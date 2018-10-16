@@ -25,7 +25,7 @@ module.exports = {
     Request,
     Account,
     builder: {
-        buildTx(req) {
+        buildSignMsg(req) {
 
             if (codec.hex.isHex(req.acc.address)) {
                 req.acc.address = codec.bech32.toBech32(constants.CyberdNetConfig.PREFIX_BECH32_ACCADDR, req.acc.address)
@@ -45,23 +45,20 @@ module.exports = {
             return msg
         },
 
-        signTx(signMsg, privateKey) {
-            let sig = signMsg.signByte
-            console.log("SIGN BYTES: ", sig)
+        signTxRequest(signMsg, privateKey) {
 
-            console.log("SIGN BYTES BYTES:", Buffer.from(JSON.stringify(sig)))
+            let objectToSign = signMsg.getSignObject()
 
-            let signbyte = cyberdKeypair.sign(privateKey, sig)
+            let signedBytes = cyberdKeypair.sign(privateKey, objectToSign)
             let keypair = cyberdKeypair.import(privateKey)
 
-            let signs = [cyberd.buildStdSignature(codec.hex.hexToBytes(keypair.publicKey), signbyte, signMsg.accnum, signMsg.sequence)]
-            return cyberd.buildStdTx(signMsg.msgs, signMsg.fee, signs, signMsg.memo)
+            let signs = [cyberd.buildSignature(codec.hex.hexToBytes(keypair.publicKey), signedBytes, signMsg.accnum, signMsg.sequence)]
+            return cyberd.buildTxRequest(signMsg.msgs, signMsg.fee, signs, signMsg.memo)
         },
 
-        buildAndSignTx(req, privateKey) {
-            let signMsg = this.buildTx(req)
-            console.log("SIGNMESSAGE: ", signMsg)
-            return this.signTx(signMsg, privateKey)
+        buildAndSignTxRequest(req, privateKey) {
+            let signMsg = this.buildSignMsg(req)
+            return this.signTxRequest(signMsg, privateKey)
         },
     }
 };

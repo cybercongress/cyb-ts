@@ -2,11 +2,8 @@ import React, {Component} from 'react';
 import axios from 'axios'
 
 const keypair = require('../core/keypair')
-const codec = require('../util/codec')
 const cyberd = require('../core/builder')
 const constants = require('../core/constants')
-const amino = require('../core/amino')
-const crypto = require('../core/crypto')
 
 function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
@@ -35,26 +32,16 @@ class App extends Component {
 
         const key = keypair.recover(seed)
 
-        console.log(key)
-
-        console.log("ADDRESS: ", codec.bech32.toBech32('cosmosaccaddr', key.address))
-
-        const account = new cyberd.Account(addr, "test-chain-PsZPAt", 0, 1)
+        const account = new cyberd.Account(addr, constants.CyberdNetConfig.CHAIN_ID, 0, 1)
         const request = new cyberd.Request(account, "42", "0xSearch", constants.TxType.LINK)
 
-        const tx = cyberd.builder.buildAndSignTx(request, key.privateKey)
-
-        console.log("TX: ", tx)
-
-        const url = 'http://localhost:8081/link'
-
         axios({
-        	method: 'post',
-        	url: url,
-        	data: tx
+            method: 'post',
+            url: 'http://localhost:8081/link',
+            data: cyberd.builder.buildAndSignTxRequest(request, key.privateKey)
         })
-        	.then(data => console.log(data))
-        	.catch(err => console.log(err))
+            .then(data => console.log(data))
+            .catch(err => console.log(err))
 
 
     }

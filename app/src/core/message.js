@@ -10,7 +10,7 @@ class Validator {
 }
 
 class Msg extends Validator {
-    getSignBytes() {
+    getSignObject() {
         throw new Error("not implement");
     }
 
@@ -35,7 +35,7 @@ class MsgLink extends Msg {
         this.cid2 = toCid
     }
 
-    getSignBytes() {
+    getSignObject() {
         return amino.marshalJSON(this.type(), utils.sortObjectKeys(this));
     }
 
@@ -54,7 +54,7 @@ class MsgLink extends Msg {
     }
 }
 
-class StdFee {
+class Fee {
     constructor(amount, gas) {
         this.amount = amount;
         if (!gas) {
@@ -63,7 +63,7 @@ class StdFee {
         this.gas = gas;
     }
 
-    getSignBytes() {
+    getSignObject() {
         if (utils.isEmpty(this.amount)) {
             this.amount = [new Coin("0", "")]
         }
@@ -72,7 +72,8 @@ class StdFee {
 }
 
 
-class StdSignMsg extends Msg {
+class SignMsg extends Msg {
+
     constructor(chainID, accnum, sequence, fee, msg, memo) {
         super();
         this.chainID = chainID;
@@ -81,24 +82,23 @@ class StdSignMsg extends Msg {
         this.fee = fee;
         this.msgs = [msg];
         this.memo = memo;
-        this.signByte = this.getSignBytes();
     }
 
-    getSignBytes() {
+    getSignObject() {
         let msgs = [];
         this.msgs.forEach(function (msg) {
-            msgs.push(msg.getSignBytes())
+            msgs.push(msg.getSignObject())
         });
 
-        let signDoc = {
+        let signObject = {
             account_number: this.accnum,
             chain_id: this.chainID,
-            fee: this.fee.getSignBytes(),
+            fee: this.fee.getSignObject(),
             memo: this.memo,
             msgs: msgs,
             sequence: this.sequence
         };
-        return utils.sortObjectKeys(signDoc)
+        return utils.sortObjectKeys(signObject)
     }
 
     validateBasic() {
@@ -117,7 +117,7 @@ class StdSignMsg extends Msg {
     }
 }
 
-class StdSignature {
+class Signature {
     constructor(pub_key, signature, account_number, sequence) {
         this.pub_key = pub_key;
         this.signature = signature;
@@ -126,10 +126,10 @@ class StdSignature {
     }
 }
 
-class StdTx {
+class TxRequest {
 
     constructor(msgs, fee, signatures, memo) {
-        this.msg = msgs;
+        this.msgs = msgs;
         this.fee = fee;
         this.signatures = signatures;
         this.memo = memo
@@ -140,18 +140,16 @@ class StdTx {
 module.exports = {
 
     buildLinkSignMsg(acc, cidTo, cidFrom) {
-        let stdFee = new StdFee();
+        let fee = new Fee();
         let msg = new MsgLink(acc.address, cidTo, cidFrom);
-        return new StdSignMsg(acc.chain_id, acc.account_number, acc.sequence, stdFee, msg, '');
+        return new SignMsg(acc.chain_id, acc.account_number, acc.sequence, fee, msg, '');
     },
 
-    buildStdSignature(pub_key, signature, account_number, sequence) {
-        return new StdSignature(pub_key, signature, account_number, sequence)
+    buildSignature(pub_key, signature, account_number, sequence) {
+        return new Signature(pub_key, signature, account_number, sequence)
     },
 
-    buildStdTx(msgs, fee, signatures, memo) {
-        return new StdTx(msgs, fee, signatures, memo)
+    buildTxRequest(msgs, fee, signatures, memo) {
+        return new TxRequest(msgs, fee, signatures, memo)
     },
-
-    MsgLink, StdTx
 };
