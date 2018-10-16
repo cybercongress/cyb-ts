@@ -6,7 +6,6 @@ const Random = require('randombytes');
 const Secp256k1 = require('secp256k1');
 const BN = require("bn.js");
 const constants = require('./constants');
-const amino = require('./amino');
 
 module.exports = {
 
@@ -25,7 +24,6 @@ module.exports = {
         let sig = Secp256k1.sign(sig32, prikeyArr);
         let signature = Buffer.from(hd.serialize(sig.signature));
 
-        // signature = amino.marshalBinary(constants.AminoKey.SignatureSecp256k1_prefix, signature);
         return Array.from(signature)
     },
 
@@ -47,7 +45,6 @@ module.exports = {
         let secretKey = this.getPrivateKeyFromSecret(mnemonicS);
 
         let pubKey = Secp256k1.publicKeyCreate(secretKey);
-        pubKey = amino.marshalBinary(constants.AminoKey.PubKeySecp256k1_prefix, pubKey);
 
         return {
             "secret": mnemonicS,
@@ -60,7 +57,6 @@ module.exports = {
     recover(seed) {
         let secretKey = this.getPrivateKeyFromSecret(seed);
         let pubKey = Secp256k1.publicKeyCreate(secretKey);
-        // pubKey = amino.marshalBinary(constants.AminoKey.PubKeySecp256k1_prefix, pubKey);
 
         return {
             "secret": seed,
@@ -73,7 +69,6 @@ module.exports = {
     import(secretKey) {
         let secretBytes = Buffer.from(secretKey, "hex");
         let pubKey = Secp256k1.publicKeyCreate(secretBytes);
-        // pubKey = amino.marshalBinary(constants.AminoKey.PubKeySecp256k1_prefix, pubKey);
 
         return {
             "address": this.getAddress(pubKey),

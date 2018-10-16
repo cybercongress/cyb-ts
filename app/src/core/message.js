@@ -129,21 +129,10 @@ class StdSignature {
 class StdTx {
 
     constructor(msgs, fee, signatures, memo) {
-        console.log("MESSAGES: ", msgs)
-        let fmtMsgs = function (msgs) {
-            let msgS = [];
-            msgs.forEach(function (msg) {
-                msgS.push(amino.marshalJSON(msg.type(), msg))
-            });
-            return msgS
-        };
-
-        if (typeof msgs !== 'undefined') {
-            this.msg = msgs;
-            this.fee = fee;
-            this.signatures = signatures;
-            this.memo = memo
-        }
+        this.msg = msgs;
+        this.fee = fee;
+        this.signatures = signatures;
+        this.memo = memo
     }
 
 }
