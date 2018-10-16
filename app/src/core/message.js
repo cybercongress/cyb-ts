@@ -1,0 +1,168 @@
+const utils = require('../util/utils');
+const constants = require('./constants');
+const amino = require('./amino');
+
+
+class Validator {
+    validateBasic() {
+        throw new Error("not implement");
+    }
+}
+
+class Msg extends Validator {
+    getSignBytes() {
+        throw new Error("not implement");
+    }
+
+    type() {
+        throw new Error("not implement");
+    }
+}
+
+class Coin {
+    constructor(amount, denom) {
+        this.denom = denom
+        this.amount = amount
+    }
+}
+
+class MsgLink extends Msg {
+
+    constructor(from, fromCid, toCid) {
+        super()
+        this.address = from
+        this.cid1 = fromCid
+        this.cid2 = toCid
+    }
+
+    getSignBytes() {
+        return amino.marshalJSON(this.type(), utils.sortObjectKeys(this));
+    }
+
+    validateBasic() {
+        if (utils.isEmpty(this.cid1)) {
+            throw new Error("from cid is empty");
+        }
+        if (utils.isEmpty(this.cid2)) {
+            throw new Error("to cid is empty");
+        }
+
+    }
+
+    type() {
+        return "cyberd/Link";
+    }
+}
+
+class StdFee {
+    constructor(amount, gas) {
+        this.amount = amount;
+        if (!gas) {
+            gas = constants.CyberdNetConfig.MAXGAS;
+        }
+        this.gas = gas;
+    }
+
+    getSignBytes() {
+        if (utils.isEmpty(this.amount)) {
+            this.amount = [new Coin("0", "")]
+        }
+        return this
+    }
+}
+
+
+class StdSignMsg extends Msg {
+    constructor(chainID, accnum, sequence, fee, msg, memo) {
+        super();
+        this.chainID = chainID;
+        this.accnum = accnum;
+        this.sequence = sequence;
+        this.fee = fee;
+        this.msgs = [msg];
+        this.memo = memo;
+        this.signByte = this.getSignBytes();
+    }
+
+    getSignBytes() {
+        let msgs = [];
+        this.msgs.forEach(function (msg) {
+            msgs.push(msg.getSignBytes())
+        });
+
+        let signDoc = {
+            account_number: this.accnum,
+            chain_id: this.chainID,
+            fee: this.fee.getSignBytes(),
+            memo: this.memo,
+            msgs: msgs,
+            sequence: this.sequence
+        };
+        return utils.sortObjectKeys(signDoc)
+    }
+
+    validateBasic() {
+        if (utils.isEmpty(this.chainID)) {
+            throw new Error("chainID is empty");
+        }
+        if (this.accnum < 0) {
+            throw new Error("accountNumber is empty");
+        }
+        if (this.sequence < 0) {
+            throw new Error("sequence is empty");
+        }
+        this.msgs.forEach(function (msg) {
+            msg.validateBasic();
+        });
+    }
+}
+
+class StdSignature {
+    constructor(pub_key, signature, account_number, sequence) {
+        this.pub_key = pub_key;
+        this.signature = signature;
+        this.account_number = account_number;
+        this.sequence = sequence;
+    }
+}
+
+class StdTx {
+
+    constructor(msgs, fee, signatures, memo) {
+        console.log("MESSAGES: ", msgs)
+        let fmtMsgs = function (msgs) {
+            let msgS = [];
+            msgs.forEach(function (msg) {
+                msgS.push(amino.marshalJSON(msg.type(), msg))
+            });
+            return msgS
+        };
+
+        if (typeof msgs !== 'undefined') {
+            this.msg = msgs;
+            this.fee = fee;
+            this.signatures = signatures;
+            this.memo = memo
+        }
+    }
+
+}
+
+module.exports = {
+
+    buildLinkSignMsg(acc, cidTo, cidFrom) {
+        let stdFee = new StdFee();
+        let msg = new MsgLink(acc.address, cidTo, cidFrom);
+        return new StdSignMsg(acc.chain_id, acc.account_number, acc.sequence, stdFee, msg, '');
+    },
+
+    buildStdSignature(pub_key, signature, account_number, sequence) {
+        return new StdSignature(pub_key, signature, account_number, sequence)
+    },
+
+    buildStdTx(msgs, fee, signatures, memo) {
+        return new StdTx(msgs, fee, signatures, memo)
+    },
+
+    MsgLink, StdTx
+};
