@@ -4,10 +4,10 @@ const codec = require("../util/codec")
 const cyberd = require("./message")
 
 class Request {
-    constructor(acc, toCid, fromCid, type) {
+    constructor(acc, fromCid, toCid, type) {
         this.acc = acc;
-        this.toCid = toCid;
         this.fromCid = fromCid;
+        this.toCid = toCid;
         this.type = type
     }
 }
