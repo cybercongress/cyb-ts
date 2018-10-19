@@ -11,7 +11,7 @@ const constants = require('../core/constants')
 
 const styles = require('./app.less');
 
-const nodeUrl = 'http://localhost:26660';
+const nodeUrl = 'http://earth.cybernode.ai:34660';
 
 function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
