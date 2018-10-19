@@ -12,7 +12,7 @@ CyberdNetConfig.PREFIX_BECH32_ACCPUB = "cosmosaccpub"
 CyberdNetConfig.ENCODING_BECH32 = "bech32"
 CyberdNetConfig.ENCODING_HEX = "hex"
 CyberdNetConfig.DEFAULT_ENCODING = CyberdNetConfig.ENCODING_BECH32
-CyberdNetConfig.CHAIN_ID = "test-chain-PsZPAt"
+CyberdNetConfig.CHAIN_ID = "test-chain-8zgDHh"
 
 class AminoKey {
 }
