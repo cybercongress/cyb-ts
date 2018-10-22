@@ -1,6 +1,6 @@
 {
   "name": "@cybercongress/dapp-cyber",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "app/src/main.jsx",
   "author": "author",
   "dependencies": {

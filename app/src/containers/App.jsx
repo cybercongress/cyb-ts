@@ -1,17 +1,4 @@
 import React, {Component} from 'react';
-import axios from 'axios'
-import {
-    create as createCyberdAccount,
-    import as importCyberdAccount,
-    recover as recoverCyberdAccount
-} from "../core/crypto";
-
-const cyberd = require('../core/builder')
-const constants = require('../core/constants')
-
-const styles = require('./app.less');
-
-const nodeUrl = 'http://earth.cybernode.ai:34660';
 
 function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
@@ -20,20 +7,14 @@ function getQueryStringValue(key) {
 class App extends Component {
 
     state = {
-        // query: '',
-        // cidFrom: '',
-        // cidTo: '',
         links: [],
-        accounts: [],
-        defaultAccount: '',
         defaultAddress: null,
-        chainId: 'test-chain-fbqPMq',
-        showAccounts: false,
-        items: []
+        browserSupport: false,
+        searchQuery: ''
     };
 
-    search() {
-        const query = this.refs.searchInput.value;
+    search(_query) {
+        const query = _query || this.refs.searchInput.value ;
 
         window.cyber.search(query).then((result) => {
             console.log('result: ', result.length);
@@ -41,98 +22,59 @@ class App extends Component {
                 links: result
             })
         })
-
-        /*        const cid = this.refs.searchInput.value;
-                console.log('Search query: ', cid);
-
-                axios({
-                    method: 'get',
-                    url: nodeUrl + '/search?cid=' + cid,
-                })
-                    .then(data => {
-                        let cids = data.data.result.cids;
-                        let links = [];
-
-                        for (let i = 0; i < cids.length; i++) {
-                            links.push({hash: cids[i].Cid})
-                        }
-
-                        this.setState({
-                            links: links
-                        })
-                    })
-                    .catch(err => console.log(err))*/
     }
 
-    linkTest() {
-        const cidFrom = this.refs.cidFromInput.value;
-        const cidTo = this.refs.cidToInput.value;
+    _handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            this.search();
+        }
+    };
 
+    link() {
+        const address = this.state.defaultAddress;
+        const cidFrom = this.refs.searchInput.value;
+        const cidTo = this.refs.cidToInput.value;
         console.log("from: " + cidFrom + " to: " + cidTo);
 
-        const address = this.state.defaultAddress;
-
         window.cyber.link(cidFrom, cidTo, address);
-
-        //const privateKey = this.state.defaultAccount.privateKey;
-
-        //this.link(addr, privateKey, cidFrom, cidTo)
     }
 
-    componentWillMount() {
+    componentDidMount() {
+        if (!window.cyber) {
+            return
+        } else {
 
-        window.cyber.getDefaultAddress(address => {
             this.setState({
-                defaultAddress: address
-            })
-        })
+                browserSupport: true,
+                searchQuery: getQueryStringValue('query')
+            });
+            window.cyber.getDefaultAddress(address => {
+                this.setState({
+                    defaultAddress: address
+                })
+            });
 
-        this.setState({
-            query: getQueryStringValue('query')
-        });
+            this.search(getQueryStringValue('query'));
 
-        this.restoreAccountsFromLs().then(accounts => {
-            if (this.state.defaultAccount === '' && accounts.length > 0) {
-                this.setDefaultAccount(accounts[0]);
-            }
-        }).then(() =>
-            this.search()
-        )
+        }
     }
 
     render() {
-
-        const accounts = this.state.accounts.map(account => {
-            const cssClassName = account.address === this.state.defaultAccount.address ? styles.defaultAccount : styles.account;
-            return <div
-                onClick={() => this.setDefaultAccount(account)}
-                key={account.address}
-                className={cssClassName}>
-                <div>
-                    address: {account.address}
-                </div>
-                <div>
-                    public key: {account.publicKey}
-                </div>
-                <div>
-                    private key: {account.privateKey}
-                </div>
-                <div>
-                    balance: {account.balance}
-                </div>
-                <button onClick={() => this.deleteAccount(account)}>remove</button>
+        if (!this.state.browserSupport) {
+            return <div>
+                Browser not supported. Download latest CYB!
             </div>
-        });
+        }
 
         const searchResults = this.state.links.map(link =>
             <div key={link.hash}>
                 <a href={`cyb://${link.hash}`}> {link.hash} </a>
             </div>
-        )
+        );
 
         return (
             <div>
-                <input ref='searchInput'/>
+                <input defaultValue={this.state.searchQuery} ref='searchInput' onKeyPress={this._handleKeyPress}/>
                 <button type="button" onClick={() => this.search()}>Search</button>
 
                 <div>
@@ -148,139 +90,14 @@ class App extends Component {
                 {this.state.defaultAddress &&
                     <div>
                         <p>Manual link:</p>
-                        Cid From: <input ref='cidFromInput'/>
                         Cid To: <input ref='cidToInput'/>
-                        <button type="button" onClick={() => this.linkTest()}>Link</button>
+                        <button type="button" onClick={() => this.link()}>Link</button>
                     </div>
-                }
-                <div>
-                    <hr/>
-                </div>
-                <button onClick={this.switchAccountManagement}>Accounts management</button>
-                {this.state.showAccounts &&
-                <span>
-                        <p>Accounts: </p>
-                        <div>
-                            {accounts}
-                        </div>
-
-                        <hr/>
-                        <button onClick={this.createAccount}>Create new account</button>
-                        <div>
-                            <p>Recover</p>
-                            <input ref='recoverInput' placeholder='seed for recover'/>
-                            <button onClick={this.recoverAccount}>recover</button>
-                        </div>
-                        <div>
-                            <p>Import</p>
-                            <input ref='privateKeyInput' placeholder='private key for import'/>
-                            <button onClick={this.importAccount}>import</button>
-                        </div>
-                    </span>
                 }
             </div>
         )
     }
 
-    switchAccountManagement = () => {
-        this.setState({
-            showAccounts: !this.state.showAccounts
-        })
-    };
-
-    setDefaultAccount = (account) => {
-        this.setState({
-            defaultAccount: account
-        });
-        this.saveAccountsToLs();
-    };
-
-    createAccount = () => {
-        const account = createCyberdAccount('');
-
-        this._addAccountAndSaveToLs(account);
-    };
-
-    importAccount = () => {
-        const privateKey = this.refs.privateKeyInput.value;
-        const account = importCyberdAccount(privateKey);
-
-        this._addAccountAndSaveToLs(account);
-    };
-
-    recoverAccount = () => {
-        const seedPhrase = this.refs.recoverInput.value;
-        const account = recoverCyberdAccount(seedPhrase);
-
-        this._addAccountAndSaveToLs(account);
-    };
-
-    deleteAccount = (account) => {
-        let accounts = this.state.accounts;
-
-        accounts = accounts.filter(acc => acc.address !== account.address);
-        this.setState({
-            accounts: accounts
-        });
-
-        if (account === this.state.defaultAccount && accounts.length > 0) {
-            this.setState({
-                defaultAccount: accounts[0]
-            })
-        }
-    };
-
-    _addAccountAndSaveToLs = (account) => {
-        let accounts = this.state.accounts;
-
-        accounts.push({
-            address: account.address,
-            publicKey: account.publicKey,
-            privateKey: account.privateKey,
-            balance: 0
-        });
-
-        this.setState({
-            accounts: accounts
-        });
-
-        this.saveAccountsToLs();
-    };
-
-    saveAccountsToLs = () => {
-        localStorage.setItem('cyberdAccounts', JSON.stringify(this.state.accounts));
-        localStorage.setItem('cyberdDefaultAccount', JSON.stringify(this.state.defaultAccount));
-    };
-
-    restoreAccountsFromLs = () => new Promise(resolve => {
-        const _accounts = JSON.parse(localStorage.getItem('cyberdAccounts') || '[]');
-        const defaultAccountRaw = localStorage.getItem('cyberdDefaultAccount') || '';
-        const defaultAccount = defaultAccountRaw ? JSON.parse(defaultAccountRaw) : '';
-
-        Promise.all(
-            _accounts.map(acc => new Promise(resolve => {
-                axios({
-                    method: 'get',
-                    url: nodeUrl + '/account?address=' + acc.address
-                }).then(data => {
-
-                    if (!data.data.error) {
-                        const account = data.data.result.account;
-                        acc.balance = account.coins[0].amount;
-                    }
-                    resolve(acc);
-                })
-            }))
-        ).then(accounts => {
-            this.setState({
-                accounts: accounts,
-                defaultAccount: defaultAccount
-            });
-            this.saveAccountsToLs();
-
-            resolve(accounts)
-        });
-    })
 }
 
 export default App;
