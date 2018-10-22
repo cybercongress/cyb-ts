@@ -20,81 +20,73 @@ function getQueryStringValue(key) {
 class App extends Component {
 
     state = {
-        query: '',
-        cidFrom: '',
-        cidTo: '',
+        // query: '',
+        // cidFrom: '',
+        // cidTo: '',
         links: [],
         accounts: [],
         defaultAccount: '',
+        defaultAddress: null,
         chainId: 'test-chain-fbqPMq',
-        showAccounts: false
+        showAccounts: false,
+        items: []
     };
 
     search() {
-        const cid = this.state.query;
-        console.log(cid);
+        const query = this.refs.searchInput.value;
 
-        axios({
-            method: 'get',
-            url: nodeUrl + '/search?cid=' + cid,
-        })
-            .then(data => {
-                let cids = data.data.result.cids;
-                let links = [];
-
-                for (let i = 0; i < cids.length; i++) {
-                    links.push({hash: cids[i].Cid})
-                }
-
-                this.setState({
-                    links: links
-                })
+        window.cyber.search(query).then((result) => {
+            console.log('result: ', result.length);
+            this.setState({
+                links: result
             })
-            .catch(err => console.log(err))
+        })
+
+        /*        const cid = this.refs.searchInput.value;
+                console.log('Search query: ', cid);
+
+                axios({
+                    method: 'get',
+                    url: nodeUrl + '/search?cid=' + cid,
+                })
+                    .then(data => {
+                        let cids = data.data.result.cids;
+                        let links = [];
+
+                        for (let i = 0; i < cids.length; i++) {
+                            links.push({hash: cids[i].Cid})
+                        }
+
+                        this.setState({
+                            links: links
+                        })
+                    })
+                    .catch(err => console.log(err))*/
     }
 
     linkTest() {
-        const cidFrom = this.state.cidFrom;
-        const cidTo = this.state.cidTo;
+        const cidFrom = this.refs.cidFromInput.value;
+        const cidTo = this.refs.cidToInput.value;
 
         console.log("from: " + cidFrom + " to: " + cidTo);
 
-        const addr = this.state.defaultAccount.address;
-        const privateKey = this.state.defaultAccount.privateKey;
+        const address = this.state.defaultAddress;
 
-        this.link(addr, privateKey, cidFrom, cidTo)
-    }
+        window.cyber.link(cidFrom, cidTo, address);
 
-    link(address, privKey, cidFrom, cidTo) {
-        this.setState({
-            query: getQueryStringValue('query')
-        });
+        //const privateKey = this.state.defaultAccount.privateKey;
 
-        axios({
-            method: 'get',
-            url: nodeUrl + '/account?address=' + address
-        }).then(data => {
-
-            const account = data.data.result.account;
-            const chainId = this.state.chainId;
-
-            console.log(account);
-
-            const cyberdAcc = new cyberd.Account(address, chainId, parseInt(account.account_number, 10), parseInt(account.sequence, 10));
-            const linkRequest = new cyberd.Request(cyberdAcc, cidFrom, cidTo, constants.TxType.LINK);
-
-            axios({
-                method: 'post',
-                url: nodeUrl + '/link',
-                data: cyberd.builder.buildAndSignTxRequest(linkRequest, privKey)
-            })
-                .then(data => console.log(data))
-                .catch(err => console.log(err))
-
-        })
+        //this.link(addr, privateKey, cidFrom, cidTo)
     }
 
     componentWillMount() {
+
+        window.cyber.getDefaultAddress(address => {
+            this.setState({
+                defaultAddress: address
+            })
+        })
+
         this.setState({
             query: getQueryStringValue('query')
         });
@@ -106,24 +98,6 @@ class App extends Component {
         }).then(() =>
             this.search()
         )
-    }
-
-    updateInputValue(evt) {
-        this.setState({
-            query: evt.target.value
-        });
-    }
-
-    updateCidFromValue(evt) {
-        this.setState({
-            cidFrom: evt.target.value
-        });
-    }
-
-    updateCidToValue(evt) {
-        this.setState({
-            cidTo: evt.target.value
-        });
     }
 
     render() {
@@ -150,29 +124,35 @@ class App extends Component {
             </div>
         });
 
+        const searchResults = this.state.links.map(link =>
+            <div key={link.hash}>
+                <a href={`cyb://${link.hash}`}> {link.hash} </a>
+            </div>
+        )
+
         return (
             <div>
-                <input defaultValue={this.state.query} onChange={evt => this.updateInputValue(evt)}/>
+                <input ref='searchInput'/>
                 <button type="button" onClick={() => this.search()}>Search</button>
 
                 <div>
                     <p>Search results:</p>
-                    {
-                        this.state.links.map(link =>
-                            <div key={link.hash}>
-                                <a href={`cyb://${link.hash}`}> {link.hash} </a>
-                            </div>
-                        )
-                    }
+                    {searchResults}
                 </div>
 
                 <div>
-                    <p>Manual link:</p>
-                    Cid From: <input defaultValue={this.state.cidFrom} onChange={evt => this.updateCidFromValue(evt)}/>
-                    Cid To: <input defaultValue={this.state.cidTo} onChange={evt => this.updateCidToValue(evt)}/>
-                    <button type="button" onClick={() => this.linkTest()}>Link</button>
+                    <p>Default address:</p>
+                    {this.state.defaultAddress || 'none'}
                 </div>
 
+                {this.state.defaultAddress &&
+                    <div>
+                        <p>Manual link:</p>
+                        Cid From: <input ref='cidFromInput'/>
+                        Cid To: <input ref='cidToInput'/>
+                        <button type="button" onClick={() => this.linkTest()}>Link</button>
+                    </div>
+                }
                 <div>
                     <hr/>
                 </div>
@@ -229,8 +209,9 @@ class App extends Component {
     };
 
     recoverAccount = () => {
-        const privateKey = this.refs.recoverInput.value;
-        const account = recoverCyberdAccount(privateKey);
+        const seedPhrase = this.refs.recoverInput.value;
+        const account = recoverCyberdAccount(seedPhrase);
+
         this._addAccountAndSaveToLs(account);
     };
 
