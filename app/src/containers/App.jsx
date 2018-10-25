@@ -4,6 +4,8 @@ function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 }
 
+import styles from './app.less';
+
 class App extends Component {
 
     state = {
@@ -14,12 +16,13 @@ class App extends Component {
     };
 
     search(_query) {
-        const query = _query || this.refs.searchInput.value ;
+        const query =  _query || this.refs.searchInput.value ;
 
         window.cyber.search(query).then((result) => {
             console.log('result: ', result.length);
             this.setState({
-                links: result
+                links: result,
+                searchQuery: query
             })
         })
     }
@@ -66,32 +69,42 @@ class App extends Component {
             </div>
         }
 
-        const searchResults = this.state.links.map(link =>
-            <div key={link.hash}>
+        const { searchQuery, links } = this.state;
+
+        const searchResults = links.map(link =>
+            <div key={link.hash} className={styles.searchItem}>
                 <a href={`cyb://${link.hash}`}> {link.hash} </a>
             </div>
         );
 
+
         return (
-            <div>
-                <input defaultValue={this.state.searchQuery} ref='searchInput' onKeyPress={this._handleKeyPress}/>
-                <button type="button" onClick={() => this.search()}>Search</button>
+            <div className={styles.searchContainer}>
+                <h2 className={styles.title}>/Cyberd search</h2>
+                <input className={styles.input} defaultValue={searchQuery} ref='searchInput' onKeyPress={this._handleKeyPress}/>
+                <button className={styles.button} type="button" onClick={() => this.search()}>search</button>
 
-                <div>
-                    <p>Search results:</p>
+                {links.length > 0 && <div>
+                    <h3 className={styles.title}>Search results:</h3>
                     {searchResults}
-                </div>
+                </div>}
 
-                <div>
-                    <p>Default address:</p>
-                    {this.state.defaultAddress || 'none'}
-                </div>
 
-                {this.state.defaultAddress &&
-                    <div>
-                        <p>Manual link:</p>
-                        Cid To: <input ref='cidToInput'/>
-                        <button type="button" onClick={() => this.link()}>Link</button>
+                {(this.state.defaultAddress && searchQuery && links.length > 0) &&
+                    <div className={styles.linkContainer}>
+                        <p>Have your own option for <b>"{searchQuery}"</b>? Link your query and Cyb will understand it!</p>
+                        <input placeholder='type your link her...' className={styles.input} ref='cidToInput'/>
+                        <button className={styles.button + ' ' + styles.yellow} type="button" onClick={() => this.link()}>Link it!</button>
+                    </div>
+                }
+
+                {(this.state.defaultAddress && searchQuery && links.length === 0) &&
+                    <div className={styles.linkContainer}>
+                        <img className={styles.vitalick }  src={require('./buterin-02.svg')} alt='vitalick'/>
+                        <p className={styles.notFoundFirstLine}>Seems that you are first one who are searching for <b>"{searchQuery}"</b></p>
+                        <p><b>Link your query</b> and Cyb will understand it!</p>
+                        <input placeholder='type your link her...' className={styles.input+ ' ' + styles.noResult} ref='cidToInput'/>
+                        <button className={styles.button+ ' ' + styles.green} type="button" onClick={() => this.link()}>Link it!</button>
                     </div>
                 }
             </div>
