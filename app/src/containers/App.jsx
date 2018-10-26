@@ -18,7 +18,12 @@ class App extends Component {
     search(_query) {
         const query =  _query || this.refs.searchInput.value ;
 
-        
+        console.log('search');
+        console.log(query);
+        console.log(this.refs.searchInput.value);
+        console.log(getQueryStringValue('query'));
+        console.log();
+
         if (this.refs.searchInput.value === getQueryStringValue('query')) {
             window.cyber.search(query).then((result) => {
                 console.log('result: ', result.length);
@@ -55,15 +60,14 @@ class App extends Component {
             this.setState({
                 browserSupport: true,
                 searchQuery: getQueryStringValue('query')
+            }, () => {
+                window.cyber.getDefaultAddress(address => {
+                    this.setState({
+                        defaultAddress: address
+                    })
+                    this.search(getQueryStringValue('query'));
+                });
             });
-            window.cyber.getDefaultAddress(address => {
-                this.setState({
-                    defaultAddress: address
-                })
-            });
-
-            this.search(getQueryStringValue('query'));
-
         }
     }
 
