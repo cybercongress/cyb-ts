@@ -18,13 +18,14 @@ class App extends Component {
     search(_query) {
         const query =  _query || this.refs.searchInput.value ;
 
-        window.cyber.search(query).then((result) => {
-            console.log('result: ', result.length);
-            this.setState({
-                links: result,
-                searchQuery: query
-            })
-        })
+        // window.cyber.search(query).then((result) => {
+        //     console.log('result: ', result.length);
+        //     this.setState({
+        //         links: result,
+        //         searchQuery: query
+        //     })
+        // })
+        window.location = 'cyb://' + query;
     }
 
     _handleKeyPress = (e) => {
