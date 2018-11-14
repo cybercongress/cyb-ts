@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
+import {Button, Title} from '@cybercongress/ui';
+import styles from './app.less';
 
 function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 }
-
-import styles from './app.less';
 
 class App extends Component {
 
@@ -81,7 +81,7 @@ class App extends Component {
 
         return (
             <div className={styles.searchContainer}>
-                <h2 className={styles.title}>/Cyberd search</h2>
+                <Title>/Cyberd search</Title>
                 <input className={styles.input} defaultValue={searchQuery} ref='searchInput' onKeyPress={this._handleKeyPress}/>
                 <button className={styles.button} type="button" onClick={() => this.search()}>search</button>
 

@@ -73,23 +73,14 @@ module.exports = function (options = {}) {
                         loader: "less-loader"
                     }]
                 }, {
-                    test: /\.s[ac]ss$/,
-                    use: [{
-                        loader: "style-loader"
-                    }, {
-                        loader: "css-loader"
-                    }, {
-                        loader: "postcss-loader",
-                        options: {
-                            plugins: function () {
-                                return [
-                                    autoprefixer
-                                ];
-                            }
+                    test: /\.(s[ac]ss|css)$/,
+                    use: [
+                        {
+                            loader: "style-loader"
+                        }, {
+                            loader: "css-loader"
                         }
-                    }, {
-                        loader: "sass-loader"
-                    }]
+                    ]
                 }, {
                     test: /\.(png|jpg|gif|svg)$/,
                     loader: "url-loader",

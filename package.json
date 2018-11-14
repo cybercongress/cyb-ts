@@ -4,6 +4,7 @@
   "main": "app/src/main.jsx",
   "author": "author",
   "dependencies": {
+    "@cybercongress/ui": "^0.0.2",
     "argparse": "1.0.10",
     "axios": "0.16.2",
     "babel-polyfill": "6.26.0",
@@ -59,7 +60,6 @@
     "webpack-dev-server": "2.8.2"
   },
   "scripts": {
-    "prestart": "npm install",
     "start": "NODE_ENV=development webpack-dev-server",
     "build": "NODE_ENV=production webpack --env.NODE_ENV production --env.SOURCE_MAP source-map",
     "serve": "serve -s distribution"
