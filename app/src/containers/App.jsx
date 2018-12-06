@@ -25,7 +25,7 @@ class App extends Component {
         console.log(getQueryStringValue('query'));
         console.log();
 
-        // if (this.refs.searchInput.value === getQueryStringValue('query')) {
+        if (this.refs.searchInput.value === getQueryStringValue('query')) {
             window.cyber.search(query).then((result) => {
                 console.log('result: ', result);
                 this.setState({
@@ -33,9 +33,9 @@ class App extends Component {
                     searchQuery: query
                 })
             })
-        // } else {
-        //     window.location = 'cyb://' + query;            
-        // }
+        } else {
+            window.location = 'cyb://' + query;            
+        }
     }
 
     _handleKeyPress = (e) => {
