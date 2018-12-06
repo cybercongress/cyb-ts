@@ -12,7 +12,8 @@ class App extends Component {
         links: [],
         defaultAddress: null,
         browserSupport: false,
-        searchQuery: ''
+        searchQuery: '',
+        seeAll: false,
     };
 
     search(_query) {
@@ -24,17 +25,17 @@ class App extends Component {
         console.log(getQueryStringValue('query'));
         console.log();
 
-        if (this.refs.searchInput.value === getQueryStringValue('query')) {
+        // if (this.refs.searchInput.value === getQueryStringValue('query')) {
             window.cyber.search(query).then((result) => {
-                console.log('result: ', result.length);
+                console.log('result: ', result);
                 this.setState({
                     links: result,
                     searchQuery: query
                 })
             })
-        } else {
-            window.location = 'cyb://' + query;            
-        }
+        // } else {
+        //     window.location = 'cyb://' + query;            
+        // }
     }
 
     _handleKeyPress = (e) => {
@@ -71,7 +72,14 @@ class App extends Component {
         }
     }
 
+    seeAll = () => {
+        this.setState({
+            seeAll: !this.state.seeAll
+        })
+    }
+
     render() {
+        const { seeAll } = this.state;
         if (!this.state.browserSupport) {
             return <div>
                 Browser not supported. Download latest CYB!
@@ -80,9 +88,9 @@ class App extends Component {
 
         const { searchQuery, links } = this.state;
 
-        const searchResults = links.map(link =>
+        const searchResults = links.slice(0, seeAll ? links.length : 10).map(link =>
             <div key={link.hash} className={styles.searchItem}>
-                <a href={`cyb://${link.hash}`}> {link.hash} </a>
+                <a href={`cyb://${link.content}`}> {link.content} </a><span>{link.Rank}</span>
             </div>
         );
 
@@ -96,6 +104,7 @@ class App extends Component {
                 {links.length > 0 && <div>
                     <h3 className={styles.title}>Search results:</h3>
                     {searchResults}
+                    {links.length > 10 &&  <button className={styles.button} type="button" onClick={() => this.seeAll()}>{!seeAll ? 'see all' : 'top 10'}</button>}
                 </div>}
 
 

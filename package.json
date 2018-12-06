@@ -4,7 +4,7 @@
   "main": "app/src/main.jsx",
   "author": "author",
   "dependencies": {
-    "@cybercongress/ui": "^0.0.2",
+    "@cybercongress/ui": ">=0.0.2",
     "argparse": "1.0.10",
     "axios": "0.16.2",
     "babel-polyfill": "6.26.0",
@@ -20,6 +20,7 @@
     "fetch": "^1.1.0",
     "fetch-api": "0.0.2",
     "history": "3.0.0",
+    "ipfs-api": "26.1.2",
     "json-loader": "0.5.7",
     "jsx-loader": "0.13.2",
     "keccak": "^1.4.0",
