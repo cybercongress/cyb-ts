@@ -14,6 +14,7 @@ class App extends Component {
         browserSupport: false,
         searchQuery: '',
         seeAll: false,
+        balance: 0
     };
 
     search(_query) {
@@ -25,7 +26,7 @@ class App extends Component {
         console.log(getQueryStringValue('query'));
         console.log();
 
-        if (this.refs.searchInput.value === getQueryStringValue('query')) {
+        // if (this.refs.searchInput.value === getQueryStringValue('query')) {
             window.cyber.search(query).then((result) => {
                 console.log('result: ', result);
                 this.setState({
@@ -33,9 +34,9 @@ class App extends Component {
                     searchQuery: query
                 })
             })
-        } else {
-            window.location = 'cyb://' + query;            
-        }
+        // } else {
+        //     window.location = 'cyb://' + query;            
+        // }
     }
 
     _handleKeyPress = (e) => {
@@ -62,9 +63,10 @@ class App extends Component {
                 browserSupport: true,
                 searchQuery: getQueryStringValue('query')
             }, () => {
-                window.cyber.getDefaultAddress(address => {
+                window.cyber.getDefaultAddress(({ address, balance }) => {
                     this.setState({
-                        defaultAddress: address
+                        defaultAddress: address,
+                        balance
                     })
                     this.search(getQueryStringValue('query'));
                 });
@@ -78,8 +80,18 @@ class App extends Component {
         })
     }
 
+    openLink = (e, link) => {
+        // e.preventDefault();
+        const { balance, defaultAddress: address } = this.state;
+        const cidFrom = this.refs.searchInput.value;
+        const cidTo = link.content;
+        console.log("from: " + cidFrom + " to: " + cidTo, address, balance);
+
+        window.cyber.link(cidFrom, cidTo, address);        
+    }
+
     render() {
-        const { seeAll } = this.state;
+        const { seeAll, balance, defaultAddress } = this.state;
         if (!this.state.browserSupport) {
             return <div>
                 Browser not supported. Download latest CYB!
@@ -90,10 +102,12 @@ class App extends Component {
 
         const searchResults = links.slice(0, seeAll ? links.length : 10).map(link =>
             <div key={link.hash} className={styles.searchItem}>
-                <a href={`cyb://${link.content}`}> {link.content} </a><span>{link.Rank}</span>
+                <a onClick={(e) => this.openLink(e, link)} href={`cyb://${link.content}`}> {link.content} </a><span>{link.Rank}</span>
             </div>
         );
 
+
+        console.log(' defaultAddress ', this.state.defaultAddress)
 
         return (
             <div className={styles.searchContainer}>
@@ -108,7 +122,7 @@ class App extends Component {
                 </div>}
 
 
-                {(this.state.defaultAddress && searchQuery && links.length > 0) &&
+                {(defaultAddress && (balance > 0) && searchQuery && links.length > 0) &&
                     <div className={styles.linkContainer}>
                         <p>Have your own option for <b>"{searchQuery}"</b>? Link your query and Cyb will understand it!</p>
                         <input placeholder='type your link her...' className={styles.input} ref='cidToInput'/>
@@ -116,7 +130,7 @@ class App extends Component {
                     </div>
                 }
 
-                {(this.state.defaultAddress && searchQuery && links.length === 0) &&
+                {(defaultAddress && (balance > 0) && searchQuery && links.length === 0) &&
                     <div className={styles.linkContainer}>
                         <img className={styles.vitalick }  src={require('./buterin-02.svg')} alt='vitalick'/>
                         <p className={styles.notFoundFirstLine}>Seems that you are first one who are searching for <b>"{searchQuery}"</b></p>
