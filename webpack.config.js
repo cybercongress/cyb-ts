@@ -42,7 +42,8 @@ module.exports = function (options = {}) {
                 },
                 {
                     test: /\.jsx?$/,
-                    exclude: /node_modules/,
+                    // exclude: /node_modules/,
+                    include: /app/,
                     // loader: "ts-loader"
                     loader: 'babel-loader',
                     options: {
