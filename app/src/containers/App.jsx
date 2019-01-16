@@ -21,7 +21,8 @@ import {
     PopupContent,
     ContentLineFund,
     Status,
-    PopupBarFooter
+    PopupBarFooter,
+    Popup
 } from '@cybercongress/ui';
 import styles from './app.less';
 
@@ -54,6 +55,28 @@ class App extends Component {
         time: 0
     };
 
+    getStatistics = (query) => {
+        return new Promise((resolve) => {
+            window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
+                window.cyber.getStatistics().then(({ cidsCount, linksCount, accsCount, height, latest_block_time }) => {
+                    const diffMSeconds = new Date().getTime() - new Date(latest_block_time).getTime() ;
+                    this.setState({
+                        searchQuery: query,
+                        links: [],
+
+                        remained: remained,
+                        max_value, max_value,
+                        defaultAddress: address,
+                        balance,
+                        cidsCount, linksCount, accsCount,
+                        blockNumber: +height,
+                        time: Math.round( diffMSeconds / 1000)
+                    }, resolve)
+                });
+            });
+        });
+    }
+
     search(_query) {
         const query =  _query || this.searchInput.value ;
 
@@ -73,26 +96,10 @@ class App extends Component {
                     })
                 })
             } else {
-                window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
-                    window.cyber.getStatistics().then(({ cidsCount, linksCount, accsCount, height, latest_block_time }) => {
-                        const diffMSeconds = new Date().getTime() - new Date(latest_block_time).getTime() ;
-                        this.setState({
-                            searchQuery: query,
-                            links: [],
-
-                            remained: remained,
-                            max_value, max_value,
-                            defaultAddress: address,
-                            balance,
-                            cidsCount, linksCount, accsCount,
-                            blockNumber: +height,
-                            time: Math.round( diffMSeconds / 1000)
-                        })
-                    });
-                });
+                this.getStatistics('');
             }
         } else {
-            window.location = 'cyb://' + query;            
+            window.location = 'cyb://' + (query === '' ? '.cyber' : query);            
         }
     }
 
@@ -130,7 +137,7 @@ class App extends Component {
                 browserSupport: true,
                 searchQuery: getQueryStringValue('query')
             }, () => {
-                this.search(getQueryStringValue('query'));                        
+                this.getStatistics('').then(() =>  this.search(getQueryStringValue('query')));
             });
 
             window.cyber.onNewBlock((event) => {
@@ -140,32 +147,6 @@ class App extends Component {
                     time: 0
                 })
             });
-
-            // let websocket = new WebSocket("ws://earth.cybernode.ai:34657/websocket");
- 
-            // websocket.onopen = function() {
-            //     websocket.send(JSON.stringify({
-            //       "method": "subscribe",
-            //       "params": ["tm.event='NewBlockHeader'"],
-            //       "id": "1",
-            //       "jsonrpc": "2.0"
-            //     }));
-
-            //     // websocket.send(JSON.stringify({
-            //     //   "method": "subscribe",
-            //     //   "params": ["signer='cbd1sk3uvpacpjm2t3389caqk4gd9n9gkzq2054yds'"],
-            //     //   "id": "1",
-            //     //   "jsonrpc": "2.0"
-            //     // }));
-            // }
-
-            // websocket.onmessage = (event) => {
-            //     console.log(event, JSON.parse(event.data))
-            //     this.setState({
-            //         blockNumber: this.state.blockNumber + 1,
-            //         time: 0
-            //     })
-            // };
 
             setInterval(() => {
                 this.setState({
@@ -424,7 +405,7 @@ class App extends Component {
                 </div>
 
                 {successPopup && (
-<PopupNotification open='claimFundOpen' onClose={this.close}>
+        <Popup type='notification' open={true} onClose={this.close}>
             <PopupContent>
                 <ContentLineFund>
                     <Status type='successfully'>Successfully linked</Status>
@@ -435,14 +416,14 @@ class App extends Component {
                     see results
                 </Button>
             </PopupBarFooter>
-        </PopupNotification>
+        </Popup>
 
                 )}
 
     {errorPopup && (
-<PopupNotification open='claimFundOpen' type='error' onClose={this.close}>
+        <Popup open={true} type='notification-error' onClose={this.close}>
             <Status type='error'>Link error</Status>
-        </PopupNotification>
+        </Popup>
     )}
 
             </MainContainer>            
