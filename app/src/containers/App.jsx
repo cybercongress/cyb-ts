@@ -43,6 +43,15 @@ class App extends Component {
 
         successPopup: false,
         errorPopup: false,
+
+        cidsCount: 0,
+        linksCount: 0,
+        accsCount: 0,
+
+        showBandwidth: false,
+
+        blockNumber: 0,
+        time: 0
     };
 
     search(_query) {
@@ -54,17 +63,37 @@ class App extends Component {
         console.log(getQueryStringValue('query'));
         console.log();
 
-        // if (this.refs.searchInput.value === getQueryStringValue('query')) {
-            window.cyber.search(query).then((result) => {
-                console.log('result: ', result);
-                this.setState({
-                    links: result,
-                    searchQuery: query
+        if (this.searchInput.value === getQueryStringValue('query')) {
+            if (query) {
+                window.cyber.search(query).then((result) => {
+                    console.log('result: ', result);
+                    this.setState({
+                        links: result,
+                        searchQuery: query
+                    })
                 })
-            })
-        // } else {
-        //     window.location = 'cyb://' + query;            
-        // }
+            } else {
+                window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
+                    window.cyber.getStatistics().then(({ cidsCount, linksCount, accsCount, height, latest_block_time }) => {
+                        const diffMSeconds = new Date().getTime() - new Date(latest_block_time).getTime() ;
+                        this.setState({
+                            searchQuery: query,
+                            links: [],
+
+                            remained: remained,
+                            max_value, max_value,
+                            defaultAddress: address,
+                            balance,
+                            cidsCount, linksCount, accsCount,
+                            blockNumber: +height,
+                            time: Math.round( diffMSeconds / 1000)
+                        })
+                    });
+                });
+            }
+        } else {
+            window.location = 'cyb://' + query;            
+        }
     }
 
     _handleKeyPress = (e) => {
@@ -101,20 +130,48 @@ class App extends Component {
                 browserSupport: true,
                 searchQuery: getQueryStringValue('query')
             }, () => {
-                window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
-                    // window.cyber.getAccountBandwidth(address).then(() => {
-                    //     debugger
-                    // });
-
-                    this.setState({
-                        remained: remained,
-                        max_value, max_value,
-                        defaultAddress: address,
-                        balance
-                    })
-                    this.search(getQueryStringValue('query'));
-                });
+                this.search(getQueryStringValue('query'));                        
             });
+
+            window.cyber.onNewBlock((event) => {
+                console.log(event)
+                this.setState({
+                    blockNumber: this.state.blockNumber + 1,
+                    time: 0
+                })
+            });
+
+            // let websocket = new WebSocket("ws://earth.cybernode.ai:34657/websocket");
+ 
+            // websocket.onopen = function() {
+            //     websocket.send(JSON.stringify({
+            //       "method": "subscribe",
+            //       "params": ["tm.event='NewBlockHeader'"],
+            //       "id": "1",
+            //       "jsonrpc": "2.0"
+            //     }));
+
+            //     // websocket.send(JSON.stringify({
+            //     //   "method": "subscribe",
+            //     //   "params": ["signer='cbd1sk3uvpacpjm2t3389caqk4gd9n9gkzq2054yds'"],
+            //     //   "id": "1",
+            //     //   "jsonrpc": "2.0"
+            //     // }));
+            // }
+
+            // websocket.onmessage = (event) => {
+            //     console.log(event, JSON.parse(event.data))
+            //     this.setState({
+            //         blockNumber: this.state.blockNumber + 1,
+            //         time: 0
+            //     })
+            // };
+
+            setInterval(() => {
+                this.setState({
+                    time: this.state.time + 1
+                })
+            }, 1000)
         }
     }
 
@@ -140,9 +197,29 @@ class App extends Component {
             errorPopup: false,
         })
     }
+    handleMouseEnter = () => {
+        this.setState({
+            showBandwidth: true
+        })
+    }
+    handleMouseLeave = () => {
+        this.setState({
+            showBandwidth: false
+        })
+    }
 
+    seeResults = () => {
+        this.search();
+        this.setState({
+            successPopup: false
+        })
+    }
     render() {
-        const { seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup } = this.state;
+        const {
+            seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup,
+            cidsCount, linksCount, accsCount,
+            showBandwidth, blockNumber, time
+        } = this.state;
         if (!this.state.browserSupport) {
             return <div>
                 Browser not supported. Download latest CYB!
@@ -152,8 +229,6 @@ class App extends Component {
         const { searchQuery, links } = this.state;
 
 
-//                <a onClick={(e) => this.openLink(e, link)} href={`cyb://${link.content}`}> {link.content} </a><span>{link.rank}</span>
-
         const searchResults = links.slice(0, seeAll ? links.length : 10).map(link =>
             <SearchItem key={link.cid} onClick={(e) => this.openLink(e, link)} rank={link.rank}>
                 {link.content}
@@ -162,18 +237,22 @@ class App extends Component {
 
 
         console.log(' defaultAddress ', this.state.defaultAddress)
-        const index = false;
+        const index = searchQuery === '';
 
         return (
             <MainContainer>
                 <FlexContainer>
                     <PageTitle>Cyberd search</PageTitle>
-                    <div style={ { width: '30%' } }>
+                    <div
+                      style={ { width: '30%' } }
+                      onMouseEnter={this.handleMouseEnter}
+                      onMouseLeave={this.handleMouseLeave}
+                    >
                         <Text style={ { paddingBottom: '10px' } }>
                             Your bandwidth:
                         </Text>
-                        <SkillBar value={ 10 }>
-                            {PopupNotification && (
+                        <SkillBar value={ remained / max_value * 100 }>
+                            {showBandwidth && (
                                 <PopupSkillBar>
                                     <Text color='white'>{remained} of {max_value} left ({(remained / max_value * 100).toFixed(2) }%) </Text>
                                 </PopupSkillBar>
@@ -221,6 +300,7 @@ class App extends Component {
 
                 {index && (
                     <div>
+
                         <Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
                             Search statistic:
                         </Title>
@@ -233,7 +313,7 @@ class App extends Component {
                                       bold
                                       size='xxlg'
                                     >
-                                        1000
+                                        {linksCount}
                                     </Text>
                                     <Text color='blue' bold size='xlg'>
                                         link
@@ -248,7 +328,7 @@ class App extends Component {
                                       size='xxlg'
                                       style={ { paddingBottom: '10px' } }
                                     >
-                                        1000
+                                        {cidsCount}
                                     </Text>
                                     <Text color='blue' bold size='xlg'>
                                         CIDs
@@ -263,7 +343,7 @@ class App extends Component {
                                       bold
                                       size='xxlg'
                                     >
-                                        1000
+                                        {accsCount}
                                     </Text>
                                     <Text color='blue' bold size='xlg'>
                                         accounts
@@ -338,6 +418,11 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
+                <div>
+                    <div>block: {blockNumber}</div>
+                    <div>time: {time} s</div>
+                </div>
+
                 {successPopup && (
 <PopupNotification open='claimFundOpen' onClose={this.close}>
             <PopupContent>
@@ -346,7 +431,7 @@ class App extends Component {
                 </ContentLineFund>
             </PopupContent>
             <PopupBarFooter>
-                <Button transparent='true' style={ { color: '#4a90e2', marginRight: '10px' } }>
+                <Button onClick={this.seeResults} transparent='true' style={ { color: '#4a90e2', marginRight: '10px' } }>
                     see results
                 </Button>
             </PopupBarFooter>
