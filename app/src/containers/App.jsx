@@ -22,7 +22,14 @@ import {
     ContentLineFund,
     Status,
     PopupBarFooter,
-    Popup
+    Popup,
+
+    IconLinks,
+    IconCIDs,
+    IconAccounts,
+    IconBlockHeight,
+    IconBlockDelay,
+
 } from '@cybercongress/ui';
 import styles from './app.less';
 
@@ -285,50 +292,79 @@ class App extends Component {
                         <Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
                             Search statistic:
                         </Title>
-                        <Section>
+                        <Section noMargin noWrap>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel>
+                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                    <IconLinks />
+                                    <Text uppercase color='blue'>
+                                        link
+                                    </Text>
                                     <Text
-                                      color='blue'
-                                      style={ { paddingBottom: '10px' } }
-                                      bold
-                                      size='xxlg'
+                                      color='blue'                                      
+                                      size='xlg'
                                     >
                                         {linksCount}
                                     </Text>
-                                    <Text color='blue' bold size='xlg'>
-                                        link
-                                    </Text>
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel>
+                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                    <IconCIDs />
+                                    <Text uppercase color='blue'>
+                                        CIDs
+                                    </Text>
                                     <Text
-                                      color='blue'
-                                      bold
-                                      size='xxlg'
-                                      style={ { paddingBottom: '10px' } }
+                                      color='blue'                                      
+                                      size='xlg'
                                     >
                                         {cidsCount}
                                     </Text>
-                                    <Text color='blue' bold size='xlg'>
-                                        CIDs
+                                </CentredPanel>
+                            </SectionContent>
+                            <SectionContent style={ { width: '25%' } }>
+                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                    <IconAccounts />
+                                    <Text uppercase color='blue'>
+                                        accounts
+                                    </Text>
+                                    <Text
+                                      color='blue'                                      
+                                      size='xlg'
+                                    >
+                                        {accsCount}
                                     </Text>
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel>
+                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                <IconBlockHeight />
+                                <Text uppercase color='blue'>
+                                        last block height
+                                    </Text>
                                     <Text
                                       color='blue'
-                                      style={ { paddingBottom: '10px' } }
-                                      bold
-                                      size='xxlg'
+                                      
+                                      size='xlg'
                                     >
-                                        {accsCount}
+                                        {blockNumber}
                                     </Text>
-                                    <Text color='blue' bold size='xlg'>
-                                        accounts
+                                    
+                                </CentredPanel>
+                            </SectionContent>
+                            <SectionContent style={ { width: '23%' } }>
+                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                <IconBlockDelay />
+                                <Text uppercase color='blue'>
+                                        last block delay
                                     </Text>
+                                    <Text
+                                      color='blue'
+                                      
+                                      size='xlg'
+                                    >
+                                        {time} sec
+                                    </Text>
+                                    
                                 </CentredPanel>
                             </SectionContent>
                         </Section>
@@ -399,11 +435,7 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-                <div>
-                    <div>block: {blockNumber}</div>
-                    <div>time: {time} s</div>
-                </div>
-
+                
                 {successPopup && (
         <Popup type='notification' open={true} onClose={this.close}>
             <PopupContent>
