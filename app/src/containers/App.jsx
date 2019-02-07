@@ -33,6 +33,8 @@ import {
 } from '@cybercongress/ui';
 import styles from './app.less';
 
+import Validators from './Validators';
+
 function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
 }
@@ -62,7 +64,6 @@ class App extends Component {
         time: 0,
 
         validators: [],
-        jailedFilter: true
     };
 
     getStatistics = (query) => {
@@ -212,7 +213,7 @@ class App extends Component {
         const {
             seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup,
             cidsCount, linksCount, accsCount,
-            showBandwidth, blockNumber, time, jailedFilter,
+            showBandwidth, blockNumber, time,
             validators
         } = this.state;
         if (!this.state.browserSupport) {
@@ -233,17 +234,6 @@ class App extends Component {
 
         console.log(' defaultAddress ', this.state.defaultAddress)
         const index = searchQuery === '';
-
-        const validatorsSorted = validators.slice(0).sort((a, b) => +a.tokens > +b.tokens ? 1 : -1);
-        const validatorRows = validatorsSorted.filter(x => x.jailed === jailedFilter).map((validator, index) => (
-            <tr>
-                <td>{index}</td>
-                <td>{validator.description.moniker}</td>
-                <td>{validator.tokens}</td>
-                <td>{validator.operator_address}</td>
-                <td>{validator.bond_height}</td>
-            </tr>
-        ));
 
         return (
             <MainContainer>
@@ -475,27 +465,7 @@ class App extends Component {
             <Status type='error'>Link error</Status>
         </Popup>
     )}
-            <div>
-                <Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
-                    Validators statistics:
-                </Title>
-                <button onClick={() => { this.setState({ jailedFilter: false })}}>Active</button>
-                <button onClick={() => { this.setState({ jailedFilter: true })}}>Jailed</button>
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Power</th>
-                            <th>Address</th>
-                            <th>Boun height</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {validatorRows}
-                    </tbody>
-                </Table>
-            </div>
+            {index && <Validators validators={validators} />}
             </MainContainer>            
         )
     }
