@@ -6,7 +6,7 @@ import {
     MainContainer,
     PopupSkillBar,
 
-    WideInput,
+    Input,
     CentredPanel,
     Section,
     SectionContent,
@@ -29,7 +29,7 @@ import {
     IconAccounts,
     IconBlockHeight,
     IconBlockDelay,
-
+    Table
 } from '@cybercongress/ui';
 import styles from './app.less';
 
@@ -59,7 +59,10 @@ class App extends Component {
         showBandwidth: false,
 
         blockNumber: 0,
-        time: 0
+        time: 0,
+
+        validators: [],
+        jailedFilter: true
     };
 
     getStatistics = (query) => {
@@ -67,18 +70,21 @@ class App extends Component {
             window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
                 window.cyber.getStatistics().then(({ cidsCount, linksCount, accsCount, height, latest_block_time }) => {
                     const diffMSeconds = new Date().getTime() - new Date(latest_block_time).getTime() ;
-                    this.setState({
-                        searchQuery: query,
-                        links: [],
+                    window.cyber.getValidators().then((validators) => {
+                        this.setState({
+                            searchQuery: query,
+                            links: [],
+                            validators,
 
-                        remained: remained,
-                        max_value, max_value,
-                        defaultAddress: address,
-                        balance,
-                        cidsCount, linksCount, accsCount,
-                        blockNumber: +height,
-                        time: Math.round( diffMSeconds / 1000)
-                    }, resolve)
+                            remained: remained,
+                            max_value, max_value,
+                            defaultAddress: address,
+                            balance,
+                            cidsCount, linksCount, accsCount,
+                            blockNumber: +height,
+                            time: Math.round( diffMSeconds / 1000)
+                        }, resolve)                        
+                    });
                 });
             });
         });
@@ -135,7 +141,7 @@ class App extends Component {
             })
     }
 
-    componentDidMount() {
+    componentDidMount() {        
         if (!window.cyber) {
             return
         } else {
@@ -206,7 +212,8 @@ class App extends Component {
         const {
             seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup,
             cidsCount, linksCount, accsCount,
-            showBandwidth, blockNumber, time
+            showBandwidth, blockNumber, time, jailedFilter,
+            validators
         } = this.state;
         if (!this.state.browserSupport) {
             return <div>
@@ -227,11 +234,22 @@ class App extends Component {
         console.log(' defaultAddress ', this.state.defaultAddress)
         const index = searchQuery === '';
 
+        const validatorsSorted = validators.slice(0).sort((a, b) => +a.tokens > +b.tokens ? 1 : -1);
+        const validatorRows = validatorsSorted.filter(x => x.jailed === jailedFilter).map((validator, index) => (
+            <tr>
+                <td>{index}</td>
+                <td>{validator.description.moniker}</td>
+                <td>{validator.tokens}</td>
+                <td>{validator.operator_address}</td>
+                <td>{validator.bond_height}</td>
+            </tr>
+        ));
+
         return (
             <MainContainer>
                 <FlexContainer>
                     <PageTitle>Cyberd search</PageTitle>
-                    <div
+                    {defaultAddress && <div
                       style={ { width: '30%' } }
                       onMouseEnter={this.handleMouseEnter}
                       onMouseLeave={this.handleMouseLeave}
@@ -246,10 +264,10 @@ class App extends Component {
                                 </PopupSkillBar>
                             )}
                         </SkillBar>
-                    </div>
+                    </div>}
                 </FlexContainer>
                 <FlexContainer>
-                    <WideInput
+                    <Input
                       defaultValue={ searchQuery }
                       inputRef={node => this.searchInput = node }
                       onKeyPress={ this._handleKeyPress }
@@ -384,7 +402,7 @@ class App extends Component {
                             will understand it!
                         </Text>
                         <FlexContainer>
-                            <WideInput placeholder='type your link her...' inputRef={node => { this.cidToInput = node; }} />
+                            <Input placeholder='type your link her...' inputRef={node => { this.cidToInput = node; }} />
                             <Button
                               color='ogange'
                               transformtext
@@ -416,7 +434,7 @@ class App extends Component {
                             </Text>
 
                             <FlexContainer>
-                                <WideInput placeholder='type your link her...' inputRef={node => { this.cidToInput = node; }} />
+                                <Input placeholder='type your link her...' inputRef={node => { this.cidToInput = node; }} />
                                 <Button
                                   color='greenyellow'
                                   transformtext
@@ -457,7 +475,27 @@ class App extends Component {
             <Status type='error'>Link error</Status>
         </Popup>
     )}
-
+            <div>
+                <Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
+                    Validators statistics:
+                </Title>
+                <button onClick={() => { this.setState({ jailedFilter: false })}}>Active</button>
+                <button onClick={() => { this.setState({ jailedFilter: true })}}>Jailed</button>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Power</th>
+                            <th>Address</th>
+                            <th>Boun height</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {validatorRows}
+                    </tbody>
+                </Table>
+            </div>
             </MainContainer>            
         )
     }
