@@ -3,7 +3,6 @@ import React from 'react';
 import {
 	Title,
 	Table,
-	TableCybLink,
 	WalletTabs,
 	WalletTab
 } from '@cybercongress/ui';
@@ -55,7 +54,7 @@ class Validators extends React.Component {
                         Jailed
                     </WalletTab>
                 </WalletTabs>
-                <TableCybLink>
+                <Table>
                     <thead>
                         <tr>
                             <th>#</th>
@@ -68,7 +67,7 @@ class Validators extends React.Component {
                     <tbody>
                         {validatorRows}
                     </tbody>
-                </TableCybLink>
+                </Table>
             </div>
 		);
 	}
