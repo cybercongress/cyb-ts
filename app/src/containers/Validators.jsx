@@ -23,10 +23,10 @@ class Validators extends React.Component {
 	render() {
 		const { validators } = this.props;
 		const { jailedFilter } = this.state;
-		const validatorsSorted = validators.slice(0).sort((a, b) => +a.tokens > +b.tokens ? 1 : -1);
+		const validatorsSorted = validators.slice(0).sort((a, b) => +a.tokens > +b.tokens ? -1 : 1);
         const validatorRows = validatorsSorted.filter(x => x.jailed === jailedFilter).map((validator, index) => (
             <tr key={validator.description.moniker}>
-                <td>{index}</td>
+                <td>{index+1}</td>
                 <td>{validator.description.moniker}</td>
                 <td>{validator.tokens}</td>
                 <td>{validator.operator_address}</td>
@@ -61,7 +61,7 @@ class Validators extends React.Component {
                             <th>Name</th>
                             <th>Power</th>
                             <th>Address</th>
-                            <th>Boun height</th>
+                            <th>Bond height</th>
                         </tr>
                     </thead>
                     <tbody>
