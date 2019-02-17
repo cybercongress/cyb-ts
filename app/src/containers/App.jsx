@@ -16,6 +16,7 @@ import {
     LinkContainer,
     Vitalick,
     Text,
+    Message,
 
     PopupNotification,
     PopupContent,
@@ -52,8 +53,8 @@ class App extends Component {
         remained: 0,
         max_value: 0,
 
-        successPopup: false,
-        errorPopup: false,
+        successLinkMessage: false,
+        errorLinkMessage: false,
 
         cidsCount: 0,
         linksCount: 0,
@@ -115,6 +116,8 @@ class App extends Component {
     };
 
     search(_query) {
+        this.closeMessages();
+
         const query =  _query || this.searchInput.value ;
 
         console.log(' defaultAddress ', this.state.defaultAddress);
@@ -165,17 +168,28 @@ class App extends Component {
         const address = this.state.defaultAddress;
         const cidFrom = this.searchInput.value;
         const cidTo = this.cidToInput.value;
-        console.log("from: " + cidFrom + " to: " + cidTo);
 
         window.cyber.link(cidFrom, cidTo, address)
             .then(a => {
+                console.log(`Linked ${cidFrom} with ${cidTo}. Results: ${a}`);
+
+                const links = {
+                    ...this.state.links,
+                    newLink: {
+                        rank: 'n/a',
+                        content: cidTo
+                    }
+                };
+
                 this.setState({
-                    successPopup: true
+                    successLinkMessage: true,
+                    links,
                 })
             })
             .catch(a => {
+                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: ${a}`);
                 this.setState({
-                    errorPopup: true
+                    errorLinkMessage: true
                 })
             })
     }
@@ -224,10 +238,10 @@ class App extends Component {
         window.cyber.link(cidFrom, cidTo, address);
     }
 
-    close = () => {
+    closeMessages = () => {
         this.setState({
-            successPopup: false,
-            errorPopup: false,
+            successLinkMessage: false,
+            errorLinkMessage: false,
         })
     }
 
@@ -246,7 +260,7 @@ class App extends Component {
     seeResults = () => {
         this.search();
         this.setState({
-            successPopup: false
+            successLinkMessage: false
         })
     }
 
@@ -259,7 +273,7 @@ class App extends Component {
         }
 
         const {
-            seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup,
+            seeAll, balance, defaultAddress, remained, max_value, successLinkMessage, errorLinkMessage,
             cidsCount, linksCount, accsCount, showBandwidth, blockNumber, time, validators,
             searchQuery, links,
         } = this.state;
@@ -318,6 +332,16 @@ class App extends Component {
                         <Title style={ { marginLeft: '0px', marginBottom: '0px' } }>
                             Search results:
                         </Title>
+                        { successLinkMessage &&
+                            <Message type="success">
+                                Link successfully added
+                            </Message>
+                        }
+                        { errorLinkMessage &&
+                            <Message type="error">
+                                Error adding link
+                            </Message>
+                        }
                         <LinkContainer column>
                             {searchResults}
                         </LinkContainer>
@@ -447,7 +471,7 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-                {defaultAddress && balance > 0 && searchQuery && links.length === 0 && (
+                {defaultAddress && balance > 0 && searchQuery && (
                     <LinkContainer style={ { paddingTop: '100px' } } center>
                         <div style={ { width: '60%' } }>
                             <Text size='lg' style={ { marginBottom: '10px' } }>
@@ -484,8 +508,7 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-
-                {successPopup && (
+{/*                {successLinkMessage && (
         <Popup type='notification' open={true} onClose={this.close}>
             <PopupContent>
                 <ContentLineFund>
@@ -501,11 +524,11 @@ class App extends Component {
 
                 )}
 
-    {errorPopup && (
+    {errorLinkMessage && (
         <Popup open={true} type='notification-error' onClose={this.close}>
             <Status type='error'>Link error</Status>
         </Popup>
-    )}
+    )}*/}
             {index && <Validators validators={validators} />}
             </MainContainer>
         )
