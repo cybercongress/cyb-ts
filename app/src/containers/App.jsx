@@ -264,6 +264,36 @@ class App extends Component {
         })
     }
 
+    getSearchResults = (links) => {
+        return Object.keys(links).map(cid => {
+            const rank = links[cid].rank;
+            const content = links[cid].content;
+            const disabled = !content;
+
+            if (disabled) {
+                return (
+                    <SearchItem
+                        key={cid}
+                        rank={rank}
+                        disabled={true}
+                    >
+                        {cid} (loading)
+                    </SearchItem>
+                )
+            } else {
+                return (
+                    <SearchItem
+                        key={cid}
+                        rank={rank}
+                        onClick={(e) => this.openLink(e, content)}
+                    >
+                        {content}
+                    </SearchItem>
+                )
+            }
+        });
+    };
+
     render() {
 
         if (!this.state.browserSupport) {
@@ -278,15 +308,18 @@ class App extends Component {
             searchQuery, links,
         } = this.state;
 
-        const searchResults = Object.keys(links).map(linkCid =>
+/*        const searchResults = Object.keys(links).map(linkCid =>
             <SearchItem
                 key={linkCid}
                 onClick={(e) => this.openLink(e, links[linkCid].content)}
                 rank={links[linkCid].rank}
+                disabled={!!!links[linkCid].content}
             >
                 {links[linkCid].content ? links[linkCid].content : `${linkCid} (loading)`}
             </SearchItem>
-        );
+        );*/
+
+        const searchResults = this.getSearchResults(links);
 
         const index = searchQuery === '';
 
