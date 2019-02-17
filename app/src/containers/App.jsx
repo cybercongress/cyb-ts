@@ -34,6 +34,7 @@ import {
 import styles from './app.less';
 
 import Validators from './Validators';
+import { getContentByCid, initIpfs } from '../utils';
 
 function getQueryStringValue(key) {
     return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
@@ -42,7 +43,7 @@ function getQueryStringValue(key) {
 class App extends Component {
 
     state = {
-        links: [],
+        links: {},
         defaultAddress: null,
         browserSupport: false,
         searchQuery: '',
@@ -66,6 +67,12 @@ class App extends Component {
         validators: [],
     };
 
+    constructor(props) {
+        super(props);
+
+        initIpfs();
+    }
+
     getStatistics = (query) => {
         return new Promise((resolve) => {
             window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
@@ -78,43 +85,74 @@ class App extends Component {
                             validators,
 
                             remained: remained,
-                            max_value, max_value,
+                            max_value,
                             defaultAddress: address,
                             balance,
                             cidsCount, linksCount, accsCount,
                             blockNumber: +height,
                             time: Math.round( diffMSeconds / 1000)
-                        }, resolve)                        
+                        }, resolve)
                     });
                 });
             });
         });
     }
 
+    async loadContent(cid) {
+
+        getContentByCid(cid)
+            .then((content) => {
+                const links = this.state.links;
+                links[cid] = {
+                    ...links[cid],
+                    content,
+                };
+
+                this.setState({
+                    links,
+                });
+            });
+    };
+
     search(_query) {
         const query =  _query || this.searchInput.value ;
 
+        console.log(' defaultAddress ', this.state.defaultAddress);
         console.log('search');
         console.log(query);
         console.log(this.searchInput.value);
         console.log(getQueryStringValue('query'));
         console.log();
 
-        if (this.searchInput.value === getQueryStringValue('query')) {
+        //if (this.searchInput.value === getQueryStringValue('query')) {
             if (query) {
-                window.cyber.search(query).then((result) => {
-                    console.log('result: ', result);
+                window.cyber.searchCids(query).then((result) => {
+                    console.log('Result cids: ', result);
+
+                    const links = result.reduce((obj, link) => {
+                        return {
+                            ...obj,
+                            [link.cid]: {
+                                rank: link.rank,
+                            }
+                        }
+                    }, {});
+
                     this.setState({
-                        links: result,
+                        links,
                         searchQuery: query
-                    })
+                    });
+
+                    Object
+                        .keys(links)
+                        .forEach(cid => this.loadContent(cid));
                 })
             } else {
                 this.getStatistics('');
             }
-        } else {
-            window.location = 'cyb://' + (query === '' ? '.cyber' : query);            
-        }
+        //} else {
+        //    window.location = 'cyb://' + (query === '' ? '.cyber' : query);
+        //}
     }
 
     _handleKeyPress = (e) => {
@@ -142,7 +180,7 @@ class App extends Component {
             })
     }
 
-    componentDidMount() {        
+    componentDidMount() {
         if (!window.cyber) {
             return
         } else {
@@ -176,14 +214,14 @@ class App extends Component {
         })
     }
 
-    openLink = (e, link) => {
+    openLink = (e, content) => {
         // e.preventDefault();
         const { balance, defaultAddress: address } = this.state;
         const cidFrom = this.refs.searchInput.value;
-        const cidTo = link.content;
+        const cidTo = content;
         console.log("from: " + cidFrom + " to: " + cidTo, address, balance);
 
-        window.cyber.link(cidFrom, cidTo, address);        
+        window.cyber.link(cidFrom, cidTo, address);
     }
 
     close = () => {
@@ -192,11 +230,13 @@ class App extends Component {
             errorPopup: false,
         })
     }
+
     handleMouseEnter = () => {
         this.setState({
             showBandwidth: true
         })
     }
+
     handleMouseLeave = () => {
         this.setState({
             showBandwidth: false
@@ -209,30 +249,31 @@ class App extends Component {
             successPopup: false
         })
     }
+
     render() {
-        const {
-            seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup,
-            cidsCount, linksCount, accsCount,
-            showBandwidth, blockNumber, time,
-            validators
-        } = this.state;
+
         if (!this.state.browserSupport) {
             return <div>
                 Browser not supported. Download latest CYB!
             </div>
         }
 
-        const { searchQuery, links } = this.state;
+        const {
+            seeAll, balance, defaultAddress, remained, max_value, successPopup, errorPopup,
+            cidsCount, linksCount, accsCount, showBandwidth, blockNumber, time, validators,
+            searchQuery, links,
+        } = this.state;
 
-
-        const searchResults = links.slice(0, seeAll ? links.length : 10).map(link =>
-            <SearchItem key={link.cid} onClick={(e) => this.openLink(e, link)} rank={link.rank}>
-                {link.content}
+        const searchResults = Object.keys(links).map(linkCid =>
+            <SearchItem
+                key={linkCid}
+                onClick={(e) => this.openLink(e, links[linkCid].content)}
+                rank={links[linkCid].rank}
+            >
+                {links[linkCid].content ? links[linkCid].content : `${linkCid} (loading)`}
             </SearchItem>
         );
 
-
-        console.log(' defaultAddress ', this.state.defaultAddress)
         const index = searchQuery === '';
 
         return (
@@ -272,7 +313,7 @@ class App extends Component {
                         search
                     </Button>
                 </FlexContainer>
-                {links.length > 0 && (
+                {Object.keys(links).length > 0 && (
                     <div>
                         <Title style={ { marginLeft: '0px', marginBottom: '0px' } }>
                             Search results:
@@ -308,7 +349,7 @@ class App extends Component {
                                         link
                                     </Text>
                                     <Text
-                                      color='blue'                                      
+                                      color='blue'
                                       size='xlg'
                                     >
                                         {linksCount}
@@ -322,7 +363,7 @@ class App extends Component {
                                         CIDs
                                     </Text>
                                     <Text
-                                      color='blue'                                      
+                                      color='blue'
                                       size='xlg'
                                     >
                                         {cidsCount}
@@ -336,7 +377,7 @@ class App extends Component {
                                         accounts
                                     </Text>
                                     <Text
-                                      color='blue'                                      
+                                      color='blue'
                                       size='xlg'
                                     >
                                         {accsCount}
@@ -351,12 +392,12 @@ class App extends Component {
                                     </Text>
                                     <Text
                                       color='blue'
-                                      
+
                                       size='xlg'
                                     >
                                         {blockNumber}
                                     </Text>
-                                    
+
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '23%' } }>
@@ -367,12 +408,12 @@ class App extends Component {
                                     </Text>
                                     <Text
                                       color='blue'
-                                      
+
                                       size='xlg'
                                     >
                                         {time} sec
                                     </Text>
-                                    
+
                                 </CentredPanel>
                             </SectionContent>
                         </Section>
@@ -410,7 +451,7 @@ class App extends Component {
                     <LinkContainer style={ { paddingTop: '100px' } } center>
                         <div style={ { width: '60%' } }>
                             <Text size='lg' style={ { marginBottom: '10px' } }>
-                                Seems that you are first one who are searching for
+                                Seems that you are first one who are searching for&nbsp;
                                 <b>
                                     "
                                     {searchQuery}
@@ -419,7 +460,7 @@ class App extends Component {
                             </Text>
 
                             <Text size='lg' style={ { marginBottom: '20px' } }>
-                                <b>Link your query</b>
+                                <b>Link your query&nbsp;</b>
                                 and Cyb will understand it!
                             </Text>
 
@@ -443,7 +484,7 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-                
+
                 {successPopup && (
         <Popup type='notification' open={true} onClose={this.close}>
             <PopupContent>
@@ -466,7 +507,7 @@ class App extends Component {
         </Popup>
     )}
             {index && <Validators validators={validators} />}
-            </MainContainer>            
+            </MainContainer>
         )
     }
 }
