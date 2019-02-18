@@ -264,14 +264,22 @@ class App extends Component {
         })
     }
 
-    getSearchResults = (links) => {
-        return Object.keys(links).map(cid => {
+    getSearchResults = (links, count) => {
+        const cids = Object.keys(links);
+        const searchItems = [];
+
+        if (cids.length === 0) {
+            return [];
+        }
+
+        for (let index=0; index<count; index+=1) {
+            const cid = cids[index];
             const rank = links[cid].rank;
             const content = links[cid].content;
             const disabled = !content;
 
             if (disabled) {
-                return (
+                searchItems.push(
                     <SearchItem
                         key={cid}
                         rank={rank}
@@ -281,7 +289,7 @@ class App extends Component {
                     </SearchItem>
                 )
             } else {
-                return (
+                searchItems.push(
                     <SearchItem
                         key={cid}
                         rank={rank}
@@ -291,7 +299,9 @@ class App extends Component {
                     </SearchItem>
                 )
             }
-        });
+        }
+
+        return searchItems;
     };
 
     render() {
@@ -319,7 +329,9 @@ class App extends Component {
             </SearchItem>
         );*/
 
-        const searchResults = this.getSearchResults(links);
+        const searchResultsCount = Object.keys(links).length;
+
+        const searchResults = this.getSearchResults(links, seeAll ? searchResultsCount : 10);
 
         const index = searchQuery === '';
 
@@ -360,7 +372,7 @@ class App extends Component {
                         search
                     </Button>
                 </FlexContainer>
-                {Object.keys(links).length > 0 && (
+                {searchResultsCount > 0 && (
                     <div>
                         <Title style={ { marginLeft: '0px', marginBottom: '0px' } }>
                             Search results:
@@ -378,7 +390,7 @@ class App extends Component {
                         <LinkContainer column>
                             {searchResults}
                         </LinkContainer>
-                        {links.length > 10 && (
+                        {searchResultsCount > 10 && (
                             <Button
                               color='blue'
                               style={ { marginLeft: '0px' } }
@@ -477,14 +489,12 @@ class App extends Component {
                     </div>
                 )}
 
-                {defaultAddress && balance > 0 && searchQuery && links.length > 0 && (
+                {defaultAddress && balance > 0 && searchQuery && searchResultsCount > 0 && (
                     <LinkContainer column>
                         <Text size='lg' style={ { marginBottom: '20px' } }>
-                            Have your own option for
+                            Have your own option for&nbsp;
                             <b>
-                                "
-                                {searchQuery}
-                                "
+                                "{searchQuery}"
                             </b>
                             ? Link your query and Cyb
                             will understand it!
@@ -504,15 +514,13 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-                {defaultAddress && balance > 0 && searchQuery && (
+                {defaultAddress && balance > 0 && searchQuery && searchResultsCount === 0 && (
                     <LinkContainer style={ { paddingTop: '100px' } } center>
                         <div style={ { width: '60%' } }>
                             <Text size='lg' style={ { marginBottom: '10px' } }>
                                 Seems that you are first one who are searching for&nbsp;
                                 <b>
-                                    "
-                                    {searchQuery}
-                                    "
+                                    "{searchQuery}"
                                 </b>
                             </Text>
 
