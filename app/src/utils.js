@@ -33,13 +33,39 @@ export const getIpfs = async () => {
     return ipfsApi;
 };
 
-export const getContentByCid = (cid) => new Promise(resolve => {
-    getIpfs()
+export const getContentByCid = (cid, timeout) => {
+    return getIpfs()
         .then((ipfs) => {
-            ipfs.get(cid, (err, files) => {
-                const buf = files[0].content;
 
-                resolve(buf.toString());
+            const timeoutPromisse = () => new Promise((resolve, reject) => {
+                setTimeout(reject, timeout, 'ipfs get timeout')
             });
+
+            const ipfsGetPromise = () => new Promise((resolve, reject) => {
+                ipfs.get(cid, (error, files) => {
+                    if (error) {
+                        reject(error)
+                    }
+
+                    const buf = files[0].content;
+
+                    resolve(buf.toString());
+                });
+            });
+
+            return Promise.race([timeoutPromisse(), ipfsGetPromise])
         });
-});
+};
+
+export const getQueryStringValue = (key) => {
+    return decodeURIComponent(
+        window.location.search.replace(
+            new RegExp(
+                "^(?:.*[&\\?]"
+                + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&")
+                + "(?:\\=([^&]*))?)?.*$", "i"
+            ),
+            "$1"
+        )
+    );
+};

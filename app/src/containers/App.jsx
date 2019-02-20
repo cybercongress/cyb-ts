@@ -32,14 +32,8 @@ import {
     IconBlockDelay,
     Table
 } from '@cybercongress/ui';
-import styles from './app.less';
-
 import Validators from './Validators';
-import { getContentByCid, initIpfs } from '../utils';
-
-function getQueryStringValue(key) {
-    return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-}
+import { getContentByCid, initIpfs, getQueryStringValue } from '../utils';
 
 class App extends Component {
 
@@ -74,6 +68,107 @@ class App extends Component {
         initIpfs();
     }
 
+    componentDidMount() {
+        if (!window.cyber) {
+            return
+        } else {
+
+            this.setState({
+                browserSupport: true,
+                searchQuery: getQueryStringValue('query')
+            }, () => {
+                this.getStatistics('').then(() =>  this.search(getQueryStringValue('query')));
+            });
+
+            window.cyber.onNewBlock((event) => {
+                console.log(event);
+                this.setState({
+                    blockNumber: this.state.blockNumber + 1,
+                    time: 0
+                })
+            });
+
+            setInterval(() => {
+                this.setState({
+                    time: this.state.time + 1
+                })
+            }, 1000)
+        }
+    }
+
+    search(_query) {
+        this.closeMessages();
+
+        const query =  _query || this.searchInput.value ;
+
+        console.log(' defaultAddress ', this.state.defaultAddress);
+        console.log('search');
+        console.log(query);
+        console.log(this.searchInput.value);
+        console.log(getQueryStringValue('query'));
+        console.log();
+
+        if (this.searchInput.value === getQueryStringValue('query')) {
+            if (query) {
+                window.cyber.searchCids(query).then((result) => {
+                    console.log('Result cids: ', result);
+
+                    const links = result.reduce((obj, link) => {
+                        return {
+                            ...obj,
+                            [link.cid]: {
+                                rank: link.rank,
+                                status: 'loading',
+                            }
+                        }
+                    }, {});
+
+                    this.setState({
+                        links,
+                        searchQuery: query
+                    });
+
+                    this.loadContent(links);
+                })
+            } else {
+                this.getStatistics('');
+            }
+        } else {
+           window.location = 'cyb://' + (query === '' ? '.cyber' : query);
+        }
+    }
+
+    link() {
+        const address = this.state.defaultAddress;
+        const cidFrom = this.searchInput.value;
+        const cidTo = this.cidToInput.value;
+
+        window.cyber.link(cidFrom, cidTo, address)
+            .then(a => {
+                console.log(`Linked ${cidFrom} with ${cidTo}. Results: ${a}`);
+
+                const links = {
+                    ...this.state.links,
+                    newLink: {
+                        rank: 'n/a',
+                        status: 'success',
+                        content: cidTo
+                    }
+                };
+
+                this.setState({
+                    successLinkMessage: true,
+                    links,
+                })
+            })
+            .catch(a => {
+                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: ${a}`);
+                this.setState({
+                    errorLinkMessage: true
+                })
+            })
+    }
+
     getStatistics = (query) => {
         return new Promise((resolve) => {
             window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
@@ -99,128 +194,41 @@ class App extends Component {
         });
     }
 
-    async loadContent(cid) {
+    async loadContent(links) {
+        Object.keys(links).forEach(cid => {
 
-        getContentByCid(cid)
-            .then((content) => {
-                const links = this.state.links;
-                links[cid] = {
-                    ...links[cid],
-                    content,
-                };
-
-                this.setState({
-                    links,
-                });
-            });
-    };
-
-    search(_query) {
-        this.closeMessages();
-
-        const query =  _query || this.searchInput.value ;
-
-        console.log(' defaultAddress ', this.state.defaultAddress);
-        console.log('search');
-        console.log(query);
-        console.log(this.searchInput.value);
-        console.log(getQueryStringValue('query'));
-        console.log();
-
-        //if (this.searchInput.value === getQueryStringValue('query')) {
-            if (query) {
-                window.cyber.searchCids(query).then((result) => {
-                    console.log('Result cids: ', result);
-
-                    const links = result.reduce((obj, link) => {
-                        return {
-                            ...obj,
-                            [link.cid]: {
-                                rank: link.rank,
-                            }
-                        }
-                    }, {});
+            getContentByCid(cid, 5000)
+                .then((content) => {
+                    const links = this.state.links;
+                    links[cid] = {
+                        ...links[cid],
+                        status: 'success',
+                        content,
+                    };
 
                     this.setState({
                         links,
-                        searchQuery: query
                     });
-
-                    Object
-                        .keys(links)
-                        .forEach(cid => this.loadContent(cid));
                 })
-            } else {
-                this.getStatistics('');
-            }
-        //} else {
-        //    window.location = 'cyb://' + (query === '' ? '.cyber' : query);
-        //}
-    }
+                .catch((error) => {
+                    const links = this.state.links;
+                    links[cid] = {
+                        ...links[cid],
+                        status: 'error',
+                    };
+
+                    this.setState({
+                        links,
+                    });
+                });
+        })
+    };
 
     _handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             this.search();
         }
     };
-
-    link() {
-        const address = this.state.defaultAddress;
-        const cidFrom = this.searchInput.value;
-        const cidTo = this.cidToInput.value;
-
-        window.cyber.link(cidFrom, cidTo, address)
-            .then(a => {
-                console.log(`Linked ${cidFrom} with ${cidTo}. Results: ${a}`);
-
-                const links = {
-                    ...this.state.links,
-                    newLink: {
-                        rank: 'n/a',
-                        content: cidTo
-                    }
-                };
-
-                this.setState({
-                    successLinkMessage: true,
-                    links,
-                })
-            })
-            .catch(a => {
-                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: ${a}`);
-                this.setState({
-                    errorLinkMessage: true
-                })
-            })
-    }
-
-    componentDidMount() {
-        if (!window.cyber) {
-            return
-        } else {
-
-            this.setState({
-                browserSupport: true,
-                searchQuery: getQueryStringValue('query')
-            }, () => {
-                this.getStatistics('').then(() =>  this.search(getQueryStringValue('query')));
-            });
-
-            window.cyber.onNewBlock((event) => {
-                console.log(event)
-                this.setState({
-                    blockNumber: this.state.blockNumber + 1,
-                    time: 0
-                })
-            });
-
-            setInterval(() => {
-                this.setState({
-                    time: this.state.time + 1
-                })
-            }, 1000)
-        }
-    }
 
     seeAll = () => {
         this.setState({
@@ -257,13 +265,6 @@ class App extends Component {
         })
     }
 
-    seeResults = () => {
-        this.search();
-        this.setState({
-            successLinkMessage: false
-        })
-    }
-
     getSearchResults = (links, count) => {
         const cids = Object.keys(links);
         const searchItems = [];
@@ -274,31 +275,27 @@ class App extends Component {
 
         for (let index=0; index<count; index+=1) {
             const cid = cids[index];
-            const rank = links[cid].rank;
-            const content = links[cid].content;
-            const disabled = !content;
+            const disabled = links[cid].status !== 'success';
 
-            if (disabled) {
-                searchItems.push(
-                    <SearchItem
-                        key={cid}
-                        rank={rank}
-                        disabled={true}
-                    >
-                        {cid} (loading)
-                    </SearchItem>
-                )
-            } else {
-                searchItems.push(
-                    <SearchItem
-                        key={cid}
-                        rank={rank}
-                        onClick={(e) => this.openLink(e, content)}
-                    >
-                        {content}
-                    </SearchItem>
-                )
-            }
+            const item = disabled ? (
+                <SearchItem
+                    key={cid}
+                    rank={links[cid].rank}
+                    disabled={true}
+                >
+                    {cid} ({links[cid].status})
+                </SearchItem>
+            ) : (
+                <SearchItem
+                    key={cid}
+                    rank={links[cid].rank}
+                    onClick={(e) => this.openLink(e, links[cid].content)}
+                >
+                    {links[cid].content}
+                </SearchItem>
+            );
+
+            searchItems.push(item);
         }
 
         return searchItems;
@@ -318,20 +315,10 @@ class App extends Component {
             searchQuery, links,
         } = this.state;
 
-/*        const searchResults = Object.keys(links).map(linkCid =>
-            <SearchItem
-                key={linkCid}
-                onClick={(e) => this.openLink(e, links[linkCid].content)}
-                rank={links[linkCid].rank}
-                disabled={!!!links[linkCid].content}
-            >
-                {links[linkCid].content ? links[linkCid].content : `${linkCid} (loading)`}
-            </SearchItem>
-        );*/
-
         const searchResultsCount = Object.keys(links).length;
+        const resultsLimit = (seeAll || searchResultsCount < 10) ? searchResultsCount : 10;
 
-        const searchResults = this.getSearchResults(links, seeAll ? searchResultsCount : 10);
+        const searchResults = this.getSearchResults(links, resultsLimit);
 
         const index = searchQuery === '';
 
@@ -549,27 +536,6 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-{/*                {successLinkMessage && (
-        <Popup type='notification' open={true} onClose={this.close}>
-            <PopupContent>
-                <ContentLineFund>
-                    <Status type='successfully'>Successfully linked</Status>
-                </ContentLineFund>
-            </PopupContent>
-            <PopupBarFooter>
-                <Button onClick={this.seeResults} transparent='true' style={ { color: '#4a90e2', marginRight: '10px' } }>
-                    see results
-                </Button>
-            </PopupBarFooter>
-        </Popup>
-
-                )}
-
-    {errorLinkMessage && (
-        <Popup open={true} type='notification-error' onClose={this.close}>
-            <Status type='error'>Link error</Status>
-        </Popup>
-    )}*/}
             {index && <Validators validators={validators} />}
             </MainContainer>
         )
