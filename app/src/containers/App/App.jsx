@@ -32,8 +32,8 @@ import {
     IconBlockDelay,
     Table
 } from '@cybercongress/ui';
-import Validators from './Validators';
-import { getContentByCid, initIpfs, getQueryStringValue } from '../utils';
+import Validators from '../Validators/Validators';
+import { getContentByCid, initIpfs, getQueryStringValue } from '../../utils';
 
 class App extends Component {
 
