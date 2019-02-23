@@ -108,7 +108,9 @@ class App extends Component {
         console.log(getQueryStringValue('query'));
         console.log();
 
+/*
         if (this.searchInput.value === getQueryStringValue('query')) {
+*/
             if (query) {
                 window.cyber.searchCids(query).then((result) => {
                     console.log('Result cids: ', result);
@@ -133,9 +135,9 @@ class App extends Component {
             } else {
                 this.getStatistics('');
             }
-        } else {
+/*        } else {
            window.location = 'cyb://' + (query === '' ? '.cyber' : query);
-        }
+        }*/
     }
 
     link() {

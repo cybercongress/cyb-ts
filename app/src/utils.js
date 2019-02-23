@@ -37,7 +37,7 @@ export const getContentByCid = (cid, timeout) => {
     return getIpfs()
         .then((ipfs) => {
 
-            const timeoutPromisse = () => new Promise((resolve, reject) => {
+            const timeoutPromise = () => new Promise((resolve, reject) => {
                 setTimeout(reject, timeout, 'ipfs get timeout')
             });
 
@@ -53,7 +53,7 @@ export const getContentByCid = (cid, timeout) => {
                 });
             });
 
-            return Promise.race([timeoutPromisse(), ipfsGetPromise])
+            return Promise.race([timeoutPromise(), ipfsGetPromise()])
         });
 };
 
