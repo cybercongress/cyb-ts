@@ -65,7 +65,7 @@ class App extends Component {
             return;
         }
 
-        window.getQuery()
+        window.cyb.getQuery()
             .then((query) => {
                 this.setState({
                     browserSupport: true,
@@ -76,7 +76,7 @@ class App extends Component {
                 });
             });
 
-        window.onQueryUpdate((query) => {
+        window.cyb.onQueryUpdate((query) => {
             this.searchInput.value = query;
             this.search(query);
         });
@@ -99,7 +99,10 @@ class App extends Component {
     search(_query) {
         this.closeMessages();
 
-        const query =  _query || this.searchInput.value ;
+        const query = _query || this.searchInput.value;
+
+        window.cyb.setQuery(query);
+
 
         console.log(' defaultAddress ', this.state.defaultAddress);
         console.log('search');
@@ -223,7 +226,7 @@ class App extends Component {
 
     _handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-            window.setQuery(this.searchInput.value);
+            window.cyb.setQuery(this.searchInput.value);
             this.search();
         }
     };
