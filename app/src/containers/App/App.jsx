@@ -18,22 +18,14 @@ import {
     Text,
     Message,
 
-    PopupNotification,
-    PopupContent,
-    ContentLineFund,
-    Status,
-    PopupBarFooter,
-    Popup,
-
     IconLinks,
     IconCIDs,
     IconAccounts,
     IconBlockHeight,
     IconBlockDelay,
-    Table
 } from '@cybercongress/ui';
 import Validators from '../Validators/Validators';
-import { getContentByCid, initIpfs, getQueryStringValue } from '../../utils';
+import { getContentByCid, initIpfs } from '../../utils';
 
 class App extends Component {
 
@@ -70,30 +62,38 @@ class App extends Component {
 
     componentDidMount() {
         if (!window.cyber) {
-            return
-        } else {
-
-            this.setState({
-                browserSupport: true,
-                searchQuery: getQueryStringValue('query')
-            }, () => {
-                this.getStatistics('').then(() =>  this.search(getQueryStringValue('query')));
-            });
-
-            window.cyber.onNewBlock((event) => {
-                console.log(event);
-                this.setState({
-                    blockNumber: this.state.blockNumber + 1,
-                    time: 0
-                })
-            });
-
-            setInterval(() => {
-                this.setState({
-                    time: this.state.time + 1
-                })
-            }, 1000)
+            return;
         }
+
+        window.getQuery()
+            .then((query) => {
+                this.setState({
+                    browserSupport: true,
+                    searchQuery: query,
+                }, () => {
+                    this.getStatistics('')
+                        .then(() =>  this.search(query));
+                });
+            });
+
+        window.onQueryUpdate((query) => {
+            this.searchInput.value = query;
+            this.search(query);
+        });
+
+        window.cyber.onNewBlock((event) => {
+            console.log(event);
+            this.setState({
+                blockNumber: this.state.blockNumber + 1,
+                time: 0,
+            });
+        });
+
+        setInterval(() => {
+            this.setState({
+                time: this.state.time + 1,
+            });
+        }, 1000);
     }
 
     search(_query) {
@@ -104,37 +104,31 @@ class App extends Component {
         console.log(' defaultAddress ', this.state.defaultAddress);
         console.log('search');
         console.log(query);
-        console.log(this.searchInput.value);
-        console.log(getQueryStringValue('query'));
         console.log();
 
-        if (this.searchInput.value === getQueryStringValue('query')) {
-            if (query) {
-                window.cyber.searchCids(query).then((result) => {
-                    console.log('Result cids: ', result);
+        if (query) {
+            window.cyber.searchCids(query).then((result) => {
+                console.log('Result cids: ', result);
 
-                    const links = result.reduce((obj, link) => {
-                        return {
-                            ...obj,
-                            [link.cid]: {
-                                rank: link.rank,
-                                status: 'loading',
-                            }
-                        }
-                    }, {});
+                const links = result.reduce((obj, link) => {
+                    return {
+                        ...obj,
+                        [link.cid]: {
+                            rank: link.rank,
+                            status: 'loading',
+                        },
+                    };
+                }, {});
 
-                    this.setState({
-                        links,
-                        searchQuery: query
-                    });
+                this.setState({
+                    links,
+                    searchQuery: query
+                });
 
-                    this.loadContent(links);
-                })
-            } else {
-                this.getStatistics('');
-            }
+                this.loadContent(links);
+            });
         } else {
-            window.location = `cyb://${query === '' ? '.cyber' : query}`;
+            this.getStatistics('');
         }
     }
 
@@ -194,12 +188,12 @@ class App extends Component {
         });
     }
 
-    async loadContent(links) {
-        Object.keys(links).forEach(cid => {
-
-            getContentByCid(cid, 5000)
+    async loadContent(cids) {
+        const contentPromises = Object.keys(cids).map((cid) => {
+            return getContentByCid(cid, 5000)
                 .then((content) => {
-                    const links = this.state.links;
+                    const { links } = this.state;
+
                     links[cid] = {
                         ...links[cid],
                         status: 'success',
@@ -211,7 +205,8 @@ class App extends Component {
                     });
                 })
                 .catch((error) => {
-                    const links = this.state.links;
+                    const { links } = this.state;
+
                     links[cid] = {
                         ...links[cid],
                         status: 'error',
@@ -221,11 +216,14 @@ class App extends Component {
                         links,
                     });
                 });
-        })
-    };
+        });
+
+        Promise.all(contentPromises);
+    }
 
     _handleKeyPress = (e) => {
         if (e.key === 'Enter') {
+            window.setQuery(this.searchInput.value);
             this.search();
         }
     };
@@ -239,7 +237,7 @@ class App extends Component {
     openLink = (e, content) => {
         // e.preventDefault();
         const { balance, defaultAddress: address } = this.state;
-        const cidFrom = this.refs.searchInput.value;
+        const cidFrom = this.searchInput.value;
         const cidTo = content;
         console.log("from: " + cidFrom + " to: " + cidTo, address, balance);
 
