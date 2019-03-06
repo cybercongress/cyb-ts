@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     Button,
     Title,
@@ -27,8 +27,9 @@ import {
 import Validators from '../Validators/Validators';
 import { getContentByCid, initIpfs } from '../../utils';
 
-class App extends Component {
+const APP_NAME = '.cyber';
 
+class App extends Component {
     state = {
         links: {},
         defaultAddress: null,
@@ -36,8 +37,8 @@ class App extends Component {
         searchQuery: '',
         seeAll: false,
         balance: 0,
-        remained: 0,
-        max_value: 0,
+        bwRemained: 0,
+        bwMaxValue: 0,
 
         successLinkMessage: false,
         errorLinkMessage: false,
@@ -71,8 +72,8 @@ class App extends Component {
                     browserSupport: true,
                     searchQuery: query,
                 }, () => {
-                    this.getStatistics('')
-                        .then(() =>  this.search(query));
+                    this.getStatistics()
+                        .then(() => this.search(query));
                 });
             });
 
@@ -96,6 +97,42 @@ class App extends Component {
         }, 1000);
     }
 
+    getSearchResults = (links, count) => {
+        const cids = Object.keys(links);
+        const searchItems = [];
+
+        if (cids.length === 0) {
+            return [];
+        }
+
+        for (let index = 0; index < count; index += 1) {
+            const cid = cids[index];
+            const disabled = links[cid].status !== 'success';
+
+            const item = disabled ? (
+                <SearchItem
+                  key={ cid }
+                  rank={ links[cid].rank }
+                  disabled
+                >
+                    {cid} ({links[cid].status})
+                </SearchItem>
+            ) : (
+                <SearchItem
+                  key={ cid }
+                  rank={ links[cid].rank }
+                  onClick={ e => this.openLink(e, links[cid].content) }
+                >
+                    {links[cid].content}
+                </SearchItem>
+            );
+
+            searchItems.push(item);
+        }
+
+        return searchItems;
+    };
+
     search(_query) {
         this.closeMessages();
 
@@ -103,123 +140,122 @@ class App extends Component {
 
         window.cyb.setQuery(query);
 
-
-        console.log(' defaultAddress ', this.state.defaultAddress);
-        console.log('search');
-        console.log(query);
-        console.log();
+        console.log('cyb defaultAddress: ', this.state.defaultAddress);
+        console.log('search query: ', query);
 
         if (query) {
             window.cyber.searchCids(query).then((result) => {
                 console.log('Result cids: ', result);
 
-                const links = result.reduce((obj, link) => {
-                    return {
-                        ...obj,
-                        [link.cid]: {
-                            rank: link.rank,
-                            status: 'loading',
-                        },
-                    };
-                }, {});
+                const links = result.reduce((obj, link) => ({
+                    ...obj,
+                    [link.cid]: {
+                        rank: link.rank,
+                        status: 'loading',
+                    },
+                }), {});
 
                 this.setState({
                     links,
-                    searchQuery: query
+                    searchQuery: query,
                 });
 
                 this.loadContent(links);
             });
+
+            this.link(APP_NAME, query);
         } else {
-            this.getStatistics('');
+            this.getStatistics();
         }
     }
 
-    link() {
+    link(from, to) {
         const address = this.state.defaultAddress;
-        const cidFrom = this.searchInput.value;
-        const cidTo = this.cidToInput.value;
+        const cidFrom = from || this.searchInput.value;
+        const cidTo = to || this.cidToInput.value;
 
         window.cyber.link(cidFrom, cidTo, address)
-            .then(a => {
-                console.log(`Linked ${cidFrom} with ${cidTo}. Results: ${a}`);
+            .then((result) => {
+                console.log(`Linked ${cidFrom} with ${cidTo}. Results: ${result}`);
 
                 const links = {
                     ...this.state.links,
                     newLink: {
                         rank: 'n/a',
                         status: 'success',
-                        content: cidTo
-                    }
+                        content: cidTo,
+                    },
                 };
 
                 this.setState({
                     successLinkMessage: true,
                     links,
-                })
+                });
             })
-            .catch(a => {
-                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: ${a}`);
+            .catch((error) => {
+                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: ${error}`);
+
                 this.setState({
-                    errorLinkMessage: true
-                })
-            })
-    }
-
-    getStatistics = (query) => {
-        return new Promise((resolve) => {
-            window.cyber.getDefaultAddress(({ address, balance, remained, max_value }) => {
-                window.cyber.getStatistics().then(({ cidsCount, linksCount, accsCount, height, latest_block_time }) => {
-                    const diffMSeconds = new Date().getTime() - new Date(latest_block_time).getTime() ;
-                    window.cyber.getValidators().then((validators) => {
-                        this.setState({
-                            searchQuery: query,
-                            links: [],
-                            validators,
-
-                            remained: remained,
-                            max_value,
-                            defaultAddress: address,
-                            balance,
-                            cidsCount, linksCount, accsCount,
-                            blockNumber: +height,
-                            time: Math.round( diffMSeconds / 1000)
-                        }, resolve)
-                    });
+                    errorLinkMessage: true,
                 });
             });
-        });
     }
 
-    async loadContent(cids) {
-        const contentPromises = Object.keys(cids).map((cid) => {
-            return getContentByCid(cid, 5000)
-                .then((content) => {
-                    const { links } = this.state;
+    getStatistics = () => new Promise((resolve) => {
+        window.cyber.getDefaultAddress(({
+            address, balance, remained, max_value,
+        }) => {
+            window.cyber.getStatistics()
+                .then(({
+                    cidsCount, linksCount, accsCount, height, latest_block_time,
+                }) => {
+                    const diffMSeconds = new Date().getTime() - new Date(latest_block_time).getTime();
 
-                    links[cid] = {
-                        ...links[cid],
-                        status: 'success',
-                        content,
-                    };
+                    window.cyber.getValidators()
+                        .then((validators) => {
+                            this.setState({
+                                validators,
 
-                    this.setState({
-                        links,
-                    });
-                })
-                .catch((error) => {
-                    const { links } = this.state;
-
-                    links[cid] = {
-                        ...links[cid],
-                        status: 'error',
-                    };
-
-                    this.setState({
-                        links,
-                    });
+                                bwRemained: remained,
+                                bwMaxValue: max_value,
+                                defaultAddress: address,
+                                balance,
+                                cidsCount, linksCount, accsCount,
+                                blockNumber: +height,
+                                time: Math.round(diffMSeconds / 1000),
+                            }, resolve);
+                        });
                 });
         });
+    });
+
+    async loadContent(cids) {
+        const contentPromises = Object.keys(cids).map(cid => getContentByCid(cid, 5000)
+            .then((content) => {
+                const { links } = this.state;
+
+                links[cid] = {
+                    ...links[cid],
+                    status: 'success',
+                    content,
+                };
+
+                this.setState({
+                    links,
+                });
+            })
+            .catch((error) => {
+                const { links } = this.state;
+
+                links[cid] = {
+                    ...links[cid],
+                    status: 'error',
+                };
+
+                this.setState({
+                    links,
+                });
+            }));
 
         Promise.all(contentPromises);
     }
@@ -233,8 +269,8 @@ class App extends Component {
 
     seeAll = () => {
         this.setState({
-            seeAll: !this.state.seeAll
-        })
+            seeAll: !this.state.seeAll,
+        });
     }
 
     openLink = (e, content) => {
@@ -242,7 +278,8 @@ class App extends Component {
         const { balance, defaultAddress: address } = this.state;
         const cidFrom = this.searchInput.value;
         const cidTo = content;
-        console.log("from: " + cidFrom + " to: " + cidTo, address, balance);
+
+        console.log(`from: ${cidFrom} to: ${cidTo}. address: ${address}. balance: ${balance}`);
 
         window.cyber.link(cidFrom, cidTo, address);
     }
@@ -251,69 +288,34 @@ class App extends Component {
         this.setState({
             successLinkMessage: false,
             errorLinkMessage: false,
-        })
+        });
     }
 
     handleMouseEnter = () => {
         this.setState({
-            showBandwidth: true
-        })
+            showBandwidth: true,
+        });
     }
 
     handleMouseLeave = () => {
         this.setState({
-            showBandwidth: false
-        })
+            showBandwidth: false,
+        });
     }
 
-    getSearchResults = (links, count) => {
-        const cids = Object.keys(links);
-        const searchItems = [];
-
-        if (cids.length === 0) {
-            return [];
-        }
-
-        for (let index=0; index<count; index+=1) {
-            const cid = cids[index];
-            const disabled = links[cid].status !== 'success';
-
-            const item = disabled ? (
-                <SearchItem
-                    key={cid}
-                    rank={links[cid].rank}
-                    disabled={true}
-                >
-                    {cid} ({links[cid].status})
-                </SearchItem>
-            ) : (
-                <SearchItem
-                    key={cid}
-                    rank={links[cid].rank}
-                    onClick={(e) => this.openLink(e, links[cid].content)}
-                >
-                    {links[cid].content}
-                </SearchItem>
-            );
-
-            searchItems.push(item);
-        }
-
-        return searchItems;
-    };
-
     render() {
-
         if (!this.state.browserSupport) {
-            return <div>
-                Browser not supported. Download latest CYB!
-            </div>
+            return (
+                <div>
+                    Browser not supported. Download latest CYB!
+                </div>
+            );
         }
 
         const {
-            seeAll, balance, defaultAddress, remained, max_value, successLinkMessage, errorLinkMessage,
-            cidsCount, linksCount, accsCount, showBandwidth, blockNumber, time, validators,
-            searchQuery, links,
+            seeAll, balance, defaultAddress, bwRemained, bwMaxValue, successLinkMessage,
+            errorLinkMessage, cidsCount, linksCount, accsCount, showBandwidth, blockNumber,
+            time, validators, searchQuery, links,
         } = this.state;
 
         const searchResultsCount = Object.keys(links).length;
@@ -327,27 +329,32 @@ class App extends Component {
             <MainContainer>
                 <FlexContainer>
                     <PageTitle>Cyberd search</PageTitle>
-                    {defaultAddress && <div
-                      style={ { width: '30%' } }
-                      onMouseEnter={this.handleMouseEnter}
-                      onMouseLeave={this.handleMouseLeave}
-                    >
-                        <Text style={ { paddingBottom: '10px' } }>
-                            Your bandwidth:
-                        </Text>
-                        <SkillBar value={ remained / max_value * 100 }>
-                            {showBandwidth && (
+                    {defaultAddress && (
+                        <div
+                          style={ { width: '30%' } }
+                          onMouseEnter={ this.handleMouseEnter }
+                          onMouseLeave={ this.handleMouseLeave }
+                        >
+                            <Text style={ { paddingBottom: '10px' } }>
+                                Your bandwidth:
+                            </Text>
+                            <SkillBar value={ bwRemained / bwMaxValue * 100 }>
+                                {showBandwidth && (
                                 <PopupSkillBar>
-                                    <Text color='white'>{remained} of {max_value} left ({(remained / max_value * 100).toFixed(2) }%) </Text>
+                                    <Text color='white'>
+                                        {bwRemained} of {bwMaxValue} left
+                                        ({(bwRemained / bwMaxValue * 100).toFixed(2) }%)
+                                    </Text>
                                 </PopupSkillBar>
-                            )}
-                        </SkillBar>
-                    </div>}
+                                )}
+                            </SkillBar>
+                        </div>
+                    )}
                 </FlexContainer>
                 <FlexContainer>
                     <Input
                       defaultValue={ searchQuery }
-                      inputRef={node => this.searchInput = node }
+                      inputRef={ node => this.searchInput = node }
                       onKeyPress={ this._handleKeyPress }
                     />
                     <Button
@@ -355,7 +362,7 @@ class App extends Component {
                       color='blue'
                       transformtext
                       style={ { height: '30px', marginLeft: '10px' } }
-                      onClick={() => this.search()}
+                      onClick={ () => this.search() }
                     >
                         search
                     </Button>
@@ -365,15 +372,19 @@ class App extends Component {
                         <Title style={ { marginLeft: '0px', marginBottom: '0px' } }>
                             Search results:
                         </Title>
-                        { successLinkMessage &&
-                            <Message type="success">
+                        { successLinkMessage
+                            && (
+                            <Message type='success'>
                                 Link successfully added
                             </Message>
+)
                         }
-                        { errorLinkMessage &&
-                            <Message type="error">
+                        { errorLinkMessage
+                            && (
+                            <Message type='error'>
                                 Error adding link
                             </Message>
+)
                         }
                         <LinkContainer column>
                             {searchResults}
@@ -400,7 +411,7 @@ class App extends Component {
                         </Title>
                         <Section noMargin noWrap>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                <CentredPanel style={ { justifyContent: 'space-evenly' } }>
                                     <IconLinks />
                                     <Text uppercase color='blue'>
                                         link
@@ -414,7 +425,7 @@ class App extends Component {
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                <CentredPanel style={ { justifyContent: 'space-evenly' } }>
                                     <IconCIDs />
                                     <Text uppercase color='blue'>
                                         CIDs
@@ -428,7 +439,7 @@ class App extends Component {
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
+                                <CentredPanel style={ { justifyContent: 'space-evenly' } }>
                                     <IconAccounts />
                                     <Text uppercase color='blue'>
                                         accounts
@@ -442,14 +453,13 @@ class App extends Component {
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '25%' } }>
-                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
-                                <IconBlockHeight />
-                                <Text uppercase color='blue'>
+                                <CentredPanel style={ { justifyContent: 'space-evenly' } }>
+                                    <IconBlockHeight />
+                                    <Text uppercase color='blue'>
                                         last block height
                                     </Text>
                                     <Text
                                       color='blue'
-
                                       size='xlg'
                                     >
                                         {blockNumber}
@@ -458,14 +468,13 @@ class App extends Component {
                                 </CentredPanel>
                             </SectionContent>
                             <SectionContent style={ { width: '23%' } }>
-                                <CentredPanel style={{justifyContent: 'space-evenly'}}>
-                                <IconBlockDelay />
-                                <Text uppercase color='blue'>
+                                <CentredPanel style={ { justifyContent: 'space-evenly' } }>
+                                    <IconBlockDelay />
+                                    <Text uppercase color='blue'>
                                         last block delay
                                     </Text>
                                     <Text
                                       color='blue'
-
                                       size='xlg'
                                     >
                                         {time} sec
@@ -488,7 +497,10 @@ class App extends Component {
                             will understand it!
                         </Text>
                         <FlexContainer>
-                            <Input placeholder='type your link her...' inputRef={node => { this.cidToInput = node; }} />
+                            <Input
+                              placeholder='type your link her...'
+                              inputRef={ (node) => { this.cidToInput = node; } }
+                            />
                             <Button
                               color='ogange'
                               transformtext
@@ -518,7 +530,10 @@ class App extends Component {
                             </Text>
 
                             <FlexContainer>
-                                <Input placeholder='type your link her...' inputRef={node => { this.cidToInput = node; }} />
+                                <Input
+                                  placeholder='type your link her...'
+                                  inputRef={ (node) => { this.cidToInput = node; } }
+                                />
                                 <Button
                                   color='greenyellow'
                                   transformtext
@@ -537,9 +552,9 @@ class App extends Component {
                     </LinkContainer>
                 )}
 
-            {index && <Validators validators={validators} />}
+                { index && <Validators validators={ validators } /> }
             </MainContainer>
-        )
+        );
     }
 }
 
