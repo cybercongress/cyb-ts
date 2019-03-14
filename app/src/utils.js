@@ -20,10 +20,11 @@ export const initIpfs = async () => {
     }
 
     const ipfsConfig = await getIpfsConfig();
+
     ipfsApi = new IPFS(ipfsConfig);
 };
 
-export const getIpfs = async () => {
+const getIpfs = async () => {
     if (ipfsApi) {
         return ipfsApi;
     }
@@ -33,26 +34,23 @@ export const getIpfs = async () => {
     return ipfsApi;
 };
 
-export const getContentByCid = (cid, timeout) => {
-    return getIpfs()
-        .then((ipfs) => {
-
-            const timeoutPromise = () => new Promise((resolve, reject) => {
-                setTimeout(reject, timeout, 'ipfs get timeout')
-            });
-
-            const ipfsGetPromise = () => new Promise((resolve, reject) => {
-                ipfs.get(cid, (error, files) => {
-                    if (error) {
-                        reject(error)
-                    }
-
-                    const buf = files[0].content;
-
-                    resolve(buf.toString());
-                });
-            });
-
-            return Promise.race([timeoutPromise(), ipfsGetPromise()])
+export const getContentByCid = (cid, timeout) => getIpfs()
+    .then((ipfs) => {
+        const timeoutPromise = () => new Promise((resolve, reject) => {
+            setTimeout(reject, timeout, 'ipfs get timeout');
         });
-};
+
+        const ipfsGetPromise = () => new Promise((resolve, reject) => {
+            ipfs.get(cid, (error, files) => {
+                if (error) {
+                    reject(error);
+                }
+
+                const buf = files[0].content;
+
+                resolve(buf.toString());
+            });
+        });
+
+        return Promise.race([timeoutPromise(), ipfsGetPromise()]);
+    });
