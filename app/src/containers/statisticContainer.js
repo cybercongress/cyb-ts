@@ -14,7 +14,7 @@ class StatisticContainer extends Container {
         time: 0,
     };
 
-    init = async () => {
+    init = () => {
         if (!window.cyber) {
             return;
         }
@@ -33,7 +33,7 @@ class StatisticContainer extends Container {
             });
         }, 1000);
 
-        await this.getStatistics();
+        this.getStatistics();
     };
 
     getStatistics = async () => {

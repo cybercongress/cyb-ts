@@ -61,7 +61,7 @@ const SearchResults = () => (
                             search
                         </Button>
                     </FlexContainer>
-                    { searchResultsCount > 0 && (
+                    { searchResultsCount > 0 && searchQuery && (
                         <div>
                             <Title style={ { marginLeft: '0px', marginBottom: '0px' } }>
                                 Search results:
