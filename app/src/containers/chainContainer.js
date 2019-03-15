@@ -79,11 +79,11 @@ class ChainContainer extends Container {
     };
 
     showActive = () => {
-        this.setState({ jailedFilter: false });
+        this.setState({ showJailed: false });
     };
 
     showJailed = () => {
-        this.setState({ jailedFilter: true });
+        this.setState({ showJailed: true });
     };
 }
 
