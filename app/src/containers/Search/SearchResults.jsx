@@ -8,8 +8,6 @@ import searchContainer from '../searchContainer';
 const SearchResults = () => (
     <Subscribe to={ [searchContainer] }>
         {(container) => {
-            console.log('[search result list render]');
-
             const {
                 successLinkMessage, errorLinkMessage,
                 seeAll, searchQuery, links,

@@ -3,18 +3,16 @@ import {
     FlexContainer, PageTitle, PopupSkillBar, SkillBar, Text,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
-import chainContainer from '../chainContainer';
+import statisticContainer from '../statisticContainer';
 
 const BandwidthBar = () => (
-    <Subscribe to={ [chainContainer] }>
+    <Subscribe to={ [statisticContainer] }>
         {(container) => {
             const {
                 defaultAddress, bwRemained, bwMaxValue, showBandwidth,
             } = container.state;
 
             const bwPercent = (bwRemained / bwMaxValue * 100).toFixed(2);
-
-            console.log('[bandwidth render]');
 
             return (
                 <FlexContainer>

@@ -9,6 +9,7 @@ class SearchContainer extends Container {
         browserSupport: false,
 
         defaultAddress: null,
+        balance: 0,
 
         links: {},
         searchQuery: '',
@@ -17,6 +18,8 @@ class SearchContainer extends Container {
         successLinkMessage: false,
         errorLinkMessage: false,
     };
+
+    querySubscribers = [];
 
     init = () => {
         if (!window.cyber) {
@@ -32,24 +35,39 @@ class SearchContainer extends Container {
                     browserSupport: true,
                     searchQuery: query,
                 }, () => {
-                    this.searchInput.value = query;
-                    this.search(query);
+                    this.onQueryUpdate(query);
                 });
             });
 
         window.cyb
             .onQueryUpdate((query) => {
-                this.searchInput.value = query;
-                this.search(query);
+                this.onQueryUpdate(query);
             });
 
         window.cyber
             .getDefaultAddress()
-            .then(({ address }) => {
+            .then(({ address, balance }) => {
                 this.setState({
                     defaultAddress: address,
+                    balance,
                 });
             });
+    };
+
+    querySubscribe = (callback) => {
+        this.querySubscribers = this.querySubscribers.concat(callback);
+    };
+
+    emitQueryUpdate = (query) => {
+        this.querySubscribers.forEach((callback) => {
+            callback(query);
+        });
+    };
+
+    onQueryUpdate = (query) => {
+        this.searchInput.value = query;
+        this.search(query);
+        this.emitQueryUpdate(query);
     };
 
     search = (query) => {
@@ -97,7 +115,7 @@ class SearchContainer extends Container {
 
         window.cyber.link(cidFrom, cidTo, address)
             .then((result) => {
-                console.log(`Linked ${cidFrom} with ${cidTo}. Results: ${JSON.stringify(result)}`);
+                console.log(`Linked ${cidFrom} with ${cidTo}. Results: `, result);
 
                 if (!inBackground) {
                     const links = {
@@ -116,7 +134,7 @@ class SearchContainer extends Container {
                 }
             })
             .catch((error) => {
-                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: ${error}`);
+                console.log(`Cant link ${cidFrom} with ${cidTo}. Error: `, error);
 
                 if (!inBackground) {
                     this.setState({
@@ -165,7 +183,6 @@ class SearchContainer extends Container {
     };
 
     openLink = (e, content) => {
-        // e.preventDefault();
         const { balance, defaultAddress: address } = this.state;
         const cidFrom = this.searchInput.value;
         const cidTo = content;
@@ -187,6 +204,7 @@ class SearchContainer extends Container {
 
         window.cyb.setQuery(query);
         this.search(query);
+        this.emitQueryUpdate(query);
     };
 
     handleKeyPress = (e) => {

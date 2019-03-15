@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import Stake from './containers/Stake/Stake';
-import Search from './containers/Search';
+import Search from './containers/Search/Search';
 import Validators from './containers/Validators/Validators';
 
 const Root = () => (

@@ -4,13 +4,11 @@ import {
     IconAccounts, Text, Title, IconBlockHeight, IconBlockDelay,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
-import chainContainer from '../chainContainer';
+import statisticContainer from '../statisticContainer';
 
 const ChainStatistic = () => (
-    <Subscribe to={ [chainContainer] }>
+    <Subscribe to={ [statisticContainer] }>
         {(container) => {
-            console.log('chain statistic render');
-
             const {
                 linksCount, cidsCount, accsCount, blockNumber, time,
             } = container.state;
