@@ -18,7 +18,7 @@ const LinkResult = () => (
                             <Text size='lg' style={ { marginBottom: '20px' } }>
                                 Have your own option for&nbsp;
                                 <b>
-                                    "{searchQuery}"
+                                    {`"${searchQuery}"`}
                                 </b>
                                 ? Link your query and Cyb
                                 will understand it!
@@ -26,7 +26,7 @@ const LinkResult = () => (
                             <FlexContainer>
                                 <Input
                                   placeholder='type your link her...'
-                                  inputRef={ (node) => { container.cidToInput = node; } }
+                                  inputRef={ container.cidToInput }
                                 />
                                 <Button
                                   color='ogange'
@@ -47,7 +47,7 @@ const LinkResult = () => (
                                 <Text size='lg' style={ { marginBottom: '10px' } }>
                                     Seems that you are first one who are searching for&nbsp;
                                     <b>
-                                        "{searchQuery}"
+                                        {`"${searchQuery}"`}
                                     </b>
                                 </Text>
 
@@ -59,7 +59,7 @@ const LinkResult = () => (
                                 <FlexContainer>
                                     <Input
                                       placeholder='type your link her...'
-                                      inputRef={ (node) => { container.cidToInput = node; } }
+                                      inputRef={ container.cidToInput }
                                     />
                                     <Button
                                       color='greenyellow'

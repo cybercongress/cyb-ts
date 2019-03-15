@@ -20,17 +20,17 @@ class StatisticContainer extends Container {
         }
 
         window.cyber
-            .onNewBlock((event) => {
-                this.setState({
-                    blockNumber: this.state.blockNumber + 1,
+            .onNewBlock(() => {
+                this.setState(state => ({
+                    blockNumber: state.blockNumber + 1,
                     time: 0,
-                });
+                }));
             });
 
         setInterval(() => {
-            this.setState({
-                time: this.state.time + 1,
-            });
+            this.setState(state => ({
+                time: state.time + 1,
+            }));
         }, 1000);
 
         this.getStatistics();

@@ -48,7 +48,7 @@ const SearchResults = () => (
                     <FlexContainer>
                         <Input
                           defaultValue={ searchQuery }
-                          inputRef={ (node) => { container.searchInput = node; } }
+                          inputRef={ container.searchInput }
                           onKeyPress={ container.handleKeyPress }
                         />
                         <Button

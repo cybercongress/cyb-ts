@@ -1,3 +1,4 @@
+import React from 'react';
 import { Container } from 'unstated';
 import { getContentByCid, initIpfs } from '../utils';
 
@@ -18,6 +19,13 @@ class SearchContainer extends Container {
         successLinkMessage: false,
         errorLinkMessage: false,
     };
+
+    constructor() {
+        super();
+
+        this.searchInput = React.createRef();
+        this.cidToInput = React.createRef();
+    }
 
     querySubscribers = [];
 
@@ -65,7 +73,7 @@ class SearchContainer extends Container {
     };
 
     onQueryUpdate = (query) => {
-        this.searchInput.value = query;
+        this.searchInput.current.value = query;
         this.search(query);
         this.emitQueryUpdate(query);
     };
@@ -106,8 +114,8 @@ class SearchContainer extends Container {
 
     link = (from, to, inBackground = false) => {
         const address = this.state.defaultAddress;
-        const cidFrom = from || this.searchInput.value;
-        const cidTo = to || this.cidToInput.value;
+        const cidFrom = from || this.searchInput.current.value;
+        const cidTo = to || this.cidToInput.current.value;
 
         if (!address) {
             return;
@@ -118,19 +126,17 @@ class SearchContainer extends Container {
                 console.log(`Linked ${cidFrom} with ${cidTo}. Results: `, result);
 
                 if (!inBackground) {
-                    const links = {
-                        ...this.state.links,
-                        newLink: {
-                            rank: 'n/a',
-                            status: 'success',
-                            content: cidTo,
-                        },
-                    };
-
-                    this.setState({
+                    this.setState(state => ({
                         successLinkMessage: true,
-                        links,
-                    });
+                        links: {
+                            ...state.links,
+                            newLink: {
+                                rank: 'n/a',
+                                status: 'success',
+                                content: cidTo,
+                            },
+                        },
+                    }));
                 }
             })
             .catch((error) => {
@@ -160,7 +166,7 @@ class SearchContainer extends Container {
                         links,
                     });
                 })
-                .catch((error) => {
+                .catch(() => {
                     const { links } = this.state;
 
                     links[cid] = {
@@ -177,14 +183,14 @@ class SearchContainer extends Container {
     };
 
     seeAll = () => {
-        this.setState({
-            seeAll: !this.state.seeAll,
-        });
+        this.setState(state => ({
+            seeAll: !state.seeAll,
+        }));
     };
 
     openLink = (e, content) => {
         const { balance, defaultAddress: address } = this.state;
-        const cidFrom = this.searchInput.value;
+        const cidFrom = this.searchInput.current.value;
         const cidTo = content;
 
         console.log(`from: ${cidFrom} to: ${cidTo}. address: ${address}. balance: ${balance}`);
@@ -200,7 +206,7 @@ class SearchContainer extends Container {
     };
 
     handleSearch = () => {
-        const query = this.searchInput.value;
+        const query = this.searchInput.current.value;
 
         window.cyb.setQuery(query);
         this.search(query);

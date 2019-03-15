@@ -22,7 +22,7 @@ class Validators extends React.Component {
                             .sort((a, b) => (+a.tokens > +b.tokens ? -1 : 1));
 
                         const validatorRows = validatorsSorted
-                            .filter(x => x.jailed === showJailed)
+                            .filter(validator => validator.jailed === showJailed)
                             .map((validator, index) => {
                                 const height = validator.jailed
                                     ? validator.unbonding_height : (validator.bond_height || 0);

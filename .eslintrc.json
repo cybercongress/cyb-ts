@@ -14,6 +14,7 @@
     "curly": ["warn", "all"],
     "jsx-quotes": ["warn", "prefer-single"],
     "newline-after-var": ["warn", "always"],
+    "no-console": "off",
     "no-alert": "warn",
     "no-debugger": "warn",
     "no-duplicate-imports": ["warn", {
