@@ -3,7 +3,7 @@ import {
     FlexContainer, Button, Input, LinkContainer, Message, Title, SearchItem,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
-import searchContainer from '../searchContainer';
+import searchContainer from './searchContainer';
 
 const SearchResults = () => (
     <Subscribe to={ [searchContainer] }>

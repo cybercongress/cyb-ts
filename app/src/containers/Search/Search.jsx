@@ -5,8 +5,8 @@ import BandwidthBar from './BandwidthBar';
 import SearchResults from './SearchResults';
 import ChainStatistic from './ChainStatistic';
 import LinkResult from './LinkResult';
-import searchContainer from '../searchContainer';
-import statisticContainer from '../statisticContainer';
+import searchContainer from './searchContainer';
+import statisticContainer from './statisticContainer';
 
 class Search extends React.Component {
     componentWillMount() {

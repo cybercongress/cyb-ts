@@ -4,7 +4,7 @@ import {
     IconAccounts, Text, Title, IconBlockHeight, IconBlockDelay,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
-import statisticContainer from '../statisticContainer';
+import statisticContainer from './statisticContainer';
 
 const ChainStatistic = () => (
     <Subscribe to={ [statisticContainer] }>

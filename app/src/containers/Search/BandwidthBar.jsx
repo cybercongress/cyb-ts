@@ -3,7 +3,7 @@ import {
     FlexContainer, PageTitle, PopupSkillBar, SkillBar, Text,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
-import statisticContainer from '../statisticContainer';
+import statisticContainer from './statisticContainer';
 
 const BandwidthBar = () => (
     <Subscribe to={ [statisticContainer] }>

@@ -3,7 +3,7 @@ import { Provider, Subscribe } from 'unstated';
 import {
     MainContainer, Title, Table, WalletTabs, WalletTab,
 } from '@cybercongress/ui';
-import validatorsContainer from '../validatorsContainer';
+import validatorsContainer from './validatorsContainer';
 
 class Validators extends React.Component {
     async componentWillMount() {
