@@ -4,18 +4,22 @@ import { Container } from 'unstated';
 class LotteryContainer extends Container {
     state = {
         showResult: false,
-        winningTicket: false,
+        result: null,
     };
 
     addressInput = React.createRef();
 
-    checkTicket = () => {
+    checkTicket = async () => {
         const address = this.addressInput.current.value;
 
-    };
+        const result = await window.cyber.checkLotteryTicket(address);
 
-    showResult = () => {
-        this.setState({ showResult: true });
+        console.log('Lottery results: ', result);
+
+        this.setState({
+            showResult: true,
+            result,
+        });
     };
 }
 

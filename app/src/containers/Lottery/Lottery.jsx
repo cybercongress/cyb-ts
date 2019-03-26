@@ -12,24 +12,45 @@ class Lottery extends React.Component {
         return (
             <Provider>
                 <Subscribe to={ [lotteryContainer] }>
-                    { (container) => (
-                        <MainContainer>
-                            <Title
-                              style={ {
-                                  marginLeft: '0px', marginBottom: '30px', textAlign: 'center',
-                              } }
-                            >
-                                Lottery
-                            </Title>
+                    { (container) => {
+                        const { showResult, result } = container.state;
 
-                            <Input
-                              inputRef={ container.addressInput }
-                            />
+                        return (
+                            <MainContainer>
+                                <Title
+                                    style={ {
+                                        marginLeft: '0px',
+                                        marginBottom: '30px',
+                                        textAlign: 'center',
+                                    } }
+                                >
+                                    Lottery
+                                </Title>
 
-                            <Button onClick={ container.checkTicket } />
+                                <Input
+                                    inputRef={ container.addressInput }
+                                />
 
-                        </MainContainer>
-                    ) }
+                                <Button onClick={ container.checkTicket }>Check</Button>
+
+                                {showResult && result
+                                    && (
+                                        <span>
+                                            your address: {result.address}
+                                            yoor balance: {result.balance} CYB
+                                        </span>
+                                )}
+
+                                {showResult && !result
+                                    && (
+                                        <span>
+                                            you lose :(
+                                        </span>
+                                )}
+
+                            </MainContainer>
+                        )}
+                    }
                 </Subscribe>
             </Provider>
         );
