@@ -17,11 +17,7 @@ class Validators extends React.Component {
                     {(container) => {
                         const { validators, showJailed } = container.state;
 
-                        const validatorsSorted = validators
-                            .slice(0)
-                            .sort((a, b) => (+a.tokens > +b.tokens ? -1 : 1));
-
-                        const validatorRows = validatorsSorted
+                        const validatorRows = validators
                             .filter(validator => validator.jailed === showJailed)
                             .map((validator, index) => {
                                 const height = validator.jailed

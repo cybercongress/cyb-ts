@@ -11,7 +11,6 @@ class StatisticContainer extends Container {
         linksCount: 0,
         accsCount: 0,
         blockNumber: 0,
-        time: 0,
     };
 
     init = () => {
@@ -23,17 +22,8 @@ class StatisticContainer extends Container {
             .onNewBlock(() => {
                 this.setState(state => ({
                     blockNumber: state.blockNumber + 1,
-                    time: 0,
                 }));
             });
-
-        setInterval(() => {
-            this.setState(state => ({
-                time: state.time + 1,
-            }));
-        }, 1000);
-
-        this.getStatistics();
     };
 
     getStatistics = async () => {
@@ -41,9 +31,6 @@ class StatisticContainer extends Container {
             window.cyber.getDefaultAddress(),
             window.cyber.getStatistics(),
         ]);
-
-        const lastBlockMs = chainStatistics.latest_block_time;
-        const diffMSeconds = new Date().getTime() - new Date(lastBlockMs).getTime();
 
         this.setState({
             defaultAddress: addressInfo.address,
@@ -56,22 +43,7 @@ class StatisticContainer extends Container {
             linksCount: chainStatistics.linksCount,
             accsCount: chainStatistics.accsCount,
             blockNumber: +chainStatistics.height,
-            time: Math.round(diffMSeconds / 1000),
         });
-    };
-
-    onQueryUpdate = (query) => {
-        if (query === '') {
-            this.getStatistics();
-        }
-    };
-
-    handleMouseEnter = () => {
-        this.setState({ showBandwidth: true });
-    };
-
-    handleMouseLeave = () => {
-        this.setState({ showBandwidth: false });
     };
 }
 

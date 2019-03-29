@@ -4,12 +4,24 @@ class ValidatorsContainer extends Container {
     state = {
         validators: [],
         showJailed: false,
+        activeValidatorsCount: 0,
     };
 
     getValidators = async () => {
-        const validators = await window.cyber.getValidators();
+        let validators = await window.cyber.getValidators();
 
-        this.setState({ validators });
+        validators = validators
+            .slice(0)
+            .sort((a, b) => (+a.tokens > +b.tokens ? -1 : 1));
+
+        const activeValidatorsCount = validators
+            .filter(validator => !validator.jailed)
+            .length;
+
+        this.setState({
+            validators,
+            activeValidatorsCount,
+        });
     };
 
     showActive = () => {

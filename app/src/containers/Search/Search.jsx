@@ -11,8 +11,6 @@ class Search extends React.Component {
     componentWillMount() {
         searchContainer.init();
         statisticContainer.init();
-
-        searchContainer.querySubscribe(statisticContainer.onQueryUpdate);
     }
 
     render() {
