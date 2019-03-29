@@ -1,7 +1,6 @@
 import React from 'react';
-import { MainContainer } from '@cybercongress/ui';
+import { MainContainer, ScrollContainer } from '@cybercongress/ui';
 import { Provider, Subscribe } from 'unstated';
-import BandwidthBar from './BandwidthBar';
 import SearchResults from './SearchResults';
 import ChainStatistic from './ChainStatistic';
 import LinkResult from './LinkResult';
@@ -22,23 +21,28 @@ class Search extends React.Component {
                 <Subscribe to={ [searchContainer] }>
                     {
                         (searchCon) => {
-                            const { searchQuery, defaultAddress, balance } = searchCon.state;
+                            const {
+                                searchQuery, defaultAddress, balance, links,
+                            } = searchCon.state;
                             const isMainPage = !searchQuery;
+                            const searchResultsCount = Object.keys(links).length;
 
                             return (
-                                <MainContainer>
+                                <ScrollContainer>
+                                    <MainContainer>
 
-                                    <BandwidthBar />
+                                        { !isMainPage && searchResultsCount > 0 && (
+                                            <SearchResults />
+                                        ) }
 
-                                    <SearchResults />
+                                        { isMainPage && <ChainStatistic /> }
 
-                                    { isMainPage && <ChainStatistic /> }
+                                        { !isMainPage && defaultAddress && balance > 0 && (
+                                            <LinkResult />
+                                        ) }
 
-                                    { !isMainPage && defaultAddress && balance > 0 && (
-                                        <LinkResult />
-                                    ) }
-
-                                </MainContainer>
+                                    </MainContainer>
+                                </ScrollContainer>
                             );
                         }}
                 </Subscribe>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    FlexContainer, PageTitle, PopupSkillBar, SkillBar, Text,
+    FlexContainer, PageTitle, PopupSkillBar, SkillBar, Text, Pane, Heading,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
 import statisticContainer from './statisticContainer';
@@ -9,12 +9,21 @@ const BandwidthBar = () => (
     <Subscribe to={ [statisticContainer] }>
         {(container) => {
             const {
-                defaultAddress, bwRemained, bwMaxValue, showBandwidth,
+                bwRemained, bwMaxValue,
             } = container.state;
 
             const bwPercent = (bwRemained / bwMaxValue * 100).toFixed(2);
 
             return (
+                <Pane marginBottom={ 56 }>
+                    <Heading size={ 600 } color='#fff' marginBottom={ 24 }>
+                        My bandwidth
+                    </Heading>
+                    <SkillBar style={ { height: 16 } } value={ bwPercent } />
+                </Pane>
+            );
+
+/*            return (
                 <FlexContainer>
                     <PageTitle>Cyberd search</PageTitle>
                     {defaultAddress && (
@@ -38,7 +47,7 @@ const BandwidthBar = () => (
                         </div>
                     )}
                 </FlexContainer>
-            );
+            );*/
         }}
     </Subscribe>
 );

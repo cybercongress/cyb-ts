@@ -73,7 +73,7 @@ class SearchContainer extends Container {
     };
 
     onQueryUpdate = (query) => {
-        this.searchInput.current.value = query;
+        //this.searchInput.current.value = query;
         this.search(query);
         this.emitQueryUpdate(query);
     };

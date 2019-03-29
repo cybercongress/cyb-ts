@@ -1,21 +1,208 @@
 import React from 'react';
 import {
-    Section, SectionContent, CentredPanel, IconLinks, IconCIDs,
-    IconAccounts, Text, Title, IconBlockHeight, IconBlockDelay,
+    TextEv, Pane, Heading, CardHover,
 } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
 import statisticContainer from './statisticContainer';
+import BandwidthBar from './BandwidthBar';
 
 const ChainStatistic = () => (
     <Subscribe to={ [statisticContainer] }>
         {(container) => {
             const {
-                linksCount, cidsCount, accsCount, blockNumber, time,
+                linksCount, cidsCount, accsCount, blockNumber,
             } = container.state;
 
             return (
                 <div>
-                    <Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
+                    <BandwidthBar />
+
+                    <Pane marginBottom={ 50 }>
+                        <Heading size={ 600 } color='#fff' marginBottom={ 24 }>
+                            Knowledge grapth
+                        </Heading>
+                        <Pane display='flex' marginX={ -15 }>
+                            <CardHover
+                              indexV2
+                              flex={ 1 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              paddingY={ 50 }
+                              marginX={ 15 }
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    {linksCount}
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    cyberlinks
+                                </TextEv>
+                            </CardHover>
+                            <CardHover
+                              indexV2
+                              flex={ 1 }
+                              paddingY={ 50 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              marginX={ 15 }
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    {cidsCount}
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    content ids
+                                </TextEv>
+                            </CardHover>
+                            <CardHover
+                              flex={ 1 }
+                              paddingY={ 50 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    {accsCount}
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    accounts
+                                </TextEv>
+                            </CardHover>
+                        </Pane>
+                    </Pane>
+                    <Pane marginBottom={ 50 }>
+                        <Heading size={ 600 } color='#fff' marginBottom={ 24 }>
+                            Cybernomics
+                        </Heading>
+                        <Pane display='flex' marginX={ -15 }>
+                            <CardHover
+                              flex={ 1 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000'
+                              paddingY={ 50 }
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    155 874(n/a)
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    Total CYB
+                                </TextEv>
+                            </CardHover>
+                            <CardHover
+                              flex={ 1 }
+                              paddingY={ 50 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    12 %(n/a)
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    Staked CYB
+                                </TextEv>
+                            </CardHover>
+                            <CardHover
+                              flex={ 1 }
+                              paddingY={ 50 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    400(n/a)
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    Price of cyberlink
+                                </TextEv>
+                            </CardHover>
+                        </Pane>
+                    </Pane>
+                    <Pane marginBottom={ 50 }>
+                        <Heading size={ 600 } color='#fff' marginBottom={ 24 }>
+                            Consensus
+                        </Heading>
+                        <Pane display='flex' marginX={ -15 }>
+                            <CardHover
+                              flex={ 1 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000'
+                              paddingY={ 50 }
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    12(n/a)
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    active validators
+                                </TextEv>
+                            </CardHover>
+                            <CardHover
+                              flex={ 1 }
+                              paddingY={ 50 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    13 M(n/a)
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    transactions
+                                    {' '}
+                                </TextEv>
+                            </CardHover>
+                            <CardHover
+                              flex={ 1 }
+                              paddingY={ 50 }
+                              display='flex'
+                              alignItems='center'
+                              flexDirection='column'
+                              backgroundColor='#000000'
+                              marginX={ 15 }
+                              indexV2
+                            >
+                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                    {blockNumber}
+                                </TextEv>
+
+                                <TextEv display='inline-block' color='#4ed6ae'>
+                                    last block
+                                </TextEv>
+                            </CardHover>
+                        </Pane>
+                    </Pane>
+
+                    {/*<Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
                         Search statistic:
                     </Title>
                     <Section noMargin noWrap>
@@ -91,7 +278,7 @@ const ChainStatistic = () => (
 
                             </CentredPanel>
                         </SectionContent>
-                    </Section>
+                    </Section>*/}
                 </div>
             );
         }}
