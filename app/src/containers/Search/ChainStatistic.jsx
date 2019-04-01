@@ -19,8 +19,8 @@ class ChainStatistic extends React.Component {
                 <Subscribe to={ [statisticContainer, validatorsContainer] }>
                     {(stats, validators) => {
                         const {
-                            linksCount, cidsCount, accsCount, blockNumber,
-                            bwRemained, bwMaxValue, linkPrice,
+                            linksCount, cidsCount, accsCount, txCount, blockNumber,
+                            bwRemained, bwMaxValue, linkPrice, totalCyb, stakedCyb,
                         } = stats.state;
 
                         const {
@@ -108,7 +108,7 @@ class ChainStatistic extends React.Component {
                                             marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                155 874(n/a)
+                                                {totalCyb}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -125,7 +125,7 @@ class ChainStatistic extends React.Component {
                                             marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                12 %(n/a)
+                                                {stakedCyb}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -183,7 +183,7 @@ class ChainStatistic extends React.Component {
                                             marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                13 M(n/a)
+                                                {txCount}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
