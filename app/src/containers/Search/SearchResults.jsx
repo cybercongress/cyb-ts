@@ -26,7 +26,7 @@ const SearchResults = () => (
                       key={ cid }
                       hash={ cid }
                       rank={ links[cid].rank }
-                      rankGrade={ 1 }
+                      rankGrade={ getRankGrade(links[cid].rank) }
                       status={ links[cid].status }
                       onClick={ e => container.openLink(e, links[cid].content) }
                     >
@@ -59,60 +59,60 @@ const SearchResults = () => (
                     )}
                 </div>
             );
-
-            // return (
-            //     <span>
-            //         <FlexContainer>
-            //             <Input
-            //               defaultValue={ searchQuery }
-            //               inputRef={ container.searchInput }
-            //               onKeyPress={ container.handleKeyPress }
-            //             />
-            //             <Button
-            //               type='button'
-            //               color='blue'
-            //               transformtext
-            //               style={ { height: '30px', marginLeft: '10px' } }
-            //               onClick={ container.handleSearch }
-            //             >
-            //                 search
-            //             </Button>
-            //         </FlexContainer>
-            //         { searchResultsCount > 0 && searchQuery && (
-            //             <div>
-            //                 <Title style={ { marginLeft: '0px', marginBottom: '0px' } }>
-            //                     Search results:
-            //                 </Title>
-            //                 { successLinkMessage && (
-            //                     <Message type='success'>
-            //                         Link successfully added
-            //                     </Message>
-            //                 )}
-            //                 { errorLinkMessage && (
-            //                     <Message type='error'>
-            //                         Error adding link
-            //                     </Message>
-            //                 )}
-            //                 <LinkContainer column>
-            //                     {searchItems}
-            //                 </LinkContainer>
-            //                 { searchResultsCount > 10 && (
-            //                     <Button
-            //                       color='blue'
-            //                       style={ { marginLeft: '0px' } }
-            //                       transformtext
-            //                       type='button'
-            //                       onClick={ () => container.seeAll() }
-            //                     >
-            //                         {!seeAll ? 'see all' : 'top 10'}
-            //                     </Button>
-            //                 )}
-            //             </div>
-            //         )}
-            //     </span>
-            // );
         }}
     </Subscribe>
 );
+
+const getRankGrade = (rank) => {
+    let from;
+    let to;
+    let grade;
+
+    switch (rank) {
+    case (rank > 0.01 && rank <= 1):
+        from = 0.01;
+        to = 1;
+        grade = 1;
+        break;
+    case (rank > 0.001 && rank <= 0.01):
+        from = 0.001;
+        to = 0.01;
+        grade = 2;
+        break;
+    case (rank > 0.000001 && rank <= 0.001):
+        from = 0.000001;
+        to = 0.001;
+        grade = 3;
+        break;
+    case (rank > 0.0000000001 && rank <= 0.000001):
+        from = 0.0000000001;
+        to = 0.000001;
+        grade = 4;
+        break;
+    case (rank > 0.000000000000001 && rank <= 0.0000000001):
+        from = 0.000000000000001;
+        to = 0.0000000001;
+        grade = 5;
+        break;
+    case (rank > 0.0000000000000000001 && rank <= 0.000000000000001):
+        from = 0.0000000000000000001;
+        to = 0.000000000000001;
+        grade = 6;
+        break;
+    case (rank > 0 && rank <= 0.0000000000000000001):
+        from = 0;
+        to = 0.0000000000000000001;
+        grade = 7;
+        break;
+    default:
+        break;
+    }
+
+    return {
+        from,
+        to,
+        grade,
+    };
+};
 
 export default SearchResults;
