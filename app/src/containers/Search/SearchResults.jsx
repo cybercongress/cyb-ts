@@ -26,7 +26,7 @@ const SearchResults = () => (
                       key={ cid }
                       hash={ cid }
                       rank={ links[cid].rank }
-                      rankGrade={ getRankGrade(links[cid].rank) }
+                      grade={ getRankGrade(links[cid].rank) }
                       status={ links[cid].status }
                       onClick={ e => container.openLink(e, links[cid].content) }
                     >
@@ -66,43 +66,43 @@ const SearchResults = () => (
 const getRankGrade = (rank) => {
     let from;
     let to;
-    let grade;
+    let value;
 
     switch (rank) {
     case (rank > 0.01 && rank <= 1):
         from = 0.01;
         to = 1;
-        grade = 1;
+        value = 1;
         break;
     case (rank > 0.001 && rank <= 0.01):
         from = 0.001;
         to = 0.01;
-        grade = 2;
+        value = 2;
         break;
     case (rank > 0.000001 && rank <= 0.001):
         from = 0.000001;
         to = 0.001;
-        grade = 3;
+        value = 3;
         break;
     case (rank > 0.0000000001 && rank <= 0.000001):
         from = 0.0000000001;
         to = 0.000001;
-        grade = 4;
+        value = 4;
         break;
     case (rank > 0.000000000000001 && rank <= 0.0000000001):
         from = 0.000000000000001;
         to = 0.0000000001;
-        grade = 5;
+        value = 5;
         break;
     case (rank > 0.0000000000000000001 && rank <= 0.000000000000001):
         from = 0.0000000000000000001;
         to = 0.000000000000001;
-        grade = 6;
+        value = 6;
         break;
     case (rank > 0 && rank <= 0.0000000000000000001):
         from = 0;
         to = 0.0000000000000000001;
-        grade = 7;
+        value = 7;
         break;
     default:
         break;
@@ -111,7 +111,7 @@ const getRankGrade = (rank) => {
     return {
         from,
         to,
-        grade,
+        value,
     };
 };
 
