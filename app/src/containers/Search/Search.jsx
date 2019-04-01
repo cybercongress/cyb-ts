@@ -3,9 +3,9 @@ import { MainContainer, ScrollContainer } from '@cybercongress/ui';
 import { Provider, Subscribe } from 'unstated';
 import SearchResults from './SearchResults';
 import ChainStatistic from './ChainStatistic';
-import LinkResult from './LinkResult';
 import searchContainer from './searchContainer';
 import statisticContainer from './statisticContainer';
+import { LinkBarContainer, LinkNewAnswerBar, LinkQuestionWithAnswerBar } from './LinkBar';
 
 class Search extends React.Component {
     componentWillMount() {
@@ -24,23 +24,30 @@ class Search extends React.Component {
                             } = searchCon.state;
                             const isMainPage = !searchQuery;
                             const searchResultsCount = Object.keys(links).length;
+                            const canLink = defaultAddress && balance > 0;
 
                             return (
-                                <ScrollContainer>
-                                    <MainContainer>
+                                <span>
+                                    <ScrollContainer style={ { height: 'calc(100vh - 64px)' } }>
+                                        <MainContainer>
 
-                                        { !isMainPage && searchResultsCount > 0 && (
-                                            <SearchResults />
-                                        ) }
+                                            { !isMainPage && searchResultsCount > 0 && (
+                                                <SearchResults />
+                                            ) }
 
-                                        { isMainPage && <ChainStatistic /> }
+                                            { isMainPage && <ChainStatistic /> }
 
-                                        { !isMainPage && defaultAddress && balance > 0 && (
-                                            <LinkResult />
-                                        ) }
-
-                                    </MainContainer>
-                                </ScrollContainer>
+                                        </MainContainer>
+                                    </ScrollContainer>
+                                    <LinkBarContainer>
+                                        { !isMainPage && canLink && searchResultsCount > 0
+                                            && (<LinkNewAnswerBar />)
+                                        }
+                                        { isMainPage && canLink
+                                            && (<LinkQuestionWithAnswerBar />)
+                                        }
+                                    </LinkBarContainer>
+                                </span>
                             );
                         }}
                 </Subscribe>

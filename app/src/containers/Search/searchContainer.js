@@ -22,6 +22,7 @@ class SearchContainer extends Container {
     constructor() {
         super();
 
+        this.cidFromInput = React.createRef();
         this.cidToInput = React.createRef();
     }
 
