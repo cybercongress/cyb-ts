@@ -145,7 +145,7 @@ class SearchContainer extends Container {
 
                     links[cid] = {
                         ...links[cid],
-                        status: 'error',
+                        status: 'failed',
                     };
 
                     this.setState({

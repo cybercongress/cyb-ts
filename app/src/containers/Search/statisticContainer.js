@@ -7,6 +7,8 @@ class StatisticContainer extends Container {
         bwRemained: 0,
         bwMaxValue: 0,
 
+        linkPrice: 0,
+
         cidsCount: 0,
         linksCount: 0,
         accsCount: 0,

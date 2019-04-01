@@ -19,23 +19,18 @@ const SearchResults = () => (
 
             for (let index = 0; index < resultsLimit; index += 1) {
                 const cid = cids[index];
-                const disabled = links[cid].status !== 'success';
+                const loaded = links[cid].status === 'success';
 
-                const item = disabled ? (
+                const item = (
                     <SearchItem
                       key={ cid }
+                      hash={ cid }
                       rank={ links[cid].rank }
-                      disabled
-                    >
-                        {`${cid} (${links[cid].status})`}
-                    </SearchItem>
-                ) : (
-                    <SearchItem
-                      key={ cid }
-                      rank={ links[cid].rank }
+                      rankGrade={ 1 }
+                      status={ links[cid].status }
                       onClick={ e => container.openLink(e, links[cid].content) }
                     >
-                        {links[cid].content}
+                        { loaded ? links[cid].content : cid}
                     </SearchItem>
                 );
 

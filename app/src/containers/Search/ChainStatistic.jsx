@@ -20,6 +20,7 @@ class ChainStatistic extends React.Component {
                     {(stats, validators) => {
                         const {
                             linksCount, cidsCount, accsCount, blockNumber,
+                            bwRemained, bwMaxValue, linkPrice,
                         } = stats.state;
 
                         const {
@@ -28,7 +29,11 @@ class ChainStatistic extends React.Component {
 
                         return (
                             <div>
-                                <BandwidthBar />
+                                <BandwidthBar
+                                  bwRemained={ bwRemained }
+                                  bwMaxValue={ bwMaxValue }
+                                  linkPrice={ linkPrice }
+                                />
 
                                 <Pane marginBottom={ 50 }>
                                     <Heading size={ 600 } color='#fff' marginBottom={ 24 }>
@@ -36,7 +41,6 @@ class ChainStatistic extends React.Component {
                                     </Heading>
                                     <Pane display='flex' marginX={ -15 }>
                                         <CardHover
-                                            indexV2
                                             flex={ 1 }
                                             display='flex'
                                             alignItems='center'
@@ -54,7 +58,6 @@ class ChainStatistic extends React.Component {
                                             </TextEv>
                                         </CardHover>
                                         <CardHover
-                                            indexV2
                                             flex={ 1 }
                                             paddingY={ 50 }
                                             display='flex'
@@ -79,7 +82,6 @@ class ChainStatistic extends React.Component {
                                             flexDirection='column'
                                             backgroundColor='#000000'
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {accsCount}
@@ -104,7 +106,6 @@ class ChainStatistic extends React.Component {
                                             backgroundColor='#000'
                                             paddingY={ 50 }
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 155 874(n/a)
@@ -122,7 +123,6 @@ class ChainStatistic extends React.Component {
                                             flexDirection='column'
                                             backgroundColor='#000000'
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 12 %(n/a)
@@ -140,10 +140,9 @@ class ChainStatistic extends React.Component {
                                             flexDirection='column'
                                             backgroundColor='#000000'
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                400(n/a)
+                                                {linkPrice}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -165,7 +164,6 @@ class ChainStatistic extends React.Component {
                                             backgroundColor='#000'
                                             paddingY={ 50 }
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {activeValidatorsCount}
@@ -183,7 +181,6 @@ class ChainStatistic extends React.Component {
                                             flexDirection='column'
                                             backgroundColor='#000000'
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 13 M(n/a)
@@ -201,7 +198,6 @@ class ChainStatistic extends React.Component {
                                             flexDirection='column'
                                             backgroundColor='#000000'
                                             marginX={ 15 }
-                                            indexV2
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {blockNumber}
