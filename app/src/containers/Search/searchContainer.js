@@ -109,10 +109,13 @@ class SearchContainer extends Container {
                                 content: cidTo,
                             },
                         },
-                        cidFromValue: null,
-                        cidToValue: null,
                     }));
                 }
+
+                this.setState({
+                    cidFromValue: null,
+                    cidToValue: null,
+                });
             })
             .catch((error) => {
                 console.log(`Cant link ${cidFrom} with ${cidTo}. Error: `, error);
