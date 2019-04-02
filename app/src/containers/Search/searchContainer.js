@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container } from 'unstated';
 import { getContentByCid, initIpfs } from '../../utils';
 
@@ -17,14 +16,10 @@ class SearchContainer extends Container {
         seeAll: false,
 
         linkResult: '',
+
+        cidToValue: null,
+        cidFromValue: null,
     };
-
-    constructor() {
-        super();
-
-        this.cidFromInput = React.createRef();
-        this.cidToInput = React.createRef();
-    }
 
     init = () => {
         if (!window.cyber) {
@@ -33,12 +28,14 @@ class SearchContainer extends Container {
 
         initIpfs();
 
-        window.cyb
-            .getQuery()
-            .then((query) => {
+        Promise
+            .all([window.cyb.getQuery(), window.cyber.getDefaultAddress()])
+            .then(([query, defaultAddressInfo]) => {
                 this.setState({
                     browserSupport: true,
                     searchQuery: query,
+                    defaultAddress: defaultAddressInfo.address,
+                    balance: defaultAddressInfo.balance,
                 }, () => {
                     this.search(query);
                 });
@@ -47,15 +44,6 @@ class SearchContainer extends Container {
         window.cyb
             .onQueryUpdate((query) => {
                 this.search(query);
-            });
-
-        window.cyber
-            .getDefaultAddress()
-            .then(({ address, balance }) => {
-                this.setState({
-                    defaultAddress: address,
-                    balance,
-                });
             });
     };
 
@@ -80,9 +68,9 @@ class SearchContainer extends Container {
                 });
 
                 this.loadContent(links);
-            });
 
-            this.link(APP_NAME, query);
+                this.link(APP_NAME, query);
+            });
         } else {
             this.setState({
                 searchQuery: query,
@@ -92,15 +80,21 @@ class SearchContainer extends Container {
     };
 
     link = (from, to) => {
-        const address = this.state.defaultAddress;
-        const cidFrom = from || this.state.searchQuery;
-        const cidTo = to || this.cidToInput.current.value;
+        const {
+            defaultAddress, cidFromValue, cidToValue, searchQuery,
+        } = this.state;
 
-        if (!address) {
+        const cidFrom = from || cidFromValue || searchQuery;
+        const cidTo = to || cidToValue;
+
+        if (!defaultAddress || !cidFrom || !cidTo) {
+            console.log(`Not enough arguments for link. 
+                Addr: ${defaultAddress}, from: ${cidFrom}, to: ${cidTo}`);
+
             return;
         }
 
-        window.cyber.link(cidFrom, cidTo, address)
+        window.cyber.link(cidFrom, cidTo, defaultAddress)
             .then((result) => {
                 console.log(`Linked ${cidFrom} with ${cidTo}. Results: `, result);
 
@@ -114,6 +108,8 @@ class SearchContainer extends Container {
                             content: cidTo,
                         },
                     },
+                    cidFromValue: null,
+                    cidToValue: null,
                 }));
             })
             .catch((error) => {
@@ -121,6 +117,8 @@ class SearchContainer extends Container {
 
                 this.setState({
                     linkResult: 'failed',
+                    cidFromValue: null,
+                    cidToValue: null,
                 });
             });
     };
@@ -172,6 +170,14 @@ class SearchContainer extends Container {
 
         window.cyber.link(cidFrom, cidTo, defaultAddress);
     };
+
+    onCidFromChange = (e) => {
+        this.setState({ cidFromValue: e.target.value });
+    };
+
+    onCidToChange = (e) => {
+        this.setState({ cidToValue: e.target.value });
+    }
 }
 
 export default new SearchContainer();

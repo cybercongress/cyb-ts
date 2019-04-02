@@ -55,7 +55,7 @@ class StatisticContainer extends Container {
             linksCount: chainStatistics.linksCount,
             accsCount: chainStatistics.accsCount,
             txCount: chainStatistics.txCount,
-            blockNumber: chainStatistics.height,
+            blockNumber: +chainStatistics.height,
 
             totalCyb,
             stakedCyb,

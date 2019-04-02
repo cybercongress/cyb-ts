@@ -32,14 +32,13 @@ export const LinkNewAnswerBar = () => (
                     <TextInput
                       height={ 42 }
                       width='40%'
-                      ref={ container.cidToInput }
+                      onChange={ container.onCidToChange }
                       marginRight={ 15 }
                       fontSize='18px'
                       placeholder='Have your own answer?'
                       textAlign='left'
                       backgroundColor='transparent'
                       outline='0'
-                      outlineOffset='0'
                       style={ { caretColor: '#36d6ae', boxShadow: 'none' } }
                     />
                     <Button
@@ -49,7 +48,7 @@ export const LinkNewAnswerBar = () => (
                       fontSize='18px'
                       borderRadius={ 3 }
                       className='btn'
-                      onClick={ container.link }
+                      onClick={ () => container.link() }
                     >
                         Cyber it
                     </Button>
@@ -66,25 +65,23 @@ export const LinkQuestionWithAnswerBar = () => (
                 <TextInput
                   height={ 42 }
                   width='100%'
-                  ref={ container.cidFromInput }
+                  onChange={ container.onCidFromChange }
                   marginRight={ 15 }
                   placeholder='Question'
                   fontSize='18px'
                   backgroundColor='transparent'
                   outline='0'
-                  outlineOffset='0'
                   style={ { caretColor: '#36d6ae', boxShadow: 'none' } }
                 />
                 <TextInput
                   height={ 42 }
                   width='100%'
-                  ref={ container.cidToInput }
+                  onChange={ container.onCidToChange }
                   marginRight={ 15 }
                   placeholder='Answer'
                   fontSize='18px'
                   backgroundColor='transparent'
                   outline='0'
-                  outlineOffset='0'
                   style={ { caretColor: '#36d6ae', boxShadow: 'none' } }
                 />
                 <Button
@@ -94,10 +91,7 @@ export const LinkQuestionWithAnswerBar = () => (
                   fontSize='18px'
                   className='btn'
                   borderRadius={ 3 }
-                  onClick={ () => container.link(
-                      container.cidFromInput.current.value,
-                      container.cidToInput.current.value,
-                  ) }
+                  onClick={ () => container.link() }
                 >
                     Cyber it
                 </Button>
