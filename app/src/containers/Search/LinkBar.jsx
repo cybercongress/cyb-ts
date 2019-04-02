@@ -3,7 +3,7 @@ import { Pane, TextInput, Button } from '@cybercongress/ui';
 import { Subscribe } from 'unstated';
 import searchContainer from './searchContainer';
 
-export const LinkBarContainer = ({ children, ...props }) => (
+const LinkBarContainer = ({ children }) => (
     <Pane
       display='flex'
       alignItems='center'
@@ -99,3 +99,5 @@ export const LinkQuestionWithAnswerBar = () => (
         )}
     </Subscribe>
 );
+
+export default LinkBarContainer;

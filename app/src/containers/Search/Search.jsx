@@ -5,7 +5,8 @@ import SearchResults from './SearchResults';
 import ChainStatistic from './ChainStatistic';
 import searchContainer from './searchContainer';
 import statisticContainer from './statisticContainer';
-import { LinkBarContainer, LinkNewAnswerBar, LinkQuestionWithAnswerBar } from './LinkBar';
+import LinkBarContainer, { LinkNewAnswerBar, LinkQuestionWithAnswerBar } from './LinkBar';
+import NoResults from './NoResults';
 
 class Search extends React.Component {
     componentWillMount() {
@@ -31,16 +32,20 @@ class Search extends React.Component {
                                     <ScrollContainer style={ { height: 'calc(100vh - 64px)' } }>
                                         <MainContainer>
 
-                                            { !isMainPage && searchResultsCount > 0 && (
-                                                <SearchResults />
-                                            ) }
+                                            { !isMainPage && searchResultsCount > 0
+                                                && (<SearchResults />)
+                                            }
+
+                                            { !isMainPage && searchResultsCount === 0
+                                                && (<NoResults />)
+                                            }
 
                                             { isMainPage && <ChainStatistic /> }
 
                                         </MainContainer>
                                     </ScrollContainer>
                                     <LinkBarContainer>
-                                        { !isMainPage && canLink && searchResultsCount > 0
+                                        { !isMainPage && canLink
                                             && (<LinkNewAnswerBar />)
                                         }
                                         { isMainPage && canLink
