@@ -68,38 +68,38 @@ const getRankGrade = (rank) => {
     let to;
     let value;
 
-    switch (rank) {
-    case (rank > 0.01 && rank <= 1):
+    switch (true) {
+    case rank > 0.01:
         from = 0.01;
         to = 1;
         value = 1;
         break;
-    case (rank > 0.001 && rank <= 0.01):
+    case rank > 0.001:
         from = 0.001;
         to = 0.01;
         value = 2;
         break;
-    case (rank > 0.000001 && rank <= 0.001):
+    case rank > 0.000001:
         from = 0.000001;
         to = 0.001;
         value = 3;
         break;
-    case (rank > 0.0000000001 && rank <= 0.000001):
+    case rank > 0.0000000001:
         from = 0.0000000001;
         to = 0.000001;
         value = 4;
         break;
-    case (rank > 0.000000000000001 && rank <= 0.0000000001):
+    case rank > 0.000000000000001:
         from = 0.000000000000001;
         to = 0.0000000001;
         value = 5;
         break;
-    case (rank > 0.0000000000000000001 && rank <= 0.000000000000001):
+    case rank > 0.0000000000000000001:
         from = 0.0000000000000000001;
         to = 0.000000000000001;
         value = 6;
         break;
-    case (rank > 0 && rank <= 0.0000000000000000001):
+    case rank > 0:
         from = 0;
         to = 0.0000000000000000001;
         value = 7;
