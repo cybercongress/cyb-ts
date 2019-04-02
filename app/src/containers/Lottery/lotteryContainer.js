@@ -1,16 +1,14 @@
-import React from 'react';
 import { Container } from 'unstated';
 
 class LotteryContainer extends Container {
     state = {
         showResult: false,
         result: null,
+        address: null,
     };
 
-    addressInput = React.createRef();
-
     checkTicket = async () => {
-        const address = this.addressInput.current.value;
+        const { address } = this.state;
 
         const result = await window.cyber.checkLotteryTicket(address);
 
@@ -21,6 +19,12 @@ class LotteryContainer extends Container {
             result,
         });
     };
+
+    onAddressChange = (event) => {
+        this.setState({
+            address: event.target.value,
+        });
+    }
 }
 
 export default new LotteryContainer();
