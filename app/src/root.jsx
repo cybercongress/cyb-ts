@@ -7,12 +7,12 @@ import Lottery from './containers/Lottery/Lottery';
 
 const Root = () => (
     <Router>
-        <div>
+        <span>
             <Route exact path='/' component={ Search } />
             <Route path='/lottery' component={ Lottery } />
             <Route path='/validators' component={ Validators } />
             <Route path='/stake' component={ Stake } />
-        </div>
+        </span>
     </Router>
 );
 
