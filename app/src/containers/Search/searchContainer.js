@@ -98,19 +98,21 @@ class SearchContainer extends Container {
             .then((result) => {
                 console.log(`Linked ${cidFrom} with ${cidTo}. Results: `, result);
 
-                this.setState(state => ({
-                    linkResult: 'success',
-                    links: {
-                        ...state.links,
-                        newLink: {
-                            rank: 'n/a',
-                            status: 'success',
-                            content: cidTo,
+                if (cidFrom === searchQuery) {
+                    this.setState(state => ({
+                        linkResult: 'success',
+                        links: {
+                            ...state.links,
+                            newLink: {
+                                rank: 'n/a',
+                                status: 'success',
+                                content: cidTo,
+                            },
                         },
-                    },
-                    cidFromValue: null,
-                    cidToValue: null,
-                }));
+                        cidFromValue: null,
+                        cidToValue: null,
+                    }));
+                }
             })
             .catch((error) => {
                 console.log(`Cant link ${cidFrom} with ${cidTo}. Error: `, error);

@@ -105,6 +105,9 @@ const getRankGrade = (rank) => {
         value = 7;
         break;
     default:
+        from = 'n/a';
+        to = 'n/a';
+        value = 'n/a';
         break;
     }
 
