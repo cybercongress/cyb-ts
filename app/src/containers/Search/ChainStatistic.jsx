@@ -27,6 +27,8 @@ class ChainStatistic extends React.Component {
                             activeValidatorsCount,
                         } = validators.state;
 
+                        const totalGcyb = (totalCyb / 1000000000).toFixed(0);
+
                         return (
                             <div>
                                 <BandwidthBar
@@ -41,13 +43,13 @@ class ChainStatistic extends React.Component {
                                     </Heading>
                                     <Pane display='flex' marginX={ -15 }>
                                         <CardHover
-                                            flex={ 1 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            paddingY={ 50 }
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          paddingY={ 50 }
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {linksCount}
@@ -58,13 +60,13 @@ class ChainStatistic extends React.Component {
                                             </TextEv>
                                         </CardHover>
                                         <CardHover
-                                            flex={ 1 }
-                                            paddingY={ 50 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          paddingY={ 50 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {cidsCount}
@@ -75,13 +77,13 @@ class ChainStatistic extends React.Component {
                                             </TextEv>
                                         </CardHover>
                                         <CardHover
-                                            flex={ 1 }
-                                            paddingY={ 50 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          paddingY={ 50 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {accsCount}
@@ -99,54 +101,54 @@ class ChainStatistic extends React.Component {
                                     </Heading>
                                     <Pane display='flex' marginX={ -15 }>
                                         <CardHover
-                                            flex={ 1 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000'
-                                            paddingY={ 50 }
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000'
+                                          paddingY={ 50 }
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {totalCyb}
+                                                {totalGcyb}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
-                                                Total CYB
+                                                total GCYB
                                             </TextEv>
                                         </CardHover>
                                         <CardHover
-                                            flex={ 1 }
-                                            paddingY={ 50 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          paddingY={ 50 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {stakedCyb}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
-                                                Staked CYB
+                                                staked CYB (%)
                                             </TextEv>
                                         </CardHover>
                                         <CardHover
-                                            flex={ 1 }
-                                            paddingY={ 50 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          paddingY={ 50 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {linkPrice}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
-                                                Price of cyberlink
+                                                price of cyberlink (BP)
                                             </TextEv>
                                         </CardHover>
                                     </Pane>
@@ -156,31 +158,38 @@ class ChainStatistic extends React.Component {
                                         Consensus
                                     </Heading>
                                     <Pane display='flex' marginX={ -15 }>
-                                        <CardHover
-                                            flex={ 1 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000'
-                                            paddingY={ 50 }
-                                            marginX={ 15 }
+                                        <a
+                                          href='cyb://.cyber/#/validators'
+                                          style={ {
+                                              display: 'contents',
+                                              textDecoration: 'none',
+                                          } }
                                         >
-                                            <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {activeValidatorsCount}
-                                            </TextEv>
-
-                                            <TextEv display='inline-block' color='#4ed6ae'>
-                                                active validators
-                                            </TextEv>
-                                        </CardHover>
+                                            <CardHover
+                                              flex={ 1 }
+                                              display='flex'
+                                              alignItems='center'
+                                              flexDirection='column'
+                                              backgroundColor='#000'
+                                              paddingY={ 50 }
+                                              marginX={ 15 }
+                                            >
+                                                <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
+                                                    {activeValidatorsCount}
+                                                </TextEv>
+                                                <TextEv display='inline-block' color='#4ed6ae'>
+                                                    active validators
+                                                </TextEv>
+                                            </CardHover>
+                                        </a>
                                         <CardHover
-                                            flex={ 1 }
-                                            paddingY={ 50 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          paddingY={ 50 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {txCount}
@@ -191,13 +200,13 @@ class ChainStatistic extends React.Component {
                                             </TextEv>
                                         </CardHover>
                                         <CardHover
-                                            flex={ 1 }
-                                            paddingY={ 50 }
-                                            display='flex'
-                                            alignItems='center'
-                                            flexDirection='column'
-                                            backgroundColor='#000000'
-                                            marginX={ 15 }
+                                          flex={ 1 }
+                                          paddingY={ 50 }
+                                          display='flex'
+                                          alignItems='center'
+                                          flexDirection='column'
+                                          backgroundColor='#000000'
+                                          marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
                                                 {blockNumber}
@@ -209,84 +218,6 @@ class ChainStatistic extends React.Component {
                                         </CardHover>
                                     </Pane>
                                 </Pane>
-
-                                {/*<Title style={ { marginLeft: '0px', marginBottom: '30px', textAlign: 'center' } }>
-                        Search statistic:
-                    </Title>
-                    <Section noMargin noWrap>
-                        <SectionContent style={ { width: '25%' } }>
-                            <CentredPanel style={ { justifyContent: 'space-evenly' } }>
-                                <IconLinks />
-                                <Text uppercase color='blue'>
-                                    link
-                                </Text>
-                                <Text
-                                  color='blue'
-                                  size='xlg'
-                                >
-                                    {linksCount}
-                                </Text>
-                            </CentredPanel>
-                        </SectionContent>
-                        <SectionContent style={ { width: '25%' } }>
-                            <CentredPanel style={ { justifyContent: 'space-evenly' } }>
-                                <IconCIDs />
-                                <Text uppercase color='blue'>
-                                    CIDs
-                                </Text>
-                                <Text
-                                  color='blue'
-                                  size='xlg'
-                                >
-                                    {cidsCount}
-                                </Text>
-                            </CentredPanel>
-                        </SectionContent>
-                        <SectionContent style={ { width: '25%' } }>
-                            <CentredPanel style={ { justifyContent: 'space-evenly' } }>
-                                <IconAccounts />
-                                <Text uppercase color='blue'>
-                                    accounts
-                                </Text>
-                                <Text
-                                  color='blue'
-                                  size='xlg'
-                                >
-                                    {accsCount}
-                                </Text>
-                            </CentredPanel>
-                        </SectionContent>
-                        <SectionContent style={ { width: '25%' } }>
-                            <CentredPanel style={ { justifyContent: 'space-evenly' } }>
-                                <IconBlockHeight />
-                                <Text uppercase color='blue'>
-                                    last block height
-                                </Text>
-                                <Text
-                                  color='blue'
-                                  size='xlg'
-                                >
-                                    {blockNumber}
-                                </Text>
-
-                            </CentredPanel>
-                        </SectionContent>
-                        <SectionContent style={ { width: '23%' } }>
-                            <CentredPanel style={ { justifyContent: 'space-evenly' } }>
-                                <IconBlockDelay />
-                                <Text uppercase color='blue'>
-                                    last block delay
-                                </Text>
-                                <Text
-                                  color='blue'
-                                  size='xlg'
-                                >
-                                    {`${time} sec`}
-                                </Text>
-
-                            </CentredPanel>
-                        </SectionContent>
-                    </Section>*/}
                             </div>
                         );
                     }}
