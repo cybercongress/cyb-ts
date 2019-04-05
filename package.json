@@ -4,7 +4,7 @@
   "main": "app/src/main.jsx",
   "author": "author",
   "dependencies": {
-    "@cybercongress/ui": ">=0.0.16",
+    "@cybercongress/ui": "0.1.0",
     "argparse": "1.0.10",
     "axios": "0.16.2",
     "babel-preset-react-app": "5.0.4",
