@@ -9,7 +9,7 @@ const Lottery = () => (
     <Provider>
         <Subscribe to={ [lotteryContainer] }>
             { (container) => {
-                const { showResult, result } = container.state;
+                const { showResult, result, isInvalidAddress } = container.state;
 
                 return (
                     <ScrollContainer>
@@ -48,10 +48,10 @@ const Lottery = () => (
                                       outline='0'
                                       style={ {
                                           caretColor: '#36d6ae',
-                                          boxShadow: '0 0 1px #fff',
                                       } }
                                       placeholder='paste your Ethereum address'
                                       onChange={ container.onAddressChange }
+                                      isInvalid={ isInvalidAddress }
                                     />
                                     <Button
                                       style={ {

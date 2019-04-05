@@ -5,24 +5,33 @@ class LotteryContainer extends Container {
         showResult: false,
         result: null,
         address: null,
+        isInvalidAddress: false,
     };
 
     checkTicket = async () => {
         const { address } = this.state;
 
-        const result = await window.cyber.checkLotteryTicket(address);
+        if (!/0x[a-fA-F0-9]{40}/.test(address)) {
+            this.setState({
+                isInvalidAddress: true,
+            });
+        } else {
+            const result = await window.cyber.checkLotteryTicket(address);
 
-        console.log('Lottery results: ', result);
+            console.log('Lottery results: ', result);
 
-        this.setState({
-            showResult: true,
-            result,
-        });
+            this.setState({
+                showResult: true,
+                result,
+                isInvalidAddress: false,
+            });
+        }
     };
 
     onAddressChange = (event) => {
         this.setState({
             address: event.target.value,
+            isInvalidAddress: false,
         });
     }
 }
