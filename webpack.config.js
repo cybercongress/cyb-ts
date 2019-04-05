@@ -12,14 +12,14 @@ function getPlugins(isProduction) {
             favicon: path.resolve(__dirname, 'app', 'favicon.ico'),
             hash: true,
         }),
-        new webpack.SourceMapDevToolPlugin({
-            test: /\.(js|jsx|css)$/,
-            exclude: [/\.vendor$/],
-        }),
     ];
 
     if (!isProduction) {
         plugins.push(new webpack.HotModuleReplacementPlugin());
+        plugins.push(new webpack.SourceMapDevToolPlugin({
+            test: /\.(js|jsx|css)$/,
+            exclude: [/\.vendor$/],
+        }));
     }
 
     return plugins;

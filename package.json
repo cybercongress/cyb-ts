@@ -1,5 +1,5 @@
 {
-  "name": "@cybercongress/dapp-cyber",
+  "name": "cyber",
   "version": "0.0.2",
   "main": "app/src/main.jsx",
   "author": "author",
