@@ -98,7 +98,7 @@ class SearchContainer extends Container {
             .then((result) => {
                 console.log(`Linked ${cidFrom} with ${cidTo}. Results: `, result);
 
-                if (cidFrom === searchQuery) {
+                if (cidFrom === searchQuery && cidTo !== cidFrom) {
                     this.setState(state => ({
                         linkResult: 'success',
                         links: {

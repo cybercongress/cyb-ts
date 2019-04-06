@@ -48,7 +48,7 @@ const SearchResults = () => (
                     <Pane>
                         {searchItems}
                     </Pane>
-                    {searchResultsCount > 10 && (
+                    {searchResultsCount > SEARCH_RESULT_COUNT_DEFAULT && (
                         <Pane display='flex' justifyContent='center'>
                             <Button
                               fontSize='1em'
