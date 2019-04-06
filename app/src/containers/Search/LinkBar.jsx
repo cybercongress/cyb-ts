@@ -32,6 +32,7 @@ export const LinkNewAnswerBar = () => (
                     <TextInput
                       height={ 42 }
                       width='40%'
+                      value={ container.state.cidToValue }
                       onChange={ container.onCidToChange }
                       marginRight={ 15 }
                       fontSize='18px'
@@ -48,7 +49,7 @@ export const LinkNewAnswerBar = () => (
                       fontSize='18px'
                       borderRadius={ 3 }
                       className='btn'
-                      onClick={ () => container.link() }
+                      onClick={ () => container.link(null, null, true) }
                     >
                         Cyber it
                     </Button>
@@ -65,6 +66,7 @@ export const LinkQuestionWithAnswerBar = () => (
                 <TextInput
                   height={ 42 }
                   width='100%'
+                  value={ container.state.cidFromValue }
                   onChange={ container.onCidFromChange }
                   marginRight={ 15 }
                   placeholder='Question'
@@ -76,6 +78,7 @@ export const LinkQuestionWithAnswerBar = () => (
                 <TextInput
                   height={ 42 }
                   width='100%'
+                  value={ container.state.cidToValue }
                   onChange={ container.onCidToChange }
                   marginRight={ 15 }
                   placeholder='Answer'

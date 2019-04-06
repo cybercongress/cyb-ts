@@ -17,8 +17,8 @@ class SearchContainer extends Container {
 
         linkResult: '',
 
-        cidToValue: null,
-        cidFromValue: null,
+        cidToValue: '',
+        cidFromValue: '',
     };
 
     init = () => {
@@ -79,7 +79,7 @@ class SearchContainer extends Container {
         }
     };
 
-    link = (from, to) => {
+    link = (from, to, showResult) => {
         const {
             defaultAddress, cidFromValue, cidToValue, searchQuery,
         } = this.state;
@@ -98,7 +98,7 @@ class SearchContainer extends Container {
             .then((result) => {
                 console.log(`Linked ${cidFrom} with ${cidTo}. Results: `, result);
 
-                if (cidFrom === searchQuery && cidTo !== cidFrom) {
+                if (showResult) {
                     this.setState(state => ({
                         linkResult: 'success',
                         links: {
@@ -113,8 +113,8 @@ class SearchContainer extends Container {
                 }
 
                 this.setState({
-                    cidFromValue: null,
-                    cidToValue: null,
+                    cidFromValue: '',
+                    cidToValue: '',
                 });
             })
             .catch((error) => {
@@ -122,8 +122,8 @@ class SearchContainer extends Container {
 
                 this.setState({
                     linkResult: 'failed',
-                    cidFromValue: null,
-                    cidToValue: null,
+                    cidFromValue: '',
+                    cidToValue: '',
                 });
             });
     };
