@@ -6,6 +6,7 @@ import { Provider, Subscribe } from 'unstated';
 import statisticContainer from './statisticContainer';
 import validatorsContainer from '../Validators/validatorsContainer';
 import BandwidthBar from './BandwidthBar';
+import { formatNumber } from '../../utils';
 
 class ChainStatistic extends React.Component {
     componentWillMount() {
@@ -52,7 +53,7 @@ class ChainStatistic extends React.Component {
                                           marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {linksCount}
+                                                {formatNumber(linksCount)}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -69,7 +70,7 @@ class ChainStatistic extends React.Component {
                                           marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {cidsCount}
+                                                {formatNumber(cidsCount)}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -86,7 +87,7 @@ class ChainStatistic extends React.Component {
                                           marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {accsCount}
+                                                {formatNumber(accsCount)}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -110,7 +111,7 @@ class ChainStatistic extends React.Component {
                                           marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {totalGcyb}
+                                                {formatNumber(totalGcyb)}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -192,7 +193,7 @@ class ChainStatistic extends React.Component {
                                           marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {txCount}
+                                                {formatNumber(txCount)}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>
@@ -209,7 +210,7 @@ class ChainStatistic extends React.Component {
                                           marginX={ 15 }
                                         >
                                             <TextEv display='inline-block' marginBottom={ 15 } color='#4ed6ae' fontSize='30px'>
-                                                {blockNumber}
+                                                {formatNumber(blockNumber)}
                                             </TextEv>
 
                                             <TextEv display='inline-block' color='#4ed6ae'>

@@ -5,6 +5,8 @@ import {
 import { Subscribe } from 'unstated';
 import searchContainer from './searchContainer';
 
+const SEARCH_RESULT_COUNT_DEFAULT = 42;
+
 const SearchResults = () => (
     <Subscribe to={ [searchContainer] }>
         {(container) => {
@@ -13,7 +15,8 @@ const SearchResults = () => (
             } = container.state;
 
             const searchResultsCount = Object.keys(links).length;
-            const resultsLimit = (seeAll || searchResultsCount < 10) ? searchResultsCount : 10;
+            const resultsLimit = (seeAll || searchResultsCount < SEARCH_RESULT_COUNT_DEFAULT)
+                ? searchResultsCount : SEARCH_RESULT_COUNT_DEFAULT;
             const cids = Object.keys(links);
             const searchItems = [];
 
@@ -53,7 +56,7 @@ const SearchResults = () => (
                               className='btn'
                               onClick={ () => container.seeAll() }
                             >
-                                {!seeAll ? 'see all' : 'top 10'}
+                                {!seeAll ? 'see all' : `top ${SEARCH_RESULT_COUNT_DEFAULT}`}
                             </Button>
                         </Pane>
                     )}

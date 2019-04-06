@@ -54,3 +54,15 @@ export const getContentByCid = (cid, timeout) => getIpfs()
 
         return Promise.race([timeoutPromise(), ipfsGetPromise()]);
     });
+
+export const formatNumber = (number, toFixed) => {
+    let formatted = +number;
+
+    if (toFixed) {
+        formatted = +formatted.toFixed(toFixed);
+    }
+
+    return formatted
+        .toLocaleString('en')
+        .replace(/,/g, ' ');
+};
