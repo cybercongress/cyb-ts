@@ -1,0 +1,38 @@
+{
+  "extends": ["standard-react", "airbnb"],
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "expect": true,
+    "FileReader": true
+  },
+  "rules": {
+    "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
+    "curly": ["warn", "all"],
+    "jsx-quotes": ["warn", "prefer-single"],
+    "newline-after-var": ["warn", "always"],
+    "no-console": "off",
+    "no-alert": "warn",
+    "no-debugger": "warn",
+    "no-duplicate-imports": ["warn", {
+      "includeExports": true
+    }],
+    "object-curly-spacing": ["warn", "always"],
+    "object-property-newline": 0,
+    "one-var-declaration-per-line": ["warn", "always"],
+    "padded-blocks": ["warn", {
+      "blocks": "never",
+      "classes": "never",
+      "switches": "never"
+    }],
+    "react/jsx-closing-bracket-location": "warn",
+    "react/jsx-curly-spacing": ["warn", "always"],
+    "react/jsx-indent-props": [2, 2],
+    "react/prop-types": 0,
+    "react/jsx-indent": ["warn", 4],
+    "indent": ["warn", 4, {"ignoredNodes": ["JSXElement *", "JSXElement"]}]
+  }
+}
