@@ -1,0 +1,18 @@
+@font-face {
+    font-family: "Play", sans-serif;
+    src: url("https://fonts.googleapis.com/css?family=Play&display=swap");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@import'./global.css';
+
+@import './funding.css';
+@import './container-distribution.css';
+@import './auction.css';
+@import './got.css';
+
+@import './loading.css';
+@import './notFound.css';
+@import './popups.css';
+

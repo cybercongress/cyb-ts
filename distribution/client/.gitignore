@@ -1,0 +1,22 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+coverage
+
+# Dependency directories
+node_modules
+build
+
+# Optional npm cache directory
+.npm
+
+# Prod Bundle
+*.xml
+*.iml
+yarn.lock
+
+.idea
+
+yarn-debug.log*
+yarn-error.log*
