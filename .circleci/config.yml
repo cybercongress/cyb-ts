@@ -7,7 +7,7 @@ workflows:
       - update_doc:
           filters:
             branches:
-              only: dev
+              only: distr
 
 
 jobs:
@@ -20,9 +20,9 @@ jobs:
       - run:
           name: Update app
           command: |
-            git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/.cyber.git
+            git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
       - deploy:
-          name: Update app from .cyber repo
+          name: Update app from dot-cyber repo
           working_directory: ~/workdir/distribution/client
           command: |
             rm -rf build/
@@ -34,4 +34,4 @@ jobs:
             git config user.name "Cyber Admin"
             git add .
             git commit -m "Circle CI: Update Site [skip ci]"
-            git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/.cyber.git dev:gh-pages
+            git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git dev:gh-pages
