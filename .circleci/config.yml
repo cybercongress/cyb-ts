@@ -29,6 +29,8 @@ jobs:
             yarn install
             yarn build
             cd build
+            pwd
+            ls
             git init
             git add .
             git config user.email "cybercongress42@gmail.com"
