@@ -4,7 +4,7 @@ workflows:
   version: 2
   default_workflow:
     jobs:
-      - update_doc:
+      - update_distribution_app:
           filters:
             branches:
               only: distr
