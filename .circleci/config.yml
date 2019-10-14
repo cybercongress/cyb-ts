@@ -29,10 +29,10 @@ jobs:
             yarn install
             yarn build
             cd build
-            git init
-            git commit -m "initial commit"
             git config user.email "cybercongress42@gmail.com"
             git config user.name "Cyber Admin"
+            git init
+            git commit -m "initial commit"
             git add .
             git commit -m "Circle CI Update Site [skip ci]"
             git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git distr:gh-pages
