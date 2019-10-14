@@ -44,13 +44,23 @@ class Funding extends PureComponent {
 
   async componentDidMount() {
     run(this.getDataWS);
+    // console.log('groupsDidMount', groups);
     const dataPin = [];
     const jsonStr = localStorage.getItem('allpin');
     dataPin.push(JSON.parse(jsonStr));
     if (dataPin[0] != null) {
       if (dataPin[0].length) {
+        // // debugger;
+        // for(let i = 0; i <= groups.length; i++){
+        //   for(let j = 0; j <= dataPin.length; j++){
+        //     if(groups[i].group.indexOf(`${dataPin[j].group}`) !== -1){
+        //       groups.pin = true;
+        //     }
+        //   }
+        // }
         this.setState({
-          pin: true
+          pin: true,
+          // groups
         });
       }
     }
@@ -187,7 +197,7 @@ class Funding extends PureComponent {
   };
 
   getTableData = async () => {
-    const { dataTxs, currentPrice, currentDiscount, amount } = this.state;
+    const { dataTxs, currentPrice, currentDiscount, amount, dataAllPin } = this.state;
     try {
       const table = [];
       let temp = 0;
@@ -225,9 +235,11 @@ class Funding extends PureComponent {
         group: key,
         address: groupsAddress[key],
         amountСolumn: null,
+        pin: false,
         cyb: null
       }));
-
+     await asyncForEach(Array.from(Array(dataAllPin.length).keys()), async pin => {
+      // for(let pin = 0; pin <= dataAllPin.length; pin++){
       for (let i = 0; i < groups.length; i++) {
         let sum = 0;
         let sumEstimation = 0;
@@ -235,9 +247,13 @@ class Funding extends PureComponent {
           sum += groups[i].address[j].amount;
           sumEstimation += groups[i].address[j].cybEstimation;
         }
+        if(groups[i].group.indexOf(`${dataAllPin[pin].group}`) !== -1){
+             groups[i].pin = true;
+        }
         groups[i].amountСolumn = sum;
         groups[i].cyb = sumEstimation;
       }
+    });
       this.setState({
         groups
       });
@@ -276,6 +292,55 @@ class Funding extends PureComponent {
     this.getPlot();
   };
 
+  pinItem = async item => {
+    // console.log('item', item);
+    const { groups } = this.state;
+    let allPin = JSON.parse(localStorage.getItem('allpin'));
+    if (allPin == null) allPin = [];
+    const { group } = item;
+    const value = item;
+    const pin = {
+      group,
+      value
+    };
+    localStorage.setItem(`item_pin`, JSON.stringify(pin));
+    allPin.push(pin);
+    localStorage.setItem('allpin', JSON.stringify(allPin));
+    this.updateList(allPin);
+    for (let i = 0; i < groups.length; i++){
+    if(groups[i].group.indexOf(`${item.group}`) !== -1 ){
+      groups[i].pin = true;
+    }
+    }
+    this.setState({
+      groups
+    });
+  };
+
+  unPinItem = item => {
+    const { groups } = this.state;
+    const tempArr = localStorage.getItem('allpin');
+    const allPin = JSON.parse(tempArr);
+    if (allPin != null) {
+      for (let i = 0; i < allPin.length; i++) {
+        const tempindexItem = allPin[i].group.indexOf(`${item.group}`) !== -1;
+        if (tempindexItem) {
+          allPin.splice(i, 1);
+          localStorage.setItem('allpin', JSON.stringify(allPin));
+          this.updateList(allPin);
+        }
+      }
+      for (let i = 0; i < groups.length; i++){
+        if(groups[i].group.indexOf(`${item.group}`) !== -1 ){
+          groups[i].pin = false;
+        }
+        }
+        this.setState({
+          groups
+        });
+  };
+};
+
   render() {
     const {
       groups,
@@ -292,7 +357,7 @@ class Funding extends PureComponent {
     // if (dataRewards[0] === undefined) {
     //   return <Loading />;
     // }
-    // console.log(dataPlot);
+    console.log('groups', groups);
     return (
       <span>
         <main className="block-body">
@@ -311,6 +376,8 @@ class Funding extends PureComponent {
             dataPinTable={dataAllPin}
             update={this.updateList}
             pin={pin}
+            fPin={this.pinItem}
+            fUpin={this.unPinItem}
           />
         </main>
         <ActionBar />

@@ -7,7 +7,7 @@ class Row extends Component {
     super(props);
     this.state = {
       open: false,
-      statePin: true
+      // statePin: true
     };
   }
 
@@ -17,61 +17,63 @@ class Row extends Component {
     });
   };
 
-  componentDidMount() {
-    const { pin } = this.props;
-    const allPin = JSON.parse(localStorage.getItem('allpin'));
-    // console.log(allPin);
-    // console.log(pin.group);
-    if (allPin != null) {
-      for (let i = 0; i < allPin.length; i++) {
-        if (allPin[i].group.indexOf(`${pin.group}`) !== -1) {
-          this.setState({
-            statePin: false
-          });
-        }
-      }
-    }
-  }
+  // componentDidMount() {
+  //   const { pin } = this.props;
+  //   const allPin = JSON.parse(localStorage.getItem('allpin'));
+  //   // console.log(allPin);
+  //   // console.log(pin.group);
+  //   if (allPin != null) {
+  //     for (let i = 0; i < allPin.length; i++) {
+  //       if (allPin[i].group.indexOf(`${pin.group}`) !== -1) {
+  //         this.setState({
+  //           statePin: false
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 
   funcPin = item => {
-    let allPin = JSON.parse(localStorage.getItem('allpin'));
-    if (allPin == null) allPin = [];
-    const { group } = item;
-    const value = item;
-    const pin = {
-      group,
-      value
-    };
-    localStorage.setItem(`item_pin`, JSON.stringify(pin));
-    allPin.push(pin);
-    localStorage.setItem('allpin', JSON.stringify(allPin));
-    this.props.updateList(allPin);
-    this.setState({
-      statePin: false
-    });
+    // let allPin = JSON.parse(localStorage.getItem('allpin'));
+    // if (allPin == null) allPin = [];
+    // const { group } = item;
+    // const value = item;
+    // const pin = {
+    //   group,
+    //   value
+    // };
+    // localStorage.setItem(`item_pin`, JSON.stringify(pin));
+    // allPin.push(pin);
+    // localStorage.setItem('allpin', JSON.stringify(allPin));
+    // this.props.updateList(allPin);
+    this.props.pinFunc(item);
+    // this.setState({
+    //   statePin: false
+    // });
   };
 
   funcUnPin = item => {
-    const tempArr = localStorage.getItem('allpin');
-    const allPin = JSON.parse(tempArr);
-    if (allPin != null) {
-      for (let i = 0; i < allPin.length; i++) {
-        const tempindexItem = allPin[i].group.indexOf(`${item.group}`) !== -1;
-        if (tempindexItem) {
-          allPin.splice(i, 1);
-          localStorage.setItem('allpin', JSON.stringify(allPin));
-          this.props.updateList(allPin);
-        }
-      }
-      this.setState({
-        statePin: true
-      });
-    }
+    // const tempArr = localStorage.getItem('allpin');
+    // const allPin = JSON.parse(tempArr);
+    // if (allPin != null) {
+    //   for (let i = 0; i < allPin.length; i++) {
+    //     const tempindexItem = allPin[i].group.indexOf(`${item.group}`) !== -1;
+    //     if (tempindexItem) {
+    //       allPin.splice(i, 1);
+    //       localStorage.setItem('allpin', JSON.stringify(allPin));
+    //       this.props.updateList(allPin);
+    //     }
+    //   }
+    this.props.unPinFunc(item);
+      // this.setState({
+      //   statePin: true
+      // });
+    // }
   };
 
   render() {
-    const { open, statePin } = this.state;
-    const { item, children, pin, unPin } = this.props;
+    const { open } = this.state;
+    const { item, children, pin, unPin, statePin } = this.props;
     const allPin = JSON.parse(localStorage.getItem('allpin'));
     // console.log(pin.group);
 
@@ -87,10 +89,10 @@ class Row extends Component {
             alignItems: 'center'
           }}
         >
-          {statePin && (
+          {!statePin && (
             <button className="pin" onClick={e => this.funcPin(pin)} />
           )}
-          {!statePin && unPin && (
+          {statePin && (
             <button className="unpin" onClick={e => this.funcUnPin(pin)} />
           )}
           <div onClick={this.open} className="table-rows-box">
@@ -196,61 +198,62 @@ export class Table extends Component {
       });
     }
     const tableRowPin = () =>
-      dataPinTable.map((itemGroup, index) => (
-        // console.log(itemGroup.value)
-        <Row
-          pin={itemGroup}
-          updateList={update}
-          key={itemGroup.value.group}
-          item={itemGroup.value.address.map((item, index) => (
-            <div className="table-rows-child" key={index}>
-              <div className="number hash">
-                <a
-                  href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
-                >
-                  {item.txhash}
-                </a>
+    data.filter(data => data.pin).map((itemGroup, index) => (
+      <Row
+        pin={itemGroup}
+        unPin
+        unPinFunc={this.props.fUpin}
+        pinFunc={this.props.fPin}
+        updateList={update}
+        statePin={itemGroup.pin}
+        key={itemGroup.group}
+        item={itemGroup.address.map((item, index) => (
+          <div className="table-rows-child" key={index}>
+            <div className="number hash">
+              <a href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}>
+                {item.txhash}
+              </a>
+            </div>
+            <div className="number">{item.height}</div>
+            <div className="number">{formatNumber(item.amount)}</div>
+            <Tooltip
+              placement="bottom"
+              tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
+            >
+              <div className="number">
+                {formatNumber(
+                  Math.floor((item.cybEstimation / Math.pow(10, 9)) * 1000) /
+                    1000
+                )}
               </div>
-              <div className="number">{item.height}</div>
-              <div className="number">{formatNumber(item.amount)}</div>
-              <Tooltip
-                placement="bottom"
-                tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
-              >
-                <div className="number">
-                  {formatNumber(
-                    Math.floor((item.cybEstimation / Math.pow(10, 9)) * 1000) /
-                      1000
-                  )}
-                </div>
-              </Tooltip>
-            </div>
-          ))}
-        >
-          <div className="number address">{itemGroup.value.group}</div>
-          <div className="number">
-            {formatNumber(itemGroup.value.amountСolumn)}
+            </Tooltip>
           </div>
-          <Tooltip
-            placement="bottom"
-            tooltip={`${formatNumber(Math.floor(itemGroup.value.cyb))} CYBs`}
-          >
-            <div className="number">
-              {formatNumber(
-                Math.floor((itemGroup.value.cyb / Math.pow(10, 9)) * 1000) /
-                  1000
-              )}
-            </div>
-          </Tooltip>
-        </Row>
-      ));
+        ))}
+      >
+        <div className="number address">{itemGroup.group}</div>
+        <div className="number">{formatNumber(itemGroup.amountСolumn)}</div>
+        <Tooltip
+          placement="bottom"
+          tooltip={`${formatNumber(Math.floor(itemGroup.cyb))} CYBs`}
+        >
+          <div className="number">
+            {formatNumber(
+              Math.floor((itemGroup.cyb / Math.pow(10, 9)) * 1000) / 1000
+            )}
+          </div>
+        </Tooltip>
+      </Row>
+    ));
 
     const tableRow = data.map((itemGroup, index) => (
       <Row
         pin={itemGroup}
         unPin
+        unPinFunc={this.props.fUpin}
+        pinFunc={this.props.fPin}
         updateList={update}
         key={itemGroup.group}
+        statePin={itemGroup.pin}
         item={itemGroup.address.map((item, index) => (
           <div className="table-rows-child" key={index}>
             <div className="number hash">
