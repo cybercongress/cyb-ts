@@ -77,7 +77,7 @@ export class Timer extends Component {
     const offset = new Date().getTimezoneOffset();
     if (offset < 0) resultGMT = `GMT+${offset / -60}`;
     else resultGMT = `GMT-${offset / 60}`;
-    const deadline = `September 30 2019 12:00:00 ${resultGMT}`;
+    const deadline = `October 30 2019 12:00:00 ${resultGMT}`;
     this.initializeClock(deadline);
   }
 
