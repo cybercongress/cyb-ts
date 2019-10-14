@@ -11,7 +11,7 @@ workflows:
 
 
 jobs:
-  update_doc:
+  update_distribution_app:
     working_directory: ~/workdir
     docker:
       - image: circleci/node:10.15.1-browsers
@@ -22,18 +22,16 @@ jobs:
           command: |
             git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
       - deploy:
-          name: Update app from .cyber repo
+          name: Update app from dot-cyber repo
           working_directory: ~/workdir/distribution/client
           command: |
             rm -rf build/
             yarn install
             yarn build
             cd build
-            pwd
-            ls
             git init
-            git add .
             git config user.email "cybercongress42@gmail.com"
             git config user.name "Cyber Admin"
-            git commit -m "Circle CI Update Site [skip ci]"
+            git add --all
+            git commit -m "Circle CI: Update Site [skip ci]"
             git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git distr:gh-pages
