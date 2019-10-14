@@ -24,10 +24,10 @@ class App extends Component {
       { id: 1, to: 'got' },
       { id: 2, to: 'funding' },
       { id: 3, to: 'auction' },
-      { id: 4, to: 'gift' },
-      { id: 5, to: 'final' },
-      { id: 6, to: 'cyber' },
-      { id: 7, to: 'euler' }
+      // { id: 4, to: 'gift' },
+      // { id: 5, to: 'final' },
+      // { id: 6, to: 'cyber' },
+      // { id: 7, to: 'euler' }
     ];
 
     return (
