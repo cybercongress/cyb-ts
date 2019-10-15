@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Timer } from '../../components/index';
+import { Timer, Tooltip } from '../../components/index';
+const bug = require('../../image/bug.svg');
 
 const Item = ({ to, selected }) => (
-  <a className={`${selected ? 'active' : ''}`} href={`#/${to}`} />
+  <a className={`${selected ? 'active' : ''}`} href={`/${to}`} />
 );
 
 class App extends Component {
@@ -33,17 +34,23 @@ class App extends Component {
     return (
       <main>
         <div className="container-distribution">
-          <Timer />
+        <Tooltip tooltip='The app is not production ready and is for testing and experimentation only. All send tokens will be lost.' placement='bottom'>
+          <img src={bug} style={{
+            width: 50,
+            height: 50
+          }} />
+          </Tooltip>
           <div className="battery">
             {htef.map(item => (
               <Item
-                key={item.to}
-                selected={item.id === this.state.selectedIndex}
-                to={item.to}
-                // onClick={e => this.onCustomClick(item.id)}
+              key={item.to}
+              selected={item.id === this.state.selectedIndex}
+              to={item.to}
+              // onClick={e => this.onCustomClick(item.id)}
               />
-            ))}
+              ))}
           </div>
+              <Timer />
         </div>
 
         {this.props.children}

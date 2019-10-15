@@ -1,6 +1,12 @@
 // const wsURL = 'wss://herzner1.cybernode.ai/';
 const wsURL = 'wss://deimos.cybernode.ai/';
-
+const OPERATOR_ADDR = 'cosmos1kajt7sxfpnfujm7ptj90654lmwz4sftpmk0jm6';
+const CHAIN_ID = 'cosmoshub-2';
+const DEFAULT_GAS = 150000;
+const DEFAULT_GAS_PRICE = 0.01;
+const DENOM = 'uatom';
+const MEMO = 'Send to Cyber~Congress';
+const urlGaiaLSD = 'https://lcd.nylira.net';
 
 const ATOMsALL = 600000;
 
@@ -24,5 +30,12 @@ export {
   a_3d_plot,
   b_3d_plot,
   c_3d_plot,
-  d_3d_plot
+  d_3d_plot,
+  OPERATOR_ADDR,
+  CHAIN_ID,
+  DEFAULT_GAS,
+  DEFAULT_GAS_PRICE,
+  DENOM,
+  MEMO,
+  urlGaiaLSD
 };

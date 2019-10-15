@@ -2,6 +2,12 @@ import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
+  OPERATOR_ADDR,
+  MEMO,
+  DEFAULT_GAS,
+  DEFAULT_GAS_PRICE
+} from '../../utils/config';
+import {
   ContributeATOMs,
   TransactionCost,
   Succesfuuly,
@@ -16,12 +22,11 @@ import {
 const HDPATH = [44, 118, 0, 0, 0];
 const TIMEOUT = 5000;
 export const DIVISOR = 1000000;
-const DEFAULT_GAS = 150000;
-const DEFAULT_GAS_PRICE = 0.01;
+// const DEFAULT_GAS = 150000;
+// const DEFAULT_GAS_PRICE = 0.01;
 const DENOM = 'uatom';
-const MEMO = 'Send to Cyber~Congress';
-const OPERATOR_ADDR = 'cosmos1kajt7sxfpnfujm7ptj90654lmwz4sftpmk0jm6';
-const CHAIN_ID = 'cosmoshub-2';
+// const MEMO = 'Send to Cyber~Congress';
+// const OPERATOR_ADDR = 'cosmos1kajt7sxfpnfujm7ptj90654lmwz4sftpmk0jm6';
 
 const STAGE_INIT = 0;
 const STAGE_SELECTION = 1;
