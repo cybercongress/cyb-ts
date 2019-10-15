@@ -3,7 +3,7 @@ import { Timer, Tooltip } from '../../components/index';
 const bug = require('../../image/bug.svg');
 
 const Item = ({ to, selected }) => (
-  <a className={`${selected ? 'active' : ''}`} href={`#/${to}`} />
+  <a className={`${selected ? 'active' : ''}`} href={`/${to}`} />
 );
 
 class App extends Component {

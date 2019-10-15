@@ -1,13 +1,13 @@
 import React from "react";
 import { hashHistory, IndexRoute, Route, Router, Switch } from "react-router";
-import { createHashHistory } from "history";
+import { createBrowserHistory } from "history";
 import App from "./containers/application/application";
 import Got from "./containers/got/got";
 import Funding from "./containers/funding/index";
 import Auction from "./containers/auction/index";
 import NotFound from "./containers/application/notFound";
 
-export const history = createHashHistory({});
+export const history = createBrowserHistory({});
 
 const AppRouter = () => (
     <Router history={history}>
