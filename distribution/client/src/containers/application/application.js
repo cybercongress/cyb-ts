@@ -23,7 +23,7 @@ class App extends Component {
   render() {
     const htef = [
       { id: 1, to: 'got' },
-      { id: 2, to: 'funding' },
+      { id: 2, to: 'takeoff' },
       { id: 3, to: 'auction' },
       // { id: 4, to: 'gift' },
       // { id: 5, to: 'final' },
