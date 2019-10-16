@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Timer, Tooltip } from '../../components/index';
-const bug = require('../../image/bug.svg');
+const bug = require('../../image/tiks.svg');
 
 const Item = ({ to, selected }) => (
   <a className={`${selected ? 'active' : ''}`} href={`#/${to}`} />
