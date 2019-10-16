@@ -423,7 +423,7 @@ class Funding extends PureComponent {
         return (
             <span>
                 <main className="block-body">
-                    <span className="caption">Cyber~Funding</span>
+                    <span className="caption">Takoff funding</span>
                     <Statistics
                         atomLeff={formatNumber(atomLeff)}
                         won={formatNumber(

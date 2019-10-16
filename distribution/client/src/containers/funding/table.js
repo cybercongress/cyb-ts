@@ -84,10 +84,7 @@ class Row extends Component {
     return (
       <div>
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center'
-          }}
+        className={`${ statePin ? 'container-row-pin-padding0' : 'container-row-pin'}`}
         >
           {!statePin && (
             <button className="pin" onClick={e => this.funcPin(pin)} />
@@ -210,7 +207,7 @@ export class Table extends Component {
         item={itemGroup.address.map((item, index) => (
           <div className="table-rows-child" key={index}>
             <div className="number hash">
-              <a href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}>
+              <a href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`} target="_blank">
                 {item.txhash}
               </a>
             </div>
@@ -257,7 +254,7 @@ export class Table extends Component {
         item={itemGroup.address.map((item, index) => (
           <div className="table-rows-child" key={index}>
             <div className="number hash">
-              <a href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}>
+              <a href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`} target="_blank">
                 {item.txhash}
               </a>
             </div>
@@ -296,7 +293,6 @@ export class Table extends Component {
     }
     return (
       <div>
-        <div className='text-align-center'>Contributions history</div>
         <div className="table">
           <div className="table-header-rows">
             <div className="number address">Address (TX id)</div>
@@ -314,9 +310,9 @@ export class Table extends Component {
             <div
               className="table-body"
               style={{
-                marginBottom: 20,
+                marginBottom: 10,
                 paddingBottom: 10,
-                borderBottom: '1px solid #fff6'
+                borderBottom: '1px solid #fff'
               }}
             >
               {tableRowPin()}

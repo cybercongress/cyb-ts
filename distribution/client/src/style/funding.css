@@ -344,37 +344,6 @@ span.right-input {
     width: 100%;
 }
 
-.btn {
-    padding: 0 20px;
-    height: 42px;
-    white-space: nowrap;
-    background-color: #000;
-    color: #36d6ae;
-    box-shadow: 0 0 4px 0px #38d6ae;
-    /* text-shadow: 0 0 25px #36d6ae; */
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-family: Play;
-    outline: none;
-}
-
-.btn:hover {
-    box-shadow: 0 0 6px 0px #38d6ae;
-}
-
-.btn:active {
-    background-color: #36d6ae;
-    color: #fff;
-    border: none;
-    outline: none;
-}
-
-.btn:focus {
-    border: none;
-    outline: none;
-}
-
 .btn-view {
     padding: 0 10px;
     height: 32px;
@@ -509,7 +478,7 @@ select {
 
 .table-rows-child {
     display: grid;
-    grid-template-columns: 2.3fr 0.8fr 0.8fr 0.8fr;
+    grid-template-columns: 2.3fr 0.8fr 1fr 0.7fr;
     width: 100%;
     height: 30px;
     align-items: center;
@@ -545,6 +514,7 @@ select {
     width: 15px;
     cursor: pointer;
     margin-right: 5px;
+    display: none;
 }
 
 .unpin {
@@ -686,6 +656,27 @@ select {
 .triangle.asc {
     transform: rotate(0deg);
 }
+
+.container-row-pin {
+    display: flex;
+    align-items: center;
+    padding-left: 22px;
+}
+
+.container-row-pin-padding0 {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+}
+
+.container-row-pin:hover {
+    padding-left: 0;
+}
+
+.container-row-pin:hover .pin {
+    display: block;
+}
+
 
 /* --------- */
 

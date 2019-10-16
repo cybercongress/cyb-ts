@@ -32,7 +32,7 @@ const LogoLedger = () => (
 
 export const ContainetLedger = ({ children, onClickBtnCloce }) => (
   <div className="container-action height50 box-shadow-1px">
-    <div style={{ textAlign: 'right', padding: '0 5px' }}>
+   <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
       <span>
         [
         <a

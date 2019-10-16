@@ -188,7 +188,7 @@ export const StartState = ({ onClickBtn, valueSelect, onChangeSelect }) => (
 
 export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
   <div className="container-action height50 box-shadow-1px">
-    <div style={{ textAlign: 'right', padding: '0 5px' }}>
+    <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
       <span>
         [
         <a
@@ -236,7 +236,7 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
             {/* <span className="display-inline-block font-size-20 margin-bottom-10px">
               Ledger
             </span> */}
-            <button className="btn max-width-200px" onClick={onClickBtn}>
+            <button className="btn" onClick={onClickBtn}>
               Send with Ledger
             </button>
           </div>

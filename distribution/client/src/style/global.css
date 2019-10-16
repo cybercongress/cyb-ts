@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Play&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Play&display=swap");
 @font-face {
     font-family: "Play";
     src: url("../fonts/Play-Regular.ttf");
@@ -33,7 +33,6 @@ a {
     text-decoration: none;
 }
 
-
 .block-body {
     width: inherit;
     min-height: 100vh;
@@ -45,12 +44,10 @@ a {
     background-position: top left !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    padding: 65px 1em 85px 1em;
+    padding: 10px 1em 85px 1em;
     position: relative;
     background-color: #000000;
 }
-
-
 
 .container-timer {
     display: flex;
@@ -65,25 +62,26 @@ a {
     margin: 0 5px;
 }
 
-.container-btn{
+.container-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.countdown-time{
+.countdown-time {
     font-size: 38px;
     font-weight: 650;
     margin: 0 10px;
 }
 
-.text-glich{
+.text-glich {
     position: relative;
     z-index: 0;
 }
 
-.text-glich::before, .text-glich::after {
+.text-glich::before,
+.text-glich::after {
     content: attr(data-text);
     width: 100%;
     height: 100%;
@@ -104,29 +102,29 @@ a {
 }
 
 @keyframes glitc-effect {
-    0%{
+    0% {
         left: -2px;
         top: -2px;
     }
-    25%{
+    25% {
         left: 2px;
         top: 0px;
     }
-    50%{
+    50% {
         left: -1px;
         top: 2px;
     }
-    75%{
+    75% {
         left: 1px;
         top: -1px;
     }
-    100%{
+    100% {
         left: 0px;
         top: 2px;
     }
 }
 
-.no-margin{
+.no-margin {
     margin: 0;
 }
 
@@ -143,49 +141,85 @@ input {
     border-radius: 3px;
 }
 
-input:focus{
+input:focus {
     outline: none;
 }
 
-input:active{
+input:active {
     outline: none;
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #3ab793;
     opacity: 1; /* Firefox */
-  }
-  
-  :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: #3ab793;
-  }
-  
-  ::-ms-input-placeholder { /* Microsoft Edge */
-    color: #3ab793;
-  }
+}
 
-  .trigger{
-      width: 100%;
-  }
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #3ab793;
+}
 
-  ::-webkit-scrollbar {
+::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: #3ab793;
+}
+
+.trigger {
+    width: 100%;
+}
+
+::-webkit-scrollbar {
     width: 4px;
     height: 4px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
+}
+
+/* Track */
+::-webkit-scrollbar-track {
     border-radius: 10px;
     background: #272728;
-  }
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
     background: #525254;
     border-radius: 10px;
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
     background: #5c5c5c;
-  }
+}
+
+.btn {
+    height: 42px;
+    white-space: nowrap;
+    background-color: #000;
+    border: none;
+    font-family: Play;
+    outline: none;
+    padding: 0 50px;
+    /* line-height: 42px; */
+    font-size: 18px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px 0px #38d6ae;
+    text-shadow: 0 0 25px #36d6ae;
+    color: #36d6ae;
+    -webkit-text-stroke: 0.5px #36d6ae67;
+}
+
+.btn:hover {
+    box-shadow: 0 0 6px 0px #38d6ae;
+}
+
+.btn:active {
+    background-color: #3ab793;
+    color: #fff;
+    border: none;
+    outline: none;
+}
+
+.btn:focus {
+    border: none;
+    outline: none;
+}
