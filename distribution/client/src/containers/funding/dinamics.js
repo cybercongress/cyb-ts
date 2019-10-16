@@ -240,8 +240,11 @@ export class Dinamics extends Component {
           color: '#36d6ae'
         },
         ticks: '',
-        showticklabels: false,
-        hoverinfo: 'none'
+        hovertemplate:
+          'TCYB allocated: %{x: .2f}<br>' +
+          'ATOMs contributed: %{y}<br>' +
+          'Personal advantage: %{z:.2f%}%<br>' +
+          '<extra></extra>'
       }
     ];
 

@@ -52,16 +52,8 @@ module.exports = {
         ]
       },
       {
-        test: /\.(ttf)(\?v=\d+\.\d+\.\d+)?$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: 'fonts/'
-            }
-          }
-        ]
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: ['file-loader']
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,

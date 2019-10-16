@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Play&display=swap');
+@font-face {
+    font-family: "Play";
+    src: url("../fonts/Play-Regular.ttf");
+    font-weight: 400;
+    font-style: normal;
+}
 
 body {
     padding: 0;
@@ -8,7 +15,7 @@ body {
 }
 html {
     overflow-x: hidden;
-    font-family: Play;
+    font-family: "Play";
 }
 
 p {
