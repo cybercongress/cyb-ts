@@ -376,7 +376,7 @@ export class Dinamics extends Component {
           }`}
           onClick={this.state4}
         >
-          Rewards
+           My CYBs estimation
         </button>
       </div>
     );

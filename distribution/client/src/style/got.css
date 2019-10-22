@@ -166,7 +166,8 @@
 }
 
 .container-card .card-value {
-    display: inline-block;
+    display: flex;
+    white-space: nowrap;
     color: #3ab793;
     font-size: 16px;
     line-height: 20px;

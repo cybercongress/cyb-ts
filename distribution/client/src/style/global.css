@@ -167,6 +167,7 @@ input:active {
 
 .trigger {
     width: 100%;
+    display: flex;
 }
 
 ::-webkit-scrollbar {
@@ -222,4 +223,8 @@ input:active {
 .btn:focus {
     border: none;
     outline: none;
+}
+
+.icons-size {
+    height: 20px;
 }

@@ -222,7 +222,10 @@ span.right-input {
 }
 
 .indicator-value {
-    display: inline-block;
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    align-items: center;
     margin-bottom: 16px;
     color: #3ab793;
     font-size: 14px;
@@ -529,7 +532,7 @@ select {
 }
 
 .copy-address {
-    background: url(../image/copy.svg) center center no-repeat;
+    background: url(../image/_ionicons_svg_ios-copy.svg) center center no-repeat;
     background-color: transparent;
     outline: none;
     border: none;

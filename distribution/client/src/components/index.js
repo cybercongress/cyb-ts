@@ -17,3 +17,4 @@ export { Tooltip } from './tooltip/tooltip';
 export { Loading } from './ui/loading';
 export { Popup } from './popups/popups';
 export {ContainetLedger} from './ledger/container';
+export { Icon } from './icon/icon';

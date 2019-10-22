@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Tooltip } from '../index';
+import { Tooltip, Icon } from '../index';
+
+const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 
 export const ContainerCard = ({ children, col, styles }) => (
   <div
@@ -13,12 +15,14 @@ export const ContainerCard = ({ children, col, styles }) => (
 export const Indicators = ({ title, value, tooltipValue, positionTooltip }) => (
   <div className="contaiter-indicator">
     <span className="indicator-title">{value}</span>
-    <span className="indicator-value">
-      {title}{' '}
+    <div className="indicator-value">
+      {/* <span> */}
+        {title}
+      {/* </span> */}
       <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
-        <span>(?)</span>
+        <Icon icon={iconHelp} />
       </Tooltip>
-    </span>
+    </div>
     {/* <div className='dots' /> */}
   </div>
 );
@@ -29,7 +33,7 @@ export const Card = ({ title, value, tooltipValue, positionTooltip }) => (
     <span className="card-value">
       {title}{' '}
       <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
-        <span>(?)</span>
+        <Icon icon={iconHelp} />
       </Tooltip>
     </span>
   </div>
