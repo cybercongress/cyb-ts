@@ -21,17 +21,18 @@ export class Dinamics extends Component {
     };
   }
 
-  componentDidMount() {
-    const { round, price, volume, distribution } = this.props;
-    this.setState({
-      price,
-      round,
-      volume,
-      distribution
-    });
-  }
+  // componentDidMount() {
+  //   const { round, price, volume, distribution } = this.props;
+  //   this.setState({
+  //     price,
+  //     round,
+  //     volume,
+  //     distribution
+  //   });
+  // }
 
   plotlyHover = dataPoint => {
+    // console.log('dataPoint', dataPoint.points[1].y);
     this.setState({
       price: dataPoint.points[0].y,
       round: dataPoint.points[0].x,
@@ -40,12 +41,12 @@ export class Dinamics extends Component {
   };
 
   plotUnhover = () => {
-    const { round, price, volume, distribution } = this.props;
+    // const { round, price, volume, distribution } = this.props;
     this.setState({
-      price,
-      round,
-      volume,
-      distribution
+      price: '',
+      round: '',
+      volume: '',
+      distribution: ''
     });
   };
 
@@ -66,7 +67,13 @@ export class Dinamics extends Component {
       line: {
         color: '#36d6ae'
       },
-      hoverinfo: 'none'
+      hovertemplate:
+          `price: ${price}` +
+          `<br>round: ${round}` +
+          `<br>volume, ETH: ${volume}` +
+
+          '<extra></extra>'
+      // hoverinfo: 'none'
     };
 
     const trace2 = {
@@ -105,7 +112,7 @@ export class Dinamics extends Component {
       },
       // scene: {
       yaxis: {
-        title: 'Price',
+        title: 'Price, ETH/GGOL',
         type: 'linear',
         rangemode: 'tozero',
         ticklen: 10,
@@ -118,6 +125,7 @@ export class Dinamics extends Component {
         spikedash: 'solid',
         gridwidth: 1,
         zeroline: false,
+        fixedrange: true,
         // bargap:0,
         gridcolor: '#ffffff42',
         titlefont: { color: '#fff' },
@@ -128,21 +136,17 @@ export class Dinamics extends Component {
         }
       },
       yaxis2: {
-        // title: 'Price',
+        // title: 'Volume, ETH',
         titlefont: { color: '#fff' },
         tickfont: { color: '#fff', size: 9 },
         overlaying: 'y',
-        // autorange: true,
         showgrid: false,
         zeroline: false,
+        fixedrange: true,
         showline: false,
-        // autotick: true,
         ticks: '',
         showticklabels: false,
-        range: [0, _yaxis]
-        // scaleratio: 0.2,
-        // scaleanchor: "x",
-        // side: 'right'
+        range: [0, _yaxis],
       },
       xaxis: {
 
@@ -151,6 +155,7 @@ export class Dinamics extends Component {
         tickcolor: '#000',
         range: x,
         tick0: x[0],
+        fixedrange: true,
         // dtick: 24*60*60*1000, // 7 days
         spikemode: 'across',
         showspikes: true,
@@ -173,14 +178,14 @@ export class Dinamics extends Component {
     };
     const config = {
       displayModeBar: false,
-      // scrollZoom: false,
+      scrollZoom: false,
       responsive: true,
       showSendToCloud: true
     };
 
     return (
       <div className="container-dinamics">
-        <div className="statistics-plot">
+        {/* <div className="statistics-plot">
           <div>
             price: <span>{price} ETH/GGOL</span>
           </div>
@@ -193,7 +198,7 @@ export class Dinamics extends Component {
           <div style={{ margin: '0 5px' }}>
             round distribution: <span>{distribution} GGOL</span>
           </div>
-        </div>
+        </div> */}
         <Plotly
           data={data}
           layout={layout}

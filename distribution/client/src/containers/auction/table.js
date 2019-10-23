@@ -14,7 +14,7 @@ export class Table extends Component {
         <div className="number">{item.dist}</div>
         <div className="number">{item.total}</div>
         <div className="number">{item.price}</div>
-        <div className="number">
+        <div className="number" style={{justifyContent: 'center'}}>
           {item.closing > 0
             ? `${item.closing} day ago`
             : item.closing < 0

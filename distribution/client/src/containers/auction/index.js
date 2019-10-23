@@ -357,7 +357,7 @@ class Auction extends PureComponent {
     return (
       <div>
         <main className="block-body auction">
-          <span className="caption">Cyber~Auction</span>
+          <span className="caption">test~Auction</span>
           <Statistics
             round={roundThis}
             roundAll={numberOfDays}
