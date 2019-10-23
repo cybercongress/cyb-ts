@@ -132,11 +132,11 @@ export class Dinamics extends Component {
 
         tickfont: {
           color: '#fff',
-          size: 12
+          size: 10
         }
       },
       yaxis2: {
-        // title: 'Volume, ETH',
+        title: 'Volume, ETH',
         titlefont: { color: '#fff' },
         tickfont: { color: '#fff', size: 9 },
         overlaying: 'y',
@@ -144,9 +144,13 @@ export class Dinamics extends Component {
         zeroline: false,
         fixedrange: true,
         showline: false,
-        ticks: '',
-        showticklabels: false,
+        // ticks: '',
+        // showticklabels: false,
         range: [0, _yaxis],
+        tickfont: {
+          color: '#fff',
+          size: 10
+        }
       },
       xaxis: {
 
@@ -168,7 +172,7 @@ export class Dinamics extends Component {
         titlefont: { color: '#fff' },
         tickfont: {
           color: '#fff',
-          size: 12
+          size: 10
         }
       },
 

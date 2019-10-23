@@ -10,7 +10,7 @@ export class Table extends Component {
         className={`table-rows ${item.period == round ? 'active-row' : ''}`}
         key={item.period}
       >
-        <div className="table-index-col">#{item.period}</div>
+        <div className="table-index-col">{item.period}</div>
         <div className="number">{item.dist}</div>
         <div className="number">{item.total}</div>
         <div className="number">{item.price}</div>
