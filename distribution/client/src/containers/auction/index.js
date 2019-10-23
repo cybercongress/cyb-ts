@@ -320,14 +320,14 @@ class Auction extends PureComponent {
 
         table.push({
           period: item,
-          dist: Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100,
+          dist: formatNumber((Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100), 2),
           total:
-            Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
-            10000,
-          price: currentPrice,
+          formatNumber((Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
+            10000),2),
+          price: formatNumber(currentPrice, 6),
           closing: (23 * (roundThis - item)) / 23,
-          youETH: _userBuys[item] / Math.pow(10, 18),
-          youCYB: Math.floor(cyb * 100) / 100,
+          youETH: formatNumber(_userBuys[item] / Math.pow(10, 18), 6),
+          youCYB: formatNumber((Math.floor(cyb * 100) / 100), 2),
           claimed: claimedItem
           // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
         });
