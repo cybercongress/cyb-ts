@@ -107,13 +107,14 @@ export class VitalikJae extends Component {
     });
 
   render() {
-    const { win, arow, diff } = this.props;
+    const { win, arow, diff, col } = this.props;
     // const { contentPopupVitalik, contentPopupJae } = this.state;
+    // console.log(col.atom);
     let contentPopupVitalik = '!!';
     let contentPopupJae = '112';
 
-    if (this.state.valueSelect === 'eth') {
-      switch (parseInt(this.state.diff)) {
+    if (win === 'eth') {
+      switch (parseInt(diff.diff)) {
         case 0:
         case 1:
           contentPopupVitalik =
@@ -163,8 +164,8 @@ export class VitalikJae extends Component {
             ];
           break;
       }
-    } else if (this.state.valueSelect === 'atom') {
-      switch (parseInt(this.state.diff)) {
+    } else if (win === 'atom') {
+      switch (parseInt(diff.diff)) {
         case 0:
         case 1:
           contentPopupVitalik =
@@ -228,7 +229,7 @@ export class VitalikJae extends Component {
             </div>
           </div>
           {/* <div>{diff}</div> */}
-          <Speedometer arow={arow} />
+          <Speedometer colEthAtom={col} />
           <div className={`jae ${win === 'atom' ? 'win-opacity' : ''}`}>
             {win === 'atom' && <CrownJae />}
             <img src={jae} />
@@ -237,14 +238,14 @@ export class VitalikJae extends Component {
             </div>
           </div>
         </div>
-        <div>
+        {/* <div>
           <input value={this.state.value} onChange={this.onChangeTest} />
           <select value={this.valueSelect} onChange={this.onChangeSelect}>
             <option value="ethAtom">ethAtom</option>
             <option value="eth">eth</option>
             <option value="atom">atom</option>
           </select>
-        </div>
+        </div> */}
       </div>
     );
   }

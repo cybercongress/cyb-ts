@@ -373,9 +373,9 @@
 
 .crown {
     position: absolute;
-    top: 10%;
+    top: 15%;
     left: 46%;
-    transform: translate(-50%, -50%);
+    transform: translate(-46%, -50%);
     width: 10rem;
     height: calc(10rem / 1.1);
     overflow: hidden;
@@ -385,7 +385,7 @@
 
 .crown-jae {
     top: 10%;
-    right: 17%;
+    left: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
     width: 10rem;
@@ -464,11 +464,13 @@
 .wrapper-speedometer {
     display: flex;
     justify-content: center;
+    align-items: flex-end;
     position: absolute;
     bottom: 0;
     left: 50%;
     z-index: 2;
     transform: translate(-50%);
+    height: 70%;
 }
 
 .speedometer {
@@ -683,4 +685,22 @@
     position: absolute;
     border-radius: 5px;
 
+}
+
+.atomCol {
+    width: 40px;
+    height: 0px;
+    margin: 0 10px;
+    background-color: #3ab793;
+    opacity: 0.8;
+    transition: height 0.5s ease-in;
+}
+
+.ethCol {
+    width: 40px;
+    height: 0px;
+    margin: 0 10px;
+    background-color: #3ab793;
+    opacity: 0.8;
+    transition: height 0.5s ease-in;
 }

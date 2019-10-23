@@ -26,6 +26,10 @@ class Got extends PureComponent {
         this.state = {
             ATOMsRaised: 0,
             ETHRaised: 0,
+            colAtomEth: {
+                atom: 0,
+                eth: 0
+            },
             dataTxs: null,
             difference: {},
             arow: 0,
@@ -47,8 +51,7 @@ class Got extends PureComponent {
             },
             (error, result) => {
                 if (!error) {
-                    run(this.getStatistics);
-                    run(this.getArbitrage);
+                    run(this.getEthAtomCourse);
                     console.log(result);
                 }
             }
@@ -162,37 +165,45 @@ class Got extends PureComponent {
                 raised.course.cosmos.eth,
                 7
             );
+            const sumAtomEth = ethRaised + AtomRaised;
+            const tempAtom = (AtomRaised / sumAtomEth) * 100 ;
+            const tempETH = (ethRaised / sumAtomEth) * 100 ;
+            const colAtomEth= {
+                atom: tempAtom,
+                eth: tempETH
+            };
+            // console.log('difference', difference);
             if (ethRaised > AtomRaised) {
-                arow = -1 * (1 - AtomRaised / ethRaised) * 90;
+                // arow = -1 * (1 - AtomRaised / ethRaised) * 90;
                 win = "eth";
                 difference = {
-                    win: "atom",
+                    popups: "atom",
                     diff: ethCYB / atomsCYB
                 };
             } else {
-                arow = (1 - ethRaised / AtomRaised) * 90;
+                // arow = (1 - ethRaised / AtomRaised) * 90;
                 win = "atom";
                 difference = {
-                    win: "eth",
+                    popups: "eth",
                     diff: atomsCYB / ethCYB
                 };
             }
-            console.log('arow, win, difference', arow, win, difference);
+            console.log('colAtomEth, difference', colAtomEth, difference);
             this.setState({
-                arow,
                 win,
+                colAtomEth,
                 difference
             });
     };
 
     render() {
-        const { ATOMsRaised, ETHRaised, difference, arow, win } = this.state;
+        const { ATOMsRaised, ETHRaised, difference, arow, win, colAtomEth } = this.state;
         console.log(ATOMsRaised);
         const cyb = 10 * Math.pow(10, 4);
         return (
             <span>
                 <main className="block-body">
-                    {/* <span className="caption">Game of Thrones</span> */}
+                    <span className="caption">Game of Thrones</span>
                     <Statistics
                         firstLeftTitle="ETH/CYB"
                         firstLeftValue={roundNumber(ETHRaised / cyb, 6)}
@@ -203,14 +214,14 @@ class Got extends PureComponent {
                         firstRightTitle="ATOM/CYB"
                         firstRightValue={roundNumber(ATOMsRaised / cyb, 6)}
                     />
-                    <VitalikJae win={win} diff={difference} arow={arow} />
+                    <VitalikJae win={win} diff={difference} arow={arow} col={colAtomEth} />
                     <ContainerCard>
                         <div className="container-text">
                             {/* <div className="paragraph">
                 Get <a>THC</a> and participate <br /> in foundation
               </div>
               <div className="paragraph">Get 10% of CYBs for ETH</div> */}
-                            {difference.win === "eth" && (
+                            {difference.popups === "eth" && (
                                 <div className="difference-container">
                                     <div className="difference-container-value">
                                         {roundNumber(difference.diff, 2)} x
@@ -226,7 +237,7 @@ class Got extends PureComponent {
                 Don't Get <a>THC</a>
               </div>
               <div className="paragraph">Get 10% of CYBs for ATOM</div> */}
-                            {difference.win === "atom" && (
+                            {difference.popups === "atom" && (
                                 <div className="difference-container">
                                     <div className="difference-container-value">
                                         {roundNumber(difference.diff, 2)} x

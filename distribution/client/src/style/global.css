@@ -34,8 +34,8 @@ a {
 }
 
 .block-body {
-    width: inherit;
-    min-height: 100vh;
+    width: calc(100% - 2em);
+    min-height: calc(100vh - 190px);
     max-width: 1000px;
     margin: 0 auto;
     display: flex;
@@ -44,7 +44,7 @@ a {
     background-position: top left !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
-    padding: 10px 1em 85px 1em;
+    padding: 10px 1em 100px 1em;
     position: relative;
     background-color: #000000;
 }
