@@ -149,7 +149,7 @@ export class Dinamics extends Component {
     let _xaxis = 0;
     if (dataRewards[0] !== undefined) {
       _yaxis = dataRewards[0].y[0] / 0.8;
-      _xaxis = dataRewards[0].x[1] / 0.8;
+      _xaxis = 600000 / 0.95;
     }
 
     const dataShare = [

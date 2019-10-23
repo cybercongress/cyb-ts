@@ -175,7 +175,7 @@ class Funding extends PureComponent {
                                 type: "scatter",
                                 line: {
                                     width: 2,
-                                    color: `#${colorPlot}`
+                                    color: '#36d6ae'
                                 }
                             };
                             const address =
