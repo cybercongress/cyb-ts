@@ -40,7 +40,7 @@ const injectWeb3 = InnerComponent =>
     async getWeb3() {
       try {
         const web3 = await waitForWeb3();
-        console.log(web3.givenProvider);
+        console.log('web3.givenProvider', web3.givenProvider);
         const contract = await new web3.eth.Contract(abi, this.smart);
         const contractAuctionUtils = await new web3.eth.Contract(
           AuctionUtils.abi,
@@ -58,7 +58,10 @@ const injectWeb3 = InnerComponent =>
         } else {
           const networkContract = Object.keys(Auction.networks);
           const networkId = await web3.eth.net.getId();
-          const accounts = await web3.eth.getAccounts();
+          let accounts = await web3.eth.getAccounts();
+          window.ethereum.on('accountsChanged', () => {
+            window.location.reload();
+          });
           this.setState({
             web3,
             contract,

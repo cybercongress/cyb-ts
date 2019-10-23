@@ -41,6 +41,7 @@ class Auction extends PureComponent {
 
   async componentDidMount() {
     const { accounts, web3 } = this.props;
+    console.log(accounts);
     if (accounts === null) {
       console.log('no-accounts');
       this.getTimeEndRound();
