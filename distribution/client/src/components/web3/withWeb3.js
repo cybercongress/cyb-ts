@@ -60,7 +60,7 @@ const injectWeb3 = InnerComponent =>
           const networkId = await web3.eth.net.getId();
           let accounts = await web3.eth.getAccounts();
           window.ethereum.on('accountsChanged', () => {
-            window.location.reload();
+            window.location.reload(true);
           });
           this.setState({
             web3,
