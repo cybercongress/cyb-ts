@@ -51,9 +51,9 @@ export class ClaimedAll extends Component {
   };
 
   render() {
-    const { children } = this.props;
+    const { children, styles } = this.props;
     return (
-      <button onClick={this.getAccount} className='bnt-claime'>
+      <button style={styles} onClick={this.getAccount} className='btn'>
         {children}
       </button>
     );

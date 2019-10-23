@@ -401,6 +401,7 @@ class Auction extends PureComponent {
           contract={this.props.contract}
           minRound={roundThis}
           maxRound={numberOfDays}
+          claimed={claimed}
         />
       </div>
     );

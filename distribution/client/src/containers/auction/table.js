@@ -46,7 +46,7 @@ export class Table extends Component {
           <div className="number">
             Your G{TOKEN_NAME}
           </div>
-          {claimed && (
+          {/* {claimed && (
             <div className="table-btn-col">
               <ClaimedAll
                 contract={contract}
@@ -56,7 +56,7 @@ export class Table extends Component {
                 Claim All
               </ClaimedAll>
             </div>
-          )}
+          )} */}
         </div>
         <div className="table-body">{tableRow}</div>
       </div>

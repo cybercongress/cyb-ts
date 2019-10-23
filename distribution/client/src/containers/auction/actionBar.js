@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { ClaimedAll } from './claimedAll';
+
 
 function lament(error) {
   if (error) {
@@ -58,7 +60,7 @@ const Input = ({
   </div>
 );
 
-const StartState = ({ onClickBtn, valueSelect, onChangeSelect }) => (
+const StartState = ({ onClickBtn, claimed, web3, contract }) => (
   <div className="container-action">
     <div className="container-action-content">
       <div className="action-text">
@@ -70,6 +72,15 @@ const StartState = ({ onClickBtn, valueSelect, onChangeSelect }) => (
           <option value="ledger">Ledger</option>
         </select> */}
       </div>
+      {claimed && (
+          <ClaimedAll
+            contract={contract}
+            web3={web3}
+            styles={{margin: '0 15px'}}
+        >
+          Claim All
+        </ClaimedAll>
+      )}
       <button className="btn" onClick={onClickBtn}>
         Fuck Google
       </button>
@@ -311,7 +322,7 @@ export class ActionBar extends Component {
       validInputRound,
       validInputAmount
     } = this.state;
-    const { minRound, maxRound, web3 } = this.props;
+    const { minRound, maxRound, web3, claimed, contract } = this.props;
     const btnConfirm = round >= minRound && round <= maxRound - 1 && amount > 0;
     if (web3.givenProvider === null)
       return (
@@ -331,7 +342,12 @@ export class ActionBar extends Component {
       );
 
     if (step === 'start') {
-      return <StartState onClickBtn={this.onClickFuckGoogle} />;
+      return <StartState
+                claimed={claimed}
+                onClickBtn={this.onClickFuckGoogle}
+                contract={contract}
+                web3={web3}
+              />;
     }
 
     if (step === 'contributeETH') {
