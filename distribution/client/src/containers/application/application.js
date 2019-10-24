@@ -3,7 +3,9 @@ import { Timer, Tooltip } from '../../components/index';
 const bug = require('../../image/tiks.svg');
 
 const Item = ({ to, selected }) => (
-  <a className={`${selected ? 'active' : ''}`} href={`#/${to}`} />
+  <a className={`${selected ? 'active' : ''}`} href={`#/${to}`}>
+    <div className="battery-segment-text">{to}</div>
+  </a>
 );
 
 class App extends Component {
