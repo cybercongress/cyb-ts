@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { formatNumber } from "../../utils/utils";
 import { Tooltip, FormatNumber } from "../../components/index";
+const imgSort = require('../../image/_ionicons_svg_ios-swap.svg');
 
 class Row extends Component {
     constructor(props) {
@@ -357,19 +358,21 @@ export class Table extends Component {
                             onClick={this.sortAtom}
                         >
                             ATOMs
-                            <div
-                                className={`triangle ${
+                            <img className="icon-sort" src={imgSort} />
+                            {/* <div
+                                className={`icon-sort ${
                                     sortAtom && asc ? "asc" : ""
                                 }`}
-                            />
+                            /> */}
                         </div>
                         <div className="number sort-row" onClick={this.sortCyb}>
                             GCYB estimation
-                            <div
-                                className={`triangle ${
+                            <img className="icon-sort" src={imgSort} />
+                            {/* <div
+                                className={`icon-sort ${
                                     sortSyb && asc ? "asc" : ""
                                 }`}
-                            />
+                            /> */}
                         </div>
                     </div>
                     {pin && (

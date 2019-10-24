@@ -227,4 +227,11 @@ input:active {
 
 .icons-size {
     height: 20px;
+    transform: rotate(0deg);
+    transition: transform 0.3s;
+    margin-left: 2px;
+}
+
+.icons-size:hover {
+    transform: rotate(360deg);
 }

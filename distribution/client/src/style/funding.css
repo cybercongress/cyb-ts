@@ -281,6 +281,7 @@ span.right-input {
     width: 100%;
     border-bottom: 1px solid #fff;
     margin-bottom: 10px;
+    padding-bottom: 5px;
 }
 
 .table-header-rows .number.address {
@@ -649,15 +650,12 @@ select {
     color: #3ab793;
 }
 
-.triangle {
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-bottom: 9px solid #3ab793;
-    margin: 0 5px;
-    transform: rotate(180deg);
+.icon-sort {
+    height: 20px;
+    transform: rotate(90deg);
 }
 
-.triangle.asc {
+.icon-sort.asc {
     transform: rotate(0deg);
 }
 

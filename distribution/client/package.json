@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
+    "eslint-config-airbnb-standard": "^3.0.1",
     "ledger-cosmos-js": "^2.0.2",
     "node-gyp": "^6.0.0",
     "react": "^16.9.0",

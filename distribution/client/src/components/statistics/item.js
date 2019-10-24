@@ -17,7 +17,7 @@ export const Indicators = ({ title, value, tooltipValue, positionTooltip }) => (
     <span className="indicator-title">{value}</span>
     <div className="indicator-value">
       {/* <span> */}
-        {title}
+      {title}
       {/* </span> */}
       <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
         <Icon icon={iconHelp} />
