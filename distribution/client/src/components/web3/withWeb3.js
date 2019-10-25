@@ -58,10 +58,7 @@ const injectWeb3 = InnerComponent =>
         } else {
           const networkContract = Object.keys(Auction.networks);
           const networkId = await web3.eth.net.getId();
-          let accounts = await web3.eth.getAccounts();
-          window.ethereum.on('accountsChanged', () => {
-            window.location.reload(true);
-          });
+          const accounts = await web3.eth.getAccounts();
           this.setState({
             web3,
             contract,
@@ -86,7 +83,6 @@ const injectWeb3 = InnerComponent =>
         isCorrectNetwork,
         buyTransactionSuccess
       } = this.state;
-
       if (!isCorrectNetwork) {
         return (
           <NotFound text="Please connect to the Ethereum Rinkeby Network" />

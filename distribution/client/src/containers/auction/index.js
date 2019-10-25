@@ -20,6 +20,7 @@ class Auction extends PureComponent {
     super(props);
     this.state = {
       table: [],
+      accounts: null,
       roundThis: '',
       timeLeft: 0,
       currentPrice: 0,
@@ -27,7 +28,7 @@ class Auction extends PureComponent {
       raised: 0,
       loading: true,
       numberOfDays: 0,
-      claimed: false,
+      claimedAll: false,
       createOnDay: 0,
       popupsBuy: false,
       dynamics: {
@@ -41,7 +42,9 @@ class Auction extends PureComponent {
 
   async componentDidMount() {
     const { accounts, web3 } = this.props;
-    console.log(accounts);
+    await this.setState({
+      accounts
+    });
     if (accounts === null) {
       console.log('no-accounts');
       this.getTimeEndRound();
@@ -55,6 +58,15 @@ class Auction extends PureComponent {
       run(this.dinamics);
       run(this.getDataTable);
     }
+    window.ethereum.on('accountsChanged', async accountsChanged => {
+      const defaultAccounts = accountsChanged[0];
+      const tmpAccount = defaultAccounts;
+      console.log(tmpAccount);
+      await this.setState({
+        accounts: tmpAccount
+      });
+      run(this.getDataTable);
+    });
     const subscription = web3.eth.subscribe(
       'logs',
       {
@@ -242,14 +254,15 @@ class Auction extends PureComponent {
     this.setState({ raised });
   };
 
+  even = element => element.claimed !== false;
+
   getDataTable = async () => {
     const {
       contract: { methods },
-      contractAuctionUtils,
-      accounts
+      contractAuctionUtils
     } = this.props;
+    const { accounts } = this.state;
     const { contract } = this.props;
-
     const youCYB = (await contract.getPastEvents('LogClaim', {
       fromBlock: 0,
       toBlock: 'latest'
@@ -315,7 +328,6 @@ class Auction extends PureComponent {
           claimedItem = false;
         } else {
           claimedItem = item;
-          this.setState({ claimed: true });
         }
 
         table.push({
@@ -335,6 +347,15 @@ class Auction extends PureComponent {
         // }
       }
     );
+    if (table.some(this.even)) {
+      this.setState({
+        claimedAll: true
+      });
+    } else {
+      this.setState({
+        claimedAll: false
+      });
+    }
     this.setState({ table });
   };
 
@@ -348,10 +369,11 @@ class Auction extends PureComponent {
       raised,
       dynamics,
       loading,
-      claimed,
+      claimedAll,
       dailyTotals,
       createOnDay,
-      popupsBuy
+      popupsBuy,
+      accounts
     } = this.state;
 
     const thc = 700 * Math.pow(10, 3);
@@ -389,7 +411,7 @@ class Auction extends PureComponent {
               <Table
                 data={table}
                 TOKEN_NAME={TOKEN_NAME}
-                claimed={claimed}
+                claimed={claimedAll}
                 web3={this.props.web3}
                 contract={this.props.contract}
                 round={roundThis}
@@ -402,7 +424,7 @@ class Auction extends PureComponent {
           contract={this.props.contract}
           minRound={roundThis}
           maxRound={numberOfDays}
-          claimed={claimed}
+          claimed={claimedAll}
         />
       </div>
     );
