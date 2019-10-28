@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Dinamics } from './dinamics';
 import { Statistics } from './statistics';
 import { Table } from './table';
-import { ActionBar } from './actionBar';
+import { ActionBarContainer } from './actionBar';
 import {
   asyncForEach,
   formatNumber,
@@ -395,7 +395,7 @@ class Funding extends PureComponent {
             fUpin={this.unPinItem}
           />
         </main>
-        <ActionBar />
+        <ActionBarContainer />
       </span>
     );
   }

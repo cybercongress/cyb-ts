@@ -55,20 +55,7 @@ const LEDGER_NOAPP = 28160;
 
 const LEDGER_VERSION_REQ = [1, 1, 1];
 
-const ActionBarContainer = ({ height, children }) => (
-  <div className={`container-action ${height ? 'height50' : ''} `}>
-    {children}
-  </div>
-);
-
-function formatAtom(amount, dp) {
-  console.log(amount);
-  console.log(dp);
-  return amount;
-  // return formatDenomination(amount, dp, "ATOM", "ATOMs");
-}
-
-export class ActionBar extends Component {
+export class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
