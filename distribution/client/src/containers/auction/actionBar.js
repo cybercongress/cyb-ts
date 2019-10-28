@@ -193,7 +193,7 @@ export class ActionBarContainer extends Component {
         if (e.target.value < minRound || e.target.value > maxRound - 1) {
             this.setState({
                 validInputRound: true,
-                messageRound: `enter round ${minRound} to ${maxRound}`
+                messageRound: `enter round ${minRound} to ${maxRound-1}`
             });
         } else {
             this.setState({

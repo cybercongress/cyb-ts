@@ -9,7 +9,6 @@ export { BuyButton } from './web3/BuyTicket';
 export { ConfirmButton } from './web3/ConfirmTicket';
 export { Dots } from './ui/Dots';
 export { Table } from './table/table';
-export { ActionBar } from './actionBar/actionBar';
 export { SeeSaw } from './SeeSaw/SeeSaw';
 export { Timer } from './timer/timer';
 export { ContainerCard, Indicators, Card, CardArrow } from './statistics/item';

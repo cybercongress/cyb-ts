@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import withWeb3 from "../../components/web3/withWeb3";
-import { ActionBar, ContainerCard } from "../../components";
+import { ContainerCard } from "../../components";
+import { ActionBarContainer } from "./actionBar";
 import { Statistics } from "./statistics";
 import { VitalikJae } from "./vitalikJae";
 import {
@@ -250,7 +251,10 @@ class Got extends PureComponent {
                         </div>
                     </ContainerCard>
                 </main>
-                <ActionBar />
+                <ActionBarContainer
+                    web3={this.props.web3}
+                    contract={this.props.contract}
+                />
             </span>
         );
     }
