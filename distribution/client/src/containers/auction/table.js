@@ -13,26 +13,26 @@ export class Table extends Component {
                 key={item.period}
             >
                 <div className="table-index-col">{item.period}</div>
-                <div className="number">
+                <div className="numberType">
                     <FormatNumber number={item.dist} />
                 </div>
-                <div className="number">
+                <div className="numberType">
                     <FormatNumber number={item.total} />
                 </div>
-                <div className="number">
+                <div className="numberType">
                     <FormatNumber number={item.price} />
                 </div>
-                <div className="number" style={{ justifyContent: "center" }}>
+                <div className="numberType" style={{ justifyContent: "center" }}>
                     {item.closing > 0
                         ? `${item.closing} day ago`
                         : item.closing < 0
                         ? `in ${item.closing * -1} days`
                         : "now"}
                 </div>
-                <div className="number">
+                <div className="numberType">
                     <FormatNumber number={item.youETH} />
                 </div>
-                <div className="number">
+                <div className="numberType">
                     <FormatNumber number={item.youCYB} />
                 </div>
                 {item.claimed && (
@@ -51,13 +51,13 @@ export class Table extends Component {
         return (
             <div className={`table ${claimed ? "claimed" : ""}`}>
                 <div className="table-header-rows">
-                    <div className="number">Round</div>
-                    <div className="number">Distributed, G{TOKEN_NAME}</div>
-                    <div className="number">Total, ETH</div>
-                    <div className="number">Price, ETH/G{TOKEN_NAME}</div>
-                    <div className="number">Closing</div>
-                    <div className="number">Your ETH</div>
-                    <div className="number">Your G{TOKEN_NAME}</div>
+                    <div className="numberType">Round</div>
+                    <div className="numberType">Distributed, G{TOKEN_NAME}</div>
+                    <div className="numberType">Total, ETH</div>
+                    <div className="numberType">Price, ETH/G{TOKEN_NAME}</div>
+                    <div className="numberType">Closing</div>
+                    <div className="numberType">Your ETH</div>
+                    <div className="numberType">Your G{TOKEN_NAME}</div>
                     {/* {claimed && (
             <div className="table-btn-col">
               <ClaimedAll

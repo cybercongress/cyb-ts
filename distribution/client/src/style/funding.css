@@ -284,7 +284,7 @@ span.right-input {
     padding-bottom: 5px;
 }
 
-.table-header-rows .number.address {
+.table-header-rows .numberType.address {
     justify-content: center;
 }
 
@@ -411,7 +411,7 @@ span.right-input {
     align-items: center;
 }
 
-.number {
+.numberType {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -422,10 +422,11 @@ span.right-input {
     align-items: center;
 }
 
-.number.address {
+.numberType.address {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    justify-content: flex-start;
 }
 
 .table-btn-col {
@@ -506,7 +507,7 @@ select {
     color: #36d6ae;
 }
 
-.table-rows-box .number.address{
+.table-rows-box .numberType.address{
     justify-content: flex-start;
 }
 

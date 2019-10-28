@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from '@cybercongress/ui';
 
 export class ClaimedAll extends Component {
   constructor(props) {
@@ -51,11 +52,11 @@ export class ClaimedAll extends Component {
   };
 
   render() {
-    const { children, styles } = this.props;
+    const { children, styles, ...props } = this.props;
     return (
-      <button style={styles} onClick={this.getAccount} className='btn'>
+      <Button {...props} onClick={this.getAccount}>
         {children}
-      </button>
+      </Button>
     );
   }
 }

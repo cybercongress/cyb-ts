@@ -54,7 +54,6 @@ class App extends Component {
           </div>
               <Timer />
         </div>
-
         {this.props.children}
       </main>
     );

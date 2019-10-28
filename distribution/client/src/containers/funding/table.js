@@ -213,7 +213,7 @@ export class Table extends Component {
             key={itemGroup.group}
             item={itemGroup.address.map((item, index) => (
               <div className="table-rows-child" key={index}>
-                <div className="number hash">
+                <div className="numberType hash">
                   <a
                     href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
                     target="_blank"
@@ -221,15 +221,15 @@ export class Table extends Component {
                     {item.txhash}
                   </a>
                 </div>
-                <div className="number">{item.height}</div>
-                <div className="number">{formatNumber(item.amount)}</div>
+                <div className="numberType">{item.height}</div>
+                <div className="numberType">{formatNumber(item.amount)}</div>
                 <Tooltip
                   placement="bottom"
                   tooltip={`${formatNumber(
                     Math.floor(item.cybEstimation)
                   )} CYBs`}
                 >
-                  <div className="number">
+                  <div className="numberType">
                     <FormatNumber
                       number={formatNumber(
                         Math.floor(
@@ -243,13 +243,13 @@ export class Table extends Component {
               </div>
             ))}
           >
-            <div className="number address">{itemGroup.group}</div>
-            <div className="number">{formatNumber(itemGroup.amountСolumn)}</div>
+            <div className="numberType address">{itemGroup.group}</div>
+            <div className="numberType">{formatNumber(itemGroup.amountСolumn)}</div>
             <Tooltip
               placement="bottom"
               tooltip={`${formatNumber(Math.floor(itemGroup.cyb))} CYBs`}
             >
-              <div className="number">
+              <div className="numberType">
                 <FormatNumber
                   number={formatNumber(
                     Math.floor((itemGroup.cyb / Math.pow(10, 9)) * 1000) / 1000,
@@ -272,7 +272,7 @@ export class Table extends Component {
         statePin={itemGroup.pin}
         item={itemGroup.address.map((item, index) => (
           <div className="table-rows-child" key={index}>
-            <div className="number hash">
+            <div className="numberType hash">
               <a
                 href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
                 target="_blank"
@@ -280,13 +280,13 @@ export class Table extends Component {
                 {item.txhash}
               </a>
             </div>
-            <div className="number">{item.height}</div>
-            <div className="number">{formatNumber(item.amount)}</div>
+            <div className="numberType">{item.height}</div>
+            <div className="numberType">{formatNumber(item.amount)}</div>
             <Tooltip
               placement="bottom"
               tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
             >
-              <div className="number">
+              <div className="numberType">
                 <FormatNumber
                   number={formatNumber(
                     Math.floor((item.cybEstimation / Math.pow(10, 9)) * 1000) /
@@ -299,13 +299,13 @@ export class Table extends Component {
           </div>
         ))}
       >
-        <div className="number address">{itemGroup.group}</div>
-        <div className="number">{formatNumber(itemGroup.amountСolumn)}</div>
+        <div className="numberType address">{itemGroup.group}</div>
+        <div className="numberType">{formatNumber(itemGroup.amountСolumn)}</div>
         <Tooltip
           placement="bottom"
           tooltip={`${formatNumber(Math.floor(itemGroup.cyb))} CYBs`}
         >
-          <div className="number">
+          <div className="numberType">
             <FormatNumber
               number={formatNumber(
                 Math.floor((itemGroup.cyb / Math.pow(10, 9)) * 1000) / 1000,
@@ -323,9 +323,9 @@ export class Table extends Component {
       <div>
         <div className="table">
           <div className="table-header-rows">
-            <div className="number address">Address (TX id)</div>
-            <div className="number">Height</div>
-            <div className="number sort-row" onClick={this.sortAtom}>
+            <div className="numberType address">Address (TX id)</div>
+            <div className="numberType">Height</div>
+            <div className="numberType sort-row" onClick={this.sortAtom}>
               ATOMs
               <img className="icon-sort" src={imgSort} />
               {/* <div
@@ -334,7 +334,7 @@ export class Table extends Component {
                                 }`}
                             /> */}
             </div>
-            <div className="number sort-row" onClick={this.sortCyb}>
+            <div className="numberType sort-row" onClick={this.sortCyb}>
               GCYB estimation
               <img className="icon-sort" src={imgSort} />
               {/* <div

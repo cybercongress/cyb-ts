@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
-import { ActionBar } from './actionBar';
+import { ActionBarContainer } from './actionBar';
 import { Dinamics } from './dinamics';
 import { Table } from './table';
 import { Loading } from '../../components/index';
@@ -419,7 +419,7 @@ class Auction extends PureComponent {
             </div>
           )}
         </main>
-        <ActionBar
+        <ActionBarContainer
           web3={this.props.web3}
           contract={this.props.contract}
           minRound={roundThis}
