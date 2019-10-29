@@ -8,13 +8,14 @@ import Auction from "./containers/auction/index";
 import NotFound from "./containers/application/notFound";
 import Search from "./containers/Search/Search";
 import Lottery from "./containers/Lottery/Lottery";
+import Home from "./containers/home/home";
 
 export const history = createHashHistory({});
 
 const AppRouter = () => (
     <Router history={history}>
         <Route path="/" component={App} />
-        <Route path="/" exact component={NotFound} />
+        <Route path="/" exact component={Home} />
         <Route path="/got" component={Got} />
         <Route path="/takeoff" component={Funding} />
         <Route path="/auction" component={Auction} />
