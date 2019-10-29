@@ -1,4 +1,6 @@
 import React from 'react';
+const cyb = require('../../image/logo-cyb-v2.svg');
+const cyber = require('../../image/cyber.png');
 
 export class Electricity extends React.Component {
     constructor(props) {
@@ -17,16 +19,16 @@ export class Electricity extends React.Component {
     };
 
     calculate = (x, y, width, height) => {
-        let points = [[x, height]];
+        let points = [[x, height / 0.8]];
         let maxPoints = 10;
         let chunkRange = width / maxPoints;
         for (let i = 0; i < maxPoints; i++) {
             let cx = chunkRange * i + Math.cos(i) * chunkRange;
-            let cy = Math.random() * height;
+            let cy = Math.random() * height*1.5;
             points.push([cx, cy]);
         }
 
-        points.push([width, height]);
+        points.push([width, height/0.8]);
 
         let d = points.map(point => point.join(','));
         return 'M' + d.join(',');
@@ -59,6 +61,8 @@ export class Electricity extends React.Component {
 
         return (
             <div className="electricity">
+                <img style={{width: 100, height: 100}} src={cyber}></img>
+                <div className="line">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200">
                     <defs>
                         <filter id="f1" x="0" y="0">
@@ -72,12 +76,14 @@ export class Electricity extends React.Component {
                         <path
                             d={d}
                             fill="none"
-                            stroke="#42ee77"
+                            stroke="#3ab793"
                             filter="url(#f1)"
                         ></path>
-                        <path d={d} fill="none" stroke="#42ee77"></path>
+                        <path d={d} fill="none" stroke="#3ab793"></path>
                     </g>
                 </svg>
+                </div>
+                <img style={{width: 100, height: 100}} src={cyb}></img>
             </div>
         );
     }

@@ -1,0 +1,9 @@
+.electricity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.electricity .line{
+  width: 100%;
+}
