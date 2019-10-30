@@ -20,7 +20,7 @@ const getShares = atoms => {
 };
 
 const getDiscountPlot = atoms => {
-  const discount = 0.00005 * atoms;
+  const discount = -0.00005 * atoms + 30;
   return discount;
 };
 

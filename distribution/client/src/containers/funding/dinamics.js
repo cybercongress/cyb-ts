@@ -97,7 +97,7 @@ export class Dinamics extends Component {
       rewards: false,
       activebtn: 'discount',
       textX: 'Donation, ATOMs',
-      textY: 'Advantage, %',
+      textY: 'Discount, %',
       margin: {
         l: 50,
         r: 50,
@@ -195,7 +195,7 @@ export class Dinamics extends Component {
         },
         hovertemplate:
           'ATOMs contributed: %{x}<br>' +
-          'Personal advantage: %{y:.2f%}%<br>' +
+          'Personal discount: %{y:.2f%}%<br>' +
           '<extra></extra>'
       },
       {
@@ -226,7 +226,7 @@ export class Dinamics extends Component {
         hovertemplate:
           'TCYB allocated: %{x: .2f}<br>' +
           'ATOMs contributed: %{y}<br>' +
-          'Personal advantage: %{z:.2f%}%<br>' +
+          'Personal discount: %{z:.2f%}%<br>' +
           '<extra></extra>'
       },
       {
@@ -243,7 +243,7 @@ export class Dinamics extends Component {
         hovertemplate:
           'TCYB allocated: %{x: .2f}<br>' +
           'ATOMs contributed: %{y}<br>' +
-          'Personal advantage: %{z:.2f%}%<br>' +
+          'Personal discount: %{z:.2f%}%<br>' +
           '<extra></extra>'
       }
     ];
@@ -312,7 +312,7 @@ export class Dinamics extends Component {
         },
         zaxis: {
           title: {
-            text: 'Advantage, %'
+            text: 'Discount, %'
           },
           gridcolor: '#dedede',
           autorange: 'reversed',
