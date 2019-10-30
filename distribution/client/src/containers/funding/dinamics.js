@@ -252,6 +252,7 @@ export class Dinamics extends Component {
       paper_bgcolor: '#000',
       plot_bgcolor: '#000',
       showlegend: false,
+      hovermode: 'closest',
       hoverlabel: {
         bgcolor: '#000',
         font: {
@@ -315,7 +316,7 @@ export class Dinamics extends Component {
             text: 'Discount, %'
           },
           gridcolor: '#dedede',
-          autorange: 'reversed',
+          // autorange: 'reversed',
           color: '#fff',
           tickfont: {
             color: '#36d6ae'

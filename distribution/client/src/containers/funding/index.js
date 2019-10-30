@@ -133,7 +133,8 @@ class Funding extends PureComponent {
       line: {
         width: 2,
         color: '#36d6ae'
-      }
+      },
+      hoverinfo: 'none'
     };
     const rewards = getRewards(currentPrice, currentDiscount, amount, amount);
     const rewards0 = getRewards(currentPrice, currentDiscount, amount, 0);
@@ -149,18 +150,22 @@ class Funding extends PureComponent {
       }
       asyncForEach(Array.from(Array(dataPin.length).keys()), async itemsG => {
         let amountAtom = 0;
+        let temp = 0;
         const { group } = dataPin[itemsG];
         asyncForEach(Array.from(Array(dataTxs.length).keys()), async item => {
+          let estimation = 0;
           const colorPlot = group.replace(/[^0-9]/g, '').substr(0, 6);
           const tempArrPlot = {
             x: 0,
             y: 0,
+            estimationPlot: 0,
             fill: 'tozeroy',
             type: 'scatter',
             line: {
               width: 2,
               color: '#36d6ae'
-            }
+            },
+            hovertemplate: ''
           };
           const address = dataTxs[item].tx.value.msg[0].value.from_address;
           const amou =
@@ -179,11 +184,29 @@ class Funding extends PureComponent {
               amount,
               amountAtom
             );
+            const tempVal = temp + amou;
+            estimation =
+              getEstimation(currentPrice, currentDiscount, amount, tempVal) -
+              getEstimation(currentPrice, currentDiscount, amount, temp);
+            temp += amou;
+            // console.log('estimation', estimation);
+            tempArrPlot.estimationPlot = estimation;
+            tempArrPlot.hovertemplate =
+              `My CYBs estimation: ${formatNumber(
+                Math.floor(estimation * 10 ** -9 * 1000) / 1000,
+                3
+              )}` +
+              `<br>Atoms: ${formatNumber(
+                Math.floor((x - x0) * 10 ** -3 * 1000) / 1000,
+                3
+              )}k` +
+              '<extra></extra>';
             tempArrPlot.x = [x0, x];
             tempArrPlot.y = [y0, y];
             Plot.push(tempArrPlot);
           } else {
             amountAtom += amou;
+            temp += amou;
           }
         });
         this.setState({
