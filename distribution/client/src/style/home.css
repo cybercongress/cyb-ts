@@ -7,3 +7,8 @@
 .electricity .line{
   width: 100%;
 }
+
+.electricity-svg {
+  stroke: #3ab793;
+  stroke-width: 5;
+}
