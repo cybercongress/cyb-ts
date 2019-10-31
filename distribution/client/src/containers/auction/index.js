@@ -31,6 +31,7 @@ class Auction extends PureComponent {
       claimedAll: false,
       createOnDay: 0,
       popupsBuy: false,
+      roundTable: null,
       dynamics: {
         x: [],
         y: [],
@@ -47,16 +48,16 @@ class Auction extends PureComponent {
     });
     if (accounts === null) {
       console.log('no-accounts');
-      this.getTimeEndRound();
-      this.statistics();
-      this.dinamics();
-      this.getDataTable();
-    } else {
-      console.log('accounts');
-      timer(this.getTimeEndRound);
+      run(this.getTimeEndRound);
       run(this.statistics);
       run(this.dinamics);
       run(this.getDataTable);
+    } else {
+      console.log('accounts');
+      timer(this.getTimeEndRound);
+      this.statistics();
+      this.dinamics();
+      this.getDataTable();
     }
     window.ethereum.on('accountsChanged', async accountsChanged => {
       const defaultAccounts = accountsChanged[0];
@@ -78,6 +79,9 @@ class Auction extends PureComponent {
       (error, result) => {
         if (!error) {
           console.log(result);
+          // const day = Number.parseInt(result.data.slice(0, 66));
+          // console.log('day', day);
+          // this.getDataTableForRound(day);
           run(this.statistics);
           run(this.dinamics);
           run(this.getDataTable);
@@ -332,14 +336,19 @@ class Auction extends PureComponent {
 
         table.push({
           period: item,
-          dist: formatNumber((Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100), 2),
-          total:
-          formatNumber((Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
-            10000),2),
+          dist: formatNumber(
+            Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100,
+            2
+          ),
+          total: formatNumber(
+            Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
+              10000,
+            2
+          ),
           price: formatNumber(currentPrice, 6),
           closing: (23 * (roundThis - item)) / 23,
           youETH: formatNumber(_userBuys[item] / Math.pow(10, 18), 6),
-          youCYB: formatNumber((Math.floor(cyb * 100) / 100), 2),
+          youCYB: formatNumber(Math.floor(cyb * 100) / 100, 2),
           claimed: claimedItem
           // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
         });
@@ -359,6 +368,47 @@ class Auction extends PureComponent {
     this.setState({ table });
   };
 
+  getDataTableForRound = async round => {
+    const {
+      contract: { methods }
+    } = this.props;
+    const { accounts, table } = this.state;
+    const userBuys = await methods.userBuys(round, accounts).call();
+    const dailyTotals = await methods.dailyTotals(round).call();
+    const createPerDay = await methods.createPerDay().call();
+    const currentPrice = roundNumber(
+      dailyTotals / (createPerDay * Math.pow(10, 9)),
+      6
+    );
+    const distValue = Math.floor((createPerDay / Math.pow(10, 9)) * 100) / 100;
+    const dailyValue =
+      Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000;
+    const userBuy = userBuys / Math.pow(10, 18);
+    let cyb;
+    if (userBuys === '0') {
+      cyb = 0;
+    } else {
+      cyb = (distValue / dailyValue) * userBuy;
+    }
+    const roundTable = {
+      round,
+      createPerDay: formatNumber(Math.floor(createPerDay * 10 ** -9 * 100) / 100, 2),
+      dailyTotals: formatNumber(Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000, 2),
+      currentPrice,
+      userBuys: formatNumber(userBuys * 10 ** -18, 6),
+      cyb
+    };
+
+    table[round].dist = roundTable.createPerDay;
+    table[round].total = roundTable.dailyTotals;
+    table[round].price = roundTable.currentPrice;
+    table[round].youCYB = roundTable.cyb;
+    table[round].youETH = roundTable.userBuys;
+    this.setState({
+      table
+    });
+  };
+
   render() {
     const {
       roundThis,
@@ -373,9 +423,20 @@ class Auction extends PureComponent {
       dailyTotals,
       createOnDay,
       popupsBuy,
-      accounts
+      accounts,
+      roundTable
     } = this.state;
-
+    // console.log('roundTable', roundTable);
+    // if (roundTable != null) {
+    //   console.log('table', table[roundTable.round]);
+    //   if (table[roundTable.round] !== undefined){
+    //     table[roundTable.round].dist = roundTable.createPerDay;
+    //     table[roundTable.round].total = roundTable.dailyTotals;
+    //     table[roundTable.round].price = roundTable.currentPrice;
+    //     table[roundTable.round].youCYB = roundTable.cyb;
+    //     table[roundTable.round].youETH = roundTable.userBuys;
+    //   }
+    // }
     const thc = 700 * Math.pow(10, 3);
     return (
       <div>
