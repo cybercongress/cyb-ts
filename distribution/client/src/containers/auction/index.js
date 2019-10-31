@@ -79,12 +79,11 @@ class Auction extends PureComponent {
       (error, result) => {
         if (!error) {
           console.log(result);
-          // const day = Number.parseInt(result.data.slice(0, 66));
-          // console.log('day', day);
-          // this.getDataTableForRound(day);
+          const day = Number.parseInt(result.data.slice(0, 66));
+          console.log('day', day);
+          this.getDataTableForRound(day);
+          this.dinamics();
           run(this.statistics);
-          run(this.dinamics);
-          run(this.getDataTable);
         }
       }
     );
@@ -105,8 +104,6 @@ class Auction extends PureComponent {
       (error, result) => {
         if (!error) {
           console.log(result);
-          run(this.statistics);
-          run(this.dinamics);
           run(this.getDataTable);
         }
       }
@@ -372,18 +369,21 @@ class Auction extends PureComponent {
     const {
       contract: { methods }
     } = this.props;
-    const { accounts, table } = this.state;
+    const { accounts, table, dynamics } = this.state;
     const userBuys = await methods.userBuys(round, accounts).call();
     const dailyTotals = await methods.dailyTotals(round).call();
     const createPerDay = await methods.createPerDay().call();
-    const currentPrice = roundNumber(
-      dailyTotals / (createPerDay * Math.pow(10, 9)),
-      6
-    );
-    const distValue = Math.floor((createPerDay / Math.pow(10, 9)) * 100) / 100;
-    const dailyValue =
-      Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000;
-    const userBuy = userBuys / Math.pow(10, 18);
+    const createFirstDay = await methods.createFirstDay().call();
+    let createOnDay;
+    if (round === 0) {
+      createOnDay = createFirstDay;
+    } else {
+      createOnDay = createPerDay;
+    }
+    const currentPrice = roundNumber(dailyTotals / (createOnDay * 10 ** 9), 6);
+    const distValue = Math.floor(createOnDay * 10 ** -9 * 100) / 100;
+    const dailyValue = Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000;
+    const userBuy = userBuys * 10 ** -18;
     let cyb;
     if (userBuys === '0') {
       cyb = 0;
@@ -392,20 +392,29 @@ class Auction extends PureComponent {
     }
     const roundTable = {
       round,
-      createPerDay: formatNumber(Math.floor(createPerDay * 10 ** -9 * 100) / 100, 2),
-      dailyTotals: formatNumber(Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000, 2),
+      createPerDay: formatNumber(
+        Math.floor(createOnDay * 10 ** -9 * 100) / 100,
+        2
+      ),
+      dailyTotals: formatNumber(
+        Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000,
+        2
+      ),
       currentPrice,
       userBuys: formatNumber(userBuys * 10 ** -18, 6),
-      cyb
+      cyb: formatNumber(Math.floor(cyb * 100) / 100, 2)
     };
-
+    console.log(dynamics.y[round]);
     table[round].dist = roundTable.createPerDay;
     table[round].total = roundTable.dailyTotals;
     table[round].price = roundTable.currentPrice;
     table[round].youCYB = roundTable.cyb;
     table[round].youETH = roundTable.userBuys;
+    dynamics.y[round] = roundTable.dailyTotals;
+    dynamics.x1[round] = roundTable.currentPrice;
     this.setState({
-      table
+      table,
+      dynamics
     });
   };
 
@@ -426,17 +435,6 @@ class Auction extends PureComponent {
       accounts,
       roundTable
     } = this.state;
-    // console.log('roundTable', roundTable);
-    // if (roundTable != null) {
-    //   console.log('table', table[roundTable.round]);
-    //   if (table[roundTable.round] !== undefined){
-    //     table[roundTable.round].dist = roundTable.createPerDay;
-    //     table[roundTable.round].total = roundTable.dailyTotals;
-    //     table[roundTable.round].price = roundTable.currentPrice;
-    //     table[roundTable.round].youCYB = roundTable.cyb;
-    //     table[roundTable.round].youETH = roundTable.userBuys;
-    //   }
-    // }
     const thc = 700 * Math.pow(10, 3);
     return (
       <div>
