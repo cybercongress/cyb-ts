@@ -7,7 +7,8 @@ export class Electricity extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      d: 'M0,100,500,100'
+      d: 'M0,100,500,100',
+      stage: false
     };
     this.run();
   }
@@ -36,29 +37,44 @@ export class Electricity extends React.Component {
   };
 
   run() {
-    const fps = 30;
-    let now;
-    let delta;
-    let then = Date.now();
-    const interval = 1000 / fps;
-    let iteration = 0;
-    const loop = () => {
-      requestAnimationFrame(loop);
+    setInterval(() => {
+      const timerId = setInterval(() => {
+        this.setState({
+          stage: true
+        });
+        this.update();
+      }, 1000 / 30);
+      setTimeout(() => {
+        clearInterval(timerId);
+        this.setState({
+          stage: false
+        });
+      }, 1000);
+    }, Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000);
 
-      now = Date.now();
-      delta = now - then;
-      if (delta > interval) {
-        then = now - (delta % interval);
+    // const fps = 30;
+    // let now;
+    // let delta;
+    // let then = Date.now();
+    // const interval = 1000 / fps;
+    // let iteration = 0;
+    // const loop = () => {
+    //   requestAnimationFrame(loop);
 
-        // update stuff
-        this.update(iteration++);
-      }
-    };
-    loop();
+    //   now = Date.now();
+    //   delta = now - then;
+    //   if (delta > interval) {
+    //     then = now - (delta % interval);
+
+    //     // update stuff
+    //     this.update(iteration++);
+    //   }
+    // };
+    // loop();
   }
 
   render() {
-    const { d } = this.state;
+    const { d, stage } = this.state;
 
     return (
       <div className="electricity">
@@ -76,10 +92,10 @@ export class Electricity extends React.Component {
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
               </filter>
             </defs>
-            <g>
+            {stage && (            <g>
               <path d={d} fill="none" stroke="#3ab793" filter="url(#f1)" />
               <path d={d} fill="none" stroke="#3ab793" />
-            </g>
+            </g>)}
           </svg>
         </div>
         <a href="https://cyb.ai/" target="_blank">
