@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ClaimedAll } from './claimedAll';
-import { ActionBar, Button, Input, Pane } from '@cybercongress/ui';
+import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 
 function lament(error) {
     if (error) {

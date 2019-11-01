@@ -8,7 +8,7 @@ import {
     Input,
     Button,
     CardAccount
-} from '@cybercongress/ui';
+} from '@cybercongress/gravity';
 import lotteryContainer from './lotteryContainer';
 
 const showResult = true,

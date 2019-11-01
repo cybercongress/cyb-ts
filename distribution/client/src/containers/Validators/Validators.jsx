@@ -3,7 +3,7 @@
 // import {
 //     ScrollContainer, MainContainer, Pane, Tablist, Tab,
 //     TableEv as Table, Pill, Tooltip, TextEv as Text,
-// } from '@cybercongress/ui';
+// } from '@cybercongress/gravity';
 // import validatorsContainer from './validatorsContainer';
 
 // class Validators extends React.Component {

@@ -82,7 +82,7 @@ class Auction extends PureComponent {
           const day = Number.parseInt(result.data.slice(0, 66));
           console.log('day', day);
           this.getDataTableForRound(day);
-          this.dinamics();
+          // this.dinamics();
           run(this.statistics);
         }
       }
@@ -404,14 +404,13 @@ class Auction extends PureComponent {
       userBuys: formatNumber(userBuys * 10 ** -18, 6),
       cyb: formatNumber(Math.floor(cyb * 100) / 100, 2)
     };
-    console.log(dynamics.y[round]);
     table[round].dist = roundTable.createPerDay;
     table[round].total = roundTable.dailyTotals;
     table[round].price = roundTable.currentPrice;
     table[round].youCYB = roundTable.cyb;
     table[round].youETH = roundTable.userBuys;
-    dynamics.y[round] = roundTable.dailyTotals;
-    dynamics.x1[round] = roundTable.currentPrice;
+    dynamics.y[round] = parseFloat(roundTable.dailyTotals);
+    dynamics.x1[round] = parseFloat(roundTable.currentPrice);
     this.setState({
       table,
       dynamics

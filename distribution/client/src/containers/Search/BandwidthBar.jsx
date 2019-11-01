@@ -1,5 +1,5 @@
 import React from 'react';
-import { Battery, Pane, Heading, Text } from '@cybercongress/ui';
+import { Battery, Pane, Heading, Text } from '@cybercongress/gravity';
 
 const BandwidthBar = ({ bwRemained, bwMaxValue, linkPrice }) => {
     const bwPercent = ((bwRemained / bwMaxValue) * 100).toFixed(2);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pane, Vitalick, Text } from '@cybercongress/ui';
+import { Pane, Vitalick, Text } from '@cybercongress/gravity';
 import { Subscribe } from 'unstated';
 import searchContainer from './searchContainer';
 

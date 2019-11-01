@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from '@cybercongress/ui';
+import { Button } from '@cybercongress/gravity';
 
 export class ClaimedAll extends Component {
   constructor(props) {

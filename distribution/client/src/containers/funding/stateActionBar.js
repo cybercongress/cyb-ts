@@ -2,7 +2,7 @@ import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { ContainetLedger, Loading } from '../../components/index';
-import { ActionBar, Button, Input, Pane } from '@cybercongress/ui';
+import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 
 const ActionBarContentText = ({ children, ...props }) => (
     <Pane

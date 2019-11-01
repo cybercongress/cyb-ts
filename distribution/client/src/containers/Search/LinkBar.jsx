@@ -1,5 +1,5 @@
 // import React from 'react';
-// import { Pane, TextInput, Button } from '@cybercongress/ui';
+// import { Pane, TextInput, Button } from '@cybercongress/gravity';
 // import { Subscribe } from 'unstated';
 // import searchContainer from './searchContainer';
 

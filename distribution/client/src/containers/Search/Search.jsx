@@ -1,5 +1,5 @@
 import React from 'react';
-import { MainContainer, ScrollContainer } from '@cybercongress/ui';
+import { MainContainer, ScrollContainer } from '@cybercongress/gravity';
 // import { Provider, Subscribe } from 'unstated';
 import SearchResults from './SearchResults';
 import ChainStatistic from './ChainStatistic';

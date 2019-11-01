@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActionBar } from '@cybercongress/ui';
+import { ActionBar } from '@cybercongress/gravity';
 import { ActionBarContainer as ActionBarAtom } from '../funding/actionBar';
 import { ActionBarContainer as ActionBarETH} from '../auction/actionBar'
 

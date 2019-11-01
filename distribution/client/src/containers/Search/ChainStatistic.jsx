@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Pane, Heading, CardHover } from '@cybercongress/ui';
+import { Text, Pane, Heading, CardHover } from '@cybercongress/gravity';
 // // import { Provider, Subscribe } from 'unstated';
 // // import statisticContainer from './statisticContainer';
 // // import validatorsContainer from '../Validators/validatorsContainer';

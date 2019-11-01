@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Button, SearchItem, Heading, Pane,
-} from '@cybercongress/ui';
+} from '@cybercongress/gravity';
 import { Subscribe } from 'unstated';
 import searchContainer from './searchContainer';
 
