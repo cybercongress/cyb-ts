@@ -97,6 +97,8 @@ class Funding extends PureComponent {
     let amount = 0;
     let atomLeff = 0;
     let currentDiscount = 0;
+    let won = 0;
+    let currentPrice = 0;
 
     await asyncForEach(Array.from(Array(dataTxs.length).keys()), async item => {
       amount +=
@@ -106,13 +108,16 @@ class Funding extends PureComponent {
     if (amount <= ATOMsALL) {
       atomLeff = ATOMsALL - amount;
       currentDiscount = funcDiscount(amount);
+      won = cybWon(amount);
+      currentPrice = won / amount;
     } else {
+      amount = ATOMsALL;
       atomLeff = 0;
-      currentDiscount = 0.3;
+      currentDiscount = funcDiscount(ATOMsALL);
+      won = cybWon(ATOMsALL);
+      currentPrice = won / ATOMsALL;
     }
-    const won = cybWon(amount);
-    const currentPrice = won / amount;
-
+    console.log('won', won);
     this.setState({
       amount,
       atomLeff,
@@ -205,7 +210,11 @@ class Funding extends PureComponent {
                 amount,
                 amountAtom
               );
-              const tempVal = temp + amou;
+              // const tempVal = temp + amou;
+              let tempVal = temp + amou;
+              if (tempVal >= ATOMsALL) {
+                tempVal = ATOMsALL;
+              }
               estimation =
                 getEstimation(currentPrice, currentDiscount, amount, tempVal) -
                 getEstimation(currentPrice, currentDiscount, amount, temp);
@@ -254,6 +263,7 @@ class Funding extends PureComponent {
       dataAllPin
     } = this.state;
     try {
+      let estimationTemp = 0;
       const table = [];
       let temp = 0;
       await asyncForEach(
@@ -266,11 +276,15 @@ class Funding extends PureComponent {
                 dataTxs[item].tx.value.msg[0].value.amount[0].amount
               ) *
               10 ** -1;
-            const tempVal = temp + val;
+            let tempVal = temp + val;
+            if (tempVal >= ATOMsALL) {
+              tempVal = ATOMsALL;
+            }
             estimation =
               getEstimation(currentPrice, currentDiscount, amount, tempVal) -
               getEstimation(currentPrice, currentDiscount, amount, temp);
             temp += val;
+            estimationTemp += estimation;
           }
           table.push({
             txhash: dataTxs[item].txhash,
@@ -285,6 +299,7 @@ class Funding extends PureComponent {
           });
         }
       );
+      console.log('estimationTemp', estimationTemp);
       const groupsAddress = getGroupAddress(table);
       const groups = Object.keys(groupsAddress).map(key => ({
         group: key,
