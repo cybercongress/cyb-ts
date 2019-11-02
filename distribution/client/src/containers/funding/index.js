@@ -105,14 +105,14 @@ class Funding extends PureComponent {
     });
     if (amount <= ATOMsALL) {
       atomLeff = ATOMsALL - amount;
-      currentDiscount = funcDiscount(amount)
+      currentDiscount = funcDiscount(amount);
     } else {
       atomLeff = 0;
       currentDiscount = 0.3;
     }
     const won = cybWon(amount);
     const currentPrice = won / amount;
-  
+
     this.setState({
       amount,
       atomLeff,
@@ -144,10 +144,22 @@ class Funding extends PureComponent {
       },
       hoverinfo: 'none'
     };
-    const rewards = getRewards(currentPrice, currentDiscount, amount, amount);
-    const rewards0 = getRewards(currentPrice, currentDiscount, amount, 0);
-    dataAxisRewards.y = [rewards0, rewards];
-    dataAxisRewards.x = [0, amount];
+    if (amount <= ATOMsALL) {
+      const rewards = getRewards(currentPrice, currentDiscount, amount, amount);
+      const rewards0 = getRewards(currentPrice, currentDiscount, amount, 0);
+      dataAxisRewards.y = [rewards0, rewards];
+      dataAxisRewards.x = [0, amount];
+    } else {
+      const rewards = getRewards(
+        currentPrice,
+        currentDiscount,
+        ATOMsALL,
+        ATOMsALL
+      );
+      const rewards0 = getRewards(currentPrice, currentDiscount, ATOMsALL, 0);
+      dataAxisRewards.y = [rewards0, rewards];
+      dataAxisRewards.x = [0, ATOMsALL];
+    }
 
     Plot.push(dataAxisRewards);
     if (dataPin !== null) {
@@ -182,36 +194,41 @@ class Funding extends PureComponent {
             ) *
             10 ** -1;
           if (address === group) {
-            const x0 = amountAtom;
-            const y0 = getRewards(currentPrice, currentDiscount, amount, x0);
-            amountAtom += amou;
-            const x = amountAtom;
-            const y = getRewards(
-              currentPrice,
-              currentDiscount,
-              amount,
-              amountAtom
-            );
-            const tempVal = temp + amou;
-            estimation =
-              getEstimation(currentPrice, currentDiscount, amount, tempVal) -
-              getEstimation(currentPrice, currentDiscount, amount, temp);
-            temp += amou;
-            // console.log('estimation', estimation);
-            tempArrPlot.estimationPlot = estimation;
-            tempArrPlot.hovertemplate =
-              `My CYBs estimation: ${formatNumber(
-                Math.floor(estimation * 10 ** -9 * 1000) / 1000,
-                3
-              )}` +
-              `<br>Atoms: ${formatNumber(
-                Math.floor((x - x0) * 10 ** -3 * 1000) / 1000,
-                3
-              )}k` +
-              '<extra></extra>';
-            tempArrPlot.x = [x0, x];
-            tempArrPlot.y = [y0, y];
-            Plot.push(tempArrPlot);
+            if (amountAtom <= ATOMsALL) {
+              const x0 = amountAtom;
+              const y0 = getRewards(currentPrice, currentDiscount, amount, x0);
+              amountAtom += amou;
+              const x = amountAtom;
+              const y = getRewards(
+                currentPrice,
+                currentDiscount,
+                amount,
+                amountAtom
+              );
+              const tempVal = temp + amou;
+              estimation =
+                getEstimation(currentPrice, currentDiscount, amount, tempVal) -
+                getEstimation(currentPrice, currentDiscount, amount, temp);
+              temp += amou;
+              // console.log('estimation', estimation);
+              tempArrPlot.estimationPlot = estimation;
+              tempArrPlot.hovertemplate =
+                `My CYBs estimation: ${formatNumber(
+                  Math.floor(estimation * 10 ** -9 * 1000) / 1000,
+                  3
+                )}` +
+                `<br>Atoms: ${formatNumber(
+                  Math.floor((x - x0) * 10 ** -3 * 1000) / 1000,
+                  3
+                )}k` +
+                '<extra></extra>';
+              tempArrPlot.x = [x0, x];
+              tempArrPlot.y = [y0, y];
+              Plot.push(tempArrPlot);
+            } else {
+              amountAtom += amou;
+              temp += amou;
+            }
           } else {
             amountAtom += amou;
             temp += amou;
@@ -243,16 +260,18 @@ class Funding extends PureComponent {
         Array.from(Array(dataTxs.length).keys()),
         async item => {
           let estimation = 0;
-          const val =
-            Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1;
-          const tempVal = temp + val;
-          estimation =
-            getEstimation(currentPrice, currentDiscount, amount, tempVal) -
-            getEstimation(currentPrice, currentDiscount, amount, temp);
-          temp += val;
+          if (temp <= ATOMsALL) {
+            const val =
+              Number.parseInt(
+                dataTxs[item].tx.value.msg[0].value.amount[0].amount
+              ) *
+              10 ** -1;
+            const tempVal = temp + val;
+            estimation =
+              getEstimation(currentPrice, currentDiscount, amount, tempVal) -
+              getEstimation(currentPrice, currentDiscount, amount, temp);
+            temp += val;
+          }
           table.push({
             txhash: dataTxs[item].txhash,
             height: dataTxs[item].height,
