@@ -95,16 +95,24 @@ class Funding extends PureComponent {
   getStatistics = async () => {
     const { dataTxs } = this.state;
     let amount = 0;
+    let atomLeff = 0;
+    let currentDiscount = 0;
 
     await asyncForEach(Array.from(Array(dataTxs.length).keys()), async item => {
       amount +=
         Number.parseInt(dataTxs[item].tx.value.msg[0].value.amount[0].amount) *
         10 ** -1;
     });
-    const atomLeff = ATOMsALL - amount;
+    if (amount <= ATOMsALL) {
+      atomLeff = ATOMsALL - amount;
+      currentDiscount = funcDiscount(amount)
+    } else {
+      atomLeff = 0;
+      currentDiscount = 0.3;
+    }
     const won = cybWon(amount);
     const currentPrice = won / amount;
-    const currentDiscount = funcDiscount(amount);
+  
     this.setState({
       amount,
       atomLeff,
@@ -303,13 +311,18 @@ class Funding extends PureComponent {
   getData = async () => {
     const { dataTxs } = this.state;
     let amount = 0;
+    let dataPlot = [];
 
     await asyncForEach(Array.from(Array(dataTxs.length).keys()), async item => {
       amount +=
         Number.parseInt(dataTxs[item].tx.value.msg[0].value.amount[0].amount) *
         10 ** -1;
     });
-    const dataPlot = await getDataPlot(amount);
+    if (amount <= ATOMsALL) {
+      dataPlot = await getDataPlot(amount);
+    } else {
+      dataPlot = await getDataPlot(ATOMsALL);
+    }
     this.setState({
       dataPlot
     });
