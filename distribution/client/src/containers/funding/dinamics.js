@@ -164,10 +164,11 @@ export class Dinamics extends Component {
           opacity: 1,
           color: '#fff'
         },
-        hovertemplate:
-          'ATOMs contributed: %{x}' +
-          '<br>TCYB allocated: %{y: .2f}%' +
-          '<extra></extra>'
+        hoverinfo: 'none'
+        // hovertemplate:
+        //   'ATOMs contributed: %{x}' +
+        //   '<br>TCYB allocated: %{y: .2f}%' +
+        //   '<extra></extra>'
       },
       {
         type: 'scatter',
@@ -178,7 +179,11 @@ export class Dinamics extends Component {
           width: 2,
           color: '#36d6ae'
         },
-        hoverinfo: 'none'
+        // hoverinfo: 'none'
+        hovertemplate:
+          'ATOMs contributed: %{x}' +
+          '<br>TCYB allocated: %{y: .2f}%' +
+          '<extra></extra>'
       }
     ];
 
@@ -193,10 +198,11 @@ export class Dinamics extends Component {
           opacity: 1,
           color: '#fff'
         },
-        hovertemplate:
-          'ATOMs contributed: %{x}<br>' +
-          'Personal discount: %{y:.2f%}%<br>' +
-          '<extra></extra>'
+        hoverinfo: 'none'
+        // hovertemplate:
+        //   'ATOMs contributed: %{x}<br>' +
+        //   'Personal discount: %{y:.2f%}%<br>' +
+        //   '<extra></extra>'
       },
       {
         type: 'scatter',
@@ -206,7 +212,11 @@ export class Dinamics extends Component {
           width: 2,
           color: '#36d6ae'
         },
-        hoverinfo: 'none'
+        // hoverinfo: 'none'
+        hovertemplate:
+          'ATOMs contributed: %{x}<br>' +
+          'Personal discount: %{y:.2f%}%<br>' +
+          '<extra></extra>'
       }
     ];
 

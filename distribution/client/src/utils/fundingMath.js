@@ -76,6 +76,7 @@ const getGroupAddress = data => {
       amount: item.amount,
       txhash: item.txhash,
       height: item.height,
+      timestamp: item.timestamp,
       cybEstimation: item.estimation
     });
     return obj;

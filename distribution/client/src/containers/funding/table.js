@@ -221,7 +221,7 @@ export class Table extends Component {
                     {item.txhash}
                   </a>
                 </div>
-                <div className="numberType">{item.height}</div>
+                <div className="numberType">{item.timestamp}</div>
                 <div className="numberType">{formatNumber(item.amount)}</div>
                 <Tooltip
                   placement="bottom"
@@ -280,7 +280,7 @@ export class Table extends Component {
                 {item.txhash}
               </a>
             </div>
-            <div className="numberType">{item.height}</div>
+            <div className="numberType">{item.timestamp}</div>
             <div className="numberType">{formatNumber(item.amount)}</div>
             <Tooltip
               placement="bottom"

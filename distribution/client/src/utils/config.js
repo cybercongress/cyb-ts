@@ -1,6 +1,6 @@
 // const wsURL = 'wss://herzner1.cybernode.ai/';
 const wsURL = 'wss://deimos.cybernode.ai/';
-const OPERATOR_ADDR = 'cosmos1kajt7sxfpnfujm7ptj90654lmwz4sftpmk0jm6';
+const OPERATOR_ADDR = 'cosmos18d2wdn0k70ll75ev3wu73yzazsprxeylv7mvd6';
 const CHAIN_ID = 'cosmoshub-2';
 const DEFAULT_GAS = 150000;
 const DEFAULT_GAS_PRICE = 0.01;

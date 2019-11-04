@@ -52,6 +52,7 @@
   "dependencies": {
     "@cybercongress/gravity": "^0.0.1",
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
+    "dateformat": "^3.0.3",
     "eslint-config-airbnb-standard": "^3.0.1",
     "ipfs-api": "^26.1.2",
     "ledger-cosmos-js": "^2.0.2",
