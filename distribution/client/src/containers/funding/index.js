@@ -26,13 +26,15 @@ const INIT = 0;
 const GET_TXS = 1;
 const GET_AMOUNT = 2;
 
-Array.prototype.diff = arr => {
-  let mergedArr = this.concat(arr);
-  return mergedArr.filter((e) => {
-      // Check if the element is appearing only once
-      return mergedArr.indexOf(e) === mergedArr.lastIndexOf(e);
-  });
-};
+const diff = (key, ...arrays) =>
+  [].concat(
+    ...arrays.map((arr, i) => {
+      const others = arrays.slice(0);
+      others.splice(i, 1);
+      const unique = [...new Set([].concat(...others))];
+      return arr.filter(x => !unique.some(y => x[key] === y[key]));
+    })
+  );
 
 class Funding extends PureComponent {
   ws = new WebSocket(wsURL);
@@ -96,19 +98,25 @@ class Funding extends PureComponent {
       const txs = JSON.parse(localStorage.getItem('txs'));
       const message = JSON.parse(evt.data);
       console.log('txs', message);
-      // if (txs == null) {
+      if (txs == null) {
         // localStorage.setItem('txs', JSON.stringify(message));
         this.setState({
           dataTxs: message
         });
-        this.init();
-      // } else if (txs.length !== message.length) {
+      } else if (txs.length !== message.length) {
         // const diffArry =
-        console.log('txsLocalStorage', txs);
-      // } else {
+        // message.diff(txs);
+        const diffTsx = diff('txhash', txs, message);
+        this.setState({
+          dataTxs: diffTsx
+        });
+        console.log('txsLocalStorage', diff('txhash', txs, message));
+        this.init();
+      } else {
+        // console.log()
         // this.getItemLocalStorage();
         // this.init();
-      // }
+      }
     };
 
     this.ws.onclose = () => {
@@ -135,16 +143,21 @@ class Funding extends PureComponent {
     });
   };
 
-  init = async () => {
-    await this.getStatistics();
+  init = async txs => {
+    await this.getStatistics(txs);
     this.getTableData();
     this.checkPin();
     this.getData();
     this.getPlot();
   };
 
-  getStatistics = async () => {
+  getStatistics = async txs => {
     const { dataTxs } = this.state;
+    console.log('dataTxs', dataTxs);
+    const statisticsLocalStorage = JSON.parse(
+      localStorage.getItem('statistics')
+    );
+
     let amount = 0;
     let atomLeff = 0;
     let currentDiscount = 0;
@@ -162,19 +175,26 @@ class Funding extends PureComponent {
         break;
       }
     }
+    if (statisticsLocalStorage !== null) {
+      amount += statisticsLocalStorage.amount;
+    }
+    // console.log(
+    //   'statisticsLocalStorage',
+    //   statisticsLocalStorage.amount + amount
+    // );
     atomLeff = ATOMsALL - amount;
     currentDiscount = funcDiscount(amount);
     won = cybWon(amount);
     currentPrice = won / amount;
     console.log('won', won);
-    const statistics = {
-      amount,
-      atomLeff,
-      won,
-      currentPrice,
-      currentDiscount
-    };
-    localStorage.setItem(`statistics`, JSON.stringify(statistics));
+    // const statistics = {
+    //   amount,
+    //   atomLeff,
+    //   won,
+    //   currentPrice,
+    //   currentDiscount
+    // };
+    // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
       amount,
       atomLeff,
