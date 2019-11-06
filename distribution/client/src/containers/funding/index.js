@@ -55,7 +55,7 @@ class Funding extends PureComponent {
       currentDiscount: 0,
       dataPlot: [],
       dataRewards: [],
-      loader: INIT,
+      loader: true,
       loading: 0
     };
   }
@@ -143,7 +143,8 @@ class Funding extends PureComponent {
       currentDiscount,
       groups,
       dataPlot,
-      dataRewards
+      dataRewards,
+      loader: false
     });
   };
 
@@ -529,21 +530,25 @@ class Funding extends PureComponent {
     //   return <Loading />;
     // }
 
-    // if (loader === INIT) {
-    //   return (
-    //     <div
-    //       style={{
-    //         width: '100%',
-    //         height: '50vh',
-    //         display: 'flex',
-    //         justifyContent: 'center',
-    //         alignItems: 'center'
-    //       }}
-    //     >
-    //       <Loading />
-    //     </div>
-    //   );
-    // }
+    if (loader) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column'
+          }}
+        >
+          <Loading />
+          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+            Recieving transactions
+          </div>
+        </div>
+      );
+    }
 
     return (
       <span>

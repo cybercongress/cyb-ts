@@ -52,7 +52,7 @@ class Got extends PureComponent {
             },
             (error, result) => {
                 if (!error) {
-                    run(this.getEthAtomCourse);
+                    this.getEthAtomCourse();
                     console.log(result);
                 }
             }
