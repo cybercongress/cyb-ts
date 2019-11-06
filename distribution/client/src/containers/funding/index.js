@@ -67,7 +67,7 @@ class Funding extends PureComponent {
     //     dataTxs: txs
     //   });
     // }
-    run(this.getDataWS);
+    this.getDataWS();
     // console.log('groupsDidMount', groups);
     const dataPin = [];
     const jsonStr = localStorage.getItem('allpin');

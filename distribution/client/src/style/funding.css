@@ -204,7 +204,7 @@ span.right-input {
     justify-items: center;
     width: 100%;
     /* align-items: center; */
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 
 .contaiter-indicator {
@@ -239,9 +239,10 @@ span.right-input {
     align-items: center;
     background-color: "#000000";
     width: 100%;
-    /* max-width: 250px; */
+    max-width: 250px;
     box-shadow: 0 0 5px #3ab793;
     border-radius: 10px;
+    margin: 0 5px;
 }
 
 .container-card:hover {
