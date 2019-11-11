@@ -380,7 +380,7 @@ class Funding extends PureComponent {
           txhash: dataTxs[item].txhash,
           height: dataTxs[item].height,
           from: dataTxs[item].tx.value.msg[0].value.from_address,
-          timestamp: dateFormat(d, 'dd.mm.yyyy, h:MM:ss TT'),
+          timestamp: dateFormat(d, 'dd/mm/yyyy, h:MM:ss TT'),
           amount:
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount
@@ -395,6 +395,8 @@ class Funding extends PureComponent {
       const groups = Object.keys(groupsAddress).map(key => ({
         group: key,
         address: groupsAddress[key],
+        height: null,
+        timestamp: null,
         amountСolumn: null,
         pin: false,
         cyb: null
@@ -405,6 +407,8 @@ class Funding extends PureComponent {
         for (let j = 0; j <= groups[i].address.length - 1; j++) {
           sum += groups[i].address[j].amount;
           sumEstimation += groups[i].address[j].cybEstimation;
+          groups[i].height = groups[i].address[0].height;
+          groups[i].timestamp = groups[i].address[0].timestamp;
         }
         groups[i].amountСolumn = sum;
         groups[i].cyb = sumEstimation;
@@ -521,14 +525,8 @@ class Funding extends PureComponent {
       dataAllPin,
       dataRewards,
       pin,
-      loader,
-      loading,
-      dataTxs
+      loader
     } = this.state;
-    // console.log('groups', groups);
-    // if (dataRewards[0] === undefined) {
-    //   return <Loading />;
-    // }
 
     if (loader) {
       return (
