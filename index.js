@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import AppRouter from './router';
 
-import './style/main.css';
+import './src/style/main.css';
 
 const root = document.getElementById('root');
 

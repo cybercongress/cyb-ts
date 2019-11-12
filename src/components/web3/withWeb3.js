@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import waitForWeb3 from './waitForWeb3';
 import { abi } from '../../utils/abi';
-import Auction from '../../../../build/contracts/Auction.json';
-import AuctionUtils from '../../../../build/contracts/AuctionUtils.json';
+import Auction from '../../../contracts/Auction.json';
+import AuctionUtils from '../../../contracts/AuctionUtils.json';
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 

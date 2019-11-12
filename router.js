@@ -1,14 +1,14 @@
 import React from "react";
 import { hashHistory, IndexRoute, Route, Router, Switch } from "react-router";
 import { createHashHistory } from "history";
-import App from "./containers/application/application";
-import Got from "./containers/got/got";
-import Funding from "./containers/funding/index";
-import Auction from "./containers/auction/index";
-import NotFound from "./containers/application/notFound";
-import Search from "./containers/Search/Search";
-import Lottery from "./containers/Lottery/Lottery";
-import Home from "./containers/home/home";
+import App from "./src/containers/application/application";
+import Got from "./src/containers/got/got";
+import Funding from "./src/containers/funding/index";
+import Auction from "./src/containers/auction/index";
+import NotFound from "./src/containers/application/notFound";
+import Search from "./src/containers/Search/Search";
+import Lottery from "./src/containers/Lottery/Lottery";
+import Home from "./src/containers/home/home";
 
 export const history = createHashHistory({});
 

@@ -1,113 +1,93 @@
 const path = require('path');
 const webpack = require('webpack');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-function getPlugins(isProduction) {
-    const plugins = [
-        new MiniCssExtractPlugin(),
-        new HtmlWebpackPlugin({
-            title: 'cyber',
-            template: path.resolve(__dirname, 'app', 'index.html'),
-            favicon: path.resolve(__dirname, 'app', 'favicon.ico'),
-            hash: true,
-        }),
-    ];
+const dev = process.env.NODE_ENV !== 'production';
 
-    if (!isProduction) {
-        plugins.push(new webpack.HotModuleReplacementPlugin());
-        plugins.push(new webpack.SourceMapDevToolPlugin({
-            test: /\.(js|jsx|css)$/,
-            exclude: [/\.vendor$/],
-        }));
-    }
+const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
+  template: path.join(__dirname, 'index.html'),
+  filename: 'index.html',
+  inject: 'body'
+});
 
-    return plugins;
-}
+const DefinePluginConfig = new webpack.DefinePlugin({
+  'process.env.NODE_ENV': JSON.stringify('production')
+});
 
-module.exports = (env = {}, argv = {}) => {
-    const isProduction = argv.mode === 'production';
-
-    return {
-        context: path.join(__dirname, 'app', 'src'),
-        entry: {
-            main: path.join(__dirname, 'app', 'src', 'main.jsx'),
-        },
-        output: {
-            path: path.resolve(__dirname, 'distribution'),
-            filename: '[name].js?[hash]',
-            publicPath: '',
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.(js|jsx)$/,
-                    // exclude: /node_modules/,
-                    include: /src/,
-                    use: [
-                        { loader: 'babel-loader' },
-                        /*
-                        {
-                            loader: 'eslint-loader',
-                            options: {
-                                emitWarning: true,
-                            },
-                        },
-                        */
-                    ],
-                },
-                {
-                    test: /\.less$/,
-                    use: [
-                        { loader: 'style-loader' },
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                modules: true,
-                                localIdentName: '[name]_[local]',
-                            },
-                        },
-                    ],
-                },
-                {
-                    test: /\.css$/,
-                    use: ['style-loader', 'css-loader'],
-                },
-                {
-                    test: /\.(png|jpg|svg|woff|woff2|ttf|eot|otf)(\?.*)?$/,
-                    use: {
-                        loader: 'file-loader',
-                    },
-                },
-            ],
-        },
-        resolve: {
-            extensions: ['*', '.js', '.jsx'],
-            alias: {},
-        },
-        devtool: false,
-        plugins: getPlugins(isProduction),
-        optimization: {
-            runtimeChunk: 'single',
-            splitChunks: {
-                cacheGroups: {
-                    commons: {
-                        test: /[\\/]node_modules|react|react-dom|moment|lodash[\\/]/,
-                        name: 'vendors',
-                        chunks: 'all',
-                    },
-                },
-            },
-        },
-        bail: false,
-        devServer: {
-            port: 5600,
-            hot: true,
-            before(app, server) {
-                app.head('/', (req, res) => {
-                    res.json({ custom: 'response' });
-                });
-            },
-        },
-    };
+module.exports = {
+  devServer: {
+    // https: true,
+    host: 'localhost',
+    port: process.env.PORT_APP || '3000',
+    hot: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    },
+    historyApiFallback: true
+  },
+  entry: [
+    '@babel/polyfill',
+    'react-hot-loader/patch',
+    path.join(__dirname, 'index.js')
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        // include: /src/,
+        loaders: ['babel-loader']
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../'
+            }
+          },
+          'css-loader'
+        ]
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: ['file-loader']
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loader: 'url-loader',
+        options: {
+          outputPath: 'image/'
+        }
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['*', '.js', '.jsx'],
+    alias: {}
+  },
+  output: {
+    filename: 'index.js',
+    path: path.join(__dirname, '/build')
+  },
+  mode: dev ? 'development' : 'production',
+  plugins: dev
+    ? [
+        HTMLWebpackPluginConfig,
+        new webpack.HotModuleReplacementPlugin(),
+        new MiniCssExtractPlugin({
+          filename: '[name].css',
+          chunkFilename: '[id].css'
+        })
+      ]
+    : [
+        HTMLWebpackPluginConfig,
+        DefinePluginConfig,
+        new MiniCssExtractPlugin({
+          filename: '[name].css',
+          chunkFilename: '[id].css'
+        })
+      ]
 };
