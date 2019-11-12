@@ -23,7 +23,7 @@ jobs:
             git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
       - deploy:
           name: Update app from dot-cyber repo
-          working_directory: ~/workdir/distribution/client
+          working_directory: ~/workdir
           command: |
             rm -rf build/
             yarn install
