@@ -108,7 +108,7 @@
 
 .container-distribution {
     display: grid;
-    grid-template-columns: 10% 60% 30%;
+    grid-template-columns: 10% 90%;
     align-items: center;
     padding: 20px;
     max-width: 1000px;
