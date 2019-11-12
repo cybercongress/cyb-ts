@@ -10,7 +10,7 @@ const NotFound = ({ text }) => (
       <span className="text-notFound">{text}</span>
     )}
     {!text && (
-      <span className="text-notFound">Page Not Found </span>
+      <span className="text-notFound">Page In Progress </span>
     )}
   </div>
 );

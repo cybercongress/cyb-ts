@@ -1,9 +1,0 @@
-{
-  "id": "cyber",
-  "name": "cyber",
-  "iconUrl": "icon.png",
-  "description": "Description of test app",
-  "version": "0.0.1",
-  "author": "cybercongress",
-  "localUrl": "http://localhost:5600"
-}

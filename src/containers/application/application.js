@@ -16,8 +16,8 @@ class App extends Component {
     };
   }
 
-  onCustomClick = (index) => {
-    console.log('index',index);
+  onCustomClick = index => {
+    console.log('index', index);
     this.setState({
       selectedIndex: index
     });
@@ -25,37 +25,45 @@ class App extends Component {
 
   render() {
     const htef = [
-      { id: 1, to: '', nameApp: 'start' },
-      { id: 2, to: 'got', nameApp: 'got' },
+      { id: 1, to: '', nameApp: 'search' },
+      { id: 2, to: 'gift', nameApp: 'gift' },
       { id: 3, to: 'takeoff', nameApp: 'takeoff' },
-      { id: 4, to: 'auction', nameApp: 'auction' },
-      { id: 5, to: 'search', nameApp: 'search' },
-      { id: 6, to: 'lottery', nameApp: 'lottery' },
+      { id: 4, to: 'tot', nameApp: 'tot' },
+      { id: 5, to: 'auction', nameApp: 'auction' },
+      { id: 6, to: 'brain', nameApp: 'brain' },
+      { id: 7, to: 'governance', nameApp: 'governance' }
       // { id: 7, to: 'cyber' },
       // { id: 7, to: 'euler' }
     ];
-// console.log('selectedIndex', this.state.selectedIndex);
+    // console.log('selectedIndex', this.state.selectedIndex);
     return (
       <main>
         <div className="container-distribution">
-        <Tooltip tooltip='The app is not production ready and is for testing and experimentation only. All send tokens will be lost.' placement='bottom'>
-          <img src={bug} style={{
-            width: 50,
-            height: 50
-          }} />
+          <Tooltip
+            tooltip="The app is not production ready and is for testing and experimentation only. All send tokens will be lost."
+            placement="bottom"
+          >
+            <img
+              src={bug}
+              alt="bug"
+              style={{
+                width: 50,
+                height: 50
+              }}
+            />
           </Tooltip>
           <div className="battery">
-            {htef.map((item) => (
+            {htef.map(item => (
               <Item
-              key={item.to}
-              selected={item.id === this.state.selectedIndex}
-              to={item.to}
-              nameApp={item.nameApp}
-              // onClick={(e) => this.onCustomClick(item.id)}
+                key={item.to}
+                selected={item.id === this.state.selectedIndex}
+                to={item.to}
+                nameApp={item.nameApp}
+                // onClick={(e) => this.onCustomClick(item.id)}
               />
-              ))}
+            ))}
           </div>
-              <Timer />
+          <Timer />
         </div>
         {this.props.children}
       </main>

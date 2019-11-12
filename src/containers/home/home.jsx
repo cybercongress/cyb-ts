@@ -1,50 +1,80 @@
 import React, { PureComponent } from 'react';
-import { Button, Input, Pane, SearchItem } from '@cybercongress/gravity';
+import { Button, Input, Pane, SearchItem, Text } from '@cybercongress/gravity';
 import { Electricity } from './electricity';
+import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
+import { formatNumber } from '../../utils/utils';
 
 const tilde = require('../../image/tilde.svg');
 
-const grade = {
-  from: 0.0001,
-  to: 0.1,
-  value: 4
-};
-const grade1 = {
-  from: 0.0001,
-  to: 0.1,
-  value: 6
-};
-const grade2 = {
-  from: 0.0001,
-  to: 0.1,
-  value: 1
-};
+// const grade = {
+//   from: 0.0001,
+//   to: 0.1,
+//   value: 4
+// };
 
 class Home extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       valueSearchInput: '',
-      result: false
+      result: false,
+      searchResults: []
     };
   }
 
   onChangeInput = async e => {
+    const { value } = e.target;
+    if (value.length === 0) {
+      await this.setState({
+        result: false
+      });
+    }
     await this.setState({
-      valueSearchInput: e.target.value
+      valueSearchInput: value
     });
   };
 
-  render() {
+  handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
-    console.log(valueSearchInput.length);
+    if (e.key === 'Enter') {
+      let searchResults = [];
+      searchResults = await search(await getIpfsHash(valueSearchInput));
+      searchResults.map((item, index) => {
+        searchResults[index].cid = item.cid;
+        searchResults[index].rank = formatNumber(item.rank, 6);
+        searchResults[index].grade = getRankGrade(item.rank);
+      });
+      console.log('searchResults', searchResults);
+      this.setState({
+        searchResults,
+        result: true
+      });
+    }
+  };
+
+  render() {
+    const { valueSearchInput, result, searchResults } = this.state;
+
+    const searchItems = searchResults.map(item => (
+      <SearchItem
+        key={item.cid}
+        hash={item.cid}
+        rank={item.rank}
+        grade={item.grade}
+        status="success"
+        // onClick={e => (e, links[cid].content)}
+      >
+        {item.cid}
+      </SearchItem>
+    ));
+
     return (
       <main className="block-body-home">
         <Pane
           display="flex"
           alignItems="center"
           justifyContent="center"
-          flex={valueSearchInput.length ? 0.3 : 0.7}
+          flex={result ? 0.3 : 0.7}
           transition="flex 0.5s"
         >
           <Input
@@ -52,43 +82,19 @@ class Home extends PureComponent {
             placeholder="joint for validators"
             value={valueSearchInput}
             onChange={e => this.onChangeInput(e)}
+            onKeyPress={this.handleKeyPress}
           />
         </Pane>
-        {valueSearchInput.length > 0 && (
-          <Pane>
-            <SearchItem
-              key="1"
-              hash="sdfsdfsdf2345fsdfs"
-              rank={4}
-              grade={grade}
-              status="success"
-              // onClick={e => container.openLink(e, links[cid].content)}
-            >
-              {valueSearchInput}
-            </SearchItem>
-            <SearchItem
-              key="2"
-              hash="sdfsdfsdf2345fsdfs"
-              rank={6}
-              grade={grade1}
-              status="loading"
-              // onClick={e => container.openLink(e, links[cid].content)}
-            >
-              {valueSearchInput}
-            </SearchItem>
-            <SearchItem
-              key="3"
-              hash="sdfsdfsdf2345fsdfs"
-              rank={1}
-              grade={grade2}
-              status="success"
-              // onClick={e => container.openLink(e, links[cid].content)}
-            >
-              {valueSearchInput}
-            </SearchItem>
+
+        {result && (
+          <Pane width="90%" marginX="auto" marginY={0} display="flex" flexDirection="column">
+            <Text fontSize="20px" marginBottom={20} color="#949292" lineHeight="20px">
+              {`The answer for ${searchItems.length} is`}
+            </Text>
+            <Pane>{searchItems}</Pane>
           </Pane>
         )}
-        {valueSearchInput.length === 0 && (
+        {!result && (
           <Pane
             flex={0.3}
             display="flex"

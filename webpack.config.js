@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const dev = process.env.NODE_ENV !== 'production';
 
 const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
-  template: path.join(__dirname, 'index.html'),
+  template: path.join(__dirname, 'src', 'index.html'),
   filename: 'index.html',
   inject: 'body'
 });
@@ -29,14 +29,14 @@ module.exports = {
   entry: [
     '@babel/polyfill',
     'react-hot-loader/patch',
-    path.join(__dirname, 'index.js')
+    path.join(__dirname, 'src', 'index.js')
   ],
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        // include: /src/,
+        include: /src/,
         loaders: ['babel-loader']
       },
       {
