@@ -79,7 +79,7 @@ export class Electricity extends React.Component {
     return (
       <div className="electricity">
         <a href="https://cyberd.ai/" target="_blank">
-        <img style={{ width: 100, height: 100 }} src={cyber} />
+        <img style={{ height: 100 }} src={cyber} />
         </a>
         <div className="line">
           <svg
