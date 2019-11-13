@@ -16,9 +16,9 @@ const AppRouter = () => (
   <Router history={history}>
     <Route path="/" component={App} />
     <Route path="/" exact component={Home} />
-    <Route path="/gift" component={Got} />
+    <Route path="/gift" component={NotFound} />
     <Route path="/takeoff" component={Funding} />
-    <Route path="/tot" component={NotFound} />
+    <Route path="/tot" component={Got} />
     <Route path="/auction" component={Auction} />
     <Route path="/brain" component={NotFound} />
     <Route path="/governance" component={NotFound} />

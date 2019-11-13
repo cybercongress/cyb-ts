@@ -7,30 +7,30 @@ export class Electricity extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      d: 'M0,100,500,100',
+      d: 'M0,100,500,70',
       stage: false
     };
     this.run();
   }
 
   update = () => {
-    const d = this.calculate(0, 0, 500, 80);
+    const d = this.calculate(0, 0, 1000, 70);
     this.setState({
       d
     });
   };
 
   calculate = (x, y, width, height) => {
-    const points = [[x, height / 0.8]];
+    const points = [[x, height / 2]];
     const maxPoints = 10;
     const chunkRange = width / maxPoints;
     for (let i = 0; i < maxPoints; i++) {
       const cx = chunkRange * i + Math.cos(i) * chunkRange;
-      const cy = (Math.random() * height) / 0.8;
+      const cy = Math.random() * height;
       points.push([cx, cy]);
     }
 
-    points.push([width, height / 0.8]);
+    points.push([width, height / 2]);
 
     const d = points.map(point => point.join(','));
     return `M${d.join(',')}`;
@@ -75,32 +75,35 @@ export class Electricity extends React.Component {
 
   render() {
     const { d, stage } = this.state;
+    const { left, right } = this.props;
 
     return (
       <div className="electricity">
-        <a href="https://cyberd.ai/" target="_blank">
+        {/* <a href="https://cyberd.ai/" target="_blank">
         <img style={{ height: 100 }} src={cyber} />
-        </a>
+        </a> */}
         <div className="line">
           <svg
             className="electricity-svg"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 500 200"
+            viewBox="0 0 1000 70"
           >
             <defs>
               <filter id="f1" x="0" y="0">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
               </filter>
             </defs>
-            {stage && (            <g>
-              <path d={d} fill="none" stroke="#3ab793" filter="url(#f1)" />
-              <path d={d} fill="none" stroke="#3ab793" />
-            </g>)}
+            {stage && (
+              <g>
+                <path d={d} fill="none" stroke="#3ab793" filter="url(#f1)" />
+                <path d={d} fill="none" stroke="#3ab793" />
+              </g>
+            )}
           </svg>
         </div>
-        <a href="https://cyb.ai/" target="_blank">
+        {/* <a href="https://cyb.ai/" target="_blank">
         <img style={{ width: 100, height: 100 }} src={cyb} />
-        </a>
+        </a> */}
       </div>
     );
   }
