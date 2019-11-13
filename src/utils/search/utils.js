@@ -6,6 +6,8 @@ const IPFS = require('ipfs-api');
 const Unixfs = require('ipfs-unixfs');
 const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
 
+const nodeUrl = indexedNode;
+
 let ipfsApi;
 
 const getIpfsConfig = async () => {
@@ -149,3 +151,55 @@ export const getRankGrade = rank => {
     value
   };
 };
+
+export const getStatistics = () =>
+  new Promise(resolve => {
+    const indexStatsPromise = axios({
+      method: 'get',
+      url: `${nodeUrl}/index_stats`
+    }).then(response => response.data.result);
+
+    const stakingPromise = axios({
+      method: 'get',
+      url: `${nodeUrl}/staking/pool`
+    }).then(response => response.data.result);
+
+    const bandwidthPricePromise = axios({
+      method: 'get',
+      url: `${nodeUrl}/current_bandwidth_price`
+    }).then(response => response.data.result);
+
+    const latestBlockPromise = axios({
+      method: 'get',
+      url: `${nodeUrl}/block`
+    }).then(response => response.data.result);
+
+    Promise.all([
+      indexStatsPromise,
+      stakingPromise,
+      bandwidthPricePromise,
+      latestBlockPromise
+    ]).then(([indexStats, staking, bandwidthPrice, latestBlock]) => {
+      const response = {
+        ...indexStats,
+        bondedTokens: staking.bonded_tokens,
+        notBondedTokens: staking.not_bonded_tokens,
+        bandwidthPrice: bandwidthPrice.price,
+        txCount: latestBlock.block_meta.header.total_txs
+      };
+
+      resolve(response);
+    });
+  });
+
+export const getValidators = () =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${nodeUrl}/validators`
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );

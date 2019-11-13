@@ -20,7 +20,7 @@ const AppRouter = () => (
     <Route path="/takeoff" component={Funding} />
     <Route path="/tot" component={Got} />
     <Route path="/auction" component={Auction} />
-    <Route path="/brain" component={NotFound} />
+    <Route path="/brain" component={Search} />
     <Route path="/governance" component={NotFound} />
 
     {/* <Route exact path="*" component={NotFound} /> */}
