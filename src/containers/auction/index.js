@@ -43,7 +43,6 @@ class Auction extends PureComponent {
 
   async componentDidMount() {
     const { accounts, web3 } = this.props;
-    localStorage.setItem('LAST_DURA', 'auction');
     await this.setState({
       accounts
     });

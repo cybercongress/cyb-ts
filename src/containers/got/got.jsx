@@ -8,7 +8,7 @@ import {
   asyncForEach,
   formatNumber,
   roundNumber,
-  run
+  run,
 } from '../../utils/utils';
 import { wsURL } from '../../utils/config';
 
@@ -24,19 +24,18 @@ class Got extends PureComponent {
 
   constructor(props) {
     super(props);
-    localStorage.setItem('LAST_DURA', 'tot');
     this.state = {
       ATOMsRaised: 0,
       ETHRaised: 0,
       colAtomEth: {
         atom: 0,
-        eth: 0
+        eth: 0,
       },
       dataTxs: null,
       difference: {},
       arow: 0,
       loading: true,
-      raised: null
+      raised: null,
     };
   }
 
@@ -48,8 +47,8 @@ class Got extends PureComponent {
       {
         address: '0x6c9c39d896b51e6736dbd3da710163903a3b091b',
         topics: [
-          '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150'
-        ]
+          '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
+        ],
       },
       (error, result) => {
         if (!error) {
@@ -78,7 +77,7 @@ class Got extends PureComponent {
       console.log('txs', message);
       this.setState({
         dataTxs: message,
-        loading: false
+        loading: false,
       });
       this.getEthAtomCourse();
     };
@@ -90,7 +89,7 @@ class Got extends PureComponent {
 
   getEthAtomCourse = async () => {
     const {
-      contract: { methods }
+      contract: { methods },
     } = this.props;
     // if(this.state.loading){
     const dailyTotals = await methods.dailyTotals(59).call();
@@ -116,17 +115,17 @@ class Got extends PureComponent {
     // const data = await response.json();
     //  console.log(this.state.dataTxs);
     const currencies = await fetch(currenciesUrl, {
-      signal: this.controller.signal
+      signal: this.controller.signal,
     });
     const course = await currencies.json();
     const raised = {
       ATOMsRaised,
       ETHRaised,
-      course
+      course,
     };
     // console.log(raised);
     this.setState({
-      raised
+      raised,
     });
     // return raised;
     await this.getStatistics();
@@ -139,7 +138,7 @@ class Got extends PureComponent {
     console.log(raised);
     this.setState({
       ETHRaised: raised.ETHRaised,
-      ATOMsRaised: raised.ATOMsRaised
+      ATOMsRaised: raised.ATOMsRaised,
     });
   };
 
@@ -166,7 +165,7 @@ class Got extends PureComponent {
     const tempETH = (ethRaised / sumAtomEth) * 100;
     const colAtomEth = {
       atom: tempAtom,
-      eth: tempETH
+      eth: tempETH,
     };
     // console.log('difference', difference);
     if (ethRaised > AtomRaised) {
@@ -174,21 +173,21 @@ class Got extends PureComponent {
       win = 'eth';
       difference = {
         popups: 'atom',
-        diff: ethCYB / atomsCYB
+        diff: ethCYB / atomsCYB,
       };
     } else {
       // arow = (1 - ethRaised / AtomRaised) * 90;
       win = 'atom';
       difference = {
         popups: 'eth',
-        diff: atomsCYB / ethCYB
+        diff: atomsCYB / ethCYB,
       };
     }
     console.log('colAtomEth, difference', colAtomEth, difference);
     this.setState({
       win,
       colAtomEth,
-      difference
+      difference,
     });
   };
 
@@ -199,7 +198,7 @@ class Got extends PureComponent {
       difference,
       arow,
       win,
-      colAtomEth
+      colAtomEth,
     } = this.state;
     console.log(ATOMsRaised);
     const cyb = 10 * Math.pow(10, 4);

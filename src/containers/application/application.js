@@ -68,9 +68,9 @@ class App extends Component {
 
   render() {
     const { app, openMenu } = this.state;
-    console.log('app', app);
+    // console.log('app', app);
     return (
-      <main>
+      <div>
         <AppSideBar onCloseSidebar={this.toggleMenu} openMenu={openMenu}>
           <AppMenu menuItems={htef} />
         </AppSideBar>
@@ -90,7 +90,7 @@ class App extends Component {
             </Tooltip> */}
           <Menu imgLogo={cyber} toggleMenu={this.toggleMenu} />
           <Electricity />
-          <a href="https://cyb.ai/" target="_blank">
+          <a href="#/wallet">
             <Pane
               width={50}
               // height={50}
@@ -118,7 +118,7 @@ class App extends Component {
         </div>
         {/* </Navigation> */}
         {this.props.children}
-      </main>
+      </div>
     );
   }
 }

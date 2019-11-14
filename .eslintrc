@@ -1,97 +1,51 @@
 {
-  "parser": "babel-eslint",
-  "plugins": [
-    "prettier"
-  ],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "amd": true
+  },
   "extends": [
     "airbnb",
-    "plugin:prettier/recommended"
+    "prettier",
+    "prettier/react"
   ],
-  "env": {
-    "node": true,
-    "browser": true
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": ["prettier", "react"],
+  "globals": {
+    "expect": true,
+    "FileReader": true
   },
   "rules": {
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true
-      }
-    ],
-    "prettier/prettier.semi": false,
-    "camelcase": "off",
-    "linebreak-style": "off",
-    "eqeqeq": [
-      "error",
-      "smart"
-    ],
-    "no-dupe-keys": "error",
-    "no-return-assign": "off",
-    "consistent-return": "off",
-    "import/prefer-default-export": "on",
-    "import/no-extraneous-dependencies": "off",
-    "react/jsx-filename-extension": [
-      "error",
-      {
-        "extensions": [
-          ".js", ".jsx"
-        ]
-      }
-    ],
-    "react/jsx-one-expression-per-line": "off",
-    "react/jsx-closing-bracket-location": "off",
-    "react/button-has-type": "off",
-    "react/no-unused-prop-types": "off",
-    "react/destructuring-assignment": "off",
-    "react/jsx-wrap-multilines": "off",
-    "react/prop-types": "off",
-    "react/no-unescaped-entities": [
-      "error",
-      {
-        "forbid": [
-          ">",
-          "}"
-        ]
-      }
-    ],
-    "react/array-type": false,
-    "jsx-a11y/anchor-is-valid": [
-      "error",
-      {
-        "components": [
-          "Link"
-        ],
-        "specialLink": [
-          "to",
-          "hrefLeft",
-          "hrefRight"
-        ],
-        "aspects": [
-          "noHref",
-          "invalidHref",
-          "preferButton"
-        ]
-      }
-    ],
-    "jsx-a11y/label-has-for": "off",
-    "jsx-a11y/label-has-associated-control": [
-      2,
-      {
-        "labelComponents": [
-          "label"
-        ],
-        "labelAttributes": [
-          "htmlFor"
-        ],
-        "controlComponents": [
-          "input"
-        ]
-      }
-    ],
-    "no-plusplus": "off",
-    "radix": [
-      "error",
-      "as-needed"
-    ]
+    "valid-jsdoc": "error",
+    "prettier/prettier": "error",
+    "linebreak-style": ["error", "unix"],
+    "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
+    "curly": ["warn", "all"],
+    "no-alert": "warn",
+    "no-debugger": "warn",
+    "no-duplicate-imports": ["warn", {
+      "includeExports": true
+    }],
+    "object-curly-spacing": ["warn", "always"],
+    "object-property-newline": 0,
+    "one-var-declaration-per-line": ["warn", "always"],
+    "padded-blocks": ["warn", {
+      "blocks": "never",
+      "classes": "never",
+      "switches": "never"
+    }],
+    "react/jsx-closing-bracket-location": "warn",
+    "react/jsx-indent-props": [2, 2],
+    "react/prop-types": 0,
+    "react/jsx-indent": ["warn", 2],
+    "indent": ["warn", 2, {"ignoredNodes": ["JSXElement *", "JSXElement"]}],
+    "react/jsx-props-no-spreading": "off"
   }
 }

@@ -22,7 +22,7 @@ class Home extends PureComponent {
     this.state = {
       valueSearchInput: '',
       result: false,
-      searchResults: []
+      searchResults: [],
     };
   }
 
@@ -34,11 +34,11 @@ class Home extends PureComponent {
     const { value } = e.target;
     if (value.length === 0) {
       await this.setState({
-        result: false
+        result: false,
       });
     }
     await this.setState({
-      valueSearchInput: value
+      valueSearchInput: value,
     });
   };
 
@@ -55,7 +55,7 @@ class Home extends PureComponent {
       console.log('searchResults', searchResults);
       this.setState({
         searchResults,
-        result: true
+        result: true,
       });
     }
   };

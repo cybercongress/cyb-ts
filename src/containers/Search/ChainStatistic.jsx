@@ -39,7 +39,7 @@ class ChainStatistic extends React.Component {
       height,
       bandwidthPrice,
       bondedTokens,
-      notBondedTokens
+      notBondedTokens,
     } = statisticContainer;
 
     const { validators } = validatorsStatistic;
@@ -58,7 +58,7 @@ class ChainStatistic extends React.Component {
       linkPrice,
       totalCyb,
       stakedCyb,
-      activeValidatorsCount: activeValidatorsCount.length
+      activeValidatorsCount: activeValidatorsCount.length,
     });
   };
 
@@ -72,7 +72,7 @@ class ChainStatistic extends React.Component {
       linkPrice,
       totalCyb,
       stakedCyb,
-      activeValidatorsCount
+      activeValidatorsCount,
     } = this.state;
     const totalGcyb = (totalCyb / 1000000000).toFixed(0);
 

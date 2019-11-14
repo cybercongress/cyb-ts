@@ -42,7 +42,6 @@ class Funding extends PureComponent {
   constructor(props) {
     super(props);
     const tempArr = localStorage.getItem('allpin');
-    localStorage.setItem('LAST_DURA', 'takeoff');
     const allPin = JSON.parse(tempArr);
     this.state = {
       groups: [],
