@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-} from '@cybercongress/gravity';
+import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { FormatNumber } from '../../components/index';
 import withWeb3 from '../../components/web3/withWeb3';
 // import { formatNumber } from '../../utils/search/utils';
@@ -11,7 +7,6 @@ import withWeb3 from '../../components/web3/withWeb3';
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
-
 
 // const Wallet = ({ address, balance, token, ...props }) => (
 //   <Pane
