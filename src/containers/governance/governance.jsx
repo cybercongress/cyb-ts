@@ -3,8 +3,8 @@ import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { FormatNumber } from '../../components/index';
 import withWeb3 from '../../components/web3/withWeb3';
 // import { formatNumber } from '../../utils/search/utils';
-// import proposals from './test';
-import { getProposals } from '../../utils/governance';
+import proposals from './test';
+// import { getProposals } from '../../utils/governance';
 
 const dateFormat = require('dateformat');
 
@@ -21,15 +21,15 @@ class Governance extends React.Component {
   }
 
   async componentDidMount() {
-    const proposals = await getProposals();
+    // const proposals = await getProposals();
     this.setState({
-      table: proposals,
+      table: proposals[0].result,
     });
   }
 
   render() {
     const { table } = this.state;
-    console.log('table', table.length);
+    // console.log('table', table.length);
     const rowsTable = table.map(item => (
       <Table.Row
         borderBottom="none"
