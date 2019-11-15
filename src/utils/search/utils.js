@@ -94,7 +94,7 @@ export const getIpfsHash = string =>
 export const search = async keywordHash =>
   axios({
     method: 'get',
-    url: `${indexedNode}/search?cid=%22${keywordHash}%22&page=0&perPage=10`
+    url: `${indexedNode}/api/search?cid=%22${keywordHash}%22&page=0&perPage=10`
   }).then(response => (response.data.result ? response.data.result.cids : []));
 
 export const getRankGrade = rank => {
@@ -156,22 +156,22 @@ export const getStatistics = () =>
   new Promise(resolve => {
     const indexStatsPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/index_stats`
+      url: `${nodeUrl}/api/index_stats`
     }).then(response => response.data.result);
 
     const stakingPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/staking/pool`
+      url: `${nodeUrl}/api/staking/pool`
     }).then(response => response.data.result);
 
     const bandwidthPricePromise = axios({
       method: 'get',
-      url: `${nodeUrl}/current_bandwidth_price`
+      url: `${nodeUrl}/api/current_bandwidth_price`
     }).then(response => response.data.result);
 
     const latestBlockPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/block`
+      url: `${nodeUrl}/api/block`
     }).then(response => response.data.result);
 
     Promise.all([
@@ -196,7 +196,7 @@ export const getValidators = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/validators`
+      url: `${nodeUrl}/api/validators`
     })
       .then(response => {
         resolve(response.data.result);

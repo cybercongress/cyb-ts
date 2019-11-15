@@ -3,83 +3,81 @@ import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { FormatNumber } from '../../components/index';
 import withWeb3 from '../../components/web3/withWeb3';
 // import { formatNumber } from '../../utils/search/utils';
+// import proposals from './test';
+import { getProposals } from '../../utils/governance';
+
+const dateFormat = require('dateformat');
 
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
 
-const table = [
-  {
-    ID: '1',
-    Title: 'test',
-    Type: 'SoftwareUpgrade',
-    Status: 'Passed',
-    Submit_Time: '2019/09/26 05:58:36+UTC',
-    Deposit_Endtime: '2019/09/26 05:58:36+UTC',
-    Voting_Endtime: '2019/09/26 05:58:36+UTC',
-  },
-  {
-    ID: '2',
-    Title: 'test',
-    Type: 'Parameter',
-    Status: 'Rejected',
-    Submit_Time: '2019/09/26 05:58:36+UTC',
-    Deposit_Endtime: '2019/09/26 05:58:36+UTC',
-    Voting_Endtime: '2019/09/26 05:58:36+UTC',
-  },
-];
-
 class Governance extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     table: [],
-  //   };
-  // }
+  constructor(props) {
+    super(props);
+    this.state = {
+      table: [],
+    };
+  }
+
+  async componentDidMount() {
+    const proposals = await getProposals();
+    this.setState({
+      table: proposals,
+    });
+  }
 
   render() {
-    // const { table } = this.state;
+    const { table } = this.state;
+    console.log('table', table.length);
     const rowsTable = table.map(item => (
       <Table.Row
         borderBottom="none"
+        width="fit-content"
         paddingLeft={20}
         height={50}
         isSelectable
-        key={item.ID}
+        key={item.id}
       >
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.ID}
+        <Table.TextCell flex="none" width={50}>
+          <Text color="#fff">{item.id}</Text>
+        </Table.TextCell>
+        <Table.TextCell flex="none" width={150}>
+          <Text color="#fff">{item.content.value.title}</Text>
+        </Table.TextCell>
+        <Table.TextCell flex="none" width={170}>
+          <Text color="#fff">{item.content.type}</Text>
+        </Table.TextCell>
+        <Table.TextCell flex="none" width={150}>
+          <Text color="#fff">{item.proposal_status}</Text>
+        </Table.TextCell>
+        <Table.TextCell flex="none" width={200}>
+          <Text color="#fff">
+            {dateFormat(new Date(item.submit_time), 'dd/mm/yyyy, h:MM:ss TT')}
           </Text>
         </Table.TextCell>
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.Title}
+        <Table.TextCell flex="none" width={200}>
+          <Text color="#fff">
+            {dateFormat(
+              new Date(item.deposit_end_time),
+              'dd/mm/yyyy, h:MM:ss TT'
+            )}
           </Text>
         </Table.TextCell>
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.Type}
+        <Table.TextCell flex="none" width={200}>
+          <Text color="#fff" flexShrink={0} flexGrow={0}>
+            {dateFormat(
+              new Date(item.voting_start_time),
+              'dd/mm/yyyy, h:MM:ss TT'
+            )}
           </Text>
         </Table.TextCell>
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.Status}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.Submit_Time}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.Deposit_Endtime}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell>
-          <Text color="#fff" fontSize="17px">
-            {item.Voting_Endtime}
+        <Table.TextCell flex="none" width={200}>
+          <Text color="#fff" flexShrink={0} flexGrow={0}>
+            {dateFormat(
+              new Date(item.voting_end_time),
+              'dd/mm/yyyy, h:MM:ss TT'
+            )}
           </Text>
         </Table.TextCell>
       </Table.Row>
@@ -87,43 +85,66 @@ class Governance extends React.Component {
 
     return (
       <main className="block-body-home">
+        <Pane>
+          <Text color="#fff">{table.length} Proposals</Text>
+        </Pane>
         <Pane
-          height="100%"
+          // height="100%"
           display="flex"
-          alignItems="center"
-          justifyContent="space-around"
         >
-          <Table width="100%">
+          <Table overflowX="auto">
             <Table.Head
+              width="fit-content"
               style={{
                 backgroundColor: '#000',
                 borderBottom: '1px solid #ffffff80',
               }}
               paddingLeft={20}
             >
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={50}>
                 <Text color="#fff" fontSize="17px">
-                  Address
+                  ID
                 </Text>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={150}>
                 <Text color="#fff" fontSize="17px">
-                  Amount
+                  Title
                 </Text>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={170}>
                 <Text color="#fff" fontSize="17px">
-                  Token
+                  Type
                 </Text>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={150}>
                 <Text color="#fff" fontSize="17px">
-                  Keys
+                  Status
+                </Text>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={200}>
+                <Text color="#fff" fontSize="17px">
+                  Submit_Time
+                </Text>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={200}>
+                <Text color="#fff" fontSize="17px">
+                  Deposit_Endtime
+                </Text>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={200}>
+                <Text color="#fff" fontSize="17px">
+                  Voting_Starttime
+                </Text>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex="none" width={200}>
+                <Text color="#fff" fontSize="17px">
+                  Voting_Endtime
                 </Text>
               </Table.TextHeaderCell>
             </Table.Head>
             <Table.Body
-              style={{ backgroundColor: '#000', overflowY: 'hidden' }}
+              width="fit-content"
+              style={{ backgroundColor: '#000', overflow: 'hidden' }}
             >
               {rowsTable}
             </Table.Body>

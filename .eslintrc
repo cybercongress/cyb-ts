@@ -46,6 +46,7 @@
     "react/prop-types": 0,
     "react/jsx-indent": ["warn", 2],
     "indent": ["warn", 2, {"ignoredNodes": ["JSXElement *", "JSXElement"]}],
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
   }
 }
