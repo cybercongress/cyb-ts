@@ -63,6 +63,7 @@ a {
     padding: 10px 1em 1em;
     position: relative;
     background-color: #000000;
+    height: 1px;
 }
 
 .container-timer {

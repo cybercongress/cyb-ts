@@ -4,6 +4,9 @@ import { Electricity } from './electricity';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 
+const cyb = require('../../image/logo-cyb-v2.svg');
+const cyber = require('../../image/cyber.png');
+
 const tilde = require('../../image/tilde.svg');
 
 // const grade = {
@@ -15,22 +18,27 @@ const tilde = require('../../image/tilde.svg');
 class Home extends PureComponent {
   constructor(props) {
     super(props);
+    localStorage.setItem('LAST_DURA', '');
     this.state = {
       valueSearchInput: '',
       result: false,
-      searchResults: []
+      searchResults: [],
     };
   }
+
+  // componentDidMount() {
+  //   localStorage.setItem('LAST_DURA', '');
+  // }
 
   onChangeInput = async e => {
     const { value } = e.target;
     if (value.length === 0) {
       await this.setState({
-        result: false
+        result: false,
       });
     }
     await this.setState({
-      valueSearchInput: value
+      valueSearchInput: value,
     });
   };
 
@@ -47,7 +55,7 @@ class Home extends PureComponent {
       console.log('searchResults', searchResults);
       this.setState({
         searchResults,
-        result: true
+        result: true,
       });
     }
   };
@@ -87,8 +95,19 @@ class Home extends PureComponent {
         </Pane>
 
         {result && (
-          <Pane width="90%" marginX="auto" marginY={0} display="flex" flexDirection="column">
-            <Text fontSize="20px" marginBottom={20} color="#949292" lineHeight="20px">
+          <Pane
+            width="90%"
+            marginX="auto"
+            marginY={0}
+            display="flex"
+            flexDirection="column"
+          >
+            <Text
+              fontSize="20px"
+              marginBottom={20}
+              color="#949292"
+              lineHeight="20px"
+            >
               {`The answer for ${searchItems.length} is`}
             </Text>
             <Pane>{searchItems}</Pane>
@@ -102,9 +121,21 @@ class Home extends PureComponent {
             alignItems="center"
             justifyContent="space-around"
           >
-            <Pane width="60%" marginY={0} marginX="auto">
+            {/* <Pane
+              width="60%"
+              display="flex"
+              justifyContent="space-between"
+              marginY={0}
+              marginX="auto"
+            >
+              <a href="https://cyberd.ai/" target="_blank">
+                <img style={{ height: 100 }} src={cyber} />
+              </a>
               <Electricity />
-            </Pane>
+              <a href="https://cyb.ai/" target="_blank">
+                <img style={{ width: 100, height: 100 }} src={cyb} />
+              </a>
+            </Pane> */}
             <a href="https://cybercongress.ai" target="_blank">
               <img style={{ width: 20, height: 20 }} src={tilde} alt="tilde" />
             </a>

@@ -6,12 +6,8 @@ const NotFound = ({ text }) => (
       <div className="vitalik-oval-1" />
       <div className="vitalik-oval-2" />
     </div>
-    {text && (
-      <span className="text-notFound">{text}</span>
-    )}
-    {!text && (
-      <span className="text-notFound">Page In Progress </span>
-    )}
+    <span className="text-notFound">Page Not Found </span>
   </div>
 );
+
 export default NotFound;

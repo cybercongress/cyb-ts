@@ -40,7 +40,7 @@ const injectWeb3 = InnerComponent =>
     async getWeb3() {
       try {
         const web3 = await waitForWeb3();
-        console.log('web3.givenProvider', web3.givenProvider);
+        console.log('web3.givenProvider', web3);
         const contract = await new web3.eth.Contract(abi, this.smart);
         const contractAuctionUtils = await new web3.eth.Contract(
           AuctionUtils.abi,
