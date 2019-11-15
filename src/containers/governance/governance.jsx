@@ -1,8 +1,6 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
-import { FormatNumber } from '../../components/index';
-import withWeb3 from '../../components/web3/withWeb3';
-// import { formatNumber } from '../../utils/search/utils';
+
 import proposals from './test';
 // import { getProposals } from '../../utils/governance';
 
@@ -82,6 +80,8 @@ class Governance extends React.Component {
     this.state = {
       table: [],
     };
+
+    this.routeChange = this.routeChange.bind(this);
   }
 
   async componentDidMount() {
@@ -90,6 +90,12 @@ class Governance extends React.Component {
       table: proposals[0].result,
     });
   }
+
+  routeChange = newPath => {
+    const { history } = this.props;
+    const path = `/governance/${newPath}`;
+    history.push(path);
+  };
 
   finalTallyResult = item => {
     const finalVotes = {};
@@ -117,6 +123,7 @@ class Governance extends React.Component {
         paddingLeft={20}
         height={50}
         isSelectable
+        onSelect={() => this.routeChange(item.id)}
         key={item.id}
       >
         <Table.TextCell flex="none" width={50}>
