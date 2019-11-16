@@ -1,4 +1,4 @@
-const proposer = [
+const proposerJson = [
   {
     height: '0',
     result: {
@@ -8,4 +8,4 @@ const proposer = [
   },
 ];
 
-export default proposer;
+export default proposerJson;

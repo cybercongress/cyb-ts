@@ -1,78 +1,11 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
+import { Votes, Legend } from '../../components';
 
 import proposals from './test';
 // import { getProposals } from '../../utils/governance';
 
 const dateFormat = require('dateformat');
-
-const toFixedNumber = (number, toFixed) => {
-  return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
-};
-
-const Legend = ({ color, text, ...props }) => (
-  <Pane display="flex" alignItems="center">
-    <Pane
-      width={12}
-      height={12}
-      borderRadius="2px"
-      display="inline-block"
-      marginRight={10}
-      backgroundColor={color}
-      verticalAlign="middle"
-      {...props}
-    />
-    <Text color="#fff" fontSize="16px">
-      {text}
-    </Text>
-  </Pane>
-);
-
-const Votes = ({ finalVotes }) => (
-  <Pane height={10} width="100%" display="flex">
-    <Tooltip
-      content={`Yes: ${toFixedNumber(finalVotes.yes, 2)}%`}
-      position="top"
-    >
-      <Pane
-        backgroundColor="#45b4ff"
-        display="flex"
-        height="100%"
-        width={`${finalVotes.yes}%`}
-      />
-    </Tooltip>
-    <Tooltip
-      content={`Abstain: ${toFixedNumber(finalVotes.abstain, 2)}%`}
-      position="top"
-    >
-      <Pane
-        backgroundColor="#ccdcff"
-        display="flex"
-        height="100%"
-        width={`${finalVotes.abstain}%`}
-      />
-    </Tooltip>
-    <Tooltip content={`No: ${toFixedNumber(finalVotes.no, 2)}%`} position="top">
-      <Pane
-        backgroundColor="#ffcf65"
-        display="flex"
-        height="100%"
-        width={`${finalVotes.no}%`}
-      />
-    </Tooltip>
-    <Tooltip
-      content={`NoWithVeto: ${toFixedNumber(finalVotes.no_with_veto, 2)}%`}
-      position="top"
-    >
-      <Pane
-        backgroundColor="#fe8a8a"
-        display="flex"
-        height="100%"
-        width={`${finalVotes.no_with_veto}%`}
-      />
-    </Tooltip>
-  </Pane>
-);
 
 class Governance extends React.Component {
   constructor(props) {
@@ -93,7 +26,7 @@ class Governance extends React.Component {
 
   routeChange = newPath => {
     const { history } = this.props;
-    const path = `/governance/${newPath}`;
+    const path = newPath;
     history.push(path);
   };
 
@@ -123,7 +56,7 @@ class Governance extends React.Component {
         paddingLeft={20}
         height={50}
         isSelectable
-        onSelect={() => this.routeChange(item.id)}
+        onSelect={() => this.routeChange(`/governance/${item.id}`)}
         key={item.id}
       >
         <Table.TextCell flex="none" width={50}>
