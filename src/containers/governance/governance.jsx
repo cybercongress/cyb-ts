@@ -49,7 +49,7 @@ class Governance extends React.Component {
   render() {
     const { table } = this.state;
     // console.log('table', table.length);
-    const rowsTable = table.map(item => (
+    const rowsTable = table.reverse().map(item => (
       <Table.Row
         borderBottom="none"
         width="fit-content"
