@@ -257,3 +257,15 @@ input:active {
     fill: #fff;
     background-color: #fff;
 }
+
+.tooltip-text-deposit::after{
+    width: 0;
+    height: 0;
+    border: 7px solid transparent;
+    content: "";
+    display: block;
+    position: absolute;
+    border-bottom-color: #3ab793;
+    left: 40%;
+    bottom: 17px;
+}

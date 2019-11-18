@@ -52,7 +52,7 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
     <Pane
       backgroundColor="#ffffff14"
       borderRadius={5}
-      overflow="hidden"
+      overflow="visible"
       height={10}
       width="100%"
       display="flex"
@@ -79,8 +79,17 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
           width={`${100 - procentDeposit}%`}
         />
       )}
-      <Pane position="absolute">
-        <Text>Total Deposit {formatNumber(totalDeposit * 10 ** -9)} GCYB</Text>
+      <Pane position="absolute" left="100%" top="20px">
+        <Text
+          whiteSpace="nowrap"
+          color="#fff"
+          position="relative"
+          right="50%"
+          width="100%"
+          className="tooltip-text-deposit"
+        >
+          Total Deposit {formatNumber(totalDeposit * 10 ** -9)} GCYB
+        </Text>
       </Pane>
     </Pane>
   );
@@ -382,14 +391,13 @@ class ProposalsDetail extends React.Component {
               display="flex"
               alignItems="center"
               justifyContent="space-between"
+              minHeight={120}
+              // height={2}
             >
               <Text marginX={5} color="#fff">
                 0
               </Text>
-              <Deposit
-                totalDeposit={totalDeposit * 1.1}
-                minDeposit={minDeposit}
-              />
+              <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
               <Text marginX={5} color="#fff" whiteSpace="nowrap">
                 {formatNumber(minDeposit * 10 ** -9)} GCYB MinDeposit
               </Text>
