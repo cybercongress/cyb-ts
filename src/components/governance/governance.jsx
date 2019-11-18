@@ -6,7 +6,7 @@ const toFixedNumber = (number, toFixed) => {
 };
 
 export const Legend = ({ color, text, ...props }) => (
-  <Pane display="flex" alignItems="center">
+  <Pane display="flex" alignItems="center" {...props}>
     <Pane
       width={12}
       height={12}
@@ -15,7 +15,6 @@ export const Legend = ({ color, text, ...props }) => (
       marginRight={10}
       backgroundColor={color}
       verticalAlign="middle"
-      {...props}
     />
     <Text color="#fff" fontSize="16px">
       {text}
@@ -24,13 +23,20 @@ export const Legend = ({ color, text, ...props }) => (
 );
 
 export const Votes = ({ finalVotes }) => (
-  <Pane backgroundColor="#ffffff14" height={10} width="100%" display="flex">
+  <Pane
+    backgroundColor="#ffffff14"
+    borderRadius={5}
+    overflow="hidden"
+    height={10}
+    width="100%"
+    display="flex"
+  >
     <Tooltip
       content={`Yes: ${toFixedNumber(finalVotes.yes, 2)}%`}
       position="top"
     >
       <Pane
-        backgroundColor="#45b4ff"
+        backgroundColor="#3ab793"
         display="flex"
         height="100%"
         width={`${finalVotes.yes}%`}
@@ -56,14 +62,14 @@ export const Votes = ({ finalVotes }) => (
       />
     </Tooltip>
     <Tooltip
-      content={`NoWithVeto: ${toFixedNumber(finalVotes.no_with_veto, 2)}%`}
+      content={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
       position="top"
     >
       <Pane
         backgroundColor="#fe8a8a"
         display="flex"
         height="100%"
-        width={`${finalVotes.no_with_veto}%`}
+        width={`${finalVotes.noWithVeto}%`}
       />
     </Tooltip>
   </Pane>

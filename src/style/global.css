@@ -252,3 +252,8 @@ input:active {
 .icons-size:hover {
     transform: rotate(360deg);
 }
+
+.icon-pie{
+    fill: #fff;
+    background-color: #fff;
+}

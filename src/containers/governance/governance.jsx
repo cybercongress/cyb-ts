@@ -2,8 +2,8 @@ import React from 'react';
 import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
 import { Votes, Legend } from '../../components';
 
-import proposals from './test';
-// import { getProposals } from '../../utils/governance';
+// import proposals from './test';
+import { getProposals } from '../../utils/governance';
 
 const dateFormat = require('dateformat');
 
@@ -18,9 +18,11 @@ class Governance extends React.Component {
   }
 
   async componentDidMount() {
-    // const proposals = await getProposals();
+    const proposals = await getProposals();
     this.setState({
-      table: proposals[0].result,
+      // table: proposals[0].result,
+      table: proposals,
+
     });
   }
 
@@ -42,7 +44,7 @@ class Governance extends React.Component {
     finalVotes.yes = (yes / finalTotalVotes) * 100;
     finalVotes.no = (no / finalTotalVotes) * 100;
     finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-    finalVotes.no_with_veto = (noWithVeto / finalTotalVotes) * 100;
+    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
     return finalVotes;
   };
 
@@ -117,7 +119,7 @@ class Governance extends React.Component {
               {table.length} Proposals
             </Text>
             <Pane display="flex">
-              <Legend color="#45b4ff" text="Yes" />
+              <Legend color="#3ab793" text="Yes" />
               <Legend color="#ccdcff" text="Abstain" marginLeft={50} />
               <Legend color="#ffcf65" text="No" marginLeft={50} />
               <Legend color="#fe8a8a" text="NoWithVeto" marginLeft={50} />
