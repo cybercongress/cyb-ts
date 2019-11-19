@@ -11,3 +11,11 @@ export { ContainetLedger } from './ledger/container';
 export { Icon } from './icon/icon';
 export { FormatNumber } from './formatNumber/formatNumber';
 export { MenuButton } from './ToggleMenu/menuButton';
+export {
+  Votes,
+  Legend,
+  IconStatus,
+  Deposit,
+  ContainerPane,
+  Item,
+} from './governance/governance';

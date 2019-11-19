@@ -8,15 +8,15 @@ export class Electricity extends React.Component {
     super(props);
     this.state = {
       d: 'M0,100,500,70',
-      stage: false
+      stage: false,
     };
     this.run();
   }
 
   update = () => {
-    const d = this.calculate(0, 0, 1000, 70);
+    const d = this.calculate(0, 0, 2000, 70);
     this.setState({
-      d
+      d,
     });
   };
 
@@ -40,14 +40,14 @@ export class Electricity extends React.Component {
     setInterval(() => {
       const timerId = setInterval(() => {
         this.setState({
-          stage: true
+          stage: true,
         });
         this.update();
       }, 1000 / 30);
       setTimeout(() => {
         clearInterval(timerId);
         this.setState({
-          stage: false
+          stage: false,
         });
       }, 1000);
     }, Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000);
@@ -86,7 +86,7 @@ export class Electricity extends React.Component {
           <svg
             className="electricity-svg"
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 1000 70"
+            viewBox="0 0 2000 70"
           >
             <defs>
               <filter id="f1" x="0" y="0">

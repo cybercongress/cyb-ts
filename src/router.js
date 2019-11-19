@@ -12,6 +12,7 @@ import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
 import Gift from './containers/gift/gift';
+import ProposalsDetail from './containers/governance/proposalsDetail';
 
 export const history = createHashHistory({});
 
@@ -25,7 +26,8 @@ const AppRouter = () => (
       <Route path="/tot" component={Got} />
       <Route path="/auction" component={Auction} />
       <Route path="/brain" component={Search} />
-      <Route path="/governance" component={Governance} />
+      <Route exact path="/governance" component={Governance} />
+      <Route path="/governance/:proposal_id" component={ProposalsDetail} />
       <Route path="/wallet" component={Wallet} />
 
       <Route exact path="*" component={NotFound} />
