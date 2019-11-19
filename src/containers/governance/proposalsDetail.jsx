@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
-import { formatNumber } from '../../utils/search/utils';
 import {
   Votes,
   Legend,
@@ -19,15 +18,15 @@ import {
   getProposer,
   getProposalsDetailVotes,
   getMinDeposit,
+  getTableVoters,
 } from '../../utils/governance';
 
-const dateFormat = require('dateformat');
-const iconPie = require('../../image/_ionicons_svg_ios-pie.svg');
-const iconPieActive = require('../../image/_ionicons_svg_ios-pie-active.svg');
+import ProposalsIdDetail from './proposalsIdDetail';
+import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
+import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 
-const toFixedNumber = (number, toFixed) => {
-  return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
-};
+const dateFormat = require('dateformat');
+
 
 const finalTallyResult = item => {
   const finalVotes = {};
@@ -86,6 +85,7 @@ class ProposalsDetail extends React.Component {
         noWithVeto: 0,
         voter: '',
       },
+      tableVoters: [],
     };
   }
 
@@ -95,6 +95,7 @@ class ProposalsDetail extends React.Component {
     this.getStatusVoting();
     this.getVotes();
     this.getDeposit();
+    this.getTableVoters();
   }
 
   getProposalsInfo = async () => {
@@ -211,6 +212,20 @@ class ProposalsDetail extends React.Component {
     });
   };
 
+  getTableVoters = async () => {
+    const { id } = this.state;
+
+    let tableVoters = [];
+
+    const data = await getTableVoters(id);
+
+    tableVoters = data;
+
+    this.setState({
+      tableVoters,
+    });
+  };
+
   getSubStr = str => {
     let string = str;
     if (string.indexOf('cosmos-sdk/') !== -1) {
@@ -231,12 +246,8 @@ class ProposalsDetail extends React.Component {
       totalDeposit,
       minDeposit,
       tallying,
+      tableVoters,
     } = this.state;
-
-    const { submitTime, depositEndTime, votingStartTime, votingEndTime } = time;
-    const { yes, abstain, no, noWithVeto, participation } = tally;
-    const { quorum, threshold, veto } = tallying;
-    const { voter } = votes;
 
     return (
       <main className="block-body-home">
@@ -270,201 +281,24 @@ class ProposalsDetail extends React.Component {
             <Item title="Description" value={proposalsInfo.description} />
           </ContainerPane>
 
-          <Pane
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(450px, 1fr))"
-            gridGap={20}
-          >
-            <ContainerPane>
-              <Item marginBottom={15} title="Submit Time" value={submitTime} />
-              <Item
-                marginBottom={15}
-                title="Deposit Endtime"
-                value={depositEndTime}
-              />
-              <Item
-                marginBottom={15}
-                title="Total Deposit"
-                value={`${formatNumber(totalDeposit * 10 ** -9)} GCYB`}
-              />
-              <Item
-                marginBottom={15}
-                title="Voting Starttime"
-                value={votingStartTime}
-              />
-              <Item title="Voting Endtime" value={votingEndTime} />
-            </ContainerPane>
+          <ProposalsIdDetail
+            time={time}
+            proposalStatus={proposalStatus}
+            tallying={tallying}
+            tally={tally}
+            totalDeposit={totalDeposit}
+            marginBottom={20}
+          />
 
-            <ContainerPane>
-              <Item
-                marginBottom={15}
-                title="Status"
-                value={
-                  <Pane display="flex">
-                    <IconStatus status={proposalStatus} marginRight={8} />
-                    <Text color="#fff">{proposalStatus}</Text>
-                  </Pane>
-                }
-              />
-              <Item
-                marginBottom={15}
-                title="Participation"
-                value={`${toFixedNumber(
-                  participation,
-                  2
-                )}% (Quorum ${toFixedNumber(quorum * 100, 2)}%)`}
-              />
-              <Item
-                marginBottom={15}
-                title="Yes"
-                value={`${yes}% (Threshold ${toFixedNumber(
-                  threshold * 100,
-                  2
-                )}%)`}
-              />
-              <Item marginBottom={15} title="No" value={`${no}%`} />
-              <Item
-                marginBottom={15}
-                title="NoWithVeto"
-                value={`${noWithVeto}% (Threshold ${toFixedNumber(
-                  veto * 100,
-                  2
-                )}%)`}
-              />
-              <Item title="Abstain" value={`${abstain}%`} />
-            </ContainerPane>
+          <ProposalsDetailProgressBar
+            proposalStatus={proposalStatus}
+            totalDeposit={totalDeposit}
+            minDeposit={minDeposit}
+            tallying={tallying}
+            tally={tally}
+          />
 
-            <ContainerPane
-              display="flex"
-              // alignItems="center"
-              // justifyContent="space-between"
-              flexDirection="column"
-              minHeight={140}
-              // height={2}
-            >
-              <Pane display="flex" marginBottom={20}>
-                <IconStatus status={proposalStatus} marginRight={8} />
-                <Text color="#fff">{proposalStatus}</Text>
-              </Pane>
-              <Pane
-                width="100%"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Text marginX={5} color="#fff">
-                  0
-                </Text>
-                <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
-                <Text marginX={5} color="#fff" whiteSpace="nowrap">
-                  {formatNumber(minDeposit * 10 ** -9)} GCYB MinDeposit
-                </Text>
-              </Pane>
-            </ContainerPane>
-
-            <ContainerPane>
-              <Pane display="flex" marginBottom={25}>
-                <Pane display="flex" alignItems="center" marginRight={15}>
-                  <img
-                    style={{ width: 20, marginRight: 5 }}
-                    src={participation > quorum * 100 ? iconPieActive : iconPie}
-                    alt="pie"
-                  />
-                  <Text color="#c7c7c7">
-                    Participation {toFixedNumber(quorum * 100, 2)}%
-                  </Text>
-                </Pane>
-                <Pane display="flex" alignItems="center" marginRight={15}>
-                  <img
-                    style={{ width: 20, marginRight: 5 }}
-                    src={yes > threshold * 100 ? iconPieActive : iconPie}
-                    alt="pie"
-                  />
-                  <Text color="#c7c7c7">
-                    Yes {toFixedNumber(threshold * 100, 2)}%
-                  </Text>
-                </Pane>
-                <Pane display="flex" alignItems="center" marginRight={15}>
-                  <img
-                    style={{ width: 20, marginRight: 5 }}
-                    src={noWithVeto > veto * 100 ? iconPieActive : iconPie}
-                    alt="pie"
-                  />
-                  <Text color="#c7c7c7">
-                    NoWithVeto {toFixedNumber(veto * 100, 2)}%
-                  </Text>
-                </Pane>
-              </Pane>
-              <Pane
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Pane display="flex" flexDirection="column">
-                  <Text
-                    whiteSpace="nowrap"
-                    color="#fff"
-                    marginX={5}
-                    marginY={5}
-                  >{`Yes: ${toFixedNumber(yes, 2)}%`}</Text>
-                  <Text
-                    whiteSpace="nowrap"
-                    color="#fff"
-                    marginX={5}
-                    marginY={5}
-                  >{`No: ${toFixedNumber(no, 2)}%`}</Text>
-                </Pane>
-                <Votes finalVotes={tally} />
-                <Pane display="flex" flexDirection="column">
-                  <Text
-                    whiteSpace="nowrap"
-                    color="#fff"
-                    marginX={5}
-                    marginY={5}
-                  >{`Abstain: ${toFixedNumber(abstain, 2)}%`}</Text>
-                  <Text
-                    whiteSpace="nowrap"
-                    color="#fff"
-                    marginX={5}
-                    marginY={5}
-                  >{`NoWithVeto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
-                </Pane>
-              </Pane>
-            </ContainerPane>
-          </Pane>
-          <Pane
-            display="flex"
-            height={70}
-            alignItems="center"
-            paddingLeft={20}
-            justifyContent="space-between"
-          >
-            <Text fontSize="18px" color="#fff">
-              Voters
-            </Text>
-            <Pane display="flex">
-              <Legend
-                color="#3ab793"
-                marginRight={20}
-                text={`Yes: ${votes.yes}`}
-              />
-              <Legend
-                color="#ccdcff"
-                marginRight={20}
-                text={`Abstain: ${votes.abstain}`}
-              />
-              <Legend
-                color="#ffcf65"
-                marginRight={20}
-                text={`No: ${votes.no}`}
-              />
-              <Legend
-                color="#fe8a8a"
-                text={`NoWithVeto: ${votes.noWithVeto}`}
-              />
-            </Pane>
-          </Pane>
-          <ContainerPane></ContainerPane>
+          <ProposalsIdDetailTableVoters data={tableVoters} votes={votes} />
         </Pane>
       </main>
     );

@@ -84,3 +84,15 @@ export const getMinDeposit = () =>
       })
       .catch(e => {})
   );
+
+export const getTableVoters = id =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${indexedNode}/lcd/gov/proposals/${id}/votes`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
