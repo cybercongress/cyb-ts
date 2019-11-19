@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
-import { Votes, Legend } from '../../components';
+import { Votes, Legend, IconStatus } from '../../components';
 
 // import proposals from './test';
 import { getProposals } from '../../utils/governance';
@@ -22,7 +22,6 @@ class Governance extends React.Component {
     this.setState({
       // table: proposals[0].result,
       table: proposals,
-
     });
   }
 
@@ -71,7 +70,10 @@ class Governance extends React.Component {
           <Text color="#fff">{item.content.type}</Text>
         </Table.TextCell>
         <Table.TextCell flex="none" width={150}>
-          <Text color="#fff">{item.proposal_status}</Text>
+          <Pane display="flex" alignItems="center" marginBottom={5}>
+            <IconStatus status={item.proposal_status} marginRight={5} />
+            <Text color="#fff">{item.proposal_status}</Text>
+          </Pane>
           <Votes finalVotes={this.finalTallyResult(item.final_tally_result)} />
         </Table.TextCell>
         <Table.TextCell flex="none" width={200}>

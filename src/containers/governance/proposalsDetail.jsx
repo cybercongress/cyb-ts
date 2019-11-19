@@ -1,7 +1,14 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
-import { Votes, Legend } from '../../components';
+import {
+  Votes,
+  Legend,
+  IconStatus,
+  Deposit,
+  ContainerPane,
+  Item,
+} from '../../components';
 import proposalsIdJson from './proposalsId';
 import proposerJson from './proposer';
 import {
@@ -20,79 +27,6 @@ const iconPieActive = require('../../image/_ionicons_svg_ios-pie-active.svg');
 
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
-};
-
-const ContainerPane = ({ children, ...props }) => (
-  <Pane {...props} paddingX={20} paddingY={20} boxShadow="0 0 3px 0px #3ab793">
-    {children}
-  </Pane>
-);
-
-const Item = ({ title, value, ...props }) => (
-  <Pane {...props} display="flex">
-    <Text minWidth="150px" color="#fff" fontSize="16px">
-      {title}:{' '}
-    </Text>
-    <Text color="#fff" fontSize="16px">
-      {value}
-    </Text>
-  </Pane>
-);
-
-export const Deposit = ({ totalDeposit, minDeposit }) => {
-  let procentDeposit = 0;
-
-  if (totalDeposit > minDeposit) {
-    procentDeposit = (minDeposit / totalDeposit) * 100;
-  } else {
-    procentDeposit = (totalDeposit / minDeposit) * 100;
-  }
-
-  return (
-    <Pane
-      backgroundColor="#ffffff14"
-      borderRadius={5}
-      overflow="visible"
-      height={10}
-      width="100%"
-      display="flex"
-      position="relative"
-    >
-      <Pane
-        backgroundColor="#3ab793"
-        display="flex"
-        height="100%"
-        borderRadius={5}
-        position="absolute"
-        width={`${totalDeposit < minDeposit ? procentDeposit : 100}%`}
-      />
-
-      {totalDeposit > minDeposit && (
-        <Pane
-          backgroundColor="#007bff"
-          display="flex"
-          height="100%"
-          borderRadius={5}
-          position="absolute"
-          zIndex={1}
-          right={0}
-          width={`${100 - procentDeposit}%`}
-        />
-      )}
-      <Pane position="absolute" left="100%" top="20px">
-        <Text
-          whiteSpace="nowrap"
-          color="#fff"
-          position="relative"
-          right="50%"
-          width="100%"
-          className="tooltip-text-deposit"
-        >
-          Total Deposit {formatNumber(totalDeposit * 10 ** -9)} GCYB
-        </Text>
-      </Pane>
-    </Pane>
-  );
 };
 
 const finalTallyResult = item => {
@@ -312,6 +246,10 @@ class ProposalsDetail extends React.Component {
               #{id} {proposalsInfo.title}
             </Text>
           </Pane>
+          <Pane display="flex" marginBottom={10} paddingLeft={20}>
+            <IconStatus status={proposalStatus} marginRight={8} />
+            <Text color="#fff">{proposalStatus}</Text>
+          </Pane>
           <ContainerPane marginBottom={20}>
             <Item
               marginBottom={15}
@@ -358,7 +296,16 @@ class ProposalsDetail extends React.Component {
             </ContainerPane>
 
             <ContainerPane>
-              <Item marginBottom={15} title="Status" value={proposalStatus} />
+              <Item
+                marginBottom={15}
+                title="Status"
+                value={
+                  <Pane display="flex">
+                    <IconStatus status={proposalStatus} marginRight={8} />
+                    <Text color="#fff">{proposalStatus}</Text>
+                  </Pane>
+                }
+              />
               <Item
                 marginBottom={15}
                 title="Participation"
@@ -389,18 +336,30 @@ class ProposalsDetail extends React.Component {
 
             <ContainerPane
               display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              minHeight={120}
+              // alignItems="center"
+              // justifyContent="space-between"
+              flexDirection="column"
+              minHeight={140}
               // height={2}
             >
-              <Text marginX={5} color="#fff">
-                0
-              </Text>
-              <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
-              <Text marginX={5} color="#fff" whiteSpace="nowrap">
-                {formatNumber(minDeposit * 10 ** -9)} GCYB MinDeposit
-              </Text>
+              <Pane display="flex" marginBottom={20}>
+                <IconStatus status={proposalStatus} marginRight={8} />
+                <Text color="#fff">{proposalStatus}</Text>
+              </Pane>
+              <Pane
+                width="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <Text marginX={5} color="#fff">
+                  0
+                </Text>
+                <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
+                <Text marginX={5} color="#fff" whiteSpace="nowrap">
+                  {formatNumber(minDeposit * 10 ** -9)} GCYB MinDeposit
+                </Text>
+              </Pane>
             </ContainerPane>
 
             <ContainerPane>
