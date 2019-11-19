@@ -6,7 +6,7 @@ const NotFound = ({ text }) => (
       <div className="vitalik-oval-1" />
       <div className="vitalik-oval-2" />
     </div>
-    <span className="text-notFound">Page Not Found </span>
+    <span className="text-notFound">{text || 'Page Not Found'}</span>
   </div>
 );
 

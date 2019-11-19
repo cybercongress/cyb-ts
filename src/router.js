@@ -26,10 +26,8 @@ const AppRouter = () => (
       <Route path="/tot" component={Got} />
       <Route path="/auction" component={Auction} />
       <Route path="/brain" component={Search} />
-      <Switch>
-        <Route exact path="/governance" component={Governance} />
-        <Route path="/governance/:proposal_id" component={ProposalsDetail} />
-      </Switch>
+      <Route exact path="/governance" component={Governance} />
+      <Route path="/governance/:proposal_id" component={ProposalsDetail} />
       <Route path="/wallet" component={Wallet} />
 
       <Route exact path="*" component={NotFound} />

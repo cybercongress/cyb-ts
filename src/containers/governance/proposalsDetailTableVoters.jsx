@@ -10,11 +10,15 @@ const ProposalsIdDetailTableVoters = ({ votes, data, ...props }) => {
       borderBottom="none"
       paddingLeft={20}
       height={50}
-      isSelectable
+      // isSelectable
       key={item.voter}
     >
       <Table.TextCell>
-        <Text color="#fff">{item.voter}</Text>
+        <Text color="#fff">
+          <a href={`https://callisto.cybernode.ai/account/${item.voter}`}>
+            {item.voter}
+          </a>
+        </Text>
       </Table.TextCell>
       <Table.TextCell>
         <Text color="#fff">{item.option}</Text>
