@@ -13,6 +13,7 @@ import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
 import Gift from './containers/gift/gift';
 import ProposalsDetail from './containers/governance/proposalsDetail';
+import Validators from './containers/Validators/Validators';
 
 export const history = createHashHistory({});
 
@@ -29,6 +30,7 @@ const AppRouter = () => (
       <Route exact path="/governance" component={Governance} />
       <Route path="/governance/:proposal_id" component={ProposalsDetail} />
       <Route path="/wallet" component={Wallet} />
+      <Route path="/validators" component={Validators} />
 
       <Route exact path="*" component={NotFound} />
     </Switch>

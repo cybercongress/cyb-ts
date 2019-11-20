@@ -3,12 +3,15 @@ import {
   Navigation,
   AppSideBar,
   NavigationLeft,
-  Pane
+  Pane,
 } from '@cybercongress/gravity';
+import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import { Electricity } from '../home/electricity';
+
+import Story from '../story/story';
 
 const cyber = require('../../image/cyber.png');
 const cyb = require('../../image/cyb.svg');
@@ -30,45 +33,63 @@ const htef = [
   { id: 4, to: 'tot', nameApp: 'tot' },
   { id: 5, to: 'auction', nameApp: 'auction' },
   { id: 6, to: 'brain', nameApp: 'brain' },
-  { id: 7, to: 'governance', nameApp: 'governance' }
-  // { id: 7, to: 'cyber' },
+  { id: 7, to: 'governance', nameApp: 'governance' },
+  { id: 8, to: 'wallet', nameApp: 'wallet' },
   // { id: 7, to: 'euler' }
 ];
 
 class App extends Component {
   constructor(props) {
     super(props);
+    let story = false;
+    const localStorageStory = localStorage.getItem('story');
+    if (localStorageStory !== null) {
+      story = localStorageStory;
+    }
+
     this.state = {
       selectedIndex: 0,
       app: '',
-      openMenu: false
+      openMenu: false,
+      story,
     };
   }
 
-  componentDidMount() {
-    const dura = localStorage.getItem('LAST_DURA');
+  handleClickOutside = evt => {
     this.setState({
-      app: dura
+      openMenu: false,
     });
-  }
+  };
 
   toggleMenu = () => {
     const { openMenu } = this.state;
     this.setState({
-      openMenu: !openMenu
+      openMenu: !openMenu,
     });
   };
 
   onCustomClick = index => {
     console.log('index', index);
     this.setState({
-      app: index.to
+      app: index.to,
+    });
+  };
+
+  closeStory = () => {
+    // console.log('dfd');
+    this.setState({
+      story: true,
     });
   };
 
   render() {
-    const { app, openMenu } = this.state;
+    const { app, openMenu, story } = this.state;
     // console.log('app', app);
+
+    if (!story) {
+      return <Story close={this.closeStory} />;
+    }
+
     return (
       <div>
         <AppSideBar onCloseSidebar={this.toggleMenu} openMenu={openMenu}>
@@ -123,4 +144,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default onClickOutside(App);

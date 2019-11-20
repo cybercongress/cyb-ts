@@ -2,6 +2,7 @@ import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { FormatNumber } from '../../components/index';
 import withWeb3 from '../../components/web3/withWeb3';
+import NotFound from '../application/notFound';
 // import { formatNumber } from '../../utils/search/utils';
 
 const toFixedNumber = (number, toFixed) => {
@@ -48,7 +49,11 @@ class Wallet extends React.Component {
   }
 
   componentDidMount() {
-    this.getAddressToMetaMask();
+    const { accounts } = this.props;
+    console.log(accounts);
+    if (accounts !== null && accounts !== undefined) {
+      this.getAddressToMetaMask();
+    }
   }
 
   getAddressToMetaMask = async () => {
@@ -73,6 +78,7 @@ class Wallet extends React.Component {
   };
 
   render() {
+    const { accounts } = this.props;
     const { table } = this.state;
 
     const rowsTable = table.map(item => (
@@ -83,29 +89,46 @@ class Wallet extends React.Component {
         isSelectable
         key={item.address}
       >
-        <Table.TextCell>
+        <Table.TextCell flex={1.5}>
           <Text color="#fff" fontSize="17px">
             {item.address}
           </Text>
         </Table.TextCell>
-        <Table.TextCell>
+        <Table.TextCell flex={0.4}>
           <Text color="#fff" fontSize="17px">
             <FormatNumber number={item.amount} />
           </Text>
         </Table.TextCell>
-        <Table.TextCell>
+        <Table.TextCell flex={0.3}>
           <Text color="#fff" fontSize="17px">
             {item.token}
           </Text>
         </Table.TextCell>
-        <Table.TextCell>
+        <Table.TextCell flex={0.4}>
           <Text color="#fff" fontSize="17px">
             {item.keys}
           </Text>
         </Table.TextCell>
       </Table.Row>
     ));
-
+    if (accounts === null) {
+      return (
+        <NotFound
+          text={
+            <span>
+              {' '}
+              <span>Please install</span>
+              &nbsp;
+              <a href="https://metamask.io/" target="_blank">
+                Metamask extension
+              </a>
+              &nbsp;
+              <span>and refresh the page</span>
+            </span>
+          }
+        />
+      );
+    }
     return (
       <main className="block-body-home">
         <Pane
@@ -122,22 +145,22 @@ class Wallet extends React.Component {
               }}
               paddingLeft={20}
             >
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={1.5}>
                 <Text color="#fff" fontSize="17px">
                   Address
                 </Text>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={0.4}>
                 <Text color="#fff" fontSize="17px">
                   Amount
                 </Text>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={0.3}>
                 <Text color="#fff" fontSize="17px">
                   Token
                 </Text>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={0.4}>
                 <Text color="#fff" fontSize="17px">
                   Keys
                 </Text>
