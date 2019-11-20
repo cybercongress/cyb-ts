@@ -3,8 +3,9 @@ import {
   Navigation,
   AppSideBar,
   NavigationLeft,
-  Pane
+  Pane,
 } from '@cybercongress/gravity';
+import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
@@ -41,28 +42,34 @@ class App extends Component {
     this.state = {
       selectedIndex: 0,
       app: '',
-      openMenu: false
+      openMenu: false,
     };
   }
 
   componentDidMount() {
     const dura = localStorage.getItem('LAST_DURA');
     this.setState({
-      app: dura
+      app: dura,
     });
   }
+
+  handleClickOutside = evt => {
+    this.setState({
+      openMenu: false,
+    });
+  };
 
   toggleMenu = () => {
     const { openMenu } = this.state;
     this.setState({
-      openMenu: !openMenu
+      openMenu: !openMenu,
     });
   };
 
   onCustomClick = index => {
     console.log('index', index);
     this.setState({
-      app: index.to
+      app: index.to,
     });
   };
 
@@ -123,4 +130,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default onClickOutside(App);
