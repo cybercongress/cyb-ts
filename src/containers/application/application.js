@@ -30,8 +30,8 @@ const htef = [
   { id: 4, to: 'tot', nameApp: 'tot' },
   { id: 5, to: 'auction', nameApp: 'auction' },
   { id: 6, to: 'brain', nameApp: 'brain' },
-  { id: 7, to: 'governance', nameApp: 'governance' }
-  // { id: 7, to: 'cyber' },
+  { id: 7, to: 'governance', nameApp: 'governance' },
+  { id: 8, to: 'wallet', nameApp: 'wallet' },
   // { id: 7, to: 'euler' }
 ];
 
