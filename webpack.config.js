@@ -1,4 +1,5 @@
 const path = require('path');
+const SRC = path.resolve(__dirname, 'src/main/js');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -8,11 +9,11 @@ const dev = process.env.NODE_ENV !== 'production';
 const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
   template: path.join(__dirname, 'src', 'index.html'),
   filename: 'index.html',
-  inject: 'body'
+  inject: 'body',
 });
 
 const DefinePluginConfig = new webpack.DefinePlugin({
-  'process.env.NODE_ENV': JSON.stringify('production')
+  'process.env.NODE_ENV': JSON.stringify('production'),
 });
 
 module.exports = {
@@ -22,14 +23,14 @@ module.exports = {
     port: process.env.PORT_APP || '3000',
     hot: true,
     headers: {
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
     },
-    historyApiFallback: true
+    historyApiFallback: true,
   },
   entry: [
     '@babel/polyfill',
     'react-hot-loader/patch',
-    path.join(__dirname, 'src', 'index.js')
+    path.join(__dirname, 'src', 'index.js'),
   ],
   module: {
     rules: [
@@ -37,7 +38,7 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         include: /src/,
-        loaders: ['babel-loader']
+        loaders: ['babel-loader'],
       },
       {
         test: /\.css$/,
@@ -45,32 +46,39 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: '../'
-            }
+              publicPath: '../',
+            },
           },
-          'css-loader'
-        ]
+          'css-loader',
+        ],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: ['file-loader']
+        use: ['file-loader'],
+      },
+      {
+        test: /\.(ogg|mp3|wav|mpe?g)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '[path][name].[ext]',
+        }
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loader: 'url-loader',
         options: {
-          outputPath: 'image/'
-        }
-      }
-    ]
+          outputPath: 'image/',
+        },
+      },
+    ],
   },
   resolve: {
     extensions: ['*', '.js', '.jsx'],
-    alias: {}
+    alias: {},
   },
   output: {
     filename: 'index.js',
-    path: path.join(__dirname, '/build')
+    path: path.join(__dirname, '/build'),
   },
   mode: dev ? 'development' : 'production',
   plugins: dev
@@ -79,15 +87,15 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         new MiniCssExtractPlugin({
           filename: '[name].css',
-          chunkFilename: '[id].css'
-        })
+          chunkFilename: '[id].css',
+        }),
       ]
     : [
         HTMLWebpackPluginConfig,
         DefinePluginConfig,
         new MiniCssExtractPlugin({
           filename: '[name].css',
-          chunkFilename: '[id].css'
-        })
-      ]
+          chunkFilename: '[id].css',
+        }),
+      ],
 };

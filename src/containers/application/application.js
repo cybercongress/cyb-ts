@@ -11,6 +11,8 @@ import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import { Electricity } from '../home/electricity';
 
+import Story from '../story/story';
+
 const cyber = require('../../image/cyber.png');
 const cyb = require('../../image/cyb.svg');
 
@@ -39,18 +41,18 @@ const htef = [
 class App extends Component {
   constructor(props) {
     super(props);
+    let story = false;
+    const localStorageStory = localStorage.getItem('story');
+    if (localStorageStory !== null) {
+      story = localStorageStory;
+    }
+
     this.state = {
       selectedIndex: 0,
       app: '',
       openMenu: false,
+      story,
     };
-  }
-
-  componentDidMount() {
-    const dura = localStorage.getItem('LAST_DURA');
-    this.setState({
-      app: dura,
-    });
   }
 
   handleClickOutside = evt => {
@@ -73,9 +75,21 @@ class App extends Component {
     });
   };
 
+  closeStory = () => {
+    // console.log('dfd');
+    this.setState({
+      story: true,
+    });
+  };
+
   render() {
-    const { app, openMenu } = this.state;
+    const { app, openMenu, story } = this.state;
     // console.log('app', app);
+
+    if (!story) {
+      return <Story close={this.closeStory} />;
+    }
+
     return (
       <div>
         <AppSideBar onCloseSidebar={this.toggleMenu} openMenu={openMenu}>
