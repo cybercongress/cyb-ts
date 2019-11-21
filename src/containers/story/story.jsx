@@ -7,6 +7,7 @@ class Story extends React.Component {
     super(props);
     this.state = {
       animated: false,
+      end: false,
     };
   }
 
@@ -28,6 +29,12 @@ class Story extends React.Component {
     }, 6000);
 
     setTimeout(() => {
+      this.setState({
+        end: true,
+      });
+    }, 68500);
+
+    setTimeout(() => {
       close();
       localStorage.setItem('story', JSON.stringify(true));
     }, 70000);
@@ -38,7 +45,7 @@ class Story extends React.Component {
     sound.volume = 0.2;
     const fade = setInterval(() => {
       if (sound.currentTime >= 55 && sound.volume >= 0.1) {
-        sound.volume -= 0.001;
+        sound.volume -= 0.002;
       }
       if (sound.currentTime >= 10 && sound.volume <= 0.1) {
         sound.volume = 0.0;
@@ -50,14 +57,9 @@ class Story extends React.Component {
   };
 
   render() {
-    const { animated } = this.state;
+    const { animated, end } = this.state;
     return (
-      <div className="story">
-        <div id="info">
-          Star Wars opening crawl recreated in HTML, CSS & JS by{' '}
-          <a href="http://github.com/charliegerard">Charlie Gerard</a>
-        </div>
-
+      <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
         <section
           id="title"
           style={{ opacity: `${animated ? 0 : 1}`, transition: 'opacity 0.3s' }}
