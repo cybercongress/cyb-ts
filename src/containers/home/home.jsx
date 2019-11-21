@@ -1,8 +1,16 @@
 import React, { PureComponent } from 'react';
-import { Button, Input, Pane, SearchItem, Text } from '@cybercongress/gravity';
+import {
+  Button,
+  Input,
+  Pane,
+  SearchItem,
+  Text,
+  TextInput,
+} from '@cybercongress/gravity';
 import { Electricity } from './electricity';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
+import { Loading } from '../../components';
 
 const cyb = require('../../image/logo-cyb-v2.svg');
 const cyber = require('../../image/cyber.png');
@@ -23,6 +31,7 @@ class Home extends PureComponent {
       valueSearchInput: '',
       result: false,
       searchResults: [],
+      loading: false,
     };
   }
 
@@ -44,24 +53,34 @@ class Home extends PureComponent {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
-    if (e.key === 'Enter') {
-      let searchResults = [];
-      searchResults = await search(await getIpfsHash(valueSearchInput));
-      searchResults.map((item, index) => {
-        searchResults[index].cid = item.cid;
-        searchResults[index].rank = formatNumber(item.rank, 6);
-        searchResults[index].grade = getRankGrade(item.rank);
-      });
-      console.log('searchResults', searchResults);
-      this.setState({
-        searchResults,
-        result: true,
-      });
+    if (valueSearchInput.length > 0) {
+      if (e.key === 'Enter') {
+        this.setState({
+          loading: true,
+        });
+        this.getSearch(valueSearchInput);
+      }
     }
   };
 
+  getSearch = async valueSearchInput => {
+    let searchResults = [];
+    searchResults = await search(await getIpfsHash(valueSearchInput));
+    searchResults.map((item, index) => {
+      searchResults[index].cid = item.cid;
+      searchResults[index].rank = formatNumber(item.rank, 6);
+      searchResults[index].grade = getRankGrade(item.rank);
+    });
+    console.log('searchResults', searchResults);
+    this.setState({
+      searchResults,
+      result: true,
+      loading: false,
+    });
+  };
+
   render() {
-    const { valueSearchInput, result, searchResults } = this.state;
+    const { valueSearchInput, result, searchResults, loading } = this.state;
 
     const searchItems = searchResults.map(item => (
       <SearchItem
@@ -85,15 +104,33 @@ class Home extends PureComponent {
           flex={result ? 0.3 : 0.9}
           transition="flex 0.5s"
         >
-          <Input
-            width="60%"
+          <input
+            style={{
+              width: '60%',
+              height: 41,
+              marginRight: 15,
+              fontSize: 20,
+            }}
             placeholder="joint for validators"
             value={valueSearchInput}
             onChange={e => this.onChangeInput(e)}
             onKeyPress={this.handleKeyPress}
+            className="search-input"
           />
+          {/* <Button fontSize={20}>cyber</Button> */}
+          {loading && (
+            <div
+              style={{
+                position: 'absolute',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                bottom: '30%',
+              }}
+            >
+              <Loading />
+            </div>
+          )}
         </Pane>
-
         {result && (
           <Pane
             width="90%"
@@ -108,7 +145,7 @@ class Home extends PureComponent {
               color="#949292"
               lineHeight="20px"
             >
-              {`The answer for ${searchItems.length}`}
+              {`I found ${searchItems.length} results`}
             </Text>
             <Pane>{searchItems}</Pane>
           </Pane>
