@@ -82,7 +82,7 @@ class Home extends PureComponent {
           display="flex"
           alignItems="center"
           justifyContent="center"
-          flex={result ? 0.3 : 0.7}
+          flex={result ? 0.3 : 0.9}
           transition="flex 0.5s"
         >
           <Input
@@ -115,11 +115,11 @@ class Home extends PureComponent {
         )}
         {!result && (
           <Pane
-            flex={0.3}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="space-around"
+            position="absolute"
+            bottom={0}
+            left="50%"
+            marginRight="-50%"
+            transform="translate(-50%, -50%)"
           >
             {/* <Pane
               width="60%"
@@ -136,8 +136,13 @@ class Home extends PureComponent {
                 <img style={{ width: 100, height: 100 }} src={cyb} />
               </a>
             </Pane> */}
-            <a href="https://cybercongress.ai" target="_blank">
-              <img style={{ width: 20, height: 20 }} src={tilde} alt="tilde" />
+            <a
+              style={{ fontSize: '60px' }}
+              href="https://cybercongress.ai"
+              target="_blank"
+            >
+              {/* <img style={{ width: 20, height: 20 }} src={tilde} alt="tilde" /> */}
+              ~
             </a>
           </Pane>
         )}
