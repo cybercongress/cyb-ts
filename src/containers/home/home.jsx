@@ -108,7 +108,7 @@ class Home extends PureComponent {
               color="#949292"
               lineHeight="20px"
             >
-              {`The answer for ${searchItems.length} is`}
+              {`The answer for ${searchItems.length}`}
             </Text>
             <Pane>{searchItems}</Pane>
           </Pane>

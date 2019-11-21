@@ -110,7 +110,7 @@ class Validators extends React.Component {
                 borderRadius="50%"
                 paddingX={4}
                 paddingY={0}
-                marginX={20}
+                // marginX={20}
                 isSolid
                 color={statusColor}
               />
