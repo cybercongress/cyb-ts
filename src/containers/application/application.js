@@ -116,7 +116,7 @@ class App extends Component {
     const { app, openMenu, story } = this.state;
     // console.log('app', app);
 
-    if (!story) {
+    if (story) {
       return <Story close={this.closeStory} />;
     }
 

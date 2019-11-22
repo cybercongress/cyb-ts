@@ -43,7 +43,7 @@ section {
 
 .content {
 	top: auto;
-	bottom: 0;
+	bottom: 40%;
 	height: 50em;
 	width: 14.65em;
 	margin: 0 0 0 -7.65em;
@@ -52,7 +52,7 @@ section {
 	overflow: hidden;
 	color: yellow;
 	transform-origin: 50% 100%;
-	transform: perspective(300px) rotateX(25deg);
+	transform: perspective(191px) rotateX(50deg);
 }
 
 .content div {
