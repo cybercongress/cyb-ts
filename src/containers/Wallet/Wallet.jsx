@@ -111,71 +111,74 @@ class Wallet extends React.Component {
         </Table.TextCell>
       </Table.Row>
     ));
-    if (accounts === null) {
-      return (
-        <NotFound
-          text={
-            <span>
-              {' '}
-              <span>Please install</span>
-              &nbsp;
-              <a href="https://metamask.io/" target="_blank">
-                Metamask extension
-              </a>
-              &nbsp;
-              <span>and refresh the page</span>
-            </span>
-          }
-        />
-      );
-    }
-    return (
-      <main className="block-body-home">
-        <Pane
-          height="100%"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-around"
-        >
-          <Table width="100%">
-            <Table.Head
-              style={{
-                backgroundColor: '#000',
-                borderBottom: '1px solid #ffffff80',
-              }}
-              paddingLeft={20}
-            >
-              <Table.TextHeaderCell flex={1.5}>
-                <Text color="#fff" fontSize="17px">
-                  Address
-                </Text>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={0.4}>
-                <Text color="#fff" fontSize="17px">
-                  Amount
-                </Text>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={0.3}>
-                <Text color="#fff" fontSize="17px">
-                  Token
-                </Text>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={0.4}>
-                <Text color="#fff" fontSize="17px">
-                  Keys
-                </Text>
-              </Table.TextHeaderCell>
-            </Table.Head>
-            <Table.Body
-              style={{ backgroundColor: '#000', overflowY: 'hidden' }}
-            >
-              {rowsTable}
-            </Table.Body>
-          </Table>
-        </Pane>
-      </main>
+    return(
+      <NotFound text="Hurry up! Find and connect your secure Ledger" />
     );
+    // if (accounts === null) {
+    //   return (
+    //     <NotFound
+    //       text={
+    //         <span>
+    //           {' '}
+    //           <span>Please install</span>
+    //           &nbsp;
+    //           <a href="https://metamask.io/" target="_blank">
+    //             Metamask extension
+    //           </a>
+    //           &nbsp;
+    //           <span>and refresh the page</span>
+    //         </span>
+    //       }
+    //     />
+    //   );
+    // }
+    // return (
+    //   <main className="block-body-home">
+    //     <Pane
+    //       height="100%"
+    //       display="flex"
+    //       alignItems="center"
+    //       justifyContent="space-around"
+    //     >
+    //       <Table width="100%">
+    //         <Table.Head
+    //           style={{
+    //             backgroundColor: '#000',
+    //             borderBottom: '1px solid #ffffff80',
+    //           }}
+    //           paddingLeft={20}
+    //         >
+    //           <Table.TextHeaderCell flex={1.5}>
+    //             <Text color="#fff" fontSize="17px">
+    //               Address
+    //             </Text>
+    //           </Table.TextHeaderCell>
+    //           <Table.TextHeaderCell flex={0.4}>
+    //             <Text color="#fff" fontSize="17px">
+    //               Amount
+    //             </Text>
+    //           </Table.TextHeaderCell>
+    //           <Table.TextHeaderCell flex={0.3}>
+    //             <Text color="#fff" fontSize="17px">
+    //               Token
+    //             </Text>
+    //           </Table.TextHeaderCell>
+    //           <Table.TextHeaderCell flex={0.4}>
+    //             <Text color="#fff" fontSize="17px">
+    //               Keys
+    //             </Text>
+    //           </Table.TextHeaderCell>
+    //         </Table.Head>
+    //         <Table.Body
+    //           style={{ backgroundColor: '#000', overflowY: 'hidden' }}
+    //         >
+    //           {rowsTable}
+    //         </Table.Body>
+    //       </Table>
+    //     </Pane>
+    //   </main>
+    // );
   }
 }
 
-export default withWeb3(Wallet);
+export default Wallet;
