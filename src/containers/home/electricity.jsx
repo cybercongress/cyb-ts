@@ -1,4 +1,5 @@
 import React from 'react';
+import { wssCyberUrl } from '../../utils/config';
 
 const cyb = require('../../image/logo-cyb-v2.svg');
 const cyber = require('../../image/cyber.png');
@@ -10,8 +11,37 @@ class Electricity extends React.Component {
       d: 'M0,100,500,70',
       stage: false,
     };
-    this.run();
+    // this.run();
   }
+
+  ws = new WebSocket(wssCyberUrl);
+
+  componentDidMount() {
+    this.getDataWS();
+  }
+
+  getDataWS = () => {
+    this.ws.onopen = () => {
+      console.log('connected');
+      this.ws.send(
+        JSON.stringify({
+          method: 'subscribe',
+          params: ["tm.event='NewBlockHeader'"],
+          id: '1',
+          jsonrpc: '2.0',
+        })
+      );
+    };
+    this.ws.onmessage = async evt => {
+      // const message = JSON.parse(evt.data);
+      // console.log('message', message);
+      this.run();
+    };
+
+    this.ws.onclose = () => {
+      console.log('disconnected');
+    };
+  };
 
   update = () => {
     const d = this.calculate(0, 0, 2000, 70);
@@ -37,20 +67,20 @@ class Electricity extends React.Component {
   };
 
   run() {
-    setInterval(() => {
-      const timerId = setInterval(() => {
-        this.setState({
-          stage: true,
-        });
-        this.update();
-      }, 1000 / 30);
-      setTimeout(() => {
-        clearInterval(timerId);
-        this.setState({
-          stage: false,
-        });
-      }, 1000);
-    }, Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000);
+    // setInterval(() => {
+    const timerId = setInterval(() => {
+      this.setState({
+        stage: true,
+      });
+      this.update();
+    }, 1000 / 30);
+    setTimeout(() => {
+      clearInterval(timerId);
+      this.setState({
+        stage: false,
+      });
+    }, 600);
+    // }, Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000);
 
     // const fps = 30;
     // let now;

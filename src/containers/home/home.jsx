@@ -57,7 +57,6 @@ class Home extends PureComponent {
     const { valueSearchInput } = this.state;
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
-        console.log('f');
         this.setState({
           targetColor: true,
         });
