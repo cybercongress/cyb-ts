@@ -3,7 +3,7 @@ import React from 'react';
 const cyb = require('../../image/logo-cyb-v2.svg');
 const cyber = require('../../image/cyber.png');
 
-export class Electricity extends React.Component {
+class Electricity extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -108,3 +108,5 @@ export class Electricity extends React.Component {
     );
   }
 }
+
+export default Electricity;

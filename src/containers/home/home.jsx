@@ -7,7 +7,7 @@ import {
   Text,
   TextInput,
 } from '@cybercongress/gravity';
-import { Electricity } from './electricity';
+import Electricity from './electricity';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';

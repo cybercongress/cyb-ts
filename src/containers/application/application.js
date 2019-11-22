@@ -9,7 +9,7 @@ import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { Electricity } from '../home/electricity';
+import Electricity from '../home/electricity';
 
 import Story from '../story/story';
 
