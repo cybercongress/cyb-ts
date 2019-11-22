@@ -55,8 +55,6 @@ class App extends Component {
     };
   }
 
-
-
   handleClickOutside = evt => {
     this.setState({
       openMenu: false,
@@ -111,7 +109,9 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <Menu imgLogo={cyber} toggleMenu={this.toggleMenu} />
+          <a href="#/brain">
+            <Menu imgLogo={cyber} />
+          </a>
           <Electricity />
           <a href="#/wallet">
             <Pane
@@ -146,4 +146,4 @@ class App extends Component {
   }
 }
 
-export default onClickOutside(App);
+export default App;
