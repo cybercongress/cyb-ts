@@ -235,13 +235,13 @@ class ChainStatistic extends React.Component {
             Consensus
           </Heading>
           <Pane display="flex" marginX={-15}>
-            <a
+            {/* <a
               href="/#/validators"
               style={{
                 display: 'contents',
                 textDecoration: 'none',
               }}
-            >
+            > */}
               <CardHover
                 flex={1}
                 display="flex"
@@ -259,12 +259,12 @@ class ChainStatistic extends React.Component {
                 >
                   {activeValidatorsCount}
                 </Text>
-                <Pane display="flex" alignItems="center">
-                  <Text color="#4caf50">active validators</Text>
-                  <Icon icon="arrow-right" color="#4caf50" marginLeft={5} />
-                </Pane>
+                {/* <Pane display="flex" alignItems="center"> */}
+                  <Text color="#4ed6ae">active validators</Text>
+                  {/* <Icon icon="arrow-right" color="#4caf50" marginLeft={5} /> */}
+                {/* </Pane> */}
               </CardHover>
-            </a>
+            {/* </a> */}
             <CardHover
               flex={1}
               paddingY={50}
