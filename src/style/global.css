@@ -295,5 +295,5 @@ input:active {
 
 .search-input:focus {
     -webkit-app-region: no-drag;
-    box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53);
+    box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53) !important;
 }

@@ -33,6 +33,7 @@ class Home extends PureComponent {
       searchResults: [],
       loading: false,
       targetColor: false,
+      boxShadow: 3,
     };
   }
 
@@ -103,6 +104,46 @@ class Home extends PureComponent {
     });
   };
 
+  showCoords = event => {
+    let boxShadow = 0;
+
+    const mX = event.pageX;
+    const mY = event.pageY;
+    const from = { x: mX, y: mY };
+
+    const element = document.getElementById('searchInput');
+    const off = element.getBoundingClientRect();
+    const { width } = off;
+    const { height } = off;
+
+    const nx1 = off.left;
+    const ny1 = off.top;
+    const nx2 = nx1 + width;
+    const ny2 = ny1 + height;
+    const maxX1 = Math.max(mX, nx1);
+    const minX2 = Math.min(mX, nx2);
+    const maxY1 = Math.max(mY, ny1);
+    const minY2 = Math.min(mY, ny2);
+    const intersectX = minX2 >= maxX1;
+    const intersectY = minY2 >= maxY1;
+    const to = {
+      x: intersectX ? mX : nx2 < mX ? nx2 : nx1,
+      y: intersectY ? mY : ny2 < mY ? ny2 : ny1,
+    };
+    const distX = to.x - from.x;
+    const distY = to.y - from.y;
+    const hypot = Math.sqrt(distX * distX + distY * distY);
+    // consoleelement = document.getElementById('some-id');.log(width, height);
+    // console.log(`X coords: ${x}, Y coords: ${y}`);
+    if (width > hypot) {
+      boxShadow = ((width - hypot) / 100) * 2.5;
+    }
+
+    this.setState({
+      boxShadow,
+    });
+  };
+
   render() {
     const {
       valueSearchInput,
@@ -110,6 +151,7 @@ class Home extends PureComponent {
       searchResults,
       loading,
       targetColor,
+      boxShadow,
     } = this.state;
 
     const searchItems = searchResults.map(item => (
@@ -126,7 +168,7 @@ class Home extends PureComponent {
     ));
 
     return (
-      <main className="block-body-home">
+      <main onMouseMove={e => this.showCoords(e)} className="block-body-home">
         <Pane
           display="flex"
           alignItems="center"
@@ -138,14 +180,15 @@ class Home extends PureComponent {
             style={{
               width: '60%',
               height: 41,
-              marginRight: 15,
               fontSize: 20,
+              boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
             }}
             placeholder="joint for validators"
             value={valueSearchInput}
             onChange={e => this.onChangeInput(e)}
             onKeyPress={this.handleKeyPress}
             className="search-input"
+            id="searchInput"
           />
           {loading && (
             <div
