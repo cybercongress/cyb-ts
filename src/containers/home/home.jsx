@@ -32,6 +32,7 @@ class Home extends PureComponent {
       result: false,
       searchResults: [],
       loading: false,
+      targetColor: false,
     };
   }
 
@@ -55,12 +56,35 @@ class Home extends PureComponent {
     const { valueSearchInput } = this.state;
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
+        console.log('f');
+        this.setState({
+          targetColor: true,
+        });
+        this.chengColorButton();
         this.setState({
           loading: true,
         });
         this.getSearch(valueSearchInput);
       }
     }
+  };
+
+  onCklicBtn = () => {
+    const { valueSearchInput } = this.state;
+    if (valueSearchInput.length > 0) {
+      this.setState({
+        loading: true,
+      });
+      this.getSearch(valueSearchInput);
+    }
+  };
+
+  chengColorButton = () => {
+    setTimeout(() => {
+      this.setState({
+        targetColor: false,
+      });
+    }, 200);
   };
 
   getSearch = async valueSearchInput => {
@@ -80,7 +104,13 @@ class Home extends PureComponent {
   };
 
   render() {
-    const { valueSearchInput, result, searchResults, loading } = this.state;
+    const {
+      valueSearchInput,
+      result,
+      searchResults,
+      loading,
+      targetColor,
+    } = this.state;
 
     const searchItems = searchResults.map(item => (
       <SearchItem
@@ -117,7 +147,6 @@ class Home extends PureComponent {
             onKeyPress={this.handleKeyPress}
             className="search-input"
           />
-          {/* <Button fontSize={20}>cyber</Button> */}
           {loading && (
             <div
               style={{
@@ -150,6 +179,7 @@ class Home extends PureComponent {
             <Pane>{searchItems}</Pane>
           </Pane>
         )}
+
         {!result && (
           <Pane
             position="absolute"
@@ -158,27 +188,34 @@ class Home extends PureComponent {
             marginRight="-50%"
             transform="translate(-50%, -50%)"
           >
-            {/* <Pane
-              width="60%"
-              display="flex"
-              justifyContent="space-between"
-              marginY={0}
-              marginX="auto"
+            <button
+              className="btn-home"
+              onClick={e => this.onCklicBtn()}
+              style={{
+                backgroundColor: `${targetColor ? '#3ab793' : '#000'}`,
+                color: `${targetColor ? '#fff' : '#3ab793'}`,
+                opacity: `${valueSearchInput.length !== 0 ? 1 : 0}`,
+              }}
             >
-              <a href="https://cyberd.ai/" target="_blank">
-                <img style={{ height: 100 }} src={cyber} />
-              </a>
-              <Electricity />
-              <a href="https://cyb.ai/" target="_blank">
-                <img style={{ width: 100, height: 100 }} src={cyb} />
-              </a>
-            </Pane> */}
+              cyber
+            </button>
+
             <a
-              style={{ fontSize: '60px' }}
+              style={{
+                fontSize: '60px',
+                transition: '0.4s',
+                display: `${valueSearchInput.length === 0 ? 'block' : 'none'}`,
+                opacity: `${valueSearchInput.length === 0 ? 1 : 0}`,
+                position: 'absolute',
+                transform: 'translate(-50%, -50%)',
+                marginRight: '-50%',
+                left: '50%',
+                bottom: '0px',
+                height: '42px',
+              }}
               href="https://cybercongress.ai"
               target="_blank"
             >
-              {/* <img style={{ width: 20, height: 20 }} src={tilde} alt="tilde" /> */}
               ~
             </a>
           </Pane>
