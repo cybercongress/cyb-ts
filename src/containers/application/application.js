@@ -9,14 +9,12 @@ import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { Electricity } from '../home/electricity';
+import Electricity from '../home/electricity';
 
 import Story from '../story/story';
 
 const cyber = require('../../image/cyber.png');
 const cyb = require('../../image/cyb.svg');
-
-const wsUrl = 'wss://herzner1.cybernode.ai/websocket';
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
@@ -56,34 +54,6 @@ class App extends Component {
       story,
     };
   }
-
-  // ws = new WebSocket(wsUrl);
-
-  // componentDidMount() {
-  //   this.getDataWS();
-  // }
-
-  // getDataWS = () => {
-  //   this.ws.onopen = () => {
-  //     console.log('connected');
-  //     this.ws.send(
-  //       JSON.stringify({
-  //         method: 'subscribe',
-  //         params: ["tm.event='NewBlockHeader'"],
-  //         id: '1',
-  //         jsonrpc: '2.0',
-  //       })
-  //     );
-  //   };
-  //   this.ws.onmessage = async evt => {
-  //     const message = JSON.parse(evt.data);
-  //     console.log('message', message);
-  //   };
-
-  //   this.ws.onclose = () => {
-  //     console.log('disconnected');
-  //   };
-  // };
 
   handleClickOutside = evt => {
     this.setState({
@@ -139,7 +109,9 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <Menu imgLogo={cyber} toggleMenu={this.toggleMenu} />
+          <a href="#/brain">
+            <Menu imgLogo={cyber} />
+          </a>
           <Electricity />
           <a href="#/wallet">
             <Pane
@@ -174,4 +146,4 @@ class App extends Component {
   }
 }
 
-export default onClickOutside(App);
+export default App;

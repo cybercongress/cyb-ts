@@ -289,11 +289,11 @@ input:active {
     font-family: 'Play', sans-serif;
     outline: 0;
     outline-offset: 0;
-    box-shadow: 0 0 1px #fff;
+    box-shadow: 0 0 2px #fff;
     caret-color: #36d6ae;
 }
 
 .search-input:focus {
     -webkit-app-region: no-drag;
-    box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53);
+    box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53) !important;
 }

@@ -9,6 +9,7 @@ const MEMO = 'Send to Cyber~Congress';
 const urlGaiaLSD = 'https://lcd.nylira.net';
 const indexedNode = 'https://titan.cybernode.ai';
 // const indexedNode = 'https://callisto.cybernode.ai';
+const wssCyberUrl= 'wss://titan.cybernode.ai/websocket';
 
 const ATOMsALL = 600000;
 
@@ -40,5 +41,6 @@ export {
   DENOM,
   MEMO,
   urlGaiaLSD,
-  indexedNode
+  indexedNode,
+  wssCyberUrl
 };
