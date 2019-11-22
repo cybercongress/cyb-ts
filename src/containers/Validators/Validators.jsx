@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Provider, Subscribe } from 'unstated';
 import {
   ScrollContainer,
@@ -9,12 +9,60 @@ import {
   TableEv as Table,
   Pill,
   Tooltip,
-  TextEv as Text,
+  Text,
 } from '@cybercongress/gravity';
 import validatorsContainer from './validatorsContainer';
 import validatorsData from './validatorsData';
 
-class Validators extends React.Component {
+const StatusTooltip = ({ status }) => {
+  let statusColor;
+
+  switch (status) {
+    case 0:
+      statusColor = 'red';
+      break;
+    case 1:
+      statusColor = 'yellow';
+      break;
+    case 2:
+      statusColor = 'green';
+      break;
+    default:
+      statusColor = 'neutral';
+      break;
+  }
+
+  return (
+    <Pane display="flex" alignItems="center">
+      <Tooltip
+        appearance="card"
+        content={
+          <Pane display="flex" alignItems="center" paddingX={18} paddingY={18}>
+            <Text>
+              Validator status:&nbsp;
+              {status === 0 && 'unbonded'}
+              {status === 1 && 'unbonding'}
+              {status === 2 && 'bonded'}
+            </Text>
+          </Pane>
+        }
+      >
+        <Pill
+          height={7}
+          width={7}
+          borderRadius="50%"
+          paddingX={4}
+          paddingY={0}
+          // marginX={20}
+          isSolid
+          color={statusColor}
+        />
+      </Tooltip>
+    </Pane>
+  );
+};
+
+class Validators extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -67,57 +115,6 @@ class Validators extends React.Component {
         const powerFloat = validator.tokens / 1000000000;
         const power = Math.round(powerFloat * 1) / 1;
 
-        let statusColor;
-
-        switch (validator.status) {
-          case 0:
-            statusColor = 'red';
-            break;
-          case 1:
-            statusColor = 'yellow';
-            break;
-          case 2:
-            statusColor = 'green';
-            break;
-          default:
-            statusColor = 'neutral';
-            break;
-        }
-
-        const statusTooltip = (
-          <Pane display="flex" alignItems="center">
-            <Tooltip
-              appearance="card"
-              content={
-                <Pane
-                  display="flex"
-                  alignItems="center"
-                  paddingX={18}
-                  paddingY={18}
-                >
-                  <Text>
-                    Validator status:&nbsp;
-                    {validator.status === 0 && 'unbonded'}
-                    {validator.status === 1 && 'unbonding'}
-                    {validator.status === 2 && 'bonded'}
-                  </Text>
-                </Pane>
-              }
-            >
-              <Pill
-                height={7}
-                width={7}
-                borderRadius="50%"
-                paddingX={4}
-                paddingY={0}
-                marginX={20}
-                isSolid
-                color={statusColor}
-              />
-            </Tooltip>
-          </Pane>
-        );
-
         return (
           <Table.Row
             borderBottom="none"
@@ -127,7 +124,7 @@ class Validators extends React.Component {
             key={index}
           >
             <Table.TextCell textAlign="center" width={35} flex="none">
-              {statusTooltip}
+              <StatusTooltip status={validator.status} />
             </Table.TextCell>
             <Table.TextCell
               textAlign="end"

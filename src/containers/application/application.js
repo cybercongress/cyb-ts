@@ -16,6 +16,8 @@ import Story from '../story/story';
 const cyber = require('../../image/cyber.png');
 const cyb = require('../../image/cyb.svg');
 
+const wsUrl = 'wss://herzner1.cybernode.ai/websocket';
+
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
     className={`${selected ? 'active' : ''}`}
@@ -54,6 +56,34 @@ class App extends Component {
       story,
     };
   }
+
+  // ws = new WebSocket(wsUrl);
+
+  // componentDidMount() {
+  //   this.getDataWS();
+  // }
+
+  // getDataWS = () => {
+  //   this.ws.onopen = () => {
+  //     console.log('connected');
+  //     this.ws.send(
+  //       JSON.stringify({
+  //         method: 'subscribe',
+  //         params: ["tm.event='NewBlockHeader'"],
+  //         id: '1',
+  //         jsonrpc: '2.0',
+  //       })
+  //     );
+  //   };
+  //   this.ws.onmessage = async evt => {
+  //     const message = JSON.parse(evt.data);
+  //     console.log('message', message);
+  //   };
+
+  //   this.ws.onclose = () => {
+  //     console.log('disconnected');
+  //   };
+  // };
 
   handleClickOutside = evt => {
     this.setState({

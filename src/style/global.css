@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Play&display=swap");
+
 @font-face {
     font-family: "Play";
     src: url("../fonts/Play-Regular.ttf");
@@ -13,6 +14,7 @@ body {
     background-color: #000000;
     color: #fff;
 }
+
 html {
     overflow-x: hidden;
     font-family: "Play";
@@ -24,6 +26,7 @@ p {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
 }
+
 button:disabled {
     color: darkgray;
 }
@@ -123,18 +126,22 @@ a {
         left: -2px;
         top: -2px;
     }
+
     25% {
         left: 2px;
         top: 0px;
     }
+
     50% {
         left: -1px;
         top: 2px;
     }
+
     75% {
         left: 1px;
         top: -1px;
     }
+
     100% {
         left: 0px;
         top: 2px;
@@ -169,7 +176,8 @@ input:active {
 ::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #3ab793;
-    opacity: 1; /* Firefox */
+    opacity: 1;
+    /* Firefox */
 }
 
 :-ms-input-placeholder {
@@ -253,12 +261,12 @@ input:active {
     transform: rotate(360deg);
 }
 
-.icon-pie{
+.icon-pie {
     fill: #fff;
     background-color: #fff;
 }
 
-.tooltip-text-deposit::after{
+.tooltip-text-deposit::after {
     width: 0;
     height: 0;
     border: 7px solid transparent;
@@ -268,4 +276,24 @@ input:active {
     border-bottom-color: #3ab793;
     left: 40%;
     bottom: 17px;
+}
+
+.search-input {
+    background-color: transparent;
+    border-radius: 20px;
+    border: none;
+    color: #fff;
+    padding: 5px 20px;
+    /*padding-right: 60px;*/
+    box-sizing: border-box;
+    font-family: 'Play', sans-serif;
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: 0 0 1px #fff;
+    caret-color: #36d6ae;
+}
+
+.search-input:focus {
+    -webkit-app-region: no-drag;
+    box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53);
 }

@@ -7,8 +7,8 @@ const DEFAULT_GAS_PRICE = 0.01;
 const DENOM = 'uatom';
 const MEMO = 'Send to Cyber~Congress';
 const urlGaiaLSD = 'https://lcd.nylira.net';
-const indexedNode = 'https://callisto.cybernode.ai';
-// https://titan.cybernode.ai/
+const indexedNode = 'https://titan.cybernode.ai';
+// const indexedNode = 'https://callisto.cybernode.ai';
 
 const ATOMsALL = 600000;
 

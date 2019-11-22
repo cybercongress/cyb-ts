@@ -1,10 +1,10 @@
 import React from 'react';
-import { Text, Pane, Heading, CardHover } from '@cybercongress/gravity';
+import { Text, Pane, Heading, CardHover, Icon } from '@cybercongress/gravity';
 import BandwidthBar from './BandwidthBar';
 import {
   formatNumber,
   getStatistics,
-  getValidators
+  getValidators,
 } from '../../utils/search/utils';
 
 class ChainStatistic extends React.Component {
@@ -19,7 +19,7 @@ class ChainStatistic extends React.Component {
       linkPrice: 0,
       totalCyb: 0,
       stakedCyb: 0,
-      activeValidatorsCount: 0
+      activeValidatorsCount: 0,
     };
   }
 
@@ -235,35 +235,36 @@ class ChainStatistic extends React.Component {
             Consensus
           </Heading>
           <Pane display="flex" marginX={-15}>
-            {/* <a
-              href="cyb://.cyber/#/validators"
+            <a
+              href="/#/validators"
               style={{
                 display: 'contents',
-                textDecoration: 'none'
+                textDecoration: 'none',
               }}
-            > */}
-            <CardHover
-              flex={1}
-              display="flex"
-              alignItems="center"
-              flexDirection="column"
-              backgroundColor="#000"
-              paddingY={50}
-              marginX={15}
             >
-              <Text
-                display="inline-block"
-                marginBottom={15}
-                color="#4ed6ae"
-                fontSize="30px"
+              <CardHover
+                flex={1}
+                display="flex"
+                alignItems="center"
+                flexDirection="column"
+                backgroundColor="#000"
+                paddingY={50}
+                marginX={15}
               >
-                {activeValidatorsCount}
-              </Text>
-              <Text display="inline-block" color="#4ed6ae">
-                active validators
-              </Text>
-            </CardHover>
-            {/* </a> */}
+                <Text
+                  display="inline-block"
+                  marginBottom={15}
+                  color="#4ed6ae"
+                  fontSize="30px"
+                >
+                  {activeValidatorsCount}
+                </Text>
+                <Pane display="flex" alignItems="center">
+                  <Text color="#4caf50">active validators</Text>
+                  <Icon icon="arrow-right" color="#4caf50" marginLeft={5} />
+                </Pane>
+              </CardHover>
+            </a>
             <CardHover
               flex={1}
               paddingY={50}
