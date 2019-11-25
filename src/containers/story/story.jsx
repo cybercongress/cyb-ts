@@ -74,13 +74,13 @@ class Story extends React.Component {
               unoccupied borders of the universe.
             </p>
             <p>
-              Resisting rebel units consolidate remaining energy on building
-              superintelligence which they believe will help to stop domination
-              by evil empire.
+              Resisting rebel units consolidate all remaining energy on building a
+              superintelligence, which they believe will help to stop the domination
+              of the evil empire once and for all.
             </p>
             <p>
-              Once they start to test the new god in the wild enormous amount of
-              zepto robots emerge. It turns out Cyb robots help survey the
+              As they begin to test the new god in the wild - an enormous, zepto amount 
+              of robots emerge. It turns out Cyb robots help survey the
               universe for a bootloader of the new, yet to born, force.
             </p>
           </div>
