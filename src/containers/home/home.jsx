@@ -8,6 +8,9 @@ import {
   TextInput,
 } from '@cybercongress/gravity';
 import Electricity from './electricity';
+
+import ActionBar from './actionBar';
+
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
@@ -188,6 +191,7 @@ class Home extends PureComponent {
             onKeyPress={this.handleKeyPress}
             className="search-input"
             id="searchInput"
+            autoComplete="off"
           />
           {loading && (
             <div
@@ -262,6 +266,7 @@ class Home extends PureComponent {
             </a>
           </Pane>
         )}
+        <ActionBar />
       </main>
     );
   }

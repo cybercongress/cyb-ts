@@ -175,7 +175,7 @@ export class ActionBarContainer extends Component {
 
   getAddress = async () => {
     // try {
-    const address = await this.state.ledger.retrieveAddress(0, 0);
+    const address = await this.state.ledger.retrieveAddress(HDPATH);
     console.log('address', address);
     // eslint-disable-next-line
         // const pk = (await this.state.ledger.publicKey(HDPATH)).pk;
