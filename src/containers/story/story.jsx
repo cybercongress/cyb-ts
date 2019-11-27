@@ -1,4 +1,5 @@
 import React from 'react';
+import { Pane } from '@cybercongress/gravity';
 
 const mp3 = require('./starwars.mp3');
 
@@ -8,6 +9,8 @@ class Story extends React.Component {
     this.state = {
       animated: false,
       end: false,
+      cyber: false,
+      cyb: false,
     };
   }
 
@@ -21,12 +24,24 @@ class Story extends React.Component {
         clearInterval(audioState);
       }
     }, 200);
-    // this.fadeAudio();
+    // // this.fadeAudio();
     setTimeout(() => {
       this.setState({
         animated: true,
       });
     }, 6000);
+
+    setTimeout(() => {
+      this.setState({
+        cyber: true,
+      });
+    }, 23000);
+
+    setTimeout(() => {
+      this.setState({
+        cyb: true,
+      });
+    }, 40500);
 
     setTimeout(() => {
       this.setState({
@@ -57,9 +72,35 @@ class Story extends React.Component {
   };
 
   render() {
-    const { animated, end } = this.state;
+    const { animated, end, cyber, cyb } = this.state;
+    const { cyberImg, cybImg } = this.props;
     return (
       <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
+        <div
+          style={{ display: 'flex', justifyContent: 'space-between' }}
+          className="container-distribution"
+        >
+          <Pane
+            width={50}
+            // height={50}
+            position="relative"
+            display="flex"
+            align-items="flex-end"
+          >
+            {cyber && (
+              <img style={{ width: 'inherit' }} alt="cyb" src={cyberImg} />
+            )}
+          </Pane>
+          <Pane
+            width={50}
+            // height={50}
+            position="relative"
+            display="flex"
+            align-items="flex-end"
+          >
+            {cyb && <img style={{ width: 'inherit' }} alt="cyb" src={cybImg} />}
+          </Pane>
+        </div>
         <section
           id="title"
           style={{ opacity: `${animated ? 0 : 1}`, transition: 'opacity 0.3s' }}

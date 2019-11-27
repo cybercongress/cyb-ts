@@ -18,7 +18,7 @@ const DefinePluginConfig = new webpack.DefinePlugin({
 
 module.exports = {
   devServer: {
-    // https: true,
+    https: true,
     host: 'localhost',
     port: process.env.PORT_APP || '3000',
     hot: true,

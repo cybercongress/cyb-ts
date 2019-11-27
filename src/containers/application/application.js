@@ -87,7 +87,7 @@ class App extends Component {
     // console.log('app', app);
 
     if (!story) {
-      return <Story close={this.closeStory} />;
+      return <Story cyberImg={cyber} cybImg={cyb} close={this.closeStory} />;
     }
 
     return (

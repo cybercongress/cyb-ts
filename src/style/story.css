@@ -8,7 +8,7 @@
 	font: 700 1em "Play", sans-serif;
 	height: 100vh;
 	position: absolute;
-	z-index: 2;
+	z-index: 3;
   transition: opacity 1.5s;
 }
 
@@ -27,7 +27,7 @@
 	color: rgb(75, 213, 238);
 	transform: translate(-50%, -50%);
 	position: absolute;
-	font-size: calc(16px + (24 - 16) * (100vw - 400px) / (800 - 400));
+	font-size: calc(16px + (30 - 16) * (100vw - 400px) / (800 - 400));
 	line-height: 1em;
 	font-weight: 200;
 	margin-right: -50%;
@@ -47,12 +47,12 @@ section {
 	height: 50em;
 	width: 14.65em;
 	margin: 0 0 0 -7.65em;
-	font-size: calc(16px + (24 - 16) * (100vw - 400px) / (800 - 400));
+	font-size: calc(16px + (30 - 16) * (100vw - 400px) / (800 - 400));
 	text-align: justify;
 	overflow: hidden;
 	color: yellow;
 	transform-origin: 50% 100%;
-	transform: perspective(191px) rotateX(50deg);
+	transform: perspective(300px) rotateX(50deg);
 }
 
 .content div {

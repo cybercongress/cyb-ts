@@ -15,6 +15,7 @@
  ******************************************************************************* */
 
 const DEFAULT_DENOM = 'uatom';
+const DEFAULT_DENOM_CYBER = '';
 // const DEFAULT_GAS = 200000;
 // const DEFAULT_GAS_PRICE = 0.025;
 const DEFAULT_MEMO = '';
@@ -59,7 +60,7 @@ function getBytesToSign(tx, txContext) {
     fee: tx.value.fee,
     memo: tx.value.memo,
     msgs: tx.value.msg,
-    sequence: txContext.sequence.toString()
+    sequence: txContext.sequence.toString(),
   };
 
   return JSON.stringify(canonicalizeJson(txFieldsToSign));
@@ -78,10 +79,32 @@ function applyGas(unsignedTx, gas) {
     amount: [
       {
         amount: (gas * DEFAULT_GAS_PRICE).toString(),
-        denom: DEFAULT_DENOM
-      }
+        denom: DEFAULT_DENOM,
+      },
     ],
-    gas: gas.toString()
+    gas: gas.toString(),
+  };
+
+  return unsignedTx;
+}
+
+function applyGasCyber(unsignedTx, gas) {
+  if (typeof unsignedTx === 'undefined') {
+    throw new Error('undefined unsignedTx');
+  }
+  if (typeof gas === 'undefined') {
+    throw new Error('undefined gas');
+  }
+
+  // eslint-disable-next-line no-param-reassign
+  unsignedTx.value.fee = {
+    amount: [
+      {
+        amount: "0",
+        denom: DEFAULT_DENOM_CYBER,
+      },
+    ],
+    gas: gas.toString(),
   };
 
   return unsignedTx;
@@ -111,14 +134,46 @@ function createSkeleton(txContext) {
           sequence: txContext.sequence.toString(),
           pub_key: {
             type: 'tendermint/PubKeySecp256k1',
-            value: 'PK'
-          }
-        }
-      ]
-    }
+            value: 'PK',
+          },
+        },
+      ],
+    },
   };
   return applyGas(txSkeleton, DEFAULT_GAS);
 }
+
+const createSkeletonCyber = txContext => {
+  if (typeof txContext === 'undefined') {
+    throw new Error('undefined txContext');
+  }
+  if (typeof txContext.accountNumber === 'undefined') {
+    throw new Error('txContext does not contain the accountNumber');
+  }
+  if (typeof txContext.sequence === 'undefined') {
+    throw new Error('txContext does not contain the sequence value');
+  }
+  const txSkeleton = {
+    type: 'auth/StdTx',
+    value: {
+      msg: [], // messages
+      fee: '',
+      memo: DEFAULT_MEMO,
+      signatures: [
+        {
+          signature: 'N/A',
+          account_number: txContext.accountNumber.toString(),
+          sequence: txContext.sequence.toString(),
+          pub_key: {
+            type: 'tendermint/PubKeySecp256k1',
+            value: 'PK',
+          },
+        },
+      ],
+    },
+  };
+  return applyGasCyber(txSkeleton, DEFAULT_GAS);
+};
 
 function applySignature(unsignedTx, txContext, secp256k1Sig) {
   if (typeof unsignedTx === 'undefined') {
@@ -146,9 +201,9 @@ function applySignature(unsignedTx, txContext, secp256k1Sig) {
       sequence: txContext.sequence.toString(),
       pub_key: {
         type: 'tendermint/PubKeySecp256k1',
-        value: Buffer.from(txContext.pk, 'hex').toString('base64')
-      }
-    }
+        value: Buffer.from(txContext.pk, 'hex').toString('base64'),
+      },
+    },
   ];
   return tmpCopy;
 }
@@ -163,11 +218,11 @@ function createDelegate(txContext, validatorBech32, uatomAmount, memo) {
     value: {
       amount: {
         amount: uatomAmount.toString(),
-        denom: DEFAULT_DENOM
+        denom: DEFAULT_DENOM,
       },
       delegator_address: txContext.bech32,
-      validator_address: validatorBech32
-    }
+      validator_address: validatorBech32,
+    },
   };
 
   txSkeleton.value.msg = [txMsg];
@@ -185,12 +240,12 @@ function createSend(txContext, validatorBech32, uatomAmount, memo) {
       amount: [
         {
           amount: uatomAmount.toString(),
-          denom: DEFAULT_DENOM
-        }
+          denom: DEFAULT_DENOM,
+        },
       ],
       from_address: txContext.bech32,
-      to_address: validatorBech32
-    }
+      to_address: validatorBech32,
+    },
   };
 
   txSkeleton.value.msg = [txMsg];
@@ -199,6 +254,27 @@ function createSend(txContext, validatorBech32, uatomAmount, memo) {
   return txSkeleton;
 }
 
+function createLink(txContext, address, fromCid, toCid, memo) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cyberd/Link',
+    value: {
+      address,
+      links: [
+        {
+          from: fromCid,
+          to: toCid,
+        },
+      ],
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
 // Creates a new undelegation tx based on the input parameters
 // the function expects a complete txContext
 function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
@@ -209,11 +285,11 @@ function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
     value: {
       amount: {
         amount: uatomAmount.toString(),
-        denom: DEFAULT_DENOM
+        denom: DEFAULT_DENOM,
       },
       delegator_address: txContext.bech32,
-      validator_address: validatorBech32
-    }
+      validator_address: validatorBech32,
+    },
   };
 
   txSkeleton.value.msg = [txMsg];
@@ -238,12 +314,12 @@ function createRedelegate(
     value: {
       amount: {
         amount: uatomAmount.toString(),
-        denom: DEFAULT_DENOM
+        denom: DEFAULT_DENOM,
       },
       delegator_address: txContext.bech32,
       validator_dst_address: validatorDestBech32,
-      validator_src_address: validatorSourceBech32
-    }
+      validator_src_address: validatorSourceBech32,
+    },
   };
 
   txSkeleton.value.msg = [txMsg];
@@ -260,5 +336,6 @@ export default {
   createUndelegate,
   getBytesToSign,
   applySignature,
-  createSend
+  createSend,
+  createLink,
 };

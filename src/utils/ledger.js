@@ -4,7 +4,10 @@ import Big from 'big.js';
 import secp256k1 from 'secp256k1';
 import txs from './txs';
 
+import { indexedNode } from './config';
+
 const defaultHrp = 'cosmos';
+const defaultHrpCyber = 'cyber';
 
 function wrapError(cdt, e) {
   try {
@@ -19,13 +22,13 @@ function wrapError(cdt, e) {
     // eslint-disable-next-line no-param-reassign
     cdt.lastError = errMessage;
     return {
-      error: errMessage
+      error: errMessage,
     };
   } catch (e2) {
     // eslint-disable-next-line no-param-reassign
     cdt.lastError = `${e.message}  ${e2.message}`;
     return {
-      error: `${e.message}  ${e2.message}`
+      error: `${e.message}  ${e2.message}`,
     };
   }
 }
@@ -69,7 +72,7 @@ class CosmosDelegateTool {
     this.lastError = null;
     const connectedLog = {
       pin: false,
-      app: false
+      app: false,
     };
     this.app = new CosmosApp(this.transport);
     if (this.checkAppInfo) {
@@ -139,9 +142,9 @@ class CosmosDelegateTool {
   }
 
   // Retrieve public key and bech32 address
-  async retrieveAddress(account, index) {
+  async retrieveAddress(path) {
     // this.connectedOrThrow(this);
-    const path = [44, 118, account, 0, index];
+    // console.log(this.app);
     const pk = await this.app.publicKey(path);
     if (pk.return_code !== 0x9000) {
       this.lastError = pk.error_message;
@@ -150,7 +153,22 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(defaultHrp, pk.compressed_pk)
+      bech32: getBech32FromPK(defaultHrp, pk.compressed_pk),
+    };
+  }
+
+  async retrieveAddressCyber(path) {
+    // this.connectedOrThrow(this);
+    // console.log(this.app);
+    const pk = await this.app.publicKey(path);
+    if (pk.return_code !== 0x9000) {
+      this.lastError = pk.error_message;
+      throw new Error(pk.error_message);
+    }
+    return {
+      pk: pk.compressed_pk.toString('hex'),
+      path,
+      bech32: getBech32FromPK(defaultHrpCyber, pk.compressed_pk),
     };
   }
 
@@ -193,7 +211,7 @@ class CosmosDelegateTool {
       sequence: '0',
       accountNumber: '0',
       balanceuAtom: '0',
-      chainId: 'cosmoshub-2'
+      chainId: 'cosmoshub-2',
     };
     return axios.get(url).then(
       r => {
@@ -210,6 +228,45 @@ class CosmosDelegateTool {
             if (r.data.value.coins !== null) {
               const tmp = [];
               tmp.push(r.data.value.coins[0]);
+              if (tmp.length > 0) {
+                txContext.balanceuAtom = Big(tmp[0].amount).toString();
+              }
+            }
+          }
+        } catch (e) {
+          console.log('Error ', e, ' returning defaults');
+        }
+        return txContext;
+      },
+      e => wrapError(this, e)
+    );
+  }
+
+  async getAccountInfoCyber(addr) {
+    const url = `${indexedNode}/api/account?address="${addr.bech32}"`;
+    const txContext = {
+      sequence: '0',
+      accountNumber: '0',
+      balanceuAtom: '0',
+      chainId: '0',
+    };
+    return axios.get(url).then(
+      r => {
+        try {
+          console.log('r.data', r.data);
+          if (
+            typeof r.data !== 'undefined' &&
+            typeof r.data.result !== 'undefined'
+          ) {
+            txContext.sequence = Number(
+              r.data.result.account.sequence
+            ).toString();
+            txContext.accountNumber = Number(
+              r.data.result.account.account_number
+            ).toString();
+            if (r.data.result.account.coins !== null) {
+              const tmp = [];
+              tmp.push(r.data.result.account.coins[0]);
               if (tmp.length > 0) {
                 txContext.balanceuAtom = Big(tmp[0].amount).toString();
               }
@@ -271,7 +328,7 @@ class CosmosDelegateTool {
       r => {
         const txContext = {
           delegations: {},
-          delegationsTotaluAtoms: '0'
+          delegationsTotaluAtoms: '0',
         };
         const delegations = {};
         let totalDelegation = Big(0);
@@ -288,7 +345,7 @@ class CosmosDelegateTool {
                 const tokens = shares.times(valTokens).div(valTotalShares);
                 delegations[valAddr] = {
                   uatoms: tokens.toString(),
-                  shares: shares.toString()
+                  shares: shares.toString(),
                 };
                 totalDelegation = totalDelegation.add(tokens);
               }
@@ -361,6 +418,17 @@ class CosmosDelegateTool {
     return txs.createSend(txContext, validatorBech32, uatomAmount, memo);
   }
 
+  async txCreateLink(txContext, address, fromCid, toCid, memo) {
+    console.log('txContext', txContext);
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createLink(txContext, address, fromCid, toCid, memo);
+  }
+
   // Creates a new staking tx based on the input parameters
   // this function expect that retrieve balances has been called before
   async txCreateRedelegate(
@@ -412,14 +480,29 @@ class CosmosDelegateTool {
   async txSubmit(signedTx) {
     const txBody = {
       tx: signedTx.value,
-      mode: 'async'
+      mode: 'async',
     };
     const url = 'https://lcd.nylira.net/txs';
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
-    return axios
-      .post(url, JSON.stringify(txBody))
-      .then(r => r, e => wrapError(this, e));
+    return axios.post(url, JSON.stringify(txBody)).then(
+      r => r,
+      e => wrapError(this, e)
+    );
+  }
+
+  async txSubmitCyberLink(signedTx) {
+    const txBody = {
+      tx: signedTx.value,
+      mode: 'async',
+    };
+    const url = `${indexedNode}/lcd/txs`;
+    // const url = 'https://phobos.cybernode.ai/lcd/txs';
+    console.log(JSON.stringify(txBody));
+    return axios.post(url, JSON.stringify(txBody)).then(
+      r => r,
+      e => wrapError(this, e)
+    );
   }
 
   //   async txSubmit(signedTx) {
@@ -445,7 +528,18 @@ class CosmosDelegateTool {
   // Retrieve the status of a transaction hash
   async txStatus(txHash) {
     const url = `https://lcd.nylira.net/txs/${txHash}`;
-    return axios.get(url).then(r => r.data, e => wrapError(this, e));
+    return axios.get(url).then(
+      r => r.data,
+      e => wrapError(this, e)
+    );
+  }
+
+  async txStatusCyber(txHash) {
+    const url = `${indexedNode}/lcd/txs/${txHash}`;
+    return axios.get(url).then(
+      r => r.data,
+      e => wrapError(this, e)
+    );
   }
 }
 
