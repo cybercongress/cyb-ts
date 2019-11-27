@@ -533,6 +533,14 @@ class CosmosDelegateTool {
       e => wrapError(this, e)
     );
   }
+
+  async txStatusCyber(txHash) {
+    const url = `${indexedNode}/lcd/txs/${txHash}`;
+    return axios.get(url).then(
+      r => r.data,
+      e => wrapError(this, e)
+    );
+  }
 }
 
 export { CosmosDelegateTool };
