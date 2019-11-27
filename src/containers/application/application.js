@@ -42,10 +42,10 @@ class App extends Component {
   constructor(props) {
     super(props);
     let story = false;
-    const localStorageStory = localStorage.getItem('story');
-    if (localStorageStory !== null) {
-      story = localStorageStory;
-    }
+    // const localStorageStory = localStorage.getItem('story');
+    // if (localStorageStory !== null) {
+    //   story = localStorageStory;
+    // }
 
     this.state = {
       selectedIndex: 0,
@@ -86,9 +86,9 @@ class App extends Component {
     const { app, openMenu, story } = this.state;
     // console.log('app', app);
 
-    // if (!story) {
-    //   return <Story close={this.closeStory} />;
-    // }
+    if (!story) {
+      return <Story close={this.closeStory} />;
+    }
 
     return (
       <div>
