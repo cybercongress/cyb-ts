@@ -144,6 +144,9 @@ class Home extends PureComponent {
       boxShadow = ((width - hypot) / 100) * 2.5;
     }
 
+    if (boxShadow < 5) {
+      boxShadow = 6;
+    }
     this.setState({
       boxShadow,
     });
@@ -174,7 +177,7 @@ class Home extends PureComponent {
     ));
 
     return (
-      <div>
+      <div style={{ position: 'relative' }}>
         <main onMouseMove={e => this.showCoords(e)} className="block-body-home">
           <Pane
             display="flex"
@@ -232,46 +235,6 @@ class Home extends PureComponent {
             </Pane>
           )}
 
-          {/* {!result && (
-          <Pane
-            position="absolute"
-            bottom={0}
-            left="50%"
-            marginRight="-50%"
-            transform="translate(-50%, -50%)"
-          >
-            <button
-              className="btn-home"
-              onClick={e => this.onCklicBtn()}
-              style={{
-                backgroundColor: `${targetColor ? '#3ab793' : '#000'}`,
-                color: `${targetColor ? '#fff' : '#3ab793'}`,
-                opacity: `${valueSearchInput.length !== 0 ? 1 : 0}`,
-              }}
-            >
-              cyber
-            </button>
-
-            <a
-              style={{
-                fontSize: '60px',
-                transition: '0.4s',
-                display: `${valueSearchInput.length === 0 ? 'block' : 'none'}`,
-                opacity: `${valueSearchInput.length === 0 ? 1 : 0}`,
-                position: 'absolute',
-                transform: 'translate(-50%, -50%)',
-                marginRight: '-50%',
-                left: '50%',
-                bottom: '0px',
-                height: '42px',
-              }}
-              href="https://cybercongress.ai"
-              target="_blank"
-            >
-              ~
-            </a>
-          </Pane>
-        )} */}
         </main>
         <ActionBarContainer
           home={!result}
@@ -279,6 +242,7 @@ class Home extends PureComponent {
           targetColor={targetColor}
           link={searchResults.length === 0 && result}
           keywordHash={keywordHash}
+          onCklicBtnSearch={this.onCklicBtn}
         />
       </div>
     );

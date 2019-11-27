@@ -42,10 +42,10 @@ class App extends Component {
   constructor(props) {
     super(props);
     let story = false;
-    // const localStorageStory = localStorage.getItem('story');
-    // if (localStorageStory !== null) {
-    //   story = localStorageStory;
-    // }
+    const localStorageStory = localStorage.getItem('story');
+    if (localStorageStory !== null) {
+      story = localStorageStory;
+    }
 
     this.state = {
       selectedIndex: 0,

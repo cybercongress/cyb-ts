@@ -397,14 +397,14 @@ class ActionBarContainer extends Component {
       txHash,
       ledger,
     } = this.state;
-    const { link, home, valueSearchInput, targetColor } = this.props;
+    const { link, home, valueSearchInput, targetColor, onCklicBtnSearch } = this.props;
 
     if (home && stage === STAGE_INIT) {
       return (
         <StartState
           targetColor={targetColor}
           valueSearchInput={valueSearchInput}
-          // onClickBtn={}
+          onClickBtn={onCklicBtnSearch}
         />
       );
     }
