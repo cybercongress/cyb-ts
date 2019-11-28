@@ -39,6 +39,7 @@ class ActionBarContainer extends Component {
     super(props);
     this.state = {
       stage: STAGE_INIT,
+      init: false,
       ledger: null,
       address: null,
       returnCode: null,
@@ -69,11 +70,42 @@ class ActionBarContainer extends Component {
     // await this.getAddressInfo();
   }
 
+  componentWillUpdate() {
+    if (this.state.ledger === null) {
+      this.pollLedger();
+    }
+    if (this.state.stage === STAGE_LEDGER_INIT) {
+      if (this.state.ledger !== null) {
+        switch (this.state.returnCode) {
+          case LEDGER_OK:
+            if (this.state.address === null) {
+              this.getAddress();
+            }
+            if (
+              this.state.address !== null &&
+              this.state.addressInfo === null
+            ) {
+              this.getAddressInfo();
+            }
+            break;
+          default:
+            console.log('getVersion');
+            this.getVersion();
+            break;
+        }
+      } else {
+        // eslint-disable-next-line
+        console.warn('Still looking for a Ledger device.');
+      }
+    }
+  }
+
   init = async () => {
     const { stage, ledger, address, addressInfo, returnCode } = this.state;
 
-    this.setState({
+    await this.setState({
       stage: STAGE_LEDGER_INIT,
+      init: true,
     });
 
     if (ledger === null) {
@@ -82,15 +114,6 @@ class ActionBarContainer extends Component {
 
     if (ledger !== null) {
       await this.getVersion();
-
-      console.log('getAddress');
-      await this.getAddress();
-
-      console.log('getWallet');
-      this.getAddressInfo();
-    } else {
-      // eslint-disable-next-line
-      console.warn('Still looking for a Ledger device.');
     }
   };
 
@@ -121,6 +144,7 @@ class ActionBarContainer extends Component {
           errorMessage: null,
         });
         // eslint-disable-next-line
+
         console.warn('Ledger app return_code', this.state.returnCode);
       } else {
         this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
@@ -361,6 +385,7 @@ class ActionBarContainer extends Component {
       txHeight: null,
       txHash: null,
       error: null,
+      init: false,
     });
     this.timeOut = null;
   };
@@ -397,7 +422,13 @@ class ActionBarContainer extends Component {
       txHash,
       ledger,
     } = this.state;
-    const { link, home, valueSearchInput, targetColor, onCklicBtnSearch } = this.props;
+    const {
+      link,
+      home,
+      valueSearchInput,
+      targetColor,
+      onCklicBtnSearch,
+    } = this.props;
 
     if (home && stage === STAGE_INIT) {
       return (
