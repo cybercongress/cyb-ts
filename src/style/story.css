@@ -9,7 +9,7 @@
 	height: 100vh;
 	position: absolute;
 	z-index: 3;
-  transition: opacity 1.5s;
+	transition: opacity 1.5s;
 }
 
 #info {
@@ -43,7 +43,7 @@ section {
 
 .content {
 	top: auto;
-	bottom: 40%;
+	bottom: 16%;
 	height: 50em;
 	width: 14.65em;
 	margin: 0 0 0 -7.65em;
@@ -51,8 +51,8 @@ section {
 	text-align: justify;
 	overflow: hidden;
 	color: yellow;
-	transform-origin: 50% 100%;
-	transform: perspective(300px) rotateX(50deg);
+	transform-origin: 50% 95%;
+	transform: perspective(352px) rotateX(39deg);
 }
 
 .content div {
@@ -67,9 +67,9 @@ section {
 .content div p {
 	line-height: 1.35em;
 	margin: 1.35em 0 1.85em 0;
-	color: yellow;
+	color: #caca23;
 	top: 97%;
-		opacity: 1;
+	opacity: 1;
 	/* @include backface-visibility(hidden); */
 }
 
