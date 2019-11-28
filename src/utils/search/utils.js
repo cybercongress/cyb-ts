@@ -18,7 +18,7 @@ const getIpfsConfig = async () => {
   return {
     host: 'localhost',
     port: 5001,
-    protocol: 'http'
+    protocol: 'http',
   };
 };
 
@@ -94,7 +94,7 @@ export const getIpfsHash = string =>
 export const search = async keywordHash =>
   axios({
     method: 'get',
-    url: `${indexedNode}/api/search?cid=%22${keywordHash}%22&page=0&perPage=10`
+    url: `${indexedNode}/api/search?cid=%22${keywordHash}%22&page=0&perPage=10`,
   }).then(response => (response.data.result ? response.data.result.cids : []));
 
 export const getRankGrade = rank => {
@@ -148,7 +148,7 @@ export const getRankGrade = rank => {
   return {
     from,
     to,
-    value
+    value,
   };
 };
 
@@ -156,47 +156,55 @@ export const getStatistics = () =>
   new Promise(resolve => {
     const indexStatsPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/index_stats`
+      url: `${nodeUrl}/api/index_stats`,
     }).then(response => response.data.result);
 
     const stakingPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/staking/pool`
+      url: `${nodeUrl}/api/staking/pool`,
     }).then(response => response.data.result);
 
     const bandwidthPricePromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/current_bandwidth_price`
+      url: `${nodeUrl}/api/current_bandwidth_price`,
     }).then(response => response.data.result);
 
     const latestBlockPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/block`
+      url: `${nodeUrl}/api/block`,
+    }).then(response => response.data.result);
+
+    const supplyTotalPropsise = axios({
+      method: 'get',
+      url: `${nodeUrl}/lcd/supply/total`,
     }).then(response => response.data.result);
 
     Promise.all([
       indexStatsPromise,
       stakingPromise,
       bandwidthPricePromise,
-      latestBlockPromise
-    ]).then(([indexStats, staking, bandwidthPrice, latestBlock]) => {
-      const response = {
-        ...indexStats,
-        bondedTokens: staking.bonded_tokens,
-        notBondedTokens: staking.not_bonded_tokens,
-        bandwidthPrice: bandwidthPrice.price,
-        txCount: latestBlock.block_meta.header.total_txs
-      };
+      latestBlockPromise,
+      supplyTotalPropsise,
+    ]).then(
+      ([indexStats, staking, bandwidthPrice, latestBlock, supplyTotal]) => {
+        const response = {
+          ...indexStats,
+          bondedTokens: staking.bonded_tokens,
+          bandwidthPrice: bandwidthPrice.price,
+          txCount: latestBlock.block_meta.header.total_txs,
+          supplyTotal: supplyTotal[0].amount,
+        };
 
-      resolve(response);
-    });
+        resolve(response);
+      }
+    );
   });
 
 export const getValidators = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/api/validators`
+      url: `${nodeUrl}/api/validators`,
     })
       .then(response => {
         resolve(response.data.result);
