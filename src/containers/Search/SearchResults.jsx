@@ -1,124 +1,111 @@
 import React from 'react';
-import {
-    Button, SearchItem, Heading, Pane,
-} from '@cybercongress/gravity';
-import { Subscribe } from 'unstated';
-import searchContainer from './searchContainer';
+import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
+import { formatNumber } from '../../utils/utils';
+import { Loading } from '../../components';
 
-const SEARCH_RESULT_COUNT_DEFAULT = 42;
+class SearchResults extends React.Component {
+  constructor(props) {
+    super(props);
+    localStorage.setItem('LAST_DURA', '');
+    this.state = {
+      result: false,
+      searchResults: [],
+      loading: false,
+      keywordHash: '',
+    };
+  }
 
-const SearchResults = () => (
-    <Subscribe to={ [searchContainer] }>
-        {(container) => {
-            const {
-                seeAll, searchQuery, links,
-            } = container.state;
+  componentDidMount() {
+    this.getParamsQuery();
+  }
 
-            const searchResultsCount = Object.keys(links).length;
-            const resultsLimit = (seeAll || searchResultsCount < SEARCH_RESULT_COUNT_DEFAULT)
-                ? searchResultsCount : SEARCH_RESULT_COUNT_DEFAULT;
-            const cids = Object.keys(links);
-            const searchItems = [];
+  getParamsQuery = async () => {
+    const { match } = this.props;
+    const { query } = match.params;
+    this.setState({
+      loading: true,
+    });
+    await this.getSearch(query);
+  };
 
-            for (let index = 0; index < resultsLimit; index += 1) {
-                const cid = cids[index];
-                const loaded = links[cid].status === 'success';
+  getSearch = async valueSearchInput => {
+    let searchResults = [];
+    const keywordHash = await getIpfsHash(valueSearchInput);
+    searchResults = await search(keywordHash);
+    searchResults.map((item, index) => {
+      searchResults[index].cid = item.cid;
+      searchResults[index].rank = formatNumber(item.rank, 6);
+      searchResults[index].grade = getRankGrade(item.rank);
+    });
+    console.log('searchResults', searchResults);
+    this.setState({
+      searchResults,
+      keywordHash,
+      result: true,
+      loading: false,
+    });
+  };
 
-                const item = (
-                    <SearchItem
-                      key={ cid }
-                      hash={ cid }
-                      rank={ links[cid].rank }
-                      grade={ getRankGrade(links[cid].rank) }
-                      status={ links[cid].status }
-                      onClick={ e => container.openLink(e, links[cid].content) }
-                    >
-                        { loaded ? links[cid].content : cid}
-                    </SearchItem>
-                );
+  render() {
+    const { searchResults, keywordHash, loading } = this.state;
+    console.log(searchResults);
 
-                searchItems.push(item);
-            }
+    const searchItems = searchResults.map(item => (
+      <SearchItem
+        key={item.cid}
+        hash={item.cid}
+        rank={item.rank}
+        grade={item.grade}
+        status="success"
+        // onClick={e => (e, links[cid].content)}
+      >
+        {item.cid}
+      </SearchItem>
+    ));
 
-            return (
-                <div>
-                    <Heading size={ 600 } color='#7c7c7c' marginBottom={ 24 }>
-                        {`The answer for ${searchQuery} is`}
-                    </Heading>
-                    <Pane>
-                        {searchItems}
-                    </Pane>
-                    {searchResultsCount > SEARCH_RESULT_COUNT_DEFAULT && (
-                        <Pane display='flex' justifyContent='center'>
-                            <Button
-                              fontSize='1em'
-                              marginY={ 15 }
-                              className='btn'
-                              onClick={ () => container.seeAll() }
-                            >
-                                {!seeAll ? 'see all' : `top ${SEARCH_RESULT_COUNT_DEFAULT}`}
-                            </Button>
-                        </Pane>
-                    )}
-                </div>
-            );
-        }}
-    </Subscribe>
-);
-
-const getRankGrade = (rank) => {
-    let from;
-    let to;
-    let value;
-
-    switch (true) {
-    case rank > 0.01:
-        from = 0.01;
-        to = 1;
-        value = 1;
-        break;
-    case rank > 0.001:
-        from = 0.001;
-        to = 0.01;
-        value = 2;
-        break;
-    case rank > 0.000001:
-        from = 0.000001;
-        to = 0.001;
-        value = 3;
-        break;
-    case rank > 0.0000000001:
-        from = 0.0000000001;
-        to = 0.000001;
-        value = 4;
-        break;
-    case rank > 0.000000000000001:
-        from = 0.000000000000001;
-        to = 0.0000000001;
-        value = 5;
-        break;
-    case rank > 0.0000000000000000001:
-        from = 0.0000000000000000001;
-        to = 0.000000000000001;
-        value = 6;
-        break;
-    case rank > 0:
-        from = 0;
-        to = 0.0000000000000000001;
-        value = 7;
-        break;
-    default:
-        from = 'n/a';
-        to = 'n/a';
-        value = 'n/a';
-        break;
+    if (loading) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Loading />
+          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+            Searching
+          </div>
+        </div>
+      );
     }
 
-    return {
-        from,
-        to,
-        value,
-    };
-};
+    return (
+      <main className="block-body-home">
+        <Pane
+          width="90%"
+          marginX="auto"
+          marginY={0}
+          display="flex"
+          flexDirection="column"
+        >
+          <Text
+            fontSize="20px"
+            marginBottom={20}
+            color="#949292"
+            lineHeight="20px"
+          >
+            {`I found ${searchItems.length} results`}
+          </Text>
+          <Pane>{searchItems}</Pane>
+        </Pane>
+      </main>
+    );
+  }
+}
 
 export default SearchResults;
