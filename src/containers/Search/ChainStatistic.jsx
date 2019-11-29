@@ -46,7 +46,7 @@ class ChainStatistic extends React.Component {
     const activeValidatorsCount = validators;
 
     const totalCyb = supplyTotal;
-    const stakedCyb = ((bondedTokens / totalCyb) * 100).toFixed(0);
+    const stakedCyb = Math.floor((bondedTokens / totalCyb) * 100 * 1000) / 1000;
     const linkPrice = (400 * +bandwidthPrice).toFixed(0);
 
     this.setState({
