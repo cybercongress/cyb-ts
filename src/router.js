@@ -23,7 +23,7 @@ const AppRouter = () => (
     <Route path="/" component={App} />
     <Switch>
       <Route path="/" exact component={Home} />
-      <Route path="/search/:query" component={SearchResults} />
+      <Route exact path="/search/:query" component={SearchResults} />
       <Route path="/gift" component={Gift} />
       <Route path="/takeoff" component={Funding} />
       <Route path="/tot" component={Got} />

@@ -3,21 +3,30 @@ import { Pane, SearchItem, Text } from '@cybercongress/gravity';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
+import ActionBarContainer from './ActionBarContainer';
 
 class SearchResults extends React.Component {
   constructor(props) {
     super(props);
-    localStorage.setItem('LAST_DURA', '');
     this.state = {
       result: false,
       searchResults: [],
       loading: false,
       keywordHash: '',
+      query: '',
     };
   }
 
   componentDidMount() {
     this.getParamsQuery();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      // this.getSearch(query);
+      this.getParamsQuery();
+    }
   }
 
   getParamsQuery = async () => {
@@ -26,12 +35,14 @@ class SearchResults extends React.Component {
     this.setState({
       loading: true,
     });
-    await this.getSearch(query);
+
+    this.getSearch(query);
   };
 
-  getSearch = async valueSearchInput => {
+  getSearch = async query => {
     let searchResults = [];
-    const keywordHash = await getIpfsHash(valueSearchInput);
+    // const { query } = this.state;
+    const keywordHash = await getIpfsHash(query);
     searchResults = await search(keywordHash);
     searchResults.map((item, index) => {
       searchResults[index].cid = item.cid;
@@ -44,12 +55,13 @@ class SearchResults extends React.Component {
       keywordHash,
       result: true,
       loading: false,
+      query,
     });
   };
 
   render() {
-    const { searchResults, keywordHash, loading } = this.state;
-    console.log(searchResults);
+    const { searchResults, keywordHash, loading, query, result } = this.state;
+    // console.log(query);
 
     const searchItems = searchResults.map(item => (
       <SearchItem
@@ -85,25 +97,34 @@ class SearchResults extends React.Component {
     }
 
     return (
-      <main className="block-body-home">
-        <Pane
-          width="90%"
-          marginX="auto"
-          marginY={0}
-          display="flex"
-          flexDirection="column"
-        >
-          <Text
-            fontSize="20px"
-            marginBottom={20}
-            color="#949292"
-            lineHeight="20px"
+      <div>
+        <main className="block-body-home" style={{ paddingTop: 30 }}>
+          <Pane
+            width="90%"
+            marginX="auto"
+            marginY={0}
+            display="flex"
+            flexDirection="column"
           >
-            {`I found ${searchItems.length} results`}
-          </Text>
-          <Pane>{searchItems}</Pane>
-        </Pane>
-      </main>
+            <Text
+              fontSize="20px"
+              marginBottom={20}
+              color="#949292"
+              lineHeight="20px"
+            >
+              {`I found ${searchItems.length} results`}
+            </Text>
+            <Pane>{searchItems}</Pane>
+          </Pane>
+        </main>
+        <ActionBarContainer
+          home={!result}
+          valueSearchInput={query}
+          link={searchResults.length === 0 && result}
+          keywordHash={keywordHash}
+          onCklicBtnSearch={this.onCklicBtn}
+        />
+      </div>
     );
   }
 }
