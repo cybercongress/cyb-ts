@@ -391,7 +391,10 @@ class ActionBarContainer extends Component {
   };
 
   onClickUsingLedger = () => {
-    this.init();
+    // this.init();
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+    });
   };
 
   hasKey() {

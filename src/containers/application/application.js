@@ -53,9 +53,34 @@ class App extends Component {
       openMenu: false,
       story,
       valueSearchInput: '',
+      home: false,
     };
     this.routeChange = this.routeChange.bind(this);
   }
+
+  componentDidMount() {
+    this.chekHomePage();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekHomePage();
+    }
+  }
+
+  chekHomePage = () => {
+    const { location } = this.props;
+    if (location.pathname === '/') {
+      this.setState({
+        home: true,
+      });
+    } else {
+      this.setState({
+        home: false,
+      });
+    }
+  };
 
   routeChange = newPath => {
     const { history } = this.props;
@@ -108,7 +133,7 @@ class App extends Component {
   };
 
   render() {
-    const { app, openMenu, story } = this.state;
+    const { app, openMenu, story, home } = this.state;
     // console.log('app', app);
 
     if (!story) {
@@ -144,29 +169,31 @@ class App extends Component {
           <a href="#/brain">
             <Menu imgLogo={cyber} />
           </a>
-          <Pane
-            position="absolute"
-            left="50%"
-            transform="translate(-50%, 0)"
-            marginRight="-50%"
-            zIndex={1}
-            backgroundColor="#000"
-            borderRadius={20}
-            width="60%"
-          >
-            <input
-              onChange={e => this.onChangeInput(e)}
-              onKeyPress={this.handleKeyPress}
-              className="search-input"
-              autoComplete="off"
-              style={{
-                width: '100%',
-                height: 41,
-                fontSize: 20,
-                boxShadow: `0 0 5px 0 #00ffa387`,
-              }}
-            />
-          </Pane>
+          {!home && (
+            <Pane
+              position="absolute"
+              left="50%"
+              transform="translate(-50%, 0)"
+              marginRight="-50%"
+              zIndex={1}
+              backgroundColor="#000"
+              borderRadius={20}
+              width="60%"
+            >
+              <input
+                onChange={e => this.onChangeInput(e)}
+                onKeyPress={this.handleKeyPress}
+                className="search-input"
+                autoComplete="off"
+                style={{
+                  width: '100%',
+                  height: 41,
+                  fontSize: 20,
+                  boxShadow: `0 0 5px 0 #00ffa387`,
+                }}
+              />
+            </Pane>
+          )}
           <Electricity />
           <a href="#/wallet">
             <Pane
