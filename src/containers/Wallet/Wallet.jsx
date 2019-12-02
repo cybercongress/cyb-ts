@@ -35,29 +35,33 @@ class Wallet extends React.Component {
       addressLedger: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
+      addAddress: false,
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { accounts } = this.props;
-    let table = [];
+    let address = [];
 
-    console.log(accounts);
-    if (accounts !== null && accounts !== undefined) {
-      this.getAddressToMetaMask();
-    }
+    // console.log(accounts);
+    // if (accounts !== null && accounts !== undefined) {
+    //   this.getAddressToMetaMask();
+    // }
 
     const localStorageStory = localStorage.getItem('ledger');
     if (localStorageStory !== null) {
-      table = JSON.parse(localStorageStory);
-      console.log(table);
-      this.setState({ table });
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      await this.setState({ addressLedger: address });
+      this.getAddressInfo();
+    } else {
+      this.setState({
+        addAddress: true,
+      });
     }
-    console.warn('Looking for Ledger Nano');
-    this.pollLedger();
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     const {
       ledger,
       stage,
@@ -65,10 +69,12 @@ class Wallet extends React.Component {
       addressLedger,
       addressInfo,
     } = this.state;
-    if (ledger === null) {
-      this.pollLedger();
-    }
+
     if (stage === STAGE_LEDGER_INIT) {
+      if (ledger === null) {
+        console.log('pollLedger');
+        this.pollLedger();
+      }
       if (ledger !== null) {
         switch (returnCode) {
           case LEDGER_OK:
@@ -131,6 +137,8 @@ class Wallet extends React.Component {
       this.setState({
         addressLedger,
       });
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedger));
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
@@ -142,7 +150,8 @@ class Wallet extends React.Component {
     }
   };
 
-  getAddressInfo = async address => {
+  getAddressInfo = async () => {
+    const { addressLedger } = this.state;
     const table = [];
     const addressInfo = {
       address: '',
@@ -151,7 +160,7 @@ class Wallet extends React.Component {
       keys: '',
     };
     const response = await fetch(
-      `${indexedNode}/api/account?address="${address}"`,
+      `${indexedNode}/api/account?address="${addressLedger.bech32}"`,
       {
         method: 'GET',
         headers: {
@@ -162,16 +171,16 @@ class Wallet extends React.Component {
     );
     const data = await response.json();
 
-    addressInfo.address = address;
-    addressInfo.amount = data.account.coins[0].amount;
-    addressInfo.token = data.account.coins[0].denom;
+    console.log('data', data);
+
+    addressInfo.address = addressLedger.bech32;
+    addressInfo.amount = data.result.account.coins[0].amount;
+    addressInfo.token = data.result.account.coins[0].denom;
     addressInfo.keys = 'ledger';
 
     table.push(addressInfo);
 
-    localStorage.setItem('ledger', JSON.stringify(table));
-
-    this.setState({ table });
+    this.setState({ table, stage: STAGE_READY, addAddress: false });
   };
 
   getAmount = async address => {
@@ -220,9 +229,15 @@ class Wallet extends React.Component {
     });
   };
 
+  onClickGetAddressLedger = () => {
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+    });
+  };
+
   render() {
     const { accounts } = this.props;
-    const { table, address, addressLedger, ledger } = this.state;
+    const { table, address, addressLedger, ledger, addAddress } = this.state;
 
     const rowsTable = table.map(item => (
       <Table.Row
@@ -254,6 +269,20 @@ class Wallet extends React.Component {
         </Table.TextCell>
       </Table.Row>
     ));
+    if (addAddress) {
+      return (
+        <div>
+          <main className="block-body-home">
+            <NotFound text="Hurry up! Find and connect your secure Ledger" />
+          </main>
+          <ActionBarContainer
+            address={address}
+            onClickAddressLedger={this.onClickGetAddressLedger}
+            addAddress={addAddress}
+          />
+        </div>
+      );
+    }
     return (
       <div>
         <main className="block-body-home">
@@ -300,7 +329,12 @@ class Wallet extends React.Component {
             </Table>
           </Pane>
         </main>
-        <ActionBarContainer address={address} />
+        <ActionBarContainer
+          address={address}
+          onClickAddressLedger={this.onClickGetAddressLedger}
+          addAddress={addAddress}
+          // onClickSend={}
+        />
       </div>
     );
   }
