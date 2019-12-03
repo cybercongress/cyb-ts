@@ -2,7 +2,7 @@ import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { FormatNumber } from '../../components/index';
+import { FormatNumber, Loading } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
 // import { formatNumber } from '../../utils/search/utils';
@@ -36,6 +36,7 @@ class Wallet extends React.Component {
       ledgerVersion: [0, 0, 0],
       time: 0,
       addAddress: false,
+      loading: true,
     };
   }
 
@@ -180,7 +181,13 @@ class Wallet extends React.Component {
 
     table.push(addressInfo);
 
-    this.setState({ table, stage: STAGE_READY, addAddress: false });
+    this.setState({
+      table,
+      stage: STAGE_READY,
+      addAddress: false,
+      loading: false,
+      addressInfo,
+    });
   };
 
   getAmount = async address => {
@@ -237,7 +244,14 @@ class Wallet extends React.Component {
 
   render() {
     const { accounts } = this.props;
-    const { table, address, addressLedger, ledger, addAddress } = this.state;
+    const {
+      table,
+      addressLedger,
+      ledger,
+      loading,
+      addAddress,
+      addressInfo,
+    } = this.state;
 
     const rowsTable = table.map(item => (
       <Table.Row
@@ -269,6 +283,11 @@ class Wallet extends React.Component {
         </Table.TextCell>
       </Table.Row>
     ));
+
+    if (loading) {
+      return <Loading />;
+    }
+
     if (addAddress) {
       return (
         <div>
@@ -276,13 +295,14 @@ class Wallet extends React.Component {
             <NotFound text="Hurry up! Find and connect your secure Ledger" />
           </main>
           <ActionBarContainer
-            address={address}
+            // address={addressLedger.bech32}
             onClickAddressLedger={this.onClickGetAddressLedger}
             addAddress={addAddress}
           />
         </div>
       );
     }
+
     return (
       <div>
         <main className="block-body-home">
@@ -330,7 +350,7 @@ class Wallet extends React.Component {
           </Pane>
         </main>
         <ActionBarContainer
-          address={address}
+          addressTable={addressLedger.bech32}
           onClickAddressLedger={this.onClickGetAddressLedger}
           addAddress={addAddress}
           // onClickSend={}

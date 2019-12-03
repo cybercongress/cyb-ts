@@ -402,7 +402,7 @@ class CosmosDelegateTool {
     return txs.createDelegate(txContext, validatorBech32, uatomAmount, memo);
   }
 
-  async txCreateSend(txContext, validatorBech32, uatomAmount, memo) {
+  async txCreateSend(txContext, validatorBech32, uatomAmount, memo, denom) {
     console.log('txContext', txContext);
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
@@ -415,7 +415,7 @@ class CosmosDelegateTool {
     // txContext.accountNumber = accountInfo.accountNumber;
     // eslint-disable-next-line no-param-reassign
     // txContext.sequence = accountInfo.sequence;
-    return txs.createSend(txContext, validatorBech32, uatomAmount, memo);
+    return txs.createSend(txContext, validatorBech32, uatomAmount, memo, denom);
   }
 
   async txCreateLink(txContext, address, fromCid, toCid, memo) {

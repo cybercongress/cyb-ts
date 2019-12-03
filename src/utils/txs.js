@@ -66,7 +66,7 @@ function getBytesToSign(tx, txContext) {
   return JSON.stringify(canonicalizeJson(txFieldsToSign));
 }
 
-function applyGas(unsignedTx, gas) {
+function applyGas(unsignedTx, gas, denom) {
   if (typeof unsignedTx === 'undefined') {
     throw new Error('undefined unsignedTx');
   }
@@ -79,7 +79,7 @@ function applyGas(unsignedTx, gas) {
     amount: [
       {
         amount: (gas * DEFAULT_GAS_PRICE).toString(),
-        denom: DEFAULT_DENOM,
+        denom: denom || DEFAULT_DENOM,
       },
     ],
     gas: gas.toString(),
@@ -111,7 +111,7 @@ function applyGasCyber(unsignedTx, gas) {
 }
 
 // Creates a new tx skeleton
-function createSkeleton(txContext) {
+function createSkeleton(txContext, denom) {
   if (typeof txContext === 'undefined') {
     throw new Error('undefined txContext');
   }
@@ -140,7 +140,7 @@ function createSkeleton(txContext) {
       ],
     },
   };
-  return applyGas(txSkeleton, DEFAULT_GAS);
+  return applyGas(txSkeleton, DEFAULT_GAS, denom);
 }
 
 const createSkeletonCyber = txContext => {
@@ -231,8 +231,8 @@ function createDelegate(txContext, validatorBech32, uatomAmount, memo) {
   return txSkeleton;
 }
 
-function createSend(txContext, validatorBech32, uatomAmount, memo) {
-  const txSkeleton = createSkeleton(txContext);
+function createSend(txContext, validatorBech32, uatomAmount, memo, denom) {
+  const txSkeleton = createSkeleton(txContext, denom);
 
   const txMsg = {
     type: 'cosmos-sdk/MsgSend',
@@ -240,7 +240,7 @@ function createSend(txContext, validatorBech32, uatomAmount, memo) {
       amount: [
         {
           amount: uatomAmount.toString(),
-          denom: DEFAULT_DENOM,
+          denom: denom || DEFAULT_DENOM,
         },
       ],
       from_address: txContext.bech32,
