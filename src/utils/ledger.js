@@ -402,7 +402,7 @@ class CosmosDelegateTool {
     return txs.createDelegate(txContext, validatorBech32, uatomAmount, memo);
   }
 
-  async txCreateSend(txContext, validatorBech32, uatomAmount, memo, denom) {
+  async txCreateSend(txContext, validatorBech32, uatomAmount, memo) {
     console.log('txContext', txContext);
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
@@ -415,8 +415,25 @@ class CosmosDelegateTool {
     // txContext.accountNumber = accountInfo.accountNumber;
     // eslint-disable-next-line no-param-reassign
     // txContext.sequence = accountInfo.sequence;
-    return txs.createSend(txContext, validatorBech32, uatomAmount, memo, denom);
+    return txs.createSend(txContext, validatorBech32, uatomAmount, memo);
   }
+
+  async txCreateSendCyber(txContext, addressTo, uatomAmount, memo, demon) {
+    console.log('txContext', txContext);
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    // const accountInfo = await this.getAccountInfo(txContext.bech32);
+    // eslint-disable-next-line no-param-reassign
+    // txContext.accountNumber = accountInfo.accountNumber;
+    // eslint-disable-next-line no-param-reassign
+    // txContext.sequence = accountInfo.sequence;
+    return txs.createSendCyber(txContext, addressTo, uatomAmount, memo, demon);
+  }
+
 
   async txCreateLink(txContext, address, fromCid, toCid, memo) {
     console.log('txContext', txContext);

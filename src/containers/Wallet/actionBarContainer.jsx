@@ -12,7 +12,7 @@ import {
 
 const HDPATH = [44, 118, 0, 0, 0];
 
-export const DIVISOR = 1000000;
+export const DIVISOR = 100000;
 
 const STAGE_INIT = 0;
 const STAGE_SELECTION = 1;
@@ -46,8 +46,8 @@ class ActionBarContainer extends Component {
       time: 0,
       gas: DEFAULT_GAS,
       gasPrice: DEFAULT_GAS_PRICE,
-      toSend: '',
-      toSendAddres: '',
+      toSend: '1',
+      toSendAddres: 'cyber195zw55zmgxssft27f77dzkw8csxpc8ljlc2g0t',
       canStake: 0,
       atomerror: null,
       errorMessage: null,
@@ -236,7 +236,7 @@ class ActionBarContainer extends Component {
       path: address.path,
     };
     // console.log('txContext', txContext);
-    const tx = await ledger.txCreateSend(
+    const tx = await ledger.txCreateSendCyber(
       txContext,
       toSendAddres,
       uatomAmount,
@@ -248,20 +248,10 @@ class ActionBarContainer extends Component {
       txMsg: tx,
       txContext,
       txBody: null,
-      error: null
+      error: null,
     });
     // debugger;
     this.signTx();
-
-    // const sing = await ledger.sign(tx, txContext);
-    // console.log('sing', sing);
-    // const txSubmit = await ledger.txSubmit(sing);
-    // console.log('txSubmit', txSubmit);
-    // console.log('tx', txSubmit.data.txhash);
-    // if (txSubmit) {
-    //   const status = await ledger.txStatus(txSubmit.data.txhash);
-    //   console.log(status);
-    // }
   };
 
   signTx = async () => {
@@ -274,10 +264,42 @@ class ActionBarContainer extends Component {
       this.setState({
         txMsg: null,
         txBody: sing,
-        stage: STAGE_SUBMITTED
+        stage: STAGE_SUBMITTED,
       });
-      // await this.injectTx();
+      await this.injectTx();
     }
+  };
+
+  injectTx = async () => {
+    const { ledger, txBody } = this.state;
+    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const data = txSubmit;
+    console.log('data', data);
+    if (data.error) {
+      // if timeout...
+      // this.setState({stage: STAGE_CONFIRMING})
+      // else
+      this.setState({ stage: STAGE_ERROR, errorMessage: data.error });
+    } else {
+      this.setState({ stage: STAGE_SUBMITTED, txHash: data.data.txhash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    }
+  };
+
+  confirmTx = async () => {
+    if (this.state.txHash !== null) {
+      this.setState({ stage: STAGE_CONFIRMING });
+      const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      const data = await status;
+      if (data.logs && data.logs[0].success === true) {
+        this.setState({
+          stage: STAGE_CONFIRMED,
+          txHeight: data.height,
+        });
+        return;
+      }
+    }
+    this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
   onClickSend = () => {
