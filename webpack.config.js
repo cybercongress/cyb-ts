@@ -61,13 +61,18 @@ module.exports = {
         loader: 'file-loader',
         options: {
           name: '[path][name].[ext]',
-        }
+        },
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        loader: 'url-loader',
-        options: {
-          outputPath: 'image/',
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[hash:10].[ext]',
+            outputPath: '',
+            publicPath: '',
+            useRelativePath: false,
+          },
         },
       },
     ],
