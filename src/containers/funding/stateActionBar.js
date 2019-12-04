@@ -290,7 +290,7 @@ export const SendAmounLadger = ({
                     } margin-right-5px`}
                 />
                 <span className="font-size-20 display-inline-block">
-                    Connect your Ledger Nano S to the computer and enter your
+                    Connect your Ledger Nano to the computer and enter your
                     PIN.
                 </span>
             </div>
