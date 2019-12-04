@@ -58,15 +58,15 @@ export const Contribute = ({
 
           <input
             value={valueInputAmount}
-            style={{ width: '20%' }}
+            style={{ width: '24%' }}
             onChange={onChangeInputAmount}
-            placeholder="amount"
+            placeholder="amount GEUL"
           />
         </div>
         <div className="text-align-center">
           <button
             type="button"
-            className="btn"
+            className="btn-disabled"
             disabled={disabledBtn}
             onClick={onClickBtn}
           >
