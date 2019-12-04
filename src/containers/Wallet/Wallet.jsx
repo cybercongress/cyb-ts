@@ -14,6 +14,8 @@ import { indexedNode } from '../../utils/config';
 
 const HDPATH = [44, 118, 0, 0, 0];
 
+const TIMEOUT = 5000;
+
 const LEDGER_OK = 36864;
 const LEDGER_NOAPP = 28160;
 
@@ -59,7 +61,6 @@ class Wallet extends React.Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       if (ledger === null) {
-        console.log('pollLedger');
         this.pollLedger();
       }
       if (ledger !== null) {
@@ -226,6 +227,20 @@ class Wallet extends React.Component {
     }
   };
 
+  cleatState = () => {
+    this.setState({
+      stage: STAGE_INIT,
+      table: [],
+      ledger: null,
+      returnCode: null,
+      addressInfo: null,
+      addressLedger: null,
+      ledgerVersion: [0, 0, 0],
+      time: 0,
+      addAddress: true,
+    });
+  };
+
   onClickGetAddressLedger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
@@ -242,7 +257,7 @@ class Wallet extends React.Component {
       returnCode,
       ledgerVersion,
     } = this.state;
-
+// console.log(addressLedger);
     const rowsTable = table.map(item => (
       <Table.Row
         borderBottom="none"
@@ -325,61 +340,64 @@ class Wallet extends React.Component {
       );
     }
 
-    return (
-      <div>
-        <main className="block-body-home">
-          <Pane
-            height="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="space-around"
-          >
-            <Table width="100%">
-              <Table.Head
-                style={{
-                  backgroundColor: '#000',
-                  borderBottom: '1px solid #ffffff80',
-                }}
-                paddingLeft={20}
-              >
-                <Table.TextHeaderCell flex={1.3}>
-                  <Text color="#fff" fontSize="17px">
-                    Address
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex={0.5}>
-                  <Text color="#fff" fontSize="17px">
-                    Amount
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex={0.2}>
-                  <Text color="#fff" fontSize="17px">
-                    Token
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex={0.3}>
-                  <Text color="#fff" fontSize="17px">
-                    Keys
-                  </Text>
-                </Table.TextHeaderCell>
-              </Table.Head>
-              <Table.Body
-                style={{ backgroundColor: '#000', overflowY: 'hidden' }}
-              >
-                {rowsTable}
-              </Table.Body>
-            </Table>
-          </Pane>
-        </main>
-        <ActionBarContainer
-          addressTable={addressLedger.bech32}
-          onClickAddressLedger={this.onClickGetAddressLedger}
-          addAddress={addAddress}
-          updateAddress={this.checkAddressLocalStorage}
-          // onClickSend={}
-        />
-      </div>
-    );
+    if (!addAddress) {
+      return (
+        <div>
+          <main className="block-body-home">
+            <Pane
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="space-around"
+            >
+              <Table width="100%">
+                <Table.Head
+                  style={{
+                    backgroundColor: '#000',
+                    borderBottom: '1px solid #ffffff80',
+                  }}
+                  paddingLeft={20}
+                >
+                  <Table.TextHeaderCell flex={1.3}>
+                    <Text color="#fff" fontSize="17px">
+                      Address
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex={0.5}>
+                    <Text color="#fff" fontSize="17px">
+                      Amount
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex={0.2}>
+                    <Text color="#fff" fontSize="17px">
+                      Token
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex={0.3}>
+                    <Text color="#fff" fontSize="17px">
+                      Keys
+                    </Text>
+                  </Table.TextHeaderCell>
+                </Table.Head>
+                <Table.Body
+                  style={{ backgroundColor: '#000', overflowY: 'hidden' }}
+                >
+                  {rowsTable}
+                </Table.Body>
+              </Table>
+            </Pane>
+          </main>
+          <ActionBarContainer
+            addressTable={addressLedger.bech32}
+            onClickAddressLedger={this.onClickGetAddressLedger}
+            addAddress={addAddress}
+            updateAddress={this.checkAddressLocalStorage}
+            // onClickSend={}
+          />
+        </div>
+      );
+    }
+    return null;
   }
 }
 
