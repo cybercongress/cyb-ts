@@ -10,9 +10,17 @@ import {
   indexedNode,
 } from '../../utils/config';
 
+import {
+  SendAmounLadger,
+  Contribute,
+  Confirmed,
+  JsonTransaction,
+  TransactionSubmitted,
+} from './actionBarStage';
+
 const HDPATH = [44, 118, 0, 0, 0];
 
-export const DIVISOR = 100000;
+export const DIVISOR = 10 ** 9;
 
 const STAGE_INIT = 0;
 const STAGE_SELECTION = 1;
@@ -42,19 +50,13 @@ class ActionBarContainer extends Component {
       returnCode: null,
       addressInfo: null,
       address: null,
-      availableStake: 0,
+      balance: 0,
       time: 0,
-      gas: DEFAULT_GAS,
-      gasPrice: DEFAULT_GAS_PRICE,
-      toSend: '1',
-      toSendAddres: 'cyber195zw55zmgxssft27f77dzkw8csxpc8ljlc2g0t',
-      canStake: 0,
-      atomerror: null,
-      errorMessage: null,
-      rewards: [],
-      governance: [],
+      toSend: '',
+      toSendAddres: '',
       txBody: null,
       txContext: null,
+      txMsg: null,
       txHash: null,
       txHeight: null,
     };
@@ -203,10 +205,13 @@ class ActionBarContainer extends Component {
 
       addressInfo.chainId = chainId;
 
+      const balance = addressInfo.coins[0].amount;
+
       console.log(addressInfo);
 
       this.setState({
         addressInfo,
+        balance,
         stage: STAGE_READY,
       });
     } catch (error) {
@@ -287,6 +292,7 @@ class ActionBarContainer extends Component {
   };
 
   confirmTx = async () => {
+    const { updateAddress } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
@@ -296,10 +302,23 @@ class ActionBarContainer extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
+        updateAddress();
         return;
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
+  };
+
+  onChangeInputAmount = e => {
+    this.setState({
+      toSend: e.target.value,
+    });
+  };
+
+  onChangeInputInputAddressT = e => {
+    this.setState({
+      toSendAddres: e.target.value,
+    });
   };
 
   onClickSend = () => {
@@ -308,36 +327,125 @@ class ActionBarContainer extends Component {
     });
   };
 
+  cleatState = () => {
+    this.setState({
+      stage: STAGE_INIT,
+      ledger: null,
+      ledgerVersion: [0, 0, 0],
+      returnCode: null,
+      addressInfo: null,
+      address: null,
+      balance: 0,
+      time: 0,
+      toSend: '',
+      toSendAddres: '',
+      txBody: null,
+      txContext: null,
+      txMsg: null,
+      txHash: null,
+      txHeight: null,
+    });
+  };
+
+  hasKey() {
+    return this.state.address !== null;
+  }
+
+  hasWallet() {
+    return this.state.addressInfo !== null;
+  }
+
   render() {
+    const { onClickAddressLedger, addAddress, send, addressInfo } = this.props;
     const {
+      stage,
+      connect,
       address,
-      onClickAddressLedger,
-      addAddress,
-      send,
-      addressInfo,
-    } = this.props;
-    // console.log('address', address);
-    // console.log('addressInfo', addressInfo);
+      returnCode,
+      ledgerVersion,
+      toSend,
+      balance,
+      toSendAddres,
+      txMsg,
+      txHash,
+      txHeight,
+    } = this.state;
 
     if (addAddress) {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={onClickAddressLedger}>add address</Button>
+            <Button onClick={onClickAddressLedger}>
+              Add address it using Ledger
+            </Button>
           </Pane>
         </ActionBar>
       );
     }
-    if (!addAddress) {
+    if (!addAddress && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={e => this.onClickSend(e)}>send</Button>
-            <Button onClick={() => this.generateTx()}>generateTx</Button>
+            <Button onClick={e => this.onClickSend(e)}>
+              Send it using Ledger
+            </Button>
           </Pane>
         </ActionBar>
       );
     }
+
+    if (stage === STAGE_LEDGER_INIT) {
+      return (
+        <SendAmounLadger
+          pin={returnCode >= LEDGER_NOAPP}
+          app={returnCode === LEDGER_OK}
+          onClickBtnCloce={this.cleatState}
+          version={
+            returnCode === LEDGER_OK &&
+            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
+          }
+        />
+      );
+    }
+
+    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+      // if (this.state.stage === STAGE_READY) {
+      return (
+        <Contribute
+          onClickBtn={() => this.generateTx()}
+          address={address.bech32}
+          availableStake={Math.floor((balance / DIVISOR) * 1000) / 1000}
+          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          valueInputAmount={toSend}
+          onClickBtnCloce={this.cleatState}
+          valueInputAddressTo={toSendAddres}
+          onChangeInputAddressTo={e => this.onChangeInputInputAddressT(e)}
+          disabledBtn={toSend.length === 0 || toSendAddres.length === 0}
+        />
+      );
+    }
+
+    if (stage === STAGE_WAIT) {
+      return (
+        <JsonTransaction txMsg={txMsg} onClickBtnCloce={this.cleatState} />
+      );
+    }
+
+    if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
+      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
+    }
+
+    if (stage === STAGE_CONFIRMED) {
+      return (
+        <Confirmed
+          txHash={txHash}
+          txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
     return null;
   }
 }

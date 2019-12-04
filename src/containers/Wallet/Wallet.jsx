@@ -8,6 +8,8 @@ import NotFound from '../application/notFound';
 // import { formatNumber } from '../../utils/search/utils';
 import ActionBarContainer from './actionBarContainer';
 
+import { SendAmounLadger } from './actionBarStage';
+
 import { indexedNode } from '../../utils/config';
 
 const HDPATH = [44, 118, 0, 0, 0];
@@ -18,6 +20,8 @@ const LEDGER_NOAPP = 28160;
 const STAGE_INIT = 0;
 const STAGE_LEDGER_INIT = 1;
 const STAGE_READY = 2;
+
+const LEDGER_VERSION_REQ = [1, 1, 1];
 
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
@@ -41,25 +45,7 @@ class Wallet extends React.Component {
   }
 
   async componentDidMount() {
-    const { accounts } = this.props;
-    let address = [];
-
-    // console.log(accounts);
-    // if (accounts !== null && accounts !== undefined) {
-    //   this.getAddressToMetaMask();
-    // }
-
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      await this.setState({ addressLedger: address });
-      this.getAddressInfo();
-    } else {
-      this.setState({
-        addAddress: true,
-      });
-    }
+    await this.checkAddressLocalStorage();
   }
 
   componentDidUpdate() {
@@ -97,6 +83,31 @@ class Wallet extends React.Component {
       }
     }
   }
+
+  compareVersion = async () => {
+    const test = this.state.ledgerVersion;
+    const target = LEDGER_VERSION_REQ;
+    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
+    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
+    return testInt >= targetInt;
+  };
+
+  checkAddressLocalStorage = async () => {
+    let address = [];
+
+    const localStorageStory = await localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address });
+      this.getAddressInfo();
+    } else {
+      this.setState({
+        addAddress: true,
+        loading: false,
+      });
+    }
+  };
 
   pollLedger = async () => {
     const transport = await TransportU2F.create();
@@ -215,27 +226,6 @@ class Wallet extends React.Component {
     }
   };
 
-  getAddressToMetaMask = async () => {
-    const { web3, accounts } = this.props;
-    const table = [];
-    const row = {
-      address: [],
-      amount: [],
-      token: [],
-      keys: [],
-    };
-
-    const balance = await web3.eth.getBalance(accounts);
-    row.address.push(accounts);
-    row.amount.push(toFixedNumber(balance * 10 ** -18, 4));
-    row.token.push('ETH');
-    row.keys.push('MetaMask');
-    table.push(row);
-    this.setState({
-      table,
-    });
-  };
-
   onClickGetAddressLedger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
@@ -243,14 +233,14 @@ class Wallet extends React.Component {
   };
 
   render() {
-    const { accounts } = this.props;
     const {
       table,
       addressLedger,
-      ledger,
       loading,
       addAddress,
-      addressInfo,
+      stage,
+      returnCode,
+      ledgerVersion,
     } = this.state;
 
     const rowsTable = table.map(item => (
@@ -263,7 +253,12 @@ class Wallet extends React.Component {
       >
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
-            {item.address}
+            <a
+              target="_blank"
+              href={`https://cyberd.ai/account/${item.address}`}
+            >
+              {item.address}
+            </a>
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
@@ -285,10 +280,23 @@ class Wallet extends React.Component {
     ));
 
     if (loading) {
-      return <Loading />;
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Loading />
+        </div>
+      );
     }
 
-    if (addAddress) {
+    if (addAddress && stage === STAGE_INIT) {
       return (
         <div>
           <main className="block-body-home">
@@ -300,6 +308,20 @@ class Wallet extends React.Component {
             addAddress={addAddress}
           />
         </div>
+      );
+    }
+
+    if (stage === STAGE_LEDGER_INIT) {
+      return (
+        <SendAmounLadger
+          pin={returnCode >= LEDGER_NOAPP}
+          app={returnCode === LEDGER_OK}
+          onClickBtnCloce={this.cleatState}
+          version={
+            returnCode === LEDGER_OK &&
+            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
+          }
+        />
       );
     }
 
@@ -353,6 +375,7 @@ class Wallet extends React.Component {
           addressTable={addressLedger.bech32}
           onClickAddressLedger={this.onClickGetAddressLedger}
           addAddress={addAddress}
+          updateAddress={this.checkAddressLocalStorage}
           // onClickSend={}
         />
       </div>
