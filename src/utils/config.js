@@ -23,6 +23,8 @@ const b_3d_plot = 2.355 * 10 ** -5;
 const c_3d_plot = 6.66 * 10 ** -11;
 const d_3d_plot = 7.332 * 10 ** -17;
 
+const BECH32_PREFIX_ACC_ADDR = 'cyber';
+
 export {
   a,
   b,
@@ -42,5 +44,6 @@ export {
   MEMO,
   urlGaiaLSD,
   indexedNode,
-  wssCyberUrl
+  wssCyberUrl,
+  BECH32_PREFIX_ACC_ADDR,
 };

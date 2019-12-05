@@ -71,7 +71,7 @@ export const formatNumber = (number, toFixed) => {
   if (toFixed) {
     formatted = +formatted.toFixed(toFixed);
   }
-
+  // debugger;
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
@@ -204,7 +204,55 @@ export const getValidators = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/api/validators`,
+      url: `${nodeUrl}/lcd/staking/validators`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
+
+export const getValidatorsUnbonding = () =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${nodeUrl}/lcd/staking/validators?status=unbonding`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
+
+export const getValidatorsUnbonded = () =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${nodeUrl}/lcd/staking/validators?status=unbonded`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
+
+export const selfDelegationShares = (delegatorAddress, operatorAddress) =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${nodeUrl}/lcd/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
+
+export const stakingPool = () =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${nodeUrl}/lcd/staking/pool`,
     })
       .then(response => {
         resolve(response.data.result);
