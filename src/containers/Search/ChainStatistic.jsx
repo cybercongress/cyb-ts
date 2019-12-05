@@ -174,13 +174,13 @@ class ChainStatistic extends React.Component {
                 display="inline-block"
                 marginBottom={15}
                 color="#4ed6ae"
-                fontSize="16px"
+                fontSize="20px"
               >
                 {formatNumber(totalCyb)}
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                supply CYB
+                supply of CYB
               </Text>
             </CardHover>
             <CardHover
@@ -202,7 +202,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                staked CYB (%)
+                % of staked CYB
               </Text>
             </CardHover>
             <CardHover
@@ -224,7 +224,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                price of cyberlink (BP)
+                price of cyberlink in RC
               </Text>
             </CardHover>
           </Pane>
@@ -259,7 +259,7 @@ class ChainStatistic extends React.Component {
                   {activeValidatorsCount}
                 </Text>
                 {/* <Pane display="flex" alignItems="center"> */}
-                  <Text color="#4ed6ae">active validators</Text>
+                  <Text color="#4ed6ae">heroes</Text>
                   {/* <Icon icon="arrow-right" color="#4caf50" marginLeft={5} /> */}
                 {/* </Pane> */}
               </CardHover>
@@ -305,7 +305,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                last block
+                last heartbeat
               </Text>
             </CardHover>
           </Pane>
