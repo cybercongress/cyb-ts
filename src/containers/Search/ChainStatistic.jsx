@@ -130,7 +130,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                content ids
+                objects
               </Text>
             </CardHover>
             <CardHover
@@ -152,7 +152,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                accounts
+                subjects
               </Text>
             </CardHover>
           </Pane>
