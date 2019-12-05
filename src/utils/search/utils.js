@@ -66,10 +66,10 @@ export const getContentByCid = (cid, timeout) =>
   });
 
 export const formatNumber = (number, toFixed) => {
-  let formatted = number;
+  let formatted = +number;
 
   if (toFixed) {
-    formatted = formatted.toFixed(toFixed);
+    formatted = +formatted.toFixed(toFixed);
   }
   // debugger;
   return formatted.toLocaleString('en').replace(/,/g, ' ');

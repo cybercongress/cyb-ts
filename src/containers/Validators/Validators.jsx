@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Provider, Subscribe } from 'unstated';
 import {
   ScrollContainer,
   MainContainer,
@@ -25,7 +24,7 @@ import {
   asyncForEach,
   formatValidatorAddress,
 } from '../../utils/utils';
-import { FormatNumber } from '../../components';
+import { FormatNumber, Loading } from '../../components';
 
 import validatorsContainer from './validatorsContainer';
 import validatorsData from './validatorsData';
@@ -188,6 +187,10 @@ class Validators extends Component {
     this.setState({ showJailed: true });
   };
 
+  // selectValidators = () => {
+    
+  // }
+
   render() {
     const {
       validators,
@@ -199,7 +202,23 @@ class Validators extends Component {
     console.log(validators);
 
     if (loading) {
-      return <div>...</div>;
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Loading />
+          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+          Loading
+          </div>
+        </div>
+      );
     }
 
     const validatorRows = validators
@@ -210,6 +229,12 @@ class Validators extends Component {
             borderBottom="none"
             //   boxShadow='0px 0px 0.1px 0px #ddd'
             //   className='validators-table-row'
+            onSelect={() => {
+              console.log(
+                validator.description.moniker,
+                validator.operator_address
+              );
+            }}
             isSelectable
             key={validator.operator_address}
           >
