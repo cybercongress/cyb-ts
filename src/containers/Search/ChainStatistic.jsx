@@ -74,7 +74,7 @@ class ChainStatistic extends React.Component {
       stakedCyb,
       activeValidatorsCount,
     } = this.state;
-    const totalGcyb = (totalCyb / 1000000000).toFixed(0);
+    const totalCyb = (totalCyb).toFixed(0);
 
     return (
       <div>
@@ -175,13 +175,13 @@ class ChainStatistic extends React.Component {
                 display="inline-block"
                 marginBottom={15}
                 color="#4ed6ae"
-                fontSize="30px"
+                fontSize="16px"
               >
-                {formatNumber(totalGcyb)}
+                {formatNumber(totalCyb)}
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                total GCYB
+                supply CYB
               </Text>
             </CardHover>
             <CardHover
