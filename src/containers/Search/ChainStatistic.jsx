@@ -74,7 +74,6 @@ class ChainStatistic extends React.Component {
       stakedCyb,
       activeValidatorsCount,
     } = this.state;
-    const totalCyb = (totalCyb).toFixed(0);
 
     return (
       <div>
