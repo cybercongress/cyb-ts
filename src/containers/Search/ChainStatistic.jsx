@@ -86,7 +86,7 @@ class ChainStatistic extends React.Component {
 
         <Pane marginTop={50} marginBottom={50}>
           <Heading size={600} color="#fff" marginBottom={24}>
-            Knowledge grapth
+            Knowledge graph
           </Heading>
           <Pane display="flex" marginX={-15}>
             <CardHover
