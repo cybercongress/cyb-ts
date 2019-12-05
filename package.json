@@ -50,6 +50,7 @@
   "dependencies": {
     "@cybercongress/gravity": "^0.0.2",
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
+    "bech32": "^1.1.3",
     "big.js": "^5.2.2",
     "dateformat": "^3.0.3",
     "eslint-config-airbnb-standard": "^3.0.1",
