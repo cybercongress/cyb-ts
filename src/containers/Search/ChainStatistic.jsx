@@ -42,8 +42,7 @@ class ChainStatistic extends React.Component {
       supplyTotal,
     } = statisticContainer;
 
-    const { validators } = validatorsStatistic;
-    const activeValidatorsCount = validators;
+    const activeValidatorsCount = validatorsStatistic;
 
     const totalCyb = supplyTotal;
     const stakedCyb = Math.floor((bondedTokens / totalCyb) * 100 * 1000) / 1000;

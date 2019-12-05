@@ -11,6 +11,22 @@ import {
   Tooltip,
   Text,
 } from '@cybercongress/gravity';
+
+import {
+  getValidators,
+  getValidatorsUnbonding,
+  getValidatorsUnbonded,
+  selfDelegationShares,
+  stakingPool,
+} from '../../utils/search/utils';
+import {
+  getDelegator,
+  formatNumber,
+  asyncForEach,
+  formatValidatorAddress,
+} from '../../utils/utils';
+import { FormatNumber } from '../../components';
+
 import validatorsContainer from './validatorsContainer';
 import validatorsData from './validatorsData';
 
@@ -62,6 +78,17 @@ const StatusTooltip = ({ status }) => {
   );
 };
 
+const TextTable = ({ children, fontSize, color, display, ...props }) => (
+  <Text
+    fontSize={`${fontSize || 13}px`}
+    color={`${color || '#fff'}`}
+    display={`${display || 'inline-flex'}`}
+    {...props}
+  >
+    {children}
+  </Text>
+);
+
 class Validators extends Component {
   constructor(props) {
     super(props);
@@ -69,16 +96,31 @@ class Validators extends Component {
       validators: [],
       showJailed: false,
       activeValidatorsCount: 0,
+      loading: true,
+      bondedTokens: 0,
     };
   }
 
   async componentDidMount() {
+    await this.getSupply();
     this.getValidators();
   }
 
+  getSupply = async () => {
+    const bondedTokens = await stakingPool();
+    this.setState({
+      bondedTokens: bondedTokens.bonded_tokens,
+    });
+  };
+
   getValidators = async () => {
-    // let validators = await window.cyber.getValidators();
-    let validators = validatorsData;
+    const { bondedTokens } = this.state;
+
+    let validators = await getValidators();
+    const validatorsJailed = await getValidatorsUnbonding();
+    const validatorsUnbonded = await getValidatorsUnbonded();
+
+    validators.push(...validatorsJailed, ...validatorsUnbonded);
 
     validators = validators
       .slice(0)
@@ -88,7 +130,51 @@ class Validators extends Component {
       validator => !validator.jailed
     ).length;
 
+    await asyncForEach(
+      Array.from(Array(validators.length).keys()),
+      async item => {
+        const delegatorAddress = getDelegator(
+          validators[item].operator_address
+        );
+
+        const getSelfDelegation = await selfDelegationShares(
+          delegatorAddress,
+          validators[item].operator_address
+        );
+
+        const height = validators[item].jailed
+          ? validators[item].unbonding_height
+          : validators[item].bond_height || 0;
+
+        const commission = formatNumber(
+          validators[item].commission.commission_rates.rate * 100,
+          2
+        );
+
+        const powerFloat = validators[item].tokens * 10 ** -9;
+        const power = formatNumber(Math.floor(powerFloat * 1000) / 1000, 3);
+
+        const shares =
+          (getSelfDelegation.shares / validators[item].delegator_shares) * 100;
+
+        const staking = (validators[item].tokens / bondedTokens) * 100;
+
+        validators[item].height = height;
+        validators[item].commission = commission;
+        validators[item].power = power;
+        validators[item].shares = formatNumber(
+          Math.floor(shares * 100) / 100,
+          2
+        );
+        validators[item].stakingPool = formatNumber(
+          Math.floor(staking * 100) / 100,
+          2
+        );
+      }
+    );
+
     this.setState({
+      loading: false,
       validators,
       activeValidatorsCount,
     });
@@ -103,72 +189,83 @@ class Validators extends Component {
   };
 
   render() {
-    const { validators, showJailed, activeValidatorsCount } = this.state;
+    const {
+      validators,
+      showJailed,
+      activeValidatorsCount,
+      loading,
+    } = this.state;
+
+    console.log(validators);
+
+    if (loading) {
+      return <div>...</div>;
+    }
 
     const validatorRows = validators
       .filter(validator => validator.jailed === showJailed)
       .map((validator, index) => {
-        const height = validator.jailed
-          ? validator.unbonding_height
-          : validator.bond_height || 0;
-        const commission = (validator.commission.rate * 100).toFixed(0);
-        const powerFloat = validator.tokens / 1000000000;
-        const power = Math.round(powerFloat * 1) / 1;
-
         return (
           <Table.Row
             borderBottom="none"
             //   boxShadow='0px 0px 0.1px 0px #ddd'
             //   className='validators-table-row'
             isSelectable
-            key={index}
+            key={validator.operator_address}
           >
             <Table.TextCell textAlign="center" width={35} flex="none">
               <StatusTooltip status={validator.status} />
             </Table.TextCell>
-            <Table.TextCell
-              textAlign="end"
-              flexBasis={60}
-              flexShrink={0}
-              flexGrow={0}
-              isNumber
-            >
-              <span style={{ color: '#fff', fontSize: 13 }}>{index + 1}</span>
+            <Table.TextCell textAlign="end" flexBasis={60} flex="none" isNumber>
+              <TextTable>{index + 1}</TextTable>
             </Table.TextCell>
             <Table.TextCell>
-              <span style={{ color: '#fff', fontSize: 13 }}>
-                {validator.description.moniker}
-              </span>
+              <TextTable>{validator.description.moniker}</TextTable>
             </Table.TextCell>
-            <Table.TextCell
-              textAlign="end"
-              flexBasis={80}
-              flexShrink={0}
-              flexGrow={0}
-              isNumber
-            >
-              <span style={{ color: '#fff', fontSize: 13 }}>{power}</span>
+            <Table.TextCell textAlign="end">
+              <TextTable>
+                {formatValidatorAddress(validator.operator_address)}
+              </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" flexGrow={1}>
-              <span style={{ color: '#fff', fontSize: 13 }}>{commission}</span>
+            <Table.TextCell textAlign="end">
+              <TextTable>
+                <FormatNumber
+                  number={validator.commission}
+                  fontSizeDecimal={11.5}
+                />{' '}
+                %
+              </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" flexGrow={3}>
-              <span style={{ color: '#fff', fontSize: 13 }}>
-                {validator.operator_address}
-              </span>
+            <Table.TextCell textAlign="end" isNumber flex={1.5}>
+              <TextTable>
+                <FormatNumber
+                  style={{ marginRight: 5 }}
+                  number={validator.power}
+                  fontSizeDecimal={11.5}
+                />
+                (
+                <FormatNumber
+                  number={validator.stakingPool}
+                  fontSizeDecimal={11.5}
+                />
+                %)
+              </TextTable>
             </Table.TextCell>
-            <Table.TextCell
-              textAlign="end"
-              flexShrink={0}
-              flexGrow={0.8}
-              isNumber
-            >
-              <span style={{ color: '#fff', fontSize: 13 }}>{height}</span>
+            <Table.TextCell textAlign="end" flex={0.5}>
+              <TextTable>
+                <FormatNumber
+                  number={validator.shares}
+                  fontSizeDecimal={11.5}
+                />
+                %
+              </TextTable>
+            </Table.TextCell>
+            <Table.TextCell textAlign="end" isNumber>
+              <TextTable>{validator.height}</TextTable>
             </Table.TextCell>
           </Table.Row>
         );
       });
-
     return (
       <main className="block-body">
         <Pane
@@ -219,37 +316,30 @@ class Validators extends Component {
             }}
           >
             <Table.TextHeaderCell textAlign="center" width={35} flex="none" />
-            <Table.TextHeaderCell
-              textAlign="end"
-              flexBasis={60}
-              flexShrink={0}
-              flexGrow={0}
-            >
-              <span style={{ color: '#fff', fontSize: 16 }}>Rank</span>
+            <Table.TextHeaderCell textAlign="end" flexBasis={60} flex="none">
+              <TextTable fontSize={15}>#</TextTable>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexGrow={1}>
-              <span style={{ color: '#fff', fontSize: 16 }}>Name</span>
+            <Table.TextHeaderCell>
+              <TextTable fontSize={15}>Moniker</TextTable>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell
-              textAlign="end"
-              flexBasis={80}
-              flexShrink={0}
-              flexGrow={0}
-            >
-              <span style={{ color: '#fff', fontSize: 16 }}>Power (GCYB)</span>
+            <Table.TextHeaderCell textAlign="end">
+              <TextTable fontSize={15}>Operator</TextTable>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell flexGrow={1} textAlign="end">
-              <span style={{ color: '#fff', fontSize: 16 }}>
+            <Table.TextHeaderCell textAlign="end">
+              <TextTable fontSize={15} whiteSpace="nowrap">
                 Commission (%)
-              </span>
+              </TextTable>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="end" flexGrow={3}>
-              <span style={{ color: '#fff', fontSize: 16 }}>Address</span>
+            <Table.TextHeaderCell flex={1.5} textAlign="end">
+              <TextTable fontSize={15}>Power (GCYB)</TextTable>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="end" flexShrink={0} flexGrow={0.8}>
-              <span style={{ color: '#fff', fontSize: 16 }}>
+            <Table.TextHeaderCell flex={0.5} textAlign="end">
+              <TextTable fontSize={15}>Self (%)</TextTable>
+            </Table.TextHeaderCell>
+            <Table.TextHeaderCell textAlign="end">
+              <TextTable fontSize={15} whiteSpace="nowrap">
                 {showJailed ? 'Unbonding height' : 'Bond height'}
-              </span>
+              </TextTable>
             </Table.TextHeaderCell>
           </Table.Head>
           <Table.Body style={{ backgroundColor: '#000', overflowY: 'hidden' }}>

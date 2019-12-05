@@ -1,3 +1,6 @@
+import bech32 from 'bech32';
+import { BECH32_PREFIX_ACC_ADDR } from './config';
+
 const formatNumber = (number, toFixed) => {
   let formatted = number;
 
@@ -9,9 +12,9 @@ const formatNumber = (number, toFixed) => {
 };
 
 const getDecimal = (number, toFixed) => {
-  let nstring = number.toString();
-  let narray = nstring.split('.');
-  let result = narray.length > 1 ? narray[1] : '0';
+  const nstring = number.toString();
+  const narray = nstring.split('.');
+  const result = narray.length > 1 ? narray[1] : '0';
   return result;
 };
 
@@ -48,4 +51,30 @@ const timer = func => {
   setInterval(func, 10000);
 };
 
-export { run, roundNumber, formatNumber, asyncForEach, timer, getDecimal };
+const getDelegator = operatorAddr => {
+  const address = bech32.decode(operatorAddr);
+  return bech32.encode(BECH32_PREFIX_ACC_ADDR, address.words);
+};
+
+const formatValidatorAddress = address => {
+  if (address && address.length > 11) {
+    return `${address.substring(0, 3)}...${address.substring(
+      address.length - 8
+    )}`;
+  }
+  if (address && address.length < 11) {
+    return address;
+  }
+  return '';
+};
+
+export {
+  run,
+  roundNumber,
+  formatNumber,
+  asyncForEach,
+  timer,
+  getDecimal,
+  getDelegator,
+  formatValidatorAddress,
+};
