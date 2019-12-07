@@ -410,6 +410,16 @@ class CosmosDelegateTool {
     return txs.createDelegate(txContext, validatorBech32, uatomAmount, memo);
   }
 
+  async txCreateDelegateCyber(txContext, validatorBech32, uAmount, memo, denom) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createDelegateCyber(txContext, validatorBech32, uAmount, memo, denom);
+  }
+
   async txCreateSend(txContext, validatorBech32, uatomAmount, memo) {
     console.log('txContext', txContext);
     if (typeof txContext === 'undefined') {

@@ -11,6 +11,7 @@ import {
   NoResultState,
   ContainetLedger,
   FormatNumber,
+  TransactionSubmitted,
 } from '../../components';
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
@@ -36,6 +37,8 @@ import {
   DENOM_CYBER,
   DENOM_CYBER_G,
 } from '../../utils/config';
+
+const DIVISOR = 10 ** 9;
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -231,6 +234,101 @@ class ActionBarContainer extends Component {
     }
   };
 
+  generateTx = async () => {
+    const { ledger, address, addressInfo, toSend } = this.state;
+    const { validators } = this.props;
+
+    const validatorAddres = validators[0].operator_address;
+
+    console.log(validatorAddres);
+
+    const amount = toSend * DIVISOR;
+
+    const { denom } = addressInfo.coins[0];
+
+    const txContext = {
+      accountNumber: addressInfo.account_number,
+      chainId: addressInfo.chainId,
+      sequence: addressInfo.sequence,
+      bech32: address.bech32,
+      pk: address.pk,
+      path: address.path,
+    };
+    // console.log('txContext', txContext);
+    const tx = await ledger.txCreateDelegateCyber(
+      txContext,
+      validatorAddres,
+      amount,
+      MEMO,
+      denom
+    );
+    console.log('tx', tx);
+    await this.setState({
+      txMsg: tx,
+      txContext,
+      txBody: null,
+      error: null,
+    });
+    // debugger;
+    this.signTx();
+  };
+
+  signTx = async () => {
+    const { txMsg, ledger, txContext } = this.state;
+    // console.log('txContext', txContext);
+    this.setState({ stage: STAGE_WAIT });
+    const sing = await ledger.sign(txMsg, txContext);
+    console.log('sing', sing);
+    if (sing !== null) {
+      this.setState({
+        txMsg: null,
+        txBody: sing,
+        stage: STAGE_SUBMITTED,
+      });
+      await this.injectTx();
+    }
+  };
+
+  injectTx = async () => {
+    const { ledger, txBody } = this.state;
+    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const data = txSubmit;
+    console.log('data', data);
+    if (data.error) {
+      // if timeout...
+      // this.setState({stage: STAGE_CONFIRMING})
+      // else
+      this.setState({ stage: STAGE_ERROR, errorMessage: data.error });
+    } else {
+      this.setState({ stage: STAGE_SUBMITTED, txHash: data.data.txhash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    }
+  };
+
+  confirmTx = async () => {
+    // const { updateAddress } = this.props;
+    if (this.state.txHash !== null) {
+      this.setState({ stage: STAGE_CONFIRMING });
+      const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      const data = await status;
+      if (data.logs && data.logs[0].success === true) {
+        this.setState({
+          stage: STAGE_CONFIRMED,
+          txHeight: data.height,
+        });
+        // updateAddress();
+        return;
+      }
+    }
+    this.timeOut = setTimeout(this.confirmTx, 1500);
+  };
+
+  onChangeInputAmount = e => {
+    this.setState({
+      toSend: e.target.value,
+    });
+  };
+
   toStageConnectLadger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
@@ -284,6 +382,9 @@ class ActionBarContainer extends Component {
       address,
       balance,
       toSend,
+      txMsg,
+      txHash,
+      txHeight,
     } = this.state;
 
     if (validators.length === 0 && stage === STAGE_INIT) {
@@ -339,10 +440,10 @@ class ActionBarContainer extends Component {
     }
 
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-    // if (stage === STAGE_READY) {
+      // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       return (
-        <ContainetLedger onClickBtnCloce={this.onClickInitStage}>
+        <ContainetLedger onClickBtnCloce={this.cleatState}>
           <Pane display="flex" flexDirection="column" alignItems="center">
             <Text
               marginBottom={20}
@@ -395,7 +496,7 @@ class ActionBarContainer extends Component {
                   width: '60%',
                   marginRight: 20,
                 }}
-                onChange={e => this.onChangeInput(e)}
+                onChange={e => this.onChangeInputAmount(e)}
                 placeholder="amount"
               />
               <button
@@ -410,13 +511,34 @@ class ActionBarContainer extends Component {
             <button
               type="button"
               className="btn"
-              onClick={e => this.link(e)}
+              onClick={() => this.generateTx()}
               style={{ height: 42, maxWidth: '200px' }}
             >
               Generate Tx
             </button>
           </Pane>
         </ContainetLedger>
+      );
+    }
+
+    if (stage === STAGE_WAIT) {
+      return (
+        <JsonTransaction txMsg={txMsg} onClickBtnCloce={this.cleatState} />
+      );
+    }
+
+    if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
+      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
+    }
+
+    if (stage === STAGE_CONFIRMED) {
+      return (
+        <Confirmed
+          txHash={txHash}
+          txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
       );
     }
 

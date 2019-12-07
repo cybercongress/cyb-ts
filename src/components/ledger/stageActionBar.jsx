@@ -100,7 +100,7 @@ export const Confirmed = ({
           alignItems: 'center',
           margin: '0 auto',
         }}
-        href={`https://callisto.cybernode.ai/transactions/${txHash}`}
+        href={`https://cyberd.ai/transactions/${txHash}`}
       >
         View transaction
       </a>
