@@ -23,6 +23,34 @@ const b_3d_plot = 2.355 * 10 ** -5;
 const c_3d_plot = 6.66 * 10 ** -11;
 const d_3d_plot = 7.332 * 10 ** -17;
 
+// ----CYBER---
+
+const DIVISOR_CYBER_G = 10 ** -9;
+const DENOM_CYBER = 'eul';
+const DENOM_CYBER_G = 'G';
+
+// -----
+
+// ---LEDGER---
+
+const LEDGER_VERSION_REQ = [1, 1, 1];
+const HDPATH = [44, 118, 0, 0, 0];
+const LEDGER_OK = 36864;
+const LEDGER_NOAPP = 28160;
+
+const STAGE_INIT = 0;
+const STAGE_SELECTION = 1;
+const STAGE_LEDGER_INIT = 2;
+const STAGE_READY = 3;
+const STAGE_WAIT = 4;
+const STAGE_GENERATED = 5;
+const STAGE_SUBMITTED = 6;
+const STAGE_CONFIRMING = 7;
+const STAGE_CONFIRMED = 8;
+const STAGE_ERROR = 15;
+
+//------
+
 const BECH32_PREFIX_ACC_ADDR = 'cyber';
 
 export {
@@ -46,4 +74,21 @@ export {
   indexedNode,
   wssCyberUrl,
   BECH32_PREFIX_ACC_ADDR,
+  STAGE_INIT,
+  STAGE_SELECTION,
+  STAGE_LEDGER_INIT,
+  STAGE_READY,
+  STAGE_WAIT,
+  STAGE_GENERATED,
+  STAGE_SUBMITTED,
+  STAGE_CONFIRMING,
+  STAGE_CONFIRMED,
+  STAGE_ERROR,
+  LEDGER_VERSION_REQ,
+  HDPATH,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  DIVISOR_CYBER_G,
+  DENOM_CYBER,
+  DENOM_CYBER_G,
 };

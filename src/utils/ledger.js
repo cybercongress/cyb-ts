@@ -4,10 +4,18 @@ import Big from 'big.js';
 import secp256k1 from 'secp256k1';
 import txs from './txs';
 
-import { indexedNode } from './config';
+import { indexedNode, LEDGER_VERSION_REQ } from './config';
 
 const defaultHrp = 'cosmos';
 const defaultHrpCyber = 'cyber';
+
+const compareVersion = async ledgerVersion => {
+  const test = ledgerVersion;
+  const target = LEDGER_VERSION_REQ;
+  const testInt = 10000 * test[0] + 100 * test[1] + test[2];
+  const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
+  return testInt >= targetInt;
+};
 
 function wrapError(cdt, e) {
   try {
@@ -560,4 +568,4 @@ class CosmosDelegateTool {
   }
 }
 
-export { CosmosDelegateTool };
+export { CosmosDelegateTool, compareVersion };

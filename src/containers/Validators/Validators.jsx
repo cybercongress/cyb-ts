@@ -25,6 +25,7 @@ import {
   formatValidatorAddress,
 } from '../../utils/utils';
 import { FormatNumber, Loading } from '../../components';
+import ActionBarContainer from './ActionBarContainer';
 
 import validatorsContainer from './validatorsContainer';
 import validatorsData from './validatorsData';
@@ -97,6 +98,8 @@ class Validators extends Component {
       activeValidatorsCount: 0,
       loading: true,
       bondedTokens: 0,
+      validatorSelect: [],
+      selectedIndex: '',
     };
   }
 
@@ -187,9 +190,30 @@ class Validators extends Component {
     this.setState({ showJailed: true });
   };
 
-  // selectValidators = () => {
-    
-  // }
+  selectValidators = (validator, index) => {
+    const { validatorSelect, selectedIndex } = this.state;
+
+    const selectValidator = [];
+
+    if (selectedIndex === index) {
+      this.setState({
+        selectedIndex: '',
+      });
+    } else {
+      this.setState({
+        selectedIndex: index,
+      });
+    }
+    if (validatorSelect[0] !== validator) {
+      selectValidator.push(validator);
+      return this.setState({
+        validatorSelect: selectValidator,
+      });
+    }
+    return this.setState({
+      validatorSelect: selectValidator,
+    });
+  };
 
   render() {
     const {
@@ -197,9 +221,9 @@ class Validators extends Component {
       showJailed,
       activeValidatorsCount,
       loading,
+      validatorSelect,
+      selectedIndex,
     } = this.state;
-
-    console.log(validators);
 
     if (loading) {
       return (
@@ -215,7 +239,7 @@ class Validators extends Component {
         >
           <Loading />
           <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-          Loading
+            Loading
           </div>
         </div>
       );
@@ -227,14 +251,10 @@ class Validators extends Component {
         return (
           <Table.Row
             borderBottom="none"
-            //   boxShadow='0px 0px 0.1px 0px #ddd'
+            // backgroundColor={index === selectedIndex ? '#ffffff29' : '#000'}
+            boxShadow={index === selectedIndex ? '0px 0px 7px #3ab793db' : ''}
             //   className='validators-table-row'
-            onSelect={() => {
-              console.log(
-                validator.description.moniker,
-                validator.operator_address
-              );
-            }}
+            onSelect={() => this.selectValidators(validator, index)}
             isSelectable
             key={validator.operator_address}
           >
@@ -292,86 +312,95 @@ class Validators extends Component {
         );
       });
     return (
-      <main className="block-body">
-        <Pane
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Tablist marginBottom={24}>
-            <Tab
-              key="Active"
-              id="Active"
-              isSelected={!showJailed}
-              onSelect={e => this.showActive()}
-              paddingX={50}
-              paddingY={20}
-              marginX={3}
-              borderRadius={4}
-              color="#36d6ae"
-              boxShadow="0px 0px 10px #36d6ae"
-              fontSize="16px"
-            >
-              Active
-            </Tab>
-            <Tab
-              key="Jailed"
-              id="Jailed"
-              isSelected={showJailed}
-              onSelect={e => this.showJailed()}
-              paddingX={50}
-              paddingY={20}
-              marginX={3}
-              borderRadius={4}
-              color="#36d6ae"
-              boxShadow="0px 0px 10px #36d6ae"
-              fontSize="16px"
-            >
-              Jailed
-            </Tab>
-          </Tablist>
-        </Pane>
-
-        <Table>
-          <Table.Head
-            style={{
-              backgroundColor: '#000',
-              borderBottom: '1px solid #ffffff80',
-            }}
+      <div>
+        <main className="block-body">
+          <Pane
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
           >
-            <Table.TextHeaderCell textAlign="center" width={35} flex="none" />
-            <Table.TextHeaderCell textAlign="end" flexBasis={60} flex="none">
-              <TextTable fontSize={15}>#</TextTable>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell>
-              <TextTable fontSize={15}>Moniker</TextTable>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="end">
-              <TextTable fontSize={15}>Operator</TextTable>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="end">
-              <TextTable fontSize={15} whiteSpace="nowrap">
-                Commission (%)
-              </TextTable>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flex={1.5} textAlign="end">
-              <TextTable fontSize={15}>Power (GCYB)</TextTable>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell flex={0.5} textAlign="end">
-              <TextTable fontSize={15}>Self (%)</TextTable>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="end">
-              <TextTable fontSize={15} whiteSpace="nowrap">
-                {showJailed ? 'Unbonding height' : 'Bond height'}
-              </TextTable>
-            </Table.TextHeaderCell>
-          </Table.Head>
-          <Table.Body style={{ backgroundColor: '#000', overflowY: 'hidden' }}>
-            {validatorRows}
-          </Table.Body>
-        </Table>
-      </main>
+            <Tablist marginBottom={24}>
+              <Tab
+                key="Active"
+                id="Active"
+                isSelected={!showJailed}
+                onSelect={e => this.showActive()}
+                paddingX={50}
+                paddingY={20}
+                marginX={3}
+                borderRadius={4}
+                color="#36d6ae"
+                boxShadow="0px 0px 10px #36d6ae"
+                fontSize="16px"
+              >
+                Active
+              </Tab>
+              <Tab
+                key="Jailed"
+                id="Jailed"
+                isSelected={showJailed}
+                onSelect={e => this.showJailed()}
+                paddingX={50}
+                paddingY={20}
+                marginX={3}
+                borderRadius={4}
+                color="#36d6ae"
+                boxShadow="0px 0px 10px #36d6ae"
+                fontSize="16px"
+              >
+                Jailed
+              </Tab>
+            </Tablist>
+          </Pane>
+
+          <Table>
+            <Table.Head
+              style={{
+                backgroundColor: '#000',
+                borderBottom: '1px solid #ffffff80',
+              }}
+            >
+              <Table.TextHeaderCell textAlign="center" width={35} flex="none" />
+              <Table.TextHeaderCell textAlign="end" flexBasis={60} flex="none">
+                <TextTable fontSize={15}>#</TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell>
+                <TextTable fontSize={15}>Moniker</TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell textAlign="end">
+                <TextTable fontSize={15}>Operator</TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell textAlign="end">
+                <TextTable fontSize={15} whiteSpace="nowrap">
+                  Commission (%)
+                </TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={1.5} textAlign="end">
+                <TextTable fontSize={15}>Power (GCYB)</TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={0.5} textAlign="end">
+                <TextTable fontSize={15}>Self (%)</TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell textAlign="end">
+                <TextTable fontSize={15} whiteSpace="nowrap">
+                  {showJailed ? 'Unbonding height' : 'Bond height'}
+                </TextTable>
+              </Table.TextHeaderCell>
+            </Table.Head>
+            <Table.Body
+              style={{
+                backgroundColor: '#000',
+                overflowY: 'hidden',
+                padding: 7,
+              }}
+            >
+              {validatorRows}
+            </Table.Body>
+          </Table>
+        </main>
+        <ActionBarContainer validators={validatorSelect} />
+      </div>
     );
   }
 }
