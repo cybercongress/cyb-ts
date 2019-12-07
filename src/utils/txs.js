@@ -231,6 +231,27 @@ function createDelegate(txContext, validatorBech32, uatomAmount, memo) {
   return txSkeleton;
 }
 
+function createDelegateCyber(txContext, validatorBech32, uAmount, memo, denom) {
+  const txSkeleton = createSkeletonCyber(txContext, denom);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgDelegate',
+    value: {
+      amount: {
+        amount: uAmount.toString(),
+        denom,
+      },
+      delegator_address: txContext.bech32,
+      validator_address: validatorBech32,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 function createSend(txContext, validatorBech32, uatomAmount, memo) {
   const txSkeleton = createSkeleton(txContext);
 
@@ -362,4 +383,5 @@ export default {
   createSend,
   createLink,
   createSendCyber,
+  createDelegateCyber,
 };
