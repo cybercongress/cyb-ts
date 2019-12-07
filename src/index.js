@@ -4,6 +4,7 @@ import { AppContainer } from 'react-hot-loader';
 import AppRouter from './router';
 
 import './style/main.css';
+import './image/favicon.ico';
 
 const root = document.getElementById('root');
 
