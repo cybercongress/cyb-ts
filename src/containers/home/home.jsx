@@ -41,9 +41,11 @@ class Home extends PureComponent {
     };
   }
 
-  // componentDidMount() {
-  //   localStorage.setItem('LAST_DURA', '');
-  // }
+  componentDidMount() {
+    document.onkeypress = (e) => {
+      document.getElementById('search-input-home').focus();
+    };
+  }
 
   onChangeInput = async e => {
     const { value } = e.target;
@@ -116,7 +118,7 @@ class Home extends PureComponent {
     const mY = event.pageY;
     const from = { x: mX, y: mY };
 
-    const element = document.getElementById('searchInput');
+    const element = document.getElementById('search-input-home');
     const off = element.getBoundingClientRect();
     const { width } = off;
     const { height } = off;
@@ -200,7 +202,7 @@ class Home extends PureComponent {
               onChange={e => this.onChangeInput(e)}
               onKeyPress={this.handleKeyPress}
               className="search-input"
-              id="searchInput"
+              id="search-input-home"
               autoComplete="off"
             />
             {loading && (

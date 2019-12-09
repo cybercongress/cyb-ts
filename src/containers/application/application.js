@@ -60,6 +60,9 @@ class App extends Component {
 
   componentDidMount() {
     this.chekHomePage();
+    document.onkeypress = (e) => {
+      document.getElementById('search-input-searchBar').focus();
+    };
   }
 
   componentDidUpdate(prevProps) {
@@ -133,7 +136,7 @@ class App extends Component {
   };
 
   render() {
-    const { app, openMenu, story, home } = this.state;
+    const { app, openMenu, story, home, valueSearchInput } = this.state;
     // console.log('app', app);
 
     if (!story) {
@@ -186,7 +189,9 @@ class App extends Component {
                 onChange={e => this.onChangeInput(e)}
                 onKeyPress={this.handleKeyPress}
                 className="search-input"
+                value={valueSearchInput}
                 autoComplete="off"
+                id="search-input-searchBar"
                 style={{
                   width: '100%',
                   height: 41,
