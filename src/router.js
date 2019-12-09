@@ -32,7 +32,7 @@ const AppRouter = () => (
       <Route exact path="/governance" component={Governance} />
       <Route path="/governance/:proposal_id" component={ProposalsDetail} />
       <Route path="/wallet" component={Wallet} />
-      <Route path="/validators" component={Validators} />
+      <Route path="/heroes" component={Validators} />
 
       <Route exact path="*" component={NotFound} />
     </Switch>

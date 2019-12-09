@@ -234,7 +234,7 @@ class ChainStatistic extends React.Component {
           </Heading>
           <Pane display="flex" marginX={-15}>
             <a
-              href="/#/validators"
+              href="/#/heroes"
               style={{
                 display: 'contents',
                 textDecoration: 'none',
