@@ -42,7 +42,8 @@ class SearchResults extends React.Component {
   getSearch = async query => {
     let searchResults = [];
     // const { query } = this.state;
-    const keywordHash = await getIpfsHash(query);
+    let keywordHash;
+    keywordHash = await getIpfsHash(query);
     searchResults = await search(keywordHash);
     searchResults.map((item, index) => {
       searchResults[index].cid = item.cid;
@@ -50,6 +51,16 @@ class SearchResults extends React.Component {
       searchResults[index].grade = getRankGrade(item.rank);
     });
     console.log('searchResults', searchResults);
+    if (searchResults.length === 0) {
+      const queryNull = '0';
+      keywordHash = await getIpfsHash(queryNull);
+      searchResults = await search(keywordHash);
+      searchResults.map((item, index) => {
+        searchResults[index].cid = item.cid;
+        searchResults[index].rank = formatNumber(item.rank, 6);
+        searchResults[index].grade = getRankGrade(item.rank);
+      });
+    }
     this.setState({
       searchResults,
       keywordHash,
