@@ -95,13 +95,25 @@ class Home extends PureComponent {
 
   getSearch = async valueSearchInput => {
     let searchResults = [];
-    const keywordHash = await getIpfsHash(valueSearchInput);
+    let keywordHash;
+    keywordHash = await getIpfsHash(valueSearchInput);
     searchResults = await search(keywordHash);
     searchResults.map((item, index) => {
       searchResults[index].cid = item.cid;
       searchResults[index].rank = formatNumber(item.rank, 6);
       searchResults[index].grade = getRankGrade(item.rank);
     });
+
+    if (searchResults.length === 0) {
+      const queryNull = '0';
+      keywordHash = await getIpfsHash(queryNull);
+      searchResults = await search(keywordHash);
+      searchResults.map((item, index) => {
+        searchResults[index].cid = item.cid;
+        searchResults[index].rank = formatNumber(item.rank, 6);
+        searchResults[index].grade = getRankGrade(item.rank);
+      });
+    }
     console.log('searchResults', searchResults);
     this.setState({
       searchResults,

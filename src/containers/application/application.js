@@ -56,19 +56,21 @@ class App extends Component {
       home: false,
     };
     this.routeChange = this.routeChange.bind(this);
+    
   }
 
   componentDidMount() {
     this.chekHomePage();
-    document.onkeypress = (e) => {
-      document.getElementById('search-input-searchBar').focus();
-    };
+   
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
+      document.onkeypress = e => {
+        document.getElementById('search-input-searchBar').focus();
+      };
     }
   }
 
@@ -183,7 +185,7 @@ class App extends Component {
               borderRadius={20}
               width="60%"
               className="box-shadow-input"
-              height='100%'
+              height="100%"
             >
               <input
                 onChange={e => this.onChangeInput(e)}
