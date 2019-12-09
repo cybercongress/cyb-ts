@@ -95,7 +95,6 @@ class Validators extends Component {
     this.state = {
       validators: [],
       showJailed: false,
-      activeValidatorsCount: 0,
       loading: true,
       bondedTokens: 0,
       validatorSelect: [],
@@ -104,9 +103,17 @@ class Validators extends Component {
   }
 
   async componentDidMount() {
+    this.init();
+  }
+
+  init = async () => {
     await this.getSupply();
     this.getValidators();
-  }
+    this.setState({
+      validatorSelect: [],
+      selectedIndex: '',
+    });
+  };
 
   getSupply = async () => {
     const bondedTokens = await stakingPool();
@@ -219,7 +226,6 @@ class Validators extends Component {
     const {
       validators,
       showJailed,
-      activeValidatorsCount,
       loading,
       validatorSelect,
       selectedIndex,
@@ -399,7 +405,10 @@ class Validators extends Component {
             </Table.Body>
           </Table>
         </main>
-        <ActionBarContainer validators={validatorSelect} />
+        <ActionBarContainer
+          updateTable={this.init}
+          validators={validatorSelect}
+        />
       </div>
     );
   }

@@ -59,7 +59,6 @@ class ActionBarContainer extends Component {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      init: false,
       ledger: null,
       address: null,
       returnCode: null,
@@ -67,10 +66,6 @@ class ActionBarContainer extends Component {
       ledgerVersion: [0, 0, 0],
       balance: 0,
       time: 0,
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
       toSend: '',
       txMsg: null,
       txContext: null,
@@ -306,7 +301,7 @@ class ActionBarContainer extends Component {
   };
 
   confirmTx = async () => {
-    // const { updateAddress } = this.props;
+    const { updateTable } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
@@ -316,7 +311,7 @@ class ActionBarContainer extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        // updateAddress();
+        updateTable();
         return;
       }
     }
@@ -345,17 +340,11 @@ class ActionBarContainer extends Component {
       txMsg: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
-      contentHash: '',
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
       error: null,
-      init: false,
     });
     this.timeOut = null;
   };
