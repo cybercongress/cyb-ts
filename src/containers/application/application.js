@@ -56,16 +56,21 @@ class App extends Component {
       home: false,
     };
     this.routeChange = this.routeChange.bind(this);
+    
   }
 
   componentDidMount() {
     this.chekHomePage();
+   
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
+      document.onkeypress = e => {
+        document.getElementById('search-input-searchBar').focus();
+      };
     }
   }
 
@@ -133,7 +138,7 @@ class App extends Component {
   };
 
   render() {
-    const { app, openMenu, story, home } = this.state;
+    const { app, openMenu, story, home, valueSearchInput } = this.state;
     // console.log('app', app);
 
     if (!story) {
@@ -179,17 +184,27 @@ class App extends Component {
               backgroundColor="#000"
               borderRadius={20}
               width="60%"
+              className="box-shadow-input"
+              height="100%"
             >
               <input
                 onChange={e => this.onChangeInput(e)}
                 onKeyPress={this.handleKeyPress}
                 className="search-input"
+                value={valueSearchInput}
                 autoComplete="off"
+                id="search-input-searchBar"
                 style={{
                   width: '100%',
                   height: 41,
                   fontSize: 20,
                   boxShadow: `0 0 5px 0 #00ffa387`,
+                  textAlign: 'center',
+                  position: 'absolute',
+                  top: '50%',
+                  transform: 'translate(0, -50%)',
+                  zIndex: 1,
+                  backgroundColor: '#000',
                 }}
               />
             </Pane>

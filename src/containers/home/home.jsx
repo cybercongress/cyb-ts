@@ -41,9 +41,11 @@ class Home extends PureComponent {
     };
   }
 
-  // componentDidMount() {
-  //   localStorage.setItem('LAST_DURA', '');
-  // }
+  componentDidMount() {
+    document.onkeypress = (e) => {
+      document.getElementById('search-input-home').focus();
+    };
+  }
 
   onChangeInput = async e => {
     const { value } = e.target;
@@ -93,13 +95,25 @@ class Home extends PureComponent {
 
   getSearch = async valueSearchInput => {
     let searchResults = [];
-    const keywordHash = await getIpfsHash(valueSearchInput);
+    let keywordHash;
+    keywordHash = await getIpfsHash(valueSearchInput);
     searchResults = await search(keywordHash);
     searchResults.map((item, index) => {
       searchResults[index].cid = item.cid;
       searchResults[index].rank = formatNumber(item.rank, 6);
       searchResults[index].grade = getRankGrade(item.rank);
     });
+
+    if (searchResults.length === 0) {
+      const queryNull = '0';
+      keywordHash = await getIpfsHash(queryNull);
+      searchResults = await search(keywordHash);
+      searchResults.map((item, index) => {
+        searchResults[index].cid = item.cid;
+        searchResults[index].rank = formatNumber(item.rank, 6);
+        searchResults[index].grade = getRankGrade(item.rank);
+      });
+    }
     console.log('searchResults', searchResults);
     this.setState({
       searchResults,
@@ -116,7 +130,7 @@ class Home extends PureComponent {
     const mY = event.pageY;
     const from = { x: mX, y: mY };
 
-    const element = document.getElementById('searchInput');
+    const element = document.getElementById('search-input-home');
     const off = element.getBoundingClientRect();
     const { width } = off;
     const { height } = off;
@@ -193,13 +207,14 @@ class Home extends PureComponent {
                 height: 41,
                 fontSize: 20,
                 boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
+                textAlign: 'center',
               }}
               placeholder="joint for validators"
               value={valueSearchInput}
               onChange={e => this.onChangeInput(e)}
               onKeyPress={this.handleKeyPress}
               className="search-input"
-              id="searchInput"
+              id="search-input-home"
               autoComplete="off"
             />
             {loading && (
