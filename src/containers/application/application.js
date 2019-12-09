@@ -179,6 +179,8 @@ class App extends Component {
               backgroundColor="#000"
               borderRadius={20}
               width="60%"
+              className="box-shadow-input"
+              height='100%'
             >
               <input
                 onChange={e => this.onChangeInput(e)}
@@ -191,6 +193,11 @@ class App extends Component {
                   fontSize: 20,
                   boxShadow: `0 0 5px 0 #00ffa387`,
                   textAlign: 'center',
+                  position: 'absolute',
+                  top: '50%',
+                  transform: 'translate(0, -50%)',
+                  zIndex: 1,
+                  backgroundColor: '#000',
                 }}
               />
             </Pane>

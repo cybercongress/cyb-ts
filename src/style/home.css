@@ -52,3 +52,23 @@
   border: none;
   outline: none;
 }
+
+.box-shadow-input::after {
+  box-shadow: -1px -1px 20px 20px #000000;
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 50%;
+  transform: translate(0, -50%);
+}
+
+.box-shadow-input::before {
+  box-shadow: -1px -1px 20px 20px #000000;
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: 50%;
+  transform: translate(0, -50%);
+}
