@@ -190,6 +190,7 @@ class App extends Component {
                   height: 41,
                   fontSize: 20,
                   boxShadow: `0 0 5px 0 #00ffa387`,
+                  textAlign: 'center',
                 }}
               />
             </Pane>

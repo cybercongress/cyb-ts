@@ -193,6 +193,7 @@ class Home extends PureComponent {
                 height: 41,
                 fontSize: 20,
                 boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
+                textAlign: 'center',
               }}
               placeholder="joint for validators"
               value={valueSearchInput}
