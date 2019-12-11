@@ -14,6 +14,7 @@ class SearchResults extends React.Component {
       loading: false,
       keywordHash: '',
       query: '',
+      resultNull: false,
     };
   }
 
@@ -41,9 +42,9 @@ class SearchResults extends React.Component {
 
   getSearch = async query => {
     let searchResults = [];
+    let resultNull = false;
     // const { query } = this.state;
-    let keywordHash;
-    keywordHash = await getIpfsHash(query);
+    const keywordHash = await getIpfsHash(query);
     searchResults = await search(keywordHash);
     searchResults.map((item, index) => {
       searchResults[index].cid = item.cid;
@@ -51,15 +52,17 @@ class SearchResults extends React.Component {
       searchResults[index].grade = getRankGrade(item.rank);
     });
     console.log('searchResults', searchResults);
+
     if (searchResults.length === 0) {
       const queryNull = '0';
-      keywordHash = await getIpfsHash(queryNull);
-      searchResults = await search(keywordHash);
+      const keywordHashNull = await getIpfsHash(queryNull);
+      searchResults = await search(keywordHashNull);
       searchResults.map((item, index) => {
         searchResults[index].cid = item.cid;
         searchResults[index].rank = formatNumber(item.rank, 6);
         searchResults[index].grade = getRankGrade(item.rank);
       });
+      resultNull = true;
     }
     this.setState({
       searchResults,
@@ -67,11 +70,19 @@ class SearchResults extends React.Component {
       result: true,
       loading: false,
       query,
+      resultNull,
     });
   };
 
   render() {
-    const { searchResults, keywordHash, loading, query, result } = this.state;
+    const {
+      searchResults,
+      keywordHash,
+      loading,
+      query,
+      result,
+      resultNull,
+    } = this.state;
     // console.log(query);
 
     const searchItems = searchResults.map(item => (
@@ -117,14 +128,31 @@ class SearchResults extends React.Component {
             display="flex"
             flexDirection="column"
           >
-            <Text
-              fontSize="20px"
-              marginBottom={20}
-              color="#949292"
-              lineHeight="20px"
-            >
-              {`I found ${searchItems.length} results`}
-            </Text>
+            {!resultNull && (
+              <Text
+                fontSize="20px"
+                marginBottom={20}
+                color="#949292"
+                lineHeight="20px"
+              >
+                {`I found ${searchItems.length} results`}
+              </Text>
+            )}
+
+            {resultNull && (
+              <Text
+                fontSize="20px"
+                marginBottom={20}
+                color="#949292"
+                lineHeight="20px"
+              >
+                I don't know{' '}
+                <Text fontSize="20px" lineHeight="20px" color="#e80909">
+                  {query}
+                </Text>
+                . Please, help me understand.
+              </Text>
+            )}
             <Pane>{searchItems}</Pane>
           </Pane>
         </main>
@@ -134,6 +162,7 @@ class SearchResults extends React.Component {
           link={searchResults.length === 0 && result}
           keywordHash={keywordHash}
           onCklicBtnSearch={this.onCklicBtn}
+          update={this.getParamsQuery}
         />
       </div>
     );

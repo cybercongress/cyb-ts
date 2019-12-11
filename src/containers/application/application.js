@@ -68,15 +68,18 @@ class App extends Component {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
-      document.onkeypress = e => {
-        document.getElementById('search-input-searchBar').focus();
-      };
+      // document.onkeypress = e => {
+      //   document.getElementById('search-input-searchBar').focus();
+      // };
     }
   }
 
   chekHomePage = () => {
     const { location } = this.props;
     if (location.pathname === '/') {
+      document.onkeypress = e => {
+        document.getElementById('search-input-home').focus();
+      };
       this.setState({
         home: true,
       });

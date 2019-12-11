@@ -8,9 +8,9 @@ import {
   TransactionSubmitted,
   Confirmed,
   StartState,
-  NoResultState,
+  StartStageSearchActionBar,
 } from './stateActionBar';
-import { ContainetLedger } from '../../components';
+import { ContainetLedger, Tooltip } from '../../components';
 
 import { indexedNode, MEMO } from '../../utils/config';
 
@@ -107,7 +107,6 @@ class ActionBarContainer extends Component {
       stage: STAGE_LEDGER_INIT,
       init: true,
     });
-
   };
 
   compareVersion = async () => {
@@ -337,6 +336,7 @@ class ActionBarContainer extends Component {
   };
 
   confirmTx = async () => {
+    const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
@@ -346,6 +346,7 @@ class ActionBarContainer extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
+        update();
         return;
       }
     }
@@ -417,13 +418,16 @@ class ActionBarContainer extends Component {
       txHeight,
       txHash,
     } = this.state;
-    const { valueSearchInput } = this.props;
+    const { valueSearchInput, keywordHash } = this.props;
+    console.log(valueSearchInput);
 
     if (stage === STAGE_INIT) {
       return (
-        <NoResultState
+        <StartStageSearchActionBar
           valueSearchInput={valueSearchInput}
           onClickBtn={this.onClickUsingLedger}
+          contentHash={contentHash}
+          onChangeInputContentHash={this.onChangeInput}
         />
       );
     }
@@ -473,7 +477,13 @@ class ActionBarContainer extends Component {
               {bandwidth.remained}/{bandwidth.max_value}
             </Text>
           </Pane>
-          <Pane>
+          <Text marginBottom={10} color="#fff" fontSize="16px">
+            to: {valueSearchInput}
+          </Text>
+          <Text color="#fff" fontSize="16px">
+            from: {contentHash}
+          </Text>
+          <Pane marginTop={30}>
             <div
               style={{
                 display: 'flex',
@@ -482,12 +492,6 @@ class ActionBarContainer extends Component {
                 width: '100%',
               }}
             >
-              <input
-                value={contentHash}
-                style={{ height: 42, marginBottom: '20px', width: '100%' }}
-                onChange={e => this.onChangeInput(e)}
-                placeholder="Content hash"
-              />
               <button
                 type="button"
                 className="btn"
