@@ -1,21 +1,23 @@
-import {
-  a,
-  b,
-  c,
-  d,
-  a_3d_plot,
-  b_3d_plot,
-  c_3d_plot,
-  d_3d_plot
-} from './config';
+import { TAKEOFF } from './config';
 import { x, y, z } from './list';
+
+const {
+  cybWon_A,
+  cybWon_B,
+  cybWon_C,
+  cybWon_D,
+  getShares_A,
+  getShares_B,
+  getShares_C,
+  getShares_D,
+} = TAKEOFF;
 
 const getShares = atoms => {
   const shares =
-    a_3d_plot +
-    b_3d_plot * atoms -
-    c_3d_plot * atoms ** 2 +
-    d_3d_plot * atoms ** 3;
+    getShares_A +
+    getShares_B * atoms -
+    getShares_C * atoms ** 2 +
+    getShares_D * atoms ** 3;
   return shares;
 };
 
@@ -28,7 +30,7 @@ const getDataPlot = atoms => {
   let data = {
     y: [],
     x: [],
-    z: []
+    z: [],
   };
   const indexArr = y.indexOf(Math.floor(atoms / 1000) * 1000);
   const newArrY = y.slice(0, indexArr + 1);
@@ -37,7 +39,7 @@ const getDataPlot = atoms => {
   data = {
     x: newArrX,
     y: newArrY,
-    z: newArrZ
+    z: newArrZ,
   };
   data.x.push(getShares(atoms));
   data.y.push(atoms);
@@ -59,7 +61,11 @@ const funcDiscount = atom => {
 };
 
 const cybWon = atom => {
-  const won = a * Math.pow(atom, 3) + b * Math.pow(atom, 2) + c * atom + d;
+  const won =
+    cybWon_A * Math.pow(atom, 3) +
+    cybWon_B * Math.pow(atom, 2) +
+    cybWon_C * atom +
+    cybWon_D;
   return won;
 };
 
@@ -77,7 +83,7 @@ const getGroupAddress = data => {
       txhash: item.txhash,
       height: item.height,
       timestamp: item.timestamp,
-      cybEstimation: item.estimation
+      cybEstimation: item.estimation,
     });
     return obj;
   }, {});
@@ -91,5 +97,5 @@ export {
   getShares,
   getDataPlot,
   getRewards,
-  getGroupAddress
+  getGroupAddress,
 };

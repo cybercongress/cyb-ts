@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Indicators, Card, ContainerCard } from '../../components/index';
 
-export const Statistics = ({ atomLeff, won, price, discount }) => (
+const Statistics = ({ atomLeff, won, price, discount }) => (
   <ContainerCard styles={{ alignItems: 'center' }} col="5">
     <Indicators
       tooltipValue="The time left to finish funding in case less than 600000 ATOMs accumulated"
@@ -35,3 +35,5 @@ export const Statistics = ({ atomLeff, won, price, discount }) => (
     />
   </ContainerCard>
 );
+
+export default Statistics;
