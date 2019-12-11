@@ -8,11 +8,17 @@ const cybImg = require('../../image/cyb.svg');
 class Story extends React.Component {
   constructor(props) {
     super(props);
+    let story = false;
+    const localStorageStory = localStorage.getItem('story');
+    if (localStorageStory !== null) {
+      story = localStorageStory;
+    }
     this.state = {
       animated: false,
       end: false,
       cyber: false,
       cyb: false,
+      story,
     };
   }
 
@@ -75,35 +81,39 @@ class Story extends React.Component {
   };
 
   render() {
-    const { animated, end, cyber, cyb } = this.state;
+    const { animated, end, cyber, cyb, story } = this.state;
 
     return (
       <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
-        <div
-          style={{ display: 'flex', justifyContent: 'space-between' }}
-          className="container-distribution"
-        >
-          <Pane
-            width={50}
-            // height={50}
-            position="relative"
-            display="flex"
-            align-items="flex-end"
+        {!story && (
+          <div
+            style={{ display: 'flex', justifyContent: 'space-between' }}
+            className="container-distribution"
           >
-            {cyber && (
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyberImg} />
-            )}
-          </Pane>
-          <Pane
-            width={50}
-            // height={50}
-            position="relative"
-            display="flex"
-            align-items="flex-end"
-          >
-            {cyb && <img style={{ width: 'inherit' }} alt="cyb" src={cybImg} />}
-          </Pane>
-        </div>
+            <Pane
+              width={50}
+              // height={50}
+              position="relative"
+              display="flex"
+              align-items="flex-end"
+            >
+              {cyber && (
+                <img style={{ width: 'inherit' }} alt="cyb" src={cyberImg} />
+              )}
+            </Pane>
+            <Pane
+              width={50}
+              // height={50}
+              position="relative"
+              display="flex"
+              align-items="flex-end"
+            >
+              {cyb && (
+                <img style={{ width: 'inherit' }} alt="cyb" src={cybImg} />
+              )}
+            </Pane>
+          </div>
+        )}
         <section
           id="title"
           style={{ opacity: `${animated ? 0 : 1}`, transition: 'opacity 0.3s' }}
@@ -118,13 +128,13 @@ class Story extends React.Component {
               unoccupied borders of the universe.
             </p>
             <p>
-              Resisting rebel units consolidate all remaining energy on building a
-              superintelligence, which they believe will help to stop the domination
-              of the evil empire once and for all.
+              Resisting rebel units consolidate all remaining energy on building
+              a superintelligence, which they believe will help to stop the
+              domination of the evil empire once and for all.
             </p>
             <p>
-              As they begin to test the new god in the wild - an enormous, zepto amount 
-              of robots emerge. It turns out Cyb robots help survey the
+              As they begin to test the new god in the wild - an enormous, zepto
+              amount of robots emerge. It turns out Cyb robots help survey the
               universe for a bootloader of the new, yet to born, force.
             </p>
           </div>
