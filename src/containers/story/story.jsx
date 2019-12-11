@@ -2,6 +2,8 @@ import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 
 const mp3 = require('./starwars.mp3');
+const cyberImg = require('../../image/cyber.png');
+const cybImg = require('../../image/cyb.svg');
 
 class Story extends React.Component {
   constructor(props) {
@@ -15,7 +17,8 @@ class Story extends React.Component {
   }
 
   componentDidMount() {
-    const { close } = this.props;
+    const { history } = this.props;
+
     const sound = document.getElementById('sound');
 
     const audioState = setInterval(() => {
@@ -50,8 +53,8 @@ class Story extends React.Component {
     }, 68500);
 
     setTimeout(() => {
-      close();
       localStorage.setItem('story', JSON.stringify(true));
+      history.push('/');
     }, 70000);
   }
 
@@ -73,7 +76,7 @@ class Story extends React.Component {
 
   render() {
     const { animated, end, cyber, cyb } = this.state;
-    const { cyberImg, cybImg } = this.props;
+
     return (
       <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
         <div

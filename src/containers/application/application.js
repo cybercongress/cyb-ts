@@ -11,8 +11,6 @@ import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
 
-import Story from '../story/story';
-
 const cyber = require('../../image/cyber.png');
 const cyb = require('../../image/cyb.svg');
 
@@ -56,23 +54,31 @@ class App extends Component {
       home: false,
     };
     this.routeChange = this.routeChange.bind(this);
-    
   }
 
   componentDidMount() {
     this.chekHomePage();
-   
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
+      this.checkStory();
       // document.onkeypress = e => {
       //   document.getElementById('search-input-searchBar').focus();
       // };
     }
   }
+
+  checkStory = () => {
+    let story = false;
+    const localStorageStory = localStorage.getItem('story');
+    if (localStorageStory !== null) {
+      story = localStorageStory;
+    }
+    this.setState({ story });
+  };
 
   chekHomePage = () => {
     const { location } = this.props;
@@ -141,11 +147,11 @@ class App extends Component {
   };
 
   render() {
-    const { app, openMenu, story, home, valueSearchInput } = this.state;
-    // console.log('app', app);
+    const { openMenu, story, home, valueSearchInput } = this.state;
+    const { children } = this.props;
 
     if (!story) {
-      return <Story cyberImg={cyber} cybImg={cyb} close={this.closeStory} />;
+      return <div>{children}</div>;
     }
 
     return (
