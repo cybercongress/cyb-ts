@@ -1,3 +1,22 @@
+const AUCTION = {
+  ADDR_SMART_CONTRACT: '0x6C9c39D896B51e6736DBd3dA710163903A3B091B',
+  ADDR_SMART_CONTRACT_AUCTION_UTILS:
+    '0x303Fb6bA398F2039b3AE56AB472D80839463E7dF',
+  TOKEN_NAME: 'GOL',
+  TOPICS_SEND:
+    '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
+  TOPICS_CLAIM:
+    '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
+  HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
+};
+
+const NETWORKSIDS = {
+  42: 'kovan',
+  1: 'main',
+  5777: 'TestNet',
+  4: 'rinkeby',
+};
+
 const TAKEOFF = {
   ATOMsALL: 600000,
   cybWon_A: 0.000740464,
@@ -19,11 +38,12 @@ const COSMOS = {
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
+  BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
 const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
-  DENOM_CYBER: 'EUL',
+  DENOM_CYBER: 'eul',
   DENOM_CYBER_G: 'G',
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
@@ -48,4 +68,4 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
-export { TAKEOFF, COSMOS, CYBER, LEDGER };
+export { TAKEOFF, COSMOS, CYBER, LEDGER, AUCTION, NETWORKSIDS };

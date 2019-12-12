@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 
+import { AUCTION } from '../../utils/config';
+
+const { ADDR_SMART_CONTRACT } = AUCTION;
+
 export class ClaimedRound extends Component {
   constructor(props) {
     super(props);
     this.state = {
       status: false
     };
-    this.smart = '0x6C9c39D896B51e6736DBd3dA710163903A3B091B';
+    this.smart = ADDR_SMART_CONTRACT;
   }
 
   claimedToken = account => {

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
-import ActionBarContainer from './actionBar';
+import ActionBarTakeOff from './actionBar';
 import { asyncForEach, formatNumber } from '../../utils/utils';
 import { Loading } from '../../components/index';
 import { COSMOS, TAKEOFF } from '../../utils/config';
@@ -564,7 +564,7 @@ class Funding extends PureComponent {
             fUpin={this.unPinItem}
           />
         </main>
-        <ActionBarContainer />
+        <ActionBarTakeOff />
       </span>
     );
   }

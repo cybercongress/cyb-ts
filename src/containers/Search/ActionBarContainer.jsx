@@ -12,27 +12,25 @@ import {
 } from './stateActionBar';
 import { ContainetLedger, Tooltip } from '../../components';
 
-import { indexedNode, MEMO } from '../../utils/config';
+import { LEDGER, CYBER } from '../../utils/config';
 
-const TIMEOUT = 5000;
-const HDPATH = [44, 118, 0, 0, 0];
-const LEDGER_OK = 36864;
-const LEDGER_NOAPP = 28160;
+const { CYBER_NODE_URL } = CYBER;
 
-const STAGE_INIT = 0;
-const STAGE_SELECTION = 1;
-const STAGE_LEDGER_INIT = 2;
-const STAGE_READY = 3;
-const STAGE_WAIT = 4;
-const STAGE_GENERATED = 5;
-const STAGE_SUBMITTED = 6;
-const STAGE_CONFIRMING = 7;
-const STAGE_CONFIRMED = 8;
-const STAGE_ERROR = 15;
-
-const CHAIN_ID = 'euler-dev';
-
-const LEDGER_VERSION_REQ = [1, 1, 1];
+const {
+  MEMO,
+  HDPATH,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  STAGE_INIT,
+  STAGE_LEDGER_INIT,
+  STAGE_READY,
+  STAGE_WAIT,
+  STAGE_SUBMITTED,
+  STAGE_CONFIRMING,
+  STAGE_CONFIRMED,
+  STAGE_ERROR,
+  LEDGER_VERSION_REQ,
+} = LEDGER;
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -172,7 +170,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${indexedNode}/api/status`, {
+      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -233,7 +231,7 @@ class ActionBarContainer extends Component {
       };
 
       const getBandwidth = await fetch(
-        `${indexedNode}/api/account_bandwidth?address="${address.bech32}"`,
+        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -418,8 +416,7 @@ class ActionBarContainer extends Component {
       txHeight,
       txHash,
     } = this.state;
-    const { valueSearchInput, keywordHash } = this.props;
-    console.log(valueSearchInput);
+    const { valueSearchInput } = this.props;
 
     if (stage === STAGE_INIT) {
       return (

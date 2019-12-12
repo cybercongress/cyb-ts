@@ -369,7 +369,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={onClickAddressLedger}>
-              Add address it using Ledger
+              Put Ledger into the pocket
             </Button>
           </Pane>
         </ActionBar>

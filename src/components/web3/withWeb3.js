@@ -6,12 +6,9 @@ import AuctionUtils from '../../../contracts/AuctionUtils.json';
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 
-const networksIds = {
-  42: 'kovan',
-  1: 'main',
-  5777: 'TestNet',
-  4: 'rinkeby'
-};
+import { AUCTION } from '../../utils/config';
+
+const { ADDR_SMART_CONTRACT, ADDR_SMART_CONTRACT_AUCTION_UTILS } = AUCTION;
 
 const injectWeb3 = InnerComponent =>
   class extends PureComponent {
@@ -28,8 +25,8 @@ const injectWeb3 = InnerComponent =>
         contractAuctionUtils: null
       };
       this.getWeb3 = this.getWeb3.bind(this);
-      this.smart = '0x6C9c39D896B51e6736DBd3dA710163903A3B091B';
-      this.smartAuctionUtils = '0x303Fb6bA398F2039b3AE56AB472D80839463E7dF';
+      this.smart = ADDR_SMART_CONTRACT;
+      this.smartAuctionUtils = ADDR_SMART_CONTRACT_AUCTION_UTILS;
     }
 
     componentDidMount() {

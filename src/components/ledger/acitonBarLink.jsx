@@ -8,33 +8,31 @@ import {
   TransactionSubmitted,
   Confirmed,
   StartState,
-  NoResultState,
-} from './stateActionBar';
-import { ContainetLedger } from '../../components';
+  StartStageSearchActionBar,
+} from './stateActionBarLink';
+import { ContainetLedger, Tooltip } from '../index';
 
-import { indexedNode, MEMO } from '../../utils/config';
+import { LEDGER, CYBER } from '../../utils/config';
 
-const TIMEOUT = 5000;
-const HDPATH = [44, 118, 0, 0, 0];
-const LEDGER_OK = 36864;
-const LEDGER_NOAPP = 28160;
+const { CYBER_NODE_URL } = CYBER;
 
-const STAGE_INIT = 0;
-const STAGE_SELECTION = 1;
-const STAGE_LEDGER_INIT = 2;
-const STAGE_READY = 3;
-const STAGE_WAIT = 4;
-const STAGE_GENERATED = 5;
-const STAGE_SUBMITTED = 6;
-const STAGE_CONFIRMING = 7;
-const STAGE_CONFIRMED = 8;
-const STAGE_ERROR = 15;
+const {
+  MEMO,
+  HDPATH,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  STAGE_INIT,
+  STAGE_LEDGER_INIT,
+  STAGE_READY,
+  STAGE_WAIT,
+  STAGE_SUBMITTED,
+  STAGE_CONFIRMING,
+  STAGE_CONFIRMED,
+  STAGE_ERROR,
+  LEDGER_VERSION_REQ,
+} = LEDGER;
 
-const CHAIN_ID = 'euler-dev';
-
-const LEDGER_VERSION_REQ = [1, 1, 1];
-
-class ActionBarContainer extends Component {
+class ActionBarLink extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -70,7 +68,7 @@ class ActionBarContainer extends Component {
     // await this.getAddressInfo();
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     if (this.state.ledger === null) {
       this.pollLedger();
     }
@@ -103,18 +101,10 @@ class ActionBarContainer extends Component {
   init = async () => {
     const { stage, ledger, address, addressInfo, returnCode } = this.state;
 
-    await this.setState({
+    this.setState({
       stage: STAGE_LEDGER_INIT,
       init: true,
     });
-
-    if (ledger === null) {
-      this.pollLedger();
-    }
-
-    if (ledger !== null) {
-      await this.getVersion();
-    }
   };
 
   compareVersion = async () => {
@@ -180,7 +170,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${indexedNode}/api/status`, {
+      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -241,7 +231,7 @@ class ActionBarContainer extends Component {
       };
 
       const getBandwidth = await fetch(
-        `${indexedNode}/api/account_bandwidth?address="${address.bech32}"`,
+        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -344,6 +334,7 @@ class ActionBarContainer extends Component {
   };
 
   confirmTx = async () => {
+    const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
@@ -353,6 +344,7 @@ class ActionBarContainer extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
+        update();
         return;
       }
     }
@@ -398,7 +390,10 @@ class ActionBarContainer extends Component {
   };
 
   onClickUsingLedger = () => {
-    this.init();
+    // this.init();
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+    });
   };
 
   hasKey() {
@@ -420,31 +415,16 @@ class ActionBarContainer extends Component {
       txMsg,
       txHeight,
       txHash,
-      ledger,
     } = this.state;
-    const {
-      link,
-      home,
-      valueSearchInput,
-      targetColor,
-      onCklicBtnSearch,
-    } = this.props;
+    const { valueSearchInput } = this.props;
 
-    if (home && stage === STAGE_INIT) {
+    if (stage === STAGE_INIT) {
       return (
-        <StartState
-          targetColor={targetColor}
-          valueSearchInput={valueSearchInput}
-          onClickBtn={onCklicBtnSearch}
-        />
-      );
-    }
-
-    if (link && stage === STAGE_INIT) {
-      return (
-        <NoResultState
+        <StartStageSearchActionBar
           valueSearchInput={valueSearchInput}
           onClickBtn={this.onClickUsingLedger}
+          contentHash={contentHash}
+          onChangeInputContentHash={this.onChangeInput}
         />
       );
     }
@@ -494,7 +474,13 @@ class ActionBarContainer extends Component {
               {bandwidth.remained}/{bandwidth.max_value}
             </Text>
           </Pane>
-          <Pane>
+          <Text marginBottom={10} color="#fff" fontSize="16px">
+            to: {valueSearchInput}
+          </Text>
+          <Text color="#fff" fontSize="16px">
+            from: {contentHash}
+          </Text>
+          <Pane marginTop={30}>
             <div
               style={{
                 display: 'flex',
@@ -503,12 +489,6 @@ class ActionBarContainer extends Component {
                 width: '100%',
               }}
             >
-              <input
-                value={contentHash}
-                style={{ height: 42, marginBottom: '20px', width: '100%' }}
-                onChange={e => this.onChangeInput(e)}
-                placeholder="Content hash"
-              />
               <button
                 type="button"
                 className="btn"
@@ -551,4 +531,4 @@ class ActionBarContainer extends Component {
   }
 }
 
-export default ActionBarContainer;
+export default ActionBarLink;

@@ -53,7 +53,7 @@ class AppRouter extends React.Component {
           <Route path="/brain" component={Search} />
           <Route exact path="/governance" component={Governance} />
           <Route path="/governance/:proposal_id" component={ProposalsDetail} />
-          <Route path="/wallet" component={Wallet} />
+          <Route path="/pocket" component={Wallet} />
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
 

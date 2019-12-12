@@ -33,7 +33,7 @@ const {
 
 const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
 
-class ActionBarContainer extends Component {
+class ActionBarTakeOff extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -342,7 +342,7 @@ class ActionBarContainer extends Component {
     this.setState(prevState => ({
       toSend:
         Math.floor(
-          (prevState.availableStake - gas * gasPrice) * DIVISOR_ATOM * 1000
+          ((prevState.availableStake - gas * gasPrice) / DIVISOR_ATOM) * 1000
         ) / 1000,
     }));
   };
@@ -430,10 +430,10 @@ class ActionBarContainer extends Component {
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
           availableStake={
-            Math.floor(availableStake * DIVISOR_ATOM * 1000) / 1000
+            Math.floor((availableStake / DIVISOR_ATOM) * 1000) / 1000
           }
           gasUAtom={gas * gasPrice}
-          gasAtom={gas * gasPrice * DIVISOR_ATOM}
+          gasAtom={(gas * gasPrice) / DIVISOR_ATOM}
           onChangeInput={e => this.onChangeInputContributeATOMs(e)}
           valueInput={toSend}
           onClickBtnCloce={this.onClickInitStage}
@@ -478,4 +478,4 @@ class ActionBarContainer extends Component {
   }
 }
 
-export default ActionBarContainer;
+export default ActionBarTakeOff;

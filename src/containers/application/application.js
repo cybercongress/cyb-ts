@@ -83,9 +83,9 @@ class App extends Component {
   chekHomePage = () => {
     const { location } = this.props;
     if (location.pathname === '/') {
-      document.onkeypress = e => {
-        document.getElementById('search-input-home').focus();
-      };
+      // document.onkeypress = e => {
+      //   document.getElementById('search-input-home').focus();
+      // };
       this.setState({
         home: true,
       });
@@ -219,7 +219,7 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <a href="#/wallet">
+          <a href="#/pocket">
             <Pane
               width={50}
               // height={50}

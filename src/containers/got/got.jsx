@@ -10,17 +10,17 @@ import {
   roundNumber,
   run,
 } from '../../utils/utils';
-import { wsURL } from '../../utils/config';
+import { COSMOS } from '../../utils/config';
 
-const url =
-  'https://herzner1.cybernode.ai/cyber12psudf4rpaw4jwhuyx3y8sejhsynae7ggvzvy8';
+const { GAIA_WEBSOCKET_URL } = COSMOS;
 
 const currenciesUrl =
   'https://api.coingecko.com/api/v3/simple/price?ids=cosmos&vs_currencies=eth';
 
 class Got extends PureComponent {
   controller = new AbortController();
-  ws = new WebSocket(wsURL);
+
+  ws = new WebSocket(GAIA_WEBSOCKET_URL);
 
   constructor(props) {
     super(props);
