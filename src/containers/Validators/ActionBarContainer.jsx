@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool, compareVersion } from '../../utils/ledger';
 import {
   SendAmounLadger,
@@ -18,6 +19,8 @@ import { formatValidatorAddress, formatNumber } from '../../utils/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
 
+import { i18n } from '../../i18n/en';
+
 const { CYBER_NODE_URL, DENOM_CYBER, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 const {
   MEMO,
@@ -33,6 +36,8 @@ const {
   STAGE_CONFIRMED,
   STAGE_ERROR,
 } = LEDGER;
+
+const T = new LocalizedStrings(i18n);
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -376,7 +381,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff">
-              Join Cyberd Network As Validator
+              {T.validators.actionBar.joinValidator}
             </Text>
           </ActionBarContentText>
           <a
@@ -388,7 +393,7 @@ class ActionBarContainer extends Component {
               alignItems: 'center',
             }}
           >
-            Become a validator
+            {T.validators.actionBar.btnBecome}
           </a>
         </ActionBar>
       );

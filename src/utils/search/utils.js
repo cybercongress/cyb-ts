@@ -259,3 +259,15 @@ export const stakingPool = () =>
       })
       .catch(e => {})
   );
+
+export const getRankValidators = address =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/api/account_bandwidth?address="${address}"`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
