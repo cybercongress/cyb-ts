@@ -27,9 +27,6 @@ import {
 import { FormatNumber, Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 
-import validatorsContainer from './validatorsContainer';
-import validatorsData from './validatorsData';
-
 const StatusTooltip = ({ status }) => {
   let statusColor;
 

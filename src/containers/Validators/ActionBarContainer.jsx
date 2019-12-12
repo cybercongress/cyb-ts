@@ -16,29 +16,23 @@ import {
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
 
-import {
-  indexedNode,
+import { LEDGER, CYBER } from '../../utils/config';
+
+const { CYBER_NODE_URL, DENOM_CYBER, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const {
   MEMO,
   HDPATH,
   LEDGER_OK,
   LEDGER_NOAPP,
   STAGE_INIT,
-  STAGE_SELECTION,
   STAGE_LEDGER_INIT,
   STAGE_READY,
   STAGE_WAIT,
-  STAGE_GENERATED,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
-  DIVISOR_CYBER_G,
-  DENOM_CYBER,
-  DENOM_CYBER_G,
-} from '../../utils/config';
-
-const DIVISOR = 10 ** 9;
+} = LEDGER;
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -80,10 +74,11 @@ class ActionBarContainer extends Component {
 
   componentDidUpdate() {
     const { ledger, stage, returnCode, address, addressInfo } = this.state;
-    if (ledger === null) {
-      this.pollLedger();
-    }
+
     if (stage === STAGE_LEDGER_INIT) {
+      if (ledger === null) {
+        this.pollLedger();
+      }
       if (ledger !== null) {
         switch (returnCode) {
           case LEDGER_OK:
@@ -161,7 +156,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${indexedNode}/api/status`, {
+      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -192,7 +187,7 @@ class ActionBarContainer extends Component {
 
     try {
       const response = await fetch(
-        `${indexedNode}/api/account?address="${address.bech32}"`,
+        `${CYBER_NODE_URL}/api/account?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -237,7 +232,7 @@ class ActionBarContainer extends Component {
 
     console.log(validatorAddres);
 
-    const amount = toSend * DIVISOR;
+    const amount = toSend * DIVISOR_CYBER_G;
 
     const { denom } = addressInfo.coins[0];
 
@@ -359,7 +354,7 @@ class ActionBarContainer extends Component {
 
   onClickMax = () =>
     this.setState(prevState => ({
-      toSend: prevState.balance * DIVISOR_CYBER_G,
+      toSend: prevState.balance / DIVISOR_CYBER_G,
     }));
 
   render() {
@@ -459,7 +454,7 @@ class ActionBarContainer extends Component {
               <FormatNumber
                 marginRight={5}
                 number={formatNumber(
-                  Math.floor(balance * DIVISOR_CYBER_G * 1000) / 1000,
+                  Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000,
                   3
                 )}
               />

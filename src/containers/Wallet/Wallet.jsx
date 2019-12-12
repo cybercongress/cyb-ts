@@ -10,24 +10,19 @@ import ActionBarContainer from './actionBarContainer';
 
 import { SendAmounLadger } from './actionBarStage';
 
-import { indexedNode } from '../../utils/config';
+import { CYBER, LEDGER } from '../../utils/config';
 
-const HDPATH = [44, 118, 0, 0, 0];
+const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
-const TIMEOUT = 5000;
-
-const LEDGER_OK = 36864;
-const LEDGER_NOAPP = 28160;
-
-const STAGE_INIT = 0;
-const STAGE_LEDGER_INIT = 1;
-const STAGE_READY = 2;
-
-const LEDGER_VERSION_REQ = [1, 1, 1];
-
-const toFixedNumber = (number, toFixed) => {
-  return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
-};
+const {
+  HDPATH,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  STAGE_INIT,
+  STAGE_LEDGER_INIT,
+  STAGE_READY,
+  LEDGER_VERSION_REQ,
+} = LEDGER;
 
 class Wallet extends React.Component {
   constructor(props) {
@@ -173,7 +168,7 @@ class Wallet extends React.Component {
       keys: '',
     };
     const response = await fetch(
-      `${indexedNode}/api/account?address="${addressLedger.bech32}"`,
+      `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
       {
         method: 'GET',
         headers: {
@@ -205,7 +200,7 @@ class Wallet extends React.Component {
   getAmount = async address => {
     try {
       const response = await fetch(
-        `${indexedNode}/api/account?address="${address}"`,
+        `${CYBER_NODE_URL}/api/account?address="${address}"`,
         {
           method: 'GET',
           headers: {
@@ -257,7 +252,7 @@ class Wallet extends React.Component {
       returnCode,
       ledgerVersion,
     } = this.state;
-// console.log(addressLedger);
+
     const rowsTable = table.map(item => (
       <Table.Row
         borderBottom="none"
@@ -278,12 +273,14 @@ class Wallet extends React.Component {
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
           <Text color="#fff" fontSize="17px">
-            <FormatNumber number={item.amount} />
+            <FormatNumber
+              number={Math.floor((item.amount / DIVISOR_CYBER_G) * 1000) / 1000}
+            />
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.2}>
           <Text color="#fff" fontSize="17px">
-            {item.token}
+            {(DENOM_CYBER_G + item.token).toUpperCase()}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.3}>

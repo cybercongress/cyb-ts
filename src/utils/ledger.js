@@ -4,7 +4,10 @@ import Big from 'big.js';
 import secp256k1 from 'secp256k1';
 import txs from './txs';
 
-import { indexedNode, LEDGER_VERSION_REQ } from './config';
+import { CYBER, LEDGER } from './config';
+
+const { CYBER_NODE_URL } = CYBER;
+const { LEDGER_VERSION_REQ } = LEDGER;
 
 const defaultHrp = 'cosmos';
 const defaultHrpCyber = 'cyber';
@@ -251,7 +254,7 @@ class CosmosDelegateTool {
   }
 
   async getAccountInfoCyber(addr) {
-    const url = `${indexedNode}/api/account?address="${addr.bech32}"`;
+    const url = `${CYBER_NODE_URL}/api/account?address="${addr.bech32}"`;
     const txContext = {
       sequence: '0',
       accountNumber: '0',
@@ -531,7 +534,7 @@ class CosmosDelegateTool {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = `${indexedNode}/lcd/txs`;
+    const url = `${CYBER_NODE_URL}/lcd/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
@@ -570,7 +573,7 @@ class CosmosDelegateTool {
   }
 
   async txStatusCyber(txHash) {
-    const url = `${indexedNode}/lcd/txs/${txHash}`;
+    const url = `${CYBER_NODE_URL}/lcd/txs/${txHash}`;
     return axios.get(url).then(
       r => r.data,
       e => wrapError(this, e)

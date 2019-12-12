@@ -18,15 +18,16 @@ const COSMOS = {
   GAIA_NODE_URL_LSD: 'https://lcd.nylira.net',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
-  DIVISOR_ATOM: 10 ** -6,
+  DIVISOR_ATOM: 10 ** 6,
 };
 
 const CYBER = {
-  DIVISOR_CYBER_G: 10 ** -9,
-  DENOM_CYBER: 'eul',
+  DIVISOR_CYBER_G: 10 ** 9,
+  DENOM_CYBER: 'EUL',
   DENOM_CYBER_G: 'G',
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
 };
 
 const LEDGER = {
@@ -45,7 +46,6 @@ const LEDGER = {
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
   MEMO: 'cyber.page, using Ledger',
-  BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
 };
 
 export { TAKEOFF, COSMOS, CYBER, LEDGER };

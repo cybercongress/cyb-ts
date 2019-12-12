@@ -1,11 +1,13 @@
 import axios from 'axios';
-import { indexedNode } from './config';
+import { CYBER } from './config';
+
+const { CYBER_NODE_URL } = CYBER;
 
 export const getProposals = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/proposals`,
+      url: `${CYBER_NODE_URL}/lcd/gov/proposals`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -17,7 +19,7 @@ export const getProposalsDetail = id =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/proposals/${id}`,
+      url: `${CYBER_NODE_URL}/lcd/gov/proposals/${id}`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -29,7 +31,7 @@ export const getStakingPool = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/staking/pool`,
+      url: `${CYBER_NODE_URL}/lcd/staking/pool`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -41,7 +43,7 @@ export const getTallying = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/parameters/tallying`,
+      url: `${CYBER_NODE_URL}/lcd/gov/parameters/tallying`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -53,7 +55,7 @@ export const getProposer = id =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/proposals/${id}/proposer`,
+      url: `${CYBER_NODE_URL}/lcd/gov/proposals/${id}/proposer`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -65,7 +67,7 @@ export const getProposalsDetailVotes = id =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/proposals/${id}/votes`,
+      url: `${CYBER_NODE_URL}/lcd/gov/proposals/${id}/votes`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -77,7 +79,7 @@ export const getMinDeposit = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/parameters/deposit`,
+      url: `${CYBER_NODE_URL}/lcd/gov/parameters/deposit`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -89,7 +91,7 @@ export const getTableVoters = id =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${indexedNode}/lcd/gov/proposals/${id}/votes`,
+      url: `${CYBER_NODE_URL}/lcd/gov/proposals/${id}/votes`,
     })
       .then(response => {
         resolve(response.data.result);

@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { indexedNode } from '../config';
+import { CYBER } from '../config';
+
+const { CYBER_NODE_URL } = CYBER;
 
 const IPFS = require('ipfs-api');
 
 const Unixfs = require('ipfs-unixfs');
 const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
-
-const nodeUrl = indexedNode;
 
 let ipfsApi;
 
@@ -156,27 +156,27 @@ export const getStatistics = () =>
   new Promise(resolve => {
     const indexStatsPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/index_stats`,
+      url: `${CYBER_NODE_URL}/api/index_stats`,
     }).then(response => response.data.result);
 
     const stakingPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/staking/pool`,
+      url: `${CYBER_NODE_URL}/api/staking/pool`,
     }).then(response => response.data.result);
 
     const bandwidthPricePromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/current_bandwidth_price`,
+      url: `${CYBER_NODE_URL}/api/current_bandwidth_price`,
     }).then(response => response.data.result);
 
     const latestBlockPromise = axios({
       method: 'get',
-      url: `${nodeUrl}/api/block`,
+      url: `${CYBER_NODE_URL}/api/block`,
     }).then(response => response.data.result);
 
     const supplyTotalPropsise = axios({
       method: 'get',
-      url: `${nodeUrl}/lcd/supply/total`,
+      url: `${CYBER_NODE_URL}/lcd/supply/total`,
     }).then(response => response.data.result);
 
     Promise.all([
@@ -204,7 +204,7 @@ export const getValidators = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/lcd/staking/validators`,
+      url: `${CYBER_NODE_URL}/lcd/staking/validators`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -216,7 +216,7 @@ export const getValidatorsUnbonding = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/lcd/staking/validators?status=unbonding`,
+      url: `${CYBER_NODE_URL}/lcd/staking/validators?status=unbonding`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -228,7 +228,7 @@ export const getValidatorsUnbonded = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/lcd/staking/validators?status=unbonded`,
+      url: `${CYBER_NODE_URL}/lcd/staking/validators?status=unbonded`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -240,7 +240,7 @@ export const selfDelegationShares = (delegatorAddress, operatorAddress) =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/lcd/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
+      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -252,7 +252,7 @@ export const stakingPool = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${nodeUrl}/lcd/staking/pool`,
+      url: `${CYBER_NODE_URL}/lcd/staking/pool`,
     })
       .then(response => {
         resolve(response.data.result);
