@@ -1,11 +1,16 @@
 import React from 'react';
 import { Text, Pane, Heading, CardHover, Icon } from '@cybercongress/gravity';
+import LocalizedStrings from 'react-localization';
 import BandwidthBar from './BandwidthBar';
 import {
   formatNumber,
   getStatistics,
   getValidators,
 } from '../../utils/search/utils';
+
+import { i18n } from '../../i18n/en';
+
+const T = new LocalizedStrings(i18n);
 
 class ChainStatistic extends React.Component {
   constructor(props) {
@@ -84,7 +89,7 @@ class ChainStatistic extends React.Component {
 
         <Pane marginTop={50} marginBottom={50}>
           <Heading size={600} color="#fff" marginBottom={24}>
-            Knowledge graph
+            {T.brain.knowledge}
           </Heading>
           <Pane display="flex" marginX={-15}>
             <CardHover
@@ -106,7 +111,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                cyberlinks
+                {T.brain.cyberlinks}
               </Text>
             </CardHover>
             <CardHover
@@ -128,7 +133,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                objects
+                {T.brain.objects}
               </Text>
             </CardHover>
             <CardHover
@@ -150,14 +155,14 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                subjects
+                {T.brain.subjects}
               </Text>
             </CardHover>
           </Pane>
         </Pane>
         <Pane marginBottom={50}>
           <Heading size={600} color="#fff" marginBottom={24}>
-            Cybernomics
+            {T.brain.cybernomics}
           </Heading>
           <Pane display="flex" marginX={-15}>
             <CardHover
@@ -179,7 +184,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                supply of CYB
+                {T.brain.supply}
               </Text>
             </CardHover>
             <CardHover
@@ -201,7 +206,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                % of staked CYB
+                {T.brain.staked}
               </Text>
             </CardHover>
             <CardHover
@@ -223,14 +228,14 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                price of cyberlink in RC
+                {T.brain.price}
               </Text>
             </CardHover>
           </Pane>
         </Pane>
         <Pane marginBottom={50}>
           <Heading size={600} color="#fff" marginBottom={24}>
-            Consensus
+            {T.brain.consensus}
           </Heading>
           <Pane display="flex" marginX={-15}>
             <a
@@ -258,7 +263,7 @@ class ChainStatistic extends React.Component {
                   {activeValidatorsCount}
                 </Text>
                 <Pane display="flex" alignItems="center">
-                  <Text color="#4ed6ae">heroes</Text>
+                  <Text color="#4ed6ae">{T.brain.heroes}</Text>
                   <Icon icon="arrow-right" color="#4caf50" marginLeft={5} />
                 </Pane>
               </CardHover>
@@ -282,7 +287,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                transactions
+                {T.brain.transactions}
               </Text>
             </CardHover>
             <CardHover
@@ -304,7 +309,7 @@ class ChainStatistic extends React.Component {
               </Text>
 
               <Text display="inline-block" color="#4ed6ae">
-                last heartbeat
+                {T.brain.last}
               </Text>
             </CardHover>
           </Pane>

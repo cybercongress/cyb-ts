@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  LEDGER,
-  CYBER,
-} from '../../utils/config';
-
-import {
-  SendAmounLadger,
-  Contribute,
-  Confirmed,
   JsonTransaction,
   TransactionSubmitted,
-} from './actionBarStage';
+  Confirmed,
+  SendLedger,
+  ConnectLadger,
+} from '../../components';
+import { LEDGER, CYBER } from '../../utils/config';
+
+import { i18n } from '../../i18n/en';
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
+
+const T = new LocalizedStrings(i18n);
 
 const {
   STAGE_INIT,
@@ -369,7 +370,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={onClickAddressLedger}>
-              Put Ledger into the pocket
+              {T.actionBar.pocket.put}
             </Button>
           </Pane>
         </ActionBar>
@@ -380,7 +381,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={e => this.onClickSend(e)}>
-              Send it using Ledger
+              {T.actionBar.pocket.send}
             </Button>
           </Pane>
         </ActionBar>
@@ -389,7 +390,7 @@ class ActionBarContainer extends Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
           onClickBtnCloce={this.cleatState}
@@ -404,7 +405,7 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       // if (this.state.stage === STAGE_READY) {
       return (
-        <Contribute
+        <SendLedger
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
           availableStake={Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000}

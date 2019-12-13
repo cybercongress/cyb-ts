@@ -2,17 +2,19 @@ import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { FormatNumber, Loading } from '../../components';
+import { FormatNumber, Loading, ConnectLadger } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
 // import { formatNumber } from '../../utils/search/utils';
 import ActionBarContainer from './actionBarContainer';
 
-import { SendAmounLadger } from './actionBarStage';
-
 import { CYBER, LEDGER } from '../../utils/config';
+import { i18n } from '../../i18n/en';
+import LocalizedStrings from 'react-localization';
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+
+const T = new LocalizedStrings(i18n);
 
 const {
   HDPATH,
@@ -312,7 +314,7 @@ class Wallet extends React.Component {
       return (
         <div>
           <main className="block-body-home">
-            <NotFound text="Hurry up! Find and connect your secure Ledger" />
+            <NotFound text={T.pocket.hurry} />
           </main>
           <ActionBarContainer
             // address={addressLedger.bech32}
@@ -325,7 +327,7 @@ class Wallet extends React.Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
           onClickBtnCloce={this.cleatState}
@@ -357,22 +359,22 @@ class Wallet extends React.Component {
                 >
                   <Table.TextHeaderCell flex={1.3}>
                     <Text color="#fff" fontSize="17px">
-                      Address
+                      {T.pocket.table.address}
                     </Text>
                   </Table.TextHeaderCell>
                   <Table.TextHeaderCell flex={0.5}>
                     <Text color="#fff" fontSize="17px">
-                      Amount
+                      {T.pocket.table.amount}
                     </Text>
                   </Table.TextHeaderCell>
                   <Table.TextHeaderCell flex={0.2}>
                     <Text color="#fff" fontSize="17px">
-                      Token
+                      {T.pocket.table.token}
                     </Text>
                   </Table.TextHeaderCell>
                   <Table.TextHeaderCell flex={0.3}>
                     <Text color="#fff" fontSize="17px">
-                      Keys
+                      {T.pocket.table.keys}
                     </Text>
                   </Table.TextHeaderCell>
                 </Table.Head>

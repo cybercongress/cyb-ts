@@ -4,15 +4,13 @@ import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool, compareVersion } from '../../utils/ledger';
 import {
-  SendAmounLadger,
   JsonTransaction,
   ConnectLadger,
   Confirmed,
-  StartState,
-  NoResultState,
   ContainetLedger,
   FormatNumber,
   TransactionSubmitted,
+  Delegate,
 } from '../../components';
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
@@ -337,9 +335,11 @@ class ActionBarContainer extends Component {
       address: null,
       returnCode: null,
       addressInfo: null,
-      txMsg: null,
       ledgerVersion: [0, 0, 0],
+      balance: 0,
       time: 0,
+      toSend: '',
+      txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
@@ -376,12 +376,14 @@ class ActionBarContainer extends Component {
       txHeight,
     } = this.state;
 
+    const T_AB = T.actionBar.delegate;
+
     if (validators.length === 0 && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff">
-              {T.validators.actionBar.joinValidator}
+              {T_AB.joinValidator}
             </Text>
           </ActionBarContentText>
           <a
@@ -393,7 +395,7 @@ class ActionBarContainer extends Component {
               alignItems: 'center',
             }}
           >
-            {T.validators.actionBar.btnBecome}
+            {T_AB.btnBecome}
           </a>
         </ActionBar>
       );
@@ -404,14 +406,14 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff" marginRight={5}>
-              Delegate to
+              {T_AB.delegate}
             </Text>
             <Text fontSize="18px" color="#fff" fontWeight={600}>
               {validators[0].description.moniker}
             </Text>
           </ActionBarContentText>
           <Button onClick={this.toStageConnectLadger}>
-            Delegate with Ledger
+            {T_AB.btnDelegate}
           </Button>
         </ActionBar>
       );
@@ -432,81 +434,17 @@ class ActionBarContainer extends Component {
       // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       return (
-        <ContainetLedger onClickBtnCloce={this.cleatState}>
-          <Pane display="flex" flexDirection="column" alignItems="center">
-            <Text
-              marginBottom={20}
-              fontSize="16px"
-              lineHeight="25.888px"
-              color="#fff"
-            >
-              {address.bech32}
-            </Text>
-            <Text fontSize="30px" lineHeight="40px" color="#fff">
-              Delegation Details
-            </Text>
-
-            <Text fontSize="18px" lineHeight="30px" color="#fff">
-              Your wallet contains
-            </Text>
-            <Text
-              display="flex"
-              justifyContent="center"
-              fontSize="20px"
-              lineHeight="25.888px"
-              color="#3ab793"
-            >
-              <FormatNumber
-                marginRight={5}
-                number={formatNumber(
-                  Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000,
-                  3
-                )}
-              />
-              {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}
-            </Text>
-
-            <Pane marginTop={20}>
-              <Text fontSize="16px" color="#fff">
-                Enter the amount of{' '}
-                {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()} you wish to
-                delegate to{' '}
-                <Text fontSize="20px" color="#fff" fontWeight={600}>
-                  {validators[0].description.moniker}
-                </Text>
-              </Text>
-            </Pane>
-            <Text color="#fff">{validators[0].operator_address}</Text>
-            <Pane marginY={30} display="flex">
-              <input
-                value={toSend}
-                style={{
-                  height: 42,
-                  width: '60%',
-                  marginRight: 20,
-                }}
-                onChange={e => this.onChangeInputAmount(e)}
-                placeholder="amount"
-              />
-              <button
-                type="button"
-                className="btn"
-                onClick={e => this.onClickMax(e)}
-                style={{ height: 42, maxWidth: '200px' }}
-              >
-                Max
-              </button>
-            </Pane>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => this.generateTx()}
-              style={{ height: 42, maxWidth: '200px' }}
-            >
-              Generate Tx
-            </button>
-          </Pane>
-        </ContainetLedger>
+        <Delegate
+          address={address.bech32}
+          onClickBtnCloce={this.cleatState}
+          balance={balance}
+          moniker={validators[0].description.moniker}
+          operatorAddress={validators[0].operator_address}
+          generateTx={() => this.generateTx()}
+          max={e => this.onClickMax(e)}
+          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          toSend={toSend}
+        />
       );
     }
 

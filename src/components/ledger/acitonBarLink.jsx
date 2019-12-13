@@ -3,14 +3,13 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  SendAmounLadger,
+  ConnectLadger,
   JsonTransaction,
   TransactionSubmitted,
   Confirmed,
-  StartState,
+  Cyberlink,
   StartStageSearchActionBar,
-} from './stateActionBarLink';
-import { ContainetLedger, Tooltip } from '../index';
+} from '../index';
 
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -431,7 +430,7 @@ class ActionBarLink extends Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
           onClickBtnCloce={this.onClickInitStage}
@@ -447,59 +446,14 @@ class ActionBarLink extends Component {
       // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       return (
-        <ContainetLedger onClickBtnCloce={this.onClickInitStage}>
-          <Pane
-            marginBottom={20}
-            textAlign="center"
-            display="flex"
-            flexDirection="column"
-          >
-            <Text fontSize="25px" lineHeight="40px" color="#fff">
-              Address
-            </Text>
-            <Text fontSize="16px" lineHeight="25.888px" color="#fff">
-              {address.bech32}
-            </Text>
-          </Pane>
-          <Pane
-            marginBottom={25}
-            textAlign="center"
-            display="flex"
-            flexDirection="column"
-          >
-            <Text fontSize="25px" lineHeight="40px" color="#fff">
-              Bandwidth
-            </Text>
-            <Text fontSize="16px" lineHeight="25.888px" color="#3ab793">
-              {bandwidth.remained}/{bandwidth.max_value}
-            </Text>
-          </Pane>
-          <Text marginBottom={10} color="#fff" fontSize="16px">
-            to: {valueSearchInput}
-          </Text>
-          <Text color="#fff" fontSize="16px">
-            from: {contentHash}
-          </Text>
-          <Pane marginTop={30}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '100%',
-              }}
-            >
-              <button
-                type="button"
-                className="btn"
-                onClick={e => this.link(e)}
-                style={{ height: 42, maxWidth: '200px' }}
-              >
-                Cyber it
-              </button>
-            </div>
-          </Pane>
-        </ContainetLedger>
+        <Cyberlink
+          onClickBtnCloce={this.onClickInitStage}
+          query={valueSearchInput}
+          onClickBtn={e => this.link(e)}
+          bandwidth={bandwidth}
+          address={address.bech32}
+          contentHash={contentHash}
+        />
       );
     }
 
