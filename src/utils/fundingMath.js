@@ -2,27 +2,29 @@ import { TAKEOFF } from './config';
 import { x, y, z } from './list';
 
 const {
-  cybWon_A,
-  cybWon_B,
-  cybWon_C,
-  cybWon_D,
-  getShares_A,
-  getShares_B,
-  getShares_C,
-  getShares_D,
+  CYBWON_A,
+  CYBWON_B,
+  CYBWON_C,
+  CYBWON_D,
+  GETSHARES_A,
+  GETSHARES_B,
+  GETSHARES_C,
+  GETSHARES_D,
+  DISCOUNT_TG,
+  DISCOUNT_TILT_ANGLE,
 } = TAKEOFF;
 
 const getShares = atoms => {
   const shares =
-    getShares_A +
-    getShares_B * atoms -
-    getShares_C * atoms ** 2 +
-    getShares_D * atoms ** 3;
+    GETSHARES_A +
+    GETSHARES_B * atoms -
+    GETSHARES_C * atoms ** 2 +
+    GETSHARES_D * atoms ** 3;
   return shares;
 };
 
 const getDiscountPlot = atoms => {
-  const discount = -0.00005 * atoms + 30;
+  const discount = DISCOUNT_TG * atoms + DISCOUNT_TILT_ANGLE;
   return discount;
 };
 
@@ -62,10 +64,10 @@ const funcDiscount = atom => {
 
 const cybWon = atom => {
   const won =
-    cybWon_A * Math.pow(atom, 3) +
-    cybWon_B * Math.pow(atom, 2) +
-    cybWon_C * atom +
-    cybWon_D;
+    CYBWON_A * Math.pow(atom, 3) +
+    CYBWON_B * Math.pow(atom, 2) +
+    CYBWON_C * atom +
+    CYBWON_D;
   return won;
 };
 

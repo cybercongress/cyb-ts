@@ -19,14 +19,16 @@ const NETWORKSIDS = {
 
 const TAKEOFF = {
   ATOMsALL: 600000,
-  cybWon_A: 0.000740464,
-  cybWon_B: -666.418,
-  cybWon_C: 2.3328 * 10 ** 8,
-  cybWon_D: 0.000343014,
-  getShares_A: -1.856 * 10 ** -3,
-  getShares_B: 2.355 * 10 ** -5,
-  getShares_C: 6.66 * 10 ** -11,
-  getShares_D: 7.332 * 10 ** -17,
+  CYBWON_A: 0.000740464,
+  CYBWON_B: -666.418,
+  CYBWON_C: 2.3328 * 10 ** 8,
+  CYBWON_D: 0.000343014,
+  GETSHARES_A: -1.856 * 10 ** -3,
+  GETSHARES_B: 2.355 * 10 ** -5,
+  GETSHARES_C: 6.66 * 10 ** -11,
+  GETSHARES_D: 7.332 * 10 ** -17,
+  DISCOUNT_TG: -0.00005,
+  DISCOUNT_TILT_ANGLE: 30,
 };
 
 const COSMOS = {
