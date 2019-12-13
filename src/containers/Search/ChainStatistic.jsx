@@ -1,5 +1,13 @@
 import React from 'react';
-import { Text, Pane, Heading, CardHover, Icon } from '@cybercongress/gravity';
+import {
+  Text,
+  Pane,
+  Heading,
+  CardHover,
+  Icon,
+  Tablist,
+  Tab,
+} from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import BandwidthBar from './BandwidthBar';
 import {
@@ -25,6 +33,12 @@ class ChainStatistic extends React.Component {
       totalCyb: 0,
       stakedCyb: 0,
       activeValidatorsCount: 0,
+      main: false,
+      graph: false,
+      cybernomicsEUL: true,
+      consensus: false,
+      bandwidth: false,
+      cybernomicsGOL: false,
     };
   }
 
@@ -66,6 +80,66 @@ class ChainStatistic extends React.Component {
     });
   };
 
+  getMain = () =>
+    this.setState({
+      main: true,
+      graph: false,
+      cybernomicsEUL: false,
+      consensus: false,
+      bandwidth: false,
+      cybernomicsGOL: false,
+    });
+
+  getGraph = () =>
+    this.setState({
+      main: false,
+      graph: true,
+      cybernomicsEUL: false,
+      consensus: false,
+      bandwidth: false,
+      cybernomicsGOL: false,
+    });
+
+  getCybernomicsEUL = () =>
+    this.setState({
+      main: false,
+      graph: false,
+      cybernomicsEUL: true,
+      consensus: false,
+      bandwidth: false,
+      cybernomicsGOL: false,
+    });
+
+  getConsensus = () =>
+    this.setState({
+      main: false,
+      graph: false,
+      cybernomicsEUL: false,
+      consensus: true,
+      bandwidth: false,
+      cybernomicsGOL: false,
+    });
+
+  getBandwidth = () =>
+    this.setState({
+      main: false,
+      graph: false,
+      cybernomicsEUL: false,
+      consensus: false,
+      bandwidth: true,
+      cybernomicsGOL: false,
+    });
+
+  getCybernomicsGOL = () =>
+    this.setState({
+      main: false,
+      graph: false,
+      cybernomicsEUL: false,
+      consensus: false,
+      bandwidth: false,
+      cybernomicsGOL: true,
+    });
+
   render() {
     const {
       linksCount,
@@ -77,6 +151,12 @@ class ChainStatistic extends React.Component {
       totalCyb,
       stakedCyb,
       activeValidatorsCount,
+      main,
+      graph,
+      cybernomicsEUL,
+      consensus,
+      bandwidth,
+      cybernomicsGOL,
     } = this.state;
 
     return (
@@ -88,6 +168,98 @@ class ChainStatistic extends React.Component {
         /> */}
 
         <Pane marginTop={50} marginBottom={50}>
+          <Tablist marginBottom={24}>
+            <Tab
+              key="Main"
+              id="Main"
+              isSelected={main}
+              onSelect={() => this.getMain()}
+              paddingX={50}
+              paddingY={20}
+              marginX={3}
+              borderRadius={4}
+              color="#36d6ae"
+              boxShadow="0px 0px 10px #36d6ae"
+              fontSize="16px"
+            >
+              Main
+            </Tab>
+            <Tab
+              key="Knowledge graph"
+              id="Knowledge graph"
+              isSelected={graph}
+              onSelect={() => this.getGraph()}
+              paddingX={50}
+              paddingY={20}
+              marginX={3}
+              borderRadius={4}
+              color="#36d6ae"
+              boxShadow="0px 0px 10px #36d6ae"
+              fontSize="16px"
+            >
+              Knowledge graph
+            </Tab>
+            <Tab
+              key="Cybernomics of EUL"
+              id="Cybernomics of EUL"
+              isSelected={cybernomicsEUL}
+              onSelect={() => this.getCybernomicsEUL()}
+              paddingX={50}
+              paddingY={20}
+              marginX={3}
+              borderRadius={4}
+              color="#36d6ae"
+              boxShadow="0px 0px 10px #36d6ae"
+              fontSize="16px"
+            >
+              Cybernomics of EUL
+            </Tab>
+            <Tab
+              key="Consensus"
+              id="Consensus"
+              isSelected={consensus}
+              onSelect={() => this.getConsensus()}
+              paddingX={50}
+              paddingY={20}
+              marginX={3}
+              borderRadius={4}
+              color="#36d6ae"
+              boxShadow="0px 0px 10px #36d6ae"
+              fontSize="16px"
+            >
+              Consensus
+            </Tab>
+            <Tab
+              key="Bandwidth"
+              id="Bandwidth"
+              isSelected={bandwidth}
+              onSelect={() => this.getBandwidth()}
+              paddingX={50}
+              paddingY={20}
+              marginX={3}
+              borderRadius={4}
+              color="#36d6ae"
+              boxShadow="0px 0px 10px #36d6ae"
+              fontSize="16px"
+            >
+              Bandwidth
+            </Tab>
+            <Tab
+              key="Cybernomics of GOL"
+              id="Cybernomics of GOL"
+              isSelected={cybernomicsGOL}
+              onSelect={() => this.getCybernomicsGOL()}
+              paddingX={50}
+              paddingY={20}
+              marginX={3}
+              borderRadius={4}
+              color="#36d6ae"
+              boxShadow="0px 0px 10px #36d6ae"
+              fontSize="16px"
+            >
+              Cybernomics of GOL
+            </Tab>
+          </Tablist>
           <Heading size={600} color="#fff" marginBottom={24}>
             {T.brain.knowledge}
           </Heading>
