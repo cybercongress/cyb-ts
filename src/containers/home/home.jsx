@@ -194,8 +194,11 @@ class Home extends PureComponent {
     ));
 
     return (
-      <div style={{ position: 'relative' }}>
-        <main onMouseMove={e => this.showCoords(e)} className="block-body-home">
+      <div style={{ position: `${!result ? 'relative' : ''}` }}>
+        <main
+          onMouseMove={e => this.showCoords(e)}
+          className={!result ? 'block-body-home' : 'block-body'}
+        >
           <Pane
             display="flex"
             alignItems="center"
@@ -274,7 +277,7 @@ class Home extends PureComponent {
         {!result && (
           <StartState
             targetColor={targetColor}
-            valueSearchInput={query}
+            valueSearchInput={valueSearchInput}
             onClickBtn={this.onCklicBtn}
           />
         )}

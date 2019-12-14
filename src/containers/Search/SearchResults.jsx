@@ -120,7 +120,7 @@ class SearchResults extends React.Component {
 
     return (
       <div>
-        <main className="block-body-home" style={{ paddingTop: 30 }}>
+        <main className="block-body" style={{ paddingTop: 30 }}>
           <Pane
             width="90%"
             marginX="auto"
