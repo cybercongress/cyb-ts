@@ -6,7 +6,7 @@ export { Nums } from './ui/Numbers';
 export { Dots } from './ui/Dots';
 export { SeeSaw } from './SeeSaw/SeeSaw';
 export { Timer } from './timer/timer';
-export { ContainerCard, Indicators, Card, CardArrow } from './statistics/item';
+export { ContainerCard, Indicators, Card, CardArrow, CardStatisics } from './statistics/item';
 export { Tooltip } from './tooltip/tooltip';
 export { Loading } from './ui/loading';
 export { Popup } from './popups/popups';

@@ -6,7 +6,7 @@ import Got from './containers/got/got';
 import Funding from './containers/funding/index';
 import Auction from './containers/auction/index';
 import NotFound from './containers/application/notFound';
-import Search from './containers/Search/Search';
+import ChainStatistic from './containers/Search/ChainStatistic';
 import Lottery from './containers/Lottery/Lottery';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
@@ -50,7 +50,7 @@ class AppRouter extends React.Component {
           <Route path="/takeoff" component={Funding} />
           <Route path="/tot" component={Got} />
           <Route path="/auction" component={Auction} />
-          <Route path="/brain" component={Search} />
+          <Route path="/brain" component={ChainStatistic} />
           <Route exact path="/governance" component={Governance} />
           <Route path="/governance/:proposal_id" component={ProposalsDetail} />
           <Route path="/pocket" component={Wallet} />

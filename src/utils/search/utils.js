@@ -271,3 +271,15 @@ export const getRankValidators = address =>
       })
       .catch(e => {})
   );
+
+export const statusNode = () =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/api/status`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );

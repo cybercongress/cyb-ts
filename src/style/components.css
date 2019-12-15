@@ -1,0 +1,33 @@
+.container-statistics-card {
+  display: flex;
+  flex-direction: column;
+  padding: 45px 0;
+  align-items: center;
+  background-color: #000;
+  min-width: 250px;
+  box-shadow: 0 0 5px #36d6ae;
+  border-radius: 5px;
+}
+
+.container-statistics-card:hover {
+  box-shadow: 0 0 15px #36d6ae;
+}
+
+.card-statistics-title {
+  display: flex;
+  white-space: nowrap;
+  color: #4ed6ae;
+  font-size: 16px;
+  line-height: 20px;
+
+}
+
+.card-statistics-value {
+  display: inline-block;
+  color: #4ed6ae;
+  font-size: 26px;
+  line-height: 20px;
+  white-space: nowrap;
+  margin-bottom: 20px;
+}
+

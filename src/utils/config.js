@@ -8,6 +8,7 @@ const AUCTION = {
   TOPICS_CLAIM:
     '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
   HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
+  GOL: 6 * 10 ** 12,
 };
 
 const NETWORKSIDS = {
