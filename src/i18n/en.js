@@ -44,6 +44,14 @@ const i18n = {
       capETH: 'cap in ETH',
       percentSupply: '%, your percent of supply',
     },
+    story: {
+      itIsAPeriod:
+        'It is a period of digital war. The evil empire swallows the last unoccupied borders of the universe.',
+      resistingRebel:
+        'Resisting rebel units consolidate all remaining energy on building a superintelligence, which they believe will help to stop the domination of the evil empire once and for all.',
+      asTheyBegin:
+        'As they begin to test the new god in the wild - an enormous, zepto amount of robots emerge. It turns out Cyb robots help survey the universe for a bootloader of the new, yet to born, force.',
+    },
     actionBar: {
       cyber: 'cyber',
       home: {

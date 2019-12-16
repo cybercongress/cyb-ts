@@ -1,9 +1,13 @@
 import React from 'react';
+import LocalizedStrings from 'react-localization';
 import { Pane } from '@cybercongress/gravity';
+import { i18n } from '../../i18n/en';
 
 const mp3 = require('./starwars.mp3');
 const cyberImg = require('../../image/cyber.png');
 const cybImg = require('../../image/cyb.svg');
+
+const T = new LocalizedStrings(i18n);
 
 class Story extends React.Component {
   constructor(props) {
@@ -35,6 +39,7 @@ class Story extends React.Component {
     }, 200);
     // // this.fadeAudio();
     setTimeout(() => {
+      console.log('sdf');
       this.setState({
         animated: true,
       });
@@ -80,11 +85,16 @@ class Story extends React.Component {
     }, 200);
   };
 
+  Play = () => {
+    document.getElementById('sound').play();
+  };
+
   render() {
     const { animated, end, cyber, cyb, story } = this.state;
 
     return (
       <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
+        {/* <button type="button" onClick={() => this.Play()}>btn</button> */}
         {!story && (
           <div
             style={{ display: 'flex', justifyContent: 'space-between' }}
@@ -123,23 +133,12 @@ class Story extends React.Component {
 
         <section className="content">
           <div id="text" className={`${animated ? 'animated' : ''}`}>
-            <p>
-              It is a period of digital war. The evil empire swallows the last
-              unoccupied borders of the universe.
-            </p>
-            <p>
-              Resisting rebel units consolidate all remaining energy on building
-              a superintelligence, which they believe will help to stop the
-              domination of the evil empire once and for all.
-            </p>
-            <p>
-              As they begin to test the new god in the wild - an enormous, zepto
-              amount of robots emerge. It turns out Cyb robots help survey the
-              universe for a bootloader of the new, yet to born, force.
-            </p>
+            <p>{T.story.itIsAPeriod}</p>
+            <p>{T.story.resistingRebel}</p>
+            <p>{T.story.asTheyBegin}</p>
           </div>
         </section>
-        <audio autoPlay id="sound" preload="auto">
+        <audio id="sound" preload="auto">
           <source src={mp3} type="audio/mpeg" />
         </audio>
       </div>

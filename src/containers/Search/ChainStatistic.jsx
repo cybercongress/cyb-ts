@@ -28,10 +28,11 @@ import {
   Loading,
   FormatNumber,
 } from '../../components';
+import { cybWon } from '../../utils/fundingMath';
 
 import { i18n } from '../../i18n/en';
 
-import { CYBER, LEDGER, AUCTION } from '../../utils/config';
+import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
@@ -65,6 +66,8 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
 );
 
 class ChainStatistic extends React.Component {
+  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
+
   constructor(props) {
     super(props);
     this.state = {
@@ -92,6 +95,9 @@ class ChainStatistic extends React.Component {
       loading: true,
       chainId: '',
       amount: 0,
+      supplyEUL: 0,
+      takeofPrice: 0,
+      capATOM: 0,
       averagePrice: 0,
       capETH: 0,
     };
@@ -104,6 +110,7 @@ class ChainStatistic extends React.Component {
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     this.getPriceGol();
+    this.getDataWS();
   }
 
   componentDidUpdate() {
@@ -140,6 +147,54 @@ class ChainStatistic extends React.Component {
       }
     }
   }
+
+  getDataWS = async () => {
+    this.ws.onopen = () => {
+      console.log('connected');
+    };
+
+    this.ws.onmessage = async evt => {
+      const message = JSON.parse(evt.data);
+      console.log('txs', message);
+      this.getAmountATOM(message);
+    };
+
+    this.ws.onclose = () => {
+      console.log('disconnected');
+    };
+  };
+
+  getAmountATOM = dataTxs => {
+    let amount = 0;
+    let won = 0;
+    let currentPrice = 0;
+
+    for (let item = 0; item < dataTxs.length; item++) {
+      if (amount <= TAKEOFF.ATOMsALL) {
+        amount +=
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount
+          ) *
+          10 ** -1;
+      } else {
+        amount = TAKEOFF.ATOMsALL;
+        break;
+      }
+    }
+
+    won = cybWon(amount);
+    currentPrice = won / amount;
+
+    const supplyEUL = roundNumber(won / DIVISOR_CYBER_G, 3);
+    const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
+    const capATOM = (won * currentPrice) / DIVISOR_CYBER_G;
+
+    this.setState({
+      supplyEUL,
+      takeofPrice,
+      capATOM,
+    });
+  };
 
   getPriceGol = async () => {
     const {
@@ -465,6 +520,9 @@ class ChainStatistic extends React.Component {
       chainId,
       averagePrice,
       capETH,
+      supplyEUL,
+      takeofPrice,
+      capATOM,
     } = this.state;
 
     if (loading) {
@@ -541,13 +599,13 @@ class ChainStatistic extends React.Component {
       >
         <CardStatisics
           title={T.brain.supplyEUL}
-          value={formatNumber(totalCyb)}
+          value={formatNumber(supplyEUL)}
         />
         <CardStatisics
           title={T.brain.takeofPrice}
-          value={formatNumber(cidsCount)}
+          value={formatNumber(takeofPrice)}
         />
-        <CardStatisics title={T.brain.capATOM} value={activeValidatorsCount} />
+        <CardStatisics title={T.brain.capATOM} value={formatNumber(capATOM)} />
       </Pane>
     );
 
@@ -596,7 +654,10 @@ class ChainStatistic extends React.Component {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <CardStatisics title={T.brain.supplyGOL} value={AUCTION.GOL} />
+        <CardStatisics
+          title={T.brain.supplyGOL}
+          value={formatNumber(AUCTION.GOL)}
+        />
         <CardStatisics
           title={T.brain.auctionPrice}
           value={
