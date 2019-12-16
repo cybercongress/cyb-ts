@@ -6,7 +6,7 @@ import Got from './containers/got/got';
 import Funding from './containers/funding/index';
 import Auction from './containers/auction/index';
 import NotFound from './containers/application/notFound';
-import ChainStatistic from './containers/Search/ChainStatistic';
+import Brain from './containers/brain/brain';
 import Lottery from './containers/Lottery/Lottery';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
@@ -16,6 +16,7 @@ import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
+import GOL from './containers/gol/gol';
 
 export const history = createHashHistory({});
 
@@ -50,12 +51,13 @@ class AppRouter extends React.Component {
           <Route path="/takeoff" component={Funding} />
           <Route path="/tot" component={Got} />
           <Route path="/auction" component={Auction} />
-          <Route path="/brain" component={ChainStatistic} />
+          <Route path="/brain" component={Brain} />
           <Route exact path="/governance" component={Governance} />
           <Route path="/governance/:proposal_id" component={ProposalsDetail} />
           <Route path="/pocket" component={Wallet} />
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
+          <Route path="/gol" component={GOL} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>

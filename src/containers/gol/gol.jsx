@@ -19,6 +19,7 @@ import {
   getStatistics,
   getValidators,
   statusNode,
+  getRelevance,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -32,6 +33,8 @@ import { cybWon } from '../../utils/fundingMath';
 import { i18n } from '../../i18n/en';
 
 import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
+
+import ActionBarContainer from './actionBarContainer';
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
@@ -64,7 +67,7 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
   </Tab>
 );
 
-class ChainStatistic extends React.Component {
+class GOL extends React.Component {
   ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
 
   constructor(props) {
@@ -85,7 +88,7 @@ class ChainStatistic extends React.Component {
       totalCyb: 0,
       stakedCyb: 0,
       activeValidatorsCount: 0,
-      selected: 'cybernomicsEUL',
+      selected: 'disciplines',
       loading: true,
       chainId: '',
       amount: 0,
@@ -97,49 +100,10 @@ class ChainStatistic extends React.Component {
     };
   }
 
-  componentWillMount() {
-    this.getStatisticsBrain();
-  }
-
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     this.getPriceGol();
     this.getDataWS();
-  }
-
-  componentDidUpdate() {
-    const {
-      ledger,
-      stage,
-      returnCode,
-      addressLedger,
-      addressInfo,
-    } = this.state;
-
-    if (stage === STAGE_LEDGER_INIT) {
-      if (ledger === null) {
-        this.pollLedger();
-      }
-      if (ledger !== null) {
-        switch (returnCode) {
-          case LEDGER_OK:
-            if (addressLedger === null) {
-              this.getAddress();
-            }
-            if (addressLedger !== null && addressInfo === null) {
-              this.getAddressInfo();
-            }
-            break;
-          default:
-            console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
-      }
-    }
   }
 
   getDataWS = async () => {
@@ -233,14 +197,6 @@ class ChainStatistic extends React.Component {
     });
   };
 
-  compareVersion = async () => {
-    const test = this.state.ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
-
   checkAddressLocalStorage = async () => {
     let address = [];
 
@@ -255,59 +211,6 @@ class ChainStatistic extends React.Component {
         addAddress: true,
         loading: false,
       });
-    }
-  };
-
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
-
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        this.setState({
-          address: null,
-          returnCode: connect.return_code,
-          ledgerVersion: [connect.major, connect.minor, connect.patch],
-          errorMessage: null,
-        });
-        // eslint-disable-next-line
-
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
-      console.error('Problem with Ledger communication', message, statusCode);
-    }
-  };
-
-  getAddress = async () => {
-    try {
-      const { ledger } = this.state;
-
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
-
-      console.log('address', addressLedger);
-
-      this.setState({
-        addressLedger,
-      });
-
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -370,43 +273,6 @@ class ChainStatistic extends React.Component {
       }
       // this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
-  };
-
-  getStatisticsBrain = async () => {
-    const statisticContainer = await getStatistics();
-    const validatorsStatistic = await getValidators();
-    const status = await statusNode();
-    const {
-      linksCount,
-      cidsCount,
-      accsCount,
-      txCount,
-      height,
-      bandwidthPrice,
-      bondedTokens,
-      supplyTotal,
-    } = statisticContainer;
-
-    const activeValidatorsCount = validatorsStatistic;
-
-    const chainId = status.node_info.network;
-
-    const totalCyb = supplyTotal;
-    const stakedCyb = Math.floor((bondedTokens / totalCyb) * 100 * 1000) / 1000;
-    const linkPrice = (400 * +bandwidthPrice).toFixed(0);
-
-    this.setState({
-      linksCount,
-      cidsCount,
-      accsCount,
-      txCount,
-      blockNumber: height,
-      linkPrice,
-      totalCyb,
-      stakedCyb,
-      activeValidatorsCount: activeValidatorsCount.length,
-      chainId,
-    });
   };
 
   select = selected => {
@@ -503,145 +369,38 @@ class ChainStatistic extends React.Component {
       </Pane>
     );
 
-    const KnowledgeGraph = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics
-          title={T.brain.objects}
-          value={formatNumber(cidsCount)}
-        />
 
-        <CardStatisics
-          title={T.brain.subjects}
-          value={formatNumber(accsCount)}
-        />
-      </Pane>
-    );
-
-    const CybernomicsEUL = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.supplyEUL}
-          value={formatNumber(supplyEUL)}
-        />
-        <CardStatisics
-          title={T.brain.takeofPrice}
-          value={formatNumber(takeofPrice)}
-        />
-        <CardStatisics title={T.brain.capATOM} value={formatNumber(capATOM)} />
-      </Pane>
-    );
-
-    const Consensus = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <a
-          href="/#/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4caf50" marginLeft={5} />}
-          />
-        </a>
-        <CardStatisics title={T.brain.staked} value={stakedCyb} />
-        <CardStatisics
-          title={T.brain.transactions}
-          value={formatNumber(txCount)}
-        />
-      </Pane>
-    );
-
-    const Bandwidth = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics title={T.brain.price} value={linkPrice} />
-        <CardStatisics title={T.brain.available} value={stakedCyb} />
-        <CardStatisics title={T.brain.load} value={formatNumber(txCount)} />
-      </Pane>
-    );
-
-    const CybernomicsGOL = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.supplyGOL}
-          value={formatNumber(AUCTION.GOL)}
-        />
-        <CardStatisics
-          title={T.brain.auctionPrice}
-          value={
-            <FormatNumber
-              fontSizeDecimal={18}
-              number={roundNumber(averagePrice, 6)}
-            />
-          }
-        />
-        <CardStatisics title={T.brain.capETH} value={formatNumber(capETH)} />
-      </Pane>
-    );
-
-    if (stage === STAGE_LEDGER_INIT) {
-      return (
-        <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.cleatState}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
-        />
-      );
-    }
-
-    if (selected === 'main') {
+    if (selected === 'delegation') {
       content = <Main />;
     }
 
-    if (selected === 'graph') {
-      content = <KnowledgeGraph />;
+    if (selected === 'load') {
+      content = <Main />;
     }
 
-    if (selected === 'cybernomicsEUL') {
-      content = <CybernomicsEUL />;
+    if (selected === 'relevance') {
+      content = <Main />;
     }
 
-    if (selected === 'consensus') {
-      content = <Consensus />;
-    }
+    // if (selected === 'disciplines') {
+    //   content = <KnowledgeGraph />;
+    // }
 
-    if (selected === 'bandwidth') {
-      content = <Bandwidth />;
-    }
+    // if (selected === 'uptime') {
+    //   content = <CybernomicsEUL />;
+    // }
 
-    if (selected === 'cybernomicsGOL') {
-      content = <CybernomicsGOL />;
-    }
+    // if (selected === 'FVS') {
+    //   content = <Consensus />;
+    // }
+
+    // if (selected === 'euler4') {
+    //   content = <Bandwidth />;
+    // }
+
+    // if (selected === 'communityPool') {
+    //   content = <CybernomicsGOL />;
+    // }
 
     return (
       <div>
@@ -664,29 +423,6 @@ class ChainStatistic extends React.Component {
               </Text>
             </Pane>
           )}
-
-          {amount > 0 && (
-            <Pane
-              marginY={20}
-              display="grid"
-              gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-              gridGap="20px"
-            >
-              <CardStatisics
-                title={T.brain.percentSupply}
-                value={
-                  <FormatNumber
-                    fontSizeDecimal={18}
-                    number={roundNumber((amount / totalCyb) * 100, 6)}
-                  />
-                }
-              />
-              <CardStatisics
-                title={chainId}
-                value={formatNumber(blockNumber)}
-              />
-            </Pane>
-          )}
           <Tablist
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
@@ -694,57 +430,58 @@ class ChainStatistic extends React.Component {
             marginTop={25}
           >
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              onSelect={() => this.select('main')}
+              text="Delegation"
+              isSelected={selected === 'delegation'}
+              onSelect={() => this.select('delegation')}
             />
             <TabBtn
-              text="Knowledge graph"
-              isSelected={selected === 'graph'}
-              onSelect={() => this.select('graph')}
+              text="Load"
+              isSelected={selected === 'load'}
+              onSelect={() => this.select('load')}
             />
             <TabBtn
-              text="Cybernomics of EUL"
-              isSelected={selected === 'cybernomicsEUL'}
-              onSelect={() => this.select('cybernomicsEUL')}
+              text="Relevance"
+              isSelected={selected === 'relevance'}
+              onSelect={() => this.select('relevance')}
             />
             <TabBtn
-              text="Consensus"
-              isSelected={selected === 'consensus'}
-              onSelect={() => this.select('consensus')}
+              text="Disciplines"
+              isSelected={selected === 'disciplines'}
+              onSelect={() => this.select('disciplines')}
             />
             <TabBtn
-              text="Bandwidth"
-              isSelected={selected === 'bandwidth'}
-              onSelect={() => this.select('bandwidth')}
+              text="Uptime"
+              isSelected={selected === 'uptime'}
+              onSelect={() => this.select('uptime')}
             />
             <TabBtn
-              text="Cybernomics of GOL"
-              isSelected={selected === 'cybernomicsGOL'}
-              onSelect={() => this.select('cybernomicsGOL')}
+              text="FVS"
+              isSelected={selected === 'FVS'}
+              onSelect={() => this.select('FVS')}
+            />
+            <TabBtn
+              text="Euler-4"
+              isSelected={selected === 'euler4'}
+              onSelect={() => this.select('euler4')}
+            />
+            <TabBtn
+              text="Community pool"
+              isSelected={selected === 'communityPool'}
+              onSelect={() => this.select('communityPool')}
             />
           </Tablist>
           <Pane marginTop={50} marginBottom={50}>
             {content}
           </Pane>
         </main>
-        <ActionBar>
-          <Pane>
-            {addAddress && (
-              <Button onClick={() => this.onClickGetAddressLedger()}>
-                {T.actionBar.pocket.put}
-              </Button>
-            )}
-            {!addAddress && (
-              <Text color="#fff" fontSize="18px">
-                Take gift or Teleport to Game of Links
-              </Text>
-            )}
-          </Pane>
-        </ActionBar>
+        <ActionBarContainer
+          addAddress={addAddress}
+          cleatState={this.cleatState}
+          updateFunc={this.checkAddressLocalStorage}
+        />
       </div>
     );
   }
 }
 
-export default withWeb3(ChainStatistic);
+export default withWeb3(GOL);

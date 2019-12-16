@@ -40,7 +40,7 @@ const COSMOS = {
   GAIA_NODE_URL_LSD: 'https://lcd.nylira.net',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
-  DIVISOR_ATOM: 10 ** 6,
+  DIVISOR_ATOM: 10 ** 5,
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 

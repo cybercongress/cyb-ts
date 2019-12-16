@@ -33,6 +33,8 @@ import { i18n } from '../../i18n/en';
 
 import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
 
+import ActionBarContainer from './actionBarContainer';
+
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
 const {
@@ -64,7 +66,7 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
   </Tab>
 );
 
-class ChainStatistic extends React.Component {
+class Brain extends React.Component {
   ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
 
   constructor(props) {
@@ -105,41 +107,6 @@ class ChainStatistic extends React.Component {
     await this.checkAddressLocalStorage();
     this.getPriceGol();
     this.getDataWS();
-  }
-
-  componentDidUpdate() {
-    const {
-      ledger,
-      stage,
-      returnCode,
-      addressLedger,
-      addressInfo,
-    } = this.state;
-
-    if (stage === STAGE_LEDGER_INIT) {
-      if (ledger === null) {
-        this.pollLedger();
-      }
-      if (ledger !== null) {
-        switch (returnCode) {
-          case LEDGER_OK:
-            if (addressLedger === null) {
-              this.getAddress();
-            }
-            if (addressLedger !== null && addressInfo === null) {
-              this.getAddressInfo();
-            }
-            break;
-          default:
-            console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
-      }
-    }
   }
 
   getDataWS = async () => {
@@ -233,14 +200,6 @@ class ChainStatistic extends React.Component {
     });
   };
 
-  compareVersion = async () => {
-    const test = this.state.ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
-
   checkAddressLocalStorage = async () => {
     let address = [];
 
@@ -255,59 +214,6 @@ class ChainStatistic extends React.Component {
         addAddress: true,
         loading: false,
       });
-    }
-  };
-
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
-
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        this.setState({
-          address: null,
-          returnCode: connect.return_code,
-          ledgerVersion: [connect.major, connect.minor, connect.patch],
-          errorMessage: null,
-        });
-        // eslint-disable-next-line
-
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
-      console.error('Problem with Ledger communication', message, statusCode);
-    }
-  };
-
-  getAddress = async () => {
-    try {
-      const { ledger } = this.state;
-
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
-
-      console.log('address', addressLedger);
-
-      this.setState({
-        addressLedger,
-      });
-
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -728,23 +634,14 @@ class ChainStatistic extends React.Component {
             {content}
           </Pane>
         </main>
-        <ActionBar>
-          <Pane>
-            {addAddress && (
-              <Button onClick={() => this.onClickGetAddressLedger()}>
-                {T.actionBar.pocket.put}
-              </Button>
-            )}
-            {!addAddress && (
-              <Text color="#fff" fontSize="18px">
-                Take gift or Teleport to Game of Links
-              </Text>
-            )}
-          </Pane>
-        </ActionBar>
+        <ActionBarContainer
+          addAddress={addAddress}
+          cleatState={this.cleatState}
+          updateFunc={this.checkAddressLocalStorage}
+        />
       </div>
     );
   }
 }
 
-export default withWeb3(ChainStatistic);
+export default withWeb3(Brain);

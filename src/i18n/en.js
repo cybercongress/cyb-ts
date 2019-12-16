@@ -34,7 +34,7 @@ const i18n = {
       transactions: 'transactions',
       last: 'last heartbeat',
       cap: 'cap',
-      supplyEUL: 'supply in EUL',
+      supplyEUL: 'supply in GEUL',
       takeofPrice: 'takeof price of GEUL in ATOM',
       capATOM: 'cap in ATOM',
       available: 'available bandwidth',

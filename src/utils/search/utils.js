@@ -283,3 +283,15 @@ export const statusNode = () =>
       })
       .catch(e => {})
   );
+
+export const getRelevance = () =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/api/top?page=0&perPage=1000`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );
