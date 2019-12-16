@@ -9,6 +9,7 @@ import {
   Tab,
   Button,
   ActionBar,
+  SearchItem,
 } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
@@ -20,6 +21,7 @@ import {
   getValidators,
   statusNode,
   getRelevance,
+  getRankGrade,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -97,6 +99,7 @@ class GOL extends React.Component {
       capATOM: 0,
       averagePrice: 0,
       capETH: 0,
+      topLink: [],
     };
   }
 
@@ -104,6 +107,7 @@ class GOL extends React.Component {
     await this.checkAddressLocalStorage();
     this.getPriceGol();
     this.getDataWS();
+    this.getRelevance();
   }
 
   getDataWS = async () => {
@@ -275,6 +279,16 @@ class GOL extends React.Component {
     }
   };
 
+  getRelevance = async () => {
+    const data = await getRelevance();
+
+    const topLink = data.cids;
+
+    this.setState({
+      topLink,
+    });
+  };
+
   select = selected => {
     this.setState({ selected });
   };
@@ -321,9 +335,12 @@ class GOL extends React.Component {
       takeofPrice,
       capATOM,
       selected,
+      topLink,
     } = this.state;
 
     let content;
+
+    console.log(topLink);
 
     if (loading) {
       return (
@@ -341,6 +358,37 @@ class GOL extends React.Component {
         </div>
       );
     }
+
+    const resultsLimit = 10;
+    const topLinkItems = [];
+
+    for (let index = 0; index < resultsLimit; index += 1) {
+      const item = (
+        <SearchItem
+          key={topLink[index].cid}
+          hash={topLink[index].cid}
+          rank={topLink[index].rank}
+          grade={getRankGrade(topLink[index].rank)}
+          status="success"
+        >
+          {topLink[index].cid}
+        </SearchItem>
+      );
+
+      topLinkItems.push(item);
+    }
+
+    // const topLinkItems = topLink.map(item => (
+    //   <SearchItem
+    //     key={item.cid}
+    //     hash={item.cid}
+    //     rank={item.rank}
+    //     grade={item.grade}
+    //     status="success"
+    //   >
+    //     {item.cid}
+    //   </SearchItem>
+    // ));
 
     const Main = () => (
       <Pane
@@ -369,6 +417,7 @@ class GOL extends React.Component {
       </Pane>
     );
 
+    const Relevance = () => <Pane>{topLinkItems}</Pane>;
 
     if (selected === 'delegation') {
       content = <Main />;
@@ -379,7 +428,7 @@ class GOL extends React.Component {
     }
 
     if (selected === 'relevance') {
-      content = <Main />;
+      content = <Relevance />;
     }
 
     // if (selected === 'disciplines') {
