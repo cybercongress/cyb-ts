@@ -10,6 +10,7 @@ import {
   Button,
   ActionBar,
   SearchItem,
+  TableEv as Table,
 } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
@@ -30,11 +31,20 @@ import {
   Loading,
   FormatNumber,
 } from '../../components';
+import Dinamics from './diagram';
 import { cybWon } from '../../utils/fundingMath';
 
 import { i18n } from '../../i18n/en';
 
-import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
+import {
+  CYBER,
+  LEDGER,
+  AUCTION,
+  COSMOS,
+  TAKEOFF,
+  DISTRIBUTION,
+  GENESIS_SUPPLY,
+} from '../../utils/config';
 
 import ActionBarContainer from './actionBarContainer';
 
@@ -104,180 +114,8 @@ class GOL extends React.Component {
   }
 
   async componentDidMount() {
-    await this.checkAddressLocalStorage();
-    this.getPriceGol();
-    this.getDataWS();
     this.getRelevance();
   }
-
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-    };
-
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAmountATOM(message);
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
-
-  getAmountATOM = dataTxs => {
-    let amount = 0;
-    let won = 0;
-    let currentPrice = 0;
-
-    for (let item = 0; item < dataTxs.length; item++) {
-      if (amount <= TAKEOFF.ATOMsALL) {
-        amount +=
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount
-          ) *
-          10 ** -1;
-      } else {
-        amount = TAKEOFF.ATOMsALL;
-        break;
-      }
-    }
-
-    won = cybWon(amount);
-    currentPrice = won / amount;
-
-    const supplyEUL = roundNumber(won / DIVISOR_CYBER_G, 3);
-    const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
-    const capATOM = (won * currentPrice) / DIVISOR_CYBER_G;
-
-    this.setState({
-      supplyEUL,
-      takeofPrice,
-      capATOM,
-    });
-  };
-
-  getPriceGol = async () => {
-    const {
-      contract: { methods },
-      contractAuctionUtils,
-    } = this.props;
-
-    // const roundThis = parseInt(await methods.today().call());
-    const createPerDay = await methods.createPerDay().call();
-    const createFirstDay = await methods.createFirstDay().call();
-
-    const dailyTotalsUtils = await contractAuctionUtils.methods
-      .dailyTotals()
-      .call();
-    console.log(dailyTotalsUtils.length);
-    let summCurrentPrice = 0;
-
-    await asyncForEach(
-      Array.from(Array(dailyTotalsUtils.length).keys()),
-      async item => {
-        let createOnDay;
-        if (item === 0) {
-          createOnDay = createFirstDay;
-        } else {
-          createOnDay = createPerDay;
-        }
-
-        const currentPrice =
-          dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9));
-
-        summCurrentPrice += currentPrice;
-      }
-    );
-    const averagePrice = summCurrentPrice / dailyTotalsUtils.length;
-    const capETH = averagePrice * AUCTION.GOL;
-
-    console.log('averagePrice', averagePrice);
-    console.log('capETH', capETH);
-    this.setState({
-      averagePrice,
-      capETH,
-    });
-  };
-
-  checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address });
-      this.getAddressInfo();
-    } else {
-      this.setState({
-        addAddress: true,
-        loading: false,
-      });
-    }
-  };
-
-  getAddressInfo = async () => {
-    const { addressLedger } = this.state;
-    const addressInfo = {
-      address: '',
-      amount: '',
-      token: '',
-      keys: '',
-    };
-    const response = await fetch(
-      `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    const data = await response.json();
-
-    console.log('data', data);
-
-    addressInfo.address = addressLedger.bech32;
-    addressInfo.amount = data.result.account.coins[0].amount;
-    addressInfo.token = data.result.account.coins[0].denom;
-    addressInfo.keys = 'ledger';
-
-    this.setState({
-      stage: STAGE_READY,
-      addAddress: false,
-      loading: false,
-      addressInfo,
-      amount: data.result.account.coins[0].amount,
-    });
-  };
-
-  getAmount = async address => {
-    try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      // this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
 
   getRelevance = async () => {
     const data = await getRelevance();
@@ -286,6 +124,7 @@ class GOL extends React.Component {
 
     this.setState({
       topLink,
+      loading: false,
     });
   };
 
@@ -340,8 +179,6 @@ class GOL extends React.Component {
 
     let content;
 
-    console.log(topLink);
-
     if (loading) {
       return (
         <div
@@ -359,23 +196,24 @@ class GOL extends React.Component {
       );
     }
 
-    const resultsLimit = 10;
     const topLinkItems = [];
+    if (topLink.length > 0) {
+      const resultsLimit = 10;
+      for (let index = 0; index < resultsLimit; index += 1) {
+        const item = (
+          <SearchItem
+            key={topLink[index].cid}
+            hash={topLink[index].cid}
+            rank={topLink[index].rank}
+            grade={getRankGrade(topLink[index].rank)}
+            status="success"
+          >
+            {topLink[index].cid}
+          </SearchItem>
+        );
 
-    for (let index = 0; index < resultsLimit; index += 1) {
-      const item = (
-        <SearchItem
-          key={topLink[index].cid}
-          hash={topLink[index].cid}
-          rank={topLink[index].rank}
-          grade={getRankGrade(topLink[index].rank)}
-          status="success"
-        >
-          {topLink[index].cid}
-        </SearchItem>
-      );
-
-      topLinkItems.push(item);
+        topLinkItems.push(item);
+      }
     }
 
     // const topLinkItems = topLink.map(item => (
@@ -395,6 +233,7 @@ class GOL extends React.Component {
         display="grid"
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
+        width="100%"
       >
         <CardStatisics
           title={T.brain.cyberlinks}
@@ -417,7 +256,7 @@ class GOL extends React.Component {
       </Pane>
     );
 
-    const Relevance = () => <Pane>{topLinkItems}</Pane>;
+    const Relevance = () => <Pane width="100%">{topLinkItems}</Pane>;
 
     if (selected === 'delegation') {
       content = <Main />;
@@ -431,9 +270,57 @@ class GOL extends React.Component {
       content = <Relevance />;
     }
 
-    // if (selected === 'disciplines') {
-    //   content = <KnowledgeGraph />;
-    // }
+    if (selected === 'disciplines') {
+      content = (
+        <Pane width="100%">
+          <Dinamics />
+          <Table>
+            <Table.Head
+              style={{
+                backgroundColor: '#000',
+                borderBottom: '1px solid #ffffff80',
+              }}
+            >
+              <Table.TextHeaderCell textAlign="center">
+                <Text fontSize="18px" color="#fff">
+                  Group
+                </Text>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell textAlign="center">
+                <Text fontSize="18px" color="#fff">
+                  Amount of EUL
+                </Text>
+              </Table.TextHeaderCell>
+            </Table.Head>
+            <Table.Body
+              style={{
+                backgroundColor: '#000',
+                overflowY: 'hidden',
+                padding: 7,
+              }}
+            >
+              {DISTRIBUTION.map(item => (
+                <Table.Row borderBottom="none">
+                  <Table.TextCell>
+                    <Text fontSize="16px" color="#fff">
+                      {item.group}
+                    </Text>
+                  </Table.TextCell>
+                  <Table.TextCell textAlign="end">
+                    <Text fontSize="16px" color="#fff">
+                      {`${formatNumber(item.amount)} (${roundNumber(
+                        (item.amount / GENESIS_SUPPLY) * 100,
+                        3
+                      )}%)`}
+                    </Text>
+                  </Table.TextCell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        </Pane>
+      );
+    }
 
     // if (selected === 'uptime') {
     //   content = <CybernomicsEUL />;
@@ -454,24 +341,34 @@ class GOL extends React.Component {
     return (
       <div>
         <main
-          style={{ justifyContent: 'space-between' }}
+          // style={{ justifyContent: 'space-between' }}
           className="block-body"
         >
-          {amount === 0 && (
-            <Pane
-              boxShadow="0px 0px 5px #36d6ae"
-              paddingX={20}
-              paddingY={20}
-              marginY={20}
-            >
-              <Text fontSize="16px" color="#fff">
-                You do not have control over the brain. You need EUL tokens to
-                let she hear you. If you came from Ethereum or Cosmos you can
-                claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: Game of Links.
-              </Text>
-            </Pane>
-          )}
+          <Pane
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridGap="20px"
+            width="100%"
+            marginY={50}
+          >
+            <CardStatisics
+              title={T.gol.myGOLs}
+              value={formatNumber(linksCount)}
+            />
+            <CardStatisics
+              title={T.gol.myEULs}
+              value={formatNumber(cidsCount)}
+            />
+            <CardStatisics title={T.gol.maxPrize} value="100 TCYB" />
+            <CardStatisics
+              title={T.gol.currentPrize}
+              value={formatNumber(cidsCount)}
+            />
+            <CardStatisics
+              title={T.gol.takeoff}
+              value={formatNumber(cidsCount)}
+            />
+          </Pane>
           <Tablist
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
@@ -519,7 +416,12 @@ class GOL extends React.Component {
               onSelect={() => this.select('communityPool')}
             />
           </Tablist>
-          <Pane marginTop={50} marginBottom={50}>
+          <Pane
+            display="flex"
+            marginTop={50}
+            marginBottom={50}
+            justifyContent="center"
+          >
             {content}
           </Pane>
         </main>

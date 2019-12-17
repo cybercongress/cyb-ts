@@ -44,6 +44,13 @@ const i18n = {
       capETH: 'cap in ETH',
       percentSupply: '%, your percent of supply',
     },
+    gol: {
+      myGOLs: 'My GOLs',
+      myEULs: 'My EULs',
+      maxPrize: 'Max prize fund',
+      currentPrize: 'Current prize fund',
+      takeoff: 'Takeoff donations',
+    },
     story: {
       itIsAPeriod:
         'It is a period of digital war. The evil empire swallows the last unoccupied borders of the universe.',

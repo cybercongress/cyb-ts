@@ -71,4 +71,42 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
-export { TAKEOFF, COSMOS, CYBER, LEDGER, AUCTION, NETWORKSIDS };
+const GENESIS_SUPPLY = 233000000000000;
+
+const DISTRIBUTION = [
+  {
+    group: 'Takeoff donations',
+    amount: '100000000000000',
+  },
+  {
+    group: 'Gifts to Ethereum, Cosmos and Urbit communities',
+    amount: '100000000000000',
+  },
+  {
+    group: 'Euler-4 validators',
+    amount: '20000000000000',
+  },
+  {
+    group: 'GOL stakers	',
+    amount: '10000000000000',
+  },
+  {
+    group: 'Community pool',
+    amount: '2000000000000',
+  },
+  {
+    group: 'Test of Thrones in ATOMs',
+    amount: '1000000000000',
+  },
+];
+
+export {
+  TAKEOFF,
+  COSMOS,
+  CYBER,
+  LEDGER,
+  AUCTION,
+  NETWORKSIDS,
+  DISTRIBUTION,
+  GENESIS_SUPPLY,
+};
