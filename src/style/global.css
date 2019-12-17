@@ -176,7 +176,6 @@ input:active {
 ::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #3ab793;
-    opacity: 1;
     /* Firefox */
 }
 
@@ -333,4 +332,44 @@ input:active {
 .search-input:focus {
     -webkit-app-region: no-drag;
     box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53) !important;
+}
+
+input::-webkit-input-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input::-moz-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input:-moz-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input:-ms-input-placeholder {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+input:focus::-webkit-input-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+input:focus::-moz-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+input:focus:-moz-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+input:focus:-ms-input-placeholder {
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }

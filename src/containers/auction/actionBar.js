@@ -191,7 +191,7 @@ const timer = func => {
   setInterval(func, 1000);
 };
 
-export class ActionBarContainer extends Component {
+class ActionBarAuction extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -396,3 +396,5 @@ export class ActionBarContainer extends Component {
     return null;
   }
 }
+
+export default ActionBarAuction;

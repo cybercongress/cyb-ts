@@ -2,32 +2,29 @@ import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { FormatNumber, Loading } from '../../components';
+import { FormatNumber, Loading, ConnectLadger } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
 // import { formatNumber } from '../../utils/search/utils';
 import ActionBarContainer from './actionBarContainer';
 
-import { SendAmounLadger } from './actionBarStage';
+import { CYBER, LEDGER } from '../../utils/config';
+import { i18n } from '../../i18n/en';
+import LocalizedStrings from 'react-localization';
 
-import { indexedNode } from '../../utils/config';
+const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
-const HDPATH = [44, 118, 0, 0, 0];
+const T = new LocalizedStrings(i18n);
 
-const TIMEOUT = 5000;
-
-const LEDGER_OK = 36864;
-const LEDGER_NOAPP = 28160;
-
-const STAGE_INIT = 0;
-const STAGE_LEDGER_INIT = 1;
-const STAGE_READY = 2;
-
-const LEDGER_VERSION_REQ = [1, 1, 1];
-
-const toFixedNumber = (number, toFixed) => {
-  return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
-};
+const {
+  HDPATH,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  STAGE_INIT,
+  STAGE_LEDGER_INIT,
+  STAGE_READY,
+  LEDGER_VERSION_REQ,
+} = LEDGER;
 
 class Wallet extends React.Component {
   constructor(props) {
@@ -173,7 +170,7 @@ class Wallet extends React.Component {
       keys: '',
     };
     const response = await fetch(
-      `${indexedNode}/api/account?address="${addressLedger.bech32}"`,
+      `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
       {
         method: 'GET',
         headers: {
@@ -205,7 +202,7 @@ class Wallet extends React.Component {
   getAmount = async address => {
     try {
       const response = await fetch(
-        `${indexedNode}/api/account?address="${address}"`,
+        `${CYBER_NODE_URL}/api/account?address="${address}"`,
         {
           method: 'GET',
           headers: {
@@ -257,7 +254,7 @@ class Wallet extends React.Component {
       returnCode,
       ledgerVersion,
     } = this.state;
-// console.log(addressLedger);
+
     const rowsTable = table.map(item => (
       <Table.Row
         borderBottom="none"
@@ -278,12 +275,14 @@ class Wallet extends React.Component {
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
           <Text color="#fff" fontSize="17px">
-            <FormatNumber number={item.amount} />
+            <FormatNumber
+              number={Math.floor((item.amount / DIVISOR_CYBER_G) * 1000) / 1000}
+            />
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.2}>
           <Text color="#fff" fontSize="17px">
-            {item.token}
+            {(DENOM_CYBER_G + item.token).toUpperCase()}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.3}>
@@ -315,7 +314,7 @@ class Wallet extends React.Component {
       return (
         <div>
           <main className="block-body-home">
-            <NotFound text="Hurry up! Find and connect your secure Ledger" />
+            <NotFound text={T.pocket.hurry} />
           </main>
           <ActionBarContainer
             // address={addressLedger.bech32}
@@ -328,7 +327,7 @@ class Wallet extends React.Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
           onClickBtnCloce={this.cleatState}
@@ -360,22 +359,22 @@ class Wallet extends React.Component {
                 >
                   <Table.TextHeaderCell flex={1.3}>
                     <Text color="#fff" fontSize="17px">
-                      Address
+                      {T.pocket.table.address}
                     </Text>
                   </Table.TextHeaderCell>
                   <Table.TextHeaderCell flex={0.5}>
                     <Text color="#fff" fontSize="17px">
-                      Amount
+                      {T.pocket.table.amount}
                     </Text>
                   </Table.TextHeaderCell>
                   <Table.TextHeaderCell flex={0.2}>
                     <Text color="#fff" fontSize="17px">
-                      Token
+                      {T.pocket.table.token}
                     </Text>
                   </Table.TextHeaderCell>
                   <Table.TextHeaderCell flex={0.3}>
                     <Text color="#fff" fontSize="17px">
-                      Keys
+                      {T.pocket.table.keys}
                     </Text>
                   </Table.TextHeaderCell>
                 </Table.Head>

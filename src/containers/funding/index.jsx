@@ -1,30 +1,24 @@
 import React, { PureComponent } from 'react';
-import { Dinamics } from './dinamics';
-import { Statistics } from './statistics';
-import { Table } from './table';
-import { ActionBarContainer } from './actionBar';
-import {
-  asyncForEach,
-  formatNumber,
-  run,
-  roundNumber
-} from '../../utils/utils';
+import Dinamics from './dinamics';
+import Statistics from './statistics';
+import Table from './table';
+import ActionBarTakeOff from './actionBar';
+import { asyncForEach, formatNumber } from '../../utils/utils';
 import { Loading } from '../../components/index';
-import { wsURL, ATOMsALL } from '../../utils/config';
+import { COSMOS, TAKEOFF } from '../../utils/config';
 import {
   cybWon,
   funcDiscount,
   getEstimation,
   getDataPlot,
   getRewards,
-  getGroupAddress
+  getGroupAddress,
 } from '../../utils/fundingMath';
 
 const dateFormat = require('dateformat');
 
-const INIT = 0;
-const GET_TXS = 1;
-const GET_AMOUNT = 2;
+const { ATOMsALL } = TAKEOFF;
+const { GAIA_WEBSOCKET_URL } = COSMOS;
 
 const diff = (key, ...arrays) =>
   [].concat(
@@ -37,7 +31,7 @@ const diff = (key, ...arrays) =>
   );
 
 class Funding extends PureComponent {
-  ws = new WebSocket(wsURL);
+  ws = new WebSocket(GAIA_WEBSOCKET_URL);
 
   constructor(props) {
     super(props);
@@ -56,7 +50,7 @@ class Funding extends PureComponent {
       dataPlot: [],
       dataRewards: [],
       loader: true,
-      loading: 0
+      loading: 0,
     };
   }
 
@@ -83,7 +77,7 @@ class Funding extends PureComponent {
         //   }
         // }
         this.setState({
-          pin: true
+          pin: true,
           // groups
         });
       }
@@ -101,7 +95,7 @@ class Funding extends PureComponent {
       if (txs == null) {
         localStorage.setItem('txs', JSON.stringify(message));
         this.setState({
-          dataTxs: message
+          dataTxs: message,
         });
         this.init(message);
       } else if (txs.length !== message.length) {
@@ -111,7 +105,7 @@ class Funding extends PureComponent {
         // message.diff(txs);
         const diffTsx = diff('txhash', txs, message);
         this.setState({
-          dataTxs: message
+          dataTxs: message,
         });
         localStorage.setItem('txs', JSON.stringify(message));
         console.log('txsLocalStorage', diff('txhash', txs, message));
@@ -144,7 +138,7 @@ class Funding extends PureComponent {
       groups,
       dataPlot,
       dataRewards,
-      loader: false
+      loader: false,
     });
   };
 
@@ -198,7 +192,7 @@ class Funding extends PureComponent {
       atomLeff,
       won,
       currentPrice,
-      currentDiscount
+      currentDiscount,
     };
     localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
@@ -207,7 +201,7 @@ class Funding extends PureComponent {
       won,
       currentPrice,
       currentDiscount,
-      loader: false
+      loader: false,
     });
   };
 
@@ -217,7 +211,7 @@ class Funding extends PureComponent {
       dataTxs,
       currentPrice,
       currentDiscount,
-      amount
+      amount,
     } = this.state;
     // console.log('dataAllPin', dataAllPin);
     const dataPin = dataAllPin;
@@ -229,9 +223,9 @@ class Funding extends PureComponent {
       y: 0,
       line: {
         width: 2,
-        color: '#36d6ae'
+        color: '#36d6ae',
       },
-      hoverinfo: 'none'
+      hoverinfo: 'none',
     };
     if (amount <= ATOMsALL) {
       const rewards = getRewards(currentPrice, currentDiscount, amount, amount);
@@ -255,7 +249,7 @@ class Funding extends PureComponent {
       if (dataPin[0] === undefined) {
         localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
         this.setState({
-          dataRewards: Plot
+          dataRewards: Plot,
         });
       }
       asyncForEach(Array.from(Array(dataPin.length).keys()), async itemsG => {
@@ -274,9 +268,9 @@ class Funding extends PureComponent {
             type: 'scatter',
             line: {
               width: 2,
-              color: '#36d6ae'
+              color: '#36d6ae',
             },
-            hovertemplate: ''
+            hovertemplate: '',
           };
           const address = dataTxs[item].tx.value.msg[0].value.from_address;
           const amou =
@@ -332,13 +326,13 @@ class Funding extends PureComponent {
         }
         localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
         this.setState({
-          dataRewards: Plot
+          dataRewards: Plot,
         });
       });
     } else {
       localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
       this.setState({
-        dataRewards: Plot
+        dataRewards: Plot,
       });
     }
   };
@@ -349,7 +343,7 @@ class Funding extends PureComponent {
       currentPrice,
       currentDiscount,
       amount,
-      dataAllPin
+      dataAllPin,
     } = this.state;
     try {
       let estimationTemp = 0;
@@ -386,7 +380,7 @@ class Funding extends PureComponent {
               dataTxs[item].tx.value.msg[0].value.amount[0].amount
             ) *
             10 ** -1,
-          estimation
+          estimation,
         });
       }
       console.log('table', table);
@@ -399,7 +393,7 @@ class Funding extends PureComponent {
         timestamp: null,
         amountСolumn: null,
         pin: false,
-        cyb: null
+        cyb: null,
       }));
       for (let i = 0; i < groups.length; i++) {
         let sum = 0;
@@ -417,7 +411,7 @@ class Funding extends PureComponent {
       console.log('groups', groups);
 
       this.setState({
-        groups
+        groups,
       });
     } catch (error) {
       throw new Error();
@@ -446,7 +440,7 @@ class Funding extends PureComponent {
     dataPlot = await getDataPlot(amount);
     localStorage.setItem(`dataPlot`, JSON.stringify(dataPlot));
     this.setState({
-      dataPlot
+      dataPlot,
     });
   };
 
@@ -460,7 +454,7 @@ class Funding extends PureComponent {
     }
     await this.setState({
       dataAllPin: tempArr,
-      pin
+      pin,
     });
     this.getPlot();
   };
@@ -474,7 +468,7 @@ class Funding extends PureComponent {
     const value = item;
     const pin = {
       group,
-      value
+      value,
     };
     localStorage.setItem(`item_pin`, JSON.stringify(pin));
     allPin.push(pin);
@@ -486,7 +480,7 @@ class Funding extends PureComponent {
       }
     }
     this.setState({
-      groups
+      groups,
     });
   };
 
@@ -509,7 +503,7 @@ class Funding extends PureComponent {
         }
       }
       this.setState({
-        groups
+        groups,
       });
     }
   };
@@ -525,7 +519,7 @@ class Funding extends PureComponent {
       dataAllPin,
       dataRewards,
       pin,
-      loader
+      loader,
     } = this.state;
 
     if (loader) {
@@ -537,7 +531,7 @@ class Funding extends PureComponent {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            flexDirection: 'column'
+            flexDirection: 'column',
           }}
         >
           <Loading />
@@ -570,7 +564,7 @@ class Funding extends PureComponent {
             fUpin={this.unPinItem}
           />
         </main>
-        <ActionBarContainer />
+        <ActionBarTakeOff />
       </span>
     );
   }

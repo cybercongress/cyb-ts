@@ -13,14 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  ******************************************************************************* */
+import { COSMOS, CYBER, LEDGER } from './config';
 
-const DEFAULT_DENOM = 'uatom';
-const DEFAULT_DENOM_CYBER = '';
-// const DEFAULT_GAS = 200000;
-// const DEFAULT_GAS_PRICE = 0.025;
-const DEFAULT_MEMO = '';
-const DEFAULT_GAS = 150000;
-const DEFAULT_GAS_PRICE = 0.01;
+const { DENOM_COSMOS, DEFAULT_GAS, DEFAULT_GAS_PRICE } = COSMOS;
+const { DENOM_CYBER } = CYBER;
+const { MEMO } = LEDGER;
 
 function canonicalizeJson(jsonTx) {
   if (Array.isArray(jsonTx)) {
@@ -79,7 +76,7 @@ function applyGas(unsignedTx, gas) {
     amount: [
       {
         amount: (gas * DEFAULT_GAS_PRICE).toString(),
-        denom: DEFAULT_DENOM,
+        denom: DENOM_COSMOS,
       },
     ],
     gas: gas.toString(),
@@ -101,7 +98,7 @@ function applyGasCyber(unsignedTx, gas, denom) {
     amount: [
       {
         amount: '0',
-        denom: denom || DEFAULT_DENOM_CYBER,
+        denom: denom || DENOM_CYBER,
       },
     ],
     gas: gas.toString(),
@@ -126,7 +123,7 @@ function createSkeleton(txContext) {
     value: {
       msg: [], // messages
       fee: '',
-      memo: DEFAULT_MEMO,
+      memo: MEMO,
       signatures: [
         {
           signature: 'N/A',
@@ -158,7 +155,7 @@ const createSkeletonCyber = (txContext, denom) => {
     value: {
       msg: [], // messages
       fee: '',
-      memo: DEFAULT_MEMO,
+      memo: MEMO,
       signatures: [
         {
           signature: 'N/A',
@@ -218,7 +215,7 @@ function createDelegate(txContext, validatorBech32, uatomAmount, memo) {
     value: {
       amount: {
         amount: uatomAmount.toString(),
-        denom: DEFAULT_DENOM,
+        denom: DENOM_COSMOS,
       },
       delegator_address: txContext.bech32,
       validator_address: validatorBech32,
@@ -261,7 +258,7 @@ function createSend(txContext, validatorBech32, uatomAmount, memo) {
       amount: [
         {
           amount: uatomAmount.toString(),
-          denom: DEFAULT_DENOM,
+          denom: DENOM_COSMOS,
         },
       ],
       from_address: txContext.bech32,
@@ -329,7 +326,7 @@ function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
     value: {
       amount: {
         amount: uatomAmount.toString(),
-        denom: DEFAULT_DENOM,
+        denom: DENOM_COSMOS,
       },
       delegator_address: txContext.bech32,
       validator_address: validatorBech32,
@@ -358,7 +355,7 @@ function createRedelegate(
     value: {
       amount: {
         amount: uatomAmount.toString(),
-        denom: DEFAULT_DENOM,
+        denom: DENOM_COSMOS,
       },
       delegator_address: txContext.bech32,
       validator_dst_address: validatorDestBech32,
@@ -373,7 +370,6 @@ function createRedelegate(
 }
 
 export default {
-  DEFAULT_DENOM,
   createSkeleton,
   createDelegate,
   createRedelegate,

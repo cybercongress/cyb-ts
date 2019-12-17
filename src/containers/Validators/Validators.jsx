@@ -11,12 +11,14 @@ import {
   Text,
 } from '@cybercongress/gravity';
 
+import LocalizedStrings from 'react-localization';
 import {
   getValidators,
   getValidatorsUnbonding,
   getValidatorsUnbonded,
   selfDelegationShares,
   stakingPool,
+  getRankValidators,
 } from '../../utils/search/utils';
 import {
   getDelegator,
@@ -26,9 +28,9 @@ import {
 } from '../../utils/utils';
 import { FormatNumber, Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
+import { i18n } from '../../i18n/en';
 
-import validatorsContainer from './validatorsContainer';
-import validatorsData from './validatorsData';
+const T = new LocalizedStrings(i18n);
 
 const StatusTooltip = ({ status }) => {
   let statusColor;
@@ -99,6 +101,7 @@ class Validators extends Component {
       bondedTokens: 0,
       validatorSelect: [],
       selectedIndex: '',
+      language: 'en',
     };
   }
 
@@ -151,9 +154,11 @@ class Validators extends Component {
           validators[item].operator_address
         );
 
+        const rank = await getRankValidators(delegatorAddress);
+
         const height = validators[item].jailed
           ? validators[item].unbonding_height
-          : validators[item].bond_height || 0;
+          : rank.linked;
 
         const commission = formatNumber(
           validators[item].commission.commission_rates.rate * 100,
@@ -229,7 +234,10 @@ class Validators extends Component {
       loading,
       validatorSelect,
       selectedIndex,
+      language,
     } = this.state;
+
+    T.setLanguage(language);
 
     if (loading) {
       return (
@@ -372,25 +380,33 @@ class Validators extends Component {
                 <TextTable fontSize={15}>#</TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell>
-                <TextTable fontSize={15}>Moniker</TextTable>
+                <TextTable fontSize={15}>
+                  {T.validators.table.moniker}
+                </TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell textAlign="end">
-                <TextTable fontSize={15}>Operator</TextTable>
+                <TextTable fontSize={15}>
+                  {T.validators.table.operator}
+                </TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell textAlign="end">
                 <TextTable fontSize={15} whiteSpace="nowrap">
-                  Commission (%)
+                  {T.validators.table.commissionProcent}
                 </TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell flex={1.5} textAlign="end">
-                <TextTable fontSize={15}>Power (GCYB)</TextTable>
+                <TextTable fontSize={15}>{T.validators.table.power}</TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell flex={0.5} textAlign="end">
-                <TextTable fontSize={15}>Self (%)</TextTable>
+                <TextTable fontSize={15}>
+                  {T.validators.table.selfProcent}
+                </TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell textAlign="end">
                 <TextTable fontSize={15} whiteSpace="nowrap">
-                  {showJailed ? 'Unbonding height' : 'Bond height'}
+                  {showJailed
+                    ? T.validators.table.unbonding
+                    : T.validators.table.rank}
                 </TextTable>
               </Table.TextHeaderCell>
             </Table.Head>

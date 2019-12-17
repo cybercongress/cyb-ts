@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Tooltip, Icon } from '../index';
+import { Pane } from '@cybercongress/gravity';
 
 const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 
@@ -32,10 +33,22 @@ export const Card = ({ title, value, tooltipValue, positionTooltip }) => (
     <span className="card-title">{value}</span>
     <span className="card-value">
       {title}{' '}
-      <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
-        <Icon icon={iconHelp} />
-      </Tooltip>
+      {tooltipValue && (
+        <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
+          <Icon icon={iconHelp} />
+        </Tooltip>
+      )}
     </span>
+  </div>
+);
+
+export const CardStatisics = ({ title, value, icon }) => (
+  <div className="container-statistics-card">
+    <span className="card-statistics-value">{value}</span>
+    <Pane display="flex" alignItems="center">
+      <span className="card-statistics-title">{title}</span>
+      {icon}
+    </Pane>
   </div>
 );
 

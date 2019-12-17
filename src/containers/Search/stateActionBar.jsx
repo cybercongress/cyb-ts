@@ -100,7 +100,7 @@ export const Confirmed = ({
           alignItems: 'center',
           margin: '0 auto',
         }}
-        href={`https://callisto.cybernode.ai/transactions/${txHash}`}
+        href={`https://cyberd.ai/transactions/${txHash}`}
       >
         View transaction
       </a>
@@ -126,17 +126,22 @@ export const Confirmed = ({
   </ContainetLedger>
 );
 
-export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
+export const StartStageSearchActionBar = ({
+  onClickBtn,
+  contentHash,
+  onChangeInputContentHash,
+  valueSearchInput,
+}) => (
   <ActionBar>
     <ActionBarContentText>
-      <Text fontSize="18px" color="#fff">
-        You are the first one who are searching for{' '}
-        <Text fontSize="18px" color="#fff" fontWeight={600}>
-          {valueSearchInput}
-        </Text>
-      </Text>
+      <input
+        value={contentHash}
+        style={{ height: 42, width: '60%' }}
+        onChange={e => onChangeInputContentHash(e)}
+        placeholder="paste a hash"
+      />
     </ActionBarContentText>
-    <Button onClick={onClickBtn}>Link it using Ledger</Button>
+    <Button disabled={!contentHash.length} onClick={onClickBtn}>Cyberlink using Ledger</Button>
   </ActionBar>
 );
 

@@ -9,11 +9,11 @@ import {
 } from '@cybercongress/gravity';
 import Electricity from './electricity';
 
-import ActionBarContainer from './actionBar';
+import { StartState } from './stateActionBar';
 
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
-import { Loading } from '../../components';
+import { Loading, ActionBarLink } from '../../components';
 
 const cyb = require('../../image/logo-cyb-v2.svg');
 const cyber = require('../../image/cyber.png');
@@ -38,12 +38,8 @@ class Home extends PureComponent {
       targetColor: false,
       boxShadow: 3,
       keywordHash: '',
-    };
-  }
-
-  componentDidMount() {
-    document.onkeypress = (e) => {
-      document.getElementById('search-input-home').focus();
+      resultNull: false,
+      query: '',
     };
   }
 
@@ -95,8 +91,9 @@ class Home extends PureComponent {
 
   getSearch = async valueSearchInput => {
     let searchResults = [];
-    let keywordHash;
-    keywordHash = await getIpfsHash(valueSearchInput);
+    let resultNull = false;
+
+    const keywordHash = await getIpfsHash(valueSearchInput);
     searchResults = await search(keywordHash);
     searchResults.map((item, index) => {
       searchResults[index].cid = item.cid;
@@ -106,20 +103,24 @@ class Home extends PureComponent {
 
     if (searchResults.length === 0) {
       const queryNull = '0';
-      keywordHash = await getIpfsHash(queryNull);
-      searchResults = await search(keywordHash);
+      const keywordHashNull = await getIpfsHash(queryNull);
+      searchResults = await search(keywordHashNull);
       searchResults.map((item, index) => {
         searchResults[index].cid = item.cid;
         searchResults[index].rank = formatNumber(item.rank, 6);
         searchResults[index].grade = getRankGrade(item.rank);
       });
+      resultNull = true;
     }
+
     console.log('searchResults', searchResults);
     this.setState({
       searchResults,
       keywordHash,
       result: true,
       loading: false,
+      resultNull,
+      query: valueSearchInput,
     });
   };
 
@@ -175,6 +176,8 @@ class Home extends PureComponent {
       targetColor,
       boxShadow,
       keywordHash,
+      resultNull,
+      query,
     } = this.state;
 
     const searchItems = searchResults.map(item => (
@@ -191,8 +194,11 @@ class Home extends PureComponent {
     ));
 
     return (
-      <div style={{ position: 'relative' }}>
-        <main onMouseMove={e => this.showCoords(e)} className="block-body-home">
+      <div style={{ position: `${!result ? 'relative' : ''}` }}>
+        <main
+          onMouseMove={e => this.showCoords(e)}
+          className={!result ? 'block-body-home' : 'block-body'}
+        >
           <Pane
             display="flex"
             alignItems="center"
@@ -216,6 +222,7 @@ class Home extends PureComponent {
               className="search-input"
               id="search-input-home"
               autoComplete="off"
+              autoFocus
             />
             {loading && (
               <div
@@ -238,27 +245,49 @@ class Home extends PureComponent {
               display="flex"
               flexDirection="column"
             >
-              <Text
-                fontSize="20px"
-                marginBottom={20}
-                color="#949292"
-                lineHeight="20px"
-              >
-                {`I found ${searchItems.length} results`}
-              </Text>
+              {!resultNull && (
+                <Text
+                  fontSize="20px"
+                  marginBottom={20}
+                  color="#949292"
+                  lineHeight="20px"
+                >
+                  {`I found ${searchItems.length} results`}
+                </Text>
+              )}
+
+              {resultNull && (
+                <Text
+                  fontSize="20px"
+                  marginBottom={20}
+                  color="#949292"
+                  lineHeight="20px"
+                >
+                  I don't know{' '}
+                  <Text fontSize="20px" lineHeight="20px" color="#e80909">
+                    {query}
+                  </Text>
+                  . Please, help me understand.
+                </Text>
+              )}
               <Pane>{searchItems}</Pane>
             </Pane>
           )}
-
         </main>
-        <ActionBarContainer
-          home={!result}
-          valueSearchInput={valueSearchInput}
-          targetColor={targetColor}
-          link={searchResults.length === 0 && result}
-          keywordHash={keywordHash}
-          onCklicBtnSearch={this.onCklicBtn}
-        />
+        {!result && (
+          <StartState
+            targetColor={targetColor}
+            valueSearchInput={valueSearchInput}
+            onClickBtn={this.onCklicBtn}
+          />
+        )}
+        {result && (
+          <ActionBarLink
+            keywordHash={keywordHash}
+            valueSearchInput={query}
+            update={() => this.getSearch(query)}
+          />
+        )}
       </div>
     );
   }

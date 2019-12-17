@@ -1,44 +1,38 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  OPERATOR_ADDR,
-  MEMO,
-  DEFAULT_GAS,
-  DEFAULT_GAS_PRICE,
-  indexedNode,
-} from '../../utils/config';
-
-import {
-  SendAmounLadger,
-  Contribute,
-  Confirmed,
   JsonTransaction,
   TransactionSubmitted,
-} from './actionBarStage';
+  Confirmed,
+  SendLedger,
+  ConnectLadger,
+} from '../../components';
+import { LEDGER, CYBER } from '../../utils/config';
 
-const HDPATH = [44, 118, 0, 0, 0];
+import { i18n } from '../../i18n/en';
 
-export const DIVISOR = 10 ** 9;
+const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
 
-const STAGE_INIT = 0;
-const STAGE_SELECTION = 1;
-const STAGE_LEDGER_INIT = 2;
-// const STAGE_COMMSOPEN = 1;
-// const STAGE_UNLOCKED = 2;
-const STAGE_READY = 3;
-const STAGE_WAIT = 4;
-const STAGE_GENERATED = 5;
-const STAGE_SUBMITTED = 6;
-const STAGE_CONFIRMING = 7;
-const STAGE_CONFIRMED = 8;
-const STAGE_ERROR = 15;
+const T = new LocalizedStrings(i18n);
 
-const LEDGER_OK = 36864;
-const LEDGER_NOAPP = 28160;
-
-const LEDGER_VERSION_REQ = [1, 1, 1];
+const {
+  STAGE_INIT,
+  STAGE_LEDGER_INIT,
+  HDPATH,
+  LEDGER_VERSION_REQ,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  STAGE_READY,
+  STAGE_WAIT,
+  STAGE_SUBMITTED,
+  STAGE_CONFIRMING,
+  STAGE_CONFIRMED,
+  STAGE_ERROR,
+  MEMO,
+} = LEDGER;
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -157,7 +151,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${indexedNode}/api/status`, {
+      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -188,7 +182,7 @@ class ActionBarContainer extends Component {
 
     try {
       const response = await fetch(
-        `${indexedNode}/api/account?address="${address.bech32}"`,
+        `${CYBER_NODE_URL}/api/account?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -228,7 +222,7 @@ class ActionBarContainer extends Component {
   generateTx = async () => {
     const { ledger, address, addressInfo, toSend, toSendAddres } = this.state;
 
-    const uatomAmount = toSend * DIVISOR;
+    const uatomAmount = toSend * DIVISOR_CYBER_G;
 
     const { denom } = addressInfo.coins[0];
 
@@ -376,7 +370,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={onClickAddressLedger}>
-              Add address it using Ledger
+              {T.actionBar.pocket.put}
             </Button>
           </Pane>
         </ActionBar>
@@ -387,7 +381,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={e => this.onClickSend(e)}>
-              Send it using Ledger
+              {T.actionBar.pocket.send}
             </Button>
           </Pane>
         </ActionBar>
@@ -396,7 +390,7 @@ class ActionBarContainer extends Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
           onClickBtnCloce={this.cleatState}
@@ -411,10 +405,10 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       // if (this.state.stage === STAGE_READY) {
       return (
-        <Contribute
+        <SendLedger
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
-          availableStake={Math.floor((balance / DIVISOR) * 1000) / 1000}
+          availableStake={Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           valueInputAmount={toSend}
           onClickBtnCloce={this.cleatState}

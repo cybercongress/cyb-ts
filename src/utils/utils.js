@@ -1,5 +1,7 @@
 import bech32 from 'bech32';
-import { BECH32_PREFIX_ACC_ADDR } from './config';
+import { CYBER } from './config';
+
+const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
 const formatNumber = (number, toFixed) => {
   let formatted = number;
@@ -53,7 +55,7 @@ const timer = func => {
 
 const getDelegator = operatorAddr => {
   const address = bech32.decode(operatorAddr);
-  return bech32.encode(BECH32_PREFIX_ACC_ADDR, address.words);
+  return bech32.encode(BECH32_PREFIX_ACC_ADDR_CYBER, address.words);
 };
 
 const formatValidatorAddress = address => {

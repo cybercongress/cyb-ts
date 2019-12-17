@@ -4,10 +4,11 @@ import Big from 'big.js';
 import secp256k1 from 'secp256k1';
 import txs from './txs';
 
-import { indexedNode, LEDGER_VERSION_REQ } from './config';
+import { CYBER, LEDGER, COSMOS } from './config';
 
-const defaultHrp = 'cosmos';
-const defaultHrpCyber = 'cyber';
+const { CYBER_NODE_URL, BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
+const { LEDGER_VERSION_REQ } = LEDGER;
+const { BECH32_PREFIX_ACC_ADDR_COSMOS } = COSMOS;
 
 const compareVersion = async ledgerVersion => {
   const test = ledgerVersion;
@@ -161,7 +162,7 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(defaultHrp, pk.compressed_pk),
+      bech32: getBech32FromPK(BECH32_PREFIX_ACC_ADDR_COSMOS, pk.compressed_pk),
     };
   }
 
@@ -176,7 +177,7 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(defaultHrpCyber, pk.compressed_pk),
+      bech32: getBech32FromPK(BECH32_PREFIX_ACC_ADDR_CYBER, pk.compressed_pk),
     };
   }
 
@@ -251,7 +252,7 @@ class CosmosDelegateTool {
   }
 
   async getAccountInfoCyber(addr) {
-    const url = `${indexedNode}/api/account?address="${addr.bech32}"`;
+    const url = `${CYBER_NODE_URL}/api/account?address="${addr.bech32}"`;
     const txContext = {
       sequence: '0',
       accountNumber: '0',
@@ -531,7 +532,7 @@ class CosmosDelegateTool {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = `${indexedNode}/lcd/txs`;
+    const url = `${CYBER_NODE_URL}/lcd/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
@@ -570,7 +571,7 @@ class CosmosDelegateTool {
   }
 
   async txStatusCyber(txHash) {
-    const url = `${indexedNode}/lcd/txs/${txHash}`;
+    const url = `${CYBER_NODE_URL}/lcd/txs/${txHash}`;
     return axios.get(url).then(
       r => r.data,
       e => wrapError(this, e)

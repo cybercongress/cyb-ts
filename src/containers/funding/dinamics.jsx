@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
-import { x, y, z } from './list';
+import { x, y, z } from '../../utils/list';
 
-export class Dinamics extends Component {
+class Dinamics extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,17 +14,17 @@ export class Dinamics extends Component {
       center: {
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
       },
       eye: {
         x: 1,
         y: 0,
-        z: -5
+        z: -5,
       },
       up: {
         x: 0,
         y: 0,
-        z: 1
+        z: 1,
       },
       textX: 'x',
       textY: 'y',
@@ -33,8 +33,8 @@ export class Dinamics extends Component {
         r: 0,
         b: 0,
         t: 0,
-        pad: 4
-      }
+        pad: 4,
+      },
     };
   }
 
@@ -48,25 +48,25 @@ export class Dinamics extends Component {
       center: {
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
       },
       eye: {
         x: 1,
         y: 0,
-        z: -5
+        z: -5,
       },
       up: {
         x: 0,
         y: 0,
-        z: 1
+        z: 1,
       },
       margin: {
         l: 0,
         r: 0,
         b: 0,
         t: 0,
-        pad: 4
-      }
+        pad: 4,
+      },
     });
   };
 
@@ -84,8 +84,8 @@ export class Dinamics extends Component {
         r: 50,
         b: 50,
         t: 50,
-        pad: 4
-      }
+        pad: 4,
+      },
     });
   };
 
@@ -103,8 +103,8 @@ export class Dinamics extends Component {
         r: 50,
         b: 50,
         t: 50,
-        pad: 4
-      }
+        pad: 4,
+      },
     });
   };
 
@@ -122,8 +122,8 @@ export class Dinamics extends Component {
         r: 50,
         b: 50,
         t: 50,
-        pad: 4
-      }
+        pad: 4,
+      },
     });
   };
 
@@ -140,7 +140,7 @@ export class Dinamics extends Component {
       general,
       share,
       discount,
-      rewards
+      rewards,
     } = this.state;
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
@@ -162,9 +162,9 @@ export class Dinamics extends Component {
         line: {
           width: 2,
           opacity: 1,
-          color: '#fff'
+          color: '#fff',
         },
-        hoverinfo: 'none'
+        hoverinfo: 'none',
         // hovertemplate:
         //   'ATOMs contributed: %{x}' +
         //   '<br>TCYB allocated: %{y: .2f}%' +
@@ -177,14 +177,14 @@ export class Dinamics extends Component {
         y: data3d.x,
         line: {
           width: 2,
-          color: '#36d6ae'
+          color: '#36d6ae',
         },
         // hoverinfo: 'none'
         hovertemplate:
           'ATOMs contributed: %{x}' +
           '<br>TCYB allocated: %{y: .2f}%' +
-          '<extra></extra>'
-      }
+          '<extra></extra>',
+      },
     ];
 
     const dataDiscount = [
@@ -196,9 +196,9 @@ export class Dinamics extends Component {
         line: {
           width: 2,
           opacity: 1,
-          color: '#fff'
+          color: '#fff',
         },
-        hoverinfo: 'none'
+        hoverinfo: 'none',
         // hovertemplate:
         //   'ATOMs contributed: %{x}<br>' +
         //   'Personal discount: %{y:.2f%}%<br>' +
@@ -210,14 +210,14 @@ export class Dinamics extends Component {
         y: data3d.z,
         line: {
           width: 2,
-          color: '#36d6ae'
+          color: '#36d6ae',
         },
         // hoverinfo: 'none'
         hovertemplate:
           'ATOMs contributed: %{x}<br>' +
           'Personal discount: %{y:.2f%}%<br>' +
-          '<extra></extra>'
-      }
+          '<extra></extra>',
+      },
     ];
 
     const data = [
@@ -231,13 +231,13 @@ export class Dinamics extends Component {
         line: {
           width: 8,
           opacity: 1,
-          color: '#fff'
+          color: '#fff',
         },
         hovertemplate:
           'TCYB allocated: %{x: .2f}<br>' +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
-          '<extra></extra>'
+          '<extra></extra>',
       },
       {
         type: 'scatter3d',
@@ -247,15 +247,15 @@ export class Dinamics extends Component {
         z: data3d.z,
         line: {
           width: 8,
-          color: '#36d6ae'
+          color: '#36d6ae',
         },
         ticks: '',
         hovertemplate:
           'TCYB allocated: %{x: .2f}<br>' +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
-          '<extra></extra>'
-      }
+          '<extra></extra>',
+      },
     ];
 
     const layout = {
@@ -266,8 +266,8 @@ export class Dinamics extends Component {
       hoverlabel: {
         bgcolor: '#000',
         font: {
-          color: '#fff'
-        }
+          color: '#fff',
+        },
       },
       yaxis: {
         autotick: true,
@@ -275,22 +275,22 @@ export class Dinamics extends Component {
         rangemode: 'normal',
         range: [0, _yaxis],
         title: {
-          text: `${textY}`
+          text: `${textY}`,
         },
         gridcolor: '#ffffff66',
         color: '#fff',
-        zerolinecolor: '#dedede'
+        zerolinecolor: '#dedede',
       },
       xaxis: {
         autotick: true,
         autorange: !rewards,
         title: {
-          text: `${textX}`
+          text: `${textX}`,
         },
         range: [0, _xaxis],
         gridcolor: '#ffffff66',
         color: '#fff',
-        zerolinecolor: '#dedede'
+        zerolinecolor: '#dedede',
       },
       scene: {
         dragmode: false,
@@ -298,61 +298,61 @@ export class Dinamics extends Component {
           autotick: false,
           dtick: 50000,
           title: {
-            text: 'Donation, ATOMs'
+            text: 'Donation, ATOMs',
           },
           gridcolor: '#dedede',
           color: '#fff',
           tickfont: {
-            color: '#36d6ae'
+            color: '#36d6ae',
           },
-          zerolinecolor: '#000'
+          zerolinecolor: '#000',
         },
         xaxis: {
           autotick: false,
           dtick: 1,
           tickcolor: '#000',
           title: {
-            text: 'CYBs won, TCYBs'
+            text: 'CYBs won, TCYBs',
           },
           gridcolor: '#dedede',
           color: '#fff',
           tickfont: {
-            color: '#36d6ae'
+            color: '#36d6ae',
           },
-          zerolinecolor: '#000'
+          zerolinecolor: '#000',
         },
         zaxis: {
           title: {
-            text: 'Discount, %'
+            text: 'Discount, %',
           },
           gridcolor: '#dedede',
           // autorange: 'reversed',
           color: '#fff',
           tickfont: {
-            color: '#36d6ae'
+            color: '#36d6ae',
           },
-          zerolinecolor: '#000'
+          zerolinecolor: '#000',
         },
         aspectratio: {
           x: 2,
           y: 6,
-          z: 2
+          z: 2,
         },
         font: {
-          family: 'Play'
+          family: 'Play',
         },
         camera: {
           center,
           up,
-          eye
-        }
+          eye,
+        },
       },
       width: 890,
       height: 400,
-      margin
+      margin,
     };
     const config = {
-      displayModeBar: false
+      displayModeBar: false,
       // scrollZoom: false
       // staticPlot: true
     };
@@ -360,6 +360,7 @@ export class Dinamics extends Component {
     const Btn = () => (
       <div className="cont-btn">
         <button
+          type="button"
           className={`btn-view margin ${
             activebtn === 'general' ? 'activebtn' : ''
           }`}
@@ -368,6 +369,7 @@ export class Dinamics extends Component {
           General
         </button>
         <button
+          type="button"
           className={`btn-view margin ${
             activebtn === 'share' ? 'activebtn' : ''
           }`}
@@ -376,6 +378,7 @@ export class Dinamics extends Component {
           Share
         </button>
         <button
+          type="button"
           className={`btn-view margin ${
             activebtn === 'discount' ? 'activebtn' : ''
           }`}
@@ -384,12 +387,13 @@ export class Dinamics extends Component {
           Discount
         </button>
         <button
+          type="button"
           className={`btn-view margin ${
             activebtn === 'rewards' ? 'activebtn' : ''
           }`}
           onClick={this.state4}
         >
-           My CYBs estimation
+          My CYBs estimation
         </button>
       </div>
     );
@@ -410,3 +414,5 @@ export class Dinamics extends Component {
     );
   }
 }
+
+export default Dinamics;

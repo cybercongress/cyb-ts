@@ -1,10 +1,11 @@
 import React from 'react';
-import { wssCyberUrl } from '../../utils/config';
+import { CYBER } from '../../utils/config';
 
-const cyb = require('../../image/logo-cyb-v2.svg');
-const cyber = require('../../image/cyber.png');
+const { CYBER_WEBSOCKET_URL } = CYBER;
 
 class Electricity extends React.Component {
+  ws = new WebSocket(CYBER_WEBSOCKET_URL);
+
   constructor(props) {
     super(props);
     this.state = {
@@ -13,8 +14,6 @@ class Electricity extends React.Component {
     };
     // this.run();
   }
-
-  ws = new WebSocket(wssCyberUrl);
 
   componentDidMount() {
     this.getDataWS();

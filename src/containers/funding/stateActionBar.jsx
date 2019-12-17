@@ -1,7 +1,7 @@
 import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
+import { ActionBar, Button, Pane } from '@cybercongress/gravity';
 import { ContainetLedger, Loading } from '../../components/index';
 
 const ActionBarContentText = ({ children, ...props }) => (
@@ -18,16 +18,16 @@ const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-export const Contribute = ({
+export const ContributeATOMs = ({
   onClickBtn,
   address,
   availableStake,
-  valueInputAmount,
-  valueInputAddressTo,
-  onChangeInputAmount,
-  onChangeInputAddressTo,
+  valueInput,
+  gasUAtom,
+  gasAtom,
+  onChangeInput,
   onClickBtnCloce,
-  disabledBtn,
+  onClickMax,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <div className="display-flex align-items-center">
@@ -44,32 +44,25 @@ export const Contribute = ({
         <h3 className="text-align-center">Send Details</h3>
         <p className="text-align-center">Your wallet contains:</p>
         <span className="actionBar-text">{availableStake}</span>
-
-        <div
-          style={{ marginBottom: 30, marginTop: 30 }}
-          className="text-align-center"
-        >
-          <input
-            value={valueInputAddressTo}
-            style={{ marginRight: 10, width: '70%' }}
-            onChange={onChangeInputAddressTo}
-            placeholder="address"
-          />
-
-          <input
-            value={valueInputAmount}
-            style={{ width: '24%' }}
-            onChange={onChangeInputAmount}
-            placeholder="amount GEUL"
-          />
+        <div style={{ marginTop: '25px', marginBottom: 10 }}>
+          Enter the amount of ATOMs you wish to send to Cyber~Congress:
         </div>
         <div className="text-align-center">
-          <button
-            type="button"
-            className="btn-disabled"
-            disabled={disabledBtn}
-            onClick={onClickBtn}
-          >
+          <input
+            value={valueInput}
+            style={{ marginRight: 10 }}
+            onChange={onChangeInput}
+          />
+          <button className="btn" onClick={onClickMax} style={{ height: 30 }}>
+            Max
+          </button>
+        </div>
+        <h6 style={{ margin: 20 }}>
+          The fees you will be charged by the network on this transaction will
+          {gasUAtom} uatom ( {gasAtom} ATOMs ).
+        </h6>
+        <div className="text-align-center">
+          <button type="button" className="btn" onClick={onClickBtn}>
             Generate my transaction
           </button>
         </div>
@@ -159,7 +152,7 @@ export const Confirmed = ({
           alignItems: 'center',
           margin: '0 auto',
         }}
-        href={`https://cyberd.ai/transactions/${txHash}`}
+        href={`https://cosmos.bigdipper.live/transactions/${txHash}`}
       >
         View transaction
       </a>
@@ -242,7 +235,7 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
             {/* <span className="display-inline-block font-size-20 margin-bottom-10px">
               Ledger
             </span> */}
-            <button type="button" className="btn" onClick={onClickBtn}>
+            <button className="btn" onClick={onClickBtn}>
               Send with Ledger
             </button>
           </div>
@@ -323,7 +316,7 @@ export const PutAddress = ({ onClickBtn }) => (
           Put address of wrom which you contributed <input />
         </span>
       </div>
-      <button type="button" className="btn" onClick={onClickBtn}>
+      <button className="btn" onClick={onClickBtn}>
         Save address
       </button>
     </div>
@@ -357,7 +350,7 @@ export const TransactionCost = ({ onClickBtn }) => (
       <div className="action-text">
         <span className="actionBar-text">Transaction cost is 0.1 uATOM</span>
       </div>
-      <button type="button" className="btn" onClick={onClickBtn}>
+      <button className="btn" onClick={onClickBtn}>
         Sign
       </button>
     </div>

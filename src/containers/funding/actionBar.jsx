@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import {
-  OPERATOR_ADDR,
-  MEMO,
-  DEFAULT_GAS,
-  DEFAULT_GAS_PRICE
-} from '../../utils/config';
+import { COSMOS, LEDGER } from '../../utils/config';
 import {
   ContributeATOMs,
   TransactionCost,
@@ -16,46 +11,29 @@ import {
   StartState,
   JsonTransaction,
   Confirmed,
-  TransactionSubmitted
+  TransactionSubmitted,
 } from './stateActionBar';
 
-const HDPATH = [44, 118, 0, 0, 0];
-const TIMEOUT = 5000;
-export const DIVISOR = 1000000;
-// const DEFAULT_GAS = 150000;
-// const DEFAULT_GAS_PRICE = 0.01;
-const DENOM = 'uatom';
-// const MEMO = 'Send to Cyber~Congress';
-// const OPERATOR_ADDR = 'cosmos1kajt7sxfpnfujm7ptj90654lmwz4sftpmk0jm6';
+const {
+  STAGE_INIT,
+  STAGE_SELECTION,
+  STAGE_LEDGER_INIT,
+  STAGE_READY,
+  STAGE_WAIT,
+  STAGE_SUBMITTED,
+  STAGE_CONFIRMING,
+  STAGE_CONFIRMED,
+  STAGE_ERROR,
+  LEDGER_VERSION_REQ,
+  HDPATH,
+  LEDGER_OK,
+  LEDGER_NOAPP,
+  MEMO,
+} = LEDGER;
 
-const STAGE_INIT = 0;
-const STAGE_SELECTION = 1;
-const STAGE_LEDGER_INIT = 2;
-// const STAGE_COMMSOPEN = 1;
-// const STAGE_UNLOCKED = 2;
-const STAGE_READY = 3;
-const STAGE_WAIT = 4;
-const STAGE_GENERATED = 5;
-const STAGE_SUBMITTED = 6;
-const STAGE_CONFIRMING = 7;
-const STAGE_CONFIRMED = 8;
-const STAGE_ERROR = 15;
+const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
 
-// const API_ROOT = 'https://moon.cybernode.ai';
-const API_ROOT = 'https://api.chorus.one/';
-
-export const TXTYPE_DELEGATE = 0;
-export const TXTYPE_REDELEGATE = 1;
-export const TXTYPE_WITHDRAW = 2;
-export const TXTYPE_GOVERNANCE_VOTE = 3;
-export const TXTYPE_GOVERNANCE_VOTE_TX = 4;
-
-const LEDGER_OK = 36864;
-const LEDGER_NOAPP = 28160;
-
-const LEDGER_VERSION_REQ = [1, 1, 1];
-
-export class ActionBarContainer extends Component {
+class ActionBarTakeOff extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -70,17 +48,10 @@ export class ActionBarContainer extends Component {
       gas: DEFAULT_GAS,
       gasPrice: DEFAULT_GAS_PRICE,
       toSend: '',
-      canStake: 0,
-      atomerror: null,
-      errorMessage: null,
-      rewards: [],
-      governance: [],
       txBody: null,
       txContext: null,
       txHash: null,
       txHeight: null,
-      textAreaRef: React.createRef(),
-      clipboardCopySuccess: false,
       height50: false,
     };
     this.ledgerModal = React.createRef();
@@ -91,36 +62,25 @@ export class ActionBarContainer extends Component {
     this.haveDocument = typeof document !== 'undefined';
   }
 
-  compareVersion = async () => {
-    const test = this.state.ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
-
   componentDidMount() {
-    this.setState({ txType: this.props.txType });
     // eslint-disable-next-line
-        console.warn('Looking for Ledger Nano');
+    console.warn('Looking for Ledger Nano');
     this.pollLedger();
   }
 
   componentWillUpdate() {
-    if (this.state.ledger === null) {
+    const { ledger, returnCode, address, addressInfo, stage } = this.state;
+    if (ledger === null) {
       this.pollLedger();
     }
-    if (this.state.stage === STAGE_LEDGER_INIT) {
-      if (this.state.ledger !== null) {
-        switch (this.state.returnCode) {
+    if (stage === STAGE_LEDGER_INIT) {
+      if (ledger !== null) {
+        switch (returnCode) {
           case LEDGER_OK:
-            if (this.state.address === null) {
+            if (address === null) {
               this.getAddress();
             }
-            if (
-              this.state.address !== null &&
-              this.state.addressInfo === null
-            ) {
+            if (address !== null && addressInfo === null) {
               this.getWallet();
             }
             break;
@@ -131,115 +91,87 @@ export class ActionBarContainer extends Component {
         }
       } else {
         // eslint-disable-next-line
-                console.warn('Still looking for a Ledger device.');
+        console.warn('Still looking for a Ledger device.');
       }
     }
   }
 
+  compareVersion = async () => {
+    const { ledgerVersion } = this.state;
+    const test = ledgerVersion;
+    const target = LEDGER_VERSION_REQ;
+    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
+    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
+    return testInt >= targetInt;
+  };
+
   pollLedger = async () => {
-    const transport = await TransportU2F.create(TIMEOUT, true);
+    const transport = await TransportU2F.create();
     this.setState({ ledger: new CosmosDelegateTool(transport) });
   };
 
   getVersion = async () => {
+    const { ledger, returnCode } = this.state;
     try {
-      const connect = await this.state.ledger.connect();
-      if (
-        this.state.returnCode === null ||
-        connect.return_code !== this.state.returnCode
-      ) {
+      const connect = await ledger.connect();
+      if (returnCode === null || connect.return_code !== returnCode) {
+        const { major, minor, patch } = connect;
+        const ledgerVersion = [major, minor, patch];
+
         this.setState({
           txMsg: null,
           address: null,
-          requestMetaData: null,
           txBody: null,
-          errorMessage: null,
           returnCode: connect.return_code,
-          version_info: [connect.major, connect.minor, connect.patch]
+          ledgerVersion,
         });
         // eslint-disable-next-line
-                console.warn('Ledger app return_code', this.state.returnCode);
+        console.warn('Ledger app return_code', this.state.returnCode);
       } else {
         this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
       }
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
-            // eslint-disable-next-line
-            console.error(
-                'Problem with Ledger communication',
-                message,
-                statusCode
-            );
+      // eslint-disable-next-line
+      console.error('Problem with Ledger communication', message, statusCode);
     }
   };
 
   getAddress = async () => {
-    // try {
-    const address = await this.state.ledger.retrieveAddress(HDPATH);
-    console.log('address', address);
-    // eslint-disable-next-line
-        // const pk = (await this.state.ledger.publicKey(HDPATH)).pk;
-    this.setState({
-      // eslint-disable-next-line
-            // cpk: this.state.ledger.compressPublicKey(pk),
-      address
-    });
-    // } catch (error) {
-    //   const { message, statusCode } = error;
-    //   if (message !== "Cannot read property 'length' of undefined") {
-    //     // this just means we haven't found the device yet...
-    //     // eslint-disable-next-line
-    //     console.error("Problem reading address data", message, statusCode);
-    //   }
-    //   this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    // }
+    const { ledger } = this.state;
+    try {
+      const address = await ledger.retrieveAddress(HDPATH);
+      console.log('address', address);
+      this.setState({
+        address,
+      });
+    } catch (error) {
+      const { message, statusCode } = error;
+      if (message !== "Cannot read property 'length' of undefined") {
+        // this just means we haven't found the device yet...
+        // eslint-disable-next-line
+        console.error('Problem reading address data', message, statusCode);
+      }
+      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+    }
   };
 
   getWallet = async () => {
-    const addressInfo = await this.state.ledger.getAccountInfo(
-      this.state.address
-    );
-    // console.log('addressInfo', addressInfo);
-    // const addressInfo = await fetch(
-    //   `${API_ROOT}/api/account?address="${this.state.address.bech32}"`,
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json'
-    //     }
-    //   }
-    // );
-    // const data = await addressInfo.json();
-    // console.log('addressInfo', data);
-    // console.log('data', data.result.account.coins[0].amount);
-    switch (this.state.txType) {
-      case TXTYPE_WITHDRAW:
-        this.getRewards();
-        break;
-      case TXTYPE_GOVERNANCE_VOTE:
-        this.getGovernanceProposals();
-        break;
-      default:
-        break;
-    }
+    const { ledger, address } = this.state;
 
-    this.setState(prevState => ({
+    const addressInfo = await ledger.getAccountInfo(address);
+
+    this.setState({
       addressInfo,
       availableStake: parseFloat(addressInfo.balanceuAtom),
-      canStake:
-        parseFloat(addressInfo.balanceuAtom) -
-        prevState.gas * prevState.gasPrice,
-      stage: STAGE_READY
-    }));
-
-    // console.log('addressInfo', addressInfo);
+      stage: STAGE_READY,
+    });
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo } = this.state;
-    const validatorBech32 = OPERATOR_ADDR;
-    const uatomAmount = this.state.toSend * DIVISOR;
+    const { ledger, address, addressInfo, toSend } = this.state;
+    const validatorBech32 = ADDR_FUNDING;
+    const uatomAmount = toSend * DIVISOR_ATOM;
     const txContext = {
       accountNumber: addressInfo.accountNumber,
       balanceuAtom: addressInfo.balanceuAtom,
@@ -247,34 +179,25 @@ export class ActionBarContainer extends Component {
       sequence: addressInfo.sequence,
       bech32: address.bech32,
       pk: address.pk,
-      path: address.path
+      path: address.path,
     };
-    // console.log('txContext', txContext);
+
     const tx = await ledger.txCreateSend(
       txContext,
       validatorBech32,
       uatomAmount,
       MEMO
     );
+
     console.log('tx', tx);
     await this.setState({
       txMsg: tx,
       txContext,
       txBody: null,
-      error: null
+      error: null,
     });
     // debugger;
     this.signTx();
-
-    // const sing = await ledger.sign(tx, txContext);
-    // console.log('sing', sing);
-    // const txSubmit = await ledger.txSubmit(sing);
-    // console.log('txSubmit', txSubmit);
-    // console.log('tx', txSubmit.data.txhash);
-    // if (txSubmit) {
-    //   const status = await ledger.txStatus(txSubmit.data.txhash);
-    //   console.log(status);
-    // }
   };
 
   signTx = async () => {
@@ -287,7 +210,7 @@ export class ActionBarContainer extends Component {
       this.setState({
         txMsg: null,
         txBody: sing,
-        stage: STAGE_SUBMITTED
+        stage: STAGE_SUBMITTED,
       });
       await this.injectTx();
     }
@@ -310,14 +233,15 @@ export class ActionBarContainer extends Component {
   };
 
   confirmTx = async () => {
-    if (this.state.txHash !== null) {
+    const { txHash, ledger } = this.state;
+    if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.state.ledger.txStatus(this.state.txHash);
+      const status = await ledger.txStatus(txHash);
       const data = await status;
       if (data.logs && data.logs[0].success === true) {
         this.setState({
           stage: STAGE_CONFIRMED,
-          txHeight: data.height
+          txHeight: data.height,
         });
         return;
       }
@@ -326,7 +250,8 @@ export class ActionBarContainer extends Component {
   };
 
   tryConnect = async () => {
-    const connect = await this.state.ledger.connect();
+    const { ledger } = this.state;
+    const connect = await ledger.connect();
     return connect;
   };
 
@@ -342,49 +267,42 @@ export class ActionBarContainer extends Component {
       gas: DEFAULT_GAS,
       gasPrice: DEFAULT_GAS_PRICE,
       toSend: '',
-      canStake: 0,
-      atomerror: null,
-      errorMessage: null,
-      rewards: [],
-      governance: [],
       txBody: null,
       txContext: null,
       txHash: null,
       txHeight: null,
-      textAreaRef: React.createRef(),
-      clipboardCopySuccess: false,
-      height50: false
+      height50: false,
     });
   };
 
   onChangeSelect = e =>
     this.setState({
-      valueSelect: e.target.value
+      valueSelect: e.target.value,
     });
 
   onClickFuckGoogle = () => {
     this.setState({
       stage: STAGE_SELECTION,
-      height50: true
+      height50: true,
     });
   };
 
   onClickInitStage = () => {
     this.cleatState();
     this.setState({
-      stage: STAGE_INIT
+      stage: STAGE_INIT,
     });
   };
 
   onClickTrackContribution = () => {
     this.setState({
-      stage: STAGE_LEDGER_INIT
+      stage: STAGE_LEDGER_INIT,
     });
 
     this.tryConnect().then(connect => {
       console.log('connect status', connect);
       this.setState({
-        connect
+        connect,
       });
       // if (connect === undefined) {
       //   this.onClickTrackContribution();
@@ -401,60 +319,53 @@ export class ActionBarContainer extends Component {
       }
       if (connect !== undefined) {
         this.setState({
-          connect
+          connect,
         });
         if (connect.app === false) {
           this.onClickSaveAddress();
         }
       }
       this.setState({
-        connect
+        connect,
       });
     });
   };
 
   onChangeInputContributeATOMs = async e => {
     this.setState({
-      toSend: e.target.value
+      toSend: e.target.value,
     });
   };
 
-  onClickMax = () =>
+  onClickMax = () => {
+    const { gas, gasPrice } = this.state;
     this.setState(prevState => ({
       toSend:
         Math.floor(
-          ((prevState.availableStake - this.state.gas * this.state.gasPrice) /
-            DIVISOR) *
-            1000
-        ) / 1000
+          ((prevState.availableStake - gas * gasPrice) / DIVISOR_ATOM) * 1000
+        ) / 1000,
     }));
+  };
 
   onClickContributeATOMs = () =>
     this.setState({
-      step: 'transactionCost'
+      step: 'transactionCost',
     });
 
   onClickTransactionCost = () =>
     this.setState({
-      step: 'succesfuuly'
+      step: 'succesfuuly',
     });
 
   hasKey() {
-    return this.state.address !== null;
+    const { address } = this.state;
+    return address !== null;
   }
 
   hasWallet() {
-    return this.state.addressInfo !== null;
+    const { addressInfo } = this.state;
+    return addressInfo !== null;
   }
-
-  // copyToClipboard() {
-  //   this.state.textAreaRef.current.select();
-  //   document.execCommand("copy");
-  //   this.setState({ clipboardCopySuccess: true });
-  //   setTimeout(() => {
-  //     this.setState({ clipboardCopySuccess: false });
-  //   }, 2000);
-  // }
 
   render() {
     const {
@@ -462,22 +373,20 @@ export class ActionBarContainer extends Component {
       step,
       height50,
       connect,
-      ledger,
       returnCode,
-      version_info,
       version,
       availableStake,
-      canStake,
       address,
       gasPrice,
       gas,
       toSend,
       txMsg,
       txHash,
-      txHeight
+      txHeight,
+      stage,
     } = this.state;
 
-    if (this.state.stage === STAGE_INIT) {
+    if (stage === STAGE_INIT) {
       return (
         <StartState
           onClickBtn={this.onClickFuckGoogle}
@@ -487,18 +396,18 @@ export class ActionBarContainer extends Component {
       );
     }
 
-    if (this.state.stage === STAGE_SELECTION) {
+    if (stage === STAGE_SELECTION) {
       return (
         <SendAmount
           height={height50}
           onClickBtn={this.onClickTrackContribution}
-          address={OPERATOR_ADDR}
+          address={ADDR_FUNDING}
           onClickBtnCloce={this.onClickInitStage}
         />
       );
     }
 
-    if (this.state.stage === STAGE_LEDGER_INIT) {
+    if (stage === STAGE_LEDGER_INIT) {
       return (
         <SendAmounLadger
           onClickBtn={this.onClickSaveAddress}
@@ -507,41 +416,33 @@ export class ActionBarContainer extends Component {
           app={returnCode === LEDGER_OK}
           onClickBtnCloce={this.onClickInitStage}
           version={
-            this.state.returnCode === LEDGER_OK &&
+            returnCode === LEDGER_OK &&
             this.compareVersion(version, LEDGER_VERSION_REQ)
           }
-          address={OPERATOR_ADDR}
+          address={ADDR_FUNDING}
         />
       );
     }
 
-    if (this.state.stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-      // if (this.state.stage === STAGE_READY) {
+    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       return (
         <ContributeATOMs
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
-          availableStake={Math.floor((availableStake / DIVISOR) * 1000) / 1000}
+          availableStake={
+            Math.floor((availableStake / DIVISOR_ATOM) * 1000) / 1000
+          }
           gasUAtom={gas * gasPrice}
-          gasAtom={(gas * gasPrice) / DIVISOR}
+          gasAtom={(gas * gasPrice) / DIVISOR_ATOM}
           onChangeInput={e => this.onChangeInputContributeATOMs(e)}
           valueInput={toSend}
           onClickBtnCloce={this.onClickInitStage}
           onClickMax={this.onClickMax}
         />
-        //   <ContributeATOMs
-        //     onClickBtn={this.onClickContributeATOMs}
-        //     address='cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'
-        //     availableStake={Math.floor(0.05851 * 1000) / 1000}
-        //     canStake={Math.floor(0.05701 * 1000) / 1000}
-        //     valueInput={Math.floor(0.05701 * 1000) / 1000}
-        //     gasUAtom={gas * gasPrice}
-        //     gasAtom={(gas * gasPrice) / DIVISOR}
-        // />
       );
     }
 
-    if (this.state.stage === STAGE_WAIT) {
+    if (stage === STAGE_WAIT) {
       return (
         <JsonTransaction
           txMsg={txMsg}
@@ -550,14 +451,11 @@ export class ActionBarContainer extends Component {
       );
     }
 
-    if (
-      this.state.stage === STAGE_SUBMITTED ||
-      this.state.stage === STAGE_CONFIRMING
-    ) {
+    if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
       return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
     }
 
-    if (this.state.stage === STAGE_CONFIRMED) {
+    if (stage === STAGE_CONFIRMED) {
       return (
         <Confirmed
           txHash={txHash}
@@ -579,3 +477,5 @@ export class ActionBarContainer extends Component {
     return null;
   }
 }
+
+export default ActionBarTakeOff;

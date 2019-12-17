@@ -1,72 +1,23 @@
 import React, { Component } from 'react';
 import { formatNumber } from '../../utils/utils';
-import { Tooltip, FormatNumber } from '../../components/index';
+import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
 
 const imgSort = require('../../image/_ionicons_svg_ios-swap.svg');
 
 const Order = {
   NONE: 'NONE',
   ASC: 'ASC',
-  DESC: 'DESC'
+  DESC: 'DESC',
 };
 
-class Row extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false
-    };
-  }
-
-  open = () => {
-    this.setState({
-      open: !this.state.open
-    });
-  };
-
-  funcPin = item => {
-    this.props.pinFunc(item);
-  };
-
-  funcUnPin = item => {
-    this.props.unPinFunc(item);
-  };
-
-  render() {
-    const { open } = this.state;
-    const { item, children, pin, statePin } = this.props;
-
-    return (
-      <div>
-        <div
-          className={`${
-            statePin ? 'container-row-pin-padding0' : 'container-row-pin'
-          }`}
-        >
-          {!statePin && (
-            <button className="pin" onClick={e => this.funcPin(pin)} />
-          )}
-          {statePin && (
-            <button className="unpin" onClick={e => this.funcUnPin(pin)} />
-          )}
-          <div onClick={this.open} className="table-rows-box">
-            {children}
-          </div>
-        </div>
-        <div className={`box ${open ? 'open' : 'close'}`}>{item}</div>
-      </div>
-    );
-  }
-}
-
-export class Table extends Component {
+class Table extends Component {
   constructor(props) {
     super(props);
     this.state = {
       pin: false,
       loader: false,
       ordering: Order.NONE,
-      sortKey: null
+      sortKey: null,
     };
   }
 
@@ -75,12 +26,12 @@ export class Table extends Component {
     if (ordering === Order.ASC) {
       return this.setState({
         ordering: 'DESC',
-        sortKey: 'timestamp'
+        sortKey: 'timestamp',
       });
     }
     return this.setState({
       ordering: 'ASC',
-      sortKey: 'timestamp'
+      sortKey: 'timestamp',
     });
   };
 
@@ -89,12 +40,12 @@ export class Table extends Component {
     if (ordering === Order.ASC) {
       return this.setState({
         ordering: 'DESC',
-        sortKey: 'cyb'
+        sortKey: 'cyb',
       });
     }
     return this.setState({
       ordering: 'ASC',
-      sortKey: 'cyb'
+      sortKey: 'cyb',
     });
   };
 
@@ -103,12 +54,12 @@ export class Table extends Component {
     if (ordering === Order.ASC) {
       return this.setState({
         ordering: 'DESC',
-        sortKey: 'amountСolumn'
+        sortKey: 'amountСolumn',
       });
     }
     return this.setState({
       ordering: 'ASC',
-      sortKey: 'amountСolumn'
+      sortKey: 'amountСolumn',
     });
   };
 
@@ -143,7 +94,7 @@ export class Table extends Component {
       pin,
       update,
       onClickSortTime,
-      onClickSortSyb
+      onClickSortSyb,
     } = this.props;
     const { loader, sortSyb, sortAtom, asc } = this.state;
 
@@ -153,7 +104,7 @@ export class Table extends Component {
       sortData
         .filter(data => data.pin)
         .map((itemGroup, index) => (
-          <Row
+          <RowTableTakeoff
             pin={itemGroup}
             unPin
             unPinFunc={this.props.fUpin}
@@ -194,7 +145,9 @@ export class Table extends Component {
             ))}
           >
             <div className="numberType address">{itemGroup.group}</div>
-            <div className="numberType">{formatNumber(itemGroup.amountСolumn)}</div>
+            <div className="numberType">
+              {formatNumber(itemGroup.amountСolumn)}
+            </div>
             <Tooltip
               placement="bottom"
               tooltip={`${formatNumber(Math.floor(itemGroup.cyb))} CYBs`}
@@ -208,11 +161,11 @@ export class Table extends Component {
                 />
               </div>
             </Tooltip>
-          </Row>
+          </RowTableTakeoff>
         ));
 
     const tableRow = sortData.map((itemGroup, index) => (
-      <Row
+      <RowTableTakeoff
         pin={itemGroup}
         unPin
         unPinFunc={this.props.fUpin}
@@ -264,7 +217,7 @@ export class Table extends Component {
             />
           </div>
         </Tooltip>
-      </Row>
+      </RowTableTakeoff>
     ));
     if (loader) {
       return <div>...</div>;
@@ -293,7 +246,7 @@ export class Table extends Component {
               style={{
                 marginBottom: 10,
                 paddingBottom: 10,
-                borderBottom: '1px solid #fff'
+                borderBottom: '1px solid #fff',
               }}
             >
               {tableRowPin()}
@@ -305,3 +258,5 @@ export class Table extends Component {
     );
   }
 }
+
+export default Table;

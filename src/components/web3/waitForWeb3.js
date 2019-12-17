@@ -1,5 +1,7 @@
 import Web3 from 'web3';
 
+import { AUCTION } from '../../utils/config';
+
 let web3js;
 
 const resolveWeb3 = async resolve => {
@@ -12,7 +14,7 @@ const resolveWeb3 = async resolve => {
   } else {
     web3js = new Web3();
     web3js.setProvider(
-      new web3js.providers.HttpProvider('https://rinkeby.infura.io/metamask')
+      new web3js.providers.HttpProvider(AUCTION.HTTP_PROVIDER_URL)
     );
   }
 

@@ -1,44 +1,41 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool, compareVersion } from '../../utils/ledger';
 import {
-  SendAmounLadger,
   JsonTransaction,
   ConnectLadger,
   Confirmed,
-  StartState,
-  NoResultState,
   ContainetLedger,
   FormatNumber,
   TransactionSubmitted,
+  Delegate,
 } from '../../components';
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
 
-import {
-  indexedNode,
+import { LEDGER, CYBER } from '../../utils/config';
+
+import { i18n } from '../../i18n/en';
+
+const { CYBER_NODE_URL, DENOM_CYBER, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const {
   MEMO,
   HDPATH,
   LEDGER_OK,
   LEDGER_NOAPP,
   STAGE_INIT,
-  STAGE_SELECTION,
   STAGE_LEDGER_INIT,
   STAGE_READY,
   STAGE_WAIT,
-  STAGE_GENERATED,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
-  DIVISOR_CYBER_G,
-  DENOM_CYBER,
-  DENOM_CYBER_G,
-} from '../../utils/config';
+} = LEDGER;
 
-const DIVISOR = 10 ** 9;
+const T = new LocalizedStrings(i18n);
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -80,10 +77,11 @@ class ActionBarContainer extends Component {
 
   componentDidUpdate() {
     const { ledger, stage, returnCode, address, addressInfo } = this.state;
-    if (ledger === null) {
-      this.pollLedger();
-    }
+
     if (stage === STAGE_LEDGER_INIT) {
+      if (ledger === null) {
+        this.pollLedger();
+      }
       if (ledger !== null) {
         switch (returnCode) {
           case LEDGER_OK:
@@ -161,7 +159,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${indexedNode}/api/status`, {
+      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -192,7 +190,7 @@ class ActionBarContainer extends Component {
 
     try {
       const response = await fetch(
-        `${indexedNode}/api/account?address="${address.bech32}"`,
+        `${CYBER_NODE_URL}/api/account?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -237,7 +235,7 @@ class ActionBarContainer extends Component {
 
     console.log(validatorAddres);
 
-    const amount = toSend * DIVISOR;
+    const amount = toSend * DIVISOR_CYBER_G;
 
     const { denom } = addressInfo.coins[0];
 
@@ -337,9 +335,11 @@ class ActionBarContainer extends Component {
       address: null,
       returnCode: null,
       addressInfo: null,
-      txMsg: null,
       ledgerVersion: [0, 0, 0],
+      balance: 0,
       time: 0,
+      toSend: '',
+      txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
@@ -359,7 +359,7 @@ class ActionBarContainer extends Component {
 
   onClickMax = () =>
     this.setState(prevState => ({
-      toSend: prevState.balance * DIVISOR_CYBER_G,
+      toSend: prevState.balance / DIVISOR_CYBER_G,
     }));
 
   render() {
@@ -376,12 +376,14 @@ class ActionBarContainer extends Component {
       txHeight,
     } = this.state;
 
+    const T_AB = T.actionBar.delegate;
+
     if (validators.length === 0 && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff">
-              Join Cyberd Network As Validator
+              {T_AB.joinValidator}
             </Text>
           </ActionBarContentText>
           <a
@@ -393,7 +395,7 @@ class ActionBarContainer extends Component {
               alignItems: 'center',
             }}
           >
-            Become a validator
+            {T_AB.btnBecome}
           </a>
         </ActionBar>
       );
@@ -404,14 +406,14 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff" marginRight={5}>
-              Delegate to
+              {T_AB.delegate}
             </Text>
             <Text fontSize="18px" color="#fff" fontWeight={600}>
               {validators[0].description.moniker}
             </Text>
           </ActionBarContentText>
           <Button onClick={this.toStageConnectLadger}>
-            Delegate with Ledger
+            {T_AB.btnDelegate}
           </Button>
         </ActionBar>
       );
@@ -432,81 +434,17 @@ class ActionBarContainer extends Component {
       // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       return (
-        <ContainetLedger onClickBtnCloce={this.cleatState}>
-          <Pane display="flex" flexDirection="column" alignItems="center">
-            <Text
-              marginBottom={20}
-              fontSize="16px"
-              lineHeight="25.888px"
-              color="#fff"
-            >
-              {address.bech32}
-            </Text>
-            <Text fontSize="30px" lineHeight="40px" color="#fff">
-              Delegation Details
-            </Text>
-
-            <Text fontSize="18px" lineHeight="30px" color="#fff">
-              Your wallet contains
-            </Text>
-            <Text
-              display="flex"
-              justifyContent="center"
-              fontSize="20px"
-              lineHeight="25.888px"
-              color="#3ab793"
-            >
-              <FormatNumber
-                marginRight={5}
-                number={formatNumber(
-                  Math.floor(balance * DIVISOR_CYBER_G * 1000) / 1000,
-                  3
-                )}
-              />
-              {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}
-            </Text>
-
-            <Pane marginTop={20}>
-              <Text fontSize="16px" color="#fff">
-                Enter the amount of{' '}
-                {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()} you wish to
-                delegate to{' '}
-                <Text fontSize="20px" color="#fff" fontWeight={600}>
-                  {validators[0].description.moniker}
-                </Text>
-              </Text>
-            </Pane>
-            <Text color="#fff">{validators[0].operator_address}</Text>
-            <Pane marginY={30} display="flex">
-              <input
-                value={toSend}
-                style={{
-                  height: 42,
-                  width: '60%',
-                  marginRight: 20,
-                }}
-                onChange={e => this.onChangeInputAmount(e)}
-                placeholder="amount"
-              />
-              <button
-                type="button"
-                className="btn"
-                onClick={e => this.onClickMax(e)}
-                style={{ height: 42, maxWidth: '200px' }}
-              >
-                Max
-              </button>
-            </Pane>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => this.generateTx()}
-              style={{ height: 42, maxWidth: '200px' }}
-            >
-              Generate Tx
-            </button>
-          </Pane>
-        </ContainetLedger>
+        <Delegate
+          address={address.bech32}
+          onClickBtnCloce={this.cleatState}
+          balance={balance}
+          moniker={validators[0].description.moniker}
+          operatorAddress={validators[0].operator_address}
+          generateTx={() => this.generateTx()}
+          max={e => this.onClickMax(e)}
+          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          toSend={toSend}
+        />
       );
     }
 

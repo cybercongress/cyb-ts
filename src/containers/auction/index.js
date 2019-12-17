@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
-import { ActionBarContainer } from './actionBar';
+import ActionBarAuction from './actionBar';
 import { Dinamics } from './dinamics';
 import { Table } from './table';
 import { Loading } from '../../components/index';
@@ -10,10 +10,12 @@ import {
   formatNumber,
   roundNumber,
   asyncForEach,
-  timer
+  timer,
 } from '../../utils/utils';
 
-const TOKEN_NAME = 'GOL';
+import { AUCTION } from '../../utils/config';
+
+const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
 
 class Auction extends PureComponent {
   constructor(props) {
@@ -36,15 +38,15 @@ class Auction extends PureComponent {
         x: [],
         y: [],
         x1: [],
-        y1: []
-      }
+        y1: [],
+      },
     };
   }
 
   async componentDidMount() {
     const { accounts, web3 } = this.props;
     await this.setState({
-      accounts
+      accounts,
     });
     if (accounts === null) {
       console.log('no-accounts');
@@ -64,17 +66,15 @@ class Auction extends PureComponent {
       const tmpAccount = defaultAccounts;
       console.log(tmpAccount);
       await this.setState({
-        accounts: tmpAccount
+        accounts: tmpAccount,
       });
       run(this.getDataTable);
     });
     const subscription = web3.eth.subscribe(
       'logs',
       {
-        address: '0x6c9c39d896b51e6736dbd3da710163903a3b091b',
-        topics: [
-          '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150'
-        ]
+        address: ADDR_SMART_CONTRACT,
+        topics: [TOPICS_SEND],
       },
       (error, result) => {
         if (!error) {
@@ -90,16 +90,14 @@ class Auction extends PureComponent {
 
     // unsubscribes the subscription
     subscription.unsubscribe((error, success) => {
-      if (success) console.log('Successfully unsubscribed!');
+      if (success) {console.log('Successfully unsubscribed!');}
     });
 
     const subscriptionClaim = web3.eth.subscribe(
       'logs',
       {
-        address: '0x6c9c39d896b51e6736dbd3da710163903a3b091b',
-        topics: [
-          '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4'
-        ]
+        address: ADDR_SMART_CONTRACT,
+        topics: [TOPICS_CLAIM],
       },
       (error, result) => {
         if (!error) {
@@ -111,22 +109,24 @@ class Auction extends PureComponent {
 
     // unsubscribes the subscription
     subscriptionClaim.unsubscribe((error, success) => {
-      if (success) console.log('Successfully unsubscribed!');
+      if (success) {console.log('Successfully unsubscribed!');}
     });
     const { contract } = this.props;
-    const youCYB = (await contract.getPastEvents('LogClaim', {
-      fromBlock: 0,
-      toBlock: 'latest'
-    })).filter(i => i.returnValues.user === accounts);
+    const youCYB = (
+      await contract.getPastEvents('LogClaim', {
+        fromBlock: 0,
+        toBlock: 'latest',
+      })
+    ).filter(i => i.returnValues.user === accounts);
 
     console.log({
-      youCYB
+      youCYB,
     });
   }
 
   getTimeEndRound = async () => {
     const {
-      contract: { methods }
+      contract: { methods },
     } = this.props;
     const today = parseInt(await methods.today().call());
     const time = await methods.time().call();
@@ -141,13 +141,13 @@ class Auction extends PureComponent {
     const m = `0${minutes}`.slice(-2);
     const timeLeft = `${h} : ${m}`;
     this.setState({
-      timeLeft
+      timeLeft,
     });
   };
 
   statistics = async () => {
     const {
-      contract: { methods }
+      contract: { methods },
     } = this.props;
     const roundThis = parseInt(await methods.today().call());
     const numberOfDays = await methods.numberOfDays().call();
@@ -163,14 +163,14 @@ class Auction extends PureComponent {
       roundThis,
       currentPrice,
       numberOfDays,
-      dailyTotals: Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000
+      dailyTotals: Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000,
     });
   };
 
   dinamics = async () => {
     const {
       contract: { methods },
-      contractAuctionUtils
+      contractAuctionUtils,
     } = this.props;
     const { roundThis } = this.state;
     let raised = 0;
@@ -179,7 +179,7 @@ class Auction extends PureComponent {
       y: [],
       x1: [],
       y1: [],
-      time: []
+      time: [],
     };
 
     const startTime = await methods.startTime().call();
@@ -192,11 +192,11 @@ class Auction extends PureComponent {
 
     if (roundThis === 0) {
       this.setState({
-        createOnDay: createFirstDay
+        createOnDay: createFirstDay,
       });
     } else {
       this.setState({
-        createOnDay: createPerDay
+        createOnDay: createPerDay,
       });
     }
     await asyncForEach(
@@ -260,14 +260,16 @@ class Auction extends PureComponent {
   getDataTable = async () => {
     const {
       contract: { methods },
-      contractAuctionUtils
+      contractAuctionUtils,
     } = this.props;
     const { accounts } = this.state;
     const { contract } = this.props;
-    const youCYB = (await contract.getPastEvents('LogClaim', {
-      fromBlock: 0,
-      toBlock: 'latest'
-    })).filter(i => i.returnValues.user === accounts);
+    const youCYB = (
+      await contract.getPastEvents('LogClaim', {
+        fromBlock: 0,
+        toBlock: 'latest',
+      })
+    ).filter(i => i.returnValues.user === accounts);
 
     // console.log({
     //   youCYB
@@ -297,12 +299,12 @@ class Auction extends PureComponent {
         if (item === 0) {
           createOnDay = createFirstDay;
           this.setState({
-            createOnDay
+            createOnDay,
           });
         } else {
           createOnDay = createPerDay;
           this.setState({
-            createOnDay
+            createOnDay,
           });
         }
         // if (item <= roundThis) {
@@ -346,7 +348,7 @@ class Auction extends PureComponent {
           closing: (23 * (roundThis - item)) / 23,
           youETH: formatNumber(_userBuys[item] / Math.pow(10, 18), 6),
           youCYB: formatNumber(Math.floor(cyb * 100) / 100, 2),
-          claimed: claimedItem
+          claimed: claimedItem,
           // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
         });
         // console.log('CR', {_createOnDay, _dailyTotals, today}, (_createOnDay/Math.pow(10,18)  +  _dailyTotals/2) /_dailyTotals);
@@ -355,11 +357,11 @@ class Auction extends PureComponent {
     );
     if (table.some(this.even)) {
       this.setState({
-        claimedAll: true
+        claimedAll: true,
       });
     } else {
       this.setState({
-        claimedAll: false
+        claimedAll: false,
       });
     }
     this.setState({ table });
@@ -367,7 +369,7 @@ class Auction extends PureComponent {
 
   getDataTableForRound = async round => {
     const {
-      contract: { methods }
+      contract: { methods },
     } = this.props;
     const { accounts, table, dynamics } = this.state;
     const userBuys = await methods.userBuys(round, accounts).call();
@@ -402,7 +404,7 @@ class Auction extends PureComponent {
       ),
       currentPrice,
       userBuys: formatNumber(userBuys * 10 ** -18, 6),
-      cyb: formatNumber(Math.floor(cyb * 100) / 100, 2)
+      cyb: formatNumber(Math.floor(cyb * 100) / 100, 2),
     };
     table[round].dist = roundTable.createPerDay;
     table[round].total = roundTable.dailyTotals;
@@ -413,7 +415,7 @@ class Auction extends PureComponent {
     dynamics.x1[round] = parseFloat(roundTable.currentPrice);
     this.setState({
       table,
-      dynamics
+      dynamics,
     });
   };
 
@@ -432,7 +434,7 @@ class Auction extends PureComponent {
       createOnDay,
       popupsBuy,
       accounts,
-      roundTable
+      roundTable,
     } = this.state;
     const thc = 700 * Math.pow(10, 3);
     return (
@@ -477,7 +479,7 @@ class Auction extends PureComponent {
             </div>
           )}
         </main>
-        <ActionBarContainer
+        <ActionBarAuction
           web3={this.props.web3}
           contract={this.props.contract}
           minRound={roundThis}
