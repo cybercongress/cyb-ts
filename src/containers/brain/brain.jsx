@@ -31,7 +31,15 @@ import { cybWon } from '../../utils/fundingMath';
 
 import { i18n } from '../../i18n/en';
 
-import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
+import {
+  CYBER,
+  LEDGER,
+  AUCTION,
+  COSMOS,
+  TAKEOFF,
+  GENESIS_SUPPLY,
+  TOTAL_GOL_GENESIS_SUPPLY,
+} from '../../utils/config';
 
 import ActionBarContainer from './actionBarContainer';
 
@@ -54,7 +62,7 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
     key={text}
     isSelected={isSelected}
     onSelect={onSelect}
-    paddingX={50}
+    paddingX={10}
     paddingY={20}
     marginX={3}
     borderRadius={4}
@@ -87,7 +95,7 @@ class Brain extends React.Component {
       totalCyb: 0,
       stakedCyb: 0,
       activeValidatorsCount: 0,
-      selected: 'cybernomicsEUL',
+      selected: 'main',
       loading: true,
       chainId: '',
       amount: 0,
@@ -146,9 +154,9 @@ class Brain extends React.Component {
     won = cybWon(amount);
     currentPrice = won / amount;
 
-    const supplyEUL = roundNumber(won / DIVISOR_CYBER_G, 3);
+    const supplyEUL = Math.floor(won);
     const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
-    const capATOM = (won * currentPrice) / DIVISOR_CYBER_G;
+    const capATOM = (supplyEUL * takeofPrice) / DIVISOR_CYBER_G;
 
     this.setState({
       supplyEUL,
@@ -190,7 +198,7 @@ class Brain extends React.Component {
       }
     );
     const averagePrice = summCurrentPrice / dailyTotalsUtils.length;
-    const capETH = averagePrice * AUCTION.GOL;
+    const capETH = (averagePrice * TOTAL_GOL_GENESIS_SUPPLY) / DIVISOR_CYBER_G;
 
     console.log('averagePrice', averagePrice);
     console.log('capETH', capETH);
@@ -392,7 +400,10 @@ class Brain extends React.Component {
           title={T.brain.cyberlinks}
           value={formatNumber(linksCount)}
         />
-        <CardStatisics title={T.brain.cap} value={formatNumber(cidsCount)} />
+        <CardStatisics
+          title={T.brain.cap}
+          value={formatNumber(Math.floor(capATOM))}
+        />
         <a
           href="/#/heroes"
           style={{
@@ -403,7 +414,7 @@ class Brain extends React.Component {
           <CardStatisics
             title={T.brain.heroes}
             value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4caf50" marginLeft={5} />}
+            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
           />
         </a>
       </Pane>
@@ -431,7 +442,7 @@ class Brain extends React.Component {
       </Pane>
     );
 
-    const CybernomicsEUL = () => (
+    const Cybernomics = () => (
       <Pane
         display="grid"
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
@@ -445,7 +456,27 @@ class Brain extends React.Component {
           title={T.brain.takeofPrice}
           value={formatNumber(takeofPrice)}
         />
-        <CardStatisics title={T.brain.capATOM} value={formatNumber(capATOM)} />
+        <CardStatisics
+          title={T.brain.cap}
+          value={formatNumber(Math.floor(capATOM))}
+        />
+        <CardStatisics
+          title={T.brain.supplyGOL}
+          value={formatNumber(TOTAL_GOL_GENESIS_SUPPLY)}
+        />
+        <CardStatisics
+          title={T.brain.auctionPrice}
+          value={
+            <FormatNumber
+              fontSizeDecimal={18}
+              number={roundNumber(averagePrice, 6)}
+            />
+          }
+        />
+        <CardStatisics
+          title={T.brain.capETH}
+          value={formatNumber(Math.floor(capETH))}
+        />
       </Pane>
     );
 
@@ -465,7 +496,7 @@ class Brain extends React.Component {
           <CardStatisics
             title={T.brain.heroes}
             value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4caf50" marginLeft={5} />}
+            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
           />
         </a>
         <CardStatisics title={T.brain.staked} value={stakedCyb} />
@@ -479,35 +510,11 @@ class Brain extends React.Component {
     const Bandwidth = () => (
       <Pane
         display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+        gridTemplateColumns="repeat(auto-fit, minmax(250px, 250px))"
         gridGap="20px"
+        justifyContent="center"
       >
         <CardStatisics title={T.brain.price} value={linkPrice} />
-        <CardStatisics title={T.brain.available} value={stakedCyb} />
-        <CardStatisics title={T.brain.load} value={formatNumber(txCount)} />
-      </Pane>
-    );
-
-    const CybernomicsGOL = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.supplyGOL}
-          value={formatNumber(AUCTION.GOL)}
-        />
-        <CardStatisics
-          title={T.brain.auctionPrice}
-          value={
-            <FormatNumber
-              fontSizeDecimal={18}
-              number={roundNumber(averagePrice, 6)}
-            />
-          }
-        />
-        <CardStatisics title={T.brain.capETH} value={formatNumber(capETH)} />
       </Pane>
     );
 
@@ -533,8 +540,8 @@ class Brain extends React.Component {
       content = <KnowledgeGraph />;
     }
 
-    if (selected === 'cybernomicsEUL') {
-      content = <CybernomicsEUL />;
+    if (selected === 'cybernomics') {
+      content = <Cybernomics />;
     }
 
     if (selected === 'consensus') {
@@ -543,10 +550,6 @@ class Brain extends React.Component {
 
     if (selected === 'bandwidth') {
       content = <Bandwidth />;
-    }
-
-    if (selected === 'cybernomicsGOL') {
-      content = <CybernomicsGOL />;
     }
 
     return (
@@ -595,24 +598,24 @@ class Brain extends React.Component {
           )}
           <Tablist
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
             gridGap="20px"
             marginTop={25}
           >
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              onSelect={() => this.select('main')}
-            />
-            <TabBtn
-              text="Knowledge graph"
+              text="Knowledge"
               isSelected={selected === 'graph'}
               onSelect={() => this.select('graph')}
             />
             <TabBtn
-              text="Cybernomics of EUL"
-              isSelected={selected === 'cybernomicsEUL'}
-              onSelect={() => this.select('cybernomicsEUL')}
+              text="Cybernomics"
+              isSelected={selected === 'cybernomics'}
+              onSelect={() => this.select('cybernomics')}
+            />
+            <TabBtn
+              text="Main"
+              isSelected={selected === 'main'}
+              onSelect={() => this.select('main')}
             />
             <TabBtn
               text="Consensus"
@@ -623,11 +626,6 @@ class Brain extends React.Component {
               text="Bandwidth"
               isSelected={selected === 'bandwidth'}
               onSelect={() => this.select('bandwidth')}
-            />
-            <TabBtn
-              text="Cybernomics of GOL"
-              isSelected={selected === 'cybernomicsGOL'}
-              onSelect={() => this.select('cybernomicsGOL')}
             />
           </Tablist>
           <Pane marginTop={50} marginBottom={50}>

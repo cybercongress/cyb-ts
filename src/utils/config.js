@@ -8,7 +8,6 @@ const AUCTION = {
   TOPICS_CLAIM:
     '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
   HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
-  GOL: 6 * 10 ** 12,
 };
 
 const NETWORKSIDS = {
@@ -72,6 +71,8 @@ const LEDGER = {
 };
 
 const GENESIS_SUPPLY = 233000000000000;
+const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
+
 
 const DISTRIBUTION = [
   {
@@ -84,11 +85,11 @@ const DISTRIBUTION = [
   },
   {
     group: 'Euler-4 validators',
-    amount: '20000000000000',
+    amount: '15000000000000',
   },
   {
     group: 'GOL stakers	',
-    amount: '10000000000000',
+    amount: '15000000000000',
   },
   {
     group: 'Community pool',
@@ -109,4 +110,5 @@ export {
   NETWORKSIDS,
   DISTRIBUTION,
   GENESIS_SUPPLY,
+  TOTAL_GOL_GENESIS_SUPPLY,
 };
