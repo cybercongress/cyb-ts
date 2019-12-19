@@ -19,6 +19,7 @@ import {
   getStatistics,
   getValidators,
   statusNode,
+  getBalance,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -151,8 +152,17 @@ class Brain extends React.Component {
       }
     }
 
+    console.log('amount', amount);
+
     won = cybWon(amount);
-    currentPrice = won / amount;
+    if (amount === 0) {
+      currentPrice = 0;
+    } else {
+      currentPrice = won / amount;
+    }
+
+    console.log('won', won);
+    console.log('currentPrice', currentPrice);
 
     const supplyEUL = Math.floor(won);
     const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
@@ -233,6 +243,30 @@ class Brain extends React.Component {
       token: '',
       keys: '',
     };
+    let total = 0;
+
+    const balance = await getBalance(addressLedger.bech32);
+    console.log('balance', balance);
+
+    if (balance) {
+      if (balance.available) {
+        total += parseFloat(balance.available.amount);
+      }
+
+      if (balance.delegations && balance.delegations.length > 0) {
+        balance.delegations.forEach((delegation, i) => {
+          total += parseFloat(delegation.shares);
+        });
+      }
+
+      // if (balance.unbonding && balance.unbonding.length > 0){
+
+      // }
+      if (balance.rewards) {
+        total += parseFloat(balance.rewards.amount);
+      }
+    }
+
     const response = await fetch(
       `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
       {
@@ -257,7 +291,7 @@ class Brain extends React.Component {
       addAddress: false,
       loading: false,
       addressInfo,
-      amount: data.result.account.coins[0].amount,
+      amount: total,
     });
   };
 
@@ -554,10 +588,7 @@ class Brain extends React.Component {
 
     return (
       <div>
-        <main
-          style={{ justifyContent: 'space-between' }}
-          className="block-body"
-        >
+        <main className="block-body">
           {amount === 0 && (
             <Pane
               boxShadow="0px 0px 5px #36d6ae"
@@ -581,6 +612,10 @@ class Brain extends React.Component {
               gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
               gridGap="20px"
             >
+              <CardStatisics
+                title={T.brain.yourTotal}
+                value={formatNumber(Math.floor(amount))}
+              />
               <CardStatisics
                 title={T.brain.percentSupply}
                 value={

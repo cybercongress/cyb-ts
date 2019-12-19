@@ -22,6 +22,7 @@ const i18n = {
     },
     brain: {
       knowledge: 'Knowledge graph',
+      yourTotal: 'your total EUL',
       cyberlinks: 'cyberlinks',
       objects: 'objects',
       subjects: 'subjects',
