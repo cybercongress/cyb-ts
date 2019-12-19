@@ -14,6 +14,7 @@ import {
 } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import InfiniteScroll from 'react-infinite-scroller';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import withWeb3 from '../../components/web3/withWeb3';
 import {
@@ -120,6 +121,8 @@ class GOL extends React.Component {
       topLink: [],
       takeoffDonations: 0,
       currentPrize: 0,
+      items: 20,
+      hasMoreItems: true,
     };
   }
 
@@ -250,6 +253,67 @@ class GOL extends React.Component {
     });
   };
 
+  fetchMoreData = () => {
+    console.log('fetchMoreData');
+    this.setState({
+      items: this.state.items + 20,
+    });
+  };
+
+  showItems() {
+    const topLinkItems = [];
+    const { topLink, items } = this.state;
+    if (topLink.length > 0) {
+      const resultsLimit = 10;
+      for (let index = 0; index < items; index += 1) {
+        const item = (
+          <Pane
+            display="grid"
+            gridTemplateColumns="50px 1fr"
+            alignItems="baseline"
+            gridGap="5px"
+          >
+            <Text textAlign="end" fontSize="16px" color="#fff">
+              #{index + 1}
+            </Text>
+            <SearchItem
+              key={topLink[index].cid}
+              hash={topLink[index].cid}
+              rank={topLink[index].rank}
+              grade={getRankGrade(topLink[index].rank)}
+              status="success"
+            >
+              {topLink[index].cid}
+            </SearchItem>
+          </Pane>
+        );
+
+        topLinkItems.push(item);
+      }
+    }
+    return topLinkItems;
+  }
+
+  loadMore() {
+    const { items, topLink } = this.state;
+    const item = 20;
+    let tempItems = items + item;
+
+    if (tempItems > topLink.length) {
+      tempItems += tempItems - topLink.length;
+    }
+    if (items === topLink.length) {
+      this.setState({ hasMoreItems: false });
+    } else {
+      setTimeout(() => {
+        this.setState({ items: tempItems });
+      }, 2000);
+    }
+    console.log(item);
+    console.log(items);
+
+  }
+
   render() {
     const {
       linksCount,
@@ -279,6 +343,8 @@ class GOL extends React.Component {
       myEULs,
       takeoffDonations,
       currentPrize,
+      items,
+      hasMoreItems,
     } = this.state;
 
     let content;
@@ -298,36 +364,6 @@ class GOL extends React.Component {
           <Loading />
         </div>
       );
-    }
-
-    const topLinkItems = [];
-    if (topLink.length > 0) {
-      const resultsLimit = 10;
-      for (let index = 0; index < resultsLimit; index += 1) {
-        const item = (
-          <Pane
-            display="grid"
-            gridTemplateColumns="50px 1fr"
-            alignItems="baseline"
-            gridGap="5px"
-          >
-            <Text textAlign="end" fontSize="16px" color="#fff">
-              #{index + 1}
-            </Text>
-            <SearchItem
-              key={topLink[index].cid}
-              hash={topLink[index].cid}
-              rank={topLink[index].rank}
-              grade={getRankGrade(topLink[index].rank)}
-              status="success"
-            >
-              {topLink[index].cid}
-            </SearchItem>
-          </Pane>
-        );
-
-        topLinkItems.push(item);
-      }
     }
 
     // const topLinkItems = topLink.map(item => (
@@ -370,7 +406,19 @@ class GOL extends React.Component {
       </Pane>
     );
 
-    const Relevance = () => <Pane width="100%">{topLinkItems}</Pane>;
+    const Relevance = () => (
+      <Pane width="100%">
+        <InfiniteScroll
+          // pageStart={0}
+          loadMore={this.loadMore.bind(this)}
+          hasMore={hasMoreItems}
+          loader={<Loading />}
+          useWindow={false}
+        >
+          {this.showItems()}
+        </InfiniteScroll>
+      </Pane>
+    );
 
     if (selected === 'delegation') {
       content = <Main />;

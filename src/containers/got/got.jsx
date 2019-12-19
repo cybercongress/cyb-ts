@@ -10,7 +10,9 @@ import {
   roundNumber,
   run,
 } from '../../utils/utils';
-import { COSMOS } from '../../utils/config';
+import { COSMOS, AUCTION } from '../../utils/config';
+
+// const abiDecoder = require('abi-decoder');
 
 const { GAIA_WEBSOCKET_URL } = COSMOS;
 
@@ -42,6 +44,27 @@ class Got extends PureComponent {
   componentDidMount() {
     const { web3 } = this.props;
     this.connect();
+    // const tx = [];
+    // web3.eth
+    //   .getPastLogs({
+    //     fromBlock: '0x0',
+    //     address: '0x6c9c39d896b51e6736dbd3da710163903a3b091b',
+    //   })
+    //   .then(res => {
+    //     res.forEach(rec => {
+    //       if (rec.topics[0] === AUCTION.TOPICS_SEND) {
+    //         // console.log(decodedData);
+    //         tx.push(rec);
+    //       }
+    //       // console.log(rec.topics);
+    //     });
+    //   })
+    //   .catch(err => console.log('getPastLogs failed', err));
+    // console.log('tx', tx);
+    // const decodedData = abiDecoder.decodeMethod(
+    //   '0x000000000000000000000000000000000000000000000000000000000000003a0000000000000000000000007a596c2d3e0f390a212a8ed47308cf621b5e949c0000000000000000000000000000000000000000000000000de0b6b3a7640000'
+    // );
+    // console.log('decodedData', decodedData);
     const subscription = web3.eth.subscribe(
       'logs',
       {
