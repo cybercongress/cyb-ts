@@ -295,3 +295,42 @@ export const getRelevance = () =>
       })
       .catch(e => {})
   );
+
+export const getBalance = address =>
+  new Promise(resolve => {
+    const availablePromise = axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/bank/balances/${address}`,
+    }).then(response => response.data.result);
+
+    const delegationsPromise = axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
+    }).then(response => response.data.result);
+
+    const unbondingPromise = axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/unbonding_delegations`,
+    }).then(response => response.data.result);
+
+    const rewardsPropsise = axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${address}/rewards`,
+    }).then(response => response.data.result);
+
+    Promise.all([
+      availablePromise,
+      delegationsPromise,
+      unbondingPromise,
+      rewardsPropsise,
+    ]).then(([available, delegations, unbonding, rewards]) => {
+      const response = {
+        available: available[0],
+        delegations,
+        unbonding,
+        rewards: rewards.total[0],
+      };
+
+      resolve(response);
+    });
+  });

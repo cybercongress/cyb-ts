@@ -9,10 +9,11 @@
 
 body {
     padding: 0;
-    margin: 0;
     overflow-x: hidden;
     background-color: #000000;
     color: #fff;
+    overflow-y: scroll;
+    margin: 0 auto;
 }
 
 html {

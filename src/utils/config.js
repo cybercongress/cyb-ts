@@ -2,13 +2,13 @@ const AUCTION = {
   ADDR_SMART_CONTRACT: '0x6C9c39D896B51e6736DBd3dA710163903A3B091B',
   ADDR_SMART_CONTRACT_AUCTION_UTILS:
     '0x303Fb6bA398F2039b3AE56AB472D80839463E7dF',
+  ADDR_TOKEN: '0x6b5058b9314c76af2312a6f46ad9a54cf9b48f1c',
   TOKEN_NAME: 'GOL',
   TOPICS_SEND:
     '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
   TOPICS_CLAIM:
     '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
-  HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
-  GOL: 6 * 10 ** 12,
+  HTTP_PROVIDER_URL: 'http://herzner1.cybernode.ai:8545/',
 };
 
 const NETWORKSIDS = {
@@ -72,6 +72,8 @@ const LEDGER = {
 };
 
 const GENESIS_SUPPLY = 233000000000000;
+const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
+
 
 const DISTRIBUTION = [
   {
@@ -84,11 +86,11 @@ const DISTRIBUTION = [
   },
   {
     group: 'Euler-4 validators',
-    amount: '20000000000000',
+    amount: '15000000000000',
   },
   {
     group: 'GOL stakers	',
-    amount: '10000000000000',
+    amount: '15000000000000',
   },
   {
     group: 'Community pool',
@@ -109,4 +111,5 @@ export {
   NETWORKSIDS,
   DISTRIBUTION,
   GENESIS_SUPPLY,
+  TOTAL_GOL_GENESIS_SUPPLY,
 };
