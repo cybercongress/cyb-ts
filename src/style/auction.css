@@ -92,6 +92,7 @@
     padding: 4px 9px;
     font-size: 14px;
     font-family: Play;
+    cursor: pointer;
 }
 
 .bnt-claime:hover {

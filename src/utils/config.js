@@ -74,7 +74,6 @@ const LEDGER = {
 const GENESIS_SUPPLY = 233000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
-
 const DISTRIBUTION = [
   {
     group: 'Takeoff donations',
@@ -89,7 +88,7 @@ const DISTRIBUTION = [
     amount: '15000000000000',
   },
   {
-    group: 'GOL stakers	',
+    group: 'GOL stakers',
     amount: '15000000000000',
   },
   {
