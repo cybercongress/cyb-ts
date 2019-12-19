@@ -48,8 +48,8 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: 'G',
-  CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
-  CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://herzner1.cybernode.ai/websocket',
+  CYBER_NODE_URL: 'https://herzner1.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
 };
 

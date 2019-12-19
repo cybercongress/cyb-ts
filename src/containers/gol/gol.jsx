@@ -109,7 +109,7 @@ class GOL extends React.Component {
       stakedCyb: 0,
       activeValidatorsCount: 0,
       selected: 'disciplines',
-      loading: true,
+      loading: false,
       chainId: '',
       amount: 0,
       supplyEUL: 0,
@@ -296,22 +296,13 @@ class GOL extends React.Component {
 
   loadMore() {
     const { items, topLink } = this.state;
-    const item = 20;
-    let tempItems = items + item;
-
-    if (tempItems > topLink.length) {
-      tempItems += tempItems - topLink.length;
-    }
-    if (items === topLink.length) {
+    if (items > topLink.length) {
       this.setState({ hasMoreItems: false });
     } else {
       setTimeout(() => {
-        this.setState({ items: tempItems });
+        this.setState({ items: items + 20 });
       }, 2000);
     }
-    console.log(item);
-    console.log(items);
-
   }
 
   render() {
@@ -378,42 +369,150 @@ class GOL extends React.Component {
     //   </SearchItem>
     // ));
 
-    const Main = () => (
+    const Delegation = () => (
       <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
         width="100%"
       >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics title={T.brain.cap} value={formatNumber(cidsCount)} />
-        <a
-          href="/#/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4caf50" marginLeft={5} />}
-          />
-        </a>
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Get more voting power for your validator - get more rewards!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          This disciplines is social discipline with max prize of. Huge chunk of
+          CYB stake allocated to all Ethereans and Cosmonauts. The more you
+          spread, the more users will claim its allocation, the more voting
+          power as validators you will have in Genesis. Max reward for this
+          discipline is 5 TCYB. Details of reward calculation you can find in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </a>
+        </Text>
+      </Pane>
+    );
+
+    const Load = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Submit as much cyberlinks as possible!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          We need to test the network under heavy load. Testing of decentralized
+          networks under load near real conditions is hard and expensive. So we
+          invite you to submit as much cyberlinks as possible. Max reward for
+          this discipline is 6 TCYB. Current reward based on current takeoff
+          donations is... Details of reward calculation you can find in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </a>
+        </Text>
+      </Pane>
+    );
+
+    const Uptime = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Setup you validator and get rewards for precommit counts!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Max rewards for uptime is 2 TCYB.
+        </Text>
+      </Pane>
+    );
+    const FVS = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Go on and convince your friend to become a hero!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Full Validator Set discipline. We want to bootstrap the cyber main
+          network with full validators set. So we assign group bonus to all
+          validators for self-organization. If the set of validators will
+          increase over or is equal to 100, and this number of validators can
+          last for 10000 blocks, we will allocate an additional 2 TCYB to
+          validators who take part in genesis. If the number of validators will
+          increase to or over 146, under the same conditions we will allocate an
+          additional 3 TCYB. All rewards in that discipline will be distributed
+          to validators per capita. Details of reward calculation you can find
+          in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </a>
+        </Text>
+      </Pane>
+    );
+    const Euler4 = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Oh! You miss the boat. This discipline is the reward for validators
+          who helped us test the network during 2019 year. Thank you for
+          participation.
+        </Text>
       </Pane>
     );
 
     const Relevance = () => (
       <Pane width="100%">
+        <Pane textAlign="center" width="100%">
+          <Text lineHeight="24px" color="#fff" fontSize="18px">
+            Submit the most ranked content first! Details of reward calculation
+            you can find in{' '}
+            <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </a>
+          </Text>
+        </Pane>
         <InfiniteScroll
           // pageStart={0}
           loadMore={this.loadMore.bind(this)}
           hasMore={hasMoreItems}
-          loader={<Loading />}
-          useWindow={false}
+          loader={
+            <Pane textAlign="center">
+              <Loading />
+            </Pane>
+          }
+          // useWindow={false}
         >
           {this.showItems()}
         </InfiniteScroll>
@@ -421,11 +520,11 @@ class GOL extends React.Component {
     );
 
     if (selected === 'delegation') {
-      content = <Main />;
+      content = <Delegation />;
     }
 
     if (selected === 'load') {
-      content = <Main />;
+      content = <Load />;
     }
 
     if (selected === 'relevance') {
@@ -435,6 +534,12 @@ class GOL extends React.Component {
     if (selected === 'disciplines') {
       content = (
         <Pane width="100%">
+          <Pane textAlign="center" width="100%">
+            <Text lineHeight="24px" color="#fff" fontSize="18px">
+              Pie diagram of allocations
+            </Text>
+          </Pane>
+
           <Dinamics />
           <Table>
             <Table.Head
@@ -484,17 +589,17 @@ class GOL extends React.Component {
       );
     }
 
-    // if (selected === 'uptime') {
-    //   content = <CybernomicsEUL />;
-    // }
+    if (selected === 'uptime') {
+      content = <Uptime />;
+    }
 
-    // if (selected === 'FVS') {
-    //   content = <Consensus />;
-    // }
+    if (selected === 'FVS') {
+      content = <FVS />;
+    }
 
-    // if (selected === 'euler4') {
-    //   content = <Bandwidth />;
-    // }
+    if (selected === 'euler4') {
+      content = <Euler4 />;
+    }
 
     // if (selected === 'communityPool') {
     //   content = <CybernomicsGOL />;
