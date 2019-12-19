@@ -71,6 +71,12 @@ const cybWon = atom => {
   return won;
 };
 
+const getDisciplinesAllocation = atom => {
+  const allocation =
+    1.2 + ((CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D) * 0.466666);
+  return allocation;
+};
+
 const getRewards = (price, discount, atoms, amount) => {
   const rewards =
     price + (price * discount) / 2 - ((price * discount) / atoms) * amount;
@@ -100,4 +106,5 @@ export {
   getDataPlot,
   getRewards,
   getGroupAddress,
+  getDisciplinesAllocation,
 };

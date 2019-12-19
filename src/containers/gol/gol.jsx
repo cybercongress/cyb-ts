@@ -37,7 +37,7 @@ import {
   Card,
 } from '../../components';
 import Dinamics from './diagram';
-import { cybWon } from '../../utils/fundingMath';
+import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 
 import { i18n } from '../../i18n/en';
 
@@ -119,6 +119,7 @@ class GOL extends React.Component {
       myGOLs: 0,
       topLink: [],
       takeoffDonations: 0,
+      currentPrize: 0,
     };
   }
 
@@ -127,6 +128,7 @@ class GOL extends React.Component {
     this.getRelevance();
     this.getMyGOLs();
     this.getMyEULs();
+    this.getDataWS();
   }
 
   getDataWS = async () => {
@@ -197,15 +199,21 @@ class GOL extends React.Component {
   getAtom = async dataTxs => {
     let amount = 0;
     let won = 0;
+    let allocation = 0;
+    let currentPrize = 0;
 
     if (dataTxs) {
       amount = await getAmountATOM(dataTxs);
     }
 
     won = cybWon(amount);
+    allocation = getDisciplinesAllocation(amount);
+
+    currentPrize = won + allocation;
 
     this.setState({
       takeoffDonations: amount,
+      currentPrize,
     });
   };
 
@@ -270,6 +278,7 @@ class GOL extends React.Component {
       myGOLs,
       myEULs,
       takeoffDonations,
+      currentPrize,
     } = this.state;
 
     let content;
@@ -468,7 +477,7 @@ class GOL extends React.Component {
             />
             <Indicators
               title={T.gol.currentPrize}
-              value={formatNumber(cidsCount)}
+              value={formatNumber(currentPrize)}
             />
             <Indicators
               title={T.gol.takeoff}
