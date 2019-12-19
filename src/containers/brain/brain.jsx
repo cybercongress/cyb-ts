@@ -20,6 +20,7 @@ import {
   getValidators,
   statusNode,
   getBalance,
+  getTotalEUL,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -245,26 +246,11 @@ class Brain extends React.Component {
     };
     let total = 0;
 
-    const balance = await getBalance(addressLedger.bech32);
-    console.log('balance', balance);
+    const result = await getBalance(addressLedger.bech32);
+    console.log('result', result);
 
-    if (balance) {
-      if (balance.available) {
-        total += parseFloat(balance.available.amount);
-      }
-
-      if (balance.delegations && balance.delegations.length > 0) {
-        balance.delegations.forEach((delegation, i) => {
-          total += parseFloat(delegation.shares);
-        });
-      }
-
-      // if (balance.unbonding && balance.unbonding.length > 0){
-
-      // }
-      if (balance.rewards) {
-        total += parseFloat(balance.rewards.amount);
-      }
+    if (result) {
+      total = getTotalEUL(result);
     }
 
     const response = await fetch(

@@ -23,6 +23,9 @@ import {
   statusNode,
   getRelevance,
   getRankGrade,
+  getTotalEUL,
+  getBalance,
+  getAmountATOM,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -30,6 +33,8 @@ import {
   ConnectLadger,
   Loading,
   FormatNumber,
+  Indicators,
+  Card,
 } from '../../components';
 import Dinamics from './diagram';
 import { cybWon } from '../../utils/fundingMath';
@@ -74,6 +79,7 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
     color="#36d6ae"
     boxShadow="0px 0px 5px #36d6ae"
     fontSize="16px"
+    whiteSpace="nowrap"
   >
     {text}
   </Tab>
@@ -90,6 +96,7 @@ class GOL extends React.Component {
       returnCode: null,
       addressInfo: null,
       addressLedger: null,
+      accountsETH: null,
       ledgerVersion: [0, 0, 0],
       linksCount: 0,
       cidsCount: 0,
@@ -111,15 +118,51 @@ class GOL extends React.Component {
       capETH: 0,
       myGOLs: 0,
       topLink: [],
+      takeoffDonations: 0,
     };
   }
 
   async componentDidMount() {
+    await this.checkAddressLocalStorage();
     this.getRelevance();
-    this.getGOLs();
+    this.getMyGOLs();
+    this.getMyEULs();
   }
 
-  getGOLs = async () => {
+  getDataWS = async () => {
+    this.ws.onopen = () => {
+      console.log('connected');
+    };
+
+    this.ws.onmessage = async evt => {
+      const message = JSON.parse(evt.data);
+      console.log('txs', message);
+      this.getAtom(message);
+    };
+
+    this.ws.onclose = () => {
+      console.log('disconnected');
+    };
+  };
+
+  checkAddressLocalStorage = async () => {
+    let address = [];
+
+    const localStorageStory = await localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address });
+      this.getMyEULs();
+    } else {
+      this.setState({
+        addAddress: true,
+        loading: false,
+      });
+    }
+  };
+
+  getMyGOLs = async () => {
     const { accounts, contractToken } = this.props;
 
     let myGOLs = 0;
@@ -132,6 +175,37 @@ class GOL extends React.Component {
 
     this.setState({
       myGOLs,
+    });
+  };
+
+  getMyEULs = async () => {
+    const { addressLedger } = this.state;
+
+    let myEULs = 0;
+
+    const result = await getBalance(addressLedger.bech32);
+
+    if (result) {
+      myEULs = getTotalEUL(result);
+    }
+
+    this.setState({
+      myEULs: Math.floor(myEULs),
+    });
+  };
+
+  getAtom = async dataTxs => {
+    let amount = 0;
+    let won = 0;
+
+    if (dataTxs) {
+      amount = await getAmountATOM(dataTxs);
+    }
+
+    won = cybWon(amount);
+
+    this.setState({
+      takeoffDonations: amount,
     });
   };
 
@@ -194,6 +268,8 @@ class GOL extends React.Component {
       selected,
       topLink,
       myGOLs,
+      myEULs,
+      takeoffDonations,
     } = this.state;
 
     let content;
@@ -220,15 +296,25 @@ class GOL extends React.Component {
       const resultsLimit = 10;
       for (let index = 0; index < resultsLimit; index += 1) {
         const item = (
-          <SearchItem
-            key={topLink[index].cid}
-            hash={topLink[index].cid}
-            rank={topLink[index].rank}
-            grade={getRankGrade(topLink[index].rank)}
-            status="success"
+          <Pane
+            display="grid"
+            gridTemplateColumns="50px 1fr"
+            alignItems="baseline"
+            gridGap="5px"
           >
-            {topLink[index].cid}
-          </SearchItem>
+            <Text textAlign="end" fontSize="16px" color="#fff">
+              #{index + 1}
+            </Text>
+            <SearchItem
+              key={topLink[index].cid}
+              hash={topLink[index].cid}
+              rank={topLink[index].rank}
+              grade={getRankGrade(topLink[index].rank)}
+              status="success"
+            >
+              {topLink[index].cid}
+            </SearchItem>
+          </Pane>
         );
 
         topLinkItems.push(item);
@@ -318,8 +404,8 @@ class GOL extends React.Component {
                 padding: 7,
               }}
             >
-              {DISTRIBUTION.map(item => (
-                <Table.Row borderBottom="none">
+              {DISTRIBUTION.map((item, index) => (
+                <Table.Row key={index} borderBottom="none">
                   <Table.TextCell>
                     <Text fontSize="16px" color="#fff">
                       {item.group}
@@ -365,31 +451,35 @@ class GOL extends React.Component {
         >
           <Pane
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
             gridGap="20px"
             width="100%"
             marginY={50}
+            alignItems="center"
           >
-            <CardStatisics title={T.gol.myGOLs} value={formatNumber(myGOLs)} />
+            <Indicators title={T.gol.myGOLs} value={formatNumber(myGOLs)} />
+            <Indicators title={T.gol.myEULs} value={formatNumber(myEULs)} />
             <CardStatisics
-              title={T.gol.myEULs}
-              value={formatNumber(cidsCount)}
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title={T.gol.maxPrize}
+              value="100 TCYB"
             />
-            <CardStatisics title={T.gol.maxPrize} value="100 TCYB" />
-            <CardStatisics
+            <Indicators
               title={T.gol.currentPrize}
               value={formatNumber(cidsCount)}
             />
-            <CardStatisics
+            <Indicators
               title={T.gol.takeoff}
-              value={formatNumber(cidsCount)}
+              value={formatNumber(takeoffDonations)}
             />
           </Pane>
           <Tablist
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-            gridGap="20px"
-            marginTop={25}
+            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+            gridGap="10px"
+            // marginTop={25}
           >
             <TabBtn
               text="Delegation"
@@ -427,7 +517,7 @@ class GOL extends React.Component {
               onSelect={() => this.select('euler4')}
             />
             <TabBtn
-              text="Community pool"
+              text="Community"
               isSelected={selected === 'communityPool'}
               onSelect={() => this.select('communityPool')}
             />

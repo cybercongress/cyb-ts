@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CYBER } from '../config';
+import { CYBER, TAKEOFF } from '../config';
 
 const { CYBER_NODE_URL } = CYBER;
 
@@ -334,3 +334,42 @@ export const getBalance = address =>
       resolve(response);
     });
   });
+
+export const getTotalEUL = data => {
+  let total = 0;
+
+  if (data) {
+    if (data.available) {
+      total += parseFloat(data.available.amount);
+    }
+
+    if (data.delegations && data.delegations.length > 0) {
+      data.delegations.forEach((delegation, i) => {
+        total += parseFloat(delegation.shares);
+      });
+    }
+
+    // if (balance.unbonding && balance.unbonding.length > 0){
+
+    // }
+    if (data.rewards) {
+      total += parseFloat(data.rewards.amount);
+    }
+  }
+  return total;
+};
+
+export const getAmountATOM = data => {
+  let amount = 0;
+  for (let item = 0; item < data.length; item++) {
+    if (amount <= TAKEOFF.ATOMsALL) {
+      amount +=
+        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) *
+        10 ** -1;
+    } else {
+      amount = TAKEOFF.ATOMsALL;
+      break;
+    }
+  }
+  return amount;
+};
