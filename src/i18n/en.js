@@ -53,6 +53,8 @@ const i18n = {
       takeoff: 'Takeoff donations',
     },
     story: {
+      episode: 'Episode 1',
+      header: 'A New Hope',
       itIsAPeriod:
         'It is a period of digital war. The evil empire swallows the last unoccupied borders of the universe.',
       resistingRebel:

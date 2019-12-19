@@ -18,6 +18,7 @@ class Story extends React.Component {
       story = localStorageStory;
     }
     this.state = {
+      btnPlay: false,
       animated: false,
       end: false,
       cyber: false,
@@ -27,17 +28,16 @@ class Story extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({
+      btnPlay: true,
+    });
+  }
+
+  startTimer = () => {
     const { history } = this.props;
-
-    const sound = document.getElementById('sound');
-
-    const audioState = setInterval(() => {
-      if (sound.readyState === 4) {
-        this.audio();
-        clearInterval(audioState);
-      }
-    }, 200);
-    // // this.fadeAudio();
+    this.setState({
+      btnPlay: false,
+    });
     setTimeout(() => {
       console.log('sdf');
       this.setState({
@@ -49,25 +49,25 @@ class Story extends React.Component {
       this.setState({
         cyber: true,
       });
-    }, 23000);
+    }, 37000);
 
     setTimeout(() => {
       this.setState({
         cyb: true,
       });
-    }, 40500);
+    }, 59500);
 
     setTimeout(() => {
       this.setState({
         end: true,
       });
-    }, 68500);
+    }, 75000);
 
     setTimeout(() => {
       localStorage.setItem('story', JSON.stringify(true));
       history.push('/');
-    }, 70000);
-  }
+    }, 80000);
+  };
 
   audio = () => {
     const sound = document.getElementById('sound');
@@ -87,60 +87,78 @@ class Story extends React.Component {
 
   Play = () => {
     document.getElementById('sound').play();
+    this.audio();
+    this.startTimer();
   };
 
   render() {
-    const { animated, end, cyber, cyb, story } = this.state;
+    const { animated, end, cyber, cyb, story, btnPlay } = this.state;
 
     return (
-      <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
-        {/* <button type="button" onClick={() => this.Play()}>btn</button> */}
-        {!story && (
-          <div
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-            className="container-distribution"
+      <div>
+        <div className="story" style={{ opacity: `${end ? 0 : 1}` }}>
+          {!story && (
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between' }}
+              className="container-distribution"
+            >
+              <Pane
+                width={50}
+                // height={50}
+                position="relative"
+                display="flex"
+                align-items="flex-end"
+              >
+                {cyber && (
+                  <img style={{ width: 'inherit' }} alt="cyb" src={cyberImg} />
+                )}
+              </Pane>
+              <Pane
+                width={50}
+                // height={50}
+                position="relative"
+                display="flex"
+                align-items="flex-end"
+              >
+                {cyb && (
+                  <img style={{ width: 'inherit' }} alt="cyb" src={cybImg} />
+                )}
+              </Pane>
+            </div>
+          )}
+          <section
+            id="title"
+            style={{
+              opacity: `${animated ? 0 : 1}`,
+              transition: 'opacity 0.3s',
+            }}
           >
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              {cyber && (
-                <img style={{ width: 'inherit' }} alt="cyb" src={cyberImg} />
-              )}
-            </Pane>
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              {cyb && (
-                <img style={{ width: 'inherit' }} alt="cyb" src={cybImg} />
-              )}
-            </Pane>
-          </div>
-        )}
-        <section
-          id="title"
-          style={{ opacity: `${animated ? 0 : 1}`, transition: 'opacity 0.3s' }}
-        >
-          <p>A long time ago somewhere in Cosmos ...</p>
-        </section>
+            <p>A long time ago somewhere in Cosmos ...</p>
+          </section>
 
-        <section className="content">
-          <div id="text" className={`${animated ? 'animated' : ''}`}>
-            <p>{T.story.itIsAPeriod}</p>
-            <p>{T.story.resistingRebel}</p>
-            <p>{T.story.asTheyBegin}</p>
-          </div>
-        </section>
-        <audio id="sound" preload="auto">
-          <source src={mp3} type="audio/mpeg" />
-        </audio>
+          <section className="content">
+            <div id="text" className={`${animated ? 'animated' : ''}`}>
+              <p style={{ textAlign: 'center' }}>{T.story.episode}</p>
+              <p style={{ textAlign: 'center' }}>{T.story.header}</p>
+              <p>{T.story.itIsAPeriod}</p>
+              <p>{T.story.resistingRebel}</p>
+              <p>{T.story.asTheyBegin}</p>
+            </div>
+          </section>
+          <audio id="sound" preload="auto">
+            <source src={mp3} type="audio/mpeg" />
+          </audio>
+        </div>
+        {btnPlay && (
+          <button
+            type="button"
+            style={{ zIndex: 3 }}
+            className="btn-home"
+            onClick={() => this.Play()}
+          >
+            Play story
+          </button>
+        )}
       </div>
     );
   }
