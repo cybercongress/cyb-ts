@@ -14,6 +14,7 @@ import {
 } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import InfiniteScroll from 'react-infinite-scroller';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import withWeb3 from '../../components/web3/withWeb3';
 import {
@@ -37,7 +38,7 @@ import {
   Card,
 } from '../../components';
 import Dinamics from './diagram';
-import { cybWon } from '../../utils/fundingMath';
+import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 
 import { i18n } from '../../i18n/en';
 
@@ -108,7 +109,7 @@ class GOL extends React.Component {
       stakedCyb: 0,
       activeValidatorsCount: 0,
       selected: 'disciplines',
-      loading: true,
+      loading: false,
       chainId: '',
       amount: 0,
       supplyEUL: 0,
@@ -119,6 +120,9 @@ class GOL extends React.Component {
       myGOLs: 0,
       topLink: [],
       takeoffDonations: 0,
+      currentPrize: 0,
+      items: 20,
+      hasMoreItems: true,
     };
   }
 
@@ -127,6 +131,7 @@ class GOL extends React.Component {
     this.getRelevance();
     this.getMyGOLs();
     this.getMyEULs();
+    this.getDataWS();
   }
 
   getDataWS = async () => {
@@ -197,15 +202,21 @@ class GOL extends React.Component {
   getAtom = async dataTxs => {
     let amount = 0;
     let won = 0;
+    let allocation = 0;
+    let currentPrize = 0;
 
     if (dataTxs) {
       amount = await getAmountATOM(dataTxs);
     }
 
     won = cybWon(amount);
+    allocation = getDisciplinesAllocation(amount);
+
+    currentPrize = won + allocation;
 
     this.setState({
       takeoffDonations: amount,
+      currentPrize,
     });
   };
 
@@ -242,6 +253,58 @@ class GOL extends React.Component {
     });
   };
 
+  fetchMoreData = () => {
+    console.log('fetchMoreData');
+    this.setState({
+      items: this.state.items + 20,
+    });
+  };
+
+  showItems() {
+    const topLinkItems = [];
+    const { topLink, items } = this.state;
+    if (topLink.length > 0) {
+      const resultsLimit = 10;
+      for (let index = 0; index < items; index += 1) {
+        const item = (
+          <Pane
+            display="grid"
+            gridTemplateColumns="50px 1fr"
+            alignItems="baseline"
+            gridGap="5px"
+          >
+            <Text textAlign="end" fontSize="16px" color="#fff">
+              #{index + 1}
+            </Text>
+            <SearchItem
+              key={topLink[index].cid}
+              hash={topLink[index].cid}
+              rank={topLink[index].rank}
+              grade={getRankGrade(topLink[index].rank)}
+              status="success"
+            >
+              {topLink[index].cid}
+            </SearchItem>
+          </Pane>
+        );
+
+        topLinkItems.push(item);
+      }
+    }
+    return topLinkItems;
+  }
+
+  loadMore() {
+    const { items, topLink } = this.state;
+    if (items > topLink.length) {
+      this.setState({ hasMoreItems: false });
+    } else {
+      setTimeout(() => {
+        this.setState({ items: items + 20 });
+      }, 2000);
+    }
+  }
+
   render() {
     const {
       linksCount,
@@ -270,6 +333,9 @@ class GOL extends React.Component {
       myGOLs,
       myEULs,
       takeoffDonations,
+      currentPrize,
+      items,
+      hasMoreItems,
     } = this.state;
 
     let content;
@@ -291,36 +357,6 @@ class GOL extends React.Component {
       );
     }
 
-    const topLinkItems = [];
-    if (topLink.length > 0) {
-      const resultsLimit = 10;
-      for (let index = 0; index < resultsLimit; index += 1) {
-        const item = (
-          <Pane
-            display="grid"
-            gridTemplateColumns="50px 1fr"
-            alignItems="baseline"
-            gridGap="5px"
-          >
-            <Text textAlign="end" fontSize="16px" color="#fff">
-              #{index + 1}
-            </Text>
-            <SearchItem
-              key={topLink[index].cid}
-              hash={topLink[index].cid}
-              rank={topLink[index].rank}
-              grade={getRankGrade(topLink[index].rank)}
-              status="success"
-            >
-              {topLink[index].cid}
-            </SearchItem>
-          </Pane>
-        );
-
-        topLinkItems.push(item);
-      }
-    }
-
     // const topLinkItems = topLink.map(item => (
     //   <SearchItem
     //     key={item.cid}
@@ -333,42 +369,162 @@ class GOL extends React.Component {
     //   </SearchItem>
     // ));
 
-    const Main = () => (
+    const Delegation = () => (
       <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
         width="100%"
       >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics title={T.brain.cap} value={formatNumber(cidsCount)} />
-        <a
-          href="/#/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4caf50" marginLeft={5} />}
-          />
-        </a>
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Get more voting power for your validator - get more rewards!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          This disciplines is social discipline with max prize of. Huge chunk of
+          CYB stake allocated to all Ethereans and Cosmonauts. The more you
+          spread, the more users will claim its allocation, the more voting
+          power as validators you will have in Genesis. Max reward for this
+          discipline is 5 TCYB. Details of reward calculation you can find in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </a>
+        </Text>
       </Pane>
     );
 
-    const Relevance = () => <Pane width="100%">{topLinkItems}</Pane>;
+    const Load = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Submit as much cyberlinks as possible!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          We need to test the network under heavy load. Testing of decentralized
+          networks under load near real conditions is hard and expensive. So we
+          invite you to submit as much cyberlinks as possible. Max reward for
+          this discipline is 6 TCYB. Current reward based on current takeoff
+          donations is... Details of reward calculation you can find in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </a>
+        </Text>
+      </Pane>
+    );
+
+    const Uptime = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Setup you validator and get rewards for precommit counts!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Max rewards for uptime is 2 TCYB.
+        </Text>
+      </Pane>
+    );
+    const FVS = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Go on and convince your friend to become a hero!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Full Validator Set discipline. We want to bootstrap the cyber main
+          network with full validators set. So we assign group bonus to all
+          validators for self-organization. If the set of validators will
+          increase over or is equal to 100, and this number of validators can
+          last for 10000 blocks, we will allocate an additional 2 TCYB to
+          validators who take part in genesis. If the number of validators will
+          increase to or over 146, under the same conditions we will allocate an
+          additional 3 TCYB. All rewards in that discipline will be distributed
+          to validators per capita. Details of reward calculation you can find
+          in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </a>
+        </Text>
+      </Pane>
+    );
+    const Euler4 = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Oh! You miss the boat. This discipline is the reward for validators
+          who helped us test the network during 2019 year. Thank you for
+          participation.
+        </Text>
+      </Pane>
+    );
+
+    const Relevance = () => (
+      <Pane width="100%">
+        <Pane textAlign="center" width="100%">
+          <Text lineHeight="24px" color="#fff" fontSize="18px">
+            Submit the most ranked content first! Details of reward calculation
+            you can find in{' '}
+            <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </a>
+          </Text>
+        </Pane>
+        <InfiniteScroll
+          // pageStart={0}
+          loadMore={this.loadMore.bind(this)}
+          hasMore={hasMoreItems}
+          loader={
+            <Pane textAlign="center">
+              <Loading />
+            </Pane>
+          }
+          // useWindow={false}
+        >
+          {this.showItems()}
+        </InfiniteScroll>
+      </Pane>
+    );
 
     if (selected === 'delegation') {
-      content = <Main />;
+      content = <Delegation />;
     }
 
     if (selected === 'load') {
-      content = <Main />;
+      content = <Load />;
     }
 
     if (selected === 'relevance') {
@@ -378,6 +534,12 @@ class GOL extends React.Component {
     if (selected === 'disciplines') {
       content = (
         <Pane width="100%">
+          <Pane textAlign="center" width="100%">
+            <Text lineHeight="24px" color="#fff" fontSize="18px">
+              Pie diagram of allocations
+            </Text>
+          </Pane>
+
           <Dinamics />
           <Table>
             <Table.Head
@@ -427,17 +589,17 @@ class GOL extends React.Component {
       );
     }
 
-    // if (selected === 'uptime') {
-    //   content = <CybernomicsEUL />;
-    // }
+    if (selected === 'uptime') {
+      content = <Uptime />;
+    }
 
-    // if (selected === 'FVS') {
-    //   content = <Consensus />;
-    // }
+    if (selected === 'FVS') {
+      content = <FVS />;
+    }
 
-    // if (selected === 'euler4') {
-    //   content = <Bandwidth />;
-    // }
+    if (selected === 'euler4') {
+      content = <Euler4 />;
+    }
 
     // if (selected === 'communityPool') {
     //   content = <CybernomicsGOL />;
@@ -468,7 +630,7 @@ class GOL extends React.Component {
             />
             <Indicators
               title={T.gol.currentPrize}
-              value={formatNumber(cidsCount)}
+              value={formatNumber(currentPrize)}
             />
             <Indicators
               title={T.gol.takeoff}
