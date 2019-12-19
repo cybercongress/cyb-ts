@@ -20,9 +20,12 @@ export const Indicators = ({ title, value, tooltipValue, positionTooltip }) => (
       {/* <span> */}
       {title}
       {/* </span> */}
-      <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
-        <Icon icon={iconHelp} />
-      </Tooltip>
+
+      {tooltipValue && (
+        <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
+          <Icon icon={iconHelp} />
+        </Tooltip>
+      )}
     </div>
     {/* <div className='dots' /> */}
   </div>
@@ -42,11 +45,22 @@ export const Card = ({ title, value, tooltipValue, positionTooltip }) => (
   </div>
 );
 
-export const CardStatisics = ({ title, value, icon }) => (
-  <div className="container-statistics-card">
-    <span className="card-statistics-value">{value}</span>
+export const CardStatisics = ({
+  title,
+  value,
+  icon,
+  styleContainer,
+  styleValue,
+  styleTitle,
+}) => (
+  <div style={styleContainer} className="container-statistics-card">
+    <span style={styleValue} className="card-statistics-value">
+      {value}
+    </span>
     <Pane display="flex" alignItems="center">
-      <span className="card-statistics-title">{title}</span>
+      <span style={styleTitle} className="card-statistics-title">
+        {title}
+      </span>
       {icon}
     </Pane>
   </div>

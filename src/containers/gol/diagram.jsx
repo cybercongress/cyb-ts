@@ -4,7 +4,14 @@ import Plotly from 'react-plotly.js';
 const data = [
   {
     values: [100, 100, 20, 10, 2, 1],
-    labels: ['Takeoff', 'Gifts', 'Euler-4', 'GOL', 'Community', 'Tot'],
+    labels: [
+      'Takeoff donations',
+      'Gifts to Ethereum, Cosmos and Urbit communities',
+      'Euler-4 validators',
+      'GOL stakers',
+      'Community pool',
+      'Test of Thrones in ATOMs',
+    ],
     textposition: 'inside',
     domain: { column: 1 },
     hoverinfo: 'label+percent',
@@ -43,12 +50,12 @@ const layout = {
     },
   ],
   // height: 400,
-  // width: 600,
+  width: 1000,
   // showlegend: false,
 };
 const config = {
   displayModeBar: false,
-  responsive: true,
+  // responsive: true,
   showSendToCloud: true,
 };
 

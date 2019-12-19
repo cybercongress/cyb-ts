@@ -11,30 +11,46 @@ const popus = [
         x0: ['Hey Vitalik, have you heard about IBC?'],
         x2_4: ['Hey Vitalik, have you heard about IBC?'],
         x5_7: ['Hey Vitalik, have you heard about IBC?'],
-        x7: ['Hey Vitalik, have you heard about IBC?']
+        x7: ['Hey Vitalik, have you heard about IBC?'],
       },
       loses: {
-        x0: ['Yeah, I know its very cool, 10 protocol implementations is fucking amazing'],
-        x2_4: ['Yeah, I know its very cool, 10 protocol implementations is fucking amazing''],
-        x5_7: ['Yeah, I know its very cool, 10 protocol implementations is fucking amazing''],
-        x7: ['Yeah, I know its very cool, 10 protocol implementations is fucking amazing'']
-      }
+        x0: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+        x2_4: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+        x5_7: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+        x7: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+      },
     },
     eth: {
       win: {
         x0: ['Hey Jae, We will launch eth2 soon ©'],
         x2_4: ['Hey Jae, We will launch eth2 soon ©'],
         x5_7: ['Hey Jae, We will launch eth2 soon ©'],
-        x7: ['Hey Jae, We will launch eth2 soon ©']
+        x7: ['Hey Jae, We will launch eth2 soon ©'],
       },
       loses: {
-        x0: ['Nope, I believe in the biggest computer with cross-shard communications'],
-        x2_4: ['Nope, I believe in the biggest computer with cross-shard communications'],
-        x5_7: ['Nope, I believe in the biggest computer with cross-shard communications'],
-        x7: ['Nope, I believe in the biggest computer with cross-shard communications']
-      }
-    }
-  }
+        x0: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+        x2_4: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+        x5_7: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+        x7: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+      },
+    },
+  },
 ];
 
 const Crown = () => <div className="crown" />;
@@ -49,7 +65,7 @@ export class VitalikJae extends Component {
       contentPopupJae: 'buy ATOMs',
       diff: 0,
       value: '',
-      valueSelect: 'ethAtom'
+      valueSelect: 'ethAtom',
     };
   }
 
@@ -98,12 +114,12 @@ export class VitalikJae extends Component {
   onChangeTest = e =>
     this.setState({
       value: e.target.value,
-      diff: e.target.value
+      diff: e.target.value,
     });
 
   onChangeSelect = e =>
     this.setState({
-      valueSelect: e.target.value
+      valueSelect: e.target.value,
     });
 
   render() {
