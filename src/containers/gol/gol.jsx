@@ -109,13 +109,31 @@ class GOL extends React.Component {
       capATOM: 0,
       averagePrice: 0,
       capETH: 0,
+      myGOLs: 0,
       topLink: [],
     };
   }
 
   async componentDidMount() {
     this.getRelevance();
+    this.getGOLs();
   }
+
+  getGOLs = async () => {
+    const { accounts, contractToken } = this.props;
+
+    let myGOLs = 0;
+
+    const balanceOfTx = await contractToken.methods.balanceOf(accounts).call();
+
+    if (balanceOfTx) {
+      myGOLs = balanceOfTx;
+    }
+
+    this.setState({
+      myGOLs,
+    });
+  };
 
   getRelevance = async () => {
     const data = await getRelevance();
@@ -175,6 +193,7 @@ class GOL extends React.Component {
       capATOM,
       selected,
       topLink,
+      myGOLs,
     } = this.state;
 
     let content;
@@ -351,10 +370,7 @@ class GOL extends React.Component {
             width="100%"
             marginY={50}
           >
-            <CardStatisics
-              title={T.gol.myGOLs}
-              value={formatNumber(linksCount)}
-            />
+            <CardStatisics title={T.gol.myGOLs} value={formatNumber(myGOLs)} />
             <CardStatisics
               title={T.gol.myEULs}
               value={formatNumber(cidsCount)}

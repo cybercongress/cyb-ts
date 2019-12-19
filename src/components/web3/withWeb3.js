@@ -3,12 +3,18 @@ import waitForWeb3 from './waitForWeb3';
 import { abi } from '../../utils/abi';
 import Auction from '../../../contracts/Auction.json';
 import AuctionUtils from '../../../contracts/AuctionUtils.json';
+import Token from '../../../contracts/Token.json';
+
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 
 import { AUCTION } from '../../utils/config';
 
-const { ADDR_SMART_CONTRACT, ADDR_SMART_CONTRACT_AUCTION_UTILS } = AUCTION;
+const {
+  ADDR_SMART_CONTRACT,
+  ADDR_SMART_CONTRACT_AUCTION_UTILS,
+  ADDR_TOKEN,
+} = AUCTION;
 
 const injectWeb3 = InnerComponent =>
   class extends PureComponent {
@@ -22,11 +28,13 @@ const injectWeb3 = InnerComponent =>
         networkId: null,
         buyTransactionSuccess: false,
         isCorrectNetwork: true,
-        contractAuctionUtils: null
+        contractAuctionUtils: null,
+        contractToken: null,
       };
       this.getWeb3 = this.getWeb3.bind(this);
       this.smart = ADDR_SMART_CONTRACT;
       this.smartAuctionUtils = ADDR_SMART_CONTRACT_AUCTION_UTILS;
+      this.tokenAdrrs = ADDR_TOKEN;
     }
 
     componentDidMount() {
@@ -43,26 +51,34 @@ const injectWeb3 = InnerComponent =>
           AuctionUtils.abi,
           this.smartAuctionUtils
         );
+        const contractToken = await new web3.eth.Contract(
+          Token.abi,
+          this.tokenAdrrs
+        );
+
         if (web3.givenProvider === null) {
           this.setState({
             web3,
             contract,
             contractAuctionUtils,
+            contractToken,
             accounts: null,
             networkId: null,
-            isCorrectNetwork: true
+            isCorrectNetwork: true,
           });
         } else {
           const networkContract = Object.keys(Auction.networks);
           const networkId = await web3.eth.net.getId();
           const accounts = await web3.eth.getAccounts();
+
           this.setState({
             web3,
             contract,
             contractAuctionUtils,
+            contractToken,
             accounts: accounts[0],
             networkId,
-            isCorrectNetwork: networkContract.indexOf(`${networkId}`) !== -1
+            isCorrectNetwork: networkContract.indexOf(`${networkId}`) !== -1,
           });
         }
       } catch (e) {
@@ -78,7 +94,8 @@ const injectWeb3 = InnerComponent =>
         accounts,
         contractAuctionUtils,
         isCorrectNetwork,
-        buyTransactionSuccess
+        buyTransactionSuccess,
+        contractToken,
       } = this.state;
       if (!isCorrectNetwork) {
         return (
@@ -93,7 +110,7 @@ const injectWeb3 = InnerComponent =>
               height: '50vh',
               display: 'flex',
               justifyContent: 'center',
-              alignItems: 'center'
+              alignItems: 'center',
             }}
           >
             <Loading />
@@ -108,6 +125,7 @@ const injectWeb3 = InnerComponent =>
           accounts={accounts}
           contractAuctionUtils={contractAuctionUtils}
           buyTransactionSuccess={buyTransactionSuccess}
+          contractToken={contractToken}
           {...this.props}
         />
       );
