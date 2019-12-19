@@ -531,11 +531,11 @@ class GOL extends React.Component {
             {content}
           </Pane>
         </main>
-        <ActionBarContainer
+        {/* <ActionBarContainer
           addAddress={addAddress}
           cleatState={this.cleatState}
           updateFunc={this.checkAddressLocalStorage}
-        />
+        /> */}
       </div>
     );
   }

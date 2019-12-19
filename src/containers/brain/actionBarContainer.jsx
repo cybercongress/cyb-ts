@@ -159,7 +159,30 @@ class ActionBarContainer extends React.Component {
           )}
           {!addAddress && (
             <Text color="#fff" fontSize="18px">
-              Take gift or Teleport to Game of Links
+              <a
+                style={{
+                  fontSize: '18px',
+                  padding: '5px 20px',
+                  margin: '0 5px',
+                }}
+                className="bnt-claime"
+                href="#/gift"
+              >
+                Take gift
+              </a>{' '}
+              or Teleport to{' '}
+              <a
+                style={{
+                  fontSize: '18px',
+                  padding: '5px 20px',
+                  margin: '0 5px',
+                }}
+                className="bnt-claime"
+                href="#/gol"
+              >
+                {' '}
+                Game of Links{' '}
+              </a>
             </Text>
           )}
         </Pane>

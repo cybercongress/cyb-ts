@@ -8,33 +8,49 @@ const popus = [
   {
     atom: {
       win: {
-        x0: ['atom 0.0', 'atom 0.1', 'atom 0.2'],
-        x2_4: ['atom 1.0', 'atom 1.1', 'atom 1.2'],
-        x5_7: ['atom 2.0', 'atom 2.1', 'atom 2.2'],
-        x7: ['atom 7.0', 'atom 7.1', 'atom 7.2']
+        x0: ['Hey Vitalik, have you heard about IBC?'],
+        x2_4: ['Hey Vitalik, have you heard about IBC?'],
+        x5_7: ['Hey Vitalik, have you heard about IBC?'],
+        x7: ['Hey Vitalik, have you heard about IBC?'],
       },
       loses: {
-        x0: ['loses atom 0.0', 'loses atom 0.1', 'loses atom 0.2'],
-        x2_4: ['loses atom 1.0', 'loses atom 1.1', 'loses atom 1.2'],
-        x5_7: ['loses atom 2.0', 'loses atom 2.1', 'loses atom 2.2'],
-        x7: ['loses atom 7.0', 'loses atom 7.1', 'loses atom 7.2']
-      }
+        x0: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+        x2_4: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+        x5_7: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+        x7: [
+          'Yeah, I know its very cool, 10 protocol implementations is fucking amazing',
+        ],
+      },
     },
     eth: {
       win: {
-        x0: ['ETH 0.0', 'ETH 0.1', 'ETH 0.2'],
-        x2_4: ['ETH 1.0', 'ETH 1.1', 'ETH 1.2'],
-        x5_7: ['ETH 2.0', 'ETH 2.1', 'ETH 2.2'],
-        x7: ['ETH 7.0', 'ETH 7.1', 'ETH 7.2']
+        x0: ['Hey Jae, We will launch eth2 soon ©'],
+        x2_4: ['Hey Jae, We will launch eth2 soon ©'],
+        x5_7: ['Hey Jae, We will launch eth2 soon ©'],
+        x7: ['Hey Jae, We will launch eth2 soon ©'],
       },
       loses: {
-        x0: ['loses ETH 0.0', 'loses ETH 0.1', 'loses ETH 0.2'],
-        x2_4: ['loses ETH 1.0', 'loses ETH 1.1', 'loses ETH 1.2'],
-        x5_7: ['loses ETH 2.0', 'loses ETH 2.1', 'loses ETH 2.2'],
-        x7: ['loses ETH 7.0', 'loses ETH 7.1', 'loses ETH 7.2']
-      }
-    }
-  }
+        x0: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+        x2_4: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+        x5_7: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+        x7: [
+          'Nope, I believe in the biggest computer with cross-shard communications',
+        ],
+      },
+    },
+  },
 ];
 
 const Crown = () => <div className="crown" />;
@@ -49,7 +65,7 @@ export class VitalikJae extends Component {
       contentPopupJae: 'buy ATOMs',
       diff: 0,
       value: '',
-      valueSelect: 'ethAtom'
+      valueSelect: 'ethAtom',
     };
   }
 
@@ -98,12 +114,12 @@ export class VitalikJae extends Component {
   onChangeTest = e =>
     this.setState({
       value: e.target.value,
-      diff: e.target.value
+      diff: e.target.value,
     });
 
   onChangeSelect = e =>
     this.setState({
-      valueSelect: e.target.value
+      valueSelect: e.target.value,
     });
 
   render() {
