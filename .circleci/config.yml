@@ -7,7 +7,7 @@ workflows:
       - update_distribution_app:
           filters:
             branches:
-              only: distr
+              only: episode-1
 
 
 jobs:
