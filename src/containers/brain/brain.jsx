@@ -98,7 +98,7 @@ class Brain extends React.Component {
       stakedCyb: 0,
       activeValidatorsCount: 0,
       selected: 'main',
-      loading: false,
+      loading: true,
       chainId: '',
       amount: 0,
       supplyEUL: 0,

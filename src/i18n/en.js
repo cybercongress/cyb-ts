@@ -69,7 +69,7 @@ const i18n = {
       },
       pocket: {
         put: 'Put Ledger into the pocket',
-        send: 'Send it using Ledger',
+        send: 'Send EUL using Ledger',
       },
       delegate: {
         joinValidator: 'Join Cyberd Network As Validator',
