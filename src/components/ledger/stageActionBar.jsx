@@ -264,6 +264,7 @@ export const Cyberlink = ({
   contentHash,
   onClickBtn,
   query,
+  disabledBtn,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <Pane
@@ -309,9 +310,10 @@ export const Cyberlink = ({
       >
         <button
           type="button"
-          className="btn"
+          className="btn-disabled"
           onClick={onClickBtn}
           style={{ height: 42, maxWidth: '200px' }}
+          disabled={disabledBtn}
         >
           {T.actionBar.link.cyberIt}
         </button>
