@@ -793,7 +793,7 @@ class GOL extends React.Component {
             marginY={50}
             alignItems="center"
           >
-            <Indicators title={T.gol.myGOLs} value={formatNumber(myGOLs)} />
+            <Indicators title={T.gol.myGOLs} value="∞" />
             <Indicators title={T.gol.myEULs} value={formatNumber(myEULs)} />
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
