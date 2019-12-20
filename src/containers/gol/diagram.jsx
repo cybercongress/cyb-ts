@@ -1,22 +1,38 @@
 import React from 'react';
 import Plotly from 'react-plotly.js';
 
+const color = [
+  '#00e676',
+  '#3d5afe',
+  '#ffea00',
+  '#ff3d00',
+  '#d500f9',
+  '#00e5ff',
+  '#651fff',
+  '#ffc400',
+];
+
 const data = [
   {
-    values: [100, 100, 20, 10, 2, 1],
+    values: [60, 15, 6, 5, 5, 5, 2, 2],
     labels: [
-      'Takeoff donations',
-      'Gifts to Ethereum, Cosmos and Urbit communities',
-      'Euler-4 validators',
-      'GOL stakers',
-      'Community pool',
-      'Test of Thrones in ATOMs',
+      'takeoff donations',
+      'relevance',
+      'load',
+      'delegation',
+      'full validator set',
+      'euler-4 rewards',
+      'lifetime',
+      'community pool',
     ],
     textposition: 'inside',
     domain: { column: 1 },
     hoverinfo: 'label+percent',
     hole: 0.4,
     type: 'pie',
+    marker: {
+      colors: color,
+    },
   },
 ];
 const layout = {

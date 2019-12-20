@@ -293,11 +293,11 @@ export const Cyberlink = ({
         {bandwidth.remained}/{bandwidth.max_value}
       </Text>
     </Pane>
-    <Text marginBottom={10} color="#fff" fontSize="16px">
-      {T.actionBar.link.to} {query}
-    </Text>
     <Text color="#fff" fontSize="16px">
-      {T.actionBar.link.from} {contentHash}
+      {T.actionBar.link.from} {query}
+    </Text>
+    <Text marginBottom={10} color="#fff" fontSize="16px">
+      {T.actionBar.link.to} {contentHash}
     </Text>
     <Pane marginTop={30}>
       <div

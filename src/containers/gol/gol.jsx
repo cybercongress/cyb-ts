@@ -108,7 +108,10 @@ class GOL extends React.Component {
       totalCyb: 0,
       stakedCyb: 0,
       activeValidatorsCount: 0,
-      selected: 'disciplines',
+      selectGlobal: 'disciplines',
+      selectedMaster: 'relevance',
+      selectedPlay: 'uptime',
+      selected: '',
       loading: false,
       chainId: '',
       amount: 0,
@@ -239,6 +242,18 @@ class GOL extends React.Component {
     this.setState({ selected });
   };
 
+  selectedMaster = selectedMaster => {
+    this.setState({ selectedMaster });
+  };
+
+  selectedPlay = selectedPlay => {
+    this.setState({ selectedPlay });
+  };
+
+  selectGlobal = selectGlobal => {
+    this.setState({ selectGlobal });
+  };
+
   onClickGetAddressLedger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
@@ -286,15 +301,18 @@ class GOL extends React.Component {
             <Text textAlign="end" fontSize="16px" color="#fff">
               #{index + 1}
             </Text>
-            <SearchItem
-              key={topLink[index].cid}
-              hash={topLink[index].cid}
-              rank={topLink[index].rank}
-              grade={getRankGrade(topLink[index].rank)}
-              status="success"
-            >
-              {topLink[index].cid}
-            </SearchItem>
+            <Pane marginY={0} marginX="auto" width="70%">
+              <SearchItem
+                key={topLink[index].cid}
+                hash={topLink[index].cid}
+                rank={topLink[index].rank}
+                grade={getRankGrade(topLink[index].rank)}
+                status="success"
+                width="70%"
+              >
+                {topLink[index].cid}
+              </SearchItem>
+            </Pane>
           </Pane>
         );
 
@@ -317,38 +335,20 @@ class GOL extends React.Component {
 
   render() {
     const {
-      linksCount,
-      cidsCount,
-      accsCount,
-      txCount,
-      blockNumber,
-      linkPrice,
-      totalCyb,
-      stakedCyb,
-      activeValidatorsCount,
-      stage,
-      returnCode,
-      ledgerVersion,
-      addAddress,
-      amount,
       loading,
-      chainId,
-      averagePrice,
-      capETH,
-      supplyEUL,
-      takeofPrice,
-      capATOM,
-      selected,
-      topLink,
+      selectedMaster,
       myGOLs,
       myEULs,
       takeoffDonations,
       currentPrize,
-      items,
       hasMoreItems,
+      selectGlobal,
+      selectedPlay,
     } = this.state;
 
     let content;
+    let contentPlay;
+    let contentMaster;
 
     if (loading) {
       return (
@@ -379,6 +379,76 @@ class GOL extends React.Component {
     //   </SearchItem>
     // ));
 
+    const Master = () => (
+      <div style={{ width: '100%' }}>
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+          gridGap="10px"
+          width="100%"
+          marginBottom={20}
+          // marginTop={25}
+        >
+          <TabBtn
+            text="Community"
+            isSelected={selectedMaster === 'community'}
+            onSelect={() => this.selectedMaster('community')}
+          />
+          <TabBtn
+            text="Load"
+            isSelected={selectedMaster === 'load'}
+            onSelect={() => this.selectedMaster('load')}
+          />
+          <TabBtn
+            text="Relevance"
+            isSelected={selectedMaster === 'relevance'}
+            onSelect={() => this.selectedMaster('relevance')}
+          />
+          <TabBtn
+            text="Takeoff"
+            isSelected={selectedMaster === 'takeoff'}
+            onSelect={() => this.selectedMaster('takeoff')}
+          />
+        </Tablist>
+        {contentMaster}
+      </div>
+    );
+
+    const Play = () => (
+      <div style={{ width: '100%' }}>
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+          gridGap="10px"
+          width="100%"
+          marginBottom={20}
+        >
+          <TabBtn
+            text="Uptime"
+            isSelected={selectedPlay === 'uptime'}
+            onSelect={() => this.selectedPlay('uptime')}
+          />
+          <TabBtn
+            text="FVS"
+            isSelected={selectedPlay === 'FVS'}
+            onSelect={() => this.selectedPlay('FVS')}
+          />
+          <TabBtn
+            text="Euler-4"
+            isSelected={selectedPlay === 'euler4'}
+            onSelect={() => this.selectedPlay('euler4')}
+          />
+
+          <TabBtn
+            text="Delegation"
+            isSelected={selectedPlay === 'delegation'}
+            onSelect={() => this.selectedPlay('delegation')}
+          />
+        </Tablist>
+        {contentPlay}
+      </div>
+    );
+
     const Delegation = () => (
       <Pane
         flexDirection="column"
@@ -394,11 +464,11 @@ class GOL extends React.Component {
           Get more voting power for your validator - get more rewards!
         </Text>
         <Text lineHeight="24px" color="#fff" fontSize="18px">
-          This disciplines is social discipline with max prize of. Huge chunk of
-          CYB stake allocated to all Ethereans and Cosmonauts. The more you
-          spread, the more users will claim its allocation, the more voting
-          power as validators you will have in Genesis. Max reward for this
-          discipline is 5 TCYB. Details of reward calculation you can find in{' '}
+          This disciplines is social discipline with max prize of 5 TCYB. Huge
+          chunk of CYB stake allocated to all Ethereans and Cosmonauts. The more
+          you spread, the more users will claim its allocation, the more voting
+          power as validators you will have in Genesis. Details of reward
+          calculation you can find in{' '}
           <a target="_blank" href="https://cybercongress.ai/game-of-links/">
             Game of Links rules
           </a>
@@ -424,8 +494,8 @@ class GOL extends React.Component {
           We need to test the network under heavy load. Testing of decentralized
           networks under load near real conditions is hard and expensive. So we
           invite you to submit as much cyberlinks as possible. Max reward for
-          this discipline is 6 TCYB. Current reward based on current takeoff
-          donations is... Details of reward calculation you can find in{' '}
+          this discipline is 6 TCYB. Details of reward calculation you can find
+          in{' '}
           <a target="_blank" href="https://cybercongress.ai/game-of-links/">
             Game of Links rules
           </a>
@@ -448,7 +518,13 @@ class GOL extends React.Component {
           Setup you validator and get rewards for precommit counts!
         </Text>
         <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Max rewards for uptime is 2 TCYB.
+          Max rewards for uptime is 2 TCYB.{' '}
+          <a
+            target="_blank"
+            href="https://cybercongress.ai/docs/cyberd/run_validator/"
+          >
+            Run validator, become the hero!
+          </a>
         </Text>
       </Pane>
     );
@@ -502,12 +578,69 @@ class GOL extends React.Component {
       </Pane>
     );
 
+    const Community = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Propose something that matters!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          2 TEUL allocated to community pool in euler-5. All governance payouts
+          will be migrated to main network. That means that up to 2 TCYB can be
+          allocated for community proposals during Game of Links.{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Details here
+          </a>
+        </Text>
+      </Pane>
+    );
+
+    const Takeoff = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Help sustain the project, get the will!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Without takeoff round it is impossible for cyber•Congress to continue
+          development of the project. Overall Game of Links rewards depends on
+          the Takeoff donations results. Takeoff round will be launched after
+          the network accept the proposal with the hash of the cyber.page app
+          with donation functionality. Details of Takeoff donations in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links
+          </a>{' '}
+          rules. Subscribe to our{' '}
+          <a target="_blank" href="https://cybercongress.ai/post/">
+            blog
+          </a>{' '}
+          to get updates.
+        </Text>
+      </Pane>
+    );
+
     const Relevance = () => (
       <Pane width="100%">
-        <Pane textAlign="center" width="100%">
+        <Pane textAlign="center" marginBottom={10} paddingX="20%" width="100%">
           <Text lineHeight="24px" color="#fff" fontSize="18px">
-            Submit the most ranked content first! Details of reward calculation
-            you can find in{' '}
+            Submit the most ranked content first!
+            <br /> Details of reward calculation you can find in{' '}
             <a target="_blank" href="https://cybercongress.ai/game-of-links/">
               Game of Links rules
             </a>
@@ -529,24 +662,40 @@ class GOL extends React.Component {
       </Pane>
     );
 
-    if (selected === 'delegation') {
-      content = <Delegation />;
+    if (selectedPlay === 'delegation') {
+      contentPlay = <Delegation />;
     }
 
-    if (selected === 'load') {
-      content = <Load />;
+    if (selectedMaster === 'load') {
+      contentMaster = <Load />;
     }
 
-    if (selected === 'relevance') {
-      content = <Relevance />;
+    if (selectedMaster === 'relevance') {
+      contentMaster = <Relevance />;
     }
 
-    if (selected === 'disciplines') {
+    if (selectedMaster === 'community') {
+      contentMaster = <Community />;
+    }
+
+    if (selectedMaster === 'takeoff') {
+      contentMaster = <Takeoff />;
+    }
+
+    if (selectGlobal === 'master') {
+      content = <Master />;
+    }
+
+    if (selectGlobal === 'play') {
+      content = <Play />;
+    }
+
+    if (selectGlobal === 'disciplines') {
       content = (
         <Pane width="100%">
           <Pane textAlign="center" width="100%">
             <Text lineHeight="24px" color="#fff" fontSize="18px">
-              Pie diagram of allocations
+              Allocations of CYB rewards by discipline
             </Text>
           </Pane>
 
@@ -560,12 +709,12 @@ class GOL extends React.Component {
             >
               <Table.TextHeaderCell textAlign="center">
                 <Text fontSize="18px" color="#fff">
-                  Group
+                  Discipline
                 </Text>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell textAlign="center">
                 <Text fontSize="18px" color="#fff">
-                  Amount of EUL
+                  CYB reward
                 </Text>
               </Table.TextHeaderCell>
             </Table.Head>
@@ -599,16 +748,16 @@ class GOL extends React.Component {
       );
     }
 
-    if (selected === 'uptime') {
-      content = <Uptime />;
+    if (selectedPlay === 'uptime') {
+      contentPlay = <Uptime />;
     }
 
-    if (selected === 'FVS') {
-      content = <FVS />;
+    if (selectedPlay === 'FVS') {
+      contentPlay = <FVS />;
     }
 
-    if (selected === 'euler4') {
-      content = <Euler4 />;
+    if (selectedPlay === 'euler4') {
+      contentPlay = <Euler4 />;
     }
 
     // if (selected === 'communityPool') {
@@ -621,6 +770,21 @@ class GOL extends React.Component {
           // style={{ justifyContent: 'space-between' }}
           className="block-body"
         >
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              Game of Links is main preparation before cyber main network
+              launch. Participants of takeoff donations and 7 disciplines could
+              get max prize in terms of 10% of CYB in Genesis.{' '}
+              <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+                Details here
+              </a>
+            </Text>
+          </Pane>
           <Pane
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
@@ -638,13 +802,10 @@ class GOL extends React.Component {
               title={T.gol.maxPrize}
               value="100 TCYB"
             />
-            <Indicators
-              title={T.gol.currentPrize}
-              value={formatNumber(currentPrize)}
-            />
+            <Indicators title={T.gol.currentPrize} value="12 TCYB" />
             <Indicators
               title={T.gol.takeoff}
-              value={formatNumber(takeoffDonations)}
+              value={`${formatNumber(takeoffDonations)} ATOMs`}
             />
           </Pane>
           <Tablist
@@ -654,49 +815,24 @@ class GOL extends React.Component {
             // marginTop={25}
           >
             <TabBtn
-              text="Delegation"
-              isSelected={selected === 'delegation'}
-              onSelect={() => this.select('delegation')}
-            />
-            <TabBtn
-              text="Load"
-              isSelected={selected === 'load'}
-              onSelect={() => this.select('load')}
-            />
-            <TabBtn
-              text="Relevance"
-              isSelected={selected === 'relevance'}
-              onSelect={() => this.select('relevance')}
+              text="Master's path"
+              isSelected={selectGlobal === 'master'}
+              onSelect={() => this.selectGlobal('master')}
             />
             <TabBtn
               text="Disciplines"
-              isSelected={selected === 'disciplines'}
-              onSelect={() => this.select('disciplines')}
+              isSelected={selectGlobal === 'disciplines'}
+              onSelect={() => this.selectGlobal('disciplines')}
             />
             <TabBtn
-              text="Uptime"
-              isSelected={selected === 'uptime'}
-              onSelect={() => this.select('uptime')}
-            />
-            <TabBtn
-              text="FVS"
-              isSelected={selected === 'FVS'}
-              onSelect={() => this.select('FVS')}
-            />
-            <TabBtn
-              text="Euler-4"
-              isSelected={selected === 'euler4'}
-              onSelect={() => this.select('euler4')}
-            />
-            <TabBtn
-              text="Community"
-              isSelected={selected === 'communityPool'}
-              onSelect={() => this.select('communityPool')}
+              text="Hero's path"
+              isSelected={selectGlobal === 'play'}
+              onSelect={() => this.selectGlobal('play')}
             />
           </Tablist>
           <Pane
             display="flex"
-            marginTop={50}
+            marginTop={20}
             marginBottom={50}
             justifyContent="center"
           >

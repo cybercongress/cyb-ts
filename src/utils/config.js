@@ -71,33 +71,41 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
-const GENESIS_SUPPLY = 233000000000000;
+const GENESIS_SUPPLY = 100000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
 const DISTRIBUTION = [
   {
-    group: 'Takeoff donations',
-    amount: '100000000000000',
+    group: 'takeoff donations',
+    amount: '60000000000000',
   },
   {
-    group: 'Gifts to Ethereum, Cosmos and Urbit communities',
-    amount: '100000000000000',
-  },
-  {
-    group: 'Euler-4 validators',
+    group: 'relevance',
     amount: '15000000000000',
   },
   {
-    group: 'GOL stakers',
-    amount: '15000000000000',
+    group: 'load',
+    amount: '6000000000000',
   },
   {
-    group: 'Community pool',
+    group: 'delegation',
+    amount: '5000000000000',
+  },
+  {
+    group: 'full validator set',
+    amount: '5000000000000',
+  },
+  {
+    group: 'euler-4 rewards',
+    amount: '5000000000000',
+  },
+  {
+    group: 'lifetime',
     amount: '2000000000000',
   },
   {
-    group: 'Test of Thrones in ATOMs',
-    amount: '1000000000000',
+    group: 'community pool',
+    amount: '2000000000000',
   },
 ];
 
