@@ -301,15 +301,18 @@ class GOL extends React.Component {
             <Text textAlign="end" fontSize="16px" color="#fff">
               #{index + 1}
             </Text>
-            <SearchItem
-              key={topLink[index].cid}
-              hash={topLink[index].cid}
-              rank={topLink[index].rank}
-              grade={getRankGrade(topLink[index].rank)}
-              status="success"
-            >
-              {topLink[index].cid}
-            </SearchItem>
+            <Pane marginY={0} marginX="auto" width="70%">
+              <SearchItem
+                key={topLink[index].cid}
+                hash={topLink[index].cid}
+                rank={topLink[index].rank}
+                grade={getRankGrade(topLink[index].rank)}
+                status="success"
+                width="70%"
+              >
+                {topLink[index].cid}
+              </SearchItem>
+            </Pane>
           </Pane>
         );
 
@@ -388,8 +391,8 @@ class GOL extends React.Component {
         >
           <TabBtn
             text="Community"
-            isSelected={selectedMaster === 'communityPool'}
-            onSelect={() => this.selectedMaster('communityPool')}
+            isSelected={selectedMaster === 'community'}
+            onSelect={() => this.selectedMaster('community')}
           />
           <TabBtn
             text="Load"
@@ -461,11 +464,11 @@ class GOL extends React.Component {
           Get more voting power for your validator - get more rewards!
         </Text>
         <Text lineHeight="24px" color="#fff" fontSize="18px">
-          This disciplines is social discipline with max prize of. Huge chunk of
-          CYB stake allocated to all Ethereans and Cosmonauts. The more you
-          spread, the more users will claim its allocation, the more voting
-          power as validators you will have in Genesis. Max reward for this
-          discipline is 5 TCYB. Details of reward calculation you can find in{' '}
+          This disciplines is social discipline with max prize of 5 TCYB. Huge
+          chunk of CYB stake allocated to all Ethereans and Cosmonauts. The more
+          you spread, the more users will claim its allocation, the more voting
+          power as validators you will have in Genesis. Details of reward
+          calculation you can find in{' '}
           <a target="_blank" href="https://cybercongress.ai/game-of-links/">
             Game of Links rules
           </a>
@@ -491,8 +494,8 @@ class GOL extends React.Component {
           We need to test the network under heavy load. Testing of decentralized
           networks under load near real conditions is hard and expensive. So we
           invite you to submit as much cyberlinks as possible. Max reward for
-          this discipline is 6 TCYB. Current reward based on current takeoff
-          donations is... Details of reward calculation you can find in{' '}
+          this discipline is 6 TCYB. Details of reward calculation you can find
+          in{' '}
           <a target="_blank" href="https://cybercongress.ai/game-of-links/">
             Game of Links rules
           </a>
@@ -515,7 +518,13 @@ class GOL extends React.Component {
           Setup you validator and get rewards for precommit counts!
         </Text>
         <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Max rewards for uptime is 2 TCYB.
+          Max rewards for uptime is 2 TCYB.{' '}
+          <a
+            target="_blank"
+            href="https://cybercongress.ai/docs/cyberd/run_validator/"
+          >
+            Run validator, become the hero!
+          </a>
         </Text>
       </Pane>
     );
@@ -569,12 +578,69 @@ class GOL extends React.Component {
       </Pane>
     );
 
+    const Community = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Propose something that matters!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          2 TEUL allocated to community pool in euler-5. All governance payouts
+          will be migrated to main network. That means that up to 2 TCYB can be
+          allocated for community proposals during Game of Links.{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Details here
+          </a>
+        </Text>
+      </Pane>
+    );
+
+    const Takeoff = () => (
+      <Pane
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        display="flex"
+        paddingY="20px"
+        paddingX="20%"
+        textAlign="justify"
+        width="100%"
+      >
+        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
+          Help sustain the project, get the will!
+        </Text>
+        <Text lineHeight="24px" color="#fff" fontSize="18px">
+          Without takeoff round it is impossible for cyber•Congress to continue
+          development of the project. Overall Game of Links rewards depends on
+          the Takeoff donations results. Takeoff round will be launched after
+          the network accept the proposal with the hash of the cyber.page app
+          with donation functionality. Details of Takeoff donations in{' '}
+          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
+            Game of Links
+          </a>{' '}
+          rules. Subscribe to our{' '}
+          <a target="_blank" href="https://cybercongress.ai/post/">
+            blog
+          </a>{' '}
+          to get updates.
+        </Text>
+      </Pane>
+    );
+
     const Relevance = () => (
       <Pane width="100%">
-        <Pane textAlign="center" width="100%">
+        <Pane textAlign="center" marginBottom={10} paddingX="20%" width="100%">
           <Text lineHeight="24px" color="#fff" fontSize="18px">
-            Submit the most ranked content first! Details of reward calculation
-            you can find in{' '}
+            Submit the most ranked content first!
+            <br /> Details of reward calculation you can find in{' '}
             <a target="_blank" href="https://cybercongress.ai/game-of-links/">
               Game of Links rules
             </a>
@@ -606,6 +672,14 @@ class GOL extends React.Component {
 
     if (selectedMaster === 'relevance') {
       contentMaster = <Relevance />;
+    }
+
+    if (selectedMaster === 'community') {
+      contentMaster = <Community />;
+    }
+
+    if (selectedMaster === 'takeoff') {
+      contentMaster = <Takeoff />;
     }
 
     if (selectGlobal === 'master') {
@@ -728,13 +802,10 @@ class GOL extends React.Component {
               title={T.gol.maxPrize}
               value="100 TCYB"
             />
-            <Indicators
-              title={T.gol.currentPrize}
-              value={formatNumber(currentPrize)}
-            />
+            <Indicators title={T.gol.currentPrize} value="12 TCYB" />
             <Indicators
               title={T.gol.takeoff}
-              value={formatNumber(takeoffDonations)}
+              value={`${formatNumber(takeoffDonations)} ATOMs`}
             />
           </Pane>
           <Tablist
