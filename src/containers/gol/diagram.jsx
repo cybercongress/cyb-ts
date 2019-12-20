@@ -55,10 +55,16 @@ const layout = {
 };
 const config = {
   displayModeBar: false,
-  // responsive: true,
   showSendToCloud: true,
 };
 
-const Dinamics = () => <Plotly data={data} layout={layout} config={config} />;
+const Dinamics = () => (
+  <Plotly
+    data={data}
+    layout={layout}
+    config={config}
+    onLegendClick={() => false}
+  />
+);
 
 export default Dinamics;

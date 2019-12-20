@@ -14,6 +14,7 @@ import {
 } from '../../components';
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import { getBalanceWallet } from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -186,28 +187,19 @@ class ActionBarContainer extends Component {
 
   getAddressInfo = async () => {
     const { address } = this.state;
-    let addressInfo;
+    let addressInfo = {};
+    let balance = 0;
 
     try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await response.json();
       const chainId = await this.getNetworkId();
-
-      addressInfo = data.result.account;
-
       addressInfo.chainId = chainId;
+      const response = await getBalanceWallet(address.bech32);
 
-      const balance = addressInfo.coins[0].amount;
+      if (response) {
+        const data = response;
+        addressInfo = data.result.account;
+        balance = addressInfo.coins[0].amount;
+      }
 
       console.log(addressInfo);
 
@@ -444,6 +436,7 @@ class ActionBarContainer extends Component {
           max={e => this.onClickMax(e)}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           toSend={toSend}
+          disabledBtn={balance === 0}
         />
       );
     }

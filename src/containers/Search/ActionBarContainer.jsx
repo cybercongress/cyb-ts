@@ -453,6 +453,7 @@ class ActionBarContainer extends Component {
           bandwidth={bandwidth}
           address={address.bech32}
           contentHash={contentHash}
+          disabledBtn={parseFloat(bandwidth.max_value) === 0}
         />
       );
     }

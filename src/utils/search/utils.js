@@ -323,16 +323,18 @@ export const getBalance = address =>
       delegationsPromise,
       unbondingPromise,
       rewardsPropsise,
-    ]).then(([available, delegations, unbonding, rewards]) => {
-      const response = {
-        available: available[0],
-        delegations,
-        unbonding,
-        rewards: rewards.total[0],
-      };
+    ])
+      .then(([available, delegations, unbonding, rewards]) => {
+        const response = {
+          available: available[0],
+          delegations,
+          unbonding,
+          rewards: rewards.total[0],
+        };
 
-      resolve(response);
-    });
+        resolve(response);
+      })
+      .catch(e => {});
   });
 
 export const getTotalEUL = data => {
@@ -373,3 +375,15 @@ export const getAmountATOM = data => {
   }
   return amount;
 };
+
+export const getBalanceWallet = address =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/api/account?address="${address}"`,
+    })
+      .then(response => {
+        resolve(response.data.result);
+      })
+      .catch(e => {})
+  );

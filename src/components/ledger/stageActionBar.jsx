@@ -264,6 +264,7 @@ export const Cyberlink = ({
   contentHash,
   onClickBtn,
   query,
+  disabledBtn,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <Pane
@@ -309,9 +310,10 @@ export const Cyberlink = ({
       >
         <button
           type="button"
-          className="btn"
+          className="btn-disabled"
           onClick={onClickBtn}
           style={{ height: 42, maxWidth: '200px' }}
+          disabled={disabledBtn}
         >
           {T.actionBar.link.cyberIt}
         </button>
@@ -330,6 +332,7 @@ export const Delegate = ({
   max,
   onChangeInputAmount,
   toSend,
+  disabledBtn,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <Pane display="flex" flexDirection="column" alignItems="center">
@@ -367,7 +370,8 @@ export const Delegate = ({
 
       <Pane marginTop={20}>
         <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount} {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}{' '}
+          {T.actionBar.delegate.enterAmount}{' '}
+          {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}{' '}
           {T.actionBar.delegate.delegate.toLowerCase()}{' '}
           <Text fontSize="20px" color="#fff" fontWeight={600}>
             {moniker}
@@ -397,9 +401,10 @@ export const Delegate = ({
       </Pane>
       <button
         type="button"
-        className="btn"
+        className="btn-disabled"
         onClick={generateTx}
         style={{ height: 42, maxWidth: '200px' }}
+        disabled={disabledBtn}
       >
         {T.actionBar.delegate.generate}
       </button>
@@ -428,41 +433,40 @@ export const SendLedger = ({
         }}
       />
     </div>
-    {availableStake > 0 && (
-      <div>
-        <h3 className="text-align-center">{T.actionBar.send.send}</h3>
-        <p className="text-align-center">{T.actionBar.send.wallet}</p>
-        <span className="actionBar-text">{availableStake}</span>
 
-        <div
-          style={{ marginBottom: 30, marginTop: 30 }}
-          className="text-align-center"
-        >
-          <input
-            value={valueInputAddressTo}
-            style={{ marginRight: 10, width: '70%' }}
-            onChange={onChangeInputAddressTo}
-            placeholder="address"
-          />
+    <div>
+      <h3 className="text-align-center">{T.actionBar.send.send}</h3>
+      <p className="text-align-center">{T.actionBar.send.wallet}</p>
+      <span className="actionBar-text">{availableStake}</span>
 
-          <input
-            value={valueInputAmount}
-            style={{ width: '24%' }}
-            onChange={onChangeInputAmount}
-            placeholder="amount GEUL"
-          />
-        </div>
-        <div className="text-align-center">
-          <button
-            type="button"
-            className="btn-disabled"
-            disabled={disabledBtn}
-            onClick={onClickBtn}
-          >
-            {T.actionBar.send.generate}
-          </button>
-        </div>
+      <div
+        style={{ marginBottom: 30, marginTop: 30 }}
+        className="text-align-center"
+      >
+        <input
+          value={valueInputAddressTo}
+          style={{ marginRight: 10, width: '70%' }}
+          onChange={onChangeInputAddressTo}
+          placeholder="address"
+        />
+
+        <input
+          value={valueInputAmount}
+          style={{ width: '24%' }}
+          onChange={onChangeInputAmount}
+          placeholder="amount GEUL"
+        />
       </div>
-    )}
+      <div className="text-align-center">
+        <button
+          type="button"
+          className="btn-disabled"
+          disabled={disabledBtn}
+          onClick={onClickBtn}
+        >
+          {T.actionBar.send.generate}
+        </button>
+      </div>
+    </div>
   </ContainetLedger>
 );

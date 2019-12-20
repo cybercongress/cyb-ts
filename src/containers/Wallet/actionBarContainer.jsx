@@ -12,6 +12,8 @@ import {
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
 
+import { getBalanceWallet } from '../../utils/search/utils';
+
 import { i18n } from '../../i18n/en';
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
@@ -178,30 +180,19 @@ class ActionBarContainer extends Component {
 
   getAddressInfo = async () => {
     const { address } = this.state;
-    let addressInfo;
+    let addressInfo = {};
+    let balance = 0;
 
     try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await response.json();
+      const response = await getBalanceWallet(address.bech32);
       const chainId = await this.getNetworkId();
-
-      addressInfo = data.result.account;
-
       addressInfo.chainId = chainId;
 
-      const balance = addressInfo.coins[0].amount;
-
-      console.log(addressInfo);
+      if (response) {
+        const data = response;
+        addressInfo = data.account;
+        balance = addressInfo.coins[0].amount;
+      }
 
       this.setState({
         addressInfo,
@@ -408,13 +399,19 @@ class ActionBarContainer extends Component {
         <SendLedger
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
-          availableStake={Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000}
+          availableStake={
+            balance !== 0
+              ? Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000
+              : 0
+          }
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           valueInputAmount={toSend}
           onClickBtnCloce={this.cleatState}
           valueInputAddressTo={toSendAddres}
           onChangeInputAddressTo={e => this.onChangeInputInputAddressT(e)}
-          disabledBtn={toSend.length === 0 || toSendAddres.length === 0}
+          disabledBtn={
+            toSend.length === 0 || toSendAddres.length === 0 || balance === 0
+          }
         />
       );
     }

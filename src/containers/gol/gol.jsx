@@ -221,9 +221,13 @@ class GOL extends React.Component {
   };
 
   getRelevance = async () => {
+    let topLink = [];
+
     const data = await getRelevance();
 
-    const topLink = data.cids;
+    if (data) {
+      topLink = data.cids;
+    }
 
     this.setState({
       topLink,
@@ -263,9 +267,15 @@ class GOL extends React.Component {
   showItems() {
     const topLinkItems = [];
     const { topLink, items } = this.state;
+
+    let linkData = items;
+
+    if (items > topLink.length) {
+      linkData = topLink.length;
+    }
+
     if (topLink.length > 0) {
-      const resultsLimit = 10;
-      for (let index = 0; index < items; index += 1) {
+      for (let index = 0; index < linkData; index += 1) {
         const item = (
           <Pane
             display="grid"
