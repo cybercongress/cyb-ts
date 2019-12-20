@@ -11,7 +11,7 @@ import ActionBarContainer from './actionBarContainer';
 import { CYBER, LEDGER } from '../../utils/config';
 import { i18n } from '../../i18n/en';
 import LocalizedStrings from 'react-localization';
-
+import { getBalanceWallet } from '../../utils/search/utils';
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
@@ -169,24 +169,20 @@ class Wallet extends React.Component {
       token: '',
       keys: '',
     };
-    const response = await fetch(
-      `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    const data = await response.json();
-
-    console.log('data', data);
-
-    addressInfo.address = addressLedger.bech32;
-    addressInfo.amount = data.result.account.coins[0].amount;
-    addressInfo.token = data.result.account.coins[0].denom;
-    addressInfo.keys = 'ledger';
+    const response = await getBalanceWallet(addressLedger.bech32);
+    if (response) {
+      const data = response;
+      console.log('data', data);
+      addressInfo.address = addressLedger.bech32;
+      addressInfo.amount = data.account.coins[0].amount;
+      addressInfo.token = data.account.coins[0].denom;
+      addressInfo.keys = 'ledger';
+    } else {
+      addressInfo.address = addressLedger.bech32;
+      addressInfo.amount = 0;
+      addressInfo.token = 'eul';
+      addressInfo.keys = 'ledger';
+    }
 
     table.push(addressInfo);
 

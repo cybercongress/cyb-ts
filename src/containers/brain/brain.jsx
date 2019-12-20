@@ -253,30 +253,30 @@ class Brain extends React.Component {
       total = getTotalEUL(result);
     }
 
-    const response = await fetch(
-      `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    const data = await response.json();
+    // const response = await fetch(
+    //   `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
+    //   {
+    //     method: 'GET',
+    //     headers: {
+    //       Accept: 'application/json',
+    //       'Content-Type': 'application/json',
+    //     },
+    //   }
+    // );
+    // const data = await response.json();
 
-    console.log('data', data);
+    // console.log('data', data);
 
-    addressInfo.address = addressLedger.bech32;
-    addressInfo.amount = data.result.account.coins[0].amount;
-    addressInfo.token = data.result.account.coins[0].denom;
-    addressInfo.keys = 'ledger';
+    // addressInfo.address = addressLedger.bech32;
+    // addressInfo.amount = data.result.account.coins[0].amount;
+    // addressInfo.token = data.result.account.coins[0].denom;
+    // addressInfo.keys = 'ledger';
 
     this.setState({
       stage: STAGE_READY,
       addAddress: false,
       loading: false,
-      addressInfo,
+      // addressInfo,
       amount: total,
     });
   };
