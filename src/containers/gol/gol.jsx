@@ -124,7 +124,7 @@ class GOL extends React.Component {
       topLink: [],
       takeoffDonations: 0,
       currentPrize: 0,
-      items: 20,
+      items: 10,
       hasMoreItems: true,
     };
   }
@@ -275,7 +275,7 @@ class GOL extends React.Component {
   fetchMoreData = () => {
     console.log('fetchMoreData');
     this.setState({
-      items: this.state.items + 20,
+      items: this.state.items + 10,
     });
   };
 
@@ -324,7 +324,7 @@ class GOL extends React.Component {
 
   loadMore() {
     const { items, topLink } = this.state;
-    if (items > topLink.length) {
+    if (items > topLink.length || items === 1000) {
       this.setState({ hasMoreItems: false });
     } else {
       setTimeout(() => {
@@ -655,7 +655,7 @@ class GOL extends React.Component {
               <Loading />
             </Pane>
           }
-          // useWindow={false}
+          useWindow={false}
         >
           {this.showItems()}
         </InfiniteScroll>
