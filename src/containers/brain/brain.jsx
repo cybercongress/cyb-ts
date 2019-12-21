@@ -586,14 +586,7 @@ class Brain extends React.Component {
                 You do not have control over the brain. You need EUL tokens to
                 let she hear you. If you came from Ethereum or Cosmos you can
                 claim the gift of gods. Then start prepare to the greatest
-                tournament in universe:{' '}
-                <a
-                  target="_blank"
-                  href="https://cybercongress.ai/game-of-links/"
-                >
-                  Game of Links
-                </a>
-                .
+                tournament in universe: <a href="#/gol">Game of Links</a>.
               </Text>
             </Pane>
           )}
