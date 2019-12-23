@@ -8,7 +8,7 @@ const AUCTION = {
     '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
   TOPICS_CLAIM:
     '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
-  HTTP_PROVIDER_URL: 'http://herzner1.cybernode.ai:8545/',
+  HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
 };
 
 const NETWORKSIDS = {
