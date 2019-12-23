@@ -13,6 +13,8 @@ import {
   timer,
 } from '../../utils/utils';
 
+const BigNumber = require('bignumber.js');
+
 import { AUCTION } from '../../utils/config';
 
 const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
@@ -154,14 +156,17 @@ class Auction extends PureComponent {
     const today = roundThis;
     const createOnDay = await methods.createOnDay(today).call();
     const dailyTotals = await methods.dailyTotals(today).call();
+
     const currentPrice = roundNumber(
       dailyTotals / (createOnDay * Math.pow(10, 9)),
       6
     );
 
+    const price = new BigNumber(currentPrice);
+
     return this.setState({
       roundThis,
-      currentPrice,
+      currentPrice: price,
       numberOfDays,
       dailyTotals: Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000,
     });

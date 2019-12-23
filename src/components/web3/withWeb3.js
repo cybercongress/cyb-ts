@@ -46,7 +46,7 @@ const injectWeb3 = InnerComponent =>
       try {
         const web3 = await waitForWeb3();
         console.log('web3.givenProvider', web3);
-        const contract = await new web3.eth.Contract(abi, this.smart);
+        const contract = await new web3.eth.Contract(Auction.abi, this.smart);
         const contractAuctionUtils = await new web3.eth.Contract(
           AuctionUtils.abi,
           this.smartAuctionUtils
@@ -55,7 +55,6 @@ const injectWeb3 = InnerComponent =>
           Token.abi,
           this.tokenAdrrs
         );
-
         if (web3.givenProvider === null) {
           this.setState({
             web3,

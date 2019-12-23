@@ -68,7 +68,7 @@ class Got extends PureComponent {
     const subscription = web3.eth.subscribe(
       'logs',
       {
-        address: '0x6c9c39d896b51e6736dbd3da710163903a3b091b',
+        address: AUCTION.ADDR_SMART_CONTRACT,
         topics: [
           '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
         ],
@@ -115,7 +115,7 @@ class Got extends PureComponent {
       contract: { methods },
     } = this.props;
     // if(this.state.loading){
-    const dailyTotals = await methods.dailyTotals(59).call();
+    const dailyTotals = await methods.dailyTotals(0).call();
     let ETHRaised = 0;
     let ATOMsRaised = 0;
 

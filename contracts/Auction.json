@@ -3,6 +3,20 @@
   "abi": [
     {
       "constant": true,
+      "inputs": [],
+      "name": "hasInitialized",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
       "inputs": [
         {
           "name": "",
@@ -18,6 +32,53 @@
         {
           "name": "",
           "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_script",
+          "type": "bytes"
+        }
+      ],
+      "name": "getEVMScriptExecutor",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "tokenManager",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getRecoveryVault",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
         }
       ],
       "payable": false,
@@ -49,17 +110,12 @@
     },
     {
       "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "keys",
+      "inputs": [],
+      "name": "foundation",
       "outputs": [
         {
           "name": "",
-          "type": "string"
+          "type": "address"
         }
       ],
       "payable": false,
@@ -67,12 +123,17 @@
       "type": "function"
     },
     {
-      "constant": false,
+      "constant": true,
       "inputs": [],
-      "name": "renounceOwnership",
-      "outputs": [],
+      "name": "utils",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
       "payable": false,
-      "stateMutability": "nonpayable",
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -110,12 +171,17 @@
     },
     {
       "constant": true,
-      "inputs": [],
-      "name": "owner",
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "allowRecoverability",
       "outputs": [
         {
           "name": "",
-          "type": "address"
+          "type": "bool"
         }
       ],
       "payable": false,
@@ -125,11 +191,94 @@
     {
       "constant": true,
       "inputs": [],
-      "name": "isOwner",
+      "name": "appId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "CREATOR_ROLE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getInitializationBlock",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "transferToVault",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_sender",
+          "type": "address"
+        },
+        {
+          "name": "_role",
+          "type": "bytes32"
+        },
+        {
+          "name": "_params",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "canPerform",
       "outputs": [
         {
           "name": "",
           "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getEVMScriptRegistry",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
         }
       ],
       "payable": false,
@@ -167,6 +316,34 @@
     {
       "constant": true,
       "inputs": [],
+      "name": "kernel",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isPetrified",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
       "name": "numberOfDays",
       "outputs": [
         {
@@ -176,20 +353,6 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "newOwner",
-          "type": "address"
-        }
-      ],
-      "name": "transferOwnership",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -221,29 +384,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "name": "_numberOfDays",
-          "type": "uint256"
-        },
-        {
-          "name": "_openTime",
-          "type": "uint256"
-        },
-        {
-          "name": "_startTime",
-          "type": "uint256"
-        },
-        {
-          "name": "_token",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
       "payable": true,
       "stateMutability": "payable",
       "type": "fallback"
@@ -257,7 +397,7 @@
           "type": "uint256"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "name": "user",
           "type": "address"
         },
@@ -279,7 +419,7 @@
           "type": "uint256"
         },
         {
-          "indexed": false,
+          "indexed": true,
           "name": "user",
           "type": "address"
         },
@@ -306,12 +446,6 @@
     },
     {
       "anonymous": false,
-      "inputs": [],
-      "name": "LogFreeze",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
           "indexed": false,
@@ -324,25 +458,122 @@
     },
     {
       "anonymous": false,
+      "inputs": [],
+      "name": "LogLoaded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "LogBurn",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
       "inputs": [
         {
           "indexed": true,
-          "name": "previousOwner",
+          "name": "executor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "script",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "name": "input",
+          "type": "bytes"
+        },
+        {
+          "indexed": false,
+          "name": "returnData",
+          "type": "bytes"
+        }
+      ],
+      "name": "ScriptResult",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "vault",
           "type": "address"
         },
         {
           "indexed": true,
-          "name": "newOwner",
+          "name": "token",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
         }
       ],
-      "name": "OwnershipTransferred",
+      "name": "RecoverToVault",
       "type": "event"
     },
     {
       "constant": false,
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "_numberOfDays",
+          "type": "uint256"
+        },
+        {
+          "name": "_openTime",
+          "type": "uint256"
+        },
+        {
+          "name": "_startTime",
+          "type": "uint256"
+        },
+        {
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "name": "_foundation",
+          "type": "address"
+        },
+        {
+          "name": "_tokenManager",
+          "type": "address"
+        }
+      ],
       "name": "initialize",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_createFirstDay",
+          "type": "uint256"
+        }
+      ],
+      "name": "load",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_utils",
+          "type": "address"
+        }
+      ],
+      "name": "addUtils",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
@@ -476,7 +707,7 @@
     {
       "constant": false,
       "inputs": [],
-      "name": "freeze",
+      "name": "burnDust",
       "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",

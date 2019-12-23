@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 import { ClaimedAll } from './claimedAll';
+import { AUCTION } from '../../utils/config';
 
 function lament(error) {
   if (error) {
@@ -179,7 +180,7 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
           href={`https://rinkeby.etherscan.io/tx/${hash}`}
           target="_blank"
         >
-          0x54ecdad68b55d3e15452cd801287434194d329e0725ee1f2cc230fb0d9dd4221
+          {hash}
         </a>
       </div>
     </ActionBarContentText>
@@ -204,7 +205,7 @@ class ActionBarAuction extends Component {
       validInputRound: false,
       validInputAmount: false
     };
-    this.smart = '0x6C9c39D896B51e6736DBd3dA710163903A3B091B';
+    this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
 
   onChangeRound = e => {
@@ -271,28 +272,30 @@ class ActionBarAuction extends Component {
     this.setState({
       step: 'start',
       round: '',
-      amount: ''
+      amount: '',
     });
 
-  buyTOKEN = account => {
+  buyTOKEN = async account => {
     const { web3, contract } = this.props;
     const { round, amount } = this.state;
     console.log(round);
     console.log(amount);
 
-    const priceInWei = web3.utils.toWei(amount, 'ether');
+    const getData = await contract.methods.buyWithLimit(round, 0).encodeABI();
+
+    const priceInWei = await web3.utils.toWei(amount, 'ether');
     web3.eth.sendTransaction(
       {
         from: account,
         to: this.smart,
         value: priceInWei,
-        data: contract.methods.buyWithLimit(round, 0).encodeABI()
+        data: getData,
       },
       hopefully(result =>
         ping(result).then(() => {
           this.setState({
             step: 'succesfuuly',
-            tx: result
+            tx: result,
           });
         })
       )

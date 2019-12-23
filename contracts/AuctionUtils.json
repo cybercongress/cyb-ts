@@ -3,80 +3,45 @@
   "abi": [
     {
       "constant": true,
-      "inputs": [],
-      "name": "sale",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
+      "inputs": [{ "name": "user", "type": "address" }],
+      "name": "userBuys",
+      "outputs": [{ "name": "result", "type": "uint256[11]" }],
       "payable": false,
       "stateMutability": "view",
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "name": "_sale",
-          "type": "address"
-        }
-      ],
+      "constant": true,
+      "inputs": [],
+      "name": "sale",
+      "outputs": [{ "name": "", "type": "address" }],
       "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "constructor"
+      "stateMutability": "view",
+      "type": "function"
     },
     {
       "constant": true,
       "inputs": [],
       "name": "dailyTotals",
-      "outputs": [
-        {
-          "name": "result",
-          "type": "uint256[60]"
-        }
-      ],
+      "outputs": [{ "name": "result", "type": "uint256[11]" }],
       "payable": false,
       "stateMutability": "view",
       "type": "function"
     },
     {
       "constant": true,
-      "inputs": [
-        {
-          "name": "user",
-          "type": "address"
-        }
-      ],
-      "name": "userBuys",
-      "outputs": [
-        {
-          "name": "result",
-          "type": "uint256[60]"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "user",
-          "type": "address"
-        }
-      ],
+      "inputs": [{ "name": "user", "type": "address" }],
       "name": "userClaims",
-      "outputs": [
-        {
-          "name": "result",
-          "type": "bool[60]"
-        }
-      ],
+      "outputs": [{ "name": "result", "type": "bool[11]" }],
       "payable": false,
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [{ "name": "_sale", "type": "address" }],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"user\",\"type\":\"address\"}],\"name\":\"userBuys\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256[60]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"sale\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"dailyTotals\",\"outputs\":[{\"name\":\"result\",\"type\":\"uint256[60]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"user\",\"type\":\"address\"}],\"name\":\"userClaims\",\"outputs\":[{\"name\":\"result\",\"type\":\"bool[60]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_sale\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/litvintech/Projects/cyber_auction/contracts/AuctionUtils.sol\":\"AuctionUtils\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":500},\"remappings\":[]},\"sources\":{\"/Users/litvintech/Projects/cyber_auction/contracts/Auction.sol\":{\"keccak256\":\"0xcc917661cb91d7e4007f5ecc6bc41bda808be02ecc525cea907b279996044002\",\"urls\":[\"bzzr://d907ccfdc3413a4784088d1d6b0dfc5e288659248ae2447b0980676dc1c1c5b6\",\"dweb:/ipfs/QmU4eS5whrSfqGsQJvsxkKe4Hm6ePX1zWciZL3YRgxNaU8\"]},\"/Users/litvintech/Projects/cyber_auction/contracts/AuctionUtils.sol\":{\"keccak256\":\"0x8e5d73dabd0e2120e1f18c1248ea88b00e99b6d4a817d528b85afc1db9f1c4d3\",\"urls\":[\"bzzr://7f3e1a30f420239654c11cda96e4fe23d0a4b7f5a5c5c8ac113dc505b71ec03d\",\"dweb:/ipfs/QmRiD7uTQ9jMX72q23yPb2iMBt7X52NooXgxYP4HJFcSvS\"]},\"/Users/litvintech/Projects/cyber_auction/contracts/DSMath.sol\":{\"keccak256\":\"0x076e4e69e3c310c9db584ed185b9ddb146119efe1b5956eb70f4a0ec3dba2ee9\",\"urls\":[\"bzzr://c31879bfff7d879627fa8c5b224aa954bad2966965e3f772677de3a7a161a22a\",\"dweb:/ipfs/QmX7KetuVanvGwC5mM5S7MQcmsXjG1UnEmq3XWSZqEiqHG\"]},\"@openzeppelin/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xf79fb10e8235770eb4aea7249034076a3cc9f9119ad944fc48705bae9c9d20dc\",\"urls\":[\"bzzr://d12a11272051eb6586de8f7e0a82c04a98c9984ce8b2a6cf1ee439f65aba29a9\",\"dweb:/ipfs/QmS55hgTvNEAKinus19m65CB4wcymN8EiUPFpRx5tYJ1i2\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x90e8c2521653bbb1768b05889c5760031e688d9cd361f167489b89215e201b95\",\"urls\":[\"bzzr://aa8b45b57edafc3d67bc5d916327ea16807fae33f753ca163ae0c4061b789766\",\"dweb:/ipfs/QmP5NaEwZthQeM2ESz4WTT3osrP7jhbvu7ocbttBi2JAw6\"]}},\"version\":1}",
@@ -89,20 +54,14 @@
   "ast": {
     "absolutePath": "/Users/litvintech/Projects/cyber_auction/contracts/AuctionUtils.sol",
     "exportedSymbols": {
-      "AuctionUtils": [
-        581
-      ]
+      "AuctionUtils": [581]
     },
     "id": 582,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 474,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".10"
-        ],
+        "literals": ["solidity", "0.5", ".10"],
         "nodeType": "PragmaDirective",
         "src": "0:23:1"
       },
@@ -124,9 +83,7 @@
         "documentation": null,
         "fullyImplemented": true,
         "id": 581,
-        "linearizedBaseContracts": [
-          581
-        ],
+        "linearizedBaseContracts": [581],
         "name": "AuctionUtils",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -457,9 +414,7 @@
                   },
                   "id": 514,
                   "initializationExpression": {
-                    "assignments": [
-                      495
-                    ],
+                    "assignments": [495],
                     "declarations": [
                       {
                         "constant": false,
@@ -836,9 +791,7 @@
                   },
                   "id": 546,
                   "initializationExpression": {
-                    "assignments": [
-                      526
-                    ],
+                    "assignments": [526],
                     "declarations": [
                       {
                         "constant": false,
@@ -1243,9 +1196,7 @@
                   },
                   "id": 578,
                   "initializationExpression": {
-                    "assignments": [
-                      558
-                    ],
+                    "assignments": [558],
                     "declarations": [
                       {
                         "constant": false,
@@ -1452,20 +1403,14 @@
   "legacyAST": {
     "absolutePath": "/Users/litvintech/Projects/cyber_auction/contracts/AuctionUtils.sol",
     "exportedSymbols": {
-      "AuctionUtils": [
-        581
-      ]
+      "AuctionUtils": [581]
     },
     "id": 582,
     "nodeType": "SourceUnit",
     "nodes": [
       {
         "id": 474,
-        "literals": [
-          "solidity",
-          "0.5",
-          ".10"
-        ],
+        "literals": ["solidity", "0.5", ".10"],
         "nodeType": "PragmaDirective",
         "src": "0:23:1"
       },
@@ -1487,9 +1432,7 @@
         "documentation": null,
         "fullyImplemented": true,
         "id": 581,
-        "linearizedBaseContracts": [
-          581
-        ],
+        "linearizedBaseContracts": [581],
         "name": "AuctionUtils",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -1820,9 +1763,7 @@
                   },
                   "id": 514,
                   "initializationExpression": {
-                    "assignments": [
-                      495
-                    ],
+                    "assignments": [495],
                     "declarations": [
                       {
                         "constant": false,
@@ -2199,9 +2140,7 @@
                   },
                   "id": 546,
                   "initializationExpression": {
-                    "assignments": [
-                      526
-                    ],
+                    "assignments": [526],
                     "declarations": [
                       {
                         "constant": false,
@@ -2606,9 +2545,7 @@
                   },
                   "id": 578,
                   "initializationExpression": {
-                    "assignments": [
-                      558
-                    ],
+                    "assignments": [558],
                     "declarations": [
                       {
                         "constant": false,

@@ -15,16 +15,22 @@ import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading, ActionBarLink } from '../../components';
 
+const ipfs = require('ipfs');
+const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
+const Unixfs = require('ipfs-unixfs');
+const IPFS = require('ipfs-api');
 const cyb = require('../../image/logo-cyb-v2.svg');
 const cyber = require('../../image/cyber.png');
 
 const tilde = require('../../image/tilde.svg');
+
 
 // const grade = {
 //   from: 0.0001,
 //   to: 0.1,
 //   value: 4
 // };
+
 
 class Home extends PureComponent {
   constructor(props) {
@@ -41,6 +47,17 @@ class Home extends PureComponent {
       resultNull: false,
       query: '',
     };
+  }
+
+  componentDidMount() {
+    // ipfs.files.get(
+    //   'QmVuQhpty8DoYYvybKhwuqTk3ocNFk64qEirXtLZbdvDgQ',
+    //   (err, files) => {
+    //     const lotteryJson = files[0].content.toString('utf8');
+    //     const lottery = JSON.parse(lotteryJson);
+    //     console.log(lottery);
+    //   }
+    // );
   }
 
   onChangeInput = async e => {
