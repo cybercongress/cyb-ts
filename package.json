@@ -45,7 +45,7 @@
     "url-loader": "^2.1.0",
     "webpack": "4.41.2",
     "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.5"
+    "webpack-dev-server": "3.1.11"
   },
   "dependencies": {
     "@cybercongress/gravity": "^0.0.2",
