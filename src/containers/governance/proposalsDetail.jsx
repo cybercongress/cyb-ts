@@ -27,7 +27,6 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 
 const dateFormat = require('dateformat');
 
-
 const finalTallyResult = item => {
   const finalVotes = {};
   let finalTotalVotes = 0;
@@ -195,11 +194,12 @@ class ProposalsDetail extends React.Component {
     let noWithVeto = [];
 
     const getVotes = await getProposalsDetailVotes(id);
-
-    yes = getVotes.filter(item => item.option === 'Yes').length;
-    no = getVotes.filter(item => item.option === 'No').length;
-    abstain = getVotes.filter(item => item.option === 'Abstain').length;
-    noWithVeto = getVotes.filter(item => item.option === 'noWithVeto').length;
+    if (getVotes) {
+      yes = getVotes.filter(item => item.option === 'Yes').length;
+      no = getVotes.filter(item => item.option === 'No').length;
+      abstain = getVotes.filter(item => item.option === 'Abstain').length;
+      noWithVeto = getVotes.filter(item => item.option === 'noWithVeto').length;
+    }
 
     votes.voter = getVotes;
     votes.yes = yes;
@@ -219,7 +219,9 @@ class ProposalsDetail extends React.Component {
 
     const data = await getTableVoters(id);
 
-    tableVoters = data;
+    if (data) {
+      tableVoters = data;
+    }
 
     this.setState({
       tableVoters,

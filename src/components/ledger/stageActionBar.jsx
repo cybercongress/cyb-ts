@@ -2,7 +2,14 @@ import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LocalizedStrings from 'react-localization';
-import { ActionBar, Button, Input, Pane, Text } from '@cybercongress/gravity';
+import {
+  ActionBar,
+  Button,
+  Input,
+  Pane,
+  Text,
+  Select,
+} from '@cybercongress/gravity';
 import { ContainetLedger, Loading, FormatNumber } from '../index';
 import { formatNumber } from '../../utils/search/utils';
 
@@ -254,6 +261,84 @@ export const StartStageSearchActionBar = ({
     <Button disabled={!contentHash.length} onClick={onClickBtn}>
       {T.actionBar.startSearch.cyberlink}
     </Button>
+  </ActionBar>
+);
+
+export const GovernanceStartStageActionBar = ({
+  valueSelect,
+  onChangeSelect,
+  onClickBtn,
+}) => (
+  <ActionBar>
+    <ActionBarContentText>
+      <select
+        style={{ height: 42, width: '60%' }}
+        className="select-green"
+        value={valueSelect}
+        onChange={onChangeSelect}
+      >
+        <option value="textProposal">Text Proposal</option>
+        <option value="paramChange">Param Change</option>
+        <option value="communityPool">Community Pool Spend</option>
+      </select>
+    </ActionBarContentText>
+    <Button onClick={onClickBtn}>Create Governance</Button>
+  </ActionBar>
+);
+
+export const TextProposal = ({
+  valueSelect,
+  onChangeSelect,
+  onClickBtn,
+  addrProposer,
+  onClickBtnCloce,
+}) => (
+  <ActionBar>
+    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+      <Text>Text Proposal</Text>
+      <Text>proposer</Text>
+      <Text>{addrProposer}</Text>
+      <Text>title</Text>
+      <Text>description</Text>
+      <Text>deposit</Text>
+      <Button onClick={onClickBtn}>Create Governance</Button>
+    </ContainetLedger>
+  </ActionBar>
+);
+
+export const ParamChange = ({ valueSelect, onChangeSelect, onClickBtn }) => (
+  <ActionBar>
+    <ActionBarContentText>
+      <select
+        style={{ height: 42, width: '60%' }}
+        className="select-green"
+        value={valueSelect}
+        onChange={onChangeSelect}
+      >
+        <option value="textProposal">Text Proposal</option>
+        <option value="paramChange">Param Change</option>
+        <option value="communityPool">Community Pool Spend</option>
+      </select>
+    </ActionBarContentText>
+    <Button onClick={onClickBtn}>Create Governance</Button>
+  </ActionBar>
+);
+
+export const CommunityPool = ({ valueSelect, onChangeSelect, onClickBtn }) => (
+  <ActionBar>
+    <ActionBarContentText>
+      <select
+        style={{ height: 42, width: '60%' }}
+        className="select-green"
+        value={valueSelect}
+        onChange={onChangeSelect}
+      >
+        <option value="textProposal">Text Proposal</option>
+        <option value="paramChange">Param Change</option>
+        <option value="communityPool">Community Pool Spend</option>
+      </select>
+    </ActionBarContentText>
+    <Button onClick={onClickBtn}>Create Governance</Button>
   </ActionBar>
 );
 

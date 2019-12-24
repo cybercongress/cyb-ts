@@ -33,4 +33,8 @@ export {
   StartStageSearchActionBar,
   Delegate,
   SendLedger,
+  GovernanceStartStageActionBar,
+  CommunityPool,
+  ParamChange,
+  TextProposal,
 } from './ledger/stageActionBar';

@@ -22,7 +22,7 @@ export const Legend = ({ color, text, ...props }) => (
       display="inline-block"
       marginRight={10}
       backgroundColor={color}
-      verticalAlign="middle"
+      verticalalign="middle"
     />
     <Text color="#fff" fontSize="16px">
       {text}

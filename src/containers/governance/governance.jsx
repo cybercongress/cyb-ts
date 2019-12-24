@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
 import { Votes, Legend, IconStatus } from '../../components';
+import ActionBar from './actionBar';
 
 // import proposals from './test';
 import { getProposals } from '../../utils/governance';
@@ -198,6 +199,7 @@ class Governance extends React.Component {
             </Pane>
           </Pane>
         </main>
+        {/* <ActionBar /> */}
       </div>
     );
   }
