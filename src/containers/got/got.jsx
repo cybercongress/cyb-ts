@@ -41,14 +41,14 @@ class Got extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { web3 } = this.props;
     this.connect();
     // const tx = [];
     // web3.eth
     //   .getPastLogs({
     //     fromBlock: '0x0',
-    //     address: '0x6c9c39d896b51e6736dbd3da710163903a3b091b',
+    //     address: AUCTION.ADDR_SMART_CONTRACT,
     //   })
     //   .then(res => {
     //     res.forEach(rec => {
@@ -82,7 +82,9 @@ class Got extends PureComponent {
     );
 
     subscription.unsubscribe((error, success) => {
-      if (success) console.log('Successfully unsubscribed!');
+      if (success) {
+        console.log('Successfully unsubscribed!');
+      }
     });
   }
 
@@ -172,7 +174,7 @@ class Got extends PureComponent {
     let ethCYB = 0;
     let atomsCYB = 0;
     let difference = {};
-    let arow = 0;
+    const arow = 0;
     let win = '';
     // debugger;s
     const cyb = 10 * Math.pow(10, 4);

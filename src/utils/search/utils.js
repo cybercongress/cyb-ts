@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { CYBER, TAKEOFF } from '../config';
+import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
+import { CYBER, TAKEOFF } from '../config'
 
 const { CYBER_NODE_URL } = CYBER;
 
 const IPFS = require('ipfs-api');
 
 const Unixfs = require('ipfs-unixfs');
-const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
 
 let ipfsApi;
 

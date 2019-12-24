@@ -109,89 +109,96 @@ class Governance extends React.Component {
     ));
 
     return (
-      <main className="block-body-home">
-        <Pane>
-          <Pane
-            height={70}
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Text marginRight={50} marginLeft={20} color="#fff" fontSize="18px">
-              {table.length} Proposals
-            </Text>
-            <Pane display="flex">
-              <Legend color="#3ab793" text="Yes" />
-              <Legend color="#ccdcff" text="Abstain" marginLeft={50} />
-              <Legend color="#ffcf65" text="No" marginLeft={50} />
-              <Legend color="#fe8a8a" text="NoWithVeto" marginLeft={50} />
+      <div>
+        <main className="block-body-home">
+          <Pane>
+            <Pane
+              height={70}
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Text
+                marginRight={50}
+                marginLeft={20}
+                color="#fff"
+                fontSize="18px"
+              >
+                {table.length} Proposals
+              </Text>
+              <Pane display="flex">
+                <Legend color="#3ab793" text="Yes" />
+                <Legend color="#ccdcff" text="Abstain" marginLeft={50} />
+                <Legend color="#ffcf65" text="No" marginLeft={50} />
+                <Legend color="#fe8a8a" text="NoWithVeto" marginLeft={50} />
+              </Pane>
+            </Pane>
+            <Pane
+              // height="100%"
+              display="flex"
+              paddingBottom={50}
+            >
+              <Table overflowX="auto">
+                <Table.Head
+                  width="fit-content"
+                  style={{
+                    backgroundColor: '#000',
+                    borderBottom: '1px solid #ffffff80',
+                  }}
+                  paddingLeft={20}
+                >
+                  <Table.TextHeaderCell flex="none" width={50}>
+                    <Text color="#fff" fontSize="17px">
+                      ID
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={150}>
+                    <Text color="#fff" fontSize="17px">
+                      Title
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={170}>
+                    <Text color="#fff" fontSize="17px">
+                      Type
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={150}>
+                    <Text color="#fff" fontSize="17px">
+                      Status
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={200}>
+                    <Text color="#fff" fontSize="17px">
+                      Submit_Time
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={200}>
+                    <Text color="#fff" fontSize="17px">
+                      Deposit_Endtime
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={200}>
+                    <Text color="#fff" fontSize="17px">
+                      Voting_Starttime
+                    </Text>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell flex="none" width={200}>
+                    <Text color="#fff" fontSize="17px">
+                      Voting_Endtime
+                    </Text>
+                  </Table.TextHeaderCell>
+                </Table.Head>
+                <Table.Body
+                  width="fit-content"
+                  style={{ backgroundColor: '#000', overflow: 'hidden' }}
+                >
+                  {rowsTable}
+                </Table.Body>
+              </Table>
             </Pane>
           </Pane>
-          <Pane
-            // height="100%"
-            display="flex"
-            paddingBottom={50}
-          >
-            <Table overflowX="auto">
-              <Table.Head
-                width="fit-content"
-                style={{
-                  backgroundColor: '#000',
-                  borderBottom: '1px solid #ffffff80',
-                }}
-                paddingLeft={20}
-              >
-                <Table.TextHeaderCell flex="none" width={50}>
-                  <Text color="#fff" fontSize="17px">
-                    ID
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={150}>
-                  <Text color="#fff" fontSize="17px">
-                    Title
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={170}>
-                  <Text color="#fff" fontSize="17px">
-                    Type
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={150}>
-                  <Text color="#fff" fontSize="17px">
-                    Status
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={200}>
-                  <Text color="#fff" fontSize="17px">
-                    Submit_Time
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={200}>
-                  <Text color="#fff" fontSize="17px">
-                    Deposit_Endtime
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={200}>
-                  <Text color="#fff" fontSize="17px">
-                    Voting_Starttime
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell flex="none" width={200}>
-                  <Text color="#fff" fontSize="17px">
-                    Voting_Endtime
-                  </Text>
-                </Table.TextHeaderCell>
-              </Table.Head>
-              <Table.Body
-                width="fit-content"
-                style={{ backgroundColor: '#000', overflow: 'hidden' }}
-              >
-                {rowsTable}
-              </Table.Body>
-            </Table>
-          </Pane>
-        </Pane>
-      </main>
+        </main>
+      </div>
     );
   }
 }

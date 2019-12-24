@@ -57,7 +57,7 @@
     "ipfs": "^0.40.0",
     "ipfs-api": "^26.1.2",
     "ipfs-unixfs": "^0.2.0",
-    "ipld-dag-pb": "^0.18.1",
+    "ipld-dag-pb": "0.15.3",
     "ledger-cosmos-js": "2.0.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
