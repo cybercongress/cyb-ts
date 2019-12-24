@@ -199,7 +199,7 @@ class Governance extends React.Component {
             </Pane>
           </Pane>
         </main>
-        {/* <ActionBar /> */}
+        <ActionBar />
       </div>
     );
   }

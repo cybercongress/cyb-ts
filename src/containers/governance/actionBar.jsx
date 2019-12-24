@@ -59,6 +59,9 @@ class ActionBar extends Component {
       txHeight: null,
       txHash: null,
       error: null,
+      valueDescription: '',
+      valueTitle: '',
+      valueDeposit: '',
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -269,13 +272,21 @@ class ActionBar extends Component {
   //   console.log('valueInput', valueInput);
   // };
 
-  link = async () => {
-    const { address, addressInfo, ledger, contentHash } = this.state;
+  generateTx = async () => {
+    const {
+      address,
+      addressInfo,
+      ledger,
+      contentHash,
+      valueSelect,
+    } = this.state;
 
     const { keywordHash } = this.props;
 
     const fromCid = keywordHash;
     const toCid = contentHash;
+
+    let tx;
 
     const txContext = {
       accountNumber: addressInfo.accountNumber,
@@ -286,13 +297,42 @@ class ActionBar extends Component {
       path: address.path,
     };
 
-    const tx = await ledger.txCreateLink(
-      txContext,
-      address.bech32,
-      fromCid,
-      toCid,
-      MEMO
-    );
+    switch (valueSelect) {
+      case 'textProposal': {
+        tx = await ledger.textProposal(
+          txContext,
+          address.bech32,
+          fromCid,
+          toCid,
+          MEMO
+        );
+        break;
+      }
+      case 'paramChange': {
+        tx = await ledger.paramChange(
+          txContext,
+          address.bech32,
+          fromCid,
+          toCid,
+          MEMO
+        );
+        break;
+      }
+      case 'communityPool': {
+        tx = await ledger.communityPool(
+          txContext,
+          address.bech32,
+          fromCid,
+          toCid,
+          MEMO
+        );
+        break;
+      }
+      default: {
+        tx = [];
+      }
+    }
+
     console.log('tx', tx);
 
     await this.setState({
@@ -368,6 +408,27 @@ class ActionBar extends Component {
     });
   };
 
+  onChangeInputTitle = async e => {
+    const { value } = e.target;
+    this.setState({
+      valueTitle: value,
+    });
+  };
+
+  onChangeInputDescription = async e => {
+    const { value } = e.target;
+    this.setState({
+      valueDescription: value,
+    });
+  };
+
+  onChangeInputDeposit = async e => {
+    const { value } = e.target;
+    this.setState({
+      valueDeposit: value,
+    });
+  };
+
   cleatState = () => {
     this.setState({
       ledger: null,
@@ -427,6 +488,9 @@ class ActionBar extends Component {
       txHeight,
       txHash,
       valueSelect,
+      valueDescription,
+      valueTitle,
+      valueDeposit,
     } = this.state;
     const { valueSearchInput } = this.props;
 
@@ -435,6 +499,13 @@ class ActionBar extends Component {
         <TextProposal
           addrProposer="cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky"
           onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.generateTx}
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
         />
       );
     }
