@@ -86,11 +86,11 @@ export const Votes = ({ finalVotes }) => (
 export const IconStatus = ({ status, size, ...props }) => {
   let imgIcon;
   switch (status) {
-    case 'Submitted': {
+    case 'DepositPeriod': {
       imgIcon = submitted;
       break;
     }
-    case 'Voting': {
+    case 'VotingPeriod': {
       imgIcon = voting;
       break;
     }

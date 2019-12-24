@@ -148,7 +148,9 @@ class ProposalsDetail extends React.Component {
 
     const minDeposit = await getMinDeposit();
 
-    totalDeposit = proposals.total_deposit[0].amount;
+    if (proposals.total_deposit.length) {
+      totalDeposit = proposals.total_deposit[0].amount;
+    }
 
     this.setState({
       totalDeposit,

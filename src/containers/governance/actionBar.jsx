@@ -430,14 +430,14 @@ class ActionBar extends Component {
     } = this.state;
     const { valueSearchInput } = this.props;
 
-    // if (valueSelect === 'textProposal' && stage === STAGE_INIT) {
-    //   return (
-    //     <TextProposal
-    //       addrProposer="cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky"
-    //       onClickBtnCloce={this.onClickInitStage}
-    //     />
-    //   );
-    // }
+    if (valueSelect === 'textProposal' && stage === STAGE_INIT) {
+      return (
+        <TextProposal
+          addrProposer="cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky"
+          onClickBtnCloce={this.onClickInitStage}
+        />
+      );
+    }
 
     if (stage === STAGE_INIT) {
       return (
