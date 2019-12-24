@@ -33,11 +33,14 @@ export class Dinamics extends Component {
 
   plotlyHover = dataPoint => {
     // console.log('dataPoint', dataPoint.points[1].y);
-    this.setState({
+    if(dataPoint.points[1]) {
+      this.setState({
       price: dataPoint.points[0].y,
       round: dataPoint.points[0].x,
       volume: dataPoint.points[1].y
     });
+    }
+    
   };
 
   plotUnhover = () => {
