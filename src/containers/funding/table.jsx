@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { formatNumber } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
-
-const imgSort = require('../../image/_ionicons_svg_ios-swap.svg');
+import { Icon } from '@cybercongress/gravity';
 
 const Order = {
   NONE: 'NONE',
@@ -229,15 +228,27 @@ class Table extends Component {
             <div className="numberType address">Address (TX id)</div>
             <div className="numberType sort-row" onClick={this.sortTime}>
               Height
-              <img className="icon-sort" alt="sort" src={imgSort} />
+              <Icon
+                icon="double-caret-vertical"
+                color="#3ab793d4"
+                marginLeft={5}
+              />
             </div>
             <div className="numberType sort-row" onClick={this.sortAtom}>
               ATOMs
-              <img className="icon-sort" alt="sort" src={imgSort} />
+              <Icon
+                icon="double-caret-vertical"
+                color="#3ab793d4"
+                marginLeft={5}
+              />
             </div>
             <div className="numberType sort-row" onClick={this.sortCyb}>
               GCYB estimation
-              <img className="icon-sort" alt="sort" src={imgSort} />
+              <Icon
+                icon="double-caret-vertical"
+                color="#3ab793d4"
+                marginLeft={5}
+              />
             </div>
           </div>
           {pin && (

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Tooltip, Icon } from '../index';
-import { Pane } from '@cybercongress/gravity';
+import { Pane, Icon, Tooltip } from '@cybercongress/gravity';
+// import { Tooltip } from '../index';
 
-const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
+// const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 
 export const ContainerCard = ({ children, col, styles }) => (
   <div
@@ -22,8 +22,8 @@ export const Indicators = ({ title, value, tooltipValue, positionTooltip }) => (
       {/* </span> */}
 
       {tooltipValue && (
-        <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
-          <Icon icon={iconHelp} />
+        <Tooltip position={positionTooltip} content={tooltipValue}>
+          <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
         </Tooltip>
       )}
     </div>
@@ -37,8 +37,8 @@ export const Card = ({ title, value, tooltipValue, positionTooltip }) => (
     <span className="card-value">
       {title}{' '}
       {tooltipValue && (
-        <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
-          <Icon icon={iconHelp} />
+        <Tooltip position={positionTooltip} content={tooltipValue}>
+          <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
         </Tooltip>
       )}
     </span>

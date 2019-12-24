@@ -3,8 +3,8 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { IconStatus, ContainerPane, Votes, Deposit } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
 
-const iconPie = require('../../image/_ionicons_svg_ios-pie.svg');
-const iconPieActive = require('../../image/_ionicons_svg_ios-pie-active.svg');
+const iconPie = require('../../image/ionicons_svg_ios-pie.svg');
+const iconPieActive = require('../../image/ionicons_svg_ios-pie-active.svg');
 
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;

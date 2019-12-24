@@ -2,12 +2,12 @@ import React from 'react';
 import { Pane, Text, Tooltip } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
 
-const submitted = require('../../image/_ionicons_svg_ios-battery-full.svg');
-const voting = require('../../image/_ionicons_svg_ios-people.svg');
-const passed = require('../../image/_ionicons_svg_ios-checkmark-circle.svg');
-const rejected = require('../../image/_ionicons_svg_ios-close-circle.svg');
-const failed = require('../../image/_ionicons_svg_ios-remove-circle.svg');
-const defaultIcon = require('../../image/_ionicons_svg_ios-warning.svg');
+const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
+const voting = require('../../image/ionicons_svg_ios-people.svg');
+const passed = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
+const rejected = require('../../image/ionicons_svg_ios-close-circle.svg');
+const failed = require('../../image/ionicons_svg_ios-remove-circle.svg');
+const defaultIcon = require('../../image/ionicons_svg_ios-warning.svg');
 
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;

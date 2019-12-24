@@ -545,7 +545,7 @@ select {
 }
 
 .copy-address {
-    background: url(../image/_ionicons_svg_ios-copy.svg) center center no-repeat;
+    background: url(../image/ionicons_svg_ios-copy.svg) center center no-repeat;
     background-color: transparent;
     outline: none;
     border: none;
