@@ -12,6 +12,8 @@ import {
 } from '../../utils/utils';
 import { COSMOS, AUCTION } from '../../utils/config';
 
+const BigNumber = require('bignumber.js');
+
 // const abiDecoder = require('abi-decoder');
 
 const { GAIA_WEBSOCKET_URL } = COSMOS;
@@ -117,7 +119,7 @@ class Got extends PureComponent {
       contract: { methods },
     } = this.props;
     // if(this.state.loading){
-    const dailyTotals = await methods.dailyTotals(0).call();
+    const dailyTotals = await methods.dailyTotals(10).call();
     let ETHRaised = 0;
     let ATOMsRaised = 0;
 
@@ -129,8 +131,7 @@ class Got extends PureComponent {
         ATOMsRaised +=
           Number.parseInt(
             this.state.dataTxs[item].tx.value.msg[0].value.amount[0].amount
-          ) *
-          10 ** -1;
+          ) / COSMOS.DIVISOR_ATOM;
       }
     );
 
@@ -177,14 +178,14 @@ class Got extends PureComponent {
     const arow = 0;
     let win = '';
     // debugger;s
-    const cyb = 10 * Math.pow(10, 4);
+    const cyb = 10 ** 5;
     ethCYB = roundNumber(raised.ETHRaised / cyb, 7);
     atomsCYB = roundNumber(
-      (raised.ATOMsRaised / cyb) * raised.course.cosmos.eth,
-      7
+      (raised.ATOMsRaised / cyb) * raised.course.cosmos.eth, 10
     );
+    console.log('atomsCYB', atomsCYB);
     ethRaised = roundNumber(raised.ETHRaised, 7);
-    AtomRaised = roundNumber(raised.ATOMsRaised * raised.course.cosmos.eth, 7);
+    AtomRaised = roundNumber(raised.ATOMsRaised * raised.course.cosmos.eth, 10);
     const sumAtomEth = ethRaised + AtomRaised;
     const tempAtom = (AtomRaised / sumAtomEth) * 100;
     const tempETH = (ethRaised / sumAtomEth) * 100;
@@ -192,7 +193,6 @@ class Got extends PureComponent {
       atom: tempAtom,
       eth: tempETH,
     };
-    // console.log('difference', difference);
     if (ethRaised > AtomRaised) {
       // arow = -1 * (1 - AtomRaised / ethRaised) * 90;
       win = 'eth';
@@ -233,13 +233,13 @@ class Got extends PureComponent {
           <span className="caption">Game of Thrones</span>
           <Statistics
             firstLeftTitle="ETH/CYB"
-            firstLeftValue={roundNumber(ETHRaised / cyb, 6)}
+            firstLeftValue={roundNumber(ETHRaised / cyb, 7)}
             secondLeftTitle="Raised, ETH"
             secondLeftValue={formatNumber(ETHRaised)}
             secondRightTitle="Raised, ATOMs"
             secondRightValue={formatNumber(ATOMsRaised)}
             firstRightTitle="ATOM/CYB"
-            firstRightValue={roundNumber(ATOMsRaised / cyb, 6)}
+            firstRightValue={roundNumber(ATOMsRaised / cyb, 9)}
           />
           <VitalikJae
             win={win}

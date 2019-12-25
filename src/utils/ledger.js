@@ -220,7 +220,7 @@ class CosmosDelegateTool {
       sequence: '0',
       accountNumber: '0',
       balanceuAtom: '0',
-      chainId: 'cosmoshub-2',
+      chainId: COSMOS.CHAIN_ID,
     };
     return axios.get(url).then(
       r => {
@@ -518,7 +518,7 @@ class CosmosDelegateTool {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = 'https://lcd.nylira.net/txs';
+    const url = 'https://deimos.cybernode.ai/gaia_lcd/txs';
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
@@ -563,7 +563,7 @@ class CosmosDelegateTool {
 
   // Retrieve the status of a transaction hash
   async txStatus(txHash) {
-    const url = `https://lcd.nylira.net/txs/${txHash}`;
+    const url = `https://deimos.cybernode.ai/gaia_lcd/txs/${txHash}`;
     return axios.get(url).then(
       r => r.data,
       e => wrapError(this, e)
