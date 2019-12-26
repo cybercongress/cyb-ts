@@ -316,6 +316,73 @@ function createLink(txContext, address, fromCid, toCid, memo) {
 
   return txSkeleton;
 }
+
+function createTextProposal(
+  txContext,
+  address,
+  title,
+  description,
+  deposit,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgSubmitProposal',
+    value: {
+      content: {
+        type: 'cosmos-sdk/TextProposal',
+        value: {
+          description,
+          title,
+        },
+      },
+      initial_deposit: deposit,
+      proposer: address,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
+function createCommunityPool(
+  txContext,
+  address,
+  title,
+  description,
+  recipient,
+  deposit,
+  amount,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgSubmitProposal',
+    value: {
+      content: {
+        type: 'cosmos-sdk/CommunityPoolSpendProposal',
+        value: {
+          amount,
+          description,
+          recipient,
+          title,
+        },
+      },
+      initial_deposit: deposit,
+      proposer: address,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 // Creates a new undelegation tx based on the input parameters
 // the function expects a complete txContext
 function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
@@ -380,4 +447,6 @@ export default {
   createLink,
   createSendCyber,
   createDelegateCyber,
+  createTextProposal,
+  createCommunityPool,
 };

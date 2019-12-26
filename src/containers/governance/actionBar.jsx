@@ -62,6 +62,8 @@ class ActionBar extends Component {
       valueDescription: '',
       valueTitle: '',
       valueDeposit: '',
+      valueAmountRecipient: '',
+      valueAddressRecipient: '',
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -279,12 +281,23 @@ class ActionBar extends Component {
       ledger,
       contentHash,
       valueSelect,
+      valueDescription,
+      valueTitle,
+      valueDeposit,
+      valueAmountRecipient,
+      valueAddressRecipient,
     } = this.state;
 
     const { keywordHash } = this.props;
 
     const fromCid = keywordHash;
     const toCid = contentHash;
+
+    let deposit = [];
+    let title = '';
+    let description = '';
+    const recipient = valueAddressRecipient;
+    let amount = [];
 
     let tx;
 
@@ -297,13 +310,35 @@ class ActionBar extends Component {
       path: address.path,
     };
 
+    if (valueDeposit > 0) {
+      deposit = [
+        {
+          amount: `${valueDeposit * CYBER.DIVISOR_CYBER_G}`,
+          denom: 'eul',
+        },
+      ];
+    }
+
+    if (valueAmountRecipient > 0) {
+      amount = [
+        {
+          amount: `${valueAmountRecipient * CYBER.DIVISOR_CYBER_G}`,
+          denom: 'eul',
+        },
+      ];
+    }
+
+    description = valueDescription;
+    title = valueTitle;
+
     switch (valueSelect) {
       case 'textProposal': {
         tx = await ledger.textProposal(
           txContext,
           address.bech32,
-          fromCid,
-          toCid,
+          title,
+          description,
+          deposit,
           MEMO
         );
         break;
@@ -322,8 +357,11 @@ class ActionBar extends Component {
         tx = await ledger.communityPool(
           txContext,
           address.bech32,
-          fromCid,
-          toCid,
+          title,
+          description,
+          recipient,
+          deposit,
+          amount,
           MEMO
         );
         break;
@@ -347,7 +385,6 @@ class ActionBar extends Component {
 
   signTx = async () => {
     const { txMsg, ledger, txContext } = this.state;
-    // console.log('txContext', txContext);
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
@@ -363,7 +400,7 @@ class ActionBar extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -429,27 +466,47 @@ class ActionBar extends Component {
     });
   };
 
+  onChangeInputAddressRecipient = async e => {
+    const { value } = e.target;
+    this.setState({
+      valueAddressRecipient: value,
+    });
+  };
+
+  onChangeInputAmountRecipient = async e => {
+    const { value } = e.target;
+    this.setState({
+      valueAmountRecipient: value,
+    });
+  };
+
   cleatState = () => {
     this.setState({
+      stage: STAGE_INIT,
+      init: false,
       ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
-      txMsg: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
+      valueSelect: 'textProposal',
       bandwidth: {
         remained: 0,
         max_value: 0,
       },
       contentHash: '',
+      txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
       error: null,
-      init: false,
-      typeGov: '',
+      valueDescription: '',
+      valueTitle: '',
+      valueDeposit: '',
+      valueAmountRecipient: '',
+      valueAddressRecipient: '',
     });
     this.timeOut = null;
   };
@@ -491,24 +548,10 @@ class ActionBar extends Component {
       valueDescription,
       valueTitle,
       valueDeposit,
+      valueAmountRecipient,
+      valueAddressRecipient,
     } = this.state;
     const { valueSearchInput } = this.props;
-
-    if (valueSelect === 'textProposal' && stage === STAGE_INIT) {
-      return (
-        <TextProposal
-          addrProposer="cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky"
-          onClickBtnCloce={this.onClickInitStage}
-          onClickBtn={this.generateTx}
-          onChangeInputTitle={this.onChangeInputTitle}
-          onChangeInputDescription={this.onChangeInputDescription}
-          onChangeInputDeposit={this.onChangeInputDeposit}
-          valueDescription={valueDescription}
-          valueTitle={valueTitle}
-          valueDeposit={valueDeposit}
-        />
-      );
-    }
 
     if (stage === STAGE_INIT) {
       return (
@@ -538,7 +581,34 @@ class ActionBar extends Component {
       return (
         <TextProposal
           addrProposer={address.bech32}
+          onClickBtn={this.generateTx}
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
           onClickBtnCloce={this.onClickInitStage}
+        />
+      );
+    }
+
+    if (valueSelect === 'communityPool' && stage === STAGE_TYPE_GOV) {
+      return (
+        <CommunityPool
+          addrProposer={address.bech32}
+          onClickBtn={this.generateTx}
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
+          onClickBtnCloce={this.onClickInitStage}
+          valueAddressRecipient={valueAddressRecipient}
+          onChangeInputAddressRecipient={this.onChangeInputAddressRecipient}
+          valueAmountRecipient={valueAmountRecipient}
+          onChangeInputAmountRecipient={this.onChangeInputAmountRecipient}
         />
       );
     }
