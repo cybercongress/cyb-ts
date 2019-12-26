@@ -22,9 +22,11 @@
     0% {
         opacity: 0.2;
     }
+
     20% {
         opacity: 1;
     }
+
     100% {
         opacity: 0.2;
     }
@@ -243,6 +245,7 @@
     max-width: 1000px;
     margin-bottom: 20px;
 }
+
 /*  */
 .wrapper {
     transform: rotate(0);
@@ -274,6 +277,7 @@
     left: 0px;
     bottom: 17px;
 }
+
 .bar .box2 {
     position: absolute;
     width: 60px;
@@ -291,6 +295,7 @@
     left: 50%;
     transform-origin: bottom center;
 }
+
 .seesaw-bottom:after {
     content: url("./../image/Bitcoin.svg");
     position: absolute;
@@ -306,6 +311,7 @@
     max-width: 1000px;
     height: 44%;
     margin-bottom: 10px;
+    padding-top: 80px;
 }
 
 .container .vitalik {
@@ -322,7 +328,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to top, #000000e6 4%,#000000e0 11%, #000000c4 15%,#0000001f 23%);
+    background: linear-gradient(to top, #000000 3%, #000000e0 7%, #000000c4 8%, #0000001f 12%);
 }
 
 .container .vitalik img {
@@ -333,6 +339,7 @@
     content: '';
     background: transparent !important;
 }
+
 /*  */
 
 .container .jae {
@@ -349,7 +356,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to top, #000000e6 4%,#000000e0 11%, #000000c4 15%,#0000001f 23%);
+    background: linear-gradient(to top, #000000 3%, #000000e0 7%, #000000c4 8%, #0000001f 12%);
 }
 
 .container .jae img {
@@ -415,20 +422,25 @@
     40% {
         box-shadow: 0 0 5px #36d6ae;
     }
+
     50% {
         box-shadow: 0 0 7px #36d6ae;
     }
+
     100% {
         box-shadow: 0 0 8px #36d6ae;
     }
 }
+
 @keyframes blink {
     40% {
         box-shadow: 0 0 5px #36d6ae;
     }
+
     50% {
         box-shadow: 0 0 7px #36d6ae;
     }
+
     100% {
         box-shadow: 0 0 8px #36d6ae;
     }
@@ -474,6 +486,7 @@
     width: 0;
     height: 0;
 }
+
 .pointer:after {
     content: "";
     display: block;
@@ -515,7 +528,7 @@
     transition: transform 0.3s ease-in-out;
 }
 
-.arow::after{
+.arow::after {
     content: '';
     background-color: #000;
     position: absolute;
@@ -529,20 +542,25 @@
     25% {
         background-color: #42b498;
     }
+
     50% {
         background-color: #74ead0;
     }
+
     100% {
         background-color: #16dfb5;
     }
 }
+
 @keyframes arow {
     25% {
         background-color: #42b498;
     }
+
     50% {
         background-color: #74ead0;
     }
+
     100% {
         background-color: #16dfb5;
     }
@@ -562,20 +580,25 @@
     25% {
         border-bottom: 20px solid #42b498;
     }
+
     50% {
         border-bottom: 20px solid #74ead0;
     }
+
     100% {
         border-bottom: 20px solid #16dfb5;
     }
 }
+
 @keyframes arowAfter {
     25% {
         border-bottom: 20px solid #42b498;
     }
+
     50% {
         border-bottom: 20px solid #74ead0;
     }
+
     100% {
         border-bottom: 20px solid #16dfb5;
     }
@@ -590,9 +613,10 @@
     border-radius: 3px;
     min-width: 80px;
     text-align: center;
-    max-width: 130px;
+    max-width: 140px;
     background: #000;
     border-radius: 5px;
+    z-index: 3;
 }
 
 .vitalik-popups span {
@@ -609,7 +633,7 @@
     box-shadow: -2px 1px 2px 0px #3ab793d9;
     background: #000;
     left: -3.8%;
-    bottom: 0.5px;
+    bottom: 0px;
     position: absolute;
     content: '';
 }
@@ -636,9 +660,10 @@
     border-radius: 3px;
     min-width: 80px;
     text-align: center;
-    max-width: 130px;
+    max-width: 140px;
     background: #000;
     border-radius: 5px;
+    z-index: 3;
 }
 
 .jae-popups span {
@@ -647,7 +672,7 @@
     position: relative;
 }
 
-.jae-popups::before{
+.jae-popups::before {
     width: 35px;
     height: 50%;
     max-height: 20px;
@@ -655,12 +680,12 @@
     box-shadow: 1px 1px 1px #3ab793c9;
     background: #000;
     right: -3.8%;
-    bottom: 0.5px;
+    bottom: 0px;
     position: absolute;
     content: '';
 }
 
-.jae-popups::after{
+.jae-popups::after {
     content: '';
     bottom: 0;
     left: 0;
@@ -673,19 +698,27 @@
 }
 
 .atomCol {
-    width: 40px;
+    width: 50px;
     height: 0px;
-    margin: 0 10px;
+    margin: 0 5px;
     background-color: #3ab793;
     opacity: 0.8;
     transition: height 0.5s ease-in;
 }
 
 .ethCol {
-    width: 40px;
+    width: 50px;
     height: 0px;
-    margin: 0 10px;
+    margin: 0 5px;
     background-color: #3ab793;
     opacity: 0.8;
     transition: height 0.5s ease-in;
+}
+
+.position-difference-container {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10rem;
 }

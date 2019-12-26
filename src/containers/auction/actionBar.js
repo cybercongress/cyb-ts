@@ -81,7 +81,7 @@ const StartState = ({
   web3,
   contract,
   round,
-  roundAll
+  roundAll,
 }) => {
   if (round <= roundAll)
     return (
@@ -124,7 +124,7 @@ const ContributeETH = ({
   validRound,
   validAmount,
   messageRound,
-  messageAmount
+  messageAmount,
 }) => (
   <ActionBar>
     <ActionBarContentText>
@@ -203,7 +203,7 @@ class ActionBarAuction extends Component {
       messageRound: '',
       messageAmount: '',
       validInputRound: false,
-      validInputAmount: false
+      validInputAmount: false,
     };
     this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
@@ -214,22 +214,22 @@ class ActionBarAuction extends Component {
     if (e.target.value < minRound || e.target.value > maxRound - 1) {
       this.setState({
         validInputRound: true,
-        messageRound: `enter round ${minRound} to ${maxRound - 1}`
+        messageRound: `enter round ${minRound} to ${maxRound - 1}`,
       });
     } else {
       this.setState({
         validInputRound: false,
-        messageRound: ''
+        messageRound: '',
       });
     }
     this.setState({
-      round: e.target.value
+      round: e.target.value,
     });
   };
 
   onChangeAmount = e =>
     this.setState({
-      amount: e.target.value
+      amount: e.target.value,
     });
 
   onClickFuckGoogle = async () => {
@@ -245,7 +245,7 @@ class ActionBarAuction extends Component {
           // console.log(accounts[0]);
           this.setState({
             step: 'contributeETH',
-            round: minRound
+            round: minRound,
           });
         }
       } catch (error) {
@@ -257,7 +257,7 @@ class ActionBarAuction extends Component {
         // console.log(accounts[0]);
         this.setState({
           step: 'contributeETH',
-          round: minRound
+          round: minRound,
         });
       }
     } else return console.log('Your metamask is locked!');
@@ -265,15 +265,20 @@ class ActionBarAuction extends Component {
 
   onClickTrackContribution = () =>
     this.setState({
-      step: 'contributeETH'
+      step: 'contributeETH',
     });
 
-  onClickSaveAddress = () =>
+  onClickSaveAddress = () => {
+    const { update } = this.props;
     this.setState({
       step: 'start',
       round: '',
       amount: '',
     });
+    if (update) {
+      update();
+    }
+  };
 
   buyTOKEN = async account => {
     const { web3, contract } = this.props;
@@ -329,7 +334,7 @@ class ActionBarAuction extends Component {
 
   onClickTransactionCost = () =>
     this.setState({
-      step: 'succesfuuly'
+      step: 'succesfuuly',
     });
 
   render() {
@@ -341,7 +346,7 @@ class ActionBarAuction extends Component {
       messageRound,
       messageAmount,
       validInputRound,
-      validInputAmount
+      validInputAmount,
     } = this.state;
     const { minRound, maxRound, web3, claimed, contract } = this.props;
     const btnConfirm = round >= minRound && round <= maxRound - 1 && amount > 0;

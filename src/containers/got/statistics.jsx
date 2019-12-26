@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
-import { Indicators, Card, ContainerCard, CardArrow } from '../../components/index';
+import {
+  Indicators,
+  Card,
+  ContainerCard,
+  CardArrow,
+} from '../../components/index';
 
-export const Statistics = ({
+export const Difference = ({ difference, custom }) => (
+  <div className={`difference-container ${custom}`}>
+    <div className="difference-container-value">{difference} x</div>
+    <span className="difference-container-text">more profitable now</span>
+  </div>
+);
+
+const Statistics = ({
   firstLeftTitle,
   firstLeftValue,
   secondLeftTitle,
@@ -9,7 +21,7 @@ export const Statistics = ({
   secondRightTitle,
   secondRightValue,
   firstRightTitle,
-  firstRightValue
+  firstRightValue,
 }) => (
   <ContainerCard col={4}>
     <Indicators title={firstLeftTitle} value={firstLeftValue} />
@@ -19,3 +31,5 @@ export const Statistics = ({
     <Indicators title={firstRightTitle} value={firstRightValue} />
   </ContainerCard>
 );
+
+export default Statistics;

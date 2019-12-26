@@ -25,6 +25,12 @@ export class ActionBarContainer extends Component {
     });
   };
 
+  startStep = () => {
+    this.setState({
+      step: 'start',
+    });
+  }
+
   render() {
     if (this.state.step === 'start') {
       return (
@@ -44,7 +50,7 @@ export class ActionBarContainer extends Component {
     }
 
     if (this.state.step === 'atom') {
-      return <ActionBarTakeOff />;
+      return <ActionBarTakeOff update={this.startStep} />;
     }
 
     if (this.state.step === 'eth') {
@@ -54,6 +60,7 @@ export class ActionBarContainer extends Component {
           contract={this.props.contract}
           minRound={10}
           maxRound={11}
+          update={this.startStep}
         />
       );
     }

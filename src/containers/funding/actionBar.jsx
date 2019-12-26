@@ -234,6 +234,7 @@ class ActionBarTakeOff extends Component {
 
   confirmTx = async () => {
     const { txHash, ledger } = this.state;
+    const { update } = this.props;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await ledger.txStatus(txHash);
@@ -243,6 +244,7 @@ class ActionBarTakeOff extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
+
         return;
       }
     }
@@ -256,6 +258,7 @@ class ActionBarTakeOff extends Component {
   };
 
   cleatState = () => {
+    const { update } = this.props;
     this.setState({
       ledger: null,
       ledgerVersion: [0, 0, 0],
@@ -273,6 +276,9 @@ class ActionBarTakeOff extends Component {
       txHeight: null,
       height50: false,
     });
+    if (update) {
+      update();
+    }
   };
 
   onChangeSelect = e =>

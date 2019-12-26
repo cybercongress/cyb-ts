@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
+import { Pane, Text } from '@cybercongress/gravity';
 import withWeb3 from '../../components/web3/withWeb3';
 import { ContainerCard } from '../../components';
 import { ActionBarContainer } from './actionBar';
-import { Statistics } from './statistics';
-import { VitalikJae } from './vitalikJae';
+import Statistics from './statistics';
+import VitalikJae from './vitalikJae';
 import {
   asyncForEach,
   formatNumber,
@@ -181,7 +182,8 @@ class Got extends PureComponent {
     const cyb = 10 ** 5;
     ethCYB = roundNumber(raised.ETHRaised / cyb, 7);
     atomsCYB = roundNumber(
-      (raised.ATOMsRaised / cyb) * raised.course.cosmos.eth, 10
+      (raised.ATOMsRaised / cyb) * raised.course.cosmos.eth,
+      10
     );
     console.log('atomsCYB', atomsCYB);
     ethRaised = roundNumber(raised.ETHRaised, 7);
@@ -230,15 +232,28 @@ class Got extends PureComponent {
     return (
       <span>
         <main className="block-body">
-          <span className="caption">Game of Thrones</span>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              You do not have control over the brain. You need EUL tokens to let
+              she hear you. If you came from Ethereum or Cosmos you can claim
+              the gift of gods. Then start prepare to the greatest tournament in
+              universe: <a href="#/gol">Game of Links</a>.
+            </Text>
+          </Pane>
+          {/* <span className="caption">Game of Thrones</span> */}
           <Statistics
-            firstLeftTitle="ETH/CYB"
+            firstLeftTitle="ETH/GOL"
             firstLeftValue={roundNumber(ETHRaised / cyb, 7)}
             secondLeftTitle="Raised, ETH"
             secondLeftValue={formatNumber(ETHRaised)}
             secondRightTitle="Raised, ATOMs"
             secondRightValue={formatNumber(ATOMsRaised)}
-            firstRightTitle="ATOM/CYB"
+            firstRightTitle="ATOM/EUL"
             firstRightValue={roundNumber(ATOMsRaised / cyb, 9)}
           />
           <VitalikJae
@@ -246,41 +261,21 @@ class Got extends PureComponent {
             diff={difference}
             arow={arow}
             col={colAtomEth}
+            difference={roundNumber(difference.diff, 2)}
           />
-          <ContainerCard>
-            <div className="container-text">
-              {/* <div className="paragraph">
-                Get <a>THC</a> and participate <br /> in foundation
-              </div>
-              <div className="paragraph">Get 10% of CYBs for ETH</div> */}
-              {difference.popups === 'eth' && (
-                <div className="difference-container">
-                  <div className="difference-container-value">
-                    {roundNumber(difference.diff, 2)} x
-                  </div>
-                  <span className="difference-container-text">
-                    more profitable now
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="container-text">
-              {/* <div className="paragraph">
-                Don't Get <a>THC</a>
-              </div>
-              <div className="paragraph">Get 10% of CYBs for ATOM</div> */}
-              {difference.popups === 'atom' && (
-                <div className="difference-container">
-                  <div className="difference-container-value">
-                    {roundNumber(difference.diff, 2)} x
-                  </div>
-                  <span className="difference-container-text">
-                    more profitable now
-                  </span>
-                </div>
-              )}
-            </div>
-          </ContainerCard>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              You do not have control over the brain. You need EUL tokens to let
+              she hear you. If you came from Ethereum or Cosmos you can claim
+              the gift of gods. Then start prepare to the greatest tournament in
+              universe: <a href="#/gol">Game of Links</a>.
+            </Text>
+          </Pane>
         </main>
         <ActionBarContainer
           web3={this.props.web3}
