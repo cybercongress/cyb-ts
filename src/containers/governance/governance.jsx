@@ -18,13 +18,17 @@ class Governance extends React.Component {
     this.routeChange = this.routeChange.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.init();
+  }
+
+  init = async () => {
     const proposals = await getProposals();
     this.setState({
       // table: proposals[0].result,
       table: proposals,
     });
-  }
+  };
 
   routeChange = newPath => {
     const { history } = this.props;
@@ -199,7 +203,7 @@ class Governance extends React.Component {
             </Pane>
           </Pane>
         </main>
-        {/* <ActionBar /> */}
+        <ActionBar update={this.init} />
       </div>
     );
   }

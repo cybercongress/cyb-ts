@@ -52,8 +52,8 @@ export class ActionBarContainer extends Component {
         <ActionBarAuction
           web3={this.props.web3}
           contract={this.props.contract}
-          minRound={59}
-          maxRound={60}
+          minRound={10}
+          maxRound={11}
         />
       );
     }

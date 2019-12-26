@@ -220,7 +220,7 @@ class CosmosDelegateTool {
       sequence: '0',
       accountNumber: '0',
       balanceuAtom: '0',
-      chainId: 'cosmoshub-2',
+      chainId: COSMOS.CHAIN_ID,
     };
     return axios.get(url).then(
       r => {
@@ -411,14 +411,26 @@ class CosmosDelegateTool {
     return txs.createDelegate(txContext, validatorBech32, uatomAmount, memo);
   }
 
-  async txCreateDelegateCyber(txContext, validatorBech32, uAmount, memo, denom) {
+  async txCreateDelegateCyber(
+    txContext,
+    validatorBech32,
+    uAmount,
+    memo,
+    denom
+  ) {
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
     }
     if (typeof txContext.bech32 === 'undefined') {
       throw new Error('txContext does not contain the source address (bech32)');
     }
-    return txs.createDelegateCyber(txContext, validatorBech32, uAmount, memo, denom);
+    return txs.createDelegateCyber(
+      txContext,
+      validatorBech32,
+      uAmount,
+      memo,
+      denom
+    );
   }
 
   async txCreateSend(txContext, validatorBech32, uatomAmount, memo) {
@@ -453,7 +465,6 @@ class CosmosDelegateTool {
     return txs.createSendCyber(txContext, addressTo, uatomAmount, memo, demon);
   }
 
-
   async txCreateLink(txContext, address, fromCid, toCid, memo) {
     console.log('txContext', txContext);
     if (typeof txContext === 'undefined') {
@@ -463,6 +474,53 @@ class CosmosDelegateTool {
       throw new Error('txContext does not contain the source address (bech32)');
     }
     return txs.createLink(txContext, address, fromCid, toCid, memo);
+  }
+
+  async textProposal(txContext, address, title, description, deposit, memo) {
+    console.log('txContext', txContext);
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createTextProposal(
+      txContext,
+      address,
+      title,
+      description,
+      deposit,
+      memo
+    );
+  }
+
+  async communityPool(
+    txContext,
+    address,
+    title,
+    description,
+    recipient,
+    deposit,
+    amount,
+    memo
+  ) {
+    console.log('txContext', txContext);
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createCommunityPool(
+      txContext,
+      address,
+      title,
+      description,
+      recipient,
+      deposit,
+      amount,
+      memo
+    );
   }
 
   // Creates a new staking tx based on the input parameters
@@ -518,7 +576,7 @@ class CosmosDelegateTool {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = 'https://lcd.nylira.net/txs';
+    const url = 'https://deimos.cybernode.ai/gaia_lcd/txs';
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
@@ -528,6 +586,20 @@ class CosmosDelegateTool {
   }
 
   async txSubmitCyberLink(signedTx) {
+    const txBody = {
+      tx: signedTx.value,
+      mode: 'async',
+    };
+    const url = `${CYBER_NODE_URL}/lcd/txs`;
+    // const url = 'https://phobos.cybernode.ai/lcd/txs';
+    console.log(JSON.stringify(txBody));
+    return axios.post(url, JSON.stringify(txBody)).then(
+      r => r,
+      e => wrapError(this, e)
+    );
+  }
+
+  async txSubmitCyber(signedTx) {
     const txBody = {
       tx: signedTx.value,
       mode: 'async',
@@ -563,7 +635,7 @@ class CosmosDelegateTool {
 
   // Retrieve the status of a transaction hash
   async txStatus(txHash) {
-    const url = `https://lcd.nylira.net/txs/${txHash}`;
+    const url = `https://deimos.cybernode.ai/gaia_lcd/txs/${txHash}`;
     return axios.get(url).then(
       r => r.data,
       e => wrapError(this, e)

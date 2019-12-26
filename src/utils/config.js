@@ -37,10 +37,10 @@ const COSMOS = {
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 150000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://lcd.nylira.net',
+  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd/',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
-  DIVISOR_ATOM: 10 ** 5,
+  DIVISOR_ATOM: 10 ** 6,
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 

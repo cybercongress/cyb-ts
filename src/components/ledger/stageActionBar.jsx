@@ -9,6 +9,7 @@ import {
   Pane,
   Text,
   Select,
+  Textarea,
 } from '@cybercongress/gravity';
 import { ContainetLedger, Loading, FormatNumber } from '../index';
 import { formatNumber } from '../../utils/search/utils';
@@ -278,7 +279,7 @@ export const GovernanceStartStageActionBar = ({
         onChange={onChangeSelect}
       >
         <option value="textProposal">Text Proposal</option>
-        <option value="paramChange">Param Change</option>
+        {/* <option value="paramChange">Param Change</option> */}
         <option value="communityPool">Community Pool Spend</option>
       </select>
     </ActionBarContentText>
@@ -287,21 +288,62 @@ export const GovernanceStartStageActionBar = ({
 );
 
 export const TextProposal = ({
-  valueSelect,
-  onChangeSelect,
   onClickBtn,
   addrProposer,
   onClickBtnCloce,
+  onChangeInputTitle,
+  onChangeInputDescription,
+  onChangeInputDeposit,
+  valueDescription,
+  valueTitle,
+  valueDeposit,
 }) => (
   <ActionBar>
-    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-      <Text>Text Proposal</Text>
-      <Text>proposer</Text>
-      <Text>{addrProposer}</Text>
-      <Text>title</Text>
-      <Text>description</Text>
-      <Text>deposit</Text>
-      <Button onClick={onClickBtn}>Create Governance</Button>
+    <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+      <Pane display="flex" flexDirection="column" alignItems="center">
+        <Text fontSize="25px" lineHeight="40px" color="#fff">
+          Text Proposal
+        </Text>
+        <Text fontSize="18px" lineHeight="40px" color="#fff">
+          proposer
+        </Text>
+        <Text color="#fff">{addrProposer}</Text>
+        <Pane marginY={10} width="100%">
+          <Text color="#fff">title</Text>
+          <input
+            value={valueTitle}
+            style={{
+              height: 42,
+              width: '100%',
+            }}
+            onChange={onChangeInputTitle}
+            placeholder="title"
+          />
+        </Pane>
+        <Pane marginBottom={10} width="100%">
+          <Text color="#fff">description</Text>
+          <textarea
+            onChange={onChangeInputDescription}
+            value={valueDescription}
+            className="resize-none"
+          />
+        </Pane>
+        <Pane width="100%">
+          <Text color="#fff">deposit, EUL</Text>
+          <input
+            value={valueDeposit}
+            style={{
+              height: 42,
+              width: '100%',
+            }}
+            onChange={onChangeInputDeposit}
+            placeholder="amount, GEUL"
+          />
+        </Pane>
+        <Button marginTop={25} onClick={onClickBtn}>
+          Create Governance
+        </Button>
+      </Pane>
     </ContainetLedger>
   </ActionBar>
 );
@@ -309,7 +351,7 @@ export const TextProposal = ({
 export const ParamChange = ({ valueSelect, onChangeSelect, onClickBtn }) => (
   <ActionBar>
     <ActionBarContentText>
-      <select
+      {/* <select
         style={{ height: 42, width: '60%' }}
         className="select-green"
         value={valueSelect}
@@ -318,27 +360,97 @@ export const ParamChange = ({ valueSelect, onChangeSelect, onClickBtn }) => (
         <option value="textProposal">Text Proposal</option>
         <option value="paramChange">Param Change</option>
         <option value="communityPool">Community Pool Spend</option>
-      </select>
+      </select> */}
     </ActionBarContentText>
     <Button onClick={onClickBtn}>Create Governance</Button>
   </ActionBar>
 );
 
-export const CommunityPool = ({ valueSelect, onChangeSelect, onClickBtn }) => (
+export const CommunityPool = ({
+  onClickBtn,
+  addrProposer,
+  onClickBtnCloce,
+  onChangeInputTitle,
+  onChangeInputDescription,
+  onChangeInputDeposit,
+  valueDescription,
+  valueTitle,
+  valueDeposit,
+  valueAddressRecipient,
+  onChangeInputAmountRecipient,
+  onChangeInputAddressRecipient,
+  valueAmountRecipient,
+}) => (
   <ActionBar>
-    <ActionBarContentText>
-      <select
-        style={{ height: 42, width: '60%' }}
-        className="select-green"
-        value={valueSelect}
-        onChange={onChangeSelect}
-      >
-        <option value="textProposal">Text Proposal</option>
-        <option value="paramChange">Param Change</option>
-        <option value="communityPool">Community Pool Spend</option>
-      </select>
-    </ActionBarContentText>
-    <Button onClick={onClickBtn}>Create Governance</Button>
+    <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+      <Pane display="flex" flexDirection="column" alignItems="center">
+        <Text fontSize="25px" lineHeight="40px" color="#fff">
+          Community Pool Spend
+        </Text>
+        <Text fontSize="18px" lineHeight="40px" color="#fff">
+          proposer
+        </Text>
+        <Text color="#fff">{addrProposer}</Text>
+        <Pane marginY={10} width="100%">
+          <Text color="#fff">title</Text>
+          <input
+            value={valueTitle}
+            style={{
+              height: 42,
+              width: '100%',
+            }}
+            onChange={onChangeInputTitle}
+            placeholder="title"
+          />
+        </Pane>
+        <Pane marginBottom={10} width="100%">
+          <Text color="#fff">description</Text>
+          <textarea
+            onChange={onChangeInputDescription}
+            value={valueDescription}
+            className="resize-none"
+          />
+        </Pane>
+        <Pane marginBottom={10} width="100%">
+          <Text color="#fff">recipient</Text>
+          <Pane display="grid" gridTemplateColumns="0.8fr 0.2fr" gridGap="10px">
+            <input
+              value={valueAddressRecipient}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputAddressRecipient}
+              placeholder="address"
+            />
+            <input
+              value={valueAmountRecipient}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputAmountRecipient}
+              placeholder="GEUL"
+            />
+          </Pane>
+        </Pane>
+        <Pane width="100%">
+          <Text color="#fff">deposit, EUL</Text>
+          <input
+            value={valueDeposit}
+            style={{
+              height: 42,
+              width: '100%',
+            }}
+            onChange={onChangeInputDeposit}
+            placeholder="amount, GEUL"
+          />
+        </Pane>
+        <Button marginTop={25} onClick={onClickBtn}>
+          Create Governance
+        </Button>
+      </Pane>
+    </ContainetLedger>
   </ActionBar>
 );
 

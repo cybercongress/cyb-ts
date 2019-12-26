@@ -153,6 +153,28 @@ a {
     margin: 0;
 }
 
+textarea {
+    font-size: 16px;
+    background-color: #000;
+    border: none;
+    outline: none;
+    caret-color: #3ab793;
+    color: #3ab793;
+    box-shadow: 0 0 2px 0.3px #3ab793;
+    padding: 0 5px;
+    border-radius: 3px;
+    width: 100%;
+    min-height: 70px;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+textarea:active {
+    outline: none;
+}
+
 input {
     font-size: 16px;
     height: 30px;
@@ -373,4 +395,8 @@ input:focus:-moz-placeholder {
 input:focus:-ms-input-placeholder {
     opacity: 0;
     transition: opacity 0.3s ease;
+}
+
+.resize-none {
+    resize: none;
 }
