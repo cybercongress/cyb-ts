@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { CYBER, TAKEOFF } from '../config'
+import { CYBER, TAKEOFF } from '../config';
 
 const { CYBER_NODE_URL } = CYBER;
 
@@ -236,17 +236,21 @@ export const getValidatorsUnbonded = () =>
       .catch(e => {})
   );
 
-export const selfDelegationShares = (delegatorAddress, operatorAddress) =>
-  new Promise(resolve =>
-    axios({
+export const selfDelegationShares = async (
+  delegatorAddress,
+  operatorAddress
+) => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL}/lcd/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result.shares;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
 
 export const stakingPool = () =>
   new Promise(resolve =>
