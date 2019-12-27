@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import withWeb3 from '../../components/web3/withWeb3';
 import { ContainerCard } from '../../components';
-import { ActionBarContainer } from './actionBar';
+import ActionBarContainer from './actionBar';
 import Statistics from './statistics';
 import VitalikJae from './vitalikJae';
 import {
@@ -227,7 +227,7 @@ class Got extends PureComponent {
       win,
       colAtomEth,
     } = this.state;
-    console.log(ATOMsRaised);
+
     const cyb = 10 * Math.pow(10, 4);
     return (
       <span>
