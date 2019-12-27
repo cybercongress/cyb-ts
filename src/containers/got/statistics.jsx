@@ -23,12 +23,12 @@ const Statistics = ({
   firstRightTitle,
   firstRightValue,
 }) => (
-  <ContainerCard col={4}>
-    <Indicators title={firstLeftTitle} value={firstLeftValue} />
-    <Indicators title={secondLeftTitle} value={secondLeftValue} />
+  <ContainerCard styles={{ gridGap: '25px' }} col={4}>
+    <Card title={firstLeftTitle} value={firstLeftValue} />
+    <Card title={secondLeftTitle} value={secondLeftValue} />
     {/* <Card title={centerCardTitle} value={centerCardValue} /> */}
-    <Indicators title={secondRightTitle} value={secondRightValue} />
-    <Indicators title={firstRightTitle} value={firstRightValue} />
+    <Card title={secondRightTitle} value={secondRightValue} />
+    <Card title={firstRightTitle} value={firstRightValue} />
   </ContainerCard>
 );
 
