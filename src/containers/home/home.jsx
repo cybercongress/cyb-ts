@@ -11,7 +11,12 @@ import Electricity from './electricity';
 
 import { StartState } from './stateActionBar';
 
-import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
+import {
+  getIpfsHash,
+  getString,
+  search,
+  getRankGrade,
+} from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading, ActionBarLink } from '../../components';
 
@@ -24,13 +29,11 @@ const cyber = require('../../image/cyber.png');
 
 const tilde = require('../../image/tilde.svg');
 
-
 // const grade = {
 //   from: 0.0001,
 //   to: 0.1,
 //   value: 4
 // };
-
 
 class Home extends PureComponent {
   constructor(props) {
@@ -49,7 +52,7 @@ class Home extends PureComponent {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // ipfs.files.get(
     //   'QmVuQhpty8DoYYvybKhwuqTk3ocNFk64qEirXtLZbdvDgQ',
     //   (err, files) => {
@@ -58,6 +61,13 @@ class Home extends PureComponent {
     //     console.log(lottery);
     //   }
     // );
+    const string = await getString(
+      'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV'
+    );
+
+    // QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV
+
+    console.log('string', string);
   }
 
   onChangeInput = async e => {
