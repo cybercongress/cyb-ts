@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { ActionBar } from '@cybercongress/gravity';
-import ActionBarTakeOff from '../funding/actionBar';
+import { ActionBar, Input } from '@cybercongress/gravity';
+import ActionBarAtom from './actionBarAtom';
 import ActionBarAuction from '../auction/actionBar';
 
 const Switch = ({ checked, onChange }) => (
@@ -18,6 +18,7 @@ class ActionBarContainer extends Component {
       step: 'start',
       select: 'atom',
       checkedSwitch: false,
+      valueAmount: '',
     };
   }
 
@@ -46,22 +47,37 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onChangeAmount = e =>
+    this.setState({
+      valueAmount: e.target.value,
+    });
+
   render() {
-    const { checkedSwitch } = this.state;
+    const { checkedSwitch, valueAmount } = this.state;
 
     if (this.state.step === 'start') {
       return (
         <ActionBar>
           <div className="action-text">
-            <span className="actionBar-text">Contribute ETH/ATOMs using</span>
+            <span className="actionBar-text">Contribute</span>
+            <Input
+              value={valueAmount}
+              onChange={this.onChangeAmount}
+              placeholder="amount"
+              // isInvalid={validAmount}
+              // message={messageAmount}
+              marginLeft={10}
+              marginRight={10}
+              width="10%"
+              height={32}
+            />
             <Switch
               checked={checkedSwitch}
               onChange={e => this.onChangeSwitch(e)}
             />
-            {/* <select onChange={this.onChangeSelect}>
-              <option value="atom">ATOMs</option>
-              <option value="eth">ETH</option>
-            </select> */}
+            <span style={{ marginLeft: 10 }} className="actionBar-text">
+              ATOMs/ETH
+            </span>
           </div>
           <button className="btn" onClick={this.onClickSelect}>
             Fuck Google
@@ -71,7 +87,9 @@ class ActionBarContainer extends Component {
     }
 
     if (!checkedSwitch) {
-      return <ActionBarTakeOff update={this.startStep} />;
+      return (
+        <ActionBarAtom valueAmount={valueAmount} update={this.startStep} />
+      );
     }
 
     if (checkedSwitch) {

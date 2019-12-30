@@ -37,4 +37,6 @@ export {
   CommunityPool,
   ParamChange,
   TextProposal,
+  SendLedgerAtomTot,
+  SendAmount,
 } from './ledger/stageActionBar';

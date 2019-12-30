@@ -379,7 +379,7 @@ span.right-input {
 
 .action-text {
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
     flex-grow: 1;
     margin-right: 15px;

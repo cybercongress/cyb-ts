@@ -61,13 +61,13 @@ class Home extends PureComponent {
     //     console.log(lottery);
     //   }
     // );
-    const string = await getString(
-      'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV'
-    );
+    // const string = await getString(
+    //   'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV'
+    // );
 
     // QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV
 
-    console.log('string', string);
+    // console.log('string', string);
   }
 
   onChangeInput = async e => {

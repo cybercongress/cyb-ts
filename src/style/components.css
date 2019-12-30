@@ -36,6 +36,7 @@
 
 .container-switch {
   position: relative;
+  display: flex;
 }
 
 .switch input {

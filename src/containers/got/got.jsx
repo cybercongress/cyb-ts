@@ -120,7 +120,7 @@ class Got extends PureComponent {
       contract: { methods },
     } = this.props;
     // if(this.state.loading){
-    const dailyTotals = await methods.dailyTotals(10).call();
+    const dailyTotals = await methods.dailyTotals(0).call();
     let ETHRaised = 0;
     let ATOMsRaised = 0;
 
