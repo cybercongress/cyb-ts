@@ -82,6 +82,7 @@ export const Confirmed = ({
   txHeight,
   onClickBtn,
   onClickBtnCloce,
+  explorer
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <span className="font-size-20 display-inline-block text-align-center">
@@ -113,7 +114,7 @@ export const Confirmed = ({
           alignItems: 'center',
           margin: '0 auto',
         }}
-        href={`https://cyberd.ai/transactions/${txHash}`}
+        href={`https://${explorer || 'cyberd.ai'}/transactions/${txHash}`}
       >
         {T.actionBar.confirmedTX.viewTX}
       </a>
@@ -674,6 +675,8 @@ export const SendLedgerAtomTot = ({
   availableStake,
   onClickBtnCloce,
   disabledBtn,
+  amount,
+  addressTo,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <div className="display-flex align-items-center">
@@ -687,14 +690,22 @@ export const SendLedgerAtomTot = ({
     </div>
 
     <div>
-      <h3 className="text-align-center">{T.actionBar.send.send}</h3>
+      <h3 className="text-align-center">Contribution Details</h3>
       <p className="text-align-center">{T.actionBar.send.wallet}</p>
       <span className="actionBar-text">{availableStake}</span>
 
       <div
         style={{ marginBottom: 30, marginTop: 30 }}
-        className="text-align-center"
-      />
+      >
+        <div style={{ marginBottom: 10 }}>
+          <span style={{ marginRight: 10 }}>address to:</span>
+          <span>{addressTo}</span>
+        </div>
+        <div>
+          <span style={{ marginRight: 10 }}>contribution amount:</span>
+          <span>{amount} ATOMs</span>
+        </div>
+      </div>
       <div className="text-align-center">
         <button
           type="button"

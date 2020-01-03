@@ -258,6 +258,7 @@ class ActionBarAtom extends Component {
   cleatState = () => {
     const { update } = this.props;
     this.setState({
+      stage: STAGE_SELECTION,
       ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
@@ -288,13 +289,6 @@ class ActionBarAtom extends Component {
     this.setState({
       stage: STAGE_SELECTION,
       height50: true,
-    });
-  };
-
-  onClickInitStage = () => {
-    this.cleatState();
-    this.setState({
-      stage: STAGE_INIT,
     });
   };
 
@@ -389,6 +383,7 @@ class ActionBarAtom extends Component {
       txHeight,
       stage,
     } = this.state;
+    const { valueAmount } = this.props;
 
     if (stage === STAGE_SELECTION) {
       return (
@@ -396,7 +391,7 @@ class ActionBarAtom extends Component {
           height={height50}
           onClickBtn={this.onClickTrackContribution}
           address={ADDR_FUNDING}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
@@ -408,7 +403,7 @@ class ActionBarAtom extends Component {
           status={connect}
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
           version={
             returnCode === LEDGER_OK &&
             this.compareVersion(version, LEDGER_VERSION_REQ)
@@ -423,15 +418,12 @@ class ActionBarAtom extends Component {
         <SendLedgerAtomTot
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
+          addressTo={ADDR_FUNDING}
+          amount={valueAmount}
           availableStake={
             Math.floor((availableStake / DIVISOR_ATOM) * 1000) / 1000
           }
-          gasUAtom={gas * gasPrice}
-          gasAtom={(gas * gasPrice) / DIVISOR_ATOM}
-          onChangeInput={e => this.onChangeInputContributeATOMs(e)}
-          valueInput={toSend}
-          onClickBtnCloce={this.onClickInitStage}
-          onClickMax={this.onClickMax}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
@@ -440,22 +432,23 @@ class ActionBarAtom extends Component {
       return (
         <JsonTransaction
           txMsg={txMsg}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
     }
 
     if (stage === STAGE_CONFIRMED) {
       return (
         <Confirmed
           txHash={txHash}
+          explorer="cosmos.bigdipper.live"
           txHeight={txHeight}
-          onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }

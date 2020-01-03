@@ -465,7 +465,7 @@
     position: absolute;
     bottom: 0;
     left: 50%;
-    z-index: 2;
+    z-index: 1;
     transform: translate(-50%);
     height: 70%;
 }
@@ -616,7 +616,7 @@
     max-width: 140px;
     background: #000;
     border-radius: 5px;
-    z-index: 3;
+    z-index: 2;
 }
 
 .vitalik-popups span {
@@ -663,7 +663,7 @@
     max-width: 140px;
     background: #000;
     border-radius: 5px;
-    z-index: 3;
+    z-index: 2;
 }
 
 .jae-popups span {

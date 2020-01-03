@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ActionBar, Input } from '@cybercongress/gravity';
 import ActionBarAtom from './actionBarAtom';
-import ActionBarAuction from '../auction/actionBar';
+import ActionBarETH from './actionBarEth';
 
 const Switch = ({ checked, onChange }) => (
   <div className="container-switch">
@@ -38,6 +38,7 @@ class ActionBarContainer extends Component {
   startStep = () => {
     this.setState({
       step: 'start',
+      valueAmount: '',
     });
   };
 
@@ -94,12 +95,12 @@ class ActionBarContainer extends Component {
 
     if (checkedSwitch) {
       return (
-        <ActionBarAuction
+        <ActionBarETH
           web3={this.props.web3}
           contract={this.props.contract}
           minRound={10}
-          maxRound={11}
           update={this.startStep}
+          valueAmount={valueAmount}
         />
       );
     }
