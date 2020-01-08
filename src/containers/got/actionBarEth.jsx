@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
-import { ClaimedAll } from './claimedAll';
 import { AUCTION } from '../../utils/config';
 
 function lament(error) {
@@ -42,25 +41,6 @@ const ping = tx =>
     }
   });
 
-// const Input = ({
-//   value,
-//   onChange,
-//   placeholder,
-//   valid,
-//   messageError,
-//   ...props
-// }) => (
-//   <div {...props} className="input-box-valid">
-//     <input
-//       style={{ textAlign: 'end' }}
-//       value={value}
-//       onChange={onChange}
-//       placeholder={placeholder}
-//     />
-//     {valid && <span className="errorMessage">{messageError}</span>}
-//   </div>
-// );
-
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
     display="flex"
@@ -75,94 +55,23 @@ const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-const StartState = ({
-  onClickBtn,
-  claimed,
-  web3,
-  contract,
-  round,
-  roundAll,
-}) => {
-  if (round <= roundAll)
-    return (
-      <ActionBar>
-        <ActionBarContentText>
-          Contribute ETH using MetaMask, push button
-        </ActionBarContentText>
-        {claimed && (
-          <ClaimedAll contract={contract} web3={web3} marginX={15}>
-            Claim All
-          </ClaimedAll>
-        )}
-        <Button onClick={onClickBtn}>Fuck Google</Button>
-      </ActionBar>
-    );
-  if (round > roundAll)
-    return (
-      <ActionBar>
-        <ActionBarContentText>
-          Auction finished. You have 3 months for claiming GOLs. Else, the
-          tokens will be burned.
-        </ActionBarContentText>
-        {claimed && (
-          <ClaimedAll contract={contract} web3={web3} marginX={15}>
-            Claim All
-          </ClaimedAll>
-        )}
-      </ActionBar>
-    );
-  return null;
+const StartState = ({ onClickBtn }) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        Contribute ETH using MetaMask, push button
+      </ActionBarContentText>
+      <Button onClick={onClickBtn}>Fuck Google</Button>
+    </ActionBar>
+  );
 };
 
-const ContributeETH = ({
-  onClickBtn,
-  valueRound,
-  valueAmount,
-  onChangeAmount,
-  onChangeRound,
-  disabledBtnConfirm,
-  validRound,
-  validAmount,
-  messageRound,
-  messageAmount,
-}) => (
+const ContributeETH = ({ onClickBtn, valueAmount }) => (
   <ActionBar>
     <ActionBarContentText>
-      I want to contribute
-      <Input
-        value={valueAmount}
-        onChange={onChangeAmount}
-        // placeholder={`сhoose round ${minValueRound} to ${maxValueRound}`}
-        isInvalid={validAmount}
-        message={messageAmount}
-        marginLeft={15}
-        marginRight={5}
-        width="15%"
-        // style={{
-        //   width: '15%',
-        //   margin: '0 5px 0 15px'
-        // }}
-      />
-      <span>ETH in</span>
-      <Input
-        value={valueRound}
-        onChange={onChangeRound}
-        // placeholder={`сhoose round ${minValueRound} to ${maxValueRound}`}
-        isInvalid={validRound}
-        message={messageRound}
-        width="10%"
-        marginLeft={15}
-        marginRight={10}
-        // style={{
-        //   width: '10%',
-        //   margin: '0 10px 0 15px'
-        // }}
-      />
-      <span>round</span>
+      I want to contribute {valueAmount} <span>ETH</span>
     </ActionBarContentText>
-    <Button disabled={disabledBtnConfirm} onClick={onClickBtn}>
-      Confirm
-    </Button>
+    <Button onClick={onClickBtn}>Confirm</Button>
   </ActionBar>
 );
 
@@ -188,56 +97,25 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
   </ActionBar>
 );
 
-const timer = func => {
-  setInterval(func, 1000);
-};
 
-class ActionBarAuction extends Component {
+class ActionBarETH extends Component {
   constructor(props) {
     super(props);
     this.state = {
       step: 'start',
       round: '',
-      amount: '',
       tx: null,
-      messageRound: '',
-      messageAmount: '',
-      validInputRound: false,
-      validInputAmount: false,
     };
     this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
 
-  onChangeRound = e => {
-    const { minRound, maxRound } = this.props;
-
-    if (e.target.value < minRound || e.target.value > maxRound - 1) {
-      this.setState({
-        validInputRound: true,
-        messageRound: `enter round ${minRound} to ${maxRound - 1}`,
-      });
-    } else {
-      this.setState({
-        validInputRound: false,
-        messageRound: '',
-      });
-    }
-    this.setState({
-      round: e.target.value,
-    });
-  };
-
-  onChangeAmount = e =>
-    this.setState({
-      amount: e.target.value,
-    });
-
   onClickFuckGoogle = async () => {
     const { minRound, web3 } = this.props;
-    if (web3.currentProvider.host)
+    if (web3.currentProvider.host) {
       return console.log(
         'Non-Ethereum browser detected. You should consider trying MetaMask!'
       );
+    }
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.enable();
@@ -260,7 +138,9 @@ class ActionBarAuction extends Component {
           round: minRound,
         });
       }
-    } else return console.log('Your metamask is locked!');
+    } else {
+      return console.log('Your metamask is locked!');
+    }
   };
 
   onClickTrackContribution = () =>
@@ -273,7 +153,6 @@ class ActionBarAuction extends Component {
     this.setState({
       step: 'start',
       round: '',
-      amount: '',
     });
     if (update) {
       update();
@@ -281,14 +160,12 @@ class ActionBarAuction extends Component {
   };
 
   buyTOKEN = async account => {
-    const { web3, contract } = this.props;
-    const { round, amount } = this.state;
-    console.log(round);
-    console.log(amount);
+    const { web3, contract, valueAmount } = this.props;
+    const { round } = this.state;
 
     const getData = await contract.methods.buyWithLimit(round, 0).encodeABI();
 
-    const priceInWei = await web3.utils.toWei(amount, 'ether');
+    const priceInWei = await web3.utils.toWei(valueAmount, 'ether');
     web3.eth.sendTransaction(
       {
         from: account,
@@ -309,10 +186,11 @@ class ActionBarAuction extends Component {
 
   onClickContributeATOMs = async () => {
     const { web3 } = this.props;
-    if (web3.currentProvider.host)
+    if (web3.currentProvider.host) {
       return console.log(
         'Non-Ethereum browser detected. You should consider trying MetaMask!'
       );
+    }
     if (window.ethereum) {
       try {
         const accounts = await window.ethereum.enable();
@@ -329,7 +207,9 @@ class ActionBarAuction extends Component {
         // console.log(accounts[0]);
         this.buyTOKEN(accounts[0]);
       }
-    } else return console.log('Your metamask is locked!');
+    } else {
+      return console.log('Your metamask is locked!');
+    }
   };
 
   onClickTransactionCost = () =>
@@ -338,19 +218,10 @@ class ActionBarAuction extends Component {
     });
 
   render() {
-    const {
-      step,
-      round,
-      amount,
-      tx,
-      messageRound,
-      messageAmount,
-      validInputRound,
-      validInputAmount,
-    } = this.state;
-    const { minRound, maxRound, web3, claimed, contract } = this.props;
-    const btnConfirm = round >= minRound && round <= maxRound - 1 && amount > 0;
-    if (web3.givenProvider === null)
+    const { step, tx } = this.state;
+    const { web3, valueAmount } = this.props;
+
+    if (web3.givenProvider === null) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -364,35 +235,17 @@ class ActionBarAuction extends Component {
           </ActionBarContentText>
         </ActionBar>
       );
+    }
 
     if (step === 'start') {
-      return (
-        <StartState
-          claimed={claimed}
-          onClickBtn={this.onClickFuckGoogle}
-          contract={contract}
-          web3={web3}
-          round={minRound}
-          roundAll={maxRound}
-        />
-      );
+      return <StartState onClickBtn={this.onClickFuckGoogle} />;
     }
 
     if (step === 'contributeETH') {
       return (
         <ContributeETH
-          valueRound={round}
-          valueAmount={amount}
-          validRound={validInputRound}
-          validAmount={validInputAmount}
-          messageRound={messageRound}
-          messageAmount={messageAmount}
-          onChangeAmount={this.onChangeAmount}
-          onChangeRound={this.onChangeRound}
-          minValueRound={minRound}
-          maxValueRound={maxRound - 1}
+          valueAmount={valueAmount}
           onClickBtn={this.onClickContributeATOMs}
-          disabledBtnConfirm={!btnConfirm}
         />
       );
     }
@@ -405,4 +258,4 @@ class ActionBarAuction extends Component {
   }
 }
 
-export default ActionBarAuction;
+export default ActionBarETH;

@@ -148,17 +148,13 @@ class Validators extends Component {
         const delegatorAddress = getDelegator(
           validators[item].operator_address
         );
-
-        const getSelfDelegation = await selfDelegationShares(
-          delegatorAddress,
-          validators[item].operator_address
-        );
+        let shares = 0;
 
         const rank = await getRankValidators(delegatorAddress);
 
         const height = validators[item].jailed
           ? validators[item].unbonding_height
-          : rank.linked;
+          : rank.karma;
 
         const commission = formatNumber(
           validators[item].commission.commission_rates.rate * 100,
@@ -168,8 +164,15 @@ class Validators extends Component {
         const powerFloat = validators[item].tokens * 10 ** -9;
         const power = formatNumber(Math.floor(powerFloat * 1000) / 1000, 3);
 
-        const shares =
-          (getSelfDelegation.shares / validators[item].delegator_shares) * 100;
+        const getSelfDelegation = await selfDelegationShares(
+          delegatorAddress,
+          validators[item].operator_address
+        );
+
+        if (getSelfDelegation && validators[item].delegator_shares > 0) {
+          shares =
+            (getSelfDelegation / validators[item].delegator_shares) * 100;
+        }
 
         const staking = (validators[item].tokens / bondedTokens) * 100;
 
@@ -186,7 +189,7 @@ class Validators extends Component {
         );
       }
     );
-
+console.log(validators);
     this.setState({
       loading: false,
       validators,

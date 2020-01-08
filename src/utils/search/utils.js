@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { CYBER, TAKEOFF } from '../config'
+import { CYBER, TAKEOFF, COSMOS } from '../config';
 
 const { CYBER_NODE_URL } = CYBER;
 
@@ -87,6 +87,23 @@ export const getIpfsHash = string =>
 
       DAGUtil.cid(dagNode, (error, cid) => {
         resolve(cid.toBaseEncodedString());
+      });
+    });
+  });
+
+export const getString = string =>
+  new Promise((resolve, reject) => {
+    const unixFsFile = new Unixfs('file', Buffer.from(string));
+
+    const buffer = unixFsFile.marshal();
+    console.log(buffer);
+    DAGNode.create(buffer, (err, dagNode) => {
+      if (err) {
+        reject(new Error('Cannot create ipfs DAGNode'));
+      }
+
+      DAGUtil.cid(dagNode, (error, cid) => {
+        resolve(cid.toV1());
       });
     });
   });
@@ -236,17 +253,21 @@ export const getValidatorsUnbonded = () =>
       .catch(e => {})
   );
 
-export const selfDelegationShares = (delegatorAddress, operatorAddress) =>
-  new Promise(resolve =>
-    axios({
+export const selfDelegationShares = async (
+  delegatorAddress,
+  operatorAddress
+) => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL}/lcd/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result.shares;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
 
 export const stakingPool = () =>
   new Promise(resolve =>
@@ -366,8 +387,7 @@ export const getAmountATOM = data => {
   for (let item = 0; item < data.length; item++) {
     if (amount <= TAKEOFF.ATOMsALL) {
       amount +=
-        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) *
-        10 ** -1;
+        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) / COSMOS.DIVISOR_ATOM;
     } else {
       amount = TAKEOFF.ATOMsALL;
       break;

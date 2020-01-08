@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Speedometer } from './speedometer';
+import { Difference } from './statistics';
 
 const vitalik = require('../../image/vitalik.png');
 const jae = require('../../image/jae.png');
@@ -57,60 +58,7 @@ const Crown = () => <div className="crown" />;
 
 const CrownJae = () => <div className="crown-jae" />;
 
-export class VitalikJae extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      contentPopupVitalik: 'buy ETH',
-      contentPopupJae: 'buy ATOMs',
-      diff: 0,
-      value: '',
-      valueSelect: 'ethAtom',
-    };
-  }
-
-  // componentDidMount() {
-  //   switch (this.state.diff) {
-  //     case 0:
-  //       this.setState({
-  //         contentPopupVitalik: popus[0].eth.win.x0,
-  //         contentPopupJae: popus[0].atom.win.x0
-  //       });
-  //       break;
-  //     case 1:
-  //       this.setState({
-  //         contentPopupVitalik: popus[0].eth.win.x1,
-  //         contentPopupJae: popus[0].atom.win.x1
-  //       });
-  //       break;
-  //     case 2:
-  //       this.setState({
-  //         contentPopupVitalik: popus[0].eth.win.x2,
-  //         contentPopupJae: popus[0].atom.win.x2
-  //       });
-  //       break;
-  //     case 4:
-  //       this.setState({
-  //         contentPopupVitalik: popus[0].eth.win.x4,
-  //         contentPopupJae: popus[0].atom.win.x4
-  //       });
-  //       break;
-  //     case 7:
-  //       this.setState({
-  //         contentPopupVitalik: popus[0].eth.win.x7,
-  //         contentPopupJae: popus[0].atom.win.x7
-  //       });
-  //       break;
-
-  //     default:
-  //       this.setState({
-  //         contentPopupVitalik: 'buyEHT!!',
-  //         contentPopupJae: 'buyATOMs!!'
-  //       });
-  //       break;
-  //   }
-  // }
-
+class VitalikJae extends Component {
   onChangeTest = e =>
     this.setState({
       value: e.target.value,
@@ -123,7 +71,7 @@ export class VitalikJae extends Component {
     });
 
   render() {
-    const { win, arow, diff, col } = this.props;
+    const { win, arow, diff, col, difference } = this.props;
     // const { contentPopupVitalik, contentPopupJae } = this.state;
     // console.log(col.atom);
     let contentPopupVitalik = '!!';
@@ -237,8 +185,15 @@ export class VitalikJae extends Component {
     return (
       <div>
         <div className="container">
-          <div className={`vitalik ${win === 'eth' ? 'win-opacity' : ''}`}>
-            {win === 'eth' && <Crown />}
+          <div className="vitalik">
+            {win === 'eth' ? (
+              <Crown />
+            ) : (
+              <Difference
+                custom="position-difference-container"
+                difference={difference}
+              />
+            )}
             <img src={vitalik} />
             <div className="vitalik-popups">
               <span>{contentPopupVitalik}</span>
@@ -246,23 +201,24 @@ export class VitalikJae extends Component {
           </div>
           {/* <div>{diff}</div> */}
           <Speedometer colEthAtom={col} />
-          <div className={`jae ${win === 'atom' ? 'win-opacity' : ''}`}>
-            {win === 'atom' && <CrownJae />}
+          <div className="jae">
+            {win === 'atom' ? (
+              <CrownJae />
+            ) : (
+              <Difference
+                custom="position-difference-container"
+                difference={difference}
+              />
+            )}
             <img src={jae} />
             <div className="jae-popups">
               <span>{contentPopupJae}</span>
             </div>
           </div>
         </div>
-        {/* <div>
-          <input value={this.state.value} onChange={this.onChangeTest} />
-          <select value={this.valueSelect} onChange={this.onChangeSelect}>
-            <option value="ethAtom">ethAtom</option>
-            <option value="eth">eth</option>
-            <option value="atom">atom</option>
-          </select>
-        </div> */}
       </div>
     );
   }
 }
+
+export default VitalikJae;

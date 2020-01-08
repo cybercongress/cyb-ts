@@ -21,6 +21,7 @@ import {
   statusNode,
   getBalance,
   getTotalEUL,
+  getAmountATOM,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -135,22 +136,13 @@ class Brain extends React.Component {
     };
   };
 
-  getAmountATOM = dataTxs => {
+  getAmountATOM = async dataTxs => {
     let amount = 0;
     let won = 0;
     let currentPrice = 0;
 
-    for (let item = 0; item < dataTxs.length; item++) {
-      if (amount <= TAKEOFF.ATOMsALL) {
-        amount +=
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount
-          ) *
-          10 ** -1;
-      } else {
-        amount = TAKEOFF.ATOMsALL;
-        break;
-      }
+    if (dataTxs) {
+      amount = await getAmountATOM(dataTxs);
     }
 
     console.log('amount', amount);
@@ -168,6 +160,7 @@ class Brain extends React.Component {
     const supplyEUL = Math.floor(won);
     const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
     const capATOM = (supplyEUL * takeofPrice) / DIVISOR_CYBER_G;
+    console.log('capATOM', capATOM);
 
     this.setState({
       supplyEUL,
@@ -422,7 +415,7 @@ class Brain extends React.Component {
         />
         <CardStatisics
           title={T.brain.cap}
-          value={formatNumber(Math.floor(capATOM))}
+          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
         />
         <a
           href="/#/heroes"
@@ -478,7 +471,7 @@ class Brain extends React.Component {
         />
         <CardStatisics
           title={T.brain.cap}
-          value={formatNumber(Math.floor(capATOM))}
+          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
         />
         {/* <CardStatisics
           title={T.brain.supplyGOL}

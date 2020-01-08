@@ -325,7 +325,7 @@ span.right-input {
     position: fixed;
     bottom: 0;
     background-color: #000;
-    z-index: 2;
+    z-index: 3;
     min-height: 5%;
     height: 1%;
     transition: min-height 2s;
@@ -379,7 +379,7 @@ span.right-input {
 
 .action-text {
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
     flex-grow: 1;
     margin-right: 15px;

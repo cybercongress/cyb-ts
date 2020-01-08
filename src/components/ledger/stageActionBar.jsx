@@ -82,6 +82,7 @@ export const Confirmed = ({
   txHeight,
   onClickBtn,
   onClickBtnCloce,
+  explorer
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <span className="font-size-20 display-inline-block text-align-center">
@@ -113,7 +114,7 @@ export const Confirmed = ({
           alignItems: 'center',
           margin: '0 auto',
         }}
-        href={`https://cyberd.ai/transactions/${txHash}`}
+        href={`https://${explorer || 'cyberd.ai'}/transactions/${txHash}`}
       >
         {T.actionBar.confirmedTX.viewTX}
       </a>
@@ -666,4 +667,123 @@ export const SendLedger = ({
       </div>
     </div>
   </ContainetLedger>
+);
+
+export const SendLedgerAtomTot = ({
+  onClickBtn,
+  address,
+  availableStake,
+  onClickBtnCloce,
+  disabledBtn,
+  amount,
+  addressTo,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <div className="display-flex align-items-center">
+      <span className="actionBar-text">{address}</span>
+      <button
+        className="copy-address"
+        onClick={() => {
+          navigator.clipboard.writeText(address);
+        }}
+      />
+    </div>
+
+    <div>
+      <h3 className="text-align-center">Contribution Details</h3>
+      <p className="text-align-center">{T.actionBar.send.wallet}</p>
+      <span className="actionBar-text">{availableStake}</span>
+
+      <div
+        style={{ marginBottom: 30, marginTop: 30 }}
+      >
+        <div style={{ marginBottom: 10 }}>
+          <span style={{ marginRight: 10 }}>address to:</span>
+          <span>{addressTo}</span>
+        </div>
+        <div>
+          <span style={{ marginRight: 10 }}>contribution amount:</span>
+          <span>{amount} ATOMs</span>
+        </div>
+      </div>
+      <div className="text-align-center">
+        <button
+          type="button"
+          className="btn-disabled"
+          disabled={disabledBtn}
+          onClick={onClickBtn}
+        >
+          {T.actionBar.send.generate}
+        </button>
+      </div>
+    </div>
+  </ContainetLedger>
+);
+
+export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
+  <div className="container-action height50 box-shadow-1px">
+    <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
+      <span>
+        [
+        <a
+          onClick={onClickBtnCloce}
+          style={{ color: 'rgb(225, 225, 225)', cursor: 'pointer' }}
+        >
+          exit
+        </a>
+        ]
+      </span>
+    </div>
+    <div className="container-action-content height100">
+      <div className="container-send">
+        <div>
+          <div>
+            <span
+              className="display-inline-block text-align-center"
+              style={{
+                marginBottom: 20,
+                fontSize: '16px',
+              }}
+            >
+              Send any amount of ATOMs directly to cyber~Congress multisig by
+              your using Cosmos wallet
+            </span>
+            <div
+              className="display-flex align-items-center"
+              style={{
+                justifyContent: 'center',
+              }}
+            >
+              <span className="font-size-16">{address}</span>
+              <button
+                className="copy-address"
+                onClick={() => {
+                  navigator.clipboard.writeText(address);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="line-action-bar" />
+        <div className="display-flex flex-direction-column align-items-center">
+          <div className="display-flex flex-direction-column">
+            {/* <span className="display-inline-block font-size-20 margin-bottom-10px">
+              Ledger
+            </span> */}
+            <button className="btn" onClick={onClickBtn}>
+              Send with Ledger
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* <span className="actionBar-text">
+          You can send any amount of ATOMs to cyber•Congress multisig
+          cosmos287fhhlgflsef
+        </span>
+      </div>
+      <button className="btn" onClick={onClickBtn}>
+        Track Contribution
+      </button> */}
+    </div>
+  </div>
 );

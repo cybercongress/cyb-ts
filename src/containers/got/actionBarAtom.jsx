@@ -3,16 +3,13 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER } from '../../utils/config';
 import {
-  ContributeATOMs,
-  TransactionCost,
-  Succesfuuly,
-  SendAmounLadger,
-  SendAmount,
-  StartState,
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
-} from './stateActionBar';
+  ConnectLadger,
+  SendLedgerAtomTot,
+  SendAmount,
+} from '../../components';
 
 const {
   STAGE_INIT,
@@ -33,11 +30,11 @@ const {
 
 const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
 
-class ActionBarTakeOff extends Component {
+class ActionBarAtom extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stage: STAGE_INIT,
+      stage: STAGE_SELECTION,
       ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
@@ -169,9 +166,10 @@ class ActionBarTakeOff extends Component {
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend } = this.state;
+    const { ledger, address, addressInfo } = this.state;
+    const { valueAmount } = this.props;
     const validatorBech32 = ADDR_FUNDING;
-    const uatomAmount = toSend * DIVISOR_ATOM;
+    const uatomAmount = valueAmount * DIVISOR_ATOM;
     const txContext = {
       accountNumber: addressInfo.accountNumber,
       balanceuAtom: addressInfo.balanceuAtom,
@@ -260,6 +258,7 @@ class ActionBarTakeOff extends Component {
   cleatState = () => {
     const { update } = this.props;
     this.setState({
+      stage: STAGE_SELECTION,
       ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
@@ -290,13 +289,6 @@ class ActionBarTakeOff extends Component {
     this.setState({
       stage: STAGE_SELECTION,
       height50: true,
-    });
-  };
-
-  onClickInitStage = () => {
-    this.cleatState();
-    this.setState({
-      stage: STAGE_INIT,
     });
   };
 
@@ -391,16 +383,7 @@ class ActionBarTakeOff extends Component {
       txHeight,
       stage,
     } = this.state;
-
-    if (stage === STAGE_INIT) {
-      return (
-        <StartState
-          onClickBtn={this.onClickFuckGoogle}
-          valueSelect={valueSelect}
-          onChangeSelect={this.onChangeSelect}
-        />
-      );
-    }
+    const { valueAmount } = this.props;
 
     if (stage === STAGE_SELECTION) {
       return (
@@ -408,19 +391,19 @@ class ActionBarTakeOff extends Component {
           height={height50}
           onClickBtn={this.onClickTrackContribution}
           address={ADDR_FUNDING}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           onClickBtn={this.onClickSaveAddress}
           status={connect}
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
           version={
             returnCode === LEDGER_OK &&
             this.compareVersion(version, LEDGER_VERSION_REQ)
@@ -432,18 +415,15 @@ class ActionBarTakeOff extends Component {
 
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       return (
-        <ContributeATOMs
+        <SendLedgerAtomTot
           onClickBtn={() => this.generateTx()}
           address={address.bech32}
+          addressTo={ADDR_FUNDING}
+          amount={valueAmount}
           availableStake={
             Math.floor((availableStake / DIVISOR_ATOM) * 1000) / 1000
           }
-          gasUAtom={gas * gasPrice}
-          gasAtom={(gas * gasPrice) / DIVISOR_ATOM}
-          onChangeInput={e => this.onChangeInputContributeATOMs(e)}
-          valueInput={toSend}
-          onClickBtnCloce={this.onClickInitStage}
-          onClickMax={this.onClickMax}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
@@ -452,36 +432,29 @@ class ActionBarTakeOff extends Component {
       return (
         <JsonTransaction
           txMsg={txMsg}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
     }
 
     if (stage === STAGE_CONFIRMED) {
       return (
         <Confirmed
           txHash={txHash}
+          explorer="cosmos.bigdipper.live"
           txHeight={txHeight}
-          onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
         />
       );
-    }
-
-    if (step === 'transactionCost') {
-      return <TransactionCost onClickBtn={this.onClickTransactionCost} />;
-    }
-
-    if (step === 'succesfuuly') {
-      return <Succesfuuly />;
     }
 
     return null;
   }
 }
 
-export default ActionBarTakeOff;
+export default ActionBarAtom;
