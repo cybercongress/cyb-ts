@@ -407,3 +407,15 @@ export const getBalanceWallet = address =>
       })
       .catch(e => {})
   );
+
+export const getDrop = address =>
+  new Promise(resolve =>
+    axios({
+      method: 'get',
+      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreidnvozbdxhieaxvgudo4jvynlqvm4xomychezff7stdi2kijwm5iu/${address}`,
+    })
+      .then(response => {
+        resolve(response.data);
+      })
+      .catch(e => {})
+  );

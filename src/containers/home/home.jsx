@@ -16,14 +16,27 @@ import {
   getString,
   search,
   getRankGrade,
+  getDrop,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading, ActionBarLink } from '../../components';
 
-const ipfs = require('ipfs');
-const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
-const Unixfs = require('ipfs-unixfs');
-const IPFS = require('ipfs-api');
+const ipfsClient = require('ipfs-http-client');
+
+// const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001');
+const ipfs = ipfsClient('https://herzner1.cybernode.ai/ipfs/api/v0/');
+
+// const ipfs = ipfsClient({
+//   host: 'herzner1.cybernode.ai/ipfs',
+//   port: '5001',
+//   protocol: 'https',
+//   'api-path': '/ipfs/api/v0',
+// });
+
+// const IPFS = require('ipfs');
+// const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
+// const Unixfs = require('ipfs-unixfs');
+// const IPFS = require('ipfs-api');
 const cyb = require('../../image/logo-cyb-v2.svg');
 const cyber = require('../../image/cyber.png');
 
@@ -34,6 +47,15 @@ const tilde = require('../../image/tilde.svg');
 //   to: 0.1,
 //   value: 4
 // };
+
+const obj = {
+  a: 1,
+  b: [1, 2, 3],
+  c: {
+    ca: [5, 6, 7],
+    cb: 'foo',
+  },
+};
 
 class Home extends PureComponent {
   constructor(props) {
@@ -53,6 +75,21 @@ class Home extends PureComponent {
   }
 
   async componentDidMount() {
+    // const repoPath = `ipfs-${Math.random()}`;
+    // const ipfs = await IPFS.create({ repo: '/var/ipfs/data' });
+    // const result = await ipfs.dag.get('zdpuAsoYmbemfzYYRUAQC5LXB1LBznR65Wifh28RSX6D5iwdW/cybervaloper12kd8w45rqxuwpwqvpmdyvvdey9ezeqhagvjc70');
+
+    // const cid = await ipfs.dag.put(obj, {
+    //   format: 'dag-cbor',
+    //   hashAlg: 'sha2-256',
+    // });
+    // console.log(cid.toString());
+
+    const result = await getDrop(
+      'cybervaloper12kd8w45rqxuwpwqvpmdyvvdey9ezeqhagvjc70'
+    );
+
+    console.log('result', result);
     // ipfs.files.get(
     //   'QmVuQhpty8DoYYvybKhwuqTk3ocNFk64qEirXtLZbdvDgQ',
     //   (err, files) => {

@@ -1,9 +1,16 @@
 import React from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
-import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
+import {
+  getIpfsHash,
+  search,
+  getRankGrade,
+  getDrop,
+} from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
+
+const pattern = /cybervaloper|cyber|cosmos/g;
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -15,6 +22,8 @@ class SearchResults extends React.Component {
       keywordHash: '',
       query: '',
       resultNull: false,
+      drop: false,
+      balance: 'null',
     };
   }
 
@@ -43,27 +52,47 @@ class SearchResults extends React.Component {
   getSearch = async query => {
     let searchResults = [];
     let resultNull = false;
+    let keywordHash = '';
+    let keywordHashNull = '';
     // const { query } = this.state;
-    const keywordHash = await getIpfsHash(query);
-    searchResults = await search(keywordHash);
-    searchResults.map((item, index) => {
-      searchResults[index].cid = item.cid;
-      searchResults[index].rank = formatNumber(item.rank, 6);
-      searchResults[index].grade = getRankGrade(item.rank);
-    });
-    console.log('searchResults', searchResults);
+    if (query.length >= 44 && query.match(pattern)) {
+      const result = await getDrop(query);
+      const drop = {
+        address: query,
+        balance: result,
+      };
 
-    if (searchResults.length === 0) {
-      const queryNull = '0';
-      const keywordHashNull = await getIpfsHash(queryNull);
-      searchResults = await search(keywordHashNull);
+      searchResults.push(drop);
+
+      this.setState({
+        balance: result,
+        drop: true,
+        loading: false,
+        searchResults,
+      });
+    } else {
+      keywordHash = await getIpfsHash(query);
+      searchResults = await search(keywordHash);
       searchResults.map((item, index) => {
         searchResults[index].cid = item.cid;
         searchResults[index].rank = formatNumber(item.rank, 6);
         searchResults[index].grade = getRankGrade(item.rank);
       });
-      resultNull = true;
+      console.log('searchResults', searchResults);
+
+      if (searchResults.length === 0) {
+        const queryNull = '0';
+        keywordHashNull = await getIpfsHash(queryNull);
+        searchResults = await search(keywordHashNull);
+        searchResults.map((item, index) => {
+          searchResults[index].cid = item.cid;
+          searchResults[index].rank = formatNumber(item.rank, 6);
+          searchResults[index].grade = getRankGrade(item.rank);
+        });
+        resultNull = true;
+      }
     }
+
     this.setState({
       searchResults,
       keywordHash,
@@ -82,21 +111,13 @@ class SearchResults extends React.Component {
       query,
       result,
       resultNull,
+      balance,
+      drop,
     } = this.state;
     // console.log(query);
+    console.log(searchResults);
 
-    const searchItems = searchResults.map(item => (
-      <SearchItem
-        key={item.cid}
-        hash={item.cid}
-        rank={item.rank}
-        grade={item.grade}
-        status="success"
-        // onClick={e => (e, links[cid].content)}
-      >
-        {item.cid}
-      </SearchItem>
-    ));
+    let searchItems = [];
 
     if (loading) {
       return (
@@ -117,6 +138,40 @@ class SearchResults extends React.Component {
         </div>
       );
     }
+    if (drop) {
+      searchItems = searchResults.map(item => (
+        <Pane
+          backgroundColor="#fff"
+          paddingY={20}
+          paddingX={20}
+          borderRadius={5}
+          key={item.address}
+        >
+          <Pane>
+            <Text>address:</Text>
+            <Text>{item.address}</Text>
+          </Pane>
+          <Pane>
+            <Text>balance:</Text>
+            <Text>{item.balance}</Text>
+          </Pane>
+        </Pane>
+      ));
+    } else {
+      searchItems = searchResults.map(item => (
+        <SearchItem
+          key={item.cid}
+          hash={item.cid}
+          rank={item.rank}
+          grade={item.grade}
+          status="success"
+          // onClick={e => (e, links[cid].content)}
+        >
+          {item.cid}
+        </SearchItem>
+      ));
+    }
+    console.log(searchItems);
 
     return (
       <div>
