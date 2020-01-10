@@ -305,11 +305,11 @@ export const statusNode = () =>
       .catch(e => {})
   );
 
-export const getRelevance = () =>
+export const getRelevance = perPage =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/top?page=0&perPage=1000`,
+      url: `${CYBER_NODE_URL}/api/top?page=0&perPage=${perPage || '50'}`,
     })
       .then(response => {
         resolve(response.data.result);
