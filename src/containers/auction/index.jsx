@@ -13,9 +13,9 @@ import {
   timer,
 } from '../../utils/utils';
 
-const BigNumber = require('bignumber.js');
-
 import { AUCTION } from '../../utils/config';
+
+const BigNumber = require('bignumber.js');
 
 const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
 
@@ -50,12 +50,12 @@ class Auction extends PureComponent {
     await this.setState({
       accounts,
     });
-    if (accounts === null) {
+    if (accounts === null || accounts === undefined) {
       console.log('no-accounts');
-      run(this.getTimeEndRound);
-      run(this.statistics);
-      run(this.dinamics);
-      run(this.getDataTable);
+      this.getTimeEndRound();
+      this.statistics();
+      this.dinamics();
+      this.getDataTable();
     } else {
       console.log('accounts');
       timer(this.getTimeEndRound);
@@ -92,7 +92,9 @@ class Auction extends PureComponent {
 
     // unsubscribes the subscription
     subscription.unsubscribe((error, success) => {
-      if (success) {console.log('Successfully unsubscribed!');}
+      if (success) {
+        console.log('Successfully unsubscribed!');
+      }
     });
 
     const subscriptionClaim = web3.eth.subscribe(
@@ -111,7 +113,9 @@ class Auction extends PureComponent {
 
     // unsubscribes the subscription
     subscriptionClaim.unsubscribe((error, success) => {
-      if (success) {console.log('Successfully unsubscribed!');}
+      if (success) {
+        console.log('Successfully unsubscribed!');
+      }
     });
     const { contract } = this.props;
     const youCYB = (
@@ -275,32 +279,31 @@ class Auction extends PureComponent {
         toBlock: 'latest',
       })
     ).filter(i => i.returnValues.user === accounts);
-
-    // console.log({
-    //   youCYB
-    // });
-
+    console.log('accounts', accounts);
+    let userBuysAuctionUtils = null;
+    let userClaims = null;
     const table = [];
     const roundThis = parseInt(await methods.today().call());
-    const startTime = await methods.startTime().call();
-    const openTime = await methods.openTime().call();
     const createPerDay = await methods.createPerDay().call();
     const createFirstDay = await methods.createFirstDay().call();
-    const userClaims = await contractAuctionUtils.methods
-      .userClaims(accounts)
-      .call();
     const dailyTotalsUtils = await contractAuctionUtils.methods
       .dailyTotals()
       .call();
 
-    const _userBuys = await contractAuctionUtils.methods
-      .userBuys(accounts)
-      .call();
+    if (accounts !== null && accounts !== undefined) {
+      userClaims = await contractAuctionUtils.methods
+        .userClaims(accounts)
+        .call();
+      userBuysAuctionUtils = await contractAuctionUtils.methods
+        .userBuys(accounts)
+        .call();
+    }
 
     await asyncForEach(
       Array.from(Array(dailyTotalsUtils.length).keys()),
       async item => {
         let createOnDay;
+        let userBuy = 0;
         if (item === 0) {
           createOnDay = createFirstDay;
           this.setState({
@@ -323,10 +326,13 @@ class Auction extends PureComponent {
         const dailyValue =
           Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
           10000;
-        const userBuy = _userBuys[item] / Math.pow(10, 18);
-        const _youCYB = youCYB.filter(i => +i.returnValues.window === +item);
+        if (accounts === null || accounts === undefined) {
+          userBuy = 0;
+        } else {
+          userBuy = userBuysAuctionUtils[item] / Math.pow(10, 18);
+        }
         let cyb;
-        if (_userBuys[item] === '0' || userClaims[item] === true) {
+        if (!userBuy || userClaims[item] === true) {
           cyb = 0;
         } else {
           cyb = (distValue / dailyValue) * userBuy;
@@ -351,7 +357,7 @@ class Auction extends PureComponent {
           ),
           price: formatNumber(currentPrice, 6),
           closing: (23 * (roundThis - item)) / 23,
-          youETH: formatNumber(_userBuys[item] / Math.pow(10, 18), 6),
+          youETH: formatNumber(userBuy, 6),
           youCYB: formatNumber(Math.floor(cyb * 100) / 100, 2),
           claimed: claimedItem,
           // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
@@ -441,6 +447,7 @@ class Auction extends PureComponent {
       accounts,
       roundTable,
     } = this.state;
+    console.log(table);
     const thc = 700 * Math.pow(10, 3);
     return (
       <div>

@@ -25,12 +25,12 @@ class Table extends Component {
     if (ordering === Order.ASC) {
       return this.setState({
         ordering: 'DESC',
-        sortKey: 'timestamp',
+        sortKey: 'height',
       });
     }
     return this.setState({
       ordering: 'ASC',
-      sortKey: 'timestamp',
+      sortKey: 'height',
     });
   };
 
@@ -70,7 +70,7 @@ class Table extends Component {
       return profiles.sort((a, b) => {
         const x = new Date(a[sortKey]);
         const y = new Date(b[sortKey]);
-        if (this.state.ordering === Order.ASC) {
+        if (ordering === Order.ASC) {
           return x - y;
         }
         return y - x;
@@ -79,7 +79,7 @@ class Table extends Component {
     return profiles.sort((a, b) => {
       const x = a[sortKey];
       const y = b[sortKey];
-      if (this.state.ordering === Order.ASC) {
+      if (ordering === Order.ASC) {
         return x - y;
       }
       return y - x;
@@ -96,6 +96,8 @@ class Table extends Component {
       onClickSortSyb,
     } = this.props;
     const { loader, sortSyb, sortAtom, asc } = this.state;
+
+    console.log(data);
 
     const sortData = this.sort(data);
 
