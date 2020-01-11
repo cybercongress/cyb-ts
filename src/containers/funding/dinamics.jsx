@@ -6,11 +6,11 @@ class Dinamics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      general: true,
+      leaderboard: true,
       share: false,
       discount: false,
       rewards: false,
-      activebtn: 'general',
+      activebtn: 'leaderboard',
       center: {
         x: 0,
         y: 0,
@@ -41,10 +41,10 @@ class Dinamics extends Component {
   state1 = () => {
     this.setState({
       share: false,
-      general: true,
+      leaderboard: true,
       discount: false,
       rewards: false,
-      activebtn: 'general',
+      activebtn: 'leaderboard',
       center: {
         x: 0,
         y: 0,
@@ -74,7 +74,7 @@ class Dinamics extends Component {
     this.setState({
       activebtn: 'share',
       share: true,
-      general: false,
+      leaderboard: false,
       discount: false,
       rewards: false,
       textX: 'Donation, ATOMs',
@@ -92,7 +92,7 @@ class Dinamics extends Component {
   state3 = () => {
     this.setState({
       share: false,
-      general: false,
+      leaderboard: false,
       discount: true,
       rewards: false,
       activebtn: 'discount',
@@ -111,7 +111,7 @@ class Dinamics extends Component {
   state4 = () => {
     this.setState({
       share: false,
-      general: false,
+      leaderboard: false,
       discount: false,
       rewards: true,
       activebtn: 'rewards',
@@ -137,7 +137,7 @@ class Dinamics extends Component {
       textX,
       textY,
       margin,
-      general,
+      leaderboard,
       share,
       discount,
       rewards,
@@ -362,11 +362,11 @@ class Dinamics extends Component {
         <button
           type="button"
           className={`btn-view margin ${
-            activebtn === 'general' ? 'activebtn' : ''
+            activebtn === 'leaderboard' ? 'activebtn' : ''
           }`}
           onClick={this.state1}
         >
-          General
+          Leaderboard
         </button>
         <button
           type="button"
@@ -400,7 +400,7 @@ class Dinamics extends Component {
 
     return (
       <div className="container-dinamics">
-        {general && <Plotly data={data} layout={layout} config={config} />}
+        {leaderboard && <Plotly data={data} layout={layout} config={config} />}
         {share && <Plotly data={dataShare} layout={layout} config={config} />}
         {discount && (
           <Plotly data={dataDiscount} layout={layout} config={config} />

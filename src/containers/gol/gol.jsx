@@ -126,6 +126,7 @@ class GOL extends React.Component {
       currentPrize: 0,
       items: 10,
       hasMoreItems: true,
+      perPage: 10,
     };
   }
 
@@ -225,8 +226,9 @@ class GOL extends React.Component {
 
   getRelevance = async () => {
     let topLink = [];
+    const { perPage } = this.state;
 
-    const data = await getRelevance();
+    const data = await getRelevance(perPage);
 
     if (data) {
       topLink = data.cids;
@@ -322,14 +324,13 @@ class GOL extends React.Component {
     return topLinkItems;
   }
 
-  loadMore() {
-    const { items, topLink } = this.state;
-    if (items > topLink.length || items === 1000) {
+  loadMore(page) {
+    const { items, perPage } = this.state;
+    console.log('df');
+    if (items > 50 || items === 50) {
       this.setState({ hasMoreItems: false });
     } else {
-      setTimeout(() => {
-        this.setState({ items: items + 20 });
-      }, 2000);
+      this.setState({ items: items + 10, perPage: perPage + 10 });
     }
   }
 

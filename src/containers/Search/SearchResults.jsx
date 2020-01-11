@@ -1,9 +1,16 @@
 import React from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
-import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
+import {
+  getIpfsHash,
+  search,
+  getRankGrade,
+  getDrop,
+  formatNumber as format,
+} from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
+import { CYBER, PATTERN } from '../../utils/config';
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -15,6 +22,7 @@ class SearchResults extends React.Component {
       keywordHash: '',
       query: '',
       resultNull: false,
+      drop: false,
     };
   }
 
@@ -43,27 +51,50 @@ class SearchResults extends React.Component {
   getSearch = async query => {
     let searchResults = [];
     let resultNull = false;
+    let keywordHash = '';
+    let keywordHashNull = '';
+    let drop;
     // const { query } = this.state;
-    const keywordHash = await getIpfsHash(query);
-    searchResults = await search(keywordHash);
-    searchResults.map((item, index) => {
-      searchResults[index].cid = item.cid;
-      searchResults[index].rank = formatNumber(item.rank, 6);
-      searchResults[index].grade = getRankGrade(item.rank);
-    });
-    console.log('searchResults', searchResults);
+    if (query.match(PATTERN)) {
+      const result = await getDrop(query);
 
-    if (searchResults.length === 0) {
-      const queryNull = '0';
-      const keywordHashNull = await getIpfsHash(queryNull);
-      searchResults = await search(keywordHashNull);
+      drop = {
+        address: query,
+        balance: result,
+      };
+
+      searchResults.push(drop);
+
+      this.setState({
+        drop: true,
+        loading: false,
+      });
+    } else {
+      keywordHash = await getIpfsHash(query);
+      searchResults = await search(keywordHash);
       searchResults.map((item, index) => {
         searchResults[index].cid = item.cid;
         searchResults[index].rank = formatNumber(item.rank, 6);
         searchResults[index].grade = getRankGrade(item.rank);
       });
-      resultNull = true;
+      console.log('searchResults', searchResults);
+
+      if (searchResults.length === 0) {
+        const queryNull = '0';
+        keywordHashNull = await getIpfsHash(queryNull);
+        searchResults = await search(keywordHashNull);
+        searchResults.map((item, index) => {
+          searchResults[index].cid = item.cid;
+          searchResults[index].rank = formatNumber(item.rank, 6);
+          searchResults[index].grade = getRankGrade(item.rank);
+        });
+        resultNull = true;
+      }
+      this.setState({
+        drop: false,
+      });
     }
+
     this.setState({
       searchResults,
       keywordHash,
@@ -82,21 +113,12 @@ class SearchResults extends React.Component {
       query,
       result,
       resultNull,
+      drop,
     } = this.state;
     // console.log(query);
+    console.log(searchResults);
 
-    const searchItems = searchResults.map(item => (
-      <SearchItem
-        key={item.cid}
-        hash={item.cid}
-        rank={item.rank}
-        grade={item.grade}
-        status="success"
-        // onClick={e => (e, links[cid].content)}
-      >
-        {item.cid}
-      </SearchItem>
-    ));
+    let searchItems = [];
 
     if (loading) {
       return (
@@ -117,6 +139,50 @@ class SearchResults extends React.Component {
         </div>
       );
     }
+    if (drop) {
+      searchItems = searchResults.map(item => (
+        <Pane
+          backgroundColor="#fff"
+          paddingY={20}
+          paddingX={20}
+          borderRadius={5}
+          key={item.address}
+          display="flex"
+          flexDirection="row"
+        >
+          <Pane display="flex" flexDirection="column" marginRight={10}>
+            <Text fontSize="18px" lineHeight="25px">
+              address:
+            </Text>
+            <Text fontSize="18px" lineHeight="25px">
+              drop:
+            </Text>
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <Text fontSize="18px" lineHeight="25px">
+              {item.address}
+            </Text>
+            <Text fontSize="18px" lineHeight="25px">
+              {`${format(item.balance)} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            </Text>
+          </Pane>
+        </Pane>
+      ));
+    } else {
+      searchItems = searchResults.map(item => (
+        <SearchItem
+          key={item.cid}
+          hash={item.cid}
+          rank={item.rank}
+          grade={item.grade}
+          status="success"
+          // onClick={e => (e, links[cid].content)}
+        >
+          {item.cid}
+        </SearchItem>
+      ));
+    }
+    console.log(searchItems);
 
     return (
       <div>
@@ -156,14 +222,17 @@ class SearchResults extends React.Component {
             <Pane>{searchItems}</Pane>
           </Pane>
         </main>
-        <ActionBarContainer
-          home={!result}
-          valueSearchInput={query}
-          link={searchResults.length === 0 && result}
-          keywordHash={keywordHash}
-          onCklicBtnSearch={this.onCklicBtn}
-          update={this.getParamsQuery}
-        />
+
+        {!drop && (
+          <ActionBarContainer
+            home={!result}
+            valueSearchInput={query}
+            link={searchResults.length === 0 && result}
+            keywordHash={keywordHash}
+            onCklicBtnSearch={this.onCklicBtn}
+            update={this.getParamsQuery}
+          />
+        )}
       </div>
     );
   }
