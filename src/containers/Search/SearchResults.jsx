@@ -5,12 +5,12 @@ import {
   search,
   getRankGrade,
   getDrop,
+  formatNumber as format,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-
-const pattern = /cybervaloper|cyber|cosmos/g;
+import { CYBER, PATTERN } from '../../utils/config';
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -23,7 +23,6 @@ class SearchResults extends React.Component {
       query: '',
       resultNull: false,
       drop: false,
-      balance: 'null',
     };
   }
 
@@ -54,10 +53,12 @@ class SearchResults extends React.Component {
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
+    let drop;
     // const { query } = this.state;
-    if (query.length >= 44 && query.match(pattern)) {
+    if (query.match(PATTERN)) {
       const result = await getDrop(query);
-      const drop = {
+
+      drop = {
         address: query,
         balance: result,
       };
@@ -65,10 +66,8 @@ class SearchResults extends React.Component {
       searchResults.push(drop);
 
       this.setState({
-        balance: result,
         drop: true,
         loading: false,
-        searchResults,
       });
     } else {
       keywordHash = await getIpfsHash(query);
@@ -91,6 +90,9 @@ class SearchResults extends React.Component {
         });
         resultNull = true;
       }
+      this.setState({
+        drop: false,
+      });
     }
 
     this.setState({
@@ -111,7 +113,6 @@ class SearchResults extends React.Component {
       query,
       result,
       resultNull,
-      balance,
       drop,
     } = this.state;
     // console.log(query);
@@ -146,14 +147,24 @@ class SearchResults extends React.Component {
           paddingX={20}
           borderRadius={5}
           key={item.address}
+          display="flex"
+          flexDirection="row"
         >
-          <Pane>
-            <Text>address:</Text>
-            <Text>{item.address}</Text>
+          <Pane display="flex" flexDirection="column" marginRight={10}>
+            <Text fontSize="18px" lineHeight="25px">
+              address:
+            </Text>
+            <Text fontSize="18px" lineHeight="25px">
+              drop:
+            </Text>
           </Pane>
-          <Pane>
-            <Text>balance:</Text>
-            <Text>{item.balance}</Text>
+          <Pane display="flex" flexDirection="column">
+            <Text fontSize="18px" lineHeight="25px">
+              {item.address}
+            </Text>
+            <Text fontSize="18px" lineHeight="25px">
+              {`${format(item.balance)} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            </Text>
           </Pane>
         </Pane>
       ));
@@ -211,14 +222,17 @@ class SearchResults extends React.Component {
             <Pane>{searchItems}</Pane>
           </Pane>
         </main>
-        <ActionBarContainer
-          home={!result}
-          valueSearchInput={query}
-          link={searchResults.length === 0 && result}
-          keywordHash={keywordHash}
-          onCklicBtnSearch={this.onCklicBtn}
-          update={this.getParamsQuery}
-        />
+
+        {!drop && (
+          <ActionBarContainer
+            home={!result}
+            valueSearchInput={query}
+            link={searchResults.length === 0 && result}
+            keywordHash={keywordHash}
+            onCklicBtnSearch={this.onCklicBtn}
+            update={this.getParamsQuery}
+          />
+        )}
       </div>
     );
   }

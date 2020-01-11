@@ -387,7 +387,8 @@ export const getAmountATOM = data => {
   for (let item = 0; item < data.length; item++) {
     if (amount <= TAKEOFF.ATOMsALL) {
       amount +=
-        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) / COSMOS.DIVISOR_ATOM;
+        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) /
+        COSMOS.DIVISOR_ATOM;
     } else {
       amount = TAKEOFF.ATOMsALL;
       break;
@@ -408,14 +409,28 @@ export const getBalanceWallet = address =>
       .catch(e => {})
   );
 
-export const getDrop = address =>
-  new Promise(resolve =>
-    axios({
+// export const getDrop = address =>
+//   new Promise(resolve =>
+//     axios({
+//       method: 'get',
+//       url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreidnvozbdxhieaxvgudo4jvynlqvm4xomychezff7stdi2kijwm5iu/${address}`,
+//     })
+//       .then(response => {
+//         console.log(response);
+//         resolve(response.data);
+//       })
+//       .catch(e => {})
+//   );
+
+export const getDrop = async address => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreidnvozbdxhieaxvgudo4jvynlqvm4xomychezff7stdi2kijwm5iu/${address}`,
-    })
-      .then(response => {
-        resolve(response.data);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};

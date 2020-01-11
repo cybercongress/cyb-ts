@@ -17,30 +17,12 @@ import {
   search,
   getRankGrade,
   getDrop,
+  formatNumber as format,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading, ActionBarLink } from '../../components';
 
-const ipfsClient = require('ipfs-http-client');
-
-// const ipfs = ipfsClient('/ip4/127.0.0.1/tcp/5001');
-const ipfs = ipfsClient('https://herzner1.cybernode.ai/ipfs/api/v0/');
-
-// const ipfs = ipfsClient({
-//   host: 'herzner1.cybernode.ai/ipfs',
-//   port: '5001',
-//   protocol: 'https',
-//   'api-path': '/ipfs/api/v0',
-// });
-
-// const IPFS = require('ipfs');
-// const { DAGNode, util: DAGUtil } = require('ipld-dag-pb');
-// const Unixfs = require('ipfs-unixfs');
-// const IPFS = require('ipfs-api');
-const cyb = require('../../image/logo-cyb-v2.svg');
-const cyber = require('../../image/cyber.png');
-
-const tilde = require('../../image/tilde.svg');
+import { CYBER, PATTERN } from '../../utils/config';
 
 // const grade = {
 //   from: 0.0001,
@@ -71,40 +53,8 @@ class Home extends PureComponent {
       keywordHash: '',
       resultNull: false,
       query: '',
+      drop: false,
     };
-  }
-
-  async componentDidMount() {
-    // const repoPath = `ipfs-${Math.random()}`;
-    // const ipfs = await IPFS.create({ repo: '/var/ipfs/data' });
-    // const result = await ipfs.dag.get('zdpuAsoYmbemfzYYRUAQC5LXB1LBznR65Wifh28RSX6D5iwdW/cybervaloper12kd8w45rqxuwpwqvpmdyvvdey9ezeqhagvjc70');
-
-    // const cid = await ipfs.dag.put(obj, {
-    //   format: 'dag-cbor',
-    //   hashAlg: 'sha2-256',
-    // });
-    // console.log(cid.toString());
-
-    const result = await getDrop(
-      'cybervaloper12kd8w45rqxuwpwqvpmdyvvdey9ezeqhagvjc70'
-    );
-
-    console.log('result', result);
-    // ipfs.files.get(
-    //   'QmVuQhpty8DoYYvybKhwuqTk3ocNFk64qEirXtLZbdvDgQ',
-    //   (err, files) => {
-    //     const lotteryJson = files[0].content.toString('utf8');
-    //     const lottery = JSON.parse(lotteryJson);
-    //     console.log(lottery);
-    //   }
-    // );
-    // const string = await getString(
-    //   'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV'
-    // );
-
-    // QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV
-
-    // console.log('string', string);
   }
 
   onChangeInput = async e => {
@@ -156,25 +106,46 @@ class Home extends PureComponent {
   getSearch = async valueSearchInput => {
     let searchResults = [];
     let resultNull = false;
+    let keywordHash = '';
+    let keywordHashNull = '';
 
-    const keywordHash = await getIpfsHash(valueSearchInput);
-    searchResults = await search(keywordHash);
-    searchResults.map((item, index) => {
-      searchResults[index].cid = item.cid;
-      searchResults[index].rank = formatNumber(item.rank, 6);
-      searchResults[index].grade = getRankGrade(item.rank);
-    });
+    if (valueSearchInput.match(PATTERN)) {
+      const result = await getDrop(valueSearchInput);
 
-    if (searchResults.length === 0) {
-      const queryNull = '0';
-      const keywordHashNull = await getIpfsHash(queryNull);
-      searchResults = await search(keywordHashNull);
+      const drop = {
+        address: valueSearchInput,
+        balance: result,
+      };
+
+      searchResults.push(drop);
+
+      this.setState({
+        drop: true,
+        loading: false,
+      });
+    } else {
+      keywordHash = await getIpfsHash(valueSearchInput);
+      searchResults = await search(keywordHash);
       searchResults.map((item, index) => {
         searchResults[index].cid = item.cid;
         searchResults[index].rank = formatNumber(item.rank, 6);
         searchResults[index].grade = getRankGrade(item.rank);
       });
-      resultNull = true;
+
+      if (searchResults.length === 0) {
+        const queryNull = '0';
+        keywordHashNull = await getIpfsHash(queryNull);
+        searchResults = await search(keywordHashNull);
+        searchResults.map((item, index) => {
+          searchResults[index].cid = item.cid;
+          searchResults[index].rank = formatNumber(item.rank, 6);
+          searchResults[index].grade = getRankGrade(item.rank);
+        });
+        resultNull = true;
+      }
+      this.setState({
+        drop: false,
+      });
     }
 
     console.log('searchResults', searchResults);
@@ -242,20 +213,54 @@ class Home extends PureComponent {
       keywordHash,
       resultNull,
       query,
+      drop,
     } = this.state;
 
-    const searchItems = searchResults.map(item => (
-      <SearchItem
-        key={item.cid}
-        hash={item.cid}
-        rank={item.rank}
-        grade={item.grade}
-        status="success"
-        // onClick={e => (e, links[cid].content)}
-      >
-        {item.cid}
-      </SearchItem>
-    ));
+    let searchItems = [];
+
+    if (drop) {
+      searchItems = searchResults.map(item => (
+        <Pane
+          backgroundColor="#fff"
+          paddingY={20}
+          paddingX={20}
+          borderRadius={5}
+          key={item.address}
+          display="flex"
+          flexDirection="row"
+        >
+          <Pane display="flex" flexDirection="column" marginRight={10}>
+            <Text fontSize="18px" lineHeight="25px">
+              address:
+            </Text>
+            <Text fontSize="18px" lineHeight="25px">
+              drop:
+            </Text>
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <Text fontSize="18px" lineHeight="25px">
+              {item.address}
+            </Text>
+            <Text fontSize="18px" lineHeight="25px">
+              {`${format(item.balance)} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            </Text>
+          </Pane>
+        </Pane>
+      ));
+    } else {
+      searchItems = searchResults.map(item => (
+        <SearchItem
+          key={item.cid}
+          hash={item.cid}
+          rank={item.rank}
+          grade={item.grade}
+          status="success"
+          // onClick={e => (e, links[cid].content)}
+        >
+          {item.cid}
+        </SearchItem>
+      ));
+    }
 
     return (
       <div style={{ position: `${!result ? 'relative' : ''}` }}>
@@ -345,7 +350,7 @@ class Home extends PureComponent {
             onClickBtn={this.onCklicBtn}
           />
         )}
-        {result && (
+        {result && !drop && (
           <ActionBarLink
             keywordHash={keywordHash}
             valueSearchInput={query}

@@ -109,6 +109,8 @@ const DISTRIBUTION = [
   },
 ];
 
+const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
+
 export {
   TAKEOFF,
   COSMOS,
@@ -119,4 +121,5 @@ export {
   DISTRIBUTION,
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
+  PATTERN,
 };
