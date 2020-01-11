@@ -22,6 +22,8 @@ import {
 import { formatNumber } from '../../utils/utils';
 import { Loading, ActionBarLink } from '../../components';
 
+const giftImg = require('../../image/gift.svg');
+
 import { CYBER, PATTERN } from '../../utils/config';
 
 // const grade = {
@@ -103,17 +105,18 @@ class Home extends PureComponent {
     }, 200);
   };
 
-  getSearch = async valueSearchInput => {
+  getSearch = async query => {
     let searchResults = [];
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
+    let drop;
+    // const { query } = this.state;
+    if (query.match(PATTERN)) {
+      const result = await getDrop(query);
 
-    if (valueSearchInput.match(PATTERN)) {
-      const result = await getDrop(valueSearchInput);
-
-      const drop = {
-        address: valueSearchInput,
+      drop = {
+        address: query,
         balance: result,
       };
 
@@ -124,13 +127,14 @@ class Home extends PureComponent {
         loading: false,
       });
     } else {
-      keywordHash = await getIpfsHash(valueSearchInput);
+      keywordHash = await getIpfsHash(query);
       searchResults = await search(keywordHash);
       searchResults.map((item, index) => {
         searchResults[index].cid = item.cid;
         searchResults[index].rank = formatNumber(item.rank, 6);
         searchResults[index].grade = getRankGrade(item.rank);
       });
+      console.log('searchResults', searchResults);
 
       if (searchResults.length === 0) {
         const queryNull = '0';
@@ -147,15 +151,13 @@ class Home extends PureComponent {
         drop: false,
       });
     }
-
-    console.log('searchResults', searchResults);
     this.setState({
       searchResults,
       keywordHash,
       result: true,
       loading: false,
+      query,
       resultNull,
-      query: valueSearchInput,
     });
   };
 
@@ -218,6 +220,27 @@ class Home extends PureComponent {
 
     let searchItems = [];
 
+    if (loading) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Loading />
+          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+            Searching
+          </div>
+        </div>
+      );
+    }
+
+
     if (drop) {
       searchItems = searchResults.map(item => (
         <Pane
@@ -233,8 +256,14 @@ class Home extends PureComponent {
             <Text fontSize="18px" lineHeight="25px">
               address:
             </Text>
-            <Text fontSize="18px" lineHeight="25px">
-              drop:
+            <Text display="flex" fontSize="18px" lineHeight="25px">
+              gift{' '}
+              <img
+                style={{ width: '25px', height: '25px', marginLeft: '5px' }}
+                src={giftImg}
+                alt="giftImg"
+              />
+              :
             </Text>
           </Pane>
           <Pane display="flex" flexDirection="column">
@@ -343,7 +372,7 @@ class Home extends PureComponent {
             </Pane>
           )}
         </main>
-        {!result && (
+        {/* {!result && (
           <StartState
             targetColor={targetColor}
             valueSearchInput={valueSearchInput}
@@ -356,7 +385,7 @@ class Home extends PureComponent {
             valueSearchInput={query}
             update={() => this.getSearch(query)}
           />
-        )}
+        )} */}
       </div>
     );
   }

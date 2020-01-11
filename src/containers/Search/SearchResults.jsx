@@ -12,6 +12,8 @@ import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { CYBER, PATTERN } from '../../utils/config';
 
+const giftImg = require('../../image/gift.svg');
+
 class SearchResults extends React.Component {
   constructor(props) {
     super(props);
@@ -154,8 +156,14 @@ class SearchResults extends React.Component {
             <Text fontSize="18px" lineHeight="25px">
               address:
             </Text>
-            <Text fontSize="18px" lineHeight="25px">
-              drop:
+            <Text display="flex" fontSize="18px" lineHeight="25px">
+              gift{' '}
+              <img
+                style={{ width: '25px', height: '25px', marginLeft: '5px' }}
+                src={giftImg}
+                alt="giftImg"
+              />
+              :
             </Text>
           </Pane>
           <Pane display="flex" flexDirection="column">
