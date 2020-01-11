@@ -463,7 +463,7 @@ class Brain extends React.Component {
       >
         <CardStatisics
           title={T.brain.supplyEUL}
-          value={formatNumber(supplyEUL)}
+          value={formatNumber(totalCyb)}
         />
         <CardStatisics
           title={T.brain.takeofPrice}
