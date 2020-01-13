@@ -69,8 +69,9 @@ class ActionBarContainer extends Component {
               // message={messageAmount}
               marginLeft={10}
               marginRight={10}
-              width="10%"
+              width="25%"
               height={32}
+              fontSize="20px"
             />
             <Switch
               checked={checkedSwitch}

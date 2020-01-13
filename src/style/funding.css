@@ -377,13 +377,6 @@ span.right-input {
     box-shadow: 0 0 6px 0px #38d6ae;
 }
 
-.action-text {
-    display: flex;
-    /* align-items: center; */
-    justify-content: center;
-    flex-grow: 1;
-    margin-right: 15px;
-}
 
 .margin {
     margin: 0 5px;
