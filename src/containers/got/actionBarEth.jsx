@@ -55,17 +55,6 @@ const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-const StartState = ({ onClickBtn }) => {
-  return (
-    <ActionBar>
-      <ActionBarContentText>
-        Contribute ETH using MetaMask, push button
-      </ActionBarContentText>
-      <Button onClick={onClickBtn}>Fuck Google</Button>
-    </ActionBar>
-  );
-};
-
 const ContributeETH = ({ onClickBtn, valueAmount }) => (
   <ActionBar>
     <ActionBarContentText>
@@ -102,56 +91,17 @@ class ActionBarETH extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      step: 'start',
+      step: 'contributeETH',
       round: '',
       tx: null,
     };
     this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
 
-  onClickFuckGoogle = async () => {
-    const { minRound, web3 } = this.props;
-    if (web3.currentProvider.host) {
-      return console.log(
-        'Non-Ethereum browser detected. You should consider trying MetaMask!'
-      );
-    }
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.enable();
-        if (accounts.length) {
-          // console.log(accounts[0]);
-          this.setState({
-            step: 'contributeETH',
-            round: minRound,
-          });
-        }
-      } catch (error) {
-        console.log('You declined transaction', error);
-      }
-    } else if (window.web3) {
-      const accounts = await web3.eth.getAccounts();
-      if (accounts.length) {
-        // console.log(accounts[0]);
-        this.setState({
-          step: 'contributeETH',
-          round: minRound,
-        });
-      }
-    } else {
-      return console.log('Your metamask is locked!');
-    }
-  };
-
-  onClickTrackContribution = () =>
-    this.setState({
-      step: 'contributeETH',
-    });
-
   onClickSaveAddress = () => {
     const { update } = this.props;
     this.setState({
-      step: 'start',
+      step: 'contributeETH',
       round: '',
     });
     if (update) {
@@ -184,7 +134,7 @@ class ActionBarETH extends Component {
     );
   };
 
-  onClickContributeATOMs = async () => {
+  onClickContributeETH = async () => {
     const { web3 } = this.props;
     if (web3.currentProvider.host) {
       return console.log(
@@ -237,15 +187,11 @@ class ActionBarETH extends Component {
       );
     }
 
-    if (step === 'start') {
-      return <StartState onClickBtn={this.onClickFuckGoogle} />;
-    }
-
     if (step === 'contributeETH') {
       return (
         <ContributeETH
           valueAmount={valueAmount}
-          onClickBtn={this.onClickContributeATOMs}
+          onClickBtn={this.onClickContributeETH}
         />
       );
     }

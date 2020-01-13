@@ -20,6 +20,7 @@ class ActionBarContainer extends Component {
       select: 'atom',
       checkedSwitch: false,
       valueAmount: '',
+      givenProviderNull: false,
     };
   }
 
@@ -49,10 +50,37 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onChangeSwitchEth = e => {
-    this.setState({
-      checkedSwitch: true,
-    });
+  onChangeSwitchEth = async e => {
+    const { web3 } = this.props;
+    if (web3.currentProvider.host) {
+      this.setState({
+        givenProviderNull: true,
+      });
+      return console.log(
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
+      );
+    }
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.enable();
+        if (accounts.length) {
+          this.setState({
+            checkedSwitch: true,
+          });
+        }
+      } catch (error) {
+        console.log('You declined transaction', error);
+      }
+    } else if (window.web3) {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length) {
+        this.setState({
+          checkedSwitch: true,
+        });
+      }
+    } else {
+      return console.log('Your metamask is locked!');
+    }
   };
 
   onChangeAmount = e =>
@@ -61,7 +89,30 @@ class ActionBarContainer extends Component {
     });
 
   render() {
-    const { checkedSwitch, valueAmount } = this.state;
+    const { checkedSwitch, valueAmount, givenProviderNull } = this.state;
+
+    if (givenProviderNull) {
+      return (
+        <ActionBar>
+          <Pane
+            display="flex"
+            fontSize="20px"
+            justifyContent="center"
+            alignItems="center"
+            flexGrow={1}
+            marginRight="15px"
+          >
+            <span>Please install</span>
+            &nbsp;
+            <a href="https://metamask.io/" target="_blank">
+              Metamask extension
+            </a>
+            &nbsp;
+            <span>and refresh the page</span>
+          </Pane>
+        </ActionBar>
+      );
+    }
 
     if (this.state.step === 'start') {
       return (
