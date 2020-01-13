@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { ActionBar, Input } from '@cybercongress/gravity';
+import { ActionBar, Tab, Input, Pane } from '@cybercongress/gravity';
 import ActionBarAtom from './actionBarAtom';
 import ActionBarETH from './actionBarEth';
 
-const Switch = ({ checked, onChange }) => (
-  <div className="container-switch">
-    <label className="switch">
-      <input type="checkbox" checked={checked} onChange={onChange} /> <div />
-    </label>
-  </div>
-);
+// const Switch = ({ checked, onChange }) => (
+//   <div className="container-switch">
+//     <input type="radio" checked={checked} onChange={onChange} /> <div />
+//     <label className="switch">
+//       ATOMs
+//     </label>
+//   </div>
+// );
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -42,9 +43,15 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onChangeSwitch = e => {
+  onChangeSwitchAtom = e => {
     this.setState({
-      checkedSwitch: e.target.checked,
+      checkedSwitch: false,
+    });
+  };
+
+  onChangeSwitchEth = e => {
+    this.setState({
+      checkedSwitch: true,
     });
   };
 
@@ -70,16 +77,42 @@ class ActionBarContainer extends Component {
               marginLeft={10}
               marginRight={10}
               width="25%"
-              height={32}
+              height={42}
               fontSize="20px"
             />
-            <Switch
-              checked={checkedSwitch}
-              onChange={e => this.onChangeSwitch(e)}
-            />
-            <span style={{ marginLeft: 10 }} className="actionBar-text">
+            <Pane>
+              <Tab
+                isSelected={!checkedSwitch}
+                onSelect={e => this.onChangeSwitchAtom()}
+                color="#36d6ae"
+                boxShadow="0px 0px 10px #36d6ae"
+                minWidth="100px"
+                marginX={0}
+                paddingX={10}
+                paddingY={10}
+                fontSize="18px"
+                height={42}
+              >
+                ATOMs
+              </Tab>
+              <Tab
+                isSelected={checkedSwitch}
+                onSelect={e => this.onChangeSwitchEth()}
+                color="#36d6ae"
+                boxShadow="0px 0px 10px #36d6ae"
+                minWidth="100px"
+                marginX={0}
+                paddingX={10}
+                paddingY={10}
+                fontSize="18px"
+                height={42}
+              >
+                ETH
+              </Tab>
+            </Pane>
+            {/* <span style={{ marginLeft: 10 }} className="actionBar-text">
               ATOMs/ETH
-            </span>
+            </span> */}
           </div>
           <button className="btn" onClick={this.onClickSelect}>
             Fuck Google
