@@ -59,7 +59,7 @@ class SearchResults extends React.Component {
     let drop;
     // const { query } = this.state;
     if (query.match(PATTERN)) {
-      const result = await getDrop(query);
+      const result = await getDrop(query.toLowerCase());
 
       console.log('result', result);
 

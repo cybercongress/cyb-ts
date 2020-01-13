@@ -21,10 +21,11 @@ import {
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading, ActionBarLink } from '../../components';
-
-const giftImg = require('../../image/gift.svg');
+import Gift from '../Search/gift';
 
 import { CYBER, PATTERN } from '../../utils/config';
+
+const giftImg = require('../../image/gift.svg');
 
 // const grade = {
 //   from: 0.0001,
@@ -113,12 +114,22 @@ class Home extends PureComponent {
     let drop;
     // const { query } = this.state;
     if (query.match(PATTERN)) {
-      const result = await getDrop(query);
+      const result = await getDrop(query.toLowerCase());
 
-      drop = {
-        address: query,
-        balance: result,
-      };
+      console.log('result', result);
+
+      if (result === 0) {
+        drop = {
+          address: query,
+          gift: 0,
+        };
+      } else {
+        drop = {
+          address: query,
+          gift: result.gift,
+          ...result,
+        };
+      }
 
       searchResults.push(drop);
 
@@ -151,6 +162,7 @@ class Home extends PureComponent {
         drop: false,
       });
     }
+
     this.setState({
       searchResults,
       keywordHash,
@@ -240,42 +252,8 @@ class Home extends PureComponent {
       );
     }
 
-
     if (drop) {
-      searchItems = searchResults.map(item => (
-        <Pane
-          backgroundColor="#fff"
-          paddingY={20}
-          paddingX={20}
-          borderRadius={5}
-          key={item.address}
-          display="flex"
-          flexDirection="row"
-        >
-          <Pane display="flex" flexDirection="column" marginRight={10}>
-            <Text fontSize="18px" lineHeight="25px">
-              address:
-            </Text>
-            <Text display="flex" fontSize="18px" lineHeight="25px">
-              gift{' '}
-              <img
-                style={{ width: '25px', height: '25px', marginLeft: '5px' }}
-                src={giftImg}
-                alt="giftImg"
-              />
-              :
-            </Text>
-          </Pane>
-          <Pane display="flex" flexDirection="column">
-            <Text fontSize="18px" lineHeight="25px">
-              {item.address}
-            </Text>
-            <Text fontSize="18px" lineHeight="25px">
-              {`${format(item.balance)} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-            </Text>
-          </Pane>
-        </Pane>
-      ));
+      searchItems = searchResults.map(item => <Gift item={item} />);
     } else {
       searchItems = searchResults.map(item => (
         <SearchItem

@@ -413,7 +413,7 @@ export const getDrop = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreicgyl3542jmwksetzsr54iqelmjdxk2tr43eugn3x2ebbfuplouzy/${address}`,
+      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreieyaqxuslbbakpr5gqe2wdlb7igdffeosqwznqlzrbjxf2xovnqua/${address}`,
     });
     return response.data;
   } catch (e) {
