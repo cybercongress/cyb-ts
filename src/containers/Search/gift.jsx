@@ -50,7 +50,8 @@ const Gift = ({ item }) => {
         {Object.keys(item).map(key => (
           <Text key={key} display="flex" fontSize="18px" lineHeight="25px">
             {key.indexOf('address') !== -1 ? item[key] : format(item[key])}{' '}
-            {key.indexOf('gift') !== -1 && CYBER.DENOM_CYBER.toUpperCase()}
+            {(key.indexOf('gift') !== -1 || key.indexOf('euler-4') !== -1) &&
+              CYBER.DENOM_CYBER.toUpperCase()}
           </Text>
         ))}
       </Pane>
