@@ -181,7 +181,14 @@ export class Dinamics extends Component {
 
       // }
       // width: 550,
-      height: 500
+      height: 400,
+      margin: {
+        l: 50,
+        r: 50,
+        b: 45,
+        t: 10,
+        pad: 4,
+      },
     };
     const config = {
       displayModeBar: false,

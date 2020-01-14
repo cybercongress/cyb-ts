@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Pane, Text } from '@cybercongress/gravity';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
@@ -447,12 +448,24 @@ class Auction extends PureComponent {
       accounts,
       roundTable,
     } = this.state;
-    console.log(table);
+    // console.log(table);
     const thc = 700 * Math.pow(10, 3);
     return (
       <div>
         <main className="block-body auction">
-          <span className="caption">test~Auction</span>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              You do not have control over the brain. You need EUL tokens to let
+              she hear you. If you came from Ethereum or Cosmos you can claim
+              the gift of gods. Then start prepare to the greatest tournament in
+              universe: <a href="#/gol">Game of Links</a>.
+            </Text>
+          </Pane>
           <Statistics
             round={roundThis}
             roundAll={numberOfDays}
