@@ -240,7 +240,7 @@ class Auction extends PureComponent {
 
         const currentPrice = roundNumber(
           dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9)),
-          6
+          10
         );
         // TODO
         // if (item <= today) {

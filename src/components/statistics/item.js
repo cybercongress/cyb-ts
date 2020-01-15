@@ -31,8 +31,8 @@ export const Indicators = ({ title, value, tooltipValue, positionTooltip }) => (
   </div>
 );
 
-export const Card = ({ title, value, tooltipValue, positionTooltip }) => (
-  <div className="container-card">
+export const Card = ({ title, value, tooltipValue, positionTooltip, stylesContainer }) => (
+  <div style={{ ...stylesContainer }} className="container-card">
     <span className="card-title">{value}</span>
     <span className="card-value">
       {title}{' '}
