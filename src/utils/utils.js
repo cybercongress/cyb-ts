@@ -10,7 +10,10 @@ const formatNumber = (number, toFixed) => {
     formatted = formatted.toFixed(toFixed);
   }
   // debugger;
-  return formatted.toLocaleString('en').replace(/,/g, ' ');
+  return formatted
+    .toLocaleString('en')
+    .replace(/(\.\d{0,})0+$/, '$1')
+    .replace(/,/g, ' ');
 };
 
 const getDecimal = (number, toFixed) => {

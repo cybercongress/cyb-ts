@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
+import { fromWei, toBN, toWei } from 'web3-utils';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
@@ -19,6 +20,20 @@ import { AUCTION } from '../../utils/config';
 const BigNumber = require('bignumber.js');
 
 const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
+
+export function roundCurrency(value, decimalDigits = 0) {
+  return value
+    .toFixed(decimalDigits)
+    .replace(/(\.\d{0,})0+$/, '$1')
+    .replace(/\.$/, '');
+}
+
+export function formatCurrency(value, decimalDigits = 0) {
+  return roundCurrency(
+    parseFloat(fromWei(value.toString(), 'ether')),
+    decimalDigits
+  );
+}
 
 class Auction extends PureComponent {
   constructor(props) {
@@ -47,7 +62,11 @@ class Auction extends PureComponent {
   }
 
   async componentDidMount() {
-    const { accounts, web3 } = this.props;
+    const {
+      accounts,
+      web3,
+      contract: { methods },
+    } = this.props;
     await this.setState({
       accounts,
     });
@@ -319,7 +338,7 @@ class Auction extends PureComponent {
         // if (item <= roundThis) {
         const currentPrice = roundNumber(
           dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9)),
-          6
+          10
         );
 
         const distValue =
@@ -349,17 +368,17 @@ class Auction extends PureComponent {
           period: item,
           dist: formatNumber(
             Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100,
-            2
+            3
           ),
           total: formatNumber(
             Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
               10000,
-            2
+            3
           ),
-          price: formatNumber(currentPrice, 6),
+          price: formatNumber(currentPrice, 7),
           closing: (23 * (roundThis - item)) / 23,
-          youETH: formatNumber(userBuy, 6),
-          youCYB: formatNumber(Math.floor(cyb * 100) / 100, 2),
+          youETH: formatNumber(userBuy, 7),
+          youCYB: formatNumber(Math.floor(cyb * 100) / 100, 3),
           claimed: claimedItem,
           // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
         });
