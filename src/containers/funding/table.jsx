@@ -15,8 +15,8 @@ class Table extends Component {
     this.state = {
       pin: false,
       loader: false,
-      ordering: Order.NONE,
-      sortKey: null,
+      ordering: Order.DESC,
+      sortKey: 'amountСolumn',
     };
   }
 
@@ -230,27 +230,27 @@ class Table extends Component {
             <div className="numberType address">Address (TX id)</div>
             <div className="numberType sort-row" onClick={this.sortTime}>
               Height
-              <Icon
+              {/* <Icon
                 icon="double-caret-vertical"
                 color="#3ab793d4"
                 marginLeft={5}
-              />
+              /> */}
             </div>
             <div className="numberType sort-row" onClick={this.sortAtom}>
               ATOMs
-              <Icon
+              {/* <Icon
                 icon="double-caret-vertical"
                 color="#3ab793d4"
                 marginLeft={5}
-              />
+              /> */}
             </div>
             <div className="numberType sort-row" onClick={this.sortCyb}>
               GCYB estimation
-              <Icon
+              {/* <Icon
                 icon="double-caret-vertical"
                 color="#3ab793d4"
                 marginLeft={5}
-              />
+              /> */}
             </div>
           </div>
           {pin && (

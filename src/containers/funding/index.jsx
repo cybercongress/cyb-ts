@@ -164,9 +164,9 @@ class Funding extends PureComponent {
       if (amount <= ATOMsALL) {
         amount +=
           Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount
-          ) *
-          10 ** -1;
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
       } else {
         amount = ATOMsALL;
         break;
@@ -181,6 +181,7 @@ class Funding extends PureComponent {
     won = cybWon(amount);
     currentPrice = won / amount;
     console.log('won', won);
+    console.log('currentDiscount', currentDiscount);
     const statistics = {
       amount,
       atomLeff,
@@ -269,9 +270,9 @@ class Funding extends PureComponent {
           const address = dataTxs[item].tx.value.msg[0].value.from_address;
           const amou =
             Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1;
+              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM;
           if (address === group) {
             if (amountAtom <= ATOMsALL) {
               const x0 = amountAtom;
@@ -348,9 +349,9 @@ class Funding extends PureComponent {
         if (temp <= ATOMsALL) {
           const val =
             Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1;
+              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM;
           let tempVal = temp + val;
           if (tempVal >= ATOMsALL) {
             tempVal = ATOMsALL;
@@ -371,9 +372,9 @@ class Funding extends PureComponent {
           timestamp: dateFormat(d, 'dd/mm/yyyy, h:MM:ss TT'),
           amount:
             Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1,
+              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM,
           estimation,
         });
       }
@@ -560,7 +561,7 @@ class Funding extends PureComponent {
             price={formatNumber(
               Math.floor(currentPrice * 10 ** -9 * 1000) / 1000
             )}
-            discount={Math.floor(currentDiscount * 100 * 1000) / 1000}
+            discount={formatNumber(currentDiscount * 100, 3)}
           />
           <Dinamics data3d={dataPlot} dataRewards={dataRewards} />
           <Table

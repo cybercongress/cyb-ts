@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
 import { x, y, z } from '../../utils/list';
+import { CYBER } from '../../utils/config';
+
+const { DENOM_CYBER_G, DENOM_CYBER } = CYBER;
 
 class Dinamics extends Component {
   constructor(props) {
@@ -78,7 +81,9 @@ class Dinamics extends Component {
       discount: false,
       rewards: false,
       textX: 'Donation, ATOMs',
-      textY: 'CYBs won, TCYBs',
+      textY: `${DENOM_CYBER.toLocaleUpperCase()}s won, ${(
+        DENOM_CYBER_G + DENOM_CYBER
+      ).toLocaleUpperCase()}`,
       margin: {
         l: 50,
         r: 50,
@@ -116,7 +121,7 @@ class Dinamics extends Component {
       rewards: true,
       activebtn: 'rewards',
       textX: 'Donation, ATOMs',
-      textY: 'Price, ATOMs/CYB',
+      textY: `Price, ATOMs/${DENOM_CYBER.toLocaleUpperCase()}`,
       margin: {
         l: 60,
         r: 50,
@@ -182,7 +187,9 @@ class Dinamics extends Component {
         // hoverinfo: 'none'
         hovertemplate:
           'ATOMs contributed: %{x}' +
-          '<br>TCYB allocated: %{y: .2f}%' +
+          `<br>${(
+            DENOM_CYBER_G + DENOM_CYBER
+          ).toLocaleUpperCase()} allocated: %{y: .2f}%` +
           '<extra></extra>',
       },
     ];
@@ -234,7 +241,9 @@ class Dinamics extends Component {
           color: '#fff',
         },
         hovertemplate:
-          'TCYB allocated: %{x: .2f}<br>' +
+          `${(
+            DENOM_CYBER_G + DENOM_CYBER
+          ).toLocaleUpperCase()} allocated: %{x: .2f}<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
           '<extra></extra>',
@@ -251,7 +260,9 @@ class Dinamics extends Component {
         },
         ticks: '',
         hovertemplate:
-          'TCYB allocated: %{x: .2f}<br>' +
+          `${(
+            DENOM_CYBER_G + DENOM_CYBER
+          ).toLocaleUpperCase()} allocated: %{x: .2f}<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
           '<extra></extra>',
@@ -312,7 +323,9 @@ class Dinamics extends Component {
           dtick: 1,
           tickcolor: '#000',
           title: {
-            text: 'CYBs won, TCYBs',
+            text: `${DENOM_CYBER.toLocaleUpperCase()} won, ${(
+              DENOM_CYBER_G + DENOM_CYBER
+            ).toLocaleUpperCase()}s`,
           },
           gridcolor: '#dedede',
           color: '#fff',
@@ -359,42 +372,51 @@ class Dinamics extends Component {
 
     const Btn = () => (
       <div className="cont-btn">
-        <button
-          type="button"
-          className={`btn-view margin ${
-            activebtn === 'leaderboard' ? 'activebtn' : ''
-          }`}
-          onClick={this.state1}
+        <div
+          style={{
+            left: '70%',
+            position: 'absolute',
+            transform: 'translate(-72%, 0)',
+            display: 'flex',
+          }}
         >
-          Leaderboard
-        </button>
-        <button
-          type="button"
-          className={`btn-view margin ${
-            activebtn === 'share' ? 'activebtn' : ''
-          }`}
-          onClick={this.state2}
-        >
-          Share
-        </button>
-        <button
-          type="button"
-          className={`btn-view margin ${
-            activebtn === 'discount' ? 'activebtn' : ''
-          }`}
-          onClick={this.state3}
-        >
-          Discount
-        </button>
-        <button
-          type="button"
-          className={`btn-view margin ${
-            activebtn === 'rewards' ? 'activebtn' : ''
-          }`}
-          onClick={this.state4}
-        >
-          My CYBs estimation
-        </button>
+          <button
+            type="button"
+            className={`btn-view margin ${
+              activebtn === 'share' ? 'activebtn' : ''
+            }`}
+            onClick={this.state2}
+          >
+            Share
+          </button>
+          <button
+            type="button"
+            className={`btn-view margin ${
+              activebtn === 'leaderboard' ? 'activebtn' : ''
+            }`}
+            onClick={this.state1}
+          >
+            Leaderboard
+          </button>
+          <button
+            type="button"
+            className={`btn-view margin ${
+              activebtn === 'discount' ? 'activebtn' : ''
+            }`}
+            onClick={this.state3}
+          >
+            Discount
+          </button>
+          <button
+            type="button"
+            className={`btn-view margin ${
+              activebtn === 'rewards' ? 'activebtn' : ''
+            }`}
+            onClick={this.state4}
+          >
+            My {DENOM_CYBER.toLocaleUpperCase()} estimation
+          </button>
+        </div>
       </div>
     );
 
