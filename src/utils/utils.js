@@ -53,7 +53,7 @@ const asyncForEach = async (array, callback) => {
 };
 
 const timer = func => {
-  setInterval(func, 10000);
+  setInterval(func, 1000);
 };
 
 const getDelegator = operatorAddr => {

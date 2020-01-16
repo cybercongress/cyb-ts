@@ -20,6 +20,7 @@ import { AUCTION } from '../../utils/config';
 const BigNumber = require('bignumber.js');
 
 const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
+const ROUND_DURATION = 1 * 60 * 60;
 
 export function roundCurrency(value, decimalDigits = 0) {
   return value
@@ -86,7 +87,7 @@ class Auction extends PureComponent {
     window.ethereum.on('accountsChanged', async accountsChanged => {
       const defaultAccounts = accountsChanged[0];
       const tmpAccount = defaultAccounts;
-      console.log(tmpAccount);
+      // console.log(tmpAccount);
       await this.setState({
         accounts: tmpAccount,
       });
@@ -158,7 +159,7 @@ class Auction extends PureComponent {
     const time = await methods.time().call();
     const startTime = await methods.startTime().call();
     const times = parseFloat(
-      today * 23 * 60 * 60 - (parseFloat(time) - parseFloat(startTime))
+      today * ROUND_DURATION - (parseFloat(time) - parseFloat(startTime))
     );
     const hours = Math.floor((times / (60 * 60)) % 24);
     const minutes = Math.floor((times / 60) % 60);
