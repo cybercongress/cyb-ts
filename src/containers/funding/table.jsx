@@ -17,16 +17,7 @@ class Table extends Component {
       loader: false,
       ordering: Order.DESC,
       sortKey: 'amountСolumn',
-      currentPage: 1,
-      todosPerPage: 3,
     };
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
-    this.setState({
-      currentPage: Number(event.target.id),
-    });
   }
 
   sortTime = () => {
@@ -109,8 +100,6 @@ class Table extends Component {
       sortSyb,
       sortAtom,
       asc,
-      todosPerPage,
-      currentPage,
     } = this.state;
 
     console.log(data);
