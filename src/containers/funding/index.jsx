@@ -564,14 +564,17 @@ class Funding extends PureComponent {
             discount={formatNumber(currentDiscount * 100, 3)}
           />
           <Dinamics data3d={dataPlot} dataRewards={dataRewards} />
-          <Table
-            data={groups}
-            dataPinTable={dataAllPin}
-            update={this.updateList}
-            pin={pin}
-            fPin={this.pinItem}
-            fUpin={this.unPinItem}
-          />
+
+          {groups.length > 0 && (
+            <Table
+              data={groups}
+              dataPinTable={dataAllPin}
+              update={this.updateList}
+              pin={pin}
+              fPin={this.pinItem}
+              fUpin={this.unPinItem}
+            />
+          )}
         </main>
         <ActionBarTakeOff />
       </span>

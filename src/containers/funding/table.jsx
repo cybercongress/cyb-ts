@@ -17,7 +17,16 @@ class Table extends Component {
       loader: false,
       ordering: Order.DESC,
       sortKey: 'amountСolumn',
+      currentPage: 1,
+      todosPerPage: 3,
     };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(event) {
+    this.setState({
+      currentPage: Number(event.target.id),
+    });
   }
 
   sortTime = () => {
@@ -95,7 +104,14 @@ class Table extends Component {
       onClickSortTime,
       onClickSortSyb,
     } = this.props;
-    const { loader, sortSyb, sortAtom, asc } = this.state;
+    const {
+      loader,
+      sortSyb,
+      sortAtom,
+      asc,
+      todosPerPage,
+      currentPage,
+    } = this.state;
 
     console.log(data);
 
@@ -228,7 +244,7 @@ class Table extends Component {
         <div className="table">
           <div className="table-header-rows">
             <div className="numberType address">Address (TX id)</div>
-            <div className="numberType sort-row" onClick={this.sortTime}>
+            <div className="numberType sort-row">
               Height
               {/* <Icon
                 icon="double-caret-vertical"
@@ -236,7 +252,7 @@ class Table extends Component {
                 marginLeft={5}
               /> */}
             </div>
-            <div className="numberType sort-row" onClick={this.sortAtom}>
+            <div className="numberType sort-row">
               ATOMs
               {/* <Icon
                 icon="double-caret-vertical"
@@ -244,7 +260,7 @@ class Table extends Component {
                 marginLeft={5}
               /> */}
             </div>
-            <div className="numberType sort-row" onClick={this.sortCyb}>
+            <div className="numberType sort-row">
               GCYB estimation
               {/* <Icon
                 icon="double-caret-vertical"

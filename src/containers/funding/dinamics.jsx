@@ -367,7 +367,7 @@ class Dinamics extends Component {
     const config = {
       displayModeBar: false,
       // scrollZoom: false
-      // staticPlot: true
+      // staticPlot: true,
     };
 
     const Btn = () => (
