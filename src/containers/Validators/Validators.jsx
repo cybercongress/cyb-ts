@@ -25,10 +25,12 @@ import {
   formatNumber,
   asyncForEach,
   formatValidatorAddress,
+  roundNumber,
 } from '../../utils/utils';
 import { FormatNumber, Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
+import { CYBER } from '../../utils/config';
 
 const T = new LocalizedStrings(i18n);
 
@@ -189,7 +191,7 @@ class Validators extends Component {
         );
       }
     );
-console.log(validators);
+    console.log(validators);
     this.setState({
       loading: false,
       validators,
@@ -313,7 +315,7 @@ console.log(validators);
                 %)
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" flex={0.5}>
+            <Table.TextCell textAlign="end" flex={0.6}>
               <TextTable>
                 <FormatNumber
                   number={validator.shares}
@@ -322,7 +324,23 @@ console.log(validators);
                 %
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" isNumber>
+            <Table.TextCell textAlign="end" isNumber flex={1}>
+              <TextTable>
+                <FormatNumber
+                  style={{ marginRight: 5 }}
+                  number={formatNumber(
+                    validator.delegator_shares / CYBER.DIVISOR_CYBER_G,
+                    3
+                  )}
+                  fontSizeDecimal={11.5}
+                />
+              </TextTable>
+            </Table.TextCell>
+            <Table.TextCell
+              flex={showJailed ? 1 : 0.7}
+              textAlign="end"
+              isNumber
+            >
               <TextTable>{validator.height}</TextTable>
             </Table.TextCell>
           </Table.Row>
@@ -376,37 +394,44 @@ console.log(validators);
               style={{
                 backgroundColor: '#000',
                 borderBottom: '1px solid #ffffff80',
+                marginTop: '10px',
+                paddingBottom: '10px',
               }}
             >
               <Table.TextHeaderCell textAlign="center" width={35} flex="none" />
               <Table.TextHeaderCell textAlign="end" flexBasis={60} flex="none">
-                <TextTable fontSize={15}>#</TextTable>
+                <TextTable fontSize={14}>#</TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell>
-                <TextTable fontSize={15}>
+                <TextTable fontSize={14}>
                   {T.validators.table.moniker}
                 </TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell textAlign="end">
-                <TextTable fontSize={15}>
+                <TextTable fontSize={14}>
                   {T.validators.table.operator}
                 </TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell textAlign="end">
-                <TextTable fontSize={15} whiteSpace="nowrap">
+                <TextTable fontSize={14} whiteSpace="nowrap">
                   {T.validators.table.commissionProcent}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={1.5} textAlign="end">
-                <TextTable fontSize={15}>{T.validators.table.power}</TextTable>
+              <Table.TextHeaderCell flex={1.3} textAlign="end">
+                <TextTable fontSize={14}>{T.validators.table.power}</TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={0.5} textAlign="end">
-                <TextTable fontSize={15}>
+              <Table.TextHeaderCell flex={0.6} textAlign="end">
+                <TextTable fontSize={14}>
                   {T.validators.table.selfProcent}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell textAlign="end">
-                <TextTable fontSize={15} whiteSpace="nowrap">
+              <Table.TextHeaderCell flex={1} textAlign="end">
+                <TextTable fontSize={14}>
+                  {T.validators.table.bondedTokens}
+                </TextTable>
+              </Table.TextHeaderCell>
+              <Table.TextHeaderCell flex={showJailed ? 1 : 0.7} textAlign="end">
+                <TextTable fontSize={14}>
                   {showJailed
                     ? T.validators.table.unbonding
                     : T.validators.table.rank}

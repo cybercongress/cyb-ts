@@ -3,11 +3,27 @@ import { CYBER } from './config';
 
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
+const roundNumber = (num, scale) => {
+  if (!`${num}`.includes('e')) {
+    return +`${Math.floor(`${num}e+${scale}`)}e-${scale}`;
+  }
+  const arr = `${num}`.split('e');
+  let sig = '';
+  if (+arr[1] + scale > 0) {
+    sig = '+';
+  }
+  const i = `${+arr[0]}e${sig}${+arr[1] + scale}`;
+  const j = Math.floor(i);
+  const k = +`${j}e-${scale}`;
+  return k;
+};
+
 const formatNumber = (number, toFixed) => {
   let formatted = number;
 
   if (toFixed) {
-    formatted = formatted.toFixed(toFixed);
+    formatted = roundNumber(formatted, toFixed);
+    formatted = formatted.toFixed(toFixed + 1);
   }
   // debugger;
   return formatted
@@ -29,21 +45,6 @@ const run = async func => {
   } catch (error) {
     setTimeout(run, 1000, func);
   }
-};
-
-const roundNumber = (num, scale) => {
-  if (!`${num}`.includes('e')) {
-    return +`${Math.floor(`${num}e+${scale}`)}e-${scale}`;
-  }
-  const arr = `${num}`.split('e');
-  let sig = '';
-  if (+arr[1] + scale > 0) {
-    sig = '+';
-  }
-  const i = `${+arr[0]}e${sig}${+arr[1] + scale}`;
-  const j = Math.floor(i);
-  const k = +`${j}e-${scale}`;
-  return k;
 };
 
 const asyncForEach = async (array, callback) => {
