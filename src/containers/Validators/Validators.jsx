@@ -277,21 +277,21 @@ class Validators extends Component {
             isSelectable
             key={validator.operator_address}
           >
-            <Table.TextCell textAlign="center" width={35} flex="none">
+            <Table.TextCell paddingX={5} textAlign="center" width={35} flex="none">
               <StatusTooltip status={validator.status} />
             </Table.TextCell>
-            <Table.TextCell textAlign="end" flexBasis={60} flex="none" isNumber>
+            <Table.TextCell paddingX={5} textAlign="end" flexBasis={60} flex="none" isNumber>
               <TextTable>{index + 1}</TextTable>
             </Table.TextCell>
-            <Table.TextCell>
+            <Table.TextCell paddingX={5}>
               <TextTable>{validator.description.moniker}</TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end">
+            <Table.TextCell paddingX={5} textAlign="end">
               <TextTable>
                 {formatValidatorAddress(validator.operator_address)}
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end">
+            <Table.TextCell paddingX={5} textAlign="end">
               <TextTable>
                 <FormatNumber
                   number={validator.commission}
@@ -300,7 +300,7 @@ class Validators extends Component {
                 %
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" isNumber flex={1.5}>
+            <Table.TextCell paddingX={5} textAlign="end" isNumber flex={1.5}>
               <TextTable>
                 <FormatNumber
                   style={{ marginRight: 5 }}
@@ -315,7 +315,7 @@ class Validators extends Component {
                 %)
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" flex={0.6}>
+            <Table.TextCell paddingX={5} textAlign="end" flex={0.6}>
               <TextTable>
                 <FormatNumber
                   number={validator.shares}
@@ -324,7 +324,7 @@ class Validators extends Component {
                 %
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell textAlign="end" isNumber flex={1}>
+            <Table.TextCell paddingX={5} textAlign="end" isNumber flex={1}>
               <TextTable>
                 <FormatNumber
                   style={{ marginRight: 5 }}
@@ -337,6 +337,7 @@ class Validators extends Component {
               </TextTable>
             </Table.TextCell>
             <Table.TextCell
+            paddingX={5}
               flex={showJailed ? 1 : 0.7}
               textAlign="end"
               isNumber
@@ -398,39 +399,39 @@ class Validators extends Component {
                 paddingBottom: '10px',
               }}
             >
-              <Table.TextHeaderCell textAlign="center" width={35} flex="none" />
-              <Table.TextHeaderCell textAlign="end" flexBasis={60} flex="none">
+              <Table.TextHeaderCell paddingX={5} textAlign="center" width={35} flex="none" />
+              <Table.TextHeaderCell paddingX={5} textAlign="end" flexBasis={60} flex="none">
                 <TextTable fontSize={14}>#</TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell>
+              <Table.TextHeaderCell paddingX={5}>
                 <TextTable fontSize={14}>
                   {T.validators.table.moniker}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell textAlign="end">
+              <Table.TextHeaderCell paddingX={5} textAlign="end">
                 <TextTable fontSize={14}>
                   {T.validators.table.operator}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell textAlign="end">
+              <Table.TextHeaderCell paddingX={5} textAlign="end">
                 <TextTable fontSize={14} whiteSpace="nowrap">
                   {T.validators.table.commissionProcent}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={1.3} textAlign="end">
+              <Table.TextHeaderCell paddingX={5} flex={1.3} textAlign="end">
                 <TextTable fontSize={14}>{T.validators.table.power}</TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={0.6} textAlign="end">
+              <Table.TextHeaderCell paddingX={5} flex={0.6} textAlign="end">
                 <TextTable fontSize={14}>
                   {T.validators.table.selfProcent}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={1} textAlign="end">
+              <Table.TextHeaderCell paddingX={5} flex={1} textAlign="end">
                 <TextTable fontSize={14}>
                   {T.validators.table.bondedTokens}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell flex={showJailed ? 1 : 0.7} textAlign="end">
+              <Table.TextHeaderCell paddingX={5} flex={showJailed ? 1 : 0.7} textAlign="end">
                 <TextTable fontSize={14}>
                   {showJailed
                     ? T.validators.table.unbonding
