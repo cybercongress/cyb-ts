@@ -406,6 +406,27 @@ function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
   return txSkeleton;
 }
 
+function createUndelegateCyber(txContext, validatorBech32, eulAmount, memo) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgUndelegate',
+    value: {
+      amount: {
+        amount: eulAmount.toString(),
+        denom: DENOM_CYBER,
+      },
+      delegator_address: txContext.bech32,
+      validator_address: validatorBech32,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 // Creates a new redelegation tx based on the input parameters
 // the function expects a complete txContext
 function createRedelegate(
@@ -449,4 +470,5 @@ export default {
   createDelegateCyber,
   createTextProposal,
   createCommunityPool,
+  createUndelegateCyber,
 };
