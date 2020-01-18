@@ -409,24 +409,11 @@ export const getBalanceWallet = address =>
       .catch(e => {})
   );
 
-// export const getDrop = address =>
-//   new Promise(resolve =>
-//     axios({
-//       method: 'get',
-//       url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreidnvozbdxhieaxvgudo4jvynlqvm4xomychezff7stdi2kijwm5iu/${address}`,
-//     })
-//       .then(response => {
-//         console.log(response);
-//         resolve(response.data);
-//       })
-//       .catch(e => {})
-//   );
-
 export const getDrop = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreidnvozbdxhieaxvgudo4jvynlqvm4xomychezff7stdi2kijwm5iu/${address}`,
+      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreieyaqxuslbbakpr5gqe2wdlb7igdffeosqwznqlzrbjxf2xovnqua/${address}`,
     });
     return response.data;
   } catch (e) {

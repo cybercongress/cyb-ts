@@ -1,4 +1,6 @@
 import React, { PureComponent } from 'react';
+import { Pane, Text } from '@cybercongress/gravity';
+import { fromWei, toBN, toWei } from 'web3-utils';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
@@ -18,6 +20,21 @@ import { AUCTION } from '../../utils/config';
 const BigNumber = require('bignumber.js');
 
 const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
+const ROUND_DURATION = 1 * 60 * 60;
+
+export function roundCurrency(value, decimalDigits = 0) {
+  return value
+    .toFixed(decimalDigits)
+    .replace(/(\.\d{0,})0+$/, '$1')
+    .replace(/\.$/, '');
+}
+
+export function formatCurrency(value, decimalDigits = 0) {
+  return roundCurrency(
+    parseFloat(fromWei(value.toString(), 'ether')),
+    decimalDigits
+  );
+}
 
 class Auction extends PureComponent {
   constructor(props) {
@@ -46,7 +63,11 @@ class Auction extends PureComponent {
   }
 
   async componentDidMount() {
-    const { accounts, web3 } = this.props;
+    const {
+      accounts,
+      web3,
+      contract: { methods },
+    } = this.props;
     await this.setState({
       accounts,
     });
@@ -66,7 +87,7 @@ class Auction extends PureComponent {
     window.ethereum.on('accountsChanged', async accountsChanged => {
       const defaultAccounts = accountsChanged[0];
       const tmpAccount = defaultAccounts;
-      console.log(tmpAccount);
+      // console.log(tmpAccount);
       await this.setState({
         accounts: tmpAccount,
       });
@@ -138,7 +159,7 @@ class Auction extends PureComponent {
     const time = await methods.time().call();
     const startTime = await methods.startTime().call();
     const times = parseFloat(
-      today * 23 * 60 * 60 - (parseFloat(time) - parseFloat(startTime))
+      today * ROUND_DURATION - (parseFloat(time) - parseFloat(startTime))
     );
     const hours = Math.floor((times / (60 * 60)) % 24);
     const minutes = Math.floor((times / 60) % 60);
@@ -220,7 +241,7 @@ class Auction extends PureComponent {
 
         const currentPrice = roundNumber(
           dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9)),
-          6
+          10
         );
         // TODO
         // if (item <= today) {
@@ -318,7 +339,7 @@ class Auction extends PureComponent {
         // if (item <= roundThis) {
         const currentPrice = roundNumber(
           dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9)),
-          6
+          10
         );
 
         const distValue =
@@ -348,17 +369,17 @@ class Auction extends PureComponent {
           period: item,
           dist: formatNumber(
             Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100,
-            2
+            3
           ),
           total: formatNumber(
             Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
               10000,
-            2
+            3
           ),
-          price: formatNumber(currentPrice, 6),
+          price: formatNumber(currentPrice, 7),
           closing: (23 * (roundThis - item)) / 23,
-          youETH: formatNumber(userBuy, 6),
-          youCYB: formatNumber(Math.floor(cyb * 100) / 100, 2),
+          youETH: formatNumber(userBuy, 7),
+          youCYB: formatNumber(Math.floor(cyb * 100) / 100, 3),
           claimed: claimedItem,
           // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
         });
@@ -447,12 +468,24 @@ class Auction extends PureComponent {
       accounts,
       roundTable,
     } = this.state;
-    console.log(table);
+    // console.log(table);
     const thc = 700 * Math.pow(10, 3);
     return (
       <div>
         <main className="block-body auction">
-          <span className="caption">test~Auction</span>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              You do not have control over the brain. You need EUL tokens to let
+              she hear you. If you came from Ethereum or Cosmos you can claim
+              the gift of gods. Then start prepare to the greatest tournament in
+              universe: <a href="#/gol">Game of Links</a>.
+            </Text>
+          </Pane>
           <Statistics
             round={roundThis}
             roundAll={numberOfDays}

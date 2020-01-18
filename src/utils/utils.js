@@ -10,7 +10,10 @@ const formatNumber = (number, toFixed) => {
     formatted = formatted.toFixed(toFixed);
   }
   // debugger;
-  return formatted.toLocaleString('en').replace(/,/g, ' ');
+  return formatted
+    .toLocaleString('en')
+    .replace(/(\.\d{0,})0+$/, '$1')
+    .replace(/,/g, ' ');
 };
 
 const getDecimal = (number, toFixed) => {
@@ -50,7 +53,7 @@ const asyncForEach = async (array, callback) => {
 };
 
 const timer = func => {
-  setInterval(func, 10000);
+  setInterval(func, 1000);
 };
 
 const getDelegator = operatorAddr => {

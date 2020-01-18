@@ -5,7 +5,7 @@
       "constant": true,
       "inputs": [{ "name": "user", "type": "address" }],
       "name": "userBuys",
-      "outputs": [{ "name": "result", "type": "uint256[11]" }],
+      "outputs": [{ "name": "result", "type": "uint256[101]" }],
       "payable": false,
       "stateMutability": "view",
       "type": "function"
@@ -23,7 +23,7 @@
       "constant": true,
       "inputs": [],
       "name": "dailyTotals",
-      "outputs": [{ "name": "result", "type": "uint256[11]" }],
+      "outputs": [{ "name": "result", "type": "uint256[101]" }],
       "payable": false,
       "stateMutability": "view",
       "type": "function"
@@ -32,7 +32,7 @@
       "constant": true,
       "inputs": [{ "name": "user", "type": "address" }],
       "name": "userClaims",
-      "outputs": [{ "name": "result", "type": "bool[11]" }],
+      "outputs": [{ "name": "result", "type": "bool[101]" }],
       "payable": false,
       "stateMutability": "view",
       "type": "function"

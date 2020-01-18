@@ -263,18 +263,33 @@ class Got extends PureComponent {
             col={colAtomEth}
             difference={roundNumber(difference.diff, 2)}
           />
-          <Pane
-            boxShadow="0px 0px 5px #36d6ae"
-            paddingX={20}
-            paddingY={20}
-            marginY={20}
-          >
-            <Text fontSize="16px" color="#fff">
-              You do not have control over the brain. You need EUL tokens to let
-              she hear you. If you came from Ethereum or Cosmos you can claim
-              the gift of gods. Then start prepare to the greatest tournament in
-              universe: <a href="#/gol">Game of Links</a>.
-            </Text>
+          <Pane display="grid" gridGap="20px" gridTemplateColumns="1fr 1fr">
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginY={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                You do not have control over the brain. You need EUL tokens to
+                let she hear you. If you came from Ethereum or Cosmos you can
+                claim the gift of gods. Then start prepare to the greatest
+                tournament in universe: <a href="#/gol">Game of Links</a>.
+              </Text>
+            </Pane>
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginY={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                You do not have control over the brain. You need EUL tokens to
+                let she hear you. If you came from Ethereum or Cosmos you can
+                claim the gift of gods. Then start prepare to the greatest
+                tournament in universe: <a href="#/gol">Game of Links</a>.
+              </Text>
+            </Pane>
           </Pane>
         </main>
         <ActionBarContainer

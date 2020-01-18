@@ -233,7 +233,7 @@
 .action-text {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     flex-grow: 1;
     margin-right: 15px;
 }
@@ -311,7 +311,7 @@
     max-width: 1000px;
     height: 44%;
     margin-bottom: 10px;
-    padding-top: 80px;
+    padding-top: 30px;
 }
 
 .container .vitalik {
@@ -416,6 +416,7 @@
     flex-direction: column;
     animation: blink 0.61s cubic-bezier(0, 1.07, 0.75, 0.01) infinite;
     padding: 10px 20px;
+    background-color: #000;
 }
 
 @-webkit-keyframes blink {
@@ -717,8 +718,8 @@
 
 .position-difference-container {
     position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 10%;
+    left: 48%;
+    transform: translate(-48%, -50%);
     width: 10rem;
 }

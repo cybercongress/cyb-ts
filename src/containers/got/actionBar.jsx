@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { ActionBar, Input } from '@cybercongress/gravity';
+import { ActionBar, Tab, Input, Pane } from '@cybercongress/gravity';
 import ActionBarAtom from './actionBarAtom';
 import ActionBarETH from './actionBarEth';
 
-const Switch = ({ checked, onChange }) => (
-  <div className="container-switch">
-    <label className="switch">
-      <input type="checkbox" checked={checked} onChange={onChange} /> <div />
-    </label>
-  </div>
-);
+// const Switch = ({ checked, onChange }) => (
+//   <div className="container-switch">
+//     <input type="radio" checked={checked} onChange={onChange} /> <div />
+//     <label className="switch">
+//       ATOMs
+//     </label>
+//   </div>
+// );
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class ActionBarContainer extends Component {
       select: 'atom',
       checkedSwitch: false,
       valueAmount: '',
+      givenProviderNull: false,
     };
   }
 
@@ -42,10 +44,43 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onChangeSwitch = e => {
+  onChangeSwitchAtom = e => {
     this.setState({
-      checkedSwitch: e.target.checked,
+      checkedSwitch: false,
     });
+  };
+
+  onChangeSwitchEth = async e => {
+    const { web3 } = this.props;
+    if (web3.currentProvider.host) {
+      this.setState({
+        givenProviderNull: true,
+      });
+      return console.log(
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
+      );
+    }
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.enable();
+        if (accounts.length) {
+          this.setState({
+            checkedSwitch: true,
+          });
+        }
+      } catch (error) {
+        console.log('You declined transaction', error);
+      }
+    } else if (window.web3) {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length) {
+        this.setState({
+          checkedSwitch: true,
+        });
+      }
+    } else {
+      return console.log('Your metamask is locked!');
+    }
   };
 
   onChangeAmount = e =>
@@ -54,7 +89,30 @@ class ActionBarContainer extends Component {
     });
 
   render() {
-    const { checkedSwitch, valueAmount } = this.state;
+    const { checkedSwitch, valueAmount, givenProviderNull } = this.state;
+
+    if (givenProviderNull) {
+      return (
+        <ActionBar>
+          <Pane
+            display="flex"
+            fontSize="20px"
+            justifyContent="center"
+            alignItems="center"
+            flexGrow={1}
+            marginRight="15px"
+          >
+            <span>Please install</span>
+            &nbsp;
+            <a href="https://metamask.io/" target="_blank">
+              Metamask extension
+            </a>
+            &nbsp;
+            <span>and refresh the page</span>
+          </Pane>
+        </ActionBar>
+      );
+    }
 
     if (this.state.step === 'start') {
       return (
@@ -69,16 +127,43 @@ class ActionBarContainer extends Component {
               // message={messageAmount}
               marginLeft={10}
               marginRight={10}
-              width="10%"
-              height={32}
+              width="25%"
+              height={42}
+              fontSize="20px"
             />
-            <Switch
-              checked={checkedSwitch}
-              onChange={e => this.onChangeSwitch(e)}
-            />
-            <span style={{ marginLeft: 10 }} className="actionBar-text">
+            <Pane>
+              <Tab
+                isSelected={!checkedSwitch}
+                onSelect={e => this.onChangeSwitchAtom()}
+                color="#36d6ae"
+                boxShadow="0px 0px 10px #36d6ae"
+                minWidth="100px"
+                marginX={0}
+                paddingX={10}
+                paddingY={10}
+                fontSize="18px"
+                height={42}
+              >
+                ATOMs
+              </Tab>
+              <Tab
+                isSelected={checkedSwitch}
+                onSelect={e => this.onChangeSwitchEth()}
+                color="#36d6ae"
+                boxShadow="0px 0px 10px #36d6ae"
+                minWidth="100px"
+                marginX={0}
+                paddingX={10}
+                paddingY={10}
+                fontSize="18px"
+                height={42}
+              >
+                ETH
+              </Tab>
+            </Pane>
+            {/* <span style={{ marginLeft: 10 }} className="actionBar-text">
               ATOMs/ETH
-            </span>
+            </span> */}
           </div>
           <button className="btn" onClick={this.onClickSelect}>
             Fuck Google

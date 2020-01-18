@@ -192,12 +192,11 @@ class ActionBarContainer extends Component {
 
     try {
       const chainId = await this.getNetworkId();
-      addressInfo.chainId = chainId;
       const response = await getBalanceWallet(address.bech32);
 
       if (response) {
-        const data = response;
-        addressInfo = data.result.account;
+        const data = response.account;
+        addressInfo = { chainId, ...data };
         balance = addressInfo.coins[0].amount;
       }
 

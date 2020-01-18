@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Text, Pane } from '@cybercongress/gravity';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
@@ -89,32 +90,29 @@ class Funding extends PureComponent {
       console.log('connected');
     };
     this.ws.onmessage = async evt => {
-      const txs = JSON.parse(localStorage.getItem('txs'));
+      // const txs = JSON.parse(localStorage.getItem('txs'));
       const message = JSON.parse(evt.data);
       console.log('txs', message);
-      if (txs == null) {
-        localStorage.setItem('txs', JSON.stringify(message));
-        this.setState({
-          dataTxs: message,
-        });
-        this.init(message);
-      } else if (txs.length !== message.length) {
-        console.log('localStorage !== ws');
+      // if (txs == null) {
+      // localStorage.setItem('txs', JSON.stringify(message));
+      this.setState({
+        dataTxs: message,
+      });
+      this.init(message);
+      // } else if (txs.length !== message.length) {
+      //   console.log('localStorage !== ws');
+      //   const diffTsx = diff('txhash', txs, message);
+      //   this.setState({
+      //     dataTxs: message,
+      //   });
+      //   localStorage.setItem('txs', JSON.stringify(message));
+      //   console.log('txsLocalStorage', diff('txhash', txs, message));
+      //   this.init(diffTsx);
 
-        // const diffArry =
-        // message.diff(txs);
-        const diffTsx = diff('txhash', txs, message);
-        this.setState({
-          dataTxs: message,
-        });
-        localStorage.setItem('txs', JSON.stringify(message));
-        console.log('txsLocalStorage', diff('txhash', txs, message));
-        this.init(diffTsx);
-      } else {
-        console.log('localStorage == ws');
-        this.getItemLocalStorage();
-        // this.init();
-      }
+      // } else {
+      //   console.log('localStorage == ws');
+      //   this.getItemLocalStorage();
+      // }
     };
 
     this.ws.onclose = () => {
@@ -151,15 +149,11 @@ class Funding extends PureComponent {
   };
 
   getStatistics = async txs => {
-    // const { dataTxs } = this.state;
-    // const txs = JSON.parse(
-    //   localStorage.getItem('txs')
-    // );statisticsLocalStorage
     const dataTxs = txs;
     console.log('dataTxs', dataTxs);
-    const statisticsLocalStorage = JSON.parse(
-      localStorage.getItem('statistics')
-    );
+    // const statisticsLocalStorage = JSON.parse(
+    //   localStorage.getItem('statistics')
+    // );
 
     let amount = 0;
     let atomLeff = 0;
@@ -170,23 +164,24 @@ class Funding extends PureComponent {
       if (amount <= ATOMsALL) {
         amount +=
           Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount
-          ) *
-          10 ** -1;
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
       } else {
         amount = ATOMsALL;
         break;
       }
     }
-    if (statisticsLocalStorage !== null) {
-      amount += statisticsLocalStorage.amount;
-    }
+    // if (statisticsLocalStorage !== null) {
+    //   amount += statisticsLocalStorage.amount;
+    // }
     console.log('amount', amount);
     atomLeff = ATOMsALL - amount;
     currentDiscount = funcDiscount(amount);
     won = cybWon(amount);
     currentPrice = won / amount;
     console.log('won', won);
+    console.log('currentDiscount', currentDiscount);
     const statistics = {
       amount,
       atomLeff,
@@ -194,7 +189,7 @@ class Funding extends PureComponent {
       currentPrice,
       currentDiscount,
     };
-    localStorage.setItem(`statistics`, JSON.stringify(statistics));
+    // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
       amount,
       atomLeff,
@@ -247,7 +242,7 @@ class Funding extends PureComponent {
     Plot.push(dataAxisRewards);
     if (dataPin !== null) {
       if (dataPin[0] === undefined) {
-        localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
+        // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
         this.setState({
           dataRewards: Plot,
         });
@@ -275,9 +270,9 @@ class Funding extends PureComponent {
           const address = dataTxs[item].tx.value.msg[0].value.from_address;
           const amou =
             Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1;
+              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM;
           if (address === group) {
             if (amountAtom <= ATOMsALL) {
               const x0 = amountAtom;
@@ -324,13 +319,13 @@ class Funding extends PureComponent {
             temp += amou;
           }
         }
-        localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
+        // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
         this.setState({
           dataRewards: Plot,
         });
       });
     } else {
-      localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
+      // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
       this.setState({
         dataRewards: Plot,
       });
@@ -354,9 +349,9 @@ class Funding extends PureComponent {
         if (temp <= ATOMsALL) {
           const val =
             Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1;
+              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM;
           let tempVal = temp + val;
           if (tempVal >= ATOMsALL) {
             tempVal = ATOMsALL;
@@ -377,9 +372,9 @@ class Funding extends PureComponent {
           timestamp: dateFormat(d, 'dd/mm/yyyy, h:MM:ss TT'),
           amount:
             Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount
-            ) *
-            10 ** -1,
+              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM,
           estimation,
         });
       }
@@ -407,7 +402,7 @@ class Funding extends PureComponent {
         groups[i].amountСolumn = sum;
         groups[i].cyb = sumEstimation;
       }
-      localStorage.setItem(`groups`, JSON.stringify(groups));
+      // localStorage.setItem(`groups`, JSON.stringify(groups));
       console.log('groups', groups);
 
       this.setState({
@@ -437,8 +432,8 @@ class Funding extends PureComponent {
   getData = async () => {
     const { amount } = this.state;
     let dataPlot = [];
-    dataPlot = await getDataPlot(amount);
-    localStorage.setItem(`dataPlot`, JSON.stringify(dataPlot));
+    dataPlot = getDataPlot(amount);
+    // localStorage.setItem(`dataPlot`, JSON.stringify(dataPlot));
     this.setState({
       dataPlot,
     });
@@ -463,7 +458,9 @@ class Funding extends PureComponent {
     // console.log('item', item);
     const { groups } = this.state;
     let allPin = JSON.parse(localStorage.getItem('allpin'));
-    if (allPin == null) allPin = [];
+    if (allPin == null) {
+      allPin = [];
+    }
     const { group } = item;
     const value = item;
     const pin = {
@@ -545,24 +542,39 @@ class Funding extends PureComponent {
     return (
       <span>
         <main className="block-body">
-          <span className="caption">Takoff funding</span>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              You do not have control over the brain. You need EUL tokens to let
+              she hear you. If you came from Ethereum or Cosmos you can claim
+              the gift of gods. Then start prepare to the greatest tournament in
+              universe: <a href="#/gol">Game of Links</a>.
+            </Text>
+          </Pane>
           <Statistics
             atomLeff={formatNumber(atomLeff)}
             won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
             price={formatNumber(
               Math.floor(currentPrice * 10 ** -9 * 1000) / 1000
             )}
-            discount={Math.floor(currentDiscount * 100 * 1000) / 1000}
+            discount={formatNumber(currentDiscount * 100, 3)}
           />
           <Dinamics data3d={dataPlot} dataRewards={dataRewards} />
-          <Table
-            data={groups}
-            dataPinTable={dataAllPin}
-            update={this.updateList}
-            pin={pin}
-            fPin={this.pinItem}
-            fUpin={this.unPinItem}
-          />
+
+          {groups.length > 0 && (
+            <Table
+              data={groups}
+              dataPinTable={dataAllPin}
+              update={this.updateList}
+              pin={pin}
+              fPin={this.pinItem}
+              fUpin={this.unPinItem}
+            />
+          )}
         </main>
         <ActionBarTakeOff />
       </span>
