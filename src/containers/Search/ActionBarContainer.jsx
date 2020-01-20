@@ -415,6 +415,9 @@ class ActionBarContainer extends Component {
       txHeight,
       txHash,
     } = this.state;
+
+    console.log('bandwidth', bandwidth);
+
     const { valueSearchInput } = this.props;
 
     if (stage === STAGE_INIT) {
