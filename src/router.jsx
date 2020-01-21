@@ -36,11 +36,12 @@ class AppRouter extends React.Component {
   }
 
   render() {
+    const { location } = this.props;
     const { story } = this.state;
 
-    if (!story) {
-      history.push('/episode-1');
-    }
+    // if (!story && location.pathname === '/') {
+    //   history.push('/episode-1');
+    // }
 
     return (
       <Router history={history}>

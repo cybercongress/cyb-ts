@@ -10,6 +10,8 @@ const AUCTION = {
     '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
   TOPICS_CLAIM:
     '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
+  TOPICS_VESTING:
+    '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
   HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
 };
 
@@ -112,6 +114,7 @@ const DISTRIBUTION = [
 ];
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
 
 export {
   TAKEOFF,
@@ -124,4 +127,5 @@ export {
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
+  PATTERN_CYBER,
 };

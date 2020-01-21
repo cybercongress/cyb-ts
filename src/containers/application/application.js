@@ -150,9 +150,9 @@ class App extends Component {
     const { openMenu, story, home, valueSearchInput } = this.state;
     const { children } = this.props;
 
-    if (!story) {
-      return <div>{children}</div>;
-    }
+    // if (!story) {
+    //   return <div>{children}</div>;
+    // }
 
     return (
       <div>

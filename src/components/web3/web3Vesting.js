@@ -80,7 +80,7 @@ const injectWeb3Vesting = InnerComponent =>
             contractVesting,
             contractTokenManager,
             contractToken,
-            accounts: accounts[0],
+            accounts: accounts[0].toLowerCase(),
             networkId,
             isCorrectNetwork: networkContract.indexOf(`${networkId}`) !== -1,
           });
