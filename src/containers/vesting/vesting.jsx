@@ -7,6 +7,7 @@ import TableVesting from './table';
 import BalancePane from './balancePane';
 import ActionBarVesting from './actionBar';
 import { AUCTION } from '../../utils/config';
+import { toBN } from 'web3-utils';
 
 const dateFormat = require('dateformat');
 
@@ -164,9 +165,13 @@ class Vesting extends PureComponent {
       .vestingsLengths(accounts)
       .call();
 
+    console.log('vestingsLengths', vestingsLengths);
+
     const proofsLength = await contractVesting.methods
       .proofsLength(accounts)
       .call();
+
+    console.log('proofsLength', proofsLength);
 
     await asyncForEach(
       Array.from(Array(parseInt(vestingsLengths, 10)).keys()),
@@ -177,21 +182,21 @@ class Vesting extends PureComponent {
           .getVesting(accounts, item)
           .call();
 
-        const getClaimAddress = await contractVesting.methods
-          .claims(accounts, item)
-          .call();
+        // const getClaimAddress = await contractVesting.methods
+        //   .getClaimAddress(accounts, item)
+        //   .call();
+        //   console.log('getClaimAddress', getClaimAddress);
 
-        if (proofsLength > 0) {
-          getProof = await contractVesting.methods
-            .proofs(accounts, item)
-            .call();
-
-          if (getProof.length === 0) {
-            getProof = DEFAULT_PROOF;
-          }
-        } else {
-          getProof = DEFAULT_PROOF;
-        }
+        // if (parseInt(proofsLength, 10) > 0) {
+        //   getProof = await contractVesting.methods
+        //     .getProof(accounts, item)
+        //     .call();
+        //   if (getProof.length === 0) {
+        //     getProof = DEFAULT_PROOF;
+        //   }
+        // } else {
+        //   getProof = DEFAULT_PROOF;
+        // }
 
         data.push({
           id: item,
@@ -200,8 +205,8 @@ class Vesting extends PureComponent {
             new Date(start * MILLISECONDS_IN_SECOND),
             'dd/mm/yyyy, hh:MM:ss tt'
           ),
-          recipient: getClaimAddress,
-          proof: getProof,
+          recipient: 'getClaimAddress',
+          proof: 'getProof',
         });
       }
     );
@@ -221,7 +226,7 @@ class Vesting extends PureComponent {
     } = this.state;
     const { web3, contractVesting } = this.props;
 
-    console.log(table.length);
+    // console.log(table.length);
 
     return (
       <div>
