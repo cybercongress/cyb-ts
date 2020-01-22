@@ -104,10 +104,17 @@ class Validators extends Component {
       validatorSelect: [],
       selectedIndex: '',
       language: 'en',
+      addressLedger: null,
     };
   }
 
   async componentDidMount() {
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      const address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address.bech32 });
+    }
     this.init();
   }
 
@@ -128,7 +135,7 @@ class Validators extends Component {
   };
 
   getValidators = async () => {
-    const { bondedTokens } = this.state;
+    const { bondedTokens, addressLedger } = this.state;
 
     let validators = await getValidators();
     const validatorsJailed = await getValidatorsUnbonding();
@@ -174,6 +181,16 @@ class Validators extends Component {
         if (getSelfDelegation && validators[item].delegator_shares > 0) {
           shares =
             (getSelfDelegation / validators[item].delegator_shares) * 100;
+        }
+
+        if (addressLedger !== null) {
+          const delegation = await selfDelegationShares(
+            addressLedger,
+            validators[item].operator_address
+          );
+          validators[item].delegation = delegation;
+        } else {
+          validators[item].delegation = 0;
         }
 
         const staking = (validators[item].tokens / bondedTokens) * 100;
@@ -286,12 +303,12 @@ class Validators extends Component {
             <Table.TextCell paddingX={5}>
               <TextTable>{validator.description.moniker}</TextTable>
             </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end">
+            <Table.TextCell flex={0.8} paddingX={5} textAlign="end">
               <TextTable>
-                {formatValidatorAddress(validator.operator_address)}
+                {formatValidatorAddress(validator.operator_address, 6, 5)}
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end">
+            <Table.TextCell paddingX={5} flex={0.8} textAlign="end">
               <TextTable>
                 <FormatNumber
                   number={validator.commission}
@@ -329,8 +346,8 @@ class Validators extends Component {
                 <FormatNumber
                   style={{ marginRight: 5 }}
                   number={formatNumber(
-                    validator.delegator_shares / CYBER.DIVISOR_CYBER_G,
-                    3
+                    validator.delegation / CYBER.DIVISOR_CYBER_G,
+                    6
                   )}
                   fontSizeDecimal={11.5}
                 />
@@ -408,12 +425,12 @@ class Validators extends Component {
                   {T.validators.table.moniker}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="end">
+              <Table.TextHeaderCell flex={0.8} paddingX={5} textAlign="center">
                 <TextTable fontSize={14}>
                   {T.validators.table.operator}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="end">
+              <Table.TextHeaderCell flex={0.8} paddingX={5} textAlign="center">
                 <TextTable fontSize={14} whiteSpace="nowrap">
                   {T.validators.table.commissionProcent}
                 </TextTable>
