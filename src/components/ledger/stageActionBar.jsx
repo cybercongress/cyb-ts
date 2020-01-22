@@ -12,7 +12,7 @@ import {
   Textarea,
 } from '@cybercongress/gravity';
 import { ContainetLedger, Loading, FormatNumber } from '../index';
-import { formatNumber } from '../../utils/search/utils';
+import { formatNumber } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -82,7 +82,7 @@ export const Confirmed = ({
   txHeight,
   onClickBtn,
   onClickBtnCloce,
-  explorer
+  explorer,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <span className="font-size-20 display-inline-block text-align-center">
@@ -531,6 +531,7 @@ export const Delegate = ({
   onChangeInputAmount,
   toSend,
   disabledBtn,
+  delegate,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <Pane display="flex" flexDirection="column" alignItems="center">
@@ -543,11 +544,15 @@ export const Delegate = ({
         {address}
       </Text>
       <Text fontSize="30px" lineHeight="40px" color="#fff">
-        {T.actionBar.delegate.details}
+        {delegate
+          ? T.actionBar.delegate.details
+          : T.actionBar.delegate.detailsUnDelegate}
       </Text>
 
       <Text fontSize="18px" lineHeight="30px" color="#fff">
-        {T.actionBar.delegate.wallet}
+        {delegate
+          ? T.actionBar.delegate.wallet
+          : T.actionBar.delegate.yourDelegated}
       </Text>
       <Text
         display="flex"
@@ -558,19 +563,17 @@ export const Delegate = ({
       >
         <FormatNumber
           marginRight={5}
-          number={formatNumber(
-            Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000,
-            3
-          )}
+          number={formatNumber(balance / DIVISOR_CYBER_G, 6)}
         />
-        {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}
+        {DENOM_CYBER_G.toUpperCase()}
       </Text>
 
       <Pane marginTop={20}>
         <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount}{' '}
-          {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}{' '}
-          {T.actionBar.delegate.delegate.toLowerCase()}{' '}
+          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+          {delegate
+            ? T.actionBar.delegate.delegate
+            : T.actionBar.delegate.unDelegateFrom}{' '}
           <Text fontSize="20px" color="#fff" fontWeight={600}>
             {moniker}
           </Text>
@@ -694,9 +697,7 @@ export const SendLedgerAtomTot = ({
       <p className="text-align-center">{T.actionBar.send.wallet}</p>
       <span className="actionBar-text">{availableStake}</span>
 
-      <div
-        style={{ marginBottom: 30, marginTop: 30 }}
-      >
+      <div style={{ marginBottom: 30, marginTop: 30 }}>
         <div style={{ marginBottom: 10 }}>
           <span style={{ marginRight: 10 }}>address to:</span>
           <span>{addressTo}</span>

@@ -570,6 +570,21 @@ class CosmosDelegateTool {
     return txs.createUndelegate(txContext, validatorBech32, uatomAmount, memo);
   }
 
+  txCreateUndelegateCyber = (txContext, validatorBech32, eulAmount, memo) => {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createUndelegateCyber(
+      txContext,
+      validatorBech32,
+      eulAmount,
+      memo
+    );
+  };
+
   // Relays a signed transaction and returns a transaction hash
   async txSubmit(signedTx) {
     const txBody = {

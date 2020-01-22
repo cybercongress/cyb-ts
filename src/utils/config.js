@@ -47,7 +47,7 @@ const COSMOS = {
 const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'eul',
-  DENOM_CYBER_G: 'G',
+  DENOM_CYBER_G: `GEUL`,
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',

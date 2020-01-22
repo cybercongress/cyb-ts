@@ -5,7 +5,7 @@ import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
 import { Dinamics } from './dinamics';
-import { Table } from './table';
+import Table from './table';
 import { Loading } from '../../components/index';
 import {
   run,
