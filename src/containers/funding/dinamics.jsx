@@ -17,7 +17,7 @@ class Dinamics extends Component {
       center: {
         x: 0,
         y: 0,
-        z: 0,
+        z: -0.7,
       },
       eye: {
         x: 1,
@@ -51,7 +51,7 @@ class Dinamics extends Component {
       center: {
         x: 0,
         y: 0,
-        z: 0,
+        z: -0.7,
       },
       eye: {
         x: 1,
@@ -88,7 +88,7 @@ class Dinamics extends Component {
         l: 50,
         r: 50,
         b: 50,
-        t: 50,
+        t: 10,
         pad: 4,
       },
     });
@@ -107,7 +107,7 @@ class Dinamics extends Component {
         l: 50,
         r: 50,
         b: 50,
-        t: 50,
+        t: 10,
         pad: 4,
       },
     });
@@ -126,7 +126,7 @@ class Dinamics extends Component {
         l: 60,
         r: 50,
         b: 50,
-        t: 50,
+        t: 10,
         pad: 4,
       },
     });
@@ -304,7 +304,7 @@ class Dinamics extends Component {
         zerolinecolor: '#dedede',
       },
       scene: {
-        dragmode: false,
+        // dragmode: false,
         yaxis: {
           autotick: false,
           dtick: 50000,
@@ -347,8 +347,8 @@ class Dinamics extends Component {
           zerolinecolor: '#000',
         },
         aspectratio: {
-          x: 2,
-          y: 6,
+          x: 2.7,
+          y: 6.5,
           z: 2,
         },
         font: {
@@ -365,7 +365,7 @@ class Dinamics extends Component {
       margin,
     };
     const config = {
-      displayModeBar: false,
+      // displayModeBar: false,
       // scrollZoom: false
       // staticPlot: true,
     };
