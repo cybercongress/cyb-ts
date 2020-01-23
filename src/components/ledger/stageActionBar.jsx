@@ -750,7 +750,7 @@ export const ContributeATOMs = ({
         <div className="text-align-center">
           <input
             value={valueInput}
-            style={{ marginRight: 10 }}
+            style={{ marginRight: 10, textAlign: 'end' }}
             onChange={onChangeInput}
           />
           <button
