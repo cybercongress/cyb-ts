@@ -31,11 +31,19 @@ class AppRouter extends React.Component {
 
     this.state = {
       story,
+      query: '',
     };
   }
 
+  funcUpdateValueSearchInput = query => {
+    // console.log('query', query);
+    this.setState({
+      query,
+    });
+  };
+
   render() {
-    const { story } = this.state;
+    const { story, query } = this.state;
 
     if (!story) {
       history.push('/episode-1');
@@ -43,9 +51,26 @@ class AppRouter extends React.Component {
 
     return (
       <Router history={history}>
-        <Route path="/" component={App} />
+        <Route
+          path="/"
+          render={props => (
+            <App
+              funcUpdate={this.funcUpdateValueSearchInput}
+              query={query}
+              {...props}
+            />
+          )}
+          // component={App}
+        />
         <Switch>
-          <Route path="/" exact component={Home} />
+          <Route
+            path="/"
+            exact
+            render={props => (
+              <Home funcUpdate={this.funcUpdateValueSearchInput} {...props} />
+            )}
+            // component={Home}
+          />
           <Route exact path="/search/:query" component={SearchResults} />
           <Route path="/gift" component={Gift} />
           <Route path="/takeoff" component={Funding} />
