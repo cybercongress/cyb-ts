@@ -16,12 +16,12 @@ class Dinamics extends Component {
       activebtn: 'leaderboard',
       center: {
         x: 0,
-        y: 0,
-        z: -0.7,
+        y: -0.4,
+        z: -1.5,
       },
       eye: {
         x: 1,
-        y: 0,
+        y: -0.4,
         z: -5,
       },
       up: {
@@ -50,12 +50,12 @@ class Dinamics extends Component {
       activebtn: 'leaderboard',
       center: {
         x: 0,
-        y: 0,
-        z: -0.7,
+        y: -0.4,
+        z: -1.5,
       },
       eye: {
         x: 1,
-        y: 0,
+        y: -0.4,
         z: -5,
       },
       up: {
@@ -87,7 +87,7 @@ class Dinamics extends Component {
       margin: {
         l: 50,
         r: 50,
-        b: 50,
+        b: 80,
         t: 10,
         pad: 4,
       },
@@ -106,7 +106,7 @@ class Dinamics extends Component {
       margin: {
         l: 50,
         r: 50,
-        b: 50,
+        b: 80,
         t: 10,
         pad: 4,
       },
@@ -125,7 +125,7 @@ class Dinamics extends Component {
       margin: {
         l: 60,
         r: 50,
-        b: 50,
+        b: 80,
         t: 10,
         pad: 4,
       },
@@ -347,7 +347,7 @@ class Dinamics extends Component {
           zerolinecolor: '#000',
         },
         aspectratio: {
-          x: 2.7,
+          x: 2.6,
           y: 6.5,
           z: 2,
         },
