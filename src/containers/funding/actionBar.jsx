@@ -7,7 +7,6 @@ import {
   ContributeATOMs,
   SendAmount,
   ConnectLadger,
-  StartState,
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
