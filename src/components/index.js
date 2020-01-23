@@ -39,4 +39,5 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
+  ContributeATOMs,
 } from './ledger/stageActionBar';
