@@ -304,7 +304,7 @@ class Dinamics extends Component {
         zerolinecolor: '#dedede',
       },
       scene: {
-        // dragmode: false,
+        dragmode: false,
         yaxis: {
           autotick: false,
           dtick: 50000,
@@ -365,7 +365,7 @@ class Dinamics extends Component {
       margin,
     };
     const config = {
-      // displayModeBar: false,
+      displayModeBar: false,
       // scrollZoom: false
       // staticPlot: true,
     };
