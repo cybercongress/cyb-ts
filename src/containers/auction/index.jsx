@@ -414,7 +414,7 @@ class Auction extends PureComponent {
     } else {
       createOnDay = createPerDay;
     }
-    const currentPrice = roundNumber(dailyTotals / (createOnDay * 10 ** 9), 6);
+    const currentPrice = roundNumber(dailyTotals / (createOnDay * 10 ** 9), 10);
     const distValue = Math.floor(createOnDay * 10 ** -9 * 100) / 100;
     const dailyValue = Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000;
     const userBuy = userBuys * 10 ** -18;
@@ -428,15 +428,15 @@ class Auction extends PureComponent {
       round,
       createPerDay: formatNumber(
         Math.floor(createOnDay * 10 ** -9 * 100) / 100,
-        2
+        3
       ),
       dailyTotals: formatNumber(
         Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000,
-        2
+        3
       ),
-      currentPrice,
-      userBuys: formatNumber(userBuys * 10 ** -18, 6),
-      cyb: formatNumber(Math.floor(cyb * 100) / 100, 2),
+      currentPrice: formatNumber(currentPrice, 7),
+      userBuys: formatNumber(userBuys * 10 ** -18, 7),
+      cyb: formatNumber(Math.floor(cyb * 100) / 100, 3),
     };
     table[round].dist = roundTable.createPerDay;
     table[round].total = roundTable.dailyTotals;
