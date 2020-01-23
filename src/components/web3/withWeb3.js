@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import waitForWeb3 from './waitForWeb3';
-import { abi } from '../../utils/abi';
 import Auction from '../../../contracts/Auction.json';
 import AuctionUtils from '../../../contracts/AuctionUtils.json';
 import Token from '../../../contracts/Token.json';
@@ -10,11 +9,7 @@ import NotFound from '../../containers/application/notFound';
 
 import { AUCTION } from '../../utils/config';
 
-const {
-  ADDR_SMART_CONTRACT,
-  ADDR_SMART_CONTRACT_AUCTION_UTILS,
-  ADDR_TOKEN,
-} = AUCTION;
+const { ADDR_SMART_CONTRACT } = AUCTION;
 
 const injectWeb3 = InnerComponent =>
   class extends PureComponent {
@@ -33,8 +28,6 @@ const injectWeb3 = InnerComponent =>
       };
       this.getWeb3 = this.getWeb3.bind(this);
       this.smart = ADDR_SMART_CONTRACT;
-      this.smartAuctionUtils = ADDR_SMART_CONTRACT_AUCTION_UTILS;
-      this.tokenAdrrs = ADDR_TOKEN;
     }
 
     componentDidMount() {
@@ -47,13 +40,19 @@ const injectWeb3 = InnerComponent =>
         const web3 = await waitForWeb3();
         console.log('web3.givenProvider', web3);
         const contract = await new web3.eth.Contract(Auction.abi, this.smart);
+
+        const auctionUtilsAddress = await contract.methods.utils().call();
+
         const contractAuctionUtils = await new web3.eth.Contract(
           AuctionUtils.abi,
-          this.smartAuctionUtils
+          auctionUtilsAddress
         );
+
+        const tokenAddress = await contract.methods.token().call();
+
         const contractToken = await new web3.eth.Contract(
           Token.abi,
-          this.tokenAdrrs
+          tokenAddress
         );
         if (web3.givenProvider === null) {
           this.setState({
