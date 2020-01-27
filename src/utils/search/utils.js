@@ -421,3 +421,29 @@ export const getDrop = async address => {
     return 0;
   }
 };
+
+export const getTxs = async txs => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/txs/${txs}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getValidatorsInfo = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/validators/${address}`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

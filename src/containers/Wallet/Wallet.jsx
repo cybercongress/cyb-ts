@@ -278,7 +278,7 @@ class Wallet extends React.Component {
         </Table.TextCell>
         <Table.TextCell flex={0.2}>
           <Text color="#fff" fontSize="17px">
-            {(DENOM_CYBER_G + item.token).toUpperCase()}
+            {(DENOM_CYBER_G).toUpperCase()}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.3}>
