@@ -67,9 +67,10 @@ const MultiSend = ({ msg }) => {
               <Account address={data.address}>
                 {data.coins.map((coin, j) => {
                   return (
-                    <em key={j} className="text-success">
+                    <span key={j}>
+                      {' '}
                       {formatNumber(coin.amount)} {coin.denom.toUpperCase()}
-                    </em>
+                    </span>
                   );
                 })}
               </Account>
@@ -85,9 +86,10 @@ const MultiSend = ({ msg }) => {
               <Account address={data.address} />
               {data.coins.map((coin, j) => {
                 return (
-                  <em key={j} className="text-success">
+                  <span key={j}>
+                    {' '}
                     {formatNumber(coin.amount)} {coin.denom.toUpperCase()}
-                  </em>
+                  </span>
                 );
               })}
             </div>
