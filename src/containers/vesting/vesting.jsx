@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { toBN } from 'web3-utils';
 import injectWeb3Vesting from '../../components/web3/web3Vesting';
 import { Loading } from '../../components/index';
 import { asyncForEach } from '../../utils/utils';
@@ -7,7 +8,6 @@ import TableVesting from './table';
 import BalancePane from './balancePane';
 import ActionBarVesting from './actionBar';
 import { AUCTION } from '../../utils/config';
-import { toBN } from 'web3-utils';
 
 const dateFormat = require('dateformat');
 
@@ -67,7 +67,7 @@ class Vesting extends PureComponent {
       },
       (error, event) => {
         this.newProofUpdate(event);
-        console.log('event', event);
+        console.log('NewProof', event);
       }
     );
 
@@ -132,13 +132,15 @@ class Vesting extends PureComponent {
 
   newProofUpdate = async dataEvent => {
     const { table, accounts } = this.state;
+    const data = [...table];
     if (accounts === dataEvent.returnValues.claimer.toLowerCase()) {
-      table.find((element, index, array) => { 
-        if (array[index].id == dataEvent.returnValues.vestingId) {
-          array[index].proof = dataEvent.returnValues.proofTx
-          return element
+      data.forEach((element, index) => {
+        if (element.id === parseInt(dataEvent.returnValues.vestingId, 10)) {
+          table[index].proof = dataEvent.returnValues.proofTx;
         }
       });
+      console.log('newProofUpdate', data);
+      this.setState({ table: data });
     }
   };
 
@@ -182,17 +184,17 @@ class Vesting extends PureComponent {
         const getClaimAddress = await contractVesting.methods
           .getClaimAddress(accounts, item)
           .call();
-          // console.log('getClaimAddress', getClaimAddress);
-          // console.log('getClaimAddressLength', getClaimAddress.length);
+        // console.log('getClaimAddress', getClaimAddress);
+        // console.log('getClaimAddressLength', getClaimAddress.length);
 
         if (getClaimAddress.length === 0) {
-          return
+          return;
         }
 
         getProof = await contractVesting.methods
           .getProof(accounts, item)
           .call();
-          // console.log('getProof', getProof);
+        // console.log('getProof', getProof);
 
         if (getProof.length === 0) {
           getProof = DEFAULT_PROOF;
@@ -225,8 +227,6 @@ class Vesting extends PureComponent {
       tableLoading,
     } = this.state;
     const { web3, contractVesting } = this.props;
-
-    // console.log(table.length);
 
     return (
       <div>
