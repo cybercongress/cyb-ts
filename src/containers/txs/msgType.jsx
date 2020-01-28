@@ -3,6 +3,7 @@ import { Text, Pane } from '@cybercongress/gravity';
 // import { formatNumber } from '../../utils/search/utils';
 // import { msgType } from '../../utils/utils';
 
+const link = require('../../image/link.svg');
 const bank = require('../../image/send.svg');
 const stake = require('../../image/stake.svg');
 const gov = require('../../image/gov.svg');
@@ -28,7 +29,7 @@ const MsgType = ({ type }) => {
   switch (type) {
     // cyberd
     case 'cyberd/Link':
-      return 'Link';
+      return <ContainerTitle img={link}>Link</ContainerTitle>;
 
     // bank
     case 'cosmos-sdk/MsgSend':

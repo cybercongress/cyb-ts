@@ -1,26 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
 import MsgType from './msgType';
 import Account from './Account';
 import { CYBER } from '../../utils/config';
 
-const Link = ({ to, children }) => <a href={to}>{children}</a>;
+const imgDropdown = require('../../image/arrow-dropdown.svg');
+const imgDropup = require('../../image/arrow-dropup.svg');
+
+const Link = ({ to, children }) => <a target="_blank" href={to}>{children}</a>;
+const Cid = ({ cid }) => <a target="_blank" href={`https://ipfs.io/ipfs/${cid}`}>{cid}</a>;
 
 export const ContainerMsgsType = ({ type, children }) => (
   <Pane
-    paddingY={20}
-    paddingX={20}
     borderRadius={5}
     display="flex"
     flexDirection="column"
     boxShadow="0 0 5px #3ab793"
     marginBottom={20}
   >
-    <Pane paddingLeft={5} paddingBottom={8} borderBottom="1px solid #3ab7938f">
+    <Pane
+      paddingLeft={16}
+      paddingTop={10}
+      paddingBottom={5}
+      paddingRight={10}
+      borderBottom="1px solid #3ab7938f"
+    >
       <MsgType type={type} />
     </Pane>
-    <Pane width="100%" paddingTop={15}>
+    <Pane width="100%" paddingY={10} paddingLeft={20} paddingRight={10}>
       {children}
     </Pane>
   </Pane>
@@ -50,6 +58,7 @@ export const Row = ({ value, title }) => (
       wordBreak="break-all"
       lineHeight="20px"
       marginBottom="5px"
+      flexDirection="column"
     >
       {value}
     </Text>
@@ -63,13 +72,18 @@ const MultiSend = ({ msg }) => {
         title="Inputs"
         value={msg.value.inputs.map((data, i) => {
           return (
-            <div key={i}>
+            <div
+              key={i}
+              style={{
+                marginBottom: '5px',
+              }}
+            >
               <Account address={data.address}>
                 {data.coins.map((coin, j) => {
                   return (
                     <span key={j}>
                       {' '}
-                      {formatNumber(coin.amount)} {coin.denom.toUpperCase()}
+                      ({formatNumber(coin.amount)} {coin.denom.toUpperCase()})
                     </span>
                   );
                 })}
@@ -82,13 +96,18 @@ const MultiSend = ({ msg }) => {
         title="Outputs"
         value={msg.value.outputs.map((data, i) => {
           return (
-            <div key={i}>
+            <div
+              key={i}
+              style={{
+                marginBottom: '5px',
+              }}
+            >
               <Account address={data.address} />
               {data.coins.map((coin, j) => {
                 return (
                   <span key={j}>
                     {' '}
-                    {formatNumber(coin.amount)} {coin.denom.toUpperCase()}
+                    ({formatNumber(coin.amount)} {coin.denom.toUpperCase()})
                   </span>
                 );
               })}
@@ -100,8 +119,52 @@ const MultiSend = ({ msg }) => {
   );
 };
 
-const Activites = ({ msg }) => {
+function Activites({ msg }) {
+  const [seeAll, setSeeAll] = useState(false);
+
+  console.log(JSON.stringify(msg));
+
   switch (msg.type) {
+    case 'cyberd/Link':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row
+            title="Address"
+            value={<Account address={msg.value.address} />}
+          />
+          {msg.value.links.slice(0, seeAll ? msg.value.length : 1).map(item => (
+            <div
+              key={item.from}
+              style={{
+                padding: '10px',
+                paddingBottom: 0,
+                marginBottom: '10px',
+                borderTop: '1px solid #3ab79366',
+              }}
+            >
+              <Row title="from" value={<Cid cid={item.from} />} />
+              <Row title="to" value={<Cid cid={item.to} />} />
+            </div>
+          ))}
+          {msg.value.links.length > 1 && (
+            <button
+              style={{
+                width: '25px',
+                height: '25px',
+                margin: 0,
+                padding: 0,
+                border: 'none',
+                backgroundColor: 'transparent',
+              }}
+              type="button"
+              onClick={() => setSeeAll(!seeAll)}
+            >
+              <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
+            </button>
+          )}
+        </ContainerMsgsType>
+      );
+
     // bank
     case 'cosmos-sdk/MsgSend':
       return (
@@ -340,6 +403,6 @@ const Activites = ({ msg }) => {
     default:
       return <div>{JSON.stringify(msg.value)}</div>;
   }
-};
+}
 
 export default Activites;
