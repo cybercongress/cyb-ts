@@ -16,6 +16,8 @@ const client = new ApolloClient({
     const token = localStorage.getItem('token');
     operation.setContext({
       headers: {
+        'content-type': 'application/json',
+        'x-hasura-admin-secret': token,
         authorization: token ? `Bearer ${token}` : '',
       },
     });
