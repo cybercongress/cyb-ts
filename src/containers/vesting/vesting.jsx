@@ -125,8 +125,6 @@ class Vesting extends PureComponent {
         ...table,
       ];
 
-      console.log(data);
-
       this.setState({ table: data });
       this.getBalance();
     }
@@ -134,9 +132,14 @@ class Vesting extends PureComponent {
 
   newProofUpdate = async dataEvent => {
     const { table, accounts } = this.state;
-
-    console.log(dataEvent);
-    // table[]
+    if (accounts === dataEvent.returnValues.claimer.toLowerCase()) {
+      table.find((element, index, array) => { 
+        if (array[index].id == dataEvent.returnValues.vestingId) {
+          array[index].proof = dataEvent.returnValues.proofTx
+          return element
+        }
+      });
+    }
   };
 
   getBalance = async () => {
@@ -165,13 +168,7 @@ class Vesting extends PureComponent {
       .vestingsLengths(accounts)
       .call();
 
-    console.log('vestingsLengths', vestingsLengths);
-
-    const proofsLength = await contractVesting.methods
-      .proofsLength(accounts)
-      .call();
-
-    console.log('proofsLength', proofsLength);
+    // console.log('vestingsLengths', vestingsLengths);
 
     await asyncForEach(
       Array.from(Array(parseInt(vestingsLengths, 10)).keys()),
@@ -182,21 +179,24 @@ class Vesting extends PureComponent {
           .getVesting(accounts, item)
           .call();
 
-        // const getClaimAddress = await contractVesting.methods
-        //   .getClaimAddress(accounts, item)
-        //   .call();
-        //   console.log('getClaimAddress', getClaimAddress);
+        const getClaimAddress = await contractVesting.methods
+          .getClaimAddress(accounts, item)
+          .call();
+          // console.log('getClaimAddress', getClaimAddress);
+          // console.log('getClaimAddressLength', getClaimAddress.length);
 
-        // if (parseInt(proofsLength, 10) > 0) {
-        //   getProof = await contractVesting.methods
-        //     .getProof(accounts, item)
-        //     .call();
-        //   if (getProof.length === 0) {
-        //     getProof = DEFAULT_PROOF;
-        //   }
-        // } else {
-        //   getProof = DEFAULT_PROOF;
-        // }
+        if (getClaimAddress.length === 0) {
+          return
+        }
+
+        getProof = await contractVesting.methods
+          .getProof(accounts, item)
+          .call();
+          // console.log('getProof', getProof);
+
+        if (getProof.length === 0) {
+          getProof = DEFAULT_PROOF;
+        }
 
         data.push({
           id: item,
@@ -205,8 +205,8 @@ class Vesting extends PureComponent {
             new Date(start * MILLISECONDS_IN_SECOND),
             'dd/mm/yyyy, hh:MM:ss tt'
           ),
-          recipient: 'getClaimAddress',
-          proof: 'getProof',
+          recipient: getClaimAddress,
+          proof: getProof,
         });
       }
     );

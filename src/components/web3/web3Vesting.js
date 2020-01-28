@@ -100,11 +100,11 @@ const injectWeb3Vesting = InnerComponent =>
         contractTokenManager,
         contractToken,
       } = this.state;
-      if (!isCorrectNetwork) {
-        return (
-          <NotFound text="Please connect to the Ethereum Rinkeby Network" />
-        );
-      }
+      // if (!isCorrectNetwork) {
+      //   return (
+      //     <NotFound text="Please connect to the Ethereum Rinkeby Network" />
+      //   );
+      // }
       if (loading) {
         return (
           <div
