@@ -8,8 +8,16 @@ import { CYBER } from '../../utils/config';
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
 
-const Link = ({ to, children }) => <a target="_blank" href={to}>{children}</a>;
-const Cid = ({ cid }) => <a target="_blank" href={`https://ipfs.io/ipfs/${cid}`}>{cid}</a>;
+const Link = ({ to, children }) => (
+  <a target="_blank" href={to}>
+    {children}
+  </a>
+);
+const Cid = ({ cid }) => (
+  <a target="_blank" href={`https://ipfs.io/ipfs/${cid}`}>
+    {cid}
+  </a>
+);
 
 export const ContainerMsgsType = ({ type, children }) => (
   <Pane
@@ -54,11 +62,11 @@ export const Row = ({ value, title }) => (
       display="flex"
       color="#fff"
       fontSize="16px"
-      alignItems="center"
       wordBreak="break-all"
       lineHeight="20px"
       marginBottom="5px"
       flexDirection="column"
+      alignItems="flex-start"
     >
       {value}
     </Text>
@@ -119,50 +127,55 @@ const MultiSend = ({ msg }) => {
   );
 };
 
+const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
+  <ContainerMsgsType type={msg.type}>
+    <Row title="Address" value={<Account address={msg.value.address} />} />
+    {msg.value.links
+      .slice(0, seeAll ? msg.value.length : 1)
+      .map((item, index) => (
+        <div
+          key={`${item.from}-${index}`}
+          style={{
+            padding: '10px',
+            paddingBottom: 0,
+            marginBottom: '10px',
+            borderTop: '1px solid #3ab79366',
+          }}
+        >
+          <Row title="from" value={<Cid cid={item.from} />} />
+          <Row title="to" value={<Cid cid={item.to} />} />
+        </div>
+      ))}
+    {msg.value.links.length > 1 && (
+      <button
+        style={{
+          width: '25px',
+          height: '25px',
+          margin: 0,
+          padding: 0,
+          border: 'none',
+          backgroundColor: 'transparent',
+        }}
+        type="button"
+        onClick={onClickBtnSeeAll}
+      >
+        <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
+      </button>
+    )}
+  </ContainerMsgsType>
+);
+
 function Activites({ msg }) {
   const [seeAll, setSeeAll] = useState(false);
-
-  console.log(JSON.stringify(msg));
 
   switch (msg.type) {
     case 'cyberd/Link':
       return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Address"
-            value={<Account address={msg.value.address} />}
-          />
-          {msg.value.links.slice(0, seeAll ? msg.value.length : 1).map(item => (
-            <div
-              key={item.from}
-              style={{
-                padding: '10px',
-                paddingBottom: 0,
-                marginBottom: '10px',
-                borderTop: '1px solid #3ab79366',
-              }}
-            >
-              <Row title="from" value={<Cid cid={item.from} />} />
-              <Row title="to" value={<Cid cid={item.to} />} />
-            </div>
-          ))}
-          {msg.value.links.length > 1 && (
-            <button
-              style={{
-                width: '25px',
-                height: '25px',
-                margin: 0,
-                padding: 0,
-                border: 'none',
-                backgroundColor: 'transparent',
-              }}
-              type="button"
-              onClick={() => setSeeAll(!seeAll)}
-            >
-              <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
-            </button>
-          )}
-        </ContainerMsgsType>
+        <MsgLink
+          msg={msg}
+          seeAll={seeAll}
+          onClickBtnSeeAll={() => setSeeAll(!seeAll)}
+        />
       );
 
     // bank

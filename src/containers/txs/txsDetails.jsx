@@ -21,6 +21,7 @@ class TxsDetails extends React.Component {
         status: '',
         timestamp: '',
         memo: '',
+        messageError: '',
       },
       msgs: '',
     };
@@ -30,14 +31,31 @@ class TxsDetails extends React.Component {
     await this.getTxHash();
   }
 
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.getTxHash();
+    }
+  }
+
   getTxHash = async () => {
     // const proposals = proposalsIdJson[0].result;
     const { match } = this.props;
     const { txHash } = match.params;
+    let messageError = '';
 
     console.log('txHash', txHash);
 
     const { height, txhash, tx, logs, timestamp } = await getTxs(txHash);
+
+    if (!logs[0].success) {
+      if (logs[0].log.length > 0) {
+        const dataLog = JSON.parse(logs[0].log);
+        messageError = dataLog.message;
+      } else {
+        messageError = 'Unknown error';
+      }
+    }
 
     this.setState({
       txs: tx,
@@ -47,6 +65,7 @@ class TxsDetails extends React.Component {
         height,
         timestamp,
         memo: tx.value.memo,
+        messageError,
       },
       msgs: tx.value.msg,
     });

@@ -3,8 +3,6 @@ import { Text, Pane } from '@cybercongress/gravity';
 import Activites from './Activites';
 
 const Msgs = ({ data }) => {
-  console.log('data', data);
-
   return (
     <Pane
       paddingTop={20}
@@ -26,8 +24,8 @@ const Msgs = ({ data }) => {
         </Text>
       </Pane>
       <Pane display="flex" paddingTop={20} width="100%" flexDirection="column">
-        {data.map(msg => (
-          <Activites msg={msg} />
+        {data.map((msg, index) => (
+          <Activites key={index} msg={msg} />
         ))}
       </Pane>
     </Pane>
