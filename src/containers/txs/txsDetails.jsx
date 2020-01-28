@@ -21,8 +21,8 @@ class TxsDetails extends React.Component {
         status: '',
         timestamp: '',
         memo: '',
-        messageError: '',
       },
+      messageError: '',
       msgs: '',
     };
   }
@@ -65,18 +65,22 @@ class TxsDetails extends React.Component {
         height,
         timestamp,
         memo: tx.value.memo,
-        messageError,
       },
+      messageError,
       msgs: tx.value.msg,
     });
   };
 
   render() {
-    const { information, msgs } = this.state;
+    const { information, messageError, msgs } = this.state;
 
     return (
       <main className="block-body">
-        <InformationTxs data={information} marginBottom={30} />
+        <InformationTxs
+          data={information}
+          messageError={messageError}
+          marginBottom={30}
+        />
         {msgs.length > 0 && <Msgs data={msgs} />}
       </main>
     );

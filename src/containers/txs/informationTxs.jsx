@@ -6,7 +6,7 @@ const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
-const InformationTxs = ({ data, ...props }) => {
+const InformationTxs = ({ data, messageError, ...props }) => {
   console.log(data);
   const value = Object.keys(data).map(key => {
     let item = '';
@@ -96,7 +96,7 @@ const InformationTxs = ({ data, ...props }) => {
           borderRadius="5px"
           backgroundColor="#d32f2f2b"
         >
-          Warning! {data.messageError}
+          Warning! {messageError}
         </Pane>
       )}
       <Pane display="flex" paddingTop={20} width="100%" flexDirection="column">
