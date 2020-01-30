@@ -359,27 +359,42 @@ export const getBalance = address =>
   });
 
 export const getTotalEUL = data => {
-  let total = 0;
+  const balance = {
+    available: 0,
+    delegation: 0,
+    unbonding: 0,
+    rewards: 0,
+    total: 0,
+  };
 
   if (data) {
     if (data.available) {
-      total += parseFloat(data.available.amount);
+      balance.total += Math.floor(parseFloat(data.available.amount));
+      balance.available += Math.floor(parseFloat(data.available.amount));
     }
 
     if (data.delegations && data.delegations.length > 0) {
       data.delegations.forEach((delegation, i) => {
-        total += parseFloat(delegation.shares);
+        balance.total += Math.floor(parseFloat(delegation.balance));
+        balance.delegation += Math.floor(parseFloat(delegation.balance));
       });
     }
 
-    // if (balance.unbonding && balance.unbonding.length > 0){
+    if (data.unbonding && data.unbonding.length > 0) {
+      data.unbonding.forEach((unbond, i) => {
+        unbond.entries.forEach((entry, j) => {
+          balance.unbonding += Math.floor(parseFloat(entry.balance));
+          balance.total += Math.floor(parseFloat(entry.balance));
+        });
+      });
+    }
 
-    // }
     if (data.rewards) {
-      total += parseFloat(data.rewards.amount);
+      balance.total += Math.floor(parseFloat(data.rewards.amount));
+      balance.rewards += Math.floor(parseFloat(data.rewards.amount));
     }
   }
-  return total;
+  return balance;
 };
 
 export const getAmountATOM = data => {

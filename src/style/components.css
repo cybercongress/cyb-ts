@@ -81,10 +81,36 @@
   line-height: 2;
 }
 
+.container-account-balance .account-balance {
+  flex: 2 1;
+  padding: 0 30px;
+}
+
+.container-account-balance .account-total {
+  flex: 1 1;
+  display: flex;
+  border-left: 1px solid #38d6ae8c;
+}
+
+.contaiter-address-total{
+  display: none;
+}
+
 @media (max-width: 979px) {
   .txs-contaiter-row{
     flex-direction: column;
     margin-bottom: 10px;
     line-height: 1.6;
   }
+  .container-account-balance .account-balance {
+    flex: 1 1;
+    padding: 0 0 0 25px;
+  }
+  .container-account-balance .account-total {
+    display: none;
+  }
+  .contaiter-address-total {
+    display: flex;
+  }
 }
+
