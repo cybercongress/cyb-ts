@@ -18,7 +18,8 @@ import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
 import TxsDetails from './containers/txs/txsDetails';
-import AccountDetails from './containers/account';
+import AccountDetails from './containers/account/index';
+import ValidatorsDetails from './containers/account/validators';
 
 export const history = createHashHistory({});
 
@@ -62,6 +63,7 @@ class AppRouter extends React.Component {
           <Route path="/gol" component={GOL} />
           <Route path="/txs/:txHash" component={TxsDetails} />
           <Route path="/account/:account" component={AccountDetails} />
+          <Route path="/validators/:validators" component={ValidatorsDetails} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>

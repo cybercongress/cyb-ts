@@ -2,6 +2,7 @@ import React from 'react';
 import Plotly from 'react-plotly.js';
 
 const color = ['#00e676', '#d500f9', '#00e5ff', '#651fff'];
+const labels = ['available', 'delegation', 'unbonding', 'rewards'];
 
 const layout = {
   bargap: 0,
@@ -45,10 +46,18 @@ const config = {
 const Dinamics = ({ data }) => {
   const { available, delegation, unbonding, rewards } = data;
 
+  const values = [available, delegation, unbonding, rewards];
+
+  if (data.commission) {
+    values.push(data.commission);
+    labels.push('commission');
+    color.push('#1de9b6');
+  }
+
   const dataPlot = [
     {
-      values: [available, delegation, unbonding, rewards],
-      labels: ['available', 'delegation', 'unbonding', 'rewards'],
+      values,
+      labels,
       textposition: 'inside',
       domain: { column: 1 },
       hoverinfo: 'label+percent',

@@ -83,6 +83,14 @@ const Balance = ({ account, balance, ...props }) => {
             procent={formatNumber((rewards / total) * 100, 3)}
             color="#651fff"
           />
+          {balance.commission && (
+            <Row
+              text="Commission"
+              number={formatNumber(balance.commission)}
+              procent={formatNumber((balance.commission / total) * 100, 3)}
+              color="#1de9b6"
+            />
+          )}
         </Pane>
         <Pane
           className="account-total"

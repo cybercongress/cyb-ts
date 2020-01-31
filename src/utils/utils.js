@@ -90,9 +90,9 @@ const timer = func => {
   setInterval(func, 1000);
 };
 
-const getDelegator = operatorAddr => {
+const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   const address = bech32.decode(operatorAddr);
-  return bech32.encode(BECH32_PREFIX_ACC_ADDR_CYBER, address.words);
+  return bech32.encode(prefix, address.words);
 };
 
 const formatValidatorAddress = (address, firstArg, secondArg) => {

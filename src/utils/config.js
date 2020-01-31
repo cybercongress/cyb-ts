@@ -51,6 +51,7 @@ const CYBER = {
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
 
 const LEDGER = {

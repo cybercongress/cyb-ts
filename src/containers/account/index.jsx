@@ -1,14 +1,21 @@
 import React from 'react';
 import GetLink from './link';
-import { getBalance, getTotalEUL } from '../../utils/search/utils';
+import {
+  getBalance,
+  getTotalEUL,
+  getDistribution,
+} from '../../utils/search/utils';
 import Balance from './balance';
 import Staking from './staking';
+import { getDelegator } from '../../utils/utils';
+import { Loading } from '../../components';
 
 class AccountDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      account: 'cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky',
+      account: '',
+      loader: true,
       balance: {
         available: 0,
         delegation: 0,
@@ -37,30 +44,54 @@ class AccountDetails extends React.Component {
   getBalanseAccount = async () => {
     const { match } = this.props;
     const { account } = match.params;
-    await this.setState({ account });
-
-    let total = 0;
+    let total;
     const staking = {
       delegations: [],
       unbonding: [],
     };
 
+    await this.setState({ account, loader: true });
+
     const result = await getBalance(account);
+    console.log('result', result);
 
-    console.log('data', result);
+    const validatorAddress = getDelegator(account, 'cybervaloper');
 
+    const resultGetDistribution = await getDistribution(validatorAddress);
+
+    if (resultGetDistribution) {
+      result.val_commission = resultGetDistribution.val_commission;
+    }
     if (result) {
-      total = getTotalEUL(result);
-      staking.delegations = result.delegations;
-      staking.unbonding = result.unbonding;
+      total = await getTotalEUL(result);
+      if (result.delegations && result.delegations.length > 0) {
+        staking.delegations = result.delegations;
+      }
+      if (result.unbonding && result.unbonding.length > 0) {
+        staking.unbonding = result.unbonding;
+      }
     }
 
-    console.log('total', total);
-    this.setState({ balance: total, staking });
+    this.setState({ balance: total, staking, loader: false });
   };
 
   render() {
-    const { account, balance, staking } = this.state;
+    const { account, balance, staking, loader } = this.state;
+
+    console.log(balance);
+
+    if (loader) {
+      return (
+        <div
+          style={{
+            height: '50vh',
+          }}
+          className="container-loading"
+        >
+          <Loading />
+        </div>
+      );
+    }
 
     return (
       <main className="block-body">
