@@ -18,8 +18,8 @@ import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
 import TxsDetails from './containers/txs/txsDetails';
-import AccountDetails from './containers/account/index';
-import ValidatorsDetails from './containers/account/validators';
+import AccountDetails from './containers/account';
+import ValidatorsDetails from './containers/validator';
 
 export const history = createHashHistory({});
 

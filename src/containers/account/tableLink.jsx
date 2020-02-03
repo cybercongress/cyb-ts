@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { Link, Cid } from '../../components';
-import CardTemplate from './cardTemplate';
+import { CardTemplate, Link, Cid } from '../../components';
 
 const dateFormat = require('dateformat');
 const imgDropdown = require('../../image/arrow-dropdown.svg');

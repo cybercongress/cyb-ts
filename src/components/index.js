@@ -1,8 +1,10 @@
 import RowTableTakeoff from './table';
 import ActionBarLink from './ledger/acitonBarLink';
 import Account from './account/account';
+import CardTemplate from './cardTemplate/cardTemplate';
+import StatusTooltip from './statusTooltip';
 
-export { RowTableTakeoff, ActionBarLink, Account };
+export { RowTableTakeoff, ActionBarLink, Account, CardTemplate, StatusTooltip };
 export { Nums } from './ui/Numbers';
 export { Dots } from './ui/Dots';
 export { SeeSaw } from './SeeSaw/SeeSaw';

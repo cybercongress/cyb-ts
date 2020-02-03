@@ -537,3 +537,29 @@ export const getDistribution = async address => {
     return null;
   }
 };
+
+export const keybaseCheck = async identity => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=basics`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const keybaseAvatar = async identity => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=pictures`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

@@ -656,4 +656,4 @@ class Brain extends React.Component {
   }
 }
 
-export default withWeb3(Brain);
+export default Brain;

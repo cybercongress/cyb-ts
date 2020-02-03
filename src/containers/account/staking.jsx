@@ -1,7 +1,6 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
-import CardTemplate from './cardTemplate';
-import { Account } from '../../components';
+import { CardTemplate, Account } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 

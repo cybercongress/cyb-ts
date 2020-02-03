@@ -1,0 +1,139 @@
+import React from 'react';
+import { Pane, Text } from '@cybercongress/gravity';
+import {
+  CardTemplate,
+  Link,
+  StatusTooltip,
+  FormatNumber,
+} from '../../components';
+import { formatNumber } from '../../utils/utils';
+import { CYBER } from '../../utils/config';
+import KeybaseCheck from './keybaseCheck';
+import KeybaseAvatar from './keybaseAvatar';
+
+export const Row = ({ value, title, marginBottom }) => (
+  <Pane
+    key={`${value}-container`}
+    style={{ marginBottom: marginBottom || 0 }}
+    className="txs-contaiter-row"
+    display="flex"
+  >
+    <Text
+      key={`${title}-title`}
+      display="flex"
+      fontSize="15px"
+      textTransform="capitalize"
+      color="#fff"
+      whiteSpace="nowrap"
+      width="240px"
+      marginBottom="5px"
+      lineHeight="20px"
+    >
+      {title} :
+    </Text>
+    <Text
+      key={`${value}-value`}
+      display="flex"
+      color="#fff"
+      fontSize="14px"
+      wordBreak="break-all"
+      lineHeight="20px"
+      marginBottom="5px"
+      flexDirection="column"
+      alignItems="flex-start"
+    >
+      {value}
+    </Text>
+  </Pane>
+);
+
+const ValidatorInfo = ({ data }) => {
+  console.log('data', data);
+
+  const {
+    rate,
+    max_rate: maxRate,
+    max_change_rate: maxChangeRate,
+  } = data.commission.commission_rates;
+
+  const { moniker, identity, website, details } = data.description;
+
+  return (
+    <CardTemplate paddingBottom={20}>
+      <Pane className="ValidatorInfo__info-wrapper" display="flex">
+        <Pane className="ValidatorInfo__moniker-avatar-wrapper-mobi">
+          <Pane
+            width={80}
+            height={80}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <KeybaseAvatar identity={identity} />
+          </Pane>
+          <Pane className="ValidatorInfo__moniker-wrapper-mobi">
+            <Pane fontSize="25px">{moniker}</Pane>
+
+            <StatusTooltip status={data.status} size={10} />
+          </Pane>
+        </Pane>
+        <Pane width="100%" className="ValidatorInfo__addrs-wrapper">
+          <Pane marginBottom={15} className="ValidatorInfo__moniker-wrapper">
+            <Pane fontSize="25px">{moniker}</Pane>
+
+            <StatusTooltip status={data.status} size={10} />
+          </Pane>
+          <Pane className="ValidatorInfo__addr-wrapper">
+            <Pane>
+              <Pane fontSize={15} marginBottom={5}>
+                Operator Address:
+              </Pane>
+              <Pane fontSize={14}>{data.operator_address}</Pane>
+            </Pane>
+            <Pane>
+              <Pane fontSize={15} marginBottom={5}>
+                Address:
+              </Pane>
+              <Pane fontSize={14}>
+                <Link to={`#/account/${data.delegateAddress}`}>
+                  {data.delegateAddress}
+                </Link>
+              </Pane>
+            </Pane>
+          </Pane>
+        </Pane>
+      </Pane>
+      <Pane>
+        {website.length > 0 && <Row title="Website" value={website} />}
+        {identity.length > 0 && (
+          <Row title="Identity" value={<KeybaseCheck identity={identity} />} />
+        )}
+        <Row
+          title="Voting Power"
+          value={
+            <Pane display="flex">
+              {formatNumber(data.votingPower, 3)}% (
+              <FormatNumber
+                number={formatNumber(data.tokens / CYBER.DIVISOR_CYBER_G, 6)}
+                currency={CYBER.DENOM_CYBER_G}
+              />
+              )
+            </Pane>
+          }
+        />
+        <Row
+          title="Commission Rate"
+          value={`${formatNumber(rate * 100, 2)}%`}
+        />
+        <Row title="Max Rate" value={`${formatNumber(maxRate * 100, 2)}%`} />
+        <Row
+          title="Max Change Rate"
+          value={`${formatNumber(maxChangeRate * 100, 2)}%`}
+        />
+        {details.length > 0 && <Row title="Details" value={details} />}
+      </Pane>
+    </CardTemplate>
+  );
+};
+
+export default ValidatorInfo;
