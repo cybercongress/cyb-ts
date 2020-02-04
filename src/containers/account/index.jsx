@@ -9,6 +9,7 @@ import Balance from './balance';
 import Staking from './staking';
 import { getDelegator } from '../../utils/utils';
 import { Loading } from '../../components';
+import ActionBarContainer from '../Wallet/actionBarContainer';
 
 class AccountDetails extends React.Component {
   constructor(props) {
@@ -31,15 +32,20 @@ class AccountDetails extends React.Component {
   }
 
   componentDidMount() {
-    this.getBalanseAccount();
+    this.init();
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
-      this.getBalanseAccount();
+      this.init();
     }
   }
+
+  init = async () => {
+    this.setState({ loader: true });
+    this.getBalanseAccount();
+  };
 
   getBalanseAccount = async () => {
     const { match } = this.props;
@@ -50,7 +56,7 @@ class AccountDetails extends React.Component {
       unbonding: [],
     };
 
-    await this.setState({ account, loader: true });
+    await this.setState({ account });
 
     const result = await getBalance(account);
     console.log('result', result);
@@ -94,11 +100,17 @@ class AccountDetails extends React.Component {
     }
 
     return (
-      <main className="block-body">
-        <Balance marginBottom={20} account={account} balance={balance} />
-        <Staking marginBottom={20} data={staking} />
-        <GetLink accountUser={account} />
-      </main>
+      <div>
+        <main className="block-body">
+          <Balance marginBottom={20} account={account} balance={balance} />
+          <Staking marginBottom={20} data={staking} />
+          <GetLink accountUser={account} />
+        </main>
+        <ActionBarContainer
+          updateAddress={this.getBalanseAccount}
+          addressSend={account}
+        />
+      </div>
     );
   }
 }
