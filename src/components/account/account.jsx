@@ -18,6 +18,12 @@ class Account extends React.Component {
     if (address) {
       if (address.includes('cybervaloper')) {
         this.updateAccount();
+      } else {
+        this.setState({
+          account: `#/account/${address}`,
+          moniker: `${formatValidatorAddress(address, 9, 6)}`,
+          loading: false,
+        });
       }
     }
   }
@@ -29,7 +35,7 @@ class Account extends React.Component {
 
     if (result) {
       this.setState({
-        account: `/validator/${address}`,
+        account: `#/validators/${address}`,
         moniker: `${formatValidatorAddress(address, 4, 6)} (${
           result.description.moniker
         })`,
@@ -48,7 +54,7 @@ class Account extends React.Component {
 
     return (
       <span>
-        <a target="_blank" href={`https://cyberd.ai${account}`}>
+        <a target="_blank" href={account}>
           {moniker}
         </a>
         {children}

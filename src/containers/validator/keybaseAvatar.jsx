@@ -9,7 +9,6 @@ function KeybaseAvatar({ identity }) {
 
   useEffect(() => {
     keybaseAvatar(identity).then(data => {
-      console.log(data);
       if (data.status.code > 0) {
         setAvatar(false);
       } else if (data.them.length > 0) {

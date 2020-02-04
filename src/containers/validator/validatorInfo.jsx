@@ -47,9 +47,7 @@ export const Row = ({ value, title, marginBottom }) => (
   </Pane>
 );
 
-const ValidatorInfo = ({ data }) => {
-  console.log('data', data);
-
+const ValidatorInfo = ({ data, marginBottom }) => {
   const {
     rate,
     max_rate: maxRate,
@@ -59,7 +57,7 @@ const ValidatorInfo = ({ data }) => {
   const { moniker, identity, website, details } = data.description;
 
   return (
-    <CardTemplate paddingBottom={20}>
+    <CardTemplate marginBottom={marginBottom} paddingBottom={20}>
       <Pane className="ValidatorInfo__info-wrapper" display="flex">
         <Pane className="ValidatorInfo__moniker-avatar-wrapper-mobi">
           <Pane
@@ -114,6 +112,7 @@ const ValidatorInfo = ({ data }) => {
             <Pane display="flex">
               {formatNumber(data.votingPower, 3)}% (
               <FormatNumber
+                fontSizeDecimal={12}
                 number={formatNumber(data.tokens / CYBER.DIVISOR_CYBER_G, 6)}
                 currency={CYBER.DENOM_CYBER_G}
               />

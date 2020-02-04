@@ -126,6 +126,12 @@
   display: none;
 }
 
+.ValidatorInfo__Delegated-MissedBlocks-wrapper{
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-gap: 15px;
+}
+
 @media (max-width: 979px) {
   .txs-contaiter-row {
     flex-direction: column;
@@ -178,5 +184,9 @@
     margin-left: 10px;
     height: 80px;
     align-items: flex-start;
+  }
+
+  .ValidatorInfo__Delegated-MissedBlocks-wrapper{
+    grid-template-columns: repeat(1, 1fr);
   }
 }

@@ -6,6 +6,7 @@ const CardTemplate = ({
   paddingBottom,
   children,
   marginBottom,
+  paddingLeftChild,
   borderBottom,
 }) => (
   <Pane
@@ -30,7 +31,12 @@ const CardTemplate = ({
         </Text>
       </Pane>
     )}
-    <Pane display="flex" width="100%" flexDirection="column">
+    <Pane
+      display="flex"
+      paddingLeft={paddingLeftChild || 0}
+      width="100%"
+      flexDirection="column"
+    >
       {children}
     </Pane>
   </Pane>

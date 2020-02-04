@@ -563,3 +563,16 @@ export const keybaseAvatar = async identity => {
     return null;
   }
 };
+
+export const getDelegations = async validatorAddr => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/validators/${validatorAddr}/delegations`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
