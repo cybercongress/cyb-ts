@@ -12,12 +12,14 @@ import DontReadTheComments from './wss';
 import Delegated from './delegated';
 import Delegators from './delegators';
 import NotFound from '../application/notFound';
+import ActionBarContainer from '../Validators/ActionBarContainer';
 
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       validatorInfo: [],
+      data: {},
       delegated: {},
       loader: true,
       error: false,
@@ -26,17 +28,26 @@ class ValidatorsDetails extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.getValidatorInfo();
-    this.getDelegators();
+    this.init();
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
-      this.getValidatorInfo();
-      this.getDelegators();
+      this.init();
     }
   }
+
+  init = async () => {
+    this.setState({ loader: true });
+    this.getValidatorInfo();
+    this.getDelegators();
+  };
+
+  update = async () => {
+    this.getValidatorInfo();
+    this.getDelegators();
+  };
 
   getSupply = async () => {
     const bondedTokens = await stakingPool();
@@ -72,8 +83,6 @@ class ValidatorsDetails extends React.PureComponent {
     const { match } = this.props;
     const { validators } = match.params;
 
-    this.setState({ loader: true });
-
     const resultStakingPool = await this.getSupply();
     const result = await getValidatorsInfo(validators);
 
@@ -90,7 +99,7 @@ class ValidatorsDetails extends React.PureComponent {
       result.operator_address
     );
 
-    this.setState({
+    return this.setState({
       validatorInfo: {
         delegateAddress,
         ...result,
@@ -122,7 +131,9 @@ class ValidatorsDetails extends React.PureComponent {
   };
 
   render() {
-    const { validatorInfo, loader, delegated, delegators, error } = this.state;
+    const { validatorInfo, loader, delegated, delegators, error, data } = this.state;
+    const { match } = this.props;
+    const { validators } = match.params;
     // console.log('validatorInfo', validatorInfo);
 
     if (loader) {
@@ -143,12 +154,18 @@ class ValidatorsDetails extends React.PureComponent {
     }
 
     return (
-      <main className="block-body">
-        <ValidatorInfo data={validatorInfo} marginBottom={20} />
-        <Delegated data={delegated} marginBottom={20} />
-        <Delegators data={delegators} />
-        {/* <DontReadTheComments /> */}
-      </main>
+      <div>
+        <main className="block-body">
+          <ValidatorInfo data={validatorInfo} marginBottom={20} />
+          <Delegated data={delegated} marginBottom={20} />
+          <Delegators data={delegators} />
+          {/* <DontReadTheComments /> */}
+        </main>
+        <ActionBarContainer
+          updateTable={this.update}
+          validators={validatorInfo}
+        />
+      </div>
     );
   }
 }

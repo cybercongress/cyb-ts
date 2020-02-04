@@ -196,7 +196,7 @@ class ActionBarContainer extends Component {
     const { address } = this.state;
     const { validators } = this.props;
 
-    const validatorAddres = validators[0].operator_address;
+    const validatorAddres = validators.operator_address;
 
     let addressInfo = {};
     let balance = 0;
@@ -241,7 +241,7 @@ class ActionBarContainer extends Component {
 
     let tx = {};
 
-    const validatorAddres = validators[0].operator_address;
+    const validatorAddres = validators.operator_address;
 
     console.log(validatorAddres);
 
@@ -421,7 +421,7 @@ class ActionBarContainer extends Component {
 
     const T_AB = T.actionBar.delegate;
 
-    if (validators.length === 0 && stage === STAGE_INIT) {
+    if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -444,7 +444,7 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (validators.length > 0 && stage === STAGE_INIT) {
+    if (Object.keys(validators).length !== 0 && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -452,7 +452,7 @@ class ActionBarContainer extends Component {
               {T_AB.heroes}
             </Text>
             <Text fontSize="18px" color="#fff" fontWeight={600}>
-              {validators[0].description.moniker}
+              {validators.description.moniker}
             </Text>
           </ActionBarContentText>
           <Button marginRight={30} onClick={this.onClickDelegate}>
@@ -482,8 +482,8 @@ class ActionBarContainer extends Component {
           address={address.bech32}
           onClickBtnCloce={this.cleatState}
           balance={txType === TXTYPE_DELEGATE ? balance : addressInfo.delegate}
-          moniker={validators[0].description.moniker}
-          operatorAddress={validators[0].operator_address}
+          moniker={validators.description.moniker}
+          operatorAddress={validators.operator_address}
           generateTx={() => this.generateTx()}
           max={e => this.onClickMax(e)}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}

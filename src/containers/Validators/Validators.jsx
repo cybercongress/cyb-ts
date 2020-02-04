@@ -227,7 +227,7 @@ class Validators extends Component {
   selectValidators = (validator, index) => {
     const { validatorSelect, selectedIndex } = this.state;
 
-    const selectValidator = [];
+    let selectValidator = {};
 
     if (selectedIndex === index) {
       this.setState({
@@ -239,7 +239,7 @@ class Validators extends Component {
       });
     }
     if (validatorSelect[0] !== validator) {
-      selectValidator.push(validator);
+      selectValidator = validator;
       return this.setState({
         validatorSelect: selectValidator,
       });

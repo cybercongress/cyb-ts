@@ -67,7 +67,7 @@ const Staking = ({ data, ...props }) => {
       gridTemplateColumns="repeat(auto-fit, minmax(450px, 1fr))"
       {...props}
     >
-      <CardTemplate paddingBottom={10} title="Delegations">
+      <CardTemplate paddingBottom={10} paddingLeftChild={10} title="Delegations">
         {delegations.length > 0 ? (
           <Pane>
             <Pane display="flex" marginBottom={10}>
@@ -80,7 +80,7 @@ const Staking = ({ data, ...props }) => {
           <Noitem text="No Delegations" />
         )}
       </CardTemplate>
-      <CardTemplate paddingBottom={10} title="Unbondings">
+      <CardTemplate paddingBottom={10} paddingLeftChild={10} title="Unbondings">
         {unbondings.length > 0 ? (
           <Pane>
             <Pane display="flex" marginBottom={10}>
