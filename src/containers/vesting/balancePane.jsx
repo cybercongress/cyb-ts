@@ -1,18 +1,16 @@
 import React from 'react';
-import { Pane, Text, Avatar } from '@cybercongress/gravity';
-
-import {
-  formatNumber,
-  formatValidatorAddress,
-  formatCurrency,
-} from '../../utils/utils';
-
-import { Tooltip } from '../../components';
-
+import { Text, Tooltip, Icon } from '@cybercongress/gravity';
+import { Card, ContainerCard } from '../../components';
+import { formatNumber, formatCurrency } from '../../utils/utils';
 import { AUCTION } from '../../utils/config';
 
 const TextHeader = ({ children }) => (
-  <Text fontSize="18px" color="#fff" lineHeight="25px">
+  <Text
+    fontSize="18px"
+    color="#fff"
+    textTransform="capitalize"
+    lineHeight="25px"
+  >
     {children}
   </Text>
 );
@@ -23,43 +21,38 @@ const TextNumber = ({ children }) => (
   </Text>
 );
 
-const BalancePane = ({ spendableBalance, balance, accounts, ...props }) => (
-  <Pane
-    display="flex"
-    alignItems="center"
-    justifyContent="space-around"
-    width="100%"
-    padding="20px"
-    boxShadow="0 0 5px #3ab793"
-    {...props}
-  >
-    <Pane display="flex" alignItems="center" flexDirection="column">
-      <TextHeader>Total</TextHeader>
-      <TextNumber>{formatCurrency(balance)}</TextNumber>
-    </Pane>
-    <Pane display="flex" alignItems="center" flexDirection="column">
-      <TextHeader>Vested</TextHeader>
-      <TextNumber>{formatCurrency(balance - spendableBalance)}</TextNumber>
-    </Pane>
-    <Pane display="flex" alignItems="center" flexDirection="column">
-      <TextHeader>Available</TextHeader>
-      <Tooltip
-        placement="bottom"
-        tooltip={`${formatNumber(Math.floor(spendableBalance))} ${
-          AUCTION.TOKEN_NAME
-        }`}
-      >
-        <TextNumber>{formatCurrency(spendableBalance)}</TextNumber>
-      </Tooltip>
-    </Pane>
-    <Pane display="flex" alignItems="center" flexDirection="column">
-      <Avatar
-        style={{ width: 60, height: 60, marginBottom: 10 }}
-        hash={accounts}
-      />
-      <Text color="#fff">{formatValidatorAddress(accounts, 6, 4)}</Text>
-    </Pane>
-  </Pane>
-);
+const BalancePane = ({ spendableBalance, balance, accounts, ...props }) => {
+  const data = {
+    total: balance,
+    vested: balance - spendableBalance,
+    available: spendableBalance,
+  };
+
+  const items = Object.keys(data).map(key => (
+    <Card
+      key={key}
+      title={<TextHeader>{key}</TextHeader>}
+      value={
+        <TextNumber>
+          {formatCurrency(data[key])}
+          <Tooltip
+            position="bottom"
+            content={`${formatNumber(parseFloat(data[key]))} ${
+              AUCTION.TOKEN_NAME
+            }`}
+          >
+            <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
+          </Tooltip>
+        </TextNumber>
+      }
+    />
+  ));
+
+  return (
+    <ContainerCard styles={{ gridGap: '25px' }} col={3}>
+      {items}
+    </ContainerCard>
+  );
+};
 
 export default BalancePane;

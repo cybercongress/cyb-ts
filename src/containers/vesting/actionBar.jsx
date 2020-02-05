@@ -143,6 +143,23 @@ class ActionBarVesting extends Component {
     this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
 
+  componentDidMount() {
+    const { available } = this.props;
+
+    const data = localStorage.getItem('ledger');
+    if (data !== null) {
+      const address = JSON.parse(data);
+
+      this.setState({
+        valueAddr: address.bech32,
+      });
+    }
+
+    this.setState({
+      valueAmount: available,
+    });
+  }
+
   onClickLook = async accounts => {
     const { web3, contractVesting } = this.props;
     const { valueAmount, valueAddr } = this.state;
@@ -236,8 +253,11 @@ class ActionBarVesting extends Component {
 
   render() {
     const { step, tx, valueAmount, valueAddr } = this.state;
-    const { web3 } = this.props;
-    const btnCreateVesting = valueAmount > 0 && valueAddr.match(PATTERN_CYBER);
+    const { web3, available } = this.props;
+    const btnCreateVesting =
+      valueAmount > 0 &&
+      valueAddr.match(PATTERN_CYBER) &&
+      valueAmount <= parseFloat(available);
 
     if (web3.givenProvider === null) {
       return (

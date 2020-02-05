@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { toBN } from 'web3-utils';
+import { Pane, Text } from '@cybercongress/gravity';
 import injectWeb3Vesting from '../../components/web3/web3Vesting';
 import { Loading } from '../../components/index';
 import { asyncForEach } from '../../utils/utils';
@@ -24,6 +25,7 @@ class Vesting extends PureComponent {
       spendableBalance: 0,
       accounts: null,
       tableLoading: true,
+      loading: true,
     };
   }
 
@@ -43,7 +45,6 @@ class Vesting extends PureComponent {
     window.ethereum.on('accountsChanged', async accountsChanged => {
       const defaultAccounts = accountsChanged[0];
       const tmpAccount = defaultAccounts;
-      console.log(tmpAccount);
       await this.setState({
         accounts: tmpAccount.toLowerCase(),
       });
@@ -57,7 +58,6 @@ class Vesting extends PureComponent {
       },
       (error, event) => {
         this.newLockUpdate(event);
-        console.log('event', event);
       }
     );
 
@@ -70,28 +70,6 @@ class Vesting extends PureComponent {
         console.log('NewProof', event);
       }
     );
-
-    // const subscription = web3.eth.subscribe(
-    //   'logs',
-    //   {
-    //     address: AUCTION.ADDR_VESTING,
-    //     topics: [AUCTION.TOPICS_VESTING],
-    //   },
-    //   (error, result) => {
-    //     if (!error) {
-    //       console.log(result);
-    //       this.getBalance();
-    //       this.getVesting();
-    //     }
-    //   }
-    // );
-
-    // // unsubscribes the subscription
-    // subscription.unsubscribe((error, success) => {
-    //   if (success) {
-    //     console.log('Successfully unsubscribed!');
-    //   }
-    // });
   }
 
   newLockUpdate = async dataEvent => {
@@ -157,6 +135,7 @@ class Vesting extends PureComponent {
 
     this.setState({
       balance,
+      loading: false,
       spendableBalance,
     });
   };
@@ -170,8 +149,6 @@ class Vesting extends PureComponent {
       .vestingsLengths(accounts)
       .call();
 
-    // console.log('vestingsLengths', vestingsLengths);
-
     await asyncForEach(
       Array.from(Array(parseInt(vestingsLengths, 10)).keys()),
       async item => {
@@ -184,8 +161,6 @@ class Vesting extends PureComponent {
         const getClaimAddress = await contractVesting.methods
           .getClaimAddress(accounts, item)
           .call();
-        // console.log('getClaimAddress', getClaimAddress);
-        // console.log('getClaimAddressLength', getClaimAddress.length);
 
         if (getClaimAddress.length === 0) {
           return;
@@ -194,7 +169,6 @@ class Vesting extends PureComponent {
         getProof = await contractVesting.methods
           .getProof(accounts, item)
           .call();
-        // console.log('getProof', getProof);
 
         if (getProof.length === 0) {
           getProof = DEFAULT_PROOF;
@@ -225,12 +199,42 @@ class Vesting extends PureComponent {
       balance,
       table,
       tableLoading,
+      loading,
     } = this.state;
     const { web3, contractVesting } = this.props;
+
+    if (loading) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '50vh',
+          }}
+        >
+          <Loading />
+        </div>
+      );
+    }
 
     return (
       <div>
         <main className="block-body">
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              You do not have control over the brain. You need EUL tokens to let
+              she hear you. If you came from Ethereum or Cosmos you can claim
+              the gift of gods. Then start prepare to the greatest tournament in
+              universe: <a href="#/gol">Game of Links</a>.
+            </Text>
+          </Pane>
           <BalancePane
             marginTop={30}
             marginBottom={50}
@@ -254,7 +258,11 @@ class Vesting extends PureComponent {
             </div>
           )}
         </main>
-        <ActionBarVesting contractVesting={contractVesting} web3={web3} />
+        <ActionBarVesting
+          available={spendableBalance}
+          contractVesting={contractVesting}
+          web3={web3}
+        />
       </div>
     );
   }
