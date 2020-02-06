@@ -130,6 +130,9 @@ class ActionBarContainer extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -260,7 +263,7 @@ class ActionBarContainer extends Component {
       if (applySignature !== null) {
         this.setState({
           txMsg: null,
-          txBody: sing,
+          txBody: applySignature,
           stage: STAGE_SUBMITTED,
         });
         await this.injectTx();
@@ -329,6 +332,7 @@ class ActionBarContainer extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
+      errorMessage: null,
       ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,

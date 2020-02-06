@@ -9,6 +9,7 @@ import {
   Confirmed,
   StartStageSearchActionBar,
   Cyberlink,
+  TransactionError,
 } from '../../components';
 
 import { LEDGER, CYBER } from '../../utils/config';
@@ -54,6 +55,7 @@ class ActionBarContainer extends Component {
       txHeight: null,
       txHash: null,
       error: null,
+      errorMessage: null,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -141,6 +143,9 @@ class ActionBarContainer extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -306,13 +311,26 @@ class ActionBarContainer extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
@@ -363,6 +381,7 @@ class ActionBarContainer extends Component {
       address: null,
       returnCode: null,
       addressInfo: null,
+      errorMessage: null,
       txMsg: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
@@ -375,6 +394,7 @@ class ActionBarContainer extends Component {
       txBody: null,
       txHeight: null,
       txHash: null,
+      errorMessage: null,
       error: null,
       init: false,
     });
@@ -414,6 +434,7 @@ class ActionBarContainer extends Component {
       txMsg,
       txHeight,
       txHash,
+      errorMessage,
     } = this.state;
     const { valueSearchInput } = this.props;
 
@@ -476,6 +497,16 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
+          onClickBtn={this.onClickInitStage}
+          onClickBtnCloce={this.onClickInitStage}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.onClickInitStage}
           onClickBtnCloce={this.onClickInitStage}
         />
