@@ -140,6 +140,39 @@ export const Confirmed = ({
   </ContainetLedger>
 );
 
+export const TransactionError = ({
+  onClickBtn,
+  onClickBtnCloce,
+  errorMessage,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <span className="font-size-20 display-inline-block text-align-center">
+      Transaction Error:
+    </span>
+    <div
+      style={{ marginTop: '25px' }}
+      className="display-flex flex-direction-column"
+    >
+      <p style={{ marginBottom: 20, textAlign: 'center' }}>
+        Message:
+        <span
+          style={{
+            color: '#3ab793',
+            marginLeft: '5px',
+          }}
+        >
+          {errorMessage}
+        </span>
+      </p>
+      <div style={{ marginTop: '25px', textAlign: 'center' }}>
+        <button type="button" className="btn" onClick={onClickBtn}>
+          {T.actionBar.confirmedTX.continue}
+        </button>
+      </div>
+    </div>
+  </ContainetLedger>
+);
+
 export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
   <ActionBar>
     <ActionBarContentText>
