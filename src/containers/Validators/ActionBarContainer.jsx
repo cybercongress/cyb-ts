@@ -14,7 +14,10 @@ import {
 } from '../../components';
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { getBalanceWallet } from '../../utils/search/utils';
+import {
+  getBalanceWallet,
+  selfDelegationShares,
+} from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -37,6 +40,9 @@ const {
 } = LEDGER;
 
 const T = new LocalizedStrings(i18n);
+
+export const TXTYPE_DELEGATE = 0;
+export const TXTYPE_UNDELEGATE = 1;
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -71,6 +77,7 @@ class ActionBarContainer extends Component {
       txHeight: null,
       txHash: null,
       error: null,
+      txType: null,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -187,16 +194,26 @@ class ActionBarContainer extends Component {
 
   getAddressInfo = async () => {
     const { address } = this.state;
+    const { validators } = this.props;
+
+    const validatorAddres = validators[0].operator_address;
+
     let addressInfo = {};
     let balance = 0;
 
     try {
       const chainId = await this.getNetworkId();
       const response = await getBalanceWallet(address.bech32);
+      const delegate = await selfDelegationShares(
+        address.bech32,
+        validatorAddres
+      );
+
+      console.log('delegate', delegate);
 
       if (response) {
         const data = response.account;
-        addressInfo = { chainId, ...data };
+        addressInfo = { chainId, ...data, delegate };
         balance = addressInfo.coins[0].amount;
       }
 
@@ -219,8 +236,10 @@ class ActionBarContainer extends Component {
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend } = this.state;
+    const { ledger, address, addressInfo, toSend, txType } = this.state;
     const { validators } = this.props;
+
+    let tx = {};
 
     const validatorAddres = validators[0].operator_address;
 
@@ -238,14 +257,29 @@ class ActionBarContainer extends Component {
       pk: address.pk,
       path: address.path,
     };
+
+    switch (txType) {
+      case TXTYPE_DELEGATE:
+        tx = await ledger.txCreateDelegateCyber(
+          txContext,
+          validatorAddres,
+          amount,
+          MEMO,
+          denom
+        );
+        break;
+      case TXTYPE_UNDELEGATE:
+        tx = await ledger.txCreateUndelegateCyber(
+          txContext,
+          validatorAddres,
+          amount,
+          MEMO
+        );
+        break;
+      default:
+        break;
+    }
     // console.log('txContext', txContext);
-    const tx = await ledger.txCreateDelegateCyber(
-      txContext,
-      validatorAddres,
-      amount,
-      MEMO,
-      denom
-    );
     console.log('tx', tx);
     await this.setState({
       txMsg: tx,
@@ -313,12 +347,6 @@ class ActionBarContainer extends Component {
     });
   };
 
-  toStageConnectLadger = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-  };
-
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
@@ -348,10 +376,32 @@ class ActionBarContainer extends Component {
     return this.state.addressInfo !== null;
   }
 
-  onClickMax = () =>
-    this.setState(prevState => ({
-      toSend: prevState.balance / DIVISOR_CYBER_G,
-    }));
+  onClickMax = () => {
+    const { txType } = this.state;
+    if (txType === TXTYPE_DELEGATE) {
+      this.setState(prevState => ({
+        toSend: prevState.balance / DIVISOR_CYBER_G,
+      }));
+    } else {
+      this.setState(prevState => ({
+        toSend: prevState.addressInfo.delegate / DIVISOR_CYBER_G,
+      }));
+    }
+  };
+
+  onClickDelegate = () => {
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+      txType: TXTYPE_DELEGATE,
+    });
+  };
+
+  onClickUnDelegate = () => {
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+      txType: TXTYPE_UNDELEGATE,
+    });
+  };
 
   render() {
     const { validators } = this.props;
@@ -365,6 +415,8 @@ class ActionBarContainer extends Component {
       txMsg,
       txHash,
       txHeight,
+      txType,
+      addressInfo,
     } = this.state;
 
     const T_AB = T.actionBar.delegate;
@@ -397,15 +449,16 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff" marginRight={5}>
-              {T_AB.delegate}
+              {T_AB.heroes}
             </Text>
             <Text fontSize="18px" color="#fff" fontWeight={600}>
               {validators[0].description.moniker}
             </Text>
           </ActionBarContentText>
-          <Button onClick={this.toStageConnectLadger}>
+          <Button marginRight={30} onClick={this.onClickDelegate}>
             {T_AB.btnDelegate}
           </Button>
+          <Button onClick={this.onClickUnDelegate}>{T_AB.btnUnDelegate}</Button>
         </ActionBar>
       );
     }
@@ -428,7 +481,7 @@ class ActionBarContainer extends Component {
         <Delegate
           address={address.bech32}
           onClickBtnCloce={this.cleatState}
-          balance={balance}
+          balance={txType === TXTYPE_DELEGATE ? balance : addressInfo.delegate}
           moniker={validators[0].description.moniker}
           operatorAddress={validators[0].operator_address}
           generateTx={() => this.generateTx()}
@@ -436,6 +489,7 @@ class ActionBarContainer extends Component {
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           toSend={toSend}
           disabledBtn={balance === 0}
+          delegate={txType === TXTYPE_DELEGATE}
         />
       );
     }
