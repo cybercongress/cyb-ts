@@ -238,7 +238,7 @@ class Validators extends Component {
         selectedIndex: index,
       });
     }
-    if (validatorSelect[0] !== validator) {
+    if (validatorSelect !== validator) {
       selectValidator = validator;
       return this.setState({
         validatorSelect: selectValidator,
