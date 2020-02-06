@@ -18,6 +18,7 @@ import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
 import Vesting from './containers/vesting/vesting';
+import ForceGraph from './containers/forceGraph/forceGraph';
 
 export const history = createHashHistory({});
 
@@ -61,6 +62,7 @@ class AppRouter extends React.Component {
           <Route path="/episode-1" component={Story} />
           <Route path="/gol" component={GOL} />
           <Route path="/vesting" component={Vesting} />
+          <Route path="/graph" component={ForceGraph} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>
