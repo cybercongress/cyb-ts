@@ -1,6 +1,7 @@
 import React from 'react';
 import { getValidatorsInfo } from '../../utils/search/utils';
 import { formatValidatorAddress } from '../../utils/utils';
+import { Link } from '../link/link';
 
 class Account extends React.Component {
   constructor(props) {
@@ -54,9 +55,7 @@ class Account extends React.Component {
 
     return (
       <span>
-        <a target="_blank" href={account}>
-          {moniker}
-        </a>
+        <Link to={account}>{moniker}</Link>
         {children}
       </span>
     );

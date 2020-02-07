@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tablist, Tab, Pane } from '@cybercongress/gravity';
 import GetLink from './link';
 import {
   getBalance,
@@ -6,10 +7,29 @@ import {
   getDistribution,
 } from '../../utils/search/utils';
 import Balance from './balance';
-import Staking from './staking';
+import Heroes from './heroes';
+import Unbondings from './unbondings';
 import { getDelegator } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from '../Wallet/actionBarContainer';
+
+const TabBtn = ({ text, isSelected, onSelect }) => (
+  <Tab
+    key={text}
+    isSelected={isSelected}
+    onSelect={onSelect}
+    paddingX={50}
+    paddingY={20}
+    marginX={3}
+    borderRadius={4}
+    color="#36d6ae"
+    boxShadow="0px 0px 5px #36d6ae"
+    fontSize="16px"
+    whiteSpace="nowrap"
+  >
+    {text}
+  </Tab>
+);
 
 class AccountDetails extends React.Component {
   constructor(props) {
@@ -28,6 +48,7 @@ class AccountDetails extends React.Component {
         delegations: [],
         unbonding: [],
       },
+      selected: 'link',
     };
   }
 
@@ -81,10 +102,13 @@ class AccountDetails extends React.Component {
     this.setState({ balance: total, staking, loader: false });
   };
 
-  render() {
-    const { account, balance, staking, loader } = this.state;
+  select = selected => {
+    this.setState({ selected });
+  };
 
-    console.log(balance);
+  render() {
+    const { account, balance, staking, selected, loader } = this.state;
+    let content;
 
     if (loader) {
       return (
@@ -99,12 +123,48 @@ class AccountDetails extends React.Component {
       );
     }
 
+    if (selected === 'heroes') {
+      content = <Heroes data={staking} />;
+    }
+
+    if (selected === 'unbondings') {
+      content = <Unbondings data={staking} />;
+    }
+
+    if (selected === 'link') {
+      content = <GetLink accountUser={account} />;
+    }
+
     return (
       <div>
         <main className="block-body">
           <Balance marginBottom={20} account={account} balance={balance} />
-          <Staking marginBottom={20} data={staking} />
-          <GetLink accountUser={account} />
+          <Tablist>
+            <TabBtn
+              text="Link"
+              isSelected={selected === 'link'}
+              onSelect={() => this.select('link')}
+            />
+            <TabBtn
+              text="Heroes"
+              isSelected={selected === 'heroes'}
+              onSelect={() => this.select('heroes')}
+            />
+            <TabBtn
+              text="Unbondings"
+              isSelected={selected === 'unbondings'}
+              onSelect={() => this.select('unbondings')}
+            />
+          </Tablist>
+          <Pane
+            display="flex"
+            marginTop={20}
+            marginBottom={50}
+            justifyContent="center"
+            flexDirection="column"
+          >
+            {content}
+          </Pane>
         </main>
         <ActionBarContainer
           updateAddress={this.getBalanseAccount}

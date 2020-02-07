@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import { Pane, Text, Tooltip } from '@cybercongress/gravity';
 import { CardTemplate, Account } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
@@ -21,22 +21,7 @@ const Noitem = ({ text }) => (
   </Pane>
 );
 
-const Staking = ({ data, ...props }) => {
-  console.log(data.unbonding);
-  const delegations = data.delegations.map(item => (
-    <Pane key={item.validator_address} display="flex" marginBottom={10}>
-      <Pane flex={1}>
-        <Account address={item.validator_address} />
-      </Pane>
-      <Pane>
-        {formatCurrency(
-          parseFloat(item.balance),
-          CYBER.DENOM_CYBER.toUpperCase()
-        )}
-      </Pane>
-    </Pane>
-  ));
-
+const Unbondings = ({ data, ...props }) => {
   const unbondings = data.unbonding.map(unbond => (
     <Pane key={unbond.validator_address} display="flex" marginBottom={10}>
       <Pane flex="calc(12 / 5)">
@@ -45,12 +30,20 @@ const Staking = ({ data, ...props }) => {
       <Pane display="flex" flex="calc(12 / 7)" flexDirection="column">
         {unbond.entries.map(entry => (
           <Pane marginBottom={5} display="flex" key={entry.completion_time}>
-            <Pane textAlign="end" paddingX={5} flex="calc(12 / 6)">
-              {formatCurrency(
-                parseFloat(entry.balance),
-                CYBER.DENOM_CYBER.toUpperCase()
-              )}
-            </Pane>
+            <Tooltip
+              content={`${formatNumber(
+                parseFloat(entry.balance)
+              )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+              position="bottom"
+            >
+              <Pane textAlign="end" paddingX={5} flex="calc(12 / 6)">
+                {formatCurrency(
+                  parseFloat(entry.balance),
+                  CYBER.DENOM_CYBER.toUpperCase()
+                )}
+              </Pane>
+            </Tooltip>
+
             <Pane textAlign="end" paddingX={5} flex="calc(12 / 6)">
               {dateFormat(entry.completion_time, 'dd/mm/yy')}
             </Pane>
@@ -61,25 +54,7 @@ const Staking = ({ data, ...props }) => {
   ));
 
   return (
-    <Pane
-      display="grid"
-      gridGap="20px"
-      gridTemplateColumns="repeat(auto-fit, minmax(450px, 1fr))"
-      {...props}
-    >
-      <CardTemplate paddingBottom={10} paddingLeftChild={10} title="Delegations">
-        {delegations.length > 0 ? (
-          <Pane>
-            <Pane display="flex" marginBottom={10}>
-              <Pane flex={1}>Validator</Pane>
-              <Pane>Amount</Pane>
-            </Pane>
-            <Pane>{delegations}</Pane>
-          </Pane>
-        ) : (
-          <Noitem text="No Delegations" />
-        )}
-      </CardTemplate>
+    <Pane display="grid" gridGap="20px" gridTemplateColumns="1fr" {...props}>
       <CardTemplate paddingBottom={10} paddingLeftChild={10} title="Unbondings">
         {unbondings.length > 0 ? (
           <Pane>
@@ -104,4 +79,4 @@ const Staking = ({ data, ...props }) => {
   );
 };
 
-export default Staking;
+export default Unbondings;
