@@ -63,7 +63,7 @@ const Delegated = ({ data, marginBottom }) => {
   return (
     <Pane
       marginBottom={marginBottom || 0}
-      className="ValidatorInfo__Delegated-MissedBlocks-wrapper"
+      // className="ValidatorInfo__Delegated-MissedBlocks-wrapper"
     >
       <CardTemplate title="Delegated" paddingLeftChild={10} paddingBottom={20}>
         <Pane marginBottom={10}>
@@ -113,7 +113,6 @@ const Delegated = ({ data, marginBottom }) => {
           </Pane>
         )}
       </CardTemplate>
-      <CardTemplate paddingLeftChild={10} title="Missed Blocks">in Process</CardTemplate>
     </Pane>
   );
 };

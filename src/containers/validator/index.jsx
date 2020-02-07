@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tablist, Tab, Pane } from '@cybercongress/gravity';
 import ValidatorInfo from './validatorInfo';
 import {
   getValidatorsInfo,
@@ -14,10 +15,29 @@ import Delegators from './delegators';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 
+const TabBtn = ({ text, isSelected, onSelect }) => (
+  <Tab
+    key={text}
+    isSelected={isSelected}
+    onSelect={onSelect}
+    paddingX={50}
+    paddingY={20}
+    marginX={3}
+    borderRadius={4}
+    color="#36d6ae"
+    boxShadow="0px 0px 5px #36d6ae"
+    fontSize="16px"
+    whiteSpace="nowrap"
+  >
+    {text}
+  </Tab>
+);
+
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      selected: 'delegated',
       validatorInfo: [],
       data: {},
       delegated: {},
@@ -130,11 +150,24 @@ class ValidatorsDetails extends React.PureComponent {
     }
   };
 
+  select = selected => {
+    this.setState({ selected });
+  };
+
   render() {
-    const { validatorInfo, loader, delegated, delegators, error, data } = this.state;
+    const {
+      validatorInfo,
+      loader,
+      delegated,
+      delegators,
+      error,
+      selected,
+      data,
+    } = this.state;
     const { match } = this.props;
     const { validators } = match.params;
     // console.log('validatorInfo', validatorInfo);
+    let content;
 
     if (loader) {
       return (
@@ -153,13 +186,45 @@ class ValidatorsDetails extends React.PureComponent {
       return <NotFound />;
     }
 
+    if (selected === 'delegated') {
+      content = <Delegated data={delegated} />;
+    }
+
+    if (selected === 'delegators') {
+      content = <Delegators data={delegators} />;
+    }
+
+
     return (
       <div>
         <main className="block-body">
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <Delegated data={delegated} marginBottom={20} />
-          <Delegators data={delegators} />
-          {/* <DontReadTheComments /> */}
+          <Tablist>
+            <TabBtn
+              text="Link"
+              isSelected={selected === 'delegated'}
+              onSelect={() => this.select('delegated')}
+            />
+            <TabBtn
+              text="Heroes"
+              isSelected={selected === 'delegators'}
+              onSelect={() => this.select('delegators')}
+            />
+            {/* <TabBtn
+              text="Unbondings"
+              isSelected={selected === 'unbondings'}
+              onSelect={() => this.select('unbondings')}
+            /> */}
+          </Tablist>
+          <Pane
+            display="flex"
+            marginTop={20}
+            marginBottom={50}
+            justifyContent="center"
+            flexDirection="column"
+          >
+            {content}
+          </Pane>
         </main>
         <ActionBarContainer
           updateTable={this.update}
