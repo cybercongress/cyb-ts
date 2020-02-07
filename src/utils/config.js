@@ -116,6 +116,8 @@ const DISTRIBUTION = [
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
+const PATTERN_TX = /[0-9A-F]{64}$/g;
 
 export {
   TAKEOFF,
@@ -129,4 +131,6 @@ export {
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
   PATTERN_CYBER,
+  PATTERN_CYBER_VALOPER,
+  PATTERN_TX,
 };

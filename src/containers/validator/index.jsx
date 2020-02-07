@@ -201,12 +201,12 @@ class ValidatorsDetails extends React.PureComponent {
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tablist>
             <TabBtn
-              text="Link"
+              text="Delegated"
               isSelected={selected === 'delegated'}
               onSelect={() => this.select('delegated')}
             />
             <TabBtn
-              text="Heroes"
+              text="Delegators"
               isSelected={selected === 'delegators'}
               onSelect={() => this.select('delegators')}
             />

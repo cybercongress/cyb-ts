@@ -30,6 +30,7 @@ const Gift = ({ item }) => {
       key={item.address}
       display="flex"
       flexDirection="row"
+      marginBottom={15}
     >
       <Pane display="flex" flexDirection="column" marginRight={10}>
         {Object.keys(item).map(key => (

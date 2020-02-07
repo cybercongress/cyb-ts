@@ -10,8 +10,15 @@ import {
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import { CYBER, PATTERN } from '../../utils/config';
+import {
+  CYBER,
+  PATTERN,
+  PATTERN_CYBER,
+  PATTERN_TX,
+  PATTERN_CYBER_VALOPER,
+} from '../../utils/config';
 import Gift from './gift';
+import SnipitAccount from './snipitAccountPages';
 
 const giftImg = require('../../image/gift.svg');
 
@@ -20,12 +27,16 @@ class SearchResults extends React.Component {
     super(props);
     this.state = {
       result: false,
-      searchResults: [],
+      searchResults: {
+        link: [],
+        drop: [],
+      },
       loading: false,
       keywordHash: '',
       query: '',
       resultNull: false,
       drop: false,
+      dropResults: [],
     };
   }
 
@@ -52,7 +63,10 @@ class SearchResults extends React.Component {
   };
 
   getSearch = async query => {
-    let searchResults = [];
+    let searchResults = {
+      link: [],
+      drop: [],
+    };
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
@@ -76,38 +90,30 @@ class SearchResults extends React.Component {
         };
       }
 
-      searchResults.push(drop);
-
-      this.setState({
-        drop: true,
-        loading: false,
-      });
-    } else {
-      keywordHash = await getIpfsHash(query);
-      searchResults = await search(keywordHash);
-      searchResults.map((item, index) => {
-        searchResults[index].cid = item.cid;
-        searchResults[index].rank = formatNumber(item.rank, 6);
-        searchResults[index].grade = getRankGrade(item.rank);
-      });
-      console.log('searchResults', searchResults);
-
-      if (searchResults.length === 0) {
-        const queryNull = '0';
-        keywordHashNull = await getIpfsHash(queryNull);
-        searchResults = await search(keywordHashNull);
-        searchResults.map((item, index) => {
-          searchResults[index].cid = item.cid;
-          searchResults[index].rank = formatNumber(item.rank, 6);
-          searchResults[index].grade = getRankGrade(item.rank);
-        });
-        resultNull = true;
-      }
-      this.setState({
-        drop: false,
-      });
+      searchResults.drop = [drop];
     }
 
+    keywordHash = await getIpfsHash(query);
+    searchResults.link = await search(keywordHash);
+    searchResults.link.map((item, index) => {
+      searchResults.link[index].cid = item.cid;
+      searchResults.link[index].rank = formatNumber(item.rank, 6);
+      searchResults.link[index].grade = getRankGrade(item.rank);
+    });
+
+    if (searchResults.link.length === 0) {
+      const queryNull = '0';
+      keywordHashNull = await getIpfsHash(queryNull);
+      searchResults.link = await search(keywordHashNull);
+      searchResults.link.map((item, index) => {
+        searchResults.link[index].cid = item.cid;
+        searchResults.link[index].rank = formatNumber(item.rank, 6);
+        searchResults.link[index].grade = getRankGrade(item.rank);
+      });
+      resultNull = true;
+    }
+
+    console.log('searchResults', searchResults);
     this.setState({
       searchResults,
       keywordHash,
@@ -129,9 +135,9 @@ class SearchResults extends React.Component {
       drop,
     } = this.state;
     // console.log(query);
-    console.log(searchResults);
+    console.log('searchResults render', searchResults);
 
-    let searchItems = [];
+    const searchItems = [];
 
     if (loading) {
       return (
@@ -152,10 +158,39 @@ class SearchResults extends React.Component {
         </div>
       );
     }
-    if (drop) {
-      searchItems = searchResults.map(item => <Gift item={item} />);
-    } else {
-      searchItems = searchResults.map(item => (
+
+    if (searchResults.drop.length > 0) {
+      searchItems.push(searchResults.drop.map(item => <Gift item={item} />));
+    }
+
+    if (query.match(PATTERN_CYBER)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Details address"
+          to={`/account/${query}`}
+          address={query}
+        />
+      );
+    }
+
+    if (query.match(PATTERN_CYBER_VALOPER)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Details a hero"
+          to={`/validators/${query}`}
+          address={query}
+        />
+      );
+    }
+
+    if (query.match(PATTERN_TX)) {
+      searchItems.push(
+        <SnipitAccount text="Details Tx" to={`/txs/${query}`} address={query} />
+      );
+    }
+
+    searchItems.push(
+      searchResults.link.map(item => (
         <SearchItem
           key={item.cid}
           hash={item.cid}
@@ -166,9 +201,10 @@ class SearchResults extends React.Component {
         >
           {item.cid}
         </SearchItem>
-      ));
-    }
-    console.log(searchItems);
+      ))
+    );
+    // }
+    // console.log(searchItems);
 
     return (
       <div>
@@ -186,6 +222,7 @@ class SearchResults extends React.Component {
                 marginBottom={20}
                 color="#949292"
                 lineHeight="20px"
+                wordBreak="break-all"
               >
                 {`I found ${searchItems.length} results`}
               </Text>
@@ -197,6 +234,7 @@ class SearchResults extends React.Component {
                 marginBottom={20}
                 color="#949292"
                 lineHeight="20px"
+                wordBreak="break-all"
               >
                 I don't know{' '}
                 <Text fontSize="20px" lineHeight="20px" color="#e80909">
@@ -209,16 +247,14 @@ class SearchResults extends React.Component {
           </Pane>
         </main>
 
-        {!drop && (
-          <ActionBarContainer
-            home={!result}
-            valueSearchInput={query}
-            link={searchResults.length === 0 && result}
-            keywordHash={keywordHash}
-            onCklicBtnSearch={this.onCklicBtn}
-            update={this.getParamsQuery}
-          />
-        )}
+        <ActionBarContainer
+          home={!result}
+          valueSearchInput={query}
+          link={searchResults.length === 0 && result}
+          keywordHash={keywordHash}
+          onCklicBtnSearch={this.onCklicBtn}
+          update={this.getParamsQuery}
+        />
       </div>
     );
   }
