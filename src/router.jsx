@@ -7,7 +7,6 @@ import Funding from './containers/funding/index';
 import Auction from './containers/auction/index';
 import NotFound from './containers/application/notFound';
 import Brain from './containers/brain/brain';
-import Lottery from './containers/Lottery/Lottery';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
