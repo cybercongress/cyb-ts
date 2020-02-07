@@ -1,6 +1,9 @@
 import bech32 from 'bech32';
 import { CYBER } from './config';
 
+const DEFAULT_DECIMAL_DIGITS = 3;
+const DEFAULT_CURRENCY = 'GOL';
+
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
 const roundNumber = (num, scale) => {
@@ -32,6 +35,36 @@ const formatNumber = (number, toFixed) => {
     .replace(/,/g, ' ');
 };
 
+const PREFIXES = [
+  {
+    prefix: 'T',
+    power: 10 ** 12,
+  },
+  {
+    prefix: 'G',
+    power: 10 ** 9,
+  },
+  {
+    prefix: 'M',
+    power: 10 ** 6,
+  },
+  {
+    prefix: 'K',
+    power: 10 ** 3,
+  },
+];
+
+export function formatCurrency(
+  value,
+  currency = DEFAULT_CURRENCY,
+  decimalDigits = DEFAULT_DECIMAL_DIGITS
+) {
+  const { prefix = '', power = 1 } =
+    PREFIXES.find(({ power }) => value >= power) || {};
+
+  return `${roundNumber(value / power, decimalDigits)} ${prefix}${currency}`;
+}
+
 const getDecimal = (number, toFixed) => {
   const nstring = number.toString();
   const narray = nstring.split('.');
@@ -62,10 +95,13 @@ const getDelegator = operatorAddr => {
   return bech32.encode(BECH32_PREFIX_ACC_ADDR_CYBER, address.words);
 };
 
-const formatValidatorAddress = address => {
+const formatValidatorAddress = (address, firstArg, secondArg) => {
+  const first = firstArg || 3;
+  const second = secondArg || 8;
+
   if (address && address.length > 11) {
-    return `${address.substring(0, 3)}...${address.substring(
-      address.length - 8
+    return `${address.substring(0, first)}...${address.substring(
+      address.length - second
     )}`;
   }
   if (address && address.length < 11) {

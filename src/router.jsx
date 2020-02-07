@@ -17,6 +17,7 @@ import Validators from './containers/Validators/Validators';
 import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
+import Vesting from './containers/vesting/vesting';
 
 export const history = createHashHistory({});
 
@@ -35,11 +36,12 @@ class AppRouter extends React.Component {
   }
 
   render() {
+    const { location } = this.props;
     const { story } = this.state;
 
-    if (!story) {
-      history.push('/episode-1');
-    }
+    // if (!story && location.pathname === '/') {
+    //   history.push('/episode-1');
+    // }
 
     return (
       <Router history={history}>
@@ -58,6 +60,7 @@ class AppRouter extends React.Component {
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
           <Route path="/gol" component={GOL} />
+          <Route path="/vesting" component={Vesting} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>
