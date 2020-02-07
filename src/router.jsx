@@ -16,32 +16,35 @@ import Validators from './containers/Validators/Validators';
 import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
+import Vesting from './containers/vesting/vesting';
 
 export const history = createHashHistory({});
 
 const AppRouter = () => {
-  return (
-    <Router history={history}>
-      <Route path="/" component={App} />
-      <Switch>
-        <Route path="/" exact component={Home} />
-        <Route exact path="/search/:query" component={SearchResults} />
-        <Route path="/gift" component={Gift} />
-        <Route path="/takeoff" component={Funding} />
-        <Route path="/tot" component={Got} />
-        <Route path="/auction" component={Auction} />
-        <Route path="/brain" component={Brain} />
-        <Route exact path="/governance" component={Governance} />
-        <Route path="/governance/:proposal_id" component={ProposalsDetail} />
-        <Route path="/pocket" component={Wallet} />
-        <Route path="/heroes" component={Validators} />
-        <Route path="/episode-1" component={Story} />
-        <Route path="/gol" component={GOL} />
+    return (
+      <Router history={history}>
+        <Route path="/" component={App} />
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route exact path="/search/:query" component={SearchResults} />
+          <Route path="/gift" component={Gift} />
+          <Route path="/takeoff" component={Funding} />
+          <Route path="/tot" component={Got} />
+          <Route path="/auction" component={Auction} />
+          <Route path="/brain" component={Brain} />
+          <Route exact path="/governance" component={Governance} />
+          <Route path="/governance/:proposal_id" component={ProposalsDetail} />
+          <Route path="/pocket" component={Wallet} />
+          <Route path="/heroes" component={Validators} />
+          <Route path="/episode-1" component={Story} />
+          <Route path="/gol" component={GOL} />
+          <Route path="/vesting" component={Vesting} />
 
-        <Route exact path="*" component={NotFound} />
-      </Switch>
-    </Router>
-  );
-};
+          <Route exact path="*" component={NotFound} />
+        </Switch>
+      </Router>
+    );
+  }
+}
 
 export default AppRouter;

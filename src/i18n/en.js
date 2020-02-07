@@ -13,7 +13,7 @@ const i18n = {
         selfProcent: 'Self',
         unbonding: 'Unbonding height',
         rank: 'Rank',
-        bondedTokens: `Bonded tokens (${DENOM_CYBER_G.toLocaleUpperCase()})`,
+        bondedTokens: `Yours Bonded tokens (${DENOM_CYBER_G.toLocaleUpperCase()})`,
       },
     },
     pocket: {
@@ -103,6 +103,13 @@ const i18n = {
       },
       confirmedTX: {
         confirmed: 'Transaction Confirmed!',
+        blockTX: 'Your transaction was included in the block at height:',
+        viewTX: 'View transaction',
+        tXHash: 'Transaction Hash:',
+        continue: 'Continue',
+      },
+      errorTx: {
+        error: 'Transaction Error!',
         blockTX: 'Your transaction was included in the block at height:',
         viewTX: 'View transaction',
         tXHash: 'Transaction Hash:',
