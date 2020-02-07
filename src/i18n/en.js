@@ -108,6 +108,13 @@ const i18n = {
         tXHash: 'Transaction Hash:',
         continue: 'Continue',
       },
+      errorTx: {
+        error: 'Transaction Error!',
+        blockTX: 'Your transaction was included in the block at height:',
+        viewTX: 'View transaction',
+        tXHash: 'Transaction Hash:',
+        continue: 'Continue',
+      },
       connectLadger: {
         getStarted: `Let's get started`,
         connect: 'Connect your Ledger Nano to the computer and enter your PIN',

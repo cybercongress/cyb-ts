@@ -140,6 +140,69 @@ export const Confirmed = ({
   </ContainetLedger>
 );
 
+export const ErrorTx = ({
+  txHash,
+  txHeight,
+  onClickBtn,
+  onClickBtnCloce,
+  explorer,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <span className="font-size-20 display-inline-block text-align-center">
+      {T.actionBar.errorTx.error}
+    </span>
+    <div
+      style={{ marginTop: '25px' }}
+      className="display-flex flex-direction-column"
+    >
+      <p style={{ marginBottom: 20, textAlign: 'center' }}>
+        {T.actionBar.errorTx.blockTX}{' '}
+        <span
+          style={{
+            color: '#3ab793',
+            marginLeft: '5px',
+          }}
+        >
+          {formatNumber(txHeight)}
+        </span>
+      </p>
+
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '0 auto',
+        }}
+        href={`https://${explorer || 'cyberd.ai'}/transactions/${txHash}`}
+      >
+        {T.actionBar.errorTx.viewTX}
+      </a>
+      <div style={{ marginTop: '25px' }}>
+        <span>{T.actionBar.errorTx.tXHash}</span>
+        <span
+          style={{
+            fontSize: '12px',
+            color: '#3ab793',
+            marginLeft: '5px',
+          }}
+        >
+          {txHash}
+        </span>
+      </div>
+
+      <div style={{ marginTop: '25px', textAlign: 'center' }}>
+        <button type="button" className="btn" onClick={onClickBtn}>
+          {T.actionBar.errorTx.continue}
+        </button>
+      </div>
+    </div>
+  </ContainetLedger>
+);
+
 export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
   <ActionBar>
     <ActionBarContentText>

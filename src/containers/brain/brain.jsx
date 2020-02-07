@@ -13,7 +13,6 @@ import {
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import withWeb3 from '../../components/web3/withWeb3';
 import {
   formatNumber,
   getStatistics,
@@ -116,7 +115,7 @@ class Brain extends React.Component {
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
-    this.getPriceGol();
+    // this.getPriceGol();
     this.getDataWS();
   }
 
@@ -169,48 +168,48 @@ class Brain extends React.Component {
     });
   };
 
-  getPriceGol = async () => {
-    const {
-      contract: { methods },
-      contractAuctionUtils,
-    } = this.props;
+  // getPriceGol = async () => {
+  //   const {
+  //     contract: { methods },
+  //     contractAuctionUtils,
+  //   } = this.props;
 
-    // const roundThis = parseInt(await methods.today().call());
-    const createPerDay = await methods.createPerDay().call();
-    const createFirstDay = await methods.createFirstDay().call();
+  //   // const roundThis = parseInt(await methods.today().call());
+  //   const createPerDay = await methods.createPerDay().call();
+  //   const createFirstDay = await methods.createFirstDay().call();
 
-    const dailyTotalsUtils = await contractAuctionUtils.methods
-      .dailyTotals()
-      .call();
-    console.log(dailyTotalsUtils.length);
-    let summCurrentPrice = 0;
+  //   const dailyTotalsUtils = await contractAuctionUtils.methods
+  //     .dailyTotals()
+  //     .call();
+  //   console.log(dailyTotalsUtils.length);
+  //   let summCurrentPrice = 0;
 
-    await asyncForEach(
-      Array.from(Array(dailyTotalsUtils.length).keys()),
-      async item => {
-        let createOnDay;
-        if (item === 0) {
-          createOnDay = createFirstDay;
-        } else {
-          createOnDay = createPerDay;
-        }
+  //   await asyncForEach(
+  //     Array.from(Array(dailyTotalsUtils.length).keys()),
+  //     async item => {
+  //       let createOnDay;
+  //       if (item === 0) {
+  //         createOnDay = createFirstDay;
+  //       } else {
+  //         createOnDay = createPerDay;
+  //       }
 
-        const currentPrice =
-          dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9));
+  //       const currentPrice =
+  //         dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9));
 
-        summCurrentPrice += currentPrice;
-      }
-    );
-    const averagePrice = summCurrentPrice / dailyTotalsUtils.length;
-    const capETH = (averagePrice * TOTAL_GOL_GENESIS_SUPPLY) / DIVISOR_CYBER_G;
+  //       summCurrentPrice += currentPrice;
+  //     }
+  //   );
+  //   const averagePrice = summCurrentPrice / dailyTotalsUtils.length;
+  //   const capETH = (averagePrice * TOTAL_GOL_GENESIS_SUPPLY) / DIVISOR_CYBER_G;
 
-    console.log('averagePrice', averagePrice);
-    console.log('capETH', capETH);
-    this.setState({
-      averagePrice,
-      capETH,
-    });
-  };
+  //   console.log('averagePrice', averagePrice);
+  //   console.log('capETH', capETH);
+  //   this.setState({
+  //     averagePrice,
+  //     capETH,
+  //   });
+  // };
 
   checkAddressLocalStorage = async () => {
     let address = [];
@@ -656,4 +655,4 @@ class Brain extends React.Component {
   }
 }
 
-export default withWeb3(Brain);
+export default Brain;
