@@ -7,7 +7,6 @@ import Funding from './containers/funding/index';
 import Auction from './containers/auction/index';
 import NotFound from './containers/application/notFound';
 import Brain from './containers/brain/brain';
-import Lottery from './containers/Lottery/Lottery';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
@@ -21,28 +20,7 @@ import Vesting from './containers/vesting/vesting';
 
 export const history = createHashHistory({});
 
-class AppRouter extends React.Component {
-  constructor(props) {
-    super(props);
-    let story = false;
-    const localStorageStory = localStorage.getItem('story');
-    if (localStorageStory !== null) {
-      story = localStorageStory;
-    }
-
-    this.state = {
-      story,
-    };
-  }
-
-  render() {
-    const { location } = this.props;
-    const { story } = this.state;
-
-    // if (!story && location.pathname === '/') {
-    //   history.push('/episode-1');
-    // }
-
+const AppRouter = () => {
     return (
       <Router history={history}>
         <Route path="/" component={App} />

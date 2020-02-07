@@ -148,11 +148,15 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children } = this.props;
+    const { children, location } = this.props;
 
-    // if (!story) {
-    //   return <div>{children}</div>;
-    // }
+    if (!story && home) {
+      this.routeChange('/episode-1');
+    }
+
+    if (!story && location.pathname === '/episode-1') {
+      return <div>{children}</div>;
+    }
 
     return (
       <div>
