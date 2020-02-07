@@ -20,12 +20,44 @@ import Vesting from './containers/vesting/vesting';
 
 export const history = createHashHistory({});
 
-const AppRouter = () => {
+class AppRouter extends React.Component {
+  constructor(props) {
+    this.state = {
+      query: '',
+    };
+  }
+
+  funcUpdateValueSearchInput = query => {
+    this.setState({
+      query,
+    });
+  };
+
+  render() {
+    const { query } = this.state;
+
     return (
       <Router history={history}>
-        <Route path="/" component={App} />
+        <Route
+          path="/"
+          render={props => (
+            <App
+              funcUpdate={this.funcUpdateValueSearchInput}
+              query={query}
+              {...props}
+            />
+          )}
+          // component={App}
+        />
         <Switch>
-          <Route path="/" exact component={Home} />
+          <Route
+            path="/"
+            exact
+            render={props => (
+              <Home funcUpdate={this.funcUpdateValueSearchInput} {...props} />
+            )}
+            // component={Home}
+          />
           <Route exact path="/search/:query" component={SearchResults} />
           <Route path="/gift" component={Gift} />
           <Route path="/takeoff" component={Funding} />

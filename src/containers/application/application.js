@@ -46,8 +46,6 @@ class App extends Component {
     }
 
     this.state = {
-      selectedIndex: 0,
-      app: '',
       openMenu: false,
       story,
       valueSearchInput: '',
@@ -62,14 +60,33 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
+    const { valueSearchInput } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
       this.checkStory();
+      this.updateInput();
+      if (location.pathname.indexOf(valueSearchInput) === -1) {
+        this.clearInrut();
+      }
       // document.onkeypress = e => {
       //   document.getElementById('search-input-searchBar').focus();
       // };
     }
   }
+
+  updateInput = () => {
+    const { query } = this.props;
+
+    this.setState({ valueSearchInput: query });
+  };
+
+  clearInrut = () => {
+    const { funcUpdate } = this.props;
+
+    const valueSearchInput = '';
+    this.setState({ valueSearchInput });
+    funcUpdate(valueSearchInput);
+  };
 
   checkStory = () => {
     let story = false;
@@ -112,9 +129,12 @@ class App extends Component {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
+    const { funcUpdate } = this.props;
+
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
         this.routeChange(`/search/${valueSearchInput}`);
+        funcUpdate(valueSearchInput);
       }
     }
   };
@@ -132,12 +152,6 @@ class App extends Component {
     });
   };
 
-  onCustomClick = index => {
-    console.log('index', index);
-    this.setState({
-      app: index.to,
-    });
-  };
 
   closeStory = () => {
     // console.log('dfd');
