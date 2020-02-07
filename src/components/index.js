@@ -17,6 +17,7 @@ export { ContainetLedger } from './ledger/container';
 export { Icon } from './icon/icon';
 export { FormatNumber } from './formatNumber/formatNumber';
 export { MenuButton } from './ToggleMenu/menuButton';
+export { Copy } from './ui/copy';
 export {
   Votes,
   Legend,

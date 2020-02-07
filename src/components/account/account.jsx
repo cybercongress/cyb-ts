@@ -1,7 +1,7 @@
 import React from 'react';
 import { getValidatorsInfo } from '../../utils/search/utils';
 import { formatValidatorAddress } from '../../utils/utils';
-import { Link } from '../link/link';
+import { Link, Dots } from '../index';
 
 class Account extends React.Component {
   constructor(props) {
@@ -50,7 +50,7 @@ class Account extends React.Component {
     const { children } = this.props;
 
     if (loading) {
-      return '...';
+      return <Dots />;
     }
 
     return (

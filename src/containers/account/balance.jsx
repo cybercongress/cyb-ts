@@ -3,6 +3,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/utils';
 import Dinamics from './dinamics';
 import { CYBER } from '../../utils/config';
+import { Copy } from '../../components';
 
 const Row = ({ text, number, procent, color }) => (
   <Pane display="flex" alignItems="center" paddingY={7}>
@@ -31,7 +32,7 @@ const Balance = ({ account, balance, ...props }) => {
           Address:
         </Text>
         <Text color="#fff" fontSize="18px">
-          {account}
+          {account} <Copy text={account} />
         </Text>
       </Pane>
       <Pane
