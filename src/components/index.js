@@ -42,5 +42,6 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
+  ErrorTx,
 } from './ledger/stageActionBar';
 export { Link, Cid } from './link/link';
