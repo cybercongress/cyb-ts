@@ -27,6 +27,11 @@ yarn start
 - [@xhipster](https://github.com/xhipster)
 - [@dima](https://github.com/dimakorzhovnik)
 
+## Gitcoin
+<a href="https://gitcoin.co/explorer?q=dot-cyber">
+ <img src="https://gitcoin.co/funding/embed?repo=https://github.com/cybercongress/dot-cyber">
+</a>
+
 ## Community
 - [#fuckgoogle](https://t.me/fuckgoogle) chat in Telegram
 - [cyb category](https://ai.cybercongress.ai/c/cyb) at cyber~Forum
