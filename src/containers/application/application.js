@@ -18,7 +18,7 @@ const Item = ({ to, selected, nameApp, onClick }) => (
   <a
     className={`${selected ? 'active' : ''}`}
     onClick={onClick}
-    href={`#/${to}`}
+    href={`/${to}`}
   >
     <div className="battery-segment-text">{nameApp}</div>
   </a>
@@ -198,7 +198,7 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <a href="#/brain">
+          <a href="/brain">
             <Menu imgLogo={cyber} />
           </a>
           {!home && (
@@ -237,7 +237,7 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <a href="#/pocket">
+          <a href="/pocket">
             <Pane
               width={50}
               // height={50}

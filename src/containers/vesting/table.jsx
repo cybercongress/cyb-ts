@@ -44,7 +44,7 @@ const TableVesting = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell flex={0.6} textAlign="center">
         <TextTable>
-          <a href={`#/account/${item.recipient}`} target="_blank">
+          <a href={`/account/${item.recipient}`} target="_blank">
             {formatValidatorAddress(item.recipient, 8, 4)}
           </a>
         </TextTable>
