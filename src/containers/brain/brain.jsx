@@ -417,7 +417,7 @@ class Brain extends React.Component {
           value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
         />
         <a
-          href="/#/heroes"
+          href="/heroes"
           style={{
             display: 'contents',
             textDecoration: 'none',
@@ -499,7 +499,7 @@ class Brain extends React.Component {
         gridGap="20px"
       >
         <a
-          href="/#/heroes"
+          href="/heroes"
           style={{
             display: 'contents',
             textDecoration: 'none',
@@ -578,7 +578,7 @@ class Brain extends React.Component {
                 You do not have control over the brain. You need EUL tokens to
                 let she hear you. If you came from Ethereum or Cosmos you can
                 claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: <a href="#/gol">Game of Links</a>.
+                tournament in universe: <a href="gol">Game of Links</a>.
               </Text>
             </Pane>
           )}

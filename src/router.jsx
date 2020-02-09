@@ -1,6 +1,6 @@
 import React from 'react';
 import { hashHistory, IndexRoute, Route, Router, Switch } from 'react-router';
-import { createHashHistory } from 'history';
+import { createBrowserHistory } from 'history';
 import App from './containers/application/application';
 import Got from './containers/got/got';
 import Funding from './containers/funding/index';
@@ -18,7 +18,7 @@ import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
 import Vesting from './containers/vesting/vesting';
 
-export const history = createHashHistory({});
+export const history = createBrowserHistory({});
 
 class AppRouter extends React.Component {
   constructor(props) {
