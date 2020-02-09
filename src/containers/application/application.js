@@ -5,6 +5,7 @@ import {
   NavigationLeft,
   Pane,
 } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
@@ -18,7 +19,7 @@ const Item = ({ to, selected, nameApp, onClick }) => (
   <a
     className={`${selected ? 'active' : ''}`}
     onClick={onClick}
-    href={`#/${to}`}
+    href={`/${to}`}
   >
     <div className="battery-segment-text">{nameApp}</div>
   </a>
@@ -46,8 +47,6 @@ class App extends Component {
     }
 
     this.state = {
-      selectedIndex: 0,
-      app: '',
       openMenu: false,
       story,
       valueSearchInput: '',
@@ -62,14 +61,33 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
+    const { valueSearchInput } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
       this.checkStory();
+      this.updateInput();
+      if (location.pathname.indexOf(valueSearchInput) === -1) {
+        this.clearInrut();
+      }
       // document.onkeypress = e => {
       //   document.getElementById('search-input-searchBar').focus();
       // };
     }
   }
+
+  updateInput = () => {
+    const { query } = this.props;
+
+    this.setState({ valueSearchInput: query });
+  };
+
+  clearInrut = () => {
+    const { funcUpdate } = this.props;
+
+    const valueSearchInput = '';
+    this.setState({ valueSearchInput });
+    funcUpdate(valueSearchInput);
+  };
 
   checkStory = () => {
     let story = false;
@@ -112,9 +130,12 @@ class App extends Component {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
+    const { funcUpdate } = this.props;
+
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
         this.routeChange(`/search/${valueSearchInput}`);
+        funcUpdate(valueSearchInput);
       }
     }
   };
@@ -132,12 +153,6 @@ class App extends Component {
     });
   };
 
-  onCustomClick = index => {
-    console.log('index', index);
-    this.setState({
-      app: index.to,
-    });
-  };
 
   closeStory = () => {
     // console.log('dfd');
@@ -148,9 +163,13 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children } = this.props;
+    const { children, location } = this.props;
 
-    if (!story) {
+    if (!story && home) {
+      this.routeChange('/episode-1');
+    }
+
+    if (!story && location.pathname === '/episode-1') {
       return <div>{children}</div>;
     }
 
@@ -180,9 +199,9 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <a href="#/brain">
+          <Link to="/brain">
             <Menu imgLogo={cyber} />
-          </a>
+          </Link>
           {!home && (
             <Pane
               position="absolute"
@@ -219,7 +238,12 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <a href="#/pocket">
+          <Link to="/pocket">
+            <Menu imgLogo={cyb} />
+          </Link>
+          {
+          /*
+          <a href="/pocket">
             <Pane
               width={50}
               // height={50}
@@ -230,7 +254,8 @@ class App extends Component {
               <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
             </Pane>
           </a>
-          {/* {app === '' && (
+          */
+          /* {app === '' && (
             <div className="battery">
               {htef.map(item => (
                 <Item

@@ -47,7 +47,7 @@ const Gift = ({ text }) => (
       </Text>
       <Text lineHeight="23px" marginBottom={20} color="#fff" fontSize="18px">
         But they know that Genesis is quite far now. Everybody are busy with the{' '}
-        <a href="#/gol">Game of Links</a> - the tournament which define the fate
+        <a href="/gol">Game of Links</a> - the tournament which define the fate
         of another 10% of CYB in the Genesis. You can find the Game of Links
         rules{' '}
         <a target="_blank" href="https://cybercongress.ai/game-of-links/">
@@ -59,7 +59,7 @@ const Gift = ({ text }) => (
         Game of Links is incentivized test network which have its standalone
         tokens EUL. Rumor has it that an incredible amount of tokens allocated
         to ethereans, cosmonauts and urbiters: 42.9% of EULs. So, go and claim
-        them: simply <a href="#/pocket">put the ledger</a> into the pocket.
+        them: simply <a href="/pocket">put the ledger</a> into the pocket.
       </Text>
       <Text lineHeight="23px" color="#fff" fontSize="18px">
         Also, you can import your private key (for Ethereum) or seed phrase (for

@@ -1,33 +1,33 @@
 import React, { PureComponent } from 'react';
 import waitForWeb3 from './waitForWeb3';
-import Auction from '../../../contracts/Auction.json';
-import AuctionUtils from '../../../contracts/AuctionUtils.json';
+
 import Token from '../../../contracts/Token.json';
+import Auction from '../../../contracts/Auction.json';
+import VestingConstract from '../../../contracts/Vesting.json';
+import TokenManager from '../../../contracts/TokenManager.json';
 
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 
 import { AUCTION } from '../../utils/config';
 
-const { ADDR_SMART_CONTRACT } = AUCTION;
-
-const injectWeb3 = InnerComponent =>
+const injectWeb3Vesting = InnerComponent =>
   class extends PureComponent {
     constructor(props) {
       super(props);
       this.state = {
         web3: null,
-        contract: null,
+        contractVesting: null,
         loading: true,
         accounts: null,
         networkId: null,
         buyTransactionSuccess: false,
         isCorrectNetwork: true,
-        contractAuctionUtils: null,
+        contractTokenManager: null,
         contractToken: null,
       };
       this.getWeb3 = this.getWeb3.bind(this);
-      this.smart = ADDR_SMART_CONTRACT;
+      this.smartVesting = AUCTION.ADDR_VESTING;
     }
 
     componentDidMount() {
@@ -36,18 +36,25 @@ const injectWeb3 = InnerComponent =>
     }
 
     async getWeb3() {
+      await window.ethereum.enable();
       try {
         const web3 = await waitForWeb3();
-        const contract = await new web3.eth.Contract(Auction.abi, this.smart);
 
-        const auctionUtilsAddress = await contract.methods.utils().call();
-
-        const contractAuctionUtils = await new web3.eth.Contract(
-          AuctionUtils.abi,
-          auctionUtilsAddress
+        const contractVesting = await new web3.eth.Contract(
+          VestingConstract.abi,
+          this.smartVesting
         );
 
-        const tokenAddress = await contract.methods.token().call();
+        const tokenManagerAddress = await contractVesting.methods
+          .tokenManager()
+          .call();
+
+        const contractTokenManager = await new web3.eth.Contract(
+          TokenManager.abi,
+          tokenManagerAddress
+        );
+
+        const tokenAddress = await contractTokenManager.methods.token().call();
 
         const contractToken = await new web3.eth.Contract(
           Token.abi,
@@ -56,8 +63,8 @@ const injectWeb3 = InnerComponent =>
         if (web3.givenProvider === null) {
           this.setState({
             web3,
-            contract,
-            contractAuctionUtils,
+            contractVesting,
+            contractTokenManager,
             contractToken,
             accounts: null,
             networkId: null,
@@ -70,10 +77,10 @@ const injectWeb3 = InnerComponent =>
 
           this.setState({
             web3,
-            contract,
-            contractAuctionUtils,
+            contractVesting,
+            contractTokenManager,
             contractToken,
-            accounts: accounts[0],
+            accounts: accounts[0].toLowerCase(),
             networkId,
             isCorrectNetwork: networkContract.indexOf(`${networkId}`) !== -1,
           });
@@ -86,19 +93,18 @@ const injectWeb3 = InnerComponent =>
     render() {
       const {
         web3,
-        contract,
         loading,
         accounts,
-        contractAuctionUtils,
         isCorrectNetwork,
-        buyTransactionSuccess,
+        contractVesting,
+        contractTokenManager,
         contractToken,
       } = this.state;
-      if (!isCorrectNetwork) {
-        return (
-          <NotFound text="Please connect to the Ethereum Rinkeby Network" />
-        );
-      }
+      // if (!isCorrectNetwork) {
+      //   return (
+      //     <NotFound text="Please connect to the Ethereum Rinkeby Network" />
+      //   );
+      // }
       if (loading) {
         return (
           <div
@@ -118,10 +124,9 @@ const injectWeb3 = InnerComponent =>
       return (
         <InnerComponent
           web3={web3}
-          contract={contract}
           accounts={accounts}
-          contractAuctionUtils={contractAuctionUtils}
-          buyTransactionSuccess={buyTransactionSuccess}
+          contractVesting={contractVesting}
+          contractTokenManager={contractTokenManager}
           contractToken={contractToken}
           {...this.props}
         />
@@ -129,4 +134,4 @@ const injectWeb3 = InnerComponent =>
     }
   };
 
-export default injectWeb3;
+export default injectWeb3Vesting;

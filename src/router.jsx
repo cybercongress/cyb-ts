@@ -1,13 +1,12 @@
 import React from 'react';
 import { hashHistory, IndexRoute, Route, Router, Switch } from 'react-router';
-import { createHashHistory } from 'history';
+import { createBrowserHistory } from 'history';
 import App from './containers/application/application';
 import Got from './containers/got/got';
 import Funding from './containers/funding/index';
 import Auction from './containers/auction/index';
 import NotFound from './containers/application/notFound';
 import Brain from './containers/brain/brain';
-import Lottery from './containers/Lottery/Lottery';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
@@ -17,35 +16,49 @@ import Validators from './containers/Validators/Validators';
 import SearchResults from './containers/Search/SearchResults';
 import Story from './containers/story/story';
 import GOL from './containers/gol/gol';
+import Vesting from './containers/vesting/vesting';
 
-export const history = createHashHistory({});
+export const history = createBrowserHistory({});
 
 class AppRouter extends React.Component {
   constructor(props) {
     super(props);
-    let story = false;
-    const localStorageStory = localStorage.getItem('story');
-    if (localStorageStory !== null) {
-      story = localStorageStory;
-    }
-
     this.state = {
-      story,
+      query: '',
     };
   }
 
-  render() {
-    const { story } = this.state;
+  funcUpdateValueSearchInput = query => {
+    this.setState({
+      query,
+    });
+  };
 
-    if (!story) {
-      history.push('/episode-1');
-    }
+  render() {
+    const { query } = this.state;
 
     return (
       <Router history={history}>
-        <Route path="/" component={App} />
+        <Route
+          path="/"
+          render={props => (
+            <App
+              funcUpdate={this.funcUpdateValueSearchInput}
+              query={query}
+              {...props}
+            />
+          )}
+          // component={App}
+        />
         <Switch>
-          <Route path="/" exact component={Home} />
+          <Route
+            path="/"
+            exact
+            render={props => (
+              <Home funcUpdate={this.funcUpdateValueSearchInput} {...props} />
+            )}
+            // component={Home}
+          />
           <Route exact path="/search/:query" component={SearchResults} />
           <Route path="/gift" component={Gift} />
           <Route path="/takeoff" component={Funding} />
@@ -58,6 +71,7 @@ class AppRouter extends React.Component {
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
           <Route path="/gol" component={GOL} />
+          <Route path="/vesting" component={Vesting} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>
