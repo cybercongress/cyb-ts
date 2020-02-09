@@ -238,6 +238,11 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
+          <Link to="/pocket">
+            <Menu imgLogo={cyb} />
+          </Link>
+          {
+          /*
           <a href="/pocket">
             <Pane
               width={50}
@@ -249,7 +254,8 @@ class App extends Component {
               <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
             </Pane>
           </a>
-          {/* {app === '' && (
+          */
+          /* {app === '' && (
             <div className="battery">
               {htef.map(item => (
                 <Item
