@@ -65,6 +65,7 @@
     "react-infinite-scroller": "^1.2.4",
     "react-localization": "^1.0.15",
     "react-onclickoutside": "^6.9.0",
+    "react-router-dom": "^5.1.2",
     "react-syntax-highlighter": "^11.0.2",
     "secp256k1": "^3.7.1",
     "unstated": "^2.1.1",

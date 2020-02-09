@@ -5,6 +5,7 @@ import {
   NavigationLeft,
   Pane,
 } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
@@ -198,9 +199,9 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <a href="/brain">
+          <Link to="/brain">
             <Menu imgLogo={cyber} />
-          </a>
+          </Link>
           {!home && (
             <Pane
               position="absolute"
