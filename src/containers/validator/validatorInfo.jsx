@@ -1,11 +1,7 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
-import {
-  CardTemplate,
-  Link,
-  StatusTooltip,
-  FormatNumber,
-} from '../../components';
+import { Link } from 'react-router-dom';
+import { CardTemplate, StatusTooltip, FormatNumber } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import KeybaseCheck from './keybaseCheck';
@@ -93,7 +89,7 @@ const ValidatorInfo = ({ data, marginBottom }) => {
                 Address:
               </Pane>
               <Pane fontSize={14}>
-                <Link to={`#/account/${data.delegateAddress}`}>
+                <Link to={`/account/${data.delegateAddress}`}>
                   {data.delegateAddress}
                 </Link>
               </Pane>

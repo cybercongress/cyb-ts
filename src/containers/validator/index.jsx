@@ -14,6 +14,7 @@ import Delegated from './delegated';
 import Delegators from './delegators';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
+import GetTxs from '../account/txs';
 
 const TabBtn = ({ text, isSelected, onSelect }) => (
   <Tab
@@ -194,6 +195,9 @@ class ValidatorsDetails extends React.PureComponent {
       content = <Delegators data={delegators} />;
     }
 
+    if (selected === 'txs') {
+      content = <GetTxs accountUser={validatorInfo.delegateAddress} />;
+    }
 
     return (
       <div>
@@ -209,6 +213,11 @@ class ValidatorsDetails extends React.PureComponent {
               text="Delegators"
               isSelected={selected === 'delegators'}
               onSelect={() => this.select('delegators')}
+            />
+            <TabBtn
+              text="Txs"
+              isSelected={selected === 'txs'}
+              onSelect={() => this.select('txs')}
             />
             {/* <TabBtn
               text="Unbondings"
