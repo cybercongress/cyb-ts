@@ -1,9 +1,5 @@
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0xedd9ac4d6bbcac74fbbdcede0c934f69b3cdfa98',
-  ADDR_SMART_CONTRACT_AUCTION_UTILS:
-    '0x45F9A89150062853F55f83a3f73C3A7f7aB0D2a4',
-  ADDR_TOKEN: '0xB753C31871Ca383814B054732B2db9042125c83d',
-
   ADDR_VESTING: '0x2c1b8763e6d291e24cb3241918d75d74f7945794',
   TOKEN_NAME: 'GOL',
   TOPICS_SEND:
@@ -16,10 +12,10 @@ const AUCTION = {
 };
 
 const NETWORKSIDS = {
-  42: 'kovan',
-  1: 'main',
-  5777: 'TestNet',
-  4: 'rinkeby',
+  main: 1,
+  rinkeby: 4,
+  kovan: 42,
+  TestNet: 5777,
 };
 
 const TAKEOFF = {
