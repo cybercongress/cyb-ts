@@ -153,7 +153,6 @@ class App extends Component {
     });
   };
 
-
   closeStory = () => {
     // console.log('dfd');
     this.setState({
@@ -186,19 +185,6 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          {/* <Tooltip
-              tooltip="The app is not production ready and is for testing and experimentation only. All send tokens will be lost."
-              placement="bottom"
-            >
-              <img
-                src={bug}
-                alt="bug"
-                style={{
-                  width: 50,
-                  height: 50
-                }}
-              />
-            </Tooltip> */}
           <Link to="/brain">
             <Menu imgLogo={cyber} />
           </Link>
@@ -239,11 +225,6 @@ class App extends Component {
           )}
           <Electricity />
           <Link to="/pocket">
-            <Menu imgLogo={cyb} />
-          </Link>
-          {
-          /*
-          <a href="/pocket">
             <Pane
               width={50}
               // height={50}
@@ -253,21 +234,7 @@ class App extends Component {
             >
               <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
             </Pane>
-          </a>
-          */
-          /* {app === '' && (
-            <div className="battery">
-              {htef.map(item => (
-                <Item
-                  key={item.to}
-                  selected={item.id === this.state.selectedIndex}
-                  to={item.to}
-                  nameApp={item.nameApp}
-                  onClick={e => this.onCustomClick(item)}
-                />
-              ))}
-            </div>
-          )} */}
+          </Link>
           {/* <Timer /> */}
         </div>
         {/* </Navigation> */}

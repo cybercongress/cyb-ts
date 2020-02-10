@@ -1,7 +1,8 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import { formatNumber as format } from '../../utils/search/utils';
-import { Account, Link } from '../../components';
+import { Account } from '../../components';
 
 import { CYBER } from '../../utils/config';
 
@@ -23,7 +24,7 @@ const KEY_NAME = {
 
 const SnipitAccount = ({ to, text, address, children }) => {
   return (
-    <Link to={`#${to}`}>
+    <Link to={`${to}`}>
       <Pane
         backgroundColor="#fff"
         paddingY={20}
