@@ -5,6 +5,7 @@ import {
   NavigationLeft,
   Pane,
 } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
@@ -18,7 +19,7 @@ const Item = ({ to, selected, nameApp, onClick }) => (
   <a
     className={`${selected ? 'active' : ''}`}
     onClick={onClick}
-    href={`#/${to}`}
+    href={`/${to}`}
   >
     <div className="battery-segment-text">{nameApp}</div>
   </a>
@@ -198,9 +199,9 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <a href="#/brain">
+          <Link to="/brain">
             <Menu imgLogo={cyber} />
-          </a>
+          </Link>
           {!home && (
             <Pane
               position="absolute"
@@ -237,7 +238,12 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <a href="#/pocket">
+          <Link to="/pocket">
+            <Menu imgLogo={cyb} />
+          </Link>
+          {
+          /*
+          <a href="/pocket">
             <Pane
               width={50}
               // height={50}
@@ -248,7 +254,8 @@ class App extends Component {
               <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
             </Pane>
           </a>
-          {/* {app === '' && (
+          */
+          /* {app === '' && (
             <div className="battery">
               {htef.map(item => (
                 <Item

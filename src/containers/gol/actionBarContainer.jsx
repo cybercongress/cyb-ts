@@ -171,7 +171,7 @@ class ActionBarContainer extends React.Component {
                   margin: '0 5px',
                 }}
                 className="bnt-claime"
-                href="#/gift"
+                href="/gift"
               >
                 Take gift
               </a>{' '}

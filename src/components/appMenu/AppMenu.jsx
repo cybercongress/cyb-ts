@@ -16,7 +16,7 @@ export const LogoLink = ({ onClick }) => (
 );
 
 const Items = ({ item, deleteAppFromMenu, selected, ...props }) => (
-  <a {...props} style={{ color: '#fff' }} href={`#/${item.to}`}>
+  <a {...props} style={{ color: '#fff' }} href={`/${item.to}`}>
     <Pane
       display="flex"
       paddingY={10}
