@@ -20,19 +20,22 @@ import TableLink from './tableLink';
 
 export default function GetLink({ accountUser }) {
   const GET_CHARACTERS = gql`
-  query MyQuery {
-    link_aggregate(where: { agent: { _eq: "${accountUser}" } }) {
-      nodes {
-        transaction
-        timestamp
-        height
-        cid_to
-        cid_from
-        agent
+    query MyQuery {
+      cyberlink_aggregate(
+        where: {
+          subject: { _eq: "${accountUser}" }
+        }
+      ) {
+        nodes {
+          timestamp
+          height
+          object_from
+          object_to
+          txhash
+        }
       }
     }
-  }
-`;
+  `;
   const { loading, error, data: dataLink } = useQuery(GET_CHARACTERS);
   if (loading) {
     return 'Loading...';
@@ -41,5 +44,5 @@ export default function GetLink({ accountUser }) {
     return `Error! ${error.message}`;
   }
 
-  return <TableLink data={dataLink.link_aggregate.nodes} />;
+  return <TableLink data={dataLink.cyberlink_aggregate.nodes} />;
 }

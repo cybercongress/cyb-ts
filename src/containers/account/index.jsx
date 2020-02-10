@@ -12,6 +12,7 @@ import Unbondings from './unbondings';
 import { getDelegator } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from '../Wallet/actionBarContainer';
+import GetTxs from './txs';
 
 const TabBtn = ({ text, isSelected, onSelect }) => (
   <Tab
@@ -135,6 +136,10 @@ class AccountDetails extends React.Component {
       content = <GetLink accountUser={account} />;
     }
 
+    if (selected === 'txs') {
+      content = <GetTxs accountUser={account} />;
+    }
+
     return (
       <div>
         <main className="block-body">
@@ -154,6 +159,11 @@ class AccountDetails extends React.Component {
               text="Unbondings"
               isSelected={selected === 'unbondings'}
               onSelect={() => this.select('unbondings')}
+            />
+            <TabBtn
+              text="Txs"
+              isSelected={selected === 'txs'}
+              onSelect={() => this.select('txs')}
             />
           </Tablist>
           <Pane

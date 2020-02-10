@@ -25,7 +25,7 @@ const getHeaders = token => {
 };
 
 const httpLink = new HttpLink({
-  uri: 'https://callisto.cybernode.ai/graphql/v1/graphql',
+  uri: 'https://titan.cybernode.ai/graphql/v1/graphql',
   headers: {
     'content-type': 'application/json',
     authorization: '',
@@ -33,7 +33,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://callisto.cybernode.ai/graphql/v1/graphql`,
+  uri: `wss://titan.cybernode.ai/graphql/v1/graphql`,
   options: {
     reconnect: true,
   },

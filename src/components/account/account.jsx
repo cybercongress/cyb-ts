@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { getValidatorsInfo } from '../../utils/search/utils';
 import { formatValidatorAddress } from '../../utils/utils';
-import { Link, Dots } from '../index';
+import { Dots } from '../index';
 
 class Account extends React.Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class Account extends React.Component {
         this.updateAccount();
       } else {
         this.setState({
-          account: `#/account/${address}`,
+          account: `/account/${address}`,
           moniker: `${formatValidatorAddress(address, 9, 6)}`,
           loading: false,
         });
@@ -36,7 +37,7 @@ class Account extends React.Component {
 
     if (result) {
       this.setState({
-        account: `#/validators/${address}`,
+        account: `/validators/${address}`,
         moniker: `${formatValidatorAddress(address, 4, 6)} (${
           result.description.moniker
         })`,

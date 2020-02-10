@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { CardTemplate, Cid } from '../../components';
+import { CardTemplate, MsgType } from '../../components';
+import Noitem from './noItem';
 
 const dateFormat = require('dateformat');
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
+const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
+const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
+
+const distribution = [
+  'cosmos-sdk/MsgWithdrawValidatorCommission',
+  'cosmos-sdk/MsgWithdrawDelegationReward',
+  'cosmos-sdk/MsgModifyWithdrawAddress',
+];
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
@@ -19,16 +28,30 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
   </Text>
 );
 
-const TableLink = ({ data }) => {
+const TableTxs = ({ data, type }) => {
   const [seeAll, setSeeAll] = useState(false);
 
   const validatorRows = data.slice(0, seeAll ? data.length : 5).map(item => (
     <Table.Row borderBottom="none" display="flex" key={item.txhash}>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/${item.txhash}`}>
+          <Link to={`/txs/${item.txhash}`}>
             {formatValidatorAddress(item.txhash, 6, 6)}
           </Link>
+        </TextTable>
+      </Table.TextCell>
+      <Table.TextCell flex={0.5} textAlign="center">
+        <TextTable>
+          <img
+            style={{ width: '20px', height: '20px', marginRight: '5px' }}
+            src={item.code === 0 ? statusTrueImg : statusFalseImg}
+            alt="statusImg"
+          />
+        </TextTable>
+      </Table.TextCell>
+      <Table.TextCell textAlign="start">
+        <TextTable>
+          <MsgType type={item.message.type} />
         </TextTable>
       </Table.TextCell>
       <Table.TextCell flex={0.7} textAlign="center">
@@ -39,31 +62,18 @@ const TableLink = ({ data }) => {
           {dateFormat(item.timestamp, 'dd/mm/yyyy, h:MM:ss TT')}
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell textAlign="center">
-        <TextTable>
-          <Cid cid={item.object_to}>
-            {formatValidatorAddress(item.object_to, 6, 6)}
-          </Cid>
-        </TextTable>
-      </Table.TextCell>
-      <Table.TextCell textAlign="center">
-        <TextTable>
-          <Cid cid={item.object_from}>
-            {formatValidatorAddress(item.object_from, 6, 6)}
-          </Cid>
-        </TextTable>
-      </Table.TextCell>
     </Table.Row>
   ));
 
   return (
-    <CardTemplate paddingBottom={10} title="Link">
+    <div>
       <Table>
         <Table.Head
           style={{
             backgroundColor: '#000',
             borderBottom: '1px solid #ffffff80',
             marginTop: '10px',
+            padding: 7,
             paddingBottom: '10px',
           }}
         >
@@ -71,16 +81,16 @@ const TableLink = ({ data }) => {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={0.7} textAlign="center">
+            <TextTable flex={0.5}>status</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>type</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
             <TextTable>height</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>timestamp</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>from</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>to</TextTable>
           </Table.TextHeaderCell>
         </Table.Head>
         <Table.Body
@@ -90,7 +100,7 @@ const TableLink = ({ data }) => {
             padding: 7,
           }}
         >
-          {validatorRows}
+          {data.length > 0 ? validatorRows : <Noitem text={`No txs ${type}`} />}
         </Table.Body>
       </Table>
       {data.length > 1 && (
@@ -109,8 +119,8 @@ const TableLink = ({ data }) => {
           <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
         </button>
       )}
-    </CardTemplate>
+    </div>
   );
 };
 
-export default TableLink;
+export default TableTxs;
