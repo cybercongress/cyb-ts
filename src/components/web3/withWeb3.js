@@ -14,7 +14,6 @@ const {
   ADDR_SMART_CONTRACT,
   ADDR_SMART_CONTRACT_AUCTION_UTILS,
   ADDR_TOKEN,
-  ADDR_TOKEN_MANAGER,
 } = AUCTION;
 
 const injectWeb3 = InnerComponent =>
@@ -36,7 +35,6 @@ const injectWeb3 = InnerComponent =>
       this.smart = ADDR_SMART_CONTRACT;
       this.smartAuctionUtils = ADDR_SMART_CONTRACT_AUCTION_UTILS;
       this.tokenAdrrs = ADDR_TOKEN;
-      this.tokenManager = ADDR_TOKEN_MANAGER;
     }
 
     componentDidMount() {
