@@ -3,7 +3,6 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/utils';
 import Dinamics from './dinamics';
 import { CYBER } from '../../utils/config';
-import { Copy } from '../../components';
 
 const Row = ({ text, number, procent, color }) => (
   <Pane display="flex" alignItems="center" paddingY={7}>
@@ -16,40 +15,16 @@ const Row = ({ text, number, procent, color }) => (
       />
       <Pane width={100}>{text}</Pane>
     </Pane>
-    <Pane>{procent}%</Pane>
     <Pane flex="1 1" textAlign="right">
-      {number}
+      {number} {CYBER.DENOM_CYBER.toUpperCase()}
     </Pane>
   </Pane>
 );
 
-const Balance = ({ account, balance, ...props }) => {
+const Main = ({ account, balance, ...props }) => {
   const { available, delegation, unbonding, rewards, total } = balance;
   return (
     <Pane {...props}>
-      <Pane display="flex" marginBottom={15} flexDirection="column">
-        <Text fontSize="18px" color="#fff">
-          Address:
-        </Text>
-        <Text color="#fff" fontSize="18px">
-          {account} <Copy text={account} />
-        </Text>
-      </Pane>
-      <Pane
-        className="contaiter-address-total"
-        marginBottom={20}
-        flexDirection="column"
-      >
-        <Text fontSize="16px" color="#fff">
-          Total:
-        </Text>
-        <Text color="#fff" fontSize="18px">
-          {formatNumber(total)}
-          <Text color="#fff" marginLeft={5} fontSize="18px">
-            {CYBER.DENOM_CYBER.toUpperCase()}
-          </Text>
-        </Text>
-      </Pane>
       <Pane
         display="flex"
         paddingX={20}
@@ -93,26 +68,9 @@ const Balance = ({ account, balance, ...props }) => {
             />
           )}
         </Pane>
-        <Pane
-          className="account-total"
-          justifyContent="center"
-          flexDirection="column"
-          alignItems="flex-end"
-        >
-          <Text fontSize="16px" marginBottom={10} color="#fff">
-            Total
-            <Text color="#fff" marginLeft={5} fontSize="20px">
-              {CYBER.DENOM_CYBER.toUpperCase()}
-            </Text>
-          </Text>
-
-          <Text color="#fff" fontSize="18px">
-            {formatNumber(total)}
-          </Text>
-        </Pane>
       </Pane>
     </Pane>
   );
 };
 
-export default Balance;
+export default Main;

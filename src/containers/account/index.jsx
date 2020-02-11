@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane } from '@cybercongress/gravity';
+import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import GetLink from './link';
 import {
@@ -7,13 +7,14 @@ import {
   getTotalEUL,
   getDistribution,
 } from '../../utils/search/utils';
-import Balance from './balance';
+// import Balance fro./mainnce';
 import Heroes from './heroes';
 import Unbondings from './unbondings';
 import { getDelegator } from '../../utils/utils';
-import { Loading } from '../../components';
+import { Loading, Copy } from '../../components';
 import ActionBarContainer from '../Wallet/actionBarContainer';
 import GetTxs from './txs';
+import Main from './main';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -160,8 +161,8 @@ class AccountDetails extends React.Component {
       );
     }
 
-    if (selected === 'unbondings') {
-      content = <Unbondings data={staking} />;
+    if (selected === 'main') {
+      content = <Main balance={balance} />;
     }
 
     if (selected === 'cyberlink') {
@@ -185,7 +186,16 @@ class AccountDetails extends React.Component {
     return (
       <div>
         <main className="block-body">
-          <Balance marginBottom={20} account={account} balance={balance} />
+          <Pane
+            marginBottom={15}
+            justifyContent="center"
+            alignItems="center"
+            display="flex"
+          >
+            <Text color="#fff" fontSize="18px">
+              {account} <Copy text={account} />
+            </Text>
+          </Pane>
           <Tablist>
             <TabBtn
               text="Link"
