@@ -188,15 +188,15 @@ class AccountDetails extends React.Component {
         <main className="block-body">
           <Pane
             marginBottom={15}
+            display="flex"
             justifyContent="center"
             alignItems="center"
-            display="flex"
           >
             <Text color="#fff" fontSize="18px">
               {account} <Copy text={account} />
             </Text>
           </Pane>
-          <Tablist>
+          <Tablist display="flex" justifyContent="center">
             <TabBtn
               text="Link"
               isSelected={selected === 'cyberlink'}
