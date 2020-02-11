@@ -38,7 +38,9 @@ const SnipitAccount = ({ to, text, address, children }) => {
       >
         <Pane display="flex" flexDirection="column" marginRight={10}>
           <Pane>{text}</Pane>
-          <Pane>{children || address}</Pane>
+          <Pane fontSize="14px" lineHeight="25px">
+            {children || address}
+          </Pane>
         </Pane>
       </Pane>
     </Link>

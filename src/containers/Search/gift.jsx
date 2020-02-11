@@ -34,7 +34,13 @@ const Gift = ({ item }) => {
     >
       <Pane display="flex" flexDirection="column" marginRight={10}>
         {Object.keys(item).map(key => (
-          <Text key={key} display="flex" fontSize="18px" lineHeight="25px">
+          <Text
+            key={key}
+            display="flex"
+            fontSize="16px"
+            color="#000"
+            lineHeight="25px"
+          >
             {KEY_NAME[key] || key}{' '}
             {key === 'gift' && (
               <img
@@ -49,7 +55,13 @@ const Gift = ({ item }) => {
       </Pane>
       <Pane display="flex" flexDirection="column">
         {Object.keys(item).map(key => (
-          <Text key={key} display="flex" fontSize="18px" lineHeight="25px">
+          <Text
+            key={key}
+            display="flex"
+            fontSize="14px"
+            color="#000"
+            lineHeight="25px"
+          >
             {key.indexOf('address') !== -1 ? item[key] : format(item[key])}{' '}
             {(key.indexOf('gift') !== -1 || key.indexOf('euler-4') !== -1) &&
               CYBER.DENOM_CYBER.toUpperCase()}
