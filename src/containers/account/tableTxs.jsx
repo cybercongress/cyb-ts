@@ -11,12 +11,6 @@ const imgDropup = require('../../image/arrow-dropup.svg');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
-const distribution = [
-  'cosmos-sdk/MsgWithdrawValidatorCommission',
-  'cosmos-sdk/MsgWithdrawDelegationReward',
-  'cosmos-sdk/MsgModifyWithdrawAddress',
-];
-
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
     fontSize={`${fontSize || 13}px`}
