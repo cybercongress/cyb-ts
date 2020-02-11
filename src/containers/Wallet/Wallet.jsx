@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Link } from 'react-router-dom';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { FormatNumber, Loading, ConnectLadger } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
@@ -261,12 +262,7 @@ class Wallet extends React.Component {
       >
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
-            <a
-              target="_blank"
-              href={`https://cyberd.ai/account/${item.address}`}
-            >
-              {item.address}
-            </a>
+            <Link to={`/account/${item.address}`}>{item.address}</Link>
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.5}>

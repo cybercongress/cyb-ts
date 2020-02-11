@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { getValidatorsInfo } from '../../utils/search/utils';
 
 class Account extends React.Component {
@@ -39,9 +40,7 @@ class Account extends React.Component {
 
     return (
       <span>
-        <a target="_blank" href={`https://cyberd.ai${account}`}>
-          {moniker}
-        </a>
+        <Link to={account}>{moniker}</Link>
         {children}
       </span>
     );

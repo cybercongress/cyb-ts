@@ -26,7 +26,7 @@ const TableLink = ({ data }) => {
     <Table.Row borderBottom="none" display="flex" key={item.txhash}>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/${item.txhash}`}>
+          <Link to={`/txs/${item.txhash}`}>
             {formatValidatorAddress(item.txhash, 6, 6)}
           </Link>
         </TextTable>

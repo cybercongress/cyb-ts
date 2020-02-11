@@ -2,6 +2,7 @@ import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LocalizedStrings from 'react-localization';
+import { Link } from 'react-router-dom';
 import {
   ActionBar,
   Button,
@@ -104,20 +105,36 @@ export const Confirmed = ({
         </span>
       </p>
 
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn"
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '0 auto',
-        }}
-        href={`https://${explorer || 'cyberd.ai'}/transactions/${txHash}`}
-      >
-        {T.actionBar.confirmedTX.viewTX}
-      </a>
+      {explorer ? (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto',
+          }}
+          href={`https://${explorer}/transactions/${txHash}`}
+        >
+          {T.actionBar.confirmedTX.viewTX}
+        </a>
+      ) : (
+        <Link
+          to={`/txs/${txHash}`}
+          className="btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto',
+          }}
+        >
+          {T.actionBar.confirmedTX.viewTX}
+        </Link>
+      )}
+
       <div style={{ marginTop: '25px' }}>
         <span>{T.actionBar.confirmedTX.tXHash}</span>
         <span
@@ -167,20 +184,35 @@ export const ErrorTx = ({
         </span>
       </p>
 
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn"
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '0 auto',
-        }}
-        href={`https://${explorer || 'cyberd.ai'}/transactions/${txHash}`}
-      >
-        {T.actionBar.errorTx.viewTX}
-      </a>
+      {explorer ? (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto',
+          }}
+          href={`https://${explorer}/transactions/${txHash}`}
+        >
+          {T.actionBar.confirmedTX.viewTX}
+        </a>
+      ) : (
+        <Link
+          to={`/txs/${txHash}`}
+          className="btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto',
+          }}
+        >
+          {T.actionBar.confirmedTX.viewTX}
+        </Link>
+      )}
       <div style={{ marginTop: '25px' }}>
         <span>{T.actionBar.errorTx.tXHash}</span>
         <span
