@@ -43,15 +43,12 @@ const TableTxs = ({ data, type, accountUser }) => {
           />
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell textAlign="start">
+      <Table.TextCell textAlign="center">
         <TextTable>
           <MsgType
             type={accountUser === item.subject ? item.type : 'Receive'}
           />
         </TextTable>
-      </Table.TextCell>
-      <Table.TextCell flex={0.7} textAlign="center">
-        <TextTable>{formatNumber(item.height)}</TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
@@ -81,9 +78,6 @@ const TableTxs = ({ data, type, accountUser }) => {
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>type</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>height</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>timestamp</TextTable>

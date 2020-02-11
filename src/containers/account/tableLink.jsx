@@ -31,9 +31,6 @@ const TableLink = ({ data }) => {
           </Link>
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell flex={0.7} textAlign="center">
-        <TextTable>{formatNumber(item.height)}</TextTable>
-      </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
           {dateFormat(item.timestamp, 'dd/mm/yyyy, h:MM:ss TT')}
@@ -69,9 +66,6 @@ const TableLink = ({ data }) => {
         >
           <Table.TextHeaderCell textAlign="center">
             <TextTable>tx</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell flex={0.7} textAlign="center">
-            <TextTable>height</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>timestamp</TextTable>
