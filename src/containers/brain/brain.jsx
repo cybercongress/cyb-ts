@@ -242,7 +242,7 @@ class Brain extends React.Component {
     console.log('result', result);
 
     if (result) {
-      total = getTotalEUL(result);
+      total = await getTotalEUL(result);
     }
 
     // const response = await fetch(
@@ -269,7 +269,7 @@ class Brain extends React.Component {
       addAddress: false,
       loading: false,
       // addressInfo,
-      amount: total,
+      amount: total.total,
     });
   };
 
