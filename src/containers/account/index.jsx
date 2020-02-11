@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tablist, Tab, Pane } from '@cybercongress/gravity';
+import { Route, Link } from 'react-router-dom';
 import GetLink from './link';
 import {
   getBalance,
@@ -14,22 +15,24 @@ import { Loading } from '../../components';
 import ActionBarContainer from '../Wallet/actionBarContainer';
 import GetTxs from './txs';
 
-const TabBtn = ({ text, isSelected, onSelect }) => (
-  <Tab
-    key={text}
-    isSelected={isSelected}
-    onSelect={onSelect}
-    paddingX={50}
-    paddingY={20}
-    marginX={3}
-    borderRadius={4}
-    color="#36d6ae"
-    boxShadow="0px 0px 5px #36d6ae"
-    fontSize="16px"
-    whiteSpace="nowrap"
-  >
-    {text}
-  </Tab>
+const TabBtn = ({ text, isSelected, onSelect, to }) => (
+  <Link to={to}>
+    <Tab
+      key={text}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      paddingX={50}
+      paddingY={20}
+      marginX={3}
+      borderRadius={4}
+      color="#36d6ae"
+      boxShadow="0px 0px 5px #36d6ae"
+      fontSize="16px"
+      whiteSpace="nowrap"
+    >
+      {text}
+    </Tab>
+  </Link>
 );
 
 class AccountDetails extends React.Component {
@@ -55,18 +58,41 @@ class AccountDetails extends React.Component {
 
   componentDidMount() {
     this.init();
+    this.chekPathname();
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.init();
+      this.chekPathname();
     }
   }
 
   init = async () => {
-    this.setState({ loader: true });
+    // this.setState({ loader: true });
     this.getBalanseAccount();
+  };
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (pathname.match(/txs/gm) && pathname.match(/txs/gm).length > 0) {
+      this.select('txs');
+    } else if (
+      pathname.match(/cyberlink/gm) &&
+      pathname.match(/cyberlink/gm).length > 0
+    ) {
+      this.select('cyberlink');
+    } else if (
+      pathname.match(/heroes/gm) &&
+      pathname.match(/heroes/gm).length > 0
+    ) {
+      this.select('heroes');
+    } else {
+      this.select('main');
+    }
   };
 
   getBalanseAccount = async () => {
@@ -109,6 +135,7 @@ class AccountDetails extends React.Component {
 
   render() {
     const { account, balance, staking, selected, loader } = this.state;
+
     let content;
 
     if (loader) {
@@ -125,19 +152,34 @@ class AccountDetails extends React.Component {
     }
 
     if (selected === 'heroes') {
-      content = <Heroes data={staking} />;
+      content = (
+        <Route
+          path="/account/:address/heroes"
+          render={() => <Heroes data={staking} />}
+        />
+      );
     }
 
     if (selected === 'unbondings') {
       content = <Unbondings data={staking} />;
     }
 
-    if (selected === 'link') {
-      content = <GetLink accountUser={account} />;
+    if (selected === 'cyberlink') {
+      content = (
+        <Route
+          path="/account/:address/cyberlink"
+          render={() => <GetLink accountUser={account} />}
+        />
+      );
     }
 
     if (selected === 'txs') {
-      content = <GetTxs accountUser={account} />;
+      content = (
+        <Route
+          path="/account/:address/txs"
+          render={() => <GetTxs accountUser={account} />}
+        />
+      );
     }
 
     return (
@@ -147,23 +189,23 @@ class AccountDetails extends React.Component {
           <Tablist>
             <TabBtn
               text="Link"
-              isSelected={selected === 'link'}
-              onSelect={() => this.select('link')}
+              isSelected={selected === 'cyberlink'}
+              to={`/account/${account}/cyberlink`}
             />
             <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
-              onSelect={() => this.select('heroes')}
+              to={`/account/${account}/heroes`}
             />
             <TabBtn
-              text="Unbondings"
-              isSelected={selected === 'unbondings'}
-              onSelect={() => this.select('unbondings')}
+              text="Main"
+              isSelected={selected === 'main'}
+              to={`/account/${account}`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
-              onSelect={() => this.select('txs')}
+              to={`/account/${account}/txs`}
             />
           </Tablist>
           <Pane

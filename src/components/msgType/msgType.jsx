@@ -36,6 +36,8 @@ const MsgType = ({ type }) => {
       return <ContainerTitle img={bank}>Send</ContainerTitle>;
     case 'cosmos-sdk/MsgMultiSend':
       return <ContainerTitle img={bank}>Multi Send</ContainerTitle>;
+    case 'Receive':
+      return <ContainerTitle img={bank}>Receive</ContainerTitle>;
 
     // staking
     case 'cosmos-sdk/MsgCreateValidator':

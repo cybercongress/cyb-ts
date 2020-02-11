@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
 import TableTxs from './tableTxs';
@@ -7,19 +7,22 @@ import { CardTemplate, Loading } from '../../components';
 export default function GetTxs({ accountUser }) {
   const GET_CHARACTERS = gql`
   subscription MyQuery {
-    transaction(where: {message: {subject: {_eq: "${accountUser}"}}}
-    order_by: { height: desc }
-    ) {
+    message(where: {_or: [
+      {value: {_contains: {to_address: "${accountUser}"}}}, 
+      {value: {_contains: {from_address: "${accountUser}"}}},
+      {subject: {_eq: "${accountUser}"}}, 
+    ]} 
+      order_by: { height: desc }) {
       txhash
-      code
-      timestamp
+      type
       height
-      message {
-        type
+      timestamp
+      transaction {
+        code
       }
+      subject
     }
   }
-  
   `;
   const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
 
@@ -36,7 +39,7 @@ export default function GetTxs({ accountUser }) {
           <Loading />
         </div>
       ) : (
-        <TableTxs data={dataTxs.transaction} />
+        <TableTxs accountUser={accountUser} data={dataTxs.message} />
       )}
     </CardTemplate>
   );

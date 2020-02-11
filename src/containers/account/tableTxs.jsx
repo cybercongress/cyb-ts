@@ -22,7 +22,7 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
   </Text>
 );
 
-const TableTxs = ({ data, type }) => {
+const TableTxs = ({ data, type, accountUser }) => {
   const [seeAll, setSeeAll] = useState(false);
 
   const validatorRows = data.slice(0, seeAll ? data.length : 5).map(item => (
@@ -38,14 +38,16 @@ const TableTxs = ({ data, type }) => {
         <TextTable>
           <img
             style={{ width: '20px', height: '20px', marginRight: '5px' }}
-            src={item.code === 0 ? statusTrueImg : statusFalseImg}
+            src={item.transaction.code === 0 ? statusTrueImg : statusFalseImg}
             alt="statusImg"
           />
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="start">
         <TextTable>
-          <MsgType type={item.message.type} />
+          <MsgType
+            type={accountUser === item.subject ? item.type : 'Receive'}
+          />
         </TextTable>
       </Table.TextCell>
       <Table.TextCell flex={0.7} textAlign="center">
