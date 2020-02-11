@@ -2,7 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
 import TableTxs from './tableTxs';
-import { CardTemplate, Loading } from '../../components';
+import { Loading } from '../../components';
 
 export default function GetTxs({ accountUser }) {
   const GET_CHARACTERS = gql`
@@ -33,7 +33,7 @@ export default function GetTxs({ accountUser }) {
   console.log('data wss', dataTxs);
 
   return (
-    <CardTemplate paddingBottom={10} title="Txs">
+    <div>
       {loading ? (
         <div className="container-loading">
           <Loading />
@@ -41,6 +41,6 @@ export default function GetTxs({ accountUser }) {
       ) : (
         <TableTxs accountUser={accountUser} data={dataTxs.message} />
       )}
-    </CardTemplate>
+    </div>
   );
 }

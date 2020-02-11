@@ -57,7 +57,7 @@ const TableLink = ({ data }) => {
   ));
 
   return (
-    <CardTemplate paddingBottom={10} title="Link">
+    <div>
       <Table>
         <Table.Head
           style={{
@@ -109,7 +109,7 @@ const TableLink = ({ data }) => {
           <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
         </button>
       )}
-    </CardTemplate>
+    </div>
   );
 };
 
