@@ -169,7 +169,7 @@ class ActionBarContainer extends React.Component {
                   margin: '0 5px',
                 }}
                 className="bnt-claime"
-                href="#/gift"
+                href="gift"
               >
                 Take gift
               </a>{' '}
@@ -181,7 +181,7 @@ class ActionBarContainer extends React.Component {
                   margin: '0 5px',
                 }}
                 className="bnt-claime"
-                href="#/gol"
+                href="/gol"
               >
                 {' '}
                 Game of Links{' '}

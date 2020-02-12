@@ -355,6 +355,7 @@ class ActionBarContainer extends Component {
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      console.log('status', status);
       const data = await status;
       if (data.logs && data.logs[0].success === true) {
         this.setState({
@@ -362,6 +363,13 @@ class ActionBarContainer extends Component {
           txHeight: data.height,
         });
         update();
+        return;
+      }
+      if (data.logs && data.logs[0].success === false) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+        });
         return;
       }
     }
@@ -436,6 +444,9 @@ class ActionBarContainer extends Component {
       txHash,
       errorMessage,
     } = this.state;
+
+    console.log('bandwidth', bandwidth);
+
     const { valueSearchInput } = this.props;
 
     if (stage === STAGE_INIT) {
