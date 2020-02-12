@@ -40,58 +40,83 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
 );
 
 const Heroes = ({ data, ...props }) => {
-  const delegations = data.delegations.map(item => (
-    <Table.Row
-      borderBottom="none"
-      key={item.validator_address}
-      display="flex"
-      marginBottom={10}
-      minHeight="48px"
-      height="fit-content"
-      paddingY={5}
-      paddingX={5}
-    >
-      <Table.TextCell flex={1} textAlign="start">
-        <TextTable>
-          <Account address={item.validator_address} />
-        </TextTable>
-      </Table.TextCell>
-      <Table.TextCell flex={1} textAlign="end">
-        {item.entries !== undefined && (
-          <Pane display="flex" alignItems="flex-end" flexDirection="column">
-            {item.entries.map(entry => (
-              <Tooltip
-                content={`${formatNumber(
-                  parseFloat(entry.balance)
-                )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-                position="bottom"
-              >
-                <Pane fontSize="13px" display="inline" color="#fff">
-                  {formatCurrency(entry.balance)} in{' '}
-                  {getDaysIn(entry.completion_time)} days
-                </Pane>
-              </Tooltip>
-            ))}
-          </Pane>
-        )}
-      </Table.TextCell>
-      <Table.TextCell textAlign="end">
-        <Tooltip
-          content={`${formatNumber(
-            parseFloat(item.balance)
-          )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-          position="bottom"
-        >
+  console.log(data);
+  const delegations = data.delegations.map(item => {
+    return (
+      <Table.Row
+        borderBottom="none"
+        key={item.validator_address}
+        display="flex"
+        marginBottom={10}
+        minHeight="48px"
+        height="fit-content"
+        paddingY={5}
+        paddingX={5}
+      >
+        <Table.TextCell flex={2} textAlign="start">
           <TextTable>
-            {formatCurrency(
-              parseFloat(item.balance),
-              CYBER.DENOM_CYBER.toUpperCase()
-            )}
+            <Account address={item.validator_address} />
           </TextTable>
-        </Tooltip>
-      </Table.TextCell>
-    </Table.Row>
-  ));
+        </Table.TextCell>
+        <Table.TextCell textAlign="end">
+          {item.entries !== undefined && (
+            <Pane display="flex" alignItems="flex-end" flexDirection="column">
+              {item.entries.map((entry, index) => (
+                <Tooltip
+                  content={`${formatNumber(
+                    parseFloat(entry.balance)
+                  )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+                  position="bottom"
+                >
+                  <Pane
+                    key={index}
+                    fontSize="13px"
+                    display="inline"
+                    color="#fff"
+                    width="100%"
+                    textOverflow="ellipsis"
+                    overflowX="hidden"
+                  >
+                    {formatCurrency(entry.balance)} in{' '}
+                    {getDaysIn(entry.completion_time)} days
+                  </Pane>
+                </Tooltip>
+              ))}
+            </Pane>
+          )}
+        </Table.TextCell>
+        <Table.TextCell textAlign="end">
+          {item.reward !== undefined && (
+            <Tooltip
+              content={`${formatNumber(
+                item.reward
+              )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+              position="bottom"
+            >
+              <TextTable>
+                {formatCurrency(item.reward, CYBER.DENOM_CYBER.toUpperCase())}
+              </TextTable>
+            </Tooltip>
+          )}
+        </Table.TextCell>
+        <Table.TextCell textAlign="end">
+          <Tooltip
+            content={`${formatNumber(
+              parseFloat(item.balance)
+            )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            position="bottom"
+          >
+            <TextTable>
+              {formatCurrency(
+                parseFloat(item.balance),
+                CYBER.DENOM_CYBER.toUpperCase()
+              )}
+            </TextTable>
+          </Tooltip>
+        </Table.TextCell>
+      </Table.Row>
+    );
+  });
 
   return (
     <Pane display="grid" gridGap="20px" gridTemplateColumns="1fr" {...props}>
@@ -105,11 +130,14 @@ const Heroes = ({ data, ...props }) => {
             paddingBottom: '10px',
           }}
         >
-          <Table.TextHeaderCell flex={1} textAlign="center">
+          <Table.TextHeaderCell flex={2} textAlign="center">
             <TextTable>Validator</TextTable>
           </Table.TextHeaderCell>
-          <Table.TextHeaderCell flex={1} textAlign="center">
+          <Table.TextHeaderCell textAlign="center">
             <TextTable>Unbondings</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Rewards</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>Amount</TextTable>

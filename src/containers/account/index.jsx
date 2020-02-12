@@ -6,11 +6,12 @@ import {
   getBalance,
   getTotalEUL,
   getDistribution,
+  getRewards,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
 import Unbondings from './unbondings';
-import { getDelegator, formatNumber } from '../../utils/utils';
+import { getDelegator, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading, Copy, ContainerCard, Card } from '../../components';
 import ActionBarContainer from '../Wallet/actionBarContainer';
 import GetTxs from './txs';
@@ -121,7 +122,22 @@ class AccountDetails extends React.Component {
       total = await getTotalEUL(result);
       if (result.delegations && result.delegations.length > 0) {
         staking.delegations = result.delegations;
+        await asyncForEach(
+          Array.from(Array(staking.delegations.length).keys()),
+          async item => {
+            let reward = 0;
+            const resultRewards = await getRewards(
+              account,
+              staking.delegations[item].validator_address
+            );
+            if (resultRewards) {
+              reward = parseFloat(resultRewards[0].amount);
+              staking.delegations[item].reward = Math.floor(reward);
+            }
+          }
+        );
       }
+
       if (result.unbonding && result.unbonding.length > 0) {
         staking.delegations.map((item, index) => {
           return result.unbonding.map(itemUnb => {
