@@ -123,10 +123,17 @@ class AccountDetails extends React.Component {
         staking.delegations = result.delegations;
       }
       if (result.unbonding && result.unbonding.length > 0) {
+        staking.delegations.map((item, index) => {
+          return result.unbonding.map(itemUnb => {
+            if (item.validator_address === itemUnb.validator_address) {
+              staking.delegations[index].entries = itemUnb.entries;
+            }
+            return staking.delegations[index];
+          });
+        });
         staking.unbonding = result.unbonding;
       }
     }
-
     this.setState({ balance: total, staking, loader: false });
   };
 

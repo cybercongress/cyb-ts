@@ -6,6 +6,15 @@ import { CYBER } from '../../utils/config';
 
 const noitem = require('../../image/noitem.svg');
 
+const getDaysIn = time => {
+  const completionTime = new Date(time);
+  const timeNow = Date.now();
+
+  const daysIn = (completionTime - timeNow) / 1000 / 60 / 60 / 24;
+
+  return Math.round(daysIn);
+};
+
 const Img = ({ img }) => (
   <img style={{ width: '45px', height: '45px' }} src={img} alt="img" />
 );
@@ -37,12 +46,34 @@ const Heroes = ({ data, ...props }) => {
       key={item.validator_address}
       display="flex"
       marginBottom={10}
+      minHeight="48px"
+      height="fit-content"
+      paddingY={5}
+      paddingX={5}
     >
-      {' '}
       <Table.TextCell flex={1} textAlign="start">
         <TextTable>
           <Account address={item.validator_address} />
         </TextTable>
+      </Table.TextCell>
+      <Table.TextCell flex={1} textAlign="end">
+        {item.entries !== undefined && (
+          <Pane display="flex" alignItems="flex-end" flexDirection="column">
+            {item.entries.map(entry => (
+              <Tooltip
+                content={`${formatNumber(
+                  parseFloat(entry.balance)
+                )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+                position="bottom"
+              >
+                <Pane fontSize="13px" display="inline" color="#fff">
+                  {formatCurrency(entry.balance)} in{' '}
+                  {getDaysIn(entry.completion_time)} days
+                </Pane>
+              </Tooltip>
+            ))}
+          </Pane>
+        )}
       </Table.TextCell>
       <Table.TextCell textAlign="end">
         <Tooltip
@@ -77,7 +108,9 @@ const Heroes = ({ data, ...props }) => {
           <Table.TextHeaderCell flex={1} textAlign="center">
             <TextTable>Validator</TextTable>
           </Table.TextHeaderCell>
-
+          <Table.TextHeaderCell flex={1} textAlign="center">
+            <TextTable>Unbondings</TextTable>
+          </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>Amount</TextTable>
           </Table.TextHeaderCell>
