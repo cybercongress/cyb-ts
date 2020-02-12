@@ -58,5 +58,6 @@ export {
   SendLedgerAtomTot,
   SendAmount,
   ErrorTx,
+  RewardsDelegators,
 } from './ledger/stageActionBar';
 export { Link, Cid } from './link/link';

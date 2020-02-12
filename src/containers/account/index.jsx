@@ -7,14 +7,13 @@ import {
   getTotalEUL,
   getDistribution,
   getRewards,
-  getTotalRewards,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
 import Unbondings from './unbondings';
 import { getDelegator, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading, Copy, ContainerCard, Card } from '../../components';
-import ActionBarContainer from '../Wallet/actionBarContainer';
+import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
 import Main from './main';
 
@@ -62,7 +61,6 @@ class AccountDetails extends React.Component {
   componentDidMount() {
     this.init();
     this.chekPathname();
-    // const data = await getTotalRewards(account);
   }
 
   componentDidUpdate(prevProps) {
@@ -268,6 +266,7 @@ class AccountDetails extends React.Component {
         <ActionBarContainer
           updateAddress={this.getBalanseAccount}
           addressSend={account}
+          type={selected}
         />
       </div>
     );

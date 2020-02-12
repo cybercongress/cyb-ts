@@ -12,7 +12,7 @@ import {
   Select,
   Textarea,
 } from '@cybercongress/gravity';
-import { ContainetLedger, Loading, FormatNumber } from '../index';
+import { ContainetLedger, Loading, FormatNumber, Account } from '../index';
 import { formatNumber } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
@@ -883,3 +883,59 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
     </div>
   </div>
 );
+
+export const RewardsDelegators = ({
+  data,
+  address,
+  onClickBtn,
+  onClickBtnCloce,
+  disabledBtn,
+}) => {
+  const itemReward = data.rewards.map(item => (
+    <Pane
+      key={item.validator_address}
+      display="flex"
+      justifyContent="space-between"
+    >
+      <Account address={item.validator_address} />
+      <Pane>
+        {formatNumber(Math.floor(item.reward[0].amount))}{' '}
+        {CYBER.DENOM_CYBER.toUpperCase()}
+      </Pane>
+    </Pane>
+  ));
+  return (
+    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+      <Text
+        marginBottom={20}
+        fontSize="16px"
+        lineHeight="25.888px"
+        color="#fff"
+      >
+        {address}
+      </Text>
+      <Pane fontSize="20px" marginBottom={20}>
+        Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
+        {CYBER.DENOM_CYBER.toUpperCase()}
+      </Pane>
+      Delegae:
+      <Pane marginTop={10} marginBottom={30}>
+        <Pane marginBottom={5} display="flex" justifyContent="space-between">
+          <Pane>Address</Pane>
+          <Pane>Amount</Pane>
+        </Pane>
+        <Pane>{itemReward}</Pane>
+      </Pane>
+      <div className="text-align-center">
+        <button
+          type="button"
+          className="btn-disabled"
+          disabled={disabledBtn}
+          onClick={onClickBtn}
+        >
+          {T.actionBar.send.generate}
+        </button>
+      </div>
+    </ContainetLedger>
+  );
+};
