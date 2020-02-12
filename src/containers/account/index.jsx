@@ -10,8 +10,8 @@ import {
 // import Balance fro./mainnce';
 import Heroes from './heroes';
 import Unbondings from './unbondings';
-import { getDelegator } from '../../utils/utils';
-import { Loading, Copy } from '../../components';
+import { getDelegator, formatNumber } from '../../utils/utils';
+import { Loading, Copy, ContainerCard, Card } from '../../components';
 import ActionBarContainer from '../Wallet/actionBarContainer';
 import GetTxs from './txs';
 import Main from './main';
@@ -187,7 +187,7 @@ class AccountDetails extends React.Component {
       <div>
         <main className="block-body">
           <Pane
-            marginBottom={15}
+            marginBottom={20}
             display="flex"
             justifyContent="center"
             alignItems="center"
@@ -196,6 +196,9 @@ class AccountDetails extends React.Component {
               {account} <Copy text={account} />
             </Text>
           </Pane>
+          <ContainerCard col={1}>
+            <Card title="total, EUL" value={formatNumber(balance.total)} />
+          </ContainerCard>
           <Tablist display="flex" justifyContent="center">
             <TabBtn
               text="Link"
