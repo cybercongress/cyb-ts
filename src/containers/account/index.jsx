@@ -7,6 +7,7 @@ import {
   getTotalEUL,
   getDistribution,
   getRewards,
+  getTotalRewards,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -61,6 +62,7 @@ class AccountDetails extends React.Component {
   componentDidMount() {
     this.init();
     this.chekPathname();
+    // const data = await getTotalRewards(account);
   }
 
   componentDidUpdate(prevProps) {
@@ -122,19 +124,9 @@ class AccountDetails extends React.Component {
       total = await getTotalEUL(result);
       if (result.delegations && result.delegations.length > 0) {
         staking.delegations = result.delegations;
-        await asyncForEach(
-          Array.from(Array(staking.delegations.length).keys()),
-          async item => {
-            let reward = 0;
-            const resultRewards = await getRewards(
-              account,
-              staking.delegations[item].validator_address
-            );
-            if (resultRewards) {
-              reward = parseFloat(resultRewards[0].amount);
-              staking.delegations[item].reward = Math.floor(reward);
-            }
-          }
+        staking.delegations = await this.countReward(
+          staking.delegations,
+          account
         );
       }
 
@@ -151,6 +143,25 @@ class AccountDetails extends React.Component {
       }
     }
     this.setState({ balance: total, staking, loader: false });
+  };
+
+  countReward = async (data, address) => {
+    const delegations = data;
+    await asyncForEach(
+      Array.from(Array(delegations.length).keys()),
+      async item => {
+        let reward = 0;
+        const resultRewards = await getRewards(
+          address,
+          delegations[item].validator_address
+        );
+        if (resultRewards) {
+          reward = parseFloat(resultRewards[0].amount);
+          delegations[item].reward = Math.floor(reward);
+        }
+      }
+    );
+    return delegations;
   };
 
   select = selected => {

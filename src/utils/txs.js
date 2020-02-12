@@ -457,6 +457,25 @@ function createRedelegate(
   return txSkeleton;
 }
 
+function createWithdrawDelegationReward(txContext, address, memo, rewards) {
+  const txSkeleton = createSkeletonCyber(txContext);
+  txSkeleton.value.msg = [];
+
+  Object.keys(rewards).forEach(key => {
+    txSkeleton.value.msg.push({
+      type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+      value: {
+        delegator_address: address,
+        validator_address: rewards[key].validator_address,
+      },
+    });
+  });
+
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 export default {
   createSkeleton,
   createDelegate,
@@ -471,4 +490,5 @@ export default {
   createTextProposal,
   createCommunityPool,
   createUndelegateCyber,
+  createWithdrawDelegationReward,
 };

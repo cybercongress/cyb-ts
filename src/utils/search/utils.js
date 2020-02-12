@@ -589,3 +589,16 @@ export const getRewards = async (delegatorAddr, validatorAddr) => {
     return null;
   }
 };
+
+export const getTotalRewards = async delegatorAddr => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${delegatorAddr}/rewards`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
