@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tablist, Tab, Pane } from '@cybercongress/gravity';
+import { Route, Link } from 'react-router-dom';
 import ValidatorInfo from './validatorInfo';
 import {
   getValidatorsInfo,
@@ -16,24 +17,25 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import GetTxs from '../account/txs';
 
-const TabBtn = ({ text, isSelected, onSelect }) => (
-  <Tab
-    key={text}
-    isSelected={isSelected}
-    onSelect={onSelect}
-    paddingX={50}
-    paddingY={20}
-    marginX={3}
-    borderRadius={4}
-    color="#36d6ae"
-    boxShadow="0px 0px 5px #36d6ae"
-    fontSize="16px"
-    whiteSpace="nowrap"
-  >
-    {text}
-  </Tab>
+const TabBtn = ({ text, isSelected, onSelect, to }) => (
+  <Link to={to}>
+    <Tab
+      key={text}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      paddingX={50}
+      paddingY={20}
+      marginX={3}
+      borderRadius={4}
+      color="#36d6ae"
+      boxShadow="0px 0px 5px #36d6ae"
+      fontSize="16px"
+      whiteSpace="nowrap"
+    >
+      {text}
+    </Tab>
+  </Link>
 );
-
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -50,17 +52,35 @@ class ValidatorsDetails extends React.PureComponent {
 
   componentDidMount() {
     this.init();
+    this.chekPathname();
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.init();
+      this.chekPathname();
     }
   }
 
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (pathname.match(/txs/gm) && pathname.match(/txs/gm).length > 0) {
+      this.select('txs');
+    } else if (
+      pathname.match(/delegators/gm) &&
+      pathname.match(/delegators/gm).length > 0
+    ) {
+      this.select('delegators');
+    } else {
+      this.select('delegated');
+    }
+  };
+
   init = async () => {
-    this.setState({ loader: true });
+    // this.setState({ loader: true });
     this.getValidatorInfo();
     this.getDelegators();
   };
@@ -192,38 +212,43 @@ class ValidatorsDetails extends React.PureComponent {
     }
 
     if (selected === 'delegators') {
-      content = <Delegators data={delegators} />;
+      content = (
+        <Route
+          path="/validators/:validators/delegators"
+          render={() => <Delegators data={delegators} />}
+        />
+      );
     }
 
     if (selected === 'txs') {
-      content = <GetTxs accountUser={validatorInfo.delegateAddress} />;
+      content = (
+        <Route
+          path="/validators/:validators/txs"
+          render={() => <GetTxs accountUser={validatorInfo.delegateAddress} />}
+        />
+      );
     }
 
     return (
       <div>
         <main className="block-body">
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <Tablist>
+          <Tablist display="flex" justifyContent="center">
             <TabBtn
               text="Delegated"
               isSelected={selected === 'delegated'}
-              onSelect={() => this.select('delegated')}
+              to={`/validators/${validators}`}
             />
             <TabBtn
               text="Delegators"
               isSelected={selected === 'delegators'}
-              onSelect={() => this.select('delegators')}
+              to={`/validators/${validators}/delegators`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
-              onSelect={() => this.select('txs')}
+              to={`/validators/${validators}/txs`}
             />
-            {/* <TabBtn
-              text="Unbondings"
-              isSelected={selected === 'unbondings'}
-              onSelect={() => this.select('unbondings')}
-            /> */}
           </Tablist>
           <Pane
             display="flex"

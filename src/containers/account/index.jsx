@@ -54,7 +54,7 @@ class AccountDetails extends React.Component {
         delegations: [],
         unbonding: [],
       },
-      selected: 'link',
+      selected: 'main',
     };
   }
 
