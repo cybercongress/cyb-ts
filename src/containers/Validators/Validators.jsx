@@ -26,6 +26,7 @@ import {
   asyncForEach,
   formatValidatorAddress,
   roundNumber,
+  formatCurrency,
 } from '../../utils/utils';
 import { FormatNumber, Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
@@ -347,16 +348,19 @@ class Validators extends Component {
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} textAlign="end" isNumber>
-              <TextTable>
-                <FormatNumber
-                  style={{ marginRight: 5 }}
-                  number={formatNumber(
-                    validator.delegation / CYBER.DIVISOR_CYBER_G,
-                    6
+              <Tooltip
+                content={`${formatNumber(
+                  Math.floor(parseFloat(validator.delegation))
+                )} 
+                ${CYBER.DENOM_CYBER.toUpperCase()}`}
+              >
+                <TextTable>
+                  {formatCurrency(
+                    parseFloat(validator.delegation),
+                    CYBER.DENOM_CYBER.toLocaleUpperCase()
                   )}
-                  fontSizeDecimal={11.5}
-                />
-              </TextTable>
+                </TextTable>
+              </Tooltip>
             </Table.TextCell>
             {showJailed && (
               <Table.TextCell paddingX={5} flex={1} textAlign="end" isNumber>

@@ -13,7 +13,7 @@ const i18n = {
         selfProcent: 'Self',
         unbonding: 'Unbonding height',
         rank: 'Rank',
-        bondedTokens: `Yours Bonded tokens (${DENOM_CYBER_G.toLocaleUpperCase()})`,
+        bondedTokens: `Your bond`,
       },
     },
     pocket: {
