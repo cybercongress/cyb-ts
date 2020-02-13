@@ -384,7 +384,10 @@ export const getBalance = async address => {
       available: availablePromise.data.result[0],
       delegations: delegationsPromise.data.result,
       unbonding: unbondingPromise.data.result,
-      rewards: rewardsPropsise.data.result.total[0],
+      rewards:
+        rewardsPropsise.data.result.total !== null
+          ? rewardsPropsise.data.result.total[0]
+          : 0,
     };
 
     return response;

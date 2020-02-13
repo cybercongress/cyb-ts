@@ -918,7 +918,7 @@ export const RewardsDelegators = ({
         Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
         {CYBER.DENOM_CYBER.toUpperCase()}
       </Pane>
-      Delegae:
+      Rewards:
       <Pane marginTop={10} marginBottom={30}>
         <Pane marginBottom={5} display="flex" justifyContent="space-between">
           <Pane>Address</Pane>

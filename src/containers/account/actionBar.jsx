@@ -15,7 +15,11 @@ import {
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
 
-import { getBalanceWallet, getTotalRewards } from '../../utils/search/utils';
+import {
+  getBalanceWallet,
+  getTotalRewards,
+  getIpfsHash,
+} from '../../utils/search/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -272,12 +276,55 @@ class ActionBarContainer extends Component {
     }
   };
 
-  generateTx = async () => {
-    const { ledger, address, addressInfo, toSend, toSendAddres } = this.state;
-
+  getTxType = async (type, txContext) => {
+    const {
+      ledger,
+      address,
+      addressInfo,
+      toSend,
+      rewards,
+      toSendAddres,
+      contentHash,
+    } = this.state;
+    const { addressSend } = this.props;
     const uatomAmount = toSend * DIVISOR_CYBER_G;
 
     const { denom } = addressInfo.coins[0];
+
+    let tx;
+
+    if (type === 'heroes') {
+      tx = await ledger.withdrawDelegationReward(
+        txContext,
+        address.bech32,
+        MEMO,
+        rewards.rewards
+      );
+    } else if (type === 'cyberlink') {
+      const fromCid = await getIpfsHash(addressSend);
+      const toCid = contentHash;
+      tx = await ledger.txCreateLink(
+        txContext,
+        address.bech32,
+        fromCid,
+        toCid,
+        MEMO
+      );
+    } else {
+      tx = await ledger.txCreateSendCyber(
+        txContext,
+        toSendAddres,
+        uatomAmount,
+        MEMO,
+        denom
+      );
+    }
+    return tx;
+  };
+
+  generateTx = async () => {
+    const { address, addressInfo } = this.state;
+    const { type } = this.props;
 
     const txContext = {
       accountNumber: addressInfo.account_number,
@@ -287,14 +334,9 @@ class ActionBarContainer extends Component {
       pk: address.pk,
       path: address.path,
     };
-    // console.log('txContext', txContext);
-    const tx = await ledger.txCreateSendCyber(
-      txContext,
-      toSendAddres,
-      uatomAmount,
-      MEMO,
-      denom
-    );
+
+    const tx = await this.getTxType(type, txContext);
+
     console.log('tx', tx);
     await this.setState({
       txMsg: tx,
@@ -410,7 +452,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { type } = this.props;
+    const { type, addressSend } = this.props;
     const {
       stage,
       address,
@@ -470,11 +512,22 @@ class ActionBarContainer extends Component {
             data={rewards}
             onClickBtnCloce={this.cleatState}
             address={address.bech32}
+            onClickBtn={this.generateTx}
           />
         );
       }
       if (type === 'cyberlink') {
-        return <Cyberlink />;
+        return (
+          <Cyberlink
+            onClickBtnCloce={this.cleatState}
+            query={addressSend}
+            onClickBtn={this.generateTx}
+            bandwidth={bandwidth}
+            address={address.bech32}
+            contentHash={contentHash}
+            disabledBtn={parseFloat(bandwidth.max_value) === 0}
+          />
+        );
       }
       return (
         <SendLedger

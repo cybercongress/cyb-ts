@@ -25,7 +25,8 @@ export default function GetLink({ accountUser }) {
         where: {
           subject: { _eq: "${accountUser}" }
         }
-      ) {
+        order_by: { height: desc }
+        ) {
         nodes {
           timestamp
           height

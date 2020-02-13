@@ -59,22 +59,18 @@ class AccountDetails extends React.Component {
   }
 
   componentDidMount() {
-    this.init();
+    this.getBalanseAccount();
     this.chekPathname();
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
-      this.init();
+      this.getBalanseAccount();
       this.chekPathname();
     }
   }
 
-  init = async () => {
-    // this.setState({ loader: true });
-    this.getBalanseAccount();
-  };
 
   chekPathname = () => {
     const { location } = this.props;

@@ -18,7 +18,7 @@ const InformationTxs = ({ data, messageError, ...props }) => {
         item = data[key] ? 'Success' : 'Fail';
         break;
       case 'timestamp':
-        item = dateFormat(data[key], 'dd/mm/yyyy, h:MM:ss TT');
+        item = dateFormat(data[key], 'UTC: dd/mm/yyyy, hh:MM:ss tt "UTC"');
         break;
       default:
         item = data[key];

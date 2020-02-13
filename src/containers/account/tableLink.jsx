@@ -33,7 +33,7 @@ const TableLink = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          {dateFormat(item.timestamp, 'dd/mm/yyyy, h:MM:ss TT')}
+          {dateFormat(item.timestamp, 'dd/mm/yyyy, hh:MM:ss tt "UTC"')}
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
