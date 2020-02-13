@@ -74,9 +74,15 @@ class AppRouter extends React.Component {
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
           <Route path="/gol" component={GOL} />
-          <Route path="/txs/:txHash" component={TxsDetails} />
-          <Route path="/account/:account" component={AccountDetails} />
-          <Route path="/validators/:validators" component={ValidatorsDetails} />
+          <Route path="/network/euler-5/tx/:txHash" component={TxsDetails} />
+          <Route
+            path="/network/euler-5/contract/:address"
+            component={AccountDetails}
+          />
+          <Route
+            path="/network/euler-5/hero/:address"
+            component={ValidatorsDetails}
+          />
           <Route path="/vesting" component={Vesting} />
 
           <Route exact path="*" component={NotFound} />

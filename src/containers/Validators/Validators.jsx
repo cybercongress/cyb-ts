@@ -10,6 +10,7 @@ import {
   Tooltip,
   Text,
 } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 
 import LocalizedStrings from 'react-localization';
 import {
@@ -294,10 +295,21 @@ class Validators extends Component {
             isSelectable
             key={validator.operator_address}
           >
-            <Table.TextCell paddingX={5} textAlign="center" width={35} flex="none">
+            <Table.TextCell
+              paddingX={5}
+              textAlign="center"
+              width={35}
+              flex="none"
+            >
               <StatusTooltip status={validator.status} />
             </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end" flexBasis={60} flex="none" isNumber>
+            <Table.TextCell
+              paddingX={5}
+              textAlign="end"
+              flexBasis={60}
+              flex="none"
+              isNumber
+            >
               <TextTable>{index + 1}</TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5}>
@@ -305,7 +317,11 @@ class Validators extends Component {
             </Table.TextCell>
             <Table.TextCell flex={0.8} paddingX={5} textAlign="end">
               <TextTable>
-                {formatValidatorAddress(validator.operator_address, 6, 5)}
+                <Link
+                  to={`/network/euler-5/hero/${validator.operator_address}`}
+                >
+                  {formatValidatorAddress(validator.operator_address, 6, 5)}
+                </Link>
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} flex={0.8} textAlign="end">
@@ -354,7 +370,7 @@ class Validators extends Component {
               </TextTable>
             </Table.TextCell>
             <Table.TextCell
-            paddingX={5}
+              paddingX={5}
               flex={showJailed ? 1 : 0.7}
               textAlign="end"
               isNumber
@@ -416,8 +432,18 @@ class Validators extends Component {
                 paddingBottom: '10px',
               }}
             >
-              <Table.TextHeaderCell paddingX={5} textAlign="center" width={35} flex="none" />
-              <Table.TextHeaderCell paddingX={5} textAlign="end" flexBasis={60} flex="none">
+              <Table.TextHeaderCell
+                paddingX={5}
+                textAlign="center"
+                width={35}
+                flex="none"
+              />
+              <Table.TextHeaderCell
+                paddingX={5}
+                textAlign="end"
+                flexBasis={60}
+                flex="none"
+              >
                 <TextTable fontSize={14}>#</TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell paddingX={5}>
@@ -448,7 +474,11 @@ class Validators extends Component {
                   {T.validators.table.bondedTokens}
                 </TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} flex={showJailed ? 1 : 0.7} textAlign="end">
+              <Table.TextHeaderCell
+                paddingX={5}
+                flex={showJailed ? 1 : 0.7}
+                textAlign="end"
+              >
                 <TextTable fontSize={14}>
                   {showJailed
                     ? T.validators.table.unbonding

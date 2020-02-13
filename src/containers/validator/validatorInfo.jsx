@@ -89,7 +89,7 @@ const ValidatorInfo = ({ data, marginBottom }) => {
                 Address:
               </Pane>
               <Pane fontSize={14}>
-                <Link to={`/account/${data.delegateAddress}`}>
+                <Link to={`/network/euler-5/contract/${data.delegateAddress}`}>
                   {data.delegateAddress}
                 </Link>
               </Pane>

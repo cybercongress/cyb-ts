@@ -122,7 +122,7 @@ export const Confirmed = ({
         </a>
       ) : (
         <Link
-          to={`/txs/${txHash}`}
+          to={`/network/euler-5/tx/${txHash}`}
           className="btn"
           style={{
             display: 'flex',
@@ -201,7 +201,7 @@ export const ErrorTx = ({
         </a>
       ) : (
         <Link
-          to={`/txs/${txHash}`}
+          to={`/network/euler-5/tx/${txHash}`}
           className="btn"
           style={{
             display: 'flex',

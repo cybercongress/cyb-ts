@@ -39,7 +39,7 @@ const TableTxs = ({ data, type, accountUser }) => {
     <Table.Row borderBottom="none" display="flex" key={item.txhash}>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/txs/${item.txhash}`}>
+          <Link to={`/network/euler-5/tx/${item.txhash}`}>
             {formatValidatorAddress(item.txhash, 6, 6)}
           </Link>
         </TextTable>

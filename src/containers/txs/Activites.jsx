@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
 import MsgType from './msgType';
-import Account from './Account';
+import { Account } from '../../components';
 import { CYBER } from '../../utils/config';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');

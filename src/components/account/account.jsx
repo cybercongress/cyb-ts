@@ -9,7 +9,7 @@ class Account extends React.Component {
     super(props);
     const { address } = this.props;
     this.state = {
-      account: `/account/${address}`,
+      account: `/network/euler-5/contract/${address}`,
       moniker: address,
       loading: true,
     };
@@ -22,7 +22,7 @@ class Account extends React.Component {
         this.updateAccount();
       } else {
         this.setState({
-          account: `/account/${address}`,
+          account: `/network/euler-5/contract/${address}`,
           moniker: `${formatValidatorAddress(address, 9, 6)}`,
           loading: false,
         });
@@ -37,7 +37,7 @@ class Account extends React.Component {
 
     if (result) {
       this.setState({
-        account: `/validators/${address}`,
+        account: `/network/euler-5/hero/${address}`,
         moniker: `${formatValidatorAddress(address, 4, 6)} (${
           result.description.moniker
         })`,

@@ -71,7 +71,6 @@ class AccountDetails extends React.Component {
     }
   }
 
-
   chekPathname = () => {
     const { location } = this.props;
     const { pathname } = location;
@@ -95,19 +94,19 @@ class AccountDetails extends React.Component {
 
   getBalanseAccount = async () => {
     const { match } = this.props;
-    const { account } = match.params;
+    const { address } = match.params;
     let total;
     const staking = {
       delegations: [],
       unbonding: [],
     };
 
-    await this.setState({ account });
+    await this.setState({ account: address });
 
-    const result = await getBalance(account);
+    const result = await getBalance(address);
     console.log('result', result);
 
-    const validatorAddress = getDelegator(account, 'cybervaloper');
+    const validatorAddress = getDelegator(address, 'cybervaloper');
 
     const resultGetDistribution = await getDistribution(validatorAddress);
 
@@ -120,7 +119,7 @@ class AccountDetails extends React.Component {
         staking.delegations = result.delegations;
         staking.delegations = await this.countReward(
           staking.delegations,
-          account
+          address
         );
       }
 
@@ -183,7 +182,7 @@ class AccountDetails extends React.Component {
     if (selected === 'heroes') {
       content = (
         <Route
-          path="/account/:address/heroes"
+          path="/network/euler-5/contract/:address/heroes"
           render={() => <Heroes data={staking} />}
         />
       );
@@ -196,7 +195,7 @@ class AccountDetails extends React.Component {
     if (selected === 'cyberlink') {
       content = (
         <Route
-          path="/account/:address/cyberlink"
+          path="/network/euler-5/contract/:address/cyberlink"
           render={() => <GetLink accountUser={account} />}
         />
       );
@@ -205,7 +204,7 @@ class AccountDetails extends React.Component {
     if (selected === 'txs') {
       content = (
         <Route
-          path="/account/:address/txs"
+          path="/network/euler-5/contract/:address/txs"
           render={() => <GetTxs accountUser={account} />}
         />
       );
@@ -231,22 +230,22 @@ class AccountDetails extends React.Component {
             <TabBtn
               text="Link"
               isSelected={selected === 'cyberlink'}
-              to={`/account/${account}/cyberlink`}
+              to={`/network/euler-5/contract/${account}/cyberlink`}
             />
             <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
-              to={`/account/${account}/heroes`}
+              to={`/network/euler-5/contract/${account}/heroes`}
             />
             <TabBtn
               text="Main"
               isSelected={selected === 'main'}
-              to={`/account/${account}`}
+              to={`/network/euler-5/contract/${account}`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
-              to={`/account/${account}/txs`}
+              to={`/network/euler-5/contract/${account}/txs`}
             />
           </Tablist>
           <Pane

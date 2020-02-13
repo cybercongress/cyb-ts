@@ -167,7 +167,7 @@ class SearchResults extends React.Component {
       searchItems.push(
         <SnipitAccount
           text="Details address"
-          to={`/account/${query}`}
+          to={`/network/euler-5/contract/${query}`}
           address={query}
         />
       );
@@ -177,7 +177,7 @@ class SearchResults extends React.Component {
       searchItems.push(
         <SnipitAccount
           text="Details a hero"
-          to={`/validators/${query}`}
+          to={`/network/euler-5/hero/${query}`}
           address={query}
         />
       );
@@ -185,7 +185,7 @@ class SearchResults extends React.Component {
 
     if (query.match(PATTERN_TX)) {
       searchItems.push(
-        <SnipitAccount text="Details Tx" to={`/txs/${query}`} address={query} />
+        <SnipitAccount text="Details Tx" to={`/network/euler-5/tx/${query}`} address={query} />
       );
     }
 

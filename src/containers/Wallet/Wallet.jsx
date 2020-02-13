@@ -262,7 +262,7 @@ class Wallet extends React.Component {
       >
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
-            <Link to={`/account/${item.address}`}>{item.address}</Link>
+            <Link to={`/network/euler-5/contract/${item.address}`}>{item.address}</Link>
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
@@ -274,7 +274,7 @@ class Wallet extends React.Component {
         </Table.TextCell>
         <Table.TextCell flex={0.2}>
           <Text color="#fff" fontSize="17px">
-            {(DENOM_CYBER_G).toUpperCase()}
+            {DENOM_CYBER_G.toUpperCase()}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.3}>

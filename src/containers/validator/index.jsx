@@ -122,10 +122,10 @@ class ValidatorsDetails extends React.PureComponent {
 
   getValidatorInfo = async () => {
     const { match } = this.props;
-    const { validators } = match.params;
+    const { address } = match.params;
 
     const resultStakingPool = await this.getSupply();
-    const result = await getValidatorsInfo(validators);
+    const result = await getValidatorsInfo(address);
 
     if (result === null) {
       return this.setState({ error: true, loader: false });
@@ -160,9 +160,9 @@ class ValidatorsDetails extends React.PureComponent {
 
   getDelegators = async () => {
     const { match } = this.props;
-    const { validators } = match.params;
+    const { address } = match.params;
 
-    const data = await getDelegations(validators);
+    const data = await getDelegations(address);
 
     if (data !== null) {
       this.setState({
@@ -186,7 +186,7 @@ class ValidatorsDetails extends React.PureComponent {
       data,
     } = this.state;
     const { match } = this.props;
-    const { validators } = match.params;
+    const { address } = match.params;
     // console.log('validatorInfo', validatorInfo);
     let content;
 
@@ -214,7 +214,7 @@ class ValidatorsDetails extends React.PureComponent {
     if (selected === 'delegators') {
       content = (
         <Route
-          path="/validators/:validators/delegators"
+          path="/network/euler-5/hero/:address/delegators"
           render={() => <Delegators data={delegators} />}
         />
       );
@@ -223,7 +223,7 @@ class ValidatorsDetails extends React.PureComponent {
     if (selected === 'txs') {
       content = (
         <Route
-          path="/validators/:validators/txs"
+          path="/network/euler-5/hero/:address/txs"
           render={() => <GetTxs accountUser={validatorInfo.delegateAddress} />}
         />
       );
@@ -237,17 +237,17 @@ class ValidatorsDetails extends React.PureComponent {
             <TabBtn
               text="Delegated"
               isSelected={selected === 'delegated'}
-              to={`/validators/${validators}`}
+              to={`/network/euler-5/hero/${address}`}
             />
             <TabBtn
               text="Delegators"
               isSelected={selected === 'delegators'}
-              to={`/validators/${validators}/delegators`}
+              to={`/network/euler-5/hero/${address}/delegators`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
-              to={`/validators/${validators}/txs`}
+              to={`/network/euler-5/hero/${address}/txs`}
             />
           </Tablist>
           <Pane
