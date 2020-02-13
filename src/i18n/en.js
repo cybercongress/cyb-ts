@@ -79,7 +79,7 @@ const i18n = {
       delegate: {
         joinValidator: 'Join Cyberd Network As Validator',
         btnBecome: 'Become a validator',
-        heroes: 'Heroes',
+        heroes: 'Hero',
         delegate: 'delegate to',
         unDelegateFrom: 'undelegate from ',
         yourDelegated: 'your delegated tokens:',
