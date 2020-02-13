@@ -12,15 +12,17 @@ const slashing = require('../../image/slashing.svg');
 
 const ContainerTitle = ({ img, children }) => (
   <Pane display="flex" alignItems="center">
-    <img
-      alt={children}
-      style={{
-        width: '30px',
-        height: '30px',
-        marginRight: '5px',
-      }}
-      src={img}
-    />
+    {img && (
+      <img
+        alt={children}
+        style={{
+          width: '30px',
+          height: '30px',
+          marginRight: '5px',
+        }}
+        src={img}
+      />
+    )}
     {children}
   </Pane>
 );
@@ -84,6 +86,9 @@ const MsgType = ({ type }) => {
       return 'IBCTransfer';
     case 'cosmos-sdk/IBCReceiveMsg':
       return 'IBC Receive';
+
+    case 'Fail':
+      return <ContainerTitle>—</ContainerTitle>;
 
     default:
       return { type };

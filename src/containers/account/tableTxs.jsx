@@ -1,10 +1,10 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroller';
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
 import { CardTemplate, MsgType, Loading } from '../../components';
 import Noitem from './noItem';
-import InfiniteScroll from 'react-infinite-scroller';
 
 const dateFormat = require('dateformat');
 const imgDropdown = require('../../image/arrow-dropdown.svg');
@@ -48,7 +48,7 @@ const TableTxs = ({ data, type, accountUser }) => {
         <TextTable>
           <img
             style={{ width: '20px', height: '20px', marginRight: '5px' }}
-            src={item.transaction.code === 0 ? statusTrueImg : statusFalseImg}
+            src={item.code === 0 ? statusTrueImg : statusFalseImg}
             alt="statusImg"
           />
         </TextTable>
@@ -56,7 +56,15 @@ const TableTxs = ({ data, type, accountUser }) => {
       <Table.TextCell textAlign="center">
         <TextTable>
           <MsgType
-            type={accountUser === item.subject ? item.type : 'Receive'}
+            type={
+              item.cyberlink !== null
+                ? 'cyberd/Link'
+                : item.message !== null
+                ? accountUser === item.subject
+                  ? item.message.type
+                  : 'Receive'
+                : 'Fail'
+            }
           />
         </TextTable>
       </Table.TextCell>

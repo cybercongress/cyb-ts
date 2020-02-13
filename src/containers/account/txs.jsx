@@ -7,22 +7,26 @@ import { Loading } from '../../components';
 export default function GetTxs({ accountUser }) {
   const GET_CHARACTERS = gql`
   subscription MyQuery {
-    message(where: {_or: [
-      {value: {_contains: {to_address: "${accountUser}"}}}, 
-      {value: {_contains: {from_address: "${accountUser}"}}},
-      {subject: {_eq: "${accountUser}"}}, 
-    ]} 
-      order_by: { height: desc }) {
-      txhash
-      type
-      height
-      timestamp
-      transaction {
-        code
+    transaction(order_by: {block: {height: desc}}, where: {_or: [{
+      subject: {_eq: "${accountUser}"}}, 
+      {message: {value: 
+        {_contains: {to_address: "${accountUser}"}
+      }}}]}
+    ) {
+      cyberlink {
+        object_from
+        object_to
       }
+      txhash
+      code
+      timestamp
       subject
+      message {
+        type
+      }
     }
   }
+  
   `;
   const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
 
@@ -39,7 +43,7 @@ export default function GetTxs({ accountUser }) {
           <Loading />
         </div>
       ) : (
-        <TableTxs accountUser={accountUser} data={dataTxs.message} />
+        <TableTxs accountUser={accountUser} data={dataTxs.transaction} />
       )}
     </div>
   );
