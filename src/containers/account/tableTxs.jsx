@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { CardTemplate, MsgType } from '../../components';
+import { CardTemplate, MsgType, Loading } from '../../components';
 import Noitem from './noItem';
+import InfiniteScroll from 'react-infinite-scroller';
 
 const dateFormat = require('dateformat');
 const imgDropdown = require('../../image/arrow-dropdown.svg');
@@ -23,9 +24,18 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
 );
 
 const TableTxs = ({ data, type, accountUser }) => {
-  const [seeAll, setSeeAll] = useState(false);
+  const containerReference = useRef();
+  const [itemsToShow, setItemsToShow] = useState(10);
 
-  const validatorRows = data.slice(0, seeAll ? data.length : 5).map(item => (
+  const setNextDisplayedPalettes = useCallback(() => {
+    setItemsToShow(itemsToShow + 10);
+  }, [itemsToShow, setItemsToShow]);
+
+  const displayedPalettes = useMemo(() => data.slice(0, itemsToShow), [
+    itemsToShow,
+  ]);
+
+  const validatorRows = displayedPalettes.map(item => (
     <Table.Row borderBottom="none" display="flex" key={item.txhash}>
       <Table.TextCell textAlign="center">
         <TextTable>
@@ -90,25 +100,30 @@ const TableTxs = ({ data, type, accountUser }) => {
             padding: 7,
           }}
         >
-          {data.length > 0 ? validatorRows : <Noitem text={`No txs ${type}`} />}
+          <div
+            style={{
+              height: '30vh',
+              overflow: 'auto',
+            }}
+            ref={containerReference}
+          >
+            <InfiniteScroll
+              hasMore={itemsToShow < data.length}
+              loader={<Loading />}
+              pageStart={0}
+              useWindow={false}
+              loadMore={setNextDisplayedPalettes}
+              getScrollParent={() => containerReference.current}
+            >
+              {data.length > 0 ? (
+                validatorRows
+              ) : (
+                <Noitem text={`No txs ${type}`} />
+              )}
+            </InfiniteScroll>
+          </div>
         </Table.Body>
       </Table>
-      {data.length > 1 && (
-        <button
-          style={{
-            width: '25px',
-            height: '25px',
-            margin: 0,
-            padding: 0,
-            border: 'none',
-            backgroundColor: 'transparent',
-          }}
-          type="button"
-          onClick={() => setSeeAll(!seeAll)}
-        >
-          <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
-        </button>
-      )}
     </div>
   );
 };
