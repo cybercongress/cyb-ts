@@ -9,6 +9,7 @@ import {
   Pill,
   Tooltip,
   Text,
+  Icon,
 } from '@cybercongress/gravity';
 
 import LocalizedStrings from 'react-localization';
@@ -89,6 +90,7 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
     fontSize={`${fontSize || 13}px`}
     color={`${color || '#fff'}`}
     display={`${display || 'inline-flex'}`}
+    alignItems="center"
     {...props}
   >
     {children}
@@ -477,7 +479,13 @@ class Validators extends Component {
               </Table.TextHeaderCell>
               <Table.TextHeaderCell paddingX={5} textAlign="center">
                 <TextTable fontSize={14}>
-                  {T.validators.table.bondedTokens}
+                  {T.validators.table.bondedTokens}{' '}
+                  <Tooltip
+                    position="bottom"
+                    content="Amount of EUL ( tokens you bonded to validator in )"
+                  >
+                    <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
+                  </Tooltip>
                 </TextTable>
               </Table.TextHeaderCell>
               {showJailed && (
