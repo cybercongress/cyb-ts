@@ -11,6 +11,7 @@ import {
   FormatNumber,
   TransactionSubmitted,
   Delegate,
+  ReDelegate,
   TransactionError,
 } from '../../components';
 
@@ -44,6 +45,7 @@ const T = new LocalizedStrings(i18n);
 
 export const TXTYPE_DELEGATE = 0;
 export const TXTYPE_UNDELEGATE = 1;
+export const TXTYPE_REDELEGATE = 2;
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -79,6 +81,7 @@ class ActionBarContainer extends Component {
       txHash: null,
       error: null,
       txType: null,
+      valueSelect: '',
       errorMessage: null,
     };
     this.timeOut = null;
@@ -241,7 +244,14 @@ class ActionBarContainer extends Component {
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend, txType } = this.state;
+    const {
+      ledger,
+      address,
+      addressInfo,
+      toSend,
+      txType,
+      valueSelect,
+    } = this.state;
     const { validators } = this.props;
 
     let tx = {};
@@ -277,6 +287,15 @@ class ActionBarContainer extends Component {
         tx = await ledger.txCreateUndelegateCyber(
           txContext,
           validatorAddres,
+          amount,
+          MEMO
+        );
+        break;
+      case TXTYPE_REDELEGATE:
+        tx = await ledger.txCreateRedelegateCyber(
+          txContext,
+          validatorAddres,
+          valueSelect,
           amount,
           MEMO
         );
@@ -365,6 +384,12 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onChangeReDelegate = e => {
+    this.setState({
+      valueSelect: e.target.value,
+    });
+  };
+
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
@@ -422,8 +447,15 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onClickRestake = () => {
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+      txType: TXTYPE_REDELEGATE,
+    });
+  };
+
   render() {
-    const { validators } = this.props;
+    const { validators, validatorsAll, addressLedger } = this.props;
     const {
       stage,
       ledgerVersion,
@@ -436,8 +468,14 @@ class ActionBarContainer extends Component {
       txHeight,
       txType,
       addressInfo,
+      valueSelect,
       errorMessage,
     } = this.state;
+
+    const validRestakeBtn =
+      parseFloat(toSend) > 0 &&
+      valueSelect.length > 0 &&
+      address.bech32 === addressLedger;
 
     const T_AB = T.actionBar.delegate;
 
@@ -475,10 +513,15 @@ class ActionBarContainer extends Component {
               {validators[0].description.moniker}
             </Text>
           </ActionBarContentText>
-          <Button marginRight={30} onClick={this.onClickDelegate}>
-            {T_AB.btnDelegate}
-          </Button>
-          <Button onClick={this.onClickUnDelegate}>{T_AB.btnUnDelegate}</Button>
+          <Button onClick={this.onClickDelegate}>Stake</Button>
+          {parseFloat(validators[0].delegation) > 0 && (
+            <div>
+              <Button marginX={25} onClick={this.onClickUnDelegate}>
+                Unstake
+              </Button>
+              <Button onClick={this.onClickRestake}>Restake</Button>
+            </div>
+          )}
         </ActionBar>
       );
     }
@@ -494,7 +537,12 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (
+      stage === STAGE_READY &&
+      (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE) &&
+      this.hasKey() &&
+      this.hasWallet()
+    ) {
       // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       return (
@@ -510,6 +558,30 @@ class ActionBarContainer extends Component {
           toSend={toSend}
           disabledBtn={balance === 0}
           delegate={txType === TXTYPE_DELEGATE}
+        />
+      );
+    }
+
+    if (
+      stage === STAGE_READY &&
+      txType === TXTYPE_REDELEGATE &&
+      this.hasKey() &&
+      this.hasWallet()
+    ) {
+      // if (stage === STAGE_READY) {
+      // if (this.state.stage === STAGE_READY) {
+      return (
+        <ReDelegate
+          address={address.bech32}
+          onClickBtnCloce={this.cleatState}
+          generateTx={() => this.generateTx()}
+          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          toSend={toSend}
+          disabledBtn={!validRestakeBtn}
+          validatorsAll={validatorsAll}
+          validators={validators}
+          onChangeReDelegate={e => this.onChangeReDelegate(e)}
+          valueSelect={valueSelect}
         />
       );
     }

@@ -646,6 +646,105 @@ export const Delegate = ({
   </ContainetLedger>
 );
 
+export const ReDelegate = ({
+  address,
+  onClickBtnCloce,
+  generateTx,
+  onChangeInputAmount,
+  toSend,
+  disabledBtn,
+  validators,
+  validatorsAll,
+  valueSelect,
+  onChangeReDelegate,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <Pane display="flex" flexDirection="column" alignItems="center">
+      <Text
+        marginBottom={20}
+        fontSize="16px"
+        lineHeight="25.888px"
+        color="#fff"
+      >
+        {address}
+      </Text>
+      <Text fontSize="30px" lineHeight="40px" color="#fff">
+        Restake details
+      </Text>
+
+      <Text fontSize="18px" lineHeight="30px" color="#fff">
+        {T.actionBar.delegate.yourDelegated}
+      </Text>
+      <Text
+        display="flex"
+        justifyContent="center"
+        fontSize="20px"
+        lineHeight="25.888px"
+        color="#3ab793"
+      >
+        <FormatNumber
+          marginRight={5}
+          number={formatNumber(validators[0].delegation / DIVISOR_CYBER_G, 6)}
+        />
+        {DENOM_CYBER_G.toUpperCase()}
+      </Text>
+
+      <Pane marginY={20}>
+        <Text fontSize="16px" color="#fff">
+          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+          restake from{' '}
+          <Text fontSize="20px" color="#fff" fontWeight={600}>
+            {validators[0].description.moniker}
+          </Text>
+        </Text>
+      </Pane>
+      <Pane marginBottom={30} display="flex" alignItems="center">
+        <input
+          value={toSend}
+          style={{
+            height: 32,
+            width: '70px',
+            marginRight: 10,
+          }}
+          onChange={onChangeInputAmount}
+          placeholder="amount"
+        />
+        <Pane display="flex" alignItems="center">
+          to:{' '}
+          <select value={valueSelect} onChange={onChangeReDelegate}>
+            <option value="">pick hero</option>
+            {validatorsAll
+              .filter(validator => validator.status > 0)
+              .map(item => (
+                <option
+                  key={item.operator_address}
+                  value={item.operator_address}
+                  style={{
+                    display:
+                      validators[0].operator_address === item.operator_address
+                        ? 'none'
+                        : 'block',
+                  }}
+                >
+                  {item.description.moniker}
+                </option>
+              ))}
+          </select>
+        </Pane>
+      </Pane>
+      <button
+        type="button"
+        className="btn-disabled"
+        onClick={generateTx}
+        style={{ height: 42, maxWidth: '200px' }}
+        disabled={disabledBtn}
+      >
+        {T.actionBar.delegate.generate}
+      </button>
+    </Pane>
+  </ContainetLedger>
+);
+
 export const SendLedger = ({
   onClickBtn,
   address,

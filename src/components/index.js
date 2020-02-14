@@ -38,5 +38,6 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
+  ReDelegate,
   TransactionError,
 } from './ledger/stageActionBar';
