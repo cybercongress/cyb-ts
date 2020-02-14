@@ -20,7 +20,7 @@ import {
   formatNumber as format,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
-import { Loading, ActionBarLink } from '../../components';
+import { Loading } from '../../components';
 import Gift from '../Search/gift';
 
 import { CYBER, PATTERN } from '../../utils/config';
