@@ -1,7 +1,6 @@
 import RowTableTakeoff from './table';
-import ActionBarLink from './ledger/acitonBarLink';
 
-export { RowTableTakeoff, ActionBarLink };
+export { RowTableTakeoff };
 export { Nums } from './ui/Numbers';
 export { Dots } from './ui/Dots';
 export { SeeSaw } from './SeeSaw/SeeSaw';
@@ -39,5 +38,5 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
-  ErrorTx,
+  TransactionError,
 } from './ledger/stageActionBar';

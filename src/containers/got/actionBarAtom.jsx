@@ -9,6 +9,7 @@ import {
   ConnectLadger,
   SendLedgerAtomTot,
   SendAmount,
+  TransactionError,
 } from '../../components';
 
 const {
@@ -50,6 +51,7 @@ class ActionBarAtom extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      errorMessage: null,
     };
     this.ledgerModal = React.createRef();
     this.atomField = React.createRef();
@@ -130,6 +132,9 @@ class ActionBarAtom extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -204,13 +209,26 @@ class ActionBarAtom extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
@@ -274,6 +292,7 @@ class ActionBarAtom extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      errorMessage: null,
     });
     if (update) {
       update();
@@ -382,6 +401,7 @@ class ActionBarAtom extends Component {
       txHash,
       txHeight,
       stage,
+      errorMessage,
     } = this.state;
     const { valueAmount } = this.props;
 
@@ -447,6 +467,16 @@ class ActionBarAtom extends Component {
           txHash={txHash}
           explorer="cosmos.bigdipper.live"
           txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.cleatState}
           onClickBtnCloce={this.cleatState}
         />

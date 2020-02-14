@@ -11,6 +11,7 @@ import {
   FormatNumber,
   TransactionSubmitted,
   Delegate,
+  TransactionError,
 } from '../../components';
 
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
@@ -78,6 +79,7 @@ class ActionBarContainer extends Component {
       txHash: null,
       error: null,
       txType: null,
+      errorMessage: null,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -139,6 +141,9 @@ class ActionBarContainer extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -297,13 +302,26 @@ class ActionBarContainer extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
@@ -362,6 +380,7 @@ class ActionBarContainer extends Component {
       txContext: null,
       txBody: null,
       txHeight: null,
+      errorMessage: null,
       txHash: null,
       error: null,
     });
@@ -417,6 +436,7 @@ class ActionBarContainer extends Component {
       txHeight,
       txType,
       addressInfo,
+      errorMessage,
     } = this.state;
 
     const T_AB = T.actionBar.delegate;
@@ -509,6 +529,16 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.cleatState}
           onClickBtnCloce={this.cleatState}
         />
