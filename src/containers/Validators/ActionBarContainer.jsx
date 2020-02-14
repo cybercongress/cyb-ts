@@ -455,10 +455,12 @@ class ActionBarContainer extends Component {
               {validators[0].description.moniker}
             </Text>
           </ActionBarContentText>
-          <Button marginRight={30} onClick={this.onClickDelegate}>
-            {T_AB.btnDelegate}
+          <Button onClick={this.onClickDelegate}>
+            Stake
           </Button>
-          <Button onClick={this.onClickUnDelegate}>{T_AB.btnUnDelegate}</Button>
+          <Button marginX={25} onClick={this.onClickUnDelegate}>Unstake</Button>
+          <Button onClick={this.onClickUnDelegate}>Restake</Button>
+
         </ActionBar>
       );
     }
