@@ -82,7 +82,7 @@ const i18n = {
         heroes: 'Hero',
         delegate: 'delegate to',
         unDelegateFrom: 'undelegate from ',
-        yourDelegated: 'your delegated tokens:',
+        yourDelegated: 'your staked tokens:',
         btnDelegate: 'DELEGATE',
         btnUnDelegate: 'UNDELEGATE',
         details: 'Delegation Details',

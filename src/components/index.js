@@ -40,4 +40,5 @@ export {
   SendLedgerAtomTot,
   SendAmount,
   ErrorTx,
+  ReDelegate,
 } from './ledger/stageActionBar';

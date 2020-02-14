@@ -35,7 +35,7 @@ const TAKEOFF = {
 const COSMOS = {
   ADDR_FUNDING: 'cosmos18d2wdn0k70ll75ev3wu73yzazsprxeylv7mvd6',
   CHAIN_ID: 'cosmoshub-3',
-  DEFAULT_GAS: 150000,
+  DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd/',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',

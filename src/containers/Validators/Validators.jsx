@@ -19,6 +19,7 @@ import {
   selfDelegationShares,
   stakingPool,
   getRankValidators,
+  getDelegations,
 } from '../../utils/search/utils';
 import {
   getDelegator,
@@ -137,6 +138,7 @@ class Validators extends Component {
 
   getValidators = async () => {
     const { bondedTokens, addressLedger } = this.state;
+    let delegationsData = [];
 
     let validators = await getValidators();
     const validatorsJailed = await getValidatorsUnbonding();
@@ -151,6 +153,21 @@ class Validators extends Component {
     const activeValidatorsCount = validators.filter(
       validator => !validator.jailed
     ).length;
+
+    if (addressLedger !== null) {
+      const responseDelegations = await getDelegations(addressLedger);
+      delegationsData = responseDelegations;
+    }
+
+    if (delegationsData.length > 0) {
+      delegationsData.forEach(item => {
+        validators.forEach((itemValidators, j) => {
+          if (itemValidators.operator_address === item.validator_address) {
+            validators[j].delegation = item.balance;
+          }
+        });
+      });
+    }
 
     await asyncForEach(
       Array.from(Array(validators.length).keys()),
@@ -178,16 +195,6 @@ class Validators extends Component {
         if (getSelfDelegation && validators[item].delegator_shares > 0) {
           shares =
             (getSelfDelegation / validators[item].delegator_shares) * 100;
-        }
-
-        if (addressLedger !== null) {
-          const delegation = await selfDelegationShares(
-            addressLedger,
-            validators[item].operator_address
-          );
-          validators[item].delegation = delegation;
-        } else {
-          validators[item].delegation = 0;
         }
 
         const staking = (validators[item].tokens / bondedTokens) * 100;
@@ -254,6 +261,7 @@ class Validators extends Component {
       validatorSelect,
       selectedIndex,
       language,
+      addressLedger,
     } = this.state;
 
     T.setLanguage(language);
@@ -350,13 +358,23 @@ class Validators extends Component {
             <Table.TextCell paddingX={5} textAlign="end" isNumber>
               <Tooltip
                 content={`${formatNumber(
-                  Math.floor(parseFloat(validator.delegation))
+                  Math.floor(
+                    parseFloat(
+                      validator.delegation !== undefined
+                        ? validator.delegation
+                        : 0
+                    )
+                  )
                 )} 
                 ${CYBER.DENOM_CYBER.toUpperCase()}`}
               >
                 <TextTable>
                   {formatCurrency(
-                    parseFloat(validator.delegation),
+                    parseFloat(
+                      validator.delegation !== undefined
+                        ? validator.delegation
+                        : 0
+                    ),
                     CYBER.DENOM_CYBER.toLocaleUpperCase()
                   )}
                 </TextTable>
@@ -484,6 +502,8 @@ class Validators extends Component {
         <ActionBarContainer
           updateTable={this.init}
           validators={validatorSelect}
+          validatorsAll={validators}
+          addressLedger={addressLedger}
         />
       </div>
     );
