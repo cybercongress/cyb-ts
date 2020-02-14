@@ -9,7 +9,7 @@ const i18n = {
         moniker: 'Moniker',
         operator: 'Operator',
         commissionProcent: 'Commission',
-        power: `Power (${DENOM_CYBER_G.toLocaleUpperCase()})`,
+        power: `Power`,
         selfProcent: 'Self',
         unbonding: 'Unbonding height',
         rank: 'Rank',

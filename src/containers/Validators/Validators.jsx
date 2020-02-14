@@ -12,6 +12,8 @@ import {
   Icon,
 } from '@cybercongress/gravity';
 
+import { Link, Route } from 'react-router-dom';
+
 import LocalizedStrings from 'react-localization';
 import {
   getValidators,
@@ -56,7 +58,7 @@ const StatusTooltip = ({ status }) => {
   }
 
   return (
-    <Pane display="flex" alignItems="center">
+    <Pane marginRight={10} display="flex" alignItems="center">
       <Tooltip
         appearance="card"
         content={
@@ -109,6 +111,7 @@ class Validators extends Component {
       selectedIndex: '',
       language: 'en',
       addressLedger: null,
+      selected: 'active',
     };
   }
 
@@ -120,7 +123,26 @@ class Validators extends Component {
       this.setState({ addressLedger: address.bech32 });
     }
     this.init();
+    this.chekPathname();
   }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (pathname.match(/jailed/gm) && pathname.match(/jailed/gm).length > 0) {
+      this.setState({ selected: 'jailed', showJailed: true });
+    } else {
+      this.setState({ selected: 'active', showJailed: false });
+    }
+  };
 
   init = async () => {
     await this.getSupply();
@@ -186,9 +208,6 @@ class Validators extends Component {
           2
         );
 
-        const powerFloat = validators[item].tokens * 10 ** -9;
-        const power = formatNumber(Math.floor(powerFloat * 1000) / 1000, 3);
-
         const getSelfDelegation = await selfDelegationShares(
           delegatorAddress,
           validators[item].operator_address
@@ -203,7 +222,7 @@ class Validators extends Component {
 
         validators[item].height = height;
         validators[item].commission = commission;
-        validators[item].power = power;
+        validators[item].power = validators[item].tokens;
         validators[item].shares = formatNumber(
           Math.floor(shares * 100) / 100,
           2
@@ -222,13 +241,6 @@ class Validators extends Component {
     });
   };
 
-  showActive = () => {
-    this.setState({ showJailed: false });
-  };
-
-  showJailed = () => {
-    this.setState({ showJailed: true });
-  };
 
   selectValidators = (validator, index) => {
     const { validatorSelect, selectedIndex } = this.state;
@@ -264,6 +276,7 @@ class Validators extends Component {
       selectedIndex,
       language,
       addressLedger,
+      selected,
     } = this.state;
 
     T.setLanguage(language);
@@ -303,15 +316,7 @@ class Validators extends Component {
           >
             <Table.TextCell
               paddingX={5}
-              textAlign="center"
-              width={35}
-              flex="none"
-            >
-              <StatusTooltip status={validator.status} />
-            </Table.TextCell>
-            <Table.TextCell
-              paddingX={5}
-              textAlign="end"
+              textAlign="start"
               flexBasis={60}
               flex="none"
               isNumber
@@ -319,24 +324,33 @@ class Validators extends Component {
               <TextTable>{index + 1}</TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5}>
-              <TextTable>{validator.description.moniker}</TextTable>
+              <TextTable>
+                <StatusTooltip status={validator.status} />
+                {validator.description.moniker}
+              </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} flex={0.7} textAlign="end">
               <TextTable>
                 <FormatNumber
                   number={validator.commission}
                   fontSizeDecimal={11.5}
-                />{' '}
-                %
+                />
+                &ensp;%
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} textAlign="end" isNumber>
               <TextTable>
-                <FormatNumber
-                  style={{ marginRight: 5 }}
-                  number={validator.power}
-                  fontSizeDecimal={11.5}
-                />
+                <Tooltip
+                  content={`${formatNumber(parseFloat(validator.power))} 
+                ${CYBER.DENOM_CYBER.toUpperCase()}`}
+                >
+                  <TextTable>
+                    {formatCurrency(
+                      validator.power,
+                      CYBER.DENOM_CYBER.toUpperCase()
+                    )}
+                  </TextTable>
+                </Tooltip>
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} textAlign="end" isNumber>
@@ -345,7 +359,7 @@ class Validators extends Component {
                   number={validator.stakingPool}
                   fontSizeDecimal={11.5}
                 />
-                %
+                &ensp;%
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} textAlign="end">
@@ -354,7 +368,7 @@ class Validators extends Component {
                   number={validator.shares}
                   fontSizeDecimal={11.5}
                 />
-                %
+                &ensp;%
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} textAlign="end" isNumber>
@@ -400,36 +414,38 @@ class Validators extends Component {
             justifyContent="center"
           >
             <Tablist marginBottom={24}>
-              <Tab
-                key="Active"
-                id="Active"
-                isSelected={!showJailed}
-                onSelect={e => this.showActive()}
-                paddingX={50}
-                paddingY={20}
-                marginX={3}
-                borderRadius={4}
-                color="#36d6ae"
-                boxShadow="0px 0px 10px #36d6ae"
-                fontSize="16px"
-              >
-                Active
-              </Tab>
-              <Tab
-                key="Jailed"
-                id="Jailed"
-                isSelected={showJailed}
-                onSelect={e => this.showJailed()}
-                paddingX={50}
-                paddingY={20}
-                marginX={3}
-                borderRadius={4}
-                color="#36d6ae"
-                boxShadow="0px 0px 10px #36d6ae"
-                fontSize="16px"
-              >
-                Jailed
-              </Tab>
+              <Link to="/heroes">
+                <Tab
+                  key="Active"
+                  id="Active"
+                  isSelected={selected === 'active'}
+                  paddingX={50}
+                  paddingY={20}
+                  marginX={3}
+                  borderRadius={4}
+                  color="#36d6ae"
+                  boxShadow="0px 0px 10px #36d6ae"
+                  fontSize="16px"
+                >
+                  Active
+                </Tab>
+              </Link>
+              <Link to="/heroes/jailed">
+                <Tab
+                  key="Jailed"
+                  id="Jailed"
+                  isSelected={selected === 'jailed'}
+                  paddingX={50}
+                  paddingY={20}
+                  marginX={3}
+                  borderRadius={4}
+                  color="#36d6ae"
+                  boxShadow="0px 0px 10px #36d6ae"
+                  fontSize="16px"
+                >
+                  Jailed
+                </Tab>
+              </Link>
             </Tablist>
           </Pane>
 
@@ -445,19 +461,13 @@ class Validators extends Component {
               <Table.TextHeaderCell
                 paddingX={5}
                 textAlign="center"
-                width={35}
-                flex="none"
-              />
-              <Table.TextHeaderCell
-                paddingX={5}
-                textAlign="end"
                 flexBasis={60}
                 flex="none"
               >
                 <TextTable fontSize={14}>#</TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5}>
-                <TextTable fontSize={14}>
+              <Table.TextHeaderCell textAlign="center" paddingX={5}>
+                <TextTable fontSize={13}>
                   {T.validators.table.moniker}
                 </TextTable>
               </Table.TextHeaderCell>
