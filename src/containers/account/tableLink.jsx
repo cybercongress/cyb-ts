@@ -10,7 +10,7 @@ const dateFormat = require('dateformat');
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
-    fontSize={`${fontSize || 13}px`}
+    fontSize={`${fontSize || 16}px`}
     color={`${color || '#fff'}`}
     display={`${display || 'inline-flex'}`}
     {...props}
@@ -40,7 +40,7 @@ const TableLink = ({ data }) => {
           </Link>
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell textAlign="center">
+      <Table.TextCell flex={1.5} textAlign="center">
         <TextTable>
           {dateFormat(item.timestamp, 'dd/mm/yyyy, hh:MM:ss tt "UTC"')}
         </TextTable>
@@ -76,7 +76,7 @@ const TableLink = ({ data }) => {
           <Table.TextHeaderCell textAlign="center">
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.5} textAlign="center">
             <TextTable>timestamp</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
