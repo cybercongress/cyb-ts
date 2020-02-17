@@ -37,13 +37,6 @@ const TableTxs = ({ data, type, accountUser }) => {
 
   const validatorRows = displayedPalettes.map(item => (
     <Table.Row borderBottom="none" display="flex" key={item.txhash}>
-      <Table.TextCell textAlign="center">
-        <TextTable>
-          <Link to={`/network/euler-5/tx/${item.txhash}`}>
-            {formatValidatorAddress(item.txhash, 6, 6)}
-          </Link>
-        </TextTable>
-      </Table.TextCell>
       <Table.TextCell flex={0.5} textAlign="center">
         <TextTable>
           <img
@@ -51,6 +44,18 @@ const TableTxs = ({ data, type, accountUser }) => {
             src={item.code === 0 ? statusTrueImg : statusFalseImg}
             alt="statusImg"
           />
+        </TextTable>
+      </Table.TextCell>
+      <Table.TextCell textAlign="center">
+        <TextTable>
+          <Link to={`/network/euler-5/tx/${item.txhash}`}>
+            {formatValidatorAddress(item.txhash, 6, 6)}
+          </Link>
+        </TextTable>
+      </Table.TextCell>
+      <Table.TextCell flex={1.3} textAlign="center">
+        <TextTable>
+          {dateFormat(item.timestamp, 'dd/mm/yyyy, hh:MM:ss tt "UTC"')}
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
@@ -68,11 +73,6 @@ const TableTxs = ({ data, type, accountUser }) => {
           />
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell textAlign="center">
-        <TextTable>
-          {dateFormat(item.timestamp, 'dd/mm/yyyy, hh:MM:ss tt "UTC"')}
-        </TextTable>
-      </Table.TextCell>
     </Table.Row>
   ));
 
@@ -87,17 +87,17 @@ const TableTxs = ({ data, type, accountUser }) => {
           paddingBottom: '10px',
         }}
       >
+        <Table.TextHeaderCell flex={0.5} textAlign="center">
+          <TextTable>status</TextTable>
+        </Table.TextHeaderCell>
         <Table.TextHeaderCell textAlign="center">
           <TextTable>tx</TextTable>
         </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={0.7} textAlign="center">
-          <TextTable flex={0.5}>status</TextTable>
+        <Table.TextHeaderCell flex={1.3} textAlign="center">
+          <TextTable>timestamp</TextTable>
         </Table.TextHeaderCell>
         <Table.TextHeaderCell textAlign="center">
           <TextTable>type</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell textAlign="center">
-          <TextTable>timestamp</TextTable>
         </Table.TextHeaderCell>
       </Table.Head>
       <Table.Body
