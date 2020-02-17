@@ -483,7 +483,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={e => this.onClickSend(e)}>
-              {type === 'heroes' ? 'reward claim' : T.actionBar.pocket.send}
+              {type === 'heroes' ? 'Claim rewards' : T.actionBar.pocket.send}
             </Button>
           </Pane>
         </ActionBar>
