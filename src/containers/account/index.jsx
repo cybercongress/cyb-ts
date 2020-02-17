@@ -151,6 +151,8 @@ class AccountDetails extends React.Component {
         if (resultRewards) {
           reward = parseFloat(resultRewards[0].amount);
           delegations[item].reward = Math.floor(reward);
+        } else {
+          delegations[item].reward = reward;
         }
       }
     );

@@ -1,5 +1,11 @@
 import React from 'react';
-import { Pane, Text, Tooltip, TableEv as Table } from '@cybercongress/gravity';
+import {
+  Pane,
+  Text,
+  Tooltip,
+  TableEv as Table,
+  Icon,
+} from '@cybercongress/gravity';
 import { CardTemplate, Account } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
@@ -30,7 +36,7 @@ const Noitem = ({ text }) => (
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
-    fontSize={`${fontSize || 13}px`}
+    fontSize={`${fontSize || 16}px`}
     color={`${color || '#fff'}`}
     display={`${display || 'inline-flex'}`}
     {...props}
@@ -39,9 +45,48 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
   </Text>
 );
 
+const Unbonding = ({ amount, stages, entries }) => (
+  <Pane display="flex" alignItems="flex-end">
+    <Pane
+      // key={}
+      fontSize="16px"
+      display="inline"
+      color="#fff"
+      width="100%"
+      textOverflow="ellipsis"
+      overflow="hidden"
+    >
+      {stages > 1
+        ? `${formatCurrency(amount)} in ${stages} stages`
+        : `${formatCurrency(entries[0].balance)} in 
+      ${getDaysIn(entries[0].completion_time)} days`}
+    </Pane>
+    <Tooltip
+      content={entries.map((items, index) => (
+        <div key={index}>
+          {`${formatNumber(
+            parseFloat(items.balance)
+          )} ${CYBER.DENOM_CYBER.toUpperCase()}`}{' '}
+          in {getDaysIn(items.completion_time)} days
+        </div>
+      ))}
+      position="bottom"
+    >
+      <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
+    </Tooltip>
+  </Pane>
+);
+
 const Heroes = ({ data, ...props }) => {
   console.log(data);
   const delegations = data.delegations.map(item => {
+    let amount = 0;
+    if (item.entries !== undefined) {
+      item.entries.forEach(entry => {
+        amount += parseFloat(entry.balance);
+      });
+    }
+
     return (
       <Table.Row
         borderBottom="none"
@@ -58,31 +103,13 @@ const Heroes = ({ data, ...props }) => {
             <Account address={item.validator_address} />
           </TextTable>
         </Table.TextCell>
-        <Table.TextCell textAlign="end">
+        <Table.TextCell flex={1.5} textAlign="end">
           {item.entries !== undefined && (
-            <Pane display="flex" alignItems="flex-end" flexDirection="column">
-              {item.entries.map((entry, index) => (
-                <Tooltip
-                  content={`${formatNumber(
-                    parseFloat(entry.balance)
-                  )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-                  position="bottom"
-                >
-                  <Pane
-                    key={index}
-                    fontSize="13px"
-                    display="inline"
-                    color="#fff"
-                    width="100%"
-                    textOverflow="ellipsis"
-                    overflowX="hidden"
-                  >
-                    {formatCurrency(entry.balance)} in{' '}
-                    {getDaysIn(entry.completion_time)} days
-                  </Pane>
-                </Tooltip>
-              ))}
-            </Pane>
+            <Unbonding
+              amount={amount}
+              stages={item.entries.length}
+              entries={item.entries}
+            />
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
@@ -133,7 +160,7 @@ const Heroes = ({ data, ...props }) => {
           <Table.TextHeaderCell flex={2} textAlign="center">
             <TextTable>Validator</TextTable>
           </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.5} textAlign="center">
             <TextTable>Unbondings</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
