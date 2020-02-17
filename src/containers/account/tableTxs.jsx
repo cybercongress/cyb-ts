@@ -36,7 +36,16 @@ const TableTxs = ({ data, type, accountUser }) => {
   ]);
 
   const validatorRows = displayedPalettes.map(item => (
-    <Table.Row borderBottom="none" display="flex" key={item.txhash}>
+    <Table.Row
+      // borderBottom="none"
+      paddingX={0}
+      paddingY={5}
+      borderBottom="1px solid #3ab79340"
+      display="flex"
+      minHeight="48px"
+      height="fit-content"
+      key={item.txhash}
+    >
       <Table.TextCell flex={0.5} textAlign="center">
         <TextTable>
           <img
@@ -59,8 +68,11 @@ const TableTxs = ({ data, type, accountUser }) => {
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
-        <TextTable>
-          <MsgType
+        <TextTable display="flex" flexDirection="column">
+          {item.messages.map((items, i) => (
+            <MsgType key={`${item.txhash}_${i}`} type={items.type} />
+          ))}
+          {/* <MsgType
             type={
               item.cyberlink !== null
                 ? 'cyberd/Link'
@@ -70,7 +82,7 @@ const TableTxs = ({ data, type, accountUser }) => {
                   : 'Receive'
                 : 'Fail'
             }
-          />
+          /> */}
         </TextTable>
       </Table.TextCell>
     </Table.Row>

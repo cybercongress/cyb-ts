@@ -13,17 +13,11 @@ export default function GetTxs({ accountUser }) {
         {_contains: {to_address: "${accountUser}"}
       }}}]}
     ) {
-      cyberlink {
-        object_from
-        object_to
-      }
       txhash
       code
       timestamp
       subject
-      message {
-        type
-      }
+      messages
     }
   }
   
