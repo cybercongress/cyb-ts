@@ -77,62 +77,60 @@ const TableTxs = ({ data, type, accountUser }) => {
   ));
 
   return (
-    <div>
-      <Table>
-        <Table.Head
+    <Table>
+      <Table.Head
+        style={{
+          backgroundColor: '#000',
+          borderBottom: '1px solid #ffffff80',
+          marginTop: '10px',
+          padding: 7,
+          paddingBottom: '10px',
+        }}
+      >
+        <Table.TextHeaderCell textAlign="center">
+          <TextTable>tx</TextTable>
+        </Table.TextHeaderCell>
+        <Table.TextHeaderCell flex={0.7} textAlign="center">
+          <TextTable flex={0.5}>status</TextTable>
+        </Table.TextHeaderCell>
+        <Table.TextHeaderCell textAlign="center">
+          <TextTable>type</TextTable>
+        </Table.TextHeaderCell>
+        <Table.TextHeaderCell textAlign="center">
+          <TextTable>timestamp</TextTable>
+        </Table.TextHeaderCell>
+      </Table.Head>
+      <Table.Body
+        style={{
+          backgroundColor: '#000',
+          overflowY: 'hidden',
+          padding: 7,
+        }}
+      >
+        <div
           style={{
-            backgroundColor: '#000',
-            borderBottom: '1px solid #ffffff80',
-            marginTop: '10px',
-            padding: 7,
-            paddingBottom: '10px',
+            height: '30vh',
+            overflow: 'auto',
           }}
+          ref={containerReference}
         >
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>tx</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell flex={0.7} textAlign="center">
-            <TextTable flex={0.5}>status</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>type</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>timestamp</TextTable>
-          </Table.TextHeaderCell>
-        </Table.Head>
-        <Table.Body
-          style={{
-            backgroundColor: '#000',
-            overflowY: 'hidden',
-            padding: 7,
-          }}
-        >
-          <div
-            style={{
-              height: '30vh',
-              overflow: 'auto',
-            }}
-            ref={containerReference}
+          <InfiniteScroll
+            hasMore={itemsToShow < data.length}
+            loader={<Loading />}
+            pageStart={0}
+            useWindow={false}
+            loadMore={setNextDisplayedPalettes}
+            getScrollParent={() => containerReference.current}
           >
-            <InfiniteScroll
-              hasMore={itemsToShow < data.length}
-              loader={<Loading />}
-              pageStart={0}
-              useWindow={false}
-              loadMore={setNextDisplayedPalettes}
-              getScrollParent={() => containerReference.current}
-            >
-              {data.length > 0 ? (
-                validatorRows
-              ) : (
-                <Noitem text={`No txs ${type}`} />
-              )}
-            </InfiniteScroll>
-          </div>
-        </Table.Body>
-      </Table>
-    </div>
+            {data.length > 0 ? (
+              validatorRows
+            ) : (
+              <Noitem text={`No txs ${type}`} />
+            )}
+          </InfiniteScroll>
+        </div>
+      </Table.Body>
+    </Table>
   );
 };
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { getValidatorsInfo } from '../../utils/search/utils';
 import { formatValidatorAddress } from '../../utils/utils';
-import { Dots } from '../index';
+import { Dots } from '../ui/Dots';
 
 class Account extends React.Component {
   constructor(props) {
@@ -38,9 +38,7 @@ class Account extends React.Component {
     if (result) {
       this.setState({
         account: `/network/euler-5/hero/${address}`,
-        moniker: `${formatValidatorAddress(address, 4, 6)} (${
-          result.description.moniker
-        })`,
+        moniker: `${result.description.moniker}`,
         loading: false,
       });
     }
