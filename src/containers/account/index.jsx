@@ -228,7 +228,7 @@ class AccountDetails extends React.Component {
           </ContainerCard>
           <Tablist display="flex" justifyContent="center">
             <TabBtn
-              text="Link"
+              text="Cyberlinks"
               isSelected={selected === 'cyberlink'}
               to={`/network/euler-5/contract/${account}/cyberlink`}
             />
