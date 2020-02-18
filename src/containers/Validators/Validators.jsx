@@ -301,7 +301,9 @@ class Validators extends Component {
     }
 
     const validatorRows = validators
-      .filter(validator => validator.jailed === showJailed)
+      .filter(validator =>
+        showJailed ? validator.status < 2 : validator.status === 2
+      )
       .map((validator, index) => {
         return (
           <Table.Row
