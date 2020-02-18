@@ -452,7 +452,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { type, addressSend } = this.props;
+    const { type, addressSend, addressLedger } = this.props;
     const {
       stage,
       address,
@@ -469,21 +469,37 @@ class ActionBarContainer extends Component {
       contentHash,
     } = this.state;
 
-    if (stage === STAGE_INIT) {
-      if (type === 'cyberlink') {
-        return (
-          <StartStageSearchActionBar
-            onClickBtn={this.onClickSend}
-            contentHash={contentHash}
-            onChangeInputContentHash={this.onChangeInput}
-          />
-        );
-      }
+    if (stage === STAGE_INIT && type === 'main') {
       return (
         <ActionBar>
           <Pane>
             <Button onClick={e => this.onClickSend(e)}>
-              {type === 'heroes' ? 'Claim rewards' : T.actionBar.pocket.send}
+              {T.actionBar.pocket.send}
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && type === 'cyberlink') {
+      return (
+        <StartStageSearchActionBar
+          onClickBtn={this.onClickSend}
+          contentHash={contentHash}
+          onChangeInputContentHash={this.onChangeInput}
+        />
+      );
+    }
+
+    if (stage === STAGE_INIT && type === 'heroes') {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button
+              disabled={addressSend !== addressLedger}
+              onClick={e => this.onClickSend(e)}
+            >
+              Claim rewards
             </Button>
           </Pane>
         </ActionBar>

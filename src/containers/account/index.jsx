@@ -46,6 +46,7 @@ class AccountDetails extends React.Component {
       account: '',
       keywordHash: '',
       loader: true,
+      addressLedger: null,
       balance: {
         available: 0,
         delegation: 0,
@@ -62,6 +63,12 @@ class AccountDetails extends React.Component {
   }
 
   componentDidMount() {
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      const address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address.bech32 });
+    }
     this.getBalanseAccount();
     this.chekPathname();
   }
@@ -181,6 +188,7 @@ class AccountDetails extends React.Component {
       selected,
       loader,
       keywordHash,
+      addressLedger,
     } = this.state;
 
     let content;
@@ -295,6 +303,7 @@ class AccountDetails extends React.Component {
           updateAddress={this.getBalanseAccount}
           addressSend={account}
           type={selected}
+          addressLedger={addressLedger}
         />
       </div>
     );
