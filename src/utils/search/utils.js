@@ -567,7 +567,7 @@ export const keybaseAvatar = async identity => {
   }
 };
 
-export const getDelegations = async validatorAddr => {
+export const getDelegators = async validatorAddr => {
   try {
     const response = await axios({
       method: 'get',
@@ -603,5 +603,18 @@ export const getTotalRewards = async delegatorAddr => {
   } catch (e) {
     console.log(e);
     return null;
+  }
+};
+
+export const getDelegations = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return 0;
   }
 };

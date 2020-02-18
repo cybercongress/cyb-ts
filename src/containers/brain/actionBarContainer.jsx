@@ -95,6 +95,9 @@ class ActionBarContainer extends React.Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };

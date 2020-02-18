@@ -82,6 +82,7 @@ const StartState = ({
   contract,
   round,
   roundAll,
+  startAuction,
 }) => {
   if (round <= roundAll)
     return (
@@ -94,7 +95,9 @@ const StartState = ({
             Claim All
           </ClaimedAll>
         )}
-        <Button onClick={onClickBtn}>Fuck Google</Button>
+        <Button disabled={startAuction} onClick={onClickBtn}>
+          Fuck Google
+        </Button>
       </ActionBar>
     );
   if (round > roundAll)
@@ -348,7 +351,14 @@ class ActionBarAuction extends Component {
       validInputRound,
       validInputAmount,
     } = this.state;
-    const { minRound, maxRound, web3, claimed, contract } = this.props;
+    const {
+      minRound,
+      maxRound,
+      web3,
+      startAuction,
+      claimed,
+      contract,
+    } = this.props;
     const btnConfirm = round >= minRound && round <= maxRound - 1 && amount > 0;
     if (web3.givenProvider === null)
       return (
@@ -374,6 +384,7 @@ class ActionBarAuction extends Component {
           web3={web3}
           round={minRound}
           roundAll={maxRound}
+          startAuction={startAuction}
         />
       );
     }

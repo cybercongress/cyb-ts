@@ -1,10 +1,6 @@
 const AUCTION = {
-  ADDR_SMART_CONTRACT: '0xc8a0b9d38d1301391fa593728cfaa2962bc72965',
-  ADDR_SMART_CONTRACT_AUCTION_UTILS:
-    '0x5095b56b6607724559d21bb4d2af0d9cdab64149',
-  ADDR_TOKEN: '0xce09a0c3ff16a4f5d2c66cea9b89e3cc2cf5242b',
-  ADDR_TOKEN_MANAGER: '0x74a653b35970c16b766a541a3410900b0f5ff024',
-  ADDR_VESTING: '0x3ce65173b147a01eb65c6ded14efc7c202186ebd',
+  ADDR_SMART_CONTRACT: '0xedd9ac4d6bbcac74fbbdcede0c934f69b3cdfa98',
+  ADDR_VESTING: '0x2c1b8763e6d291e24cb3241918d75d74f7945794',
   TOKEN_NAME: 'GOL',
   TOPICS_SEND:
     '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
@@ -16,10 +12,10 @@ const AUCTION = {
 };
 
 const NETWORKSIDS = {
-  42: 'kovan',
-  1: 'main',
-  5777: 'TestNet',
-  4: 'rinkeby',
+  main: 1,
+  rinkeby: 4,
+  kovan: 42,
+  TestNet: 5777,
 };
 
 const TAKEOFF = {
@@ -39,7 +35,7 @@ const TAKEOFF = {
 const COSMOS = {
   ADDR_FUNDING: 'cosmos18d2wdn0k70ll75ev3wu73yzazsprxeylv7mvd6',
   CHAIN_ID: 'cosmoshub-3',
-  DEFAULT_GAS: 150000,
+  DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd/',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',

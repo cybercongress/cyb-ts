@@ -12,7 +12,11 @@ import {
   Select,
   Textarea,
 } from '@cybercongress/gravity';
-import { ContainetLedger, Loading, FormatNumber, Account } from '../index';
+import { ContainetLedger } from './container';
+import { Loading } from '../ui/loading';
+import Account from '../account/account';
+import { FormatNumber } from '../formatNumber/formatNumber';
+
 import { formatNumber } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
@@ -157,78 +161,33 @@ export const Confirmed = ({
   </ContainetLedger>
 );
 
-export const ErrorTx = ({
-  txHash,
-  txHeight,
+export const TransactionError = ({
   onClickBtn,
   onClickBtnCloce,
-  explorer,
+  errorMessage,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <span className="font-size-20 display-inline-block text-align-center">
-      {T.actionBar.errorTx.error}
+      Transaction Error:
     </span>
     <div
       style={{ marginTop: '25px' }}
       className="display-flex flex-direction-column"
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
-        {T.actionBar.errorTx.blockTX}{' '}
+        Message:
         <span
           style={{
             color: '#3ab793',
             marginLeft: '5px',
           }}
         >
-          {formatNumber(txHeight)}
+          {errorMessage}
         </span>
       </p>
-
-      {explorer ? (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto',
-          }}
-          href={`https://${explorer}/transactions/${txHash}`}
-        >
-          {T.actionBar.confirmedTX.viewTX}
-        </a>
-      ) : (
-        <Link
-          to={`/network/euler-5/tx/${txHash}`}
-          className="btn"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto',
-          }}
-        >
-          {T.actionBar.confirmedTX.viewTX}
-        </Link>
-      )}
-      <div style={{ marginTop: '25px' }}>
-        <span>{T.actionBar.errorTx.tXHash}</span>
-        <span
-          style={{
-            fontSize: '12px',
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {txHash}
-        </span>
-      </div>
-
       <div style={{ marginTop: '25px', textAlign: 'center' }}>
         <button type="button" className="btn" onClick={onClickBtn}>
-          {T.actionBar.errorTx.continue}
+          {T.actionBar.confirmedTX.continue}
         </button>
       </div>
     </div>
@@ -694,6 +653,105 @@ export const Delegate = ({
         >
           {T.actionBar.delegate.max}
         </button>
+      </Pane>
+      <button
+        type="button"
+        className="btn-disabled"
+        onClick={generateTx}
+        style={{ height: 42, maxWidth: '200px' }}
+        disabled={disabledBtn}
+      >
+        {T.actionBar.delegate.generate}
+      </button>
+    </Pane>
+  </ContainetLedger>
+);
+
+export const ReDelegate = ({
+  address,
+  onClickBtnCloce,
+  generateTx,
+  onChangeInputAmount,
+  toSend,
+  disabledBtn,
+  validators,
+  validatorsAll,
+  valueSelect,
+  onChangeReDelegate,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <Pane display="flex" flexDirection="column" alignItems="center">
+      <Text
+        marginBottom={20}
+        fontSize="16px"
+        lineHeight="25.888px"
+        color="#fff"
+      >
+        {address}
+      </Text>
+      <Text fontSize="30px" lineHeight="40px" color="#fff">
+        Restake details
+      </Text>
+
+      <Text fontSize="18px" lineHeight="30px" color="#fff">
+        {T.actionBar.delegate.yourDelegated}
+      </Text>
+      <Text
+        display="flex"
+        justifyContent="center"
+        fontSize="20px"
+        lineHeight="25.888px"
+        color="#3ab793"
+      >
+        <FormatNumber
+          marginRight={5}
+          number={formatNumber(validators.delegation / DIVISOR_CYBER_G, 6)}
+        />
+        {DENOM_CYBER_G.toUpperCase()}
+      </Text>
+
+      <Pane marginY={20}>
+        <Text fontSize="16px" color="#fff">
+          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+          restake from{' '}
+          <Text fontSize="20px" color="#fff" fontWeight={600}>
+            {validators.description.moniker}
+          </Text>
+        </Text>
+      </Pane>
+      <Pane marginBottom={30} display="flex" alignItems="center">
+        <input
+          value={toSend}
+          style={{
+            height: 32,
+            width: '70px',
+            marginRight: 10,
+          }}
+          onChange={onChangeInputAmount}
+          placeholder="amount"
+        />
+        <Pane display="flex" alignItems="center">
+          to:{' '}
+          <select value={valueSelect} onChange={onChangeReDelegate}>
+            <option value="">pick hero</option>
+            {validatorsAll
+              .filter(validator => validator.status > 0)
+              .map(item => (
+                <option
+                  key={item.operator_address}
+                  value={item.operator_address}
+                  style={{
+                    display:
+                      validators.operator_address === item.operator_address
+                        ? 'none'
+                        : 'block',
+                  }}
+                >
+                  {item.description.moniker}
+                </option>
+              ))}
+          </select>
+        </Pane>
       </Pane>
       <button
         type="button"

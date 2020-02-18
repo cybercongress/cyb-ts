@@ -6,7 +6,7 @@ import {
   getValidatorsInfo,
   stakingPool,
   selfDelegationShares,
-  getDelegations,
+  getDelegators,
 } from '../../utils/search/utils';
 import { getDelegator } from '../../utils/utils';
 import { Loading } from '../../components';
@@ -162,7 +162,7 @@ class ValidatorsDetails extends React.PureComponent {
     const { match } = this.props;
     const { address } = match.params;
 
-    const data = await getDelegations(address);
+    const data = await getDelegators(address);
 
     if (data !== null) {
       this.setState({

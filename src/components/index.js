@@ -1,5 +1,25 @@
 import RowTableTakeoff from './table';
-import ActionBarLink from './ledger/acitonBarLink';
+import {
+  JsonTransaction,
+  TransactionSubmitted,
+  Confirmed,
+  NoResultState,
+  StartState,
+  ConnectLadger,
+  Cyberlink,
+  StartStageSearchActionBar,
+  Delegate,
+  SendLedger,
+  GovernanceStartStageActionBar,
+  CommunityPool,
+  ParamChange,
+  TextProposal,
+  SendLedgerAtomTot,
+  SendAmount,
+  RewardsDelegators,
+  ReDelegate,
+  TransactionError,
+} from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
 import StatusTooltip from './statusTooltip';
@@ -7,12 +27,31 @@ import MsgType from './msgType/msgType';
 
 export {
   RowTableTakeoff,
-  ActionBarLink,
   Account,
   CardTemplate,
   StatusTooltip,
   MsgType,
+  JsonTransaction,
+  TransactionSubmitted,
+  Confirmed,
+  NoResultState,
+  StartState,
+  ConnectLadger,
+  Cyberlink,
+  StartStageSearchActionBar,
+  Delegate,
+  SendLedger,
+  GovernanceStartStageActionBar,
+  CommunityPool,
+  ParamChange,
+  TextProposal,
+  SendLedgerAtomTot,
+  SendAmount,
+  RewardsDelegators,
+  ReDelegate,
+  TransactionError,
 };
+
 export { Nums } from './ui/Numbers';
 export { Dots } from './ui/Dots';
 export { SeeSaw } from './SeeSaw/SeeSaw';
@@ -40,24 +79,4 @@ export {
   ContainerPane,
   Item,
 } from './governance/governance';
-export {
-  JsonTransaction,
-  TransactionSubmitted,
-  Confirmed,
-  NoResultState,
-  StartState,
-  ConnectLadger,
-  Cyberlink,
-  StartStageSearchActionBar,
-  Delegate,
-  SendLedger,
-  GovernanceStartStageActionBar,
-  CommunityPool,
-  ParamChange,
-  TextProposal,
-  SendLedgerAtomTot,
-  SendAmount,
-  ErrorTx,
-  RewardsDelegators,
-} from './ledger/stageActionBar';
 export { Link, Cid } from './link/link';

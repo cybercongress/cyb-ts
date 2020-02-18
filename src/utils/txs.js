@@ -470,7 +470,31 @@ function createWithdrawDelegationReward(txContext, address, memo, rewards) {
       },
     });
   });
+}
 
+function createRedelegateCyber(
+  txContext,
+  validatorSourceBech32,
+  validatorDestBech32,
+  uatomAmount,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgBeginRedelegate',
+    value: {
+      amount: {
+        amount: uatomAmount.toString(),
+        denom: DENOM_CYBER,
+      },
+      delegator_address: txContext.bech32,
+      validator_dst_address: validatorDestBech32,
+      validator_src_address: validatorSourceBech32,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
   txSkeleton.value.memo = memo || '';
 
   return txSkeleton;
@@ -491,4 +515,5 @@ export default {
   createCommunityPool,
   createUndelegateCyber,
   createWithdrawDelegationReward,
+  createRedelegateCyber,
 };

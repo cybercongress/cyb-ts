@@ -1,15 +1,14 @@
 import React, { PureComponent } from 'react';
 import waitForWeb3 from './waitForWeb3';
 
-import Token from '../../../contracts/Token.json';
-import Auction from '../../../contracts/Auction.json';
+import abiToken from '../../../contracts/Token';
 import VestingConstract from '../../../contracts/Vesting.json';
 import TokenManager from '../../../contracts/TokenManager.json';
 
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 
-import { AUCTION } from '../../utils/config';
+import { AUCTION, NETWORKSIDS } from '../../utils/config';
 
 const injectWeb3Vesting = InnerComponent =>
   class extends PureComponent {
@@ -35,10 +34,20 @@ const injectWeb3Vesting = InnerComponent =>
       // this.checkBuy();
     }
 
-    async getWeb3() {
+    getWeb3 = async () => {
       await window.ethereum.enable();
       try {
         const web3 = await waitForWeb3();
+
+        console.log(web3.givenProvider);
+        const networkId = await web3.eth.net.getId();
+        const networkContract = NETWORKSIDS.rinkeby;
+
+        if (networkContract !== networkId) {
+          return this.setState({
+            isCorrectNetwork: false,
+          });
+        }
 
         const contractVesting = await new web3.eth.Contract(
           VestingConstract.abi,
@@ -57,7 +66,7 @@ const injectWeb3Vesting = InnerComponent =>
         const tokenAddress = await contractTokenManager.methods.token().call();
 
         const contractToken = await new web3.eth.Contract(
-          Token.abi,
+          abiToken,
           tokenAddress
         );
         if (web3.givenProvider === null) {
@@ -71,8 +80,6 @@ const injectWeb3Vesting = InnerComponent =>
             isCorrectNetwork: true,
           });
         } else {
-          const networkContract = Object.keys(Auction.networks);
-          const networkId = await web3.eth.net.getId();
           const accounts = await web3.eth.getAccounts();
 
           this.setState({
@@ -82,7 +89,7 @@ const injectWeb3Vesting = InnerComponent =>
             contractToken,
             accounts: accounts[0].toLowerCase(),
             networkId,
-            isCorrectNetwork: networkContract.indexOf(`${networkId}`) !== -1,
+            isCorrectNetwork: true,
           });
         }
       } catch (e) {
@@ -100,11 +107,13 @@ const injectWeb3Vesting = InnerComponent =>
         contractTokenManager,
         contractToken,
       } = this.state;
-      // if (!isCorrectNetwork) {
-      //   return (
-      //     <NotFound text="Please connect to the Ethereum Rinkeby Network" />
-      //   );
-      // }
+
+      if (!isCorrectNetwork) {
+        return (
+          <NotFound text="Please connect to the Ethereum Rinkeby Network" />
+        );
+      }
+
       if (loading) {
         return (
           <div
