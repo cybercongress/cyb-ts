@@ -469,7 +469,7 @@ class ActionBarContainer extends Component {
       contentHash,
     } = this.state;
 
-    if (stage === STAGE_INIT && type === 'main') {
+    if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
       return (
         <ActionBar>
           <Pane>
@@ -481,7 +481,7 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_INIT && type === 'cyberlink') {
+    if (stage === STAGE_INIT && (type === 'cyberlink' || type === 'mentions')) {
       return (
         <StartStageSearchActionBar
           onClickBtn={this.onClickSend}
