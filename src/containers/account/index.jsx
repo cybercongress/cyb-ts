@@ -7,6 +7,7 @@ import {
   getTotalEUL,
   getDistribution,
   getRewards,
+  getIpfsHash,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -16,6 +17,7 @@ import { Loading, Copy, ContainerCard, Card } from '../../components';
 import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
 import Main from './main';
+import GetMentions from './mentions';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -42,6 +44,7 @@ class AccountDetails extends React.Component {
     super(props);
     this.state = {
       account: '',
+      keywordHash: '',
       loader: true,
       balance: {
         available: 0,
@@ -87,6 +90,11 @@ class AccountDetails extends React.Component {
       pathname.match(/heroes/gm).length > 0
     ) {
       this.select('heroes');
+    } else if (
+      pathname.match(/mentions/gm) &&
+      pathname.match(/mentions/gm).length > 0
+    ) {
+      this.select('mentions');
     } else {
       this.select('main');
     }
@@ -101,7 +109,9 @@ class AccountDetails extends React.Component {
       unbonding: [],
     };
 
-    await this.setState({ account: address });
+    const keywordHash = await getIpfsHash(address);
+
+    await this.setState({ account: address, keywordHash });
 
     const result = await getBalance(address);
     console.log('result', result);
@@ -164,7 +174,14 @@ class AccountDetails extends React.Component {
   };
 
   render() {
-    const { account, balance, staking, selected, loader } = this.state;
+    const {
+      account,
+      balance,
+      staking,
+      selected,
+      loader,
+      keywordHash,
+    } = this.state;
 
     let content;
 
@@ -212,6 +229,15 @@ class AccountDetails extends React.Component {
       );
     }
 
+    if (selected === 'mentions') {
+      content = (
+        <Route
+          path="/network/euler-5/contract/:address/mentions"
+          render={() => <GetMentions accountUser={keywordHash} />}
+        />
+      );
+    }
+
     return (
       <div>
         <main className="block-body">
@@ -248,6 +274,11 @@ class AccountDetails extends React.Component {
               text="Txs"
               isSelected={selected === 'txs'}
               to={`/network/euler-5/contract/${account}/txs`}
+            />
+            <TabBtn
+              text="Mentions"
+              isSelected={selected === 'mentions'}
+              to={`/network/euler-5/contract/${account}/mentions`}
             />
           </Tablist>
           <Pane
