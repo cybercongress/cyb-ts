@@ -10,12 +10,13 @@ import {
 } from '../../utils/search/utils';
 import { getDelegator } from '../../utils/utils';
 import { Loading } from '../../components';
-import DontReadTheComments from './wss';
+import Burden from './burden';
 import Delegated from './delegated';
 import Delegators from './delegators';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
-import GetTxs from '../account/txs';
+import Leadership from './leadership';
+import Rumors from './rumors';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -67,15 +68,28 @@ class ValidatorsDetails extends React.PureComponent {
     const { location } = this.props;
     const { pathname } = location;
 
-    if (pathname.match(/txs/gm) && pathname.match(/txs/gm).length > 0) {
-      this.select('txs');
-    } else if (
-      pathname.match(/delegators/gm) &&
-      pathname.match(/delegators/gm).length > 0
+    if (
+      pathname.match(/leadership/gm) &&
+      pathname.match(/leadership/gm).length > 0
     ) {
-      this.select('delegators');
+      this.select('leadership');
+    } else if (
+      pathname.match(/fans/gm) &&
+      pathname.match(/fans/gm).length > 0
+    ) {
+      this.select('fans');
+    } else if (
+      pathname.match(/burden/gm) &&
+      pathname.match(/burden/gm).length > 0
+    ) {
+      this.select('burden');
+    } else if (
+      pathname.match(/rumors/gm) &&
+      pathname.match(/rumors/gm).length > 0
+    ) {
+      this.select('rumors');
     } else {
-      this.select('delegated');
+      this.select('main');
     }
   };
 
@@ -187,7 +201,7 @@ class ValidatorsDetails extends React.PureComponent {
     } = this.state;
     const { match } = this.props;
     const { address } = match.params;
-    // console.log('validatorInfo', validatorInfo);
+    // console.log('validatorInfo', validatorInfo.consensus_pubkey);
     let content;
 
     if (loader) {
@@ -207,24 +221,41 @@ class ValidatorsDetails extends React.PureComponent {
       return <NotFound />;
     }
 
-    if (selected === 'delegated') {
+    if (selected === 'main') {
       content = <Delegated data={delegated} />;
     }
 
-    if (selected === 'delegators') {
+    if (selected === 'fans') {
       content = (
         <Route
-          path="/network/euler-5/hero/:address/delegators"
+          path="/network/euler-5/hero/:address/fans"
           render={() => <Delegators data={delegators} />}
         />
       );
     }
-
-    if (selected === 'txs') {
+    if (selected === 'rumors') {
       content = (
         <Route
-          path="/network/euler-5/hero/:address/txs"
-          render={() => <GetTxs accountUser={validatorInfo.delegateAddress} />}
+          path="/network/euler-5/hero/:address/rumors"
+          render={() => <Rumors accountUser={validatorInfo.operator_address} />}
+        />
+      );
+    }
+    if (selected === 'burden') {
+      content = (
+        <Route
+          path="/network/euler-5/hero/:address/burden"
+          render={() => <Burden accountUser={validatorInfo.consensus_pubkey} />}
+        />
+      );
+    }
+    if (selected === 'leadership') {
+      content = (
+        <Route
+          path="/network/euler-5/hero/:address/leadership"
+          render={() => (
+            <Leadership accountUser={validatorInfo.delegateAddress} />
+          )}
         />
       );
     }
@@ -235,19 +266,30 @@ class ValidatorsDetails extends React.PureComponent {
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tablist display="flex" justifyContent="center">
             <TabBtn
-              text="Delegated"
-              isSelected={selected === 'delegated'}
+              text="Main"
+              isSelected={selected === 'main'}
               to={`/network/euler-5/hero/${address}`}
             />
             <TabBtn
-              text="Delegators"
-              isSelected={selected === 'delegators'}
-              to={`/network/euler-5/hero/${address}/delegators`}
+              text="Fans"
+              isSelected={selected === 'fans'}
+              to={`/network/euler-5/hero/${address}/fans`}
             />
             <TabBtn
-              text="Txs"
-              isSelected={selected === 'txs'}
-              to={`/network/euler-5/hero/${address}/txs`}
+              text="Burden"
+              isSelected={selected === 'burden'}
+              to={`/network/euler-5/hero/${address}/burden`}
+            />
+            <TabBtn
+              text="Rumors"
+              isSelected={selected === 'rumors'}
+              to={`/network/euler-5/hero/${address}/rumors`}
+            />
+
+            <TabBtn
+              text="Leadership"
+              isSelected={selected === 'leadership'}
+              to={`/network/euler-5/hero/${address}/leadership`}
             />
           </Tablist>
           <Pane
