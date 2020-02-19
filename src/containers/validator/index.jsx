@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane } from '@cybercongress/gravity';
+import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import ValidatorInfo from './validatorInfo';
 import {
@@ -9,7 +9,7 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { getDelegator } from '../../utils/utils';
-import { Loading } from '../../components';
+import { Loading, Copy } from '../../components';
 import Burden from './burden';
 import Delegated from './delegated';
 import Fans from './fans';
@@ -41,7 +41,7 @@ class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      selected: 'delegated',
+      selected: 'main',
       validatorInfo: [],
       data: {},
       delegated: {},
@@ -275,6 +275,17 @@ class ValidatorsDetails extends React.PureComponent {
     return (
       <div>
         <main className="block-body">
+          <Pane
+            marginBottom={40}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Text color="#fff" fontSize="18px">
+              {validatorInfo.operator_address}{' '}
+              <Copy text={validatorInfo.operator_address} />
+            </Text>
+          </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tablist display="flex" justifyContent="center">
             <TabBtn

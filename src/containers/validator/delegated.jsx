@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { CardTemplate, StatusTooltip, FormatNumber } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
+import KeybaseCheck from './keybaseCheck';
 
 const dateFormat = require('dateformat');
 
@@ -78,6 +79,12 @@ const Delegated = ({ data, marginBottom }) => {
             </Link>
           }
         />
+        {data.description.identity.length > 0 && (
+          <Row
+            title="Identity"
+            value={<KeybaseCheck identity={data.description.identity} />}
+          />
+        )}
         <Row
           title="Delegator Shares"
           value={`${formatNumber(

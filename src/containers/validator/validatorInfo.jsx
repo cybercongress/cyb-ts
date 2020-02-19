@@ -1,7 +1,13 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { CardTemplate, StatusTooltip, FormatNumber } from '../../components';
+import {
+  CardTemplate,
+  ContainerCard,
+  Card,
+  StatusTooltip,
+  FormatNumber,
+} from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import KeybaseCheck from './keybaseCheck';
@@ -43,64 +49,34 @@ export const Row = ({ value, title, marginBottom }) => (
   </Pane>
 );
 
-const ValidatorInfo = ({ data, marginBottom }) => {
-  const {
-    rate,
-    max_rate: maxRate,
-    max_change_rate: maxChangeRate,
-  } = data.commission.commission_rates;
-
+const ValidatorInfo = ({ data }) => {
   const { moniker, identity, website, details } = data.description;
 
   return (
-    <CardTemplate marginBottom={marginBottom} paddingBottom={20}>
-      <Pane className="ValidatorInfo__info-wrapper" display="flex">
-        <Pane className="ValidatorInfo__moniker-avatar-wrapper-mobi">
-          <Pane
-            width={80}
-            height={80}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <KeybaseAvatar identity={identity} />
-          </Pane>
-          <Pane className="ValidatorInfo__moniker-wrapper-mobi">
-            <Pane fontSize="25px">{moniker}</Pane>
-
-            <StatusTooltip status={data.status} size={10} />
-          </Pane>
+    <ContainerCard styles={{ marginBottom: '50px' }} col={3}>
+      <Card
+        title="Voting Power"
+        value={`${formatNumber(data.votingPower, 3)} %`}
+      />
+      <Pane display="flex" flexDirection="column" alignItems="center">
+        <Pane
+          width={80}
+          height={80}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <KeybaseAvatar identity={identity} />
         </Pane>
-        <Pane width="100%" className="ValidatorInfo__addrs-wrapper">
-          <Pane marginBottom={15} className="ValidatorInfo__moniker-wrapper">
-            <Pane fontSize="25px">{moniker}</Pane>
-
-            <StatusTooltip status={data.status} size={10} />
+        <Pane display="flex" alignItems="center">
+          <StatusTooltip status={data.status} size={10} />
+          <Pane marginLeft={10} fontSize="25px">
+            {website.length > 0 ? <a href={website}>{moniker}</a> : moniker}
           </Pane>
         </Pane>
       </Pane>
-      <Pane>
-        {website.length > 0 && <Row title="Website" value={website} />}
-        {identity.length > 0 && (
-          <Row title="Identity" value={<KeybaseCheck identity={identity} />} />
-        )}
-        <Row
-          title="Voting Power"
-          value={
-            <Pane display="flex">
-              {formatNumber(data.votingPower, 3)}% (
-              <FormatNumber
-                fontSizeDecimal={12}
-                number={formatNumber(data.tokens / CYBER.DIVISOR_CYBER_G, 6)}
-                currency={CYBER.DENOM_CYBER_G}
-              />
-              )
-            </Pane>
-          }
-        />
-        {details.length > 0 && <Row title="Details" value={details} />}
-      </Pane>
-    </CardTemplate>
+      <Card title="Uptime" value={`100 %`} />
+    </ContainerCard>
   );
 };
 
