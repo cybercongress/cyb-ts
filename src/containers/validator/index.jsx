@@ -12,7 +12,7 @@ import { getDelegator } from '../../utils/utils';
 import { Loading } from '../../components';
 import Burden from './burden';
 import Delegated from './delegated';
-import Delegators from './delegators';
+import Fans from './fans';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
@@ -47,7 +47,7 @@ class ValidatorsDetails extends React.PureComponent {
       delegated: {},
       loader: true,
       error: false,
-      delegators: [],
+      fans: [],
     };
   }
 
@@ -95,12 +95,12 @@ class ValidatorsDetails extends React.PureComponent {
 
   init = async () => {
     // this.setState({ loader: true });
-    this.getValidatorInfo();
+    await this.getValidatorInfo();
     this.getDelegators();
   };
 
   update = async () => {
-    this.getValidatorInfo();
+    await this.getValidatorInfo();
     this.getDelegators();
   };
 
@@ -168,21 +168,31 @@ class ValidatorsDetails extends React.PureComponent {
         delegatorShares: result.delegator_shares,
         ...delegated,
       },
-      loader: false,
     });
   };
 
   getDelegators = async () => {
     const { match } = this.props;
     const { address } = match.params;
+    const { validatorInfo } = this.state;
+
+    let fans = [];
 
     const data = await getDelegators(address);
 
     if (data !== null) {
-      this.setState({
-        delegators: data.result,
+      fans = data.result;
+      Object.keys(fans).forEach(key => {
+        fans[key].share =
+          parseFloat(fans[key].balance) /
+          Math.floor(parseFloat(validatorInfo.delegator_shares));
       });
     }
+
+    this.setState({
+      fans,
+      loader: false,
+    });
   };
 
   select = selected => {
@@ -194,7 +204,7 @@ class ValidatorsDetails extends React.PureComponent {
       validatorInfo,
       loader,
       delegated,
-      delegators,
+      fans,
       error,
       selected,
       data,
@@ -229,7 +239,7 @@ class ValidatorsDetails extends React.PureComponent {
       content = (
         <Route
           path="/network/euler-5/hero/:address/fans"
-          render={() => <Delegators data={delegators} />}
+          render={() => <Fans data={fans} />}
         />
       );
     }

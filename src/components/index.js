@@ -24,6 +24,7 @@ import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
 import StatusTooltip from './statusTooltip';
 import MsgType from './msgType/msgType';
+import TextTable from './text/textTable';
 
 export {
   RowTableTakeoff,
@@ -50,6 +51,7 @@ export {
   RewardsDelegators,
   ReDelegate,
   TransactionError,
+  TextTable,
 };
 
 export { Nums } from './ui/Numbers';
