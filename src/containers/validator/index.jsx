@@ -162,11 +162,13 @@ class ValidatorsDetails extends React.PureComponent {
       },
       delegated: {
         total: parseFloat(result.tokens),
+        delegateAddress,
         jailed: result.jailed,
         unbondingTime: result.unbonding_time,
         unbondingHeight: result.unbonding_height,
         delegatorShares: result.delegator_shares,
         ...delegated,
+        ...result,
       },
     });
   };

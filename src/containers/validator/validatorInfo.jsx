@@ -77,24 +77,6 @@ const ValidatorInfo = ({ data, marginBottom }) => {
 
             <StatusTooltip status={data.status} size={10} />
           </Pane>
-          <Pane className="ValidatorInfo__addr-wrapper">
-            <Pane>
-              <Pane fontSize={15} marginBottom={5}>
-                Operator Address:
-              </Pane>
-              <Pane fontSize={14}>{data.operator_address}</Pane>
-            </Pane>
-            <Pane>
-              <Pane fontSize={15} marginBottom={5}>
-                Address:
-              </Pane>
-              <Pane fontSize={14}>
-                <Link to={`/network/euler-5/contract/${data.delegateAddress}`}>
-                  {data.delegateAddress}
-                </Link>
-              </Pane>
-            </Pane>
-          </Pane>
         </Pane>
       </Pane>
       <Pane>
@@ -115,15 +97,6 @@ const ValidatorInfo = ({ data, marginBottom }) => {
               )
             </Pane>
           }
-        />
-        <Row
-          title="Commission Rate"
-          value={`${formatNumber(rate * 100, 2)}%`}
-        />
-        <Row title="Max Rate" value={`${formatNumber(maxRate * 100, 2)}%`} />
-        <Row
-          title="Max Change Rate"
-          value={`${formatNumber(maxChangeRate * 100, 2)}%`}
         />
         {details.length > 0 && <Row title="Details" value={details} />}
       </Pane>

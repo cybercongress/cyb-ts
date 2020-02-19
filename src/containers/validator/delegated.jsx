@@ -1,11 +1,7 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
-import {
-  CardTemplate,
-  Link,
-  StatusTooltip,
-  FormatNumber,
-} from '../../components';
+import { Link } from 'react-router-dom';
+import { CardTemplate, StatusTooltip, FormatNumber } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 
@@ -48,6 +44,7 @@ export const Row = ({ value, title, marginBottom }) => (
 );
 
 const Delegated = ({ data, marginBottom }) => {
+  console.log(data);
   const {
     self,
     selfPercent,
@@ -60,20 +57,27 @@ const Delegated = ({ data, marginBottom }) => {
     delegatorShares,
   } = data;
 
+  const {
+    rate,
+    max_rate: maxRate,
+    max_change_rate: maxChangeRate,
+  } = data.commission.commission_rates;
+
   return (
     <Pane
       marginBottom={marginBottom || 0}
       // className="ValidatorInfo__Delegated-MissedBlocks-wrapper"
     >
-      <CardTemplate title="Delegated" paddingLeftChild={10} paddingBottom={20}>
-        <Pane marginBottom={10}>
-          <Pane>Total</Pane>
-          <FormatNumber
-            number={formatNumber(total / CYBER.DIVISOR_CYBER_G, 6)}
-            currency={CYBER.DENOM_CYBER_G}
-            fontSize={18}
-          />
-        </Pane>
+      <CardTemplate paddingLeftChild={10} paddingBottom={20}>
+        <Row title="Operator Address" value={data.operator_address} />
+        <Row
+          title="Address"
+          value={
+            <Link to={`/network/euler-5/contract/${data.delegateAddress}`}>
+              {data.delegateAddress}
+            </Link>
+          }
+        />
         <Row
           title="Delegator Shares"
           value={`${formatNumber(
@@ -85,6 +89,15 @@ const Delegated = ({ data, marginBottom }) => {
           value={`${formatNumber(
             Math.floor(total)
           )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+        />
+        <Row
+          title="Commission Rate"
+          value={`${formatNumber(rate * 100, 2)}%`}
+        />
+        <Row title="Max Rate" value={`${formatNumber(maxRate * 100, 2)}%`} />
+        <Row
+          title="Max Change Rate"
+          value={`${formatNumber(maxChangeRate * 100, 2)}%`}
         />
         <Row
           title="Self Stake"
@@ -100,6 +113,9 @@ const Delegated = ({ data, marginBottom }) => {
             </Pane>
           }
         />
+        {data.description.details.length > 0 && (
+          <Row title="Details" value={data.description.details} />
+        )}
         {jailed && (
           <Pane>
             <Row
