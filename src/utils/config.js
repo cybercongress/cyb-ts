@@ -114,6 +114,7 @@ const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9A-F]{64}$/g;
+const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 
 export {
   TAKEOFF,
@@ -129,4 +130,5 @@ export {
   PATTERN_CYBER,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
+  PATTERN_IPFS_HASH,
 };

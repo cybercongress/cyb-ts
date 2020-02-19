@@ -45,7 +45,9 @@ class Wallet extends React.Component {
   }
 
   async componentDidMount() {
+    const { web3 } = this.props;
     await this.checkAddressLocalStorage();
+    console.log(web3);
   }
 
   componentDidUpdate() {
@@ -262,7 +264,9 @@ class Wallet extends React.Component {
       >
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
-            <Link to={`/network/euler-5/contract/${item.address}`}>{item.address}</Link>
+            <Link to={`/network/euler-5/contract/${item.address}`}>
+              {item.address}
+            </Link>
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
@@ -392,4 +396,4 @@ class Wallet extends React.Component {
   }
 }
 
-export default Wallet;
+export default withWeb3(Wallet);
