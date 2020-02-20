@@ -264,6 +264,7 @@ class App extends Component {
           <MenuButton
             to="/pocket"
             imgLogo={cyb}
+            positionBugLeft
             textTooltip={
               <span>
                 <a

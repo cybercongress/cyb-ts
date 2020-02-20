@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const stausImgCyb = require('../../image/cyb.svg');
 const bug = require('../../image/bug.svg');
 
-export const MenuButton = ({ imgLogo, textTooltip, to, ...props }) => (
+export const MenuButton = ({ imgLogo, positionBugLeft, textTooltip, to, ...props }) => (
   <Tooltip
     content={textTooltip}
     position="bottom"
@@ -15,7 +15,8 @@ export const MenuButton = ({ imgLogo, textTooltip, to, ...props }) => (
       <Link to={to}>
         <Pane
           width={50}
-          // height={50}
+          height="auto"
+          maxHeight="50px"
           position="relative"
           display="flex"
           align-items="flex-end"
@@ -33,7 +34,8 @@ export const MenuButton = ({ imgLogo, textTooltip, to, ...props }) => (
               height: 20,
               position: 'absolute',
               bottom: '-20%',
-              left: '100%',
+              left: positionBugLeft ? 'unset' :  "100%",
+              right: positionBugLeft ? "100%" : 'unset',
             }}
           />
         </Pane>
