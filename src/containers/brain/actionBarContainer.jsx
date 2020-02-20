@@ -5,6 +5,7 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
 
 import { i18n } from '../../i18n/en';
+import { Link } from 'react-router-dom';
 
 import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
 
@@ -162,30 +163,30 @@ class ActionBarContainer extends React.Component {
           )}
           {!addAddress && (
             <Text color="#fff" fontSize="18px">
-              <a
+              <Link
                 style={{
                   fontSize: '18px',
                   padding: '5px 20px',
                   margin: '0 5px',
                 }}
                 className="bnt-claime"
-                href="gift"
+                to="/gift"
               >
                 Take gift
-              </a>{' '}
+              </Link>{' '}
               or Teleport to{' '}
-              <a
+              <Link
                 style={{
                   fontSize: '18px',
                   padding: '5px 20px',
                   margin: '0 5px',
                 }}
                 className="bnt-claime"
-                href="/gol"
+                to="/gol"
               >
                 {' '}
                 Game of Links{' '}
-              </a>
+              </Link>
             </Text>
           )}
         </Pane>
