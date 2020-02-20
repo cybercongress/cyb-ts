@@ -24,7 +24,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={50}
+      paddingX={20}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -32,6 +32,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
+      minWidth="150px"
     >
       {text}
     </Tab>
@@ -289,11 +290,6 @@ class ValidatorsDetails extends React.PureComponent {
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tablist display="flex" justifyContent="center">
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              to={`/network/euler-5/hero/${address}`}
-            />
-            <TabBtn
               text="Fans"
               isSelected={selected === 'fans'}
               to={`/network/euler-5/hero/${address}/fans`}
@@ -302,6 +298,11 @@ class ValidatorsDetails extends React.PureComponent {
               text="Burden"
               isSelected={selected === 'burden'}
               to={`/network/euler-5/hero/${address}/burden`}
+            />
+            <TabBtn
+              text="Main"
+              isSelected={selected === 'main'}
+              to={`/network/euler-5/hero/${address}`}
             />
             <TabBtn
               text="Rumors"

@@ -25,7 +25,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={50}
+      paddingX={20}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -33,6 +33,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
+      minWidth="150px"
     >
       {text}
     </Tab>

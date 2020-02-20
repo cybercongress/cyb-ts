@@ -18,7 +18,7 @@ export const Row = ({ value, title, marginBottom }) => (
     <Text
       key={`${title}-title`}
       display="flex"
-      fontSize="15px"
+      fontSize="16px"
       textTransform="capitalize"
       color="#fff"
       whiteSpace="nowrap"
@@ -32,7 +32,7 @@ export const Row = ({ value, title, marginBottom }) => (
       key={`${value}-value`}
       display="flex"
       color="#fff"
-      fontSize="14px"
+      fontSize="16px"
       wordBreak="break-all"
       lineHeight="20px"
       marginBottom="5px"
