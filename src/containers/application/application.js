@@ -202,8 +202,16 @@ class App extends Component {
             to="/brain"
             textTooltip={
               <span>
-                You are on the euler-5 network. Euler-5 is incentivized test
-                network. Be careful. Details in{' '}
+                You are on the{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/cyberd/releases/tag/euler-5"
+                >
+                  euler-5
+                </a>{' '}
+                network. Euler-5 is incentivized test network. Be careful.
+                Details in{' '}
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
