@@ -6692,6 +6692,11 @@ get-folder-size@^2.0.0:
     gar "^1.0.4"
     tiny-each-async "2.0.3"
 
+get-ipfs@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/get-ipfs/-/get-ipfs-1.0.1.tgz#07ee451dae0b901d17b6fa39e6f01e519d3df498"
+  integrity sha512-GjzEcIbI2Kx6tn7jAImPhb69xk+uecZH2M4qT+EsAafROXs6FDtJNtAnuvwwiRCzuAbrePn/aOcNKdEWfXR+2Q==
+
 get-iterator@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/get-iterator/-/get-iterator-1.0.2.tgz#cd747c02b4c084461fac14f48f6b45a80ed25c82"

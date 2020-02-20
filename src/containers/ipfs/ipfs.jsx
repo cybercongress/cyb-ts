@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import getIpfs from 'get-ipfs';
 
 const IPFS = require('ipfs');
 
@@ -16,8 +17,19 @@ class Ipfs extends PureComponent {
     };
   }
 
-  componentDidMount() {
-    this.ops();
+  async componentDidMount() {
+    const config = {
+      permissions: ['id', 'version', 'add', 'cat', 'dag', 'swarm'],
+    };
+    const ipfs = await getIpfs([config]);
+    const { id, agentVersion, protocolVersion } = await ipfs.id();
+
+    console.log(id, agentVersion, protocolVersion);
+
+    const cid = await ipfs.add('strdingToUse');
+    console.log(cid);
+
+    // this.ops();
   }
   // {
   //   repo: String(Math.random() + Date.now()),
