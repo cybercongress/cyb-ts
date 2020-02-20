@@ -198,7 +198,32 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <MenuButton to="/brain" imgLogo={cyber} />
+          <MenuButton
+            to="/brain"
+            textTooltip={
+              <span>
+                You are on the euler-5 network. Euler-5 is incentivized test
+                network. Be careful. Details in{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+                >
+                  whitepaper
+                </a>{' '}
+                and{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://cybercongress.ai/game-of-links/"
+                >
+                  Game of links
+                </a>{' '}
+                rules.
+              </span>
+            }
+            imgLogo={cyber}
+          />
           {!home && (
             <Pane
               position="absolute"
@@ -235,17 +260,23 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Link to="/pocket">
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
-            </Pane>
-          </Link>
+
+          <MenuButton
+            to="/pocket"
+            imgLogo={cyb}
+            textTooltip={
+              <span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/dot-cyber"
+                >
+                  dot-cyber
+                </a>{' '}
+                app has not been audited yet. Please, use it with caution.
+              </span>
+            }
+          />
           {/*
           <a href="/pocket">
             <Pane

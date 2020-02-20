@@ -6,25 +6,9 @@ import { Link } from 'react-router-dom';
 const stausImgCyb = require('../../image/cyb.svg');
 const bug = require('../../image/bug.svg');
 
-export const MenuButton = ({ imgLogo, to, ...props }) => (
+export const MenuButton = ({ imgLogo, textTooltip, to, ...props }) => (
   <Tooltip
-    content={
-      <span>
-        You are on the euler-5 network. Euler-5 is incentivized test network. Be
-        careful. Details in{' '}
-        <a
-          target="_blank"
-          href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
-        >
-          whitepaper
-        </a>{' '}
-        and{' '}
-        <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-          Game of links
-        </a>{' '}
-        rules.
-      </span>
-    }
+    content={textTooltip}
     position="bottom"
   >
     <Pane {...props} display="flex" alignItems="center" cursor="pointer">
