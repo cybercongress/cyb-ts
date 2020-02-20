@@ -1,23 +1,18 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import {
+  Pane,
+  Text,
+  TableEv as Table,
+  Tooltip,
+  Icon,
+} from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { CardTemplate, Cid, Loading } from '../../components';
+import { CardTemplate, Cid, Loading, TextTable } from '../../components';
 import Noitem from './noItem';
 
 const dateFormat = require('dateformat');
-
-const TextTable = ({ children, fontSize, color, display, ...props }) => (
-  <Text
-    fontSize={`${fontSize || 16}px`}
-    color={`${color || '#fff'}`}
-    display={`${display || 'inline-flex'}`}
-    {...props}
-  >
-    {children}
-  </Text>
-);
 
 const TableLink = ({ data }) => {
   const containerReference = useRef();
@@ -42,7 +37,7 @@ const TableLink = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell flex={1.5} textAlign="center">
         <TextTable>
-          {dateFormat(item.timestamp, 'dd/mm/yyyy, hh:MM:ss tt "UTC"')}
+          {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
@@ -77,7 +72,12 @@ const TableLink = ({ data }) => {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={1.5} textAlign="center">
-            <TextTable>timestamp</TextTable>
+            <TextTable>
+              timestamp{' '}
+              <Tooltip content="UTC" position="bottom">
+                <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
+              </Tooltip>
+            </TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>from</TextTable>

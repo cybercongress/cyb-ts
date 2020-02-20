@@ -3,7 +3,7 @@ import { Pane, Text, TableEv as Table, Icon, Tooltip } from '@cybercongress/grav
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { CardTemplate, MsgType, Loading } from '../../components';
+import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
 import Noitem from './noItem';
 
 const dateFormat = require('dateformat');
@@ -11,17 +11,6 @@ const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
-
-const TextTable = ({ children, fontSize, color, display, ...props }) => (
-  <Text
-    fontSize={`${fontSize || 16}px`}
-    color={`${color || '#fff'}`}
-    display={`${display || 'inline-flex'}`}
-    {...props}
-  >
-    {children}
-  </Text>
-);
 
 const TableTxs = ({ data, type, accountUser }) => {
   const containerReference = useRef();

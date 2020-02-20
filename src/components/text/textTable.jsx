@@ -6,6 +6,7 @@ const TextTable = ({ children, fontSize, color, display, ...props }) => (
     fontSize={`${fontSize || 16}px`}
     color={`${color || '#fff'}`}
     display={`${display || 'inline-flex'}`}
+    alignItems="center"
     {...props}
   >
     {children}
