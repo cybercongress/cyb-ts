@@ -7,9 +7,9 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
-import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
+import { MenuButton } from '../../components';
 import Electricity from '../home/electricity';
 
 const cyber = require('../../image/cyber.png');
@@ -153,7 +153,6 @@ class App extends Component {
     });
   };
 
-
   closeStory = () => {
     // console.log('dfd');
     this.setState({
@@ -199,9 +198,7 @@ class App extends Component {
                 }}
               />
             </Tooltip> */}
-          <Link to="/brain">
-            <Menu imgLogo={cyber} />
-          </Link>
+          <MenuButton to="/brain" imgLogo={cyber} />
           {!home && (
             <Pane
               position="absolute"
@@ -239,10 +236,17 @@ class App extends Component {
           )}
           <Electricity />
           <Link to="/pocket">
-            <Menu imgLogo={cyb} />
+            <Pane
+              width={50}
+              // height={50}
+              position="relative"
+              display="flex"
+              align-items="flex-end"
+            >
+              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
+            </Pane>
           </Link>
-          {
-          /*
+          {/*
           <a href="/pocket">
             <Pane
               width={50}
