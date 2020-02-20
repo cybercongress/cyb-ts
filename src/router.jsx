@@ -20,6 +20,7 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
+import Ipfs from './containers/ipfs/ipfs';
 
 export const history = createBrowserHistory({});
 
@@ -84,6 +85,7 @@ class AppRouter extends React.Component {
             component={ValidatorsDetails}
           />
           <Route path="/vesting" component={Vesting} />
+          <Route path="/ipfs" component={Ipfs} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>
