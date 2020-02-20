@@ -55,23 +55,26 @@ function Burden({ accountUser }) {
   });
 
   return (
-    <Pane
-      display="grid"
-      gridTemplateColumns="repeat(auto-fill, 25px)"
-      width="100%"
-    >
-      {block.map(item => (
-        <Tooltip position="bottom" content={item.height}>
-          <Pane
-            width="25px"
-            height="15px"
-            backgroundColor={item.status ? '#009624' : '#9b0000'}
-            boxShadow="inset 0 0 0px 1px #000"
-            key={item.height}
-          />
-        </Tooltip>
-      ))}
-    </Pane>
+    <div>
+      Last 300 blocks
+      <Pane
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, 25px)"
+        width="100%"
+      >
+        {block.map((item, index) => (
+          <Tooltip position="bottom" content={item.height}>
+            <Pane
+              width="25px"
+              height="15px"
+              backgroundColor={item.status ? '#009624' : '#9b0000'}
+              boxShadow="inset 0 0 0px 1px #000"
+              key={index}
+            />
+          </Tooltip>
+        ))}
+      </Pane>
+    </div>
   );
 }
 
