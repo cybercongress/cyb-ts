@@ -12,6 +12,7 @@ import {
 } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Link } from 'react-router-dom';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   formatNumber,
@@ -416,8 +417,8 @@ class Brain extends React.Component {
           title={T.brain.cap}
           value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
         />
-        <a
-          href="/heroes"
+        <Link
+          to="/heroes"
           style={{
             display: 'contents',
             textDecoration: 'none',
@@ -428,7 +429,7 @@ class Brain extends React.Component {
             value={activeValidatorsCount}
             icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
           />
-        </a>
+        </Link>
       </Pane>
     );
 
@@ -498,8 +499,8 @@ class Brain extends React.Component {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <a
-          href="/heroes"
+        <Link
+          to="/heroes"
           style={{
             display: 'contents',
             textDecoration: 'none',
@@ -510,7 +511,7 @@ class Brain extends React.Component {
             value={activeValidatorsCount}
             icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
           />
-        </a>
+        </Link>
         <CardStatisics title={T.brain.staked} value={stakedCyb} />
         <CardStatisics
           title={T.brain.transactions}
