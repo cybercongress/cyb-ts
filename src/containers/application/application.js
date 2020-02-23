@@ -7,9 +7,9 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
-import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
+import { MenuButton } from '../../components';
 import Electricity from '../home/electricity';
 
 const cyber = require('../../image/cyber.png');
@@ -185,9 +185,40 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          <Link to="/brain">
-            <Menu imgLogo={cyber} />
-          </Link>
+          <MenuButton
+            to="/brain"
+            textTooltip={
+              <span>
+                You are on the{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/cyberd/releases/tag/euler-5"
+                >
+                  euler-5
+                </a>{' '}
+                network. Euler-5 is incentivized test network. Be careful.
+                Details in{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+                >
+                  whitepaper
+                </a>{' '}
+                and{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://cybercongress.ai/game-of-links/"
+                >
+                  Game of links
+                </a>{' '}
+                rules.
+              </span>
+            }
+            imgLogo={cyber}
+          />
           {!home && (
             <Pane
               position="absolute"
@@ -224,18 +255,23 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Link to="/pocket">
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
-            </Pane>
-          </Link>
-          {/* <Timer /> */}
+          <MenuButton
+            to="/pocket"
+            imgLogo={cyb}
+            positionBugLeft
+            textTooltip={
+              <span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/dot-cyber"
+                >
+                  dot-cyber
+                </a>{' '}
+                app has not been audited yet. Please, use it with caution.
+              </span>
+            }
+          />
         </div>
         {/* </Navigation> */}
         {this.props.children}
