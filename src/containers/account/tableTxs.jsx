@@ -24,12 +24,13 @@ const TableTxs = ({ data, type, accountUser }) => {
     itemsToShow,
   ]);
 
-  const validatorRows = displayedPalettes.map(item => (
+  const validatorRows = displayedPalettes.map((item, index) => (
     <Table.Row
       // borderBottom="none"
       paddingX={0}
       paddingY={5}
-      borderBottom="1px solid #3ab79340"
+      borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}
+      borderBottom="none"
       display="flex"
       minHeight="48px"
       height="fit-content"
@@ -115,7 +116,7 @@ const TableTxs = ({ data, type, accountUser }) => {
       >
         <div
           style={{
-            height: '30vh',
+            height: data.length > 5 ? '30vh' : 'auto',
             overflow: 'auto',
           }}
           ref={containerReference}
@@ -131,7 +132,7 @@ const TableTxs = ({ data, type, accountUser }) => {
             {data.length > 0 ? (
               validatorRows
             ) : (
-              <Noitem text={`No txs ${type}`} />
+              <Noitem text={`No txs ${type || ' '}`} />
             )}
           </InfiniteScroll>
         </div>
