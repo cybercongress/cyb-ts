@@ -31,7 +31,7 @@ function Rumors({ accountUser }) {
           <Loading />
         </div>
       ) : (
-        <TableTxs accountUser={accountUser} data={dataTxs.transaction} />
+        <TableTxs accountUser={accountUser} amount data={dataTxs.transaction} />
       )}
     </div>
   );
