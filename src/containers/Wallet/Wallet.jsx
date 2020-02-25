@@ -9,7 +9,13 @@ import NotFound from '../application/notFound';
 import { formatNumber } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
-import { CYBER, LEDGER, COSMOS } from '../../utils/config';
+import {
+  CYBER,
+  LEDGER,
+  COSMOS,
+  PATTERN_COSMOS,
+  PATTERN_CYBER,
+} from '../../utils/config';
 import { i18n } from '../../i18n/en';
 import LocalizedStrings from 'react-localization';
 import { getBalance, getTotalEUL } from '../../utils/search/utils';
@@ -253,9 +259,20 @@ class Wallet extends React.Component {
       >
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
-            <Link to={`/network/euler-5/contract/${item.address}`}>
-              {item.address}
-            </Link>
+            {item.address.match(PATTERN_CYBER) && (
+              <Link to={`/network/euler-5/contract/${item.address}`}>
+                {item.address}
+              </Link>
+            )}
+            {item.address.match(PATTERN_COSMOS) && (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://www.mintscan.io/account/${item.address}`}
+              >
+                {item.address}
+              </a>
+            )}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
