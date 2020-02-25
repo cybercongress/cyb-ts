@@ -9,10 +9,10 @@ import NotFound from '../application/notFound';
 import { formatNumber } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
-import { CYBER, LEDGER } from '../../utils/config';
+import { CYBER, LEDGER, COSMOS } from '../../utils/config';
 import { i18n } from '../../i18n/en';
 import LocalizedStrings from 'react-localization';
-import { getBalanceWallet } from '../../utils/search/utils';
+import { getBalance, getTotalEUL } from '../../utils/search/utils';
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
@@ -41,6 +41,7 @@ class Wallet extends React.Component {
       time: 0,
       addAddress: false,
       loading: true,
+      accounts: null,
     };
   }
 
@@ -94,11 +95,11 @@ class Wallet extends React.Component {
   checkAddressLocalStorage = async () => {
     let address = [];
 
-    const localStorageStory = await localStorage.getItem('ledger');
+    const localStorageStory = await localStorage.getItem('poket');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      this.setState({ addressLedger: address });
+      this.setState({ accounts: address });
       this.getAddressInfo();
     } else {
       this.setState({
@@ -140,16 +141,23 @@ class Wallet extends React.Component {
   getAddress = async () => {
     try {
       const { ledger } = this.state;
+      const accounts = {};
 
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
-      console.log('address', addressLedger);
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
+
+      console.log('address', addressLedgerCyber);
 
       this.setState({
-        addressLedger,
+        addressLedger: addressLedgerCyber,
+        accounts,
       });
 
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('poket', JSON.stringify(accounts));
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
@@ -162,7 +170,7 @@ class Wallet extends React.Component {
   };
 
   getAddressInfo = async () => {
-    const { addressLedger } = this.state;
+    const { accounts } = this.state;
     const table = [];
     const addressInfo = {
       address: '',
@@ -170,22 +178,29 @@ class Wallet extends React.Component {
       token: '',
       keys: '',
     };
-    const response = await getBalanceWallet(addressLedger.bech32);
-    if (response) {
-      const data = response;
-      console.log('data', data);
-      addressInfo.address = addressLedger.bech32;
-      addressInfo.amount = data.account.coins[0].amount;
-      addressInfo.token = data.account.coins[0].denom;
-      addressInfo.keys = 'ledger';
-    } else {
-      addressInfo.address = addressLedger.bech32;
-      addressInfo.amount = 0;
-      addressInfo.token = 'eul';
-      addressInfo.keys = 'ledger';
-    }
+    const responseCyber = await getBalance(accounts.cyber.bech32);
+    const responseCosmos = await getBalance(
+      accounts.cosmos.bech32,
+      COSMOS.GAIA_NODE_URL_LSD,
+      'gaia_lcd'
+    );
 
-    table.push(addressInfo);
+    const totalCyber = await getTotalEUL(responseCyber);
+    table.push({
+      address: accounts.cyber.bech32,
+      amount: totalCyber.total,
+      token: 'eul',
+      keys: 'ledger',
+    });
+    const totalCosmos = await getTotalEUL(responseCosmos);
+    table.push({
+      address: accounts.cosmos.bech32,
+      amount: totalCosmos.total / COSMOS.DIVISOR_ATOM,
+      token: 'atom',
+      keys: 'ledger',
+    });
+
+    console.log(table);
 
     this.setState({
       table,
@@ -194,31 +209,6 @@ class Wallet extends React.Component {
       loading: false,
       addressInfo,
     });
-  };
-
-  getAmount = async address => {
-    try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      // this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
   };
 
   cleatState = () => {
@@ -250,6 +240,7 @@ class Wallet extends React.Component {
       stage,
       returnCode,
       ledgerVersion,
+      accounts,
     } = this.state;
 
     const rowsTable = table.map(item => (
@@ -262,7 +253,9 @@ class Wallet extends React.Component {
       >
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
-            <Link to={`/network/euler-5/contract/${item.address}`}>{item.address}</Link>
+            <Link to={`/network/euler-5/contract/${item.address}`}>
+              {item.address}
+            </Link>
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
@@ -272,7 +265,7 @@ class Wallet extends React.Component {
         </Table.TextCell>
         <Table.TextCell flex={0.2}>
           <Text color="#fff" fontSize="17px">
-            {CYBER.DENOM_CYBER.toUpperCase()}
+            {item.token.toUpperCase()}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.3}>
@@ -377,7 +370,7 @@ class Wallet extends React.Component {
             </Pane>
           </main>
           <ActionBarContainer
-            addressTable={addressLedger.bech32}
+            addressTable={accounts.cyber.bech32}
             onClickAddressLedger={this.onClickGetAddressLedger}
             addAddress={addAddress}
             updateAddress={this.checkAddressLocalStorage}

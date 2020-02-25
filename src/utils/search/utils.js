@@ -358,26 +358,29 @@ export const getRelevance = perPage =>
 //       .catch(e => {});
 //   });
 
-export const getBalance = async address => {
+export const getBalance = async (address, node, lcd) => {
   try {
     const availablePromise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/bank/balances/${address}`,
+      url: `${node || CYBER_NODE_URL}/${lcd || 'lcd'}/bank/balances/${address}`,
     });
 
     const delegationsPromise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
+      url: `${node || CYBER_NODE_URL}/${lcd ||
+        'lcd'}/staking/delegators/${address}/delegations`,
     });
 
     const unbondingPromise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/unbonding_delegations`,
+      url: `${node || CYBER_NODE_URL}/${lcd ||
+        'lcd'}/staking/delegators/${address}/unbonding_delegations`,
     });
 
     const rewardsPropsise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${address}/rewards`,
+      url: `${node || CYBER_NODE_URL}/${lcd ||
+        'lcd'}/distribution/delegators/${address}/rewards`,
     });
 
     const response = {
