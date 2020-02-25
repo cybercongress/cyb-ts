@@ -6,7 +6,7 @@ import { CosmosDelegateTool } from '../../utils/ledger';
 import { FormatNumber, Loading, ConnectLadger } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
-// import { formatNumber } from '../../utils/search/utils';
+import { formatNumber } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
 import { CYBER, LEDGER } from '../../utils/config';
@@ -267,14 +267,12 @@ class Wallet extends React.Component {
         </Table.TextCell>
         <Table.TextCell flex={0.5}>
           <Text color="#fff" fontSize="17px">
-            <FormatNumber
-              number={Math.floor((item.amount / DIVISOR_CYBER_G) * 1000) / 1000}
-            />
+            {formatNumber(parseFloat(item.amount))}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.2}>
           <Text color="#fff" fontSize="17px">
-            {DENOM_CYBER_G.toUpperCase()}
+            {CYBER.DENOM_CYBER.toUpperCase()}
           </Text>
         </Table.TextCell>
         <Table.TextCell flex={0.3}>
