@@ -5,6 +5,7 @@ import bech32 from 'bech32';
 import InformationBlock from './informationBlock';
 import TableTxs from '../account/tableTxs';
 import { CardTemplate } from '../../components';
+import ActionBarContainer from '../../containers/Search/ActionBarContainer';
 
 const GET_CHARACTERS = gql`
   query MyQuery($blockId: Int) {
@@ -51,6 +52,7 @@ function Block({ match }) {
           <TableTxs data={data.block[0].transactions} />
         </CardTemplate>
       </main>
+      <ActionBarContainer valueSearchInput={idBlock} keywordHash={idBlock} />
     </div>
   );
 }
