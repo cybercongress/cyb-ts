@@ -12,6 +12,8 @@ import {
   TransactionSubmitted,
 } from '../../components';
 
+import { TransactionError } from '../../components';
+
 const {
   STAGE_INIT,
   STAGE_SELECTION,
@@ -131,6 +133,9 @@ class ActionBarTakeOff extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -204,13 +209,26 @@ class ActionBarTakeOff extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
@@ -273,6 +291,7 @@ class ActionBarTakeOff extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      errorMessage: null,
     });
     if (update) {
       update();
@@ -389,6 +408,7 @@ class ActionBarTakeOff extends Component {
       txHeight,
       stage,
       valueAmount,
+      errorMessage,
     } = this.state;
 
     if (stage === STAGE_INIT) {
@@ -491,6 +511,24 @@ class ActionBarTakeOff extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
+          onClickBtn={this.onClickInitStage}
+          onClickBtnCloce={this.onClickInitStage}
+        />
+      );
+    }
+
+    if (step === 'transactionCost') {
+      return <TransactionCost onClickBtn={this.onClickTransactionCost} />;
+    }
+
+    if (step === 'succesfuuly') {
+      return <Succesfuuly />;
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.onClickInitStage}
           onClickBtnCloce={this.onClickInitStage}
         />

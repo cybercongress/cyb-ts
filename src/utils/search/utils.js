@@ -421,3 +421,16 @@ export const getDrop = async address => {
     return 0;
   }
 };
+
+export const getDelegations = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
