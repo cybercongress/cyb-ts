@@ -2,11 +2,12 @@ import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
+import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { FormatNumber, Loading, ConnectLadger } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, getDecimal } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
 import {
@@ -17,8 +18,8 @@ import {
   PATTERN_CYBER,
 } from '../../utils/config';
 import { i18n } from '../../i18n/en';
-import LocalizedStrings from 'react-localization';
 import { getBalance, getTotalEUL } from '../../utils/search/utils';
+
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
@@ -275,12 +276,23 @@ class Wallet extends React.Component {
             )}
           </Text>
         </Table.TextCell>
-        <Table.TextCell flex={0.5}>
+        <Table.TextCell textAlign="end" flex={0.5}>
           <Text color="#fff" fontSize="17px">
-            {formatNumber(parseFloat(item.amount))}
+            <span>{formatNumber(Math.floor(parseFloat(item.amount)))}</span>
+            <span
+              style={{
+                display: 'inline-block',
+                textAlign: 'left',
+                width: '40px',
+              }}
+            >
+              {Math.floor(item.amount) > 0
+                ? ''
+                : `,${getDecimal(formatNumber(item.amount, 3))}`}
+            </span>
           </Text>
         </Table.TextCell>
-        <Table.TextCell flex={0.2}>
+        <Table.TextCell textAlign="center" flex={0.2}>
           <Text color="#fff" fontSize="17px">
             {item.token.toUpperCase()}
           </Text>
