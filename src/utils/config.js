@@ -37,7 +37,7 @@ const COSMOS = {
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd/',
+  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
@@ -51,6 +51,7 @@ const CYBER = {
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
 
 const LEDGER = {
@@ -111,6 +112,10 @@ const DISTRIBUTION = [
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
+const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
+const PATTERN_TX = /[0-9A-F]{64}$/g;
+const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 
 export {
   TAKEOFF,
@@ -124,4 +129,8 @@ export {
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
   PATTERN_CYBER,
+  PATTERN_CYBER_VALOPER,
+  PATTERN_TX,
+  PATTERN_IPFS_HASH,
+  PATTERN_COSMOS,
 };

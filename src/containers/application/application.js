@@ -185,19 +185,6 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          {/* <Tooltip
-              tooltip="The app is not production ready and is for testing and experimentation only. All send tokens will be lost."
-              placement="bottom"
-            >
-              <img
-                src={bug}
-                alt="bug"
-                style={{
-                  width: 50,
-                  height: 50
-                }}
-              />
-            </Tooltip> */}
           <MenuButton
             to="/brain"
             textTooltip={
@@ -268,7 +255,6 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-
           <MenuButton
             to="/pocket"
             imgLogo={cyb}
@@ -286,33 +272,6 @@ class App extends Component {
               </span>
             }
           />
-          {/*
-          <a href="/pocket">
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
-            </Pane>
-          </a>
-          */
-          /* {app === '' && (
-            <div className="battery">
-              {htef.map(item => (
-                <Item
-                  key={item.to}
-                  selected={item.id === this.state.selectedIndex}
-                  to={item.to}
-                  nameApp={item.nameApp}
-                  onClick={e => this.onCustomClick(item)}
-                />
-              ))}
-            </div>
-          )} */}
-          {/* <Timer /> */}
         </div>
         {/* </Navigation> */}
         {this.props.children}

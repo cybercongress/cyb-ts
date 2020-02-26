@@ -2,7 +2,7 @@ import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import { CYBER, TAKEOFF, COSMOS } from '../config';
 
-const { CYBER_NODE_URL } = CYBER;
+const { CYBER_NODE_URL, BECH32_PREFIX_ACC_ADDR_CYBERVALOPER } = CYBER;
 
 const IPFS = require('ipfs-api');
 
@@ -317,69 +317,152 @@ export const getRelevance = perPage =>
       .catch(e => {})
   );
 
-export const getBalance = address =>
-  new Promise(resolve => {
-    const availablePromise = axios({
+// export const getBalance = address =>
+//   new Promise(resolve => {
+//     const availablePromise = axios({
+//       method: 'get',
+//       url: `${CYBER_NODE_URL}/lcd/bank/balances/${address}`,
+//     }).then(response => response.data.result);
+
+//     const delegationsPromise = axios({
+//       method: 'get',
+//       url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
+//     }).then(response => response.data.result);
+
+//     const unbondingPromise = axios({
+//       method: 'get',
+//       url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/unbonding_delegations`,
+//     }).then(response => response.data.result);
+
+//     const rewardsPropsise = axios({
+//       method: 'get',
+//       url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${address}/rewards`,
+//     }).then(response => response.data.result);
+
+//     Promise.all([
+//       availablePromise,
+//       delegationsPromise,
+//       unbondingPromise,
+//       rewardsPropsise,
+//     ])
+//       .then(([available, delegations, unbonding, rewards]) => {
+//         const response = {
+//           available: available[0],
+//           delegations,
+//           unbonding,
+//           rewards: rewards.total[0],
+//         };
+
+//         resolve(response);
+//       })
+//       .catch(e => {});
+//   });
+
+export const getBalance = async (address, node, lcd) => {
+  try {
+    const availablePromise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/bank/balances/${address}`,
-    }).then(response => response.data.result);
+      url: `${node || CYBER_NODE_URL}/${lcd || 'lcd'}/bank/balances/${address}`,
+    });
 
-    const delegationsPromise = axios({
+    const delegationsPromise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
-    }).then(response => response.data.result);
+      url: `${node || CYBER_NODE_URL}/${lcd ||
+        'lcd'}/staking/delegators/${address}/delegations`,
+    });
 
-    const unbondingPromise = axios({
+    const unbondingPromise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/unbonding_delegations`,
-    }).then(response => response.data.result);
+      url: `${node || CYBER_NODE_URL}/${lcd ||
+        'lcd'}/staking/delegators/${address}/unbonding_delegations`,
+    });
 
-    const rewardsPropsise = axios({
+    const rewardsPropsise = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${address}/rewards`,
-    }).then(response => response.data.result);
+      url: `${node || CYBER_NODE_URL}/${lcd ||
+        'lcd'}/distribution/delegators/${address}/rewards`,
+    });
 
-    Promise.all([
-      availablePromise,
-      delegationsPromise,
-      unbondingPromise,
-      rewardsPropsise,
-    ])
-      .then(([available, delegations, unbonding, rewards]) => {
-        const response = {
-          available: available[0],
-          delegations,
-          unbonding,
-          rewards: rewards.total[0],
-        };
+    const response = {
+      available: availablePromise.data.result[0],
+      delegations: delegationsPromise.data.result,
+      unbonding: unbondingPromise.data.result,
+      rewards:
+        rewardsPropsise.data.result.total !== null
+          ? rewardsPropsise.data.result.total[0]
+          : 0,
+    };
 
-        resolve(response);
-      })
-      .catch(e => {});
-  });
+    return response;
+  } catch (e) {
+    console.log(e);
+    return {
+      available: 0,
+      delegations: 0,
+      unbonding: 0,
+      rewards: 0,
+    };
+  }
+};
 
-export const getTotalEUL = data => {
-  let total = 0;
+export const getTotalEUL = async data => {
+  const balance = {
+    available: 0,
+    delegation: 0,
+    unbonding: 0,
+    rewards: 0,
+    total: 0,
+  };
 
   if (data) {
-    if (data.available) {
-      total += parseFloat(data.available.amount);
+    if (data.available && data.available !== 0) {
+      balance.total += Math.floor(parseFloat(data.available.amount));
+      balance.available += Math.floor(parseFloat(data.available.amount));
     }
 
-    if (data.delegations && data.delegations.length > 0) {
+    if (
+      data.delegations &&
+      data.delegations.length > 0 &&
+      data.delegations !== 0
+    ) {
       data.delegations.forEach((delegation, i) => {
-        total += parseFloat(delegation.shares);
+        balance.total += Math.floor(parseFloat(delegation.balance));
+        balance.delegation += Math.floor(parseFloat(delegation.balance));
       });
     }
 
-    // if (balance.unbonding && balance.unbonding.length > 0){
-
-    // }
-    if (data.rewards) {
-      total += parseFloat(data.rewards.amount);
+    if (data.unbonding && data.unbonding.length > 0 && data.unbonding !== 0) {
+      data.unbonding.forEach((unbond, i) => {
+        unbond.entries.forEach((entry, j) => {
+          balance.unbonding += Math.floor(parseFloat(entry.balance));
+          balance.total += Math.floor(parseFloat(entry.balance));
+        });
+      });
     }
+
+    if (data.rewards && data.rewards !== 0) {
+      balance.total += Math.floor(parseFloat(data.rewards.amount));
+      balance.rewards += Math.floor(parseFloat(data.rewards.amount));
+    }
+
+    if (data.val_commission && data.val_commission.length > 0) {
+      balance.commission = Math.floor(
+        parseFloat(data.val_commission[0].amount)
+      );
+      balance.total += Math.floor(parseFloat(data.val_commission[0].amount));
+    }
+    // const validatorAddress = getDelegator(account, 'cybervaloper');
+    // const resultGetDistribution = await getDistribution(validatorAddress);
+    // if (resultGetDistribution) {
+    //   balance.commission += Math.floor(
+    //     parseFloat(resultGetDistribution.val_commission[0].amount)
+    //   );
+    //   balance.total += Math.floor(
+    //     parseFloat(resultGetDistribution.val_commission[0].amount)
+    //   );;
+    // }
   }
-  return total;
+  return balance;
 };
 
 export const getAmountATOM = data => {
@@ -419,6 +502,110 @@ export const getDrop = async address => {
   } catch (e) {
     console.log(e);
     return 0;
+  }
+};
+
+export const getTxs = async txs => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/txs/${txs}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getValidatorsInfo = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/validators/${address}`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getDistribution = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/distribution/validators/${address}`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const keybaseCheck = async identity => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=basics`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const keybaseAvatar = async identity => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=${identity}&fields=pictures`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getDelegators = async validatorAddr => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/staking/validators/${validatorAddr}/delegations`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getRewards = async (delegatorAddr, validatorAddr) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${delegatorAddr}/rewards/${validatorAddr}`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getTotalRewards = async delegatorAddr => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${delegatorAddr}/rewards`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
   }
 };
 

@@ -90,9 +90,9 @@ const timer = func => {
   setInterval(func, 1000);
 };
 
-const getDelegator = operatorAddr => {
+const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   const address = bech32.decode(operatorAddr);
-  return bech32.encode(BECH32_PREFIX_ACC_ADDR_CYBER, address.words);
+  return bech32.encode(prefix, address.words);
 };
 
 const formatValidatorAddress = (address, firstArg, secondArg) => {
@@ -110,6 +110,61 @@ const formatValidatorAddress = (address, firstArg, secondArg) => {
   return '';
 };
 
+const msgType = type => {
+  switch (type) {
+    // cyberd
+    case 'cyberd/Link':
+      return 'Link';
+
+    // bank
+    case 'cosmos-sdk/MsgSend':
+      return 'Send';
+    case 'cosmos-sdk/MsgMultiSend':
+      return 'Multi Send';
+
+    // staking
+    case 'cosmos-sdk/MsgCreateValidator':
+      return 'Create Validator';
+    case 'cosmos-sdk/MsgEditValidator':
+      return 'Edit Validator';
+    case 'cosmos-sdk/MsgDelegate':
+      return 'Delegate';
+    case 'cosmos-sdk/MsgUndelegate':
+      return 'Undelegate';
+    case 'cosmos-sdk/MsgBeginRedelegate':
+      return 'Redelegate';
+
+    // gov
+    case 'cosmos-sdk/MsgSubmitProposal':
+      return 'Submit Proposal';
+    case 'cosmos-sdk/MsgDeposit':
+      return 'Deposit';
+    case 'cosmos-sdk/MsgVote':
+      return 'Vote';
+
+    // distribution
+    case 'cosmos-sdk/MsgWithdrawValidatorCommission':
+      return 'Withdraw Commission';
+    case 'cosmos-sdk/MsgWithdrawDelegationReward':
+      return 'Withdraw Reward';
+    case 'cosmos-sdk/MsgModifyWithdrawAddress':
+      return 'Modify Withdraw Address';
+
+    // slashing
+    case 'cosmos-sdk/MsgUnjail':
+      return 'Unjail';
+
+    // ibc
+    case 'cosmos-sdk/IBCTransferMsg':
+      return 'IBCTransfer';
+    case 'cosmos-sdk/IBCReceiveMsg':
+      return 'IBC Receive';
+
+    default:
+      return { type };
+  }
+};
+
 export {
   run,
   roundNumber,
@@ -119,4 +174,5 @@ export {
   getDecimal,
   getDelegator,
   formatValidatorAddress,
+  msgType,
 };

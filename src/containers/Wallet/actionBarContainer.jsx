@@ -185,6 +185,8 @@ class ActionBarContainer extends Component {
 
   getAddressInfo = async () => {
     const { address } = this.state;
+    const { addressSend } = this.props;
+    let toSendAddres = '';
     let addressInfo = {};
     let balance = 0;
     try {
@@ -198,8 +200,13 @@ class ActionBarContainer extends Component {
       }
       addressInfo.chainId = chainId;
 
+      if (addressSend) {
+        toSendAddres = addressSend;
+      }
+
       this.setState({
         addressInfo,
+        toSendAddres,
         balance,
         stage: STAGE_READY,
       });
@@ -359,7 +366,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { onClickAddressLedger, addAddress, send, addressInfo } = this.props;
+    const { onClickAddressLedger, addAddress, addressSend, send, addressInfo } = this.props;
     const {
       stage,
       connect,

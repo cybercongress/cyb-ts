@@ -11,8 +11,9 @@ import {
   Cyberlink,
   TransactionError,
 } from '../../components';
+import { getIpfsHash } from '../../utils/search/utils';
 
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 
 const { CYBER_NODE_URL } = CYBER;
 
@@ -274,8 +275,16 @@ class ActionBarContainer extends Component {
 
     const { keywordHash } = this.props;
 
-    const fromCid = keywordHash;
-    const toCid = contentHash;
+    let fromCid = keywordHash;
+    let toCid = contentHash;
+
+    if (!fromCid.match(PATTERN_IPFS_HASH)) {
+      fromCid = await getIpfsHash(fromCid);
+    }
+
+    if (!toCid.match(PATTERN_IPFS_HASH)) {
+      toCid = await getIpfsHash(toCid);
+    }
 
     const txContext = {
       accountNumber: addressInfo.accountNumber,
@@ -362,7 +371,9 @@ class ActionBarContainer extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        update();
+        if (update) {
+          update();
+        }
         return;
       }
       if (data.logs && data.logs[0].success === false) {
@@ -444,8 +455,6 @@ class ActionBarContainer extends Component {
       txHash,
       errorMessage,
     } = this.state;
-
-    console.log('bandwidth', bandwidth);
 
     const { valueSearchInput } = this.props;
 
