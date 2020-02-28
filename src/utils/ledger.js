@@ -133,14 +133,12 @@ class CosmosDelegateTool {
   // Returns a signed transaction ready to be relayed
   async sign(unsignedTx, txContext) {
     // this.connectedOrThrow(this);
-    console.log(txContext);
     if (typeof txContext.path === 'undefined') {
       this.lastError = 'context should include the account path';
       throw new Error('context should include the account path');
     }
     // console.log('txContext', txContext);
     const bytesToSign = txs.getBytesToSign(unsignedTx, txContext);
-    console.log(bytesToSign);
     const response = await this.app.sign(txContext.path, bytesToSign);
 
     return response;
@@ -644,6 +642,7 @@ class CosmosDelegateTool {
   }
 
   async txSubmitCyberLink(signedTx) {
+    console.log(signedTx);
     const txBody = {
       tx: signedTx.value,
       mode: 'async',

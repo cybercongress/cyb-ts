@@ -171,7 +171,7 @@ export const TransactionError = ({
       Transaction Error:
     </span>
     <div
-      style={{ marginTop: '25px' }}
+      style={{ marginTop: '25px', width: '80%', margin: '0 auto' }}
       className="display-flex flex-direction-column"
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
