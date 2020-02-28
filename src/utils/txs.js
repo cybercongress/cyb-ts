@@ -470,6 +470,10 @@ function createWithdrawDelegationReward(txContext, address, memo, rewards) {
       },
     });
   });
+
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
 }
 
 function createRedelegateCyber(
