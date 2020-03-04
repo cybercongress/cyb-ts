@@ -23,12 +23,9 @@ const GiftTable = ({ data }) => {
         <TextTable fontSize={14}>@SaveTheAles</TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="end">
-        <Tooltip
-          position="bottom"
-          content={`${formatNumber(item.gift * 30)} CYB`}
-        >
+        <Tooltip position="bottom" content={`${formatNumber(item.gift)} CYB`}>
           <TextTable fontSize={14}>
-            {formatCurrency(item.gift * 30, 'CYB', 0)}
+            {formatCurrency(item.gift, 'CYB', 0)}
           </TextTable>
         </Tooltip>
       </Table.TextCell>
