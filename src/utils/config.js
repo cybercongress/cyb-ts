@@ -75,40 +75,15 @@ const LEDGER = {
 const GENESIS_SUPPLY = 100000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
-const DISTRIBUTION = [
-  {
-    group: 'takeoff donations',
-    amount: '60000000000000',
-  },
-  {
-    group: 'relevance',
-    amount: '15000000000000',
-  },
-  {
-    group: 'load',
-    amount: '6000000000000',
-  },
-  {
-    group: 'delegation',
-    amount: '5000000000000',
-  },
-  {
-    group: 'full validator set',
-    amount: '5000000000000',
-  },
-  {
-    group: 'euler-4 rewards',
-    amount: '5000000000000',
-  },
-  {
-    group: 'lifetime',
-    amount: '2000000000000',
-  },
-  {
-    group: 'community pool',
-    amount: '2000000000000',
-  },
-];
+const DISTRIBUTION = {
+  takeoff: 60000000000000,
+  relevance: 15000000000000,
+  load: 6000000000000,
+  delegation: 5000000000000,
+  'full validator set': 5000000000000,
+  'euler 4 rewards': 5000000000000,
+  lifetime: 2000000000000,
+};
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
