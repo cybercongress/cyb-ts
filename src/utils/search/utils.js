@@ -496,7 +496,7 @@ export const getDrop = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreid43o5mcf73wzwqaawxncrvj46avtpha3ydtjocmnenq2zemnstdm/${address}`,
+      url: `https://herzner1.cybernode.ai/ipfs/api/v0/dag/get?arg=bafyreifheyc6rhjhxenu3df3pwbxv5r6vb273szvwufjbly4m6rlv3jyni/${address}`,
     });
     return response.data;
   } catch (e) {
