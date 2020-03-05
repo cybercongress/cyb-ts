@@ -84,6 +84,7 @@ function GiftAddress({ address }) {
     const fetchData = async () => {
       setLoading(true);
       const response = await getDrop(address.toLowerCase());
+      console.log(response);
       if (response !== 0) {
         const responseSupply = await getTotalSupply();
         if (responseSupply > 0) {
@@ -107,7 +108,12 @@ function GiftAddress({ address }) {
         });
         setLoading(false);
       } else {
-        setDrop([]);
+        setDrop({
+          address,
+          cyberAddress: '',
+          gift: 0,
+          drop: [],
+        });
         setLoading(false);
       }
     };
