@@ -1,7 +1,11 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
 import { GENESIS_SUPPLY, COSMOS } from '../../utils/config';
-import { formatNumber, formatCurrency } from '../../utils/utils';
+import {
+  formatNumber,
+  formatCurrency,
+  exponentialToDecimal,
+} from '../../utils/utils';
 import { TextTable } from '../../components';
 
 const GiftTable = ({ data }) => {
@@ -33,7 +37,9 @@ const GiftTable = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="end">
         <TextTable fontSize={14}>
-          {`${formatNumber((item.gift / GENESIS_SUPPLY) * 100, 4)} %`}
+          {`${exponentialToDecimal(
+            ((item.gift / GENESIS_SUPPLY) * 100).toPrecision(1)
+          )} %`}
         </TextTable>
       </Table.TextCell>
     </Table.Row>

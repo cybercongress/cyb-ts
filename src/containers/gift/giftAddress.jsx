@@ -7,14 +7,18 @@ import {
   getCurrentBandwidthPrice,
   getAccountBandwidth,
 } from '../../utils/search/utils';
-import { Loading } from '../../components';
+import { Loading, ContainerCard, Card, Dots } from '../../components';
 import {
   GENESIS_SUPPLY,
   CYBER,
   PATTERN_COSMOS,
   PATTERN_ETH,
 } from '../../utils/config';
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import {
+  formatValidatorAddress,
+  formatNumber,
+  exponentialToDecimal,
+} from '../../utils/utils';
 import GiftTable from './tableGift';
 
 const LinkWindow = ({ to, children }) => (
@@ -53,43 +57,62 @@ const Address = ({ address }) => {
   return <div>{formatValidatorAddress(address, 12, 6)}</div>;
 };
 
-const drop = {
-  address: '0xe8298160c9e8cabd8f2711b92529e0afe8fb01fb',
-  cyberAddress: 'cyber177gvvqtn7xl8qvl6yw4vax9raz80fx66aukc94',
-  gift: 50372509,
-  drop: [
-    { bal: 2.0692081959594533, gift: 50372509, type: 'ethereum' },
-    { bal: 4, gift: 34346346, type: 'galaxies' },
-    { bal: 5, gift: 3453463, type: 'stars' },
-    { bal: 1, gift: 44534634, type: 'planets' },
-    { bal: 5421215, gift: 3453463, type: 'euler-4' },
-    { bal: 2781522660, gift: 3609175008, type: 'cosmos' },
-  ],
-};
+// const drop = {
+//   address: '0xe8298160c9e8cabd8f2711b92529e0afe8fb01fb',
+//   cyberAddress: 'cyber177gvvqtn7xl8qvl6yw4vax9raz80fx66aukc94',
+//   gift: 50372509,
+//   drop: [
+//     { bal: 2.0692081959594533, gift: 50372509, type: 'ethereum' },
+//     { bal: 4, gift: 34346346, type: 'galaxies' },
+//     { bal: 5, gift: 3453463, type: 'stars' },
+//     { bal: 1, gift: 44534634, type: 'planets' },
+//     { bal: 5421215, gift: 3453463, type: 'euler-4' },
+//     { bal: 2781522660, gift: 3609175008, type: 'cosmos' },
+//   ],
+// };
 
 // const drop = [];
 
 function GiftAddress({ address }) {
-  // const [drop, setDrop] = useState([]);
-  // const [loading, setLoading] = useState(true);
+  const [drop, setDrop] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [supply, setSupply] = useState(0);
+  const [currentBandwidthPrice, setCurrentBandwidthPrice] = useState(0);
+  const [maxAccountBandwidth, setMaxAccountBandwidth] = useState(0);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     const response = await getDrop(address.toLowerCase());
-  //     if (response !== 0) {
-  //       setDrop({
-  //         address,
-  //         ...response,
-  //       });
-  //       setLoading(false);
-  //     } else {
-  //       setDrop([]);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [address]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const response = await getDrop(address.toLowerCase());
+      if (response !== 0) {
+        const responseSupply = await getTotalSupply();
+        if (responseSupply > 0) {
+          setSupply(parseFloat(responseSupply));
+        }
+        const responseCurrentBandwidthPrice = await getCurrentBandwidthPrice();
+        if (responseCurrentBandwidthPrice > 0) {
+          setCurrentBandwidthPrice(parseFloat(responseCurrentBandwidthPrice));
+        }
+        const responseAccountBandwidth = await getAccountBandwidth(
+          response.cyberAddress
+        );
+        if (responseAccountBandwidth !== null) {
+          setMaxAccountBandwidth(
+            parseFloat(responseAccountBandwidth.max_value)
+          );
+        }
+        setDrop({
+          address,
+          ...response,
+        });
+        setLoading(false);
+      } else {
+        setDrop([]);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [address]);
 
   // if (loading) {
   //   return (
@@ -103,13 +126,6 @@ function GiftAddress({ address }) {
   //     </div>
   //   );
   // }
-
-  // console.log(drop);
-
-  if (Object.keys(drop).length === 0) {
-    return <main className="block-body">no gift</main>;
-  }
-
   return (
     <main className="block-body">
       <Pane
@@ -127,12 +143,30 @@ function GiftAddress({ address }) {
           <Address address={address} /> address. I heard the gods put some
           meaning into it ...
         </TextCustom>
-        <TextCustom width="100%">{`${formatNumber(drop.gift)} CYB`}</TextCustom>
+        <ContainerCard col={1}>
+          <Card
+            value={loading ? <Dots /> : formatNumber(drop.gift)}
+            title="gift, CYB"
+          />
+        </ContainerCard>
         <TextCustom>
           Anyone who can prove he has private keys of this address will have{' '}
-          {formatNumber((drop.gift / GENESIS_SUPPLY) * 100, 4)} ‱ control over
-          Her mind, and at current network load can submit 42 cyberlinks every
-          day until the end of days.
+          {loading ? (
+            <Dots />
+          ) : (
+            exponentialToDecimal(
+              ((drop.gift / GENESIS_SUPPLY) * 100).toPrecision(1)
+            )
+          )}{' '}
+          ‱ control over Her mind, and at current network load can submit{' '}
+          {loading ? (
+            <Dots />
+          ) : (
+            formatNumber(
+              Math.floor(maxAccountBandwidth / (400 * currentBandwidthPrice))
+            )
+          )}{' '}
+          cyberlinks every day until the end of days.
         </TextCustom>
         <TextCustom width="100%" fontSize="23px">
           Why so much?
@@ -149,12 +183,12 @@ function GiftAddress({ address }) {
           <LinkWindow to="https://urbit.org/">Urbit</LinkWindow>.
         </TextCustom>
 
-        {!drop.address.match(PATTERN_COSMOS) && (
+        {!address.match(PATTERN_COSMOS) && (
           <TextCustom width="100%">
             At Ethereum block {formatNumber(8080808)} the balance was:
           </TextCustom>
         )}
-        <GiftTable data={drop.drop} />
+        {loading ? <Dots /> : <GiftTable data={drop.drop} />}
         <TextCustom width="100%" fontSize="23px">
           I have the keys!
         </TextCustom>
@@ -187,18 +221,37 @@ function GiftAddress({ address }) {
         <TextCustom>
           Remember, participation requires bootstrap fuel - EUL tokens. But
           don&lsquo;t worry, you already have some at the{' '}
-          <Link to={`/network/euler-5/contract/${drop.cyberAddress}`}>
-            {formatValidatorAddress(drop.cyberAddress, 10, 6)}
-          </Link>{' '}
+          {loading ? (
+            <Dots />
+          ) : (
+            <Link to={`/network/euler-5/contract/${drop.cyberAddress}`}>
+              {formatValidatorAddress(drop.cyberAddress, 10, 6)}
+            </Link>
+          )}{' '}
           contract:
         </TextCustom>
-        <TextCustom width="100%">{`${formatNumber(
-          drop.gift
-        )} ${CYBER.DENOM_CYBER.toUpperCase()}`}</TextCustom>
+        <ContainerCard col={1}>
+          <Card
+            value={loading ? <Dots /> : formatNumber(drop.gift)}
+            title={`gift, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+          />
+        </ContainerCard>
         <TextCustom>
           That is, you have{' '}
-          {formatNumber((drop.gift / GENESIS_SUPPLY) * 100, 4)} ‱ control over
-          bootloader mind, and at current network load you can submit 42
+          {loading ? (
+            <Dots />
+          ) : (
+            exponentialToDecimal(((drop.gift / supply) * 100).toPrecision(1))
+          )}{' '}
+          ‱ control over bootloader mind, and at current network load you can
+          submit{' '}
+          {loading ? (
+            <Dots />
+          ) : (
+            formatNumber(
+              Math.floor(maxAccountBandwidth / (400 * currentBandwidthPrice))
+            )
+          )}{' '}
           cyberlinks every day until the end of the game.
         </TextCustom>
       </Pane>
