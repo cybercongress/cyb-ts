@@ -133,8 +133,7 @@ function GiftAddress({ address }) {
         justifyContent="center"
         alignItems="center"
         display="flex"
-        paddingY="20px"
-        paddingX="20%"
+        className="container-gift"
         textAlign="justify"
       >
         <TextCustom>Greetings, bearer of strong intelligence!</TextCustom>
