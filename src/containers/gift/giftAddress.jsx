@@ -160,7 +160,7 @@ function GiftAddress({ address }) {
             <Dots />
           ) : (
             exponentialToDecimal(
-              ((drop.gift / GENESIS_SUPPLY) * 100).toPrecision(1)
+              ((drop.gift / GENESIS_SUPPLY) * 10000).toPrecision(1)
             )
           )}{' '}
           ‱ control over Her mind, and at current network load can submit{' '}
@@ -246,7 +246,7 @@ function GiftAddress({ address }) {
           {loading ? (
             <Dots />
           ) : (
-            exponentialToDecimal(((drop.gift / supply) * 100).toPrecision(1))
+            exponentialToDecimal(((drop.gift / supply) * 10000).toPrecision(1))
           )}{' '}
           ‱ control over bootloader mind, and at current network load you can
           submit{' '}

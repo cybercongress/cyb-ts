@@ -195,12 +195,6 @@
   }
 }
 
-@media (max-width: 900px) {
-  .container-gift {
-    padding: 20px 10%;
-  }
-}
-
 @media (max-width: 500px) {
   .container-gift {
     padding: 20px 0;
