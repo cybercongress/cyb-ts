@@ -72,7 +72,7 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
-const GENESIS_SUPPLY = 100000000000000;
+const GENESIS_SUPPLY = 1000000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
 const DISTRIBUTION = {
@@ -88,6 +88,7 @@ const DISTRIBUTION = {
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9A-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
@@ -108,4 +109,5 @@ export {
   PATTERN_TX,
   PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
+  PATTERN_ETH,
 };

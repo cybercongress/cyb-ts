@@ -132,6 +132,10 @@
   grid-gap: 15px;
 }
 
+.container-gift {
+  padding: 20px 20%;
+}
+
 @media (max-width: 979px) {
   .txs-contaiter-row {
     flex-direction: column;
@@ -188,5 +192,11 @@
 
   .ValidatorInfo__Delegated-MissedBlocks-wrapper{
     grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .container-gift {
+    padding: 20px 0;
   }
 }

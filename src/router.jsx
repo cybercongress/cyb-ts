@@ -10,7 +10,7 @@ import Brain from './containers/brain/brain';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
-import Gift from './containers/gift/gift';
+import Gift from './containers/gift';
 import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import SearchResults from './containers/Search/SearchResults';
@@ -64,7 +64,7 @@ class AppRouter extends React.Component {
             // component={Home}
           />
           <Route exact path="/search/:query" component={SearchResults} />
-          <Route path="/gift" component={Gift} />
+          <Route path="/gift/:address?" component={Gift} />
           <Route path="/takeoff" component={Funding} />
           <Route path="/tot" component={Got} />
           <Route path="/auction" component={Auction} />
