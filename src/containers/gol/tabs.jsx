@@ -198,18 +198,5 @@ export const Relevance = ({ hasMoreItems, showItems, loadMore }) => (
         </a>
       </Text>
     </Pane>
-    <InfiniteScroll
-      // pageStart={0}
-      loadMore={loadMore}
-      hasMore={hasMoreItems}
-      loader={
-        <Pane textAlign="center">
-          <Loading />
-        </Pane>
-      }
-      useWindow={false}
-    >
-      {showItems}
-    </InfiniteScroll>
   </Pane>
 );

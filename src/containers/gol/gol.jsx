@@ -12,22 +12,14 @@ import {
   SearchItem,
   TableEv as Table,
 } from '@cybercongress/gravity';
-import LocalizedStrings from 'react-localization';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import InfiniteScroll from 'react-infinite-scroller';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   formatNumber,
-  getStatistics,
-  getValidators,
-  statusNode,
-  getRelevance,
-  getRankGrade,
   getTotalEUL,
   getBalance,
   getAmountATOM,
+  getAccountBandwidth,
+  getIndexStats,
 } from '../../utils/search/utils';
-import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
   CardStatisics,
   ConnectLadger,
@@ -60,8 +52,6 @@ import {
   GENESIS_SUPPLY,
 } from '../../utils/config';
 
-const T = new LocalizedStrings(i18n);
-
 const TabBtn = ({ text, isSelected, onSelect }) => (
   <Tab
     key={text}
@@ -91,7 +81,7 @@ class GOL extends React.Component {
       selectedMaster: 'relevance',
       selectedPlay: 'uptime',
       loading: false,
-      cybWon: 0,
+      won: 0,
       myGOLs: 0,
       topLink: [],
       takeoffDonations: 0,
@@ -99,12 +89,13 @@ class GOL extends React.Component {
       items: 10,
       hasMoreItems: true,
       perPage: 10,
+      dataTable: [],
     };
   }
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
-    this.getRelevance();
+    this.getDataTableMonitor();
     // this.getMyGOLs();
     this.getMyEULs();
     this.getDataWS();
@@ -143,6 +134,64 @@ class GOL extends React.Component {
     }
   };
 
+  getLoad = async addressLedger => {
+    let karma = 0;
+    let sumKarma = 0;
+    let load = 0;
+
+    const responseAccountBandwidth = await getAccountBandwidth(addressLedger);
+    const responseIndexStats = await getIndexStats();
+
+    if (responseAccountBandwidth !== null && responseIndexStats !== null) {
+      karma = responseAccountBandwidth.karma;
+      sumKarma = responseIndexStats.totalKarma;
+      load = parseFloat(karma) / parseFloat(sumKarma);
+      console.log('load', load);
+    }
+    return load;
+  };
+
+  // {Math.floor(
+  //   (cybWon / DISTRIBUTION.takeoff) * DISTRIBUTION[key]
+  // )}
+  getDataTableMonitor = async () => {
+    const { won, addressLedger } = this.state;
+    const dataTable = [];
+
+    Object.keys(DISTRIBUTION).forEach(async key => {
+      let discipline = '';
+      let maxPrize = 0;
+      let currentPrize = 0;
+      let cybWonAbsolute = 0;
+      const cybWonPercent = 0;
+      let response = null;
+
+      if (key !== 'takeoff') {
+        discipline = key;
+        maxPrize = DISTRIBUTION[key];
+        currentPrize = (won / DISTRIBUTION.takeoff) * maxPrize;
+
+        switch (key) {
+          case 'load':
+            response = await this.getLoad(addressLedger.bech32);
+            cybWonAbsolute = response * currentPrize;
+            break;
+          default:
+            break;
+        }
+
+        dataTable.push({
+          discipline,
+          maxPrize,
+          currentPrize,
+          cybWonAbsolute,
+          cybWonPercent,
+        });
+      }
+    });
+    this.setState({ dataTable });
+  };
+
   getMyEULs = async () => {
     const { addressLedger } = this.state;
 
@@ -177,23 +226,7 @@ class GOL extends React.Component {
     this.setState({
       takeoffDonations: amount,
       currentPrize,
-      cybWon: won,
-    });
-  };
-
-  getRelevance = async () => {
-    let topLink = [];
-    const { perPage } = this.state;
-
-    const data = await getRelevance(perPage);
-
-    if (data) {
-      topLink = data.cids;
-    }
-
-    this.setState({
-      topLink,
-      loading: false,
+      won,
     });
   };
 
@@ -209,60 +242,6 @@ class GOL extends React.Component {
     this.setState({ selectGlobal });
   };
 
-  showItems() {
-    const topLinkItems = [];
-    const { topLink, items } = this.state;
-
-    let linkData = items;
-
-    if (items > topLink.length) {
-      linkData = topLink.length;
-    }
-
-    if (topLink.length > 0) {
-      for (let index = 0; index < linkData; index += 1) {
-        const item = (
-          <Pane
-            display="grid"
-            gridTemplateColumns="50px 1fr"
-            alignItems="baseline"
-            gridGap="5px"
-            key={index}
-          >
-            <Text textAlign="end" fontSize="16px" color="#fff">
-              #{index + 1}
-            </Text>
-            <Pane marginY={0} marginX="auto" width="70%">
-              <SearchItem
-                key={topLink[index].cid}
-                hash={topLink[index].cid}
-                rank={topLink[index].rank}
-                grade={getRankGrade(topLink[index].rank)}
-                status="success"
-                width="70%"
-              >
-                {topLink[index].cid}
-              </SearchItem>
-            </Pane>
-          </Pane>
-        );
-
-        topLinkItems.push(item);
-      }
-    }
-    return topLinkItems;
-  }
-
-  loadMore(page) {
-    const { items, perPage } = this.state;
-    console.log('df');
-    if (items > 50 || items === 50) {
-      this.setState({ hasMoreItems: false });
-    } else {
-      this.setState({ items: items + 10, perPage: perPage + 10 });
-    }
-  }
-
   render() {
     const {
       loading,
@@ -274,8 +253,11 @@ class GOL extends React.Component {
       hasMoreItems,
       selectGlobal,
       selectedPlay,
-      cybWon,
+      won,
+      dataTable,
     } = this.state;
+
+    console.log('dataTable', dataTable);
 
     let content;
     let contentPlay;
@@ -377,13 +359,7 @@ class GOL extends React.Component {
     }
 
     if (selectedMaster === 'relevance') {
-      contentMaster = (
-        <Relevance
-          hasMoreItems={hasMoreItems}
-          showItems={this.showItems()}
-          loadMore={this.loadMore.bind(this)}
-        />
-      );
+      contentMaster = <Relevance />;
     }
 
     if (selectedMaster === 'community') {
@@ -452,7 +428,7 @@ class GOL extends React.Component {
                       <Table.TextCell textAlign="end">
                         <Text fontSize="16px" color="#fff">
                           {Math.floor(
-                            (cybWon / DISTRIBUTION.takeoff) * DISTRIBUTION[key]
+                            (won / DISTRIBUTION.takeoff) * DISTRIBUTION[key]
                           )}
                         </Text>
                       </Table.TextCell>
@@ -478,10 +454,6 @@ class GOL extends React.Component {
     if (selectedPlay === 'euler4') {
       contentPlay = <Euler4 />;
     }
-
-    // if (selected === 'communityPool') {
-    //   content = <CybernomicsGOL />;
-    // }
 
     return (
       <div>
@@ -512,18 +484,18 @@ class GOL extends React.Component {
             marginY={50}
             alignItems="center"
           >
-            <Indicators title={T.gol.myGOLs} value="∞" />
-            <Indicators title={T.gol.myEULs} value="∞" />
+            <Indicators title="My GOLs" value="∞" />
+            <Indicators title="My EULs" value="∞" />
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title={T.gol.maxPrize}
+              title="Max prize fund"
               value="100 TCYB"
             />
-            <Indicators title={T.gol.currentPrize} value="12 TCYB" />
+            <Indicators title="Current prize fund" value="12 TCYB" />
             <Indicators
-              title={T.gol.takeoff}
+              title="Takeoff donations"
               value={`${formatNumber(takeoffDonations)} ATOMs`}
             />
           </Pane>

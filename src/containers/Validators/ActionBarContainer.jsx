@@ -351,7 +351,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {

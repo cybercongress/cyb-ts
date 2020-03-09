@@ -175,7 +175,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -236,7 +236,7 @@ class ActionBarContainer extends Component {
       };
 
       const getBandwidth = await fetch(
-        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
+        `${CYBER.CYBER_NODE_URL_API}/account_bandwidth?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -345,7 +345,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {

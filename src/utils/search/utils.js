@@ -2,7 +2,12 @@ import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import { CYBER, TAKEOFF, COSMOS } from '../config';
 
-const { CYBER_NODE_URL, BECH32_PREFIX_ACC_ADDR_CYBERVALOPER } = CYBER;
+const {
+  CYBER_NODE_URL,
+  CYBER_NODE_URL_API,
+  CYBER_NODE_URL_LCD,
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
+} = CYBER;
 
 const IPFS = require('ipfs-api');
 
@@ -173,27 +178,27 @@ export const getStatistics = () =>
   new Promise(resolve => {
     const indexStatsPromise = axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/index_stats`,
+      url: `${CYBER_NODE_URL_API}/index_stats`,
     }).then(response => response.data.result);
 
     const stakingPromise = axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/staking/pool`,
+      url: `${CYBER_NODE_URL_API}/staking/pool`,
     }).then(response => response.data.result);
 
     const bandwidthPricePromise = axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/current_bandwidth_price`,
+      url: `${CYBER_NODE_URL_API}/current_bandwidth_price`,
     }).then(response => response.data.result);
 
     const latestBlockPromise = axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/block`,
+      url: `${CYBER_NODE_URL_API}/block`,
     }).then(response => response.data.result);
 
     const supplyTotalPropsise = axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/supply/total`,
+      url: `${CYBER_NODE_URL_LCD}/supply/total`,
     }).then(response => response.data.result);
 
     Promise.all([
@@ -208,7 +213,7 @@ export const getStatistics = () =>
           ...indexStats,
           bondedTokens: staking.bonded_tokens,
           bandwidthPrice: bandwidthPrice.price,
-          txCount: latestBlock.block_meta.header.total_txs,
+          txCount: 0,
           supplyTotal: supplyTotal[0].amount,
         };
 
@@ -221,7 +226,7 @@ export const getValidators = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/validators`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -233,7 +238,7 @@ export const getValidatorsUnbonding = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/validators?status=unbonding`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonding`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -245,7 +250,7 @@ export const getValidatorsUnbonded = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/validators?status=unbonded`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonded`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -260,7 +265,7 @@ export const selfDelegationShares = async (
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
+      url: `${CYBER_NODE_URL_LCD}/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
     });
     return response.data.result.shares;
   } catch (e) {
@@ -273,7 +278,7 @@ export const stakingPool = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/pool`,
+      url: `${CYBER_NODE_URL_LCD}/staking/pool`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -285,7 +290,7 @@ export const getAccountBandwidth = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/account_bandwidth?address="${address}"`,
+      url: `${CYBER_NODE_URL_API}/account_bandwidth?address="${address}"`,
     });
     return response.data.result;
   } catch (e) {
@@ -298,7 +303,7 @@ export const statusNode = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/status`,
+      url: `${CYBER_NODE_URL_API}/status`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -310,7 +315,7 @@ export const getRelevance = perPage =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/top?page=0&perPage=${perPage || '50'}`,
+      url: `${CYBER_NODE_URL_API}/top?page=0&perPage=${perPage || '50'}`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -318,29 +323,29 @@ export const getRelevance = perPage =>
       .catch(e => {})
   );
 
-export const getBalance = async (address, node, lcd) => {
+export const getBalance = async (address, node) => {
   try {
     const availablePromise = await axios({
       method: 'get',
-      url: `${node || CYBER_NODE_URL}/${lcd || 'lcd'}/bank/balances/${address}`,
+      url: `${node || CYBER_NODE_URL_LCD}/bank/balances/${address}`,
     });
 
     const delegationsPromise = await axios({
       method: 'get',
-      url: `${node || CYBER_NODE_URL}/${lcd ||
-        'lcd'}/staking/delegators/${address}/delegations`,
+      url: `${node ||
+        CYBER_NODE_URL_LCD}/staking/delegators/${address}/delegations`,
     });
 
     const unbondingPromise = await axios({
       method: 'get',
-      url: `${node || CYBER_NODE_URL}/${lcd ||
-        'lcd'}/staking/delegators/${address}/unbonding_delegations`,
+      url: `${node ||
+        CYBER_NODE_URL_LCD}/staking/delegators/${address}/unbonding_delegations`,
     });
 
     const rewardsPropsise = await axios({
       method: 'get',
-      url: `${node || CYBER_NODE_URL}/${lcd ||
-        'lcd'}/distribution/delegators/${address}/rewards`,
+      url: `${node ||
+        CYBER_NODE_URL_LCD}/distribution/delegators/${address}/rewards`,
     });
 
     const response = {
@@ -444,7 +449,7 @@ export const getBalanceWallet = address =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/account?address="${address}"`,
+      url: `${CYBER_NODE_URL_API}/account?address="${address}"`,
     })
       .then(response => {
         resolve(response.data.result);
@@ -469,7 +474,7 @@ export const getTxs = async txs => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/txs/${txs}`,
+      url: `${CYBER_NODE_URL_LCD}/txs/${txs}`,
     });
     return response.data;
   } catch (e) {
@@ -482,7 +487,7 @@ export const getValidatorsInfo = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/validators/${address}`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators/${address}`,
     });
     return response.data.result;
   } catch (e) {
@@ -495,7 +500,7 @@ export const getDistribution = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/distribution/validators/${address}`,
+      url: `${CYBER_NODE_URL_LCD}/distribution/validators/${address}`,
     });
     return response.data.result;
   } catch (e) {
@@ -534,7 +539,7 @@ export const getDelegators = async validatorAddr => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/validators/${validatorAddr}/delegations`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators/${validatorAddr}/delegations`,
     });
     return response.data;
   } catch (e) {
@@ -547,7 +552,7 @@ export const getRewards = async (delegatorAddr, validatorAddr) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${delegatorAddr}/rewards/${validatorAddr}`,
+      url: `${CYBER_NODE_URL_LCD}/distribution/delegators/${delegatorAddr}/rewards/${validatorAddr}`,
     });
     return response.data.result;
   } catch (e) {
@@ -560,7 +565,7 @@ export const getTotalRewards = async delegatorAddr => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/distribution/delegators/${delegatorAddr}/rewards`,
+      url: `${CYBER_NODE_URL_LCD}/distribution/delegators/${delegatorAddr}/rewards`,
     });
     return response.data.result;
   } catch (e) {
@@ -573,7 +578,7 @@ export const getDelegations = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/staking/delegators/${address}/delegations`,
+      url: `${CYBER_NODE_URL_LCD}/staking/delegators/${address}/delegations`,
     });
     return response.data.result;
   } catch (e) {
@@ -586,7 +591,7 @@ export const getTotalSupply = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/lcd/supply/total`,
+      url: `${CYBER_NODE_URL_LCD}/supply/total`,
     });
     return response.data.result[0].amount;
   } catch (e) {
@@ -599,9 +604,22 @@ export const getCurrentBandwidthPrice = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL}/api/current_bandwidth_price`,
+      url: `${CYBER_NODE_URL_API}/current_bandwidth_price`,
     });
     return response.data.result.price;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
+
+export const getIndexStats = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_API}/index_stats`,
+    });
+    return response.data.result;
   } catch (e) {
     console.log(e);
     return 0;

@@ -37,7 +37,7 @@ const COSMOS = {
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai',
+  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
@@ -50,6 +50,8 @@ const CYBER = {
   DENOM_CYBER_G: `GEUL`,
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  CYBER_NODE_URL_API: 'https://mars.cybernode.ai/dev_api',
+  CYBER_NODE_URL_LCD: 'https://mars.cybernode.ai/dev_lcd',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
