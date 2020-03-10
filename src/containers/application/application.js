@@ -7,13 +7,15 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
+import { connect } from 'react-redux';
 import { Timer, Tooltip } from '../../components/index';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
 
 const cyber = require('../../image/cyber.png');
-const cyb = require('../../image/cyb.svg');
+const cybFalse = require('../../image/cyb.svg');
+const cybTrue = require('../../image/cybTrue.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
@@ -162,7 +164,7 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children, location } = this.props;
+    const { children, location, ipfsStatus } = this.props;
 
     if (!story && home) {
       this.routeChange('/episode-1');
@@ -232,7 +234,11 @@ class App extends Component {
               display="flex"
               align-items="flex-end"
             >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
+              <img
+                style={{ width: 'inherit' }}
+                alt="cyb"
+                src={ipfsStatus ? cybTrue : cybFalse}
+              />
             </Pane>
           </Link>
           {/* <Timer /> */}
@@ -244,4 +250,10 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = store => {
+  return {
+    ipfsStatus: store.ipfs.statusIpfs,
+  };
+};
+
+export default connect(mapStateToProps)(App);

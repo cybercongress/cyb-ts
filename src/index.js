@@ -8,7 +8,9 @@ import { ApolloLink, split } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { Provider } from 'react-redux';
 import AppRouter from './router';
+import store from './redux/store';
 
 import './style/main.css';
 import './image/favicon.ico';
@@ -73,11 +75,13 @@ const client = new ApolloClient({
 
 const render = () => {
   ReactDOM.render(
-    <ApolloProvider client={client}>
-      <AppContainer>
-        <AppRouter />
-      </AppContainer>
-    </ApolloProvider>,
+    <Provider store={store}>
+      <ApolloProvider client={client}>
+        <AppContainer>
+          <AppRouter />
+        </AppContainer>
+      </ApolloProvider>
+    </Provider>,
     root
   );
 };

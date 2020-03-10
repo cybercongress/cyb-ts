@@ -1,6 +1,7 @@
 import React from 'react';
 import { hashHistory, IndexRoute, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
+import { connect } from 'react-redux';
 import App from './containers/application/application';
 import Got from './containers/got/got';
 import Funding from './containers/funding/index';
@@ -21,6 +22,10 @@ import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
+import { Dots } from './components';
+import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+
+const IPFS = require('ipfs');
 
 export const history = createBrowserHistory({});
 
@@ -29,7 +34,13 @@ class AppRouter extends React.Component {
     super(props);
     this.state = {
       query: '',
+      ipfs: null,
+      loader: true,
     };
+  }
+
+  async componentDidMount() {
+    await this.initIpfsNode();
   }
 
   funcUpdateValueSearchInput = query => {
@@ -38,8 +49,58 @@ class AppRouter extends React.Component {
     });
   };
 
+  initIpfsNode = async () => {
+    const { initIpfsProps, setIpfsStatusProps } = this.props;
+    try {
+      const node = await IPFS.create({
+        repo: 'ipfs-repo-cyber',
+        init: false,
+        start: true,
+        config: {
+          Addresses: {
+            Swarm: [
+              '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+            ],
+          },
+        },
+      });
+      console.log('node init false', node);
+      initIpfsProps(node);
+      if (node !== null) {
+        const status = await node.isOnline();
+        setIpfsStatusProps(status);
+      }
+      this.setState({ loader: false });
+    } catch (error) {
+      console.log(error);
+      const node = await IPFS.create({
+        repo: 'ipfs-repo-cyber',
+        init: true,
+        start: true,
+        config: {
+          Addresses: {
+            Swarm: [
+              '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+            ],
+          },
+        },
+      });
+      console.log('node init true', node);
+      initIpfsProps(node);
+      if (node !== null) {
+        const status = await node.isOnline();
+        setIpfsStatusProps(status);
+      }
+      this.setState({ loader: false });
+    }
+  };
+
   render() {
-    const { query } = this.state;
+    const { query, loader } = this.state;
+
+    if (loader) {
+      return <Dots />;
+    }
 
     return (
       <Router history={history}>
@@ -94,4 +155,11 @@ class AppRouter extends React.Component {
   }
 }
 
-export default AppRouter;
+const mapDispatchprops = dispatch => {
+  return {
+    initIpfsProps: ipfsNode => dispatch(initIpfs(ipfsNode)),
+    setIpfsStatusProps: status => dispatch(setIpfsStatus(status)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(AppRouter);

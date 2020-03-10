@@ -1,9 +1,14 @@
 import React, { PureComponent } from 'react';
 import getIpfs from 'get-ipfs';
+import { connect } from 'react-redux';
 
 const IPFS = require('ipfs');
+const FileType = require('file-type');
 
-const stringToUse = 'hello world from webpacked IPFS';
+const stringToUse1 = 'hello world from webpacked IPFS1';
+const stringToUse2 = 'hello world from webpacked IPFS2';
+
+import Status from './status';
 
 class Ipfs extends PureComponent {
   constructor(props) {
@@ -14,58 +19,121 @@ class Ipfs extends PureComponent {
       protocolVersion: null,
       addedFileHash: null,
       addedFileContents: null,
+      inputAdd1: '',
+      inputCup1: '',
+      fileType: '',
     };
   }
 
-  async componentDidMount() {
-    const config = {
-      permissions: ['id', 'version', 'add', 'cat', 'dag', 'swarm'],
-    };
-    const ipfs = await getIpfs([config]);
-    const { id, agentVersion, protocolVersion } = await ipfs.id();
-
-    console.log(id, agentVersion, protocolVersion);
-
-    const cid = await ipfs.add('strdingToUse');
-    console.log(cid);
-
-    // this.ops();
-  }
-  // {
-  //   repo: String(Math.random() + Date.now()),
+  // async componentDidMount() {
+  //   this.ops();
   // }
 
-  ops = async () => {
-    const node = await IPFS.create({
-      repo: String(Math.random() + Date.now()),
-      config: { Addresses: { Swarm: [] } },
-    });
+  // ops = async () => {
+  //   const { node } = this.props;
 
-    console.log('node', node);
-    console.log('IPFS node is ready 1');
+  //   if (node !== null) {
+  //     console.log('node createNode', node);
+  //     console.log('IPFS node is ready 1');
 
-    const { id, agentVersion, protocolVersion } = await node.id();
+  //     const { id, agentVersion, protocolVersion } = await node.id();
 
-    const peers = await node.swarm.peers();
+  //     const peers = await node.swarm.peers();
 
-    console.log(peers);
+  //     console.log('peers', peers);
 
-    this.setState({ id, agentVersion, protocolVersion });
+  //     this.setState({ id, agentVersion, protocolVersion });
 
-    const cid = await node.add(stringToUse);
-    console.log('cid', cid);
-    this.setState({ addedFileHash: cid[0].hash });
+  //     const cid = await node.add(new Buffer(stringToUse));
+  //     console.log('cid', cid);
+  //     this.setState({ addedFileHash: cid[0].hash });
+  //     const bufs = [];
+  //     const buf = await node.cat(cid[0].hash);
+  //     bufs.push(buf);
+  //     const data = await Buffer.concat(bufs);
+  //     this.setState({ addedFileContents: data.toString('utf8') });
+  //   }
+  // };
+
+  onClickAdd1 = async () => {
+    const { node } = this.props;
+    const { inputAdd1 } = this.state;
+    const cid = await node.add(new Buffer(inputAdd1));
+    console.log('onClickAdd1', cid);
+  };
+
+  onClickCut1 = async () => {
+    const { node } = this.props;
+    const { inputCup1 } = this.state;
+    let mime;
+    const buf = await node.cat(inputCup1);
     const bufs = [];
-    const buf = await node.cat(cid[0].hash);
     bufs.push(buf);
     const data = await Buffer.concat(bufs);
-    this.setState({ addedFileContents: data.toString('utf8') });
+    const dataFileType = await FileType.fromBuffer(data);
+    const dataBase64 = await data.toString('base64');
+    console.warn(dataFileType);
+    if (dataFileType !== undefined) {
+      mime = dataFileType.mime;
+    } else {
+      mime = 'text/plain';
+    }
+    const fileType = `data:${mime};base64,${dataBase64}`;
+    this.setState({ fileType });
+    console.warn('onClickCut1', data.toString('base64'));
+  };
+
+  onChangeCut1 = async e => {
+    const { value } = e.target;
+
+    await this.setState({
+      inputCup1: value,
+    });
+  };
+
+  onChangeAdd1 = async e => {
+    const { value } = e.target;
+
+    await this.setState({
+      inputAdd1: value,
+    });
+  };
+
+  onClickDagGet = async () => {
+    const { node } = this.props;
+    const { inputCup1 } = this.state;
+    const data = await node.dag.get(inputCup1, { localResolve: false });
+    console.log('data', data);
   };
 
   render() {
+    const { inputAdd1, inputCup1, fileType } = this.state;
     return (
       <div style={{ textAlign: 'center' }}>
+        {/* <Status ipfs={ipfs} /> */}
         {/* <h1>Everything is working</h1> */}
+        <iframe src={fileType} style={{ backgroundColor: '#fff' }} />
+        <div>
+          <input
+            onChange={e => this.onChangeAdd1(e)}
+            placeholder="inputAdd1"
+            value={inputAdd1}
+          />
+          <button type="button" onClick={this.onClickAdd1}>
+            add1
+          </button>
+          <input
+            onChange={e => this.onChangeCut1(e)}
+            placeholder="inputCup1"
+            value={inputCup1}
+          />
+          <button type="button" onClick={this.onClickCut1}>
+            cut1
+          </button>
+          <button type="button" onClick={this.onClickDagGet}>
+            dag.get
+          </button>
+        </div>
         <p>
           Your ID is <strong>{this.state.id}</strong>
         </p>
@@ -92,4 +160,11 @@ class Ipfs extends PureComponent {
   }
 }
 
-export default Ipfs;
+const mapStateToProps = store => {
+  console.log(store);
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(Ipfs);

@@ -33,6 +33,7 @@ module.exports = {
     'react-hot-loader/patch',
     path.join(__dirname, 'src', 'index.js'),
   ],
+  node: { fs: 'empty' },
   module: {
     rules: [
       {
