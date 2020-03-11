@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import getIpfs from 'get-ipfs';
 import { connect } from 'react-redux';
+import { getContentByCid } from '../../utils/search/utils';
 
 const IPFS = require('ipfs');
 const FileType = require('file-type');
@@ -102,8 +103,8 @@ class Ipfs extends PureComponent {
   onClickDagGet = async () => {
     const { node } = this.props;
     const { inputCup1 } = this.state;
-    const data = await node.dag.get(inputCup1, { localResolve: false });
-    console.log('data', data);
+    const fileType = await getContentByCid(inputCup1, node);
+    this.setState({ fileType });
   };
 
   render() {

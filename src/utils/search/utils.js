@@ -4,9 +4,12 @@ import { CYBER, TAKEOFF, COSMOS } from '../config';
 
 const { CYBER_NODE_URL, BECH32_PREFIX_ACC_ADDR_CYBERVALOPER } = CYBER;
 
+const SEARCH_RESULT_TIMEOUT_MS = 15000;
+
 const IPFS = require('ipfs-api');
 
 const Unixfs = require('ipfs-unixfs');
+const FileType = require('file-type');
 
 let ipfsApi;
 
@@ -42,28 +45,39 @@ const getIpfs = async () => {
   return ipfsApi;
 };
 
-export const getContentByCid = (cid, timeout) =>
-  getIpfs().then(ipfs => {
-    const timeoutPromise = () =>
-      new Promise((resolve, reject) => {
-        setTimeout(reject, timeout, 'ipfs get timeout');
-      });
-
-    const ipfsGetPromise = () =>
-      new Promise((resolve, reject) => {
-        ipfs.get(cid, (error, files) => {
-          if (error) {
-            reject(error);
-          }
-
-          const buf = files[0].content;
-
-          resolve(buf.toString());
-        });
-      });
-
-    return Promise.race([timeoutPromise(), ipfsGetPromise()]);
-  });
+export const getContentByCid = async (cid, ipfs) => {
+  try {
+    const timerId = setTimeout(() => {
+      console.warn('ipfs timeout');
+      return `data:,${cid}`;
+    }, 15000);
+    const { value: dagGetValue } = await ipfs.dag.get(cid, {
+      localResolve: false,
+    });
+    clearTimeout(timerId);
+    const link = dagGetValue._links;
+    if (link.length < 1) {
+      let mime;
+      const buf = await ipfs.cat(cid);
+      console.warn('buf', buf);
+      const bufs = [];
+      bufs.push(buf);
+      const data = Buffer.concat(bufs);
+      const dataFileType = await FileType.fromBuffer(data);
+      const dataBase64 = data.toString('base64');
+      if (dataFileType !== undefined) {
+        mime = dataFileType.mime;
+      } else {
+        mime = 'text/plain';
+      }
+      const fileType = `data:${mime};base64,${dataBase64}`;
+      return fileType;
+    }
+    return `data:,${cid}`;
+  } catch (error) {
+    return `data:,${cid}`;
+  }
+};
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
