@@ -21,7 +21,7 @@ module.exports = {
   devServer: {
     https: true,
     host: 'localhost',
-    port: process.env.PORT_APP || '3000',
+    port: process.env.PORT_APP || '3001',
     hot: true,
     headers: {
       'Access-Control-Allow-Origin': '*',

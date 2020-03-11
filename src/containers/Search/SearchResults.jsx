@@ -1,5 +1,7 @@
 import React from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import Iframe from 'react-iframe';
+import { connect } from 'react-redux';
 import {
   getIpfsHash,
   search,
@@ -8,7 +10,6 @@ import {
   formatNumber as format,
   getContentByCid,
 } from '../../utils/search/utils';
-import { connect } from 'react-redux';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
@@ -255,12 +256,18 @@ class SearchResults extends React.Component {
             rank={links[key].rank}
             grade={links[key].grade}
             status={links[key].status}
+            contentIpfs={links[key].content}
             // onClick={e => (e, links[cid].content)}
           >
-            {links[key].status === 'loading' ? (
+            {links[key].status !== 'success' ? (
               key
             ) : (
-              <iframe src={links[key].content} />
+              <Iframe
+                width="100%"
+                height="fit-content"
+                className="iframe-SearchItem"
+                url={links[key].content}
+              />
             )}
           </SearchItem>
         );
