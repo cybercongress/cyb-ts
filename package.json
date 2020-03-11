@@ -38,6 +38,7 @@
     "prettier": "^1.15.3",
     "prop-types": "^15.6.2",
     "react-hot-loader": "^4.8.8",
+    "react-iframe": "^1.8.0",
     "react-plotly.js": "^2.3.0",
     "react-popper-tooltip": "^2.8.3",
     "react-redux": "^7.2.0",

@@ -45,38 +45,57 @@ const getIpfs = async () => {
   return ipfsApi;
 };
 
-export const getContentByCid = async (cid, ipfs) => {
-  try {
-    const timerId = setTimeout(() => {
-      console.warn('ipfs timeout');
-      return `data:,${cid}`;
-    }, 15000);
-    const { value: dagGetValue } = await ipfs.dag.get(cid, {
-      localResolve: false,
+export const getContentByCid = async (
+  cid,
+  ipfs,
+  timeout = SEARCH_RESULT_TIMEOUT_MS
+) => {
+  let timerId;
+  const timeoutPromise = () =>
+    new Promise(reject => {
+      timerId = setTimeout(reject, timeout);
     });
-    clearTimeout(timerId);
-    const link = dagGetValue._links;
-    if (link.length < 1) {
-      let mime;
-      const buf = await ipfs.cat(cid);
-      console.warn('buf', buf);
-      const bufs = [];
-      bufs.push(buf);
-      const data = Buffer.concat(bufs);
-      const dataFileType = await FileType.fromBuffer(data);
-      const dataBase64 = data.toString('base64');
-      if (dataFileType !== undefined) {
-        mime = dataFileType.mime;
-      } else {
-        mime = 'text/plain';
-      }
-      const fileType = `data:${mime};base64,${dataBase64}`;
-      return fileType;
-    }
-    return `data:,${cid}`;
-  } catch (error) {
-    return `data:,${cid}`;
-  }
+
+  const ipfsGetPromise = () =>
+    new Promise((resolve, reject) => {
+      ipfs.dag
+        .get(cid, {
+          localResolve: false,
+        })
+        .then(dagGet => {
+          clearTimeout(timerId);
+          const { value: dagGetValue } = dagGet;
+          const link = dagGetValue._links;
+          if (link.length < 1) {
+            let mime;
+            ipfs.cat(cid).then(dataCat => {
+              const buf = dataCat;
+              const bufs = [];
+              bufs.push(buf);
+              const data = Buffer.concat(bufs);
+              FileType.fromBuffer(data).then(dataFileType => {
+                const dataBase64 = data.toString('base64');
+                if (dataFileType !== undefined) {
+                  mime = dataFileType.mime;
+                } else {
+                  mime = 'text/plain';
+                }
+                const fileType = `data:${mime};base64,${dataBase64}`;
+                resolve({
+                  status: 'success',
+                  content: fileType,
+                });
+              });
+            });
+          } else {
+            resolve({
+              status: 'success',
+              content: `data:,${cid}`,
+            });
+          }
+        });
+    });
+  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
 };
 
 export const formatNumber = (number, toFixed) => {

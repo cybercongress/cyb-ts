@@ -68,16 +68,15 @@ class SearchResults extends React.Component {
     const contentPromises = Object.keys(cids).map(cid =>
       getContentByCid(cid, node)
         .then(content => {
-          console.warn(content);
           const { searchResults } = this.state;
           const links = searchResults.link;
 
+          console.warn({ ...links[cid], ...content });
           links[cid] = {
             ...links[cid],
-            status: 'success',
-            content,
+            status: content.status,
+            content: content.content,
           };
-
           this.setState({
             searchResults,
           });
@@ -89,14 +88,13 @@ class SearchResults extends React.Component {
           links[cid] = {
             ...links[cid],
             status: 'failed',
+            content: `data:,${cid}`,
           };
-
           this.setState({
             searchResults,
           });
         })
     );
-
     Promise.all(contentPromises);
   };
 
