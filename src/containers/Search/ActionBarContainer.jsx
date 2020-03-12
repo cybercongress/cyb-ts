@@ -519,8 +519,6 @@ class ActionBarContainer extends Component {
       file,
     } = this.state;
 
-    console.log(this.inputOpenFileRef);
-
     const { valueSearchInput } = this.props;
 
     if (stage === STAGE_INIT) {

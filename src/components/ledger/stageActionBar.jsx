@@ -320,17 +320,19 @@ export const StartStageSearchActionBar = ({
           type="file"
           style={{ display: 'none' }}
         />
-        <button type="button" onClick={showOpenFileDlg}>
-          Open
-        </button>
+        <button
+          className="btn-add-file"
+          onClick={showOpenFileDlg}
+        />
       </div>
-      <div>{file !== null ? file.name : ''}</div>
-      <input
-        value={contentHash}
-        style={{ height: 42, width: '60%' }}
-        onChange={e => onChangeInputContentHash(e)}
-        placeholder="paste a hash"
-      />
+      <Pane display="flex" flexDirection="column" width="60%">
+        <input
+          value={file !== null ? file.name : contentHash}
+          style={{ height: 42, width: '100%' }}
+          onChange={e => onChangeInputContentHash(e)}
+          placeholder="paste a hash"
+        />
+      </Pane>
     </ActionBarContentText>
     <Button
       // disabled={!contentHash.length || file !== null}
