@@ -65,35 +65,50 @@ class SearchResults extends React.Component {
     this.getSearch(query);
   };
 
-  loadContent = async (cids, node) => {
+  loadContent = async (cids, node, prevState) => {
+    const { query } = this.state;
     const contentPromises = Object.keys(cids).map(cid =>
       getContentByCid(cid, node)
         .then(content => {
           const { searchResults } = this.state;
           const links = searchResults.link;
-
-          console.warn({ ...links[cid], ...content });
-          links[cid] = {
-            ...links[cid],
-            status: content.status,
-            content: content.content,
-          };
-          this.setState({
-            searchResults,
-          });
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              console.warn({ ...links[cid], ...content });
+              links[cid] = {
+                ...links[cid],
+                status: content.status,
+                content: content.content,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
         })
         .catch(() => {
           const { searchResults } = this.state;
           const links = searchResults.link;
-
-          links[cid] = {
-            ...links[cid],
-            status: 'failed',
-            content: `data:,${cid}`,
-          };
-          this.setState({
-            searchResults,
-          });
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              links[cid] = {
+                ...links[cid],
+                status: 'failed',
+                content: `data:,${cid}`,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
         })
     );
     Promise.all(contentPromises);
@@ -158,6 +173,7 @@ class SearchResults extends React.Component {
           rank: link.rank,
           grade: link.grade,
           status: 'loading',
+          query,
         },
       }),
       {}
@@ -249,6 +265,14 @@ class SearchResults extends React.Component {
     const links = searchResults.link;
     searchItems.push(
       Object.keys(links).map(key => {
+        let contentItem = false;
+        if (links[key].status === 'success') {
+          if (links[key].content !== undefined) {
+            if (links[key].content.indexOf(key) === -1) {
+              contentItem = true;
+            }
+          }
+        }
         return (
           <SearchItem
             key={key}
@@ -259,9 +283,7 @@ class SearchResults extends React.Component {
             contentIpfs={links[key].content}
             // onClick={e => (e, links[cid].content)}
           >
-            {links[key].status !== 'success' ? (
-              key
-            ) : (
+            {contentItem && (
               <Iframe
                 width="100%"
                 height="fit-content"
