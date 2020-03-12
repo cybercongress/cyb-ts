@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -11,7 +12,7 @@ import {
   Cyberlink,
   TransactionError,
 } from '../../components';
-import { getIpfsHash } from '../../utils/search/utils';
+import { getIpfsHash, getPin } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 
@@ -273,16 +274,18 @@ class ActionBarContainer extends Component {
   link = async () => {
     const { address, addressInfo, ledger, contentHash } = this.state;
 
-    const { keywordHash } = this.props;
+    const { keywordHash, node } = this.props;
 
     let fromCid = keywordHash;
     let toCid = contentHash;
 
     if (!fromCid.match(PATTERN_IPFS_HASH)) {
+      getPin(node, fromCid);
       fromCid = await getIpfsHash(fromCid);
     }
 
     if (!toCid.match(PATTERN_IPFS_HASH)) {
+      getPin(node, toCid);
       toCid = await getIpfsHash(toCid);
     }
 
@@ -537,4 +540,10 @@ class ActionBarContainer extends Component {
   }
 }
 
-export default ActionBarContainer;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(ActionBarContainer);

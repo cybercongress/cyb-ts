@@ -108,6 +108,15 @@ export const formatNumber = (number, toFixed) => {
   return formatted.toLocaleString('en').replace(/,/g, ' ');
 };
 
+export const getPin = async (node, content) => {
+  if (node) {
+    const cid = await node.add(new Buffer(content));
+    const pin = node.pin.add(cid[0].hash);
+
+    console.warn('content', content, 'cid', cid, 'pin', pin);
+  }
+};
+
 export const getIpfsHash = string =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
