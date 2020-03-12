@@ -12,6 +12,7 @@ import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import KeybaseCheck from './keybaseCheck';
 import KeybaseAvatar from './keybaseAvatar';
+import UptimeHook from './UptimeHook';
 
 export const Row = ({ value, title, marginBottom }) => (
   <Pane
@@ -75,7 +76,10 @@ const ValidatorInfo = ({ data }) => {
           </Pane>
         </Pane>
       </Pane>
-      <Card title="Uptime" value={`100 %`} />
+      <Card
+        title="Uptime"
+        value={<UptimeHook accountUser={data.consensus_pubkey} />}
+      />
     </ContainerCard>
   );
 };

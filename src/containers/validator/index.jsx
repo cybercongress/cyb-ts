@@ -24,7 +24,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={50}
+      paddingX={20}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -32,6 +32,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
+      minWidth="150px"
     >
       {text}
     </Tab>
@@ -48,10 +49,18 @@ class ValidatorsDetails extends React.PureComponent {
       loader: true,
       error: false,
       fans: [],
+      addressLedger: null,
+      unStake: false,
     };
   }
 
   componentDidMount() {
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      const address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address.bech32 });
+    }
     this.init();
     this.chekPathname();
   }
@@ -176,7 +185,7 @@ class ValidatorsDetails extends React.PureComponent {
   getDelegators = async () => {
     const { match } = this.props;
     const { address } = match.params;
-    const { validatorInfo } = this.state;
+    const { validatorInfo, addressLedger, unStake } = this.state;
 
     let fans = [];
 
@@ -185,6 +194,13 @@ class ValidatorsDetails extends React.PureComponent {
     if (data !== null) {
       fans = data.result;
       Object.keys(fans).forEach(key => {
+        if (unStake === false) {
+          if (fans[key].delegator_address === addressLedger) {
+            this.setState({
+              unStake: true,
+            });
+          }
+        }
         fans[key].share =
           parseFloat(fans[key].balance) /
           Math.floor(parseFloat(validatorInfo.delegator_shares));
@@ -210,6 +226,8 @@ class ValidatorsDetails extends React.PureComponent {
       error,
       selected,
       data,
+      addressLedger,
+      unStake,
     } = this.state;
     const { match } = this.props;
     const { address } = match.params;
@@ -289,11 +307,6 @@ class ValidatorsDetails extends React.PureComponent {
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tablist display="flex" justifyContent="center">
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              to={`/network/euler-5/hero/${address}`}
-            />
-            <TabBtn
               text="Fans"
               isSelected={selected === 'fans'}
               to={`/network/euler-5/hero/${address}/fans`}
@@ -302,6 +315,11 @@ class ValidatorsDetails extends React.PureComponent {
               text="Burden"
               isSelected={selected === 'burden'}
               to={`/network/euler-5/hero/${address}/burden`}
+            />
+            <TabBtn
+              text="Main"
+              isSelected={selected === 'main'}
+              to={`/network/euler-5/hero/${address}`}
             />
             <TabBtn
               text="Rumors"
@@ -328,6 +346,8 @@ class ValidatorsDetails extends React.PureComponent {
         <ActionBarContainer
           updateTable={this.update}
           validators={validatorInfo}
+          unStake={unStake}
+          addressLedger={addressLedger}
         />
       </div>
     );

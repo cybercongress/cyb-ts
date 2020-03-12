@@ -3,6 +3,7 @@ import { Text, Pane } from '@cybercongress/gravity';
 import { getTxs } from '../../utils/search/utils';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';
+import ActionBarContainer from '../../containers/Search/ActionBarContainer';
 
 const TextTitle = ({ children }) => (
   <Text color="#fff" fontSize="20px">
@@ -73,16 +74,21 @@ class TxsDetails extends React.Component {
 
   render() {
     const { information, messageError, msgs } = this.state;
+    const { match } = this.props;
+    const { txHash } = match.params;
 
     return (
-      <main className="block-body">
-        <InformationTxs
-          data={information}
-          messageError={messageError}
-          marginBottom={30}
-        />
-        {msgs.length > 0 && <Msgs data={msgs} />}
-      </main>
+      <div>
+        <main className="block-body">
+          <InformationTxs
+            data={information}
+            messageError={messageError}
+            marginBottom={30}
+          />
+          {msgs.length > 0 && <Msgs data={msgs} />}
+        </main>
+        <ActionBarContainer valueSearchInput={txHash} keywordHash={txHash} />
+      </div>
     );
   }
 }

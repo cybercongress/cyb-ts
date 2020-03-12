@@ -11,7 +11,7 @@ import Brain from './containers/brain/brain';
 import Home from './containers/home/home';
 import Wallet from './containers/Wallet/Wallet';
 import Governance from './containers/governance/governance';
-import Gift from './containers/gift/gift';
+import Gift from './containers/gift';
 import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import SearchResults from './containers/Search/SearchResults';
@@ -24,8 +24,11 @@ import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+import Block from './containers/blok';
 
 const IPFS = require('ipfs');
+
+
 
 export const history = createBrowserHistory({});
 
@@ -155,7 +158,7 @@ class AppRouter extends React.Component {
             // component={Home}
           />
           <Route exact path="/search/:query" component={SearchResults} />
-          <Route path="/gift" component={Gift} />
+          <Route path="/gift/:address?" component={Gift} />
           <Route path="/takeoff" component={Funding} />
           <Route path="/tot" component={Got} />
           <Route path="/auction" component={Auction} />
@@ -177,6 +180,7 @@ class AppRouter extends React.Component {
           />
           <Route path="/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
+          <Route path="/network/euler-5/block/:idBlock" component={Block} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>

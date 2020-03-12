@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
+import { Link } from 'react-router-dom';
 
 const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -61,7 +62,11 @@ const InformationTxs = ({ data, messageError, ...props }) => {
               alt="statusImg"
             />
           )}
-          {item}
+          {key === 'height' ? (
+            <Link to={`/network/euler-5/block/${data[key]}`}>{item}</Link>
+          ) : (
+            item
+          )}
         </Text>
       </Pane>
     );

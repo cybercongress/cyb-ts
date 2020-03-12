@@ -123,28 +123,7 @@ class SearchResults extends React.Component {
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
-    let drop;
     // const { query } = this.state;
-    if (query.match(PATTERN)) {
-      const result = await getDrop(query.toLowerCase());
-
-      console.log('result', result);
-
-      if (result === 0) {
-        drop = {
-          address: query,
-          gift: 0,
-        };
-      } else {
-        drop = {
-          address: query,
-          gift: result.gift,
-          ...result,
-        };
-      }
-
-      searchResults.drop = [drop];
-    }
 
     keywordHash = await getIpfsHash(query);
     searchResults.link = await search(keywordHash);
@@ -228,8 +207,14 @@ class SearchResults extends React.Component {
       );
     }
 
-    if (searchResults.drop.length > 0) {
-      searchItems.push(searchResults.drop.map(item => <Gift item={item} />));
+    if (query.match(PATTERN)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Check your gift"
+          to={`/gift/${query}`}
+          // address={query}
+        />
+      );
     }
 
     if (query.match(PATTERN_CYBER)) {

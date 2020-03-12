@@ -25,6 +25,7 @@ import CardTemplate from './cardTemplate/cardTemplate';
 import StatusTooltip from './statusTooltip';
 import MsgType from './msgType/msgType';
 import TextTable from './text/textTable';
+import StatusTx from './statusTx';
 
 export {
   RowTableTakeoff,
@@ -52,6 +53,7 @@ export {
   ReDelegate,
   TransactionError,
   TextTable,
+  StatusTx,
 };
 
 export { Nums } from './ui/Numbers';

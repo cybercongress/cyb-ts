@@ -99,14 +99,14 @@ export const Confirmed = ({
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
         {T.actionBar.confirmedTX.blockTX}{' '}
-        <span
+        <Link
+          to={`/network/euler-5/block/${txHeight}`}
           style={{
-            color: '#3ab793',
             marginLeft: '5px',
           }}
         >
           {formatNumber(txHeight)}
-        </span>
+        </Link>
       </p>
 
       {explorer ? (
@@ -171,7 +171,7 @@ export const TransactionError = ({
       Transaction Error:
     </span>
     <div
-      style={{ marginTop: '25px' }}
+      style={{ marginTop: '25px', width: '80%', margin: '0 auto' }}
       className="display-flex flex-direction-column"
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>

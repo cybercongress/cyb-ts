@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text, Pane, Button, ActionBar } from '@cybercongress/gravity';
+import { withRouter, Redirect } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
 
 import { i18n } from '../../i18n/en';
-import { Link } from 'react-router-dom';
 
 import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
 
@@ -34,7 +34,10 @@ class ActionBarContainer extends React.Component {
       returnCode: null,
       addressLedger: null,
       ledgerVersion: [0, 0, 0],
+      toRedirect: null,
+      redirect: false,
     };
+    this.routeChange = this.routeChange.bind(this);
   }
 
   componentDidUpdate() {
@@ -62,6 +65,12 @@ class ActionBarContainer extends React.Component {
       }
     }
   }
+
+  routeChange = newPath => {
+    const { history } = this.props;
+    const path = newPath;
+    history.push(path);
+  };
 
   compareVersion = async () => {
     const test = this.state.ledgerVersion;
@@ -106,17 +115,22 @@ class ActionBarContainer extends React.Component {
   getAddress = async () => {
     try {
       const { ledger } = this.state;
-      const { updateFunc } = this.props;
+      const accounts = {};
 
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
-      console.log('address', addressLedger);
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
 
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
-      updateFunc();
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
       this.setState({
-        addressLedger,
         stage: STAGE_READY,
+        toRedirect: '/pocket',
+        redirect: true,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -129,22 +143,48 @@ class ActionBarContainer extends React.Component {
     }
   };
 
+  cleatState = () => {
+    this.setState({
+      stage: STAGE_INIT,
+      ledger: null,
+      returnCode: null,
+      addressLedger: null,
+      ledgerVersion: [0, 0, 0],
+      toRedirect: null,
+      redirect: false,
+    });
+  };
+
   onClickGetAddressLedger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
     });
   };
 
+  onClickPlay = () => {
+    this.routeChange('/gol');
+  };
+
   render() {
-    const { addAddress, cleatState } = this.props;
-    const { stage, returnCode, ledgerVersion } = this.state;
+    const { addAddress } = this.props;
+    const {
+      stage,
+      returnCode,
+      ledgerVersion,
+      redirect,
+      toRedirect,
+    } = this.state;
+
+    if (redirect) {
+      this.routeChange(toRedirect);
+    }
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
-          onClickBtnCloce={cleatState}
+          onClickBtnCloce={this.cleatState}
           version={
             returnCode === LEDGER_OK &&
             this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
@@ -157,37 +197,23 @@ class ActionBarContainer extends React.Component {
       <ActionBar>
         <Pane>
           {addAddress && (
-            <Button onClick={() => this.onClickGetAddressLedger()}>
-              {T.actionBar.pocket.put}
-            </Button>
+            <Pane>
+              You can safely claim bootstrap fuel by connecting the Ledger
+              <Button
+                marginLeft={10}
+                onClick={() => this.onClickGetAddressLedger()}
+              >
+                Connect
+              </Button>
+            </Pane>
           )}
           {!addAddress && (
-            <Text color="#fff" fontSize="18px">
-              <Link
-                style={{
-                  fontSize: '18px',
-                  padding: '5px 20px',
-                  margin: '0 5px',
-                }}
-                className="bnt-claime"
-                to="/gift"
-              >
-                Take gift
-              </Link>{' '}
-              or Teleport to{' '}
-              <Link
-                style={{
-                  fontSize: '18px',
-                  padding: '5px 20px',
-                  margin: '0 5px',
-                }}
-                className="bnt-claime"
-                to="/gol"
-              >
-                {' '}
-                Game of Links{' '}
-              </Link>
-            </Text>
+            <Pane>
+              Amazing, you can join Game of Links now{' '}
+              <Button marginLeft={10} onClick={this.onClickPlay}>
+                Play
+              </Button>
+            </Pane>
           )}
         </Pane>
       </ActionBar>
@@ -195,4 +221,4 @@ class ActionBarContainer extends React.Component {
   }
 }
 
-export default ActionBarContainer;
+export default withRouter(ActionBarContainer);
