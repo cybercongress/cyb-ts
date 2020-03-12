@@ -109,11 +109,15 @@ export const formatNumber = (number, toFixed) => {
 };
 
 export const getPin = async (node, content) => {
+  let cid;
   if (node) {
-    const cid = await node.add(new Buffer(content));
-    const pin = node.pin.add(cid[0].hash);
-
-    console.warn('content', content, 'cid', cid, 'pin', pin);
+    if (typeof content === 'string') {
+      cid = await node.add(new Buffer(content), { pin: true });
+    } else {
+      cid = await node.add(content, { pin: true });
+    }
+    console.warn('content', content, 'cid', cid);
+    return cid[0].hash;
   }
 };
 

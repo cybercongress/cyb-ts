@@ -11,6 +11,7 @@ import {
   Text,
   Select,
   Textarea,
+  FilePicker,
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
 import { Loading } from '../ui/loading';
@@ -304,9 +305,26 @@ export const StartStageSearchActionBar = ({
   onClickBtn,
   contentHash,
   onChangeInputContentHash,
+  showOpenFileDlg,
+  inputOpenFileRef,
+  onChangeInput,
+  onClickAdd,
+  file,
 }) => (
   <ActionBar>
     <ActionBarContentText>
+      <div>
+        <input
+          ref={inputOpenFileRef}
+          onChange={() => onChangeInput(inputOpenFileRef)}
+          type="file"
+          style={{ display: 'none' }}
+        />
+        <button type="button" onClick={showOpenFileDlg}>
+          Open
+        </button>
+      </div>
+      <div>{file !== null ? file.name : ''}</div>
       <input
         value={contentHash}
         style={{ height: 42, width: '60%' }}
@@ -314,7 +332,10 @@ export const StartStageSearchActionBar = ({
         placeholder="paste a hash"
       />
     </ActionBarContentText>
-    <Button disabled={!contentHash.length} onClick={onClickBtn}>
+    <Button
+      // disabled={!contentHash.length || file !== null}
+      onClick={onClickBtn}
+    >
       {T.actionBar.startSearch.cyberlink}
     </Button>
   </ActionBar>
