@@ -308,40 +308,57 @@ export const StartStageSearchActionBar = ({
   showOpenFileDlg,
   inputOpenFileRef,
   onChangeInput,
-  onClickAdd,
+  onClickClear,
   file,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <div>
-        <input
-          ref={inputOpenFileRef}
-          onChange={() => onChangeInput(inputOpenFileRef)}
-          type="file"
-          style={{ display: 'none' }}
-        />
-        <button
-          className="btn-add-file"
-          onClick={showOpenFileDlg}
-        />
-      </div>
-      <Pane display="flex" flexDirection="column" width="60%">
-        <input
-          value={file !== null ? file.name : contentHash}
-          style={{ height: 42, width: '100%' }}
-          onChange={e => onChangeInputContentHash(e)}
-          placeholder="paste a hash"
-        />
-      </Pane>
-    </ActionBarContentText>
-    <Button
-      // disabled={!contentHash.length || file !== null}
-      onClick={onClickBtn}
-    >
-      {T.actionBar.startSearch.cyberlink}
-    </Button>
-  </ActionBar>
-);
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          flexDirection="column"
+          position="relative"
+          width="60%"
+        >
+          <input
+            value={contentHash}
+            style={{ height: 42, width: '100%', paddingRight: '35px' }}
+            onChange={e => onChangeInputContentHash(e)}
+            placeholder="paste a hash"
+          />
+          <Pane
+            position="absolute"
+            right="0"
+            top="50%"
+            transform="translate(0, -50%)"
+          >
+            <input
+              ref={inputOpenFileRef}
+              onChange={() => onChangeInput(inputOpenFileRef)}
+              type="file"
+              style={{ display: 'none' }}
+            />
+            <button
+              className={
+                file !== null && file !== undefined
+                  ? 'btn-add-close'
+                  : 'btn-add-file'
+              }
+              onClick={
+                file !== null && file !== undefined
+                  ? onClickClear
+                  : showOpenFileDlg
+              }
+            />
+          </Pane>
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={!contentHash.length} onClick={onClickBtn}>
+        {T.actionBar.startSearch.cyberlink}
+      </Button>
+    </ActionBar>
+  );
+};
 
 export const GovernanceStartStageActionBar = ({
   valueSelect,

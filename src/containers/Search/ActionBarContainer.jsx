@@ -484,6 +484,12 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onClickClear = () => {
+    this.setState({
+      file: null,
+    });
+  };
+
   hasKey() {
     return this.state.address !== null;
   }
@@ -526,11 +532,14 @@ class ActionBarContainer extends Component {
         <StartStageSearchActionBar
           valueSearchInput={valueSearchInput}
           onClickBtn={this.onClickUsingLedger}
-          contentHash={contentHash}
+          contentHash={
+            file !== null && file !== undefined ? file.name : contentHash
+          }
           onChangeInputContentHash={this.onChangeInput}
           inputOpenFileRef={this.inputOpenFileRef}
           showOpenFileDlg={this.showOpenFileDlg}
           onChangeInput={this.onFilePickerChange}
+          onClickClear={this.onClickClear}
           file={file}
         />
       );
