@@ -39,6 +39,8 @@ import {
   Takeoff,
   Relevance,
 } from './tabs';
+import TableDiscipline from './table';
+import { getDelegator } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -76,8 +78,11 @@ class GOL extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      addressLedger: null,
+      addressLedger: {
+        bech32: 'cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky',
+      },
       selectGlobal: 'disciplines',
+      validatorAddress: 'cybervaloper1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq4xvhhf',
       selectedMaster: 'relevance',
       selectedPlay: 'uptime',
       loading: false,
@@ -94,8 +99,7 @@ class GOL extends React.Component {
   }
 
   async componentDidMount() {
-    await this.checkAddressLocalStorage();
-    this.getDataTableMonitor();
+    // await this.checkAddressLocalStorage();
     // this.getMyGOLs();
     this.getMyEULs();
     this.getDataWS();
@@ -124,7 +128,8 @@ class GOL extends React.Component {
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      this.setState({ addressLedger: address });
+      const validatorAddress = getDelegator(address.bech32, 'cybervaloper');
+      this.setState({ addressLedger: address, validatorAddress });
       this.getMyEULs();
     } else {
       this.setState({
@@ -132,64 +137,6 @@ class GOL extends React.Component {
         loading: false,
       });
     }
-  };
-
-  getLoad = async addressLedger => {
-    let karma = 0;
-    let sumKarma = 0;
-    let load = 0;
-
-    const responseAccountBandwidth = await getAccountBandwidth(addressLedger);
-    const responseIndexStats = await getIndexStats();
-
-    if (responseAccountBandwidth !== null && responseIndexStats !== null) {
-      karma = responseAccountBandwidth.karma;
-      sumKarma = responseIndexStats.totalKarma;
-      load = parseFloat(karma) / parseFloat(sumKarma);
-      console.log('load', load);
-    }
-    return load;
-  };
-
-  // {Math.floor(
-  //   (cybWon / DISTRIBUTION.takeoff) * DISTRIBUTION[key]
-  // )}
-  getDataTableMonitor = async () => {
-    const { won, addressLedger } = this.state;
-    const dataTable = [];
-
-    Object.keys(DISTRIBUTION).forEach(async key => {
-      let discipline = '';
-      let maxPrize = 0;
-      let currentPrize = 0;
-      let cybWonAbsolute = 0;
-      const cybWonPercent = 0;
-      let response = null;
-
-      if (key !== 'takeoff') {
-        discipline = key;
-        maxPrize = DISTRIBUTION[key];
-        currentPrize = (won / DISTRIBUTION.takeoff) * maxPrize;
-
-        switch (key) {
-          case 'load':
-            response = await this.getLoad(addressLedger.bech32);
-            cybWonAbsolute = response * currentPrize;
-            break;
-          default:
-            break;
-        }
-
-        dataTable.push({
-          discipline,
-          maxPrize,
-          currentPrize,
-          cybWonAbsolute,
-          cybWonPercent,
-        });
-      }
-    });
-    this.setState({ dataTable });
   };
 
   getMyEULs = async () => {
@@ -200,7 +147,7 @@ class GOL extends React.Component {
     const result = await getBalance(addressLedger.bech32);
 
     if (result) {
-      myEULs = getTotalEUL(result);
+      myEULs = await getTotalEUL(result);
     }
 
     this.setState({
@@ -255,6 +202,8 @@ class GOL extends React.Component {
       selectedPlay,
       won,
       dataTable,
+      addressLedger,
+      validatorAddress,
     } = this.state;
 
     console.log('dataTable', dataTable);
@@ -380,66 +329,11 @@ class GOL extends React.Component {
 
     if (selectGlobal === 'disciplines') {
       content = (
-        <Pane width="100%">
-          <Pane textAlign="center" width="100%">
-            <Text lineHeight="24px" color="#fff" fontSize="18px">
-              Allocations of CYB rewards by discipline
-            </Text>
-          </Pane>
-          <Table>
-            <Table.Head
-              style={{
-                backgroundColor: '#000',
-                borderBottom: '1px solid #ffffff80',
-              }}
-            >
-              <Table.TextHeaderCell textAlign="center">
-                <Text fontSize="18px" color="#fff">
-                  Discipline
-                </Text>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell textAlign="center">
-                <Text fontSize="18px" color="#fff">
-                  CYB reward
-                </Text>
-              </Table.TextHeaderCell>
-            </Table.Head>
-            <Table.Body
-              style={{
-                backgroundColor: '#000',
-                overflowY: 'hidden',
-                padding: 7,
-              }}
-            >
-              {Object.keys(DISTRIBUTION).map(key => {
-                if (key !== 'takeoff') {
-                  return (
-                    <Table.Row key={key} borderBottom="none">
-                      <Table.TextCell>
-                        <Text fontSize="16px" color="#fff">
-                          {key}
-                        </Text>
-                      </Table.TextCell>
-                      <Table.TextCell textAlign="end">
-                        <Text fontSize="16px" color="#fff">
-                          {DISTRIBUTION[key]}
-                        </Text>
-                      </Table.TextCell>
-                      <Table.TextCell textAlign="end">
-                        <Text fontSize="16px" color="#fff">
-                          {Math.floor(
-                            (won / DISTRIBUTION.takeoff) * DISTRIBUTION[key]
-                          )}
-                        </Text>
-                      </Table.TextCell>
-                    </Table.Row>
-                  );
-                }
-                return null;
-              })}
-            </Table.Body>
-          </Table>
-        </Pane>
+        <TableDiscipline
+          addressLedger={addressLedger.bech32}
+          validatorAddress={validatorAddress}
+          won={won}
+        />
       );
     }
 

@@ -70,9 +70,16 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable display="flex" flexDirection="column">
-          {item.messages.map((items, i) => (
-            <MsgType key={`${item.txhash}_${i}`} type={items.type} />
-          ))}
+          {item.messages.map((items, i) => {
+            let typeTx = items.type;
+            if (
+              typeTx === 'cosmos-sdk/MsgSend' &&
+              items.value.to_address === accountUser
+            ) {
+              typeTx = 'Receive';
+            }
+            return <MsgType key={i} type={typeTx} />;
+          })}
         </TextTable>
       </Table.TextCell>
       {amount && (
@@ -80,7 +87,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
           {item.messages.map((items, i) => (
             <Tooltip
               position="bottom"
-              key={`${item.txhash}_${i}`}
+              key={i}
               content={`${formatNumber(
                 Math.floor(items.value.amount.amount)
               )} ${CYBER.DENOM_CYBER.toUpperCase()}`}

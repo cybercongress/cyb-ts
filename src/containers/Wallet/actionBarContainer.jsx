@@ -158,7 +158,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',

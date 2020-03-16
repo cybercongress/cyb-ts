@@ -95,12 +95,7 @@ function applyGasCyber(unsignedTx, gas, denom) {
 
   // eslint-disable-next-line no-param-reassign
   unsignedTx.value.fee = {
-    amount: [
-      {
-        amount: '0',
-        denom: denom || DENOM_CYBER,
-      },
-    ],
+    amount: [],
     gas: gas.toString(),
   };
 

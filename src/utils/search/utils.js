@@ -222,17 +222,18 @@ export const getStatistics = () =>
     );
   });
 
-export const getValidators = () =>
-  new Promise(resolve =>
-    axios({
+export const getValidators = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/validators`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 
 export const getValidatorsUnbonding = () =>
   new Promise(resolve =>
@@ -274,17 +275,19 @@ export const selfDelegationShares = async (
   }
 };
 
-export const stakingPool = () =>
-  new Promise(resolve =>
-    axios({
+export const stakingPool = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/pool`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
 
 export const getAccountBandwidth = async address => {
   try {
@@ -391,8 +394,8 @@ export const getTotalEUL = async data => {
       data.delegations !== 0
     ) {
       data.delegations.forEach((delegation, i) => {
-        balance.total += Math.floor(parseFloat(delegation.balance));
-        balance.delegation += Math.floor(parseFloat(delegation.balance));
+        balance.total += Math.floor(parseFloat(delegation.balance.amount));
+        balance.delegation += Math.floor(parseFloat(delegation.balance.amount));
       });
     }
 

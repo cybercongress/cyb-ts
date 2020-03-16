@@ -9,6 +9,7 @@ import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import AppRouter from './router';
+import { CYBER } from './utils/config';
 
 import './style/main.css';
 import './image/favicon.ico';
@@ -25,7 +26,7 @@ const getHeaders = token => {
 };
 
 const httpLink = new HttpLink({
-  uri: 'https://mars.cybernode.ai/graphql/v1/graphql',
+  uri: CYBER.CYBER_INDEX_HTTPS,
   headers: {
     'content-type': 'application/json',
     authorization: '',
@@ -33,7 +34,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://mars.cybernode.ai/graphql/v1/graphql`,
+  uri: CYBER.CYBER_INDEX_WEBSOCKET,
   options: {
     reconnect: true,
   },
