@@ -1,6 +1,13 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
-import { Load, Delegation, LifetimeHooks } from './discipline';
+import {
+  Load,
+  Delegation,
+  LifetimeHooks,
+  Rewards,
+  FVS,
+  Relevance,
+} from './discipline';
 
 const TableDiscipline = ({ won, addressLedger, validatorAddress }) => {
   return (
@@ -35,9 +42,12 @@ const TableDiscipline = ({ won, addressLedger, validatorAddress }) => {
             padding: 7,
           }}
         >
+          <Relevance addressLedger={addressLedger} won={won} />
           <Load addressLedger={addressLedger} won={won} />
           <Delegation validatorAddress={validatorAddress} won={won} />
           <LifetimeHooks validatorAddress={validatorAddress} won={won} />
+          <Rewards validatorAddress={validatorAddress} won={won} />
+          <FVS />
         </Table.Body>
       </Table>
     </Pane>

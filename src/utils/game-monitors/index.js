@@ -3,6 +3,7 @@ import {
   getIndexStats,
   getValidatorsInfo,
   stakingPool,
+  getDrop,
 } from '../search/utils';
 
 export const getLoad = async address => {
@@ -41,4 +42,60 @@ export const getDelegation = async address => {
       parseFloat(currentValidatorStakedTokens) / parseFloat(allBondedTokens);
   }
   return delegation;
+};
+
+export const getLifetime = async data => {
+  let lifetime = 0;
+
+  if (data !== null) {
+    if (data.preCommit !== 0) {
+      lifetime = parseFloat(data.preCommit) / parseFloat(data.block);
+    }
+  }
+
+  return lifetime;
+};
+
+export const getRewards = async address => {
+  let rewards = 0;
+
+  const dataGetDrop = await getDrop(address);
+
+  if (dataGetDrop !== 0) {
+    rewards = dataGetDrop.gift;
+  }
+
+  return rewards;
+};
+
+export const getRelevance = async (dataRelevance, dataQ) => {
+  let relevance = 0;
+  const arrCof = [
+    1,
+    1.5,
+    1.83333333,
+    2.08333333,
+    2.28333333,
+    2.45,
+    2.59285714,
+    2.71785714,
+    2.82896825,
+    2.92896825,
+  ];
+  const rankAggr = dataRelevance.relevance_aggregate.aggregate.sum.rank;
+
+  dataRelevance.rewards_view.forEach((item, index) => {
+    let weght = 0;
+    let tempShare = 0;
+    const indexArrCof = dataQ.linkages_view[index].linkages;
+
+    weght = parseFloat(item.rank) / parseFloat(rankAggr);
+
+    const order = parseFloat(item.order_number) / arrCof[indexArrCof];
+
+    tempShare = weght * order;
+
+    relevance += tempShare;
+  });
+  return relevance;
 };

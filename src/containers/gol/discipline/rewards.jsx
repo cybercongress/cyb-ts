@@ -1,45 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { DISTRIBUTION } from '../../../utils/config';
 import { Dots } from '../../../components';
-import { getLifetime } from '../../../utils/game-monitors';
+import { getRewards } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 
-const Lifetime = ({
-  validatorAddress,
-  subscribeToNewComments,
-  reward = 0,
-  won = 0,
-  dataQ,
-}) => {
+const Rewards = ({ validatorAddress, reward = 0, won = 0 }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
-  const currentPrize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
-  );
+  const currentPrize = '-';
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getLifetime({
-        block: dataQ.pre_commit_aggregate.aggregate.count,
-        preCommit: dataQ.validator[0].pre_commits_aggregate.aggregate.count,
-      });
-      const cybAbsolute = data * currentPrize;
+      const data = await getRewards(validatorAddress);
+      const cybAbsolute = data;
       setCybWonAbsolute(cybAbsolute);
       if (cybAbsolute !== 0) {
-        const cybPercent = (cybAbsolute / currentPrize) * 100;
+        const cybPercent =
+          (cybAbsolute / DISTRIBUTION['euler 4 rewards']) * 100;
         setCybWonPercent(cybPercent);
       }
       setLoading(false);
     };
     fetchData();
-  }, [won, dataQ]);
+  }, [won, validatorAddress]);
 
   return (
     <RowTable
-      text="lifetime"
-      reward={DISTRIBUTION.delegation}
+      text="euler 4 rewards"
+      reward={DISTRIBUTION['euler 4 rewards']}
       currentPrize={currentPrize}
       cybWonAbsolute={
         loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))
@@ -49,4 +39,4 @@ const Lifetime = ({
   );
 };
 
-export default Lifetime;
+export default Rewards;

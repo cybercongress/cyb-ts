@@ -1,7 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import Lifetime from './lifetime';
+import { Dots } from '../../../components';
 
 const BLOCK_SUBSCRIPTION = gql`
   subscription newBlock {
@@ -13,27 +14,35 @@ const BLOCK_SUBSCRIPTION = gql`
 
 function LifetimeHooks({ validatorAddress, won }) {
   const GET_CHARACTERS = gql`
-    query uptime {
-      pre_commit_aggregate(
+    query lifetimeRate {
+      validator(
         where: {
-          validator: {
-            consensus_pubkey: {
-              _eq: "cybervalconspub1zcjduepqz4dnk3702wsrksnfsdv3adz97rzcysu8w7a3et2pyvswpce909hsgyshz6"
-            }
+          consensus_pubkey: {
+            _eq: "cybervalconspub1zcjduepqz4dnk3702wsrksnfsdv3adz97rzcysu8w7a3et2pyvswpce909hsgyshz6"
           }
         }
       ) {
+        pre_commits_aggregate {
+          aggregate {
+            count
+          }
+        }
+      }
+      pre_commit_aggregate {
         aggregate {
-          count(distinct: true)
+          count
         }
       }
     }
   `;
-  const { subscribeToMore, ...result } = useQuery(GET_CHARACTERS);
+  const { subscribeToMore, loading, data: dataQ } = useQuery(GET_CHARACTERS);
 
+  if (loading) {
+    return <Dots />;
+  }
   return (
     <Lifetime
-      {...result}
+      dataQ={dataQ}
       won={won}
       subscribeToNewComments={() =>
         subscribeToMore({
@@ -47,9 +56,10 @@ function LifetimeHooks({ validatorAddress, won }) {
             const dataSubscribe = {
               ...prev,
               entry: {
-                data: [newFeedItem, prev.pre_commit_aggregate],
+                data: [newFeedItem],
               },
             };
+            // console.log(dataQ);
             return dataSubscribe;
           },
         })

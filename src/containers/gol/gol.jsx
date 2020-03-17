@@ -156,14 +156,14 @@ class GOL extends React.Component {
   };
 
   getAtom = async dataTxs => {
-    let amount = 0;
+    let amount = 10;
     let won = 0;
     let allocation = 0;
     let currentPrize = 0;
 
-    if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
-    }
+    // if (dataTxs) {
+    //   amount = await getAmountATOM(dataTxs);
+    // }
 
     won = cybWon(amount);
     allocation = getDisciplinesAllocation(amount);
