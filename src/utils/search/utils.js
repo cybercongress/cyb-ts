@@ -9,9 +9,12 @@ const {
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
 } = CYBER;
 
+const SEARCH_RESULT_TIMEOUT_MS = 15000;
+
 const IPFS = require('ipfs-api');
 
 const Unixfs = require('ipfs-unixfs');
+const FileType = require('file-type');
 
 let ipfsApi;
 
@@ -47,28 +50,58 @@ const getIpfs = async () => {
   return ipfsApi;
 };
 
-export const getContentByCid = (cid, timeout) =>
-  getIpfs().then(ipfs => {
-    const timeoutPromise = () =>
-      new Promise((resolve, reject) => {
-        setTimeout(reject, timeout, 'ipfs get timeout');
-      });
+export const getContentByCid = async (
+  cid,
+  ipfs,
+  timeout = SEARCH_RESULT_TIMEOUT_MS
+) => {
+  let timerId;
+  const timeoutPromise = () =>
+    new Promise(reject => {
+      timerId = setTimeout(reject, timeout);
+    });
 
-    const ipfsGetPromise = () =>
-      new Promise((resolve, reject) => {
-        ipfs.get(cid, (error, files) => {
-          if (error) {
-            reject(error);
+  const ipfsGetPromise = () =>
+    new Promise((resolve, reject) => {
+      ipfs.dag
+        .get(cid, {
+          localResolve: false,
+        })
+        .then(dagGet => {
+          clearTimeout(timerId);
+          const { value: dagGetValue } = dagGet;
+          const link = dagGetValue._links;
+          if (link.length < 1) {
+            let mime;
+            ipfs.cat(cid).then(dataCat => {
+              const buf = dataCat;
+              const bufs = [];
+              bufs.push(buf);
+              const data = Buffer.concat(bufs);
+              FileType.fromBuffer(data).then(dataFileType => {
+                const dataBase64 = data.toString('base64');
+                if (dataFileType !== undefined) {
+                  mime = dataFileType.mime;
+                } else {
+                  mime = 'text/plain';
+                }
+                const fileType = `data:${mime};base64,${dataBase64}`;
+                resolve({
+                  status: 'success',
+                  content: fileType,
+                });
+              });
+            });
+          } else {
+            resolve({
+              status: 'success',
+              content: `data:,${cid}`,
+            });
           }
-
-          const buf = files[0].content;
-
-          resolve(buf.toString());
         });
-      });
-
-    return Promise.race([timeoutPromise(), ipfsGetPromise()]);
-  });
+    });
+  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
+};
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -78,6 +111,19 @@ export const formatNumber = (number, toFixed) => {
   }
   // debugger;
   return formatted.toLocaleString('en').replace(/,/g, ' ');
+};
+
+export const getPin = async (node, content) => {
+  let cid;
+  if (node) {
+    if (typeof content === 'string') {
+      cid = await node.add(new Buffer(content), { pin: true });
+    } else {
+      cid = await node.add(content, { pin: true });
+    }
+    console.warn('content', content, 'cid', cid);
+    return cid[0].hash;
+  }
 };
 
 export const getIpfsHash = string =>
