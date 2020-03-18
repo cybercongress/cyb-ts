@@ -12,13 +12,13 @@ const BLOCK_SUBSCRIPTION = gql`
   }
 `;
 
-function LifetimeHooks({ validatorAddress, won }) {
+function LifetimeHooks({ consensusAddress, won }) {
   const GET_CHARACTERS = gql`
     query lifetimeRate {
       validator(
         where: {
           consensus_pubkey: {
-            _eq: "cybervalconspub1zcjduepqz4dnk3702wsrksnfsdv3adz97rzcysu8w7a3et2pyvswpce909hsgyshz6"
+            _eq: "${consensusAddress}"
           }
         }
       ) {
@@ -35,37 +35,15 @@ function LifetimeHooks({ validatorAddress, won }) {
       }
     }
   `;
-  const { subscribeToMore, loading, data: dataQ } = useQuery(GET_CHARACTERS);
+  if (consensusAddress === null) {
+    return <Lifetime dataQ={null} won={won} />;
+  }
+  const { loading, data: dataQ } = useQuery(GET_CHARACTERS);
 
   if (loading) {
     return <Dots />;
   }
-  return (
-    <Lifetime
-      dataQ={dataQ}
-      won={won}
-      subscribeToNewComments={() =>
-        subscribeToMore({
-          document: BLOCK_SUBSCRIPTION,
-          updateQuery: (prev, { subscriptionData }) => {
-            if (!subscriptionData.data) {
-              return prev;
-            }
-
-            const newFeedItem = subscriptionData.data;
-            const dataSubscribe = {
-              ...prev,
-              entry: {
-                data: [newFeedItem],
-              },
-            };
-            // console.log(dataQ);
-            return dataSubscribe;
-          },
-        })
-      }
-    />
-  );
+  return <Lifetime dataQ={dataQ} won={won} />;
 }
 
 export default LifetimeHooks;

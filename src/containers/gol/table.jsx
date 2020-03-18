@@ -1,5 +1,8 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+import { Dots } from '../../components';
 import {
   Load,
   Delegation,
@@ -9,7 +12,26 @@ import {
   Relevance,
 } from './discipline';
 
-const TableDiscipline = ({ won, addressLedger, validatorAddress }) => {
+const BLOCK_SUBSCRIPTION = gql`
+  query newBlock {
+    block(limit: 1, order_by: { height: desc }) {
+      height
+    }
+  }
+`;
+
+const TableDiscipline = ({
+  won,
+  addressLedger,
+  validatorAddress,
+  consensusAddress,
+}) => {
+  const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
+
+  if (loading) {
+    return <Dots />;
+  }
+
   return (
     <Pane width="100%">
       <Pane textAlign="center" width="100%">
@@ -34,6 +56,21 @@ const TableDiscipline = ({ won, addressLedger, validatorAddress }) => {
               CYB reward
             </Text>
           </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <Text fontSize="18px" color="#fff">
+              Current Prize
+            </Text>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <Text fontSize="18px" color="#fff">
+              cyb won absolute
+            </Text>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <Text fontSize="18px" color="#fff">
+              cyb won percent
+            </Text>
+          </Table.TextHeaderCell>
         </Table.Head>
         <Table.Body
           style={{
@@ -42,10 +79,14 @@ const TableDiscipline = ({ won, addressLedger, validatorAddress }) => {
             padding: 7,
           }}
         >
-          <Relevance addressLedger={addressLedger} won={won} />
+          <Relevance
+            dataBlock={dataBlock.block[0].height}
+            addressLedger={addressLedger}
+            won={won}
+          />
           <Load addressLedger={addressLedger} won={won} />
           <Delegation validatorAddress={validatorAddress} won={won} />
-          <LifetimeHooks validatorAddress={validatorAddress} won={won} />
+          <LifetimeHooks consensusAddress={consensusAddress} won={won} />
           <Rewards validatorAddress={validatorAddress} won={won} />
           <FVS />
         </Table.Body>

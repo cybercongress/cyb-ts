@@ -5,13 +5,7 @@ import { getLifetime } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 
-const Lifetime = ({
-  validatorAddress,
-  subscribeToNewComments,
-  reward = 0,
-  won = 0,
-  dataQ,
-}) => {
+const Lifetime = ({ won = 0, dataQ }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
@@ -20,20 +14,24 @@ const Lifetime = ({
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getLifetime({
-        block: dataQ.pre_commit_aggregate.aggregate.count,
-        preCommit: dataQ.validator[0].pre_commits_aggregate.aggregate.count,
-      });
-      const cybAbsolute = data * currentPrize;
-      setCybWonAbsolute(cybAbsolute);
-      if (cybAbsolute !== 0) {
-        const cybPercent = (cybAbsolute / currentPrize) * 100;
-        setCybWonPercent(cybPercent);
-      }
+    if (dataQ !== null) {
+      const fetchData = async () => {
+        const data = await getLifetime({
+          block: dataQ.pre_commit_aggregate.aggregate.count,
+          preCommit: dataQ.validator[0].pre_commits_aggregate.aggregate.count,
+        });
+        const cybAbsolute = data * currentPrize;
+        setCybWonAbsolute(cybAbsolute);
+        if (cybAbsolute !== 0) {
+          const cybPercent = (cybAbsolute / currentPrize) * 100;
+          setCybWonPercent(cybPercent);
+        }
+        setLoading(false);
+      };
+      fetchData();
+    } else {
       setLoading(false);
-    };
-    fetchData();
+    }
   }, [won, dataQ]);
 
   return (

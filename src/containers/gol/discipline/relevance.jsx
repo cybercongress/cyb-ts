@@ -7,25 +7,18 @@ import { getRelevance } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 
-const BLOCK_SUBSCRIPTION = gql`
-  query newBlock {
-    block(limit: 1, order_by: { height: desc }) {
-      height
-    }
+const Relevance = ({ addressLedger, reward = 0, won = 0, dataBlock }) => {
+  if (addressLedger === null) {
+    return (
+      <RelevanceC
+        dataBlock={dataBlock}
+        dataRelevance={null}
+        won={won}
+        arrLink={null}
+        addressLedger={addressLedger}
+      />
+    );
   }
-`;
-
-const Relevance = ({ addressLedger, reward = 0, won = 0 }) => {
-  const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
-
-  if (loading) {
-    return <Dots />;
-  }
-
-  return <RelevanceB won={won} dataBlock={dataBlock.block[0].height} />;
-};
-
-const RelevanceB = ({ addressLedger, reward = 0, won = 0, dataBlock }) => {
   const GET_CHARACTERS = gql`
   query newBlock {
     relevance_aggregate(where: {height: {_eq: ${dataBlock}}}) {
@@ -35,7 +28,7 @@ const RelevanceB = ({ addressLedger, reward = 0, won = 0, dataBlock }) => {
         }
       }
     }
-    rewards_view(where: {_and: [{block: {_eq: ${dataBlock}}}, {subject: {_eq: "cyber18naxcfp2s397a2ucav2m53f003uylk3qxa6h5r"}}]}) {
+    rewards_view(where: {_and: [{block: {_eq: ${dataBlock}}}, {subject: {_eq: "${addressLedger.bech32}"}}]}) {
       object
       subject
       rank
@@ -74,10 +67,9 @@ const RelevanceB = ({ addressLedger, reward = 0, won = 0, dataBlock }) => {
 };
 
 const RelevanceC = ({
-  addressLedger,
-  reward = 0,
   won = 0,
   dataRelevance,
+  addressLedger,
   dataBlock,
   arrLink,
 }) => {
@@ -105,26 +97,37 @@ const RelevanceC = ({
   }
 `;
 
+  if (addressLedger === null) {
+    // setLoadingCalc(false);
+    return (
+      <RowTable
+        text="relevance"
+        reward={DISTRIBUTION.relevance}
+        currentPrize={currentPrize}
+        cybWonAbsolute={formatNumber(Math.floor(cybWonAbsolute))}
+        cybWonPercent={`${formatNumber(cybWonPercent, 2)}%`}
+      />
+    );
+  }
+
   const { loading, data: dataQ } = useQuery(GET_LINKAGES);
 
   if (loading) {
     return <Dots />;
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getRelevance(dataRelevance, dataQ);
-      console.log(data);
-      const cybAbsolute = data * currentPrize;
-      setCybWonAbsolute(cybAbsolute);
-      if (cybAbsolute !== 0) {
-        const cybPercent = (cybAbsolute / currentPrize) * 100;
-        setCybWonPercent(cybPercent);
-      }
-      setLoadingCalc(false);
-    };
-    fetchData();
-  }, [won, addressLedger, dataQ, dataRelevance]);
+  const fetchData = async () => {
+    const data = await getRelevance(dataRelevance, dataQ);
+    console.log(data);
+    const cybAbsolute = data * currentPrize;
+    setCybWonAbsolute(cybAbsolute);
+    if (cybAbsolute !== 0) {
+      const cybPercent = (cybAbsolute / currentPrize) * 100;
+      setCybWonPercent(cybPercent);
+    }
+    setLoadingCalc(false);
+  };
+  fetchData();
 
   return (
     <RowTable

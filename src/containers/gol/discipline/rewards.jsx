@@ -12,18 +12,22 @@ const Rewards = ({ validatorAddress, reward = 0, won = 0 }) => {
   const currentPrize = '-';
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getRewards(validatorAddress);
-      const cybAbsolute = data;
-      setCybWonAbsolute(cybAbsolute);
-      if (cybAbsolute !== 0) {
-        const cybPercent =
-          (cybAbsolute / DISTRIBUTION['euler 4 rewards']) * 100;
-        setCybWonPercent(cybPercent);
-      }
+    if (validatorAddress !== null) {
+      const fetchData = async () => {
+        const data = await getRewards(validatorAddress);
+        const cybAbsolute = data;
+        setCybWonAbsolute(cybAbsolute);
+        if (cybAbsolute !== 0) {
+          const cybPercent =
+            (cybAbsolute / DISTRIBUTION['euler 4 rewards']) * 100;
+          setCybWonPercent(cybPercent);
+        }
+        setLoading(false);
+      };
+      fetchData();
+    } else {
       setLoading(false);
-    };
-    fetchData();
+    }
   }, [won, validatorAddress]);
 
   return (

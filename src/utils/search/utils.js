@@ -381,7 +381,7 @@ export const getTotalEUL = async data => {
     rewards: 0,
     total: 0,
   };
-
+console.log(data);
   if (data) {
     if (data.available && data.available !== 0) {
       balance.total += Math.floor(parseFloat(data.available.amount));
@@ -394,8 +394,8 @@ export const getTotalEUL = async data => {
       data.delegations !== 0
     ) {
       data.delegations.forEach((delegation, i) => {
-        balance.total += Math.floor(parseFloat(delegation.balance.amount));
-        balance.delegation += Math.floor(parseFloat(delegation.balance.amount));
+        balance.total += Math.floor(parseFloat(delegation.balance));
+        balance.delegation += Math.floor(parseFloat(delegation.balance));
       });
     }
 

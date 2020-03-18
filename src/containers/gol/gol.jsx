@@ -19,6 +19,7 @@ import {
   getAmountATOM,
   getAccountBandwidth,
   getIndexStats,
+  getValidatorsInfo,
 } from '../../utils/search/utils';
 import {
   CardStatisics,
@@ -78,14 +79,13 @@ class GOL extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      addressLedger: {
-        bech32: 'cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky',
-      },
+      addressLedger: null,
+      validatorAddress: null,
+      consensusAddress: null,
       selectGlobal: 'disciplines',
-      validatorAddress: 'cybervaloper1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq4xvhhf',
       selectedMaster: 'relevance',
       selectedPlay: 'uptime',
-      loading: false,
+      loading: true,
       won: 0,
       myGOLs: 0,
       topLink: [],
@@ -99,7 +99,7 @@ class GOL extends React.Component {
   }
 
   async componentDidMount() {
-    // await this.checkAddressLocalStorage();
+    await this.checkAddressLocalStorage();
     // this.getMyGOLs();
     this.getMyEULs();
     this.getDataWS();
@@ -123,13 +123,28 @@ class GOL extends React.Component {
 
   checkAddressLocalStorage = async () => {
     let address = [];
+    let consensusAddress = null;
+    let validatorAddress = null;
 
     const localStorageStory = await localStorage.getItem('ledger');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      const validatorAddress = getDelegator(address.bech32, 'cybervaloper');
-      this.setState({ addressLedger: address, validatorAddress });
+      const dataValidatorAddress = getDelegator(address.bech32, 'cybervaloper');
+      const dataGetValidatorsInfo = await getValidatorsInfo(
+        dataValidatorAddress
+      );
+
+      if (dataGetValidatorsInfo !== null) {
+        consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
+        validatorAddress = dataValidatorAddress;
+      }
+
+      this.setState({
+        addressLedger: address,
+        validatorAddress,
+        consensusAddress,
+      });
       this.getMyEULs();
     } else {
       this.setState({
@@ -143,11 +158,12 @@ class GOL extends React.Component {
     const { addressLedger } = this.state;
 
     let myEULs = 0;
+    if (addressLedger !== null) {
+      const result = await getBalance(addressLedger.bech32);
 
-    const result = await getBalance(addressLedger.bech32);
-
-    if (result) {
-      myEULs = await getTotalEUL(result);
+      if (result) {
+        myEULs = await getTotalEUL(result);
+      }
     }
 
     this.setState({
@@ -156,7 +172,7 @@ class GOL extends React.Component {
   };
 
   getAtom = async dataTxs => {
-    let amount = 10;
+    const amount = 10;
     let won = 0;
     let allocation = 0;
     let currentPrize = 0;
@@ -174,6 +190,7 @@ class GOL extends React.Component {
       takeoffDonations: amount,
       currentPrize,
       won,
+      loading: false,
     });
   };
 
@@ -204,9 +221,11 @@ class GOL extends React.Component {
       dataTable,
       addressLedger,
       validatorAddress,
+      consensusAddress,
     } = this.state;
 
     console.log('dataTable', dataTable);
+    console.log('validatorAddress', validatorAddress);
 
     let content;
     let contentPlay;
@@ -330,8 +349,9 @@ class GOL extends React.Component {
     if (selectGlobal === 'disciplines') {
       content = (
         <TableDiscipline
-          addressLedger={addressLedger.bech32}
+          addressLedger={addressLedger}
           validatorAddress={validatorAddress}
+          consensusAddress={consensusAddress}
           won={won}
         />
       );
