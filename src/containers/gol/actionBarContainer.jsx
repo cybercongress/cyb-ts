@@ -106,15 +106,21 @@ class ActionBarContainer extends React.Component {
     try {
       const { ledger } = this.state;
       const { updateFunc } = this.props;
+      const accounts = {};
 
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
-      console.log('address', addressLedger);
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
 
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
       updateFunc();
       this.setState({
-        addressLedger,
+        addressLedger: addressLedgerCyber,
         stage: STAGE_READY,
       });
     } catch (error) {

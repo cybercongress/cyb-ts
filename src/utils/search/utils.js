@@ -427,7 +427,7 @@ export const getTotalEUL = async data => {
     rewards: 0,
     total: 0,
   };
-console.log(data);
+  console.log(data);
   if (data) {
     if (data.available && data.available !== 0) {
       balance.total += Math.floor(parseFloat(data.available.amount));
@@ -672,5 +672,40 @@ export const getIndexStats = async () => {
   } catch (e) {
     console.log(e);
     return 0;
+  }
+};
+
+export const getPreCommits = async consensusAddress => {
+  try {
+    const body = JSON.stringify({
+      query: `query lifetimeRate {
+        validator(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
+          pre_commits_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
+        pre_commit_aggregate {
+            aggregate {
+              count
+            }
+        }
+      }`,
+    });
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    const response = await axios({
+      method: 'post',
+      url: CYBER.CYBER_INDEX_HTTPS,
+      headers,
+      data: body,
+    });
+    return response.data.data;
+  } catch (e) {
+    console.log(e);
+    return null;
   }
 };

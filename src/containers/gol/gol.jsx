@@ -1,77 +1,19 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Text, Pane, Tab } from '@cybercongress/gravity';
 import {
-  Text,
-  Pane,
-  Heading,
-  CardHover,
-  Icon,
-  Tablist,
-  Tab,
-  Button,
-  ActionBar,
-  SearchItem,
-  TableEv as Table,
-} from '@cybercongress/gravity';
-import {
-  formatNumber,
-  getTotalEUL,
-  getBalance,
   getAmountATOM,
-  getAccountBandwidth,
-  getIndexStats,
   getValidatorsInfo,
+  getValidators,
 } from '../../utils/search/utils';
-import {
-  CardStatisics,
-  ConnectLadger,
-  Loading,
-  FormatNumber,
-  Indicators,
-  Card,
-} from '../../components';
+import { CardStatisics, Loading, LinkWindow } from '../../components';
 import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
-import {
-  Delegation,
-  Load,
-  Uptime,
-  FVS,
-  Euler4,
-  Community,
-  Takeoff,
-  Relevance,
-} from './tabs';
 import TableDiscipline from './table';
-import { getDelegator } from '../../utils/utils';
+import { getDelegator, exponentialToDecimal } from '../../utils/utils';
+import ActionBarContainer from './actionBarContainer';
 
-import { i18n } from '../../i18n/en';
-
-import {
-  CYBER,
-  LEDGER,
-  AUCTION,
-  COSMOS,
-  TAKEOFF,
-  DISTRIBUTION,
-  GENESIS_SUPPLY,
-} from '../../utils/config';
-
-const TabBtn = ({ text, isSelected, onSelect }) => (
-  <Tab
-    key={text}
-    isSelected={isSelected}
-    onSelect={onSelect}
-    paddingX={50}
-    paddingY={20}
-    marginX={3}
-    borderRadius={4}
-    color="#36d6ae"
-    boxShadow="0px 0px 5px #36d6ae"
-    fontSize="16px"
-    whiteSpace="nowrap"
-  >
-    {text}
-  </Tab>
-);
+import { COSMOS, TAKEOFF } from '../../utils/config';
 
 class GOL extends React.Component {
   ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
@@ -82,26 +24,19 @@ class GOL extends React.Component {
       addressLedger: null,
       validatorAddress: null,
       consensusAddress: null,
-      selectGlobal: 'disciplines',
-      selectedMaster: 'relevance',
-      selectedPlay: 'uptime',
       loading: true,
       won: 0,
-      myGOLs: 0,
-      topLink: [],
       takeoffDonations: 0,
-      currentPrize: 0,
-      items: 10,
-      hasMoreItems: true,
-      perPage: 10,
+      herosCount: 0,
       dataTable: [],
+      addAddress: false,
     };
   }
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     // this.getMyGOLs();
-    this.getMyEULs();
+    this.getValidatorsCount();
     this.getDataWS();
   }
 
@@ -144,8 +79,8 @@ class GOL extends React.Component {
         addressLedger: address,
         validatorAddress,
         consensusAddress,
+        addAddress: false,
       });
-      this.getMyEULs();
     } else {
       this.setState({
         addAddress: true,
@@ -154,32 +89,26 @@ class GOL extends React.Component {
     }
   };
 
-  getMyEULs = async () => {
-    const { addressLedger } = this.state;
-
-    let myEULs = 0;
-    if (addressLedger !== null) {
-      const result = await getBalance(addressLedger.bech32);
-
-      if (result) {
-        myEULs = await getTotalEUL(result);
-      }
+  getValidatorsCount = async () => {
+    const data = await getValidators();
+    let herosCount = 0;
+    if (data !== null) {
+      herosCount = data.length;
     }
-
     this.setState({
-      myEULs: Math.floor(myEULs),
+      herosCount,
     });
   };
 
   getAtom = async dataTxs => {
-    const amount = 10;
+    let amount = 0;
     let won = 0;
     let allocation = 0;
     let currentPrize = 0;
 
-    // if (dataTxs) {
-    //   amount = await getAmountATOM(dataTxs);
-    // }
+    if (dataTxs) {
+      amount = await getAmountATOM(dataTxs);
+    }
 
     won = cybWon(amount);
     allocation = getDisciplinesAllocation(amount);
@@ -194,42 +123,22 @@ class GOL extends React.Component {
     });
   };
 
-  selectedMaster = selectedMaster => {
-    this.setState({ selectedMaster });
-  };
-
-  selectedPlay = selectedPlay => {
-    this.setState({ selectedPlay });
-  };
-
-  selectGlobal = selectGlobal => {
-    this.setState({ selectGlobal });
-  };
-
   render() {
     const {
       loading,
-      selectedMaster,
-      myGOLs,
-      myEULs,
       takeoffDonations,
-      currentPrize,
-      hasMoreItems,
-      selectGlobal,
-      selectedPlay,
       won,
       dataTable,
       addressLedger,
       validatorAddress,
+      herosCount,
       consensusAddress,
+      addAddress,
     } = this.state;
+    const { load } = this.props;
 
     console.log('dataTable', dataTable);
     console.log('validatorAddress', validatorAddress);
-
-    let content;
-    let contentPlay;
-    let contentMaster;
 
     if (loading) {
       return (
@@ -248,127 +157,6 @@ class GOL extends React.Component {
       );
     }
 
-    const Master = () => (
-      <div style={{ width: '100%' }}>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-          gridGap="10px"
-          width="100%"
-          marginBottom={20}
-          // marginTop={25}
-        >
-          <TabBtn
-            text="Community"
-            isSelected={selectedMaster === 'community'}
-            onSelect={() => this.selectedMaster('community')}
-          />
-          <TabBtn
-            text="Load"
-            isSelected={selectedMaster === 'load'}
-            onSelect={() => this.selectedMaster('load')}
-          />
-          <TabBtn
-            text="Relevance"
-            isSelected={selectedMaster === 'relevance'}
-            onSelect={() => this.selectedMaster('relevance')}
-          />
-          <TabBtn
-            text="Takeoff"
-            isSelected={selectedMaster === 'takeoff'}
-            onSelect={() => this.selectedMaster('takeoff')}
-          />
-        </Tablist>
-        {contentMaster}
-      </div>
-    );
-
-    const Play = () => (
-      <div style={{ width: '100%' }}>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-          gridGap="10px"
-          width="100%"
-          marginBottom={20}
-        >
-          <TabBtn
-            text="Uptime"
-            isSelected={selectedPlay === 'uptime'}
-            onSelect={() => this.selectedPlay('uptime')}
-          />
-          <TabBtn
-            text="FVS"
-            isSelected={selectedPlay === 'FVS'}
-            onSelect={() => this.selectedPlay('FVS')}
-          />
-          <TabBtn
-            text="Euler-4"
-            isSelected={selectedPlay === 'euler4'}
-            onSelect={() => this.selectedPlay('euler4')}
-          />
-
-          <TabBtn
-            text="Delegation"
-            isSelected={selectedPlay === 'delegation'}
-            onSelect={() => this.selectedPlay('delegation')}
-          />
-        </Tablist>
-        {contentPlay}
-      </div>
-    );
-
-    if (selectedPlay === 'delegation') {
-      contentPlay = <Delegation />;
-    }
-
-    if (selectedMaster === 'load') {
-      contentMaster = <Load />;
-    }
-
-    if (selectedMaster === 'relevance') {
-      contentMaster = <Relevance />;
-    }
-
-    if (selectedMaster === 'community') {
-      contentMaster = <Community />;
-    }
-
-    if (selectedMaster === 'takeoff') {
-      contentMaster = <Takeoff />;
-    }
-
-    if (selectGlobal === 'master') {
-      content = <Master />;
-    }
-
-    if (selectGlobal === 'play') {
-      content = <Play />;
-    }
-
-    if (selectGlobal === 'disciplines') {
-      content = (
-        <TableDiscipline
-          addressLedger={addressLedger}
-          validatorAddress={validatorAddress}
-          consensusAddress={consensusAddress}
-          won={won}
-        />
-      );
-    }
-
-    if (selectedPlay === 'uptime') {
-      contentPlay = <Uptime />;
-    }
-
-    if (selectedPlay === 'FVS') {
-      contentPlay = <FVS />;
-    }
-
-    if (selectedPlay === 'euler4') {
-      contentPlay = <Euler4 />;
-    }
-
     return (
       <div>
         <main
@@ -382,12 +170,23 @@ class GOL extends React.Component {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Game of Links is main preparation before cyber main network
-              launch. Participants of takeoff donations and 7 disciplines could
-              get max prize in terms of 10% of CYB in Genesis.{' '}
-              <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-                Details here
-              </a>
+              Welcome to the intergalactic tournament Game of Links. GoL - is
+              the main preparation before{' '}
+              <Link to="/search/genesis">the main network launch</Link> of{' '}
+              <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+                the cyber protocol
+              </LinkWindow>
+              . Main goal of the tournament is to collectively bootstrap{' '}
+              <Link to="/brain">Superintelligence</Link>. Everyone can find
+              themselves in this fascinating process: we need to setup physical
+              infrastructure, upload initial knowledge, and create a reserve for
+              sustaining the project during infancy. Athletes must solve
+              different parts of the puzzle and could win up to 10% of CYB in
+              the Genesis. Read full rules of the tournament{' '}
+              <LinkWindow to="https://cybercongress.ai/game-of-links/">
+                in the organizator&apos;s blog
+              </LinkWindow>
+              .
             </Text>
           </Pane>
           <Pane
@@ -398,60 +197,60 @@ class GOL extends React.Component {
             marginY={50}
             alignItems="center"
           >
-            <Indicators title="My GOLs" value="∞" />
-            <Indicators title="My EULs" value="∞" />
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Max prize fund"
-              value="100 TCYB"
+              title="Network load"
+              value="1 %"
             />
-            <Indicators title="Current prize fund" value="12 TCYB" />
-            <Indicators
-              title="Takeoff donations"
-              value={`${formatNumber(takeoffDonations)} ATOMs`}
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Donation goal"
+              value={`${exponentialToDecimal(
+                ((takeoffDonations / TAKEOFF.ATOMsALL) * 100).toPrecision(3)
+              )} %`}
+            />
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Validator set"
+              value={`${exponentialToDecimal(
+                ((herosCount / 146) * 100).toPrecision(1)
+              )} %`}
             />
           </Pane>
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-            gridGap="10px"
-            // marginTop={25}
-          >
-            <TabBtn
-              text="Master's path"
-              isSelected={selectGlobal === 'master'}
-              onSelect={() => this.selectGlobal('master')}
-            />
-            <TabBtn
-              text="Disciplines"
-              isSelected={selectGlobal === 'disciplines'}
-              onSelect={() => this.selectGlobal('disciplines')}
-            />
-            <TabBtn
-              text="Hero's path"
-              isSelected={selectGlobal === 'play'}
-              onSelect={() => this.selectGlobal('play')}
-            />
-          </Tablist>
           <Pane
             display="flex"
             marginTop={20}
             marginBottom={50}
             justifyContent="center"
           >
-            {content}
+            <TableDiscipline
+              addressLedger={addressLedger}
+              validatorAddress={validatorAddress}
+              consensusAddress={consensusAddress}
+              won={won}
+            />
           </Pane>
         </main>
-        {/* <ActionBarContainer
+        <ActionBarContainer
           addAddress={addAddress}
           cleatState={this.cleatState}
           updateFunc={this.checkAddressLocalStorage}
-        /> */}
+        />
       </div>
     );
   }
 }
 
-export default GOL;
+const mapStateToProps = store => {
+  return {
+    load: store.gol.load,
+  };
+};
+
+export default connect(mapStateToProps)(GOL);

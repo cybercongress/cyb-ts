@@ -4,6 +4,12 @@ import { CYBER } from './config';
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GOL';
 
+const ORDER = {
+  NONE: 'NONE',
+  ASC: 'ASC',
+  DESC: 'DESC',
+};
+
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
 const roundNumber = (num, scale) => {
@@ -207,8 +213,33 @@ const exponentialToDecimal = exponential => {
   return decimal;
 };
 
+const sort = (data, sortKey, ordering = ORDER.DESC) => {
+  if (ordering === ORDER.NONE) {
+    return data;
+  }
+  if (sortKey === 'timestamp') {
+    return data.sort((a, b) => {
+      const x = new Date(a[sortKey]);
+      const y = new Date(b[sortKey]);
+      if (ordering === ORDER.ASC) {
+        return x - y;
+      }
+      return y - x;
+    });
+  }
+  return data.sort((a, b) => {
+    const x = a[sortKey];
+    const y = b[sortKey];
+    if (ordering === ORDER.ASC) {
+      return x - y;
+    }
+    return y - x;
+  });
+};
+
 export {
   run,
+  sort,
   roundNumber,
   formatNumber,
   asyncForEach,
