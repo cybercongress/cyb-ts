@@ -360,11 +360,11 @@ export const statusNode = () =>
       .catch(e => {})
   );
 
-export const getRelevance = perPage =>
+export const getRelevance = (page = 0, perPage = 50) =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_API}/top?page=0&perPage=${perPage || '50'}`,
+      url: `${CYBER_NODE_URL_API}/top?page=${page}&perPage=${perPage}`,
     })
       .then(response => {
         resolve(response.data.result);

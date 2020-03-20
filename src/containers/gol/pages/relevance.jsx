@@ -1,152 +1,73 @@
-import React, {
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-  useEffect,
-} from 'react';
-import { Pane, SearchItem, Text } from '@cybercongress/gravity';
-import Iframe from 'react-iframe';
-import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroller';
-import {
-  getIpfsHash,
-  search,
-  getRankGrade,
-  getDrop,
-  getContentByCid,
-  getRelevance,
-} from '../../../utils/search/utils';
-import { formatNumber } from '../../../utils/utils';
-import { Loading } from '../../../components';
-// import ActionBarContainer from './ActionBarContainer';
-// import {
-//   CYBER,
-//   PATTERN,
-//   PATTERN_CYBER,
-//   PATTERN_TX,
-//   PATTERN_CYBER_VALOPER,
-// } from '../../utils/config';
-// import Gift from './gift';
-// import SnipitAccount from './snipitAccountPages';
+import React from 'react';
+import { render } from 'react-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { getRelevance } from '../../../utils/search/utils';
 
-const GolRelevance = () => {
-  const [linksRelevance, setLinksRelevance] = useState([]);
-  const containerReference = useRef();
-  const [itemsToShow, setItemsToShow] = useState(10);
+const style = {
+  height: 30,
+  border: '1px solid green',
+  margin: 6,
+  padding: 8,
+};
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let data = await getRelevance();
-      // const links = data.cids.reduce(
-      //   (obj, link) => ({
-      //     ...obj,
-      //     [link.cid]: {
-      //       rank: formatNumber(link.rank, 6),
-      //       grade: getRankGrade(link.rank),
-      //       status: 'loading',
-      //     },
-      //   }),
-      //   {}
-      // );
-      // data = links;
-      setLinksRelevance(data.cids);
+class GolRelevance extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: [],
+      page: 0,
     };
-    fetchData();
-  }, []);
+  }
 
-  const setNextDisplayedPalettes = useCallback(() => {
-    setItemsToShow(itemsToShow + 10);
-  }, [itemsToShow, setItemsToShow]);
+  async componentDidMount() {
+    const { page } = this.state;
+    const data = await getRelevance(page);
+    this.setState({
+      items: data.cids,
+      page: page + 1,
+      allPage: Math.ceil(parseFloat(data.total) / 50),
+    });
+  }
 
-  const displayedPalettes = useMemo(() => {
-     return linksRelevance.slice(0, itemsToShow);
-  }, [itemsToShow]);
-  // if (loading) {я
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '50vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'column',
-  //       }}
-  //     >
-  //       <Loading />
-  //       <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-  //         Searching
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  const searchItems = [];
-  const link = displayedPalettes;
-  console.log(link);
-  // searchItems.push(
-  //   Object.keys(link).map(key => {
-  //     let contentItem = false;
-  //     if (link[key].status === 'success') {
-  //       if (link[key].content !== undefined) {
-  //         if (link[key].content.indexOf(key) === -1) {
-  //           contentItem = true;
-  //         }
-  //       }
-  //     }
-  //     return (
-  //       <SearchItem
-  //         key={key}
-  //         hash={key}
-  //         rank={link[key].rank}
-  //         grade={link[key].grade}
-  //         status={link[key].status}
-  //         contentIpfs={link[key].content}
-  //         // onClick={e => (e, links[cid].content)}
-  //       >
-  //         {/* {contentItem && (
-  //           <Iframe
-  //             width="100%"
-  //             height="fit-content"
-  //             className="iframe-SearchItem"
-  //             url={displayedPalettes[key].content}
-  //           />
-  //         )} */}
-  //       </SearchItem>
-  //     );
-  //   })
-  // );
+  fetchMoreData = async () => {
+    const { page, items } = this.state;
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    const data = await getRelevance(page);
 
-  return (
-    <main className="block-body" style={{ paddingTop: 30 }}>
-      <Pane
-        width="90%"
-        marginX="auto"
-        marginY={0}
-        display="flex"
-        flexDirection="column"
-      >
-        <Pane>
-          <InfiniteScroll
-            hasMore={itemsToShow < linksRelevance.length}
-            loader={<Loading />}
-            pageStart={0}
-            useWindow={false}
-            loadMore={setNextDisplayedPalettes}
-            getScrollParent={() => containerReference.current}
-          >
-            {searchItems}
-          </InfiniteScroll>
-        </Pane>
-      </Pane>
-    </main>
-  );
-};
-
-const mapStateToProps = store => {
-  return {
-    node: store.ipfs.ipfs,
+    setTimeout(() => {
+      this.setState({
+        items: items.concat(data.cids),
+        page: page + 1,
+      });
+    }, 1500);
   };
-};
 
-export default connect(mapStateToProps)(GolRelevance);
+  render() {
+    const { page, allPage, items } = this.state;
+    console.log(items);
+    return (
+      <div>
+        <h1>Top CIDs</h1>
+        <hr />
+        <div id="scrollableDiv" style={{ height: '80vh', overflow: 'auto' }}>
+          <InfiniteScroll
+            dataLength={items.length}
+            next={this.fetchMoreData}
+            hasMore={page < allPage}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget="scrollableDiv"
+          >
+            {items.map((item, index) => (
+              <div style={style} key={index}>
+                #{index + 1} - {item.cid}
+              </div>
+            ))}
+          </InfiniteScroll>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default GolRelevance;
