@@ -294,7 +294,7 @@ function createLink(txContext, address, fromCid, toCid, memo) {
   const txSkeleton = createSkeletonCyber(txContext);
 
   const txMsg = {
-    type: 'cyberd/Link',
+    type: 'cyber/Link',
     value: {
       address,
       links: [

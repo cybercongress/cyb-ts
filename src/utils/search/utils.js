@@ -709,3 +709,25 @@ export const getPreCommits = async consensusAddress => {
     return null;
   }
 };
+
+export const getGraphQLQuery = async query => {
+  try {
+    const body = JSON.stringify({
+      query,
+    });
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    const response = await axios({
+      method: 'post',
+      url: CYBER.CYBER_INDEX_HTTPS,
+      headers,
+      data: body,
+    });
+    return response.data.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

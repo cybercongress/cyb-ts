@@ -305,8 +305,9 @@ class ActionBarContainer extends Component {
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
@@ -314,7 +315,16 @@ class ActionBarContainer extends Component {
         updateAddress();
         return;
       }
+      if (data.code) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
+        });
+        return;
+      }
     }
+
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 

@@ -16,9 +16,10 @@ const Lifetime = ({ won = 0, dataQ }) => {
   useEffect(() => {
     if (dataQ !== null) {
       const fetchData = async () => {
+        console.log(dataQ);
         const data = await getLifetime({
           block: dataQ.pre_commit_aggregate.aggregate.count,
-          preCommit: dataQ.validator[0].pre_commits_aggregate.aggregate.count,
+          preCommit: dataQ.pre_commit_view[0].precommits,
         });
         const cybAbsolute = data * currentPrize;
         setCybWonAbsolute(cybAbsolute);

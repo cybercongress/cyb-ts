@@ -15,18 +15,8 @@ const BLOCK_SUBSCRIPTION = gql`
 function LifetimeHooks({ consensusAddress, won }) {
   const GET_CHARACTERS = gql`
     query lifetimeRate {
-      validator(
-        where: {
-          consensus_pubkey: {
-            _eq: "${consensusAddress}"
-          }
-        }
-      ) {
-        pre_commits_aggregate {
-          aggregate {
-            count
-          }
-        }
+      pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
+        precommits
       }
       pre_commit_aggregate {
         aggregate {

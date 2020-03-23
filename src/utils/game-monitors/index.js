@@ -17,7 +17,7 @@ export const getLoad = async address => {
   if (responseAccountBandwidth !== null && responseIndexStats !== null) {
     karma = responseAccountBandwidth.karma;
     // sumKarma = responseIndexStats.totalKarma;
-    sumKarma = responseIndexStats.karmaAll;
+    sumKarma = responseIndexStats.totalKarma;
     load = parseFloat(karma) / parseFloat(sumKarma);
     console.log('load', load);
   }
