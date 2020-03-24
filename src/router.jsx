@@ -47,7 +47,7 @@ class AppRouter extends React.Component {
   async componentDidMount() {
     const { setIpfsStatusProps } = this.props;
     setIpfsStatusProps(false);
-    // await this.initIpfsNode();
+    await this.initIpfsNode();
   }
 
   funcUpdateValueSearchInput = query => {
@@ -135,9 +135,9 @@ class AppRouter extends React.Component {
   render() {
     const { query, loader } = this.state;
 
-    // if (loader) {
-    //   return <Dots />;
-    // }
+    if (loader) {
+      return <Dots />;
+    }
 
     return (
       <Router history={history}>
