@@ -102,7 +102,7 @@ class Wallet extends React.Component {
   checkAddressLocalStorage = async () => {
     let address = [];
 
-    const localStorageStory = await localStorage.getItem('poket');
+    const localStorageStory = await localStorage.getItem('pocket');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
@@ -164,7 +164,7 @@ class Wallet extends React.Component {
       });
 
       localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
-      localStorage.setItem('poket', JSON.stringify(accounts));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
@@ -188,8 +188,7 @@ class Wallet extends React.Component {
     const responseCyber = await getBalance(accounts.cyber.bech32);
     const responseCosmos = await getBalance(
       accounts.cosmos.bech32,
-      COSMOS.GAIA_NODE_URL_LSD,
-      'gaia_lcd'
+      COSMOS.GAIA_NODE_URL_LSD
     );
 
     const totalCyber = await getTotalEUL(responseCyber);

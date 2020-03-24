@@ -2,6 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription, useQuery } from '@apollo/react-hooks';
 import { Pane, Tooltip } from '@cybercongress/gravity';
+import Noitem from '../account/noItem';
 
 function Burden({ accountUser }) {
   const GET_CHARACTERS = gql`
@@ -40,40 +41,48 @@ function Burden({ accountUser }) {
   const preCommit = data.pre_commit;
   const block = [];
 
-  Object.keys(blockAggregate).forEach(key => {
-    if (blockAggregate[key].height - 1 === preCommit[key].height) {
-      block.push({
-        status: true,
-        height: blockAggregate[key].height,
-      });
-    } else {
-      block.push({
-        status: false,
-        height: blockAggregate[key].height,
-      });
-    }
-  });
+  if (Object.keys(preCommit).length !== 0) {
+    Object.keys(blockAggregate).forEach(key => {
+      if (blockAggregate[key].height - 1 === preCommit[key].height) {
+        block.push({
+          status: true,
+          height: blockAggregate[key].height,
+        });
+      } else {
+        block.push({
+          status: false,
+          height: blockAggregate[key].height,
+        });
+      }
+    });
+  }
+
+  const blocks = block.map((item, index) => (
+    <Tooltip position="bottom" content={item.height}>
+      <Pane
+        width="25px"
+        height="15px"
+        backgroundColor={item.status ? '#009624' : '#9b0000'}
+        boxShadow="inset 0 0 0px 1px #000"
+        key={index}
+      />
+    </Tooltip>
+  ));
 
   return (
     <div>
       Last 300 blocks
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fill, 25px)"
-        width="100%"
-      >
-        {block.map((item, index) => (
-          <Tooltip position="bottom" content={item.height}>
-            <Pane
-              width="25px"
-              height="15px"
-              backgroundColor={item.status ? '#009624' : '#9b0000'}
-              boxShadow="inset 0 0 0px 1px #000"
-              key={index}
-            />
-          </Tooltip>
-        ))}
-      </Pane>
+      {block.length > 0 ? (
+        <Pane
+          display="grid"
+          gridTemplateColumns="repeat(auto-fill, 25px)"
+          width="100%"
+        >
+          {blocks}
+        </Pane>
+      ) : (
+        <Noitem text="No preCommit" />
+      )}
     </div>
   );
 }
