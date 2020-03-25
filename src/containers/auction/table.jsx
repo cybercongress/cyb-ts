@@ -82,4 +82,5 @@ const Table = ({ data, TOKEN_NAME, claimed, web3, contract, round }) => {
   );
 };
 
+
 export default Table;
