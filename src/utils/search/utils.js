@@ -157,7 +157,7 @@ export const getString = string =>
 export const search = async keywordHash =>
   axios({
     method: 'get',
-    url: `${CYBER_NODE_URL}/api/search?cid=%22${keywordHash}%22&page=0&perPage=10`,
+    url: `${CYBER_NODE_URL}/api/search?cid=%22${keywordHash}%22&page=0&perPage=1000`,
   }).then(response => (response.data.result ? response.data.result.cids : []));
 
 export const getRankGrade = rank => {
