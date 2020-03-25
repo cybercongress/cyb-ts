@@ -10,8 +10,8 @@ import {
   formatNumber as format,
   getContentByCid,
 } from '../../utils/search/utils';
-import { formatNumber } from '../../utils/utils';
-import { Loading } from '../../components';
+import { formatNumber, formatValidatorAddress } from '../../utils/utils';
+import { Loading, Account } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   CYBER,
@@ -210,7 +210,7 @@ class SearchResults extends React.Component {
     if (query.match(PATTERN)) {
       searchItems.push(
         <SnipitAccount
-          text="Check your gift"
+          text="Don't wait, claim your gift :-) And to the Game of Links!"
           to={`/gift/${query}`}
           // address={query}
         />
@@ -220,9 +220,9 @@ class SearchResults extends React.Component {
     if (query.match(PATTERN_CYBER)) {
       searchItems.push(
         <SnipitAccount
-          text="Details address"
+          text="Explore details of contract"
           to={`/network/euler-5/contract/${query}`}
-          address={query}
+          content={formatValidatorAddress(query, 8, 5)}
         />
       );
     }
@@ -230,9 +230,9 @@ class SearchResults extends React.Component {
     if (query.match(PATTERN_CYBER_VALOPER)) {
       searchItems.push(
         <SnipitAccount
-          text="Details a hero"
+          text="Explore details of hero"
           to={`/network/euler-5/hero/${query}`}
-          address={query}
+          content={<Account colorText="#000" address={query} />}
         />
       );
     }
@@ -240,9 +240,9 @@ class SearchResults extends React.Component {
     if (query.match(PATTERN_TX)) {
       searchItems.push(
         <SnipitAccount
-          text="Details Tx"
+          text="Explore details of tx "
           to={`/network/euler-5/tx/${query}`}
-          address={query}
+          content={formatValidatorAddress(query, 4, 4)}
         />
       );
     }
@@ -299,7 +299,7 @@ class SearchResults extends React.Component {
                 lineHeight="20px"
                 wordBreak="break-all"
               >
-                {`I found ${searchItems.length} results`}
+                {`I found ${searchItems.length} answers`}
               </Text>
             )}
 

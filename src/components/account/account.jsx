@@ -46,7 +46,7 @@ class Account extends React.Component {
 
   render() {
     const { moniker, account, loading } = this.state;
-    const { children } = this.props;
+    const { children, colorText } = this.props;
 
     if (loading) {
       return <Dots />;
@@ -54,7 +54,9 @@ class Account extends React.Component {
 
     return (
       <span>
-        <Link to={account}>{moniker}</Link>
+        <Link style={{ color: colorText || '#36d6ae' }} to={account}>
+          {moniker}
+        </Link>
         {children}
       </span>
     );
