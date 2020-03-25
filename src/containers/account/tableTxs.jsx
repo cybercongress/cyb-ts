@@ -1,10 +1,21 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import {
+  Pane,
+  Text,
+  TableEv as Table,
+  Icon,
+  Tooltip,
+} from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
-import { CardTemplate, MsgType, Loading } from '../../components';
+import {
+  formatValidatorAddress,
+  formatNumber,
+  formatCurrency,
+} from '../../utils/utils';
+import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
 import Noitem from './noItem';
+import { CYBER } from '../../utils/config';
 
 const dateFormat = require('dateformat');
 const imgDropdown = require('../../image/arrow-dropdown.svg');
@@ -12,18 +23,7 @@ const imgDropup = require('../../image/arrow-dropup.svg');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
-const TextTable = ({ children, fontSize, color, display, ...props }) => (
-  <Text
-    fontSize={`${fontSize || 16}px`}
-    color={`${color || '#fff'}`}
-    display={`${display || 'inline-flex'}`}
-    {...props}
-  >
-    {children}
-  </Text>
-);
-
-const TableTxs = ({ data, type, accountUser }) => {
+const TableTxs = ({ data, type, accountUser, amount }) => {
   const containerReference = useRef();
   const [itemsToShow, setItemsToShow] = useState(10);
 
@@ -35,12 +35,13 @@ const TableTxs = ({ data, type, accountUser }) => {
     itemsToShow,
   ]);
 
-  const validatorRows = displayedPalettes.map(item => (
+  const validatorRows = displayedPalettes.map((item, index) => (
     <Table.Row
       // borderBottom="none"
       paddingX={0}
       paddingY={5}
-      borderBottom="1px solid #3ab79340"
+      borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}
+      borderBottom="none"
       display="flex"
       minHeight="48px"
       height="fit-content"
@@ -64,27 +65,56 @@ const TableTxs = ({ data, type, accountUser }) => {
       </Table.TextCell>
       <Table.TextCell flex={1.3} textAlign="center">
         <TextTable>
-          {dateFormat(item.timestamp, 'dd/mm/yyyy, hh:MM:ss tt "UTC"')}
+          {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable display="flex" flexDirection="column">
-          {item.messages.map((items, i) => (
-            <MsgType key={`${item.txhash}_${i}`} type={items.type} />
-          ))}
-          {/* <MsgType
-            type={
-              item.cyberlink !== null
-                ? 'cyberd/Link'
-                : item.message !== null
-                ? accountUser === item.subject
-                  ? item.message.type
-                  : 'Receive'
-                : 'Fail'
+          {item.messages.map((items, i) => {
+            let typeTx = items.type;
+            if (
+              typeTx === 'cosmos-sdk/MsgSend' &&
+              items.value.to_address === accountUser
+            ) {
+              typeTx = 'Receive';
             }
-          /> */}
+            return <MsgType key={i} type={typeTx} />;
+          })}
         </TextTable>
       </Table.TextCell>
+      {amount && (
+        <Table.TextCell textAlign="end">
+          {item.messages.map((items, i) => (
+            <Tooltip
+              position="bottom"
+              key={i}
+              content={`${formatNumber(
+                Math.floor(items.value.amount.amount)
+              )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            >
+              <TextTable
+                color={
+                  items.type === 'cosmos-sdk/MsgDelegate'
+                    ? '#4ed6ae'
+                    : '#f4516b'
+                }
+              >
+                {items.type === 'cosmos-sdk/MsgDelegate'
+                  ? `+ ${formatCurrency(
+                      items.value.amount.amount,
+                      CYBER.DENOM_CYBER.toUpperCase(),
+                      0
+                    )}`
+                  : `- ${formatCurrency(
+                      items.value.amount.amount,
+                      CYBER.DENOM_CYBER.toUpperCase(),
+                      0
+                    )}`}
+              </TextTable>
+            </Tooltip>
+          ))}
+        </Table.TextCell>
+      )}
     </Table.Row>
   ));
 
@@ -106,11 +136,21 @@ const TableTxs = ({ data, type, accountUser }) => {
           <TextTable>tx</TextTable>
         </Table.TextHeaderCell>
         <Table.TextHeaderCell flex={1.3} textAlign="center">
-          <TextTable>timestamp</TextTable>
+          <TextTable>
+            timestamp{' '}
+            <Tooltip content="UTC" position="bottom">
+              <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
+            </Tooltip>
+          </TextTable>
         </Table.TextHeaderCell>
         <Table.TextHeaderCell textAlign="center">
           <TextTable>type</TextTable>
         </Table.TextHeaderCell>
+        {amount && (
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>amount</TextTable>
+          </Table.TextHeaderCell>
+        )}
       </Table.Head>
       <Table.Body
         style={{
@@ -121,7 +161,7 @@ const TableTxs = ({ data, type, accountUser }) => {
       >
         <div
           style={{
-            height: '30vh',
+            height: data.length > 5 ? '30vh' : 'auto',
             overflow: 'auto',
           }}
           ref={containerReference}
@@ -137,7 +177,7 @@ const TableTxs = ({ data, type, accountUser }) => {
             {data.length > 0 ? (
               validatorRows
             ) : (
-              <Noitem text={`No txs ${type}`} />
+              <Noitem text={`No txs ${type || ' '}`} />
             )}
           </InfiniteScroll>
         </div>

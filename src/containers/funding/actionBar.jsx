@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Input, ActionBar, Pane, Text } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER } from '../../utils/config';
 import {
   ContributeATOMs,
-  TransactionCost,
-  Succesfuuly,
-  SendAmounLadger,
   SendAmount,
-  StartState,
+  ConnectLadger,
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
-} from './stateActionBar';
+} from '../../components';
 
 import { TransactionError } from '../../components';
 
@@ -409,16 +407,43 @@ class ActionBarTakeOff extends Component {
       txHash,
       txHeight,
       stage,
+      valueAmount,
       errorMessage,
     } = this.state;
 
     if (stage === STAGE_INIT) {
       return (
-        <StartState
-          onClickBtn={this.onClickFuckGoogle}
-          valueSelect={valueSelect}
-          onChangeSelect={this.onChangeSelect}
-        />
+        <ActionBar>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <span className="actionBar-text">Contribute</span>
+            <Input
+              value={toSend}
+              onChange={e => this.onChangeInputContributeATOMs(e)}
+              placeholder="amount"
+              marginLeft={20}
+              marginRight={20}
+              width="25%"
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+            />
+            <Text color="#fff" fontSize="20px">
+              ATOMs
+            </Text>
+          </Pane>
+          <button
+            type="button"
+            className="btn"
+            onClick={this.onClickFuckGoogle}
+          >
+            Fuck Google
+          </button>
+        </ActionBar>
       );
     }
 
@@ -435,7 +460,7 @@ class ActionBarTakeOff extends Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           onClickBtn={this.onClickSaveAddress}
           status={connect}
           pin={returnCode >= LEDGER_NOAPP}

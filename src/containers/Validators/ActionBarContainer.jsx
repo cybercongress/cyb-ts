@@ -19,6 +19,7 @@ import { formatValidatorAddress, formatNumber } from '../../utils/utils';
 import {
   getBalanceWallet,
   selfDelegationShares,
+  getValidators,
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
@@ -83,6 +84,7 @@ class ActionBarContainer extends Component {
       txType: null,
       valueSelect: '',
       errorMessage: null,
+      validatorsAll: null,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -175,7 +177,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -208,7 +210,7 @@ class ActionBarContainer extends Component {
 
     let addressInfo = {};
     let balance = 0;
-
+    let validatorsAll = [];
     try {
       const chainId = await this.getNetworkId();
       const response = await getBalanceWallet(address.bech32);
@@ -216,7 +218,7 @@ class ActionBarContainer extends Component {
         address.bech32,
         validatorAddres
       );
-
+      const validators = await getValidators();
       console.log('delegate', delegate);
 
       if (response) {
@@ -227,10 +229,13 @@ class ActionBarContainer extends Component {
 
       console.log(addressInfo);
 
+      validatorsAll = validators;
+
       this.setState({
         addressInfo,
         balance,
         stage: STAGE_READY,
+        validatorsAll,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -346,7 +351,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -464,7 +469,7 @@ class ActionBarContainer extends Component {
   };
 
   render() {
-    const { validators, validatorsAll, addressLedger } = this.props;
+    const { validators, addressLedger, unStake } = this.props;
     const {
       stage,
       ledgerVersion,
@@ -479,6 +484,7 @@ class ActionBarContainer extends Component {
       addressInfo,
       valueSelect,
       errorMessage,
+      validatorsAll,
     } = this.state;
 
     const validRestakeBtn =
@@ -523,7 +529,7 @@ class ActionBarContainer extends Component {
             </Text>
           </ActionBarContentText>
           <Button onClick={this.onClickDelegate}>Stake</Button>
-          {parseFloat(validators.delegation) > 0 && (
+          {(parseFloat(validators.delegation) > 0 || unStake) && (
             <div>
               <Button marginX={25} onClick={this.onClickUnDelegate}>
                 Unstake

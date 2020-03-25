@@ -7,13 +7,15 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
-import { Timer, Tooltip } from '../../components/index';
+import { connect } from 'react-redux';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
+import { MenuButton } from '../../components';
 import Electricity from '../home/electricity';
 
 const cyber = require('../../image/cyber.png');
-const cyb = require('../../image/cyb.svg');
+const cybFalse = require('../../image/cyb.svg');
+const cybTrue = require('../../image/cybTrue.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
@@ -162,7 +164,7 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children, location } = this.props;
+    const { children, location, ipfsStatus } = this.props;
 
     if (!story && home) {
       this.routeChange('/episode-1');
@@ -185,9 +187,40 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          <Link to="/brain">
-            <Menu imgLogo={cyber} />
-          </Link>
+          <MenuButton
+            to="/brain"
+            textTooltip={
+              <span>
+                You are on the{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/cyberd/releases/tag/euler-5"
+                >
+                  euler-5
+                </a>{' '}
+                network. Euler-5 is incentivized test network. Be careful.
+                Details in{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+                >
+                  whitepaper
+                </a>{' '}
+                and{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://cybercongress.ai/game-of-links/"
+                >
+                  Game of links
+                </a>{' '}
+                rules.
+              </span>
+            }
+            imgLogo={cyber}
+          />
           {!home && (
             <Pane
               position="absolute"
@@ -224,18 +257,24 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Link to="/pocket">
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
-            </Pane>
-          </Link>
-          {/* <Timer /> */}
+
+          <MenuButton
+            to="/pocket"
+            imgLogo={ipfsStatus ? cybTrue : cybFalse}
+            positionBugLeft
+            textTooltip={
+              <span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/dot-cyber"
+                >
+                  dot-cyber
+                </a>{' '}
+                app has not been audited yet. Please, use it with caution.
+              </span>
+            }
+          />
         </div>
         {/* </Navigation> */}
         {this.props.children}
@@ -244,4 +283,10 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = store => {
+  return {
+    ipfsStatus: store.ipfs.statusIpfs,
+  };
+};
+
+export default connect(mapStateToProps)(App);

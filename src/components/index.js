@@ -24,6 +24,8 @@ import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
 import StatusTooltip from './statusTooltip';
 import MsgType from './msgType/msgType';
+import TextTable from './text/textTable';
+import StatusTx from './statusTx';
 
 export {
   RowTableTakeoff,
@@ -47,9 +49,12 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
+  ContributeATOMs,
   RewardsDelegators,
   ReDelegate,
   TransactionError,
+  TextTable,
+  StatusTx,
 };
 
 export { Nums } from './ui/Numbers';
@@ -79,4 +84,4 @@ export {
   ContainerPane,
   Item,
 } from './governance/governance';
-export { Link, Cid } from './link/link';
+export { LinkWindow, Cid } from './link/link';

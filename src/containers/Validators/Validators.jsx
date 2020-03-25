@@ -21,7 +21,6 @@ import {
   getValidatorsUnbonded,
   selfDelegationShares,
   stakingPool,
-  getRankValidators,
   getDelegations,
 } from '../../utils/search/utils';
 import {

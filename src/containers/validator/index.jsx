@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane } from '@cybercongress/gravity';
+import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import ValidatorInfo from './validatorInfo';
 import {
@@ -9,10 +9,10 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { getDelegator } from '../../utils/utils';
-import { Loading } from '../../components';
+import { Loading, Copy } from '../../components';
 import Burden from './burden';
 import Delegated from './delegated';
-import Delegators from './delegators';
+import Fans from './fans';
 import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
@@ -24,7 +24,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={50}
+      paddingX={20}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -32,6 +32,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
+      minWidth="150px"
     >
       {text}
     </Tab>
@@ -41,17 +42,25 @@ class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      selected: 'delegated',
+      selected: 'main',
       validatorInfo: [],
       data: {},
       delegated: {},
       loader: true,
       error: false,
-      delegators: [],
+      fans: [],
+      addressLedger: null,
+      unStake: false,
     };
   }
 
   componentDidMount() {
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      const address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address.bech32 });
+    }
     this.init();
     this.chekPathname();
   }
@@ -95,12 +104,12 @@ class ValidatorsDetails extends React.PureComponent {
 
   init = async () => {
     // this.setState({ loader: true });
-    this.getValidatorInfo();
+    await this.getValidatorInfo();
     this.getDelegators();
   };
 
   update = async () => {
-    this.getValidatorInfo();
+    await this.getValidatorInfo();
     this.getDelegators();
   };
 
@@ -162,27 +171,46 @@ class ValidatorsDetails extends React.PureComponent {
       },
       delegated: {
         total: parseFloat(result.tokens),
+        delegateAddress,
         jailed: result.jailed,
         unbondingTime: result.unbonding_time,
         unbondingHeight: result.unbonding_height,
         delegatorShares: result.delegator_shares,
         ...delegated,
+        ...result,
       },
-      loader: false,
     });
   };
 
   getDelegators = async () => {
     const { match } = this.props;
     const { address } = match.params;
+    const { validatorInfo, addressLedger, unStake } = this.state;
+
+    let fans = [];
 
     const data = await getDelegators(address);
 
     if (data !== null) {
-      this.setState({
-        delegators: data.result,
+      fans = data.result;
+      Object.keys(fans).forEach(key => {
+        if (unStake === false) {
+          if (fans[key].delegator_address === addressLedger) {
+            this.setState({
+              unStake: true,
+            });
+          }
+        }
+        fans[key].share =
+          parseFloat(fans[key].balance) /
+          Math.floor(parseFloat(validatorInfo.delegator_shares));
       });
     }
+
+    this.setState({
+      fans,
+      loader: false,
+    });
   };
 
   select = selected => {
@@ -194,10 +222,12 @@ class ValidatorsDetails extends React.PureComponent {
       validatorInfo,
       loader,
       delegated,
-      delegators,
+      fans,
       error,
       selected,
       data,
+      addressLedger,
+      unStake,
     } = this.state;
     const { match } = this.props;
     const { address } = match.params;
@@ -229,7 +259,7 @@ class ValidatorsDetails extends React.PureComponent {
       content = (
         <Route
           path="/network/euler-5/hero/:address/fans"
-          render={() => <Delegators data={delegators} />}
+          render={() => <Fans data={fans} />}
         />
       );
     }
@@ -263,13 +293,19 @@ class ValidatorsDetails extends React.PureComponent {
     return (
       <div>
         <main className="block-body">
+          <Pane
+            marginBottom={40}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Text color="#fff" fontSize="18px">
+              {validatorInfo.operator_address}{' '}
+              <Copy text={validatorInfo.operator_address} />
+            </Text>
+          </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
           <Tablist display="flex" justifyContent="center">
-            <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              to={`/network/euler-5/hero/${address}`}
-            />
             <TabBtn
               text="Fans"
               isSelected={selected === 'fans'}
@@ -279,6 +315,11 @@ class ValidatorsDetails extends React.PureComponent {
               text="Burden"
               isSelected={selected === 'burden'}
               to={`/network/euler-5/hero/${address}/burden`}
+            />
+            <TabBtn
+              text="Main"
+              isSelected={selected === 'main'}
+              to={`/network/euler-5/hero/${address}`}
             />
             <TabBtn
               text="Rumors"
@@ -305,6 +346,8 @@ class ValidatorsDetails extends React.PureComponent {
         <ActionBarContainer
           updateTable={this.update}
           validators={validatorInfo}
+          unStake={unStake}
+          addressLedger={addressLedger}
         />
       </div>
     );

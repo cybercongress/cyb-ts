@@ -95,12 +95,7 @@ function applyGasCyber(unsignedTx, gas, denom) {
 
   // eslint-disable-next-line no-param-reassign
   unsignedTx.value.fee = {
-    amount: [
-      {
-        amount: '0',
-        denom: denom || DENOM_CYBER,
-      },
-    ],
+    amount: [],
     gas: gas.toString(),
   };
 
@@ -299,7 +294,7 @@ function createLink(txContext, address, fromCid, toCid, memo) {
   const txSkeleton = createSkeletonCyber(txContext);
 
   const txMsg = {
-    type: 'cyberd/Link',
+    type: 'cyber/Link',
     value: {
       address,
       links: [
@@ -470,6 +465,10 @@ function createWithdrawDelegationReward(txContext, address, memo, rewards) {
       },
     });
   });
+
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
 }
 
 function createRedelegateCyber(

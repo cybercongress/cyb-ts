@@ -6,7 +6,11 @@ import txs from './txs';
 
 import { CYBER, LEDGER, COSMOS } from './config';
 
-const { CYBER_NODE_URL, BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
+const {
+  CYBER_NODE_URL,
+  BECH32_PREFIX_ACC_ADDR_CYBER,
+  CYBER_NODE_URL_LCD,
+} = CYBER;
 const { LEDGER_VERSION_REQ } = LEDGER;
 const { BECH32_PREFIX_ACC_ADDR_COSMOS } = COSMOS;
 
@@ -133,14 +137,12 @@ class CosmosDelegateTool {
   // Returns a signed transaction ready to be relayed
   async sign(unsignedTx, txContext) {
     // this.connectedOrThrow(this);
-    console.log(txContext);
     if (typeof txContext.path === 'undefined') {
       this.lastError = 'context should include the account path';
       throw new Error('context should include the account path');
     }
     // console.log('txContext', txContext);
     const bytesToSign = txs.getBytesToSign(unsignedTx, txContext);
-    console.log(bytesToSign);
     const response = await this.app.sign(txContext.path, bytesToSign);
 
     return response;
@@ -257,7 +259,7 @@ class CosmosDelegateTool {
   }
 
   async getAccountInfoCyber(addr) {
-    const url = `${CYBER_NODE_URL}/api/account?address="${addr.bech32}"`;
+    const url = `${CYBER.CYBER_NODE_URL_API}/account?address="${addr.bech32}"`;
     const txContext = {
       sequence: '0',
       accountNumber: '0',
@@ -643,26 +645,12 @@ class CosmosDelegateTool {
     );
   }
 
-  async txSubmitCyberLink(signedTx) {
-    const txBody = {
-      tx: signedTx.value,
-      mode: 'async',
-    };
-    const url = `${CYBER_NODE_URL}/lcd/txs`;
-    // const url = 'https://phobos.cybernode.ai/lcd/txs';
-    console.log(JSON.stringify(txBody));
-    return axios.post(url, JSON.stringify(txBody)).then(
-      r => r,
-      e => wrapError(this, e)
-    );
-  }
-
   async txSubmitCyber(signedTx) {
     const txBody = {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = `${CYBER_NODE_URL}/lcd/txs`;
+    const url = `${CYBER_NODE_URL_LCD}/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
@@ -701,7 +689,7 @@ class CosmosDelegateTool {
   }
 
   async txStatusCyber(txHash) {
-    const url = `${CYBER_NODE_URL}/lcd/txs/${txHash}`;
+    const url = `${CYBER_NODE_URL_LCD}/txs/${txHash}`;
     return axios.get(url).then(
       r => r.data,
       e => wrapError(this, e)

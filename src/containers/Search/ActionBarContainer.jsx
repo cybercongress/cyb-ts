@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -11,8 +12,9 @@ import {
   Cyberlink,
   TransactionError,
 } from '../../components';
+import { getIpfsHash, getPin } from '../../utils/search/utils';
 
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 
 const { CYBER_NODE_URL } = CYBER;
 
@@ -56,9 +58,13 @@ class ActionBarContainer extends Component {
       txHash: null,
       error: null,
       errorMessage: null,
+      file: null,
+      fromCid: null,
+      toCid: null,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
+    this.inputOpenFileRef = React.createRef();
   }
 
   async componentDidMount() {
@@ -70,21 +76,47 @@ class ActionBarContainer extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.ledger === null) {
+    const {
+      getIpfsCid,
+      ledger,
+      stage,
+      returnCode,
+      address,
+      addressInfo,
+      fromCid,
+      toCid,
+    } = this.state;
+    if (ledger === null) {
       this.pollLedger();
     }
-    if (this.state.stage === STAGE_LEDGER_INIT) {
-      if (this.state.ledger !== null) {
-        switch (this.state.returnCode) {
+    if (stage === STAGE_LEDGER_INIT) {
+      if (ledger !== null) {
+        switch (returnCode) {
           case LEDGER_OK:
-            if (this.state.address === null) {
+            if (address === null) {
               this.getAddress();
             }
-            if (
-              this.state.address !== null &&
-              this.state.addressInfo === null
-            ) {
+            if (address !== null && addressInfo === null) {
               this.getAddressInfo();
+            }
+            if (address !== null && addressInfo !== null && toCid === null) {
+              this.calculationIpfsTo();
+            }
+            if (
+              address !== null &&
+              addressInfo !== null &&
+              toCid !== null &&
+              fromCid === null
+            ) {
+              this.calculationIpfsFrom();
+            }
+            if (
+              address !== null &&
+              addressInfo !== null &&
+              toCid !== null &&
+              fromCid !== null
+            ) {
+              this.stageReady();
             }
             break;
           default:
@@ -98,15 +130,6 @@ class ActionBarContainer extends Component {
       }
     }
   }
-
-  init = async () => {
-    const { stage, ledger, address, addressInfo, returnCode } = this.state;
-
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-      init: true,
-    });
-  };
 
   compareVersion = async () => {
     const test = this.state.ledgerVersion;
@@ -174,7 +197,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -192,6 +215,46 @@ class ActionBarContainer extends Component {
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
+  };
+
+  calculationIpfsTo = async () => {
+    const { contentHash, file } = this.state;
+    const { node } = this.props;
+
+    let toCid = contentHash;
+    if (file !== null) {
+      toCid = file;
+    }
+
+    if (file !== null) {
+      toCid = await getPin(node, toCid);
+    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
+      toCid = await getPin(node, toCid);
+    }
+
+    this.setState({
+      toCid,
+    });
+  };
+
+  calculationIpfsFrom = async () => {
+    const { keywordHash, node } = this.props;
+
+    let fromCid = keywordHash;
+
+    if (!fromCid.match(PATTERN_IPFS_HASH)) {
+      fromCid = await getPin(node, fromCid);
+    }
+
+    this.setState({
+      fromCid,
+    });
+  };
+
+  stageReady = () => {
+    this.setState({
+      stage: STAGE_READY,
+    });
   };
 
   getNetworkId = async () => {
@@ -212,7 +275,6 @@ class ActionBarContainer extends Component {
 
       this.setState({
         addressInfo,
-        stage: STAGE_READY,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -235,7 +297,7 @@ class ActionBarContainer extends Component {
       };
 
       const getBandwidth = await fetch(
-        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
+        `${CYBER.CYBER_NODE_URL_API}/account_bandwidth?address="${address.bech32}"`,
         {
           method: 'GET',
           headers: {
@@ -270,12 +332,7 @@ class ActionBarContainer extends Component {
   // };
 
   link = async () => {
-    const { address, addressInfo, ledger, contentHash } = this.state;
-
-    const { keywordHash } = this.props;
-
-    const fromCid = keywordHash;
-    const toCid = contentHash;
+    const { address, addressInfo, ledger, fromCid, toCid } = this.state;
 
     const txContext = {
       accountNumber: addressInfo.accountNumber,
@@ -336,7 +393,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -357,18 +414,21 @@ class ActionBarContainer extends Component {
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
       console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        update();
+        if (update) {
+          update();
+        }
         return;
       }
-      if (data.logs && data.logs[0].success === false) {
+      if (data.code) {
         this.setState({
           stage: STAGE_ERROR,
           txHeight: data.height,
+          errorMessage: data.raw_log,
         });
         return;
       }
@@ -385,12 +445,11 @@ class ActionBarContainer extends Component {
 
   cleatState = () => {
     this.setState({
+      init: false,
       ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
-      errorMessage: null,
-      txMsg: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
       bandwidth: {
@@ -398,13 +457,16 @@ class ActionBarContainer extends Component {
         max_value: 0,
       },
       contentHash: '',
+      txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
-      errorMessage: null,
       error: null,
-      init: false,
+      errorMessage: null,
+      file: null,
+      fromCid: null,
+      toCid: null,
     });
     this.timeOut = null;
   };
@@ -423,6 +485,12 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onClickClear = () => {
+    this.setState({
+      file: null,
+    });
+  };
+
   hasKey() {
     return this.state.address !== null;
   }
@@ -430,6 +498,18 @@ class ActionBarContainer extends Component {
   hasWallet() {
     return this.state.addressInfo !== null;
   }
+
+  showOpenFileDlg = () => {
+    this.inputOpenFileRef.current.click();
+  };
+
+  onFilePickerChange = files => {
+    const file = files.current.files[0];
+
+    this.setState({
+      file,
+    });
+  };
 
   render() {
     const {
@@ -443,9 +523,8 @@ class ActionBarContainer extends Component {
       txHeight,
       txHash,
       errorMessage,
+      file,
     } = this.state;
-
-    console.log('bandwidth', bandwidth);
 
     const { valueSearchInput } = this.props;
 
@@ -454,8 +533,15 @@ class ActionBarContainer extends Component {
         <StartStageSearchActionBar
           valueSearchInput={valueSearchInput}
           onClickBtn={this.onClickUsingLedger}
-          contentHash={contentHash}
+          contentHash={
+            file !== null && file !== undefined ? file.name : contentHash
+          }
           onChangeInputContentHash={this.onChangeInput}
+          inputOpenFileRef={this.inputOpenFileRef}
+          showOpenFileDlg={this.showOpenFileDlg}
+          onChangeInput={this.onFilePickerChange}
+          onClickClear={this.onClickClear}
+          file={file}
         />
       );
     }
@@ -484,7 +570,7 @@ class ActionBarContainer extends Component {
           onClickBtn={e => this.link(e)}
           bandwidth={bandwidth}
           address={address.bech32}
-          contentHash={contentHash}
+          contentHash={file !== null ? file.name : contentHash}
           disabledBtn={parseFloat(bandwidth.max_value) === 0}
         />
       );
@@ -528,4 +614,10 @@ class ActionBarContainer extends Component {
   }
 }
 
-export default ActionBarContainer;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(ActionBarContainer);

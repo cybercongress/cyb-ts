@@ -11,6 +11,7 @@ import {
   Text,
   Select,
   Textarea,
+  FilePicker,
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
 import { Loading } from '../ui/loading';
@@ -99,14 +100,14 @@ export const Confirmed = ({
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
         {T.actionBar.confirmedTX.blockTX}{' '}
-        <span
+        <Link
+          to={`/network/euler-5/block/${txHeight}`}
           style={{
-            color: '#3ab793',
             marginLeft: '5px',
           }}
         >
           {formatNumber(txHeight)}
-        </span>
+        </Link>
       </p>
 
       {explorer ? (
@@ -171,7 +172,7 @@ export const TransactionError = ({
       Transaction Error:
     </span>
     <div
-      style={{ marginTop: '25px' }}
+      style={{ marginTop: '25px', width: '80%', margin: '0 auto' }}
       className="display-flex flex-direction-column"
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
@@ -304,21 +305,60 @@ export const StartStageSearchActionBar = ({
   onClickBtn,
   contentHash,
   onChangeInputContentHash,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <input
-        value={contentHash}
-        style={{ height: 42, width: '60%' }}
-        onChange={e => onChangeInputContentHash(e)}
-        placeholder="paste a hash"
-      />
-    </ActionBarContentText>
-    <Button disabled={!contentHash.length} onClick={onClickBtn}>
-      {T.actionBar.startSearch.cyberlink}
-    </Button>
-  </ActionBar>
-);
+  showOpenFileDlg,
+  inputOpenFileRef,
+  onChangeInput,
+  onClickClear,
+  file,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          flexDirection="column"
+          position="relative"
+          width="60%"
+        >
+          <input
+            value={contentHash}
+            style={{ height: 42, width: '100%', paddingRight: '35px' }}
+            onChange={e => onChangeInputContentHash(e)}
+            placeholder="paste a hash"
+          />
+          <Pane
+            position="absolute"
+            right="0"
+            top="50%"
+            transform="translate(0, -50%)"
+          >
+            <input
+              ref={inputOpenFileRef}
+              onChange={() => onChangeInput(inputOpenFileRef)}
+              type="file"
+              style={{ display: 'none' }}
+            />
+            <button
+              className={
+                file !== null && file !== undefined
+                  ? 'btn-add-close'
+                  : 'btn-add-file'
+              }
+              onClick={
+                file !== null && file !== undefined
+                  ? onClickClear
+                  : showOpenFileDlg
+              }
+            />
+          </Pane>
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={!contentHash.length} onClick={onClickBtn}>
+        {T.actionBar.startSearch.cyberlink}
+      </Button>
+    </ActionBar>
+  );
+};
 
 export const GovernanceStartStageActionBar = ({
   valueSelect,
@@ -871,6 +911,64 @@ export const SendLedgerAtomTot = ({
         </button>
       </div>
     </div>
+  </ContainetLedger>
+);
+
+export const ContributeATOMs = ({
+  onClickBtn,
+  address,
+  availableStake,
+  valueInput,
+  gasUAtom,
+  gasAtom,
+  onChangeInput,
+  onClickBtnCloce,
+  onClickMax,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <div className="display-flex align-items-center">
+      <span className="actionBar-text">{address}</span>
+      <button
+        className="copy-address"
+        onClick={() => {
+          navigator.clipboard.writeText(address);
+        }}
+      />
+    </div>
+    {availableStake > 0 && (
+      <div>
+        <h3 className="text-align-center">Send Details</h3>
+        <p className="text-align-center">Your wallet contains:</p>
+        <span className="actionBar-text">{availableStake}</span>
+        <div style={{ marginTop: '25px', marginBottom: 10 }}>
+          Enter the amount of ATOMs you wish to send to Cyber~Congress:
+        </div>
+        <div className="text-align-center">
+          <input
+            value={valueInput}
+            style={{ marginRight: 10, textAlign: 'end' }}
+            onChange={onChangeInput}
+          />
+          <button
+            type="button"
+            className="btn"
+            onClick={onClickMax}
+            style={{ height: 30 }}
+          >
+            Max
+          </button>
+        </div>
+        <h6 style={{ margin: 20 }}>
+          The fees you will be charged by the network on this transaction will
+          {gasUAtom} uatom ( {gasAtom} ATOMs ).
+        </h6>
+        <div className="text-align-center">
+          <button type="button" className="btn" onClick={onClickBtn}>
+            Generate my transaction
+          </button>
+        </div>
+      </div>
+    )}
   </ContainetLedger>
 );
 

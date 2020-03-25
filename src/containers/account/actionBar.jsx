@@ -12,6 +12,7 @@ import {
   RewardsDelegators,
   Cyberlink,
   StartStageSearchActionBar,
+  TransactionError,
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -64,6 +65,7 @@ class ActionBarContainer extends Component {
       txHash: null,
       txHeight: null,
       rewards: null,
+      errorMessage: null,
       bandwidth: {
         remained: 0,
         max_value: 0,
@@ -354,19 +356,32 @@ class ActionBarContainer extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -392,6 +407,13 @@ class ActionBarContainer extends Component {
           txHeight: data.height,
         });
         updateAddress();
+        return;
+      }
+      if (data.code !== undefined && data.code > 0) {
+        this.setState({
+          stage: STAGE_ERROR,
+          errorMessage: data.raw_log,
+        });
         return;
       }
     }
@@ -467,6 +489,7 @@ class ActionBarContainer extends Component {
       rewards,
       bandwidth,
       contentHash,
+      errorMessage,
     } = this.state;
 
     if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
@@ -581,6 +604,16 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.cleatState}
           onClickBtnCloce={this.cleatState}
         />

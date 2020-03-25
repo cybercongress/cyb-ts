@@ -58,9 +58,9 @@
     padding-bottom: 5px;
 }
 
-.container-dinamics {
+.auction-container-dinamics{
     position: relative;
-    margin-bottom: 35px;
+    margin-bottom: 0;
     display: flex;
     justify-content: center;
     flex-direction: column;

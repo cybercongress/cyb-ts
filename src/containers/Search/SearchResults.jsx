@@ -1,11 +1,14 @@
 import React from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import Iframe from 'react-iframe';
+import { connect } from 'react-redux';
 import {
   getIpfsHash,
   search,
   getRankGrade,
   getDrop,
   formatNumber as format,
+  getContentByCid,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
@@ -59,39 +62,68 @@ class SearchResults extends React.Component {
       loading: true,
     });
 
-    this.getSearch(query);
+    this.getSearch(query.toLowerCase());
+  };
+
+  loadContent = async (cids, node, prevState) => {
+    const { query } = this.state;
+    const contentPromises = Object.keys(cids).map(cid =>
+      getContentByCid(cid, node)
+        .then(content => {
+          const { searchResults } = this.state;
+          const links = searchResults.link;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              console.warn({ ...links[cid], ...content });
+              links[cid] = {
+                ...links[cid],
+                status: content.status,
+                content: content.content,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
+        })
+        .catch(() => {
+          const { searchResults } = this.state;
+          const links = searchResults.link;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              links[cid] = {
+                ...links[cid],
+                status: 'failed',
+                content: `data:,${cid}`,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
+        })
+    );
+    Promise.all(contentPromises);
   };
 
   getSearch = async query => {
-    let searchResults = {
+    const { node } = this.props;
+    const searchResults = {
       link: [],
       drop: [],
     };
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
-    let drop;
     // const { query } = this.state;
-    if (query.match(PATTERN)) {
-      const result = await getDrop(query.toLowerCase());
-
-      console.log('result', result);
-
-      if (result === 0) {
-        drop = {
-          address: query,
-          gift: 0,
-        };
-      } else {
-        drop = {
-          address: query,
-          gift: result.gift,
-          ...result,
-        };
-      }
-
-      searchResults.drop = [drop];
-    }
 
     keywordHash = await getIpfsHash(query);
     searchResults.link = await search(keywordHash);
@@ -113,7 +145,22 @@ class SearchResults extends React.Component {
       resultNull = true;
     }
 
+    const links = searchResults.link.reduce(
+      (obj, link) => ({
+        ...obj,
+        [link.cid]: {
+          rank: link.rank,
+          grade: link.grade,
+          status: 'loading',
+          query,
+        },
+      }),
+      {}
+    );
+
     console.log('searchResults', searchResults);
+    searchResults.link = links;
+
     this.setState({
       searchResults,
       keywordHash,
@@ -122,6 +169,7 @@ class SearchResults extends React.Component {
       query,
       resultNull,
     });
+    this.loadContent(searchResults.link, node);
   };
 
   render() {
@@ -135,7 +183,6 @@ class SearchResults extends React.Component {
       drop,
     } = this.state;
     // console.log(query);
-    console.log('searchResults render', searchResults);
 
     const searchItems = [];
 
@@ -159,8 +206,14 @@ class SearchResults extends React.Component {
       );
     }
 
-    if (searchResults.drop.length > 0) {
-      searchItems.push(searchResults.drop.map(item => <Gift item={item} />));
+    if (query.match(PATTERN)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Check your gift"
+          to={`/gift/${query}`}
+          // address={query}
+        />
+      );
     }
 
     if (query.match(PATTERN_CYBER)) {
@@ -185,26 +238,47 @@ class SearchResults extends React.Component {
 
     if (query.match(PATTERN_TX)) {
       searchItems.push(
-        <SnipitAccount text="Details Tx" to={`/network/euler-5/tx/${query}`} address={query} />
+        <SnipitAccount
+          text="Details Tx"
+          to={`/network/euler-5/tx/${query}`}
+          address={query}
+        />
       );
     }
 
+    const links = searchResults.link;
     searchItems.push(
-      searchResults.link.map(item => (
-        <SearchItem
-          key={item.cid}
-          hash={item.cid}
-          rank={item.rank}
-          grade={item.grade}
-          status="success"
-          // onClick={e => (e, links[cid].content)}
-        >
-          {item.cid}
-        </SearchItem>
-      ))
+      Object.keys(links).map(key => {
+        let contentItem = false;
+        if (links[key].status === 'success') {
+          if (links[key].content !== undefined) {
+            if (links[key].content.indexOf(key) === -1) {
+              contentItem = true;
+            }
+          }
+        }
+        return (
+          <SearchItem
+            key={key}
+            hash={key}
+            rank={links[key].rank}
+            grade={links[key].grade}
+            status={links[key].status}
+            contentIpfs={links[key].content}
+            // onClick={e => (e, links[cid].content)}
+          >
+            {contentItem && (
+              <Iframe
+                width="100%"
+                height="fit-content"
+                className="iframe-SearchItem"
+                url={links[key].content}
+              />
+            )}
+          </SearchItem>
+        );
+      })
     );
-    // }
-    // console.log(searchItems);
 
     return (
       <div>
@@ -224,7 +298,7 @@ class SearchResults extends React.Component {
                 lineHeight="20px"
                 wordBreak="break-all"
               >
-                {`I found ${searchItems.length} results`}
+                {`I found ${Object.keys(searchResults.link).length} results`}
               </Text>
             )}
 
@@ -260,4 +334,10 @@ class SearchResults extends React.Component {
   }
 }
 
-export default SearchResults;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(SearchResults);
