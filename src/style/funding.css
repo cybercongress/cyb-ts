@@ -236,7 +236,7 @@ span.right-input {
 .container-card {
     display: flex;
     flex-direction: column;
-    padding: 45px 0;
+    padding: 25px 0;
     align-items: center;
     background-color: "#000000";
     width: 100%;
