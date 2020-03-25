@@ -21,6 +21,7 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
+import Snap from './containers/snap';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
@@ -209,6 +210,7 @@ class AppRouter extends React.Component {
             component={ValidatorsDetails}
           />
           <Route path="/vesting" component={Vesting} />
+          <Route path="/snap" component={Snap} />
           <Route path="/ipfs" component={Ipfs} />
           <Route path="/network/euler-5/block/:idBlock" component={Block} />
 
