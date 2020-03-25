@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { Link } from 'react-router-dom';
 import { DISTRIBUTION } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getRelevance } from '../../../utils/game-monitors';
@@ -131,7 +132,7 @@ const RelevanceC = ({
 
   return (
     <RowTable
-      text="relevance"
+      text={<Link to="/gol/relevance">relevance</Link>}
       reward={DISTRIBUTION.relevance}
       currentPrize={currentPrize}
       cybWonAbsolute={

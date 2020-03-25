@@ -182,7 +182,11 @@ class GolDelegation extends React.Component {
         key={item.operatorAddress}
       >
         <Table.TextCell>
-          <TextTable>{item.moniker}</TextTable>
+          <TextTable>
+            <Link to={`/network/euler-5/hero/${item.operatorAddress}`}>
+              {item.moniker}
+            </Link>
+          </TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           <TextTable>{item.tokens}</TextTable>
@@ -213,8 +217,10 @@ class GolDelegation extends React.Component {
               TCYB. Huge chunk of CYB stake allocated to all Ethereans and
               Cosmonauts. The more you spread, the more users will claim its
               allocation, the more voting power as validators you will have in
-              Genesis. Details of reward calculation you can find in Game of
-              Links rules
+              Genesis. Details of reward calculation you can find in{' '}
+              <LinkWindow to="https://cybercongress.ai/game-of-links/">
+                Game of Links rules
+              </LinkWindow>
             </Text>
           </Pane>
           <Pane

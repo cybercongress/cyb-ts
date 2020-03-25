@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { DISTRIBUTION } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLifetime } from '../../../utils/game-monitors';
@@ -37,8 +38,8 @@ const Lifetime = ({ won = 0, dataQ }) => {
 
   return (
     <RowTable
-      text="lifetime"
-      reward={DISTRIBUTION.delegation}
+      text={<Link to="/gol/lifetime">lifetime</Link>}
+      reward={DISTRIBUTION.lifetime}
       currentPrize={currentPrize}
       cybWonAbsolute={
         loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))

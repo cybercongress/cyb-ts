@@ -155,6 +155,7 @@ class GolLifetime extends React.Component {
           dataValidators.forEach(itemRPC => {
             if (itemQ.consensus_pubkey === itemRPC.consensus_pubkey) {
               dataPreCommit[index].moniker = itemRPC.description.moniker;
+              dataPreCommit[index].operatorAddress = itemRPC.operator_address;
             }
           });
         });
@@ -212,24 +213,24 @@ class GolLifetime extends React.Component {
     console.log('dataTable', dataTable);
     console.log('validatorAddress', validatorAddress);
 
-    // if (loadingAtom) {
-    //   return (
-    //     <div
-    //       style={{
-    //         width: '100%',
-    //         height: '50vh',
-    //         display: 'flex',
-    //         justifyContent: 'center',
-    //         alignItems: 'center',
-    //         flexDirection: 'column',
-    //       }}
-    //     >
-    //       <Loading />
-    //     </div>
-    //   );
-    // }
+    if (!loadingAtom) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Loading />
+        </div>
+      );
+    }
 
-    const content = dataTable.map(item => {
+    const content = dataTable.map((item, index) => {
       let lifeTime = 0;
       let cybWonAbsolute = 0;
       let share = 0;
@@ -246,10 +247,14 @@ class GolLifetime extends React.Component {
           display="flex"
           minHeight="48px"
           height="fit-content"
-          key={item.operatorAddress}
+          key={(item.operatorAddress, index)}
         >
           <Table.TextCell>
-            <TextTable>{item.moniker}</TextTable>
+            <TextTable>
+              <Link to={`/network/euler-5/hero/${item.operatorAddress}`}>
+                {item.moniker}
+              </Link>
+            </TextTable>
           </Table.TextCell>
           <Table.TextCell flex={0.5} textAlign="end">
             <TextTable>{formatNumber(item.precommits)}</TextTable>
@@ -279,7 +284,10 @@ class GolLifetime extends React.Component {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Setup you validator and get rewards for precommit counts!
+              <LinkWindow to="https://cybercongress.ai/docs/cyberd/run_validator/">
+                Setup you validator
+              </LinkWindow>{' '}
+              and get rewards for precommit counts!
             </Text>
           </Pane>
           <Pane

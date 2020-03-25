@@ -87,6 +87,7 @@ const DISTRIBUTION = {
   'full validator set': 5000000000000,
   'euler 4 rewards': 5000000000000,
   lifetime: 2000000000000,
+  'community pool': 2000000000000,
 };
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;

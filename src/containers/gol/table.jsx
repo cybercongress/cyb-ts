@@ -10,6 +10,7 @@ import {
   Rewards,
   FVS,
   Relevance,
+  CommunityPool,
 } from './discipline';
 
 const BLOCK_SUBSCRIPTION = gql`
@@ -89,6 +90,7 @@ const TableDiscipline = ({
           <LifetimeHooks consensusAddress={consensusAddress} won={won} />
           <Rewards validatorAddress={validatorAddress} won={won} />
           <FVS />
+          <CommunityPool />
         </Table.Body>
       </Table>
     </Pane>

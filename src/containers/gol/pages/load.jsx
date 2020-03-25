@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Dots, TextTable } from '../../../components';
+import { Loading, TextTable, LinkWindow } from '../../../components';
 import {
   getAmountATOM,
   getGraphQLQuery,
@@ -164,8 +165,22 @@ class GolLoad extends React.Component {
     console.log(items);
 
     if (loadingAtom) {
-      return <Dots />;
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Loading />
+        </div>
+      );
     }
+
     return (
       <main
         // style={{ justifyContent: 'space-between' }}
@@ -185,8 +200,10 @@ class GolLoad extends React.Component {
             in this discipline we would recommend you submit something
             meaningful, which increase value of our knowledge graph. We prepare
             some default scripts for this. Max reward for this discipline is 6
-            TCYB. Details of reward calculation you can find in Game of Links
-            rules
+            TCYB. Details of reward calculation you can find in{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </LinkWindow>
           </Text>
         </Pane>
         <div
@@ -251,7 +268,13 @@ class GolLoad extends React.Component {
                       key={(item.subject, index)}
                     >
                       <Table.TextCell flex={2}>
-                        <TextTable>{item.subject}</TextTable>
+                        <TextTable>
+                          <Link
+                            to={`/network/euler-5/contract/${item.subject}`}
+                          >
+                            {item.subject}
+                          </Link>
+                        </TextTable>
                       </Table.TextCell>
                       <Table.TextCell flex={0.5} textAlign="end">
                         <TextTable>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { DISTRIBUTION } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getDelegation } from '../../../utils/game-monitors';
@@ -40,7 +41,7 @@ const Delegation = ({
 
   return (
     <RowTable
-      text="delegation"
+      text={<Link to="/gol/delegation">delegation</Link>}
       reward={DISTRIBUTION.delegation}
       currentPrize={currentPrize}
       cybWonAbsolute={loading ? <Dots /> : formatNumber(Math.floor(delegation))}

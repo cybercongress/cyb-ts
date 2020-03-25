@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { DISTRIBUTION } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLoad } from '../../../utils/game-monitors';
@@ -36,7 +37,7 @@ const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
 
   return (
     <RowTable
-      text="load"
+      text={<Link to="/gol/load">load</Link>}
       reward={DISTRIBUTION.load}
       currentPrize={currentPrize}
       cybWonAbsolute={loading ? <Dots /> : formatNumber(Math.floor(load))}

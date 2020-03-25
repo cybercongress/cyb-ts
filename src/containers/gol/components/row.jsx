@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TableEv as Table } from '@cybercongress/gravity';
+import { formatNumber } from '../../../utils/utils';
 
 const RowTable = ({
   text,
@@ -16,13 +17,13 @@ const RowTable = ({
     </Table.TextCell>
     <Table.TextCell textAlign="end">
       <Text fontSize="16px" color="#fff">
-        {reward}
+        {formatNumber(reward)}
       </Text>
     </Table.TextCell>
     <Table.TextCell textAlign="end">
       <Text fontSize="16px" color="#fff">
         {/* {Math.floor((won / DISTRIBUTION.takeoff) * DISTRIBUTION[key])} */}
-        {currentPrize}
+        {formatNumber(currentPrize)}
       </Text>
     </Table.TextCell>
     <Table.TextCell textAlign="end">
