@@ -49,7 +49,6 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
-  ContributeATOMs,
   RewardsDelegators,
   ReDelegate,
   TransactionError,
