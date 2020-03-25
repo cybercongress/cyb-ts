@@ -4,6 +4,12 @@ import { CYBER } from './config';
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GOL';
 
+const ORDER = {
+  NONE: 'NONE',
+  ASC: 'ASC',
+  DESC: 'DESC',
+};
+
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
 const roundNumber = (num, scale) => {
@@ -90,9 +96,9 @@ const timer = func => {
   setInterval(func, 1000);
 };
 
-const getDelegator = operatorAddr => {
+const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   const address = bech32.decode(operatorAddr);
-  return bech32.encode(BECH32_PREFIX_ACC_ADDR_CYBER, address.words);
+  return bech32.encode(prefix, address.words);
 };
 
 const formatValidatorAddress = (address, firstArg, secondArg) => {
@@ -110,8 +116,130 @@ const formatValidatorAddress = (address, firstArg, secondArg) => {
   return '';
 };
 
+const msgType = type => {
+  switch (type) {
+    // cyberd
+    case 'cyberd/Link':
+      return 'Link';
+
+    // bank
+    case 'cosmos-sdk/MsgSend':
+      return 'Send';
+    case 'cosmos-sdk/MsgMultiSend':
+      return 'Multi Send';
+
+    // staking
+    case 'cosmos-sdk/MsgCreateValidator':
+      return 'Create Validator';
+    case 'cosmos-sdk/MsgEditValidator':
+      return 'Edit Validator';
+    case 'cosmos-sdk/MsgDelegate':
+      return 'Delegate';
+    case 'cosmos-sdk/MsgUndelegate':
+      return 'Undelegate';
+    case 'cosmos-sdk/MsgBeginRedelegate':
+      return 'Redelegate';
+
+    // gov
+    case 'cosmos-sdk/MsgSubmitProposal':
+      return 'Submit Proposal';
+    case 'cosmos-sdk/MsgDeposit':
+      return 'Deposit';
+    case 'cosmos-sdk/MsgVote':
+      return 'Vote';
+
+    // distribution
+    case 'cosmos-sdk/MsgWithdrawValidatorCommission':
+      return 'Withdraw Commission';
+    case 'cosmos-sdk/MsgWithdrawDelegationReward':
+      return 'Withdraw Reward';
+    case 'cosmos-sdk/MsgModifyWithdrawAddress':
+      return 'Modify Withdraw Address';
+
+    // slashing
+    case 'cosmos-sdk/MsgUnjail':
+      return 'Unjail';
+
+    // ibc
+    case 'cosmos-sdk/IBCTransferMsg':
+      return 'IBCTransfer';
+    case 'cosmos-sdk/IBCReceiveMsg':
+      return 'IBC Receive';
+
+    default:
+      return { type };
+  }
+};
+
+const exponentialToDecimal = exponential => {
+  let decimal = exponential.toString().toLowerCase();
+  if (decimal.includes('e+')) {
+    const exponentialSplitted = decimal.split('e+');
+    let postfix = '';
+    for (
+      let i = 0;
+      i <
+      +exponentialSplitted[1] -
+        (exponentialSplitted[0].includes('.')
+          ? exponentialSplitted[0].split('.')[1].length
+          : 0);
+      i++
+    ) {
+      postfix += '0';
+    }
+    const addCommas = text => {
+      let j = 3;
+      let textLength = text.length;
+      while (j < textLength) {
+        text = `${text.slice(0, textLength - j)},${text.slice(
+          textLength - j,
+          textLength
+        )}`;
+        textLength++;
+        j += 3 + 1;
+      }
+      return text;
+    };
+    decimal = addCommas(exponentialSplitted[0].replace('.', '') + postfix);
+  }
+  if (decimal.toLowerCase().includes('e-')) {
+    const exponentialSplitted = decimal.split('e-');
+    let prefix = '0.';
+    for (let i = 0; i < +exponentialSplitted[1] - 1; i++) {
+      prefix += '0';
+    }
+    decimal = prefix + exponentialSplitted[0].replace('.', '');
+  }
+  return decimal;
+};
+
+const sort = (data, sortKey, ordering = ORDER.DESC) => {
+  if (ordering === ORDER.NONE) {
+    return data;
+  }
+  if (sortKey === 'timestamp') {
+    return data.sort((a, b) => {
+      const x = new Date(a[sortKey]);
+      const y = new Date(b[sortKey]);
+      if (ordering === ORDER.ASC) {
+        return x - y;
+      }
+      return y - x;
+    });
+  }
+  return data.sort((a, b) => {
+    const x = a[sortKey];
+    const y = b[sortKey];
+    if (ordering === ORDER.ASC) {
+      return x - y;
+    }
+    return y - x;
+  });
+};
+
 export {
   run,
+  sort,
   roundNumber,
   formatNumber,
   asyncForEach,
@@ -119,4 +247,6 @@ export {
   getDecimal,
   getDelegator,
   formatValidatorAddress,
+  msgType,
+  exponentialToDecimal,
 };

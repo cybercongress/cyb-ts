@@ -158,7 +158,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -185,6 +185,8 @@ class ActionBarContainer extends Component {
 
   getAddressInfo = async () => {
     const { address } = this.state;
+    const { addressSend } = this.props;
+    let toSendAddres = '';
     let addressInfo = {};
     let balance = 0;
     try {
@@ -198,8 +200,13 @@ class ActionBarContainer extends Component {
       }
       addressInfo.chainId = chainId;
 
+      if (addressSend) {
+        toSendAddres = addressSend;
+      }
+
       this.setState({
         addressInfo,
+        toSendAddres,
         balance,
         stage: STAGE_READY,
       });
@@ -279,7 +286,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -298,8 +305,9 @@ class ActionBarContainer extends Component {
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
@@ -307,7 +315,16 @@ class ActionBarContainer extends Component {
         updateAddress();
         return;
       }
+      if (data.code) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
+        });
+        return;
+      }
     }
+
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
@@ -359,7 +376,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { onClickAddressLedger, addAddress, send, addressInfo } = this.props;
+    const { onClickAddressLedger, addAddress, addressSend, send, addressInfo } = this.props;
     const {
       stage,
       connect,

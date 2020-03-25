@@ -1,4 +1,5 @@
 const path = require('path');
+
 const SRC = path.resolve(__dirname, 'src/main/js');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
@@ -21,7 +22,7 @@ module.exports = {
   devServer: {
     https: true,
     host: 'localhost',
-    port: process.env.PORT_APP || '3000',
+    port: process.env.PORT_APP || '3001',
     hot: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -33,6 +34,7 @@ module.exports = {
     'react-hot-loader/patch',
     path.join(__dirname, 'src', 'index.js'),
   ],
+  node: { fs: 'empty' },
   module: {
     rules: [
       {
@@ -80,7 +82,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['*', '.js', '.jsx'],
-    alias: {},
+    alias: {
+      'multicodec/src/base-table': path.dirname(
+        require.resolve('multicodec/src/base-table.json')
+      ),
+    },
   },
   output: {
     filename: 'index.js',

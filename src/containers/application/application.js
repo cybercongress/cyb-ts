@@ -7,13 +7,15 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
+import { connect } from 'react-redux';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import { MenuButton } from '../../components';
 import Electricity from '../home/electricity';
 
 const cyber = require('../../image/cyber.png');
-const cyb = require('../../image/cyb.svg');
+const cybFalse = require('../../image/cyb.svg');
+const cybTrue = require('../../image/cybTrue.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
@@ -162,7 +164,7 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children, location } = this.props;
+    const { children, location, ipfsStatus } = this.props;
 
     if (!story && home) {
       this.routeChange('/episode-1');
@@ -185,19 +187,6 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          {/* <Tooltip
-              tooltip="The app is not production ready and is for testing and experimentation only. All send tokens will be lost."
-              placement="bottom"
-            >
-              <img
-                src={bug}
-                alt="bug"
-                style={{
-                  width: 50,
-                  height: 50
-                }}
-              />
-            </Tooltip> */}
           <MenuButton
             to="/brain"
             textTooltip={
@@ -271,7 +260,7 @@ class App extends Component {
 
           <MenuButton
             to="/pocket"
-            imgLogo={cyb}
+            imgLogo={ipfsStatus ? cybTrue : cybFalse}
             positionBugLeft
             textTooltip={
               <span>
@@ -286,33 +275,6 @@ class App extends Component {
               </span>
             }
           />
-          {/*
-          <a href="/pocket">
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
-            </Pane>
-          </a>
-          */
-          /* {app === '' && (
-            <div className="battery">
-              {htef.map(item => (
-                <Item
-                  key={item.to}
-                  selected={item.id === this.state.selectedIndex}
-                  to={item.to}
-                  nameApp={item.nameApp}
-                  onClick={e => this.onCustomClick(item)}
-                />
-              ))}
-            </div>
-          )} */}
-          {/* <Timer /> */}
         </div>
         {/* </Navigation> */}
         {this.props.children}
@@ -321,4 +283,10 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = store => {
+  return {
+    ipfsStatus: store.ipfs.statusIpfs,
+  };
+};
+
+export default connect(mapStateToProps)(App);

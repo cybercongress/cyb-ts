@@ -21,7 +21,6 @@ import {
   getValidatorsUnbonded,
   selfDelegationShares,
   stakingPool,
-  getRankValidators,
   getDelegations,
 } from '../../utils/search/utils';
 import {
@@ -241,11 +240,10 @@ class Validators extends Component {
     });
   };
 
-
   selectValidators = (validator, index) => {
     const { validatorSelect, selectedIndex } = this.state;
 
-    const selectValidator = [];
+    let selectValidator = {};
 
     if (selectedIndex === index) {
       this.setState({
@@ -256,8 +254,8 @@ class Validators extends Component {
         selectedIndex: index,
       });
     }
-    if (validatorSelect[0] !== validator) {
-      selectValidator.push(validator);
+    if (validatorSelect !== validator) {
+      selectValidator = validator;
       return this.setState({
         validatorSelect: selectValidator,
       });
@@ -302,7 +300,9 @@ class Validators extends Component {
     }
 
     const validatorRows = validators
-      .filter(validator => validator.jailed === showJailed)
+      .filter(validator =>
+        showJailed ? validator.status < 2 : validator.status === 2
+      )
       .map((validator, index) => {
         return (
           <Table.Row
@@ -326,7 +326,11 @@ class Validators extends Component {
             <Table.TextCell paddingX={5}>
               <TextTable>
                 <StatusTooltip status={validator.status} />
-                {validator.description.moniker}
+                <Link
+                  to={`/network/euler-5/hero/${validator.operator_address}`}
+                >
+                  {validator.description.moniker}
+                </Link>
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} flex={0.7} textAlign="end">
