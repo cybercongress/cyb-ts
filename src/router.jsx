@@ -48,6 +48,7 @@ class AppRouter extends React.Component {
     const { setIpfsStatusProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = this.isMobileTablet();
+    // this.setState({ loader: false });
     if (!mobile) {
       await this.initIpfsNode();
     } else {

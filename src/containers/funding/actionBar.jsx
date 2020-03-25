@@ -10,9 +10,8 @@ import {
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
+  TransactionError,
 } from '../../components';
-
-import { TransactionError } from '../../components';
 
 const {
   STAGE_INIT,
@@ -515,14 +514,6 @@ class ActionBarTakeOff extends Component {
           onClickBtnCloce={this.onClickInitStage}
         />
       );
-    }
-
-    if (step === 'transactionCost') {
-      return <TransactionCost onClickBtn={this.onClickTransactionCost} />;
-    }
-
-    if (step === 'succesfuuly') {
-      return <Succesfuuly />;
     }
 
     if (stage === STAGE_ERROR && errorMessage !== null) {
