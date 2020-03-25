@@ -9,7 +9,7 @@ import {
   getGraphQLQuery,
   getIndexStats,
 } from '../../../utils/search/utils';
-import { exponentialToDecimal } from '../../../utils/utils';
+import { exponentialToDecimal, formatNumber } from '../../../utils/utils';
 import { cybWon } from '../../../utils/fundingMath';
 import { COSMOS, TAKEOFF, DISTRIBUTION, CYBER } from '../../../utils/config';
 
@@ -35,48 +35,17 @@ const Query = page =>
     }
   }`;
 
-const GolLoad = () => {
-  const [currentPrize, setCurrentPrize] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  const ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
-
-  useEffect(() => {
-    ws.onopen = () => {
-      console.log('connected');
-    };
-
-    ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      if (Object.keys(message).length > 0) {
-        let amount = 0;
-        let won = 0;
-
-        amount = getAmountATOM(message);
-
-        won = cybWon(amount);
-
-        setCurrentPrize(
-          Math.floor((won / DISTRIBUTION.takeoff) * DISTRIBUTION.load)
-        );
-        setLoading(false);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log('disconnected');
-    };
-  }, []);
-
-  if (loading) {
-    return <Dots />;
+const QueryAddress = address =>
+  ` query MyQuery {
+  karma_view(where: {subject: {_eq: "${address}"}}) {
+    karma
+    subject
   }
+}`;
 
-  return <Load currentPrize={currentPrize} />;
-};
+class GolLoad extends React.Component {
+  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
 
-class Load extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -84,20 +53,70 @@ class Load extends React.Component {
       page: 0,
       allPage: 0,
       sumKarma: 0,
+      currentPrize: 0,
+      loadingAtom: true,
+      addAddress: false,
     };
   }
 
   async componentDidMount() {
-    this.getFirstItem();
+    await this.getFirstItem();
+    this.getDataWS();
   }
 
-  getFirstItem = async () => {
-    const { currentPrize } = this.props;
-    const { page } = this.state;
+  getDataWS = async () => {
+    this.ws.onopen = () => {
+      console.log('connected');
+    };
 
+    this.ws.onmessage = async evt => {
+      const message = JSON.parse(evt.data);
+      console.log('txs', message);
+      this.getAtom(message);
+    };
+
+    this.ws.onclose = () => {
+      console.log('disconnected');
+    };
+  };
+
+  getAtom = async dataTxs => {
+    let amount = 0;
+    let won = 0;
+
+    if (dataTxs) {
+      amount = getAmountATOM(dataTxs);
+    }
+
+    won = cybWon(amount);
+
+    const currentPrize = Math.floor(
+      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
+    );
+
+    this.setState({
+      loadingAtom: false,
+      currentPrize,
+    });
+  };
+
+  getFirstItem = async () => {
+    const { page, items } = this.state;
+    let address = [];
+    const itemsData = [];
     let allPage = 0;
     let sumKarma = 0;
-    const items = [];
+
+    const localStorageStory = await localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      const dataLocal = await getGraphQLQuery(QueryAddress(address.bech32));
+      if (Object.keys(dataLocal.karma_view).length > 0) {
+        dataLocal.karma_view[0].local = true;
+        itemsData.push(...dataLocal.karma_view);
+      }
+    }
+
     const data = await getGraphQLQuery(GET_CHARACTERS);
     const responseIndexStats = await getIndexStats();
 
@@ -105,26 +124,14 @@ class Load extends React.Component {
       allPage = data.karma_view_aggregate.aggregate.count;
     }
 
-    if (data.karma_view) {
-      data.karma_view.forEach(item => {
-        let load = 0;
-        let cybWonAbsolute = 0;
-        let control = 0;
-        if (responseIndexStats !== null) {
-          sumKarma = responseIndexStats.totalKarma;
-          load = parseFloat(item.karma) / parseFloat(sumKarma);
-          cybWonAbsolute = load * currentPrize;
-          control = (cybWonAbsolute / DISTRIBUTION.load) * 10000;
-        }
-        items.push({
-          ...item,
-          control,
-          cybWonAbsolute,
-        });
-      });
+    if (Object.keys(data.karma_view).length > 0) {
+      if (responseIndexStats !== null) {
+        sumKarma = responseIndexStats.totalKarma;
+      }
+      itemsData.push(...data.karma_view);
     }
     this.setState({
-      items,
+      items: items.concat(itemsData),
       sumKarma,
       page: page + 1,
       allPage: Math.ceil(parseFloat(allPage) / 1),
@@ -132,38 +139,33 @@ class Load extends React.Component {
   };
 
   fetchMoreData = async () => {
-    const { page, items, sumKarma } = this.state;
-    const { currentPrize } = this.props;
-    const dataQ = [];
+    const { page, items } = this.state;
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     const data = await getGraphQLQuery(Query(page));
 
-    data.karma_view.forEach(item => {
-      let load = 0;
-      let cybWonAbsolute = 0;
-      let control = 0;
-      load = parseFloat(item.karma) / parseFloat(sumKarma);
-      cybWonAbsolute = load * currentPrize;
-      control = (cybWonAbsolute / DISTRIBUTION.load) * 10000;
-      dataQ.push({
-        ...item,
-        control,
-        cybWonAbsolute,
-      });
-    });
-
     setTimeout(() => {
       this.setState({
-        items: items.concat(dataQ),
+        items: items.concat(data.karma_view),
         page: page + 1,
       });
     }, 500);
   };
 
   render() {
-    const { page, allPage, items } = this.state;
+    const {
+      page,
+      allPage,
+      items,
+      currentPrize,
+      sumKarma,
+      loadingAtom,
+    } = this.state;
     console.log(items);
+
+    if (loadingAtom) {
+      return <Dots />;
+    }
     return (
       <main
         // style={{ justifyContent: 'space-between' }}
@@ -187,7 +189,10 @@ class Load extends React.Component {
             rules
           </Text>
         </Pane>
-        <div id="scrollableDiv" style={{ height: '80vh', overflow: 'auto' }}>
+        <div
+          id="scrollableDiv"
+          style={{ height: 'calc(100vh - 360px)', overflow: 'auto' }}
+        >
           <Table>
             <Table.Head
               style={{
@@ -225,34 +230,45 @@ class Load extends React.Component {
                 loader={<h4>Loading...</h4>}
                 scrollableTarget="scrollableDiv"
               >
-                {items.map((item, index) => (
-                  <Table.Row
-                    paddingX={0}
-                    paddingY={5}
-                    borderBottom={
-                      item.addressStorage ? '1px solid #3ab79340' : 'none'
-                    }
-                    display="flex"
-                    minHeight="48px"
-                    height="fit-content"
-                    key={item.subject}
-                  >
-                    <Table.TextCell flex={2}>
-                      <TextTable>{item.subject}</TextTable>
-                    </Table.TextCell>
-                    <Table.TextCell flex={0.5} textAlign="end">
-                      <TextTable>
-                        {exponentialToDecimal(item.control.toPrecision(2))}
-                      </TextTable>
-                    </Table.TextCell>
-                    <Table.TextCell flex={0.5} textAlign="end">
-                      <TextTable>{item.karma}</TextTable>
-                    </Table.TextCell>
-                    <Table.TextCell flex={0.5} textAlign="end">
-                      <TextTable>{Math.floor(item.cybWonAbsolute)}</TextTable>
-                    </Table.TextCell>
-                  </Table.Row>
-                ))}
+                {items.map((item, index) => {
+                  let load = 0;
+                  let cybWonAbsolute = 0;
+                  let control = 0;
+                  if (sumKarma > 0) {
+                    load = parseFloat(item.karma) / parseFloat(sumKarma);
+                    cybWonAbsolute = load * currentPrize;
+                    control = (cybWonAbsolute / DISTRIBUTION.load) * 10000;
+                  }
+
+                  return (
+                    <Table.Row
+                      paddingX={0}
+                      paddingY={5}
+                      borderBottom={item.local ? '1px solid #3ab793bf' : 'none'}
+                      display="flex"
+                      minHeight="48px"
+                      height="fit-content"
+                      key={(item.subject, index)}
+                    >
+                      <Table.TextCell flex={2}>
+                        <TextTable>{item.subject}</TextTable>
+                      </Table.TextCell>
+                      <Table.TextCell flex={0.5} textAlign="end">
+                        <TextTable>
+                          {exponentialToDecimal(control.toPrecision(2))}
+                        </TextTable>
+                      </Table.TextCell>
+                      <Table.TextCell flex={0.5} textAlign="end">
+                        <TextTable>{formatNumber(item.karma)}</TextTable>
+                      </Table.TextCell>
+                      <Table.TextCell flex={0.5} textAlign="end">
+                        <TextTable>
+                          {formatNumber(Math.floor(cybWonAbsolute))}
+                        </TextTable>
+                      </Table.TextCell>
+                    </Table.Row>
+                  );
+                })}
               </InfiniteScroll>
             </Table.Body>
           </Table>
