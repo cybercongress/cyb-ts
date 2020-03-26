@@ -10,6 +10,7 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { Provider } from 'react-redux';
 import AppRouter from './router';
+import { CYBER } from './utils/config';
 import store from './redux/store';
 
 import './style/main.css';
@@ -27,7 +28,7 @@ const getHeaders = token => {
 };
 
 const httpLink = new HttpLink({
-  uri: 'https://titan.cybernode.ai/graphql/v1/graphql',
+  uri: CYBER.CYBER_INDEX_HTTPS,
   headers: {
     'content-type': 'application/json',
     authorization: '',
@@ -35,7 +36,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://titan.cybernode.ai/graphql/v1/graphql`,
+  uri: CYBER.CYBER_INDEX_WEBSOCKET,
   options: {
     reconnect: true,
   },

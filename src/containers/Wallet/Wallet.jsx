@@ -53,7 +53,9 @@ class Wallet extends React.Component {
   }
 
   async componentDidMount() {
+    const { web3 } = this.props;
     await this.checkAddressLocalStorage();
+    console.log(web3);
   }
 
   componentDidUpdate() {
@@ -188,8 +190,7 @@ class Wallet extends React.Component {
     const responseCyber = await getBalance(accounts.cyber.bech32);
     const responseCosmos = await getBalance(
       accounts.cosmos.bech32,
-      COSMOS.GAIA_NODE_URL_LSD,
-      'gaia_lcd'
+      COSMOS.GAIA_NODE_URL_LSD
     );
 
     const totalCyber = await getTotalEUL(responseCyber);
@@ -412,4 +413,4 @@ class Wallet extends React.Component {
   }
 }
 
-export default Wallet;
+export default withWeb3(Wallet);

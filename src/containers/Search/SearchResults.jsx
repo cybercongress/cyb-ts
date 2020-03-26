@@ -65,7 +65,7 @@ class SearchResults extends React.Component {
       loading: true,
     });
 
-    this.getSearch(query);
+    this.getSearch(query.toLowerCase());
   };
 
   loadContent = async (cids, node, prevState) => {
@@ -186,7 +186,6 @@ class SearchResults extends React.Component {
       drop,
     } = this.state;
     // console.log(query);
-    console.log('searchResults render', searchResults);
 
     const searchItems = [];
 
