@@ -82,14 +82,14 @@ export const getContentByCid = async (
                 }
                 const fileType = `data:${mime};base64,${dataBase64}`;
                 resolve({
-                  status: 'success',
+                  status: 'downloaded',
                   content: fileType,
                 });
               });
             });
           } else {
             resolve({
-              status: 'success',
+              status: 'availableDownload',
               content: `data:,${cid}`,
             });
           }
