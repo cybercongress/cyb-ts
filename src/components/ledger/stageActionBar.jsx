@@ -12,13 +12,14 @@ import {
   Select,
   Textarea,
   FilePicker,
+  Battery,
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
 import { Loading } from '../ui/loading';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, formatValidatorAddress } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -322,7 +323,14 @@ export const StartStageSearchActionBar = ({
         >
           <input
             value={contentHash}
-            style={{ height: 42, width: '100%', paddingRight: '35px' }}
+            style={{
+              height: 42,
+              width: '100%',
+              paddingLeft: '10px',
+              borderRadius: '20px',
+              textAlign: 'center',
+              paddingRight: '35px',
+            }}
             onChange={e => onChangeInputContentHash(e)}
             placeholder="paste a hash"
           />
@@ -549,6 +557,33 @@ export const CommunityPool = ({
   </ActionBar>
 );
 
+const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
+  <Pane
+    minWidth={200}
+    paddingX={18}
+    paddingY={14}
+    borderRadius={4}
+    backgroundColor="#fff"
+  >
+    <Pane marginBottom={5}>
+      <Text size={300}>
+        You have {bwRemained} BP out of {bwMaxValue} BP.
+      </Text>
+    </Pane>
+    <Pane marginBottom={5}>
+      <Text size={300}>
+        Full regeneration of bandwidth points or BP happens in 24 hours.
+      </Text>
+    </Pane>
+    <Pane display="flex">
+      <Text size={300}>
+        Current rate for 1 cyberlink is{' '}
+        {linkPrice} BP.
+      </Text>
+    </Pane>
+  </Pane>
+);
+
 export const Cyberlink = ({
   bandwidth,
   onClickBtnCloce,
@@ -557,47 +592,58 @@ export const Cyberlink = ({
   onClickBtn,
   query,
   disabledBtn,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <Pane
-      marginBottom={20}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-    >
-      <Text fontSize="25px" lineHeight="40px" color="#fff">
-        {T.actionBar.link.addr}
-      </Text>
-      <Text fontSize="16px" lineHeight="25.888px" color="#fff">
-        {address}
-      </Text>
-    </Pane>
-    <Pane
-      marginBottom={25}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-    >
-      <Text fontSize="25px" lineHeight="40px" color="#fff">
-        {T.actionBar.link.bandwidth}
-      </Text>
-      <Text fontSize="16px" lineHeight="25.888px" color="#3ab793">
-        {bandwidth.remained}/{bandwidth.max_value}
-      </Text>
-    </Pane>
-    <Text color="#fff" fontSize="16px">
-      {T.actionBar.link.from} {query}
-    </Text>
-    <Text marginBottom={10} color="#fff" fontSize="16px">
-      {T.actionBar.link.to} {contentHash}
-    </Text>
-    <Pane marginTop={30}>
+  linkPrice,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText flexDirection="column">
+        <Pane>
+          <Pane display="flex">
+            <Pane display="flex" alignItems="center" marginRight={10}>
+              <Pane fontSize="16px" marginRight={5}>
+                address:
+              </Pane>
+              <Text fontSize="16px" lineHeight="25.888px" color="#fff">
+                {address}
+              </Text>
+            </Pane>
+            <Pane display="flex" alignItems="center">
+              <Pane fontSize="16px" marginRight={5}>
+                bandwidth:
+              </Pane>
+              <Battery
+                style={{ width: '140px', height: '16px' }}
+                bwPercent={(bandwidth.remained / bandwidth.max_value) * 100}
+                contentTooltip={
+                  <ContentTooltip
+                    bwRemained={bandwidth.remained}
+                    bwMaxValue={bandwidth.max_value}
+                    linkPrice={linkPrice}
+                  />
+                }
+              />
+            </Pane>
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <Text color="#fff" marginRight={10} fontSize="16px">
+              {T.actionBar.link.from}{' '}
+              {contentHash.length > 12
+                ? formatValidatorAddress(contentHash, 6, 6)
+                : contentHash}
+            </Text>
+            <Text color="#fff" fontSize="16px">
+              {T.actionBar.link.to} {query}
+            </Text>
+          </Pane>
+        </Pane>
+      </ActionBarContentText>
+
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: '100%',
+          // width: '100%',
         }}
       >
         <button
@@ -610,9 +656,9 @@ export const Cyberlink = ({
           {T.actionBar.link.cyberIt}
         </button>
       </div>
-    </Pane>
-  </ContainetLedger>
-);
+    </ActionBar>
+  );
+};
 
 export const Delegate = ({
   address,

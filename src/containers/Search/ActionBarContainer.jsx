@@ -12,9 +12,17 @@ import {
   Cyberlink,
   TransactionError,
 } from '../../components';
-import { getIpfsHash, getPin } from '../../utils/search/utils';
+
+import {
+  getIpfsHash,
+  getPin,
+  statusNode,
+  getAccountBandwidth,
+  getCurrentBandwidthPrice,
+} from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import { formatValidatorAddress } from '../../utils/utils';
 
 const { CYBER_NODE_URL } = CYBER;
 
@@ -34,6 +42,8 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
+const CREATE_LINK = 10;
+
 class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
@@ -42,6 +52,7 @@ class ActionBarContainer extends Component {
       init: false,
       ledger: null,
       address: null,
+      addressLocalStor: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
@@ -50,6 +61,7 @@ class ActionBarContainer extends Component {
         remained: 0,
         max_value: 0,
       },
+      linkPrice: 0,
       contentHash: '',
       txMsg: null,
       txContext: null,
@@ -69,6 +81,7 @@ class ActionBarContainer extends Component {
 
   async componentDidMount() {
     console.warn('Looking for Ledger Nano');
+    await this.checkAddressLocalStorage();
     this.pollLedger();
     // await this.getVersion();
     // await this.getAddress();
@@ -130,6 +143,23 @@ class ActionBarContainer extends Component {
       }
     }
   }
+
+  checkAddressLocalStorage = async () => {
+    let address = [];
+
+    const localStorageStory = await localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLocalStor: address });
+      this.getBandwidth();
+      this.getLinkPrice();
+    } else {
+      this.setState({
+        addressLocalStor: null,
+      });
+    }
+  };
 
   compareVersion = async () => {
     const test = this.state.ledgerVersion;
@@ -195,28 +225,6 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   calculationIpfsTo = async () => {
     const { contentHash, file } = this.state;
     const { node } = this.props;
@@ -258,15 +266,13 @@ class ActionBarContainer extends Component {
   };
 
   getNetworkId = async () => {
-    const data = await this.getStatus();
+    const data = await statusNode();
     return data.node_info.network;
   };
 
   getAddressInfo = async () => {
     try {
       const { ledger, address } = this.state;
-
-      this.getBandwidth();
 
       const addressInfo = await ledger.getAccountInfoCyber(address);
       const chainId = await this.getNetworkId();
@@ -278,58 +284,59 @@ class ActionBarContainer extends Component {
       });
     } catch (error) {
       const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
+      if (message !== 'getAddressInfo') {
         // this just means we haven't found the device yet...
         // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
+        console.error('getAddressInfo', message, statusCode);
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
+  getLinkPrice = async () => {
+    let linkPrice = 0;
+
+    const data = await getCurrentBandwidthPrice();
+
+    if (data !== null) {
+      linkPrice = data * 400;
+    }
+
+    this.setState({
+      linkPrice,
+    });
+  };
+
   getBandwidth = async () => {
     try {
-      const { address } = this.state;
+      const { addressLocalStor } = this.state;
 
       const bandwidth = {
         remained: 0,
         max_value: 0,
       };
 
-      const getBandwidth = await fetch(
-        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
+      let data = null;
+
+      if (addressLocalStor !== null) {
+        data = await getAccountBandwidth(addressLocalStor.bech32);
+
+        if (data !== null) {
+          bandwidth.remained = data.remained;
+          bandwidth.max_value = data.max_value;
         }
-      );
-
-      const data = await getBandwidth.json();
-
-      bandwidth.remained = data.result.remained;
-      bandwidth.max_value = data.result.max_value;
-
+      }
       this.setState({
         bandwidth,
       });
     } catch (error) {
       const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
+      if (message !== 'getBandwidth') {
+        console.error('getBandwidth', message, statusCode);
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
-
-  // link = async () => {
-  //   const { valueInput } = this.state;
-  //   console.log('valueInput', valueInput);
-  // };
 
   link = async () => {
     const { address, addressInfo, ledger, fromCid, toCid } = this.state;
@@ -480,6 +487,13 @@ class ActionBarContainer extends Component {
   onClickUsingLedger = () => {
     // this.init();
     this.setState({
+      stage: CREATE_LINK,
+    });
+  };
+
+  onClickInitLedger = () => {
+    // this.init();
+    this.setState({
       stage: STAGE_LEDGER_INIT,
     });
   };
@@ -523,9 +537,13 @@ class ActionBarContainer extends Component {
       txHash,
       errorMessage,
       file,
+      linkPrice,
+      addressLocalStor,
     } = this.state;
 
-    const { valueSearchInput } = this.props;
+    const { valueSearchInput, node } = this.props;
+
+    console.log('node', node);
 
     if (stage === STAGE_INIT) {
       return (
@@ -545,6 +563,23 @@ class ActionBarContainer extends Component {
       );
     }
 
+    if (stage === CREATE_LINK) {
+      // if (stage === STAGE_READY) {
+      // if (this.state.stage === STAGE_READY) {
+      return (
+        <Cyberlink
+          onClickBtnCloce={this.onClickInitStage}
+          query={valueSearchInput}
+          onClickBtn={this.onClickInitLedger}
+          bandwidth={bandwidth}
+          address={formatValidatorAddress(addressLocalStor.bech32, 9, 4)}
+          contentHash={file !== null ? file.name : contentHash}
+          disabledBtn={parseFloat(bandwidth.max_value) === 0}
+          linkPrice={linkPrice}
+        />
+      );
+    }
+
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
@@ -560,18 +595,11 @@ class ActionBarContainer extends Component {
     }
 
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
       return (
-        <Cyberlink
-          onClickBtnCloce={this.onClickInitStage}
-          query={valueSearchInput}
-          onClickBtn={e => this.link(e)}
-          bandwidth={bandwidth}
-          address={address.bech32}
-          contentHash={file !== null ? file.name : contentHash}
-          disabledBtn={parseFloat(bandwidth.max_value) === 0}
-        />
+        <div>
+          <span> please confirm the transaction on Ledger</span>
+          <button onClick={e => this.link(e)}>Cyberlink</button>
+        </div>
       );
     }
 
