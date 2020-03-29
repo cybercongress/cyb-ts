@@ -15,7 +15,7 @@ import {
   PATTERN_ETH,
 } from '../../utils/config';
 import {
-  formatValidatorAddress,
+  trimString,
   formatNumber,
   exponentialToDecimal,
 } from '../../utils/utils';
@@ -44,18 +44,18 @@ const Address = ({ address }) => {
   if (address.match(PATTERN_COSMOS)) {
     return (
       <LinkWindow to={`https://www.mintscan.io/account/${address}`}>
-        {formatValidatorAddress(address, 10, 6)}
+        {trimString(address, 10, 6)}
       </LinkWindow>
     );
   }
   if (address.match(PATTERN_ETH)) {
     return (
       <LinkWindow to={`http://etherscan.io/address/${address}`}>
-        {formatValidatorAddress(address, 10, 6)}
+        {trimString(address, 10, 6)}
       </LinkWindow>
     );
   }
-  return <div>{formatValidatorAddress(address, 12, 6)}</div>;
+  return <div>{trimString(address, 12, 6)}</div>;
 };
 
 // const drop = {
@@ -236,7 +236,7 @@ function GiftAddress({ address }) {
               <Dots />
             ) : (
               <Link to={`/network/euler-5/contract/${drop.cyberAddress}`}>
-                {formatValidatorAddress(drop.cyberAddress, 10, 6)}
+                {trimString(drop.cyberAddress, 10, 6)}
               </Link>
             )}{' '}
             contract:

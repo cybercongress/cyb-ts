@@ -1,7 +1,6 @@
 import React, { useEffect, useStatea } from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
-import { getGraphQLQuery } from '../../utils/search/utils';
 import {
   Pane,
   Text,
@@ -10,23 +9,24 @@ import {
   Tooltip,
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
+import { getGraphQLQuery } from '../../utils/search/utils';
 import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
+import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
+
 const dateFormat = require('dateformat');
+
+const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
+const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
 const GET_CHARACTERS = gql`
   subscription Query {
-    block(limit: 50, order_by: { height: desc }, offset: 0) {
-      hash
+    transaction(offset: 0, limit: 50, order_by: { height: desc }) {
       height
-      proposer_address
-      transactions_aggregate {
-        aggregate {
-          count
-        }
-      }
-      pre_commits
+      txhash
+      messages
+      subject
       timestamp
+      code
     }
   }
 `;
@@ -48,7 +48,7 @@ query MyQuery {
 }
 `;
 
-const Block = () => {
+const Txs = () => {
   const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
 
   if (error) {
@@ -61,7 +61,7 @@ const Block = () => {
 
   console.log(dataTxs);
 
-  const blockRows = dataTxs.block.map((item, index) => (
+  const validatorRows = dataTxs.transaction.map((item, index) => (
     <Table.Row
       // borderBottom="none"
       paddingX={0}
@@ -73,28 +73,32 @@ const Block = () => {
       height="fit-content"
       key={item.txhash}
     >
-      <Table.TextCell textAlign="center">
-        <TextTable>{trimString(item.hash, 5, 5)}</TextTable>
-      </Table.TextCell>
-      <Table.TextCell textAlign="end">
+      <Table.TextCell flex={0.5} textAlign="center">
         <TextTable>
-          <Link to={`/network/euler-5/block/${item.height}`}>
-            {formatNumber(item.height)}
+          <img
+            style={{ width: '20px', height: '20px', marginRight: '5px' }}
+            src={item.code === 0 ? statusTrueImg : statusFalseImg}
+            alt="statusImg"
+          />
+        </TextTable>
+      </Table.TextCell>
+      <Table.TextCell textAlign="center">
+        <TextTable>
+          <Link to={`/network/euler-5/tx/${item.txhash}`}>
+            {trimString(item.txhash, 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell flex={0.5} textAlign="end">
+      <Table.TextCell flex={1.3} textAlign="center">
         <TextTable>
-          {formatNumber(item.transactions_aggregate.aggregate.count)}
+          {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell textAlign="center">
-        <TextTable>{trimString(item.proposer_address, 5, 5)}</TextTable>
-      </Table.TextCell>
-      <Table.TextCell textAlign="center">
-        <TextTable>
-          {' '}
-          {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
+      <Table.TextCell textAlign="start">
+        <TextTable display="flex" alignItems="start" flexDirection="column">
+          {item.messages.map((items, i) => (
+            <MsgType key={`${item.txhash}_${i}`} type={items.type} />
+          ))}
         </TextTable>
       </Table.TextCell>
     </Table.Row>
@@ -112,25 +116,22 @@ const Block = () => {
             paddingBottom: '10px',
           }}
         >
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>hash</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>height</TextTable>
-          </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={0.5} textAlign="center">
+            <TextTable>status</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>proposer address</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.3} textAlign="center">
             <TextTable>
               timestamp{' '}
               <Tooltip content="UTC" position="bottom">
                 <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
               </Tooltip>
             </TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>type</TextTable>
           </Table.TextHeaderCell>
         </Table.Head>
         <Table.Body
@@ -140,11 +141,11 @@ const Block = () => {
             padding: 7,
           }}
         >
-          {blockRows}
+          {validatorRows}
         </Table.Body>
       </Table>
     </main>
   );
 };
 
-export default Block;
+export default Txs;

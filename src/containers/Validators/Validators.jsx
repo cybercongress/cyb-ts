@@ -27,7 +27,7 @@ import {
   getDelegator,
   formatNumber,
   asyncForEach,
-  formatValidatorAddress,
+  trimString,
   roundNumber,
   formatCurrency,
 } from '../../utils/utils';

@@ -24,11 +24,12 @@ import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+import BlockDetails from './containers/blok/blockDetails';
+import Txs from './containers/txs';
 import Block from './containers/blok';
+import ParamNetwork from './containers/parameters';
 
 const IPFS = require('ipfs');
-
-
 
 export const history = createBrowserHistory({});
 
@@ -43,7 +44,11 @@ class AppRouter extends React.Component {
   }
 
   async componentDidMount() {
-    await this.initIpfsNode();
+    this.props.setIpfsStatusProps(false);
+    this.setState({
+      loader: false,
+    });
+    // await this.initIpfsNode();
   }
 
   funcUpdateValueSearchInput = query => {
@@ -169,6 +174,7 @@ class AppRouter extends React.Component {
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
           <Route path="/gol" component={GOL} />
+          <Route exact path="/network/euler-5/tx" component={Txs} />
           <Route path="/network/euler-5/tx/:txHash" component={TxsDetails} />
           <Route
             path="/network/euler-5/contract/:address"
@@ -180,7 +186,12 @@ class AppRouter extends React.Component {
           />
           <Route path="/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
-          <Route path="/network/euler-5/block/:idBlock" component={Block} />
+          <Route exact path="/network/euler-5/block" component={Block} />
+          <Route
+            path="/network/euler-5/block/:idBlock"
+            component={BlockDetails}
+          />
+          <Route path="/network/euler-5/parameters" component={ParamNetwork} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>

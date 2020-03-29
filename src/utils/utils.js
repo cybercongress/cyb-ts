@@ -95,7 +95,7 @@ const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   return bech32.encode(prefix, address.words);
 };
 
-const formatValidatorAddress = (address, firstArg, secondArg) => {
+const trimString = (address, firstArg, secondArg) => {
   const first = firstArg || 3;
   const second = secondArg || 8;
 
@@ -215,7 +215,7 @@ export {
   timer,
   getDecimal,
   getDelegator,
-  formatValidatorAddress,
+  trimString,
   msgType,
   exponentialToDecimal,
 };
