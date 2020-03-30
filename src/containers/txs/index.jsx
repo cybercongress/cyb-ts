@@ -96,9 +96,21 @@ const Txs = () => {
       </Table.TextCell>
       <Table.TextCell textAlign="start">
         <TextTable display="flex" alignItems="start" flexDirection="column">
-          {item.messages.map((items, i) => (
-            <MsgType key={`${item.txhash}_${i}`} type={items.type} />
-          ))}
+          {item.messages.length > 4 ? (
+            <Pane display="flex" alignItems="center">
+              <MsgType
+                key={item.messages[0].txhash}
+                type={item.messages[0].type}
+              />
+              <div style={{ marginLeft: '5px' }}>
+                ({item.messages.length} messages)
+              </div>
+            </Pane>
+          ) : (
+            item.messages.map((items, i) => {
+              return <MsgType key={`${item.txhash}_${i}`} type={items.type} />;
+            })
+          )}
         </TextTable>
       </Table.TextCell>
     </Table.Row>

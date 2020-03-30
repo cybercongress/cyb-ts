@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
-import MsgType from './msgType';
-import { Account } from '../../components';
+import { Account, MsgType } from '../../components';
 import { CYBER } from '../../utils/config';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
@@ -169,7 +168,7 @@ function Activites({ msg }) {
   const [seeAll, setSeeAll] = useState(false);
 
   switch (msg.type) {
-    case 'cyberd/Link':
+    case 'cyber/Link':
       return (
         <MsgLink
           msg={msg}

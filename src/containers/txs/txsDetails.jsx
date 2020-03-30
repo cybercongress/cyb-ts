@@ -44,25 +44,35 @@ class TxsDetails extends React.Component {
     const { match } = this.props;
     const { txHash } = match.params;
     let messageError = '';
+    let status = false;
 
     console.log('txHash', txHash);
 
-    const { height, txhash, tx, logs, timestamp } = await getTxs(txHash);
+    const {
+      height,
+      txhash,
+      tx,
+      code,
+      raw_log: rawLog,
+      timestamp,
+    } = await getTxs(txHash);
 
-    if (!logs[0].success) {
-      if (logs[0].log.length > 0) {
-        const dataLog = JSON.parse(logs[0].log);
-        messageError = dataLog.message;
+    if (code !== undefined) {
+      if (code !== 0) {
+        status = false;
+        messageError = rawLog;
       } else {
-        messageError = 'Unknown error';
+        status = true;
       }
+    } else {
+      status = true;
     }
 
     this.setState({
       txs: tx,
       information: {
         txHash: txhash,
-        status: logs[0].success,
+        status,
         height,
         timestamp,
         memo: tx.value.memo,
