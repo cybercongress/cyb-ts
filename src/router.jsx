@@ -22,7 +22,7 @@ import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
-import { Dots } from './components';
+import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
@@ -40,16 +40,77 @@ class AppRouter extends React.Component {
       query: '',
       ipfs: null,
       loader: true,
+      days: '00',
+      hours: '00',
+      seconds: '00',
+      minutes: '00',
+      time: true,
     };
   }
 
   async componentDidMount() {
-    this.props.setIpfsStatusProps(false);
+    let resultGMT;
+    const offset = new Date().getTimezoneOffset();
+    if (offset < 0) {
+      resultGMT = `GMT+${offset / -60}`;
+    } else {
+      resultGMT = `GMT-${offset / 60}`;
+    }
+    const deadline = `Mart 30 2020 21:59:00 ${resultGMT}`;
+    const startTime = Date.parse(deadline) - Date.parse(new Date());
+    console.log(startTime);
+    if (startTime <= 0) {
+      this.init();
+    } else {
+      this.initializeClock(deadline);
+    }
+  }
+
+  init = () => {
+    const { setIpfsStatusProps } = this.props;
+    setIpfsStatusProps(false);
     this.setState({
       loader: false,
+      time: false,
     });
     // await this.initIpfsNode();
-  }
+  };
+
+  getTimeRemaining = endtime => {
+    const t = Date.parse(endtime) - Date.parse(new Date());
+    const seconds = Math.floor((t / 1000) % 60);
+    const minutes = Math.floor((t / 1000 / 60) % 60);
+    const hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(t / (1000 * 60 * 60 * 24));
+    return {
+      total: t,
+      days,
+      hours,
+      minutes,
+      seconds,
+    };
+  };
+
+  initializeClock = endtime => {
+    let timeinterval;
+    const updateClock = () => {
+      const t = this.getTimeRemaining(endtime);
+      if (t.total <= 0) {
+        clearInterval(timeinterval);
+        this.init();
+        return true;
+      }
+      this.setState({
+        days: t.days,
+        hours: `0${t.hours}`.slice(-2),
+        minutes: `0${t.minutes}`.slice(-2),
+        seconds: `0${t.seconds}`.slice(-2),
+      });
+    };
+
+    updateClock();
+    timeinterval = setInterval(updateClock, 1000);
+  };
 
   funcUpdateValueSearchInput = query => {
     this.setState({
@@ -134,7 +195,32 @@ class AppRouter extends React.Component {
   };
 
   render() {
-    const { query, loader } = this.state;
+    const { query, loader, time, days, hours, seconds, minutes } = this.state;
+
+    if (time) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <div className="countdown-time text-glich" data-text="Start">
+            Start
+          </div>
+          <Timer
+            days={days}
+            hours={hours}
+            seconds={seconds}
+            minutes={minutes}
+          />
+        </div>
+      );
+    }
 
     if (loader) {
       return <Dots />;
