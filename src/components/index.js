@@ -26,6 +26,7 @@ import StatusTooltip from './statusTooltip';
 import MsgType from './msgType/msgType';
 import TextTable from './text/textTable';
 import StatusTx from './statusTx';
+import Vitalik from './vitalik';
 
 export {
   RowTableTakeoff,
@@ -54,6 +55,7 @@ export {
   TransactionError,
   TextTable,
   StatusTx,
+  Vitalik,
 };
 
 export { Nums } from './ui/Numbers';

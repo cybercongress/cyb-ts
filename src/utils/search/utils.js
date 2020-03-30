@@ -802,12 +802,25 @@ export const getParamGov = async () => {
     });
 
     const response = {
-      Deposit: responseGovDeposit.data.result,
-      Voting: responseGovTallying.data.result,
-      Tallying: responseGovVoting.data.result,
+      deposit: responseGovDeposit.data.result,
+      voting: responseGovTallying.data.result,
+      tallying: responseGovVoting.data.result,
     };
 
     return response;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamRank = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/rank/parameters`,
+    });
+    return response.data.result;
   } catch (e) {
     console.log(e);
     return null;
@@ -821,6 +834,7 @@ export const getParamNetwork = async (address, node) => {
     let distribution = null;
     let bandwidth = null;
     let gov = null;
+    let rank = null;
 
     const dataStaking = await getParamStaking();
     if (dataStaking !== null) {
@@ -843,12 +857,18 @@ export const getParamNetwork = async (address, node) => {
       bandwidth = dataBandwidth;
     }
 
+    const dataRank = await getParamRank();
+    if (dataRank !== null) {
+      rank = dataRank;
+    }
+
     const response = {
       staking,
       slashing,
       distribution,
       bandwidth,
       gov,
+      rank,
     };
 
     return response;

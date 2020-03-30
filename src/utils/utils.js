@@ -62,7 +62,10 @@ export function formatCurrency(
   const { prefix = '', power = 1 } =
     PREFIXES.find(({ power }) => value >= power) || {};
 
-  return `${roundNumber(value / power, decimalDigits)} ${prefix}${currency}`;
+  return `${roundNumber(
+    value / power,
+    decimalDigits
+  )} ${prefix}${currency.toLocaleUpperCase()}`;
 }
 
 const getDecimal = (number, toFixed) => {
@@ -207,6 +210,26 @@ const exponentialToDecimal = exponential => {
   return decimal;
 };
 
+function dhm(t) {
+  const cd = 24 * 60 * 60 * 1000;
+  const ch = 60 * 60 * 1000;
+  let d = Math.floor(t / cd);
+  let h = Math.floor((t - d * cd) / ch);
+  let m = Math.round((t - d * cd - h * ch) / 60000);
+  const pad = function(n, unit) {
+    return n < 10 ? `0${n}${unit}` : n;
+  };
+  if (m === 60) {
+    h++;
+    m = 0;
+  }
+  if (h === 24) {
+    d++;
+    h = 0;
+  }
+  return [`${d}d`, pad(h, 'h'), pad(m, 'm')].join(':');
+}
+
 export {
   run,
   roundNumber,
@@ -218,4 +241,5 @@ export {
   trimString,
   msgType,
   exponentialToDecimal,
+  dhm,
 };
