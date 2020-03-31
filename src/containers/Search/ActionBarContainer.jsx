@@ -43,6 +43,7 @@ const {
 } = LEDGER;
 
 const CREATE_LINK = 10;
+const ADD_ADDRESS = 11;
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -142,7 +143,67 @@ class ActionBarContainer extends Component {
         console.warn('Still looking for a Ledger device.');
       }
     }
+    if (stage === ADD_ADDRESS) {
+      this.addAddress();
+    }
   }
+
+  addAddress = () => {
+    const { ledger, stage, returnCode, address } = this.state;
+
+    if (stage === ADD_ADDRESS) {
+      if (ledger === null) {
+        this.pollLedger();
+      }
+      if (ledger !== null) {
+        switch (returnCode) {
+          case LEDGER_OK:
+            if (address === null) {
+              console.log('addressLedger');
+              this.getAddAddress();
+            }
+            break;
+          default:
+            console.log('getVersion');
+            this.getVersion();
+            break;
+        }
+      } else {
+        // eslint-disable-next-line
+        console.warn('Still looking for a Ledger device.');
+      }
+    }
+  };
+
+  getAddAddress = async () => {
+    try {
+      const { ledger } = this.state;
+      const accounts = {};
+
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
+
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      this.setState({
+        address: addressLedgerCyber,
+        stage: STAGE_INIT,
+      });
+      this.checkAddressLocalStorage();
+    } catch (error) {
+      const { message, statusCode } = error;
+      if (message !== "Cannot read property 'length' of undefined") {
+        // this just means we haven't found the device yet...
+        // eslint-disable-next-line
+        console.error('Problem reading address data', message, statusCode);
+      }
+      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+    }
+  };
 
   checkAddressLocalStorage = async () => {
     let address = [];
@@ -451,6 +512,7 @@ class ActionBarContainer extends Component {
 
   cleatState = () => {
     this.setState({
+      stage: STAGE_INIT,
       init: false,
       ledger: null,
       address: null,
@@ -462,6 +524,7 @@ class ActionBarContainer extends Component {
         remained: 0,
         max_value: 0,
       },
+      linkPrice: 0,
       contentHash: '',
       txMsg: null,
       txContext: null,
@@ -524,6 +587,12 @@ class ActionBarContainer extends Component {
     });
   };
 
+  addAddressOnClick = () => {
+    this.setState({
+      stage: ADD_ADDRESS,
+    });
+  };
+
   render() {
     const {
       address,
@@ -541,9 +610,33 @@ class ActionBarContainer extends Component {
       addressLocalStor,
     } = this.state;
 
-    const { valueSearchInput, node } = this.props;
+    const { valueSearchInput } = this.props;
 
-    console.log('node', node);
+    if (stage === STAGE_INIT && addressLocalStor === null) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={this.addAddressOnClick}>
+              Put Ledger into the pocket
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (stage === ADD_ADDRESS) {
+      return (
+        <ConnectLadger
+          pin={returnCode >= LEDGER_NOAPP}
+          app={returnCode === LEDGER_OK}
+          onClickBtnCloce={this.onClickInitStage}
+          version={
+            returnCode === LEDGER_OK &&
+            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
+          }
+        />
+      );
+    }
 
     if (stage === STAGE_INIT) {
       return (
@@ -596,10 +689,21 @@ class ActionBarContainer extends Component {
 
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       return (
-        <div>
-          <span> please confirm the transaction on Ledger</span>
-          <button onClick={e => this.link(e)}>Cyberlink</button>
-        </div>
+        <ActionBar>
+          <Pane
+            display="flex"
+            fontSize="20px"
+            justifyContent="center"
+            alignItems="center"
+            flexGrow={1}
+            marginRight="15px"
+          >
+            please confirm the transaction on Ledger
+          </Pane>
+          <button type="button" className="btn" onClick={e => this.link(e)}>
+            Cyberlink
+          </button>
+        </ActionBar>
       );
     }
 
