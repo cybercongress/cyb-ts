@@ -6,35 +6,22 @@ import { Loading, Dots } from '../../components';
 import { formatNumber } from '../../utils/utils';
 
 function useUptime({ accountUser }) {
-  const GET_CHARACTERS = gql`
+  try {
+    const GET_CHARACTERS = gql`
     query uptime {
-      pre_commit(
-        where: {
-          validator: {
-            consensus_pubkey: {
-              _eq: "${accountUser}"
-            }
+      pre_commit(where: {validator: {consensus_pubkey: {_eq: "${accountUser}"}}}, limit: 1) {
+        validator {
+          blocks(order_by: {height: asc}, limit: 1) {
+            height
           }
         }
-        order_by: { height: asc }
-        limit: 1
-      ) {
-        height
       }
-      pre_commit_aggregate(
-        where: {
-          validator: {
-            consensus_pubkey: {
-              _eq: "${accountUser}"
-            }
-          }
-        }
-      ) {
+      pre_commit_aggregate(where: {validator: {consensus_pubkey: {_eq: "${accountUser}"}}}) {
         aggregate {
-          count(distinct: true)
+          count
         }
       }
-      block_aggregate(limit: 1, order_by: { height: desc }) {
+      block_aggregate(limit: 1, order_by: {height: desc}) {
         nodes {
           height
         }
@@ -42,28 +29,34 @@ function useUptime({ accountUser }) {
     }
   `;
 
-  const { loading, error, data } = useQuery(GET_CHARACTERS);
-  if (loading) {
-    return <Dots />;
-  }
-  if (error) {
-    return `Error! ${error.message}`;
-  }
+    const { loading, error, data } = useQuery(GET_CHARACTERS);
 
-  let uptime = 0;
+    if (loading) {
+      return <Dots />;
+    }
 
-  if (
-    Object.keys(data.pre_commit).length !== 0 &&
-    Object.keys(data.pre_commit_aggregate).length !== 0 &&
-    Object.keys(data.block_aggregate).length !== 0
-  ) {
-    const thisBlock = data.block_aggregate.nodes[0].height;
-    const firstPreCommit = data.pre_commit[0].height;
-    const countPreCommit = data.pre_commit_aggregate.aggregate.count;
-    uptime = countPreCommit / (thisBlock - firstPreCommit);
+    let uptime = 0;
+
+    console.log('data', data);
+
+    if (data !== undefined) {
+      if (
+        Object.keys(data.pre_commit).length !== 0 &&
+        Object.keys(data.pre_commit_aggregate).length !== 0 &&
+        Object.keys(data.block_aggregate).length !== 0
+      ) {
+        const thisBlock = data.block_aggregate.nodes[0].height;
+        const firstPreCommit = data.pre_commit[0].validator.blocks[0].height;
+        const countPreCommit = data.pre_commit_aggregate.aggregate.count;
+        uptime = countPreCommit / (thisBlock - firstPreCommit);
+      }
+    }
+
+    return `${formatNumber(uptime * 100, 2)} %`;
+  } catch (error) {
+    console.warn(error);
+    return '∞';
   }
-
-  return `${formatNumber(uptime * 100, 2)} %`;
 }
 
 export default useUptime;

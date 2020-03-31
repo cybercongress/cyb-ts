@@ -202,7 +202,7 @@ class ValidatorsDetails extends React.PureComponent {
           }
         }
         fans[key].share =
-          parseFloat(fans[key].balance) /
+          parseFloat(fans[key].balance.amount) /
           Math.floor(parseFloat(validatorInfo.delegator_shares));
       });
     }

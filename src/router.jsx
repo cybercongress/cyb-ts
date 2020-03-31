@@ -43,7 +43,12 @@ class AppRouter extends React.Component {
   }
 
   async componentDidMount() {
-    await this.initIpfsNode();
+    const { setIpfsStatusProps } = this.props;
+    setIpfsStatusProps(false);
+    this.setState({
+      loader: false,
+    });
+    // await this.initIpfsNode();
   }
 
   funcUpdateValueSearchInput = query => {

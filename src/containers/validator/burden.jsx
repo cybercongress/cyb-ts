@@ -7,20 +7,14 @@ import Noitem from '../account/noItem';
 function Burden({ accountUser }) {
   const GET_CHARACTERS = gql`
   query all_by_subject {
-    pre_commit(
-      where: {
-        validator: {
-          consensus_pubkey: {
-            _eq: "${accountUser}"
-          }
+    pre_commit(where: {validator: {consensus_pubkey: {_eq: "${accountUser}"}}}, limit: 1) {
+      validator {
+        blocks(order_by: {height: desc}, limit: 300) {
+          height
         }
       }
-      order_by: { height: desc }
-      limit: 300
-    ) {
-      height
     }
-    block_aggregate(limit: 300, order_by: { height: desc }) {
+    block_aggregate(limit: 300, order_by: {height: desc}) {
       nodes {
         height
       }
@@ -38,7 +32,7 @@ function Burden({ accountUser }) {
   console.log(data);
 
   const blockAggregate = data.block_aggregate.nodes;
-  const preCommit = data.pre_commit;
+  const preCommit = data.pre_commit[0].validator.blocks;
   const block = [];
 
   if (Object.keys(preCommit).length !== 0) {
