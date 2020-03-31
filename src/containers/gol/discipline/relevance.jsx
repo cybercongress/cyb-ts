@@ -102,7 +102,7 @@ const RelevanceC = ({
     // setLoadingCalc(false);
     return (
       <RowTable
-        text="relevance"
+        text={<Link to="/gol/relevance">relevance</Link>}
         reward={DISTRIBUTION.relevance}
         currentPrize={currentPrize}
         cybWonAbsolute={formatNumber(Math.floor(cybWonAbsolute))}

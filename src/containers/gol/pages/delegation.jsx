@@ -15,7 +15,7 @@ import {
 } from '../../../components';
 import { cybWon, getDisciplinesAllocation } from '../../../utils/fundingMath';
 import TableDiscipline from '../table';
-import { getDelegator, exponentialToDecimal, sort } from '../../../utils/utils';
+import { getDelegator, formatNumber, sort } from '../../../utils/utils';
 
 import { COSMOS, TAKEOFF, DISTRIBUTION } from '../../../utils/config';
 
@@ -189,11 +189,11 @@ class GolDelegation extends React.Component {
           </TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          <TextTable>{item.tokens}</TextTable>
+          <TextTable>{formatNumber(parseFloat(item.tokens))}</TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           <TextTable>
-            {Math.floor((item.tokens / total) * currentPrize)}
+            {formatNumber(Math.floor((item.tokens / total) * currentPrize))}
           </TextTable>
         </Table.TextCell>
       </Table.Row>
