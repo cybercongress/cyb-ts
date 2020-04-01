@@ -427,7 +427,7 @@ class Wallet extends React.Component {
                         <div>{trimString(pocket.pk, 6, 6)}</div>
                       </Pane>
                     }
-                    title="pybkey"
+                    title="pubkey"
                   />
                   <Row
                     marginBottom={20}
