@@ -1,13 +1,18 @@
 import React from 'react';
-import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import { Pane, Text, TableEv as Table, Battery } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { FormatNumber, Loading, ConnectLadger } from '../../components';
+import { FormatNumber, Loading, ConnectLadger, Copy } from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
-import { formatNumber, getDecimal } from '../../utils/utils';
+import {
+  formatNumber,
+  getDecimal,
+  trimString,
+  formatCurrency,
+} from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
 import {
@@ -18,7 +23,13 @@ import {
   PATTERN_CYBER,
 } from '../../utils/config';
 import { i18n } from '../../i18n/en';
-import { getBalance, getTotalEUL } from '../../utils/search/utils';
+import {
+  getBalance,
+  getTotalEUL,
+  getAccountBandwidth,
+  getCurrentBandwidthPrice,
+  getParamBandwidth,
+} from '../../utils/search/utils';
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
@@ -34,12 +45,53 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
+const imgLedger = require('../../image/ledger.svg');
+
+const Row = ({ title, value, marginBottomValue, fontSizeValue, ...props }) => (
+  <Pane
+    width="100%"
+    display="flex"
+    flexDirection="column"
+    alignItems="center"
+    {...props}
+  >
+    <Pane fontSize={fontSizeValue} marginBottom={marginBottomValue}>
+      {value}
+    </Pane>
+    <Pane>{title}</Pane>
+  </Pane>
+);
+
+const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
+  <Pane
+    minWidth={200}
+    paddingX={18}
+    paddingY={14}
+    borderRadius={4}
+    backgroundColor="#fff"
+  >
+    <Pane marginBottom={12}>
+      <Text size={300}>
+        You have {bwRemained} BP out of {bwMaxValue} BP.
+      </Text>
+    </Pane>
+    <Pane marginBottom={12}>
+      <Text size={300}>
+        Full regeneration of bandwidth points or BP happens in 24 hours.
+      </Text>
+    </Pane>
+    <Pane display="flex" marginBottom={12}>
+      <Text size={300}>Current rate for 1 cyberlink is {linkPrice} BP.</Text>
+    </Pane>
+  </Pane>
+);
+
 class Wallet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      table: [],
+      pocket: [],
       ledger: null,
       returnCode: null,
       addressInfo: null,
@@ -49,10 +101,12 @@ class Wallet extends React.Component {
       addAddress: false,
       loading: true,
       accounts: null,
+      linkPrice: 0,
     };
   }
 
   async componentDidMount() {
+    await this.getLinkPrice();
     await this.checkAddressLocalStorage();
   }
 
@@ -90,6 +144,31 @@ class Wallet extends React.Component {
       }
     }
   }
+
+  getLinkPrice = async () => {
+    let linkMsgCost = 0;
+    let txCost = 0;
+    let currentBandwidthPrice = 0;
+    let linkPrice = 0;
+
+    const dataParamBandwidth = await getParamBandwidth();
+    if (dataParamBandwidth !== null) {
+      linkMsgCost = dataParamBandwidth.link_msg_cost;
+      txCost = dataParamBandwidth.tx_cost;
+    }
+    const dataCurrentBandwidthPrice = await getCurrentBandwidthPrice();
+    if (dataCurrentBandwidthPrice !== null) {
+      currentBandwidthPrice = dataCurrentBandwidthPrice;
+    }
+
+    linkPrice =
+      (parseFloat(linkMsgCost) + parseFloat(txCost)) *
+      parseFloat(currentBandwidthPrice);
+
+    this.setState({
+      linkPrice,
+    });
+  };
 
   compareVersion = async () => {
     const test = this.state.ledgerVersion;
@@ -178,7 +257,7 @@ class Wallet extends React.Component {
 
   getAddressInfo = async () => {
     const { accounts } = this.state;
-    const table = [];
+    const pocket = {};
     const addressInfo = {
       address: '',
       amount: '',
@@ -186,31 +265,33 @@ class Wallet extends React.Component {
       keys: '',
     };
     const responseCyber = await getBalance(accounts.cyber.bech32);
+    const bandwidth = await getAccountBandwidth(accounts.cyber.bech32);
     const responseCosmos = await getBalance(
       accounts.cosmos.bech32,
-      COSMOS.GAIA_NODE_URL_LSD,
-      'gaia_lcd'
+      COSMOS.GAIA_NODE_URL_LSD
     );
 
     const totalCyber = await getTotalEUL(responseCyber);
-    table.push({
+    pocket.cyber = {
       address: accounts.cyber.bech32,
       amount: totalCyber.total,
       token: 'eul',
-      keys: 'ledger',
-    });
+      bandwidth,
+    };
     const totalCosmos = await getTotalEUL(responseCosmos);
-    table.push({
+    pocket.cosmos = {
       address: accounts.cosmos.bech32,
       amount: totalCosmos.total / COSMOS.DIVISOR_ATOM,
       token: 'atom',
       keys: 'ledger',
-    });
+    };
 
-    console.log(table);
+    pocket.pk = accounts.cyber.pk;
+
+    console.log(pocket);
 
     this.setState({
-      table,
+      pocket,
       stage: STAGE_READY,
       addAddress: false,
       loading: false,
@@ -240,7 +321,7 @@ class Wallet extends React.Component {
 
   render() {
     const {
-      table,
+      pocket,
       addressLedger,
       loading,
       addAddress,
@@ -248,62 +329,8 @@ class Wallet extends React.Component {
       returnCode,
       ledgerVersion,
       accounts,
+      linkPrice,
     } = this.state;
-
-    const rowsTable = table.map(item => (
-      <Table.Row
-        borderBottom="none"
-        paddingLeft={20}
-        height={50}
-        isSelectable
-        key={item.address}
-      >
-        <Table.TextCell flex={1.3}>
-          <Text color="#fff" fontSize="17px">
-            {item.address.match(PATTERN_CYBER) && (
-              <Link to={`/network/euler-5/contract/${item.address}`}>
-                {item.address}
-              </Link>
-            )}
-            {item.address.match(PATTERN_COSMOS) && (
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={`https://www.mintscan.io/account/${item.address}`}
-              >
-                {item.address}
-              </a>
-            )}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell textAlign="end" flex={0.5}>
-          <Text color="#fff" fontSize="17px">
-            <span>{formatNumber(Math.floor(parseFloat(item.amount)))}</span>
-            <span
-              style={{
-                display: 'inline-block',
-                textAlign: 'left',
-                width: '40px',
-              }}
-            >
-              {Math.floor(item.amount) > 0
-                ? ''
-                : `,${getDecimal(formatNumber(item.amount, 3))}`}
-            </span>
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell textAlign="center" flex={0.2}>
-          <Text color="#fff" fontSize="17px">
-            {item.token.toUpperCase()}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex={0.3}>
-          <Text color="#fff" fontSize="17px">
-            {item.keys}
-          </Text>
-        </Table.TextCell>
-      </Table.Row>
-    ));
 
     if (loading) {
       return (
@@ -354,48 +381,115 @@ class Wallet extends React.Component {
     if (!addAddress) {
       return (
         <div>
-          <main className="block-body-home">
+          <main
+            style={{ minHeight: 'calc(100vh - 162px)' }}
+            className="block-body-home"
+          >
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginY={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                You do not have control over the brain. You need EUL tokens to
+                let she hear you. If you came from Ethereum or Cosmos you can
+                claim the gift of gods. Then start prepare to the greatest
+                tournament in universe: <a href="gol">Game of Links</a>.
+              </Text>
+            </Pane>
             <Pane
               height="100%"
               display="flex"
               alignItems="center"
               justifyContent="space-around"
             >
-              <Table width="100%">
-                <Table.Head
-                  style={{
-                    backgroundColor: '#000',
-                    borderBottom: '1px solid #ffffff80',
-                  }}
-                  paddingLeft={20}
-                >
-                  <Table.TextHeaderCell flex={1.3}>
-                    <Text color="#fff" fontSize="17px">
-                      {T.pocket.table.address}
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex={0.5}>
-                    <Text color="#fff" fontSize="17px">
-                      {T.pocket.table.amount}
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex={0.2}>
-                    <Text color="#fff" fontSize="17px">
-                      {T.pocket.table.token}
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex={0.3}>
-                    <Text color="#fff" fontSize="17px">
-                      {T.pocket.table.keys}
-                    </Text>
-                  </Table.TextHeaderCell>
-                </Table.Head>
-                <Table.Body
-                  style={{ backgroundColor: '#000', overflowY: 'hidden' }}
-                >
-                  {rowsTable}
-                </Table.Body>
-              </Table>
+              <Pane
+                display="flex"
+                flexDirection="column"
+                className="container-card"
+                paddingX={10}
+                paddingTop={15}
+                paddingBottom={40}
+                height="300px"
+              >
+                <Pane flex={1}>
+                  <Row
+                    marginBottom={25}
+                    fontSizeValue="18px"
+                    value={
+                      <Pane display="flex" alignItems="center">
+                        <img
+                          style={{ width: 20, height: 20, marginRight: 5 }}
+                          src={imgLedger}
+                          alt="ledger"
+                        />
+                        <div>{trimString(pocket.pk, 6, 6)}</div>
+                      </Pane>
+                    }
+                    title="pybkey"
+                  />
+                  <Row
+                    marginBottom={20}
+                    marginBottomValue={5}
+                    value={
+                      <Pane display="flex" alignItems="center">
+                        <Link
+                          to={`/network/euler-5/contract/${pocket.cyber.address}`}
+                        >
+                          <div>{trimString(pocket.cyber.address, 11, 6)}</div>
+                        </Link>
+                        <Copy text={pocket.cyber.address} />
+                      </Pane>
+                    }
+                    title={formatCurrency(
+                      pocket.cyber.amount,
+                      pocket.cyber.token
+                    )}
+                  />
+                  <Row
+                    marginBottom={20}
+                    marginBottomValue={5}
+                    value={
+                      <Pane display="flex" alignItems="center">
+                        <a
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={`https://www.mintscan.io/account/${pocket.cosmos.address}`}
+                        >
+                          <div>{trimString(pocket.cosmos.address, 12, 6)}</div>
+                        </a>
+                        <Copy text={pocket.cosmos.address} />
+                      </Pane>
+                    }
+                    title={
+                      <div>
+                        {pocket.cosmos.amount.toPrecision(2)}{' '}
+                        {pocket.cosmos.token}
+                      </div>
+                    }
+                  />
+                </Pane>
+
+                <Pane width="80%">
+                  <Battery
+                    bwPercent={trimString(
+                      (
+                        (parseFloat(pocket.cyber.bandwidth.remained) /
+                          parseFloat(pocket.cyber.bandwidth.max_value)) *
+                        100
+                      ).toPrecision(2)
+                    )}
+                    contentTooltip={
+                      <ContentTooltip
+                        bwRemained={pocket.cyber.bandwidth.remained}
+                        bwMaxValue={pocket.cyber.bandwidth.max_value}
+                        linkPrice={linkPrice}
+                      />
+                    }
+                  />
+                </Pane>
+              </Pane>
             </Pane>
           </main>
           <ActionBarContainer

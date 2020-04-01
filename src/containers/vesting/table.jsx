@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
 
 import {
-  formatValidatorAddress,
+  trimString,
   formatCurrency,
   formatNumber,
 } from '../../utils/utils';
@@ -52,7 +52,7 @@ const TableVesting = ({ data }) => {
       <Table.TextCell textAlign="center">
         <TextTable>
           <Link to={`/network/euler-5/tx/${item.proof.toUpperCase()}`}>
-            {formatValidatorAddress(item.proof.toUpperCase(), 6, 6)}
+            {trimString(item.proof.toUpperCase(), 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>

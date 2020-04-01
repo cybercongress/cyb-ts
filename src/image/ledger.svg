@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 23.76">
+  <title>Fichier 1</title>
+  <g id="Calque_2" data-name="Calque 2">
+    <g id="Calque_1-2" data-name="Calque 1">
+      <g>
+        <path id="Shape" d="M16.7,0H7.59V12.29h12.3V3.18A3.18,3.18,0,0,0,16.7,0Z" style="fill: #fff"/>
+        <path d="M4.75,0H3.18A3.18,3.18,0,0,0,0,3.18V4.75H4.75Z" style="fill: #fff"/>
+        <polygon id="Rectangle-path" points="0 7.59 4.75 7.59 4.75 12.34 0 12.34 0 7.59" style="fill: #fff"/>
+        <path d="M15.18,19.89h1.57a3.18,3.18,0,0,0,3.18-3.19V15.18H15.18Z" style="fill: #fff"/>
+        <polygon points="7.59 15.18 12.34 15.18 12.34 19.93 7.59 19.93 7.59 15.18" style="fill: #fff"/>
+        <path d="M0,15.18v1.57a3.18,3.18,0,0,0,3.18,3.18H4.75V15.18Z" style="fill: #fff"/>
+      </g>
+    </g>
+  </g>
+</svg>

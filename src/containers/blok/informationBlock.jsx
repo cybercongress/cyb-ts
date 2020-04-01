@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { CardTemplate } from '../../components';
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import { trimString, formatNumber } from '../../utils/utils';
 
 const dateFormat = require('dateformat');
 
@@ -53,7 +53,7 @@ const InformationBlock = ({ data, marginBottom }) => {
         value={dateFormat(data.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
         title="Block Time"
       />
-      <Row value={formatValidatorAddress(data.hash, 6, 6)} title="Block Hash" />
+      <Row value={trimString(data.hash, 6, 6)} title="Block Hash" />
       <Row value={data.num_txs} title="Number of Transactions" />
     </CardTemplate>
   );
