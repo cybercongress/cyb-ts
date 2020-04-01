@@ -22,8 +22,8 @@ const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
         const data = await getLoad(addressLedger.bech32);
         const cybAbsolute = data * currentPrize;
         setCybWonAbsolute(cybAbsolute);
-        golLoadProps(cybAbsolute);
         if (cybAbsolute !== 0) {
+          golLoadProps(Math.floor(cybAbsolute));
           const cybPercent = (cybAbsolute / currentPrize) * 100;
           setCybWonPercent(cybPercent);
         }

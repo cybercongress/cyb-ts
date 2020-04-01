@@ -4,7 +4,11 @@ import {
   getValidatorsInfo,
   stakingPool,
   getDrop,
+  getAmountATOM,
+  getSendTxToTakeoff,
 } from '../search/utils';
+import { getDelegator } from '../utils';
+import { COSMOS } from '../config';
 
 export const getLoad = async address => {
   let karma = 0;
@@ -98,4 +102,19 @@ export const getRelevance = async (dataRelevance, dataQ) => {
     relevance += tempShare;
   });
   return relevance;
+};
+
+export const getTakeoff = async (sender, takeoffDonations) => {
+  let amount = 0;
+  let takeoff = 0;
+
+  const cosmosAddress = getDelegator(sender, 'cosmos');
+  const data = await getSendTxToTakeoff(cosmosAddress, COSMOS.ADDR_FUNDING);
+
+  if (Object.keys(data).length > 0) {
+    amount = getAmountATOM(data);
+    takeoff = parseFloat(amount) / parseFloat(takeoffDonations);
+  }
+
+  return takeoff;
 };

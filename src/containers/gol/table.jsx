@@ -11,6 +11,8 @@ import {
   FVS,
   Relevance,
   CommunityPool,
+  Takeoff,
+  Total,
 } from './discipline';
 
 const BLOCK_SUBSCRIPTION = gql`
@@ -26,6 +28,7 @@ const TableDiscipline = ({
   addressLedger,
   validatorAddress,
   consensusAddress,
+  takeoffDonations,
 }) => {
   const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
 
@@ -80,6 +83,11 @@ const TableDiscipline = ({
             padding: 7,
           }}
         >
+          <Takeoff
+            takeoffDonations={takeoffDonations}
+            won={won}
+            addressLedger={addressLedger}
+          />
           <Relevance
             dataBlock={dataBlock.block[0].height}
             addressLedger={addressLedger}
@@ -91,6 +99,7 @@ const TableDiscipline = ({
           <Rewards validatorAddress={validatorAddress} won={won} />
           <FVS />
           <CommunityPool />
+          <Total />
         </Table.Body>
       </Table>
     </Pane>

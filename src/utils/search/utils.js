@@ -731,3 +731,29 @@ export const getGraphQLQuery = async query => {
     return null;
   }
 };
+
+export const getSendTxToTakeoff = async (sender, recipient) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
+    });
+    return response.data.txs;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
+export const getCurrentNetworkLoad = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_API}/current_network_load`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

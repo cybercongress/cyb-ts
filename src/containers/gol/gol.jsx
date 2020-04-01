@@ -6,11 +6,16 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getValidators,
+  getCurrentNetworkLoad,
 } from '../../utils/search/utils';
 import { CardStatisics, Loading, LinkWindow } from '../../components';
 import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 import TableDiscipline from './table';
-import { getDelegator, exponentialToDecimal } from '../../utils/utils';
+import {
+  getDelegator,
+  exponentialToDecimal,
+  formatNumber,
+} from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
 import { COSMOS, TAKEOFF } from '../../utils/config';
@@ -30,12 +35,14 @@ class GOL extends React.Component {
       herosCount: 0,
       dataTable: [],
       addAddress: false,
+      currentNetworkLoad: 0,
     };
   }
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     // this.getMyGOLs();
+    this.checkCurrentNetworkLoad();
     this.getValidatorsCount();
     this.getDataWS();
   }
@@ -89,6 +96,17 @@ class GOL extends React.Component {
     }
   };
 
+  checkCurrentNetworkLoad = async () => {
+    let currentNetworkLoad = 0;
+    const dataCurrentNetworkLoad = await getCurrentNetworkLoad();
+    if (dataCurrentNetworkLoad !== null) {
+      currentNetworkLoad = parseFloat(dataCurrentNetworkLoad.load) * 100;
+    }
+    this.setState({
+      currentNetworkLoad,
+    });
+  };
+
   getValidatorsCount = async () => {
     const data = await getValidators();
     let herosCount = 0;
@@ -134,11 +152,35 @@ class GOL extends React.Component {
       herosCount,
       consensusAddress,
       addAddress,
+      currentNetworkLoad,
     } = this.state;
-    const { load } = this.props;
+
+    const {
+      load,
+      takeoff,
+      relevance,
+      delegation,
+      lifetime,
+      euler4Rewards,
+    } = this.props;
 
     console.log('dataTable', dataTable);
     console.log('validatorAddress', validatorAddress);
+
+    console.log(
+      'load, takeoff, relevance, delegation, lifetime, euler4Rewards',
+      load,
+      takeoff,
+      relevance,
+      delegation,
+      lifetime,
+      euler4Rewards
+    );
+
+    console.log(
+      'total',
+      load + takeoff + relevance + delegation + lifetime + euler4Rewards
+    );
 
     if (loading) {
       return (
@@ -197,20 +239,28 @@ class GOL extends React.Component {
             marginY={50}
             alignItems="center"
           >
+            {/* <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Total"
+              value={`${formatNumber(total)} CYB`}
+            /> */}
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
               title="Network load"
-              value="1 %"
+              value={`${formatNumber(currentNetworkLoad, 2)} %`}
             />
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
               title="Donation goal"
-              value={`${exponentialToDecimal(
-                ((takeoffDonations / TAKEOFF.ATOMsALL) * 100).toPrecision(3)
+              value={`${formatNumber(
+                (takeoffDonations / TAKEOFF.ATOMsALL) * 100,
+                2
               )} %`}
             />
             <CardStatisics
@@ -218,9 +268,7 @@ class GOL extends React.Component {
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
               title="Validator set"
-              value={`${exponentialToDecimal(
-                ((herosCount / 146) * 100).toPrecision(1)
-              )} %`}
+              value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
             />
           </Pane>
           <Pane
@@ -234,6 +282,7 @@ class GOL extends React.Component {
               validatorAddress={validatorAddress}
               consensusAddress={consensusAddress}
               won={won}
+              takeoffDonations={takeoffDonations}
             />
           </Pane>
         </main>
@@ -250,6 +299,11 @@ class GOL extends React.Component {
 const mapStateToProps = store => {
   return {
     load: store.gol.load,
+    takeoff: store.gol.takeoff,
+    relevance: store.gol.relevance,
+    delegation: store.gol.delegation,
+    lifetime: store.gol.lifetime,
+    euler4Rewards: store.gol.euler4Rewards,
   };
 };
 

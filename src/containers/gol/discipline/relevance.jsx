@@ -7,8 +7,16 @@ import { Dots } from '../../../components';
 import { getRelevance } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
+import { setGolRelevance } from '../../../redux/actions/gol';
+import { connect } from 'react-redux';
 
-const Relevance = ({ addressLedger, reward = 0, won = 0, dataBlock }) => {
+const Relevance = ({
+  addressLedger,
+  reward = 0,
+  won = 0,
+  setGolRelevanceProps,
+  dataBlock,
+}) => {
   if (addressLedger === null) {
     return (
       <RelevanceC
@@ -62,6 +70,7 @@ const Relevance = ({ addressLedger, reward = 0, won = 0, dataBlock }) => {
       dataBlock={dataBlock}
       dataRelevance={dataQ}
       won={won}
+      setGolRelevanceProps={setGolRelevanceProps}
       arrLink={arrLink}
     />
   );
@@ -73,6 +82,7 @@ const RelevanceC = ({
   addressLedger,
   dataBlock,
   arrLink,
+  setGolRelevanceProps,
 }) => {
   const [loadingCalc, setLoadingCalc] = useState(true);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
@@ -123,6 +133,7 @@ const RelevanceC = ({
     const cybAbsolute = data * currentPrize;
     setCybWonAbsolute(cybAbsolute);
     if (cybAbsolute !== 0) {
+      setGolRelevanceProps(Math.floor(cybAbsolute));
       const cybPercent = (cybAbsolute / currentPrize) * 100;
       setCybWonPercent(cybPercent);
     }
@@ -145,4 +156,10 @@ const RelevanceC = ({
   );
 };
 
-export default Relevance;
+const mapDispatchprops = dispatch => {
+  return {
+    setGolRelevanceProps: amount => dispatch(setGolRelevance(amount)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(Relevance);

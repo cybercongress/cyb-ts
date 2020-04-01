@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { DISTRIBUTION } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLifetime } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
+import { setGolLifeTime } from '../../../redux/actions/gol';
 
-const Lifetime = ({ won = 0, dataQ }) => {
+const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
@@ -25,6 +27,7 @@ const Lifetime = ({ won = 0, dataQ }) => {
         const cybAbsolute = data * currentPrize;
         setCybWonAbsolute(cybAbsolute);
         if (cybAbsolute !== 0) {
+          setGolLifeTimeProps(Math.floor(cybAbsolute));
           const cybPercent = (cybAbsolute / currentPrize) * 100;
           setCybWonPercent(cybPercent);
         }
@@ -49,4 +52,10 @@ const Lifetime = ({ won = 0, dataQ }) => {
   );
 };
 
-export default Lifetime;
+const mapDispatchprops = dispatch => {
+  return {
+    setGolLifeTimeProps: amount => dispatch(setGolLifeTime(amount)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(Lifetime);
