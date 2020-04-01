@@ -35,11 +35,6 @@ const TableDiscipline = ({
 
   return (
     <Pane width="100%">
-      <Pane textAlign="center" width="100%">
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Allocations of CYB rewards by discipline
-        </Text>
-      </Pane>
       <Table>
         <Table.Head
           style={{
@@ -54,22 +49,22 @@ const TableDiscipline = ({
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <Text fontSize="18px" color="#fff">
-              CYB reward
+              Max CYB reward
             </Text>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <Text fontSize="18px" color="#fff">
-              Current Prize
+              Current CYB reward
             </Text>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <Text fontSize="18px" color="#fff">
-              cyb won absolute
+              CYB won
             </Text>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <Text fontSize="18px" color="#fff">
-              cyb won percent
+              CYB won, %
             </Text>
           </Table.TextHeaderCell>
         </Table.Head>

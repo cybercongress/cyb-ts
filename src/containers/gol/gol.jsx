@@ -170,7 +170,13 @@ class GOL extends React.Component {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Welcome to the intergalactic tournament Game of Links. GoL - is
+              Looking back, important things feels obvious.
+              It takes phenomenal talent and incredible will to see them from afar.
+              Those who can, define the future.
+              Founders
+            </Text>
+            <Text fontSize="16px" color="#fff">
+              Welcome to the intergalactic tournament - Game of Links. GoL - is
               the main preparation before{' '}
               <Link to="/search/genesis">the main network launch</Link> of{' '}
               <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">

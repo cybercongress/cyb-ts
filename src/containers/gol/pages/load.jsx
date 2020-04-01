@@ -224,7 +224,7 @@ class GolLoad extends React.Component {
                 <TextTable>Address</TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell flex={0.5} textAlign="center">
-                <TextTable>Constrol, ‱</TextTable>
+                <TextTable>Load, ‱</TextTable>
               </Table.TextHeaderCell>
               <Table.TextHeaderCell flex={0.5} textAlign="center">
                 <TextTable>Karma</TextTable>
