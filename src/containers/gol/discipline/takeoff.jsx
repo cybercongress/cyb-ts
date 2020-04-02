@@ -24,7 +24,7 @@ const Takeoff = ({
       if (addressLedger !== null) {
         const fetchData = async () => {
           const takeoffAccount = await getTakeoff(
-            addressLedger.bech32,
+            addressLedger.bech32 || addressLedger,
             takeoffDonations
           );
           const cybAbsolute = takeoffAccount * currentPrize;

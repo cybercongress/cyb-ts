@@ -18,7 +18,7 @@ const Load = ({ addressLedger, won = 0, golLoadProps, load }) => {
   useEffect(() => {
     if (addressLedger !== null) {
       const fetchData = async () => {
-        const data = await getLoad(addressLedger.bech32);
+        const data = await getLoad(addressLedger.bech32 || addressLedger);
         const cybAbsolute = data * currentPrize;
         golLoadProps(Math.floor(cybAbsolute), currentPrize);
         if (cybAbsolute !== 0) {
