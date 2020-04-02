@@ -778,3 +778,16 @@ export const getCurrentNetworkLoad = async () => {
     return null;
   }
 };
+
+export const getTxCosmos = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

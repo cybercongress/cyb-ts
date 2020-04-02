@@ -10,6 +10,7 @@ import {
   getAllValidators,
   getPreCommits,
   getGraphQLQuery,
+  getTxCosmos,
 } from '../../../utils/search/utils';
 import {
   CardStatisics,
@@ -81,24 +82,73 @@ class GolLifetime extends React.Component {
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
+    this.getTxsCosmos();
     this.getDataWS();
     this.getValidatorsCount();
   }
 
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getAtom(dataTx.txs);
+    }
+  };
+
   getDataWS = async () => {
     this.ws.onopen = () => {
       console.log('connected');
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          id: '0',
+          params: {
+            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
+          },
+        })
+      );
     };
 
     this.ws.onmessage = async evt => {
       const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAtom(message);
+      console.warn('txs', message);
+      if (message.result.events) {
+        this.getAtomWS(message.result.events);
+      }
     };
 
     this.ws.onclose = () => {
       console.log('disconnected');
     };
+  };
+
+  getAtomWS = data => {
+    const { won } = this.state;
+    let amount = 0;
+    console.warn('data', data['transfer.amount']);
+    if (data['transfer.amount']) {
+      console.warn('transfer.amount', data['transfer.amount']);
+      data['transfer.amount'].forEach(element => {
+        let amountWS = 0;
+        if (element.indexOf('uatom') !== -1) {
+          const positionDenom = element.indexOf('uatom');
+          const str = element.slice(0, positionDenom);
+          amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
+        }
+        amount += amountWS;
+      });
+    }
+    const wonWs = cybWon(amount);
+    const newWon = Math.floor(won + parseFloat(wonWs));
+    const currentPrize = Math.floor(
+      (newWon / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
+    );
+
+    this.setState({
+      currentPrize,
+      won: newWon,
+    });
   };
 
   checkAddressLocalStorage = async () => {
@@ -183,7 +233,7 @@ class GolLifetime extends React.Component {
     won = cybWon(amount);
 
     const currentPrize = Math.floor(
-      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
     );
 
     this.setState({

@@ -6,6 +6,7 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getValidators,
+  getTxCosmos,
   getCurrentNetworkLoad,
 } from '../../utils/search/utils';
 import { CardStatisics, Loading, LinkWindow } from '../../components';
@@ -19,6 +20,19 @@ import {
 import ActionBarContainer from './actionBarContainer';
 
 import { COSMOS, TAKEOFF } from '../../utils/config';
+
+const test = {
+  'tx.hash': [
+    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
+  ],
+  'tx.height': ['1372872'],
+  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
+  'transfer.amount': ['10000uatom'],
+  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
+  'message.module': ['bank'],
+  'message.action': ['send'],
+  'tm.event': ['Tx'],
+};
 
 class GOL extends React.Component {
   ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
@@ -41,21 +55,42 @@ class GOL extends React.Component {
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
+    await this.getTxsCosmos();
+    await this.getDataWS();
     // this.getMyGOLs();
     this.checkCurrentNetworkLoad();
     this.getValidatorsCount();
-    this.getDataWS();
   }
+
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getAtom(dataTx.txs);
+    }
+  };
 
   getDataWS = async () => {
     this.ws.onopen = () => {
       console.log('connected');
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          id: '0',
+          params: {
+            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
+          },
+        })
+      );
     };
 
     this.ws.onmessage = async evt => {
       const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAtom(message);
+      console.warn('txs', message);
+      if (message.result.events) {
+        this.getAtomWS(message.result.events);
+      }
     };
 
     this.ws.onclose = () => {
@@ -118,8 +153,32 @@ class GOL extends React.Component {
     });
   };
 
+  getAtomWS = data => {
+    const { takeoffDonations } = this.state;
+    let amount = takeoffDonations;
+    console.warn('data', data['transfer.amount']);
+    if (data['transfer.amount']) {
+      console.warn('transfer.amount', data['transfer.amount']);
+      data['transfer.amount'].forEach(element => {
+        let amountWS = 0;
+        if (element.indexOf('uatom') !== -1) {
+          const positionDenom = element.indexOf('uatom');
+          const str = element.slice(0, positionDenom);
+          amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
+        }
+        amount += amountWS;
+      });
+    }
+    const wonWs = cybWon(amount);
+    this.setState({
+      takeoffDonations: amount,
+      won: Math.floor(wonWs),
+    });
+  };
+
   getAtom = async dataTxs => {
-    let amount = 0;
+    const { takeoffDonations } = this.state;
+    let amount = takeoffDonations;
     let won = 0;
     let allocation = 0;
     let currentPrize = 0;
@@ -128,7 +187,7 @@ class GOL extends React.Component {
       amount = await getAmountATOM(dataTxs);
     }
 
-    won = cybWon(amount);
+    won = Math.floor(cybWon(amount));
     allocation = getDisciplinesAllocation(amount);
 
     currentPrize = won + allocation;
@@ -164,23 +223,7 @@ class GOL extends React.Component {
       euler4Rewards,
     } = this.props;
 
-    console.log('dataTable', dataTable);
-    console.log('validatorAddress', validatorAddress);
-
-    console.log(
-      'load',
-      load,
-      'takeoff',
-      takeoff,
-      'relevance',
-      relevance,
-      'delegation',
-      delegation,
-      'lifetime',
-      lifetime,
-      'euler4Rewards',
-      euler4Rewards
-    );
+    console.log(takeoffDonations, won);
 
     if (loading) {
       return (
@@ -206,10 +249,11 @@ class GOL extends React.Component {
           className="block-body"
         >
           <Pane
-            borderLeft="3px solid #9a9a9a"
-            paddingY={10}
+            borderLeft="3px solid #3ab793e3"
+            paddingY={0}
             paddingLeft={20}
             paddingRight={5}
+            marginY={5}
           >
             <Pane>Looking back, important things feels obvious.</Pane>
             <Pane>

@@ -33,12 +33,12 @@ const TAKEOFF = {
 };
 
 const COSMOS = {
-  ADDR_FUNDING: 'cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq',
+  ADDR_FUNDING: 'cosmos16ahkkv0jzhtp73z83qlhqrypss6jpjm862zjst',
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd',
-  GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
+  GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/gaia_websocket',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',

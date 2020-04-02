@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { DISTRIBUTION } from '../../../utils/config';
-import { Dots } from '../../../components';
-import { getDelegation } from '../../../utils/game-monitors';
+import { Dots, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 
@@ -53,7 +52,11 @@ const Total = ({
 
   return (
     <RowTable
-      text={<Link to="/gol/delegation">total</Link>}
+      text={
+        <LinkWindow to="https://cybercongress.ai/game-of-links/">
+          total
+        </LinkWindow>
+      }
       reward={totalReward}
       currentPrize={currentPrize}
       cybWonAbsolute={
