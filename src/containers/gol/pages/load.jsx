@@ -277,9 +277,7 @@ class GolLoad extends React.Component {
                         </TextTable>
                       </Table.TextCell>
                       <Table.TextCell flex={0.5} textAlign="end">
-                        <TextTable>
-                          {exponentialToDecimal(control.toPrecision(2))}
-                        </TextTable>
+                        <TextTable>{formatNumber(control, 4)}</TextTable>
                       </Table.TextCell>
                       <Table.TextCell flex={0.5} textAlign="end">
                         <TextTable>{formatNumber(item.karma)}</TextTable>

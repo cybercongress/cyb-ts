@@ -13,6 +13,7 @@ const Delegation = ({
   reward = 0,
   won = 0,
   setDelegationProps,
+  delegation,
 }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
@@ -26,9 +27,8 @@ const Delegation = ({
       const fetchData = async () => {
         const data = await getDelegation(validatorAddress);
         const cybAbsolute = data * currentPrize;
+        setDelegationProps(Math.floor(cybAbsolute), currentPrize);
         if (cybAbsolute !== 0) {
-          setCybWonAbsolute(cybAbsolute);
-          setDelegationProps(Math.floor(cybAbsolute));
           const cybPercent = (cybAbsolute / currentPrize) * 100;
           setCybWonPercent(cybPercent);
         }
@@ -36,6 +36,7 @@ const Delegation = ({
       };
       fetchData();
     } else {
+      setDelegationProps(0, currentPrize);
       setLoading(false);
     }
   }, [won, validatorAddress]);
@@ -45,9 +46,7 @@ const Delegation = ({
       text={<Link to="/gol/delegation">delegation</Link>}
       reward={DISTRIBUTION.delegation}
       currentPrize={currentPrize}
-      cybWonAbsolute={
-        loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))
-      }
+      cybWonAbsolute={loading ? <Dots /> : delegation.cybAbsolute}
       cybWonPercent={loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`}
     />
   );
@@ -55,9 +54,15 @@ const Delegation = ({
 
 const mapDispatchprops = dispatch => {
   return {
-    setDelegationProps: golDelegation =>
-      dispatch(setGolDelegation(golDelegation)),
+    setDelegationProps: (amount, prize) =>
+      dispatch(setGolDelegation(amount, prize)),
   };
 };
 
-export default connect(null, mapDispatchprops)(Delegation);
+const mapStateToProps = store => {
+  return {
+    delegation: store.gol.delegation,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(Delegation);

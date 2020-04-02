@@ -13,24 +13,23 @@ const Takeoff = ({
   takeoffDonations,
   addressLedger,
   setGolTakeOffProps,
+  takeoff,
 }) => {
   try {
     const [loading, setLoading] = useState(true);
-    const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
     const [cybWonPercent, setCybWonPercent] = useState(0);
     const currentPrize = Math.floor(won);
 
     useEffect(() => {
       if (addressLedger !== null) {
         const fetchData = async () => {
-          const takeoff = await getTakeoff(
+          const takeoffAccount = await getTakeoff(
             addressLedger.bech32,
             takeoffDonations
           );
-          const cybAbsolute = takeoff * currentPrize;
-          setCybWonAbsolute(cybAbsolute);
+          const cybAbsolute = takeoffAccount * currentPrize;
+          setGolTakeOffProps(Math.floor(cybAbsolute), currentPrize);
           if (cybAbsolute !== 0) {
-            setGolTakeOffProps(Math.floor(cybAbsolute));
             const cybPercent = (cybAbsolute / currentPrize) * 100;
             setCybWonPercent(cybPercent);
           }
@@ -38,6 +37,7 @@ const Takeoff = ({
         };
         fetchData();
       } else {
+        setGolTakeOffProps(0, currentPrize);
         setLoading(false);
       }
     }, [won, addressLedger]);
@@ -48,7 +48,7 @@ const Takeoff = ({
         reward={DISTRIBUTION.takeoff}
         currentPrize={currentPrize}
         cybWonAbsolute={
-          loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))
+          loading ? <Dots /> : formatNumber(Math.floor(takeoff.cybAbsolute))
         }
         cybWonPercent={
           loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`
@@ -71,8 +71,15 @@ const Takeoff = ({
 
 const mapDispatchprops = dispatch => {
   return {
-    setGolTakeOffProps: total => dispatch(setGolTakeOff(total)),
+    setGolTakeOffProps: (amount, prize) =>
+      dispatch(setGolTakeOff(amount, prize)),
   };
 };
 
-export default connect(null, mapDispatchprops)(Takeoff);
+const mapStateToProps = store => {
+  return {
+    takeoff: store.gol.takeoff,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(Takeoff);

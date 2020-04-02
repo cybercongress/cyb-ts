@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import {
   getAmountATOM,
   getValidatorsInfo,
-  getValidators,
+  getAllValidators,
   getPreCommits,
   getGraphQLQuery,
 } from '../../../utils/search/utils';
@@ -51,7 +51,7 @@ const GET_CHARACTERS = `
 
 const QueryAddress = address =>
   ` query MyQuery {
-    pre_commit_view(where: {consensus_pubkey: {_eq: "cybervalconspub1zcjduepqed4gxhklt57ap668r955jht8m7t965gsky30sgt6macp4x6rsm8qkqv28l"}}) {
+    pre_commit_view(where: {consensus_pubkey: {_eq: "${address}"}}) {
       consensus_pubkey
       precommits
     }
@@ -133,7 +133,7 @@ class GolLifetime extends React.Component {
 
     const dataPreCommit = [];
     let sumPrecommits = 0;
-    const dataValidators = await getValidators();
+    const dataValidators = await getAllValidators();
 
     if (consensusAddress !== null) {
       const dataQueryAddress = await getGraphQLQuery(

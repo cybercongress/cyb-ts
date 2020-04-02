@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, Pane, Button, ActionBar } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -176,15 +177,40 @@ class ActionBarContainer extends React.Component {
               <a
                 style={{
                   fontSize: '18px',
-                  padding: '5px 20px',
-                  margin: '0 5px',
+                  padding: '10px 30px',
+                  minWidth: '120px',
+                  textAlign: 'center'
                 }}
                 className="bnt-claime"
-                href="/gift"
+                href=""
               >
-                Take gift
-              </a>{' '}
-              or Teleport to Game of Links
+                Master
+              </a>
+              <Link
+                style={{
+                  fontSize: '18px',
+                  margin: '0 10px',
+                  padding: '10px 30px',
+                  minWidth: '120px',
+                  textAlign: 'center'
+                }}
+                className="bnt-claime"
+                to="/heroes"
+              >
+                Hero
+              </Link>
+              <a
+                style={{
+                  fontSize: '18px',
+                  padding: '10px 30px',
+                  minWidth: '120px',
+                  textAlign: 'center'
+                }}
+                className="bnt-claime"
+                href=""
+              >
+                Evangelist
+              </a>
             </Text>
           )}
         </Pane>

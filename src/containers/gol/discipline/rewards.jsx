@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { DISTRIBUTION } from '../../../utils/config';
-import { Dots } from '../../../components';
+import { Dots, LinkWindow } from '../../../components';
 import { setGolEuler4Rewards } from '../../../redux/actions/gol';
 
 import { getRewards } from '../../../utils/game-monitors';
@@ -11,25 +11,25 @@ import RowTable from '../components/row';
 
 const Rewards = ({
   validatorAddress,
-  reward = 0,
   won = 0,
   setGolEuler4RewardsProps,
+  euler4Rewards,
 }) => {
   const [loading, setLoading] = useState(true);
-  const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
-  const [linkTo, setLinkTo] = useState('/gift');
+  const [linkTo, setLinkTo] = useState(
+    'https://cybercongress.ai/game-of-links/'
+  );
   const currentPrize = '-';
 
   useEffect(() => {
     if (validatorAddress !== null) {
-      setLinkTo(`/gift/${validatorAddress}`);
       const fetchData = async () => {
         const data = await getRewards(validatorAddress);
         const cybAbsolute = data;
-        setCybWonAbsolute(cybAbsolute);
         if (cybAbsolute !== 0) {
-          setGolEuler4RewardsProps(Math.floor(cybAbsolute));
+          setGolEuler4RewardsProps(Math.floor(cybAbsolute), 0);
+          setLinkTo(`/gift/${validatorAddress}`);
           const cybPercent =
             (cybAbsolute / DISTRIBUTION['euler 4 rewards']) * 100;
           setCybWonPercent(cybPercent);
@@ -44,11 +44,17 @@ const Rewards = ({
 
   return (
     <RowTable
-      text={<Link to={linkTo}>euler 4 rewards</Link>}
+      text={
+        linkTo.indexOf('https') !== -1 ? (
+          <LinkWindow to={linkTo}>euler 4 rewards</LinkWindow>
+        ) : (
+          <Link to={linkTo}>euler 4 rewards</Link>
+        )
+      }
       reward={formatNumber(DISTRIBUTION['euler 4 rewards'])}
       currentPrize={formatNumber(currentPrize)}
       cybWonAbsolute={
-        loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))
+        loading ? <Dots /> : formatNumber(Math.floor(euler4Rewards.cybAbsolute))
       }
       cybWonPercent={loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`}
     />
@@ -57,8 +63,15 @@ const Rewards = ({
 
 const mapDispatchprops = dispatch => {
   return {
-    setGolEuler4RewardsProps: amount => dispatch(setGolEuler4Rewards(amount)),
+    setGolEuler4RewardsProps: (amount, prize) =>
+      dispatch(setGolEuler4Rewards(amount, prize)),
   };
 };
 
-export default connect(null, mapDispatchprops)(Rewards);
+const mapStateToProps = store => {
+  return {
+    euler4Rewards: store.gol.euler4Rewards,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(Rewards);

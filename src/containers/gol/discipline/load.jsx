@@ -8,9 +8,8 @@ import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolLoad } from '../../../redux/actions/gol';
 
-const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
+const Load = ({ addressLedger, won = 0, golLoadProps, load }) => {
   const [loading, setLoading] = useState(true);
-  const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const currentPrize = Math.floor(
     (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
@@ -21,9 +20,8 @@ const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
       const fetchData = async () => {
         const data = await getLoad(addressLedger.bech32);
         const cybAbsolute = data * currentPrize;
-        setCybWonAbsolute(cybAbsolute);
+        golLoadProps(Math.floor(cybAbsolute), currentPrize);
         if (cybAbsolute !== 0) {
-          golLoadProps(Math.floor(cybAbsolute));
           const cybPercent = (cybAbsolute / currentPrize) * 100;
           setCybWonPercent(cybPercent);
         }
@@ -31,6 +29,7 @@ const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
       };
       fetchData();
     } else {
+      golLoadProps(0, currentPrize);
       setLoading(false);
     }
   }, [won, addressLedger]);
@@ -40,7 +39,9 @@ const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
       text={<Link to="/gol/load">load</Link>}
       reward={DISTRIBUTION.load}
       currentPrize={currentPrize}
-      cybWonAbsolute={loading ? <Dots /> : formatNumber(Math.floor(load))}
+      cybWonAbsolute={
+        loading ? <Dots /> : formatNumber(Math.floor(load.cybAbsolute))
+      }
       cybWonPercent={loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`}
     />
   );
@@ -48,7 +49,7 @@ const Load = ({ addressLedger, reward = 0, won = 0, golLoadProps, load }) => {
 
 const mapDispatchprops = dispatch => {
   return {
-    golLoadProps: golLoad => dispatch(setGolLoad(golLoad)),
+    golLoadProps: (amount, prize) => dispatch(setGolLoad(amount, prize)),
   };
 };
 

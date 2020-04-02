@@ -281,29 +281,50 @@ export const getValidators = async () => {
   }
 };
 
-export const getValidatorsUnbonding = () =>
-  new Promise(resolve =>
-    axios({
+export const getValidatorsUnbonding = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonding`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 
-export const getValidatorsUnbonded = () =>
-  new Promise(resolve =>
-    axios({
+export const getValidatorsUnbonded = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonded`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getAllValidators = async () => {
+  const allValidators = [];
+
+  const responseGetValidators = await getValidators();
+  if (responseGetValidators !== null) {
+    allValidators.push(...responseGetValidators);
+  }
+  const responseGetValidatorsUnbonding = await getValidatorsUnbonding();
+  if (responseGetValidatorsUnbonding !== null) {
+    allValidators.push(...responseGetValidatorsUnbonding);
+  }
+  const responseGetValidatorsUnbonded = await getValidatorsUnbonded();
+  if (responseGetValidatorsUnbonded !== null) {
+    allValidators.push(...responseGetValidatorsUnbonded);
+  }
+
+  return allValidators;
+};
 
 export const selfDelegationShares = async (
   delegatorAddress,

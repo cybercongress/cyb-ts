@@ -43,6 +43,7 @@ const TableDiscipline = ({
           style={{
             backgroundColor: '#000',
             borderBottom: '1px solid #ffffff80',
+            paddingBottom: '15px',
           }}
         >
           <Table.TextHeaderCell textAlign="center">

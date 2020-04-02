@@ -19,6 +19,7 @@ const Total = ({
   const [totalReward, setTotalReward] = useState(0);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
+  const [currentPrize, setCurrentPrize] = useState(0);
   const cybWon = {
     load,
     takeoff,
@@ -31,12 +32,20 @@ const Total = ({
   useEffect(() => {
     let total = 0;
     let rewardTotal = 0;
+    let prize = 0;
     Object.keys(cybWon).forEach(keys => {
-      total += cybWon[keys];
+      total += cybWon[keys].cybAbsolute;
     });
     Object.keys(DISTRIBUTION).forEach(keys => {
       rewardTotal += DISTRIBUTION[keys];
     });
+    Object.keys(cybWon).forEach(keys => {
+      prize += cybWon[keys].currentPrize;
+    });
+    if (total > 0 && prize > 0) {
+      setCybWonPercent((total / prize) * 100);
+    }
+    setCurrentPrize(prize);
     setTotalReward(rewardTotal);
     setCybWonAbsolute(total);
     setLoading(false);
@@ -46,7 +55,7 @@ const Total = ({
     <RowTable
       text={<Link to="/gol/delegation">total</Link>}
       reward={totalReward}
-      currentPrize={0}
+      currentPrize={currentPrize}
       cybWonAbsolute={
         loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))
       }

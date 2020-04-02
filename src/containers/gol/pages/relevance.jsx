@@ -71,7 +71,10 @@ class GolRelevance extends React.Component {
             </LinkWindow>
           </Text>
         </Pane>
-        <div id="scrollableDiv" style={{ height: '100%', overflow: 'auto' }}>
+        <div
+          id="scrollableDiv"
+          style={{ height: '100%', padding: '0 10px', overflow: 'auto' }}
+        >
           <InfiniteScroll
             dataLength={items.length}
             next={this.fetchMoreData}
@@ -85,26 +88,12 @@ class GolRelevance extends React.Component {
             scrollableTarget="scrollableDiv"
           >
             {items.map((item, index) => (
-              <Pane
-                display="grid"
-                gridTemplateColumns="50px 1fr"
-                alignItems="baseline"
-                gridGap="5px"
-                key={index}
-              >
-                <Text textAlign="end" fontSize="16px" color="#fff">
-                  #{index + 1}
-                </Text>
-                <Pane marginY={0} marginX="auto" width="70%">
-                  <SearchItem
-                    hash={`#${index + 1} ${item.cid}`}
-                    rank={item.rank}
-                    grade={getRankGrade(item.rank)}
-                    // status="success"
-                    width="70%"
-                  />
-                </Pane>
-              </Pane>
+              <SearchItem
+                hash={item.cid}
+                rank={item.rank}
+                grade={getRankGrade(item.rank)}
+                // status="success"
+              />
             ))}
           </InfiniteScroll>
         </div>

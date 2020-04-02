@@ -168,18 +168,18 @@ class GOL extends React.Component {
     console.log('validatorAddress', validatorAddress);
 
     console.log(
-      'load, takeoff, relevance, delegation, lifetime, euler4Rewards',
+      'load',
       load,
+      'takeoff',
       takeoff,
+      'relevance',
       relevance,
+      'delegation',
       delegation,
+      'lifetime',
       lifetime,
+      'euler4Rewards',
       euler4Rewards
-    );
-
-    console.log(
-      'total',
-      load + takeoff + relevance + delegation + lifetime + euler4Rewards
     );
 
     if (loading) {
@@ -206,16 +206,29 @@ class GOL extends React.Component {
           className="block-body"
         >
           <Pane
+            borderLeft="3px solid #9a9a9a"
+            paddingY={10}
+            paddingLeft={20}
+            paddingRight={5}
+          >
+            <Pane>Looking back, important things feels obvious.</Pane>
+            <Pane>
+              It takes phenomenal talent and incredible will to see them from
+              afar.
+            </Pane>
+            <Pane>Those who can, define the future.</Pane>
+            <Pane>Founders</Pane>
+          </Pane>
+          <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
             paddingY={20}
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Looking back, important things feels obvious.
-              It takes phenomenal talent and incredible will to see them from afar.
-              Those who can, define the future.
-              Founders
+              Looking back, important things feels obvious. It takes phenomenal
+              talent and incredible will to see them from afar. Those who can,
+              define the future. Founders
             </Text>
             <Text fontSize="16px" color="#fff">
               Welcome to the intergalactic tournament - Game of Links. GoL - is
@@ -242,7 +255,7 @@ class GOL extends React.Component {
             gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
             gridGap="20px"
             width="100%"
-            marginY={50}
+            marginY={20}
             alignItems="center"
           >
             {/* <CardStatisics

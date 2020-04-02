@@ -8,9 +8,8 @@ import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolLifeTime } from '../../../redux/actions/gol';
 
-const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps }) => {
+const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps, lifetime }) => {
   const [loading, setLoading] = useState(true);
-  const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const currentPrize = Math.floor(
     (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
@@ -25,9 +24,8 @@ const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps }) => {
           preCommit: dataQ.pre_commit_view[0].precommits,
         });
         const cybAbsolute = data * currentPrize;
-        setCybWonAbsolute(cybAbsolute);
+        setGolLifeTimeProps(Math.floor(cybAbsolute), currentPrize);
         if (cybAbsolute !== 0) {
-          setGolLifeTimeProps(Math.floor(cybAbsolute));
           const cybPercent = (cybAbsolute / currentPrize) * 100;
           setCybWonPercent(cybPercent);
         }
@@ -35,6 +33,7 @@ const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps }) => {
       };
       fetchData();
     } else {
+      setGolLifeTimeProps(0, currentPrize);
       setLoading(false);
     }
   }, [won, dataQ]);
@@ -44,9 +43,7 @@ const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps }) => {
       text={<Link to="/gol/lifetime">lifetime</Link>}
       reward={DISTRIBUTION.lifetime}
       currentPrize={currentPrize}
-      cybWonAbsolute={
-        loading ? <Dots /> : formatNumber(Math.floor(cybWonAbsolute))
-      }
+      cybWonAbsolute={loading ? <Dots /> : lifetime.cybAbsolute}
       cybWonPercent={loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`}
     />
   );
@@ -54,8 +51,15 @@ const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps }) => {
 
 const mapDispatchprops = dispatch => {
   return {
-    setGolLifeTimeProps: amount => dispatch(setGolLifeTime(amount)),
+    setGolLifeTimeProps: (amount, prize) =>
+      dispatch(setGolLifeTime(amount, prize)),
   };
 };
 
-export default connect(null, mapDispatchprops)(Lifetime);
+const mapStateToProps = store => {
+  return {
+    lifetime: store.gol.lifetime,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(Lifetime);

@@ -5,7 +5,7 @@ import { Text, Pane, TableEv as Table } from '@cybercongress/gravity';
 import {
   getAmountATOM,
   getValidatorsInfo,
-  getValidators,
+  getAllValidators,
 } from '../../../utils/search/utils';
 import {
   CardStatisics,
@@ -87,7 +87,7 @@ class GolDelegation extends React.Component {
     const { validatorAddress } = this.state;
     const dataTable = [];
     let total = 0;
-    const data = await getValidators();
+    const data = await getAllValidators();
     let herosCount = 0;
     if (data !== null) {
       data.forEach(item => {
