@@ -37,7 +37,7 @@ const COSMOS = {
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai',
+  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
@@ -49,7 +49,11 @@ const CYBER = {
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: `GEUL`,
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
-  CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  CYBER_NODE_URL: 'https://mars.cybernode.ai',
+  CYBER_NODE_URL_API: 'https://mars.cybernode.ai/dev_api',
+  CYBER_NODE_URL_LCD: 'https://mars.cybernode.ai/dev_lcd',
+  CYBER_INDEX_HTTPS: 'https://mars.cybernode.ai/graphql/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://mars.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
@@ -75,40 +79,15 @@ const LEDGER = {
 const GENESIS_SUPPLY = 1000000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
-const DISTRIBUTION = [
-  {
-    group: 'takeoff donations',
-    amount: '60000000000000',
-  },
-  {
-    group: 'relevance',
-    amount: '15000000000000',
-  },
-  {
-    group: 'load',
-    amount: '6000000000000',
-  },
-  {
-    group: 'delegation',
-    amount: '5000000000000',
-  },
-  {
-    group: 'full validator set',
-    amount: '5000000000000',
-  },
-  {
-    group: 'euler-4 rewards',
-    amount: '5000000000000',
-  },
-  {
-    group: 'lifetime',
-    amount: '2000000000000',
-  },
-  {
-    group: 'community pool',
-    amount: '2000000000000',
-  },
-];
+const DISTRIBUTION = {
+  takeoff: 60000000000000,
+  relevance: 15000000000000,
+  load: 6000000000000,
+  delegation: 5000000000000,
+  'full validator set': 5000000000000,
+  'euler 4 rewards': 5000000000000,
+  lifetime: 2000000000000,
+};
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;

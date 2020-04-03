@@ -49,6 +49,7 @@ export {
   TextProposal,
   SendLedgerAtomTot,
   SendAmount,
+  ContributeATOMs,
   RewardsDelegators,
   ReDelegate,
   TransactionError,
@@ -83,4 +84,4 @@ export {
   ContainerPane,
   Item,
 } from './governance/governance';
-export { Link, Cid } from './link/link';
+export { LinkWindow, Cid } from './link/link';

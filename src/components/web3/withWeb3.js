@@ -8,9 +8,7 @@ import NotFound from '../../containers/application/notFound';
 
 import { AUCTION, NETWORKSIDS } from '../../utils/config';
 
-const {
-  ADDR_SMART_CONTRACT,
-} = AUCTION;
+const { ADDR_SMART_CONTRACT } = AUCTION;
 
 const injectWeb3 = InnerComponent =>
   class extends PureComponent {

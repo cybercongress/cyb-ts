@@ -1,7 +1,7 @@
 import React from 'react';
 
-export const Link = ({ to, children, blank }) => (
-  <a target={blank ? '_blank' : '_self'} href={to}>
+export const LinkWindow = ({ to, children }) => (
+  <a target="_blank" rel="noopener noreferrer" href={to}>
     {children}
   </a>
 );

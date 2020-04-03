@@ -25,10 +25,12 @@ import Ipfs from './containers/ipfs/ipfs';
 import { Dots } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
 import Block from './containers/blok';
+import GolDelegation from './containers/gol/pages/delegation';
+import GolLifetime from './containers/gol/pages/lifetime';
+import GolRelevance from './containers/gol/pages/relevance';
+import GolLoad from './containers/gol/pages/load';
 
 const IPFS = require('ipfs');
-
-
 
 export const history = createBrowserHistory({});
 
@@ -43,6 +45,8 @@ class AppRouter extends React.Component {
   }
 
   async componentDidMount() {
+    const { setIpfsStatusProps } = this.props;
+    setIpfsStatusProps(false);
     await this.initIpfsNode();
   }
 
@@ -168,7 +172,11 @@ class AppRouter extends React.Component {
           <Route path="/pocket" component={Wallet} />
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
-          <Route path="/gol" component={GOL} />
+          <Route exact path="/gol" component={GOL} />
+          <Route path="/gol/delegation" component={GolDelegation} />
+          <Route path="/gol/lifetime" component={GolLifetime} />
+          <Route path="/gol/relevance" component={GolRelevance} />
+          <Route path="/gol/load" component={GolLoad} />
           <Route path="/network/euler-5/tx/:txHash" component={TxsDetails} />
           <Route
             path="/network/euler-5/contract/:address"
