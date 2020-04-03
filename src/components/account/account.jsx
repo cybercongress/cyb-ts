@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getValidatorsInfo } from '../../utils/search/utils';
-import { formatValidatorAddress } from '../../utils/utils';
+import { trimString } from '../../utils/utils';
 import { Dots } from '../ui/Dots';
 
 class Account extends React.Component {
@@ -23,7 +23,7 @@ class Account extends React.Component {
       } else {
         this.setState({
           account: `/network/euler-5/contract/${address}`,
-          moniker: `${formatValidatorAddress(address, 9, 6)}`,
+          moniker: `${trimString(address, 9, 6)}`,
           loading: false,
         });
       }

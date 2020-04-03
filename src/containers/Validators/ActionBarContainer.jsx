@@ -15,7 +15,7 @@ import {
   TransactionError,
 } from '../../components';
 
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import { trimString, formatNumber } from '../../utils/utils';
 import {
   getBalanceWallet,
   selfDelegationShares,
