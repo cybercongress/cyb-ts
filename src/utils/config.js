@@ -1,4 +1,4 @@
-const TIME_START = 'April 3 2020 18:00:00';
+const TIME_START = 'April 4 2020 18:00:00';
 
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0xedd9ac4d6bbcac74fbbdcede0c934f69b3cdfa98',
@@ -51,11 +51,11 @@ const CYBER = {
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: `GEUL`,
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
-  CYBER_NODE_URL: 'https://mars.cybernode.ai',
-  CYBER_NODE_URL_API: 'https://mars.cybernode.ai/dev_api',
-  CYBER_NODE_URL_LCD: 'https://mars.cybernode.ai/dev_lcd',
-  CYBER_INDEX_HTTPS: 'https://mars.cybernode.ai/graphql/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://mars.cybernode.ai/graphql/v1/graphql',
+  CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  CYBER_NODE_URL_API: 'https://titan.cybernode.ai/api',
+  CYBER_NODE_URL_LCD: 'https://titan.cybernode.ai/lcd',
+  CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
