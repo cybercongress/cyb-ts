@@ -28,7 +28,10 @@ const Rewards = ({
         const data = await getRewards(validatorAddress);
         const cybAbsolute = data;
         if (cybAbsolute !== 0) {
-          setGolEuler4RewardsProps(Math.floor(cybAbsolute), 0);
+          setGolEuler4RewardsProps(
+            Math.floor(cybAbsolute),
+            DISTRIBUTION['euler 4 rewards']
+          );
           setLinkTo(`/gift/${validatorAddress}`);
           const cybPercent =
             (cybAbsolute / DISTRIBUTION['euler 4 rewards']) * 100;
@@ -38,6 +41,7 @@ const Rewards = ({
       };
       fetchData();
     } else {
+      setGolEuler4RewardsProps(0, DISTRIBUTION['euler 4 rewards']);
       setLoading(false);
     }
   }, [won, validatorAddress]);
@@ -52,7 +56,7 @@ const Rewards = ({
         )
       }
       reward={formatNumber(DISTRIBUTION['euler 4 rewards'])}
-      currentPrize={formatNumber(currentPrize)}
+      currentPrize={formatNumber(DISTRIBUTION['euler 4 rewards'])}
       cybWonAbsolute={
         loading ? <Dots /> : formatNumber(Math.floor(euler4Rewards.cybAbsolute))
       }

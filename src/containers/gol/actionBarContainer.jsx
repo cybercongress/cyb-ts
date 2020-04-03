@@ -161,25 +161,55 @@ class ActionBarContainer extends React.Component {
 
     return (
       <ActionBar>
-        <Pane>
+        <Pane width="100%">
           {addAddress && (
-            <Button onClick={() => this.onClickGetAddressLedger()}>
-              {T.actionBar.pocket.put}
-            </Button>
+            <Pane
+              display="flex"
+              width="100%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text
+                color="#fff"
+                // display="flex"
+                // alignItems="center"
+                textAlign="center"
+                flex={1}
+                fontSize="18px"
+              >
+                You can track your progress
+              </Text>
+              <Button
+                paddingX={20}
+                onClick={() => this.onClickGetAddressLedger()}
+              >
+                {T.actionBar.pocket.put}
+              </Button>
+            </Pane>
           )}
           {!addAddress && (
-            <Text
-              color="#fff"
+            <Pane
               display="flex"
+              width="100%"
               alignItems="center"
-              fontSize="18px"
+              justifyContent="center"
             >
+              <Text
+                color="#fff"
+                // display="flex"
+                // alignItems="center"
+                textAlign="center"
+                flex={1}
+                fontSize="18px"
+              >
+                Choose you path
+              </Text>
               <a
                 style={{
                   fontSize: '18px',
                   padding: '10px 30px',
                   minWidth: '120px',
-                  textAlign: 'center'
+                  textAlign: 'center',
                 }}
                 className="bnt-claime"
                 href=""
@@ -192,7 +222,7 @@ class ActionBarContainer extends React.Component {
                   margin: '0 10px',
                   padding: '10px 30px',
                   minWidth: '120px',
-                  textAlign: 'center'
+                  textAlign: 'center',
                 }}
                 className="bnt-claime"
                 to="/heroes"
@@ -204,14 +234,14 @@ class ActionBarContainer extends React.Component {
                   fontSize: '18px',
                   padding: '10px 30px',
                   minWidth: '120px',
-                  textAlign: 'center'
+                  textAlign: 'center',
                 }}
                 className="bnt-claime"
                 href=""
               >
                 Evangelist
               </a>
-            </Text>
+            </Pane>
           )}
         </Pane>
       </ActionBar>

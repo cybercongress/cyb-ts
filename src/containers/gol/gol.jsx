@@ -309,30 +309,36 @@ class GOL extends React.Component {
               title="Total"
               value={`${formatNumber(total)} CYB`}
             /> */}
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Network load"
-              value={`${formatNumber(currentNetworkLoad, 2)} %`}
-            />
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Donation goal"
-              value={`${formatNumber(
-                (takeoffDonations / TAKEOFF.ATOMsALL) * 100,
-                2
-              )} %`}
-            />
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Validator set"
-              value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
-            />
+            <Link to="/gol/load">
+              <CardStatisics
+                styleContainer={{ minWidth: '100px' }}
+                styleValue={{ fontSize: '18px', color: '#3ab793' }}
+                styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+                title="Network load"
+                value={`${formatNumber(currentNetworkLoad, 2)} %`}
+              />
+            </Link>
+            <Link to="/takeoff">
+              <CardStatisics
+                styleContainer={{ minWidth: '100px' }}
+                styleValue={{ fontSize: '18px', color: '#3ab793' }}
+                styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+                title="Donation goal"
+                value={`${formatNumber(
+                  (takeoffDonations / TAKEOFF.ATOMsALL) * 100,
+                  2
+                )} %`}
+              />
+            </Link>
+            <Link to="/heroes">
+              <CardStatisics
+                styleContainer={{ minWidth: '100px' }}
+                styleValue={{ fontSize: '18px', color: '#3ab793' }}
+                styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+                title="Validator set"
+                value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
+              />
+            </Link>
           </Pane>
           <Pane
             display="flex"
