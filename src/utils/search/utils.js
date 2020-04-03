@@ -827,6 +827,19 @@ export const getParamRank = async () => {
   }
 };
 
+export const getParamInlfation = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/minting/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getParamNetwork = async (address, node) => {
   try {
     let staking = null;
@@ -835,6 +848,7 @@ export const getParamNetwork = async (address, node) => {
     let bandwidth = null;
     let gov = null;
     let rank = null;
+    let inlfation = null;
 
     const dataStaking = await getParamStaking();
     if (dataStaking !== null) {
@@ -862,6 +876,11 @@ export const getParamNetwork = async (address, node) => {
       rank = dataRank;
     }
 
+    const dataInlfation = await getParamInlfation();
+    if (dataInlfation !== null) {
+      inlfation = dataInlfation;
+    }
+
     const response = {
       staking,
       slashing,
@@ -869,9 +888,23 @@ export const getParamNetwork = async (address, node) => {
       bandwidth,
       gov,
       rank,
+      inlfation,
     };
 
     return response;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getInlfation = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/minting/inflation`,
+    });
+    return response.data.result;
   } catch (e) {
     console.log(e);
     return null;

@@ -10,6 +10,7 @@ import {
   DistributionParam,
   StakingParam,
   RankParam,
+  InlfationParam,
 } from './tabs';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -18,7 +19,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={20}
+      paddingX={10}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -26,7 +27,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
-      minWidth="150px"
+      width="100%"
     >
       {text}
     </Tab>
@@ -60,6 +61,11 @@ function ParamNetwork({ location }) {
       pathname.match(/rank/gm).length > 0
     ) {
       setSelected('rank');
+    } else if (
+      pathname.match(/inlfation/gm) &&
+      pathname.match(/inlfation/gm).length > 0
+    ) {
+      setSelected('inlfation');
     } else {
       setSelected('bandwidth');
     }
@@ -148,6 +154,15 @@ function ParamNetwork({ location }) {
     );
   }
 
+  if (selected === 'inlfation') {
+    content = (
+      <Route
+        path="/network/euler-5/parameters/inlfation"
+        render={() => <InlfationParam data={dataParam.inlfation} />}
+      />
+    );
+  }
+
   return (
     <main className="block-body">
       <Pane
@@ -157,12 +172,15 @@ function ParamNetwork({ location }) {
         marginY={20}
       >
         <Text fontSize="16px" color="#fff">
-          You do not have control over the brain. You need EUL tokens to let she
-          hear you. If you came from Ethereum or Cosmos you can claim the gift
-          of gods.
+          Parametrs are adjastable by the consensus. Everybody can propose
+          change the parametrs to different value.
         </Text>
       </Pane>
-      <Tablist display="flex" justifyContent="center">
+      <Tablist
+        display="grid"
+        gridTemplateColumns="repeat(auto-fit, minmax(120px, 0.5fr))"
+        gridGap="10px"
+      >
         <TabBtn
           text="Staking"
           isSelected={selected === 'staking'}
@@ -174,14 +192,14 @@ function ParamNetwork({ location }) {
           to="/network/euler-5/parameters/slashing"
         />
         <TabBtn
-          text="Bandwidth"
-          isSelected={selected === 'bandwidth'}
-          to="/network/euler-5/parameters"
-        />
-        <TabBtn
           text="Distribution"
           isSelected={selected === 'distribution'}
           to="/network/euler-5/parameters/distribution"
+        />
+        <TabBtn
+          text="Bandwidth"
+          isSelected={selected === 'bandwidth'}
+          to="/network/euler-5/parameters"
         />
         <TabBtn
           text="Governance"
@@ -192,6 +210,11 @@ function ParamNetwork({ location }) {
           text="Rank"
           isSelected={selected === 'rank'}
           to="/network/euler-5/parameters/rank"
+        />
+        <TabBtn
+          text="Inlfation"
+          isSelected={selected === 'inlfation'}
+          to="/network/euler-5/parameters/inlfation"
         />
       </Tablist>
       <Pane

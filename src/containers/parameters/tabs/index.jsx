@@ -4,6 +4,7 @@ import StakingParam from './staking';
 import DistributionParam from './distribution';
 import GovParam from './gov';
 import RankParam from './rank';
+import InlfationParam from './inlfation';
 
 export {
   BandwidthParam,
@@ -12,4 +13,5 @@ export {
   DistributionParam,
   StakingParam,
   RankParam,
+  InlfationParam,
 };

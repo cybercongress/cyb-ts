@@ -15,17 +15,6 @@ function GovParam({ data }) {
         gridGap="20px"
       >
         <CardStatisics
-          title="min deposit"
-          value={formatCurrency(
-            parseFloat(data.deposit.min_deposit[0].amount),
-            data.deposit.min_deposit[0].denom
-          )}
-        />
-        <CardStatisics
-          title="max deposit period"
-          value={dhm(parseFloat(data.deposit.max_deposit_period / NS_TO_MS))}
-        />
-        <CardStatisics
           title="quorum"
           value={`${parseFloat(data.voting.quorum) * 100} %`}
         />
@@ -36,6 +25,17 @@ function GovParam({ data }) {
         <CardStatisics
           title="veto"
           value={`${parseFloat(data.voting.veto) * 100} %`}
+        />
+        <CardStatisics
+          title="min deposit"
+          value={formatCurrency(
+            parseFloat(data.deposit.min_deposit[0].amount),
+            data.deposit.min_deposit[0].denom
+          )}
+        />
+        <CardStatisics
+          title="max deposit period"
+          value={dhm(parseFloat(data.deposit.max_deposit_period / NS_TO_MS))}
         />
         <CardStatisics
           title="voting period"
