@@ -15,6 +15,7 @@ import {
   getRewards,
   getGroupAddress,
 } from '../../utils/fundingMath';
+import { getTxCosmos } from '../../utils/search/utils';
 
 const dateFormat = require('dateformat');
 
@@ -56,6 +57,13 @@ class Funding extends PureComponent {
   }
 
   async componentDidMount() {
+    const dataTx = await getTxCosmos();
+    if (dataTx !== null) {
+      this.setState({
+        dataTxs: dataTx.txs,
+      });
+      this.init(dataTx);
+    }
     // const txs = JSON.parse(localStorage.getItem('txs'));
     // if (txs !== null) {
     //   this.setState({
@@ -95,10 +103,10 @@ class Funding extends PureComponent {
       console.log('txs', message);
       // if (txs == null) {
       // localStorage.setItem('txs', JSON.stringify(message));
-      this.setState({
-        dataTxs: message,
-      });
-      this.init(message);
+      // this.setState({
+      //   dataTxs: message,
+      // });
+      // this.init(message);
       // } else if (txs.length !== message.length) {
       //   console.log('localStorage !== ws');
       //   const diffTsx = diff('txhash', txs, message);
@@ -141,6 +149,7 @@ class Funding extends PureComponent {
   };
 
   init = async txs => {
+    console.log(txs);
     await this.getStatistics(txs);
     this.getTableData();
     this.checkPin();
@@ -148,8 +157,8 @@ class Funding extends PureComponent {
     this.getPlot();
   };
 
-  getStatistics = async txs => {
-    const dataTxs = txs;
+  getStatistics = async data => {
+    const dataTxs = data.txs;
     console.log('dataTxs', dataTxs);
     // const statisticsLocalStorage = JSON.parse(
     //   localStorage.getItem('statistics')
