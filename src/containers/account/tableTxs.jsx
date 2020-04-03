@@ -9,7 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import {
-  formatValidatorAddress,
+  trimString,
   formatNumber,
   formatCurrency,
 } from '../../utils/utils';
@@ -59,7 +59,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       <Table.TextCell textAlign="center">
         <TextTable>
           <Link to={`/network/euler-5/tx/${item.txhash}`}>
-            {formatValidatorAddress(item.txhash, 6, 6)}
+            {trimString(item.txhash, 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>
@@ -70,9 +70,16 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable display="flex" flexDirection="column">
-          {item.messages.map((items, i) => (
-            <MsgType key={`${item.txhash}_${i}`} type={items.type} />
-          ))}
+          {item.messages.map((items, i) => {
+            let typeTx = items.type;
+            if (
+              typeTx === 'cosmos-sdk/MsgSend' &&
+              items.value.to_address === accountUser
+            ) {
+              typeTx = 'Receive';
+            }
+            return <MsgType key={i} type={typeTx} />;
+          })}
         </TextTable>
       </Table.TextCell>
       {amount && (
@@ -80,7 +87,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
           {item.messages.map((items, i) => (
             <Tooltip
               position="bottom"
-              key={`${item.txhash}_${i}`}
+              key={i}
               content={`${formatNumber(
                 Math.floor(items.value.amount.amount)
               )} ${CYBER.DENOM_CYBER.toUpperCase()}`}

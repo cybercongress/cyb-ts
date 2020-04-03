@@ -4,6 +4,12 @@ import { CYBER } from './config';
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GOL';
 
+const ORDER = {
+  NONE: 'NONE',
+  ASC: 'ASC',
+  DESC: 'DESC',
+};
+
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
 const roundNumber = (num, scale) => {
@@ -62,7 +68,10 @@ export function formatCurrency(
   const { prefix = '', power = 1 } =
     PREFIXES.find(({ power }) => value >= power) || {};
 
-  return `${roundNumber(value / power, decimalDigits)} ${prefix}${currency}`;
+  return `${roundNumber(
+    value / power,
+    decimalDigits
+  )} ${prefix}${currency.toLocaleUpperCase()}`;
 }
 
 const getDecimal = (number, toFixed) => {
@@ -95,7 +104,7 @@ const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   return bech32.encode(prefix, address.words);
 };
 
-const formatValidatorAddress = (address, firstArg, secondArg) => {
+const trimString = (address, firstArg, secondArg) => {
   const first = firstArg || 3;
   const second = secondArg || 8;
 
@@ -207,15 +216,60 @@ const exponentialToDecimal = exponential => {
   return decimal;
 };
 
+function dhm(t) {
+  const cd = 24 * 60 * 60 * 1000;
+  const ch = 60 * 60 * 1000;
+  let d = Math.floor(t / cd);
+  let h = Math.floor((t - d * cd) / ch);
+  let m = Math.round((t - d * cd - h * ch) / 60000);
+  const pad = function(n, unit) {
+    return n < 10 ? `0${n}${unit}` : n;
+  };
+  if (m === 60) {
+    h++;
+    m = 0;
+  }
+  if (h === 24) {
+    d++;
+    h = 0;
+  }
+  return [`${d}d`, pad(h, 'h'), pad(m, 'm')].join(':');
+}
+const sort = (data, sortKey, ordering = ORDER.DESC) => {
+  if (ordering === ORDER.NONE) {
+    return data;
+  }
+  if (sortKey === 'timestamp') {
+    return data.sort((a, b) => {
+      const x = new Date(a[sortKey]);
+      const y = new Date(b[sortKey]);
+      if (ordering === ORDER.ASC) {
+        return x - y;
+      }
+      return y - x;
+    });
+  }
+  return data.sort((a, b) => {
+    const x = a[sortKey];
+    const y = b[sortKey];
+    if (ordering === ORDER.ASC) {
+      return x - y;
+    }
+    return y - x;
+  });
+};
+
 export {
   run,
+  sort,
   roundNumber,
   formatNumber,
   asyncForEach,
   timer,
   getDecimal,
   getDelegator,
-  formatValidatorAddress,
+  trimString,
   msgType,
   exponentialToDecimal,
+  dhm,
 };

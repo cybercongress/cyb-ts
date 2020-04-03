@@ -181,7 +181,7 @@ export class Dinamics extends Component {
 
       // }
       // width: 550,
-      height: 400,
+      height: 350,
       margin: {
         l: 50,
         r: 50,
@@ -198,7 +198,7 @@ export class Dinamics extends Component {
     };
 
     return (
-      <div className="container-dinamics">
+      <div className="auction-container-dinamics">
         {/* <div className="statistics-plot">
           <div>
             price: <span>{price} ETH/GGOL</span>
@@ -221,7 +221,7 @@ export class Dinamics extends Component {
           config={config}
           style={{
             position: 'relative',
-            display: 'block',
+            display: 'inline-block',
             width: '100%'
           }}
         />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, Pane, Button, ActionBar } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -106,15 +107,21 @@ class ActionBarContainer extends React.Component {
     try {
       const { ledger } = this.state;
       const { updateFunc } = this.props;
+      const accounts = {};
 
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
-      console.log('address', addressLedger);
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
 
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
       updateFunc();
       this.setState({
-        addressLedger,
+        addressLedger: addressLedgerCyber,
         stage: STAGE_READY,
       });
     } catch (error) {
@@ -154,32 +161,87 @@ class ActionBarContainer extends React.Component {
 
     return (
       <ActionBar>
-        <Pane>
+        <Pane width="100%">
           {addAddress && (
-            <Button onClick={() => this.onClickGetAddressLedger()}>
-              {T.actionBar.pocket.put}
-            </Button>
+            <Pane
+              display="flex"
+              width="100%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text
+                color="#fff"
+                // display="flex"
+                // alignItems="center"
+                textAlign="center"
+                flex={1}
+                fontSize="18px"
+              >
+                You can track your progress
+              </Text>
+              <Button
+                paddingX={20}
+                onClick={() => this.onClickGetAddressLedger()}
+              >
+                {T.actionBar.pocket.put}
+              </Button>
+            </Pane>
           )}
           {!addAddress && (
-            <Text
-              color="#fff"
+            <Pane
               display="flex"
+              width="100%"
               alignItems="center"
-              fontSize="18px"
+              justifyContent="center"
             >
+              <Text
+                color="#fff"
+                // display="flex"
+                // alignItems="center"
+                textAlign="center"
+                flex={1}
+                fontSize="18px"
+              >
+                Choose you path
+              </Text>
               <a
                 style={{
                   fontSize: '18px',
-                  padding: '5px 20px',
-                  margin: '0 5px',
+                  padding: '10px 30px',
+                  minWidth: '120px',
+                  textAlign: 'center',
                 }}
                 className="bnt-claime"
-                href="/gift"
+                href=""
               >
-                Take gift
-              </a>{' '}
-              or Teleport to Game of Links
-            </Text>
+                Master
+              </a>
+              <Link
+                style={{
+                  fontSize: '18px',
+                  margin: '0 10px',
+                  padding: '10px 30px',
+                  minWidth: '120px',
+                  textAlign: 'center',
+                }}
+                className="bnt-claime"
+                to="/heroes"
+              >
+                Hero
+              </Link>
+              <a
+                style={{
+                  fontSize: '18px',
+                  padding: '10px 30px',
+                  minWidth: '120px',
+                  textAlign: 'center',
+                }}
+                className="bnt-claime"
+                href=""
+              >
+                Evangelist
+              </a>
+            </Pane>
           )}
         </Pane>
       </ActionBar>

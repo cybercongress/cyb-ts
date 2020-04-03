@@ -8,7 +8,7 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import { trimString, formatNumber } from '../../utils/utils';
 import { CardTemplate, Cid, Loading, TextTable } from '../../components';
 import Noitem from './noItem';
 
@@ -31,7 +31,7 @@ const TableLink = ({ data }) => {
       <Table.TextCell textAlign="center">
         <TextTable>
           <Link to={`/network/euler-5/tx/${item.txhash}`}>
-            {formatValidatorAddress(item.txhash, 6, 6)}
+            {trimString(item.txhash, 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>
@@ -43,14 +43,14 @@ const TableLink = ({ data }) => {
       <Table.TextCell textAlign="center">
         <TextTable>
           <Cid cid={item.object_to}>
-            {formatValidatorAddress(item.object_to, 6, 6)}
+            {trimString(item.object_to, 6, 6)}
           </Cid>
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
           <Cid cid={item.object_from}>
-            {formatValidatorAddress(item.object_from, 6, 6)}
+            {trimString(item.object_from, 6, 6)}
           </Cid>
         </TextTable>
       </Table.TextCell>

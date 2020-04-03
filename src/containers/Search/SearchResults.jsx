@@ -62,7 +62,7 @@ class SearchResults extends React.Component {
       loading: true,
     });
 
-    this.getSearch(query);
+    this.getSearch(query.toLowerCase());
   };
 
   loadContent = async (cids, node, prevState) => {
@@ -183,7 +183,6 @@ class SearchResults extends React.Component {
       drop,
     } = this.state;
     // console.log(query);
-    console.log('searchResults render', searchResults);
 
     const searchItems = [];
 
@@ -299,7 +298,7 @@ class SearchResults extends React.Component {
                 lineHeight="20px"
                 wordBreak="break-all"
               >
-                {`I found ${searchItems.length} results`}
+                {`I found ${Object.keys(searchResults.link).length} results`}
               </Text>
             )}
 
