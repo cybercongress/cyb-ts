@@ -792,6 +792,19 @@ export const getCurrentNetworkLoad = async () => {
   }
 };
 
+export const getParamSlashing = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/slashing/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getParamDistribution = async () => {
   try {
     const response = await axios({
@@ -952,6 +965,12 @@ export const getcommunityPool = async () => {
       url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
     });
     return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getTxCosmos = async () => {
   try {
     const response = await axios({

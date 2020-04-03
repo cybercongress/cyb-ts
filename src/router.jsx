@@ -67,6 +67,9 @@ class AppRouter extends React.Component {
     const startTime = Date.parse(deadline) - Date.parse(new Date());
     console.log(startTime);
     if (startTime <= 0) {
+      this.setState({
+        time: false,
+      });
       this.init();
     } else {
       this.initializeClock(deadline);

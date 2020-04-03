@@ -34,9 +34,19 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
+const initParam = {
+  staking: null,
+  slashing: null,
+  distribution: null,
+  bandwidth: null,
+  gov: null,
+  rank: null,
+  inlfation: null,
+};
+
 function ParamNetwork({ location }) {
   const [selected, setSelected] = useState('bandwidth');
-  const [dataParam, setDataParam] = useState();
+  const [dataParam, setDataParam] = useState(initParam);
   const [loading, setLoading] = useState(true);
 
   const chekPathname = () => {
@@ -76,7 +86,9 @@ function ParamNetwork({ location }) {
     const feachData = async () => {
       const response = await getParamNetwork();
       console.log('response Param', response);
-      setDataParam(response);
+      if (response !== null) {
+        setDataParam(response);
+      }
       setLoading(false);
     };
     feachData();

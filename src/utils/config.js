@@ -1,4 +1,4 @@
-const TIME_START = 'April 4 2020 18:00:00';
+const TIME_START = 'April 3 2020 18:00:00';
 
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0xedd9ac4d6bbcac74fbbdcede0c934f69b3cdfa98',
