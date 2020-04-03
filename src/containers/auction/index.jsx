@@ -145,7 +145,7 @@ class Auction extends PureComponent {
       (error, result) => {
         if (!error) {
           console.log(result);
-          const day = Number.parseInt(result.data.slice(0, 66));
+          const day = Number.parseInt(result.topics[1]);
           console.log('day', day);
           this.getDataTableForRound(day);
           // this.dinamics();

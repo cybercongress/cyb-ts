@@ -26,11 +26,23 @@ class Vesting extends PureComponent {
       accounts: null,
       tableLoading: true,
       loading: true,
+      endTime: null,
     };
   }
 
   async componentDidMount() {
-    const { accounts, web3, contractVesting } = this.props;
+    const { accounts, contractVesting } = this.props;
+    const end = await contractVesting.methods.vestingEnd().call();
+    if (end * MILLISECONDS_IN_SECOND < Date.parse(new Date())) {
+      const endTime = dateFormat(
+        new Date(end * MILLISECONDS_IN_SECOND),
+        'dd/mm/yyyy, HH:MM:ss'
+      );
+      this.setState({
+        endTime,
+      });
+    }
+
     await this.setState({
       accounts,
     });
@@ -200,6 +212,7 @@ class Vesting extends PureComponent {
       table,
       tableLoading,
       loading,
+      endTime,
     } = this.state;
     const { web3, contractVesting } = this.props;
 
@@ -228,12 +241,18 @@ class Vesting extends PureComponent {
             paddingY={20}
             marginY={20}
           >
-            <Text fontSize="16px" color="#fff">
-              You do not have control over the brain. You need EUL tokens to let
-              she hear you. If you came from Ethereum or Cosmos you can claim
-              the gift of gods. Then start prepare to the greatest tournament in
-              universe: <a href="/gol">Game of Links</a>.
-            </Text>
+            {endTime === null ? (
+              <Text fontSize="16px" color="#fff">
+                You do not have control over the brain. You need EUL tokens to
+                let she hear you. If you came from Ethereum or Cosmos you can
+                claim the gift of gods. Then start prepare to the greatest
+                tournament in universe: <a href="/gol">Game of Links</a>.
+              </Text>
+            ) : (
+              <Text fontSize="16px" color="#fff">
+                Vecting end {endTime}
+              </Text>
+            )}
           </Pane>
           <BalancePane
             marginTop={30}
@@ -262,6 +281,7 @@ class Vesting extends PureComponent {
           available={spendableBalance}
           contractVesting={contractVesting}
           web3={web3}
+          endTime={endTime}
         />
       </div>
     );
