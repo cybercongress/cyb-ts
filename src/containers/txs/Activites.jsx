@@ -165,6 +165,7 @@ const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
 );
 
 function Activites({ msg }) {
+  console.log(msg);
   const [seeAll, setSeeAll] = useState(false);
 
   switch (msg.type) {
@@ -409,6 +410,30 @@ function Activites({ msg }) {
             title="address"
             value={<Account address={msg.value.address} />}
           />
+        </ContainerMsgsType>
+      );
+
+    // wasm
+    case 'wasm/instantiate':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="address" value={<Account address={msg.value.sender} />} />
+          <Row title="label" value={msg.value.label} />
+          {msg.value.code_id && (
+            <Row title="code id" value={msg.value.code_id} />
+          )}
+          {msg.value.init_msg.purchase_price && (
+            <Row
+              title="purchase_price"
+              value={msg.value.init_msg.transfer_price}
+            />
+          )}
+          {msg.value.init_msg.transfer_price && (
+            <Row
+              title="transfer price"
+              value={msg.value.init_msg.transfer_price}
+            />
+          )}
         </ContainerMsgsType>
       );
 

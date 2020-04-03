@@ -130,6 +130,7 @@ class ActionBarContainer extends Component {
               width="25%"
               height={42}
               fontSize="20px"
+              textAlign="end"
             />
             <Pane>
               <Tab

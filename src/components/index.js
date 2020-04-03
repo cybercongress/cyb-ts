@@ -17,6 +17,7 @@ import {
   SendLedgerAtomTot,
   SendAmount,
   RewardsDelegators,
+  ContributeATOMs,
   ReDelegate,
   TransactionError,
 } from './ledger/stageActionBar';
@@ -56,6 +57,7 @@ export {
   TextTable,
   StatusTx,
   Vitalik,
+  ContributeATOMs,
 };
 
 export { Nums } from './ui/Numbers';
@@ -85,4 +87,4 @@ export {
   ContainerPane,
   Item,
 } from './governance/governance';
-export { Link, Cid } from './link/link';
+export { LinkWindow, Cid } from './link/link';

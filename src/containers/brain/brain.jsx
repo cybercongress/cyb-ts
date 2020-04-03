@@ -24,6 +24,7 @@ import {
   getAmountATOM,
   getInlfation,
   getcommunityPool,
+  getTxCosmos,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -81,7 +82,6 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
 );
 
 class Brain extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
 
   constructor(props) {
     super(props);
@@ -114,30 +114,20 @@ class Brain extends React.Component {
     };
   }
 
-  componentWillMount() {
-    this.getStatisticsBrain();
-  }
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
+    this.getStatisticsBrain();
     // this.getPriceGol();
-    this.getDataWS();
+    this.getTxsCosmos();
   }
 
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-    };
-
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAmountATOM(message);
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getAmountATOM(dataTx.txs);
+    }
   };
 
   getAmountATOM = async dataTxs => {
