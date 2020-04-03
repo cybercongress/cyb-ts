@@ -1,92 +1,101 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  ConnectLadger,
   JsonTransaction,
   TransactionSubmitted,
   Confirmed,
+  SendLedger,
+  ConnectLadger,
+  RewardsDelegators,
   Cyberlink,
   StartStageSearchActionBar,
-} from '../index';
-
+  TransactionError,
+} from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
 
-const { CYBER_NODE_URL } = CYBER;
+import {
+  getBalanceWallet,
+  getTotalRewards,
+  getIpfsHash,
+} from '../../utils/search/utils';
+
+import { i18n } from '../../i18n/en';
+
+const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
+
+const T = new LocalizedStrings(i18n);
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
   STAGE_LEDGER_INIT,
+  HDPATH,
+  LEDGER_VERSION_REQ,
+  LEDGER_OK,
+  LEDGER_NOAPP,
   STAGE_READY,
   STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
+  MEMO,
 } = LEDGER;
 
-class ActionBarLink extends Component {
+class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      init: false,
       ledger: null,
-      address: null,
+      ledgerVersion: [0, 0, 0],
       returnCode: null,
       addressInfo: null,
-      ledgerVersion: [0, 0, 0],
+      address: null,
+      balance: 0,
       time: 0,
+      toSend: '',
+      toSendAddres: '',
+      contentHash: '',
+      txBody: null,
+      txContext: null,
+      txMsg: null,
+      txHash: null,
+      txHeight: null,
+      rewards: null,
+      errorMessage: null,
       bandwidth: {
         remained: 0,
         max_value: 0,
       },
-      contentHash: '',
-      txMsg: null,
-      txContext: null,
-      txBody: null,
-      txHeight: null,
-      txHash: null,
-      error: null,
     };
+    this.gasField = React.createRef();
+    this.gasPriceField = React.createRef();
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
   }
 
-  async componentDidMount() {
-    console.warn('Looking for Ledger Nano');
-    this.pollLedger();
-    // await this.getVersion();
-    // await this.getAddress();
-    // await this.getAddressInfo();
-  }
-
   componentDidUpdate() {
-    if (this.state.ledger === null) {
-      this.pollLedger();
-    }
-    if (this.state.stage === STAGE_LEDGER_INIT) {
-      if (this.state.ledger !== null) {
-        switch (this.state.returnCode) {
+    const { stage, ledger, returnCode, address, addressInfo } = this.state;
+
+    if (stage === STAGE_LEDGER_INIT) {
+      if (ledger === null) {
+        this.pollLedger();
+      }
+      if (ledger !== null) {
+        switch (returnCode) {
           case LEDGER_OK:
-            if (this.state.address === null) {
+            if (address === null) {
               this.getAddress();
             }
-            if (
-              this.state.address !== null &&
-              this.state.addressInfo === null
-            ) {
+            if (address !== null && addressInfo === null) {
               this.getAddressInfo();
             }
             break;
           default:
-            console.log('getVersion');
+            // console.log('getVersion');
             this.getVersion();
             break;
         }
@@ -96,15 +105,6 @@ class ActionBarLink extends Component {
       }
     }
   }
-
-  init = async () => {
-    const { stage, ledger, address, addressInfo, returnCode } = this.state;
-
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-      init: true,
-    });
-  };
 
   compareVersion = async () => {
     const test = this.state.ledgerVersion;
@@ -123,44 +123,46 @@ class ActionBarLink extends Component {
     const { ledger, returnCode } = this.state;
     try {
       const connect = await ledger.connect();
+      console.log('connect', connect);
       if (returnCode === null || connect.return_code !== returnCode) {
         this.setState({
-          address: null,
-          returnCode: connect.return_code,
-          ledgerVersion: [connect.major, connect.minor, connect.patch],
           txMsg: null,
+          address: null,
+          addressInfo: null,
+          requestMetaData: null,
           txBody: null,
           errorMessage: null,
+          returnCode: connect.return_code,
+          version_info: [connect.major, connect.minor, connect.patch],
         });
         // eslint-disable-next-line
-
-        console.warn('Ledger app return_code', this.state.returnCode);
+        console.warn('Ledger app return_code', returnCode);
       } else {
         this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
       }
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
 
   getAddress = async () => {
+    const { ledger } = this.state;
     try {
-      const { ledger } = this.state;
-
       const address = await ledger.retrieveAddressCyber(HDPATH);
-
       console.log('address', address);
-
       this.setState({
         address,
       });
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
+        //     // this just means we haven't found the device yet...
+        //     // eslint-disable-next-line
         console.error('Problem reading address data', message, statusCode);
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
@@ -195,25 +197,42 @@ class ActionBarLink extends Component {
   };
 
   getAddressInfo = async () => {
+    const { address } = this.state;
+    const { addressSend } = this.props;
+    let toSendAddres = '';
+    let addressInfo = {};
+    let balance = 0;
     try {
-      const { ledger, address } = this.state;
+      const response = await getBalanceWallet(address.bech32);
+      const chainId = await this.getNetworkId();
 
       this.getBandwidth();
 
-      const addressInfo = await ledger.getAccountInfoCyber(address);
-      const chainId = await this.getNetworkId();
-
+      if (response) {
+        const data = response;
+        addressInfo = data.account;
+        balance = addressInfo.coins[0].amount;
+      }
       addressInfo.chainId = chainId;
+
+      if (addressSend) {
+        toSendAddres = addressSend;
+      }
+
+      const dataTotalRewards = await getTotalRewards(address.bech32);
 
       this.setState({
         addressInfo,
+        toSendAddres,
+        balance,
         stage: STAGE_READY,
+        rewards: dataTotalRewards,
       });
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
+        //     // this just means we haven't found the device yet...
+        //     // eslint-disable-next-line
         console.error('Problem reading address data', message, statusCode);
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
@@ -259,21 +278,58 @@ class ActionBarLink extends Component {
     }
   };
 
-  // link = async () => {
-  //   const { valueInput } = this.state;
-  //   console.log('valueInput', valueInput);
-  // };
+  getTxType = async (type, txContext) => {
+    const {
+      ledger,
+      address,
+      addressInfo,
+      toSend,
+      rewards,
+      toSendAddres,
+      contentHash,
+    } = this.state;
+    const { addressSend } = this.props;
+    const uatomAmount = toSend * DIVISOR_CYBER_G;
 
-  link = async () => {
-    const { address, addressInfo, ledger, contentHash } = this.state;
+    const { denom } = addressInfo.coins[0];
 
-    const { keywordHash } = this.props;
+    let tx;
 
-    const fromCid = keywordHash;
-    const toCid = contentHash;
+    if (type === 'heroes') {
+      tx = await ledger.withdrawDelegationReward(
+        txContext,
+        address.bech32,
+        MEMO,
+        rewards.rewards
+      );
+    } else if (type === 'cyberlink') {
+      const fromCid = await getIpfsHash(addressSend);
+      const toCid = contentHash;
+      tx = await ledger.txCreateLink(
+        txContext,
+        address.bech32,
+        fromCid,
+        toCid,
+        MEMO
+      );
+    } else {
+      tx = await ledger.txCreateSendCyber(
+        txContext,
+        toSendAddres,
+        uatomAmount,
+        MEMO,
+        denom
+      );
+    }
+    return tx;
+  };
+
+  generateTx = async () => {
+    const { address, addressInfo } = this.state;
+    const { type } = this.props;
 
     const txContext = {
-      accountNumber: addressInfo.accountNumber,
+      accountNumber: addressInfo.account_number,
       chainId: addressInfo.chainId,
       sequence: addressInfo.sequence,
       bech32: address.bech32,
@@ -281,15 +337,9 @@ class ActionBarLink extends Component {
       path: address.path,
     };
 
-    const tx = await ledger.txCreateLink(
-      txContext,
-      address.bech32,
-      fromCid,
-      toCid,
-      MEMO
-    );
-    console.log('tx', tx);
+    const tx = await this.getTxType(type, txContext);
 
+    console.log('tx', tx);
     await this.setState({
       txMsg: tx,
       txContext,
@@ -306,13 +356,26 @@ class ActionBarLink extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
@@ -333,7 +396,7 @@ class ActionBarLink extends Component {
   };
 
   confirmTx = async () => {
-    const { update } = this.props;
+    const { updateAddress } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
@@ -343,55 +406,62 @@ class ActionBarLink extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        update();
+        updateAddress();
+        return;
+      }
+      if (data.code !== undefined && data.code > 0) {
+        this.setState({
+          stage: STAGE_ERROR,
+          errorMessage: data.raw_log,
+        });
         return;
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInput = async e => {
-    const { value } = e.target;
+  onChangeInputAmount = e => {
     this.setState({
-      contentHash: value,
+      toSend: e.target.value,
+    });
+  };
+
+  onChangeInputInputAddressT = e => {
+    this.setState({
+      toSendAddres: e.target.value,
+    });
+  };
+
+  onClickSend = () => {
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
     });
   };
 
   cleatState = () => {
     this.setState({
+      stage: STAGE_INIT,
       ledger: null,
-      address: null,
+      ledgerVersion: [0, 0, 0],
       returnCode: null,
       addressInfo: null,
-      txMsg: null,
-      ledgerVersion: [0, 0, 0],
+      address: null,
+      balance: 0,
       time: 0,
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
-      contentHash: '',
-      txContext: null,
+      toSend: '',
+      toSendAddres: '',
       txBody: null,
-      txHeight: null,
+      txContext: null,
+      txMsg: null,
       txHash: null,
-      error: null,
-      init: false,
-    });
-    this.timeOut = null;
-  };
-
-  onClickInitStage = () => {
-    this.cleatState();
-    this.setState({
-      stage: STAGE_INIT,
+      txHeight: null,
     });
   };
 
-  onClickUsingLedger = () => {
-    // this.init();
+  onChangeInput = async e => {
+    const { value } = e.target;
     this.setState({
-      stage: STAGE_LEDGER_INIT,
+      contentHash: value,
     });
   };
 
@@ -404,27 +474,58 @@ class ActionBarLink extends Component {
   }
 
   render() {
+    const { type, addressSend, addressLedger } = this.props;
     const {
+      stage,
       address,
-      bandwidth,
-      contentHash,
       returnCode,
       ledgerVersion,
-      stage,
+      toSend,
+      balance,
+      toSendAddres,
       txMsg,
-      txHeight,
       txHash,
+      txHeight,
+      rewards,
+      bandwidth,
+      contentHash,
+      errorMessage,
     } = this.state;
-    const { valueSearchInput } = this.props;
 
-    if (stage === STAGE_INIT) {
+    if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={e => this.onClickSend(e)}>
+              {T.actionBar.pocket.send}
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && (type === 'cyberlink' || type === 'mentions')) {
       return (
         <StartStageSearchActionBar
-          valueSearchInput={valueSearchInput}
-          onClickBtn={this.onClickUsingLedger}
+          onClickBtn={this.onClickSend}
           contentHash={contentHash}
           onChangeInputContentHash={this.onChangeInput}
         />
+      );
+    }
+
+    if (stage === STAGE_INIT && type === 'heroes') {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button
+              disabled={addressSend !== addressLedger}
+              onClick={e => this.onClickSend(e)}
+            >
+              Claim rewards
+            </Button>
+          </Pane>
+        </ActionBar>
       );
     }
 
@@ -433,7 +534,7 @@ class ActionBarLink extends Component {
         <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtnCloce={this.cleatState}
           version={
             returnCode === LEDGER_OK &&
             this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
@@ -443,32 +544,59 @@ class ActionBarLink extends Component {
     }
 
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-      // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
+      if (type === 'heroes') {
+        return (
+          <RewardsDelegators
+            data={rewards}
+            onClickBtnCloce={this.cleatState}
+            address={address.bech32}
+            onClickBtn={this.generateTx}
+          />
+        );
+      }
+      if (type === 'cyberlink') {
+        return (
+          <Cyberlink
+            onClickBtnCloce={this.cleatState}
+            query={addressSend}
+            onClickBtn={this.generateTx}
+            bandwidth={bandwidth}
+            address={address.bech32}
+            contentHash={contentHash}
+            disabledBtn={parseFloat(bandwidth.max_value) === 0}
+          />
+        );
+      }
       return (
-        <Cyberlink
-          onClickBtnCloce={this.onClickInitStage}
-          query={valueSearchInput}
-          onClickBtn={e => this.link(e)}
-          bandwidth={bandwidth}
+        <SendLedger
+          onClickBtn={() => this.generateTx()}
           address={address.bech32}
-          contentHash={contentHash}
-          disabledBtn={parseFloat(bandwidth.max_value) === 0}
+          availableStake={
+            balance !== 0
+              ? Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000
+              : 0
+          }
+          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          valueInputAmount={toSend}
+          onClickBtnCloce={this.cleatState}
+          valueInputAddressTo={toSendAddres}
+          onChangeInputAddressTo={e => this.onChangeInputInputAddressT(e)}
+          disabledBtn={
+            toSend.length === 0 || toSendAddres.length === 0 || balance === 0
+          }
         />
       );
     }
 
     if (stage === STAGE_WAIT) {
       return (
-        <JsonTransaction
-          txMsg={txMsg}
-          onClickBtnCloce={this.onClickInitStage}
-        />
+        <JsonTransaction txMsg={txMsg} onClickBtnCloce={this.cleatState} />
       );
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
     }
 
     if (stage === STAGE_CONFIRMED) {
@@ -476,8 +604,18 @@ class ActionBarLink extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
-          onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
@@ -486,4 +624,4 @@ class ActionBarLink extends Component {
   }
 }
 
-export default ActionBarLink;
+export default ActionBarContainer;

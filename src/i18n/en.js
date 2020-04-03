@@ -1,14 +1,19 @@
+import { CYBER } from '../utils/config';
+
+const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
+
 const i18n = {
   en: {
     validators: {
       table: {
         moniker: 'Moniker',
         operator: 'Operator',
-        commissionProcent: 'Commission (%)',
-        power: 'Power (GCYB)',
-        selfProcent: 'Self (%)',
+        commissionProcent: 'Commission',
+        power: `Power`,
+        selfProcent: 'Self',
         unbonding: 'Unbonding height',
         rank: 'Rank',
+        bondedTokens: `Your bond`,
       },
     },
     pocket: {
@@ -22,12 +27,12 @@ const i18n = {
     },
     brain: {
       knowledge: 'Knowledge graph',
-      yourTotal: 'your total EUL',
+      yourTotal: `your total ${DENOM_CYBER.toLocaleUpperCase()}`,
       cyberlinks: 'cyberlinks',
       objects: 'objects',
       subjects: 'subjects',
       cybernomics: 'Cybernomics',
-      supply: 'supply of CYB',
+      supply: `supply of ${DENOM_CYBER.toLocaleUpperCase()}`,
       staked: '% of staked CYB',
       price: 'price of cyberlink in RC',
       consensus: 'Consensus',
@@ -74,9 +79,14 @@ const i18n = {
       delegate: {
         joinValidator: 'Join Cyberd Network As Validator',
         btnBecome: 'Become a validator',
-        delegate: 'Delegate to',
-        btnDelegate: 'Delegate with Ledger',
+        heroes: 'Hero',
+        delegate: 'delegate to',
+        unDelegateFrom: 'undelegate from ',
+        yourDelegated: 'your staked tokens:',
+        btnDelegate: 'DELEGATE',
+        btnUnDelegate: 'UNDELEGATE',
         details: 'Delegation Details',
+        detailsUnDelegate: 'UnDelegation Details',
         wallet: 'Your wallet contains',
         max: 'Max',
         generate: 'Generate Tx',
@@ -93,6 +103,13 @@ const i18n = {
       },
       confirmedTX: {
         confirmed: 'Transaction Confirmed!',
+        blockTX: 'Your transaction was included in the block at height:',
+        viewTX: 'View transaction',
+        tXHash: 'Transaction Hash:',
+        continue: 'Continue',
+      },
+      errorTx: {
+        error: 'Transaction Error!',
         blockTX: 'Your transaction was included in the block at height:',
         viewTX: 'View transaction',
         tXHash: 'Transaction Hash:',

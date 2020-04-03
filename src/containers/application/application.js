@@ -5,20 +5,23 @@ import {
   NavigationLeft,
   Pane,
 } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
-import { Timer, Tooltip } from '../../components/index';
+import { connect } from 'react-redux';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
+import { MenuButton } from '../../components';
 import Electricity from '../home/electricity';
 
 const cyber = require('../../image/cyber.png');
-const cyb = require('../../image/cyb.svg');
+const cybFalse = require('../../image/cyb.svg');
+const cybTrue = require('../../image/cybTrue.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
     className={`${selected ? 'active' : ''}`}
     onClick={onClick}
-    href={`#/${to}`}
+    href={`/${to}`}
   >
     <div className="battery-segment-text">{nameApp}</div>
   </a>
@@ -46,8 +49,6 @@ class App extends Component {
     }
 
     this.state = {
-      selectedIndex: 0,
-      app: '',
       openMenu: false,
       story,
       valueSearchInput: '',
@@ -62,14 +63,33 @@ class App extends Component {
 
   componentDidUpdate(prevProps) {
     const { location } = this.props;
+    const { valueSearchInput } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
       this.checkStory();
+      this.updateInput();
+      if (location.pathname.indexOf(valueSearchInput) === -1) {
+        this.clearInrut();
+      }
       // document.onkeypress = e => {
       //   document.getElementById('search-input-searchBar').focus();
       // };
     }
   }
+
+  updateInput = () => {
+    const { query } = this.props;
+
+    this.setState({ valueSearchInput: query });
+  };
+
+  clearInrut = () => {
+    const { funcUpdate } = this.props;
+
+    const valueSearchInput = '';
+    this.setState({ valueSearchInput });
+    funcUpdate(valueSearchInput);
+  };
 
   checkStory = () => {
     let story = false;
@@ -112,9 +132,12 @@ class App extends Component {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
+    const { funcUpdate } = this.props;
+
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
         this.routeChange(`/search/${valueSearchInput}`);
+        funcUpdate(valueSearchInput);
       }
     }
   };
@@ -132,13 +155,6 @@ class App extends Component {
     });
   };
 
-  onCustomClick = index => {
-    console.log('index', index);
-    this.setState({
-      app: index.to,
-    });
-  };
-
   closeStory = () => {
     // console.log('dfd');
     this.setState({
@@ -148,9 +164,13 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children } = this.props;
+    const { children, location, ipfsStatus } = this.props;
 
-    if (!story) {
+    if (!story && home) {
+      this.routeChange('/episode-1');
+    }
+
+    if (!story && location.pathname === '/episode-1') {
       return <div>{children}</div>;
     }
 
@@ -167,22 +187,40 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          {/* <Tooltip
-              tooltip="The app is not production ready and is for testing and experimentation only. All send tokens will be lost."
-              placement="bottom"
-            >
-              <img
-                src={bug}
-                alt="bug"
-                style={{
-                  width: 50,
-                  height: 50
-                }}
-              />
-            </Tooltip> */}
-          <a href="#/brain">
-            <Menu imgLogo={cyber} />
-          </a>
+          <MenuButton
+            to="/brain"
+            textTooltip={
+              <span>
+                You are on the{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/cyberd/releases/tag/euler-5"
+                >
+                  euler-5
+                </a>{' '}
+                network. Euler-5 is incentivized test network. Be careful.
+                Details in{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+                >
+                  whitepaper
+                </a>{' '}
+                and{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://cybercongress.ai/game-of-links/"
+                >
+                  Game of links
+                </a>{' '}
+                rules.
+              </span>
+            }
+            imgLogo={cyber}
+          />
           {!home && (
             <Pane
               position="absolute"
@@ -219,31 +257,24 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <a href="#/pocket">
-            <Pane
-              width={50}
-              // height={50}
-              position="relative"
-              display="flex"
-              align-items="flex-end"
-            >
-              <img style={{ width: 'inherit' }} alt="cyb" src={cyb} />
-            </Pane>
-          </a>
-          {/* {app === '' && (
-            <div className="battery">
-              {htef.map(item => (
-                <Item
-                  key={item.to}
-                  selected={item.id === this.state.selectedIndex}
-                  to={item.to}
-                  nameApp={item.nameApp}
-                  onClick={e => this.onCustomClick(item)}
-                />
-              ))}
-            </div>
-          )} */}
-          {/* <Timer /> */}
+
+          <MenuButton
+            to="/pocket"
+            imgLogo={ipfsStatus ? cybTrue : cybFalse}
+            positionBugLeft
+            textTooltip={
+              <span>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/cybercongress/dot-cyber"
+                >
+                  dot-cyber
+                </a>{' '}
+                app has not been audited yet. Please, use it with caution.
+              </span>
+            }
+          />
         </div>
         {/* </Navigation> */}
         {this.props.children}
@@ -252,4 +283,10 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = store => {
+  return {
+    ipfsStatus: store.ipfs.statusIpfs,
+  };
+};
+
+export default connect(mapStateToProps)(App);

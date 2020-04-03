@@ -108,9 +108,6 @@ class Electricity extends React.Component {
 
     return (
       <div className="electricity">
-        {/* <a href="https://cyberd.ai/" target="_blank">
-        <img style={{ height: 100 }} src={cyber} />
-        </a> */}
         <div className="line">
           <svg
             className="electricity-svg"

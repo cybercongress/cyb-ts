@@ -406,6 +406,27 @@ function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
   return txSkeleton;
 }
 
+function createUndelegateCyber(txContext, validatorBech32, eulAmount, memo) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgUndelegate',
+    value: {
+      amount: {
+        amount: eulAmount.toString(),
+        denom: DENOM_CYBER,
+      },
+      delegator_address: txContext.bech32,
+      validator_address: validatorBech32,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 // Creates a new redelegation tx based on the input parameters
 // the function expects a complete txContext
 function createRedelegate(
@@ -436,6 +457,53 @@ function createRedelegate(
   return txSkeleton;
 }
 
+function createWithdrawDelegationReward(txContext, address, memo, rewards) {
+  const txSkeleton = createSkeletonCyber(txContext);
+  txSkeleton.value.msg = [];
+
+  Object.keys(rewards).forEach(key => {
+    txSkeleton.value.msg.push({
+      type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+      value: {
+        delegator_address: address,
+        validator_address: rewards[key].validator_address,
+      },
+    });
+  });
+
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
+function createRedelegateCyber(
+  txContext,
+  validatorSourceBech32,
+  validatorDestBech32,
+  uatomAmount,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgBeginRedelegate',
+    value: {
+      amount: {
+        amount: uatomAmount.toString(),
+        denom: DENOM_CYBER,
+      },
+      delegator_address: txContext.bech32,
+      validator_dst_address: validatorDestBech32,
+      validator_src_address: validatorSourceBech32,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 export default {
   createSkeleton,
   createDelegate,
@@ -449,4 +517,7 @@ export default {
   createDelegateCyber,
   createTextProposal,
   createCommunityPool,
+  createUndelegateCyber,
+  createWithdrawDelegationReward,
+  createRedelegateCyber,
 };

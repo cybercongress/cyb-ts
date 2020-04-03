@@ -20,7 +20,7 @@ import {
   formatNumber as format,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
-import { Loading, ActionBarLink } from '../../components';
+import { Loading } from '../../components';
 import Gift from '../Search/gift';
 
 import { CYBER, PATTERN } from '../../utils/config';
@@ -58,7 +58,14 @@ class Home extends PureComponent {
       query: '',
       drop: false,
     };
+    this.routeChange = this.routeChange.bind(this);
   }
+
+  routeChange = newPath => {
+    const { history } = this.props;
+    const path = newPath;
+    history.push(path);
+  };
 
   onChangeInput = async e => {
     const { value } = e.target;
@@ -74,6 +81,8 @@ class Home extends PureComponent {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
+    const { funcUpdate } = this.props;
+
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
         this.setState({
@@ -83,18 +92,22 @@ class Home extends PureComponent {
         this.setState({
           loading: true,
         });
-        this.getSearch(valueSearchInput);
+        this.routeChange(`/search/${valueSearchInput}`);
+        funcUpdate(valueSearchInput);
       }
     }
   };
 
   onCklicBtn = () => {
     const { valueSearchInput } = this.state;
+    const { funcUpdate } = this.props;
+
     if (valueSearchInput.length > 0) {
       this.setState({
         loading: true,
       });
-      this.getSearch(valueSearchInput);
+      this.routeChange(`/search/${valueSearchInput}`);
+      funcUpdate(valueSearchInput);
     }
   };
 
@@ -104,73 +117,6 @@ class Home extends PureComponent {
         targetColor: false,
       });
     }, 200);
-  };
-
-  getSearch = async query => {
-    let searchResults = [];
-    let resultNull = false;
-    let keywordHash = '';
-    let keywordHashNull = '';
-    let drop;
-    // const { query } = this.state;
-    if (query.match(PATTERN)) {
-      const result = await getDrop(query.toLowerCase());
-
-      console.log('result', result);
-
-      if (result === 0) {
-        drop = {
-          address: query,
-          gift: 0,
-        };
-      } else {
-        drop = {
-          address: query,
-          gift: result.gift,
-          ...result,
-        };
-      }
-
-      searchResults.push(drop);
-
-      this.setState({
-        drop: true,
-        loading: false,
-      });
-    } else {
-      keywordHash = await getIpfsHash(query);
-      searchResults = await search(keywordHash);
-      searchResults.map((item, index) => {
-        searchResults[index].cid = item.cid;
-        searchResults[index].rank = formatNumber(item.rank, 6);
-        searchResults[index].grade = getRankGrade(item.rank);
-      });
-      console.log('searchResults', searchResults);
-
-      if (searchResults.length === 0) {
-        const queryNull = '0';
-        keywordHashNull = await getIpfsHash(queryNull);
-        searchResults = await search(keywordHashNull);
-        searchResults.map((item, index) => {
-          searchResults[index].cid = item.cid;
-          searchResults[index].rank = formatNumber(item.rank, 6);
-          searchResults[index].grade = getRankGrade(item.rank);
-        });
-        resultNull = true;
-      }
-      this.setState({
-        drop: false,
-      });
-    }
-
-    this.setState({
-      searchResults,
-      keywordHash,
-      result: true,
-      loading: false,
-      query,
-      resultNull,
-    });
   };
 
   showCoords = event => {
@@ -350,20 +296,13 @@ class Home extends PureComponent {
             </Pane>
           )}
         </main>
-        {/* {!result && (
+        {!result && (
           <StartState
             targetColor={targetColor}
             valueSearchInput={valueSearchInput}
             onClickBtn={this.onCklicBtn}
           />
         )}
-        {result && !drop && (
-          <ActionBarLink
-            keywordHash={keywordHash}
-            valueSearchInput={query}
-            update={() => this.getSearch(query)}
-          />
-        )} */}
       </div>
     );
   }

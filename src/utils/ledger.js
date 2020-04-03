@@ -133,20 +133,23 @@ class CosmosDelegateTool {
   // Returns a signed transaction ready to be relayed
   async sign(unsignedTx, txContext) {
     // this.connectedOrThrow(this);
-    console.log(txContext);
     if (typeof txContext.path === 'undefined') {
       this.lastError = 'context should include the account path';
       throw new Error('context should include the account path');
     }
     // console.log('txContext', txContext);
     const bytesToSign = txs.getBytesToSign(unsignedTx, txContext);
-    console.log(bytesToSign);
     const response = await this.app.sign(txContext.path, bytesToSign);
-    if (response.return_code !== 0x9000) {
-      this.lastError = response.error_message;
-      throw new Error(response.error_message);
+
+    return response;
+  }
+
+  async applySignature(signature, unsignedTx, txContext) {
+    if (signature.return_code !== LEDGER.LEDGER_OK) {
+      this.lastError = signature.error_message;
+      throw new Error(signature.return_code, signature.error_message);
     }
-    const sig = secp256k1.signatureImport(response.signature);
+    const sig = secp256k1.signatureImport(signature.signature);
     return txs.applySignature(unsignedTx, txContext, sig);
   }
 
@@ -378,7 +381,7 @@ class CosmosDelegateTool {
     // Get all balances
     const requestsBalance = addressList.map(async (addr, index) => {
       const txContext = await this.getAccountInfo(addr);
-      return Object.assign({}, addressList[index], txContext);
+      return { ...addressList[index], ...txContext };
     });
     // eslint-disable-next-line max-len,no-unused-vars
     const requestsDelegations = addressList.map((addr, index) =>
@@ -389,7 +392,7 @@ class CosmosDelegateTool {
     const delegations = await Promise.all(requestsDelegations);
     const reply = [];
     for (let i = 0; i < addressList.length; i += 1) {
-      reply.push(Object.assign({}, delegations[i], balances[i]));
+      reply.push({ ...delegations[i], ...balances[i] });
     }
     return reply;
   }
@@ -494,6 +497,22 @@ class CosmosDelegateTool {
     );
   }
 
+  withdrawDelegationReward = async (txContext, address, memo, rewards) => {
+    console.log('txContext', txContext);
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createWithdrawDelegationReward(
+      txContext,
+      address,
+      memo,
+      rewards
+    );
+  };
+
   async communityPool(
     txContext,
     address,
@@ -570,6 +589,43 @@ class CosmosDelegateTool {
     return txs.createUndelegate(txContext, validatorBech32, uatomAmount, memo);
   }
 
+  txCreateUndelegateCyber = (txContext, validatorBech32, eulAmount, memo) => {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createUndelegateCyber(
+      txContext,
+      validatorBech32,
+      eulAmount,
+      memo
+    );
+  };
+
+  txCreateRedelegateCyber = (
+    txContext,
+    validatorSourceBech32,
+    validatorDestBech32,
+    uatomAmount,
+    memo
+  ) => {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createRedelegateCyber(
+      txContext,
+      validatorSourceBech32,
+      validatorDestBech32,
+      uatomAmount,
+      memo
+    );
+  };
+
   // Relays a signed transaction and returns a transaction hash
   async txSubmit(signedTx) {
     const txBody = {
@@ -586,6 +642,7 @@ class CosmosDelegateTool {
   }
 
   async txSubmitCyberLink(signedTx) {
+    console.log(signedTx);
     const txBody = {
       tx: signedTx.value,
       mode: 'async',

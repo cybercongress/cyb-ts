@@ -16,7 +16,6 @@ import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import InfiniteScroll from 'react-infinite-scroller';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import withWeb3 from '../../components/web3/withWeb3';
 import {
   formatNumber,
   getStatistics,
@@ -133,7 +132,7 @@ class GOL extends React.Component {
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     this.getRelevance();
-    this.getMyGOLs();
+    // this.getMyGOLs();
     this.getMyEULs();
     this.getDataWS();
   }
@@ -171,21 +170,21 @@ class GOL extends React.Component {
     }
   };
 
-  getMyGOLs = async () => {
-    const { accounts, contractToken } = this.props;
+  // getMyGOLs = async () => {
+  //   const { accounts, contractToken } = this.props;
 
-    let myGOLs = 0;
+  //   let myGOLs = 0;
 
-    const balanceOfTx = await contractToken.methods.balanceOf(accounts).call();
+  //   const balanceOfTx = await contractToken.methods.balanceOf(accounts).call();
 
-    if (balanceOfTx) {
-      myGOLs = balanceOfTx;
-    }
+  //   if (balanceOfTx) {
+  //     myGOLs = balanceOfTx;
+  //   }
 
-    this.setState({
-      myGOLs,
-    });
-  };
+  //   this.setState({
+  //     myGOLs,
+  //   });
+  // };
 
   getMyEULs = async () => {
     const { addressLedger } = this.state;
@@ -795,7 +794,7 @@ class GOL extends React.Component {
             alignItems="center"
           >
             <Indicators title={T.gol.myGOLs} value="∞" />
-            <Indicators title={T.gol.myEULs} value={formatNumber(myEULs)} />
+            <Indicators title={T.gol.myEULs} value="∞" />
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
@@ -850,4 +849,4 @@ class GOL extends React.Component {
   }
 }
 
-export default withWeb3(GOL);
+export default GOL;

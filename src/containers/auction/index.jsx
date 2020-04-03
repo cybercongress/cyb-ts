@@ -14,10 +14,12 @@ import {
   asyncForEach,
   timer,
 } from '../../utils/utils';
+import InfoPane from './infoPane';
 
 import { AUCTION } from '../../utils/config';
 
 const BigNumber = require('bignumber.js');
+const dateFormat = require('dateformat');
 
 const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
 const ROUND_DURATION = 1 * 60 * 60;
@@ -53,6 +55,8 @@ class Auction extends PureComponent {
       createOnDay: 0,
       popupsBuy: false,
       roundTable: null,
+      typeTime: 'start',
+      startTimeTot: null,
       dynamics: {
         x: [],
         y: [],
@@ -63,36 +67,75 @@ class Auction extends PureComponent {
   }
 
   async componentDidMount() {
+    const { accounts } = this.props;
+    this.init();
+    this.subscription();
+    this.accountsChanged();
+
+    const { contract } = this.props;
+    const youCYB = (
+      await contract.getPastEvents('LogClaim', {
+        fromBlock: 0,
+        toBlock: 'latest',
+      })
+    ).filter(i => i.returnValues.user === accounts);
+
+    console.log({
+      youCYB,
+    });
+  }
+
+  init = async () => {
     const {
       accounts,
-      web3,
       contract: { methods },
     } = this.props;
     await this.setState({
       accounts,
     });
-    if (accounts === null || accounts === undefined) {
-      console.log('no-accounts');
-      this.getTimeEndRound();
-      this.statistics();
-      this.dinamics();
-      this.getDataTable();
+    const roundThis = parseInt(await methods.today().call());
+    const numberOfDays = await methods.numberOfDays().call();
+    const openTime = await methods.openTime().call();
+    let startTimeTot;
+    let typeTime;
+
+    if (new Date(openTime * 1000) > Date.now()) {
+      typeTime = 'intro';
+      startTimeTot = dateFormat(
+        new Date(openTime * 1000),
+        'dd/mm/yyyy hh:MM:ss tt'
+      );
+    } else if (roundThis > numberOfDays) {
+      typeTime = 'end';
     } else {
-      console.log('accounts');
-      timer(this.getTimeEndRound);
-      this.statistics();
-      this.dinamics();
-      this.getDataTable();
+      typeTime = 'start';
     }
-    window.ethereum.on('accountsChanged', async accountsChanged => {
-      const defaultAccounts = accountsChanged[0];
-      const tmpAccount = defaultAccounts;
-      // console.log(tmpAccount);
-      await this.setState({
-        accounts: tmpAccount,
-      });
-      run(this.getDataTable);
+
+    this.setState({
+      typeTime,
+      startTimeTot,
     });
+    if (new Date(openTime * 1000) < Date.now()) {
+      if (accounts === null || accounts === undefined) {
+        console.log('no-accounts');
+        this.getTimeEndRound();
+        this.statistics();
+        this.dinamics();
+        this.getDataTable();
+      } else {
+        console.log('accounts');
+        timer(this.getTimeEndRound);
+        this.statistics();
+        this.dinamics();
+        this.getDataTable();
+      }
+    } else {
+      this.setState({ loading: false });
+    }
+  };
+
+  subscription = async () => {
+    const { web3 } = this.props;
     const subscription = web3.eth.subscribe(
       'logs',
       {
@@ -138,18 +181,19 @@ class Auction extends PureComponent {
         console.log('Successfully unsubscribed!');
       }
     });
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
+  };
 
-    console.log({
-      youCYB,
+  accountsChanged = () => {
+    window.ethereum.on('accountsChanged', async accountsChanged => {
+      const defaultAccounts = accountsChanged[0];
+      const tmpAccount = defaultAccounts;
+      // console.log(tmpAccount);
+      await this.setState({
+        accounts: tmpAccount,
+      });
+      run(this.getDataTable);
     });
-  }
+  };
 
   getTimeEndRound = async () => {
     const {
@@ -464,28 +508,15 @@ class Auction extends PureComponent {
       claimedAll,
       dailyTotals,
       createOnDay,
-      popupsBuy,
-      accounts,
-      roundTable,
+      typeTime,
+      startTimeTot,
     } = this.state;
     // console.log(table);
     const thc = 700 * Math.pow(10, 3);
     return (
       <div>
         <main className="block-body auction">
-          <Pane
-            boxShadow="0px 0px 5px #36d6ae"
-            paddingX={20}
-            paddingY={20}
-            marginY={20}
-          >
-            <Text fontSize="16px" color="#fff">
-              You do not have control over the brain. You need EUL tokens to let
-              she hear you. If you came from Ethereum or Cosmos you can claim
-              the gift of gods. Then start prepare to the greatest tournament in
-              universe: <a href="#/gol">Game of Links</a>.
-            </Text>
-          </Pane>
+          <InfoPane openTime={typeTime} startTimeTot={startTimeTot} />
           <Statistics
             round={roundThis}
             roundAll={numberOfDays}
@@ -530,6 +561,7 @@ class Auction extends PureComponent {
           minRound={roundThis}
           maxRound={numberOfDays}
           claimed={claimedAll}
+          startAuction={typeTime === 'intro'}
         />
       </div>
     );

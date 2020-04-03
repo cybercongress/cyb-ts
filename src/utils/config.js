@@ -1,18 +1,21 @@
 const AUCTION = {
-  ADDR_SMART_CONTRACT: '0x76c0489ea9ef1deee4370910956a1e9e81a637ba',
+  ADDR_SMART_CONTRACT: '0xedd9ac4d6bbcac74fbbdcede0c934f69b3cdfa98',
+  ADDR_VESTING: '0x2c1b8763e6d291e24cb3241918d75d74f7945794',
   TOKEN_NAME: 'GOL',
   TOPICS_SEND:
     '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
   TOPICS_CLAIM:
     '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
+  TOPICS_VESTING:
+    '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
   HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
 };
 
 const NETWORKSIDS = {
-  42: 'kovan',
-  1: 'main',
-  5777: 'TestNet',
-  4: 'rinkeby',
+  main: 1,
+  rinkeby: 4,
+  kovan: 42,
+  TestNet: 5777,
 };
 
 const TAKEOFF = {
@@ -30,11 +33,11 @@ const TAKEOFF = {
 };
 
 const COSMOS = {
-  ADDR_FUNDING: 'cosmos18d2wdn0k70ll75ev3wu73yzazsprxeylv7mvd6',
+  ADDR_FUNDING: 'cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq',
   CHAIN_ID: 'cosmoshub-3',
-  DEFAULT_GAS: 150000,
+  DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd/',
+  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai',
   GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
@@ -44,10 +47,11 @@ const COSMOS = {
 const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'eul',
-  DENOM_CYBER_G: 'G',
+  DENOM_CYBER_G: `GEUL`,
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
   CYBER_NODE_URL: 'https://titan.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
 
 const LEDGER = {
@@ -68,7 +72,7 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
-const GENESIS_SUPPLY = 100000000000000;
+const GENESIS_SUPPLY = 1000000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
 const DISTRIBUTION = [
@@ -107,6 +111,12 @@ const DISTRIBUTION = [
 ];
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
+const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
+const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
+const PATTERN_TX = /[0-9A-F]{64}$/g;
+const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 
 export {
   TAKEOFF,
@@ -119,4 +129,10 @@ export {
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
+  PATTERN_CYBER,
+  PATTERN_CYBER_VALOPER,
+  PATTERN_TX,
+  PATTERN_IPFS_HASH,
+  PATTERN_COSMOS,
+  PATTERN_ETH,
 };

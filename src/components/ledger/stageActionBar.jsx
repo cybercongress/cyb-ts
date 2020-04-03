@@ -2,6 +2,7 @@ import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LocalizedStrings from 'react-localization';
+import { Link } from 'react-router-dom';
 import {
   ActionBar,
   Button,
@@ -10,9 +11,14 @@ import {
   Text,
   Select,
   Textarea,
+  FilePicker,
 } from '@cybercongress/gravity';
-import { ContainetLedger, Loading, FormatNumber } from '../index';
-import { formatNumber } from '../../utils/search/utils';
+import { ContainetLedger } from './container';
+import { Loading } from '../ui/loading';
+import Account from '../account/account';
+import { FormatNumber } from '../formatNumber/formatNumber';
+
+import { formatNumber } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -94,30 +100,46 @@ export const Confirmed = ({
     >
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
         {T.actionBar.confirmedTX.blockTX}{' '}
-        <span
+        <Link
+          to={`/network/euler-5/block/${txHeight}`}
           style={{
-            color: '#3ab793',
             marginLeft: '5px',
           }}
         >
           {formatNumber(txHeight)}
-        </span>
+        </Link>
       </p>
 
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn"
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '0 auto',
-        }}
-        href={`https://${explorer || 'cyberd.ai'}/transactions/${txHash}`}
-      >
-        {T.actionBar.confirmedTX.viewTX}
-      </a>
+      {explorer ? (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto',
+          }}
+          href={`https://${explorer}/transactions/${txHash}`}
+        >
+          {T.actionBar.confirmedTX.viewTX}
+        </a>
+      ) : (
+        <Link
+          to={`/network/euler-5/tx/${txHash}`}
+          className="btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto',
+          }}
+        >
+          {T.actionBar.confirmedTX.viewTX}
+        </Link>
+      )}
+
       <div style={{ marginTop: '25px' }}>
         <span>{T.actionBar.confirmedTX.tXHash}</span>
         <span
@@ -131,6 +153,39 @@ export const Confirmed = ({
         </span>
       </div>
 
+      <div style={{ marginTop: '25px', textAlign: 'center' }}>
+        <button type="button" className="btn" onClick={onClickBtn}>
+          {T.actionBar.confirmedTX.continue}
+        </button>
+      </div>
+    </div>
+  </ContainetLedger>
+);
+
+export const TransactionError = ({
+  onClickBtn,
+  onClickBtnCloce,
+  errorMessage,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <span className="font-size-20 display-inline-block text-align-center">
+      Transaction Error:
+    </span>
+    <div
+      style={{ marginTop: '25px', width: '80%', margin: '0 auto' }}
+      className="display-flex flex-direction-column"
+    >
+      <p style={{ marginBottom: 20, textAlign: 'center' }}>
+        Message:
+        <span
+          style={{
+            color: '#3ab793',
+            marginLeft: '5px',
+          }}
+        >
+          {errorMessage}
+        </span>
+      </p>
       <div style={{ marginTop: '25px', textAlign: 'center' }}>
         <button type="button" className="btn" onClick={onClickBtn}>
           {T.actionBar.confirmedTX.continue}
@@ -250,21 +305,60 @@ export const StartStageSearchActionBar = ({
   onClickBtn,
   contentHash,
   onChangeInputContentHash,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <input
-        value={contentHash}
-        style={{ height: 42, width: '60%' }}
-        onChange={e => onChangeInputContentHash(e)}
-        placeholder="paste a hash"
-      />
-    </ActionBarContentText>
-    <Button disabled={!contentHash.length} onClick={onClickBtn}>
-      {T.actionBar.startSearch.cyberlink}
-    </Button>
-  </ActionBar>
-);
+  showOpenFileDlg,
+  inputOpenFileRef,
+  onChangeInput,
+  onClickClear,
+  file,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          flexDirection="column"
+          position="relative"
+          width="60%"
+        >
+          <input
+            value={contentHash}
+            style={{ height: 42, width: '100%', paddingRight: '35px' }}
+            onChange={e => onChangeInputContentHash(e)}
+            placeholder="paste a hash"
+          />
+          <Pane
+            position="absolute"
+            right="0"
+            top="50%"
+            transform="translate(0, -50%)"
+          >
+            <input
+              ref={inputOpenFileRef}
+              onChange={() => onChangeInput(inputOpenFileRef)}
+              type="file"
+              style={{ display: 'none' }}
+            />
+            <button
+              className={
+                file !== null && file !== undefined
+                  ? 'btn-add-close'
+                  : 'btn-add-file'
+              }
+              onClick={
+                file !== null && file !== undefined
+                  ? onClickClear
+                  : showOpenFileDlg
+              }
+            />
+          </Pane>
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={!contentHash.length} onClick={onClickBtn}>
+        {T.actionBar.startSearch.cyberlink}
+      </Button>
+    </ActionBar>
+  );
+};
 
 export const GovernanceStartStageActionBar = ({
   valueSelect,
@@ -531,6 +625,7 @@ export const Delegate = ({
   onChangeInputAmount,
   toSend,
   disabledBtn,
+  delegate,
 }) => (
   <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
     <Pane display="flex" flexDirection="column" alignItems="center">
@@ -543,11 +638,15 @@ export const Delegate = ({
         {address}
       </Text>
       <Text fontSize="30px" lineHeight="40px" color="#fff">
-        {T.actionBar.delegate.details}
+        {delegate
+          ? T.actionBar.delegate.details
+          : T.actionBar.delegate.detailsUnDelegate}
       </Text>
 
       <Text fontSize="18px" lineHeight="30px" color="#fff">
-        {T.actionBar.delegate.wallet}
+        {delegate
+          ? T.actionBar.delegate.wallet
+          : T.actionBar.delegate.yourDelegated}
       </Text>
       <Text
         display="flex"
@@ -558,19 +657,17 @@ export const Delegate = ({
       >
         <FormatNumber
           marginRight={5}
-          number={formatNumber(
-            Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000,
-            3
-          )}
+          number={formatNumber(balance / DIVISOR_CYBER_G, 6)}
         />
-        {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}
+        {DENOM_CYBER_G.toUpperCase()}
       </Text>
 
       <Pane marginTop={20}>
         <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount}{' '}
-          {(DENOM_CYBER_G + DENOM_CYBER).toUpperCase()}{' '}
-          {T.actionBar.delegate.delegate.toLowerCase()}{' '}
+          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+          {delegate
+            ? T.actionBar.delegate.delegate
+            : T.actionBar.delegate.unDelegateFrom}{' '}
           <Text fontSize="20px" color="#fff" fontWeight={600}>
             {moniker}
           </Text>
@@ -596,6 +693,105 @@ export const Delegate = ({
         >
           {T.actionBar.delegate.max}
         </button>
+      </Pane>
+      <button
+        type="button"
+        className="btn-disabled"
+        onClick={generateTx}
+        style={{ height: 42, maxWidth: '200px' }}
+        disabled={disabledBtn}
+      >
+        {T.actionBar.delegate.generate}
+      </button>
+    </Pane>
+  </ContainetLedger>
+);
+
+export const ReDelegate = ({
+  address,
+  onClickBtnCloce,
+  generateTx,
+  onChangeInputAmount,
+  toSend,
+  disabledBtn,
+  validators,
+  validatorsAll,
+  valueSelect,
+  onChangeReDelegate,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <Pane display="flex" flexDirection="column" alignItems="center">
+      <Text
+        marginBottom={20}
+        fontSize="16px"
+        lineHeight="25.888px"
+        color="#fff"
+      >
+        {address}
+      </Text>
+      <Text fontSize="30px" lineHeight="40px" color="#fff">
+        Restake details
+      </Text>
+
+      <Text fontSize="18px" lineHeight="30px" color="#fff">
+        {T.actionBar.delegate.yourDelegated}
+      </Text>
+      <Text
+        display="flex"
+        justifyContent="center"
+        fontSize="20px"
+        lineHeight="25.888px"
+        color="#3ab793"
+      >
+        <FormatNumber
+          marginRight={5}
+          number={formatNumber(validators.delegation / DIVISOR_CYBER_G, 6)}
+        />
+        {DENOM_CYBER_G.toUpperCase()}
+      </Text>
+
+      <Pane marginY={20}>
+        <Text fontSize="16px" color="#fff">
+          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+          restake from{' '}
+          <Text fontSize="20px" color="#fff" fontWeight={600}>
+            {validators.description.moniker}
+          </Text>
+        </Text>
+      </Pane>
+      <Pane marginBottom={30} display="flex" alignItems="center">
+        <input
+          value={toSend}
+          style={{
+            height: 32,
+            width: '70px',
+            marginRight: 10,
+          }}
+          onChange={onChangeInputAmount}
+          placeholder="amount"
+        />
+        <Pane display="flex" alignItems="center">
+          to:{' '}
+          <select value={valueSelect} onChange={onChangeReDelegate}>
+            <option value="">pick hero</option>
+            {validatorsAll
+              .filter(validator => validator.status > 0)
+              .map(item => (
+                <option
+                  key={item.operator_address}
+                  value={item.operator_address}
+                  style={{
+                    display:
+                      validators.operator_address === item.operator_address
+                        ? 'none'
+                        : 'block',
+                  }}
+                >
+                  {item.description.moniker}
+                </option>
+              ))}
+          </select>
+        </Pane>
       </Pane>
       <button
         type="button"
@@ -843,3 +1039,59 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
     </div>
   </div>
 );
+
+export const RewardsDelegators = ({
+  data,
+  address,
+  onClickBtn,
+  onClickBtnCloce,
+  disabledBtn,
+}) => {
+  const itemReward = data.rewards.map(item => (
+    <Pane
+      key={item.validator_address}
+      display="flex"
+      justifyContent="space-between"
+    >
+      <Account address={item.validator_address} />
+      <Pane>
+        {formatNumber(Math.floor(item.reward[0].amount))}{' '}
+        {CYBER.DENOM_CYBER.toUpperCase()}
+      </Pane>
+    </Pane>
+  ));
+  return (
+    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+      <Text
+        marginBottom={20}
+        fontSize="16px"
+        lineHeight="25.888px"
+        color="#fff"
+      >
+        {address}
+      </Text>
+      <Pane fontSize="20px" marginBottom={20}>
+        Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
+        {CYBER.DENOM_CYBER.toUpperCase()}
+      </Pane>
+      Rewards:
+      <Pane marginTop={10} marginBottom={30}>
+        <Pane marginBottom={5} display="flex" justifyContent="space-between">
+          <Pane>Address</Pane>
+          <Pane>Amount</Pane>
+        </Pane>
+        <Pane>{itemReward}</Pane>
+      </Pane>
+      <div className="text-align-center">
+        <button
+          type="button"
+          className="btn-disabled"
+          disabled={disabledBtn}
+          onClick={onClickBtn}
+        >
+          {T.actionBar.send.generate}
+        </button>
+      </div>
+    </ContainetLedger>
+  );
+};
