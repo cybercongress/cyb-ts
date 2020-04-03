@@ -23,6 +23,7 @@ import {
   getTotalEUL,
   getAmountATOM,
   getInlfation,
+  getcommunityPool,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -109,6 +110,7 @@ class Brain extends React.Component {
       capATOM: 0,
       averagePrice: 0,
       capETH: 0,
+      communityPool: 0,
     };
   }
 
@@ -243,6 +245,7 @@ class Brain extends React.Component {
     const validatorsStatistic = await getValidators();
     const status = await statusNode();
     const dataInlfation = await getInlfation();
+    const dataCommunityPool = await getcommunityPool();
     const {
       linksCount,
       cidsCount,
@@ -253,6 +256,7 @@ class Brain extends React.Component {
       supplyTotal,
     } = statisticContainer;
     let inlfation = 0;
+    let communityPool = 0;
     const activeValidatorsCount = validatorsStatistic;
 
     const chainId = status.node_info.network;
@@ -265,6 +269,10 @@ class Brain extends React.Component {
       inlfation = dataInlfation;
     }
 
+    if (dataCommunityPool !== null) {
+      communityPool = Math.floor(parseFloat(dataCommunityPool[0].amount));
+    }
+
     this.setState({
       linksCount,
       cidsCount,
@@ -272,6 +280,7 @@ class Brain extends React.Component {
       blockNumber: height,
       linkPrice,
       totalCyb,
+      communityPool,
       stakedCyb,
       activeValidatorsCount: activeValidatorsCount.length,
       chainId,
@@ -324,6 +333,7 @@ class Brain extends React.Component {
       takeofPrice,
       capATOM,
       selected,
+      communityPool,
       inlfation,
     } = this.state;
 
@@ -473,6 +483,12 @@ class Brain extends React.Component {
         gridGap="20px"
         justifyContent="center"
       >
+        <Link to="/governance">
+          <CardStatisics
+            title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
+            value={formatNumber(communityPool)}
+          />
+        </Link>
         <Link to="network/euler-5/parameters">
           <CardStatisics title="Network parameters" value={30} />
         </Link>
@@ -531,35 +547,22 @@ class Brain extends React.Component {
               </Text>
             </Pane>
           )}
+          <Pane
+            marginY={20}
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridGap="20px"
+          >
+            <div />
+            <Link to="/network/euler-5/block">
+              <CardStatisics
+                title={chainId}
+                value={formatNumber(blockNumber)}
+              />
+            </Link>
+            <div />
+          </Pane>
 
-          {amount > 0 && (
-            <Pane
-              marginY={20}
-              display="grid"
-              gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-              gridGap="20px"
-            >
-              <CardStatisics
-                title={T.brain.yourTotal}
-                value={formatNumber(Math.floor(amount))}
-              />
-              <CardStatisics
-                title={T.brain.percentSupply}
-                value={
-                  <FormatNumber
-                    fontSizeDecimal={18}
-                    number={roundNumber((amount / totalCyb) * 100, 6)}
-                  />
-                }
-              />
-              <Link to="/network/euler-5/block">
-                <CardStatisics
-                  title={chainId}
-                  value={formatNumber(blockNumber)}
-                />
-              </Link>
-            </Pane>
-          )}
           <Tablist
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"

@@ -29,6 +29,8 @@ import Txs from './containers/txs';
 import Block from './containers/blok';
 import ParamNetwork from './containers/parameters';
 
+import { TIME_START } from './utils/config';
+
 const IPFS = require('ipfs');
 
 export const history = createBrowserHistory({});
@@ -56,7 +58,7 @@ class AppRouter extends React.Component {
     } else {
       resultGMT = `GMT-${offset / 60}`;
     }
-    const deadline = `Mart 30 2020 21:59:00 ${resultGMT}`;
+    const deadline = `${TIME_START} ${resultGMT}`;
     const startTime = Date.parse(deadline) - Date.parse(new Date());
     console.log(startTime);
     if (startTime <= 0) {
@@ -66,14 +68,14 @@ class AppRouter extends React.Component {
     }
   }
 
-  init = () => {
+  init = async () => {
     const { setIpfsStatusProps } = this.props;
     setIpfsStatusProps(false);
     this.setState({
-      loader: false,
+      // loader: false,
       time: false,
     });
-    // await this.initIpfsNode();
+    await this.initIpfsNode();
   };
 
   getTimeRemaining = endtime => {
@@ -209,8 +211,11 @@ class AppRouter extends React.Component {
             flexDirection: 'column',
           }}
         >
-          <div className="countdown-time text-glich" data-text="Start">
-            Start
+          <div
+            className="countdown-time text-glich"
+            data-text="euler-6 will start in"
+          >
+            euler-6 will start in
           </div>
           <Timer
             days={days}
