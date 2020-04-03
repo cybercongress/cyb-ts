@@ -1017,3 +1017,15 @@ export const getTxCosmos = async () => {
   }
 };
 
+export const getcommunityPool = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
