@@ -91,7 +91,7 @@ const MsgType = ({ type }) => {
       return <ContainerTitle>—</ContainerTitle>;
 
     default:
-      return { type };
+      return <div>{type}</div>;
   }
 };
 

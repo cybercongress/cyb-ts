@@ -9,7 +9,7 @@ Built with the help of [gravity](https://github.com/cybercongress/gravity), [cyb
 - search
 - cyberlinking
 - transfer and stake CYBs
-- brain monitoring
+- brain monitoring.
 
 ## Build
 
