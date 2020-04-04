@@ -56,14 +56,7 @@ class AppRouter extends React.Component {
   }
 
   async componentDidMount() {
-    let resultGMT;
-    const offset = new Date().getTimezoneOffset();
-    if (offset < 0) {
-      resultGMT = `GMT+${offset / -60}`;
-    } else {
-      resultGMT = `GMT-${offset / 60}`;
-    }
-    const deadline = `${TIME_START} ${resultGMT}`;
+    const deadline = `${TIME_START}`;
     const startTime = Date.parse(deadline) - Date.parse(new Date());
     console.log(startTime);
     if (startTime <= 0) {
