@@ -15,7 +15,6 @@ const GET_CHARACTERS = gql`
       timestamp
       pre_commits
       proposer_address
-      num_txs
       transactions {
         messages
         txhash
@@ -47,7 +46,11 @@ function BlockDetails({ match }) {
   return (
     <div>
       <main className="block-body">
-        <InformationBlock marginBottom={20} data={data.block[0]} />
+        <InformationBlock
+          numbTx={data.block[0].transactions}
+          marginBottom={20}
+          data={data.block[0]}
+        />
         <CardTemplate title="Transactions">
           <TableTxs data={data.block[0].transactions} />
         </CardTemplate>

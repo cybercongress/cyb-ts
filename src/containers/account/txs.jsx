@@ -26,7 +26,7 @@ export default function GetTxs({ accountUser }) {
   subscription MyQuery {
     transaction(order_by: {block: {height: desc}}, where: {_or: [{
       subject: {_eq: "${accountUser}"}}, 
-      {message: {value: 
+      {messagesByTxhash: {value: 
         {_contains: {to_address: "${accountUser}"}
       }}}]}
     ) {

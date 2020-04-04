@@ -13,7 +13,7 @@ function Leadership({ accountUser }) {
         order_by: { height: desc }
         where: {
           _and: [
-            { message: { type: { _in: ${typeTx} } } }
+            { messagesByTxhash: { type: { _in: ${typeTx} } } }
             { subject: { _eq: "${accountUser}" } }
           ]
         }

@@ -461,8 +461,15 @@ export const getTotalEUL = async data => {
       data.delegations !== 0
     ) {
       data.delegations.forEach((delegation, i) => {
-        balance.total += Math.floor(parseFloat(delegation.balance.amount));
-        balance.delegation += Math.floor(parseFloat(delegation.balance.amount));
+        if (delegation.balance.amount) {
+          balance.total += Math.floor(parseFloat(delegation.balance.amount));
+          balance.delegation += Math.floor(
+            parseFloat(delegation.balance.amount)
+          );
+        } else {
+          balance.total += Math.floor(parseFloat(delegation.balance));
+          balance.delegation += Math.floor(parseFloat(delegation.balance));
+        }
       });
     }
 
@@ -644,7 +651,7 @@ export const getTotalRewards = async delegatorAddr => {
   }
 };
 
-export const getDelegations = async address => {
+export const getDelegations = async (address, node = CYBER_NODE_URL_LCD) => {
   try {
     const response = await axios({
       method: 'get',
@@ -653,7 +660,7 @@ export const getDelegations = async address => {
     return response.data.result;
   } catch (e) {
     console.log(e);
-    return 0;
+    return null;
   }
 };
 
@@ -945,6 +952,19 @@ export const getParamNetwork = async (address, node) => {
   }
 };
 
+export const getAvailable = async (address, node = CYBER_NODE_URL_LCD) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${node}/bank/balances/${address}`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getInlfation = async () => {
   try {
     const response = await axios({
@@ -958,11 +978,24 @@ export const getInlfation = async () => {
   }
 };
 
-export const getcommunityPool = async () => {
+export const getUnbonding = async (address, node = CYBER_NODE_URL_LCD) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
+      url: `${node}/staking/delegators/${address}/unbonding_delegations`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getRewardsAll = async (address, node = CYBER_NODE_URL_LCD) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${node}/distribution/delegators/${address}/rewards`,
     });
     return response.data.result;
   } catch (e) {
@@ -978,6 +1011,19 @@ export const getTxCosmos = async () => {
       url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000`,
     });
     return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getcommunityPool = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
+    });
+    return response.data.result;
   } catch (e) {
     console.log(e);
     return null;
