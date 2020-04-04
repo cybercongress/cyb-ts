@@ -48,13 +48,7 @@ const {
 const imgLedger = require('../../image/ledger.svg');
 
 const Row = ({ title, value, marginBottomValue, fontSizeValue, ...props }) => (
-  <Pane
-    width="100%"
-    display="flex"
-    flexDirection="column"
-    alignItems="center"
-    {...props}
-  >
+  <Pane width="100%" display="flex" alignItems="center" {...props}>
     <Pane fontSize={fontSizeValue} marginBottom={marginBottomValue}>
       {value}
     </Pane>
@@ -408,70 +402,76 @@ class Wallet extends React.Component {
                 display="flex"
                 flexDirection="column"
                 className="container-card"
-                paddingX={10}
+                paddingX={20}
                 paddingTop={15}
                 paddingBottom={40}
-                height="300px"
+                height="200px"
+                width="60%"
+                maxWidth="unset"
               >
-                <Pane flex={1}>
-                  <Row
-                    marginBottom={25}
-                    fontSizeValue="18px"
-                    value={
-                      <Pane display="flex" alignItems="center">
-                        <img
-                          style={{ width: 20, height: 20, marginRight: 5 }}
-                          src={imgLedger}
-                          alt="ledger"
-                        />
-                        <div>{trimString(pocket.pk, 6, 6)}</div>
-                      </Pane>
-                    }
-                    title="pubkey"
-                  />
-                  <Row
-                    marginBottom={20}
-                    marginBottomValue={5}
-                    value={
-                      <Pane display="flex" alignItems="center">
-                        <Link
-                          to={`/network/euler-5/contract/${pocket.cyber.address}`}
-                        >
-                          <div>{trimString(pocket.cyber.address, 11, 6)}</div>
-                        </Link>
-                        <Copy text={pocket.cyber.address} />
-                      </Pane>
-                    }
-                    title={formatCurrency(
-                      pocket.cyber.amount,
-                      pocket.cyber.token
-                    )}
-                  />
-                  <Row
-                    marginBottom={20}
-                    marginBottomValue={5}
-                    value={
-                      <Pane display="flex" alignItems="center">
-                        <a
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          href={`https://www.mintscan.io/account/${pocket.cosmos.address}`}
-                        >
-                          <div>{trimString(pocket.cosmos.address, 12, 6)}</div>
-                        </a>
-                        <Copy text={pocket.cosmos.address} />
-                      </Pane>
-                    }
-                    title={
-                      <div>
-                        {pocket.cosmos.amount.toPrecision(2)}{' '}
-                        {pocket.cosmos.token}
-                      </div>
-                    }
-                  />
-                </Pane>
+                <Row
+                  marginBottom={25}
+                  fontSizeValue="18px"
+                  flexDirection="column"
+                  alignItems="flex-start"
+                  value={
+                    <Pane display="flex" alignItems="center">
+                      <img
+                        style={{ width: 20, height: 20, marginRight: 5 }}
+                        src={imgLedger}
+                        alt="ledger"
+                      />
+                      <div>{trimString(pocket.pk, 6, 6)}</div>
+                    </Pane>
+                  }
+                  title="pubkey"
+                />
+                <Row
+                  marginBottom={20}
+                  marginBottomValue={5}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  value={
+                    <Pane display="flex" alignItems="center">
+                      <Link
+                        to={`/network/euler-5/contract/${pocket.cyber.address}`}
+                      >
+                        <div>{trimString(pocket.cyber.address, 11, 6)}</div>
+                      </Link>
+                      <Copy text={pocket.cyber.address} />
+                    </Pane>
+                  }
+                  title={formatCurrency(
+                    pocket.cyber.amount,
+                    pocket.cyber.token
+                  )}
+                />
+                <Row
+                  marginBottom={20}
+                  marginBottomValue={5}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  value={
+                    <Pane display="flex" alignItems="center">
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://www.mintscan.io/account/${pocket.cosmos.address}`}
+                      >
+                        <div>{trimString(pocket.cosmos.address, 12, 6)}</div>
+                      </a>
+                      <Copy text={pocket.cosmos.address} />
+                    </Pane>
+                  }
+                  title={
+                    <div>
+                      {pocket.cosmos.amount.toPrecision(2)}{' '}
+                      {pocket.cosmos.token}
+                    </div>
+                  }
+                />
 
-                <Pane width="80%">
+                {/* <Pane width="80%">
                   <Battery
                     bwPercent={trimString(
                       (
@@ -488,7 +488,7 @@ class Wallet extends React.Component {
                       />
                     }
                   />
-                </Pane>
+                </Pane> */}
               </Pane>
             </Pane>
           </main>

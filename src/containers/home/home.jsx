@@ -237,7 +237,6 @@ class Home extends PureComponent {
                 boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
                 textAlign: 'center',
               }}
-              placeholder="joint for validators"
               value={valueSearchInput}
               onChange={e => this.onChangeInput(e)}
               onKeyPress={this.handleKeyPress}
