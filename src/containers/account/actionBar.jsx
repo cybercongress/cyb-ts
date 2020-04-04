@@ -381,7 +381,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -401,17 +401,20 @@ class ActionBarContainer extends Component {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        updateAddress();
+        if (updateAddress) {
+          updateAddress();
+        }
         return;
       }
-      if (data.code !== undefined && data.code > 0) {
+      if (data.code) {
         this.setState({
           stage: STAGE_ERROR,
+          txHeight: data.height,
           errorMessage: data.raw_log,
         });
         return;
