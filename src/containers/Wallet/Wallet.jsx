@@ -4,7 +4,13 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { FormatNumber, Loading, ConnectLadger, Copy } from '../../components';
+import {
+  FormatNumber,
+  Loading,
+  ConnectLadger,
+  Copy,
+  LinkWindow,
+} from '../../components';
 import withWeb3 from '../../components/web3/withWeb3';
 import NotFound from '../application/notFound';
 import {
@@ -29,7 +35,12 @@ import {
   getAccountBandwidth,
   getCurrentBandwidthPrice,
   getParamBandwidth,
+  getImportLink,
 } from '../../utils/search/utils';
+
+import { downloadObjectAsJson } from '../../utils/utils';
+
+const fs = require('fs');
 
 const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
@@ -96,6 +107,8 @@ class Wallet extends React.Component {
       loading: true,
       accounts: null,
       linkPrice: 0,
+      link: null,
+      importLink: false,
     };
   }
 
@@ -181,10 +194,22 @@ class Wallet extends React.Component {
       console.log('address', address);
       this.setState({ accounts: address });
       this.getAddressInfo();
+      this.getLink();
     } else {
       this.setState({
         addAddress: true,
         loading: false,
+      });
+    }
+  };
+
+  getLink = async () => {
+    const { accounts } = this.state;
+
+    const dataLink = await getImportLink(accounts.cyber.bech32);
+    if (dataLink !== null) {
+      this.setState({
+        link: dataLink,
       });
     }
   };
@@ -313,6 +338,14 @@ class Wallet extends React.Component {
     });
   };
 
+  onClickImportLink = () => {
+    const { importLink } = this.state;
+
+    this.setState({
+      importLink: !importLink,
+    });
+  };
+
   render() {
     const {
       pocket,
@@ -324,6 +357,9 @@ class Wallet extends React.Component {
       ledgerVersion,
       accounts,
       linkPrice,
+      link,
+      bandwidth,
+      importLink,
     } = this.state;
 
     if (loading) {
@@ -376,7 +412,7 @@ class Wallet extends React.Component {
       return (
         <div>
           <main
-            style={{ minHeight: 'calc(100vh - 162px)' }}
+            style={{ minHeight: 'calc(100vh - 162px)', alignItems: 'center' }}
             className="block-body-home"
           >
             <Pane
@@ -393,10 +429,12 @@ class Wallet extends React.Component {
               </Text>
             </Pane>
             <Pane
-              height="100%"
+              width="60%"
               display="flex"
               alignItems="center"
-              justifyContent="space-around"
+              justifyContent="center"
+              flexDirection="column"
+              height="100%"
             >
               <Pane
                 display="flex"
@@ -406,7 +444,7 @@ class Wallet extends React.Component {
                 paddingTop={15}
                 paddingBottom={40}
                 height="200px"
-                width="60%"
+                width="100%"
                 maxWidth="unset"
               >
                 <Row
@@ -470,32 +508,57 @@ class Wallet extends React.Component {
                     </div>
                   }
                 />
-
-                {/* <Pane width="80%">
-                  <Battery
-                    bwPercent={trimString(
-                      (
-                        (parseFloat(pocket.cyber.bandwidth.remained) /
-                          parseFloat(pocket.cyber.bandwidth.max_value)) *
-                        100
-                      ).toPrecision(2)
-                    )}
-                    contentTooltip={
-                      <ContentTooltip
-                        bwRemained={pocket.cyber.bandwidth.remained}
-                        bwMaxValue={pocket.cyber.bandwidth.max_value}
-                        linkPrice={linkPrice}
-                      />
-                    }
-                  />
-                </Pane> */}
               </Pane>
+              <Pane
+                boxShadow="0px 0px 5px #36d6ae"
+                className="container-card"
+                width="100%"
+                maxWidth="unset"
+                paddingX={20}
+                paddingY={20}
+                marginY={20}
+              >
+                <Text fontSize="16px" color="#fff">
+                  Welcome to the intergalactic tournament - Game of Links. GoL -
+                  is the main preparation before{' '}
+                  <Link to="/search/genesis">the main network launch</Link> of{' '}
+                  <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+                    the cyber protocol
+                  </LinkWindow>
+                  . Main goal of the tournament is to collectively bootstrap{' '}
+                  <Link to="/brain">Superintelligence</Link>. Everyone can find
+                  themselves in this fascinating process: we need to setup
+                  physical infrastructure, upload initial knowledge, and create
+                  a reserve for sustaining the project during infancy. Athletes
+                  must solve different parts of the puzzle and could win up to
+                  10% of CYB in the Genesis. <Link to="/gol">Go and play</Link>.
+                </Text>
+              </Pane>
+              {link !== null && (
+                <Pane
+                  boxShadow="0px 0px 5px #36d6ae"
+                  className="container-card"
+                  width="100%"
+                  maxWidth="unset"
+                  paddingX={20}
+                  paddingY={20}
+                  onClick={this.onClickImportLink}
+                >
+                  <Text fontSize="16px" color="#fff">
+                    You created {link !== null && Object.keys(link).length}{' '}
+                    cyberlinks in euler-5. Import
+                  </Text>
+                </Pane>
+              )}
             </Pane>
           </main>
           <ActionBarContainer
+            links={link}
+            importLink={importLink}
             addressTable={accounts.cyber.bech32}
             onClickAddressLedger={this.onClickGetAddressLedger}
             addAddress={addAddress}
+            bandwidth={bandwidth}
             updateAddress={this.checkAddressLocalStorage}
             // onClickSend={}
           />

@@ -12,8 +12,8 @@ import {
   TransactionError,
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
-
-import { getBalanceWallet } from '../../utils/search/utils';
+import { getBalanceWallet, statusNode } from '../../utils/search/utils';
+import { downloadObjectAsJson } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -62,6 +62,10 @@ class ActionBarContainer extends Component {
     this.gasPriceField = React.createRef();
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
+  }
+
+  componentDidMount() {
+    this.pollLedger();
   }
 
   componentDidUpdate() {
@@ -156,31 +160,12 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   getNetworkId = async () => {
-    const data = await this.getStatus();
-    return data.node_info.network;
+    const data = await statusNode();
+    if (data !== null) {
+      return data.node_info.network;
+    }
+    return null;
   };
 
   getAddressInfo = async () => {
@@ -190,15 +175,17 @@ class ActionBarContainer extends Component {
     let addressInfo = {};
     let balance = 0;
     try {
-      const response = await getBalanceWallet(address.bech32);
+      const responseBalanceWallet = await getBalanceWallet(address.bech32);
       const chainId = await this.getNetworkId();
 
-      if (response) {
-        const data = response;
-        addressInfo = data.account;
+      if (responseBalanceWallet) {
+        addressInfo = responseBalanceWallet.account;
         balance = addressInfo.coins[0].amount;
       }
-      addressInfo.chainId = chainId;
+
+      if (chainId !== null) {
+        addressInfo.chainId = chainId;
+      }
 
       if (addressSend) {
         toSendAddres = addressSend;
@@ -244,6 +231,31 @@ class ActionBarContainer extends Component {
       MEMO,
       denom
     );
+    console.log('tx', tx);
+    await this.setState({
+      txMsg: tx,
+      txContext,
+      txBody: null,
+      error: null,
+    });
+    // debugger;
+    this.signTx();
+  };
+
+  generateTxImport = async () => {
+    const { links, addressTable } = this.props;
+    const { ledger, address, addressInfo } = this.state;
+
+    const txContext = {
+      accountNumber: addressInfo.account_number,
+      chainId: addressInfo.chainId,
+      sequence: addressInfo.sequence,
+      bech32: address.bech32,
+      pk: address.pk,
+      path: address.path,
+    };
+    // console.log('txContext', txContext);
+    const tx = await ledger.importLink(txContext, addressTable, links, MEMO);
     console.log('tx', tx);
     await this.setState({
       txMsg: tx,
@@ -350,10 +362,20 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onClickSend = () => {
+  onClickInitLedger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
     });
+  };
+
+  importCli = async () => {
+    const { ledger } = this.state;
+    const { links, addressTable } = this.props;
+
+    if (links !== null) {
+      const tx = await ledger.importLink(null, addressTable, links, MEMO, true);
+      downloadObjectAsJson(tx, 'tx_links');
+    }
   };
 
   cleatState = () => {
@@ -386,7 +408,14 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { onClickAddressLedger, addAddress, addressSend, send, addressInfo } = this.props;
+    const {
+      onClickAddressLedger,
+      addAddress,
+      addressSend,
+      send,
+      addressInfo,
+      importLink,
+    } = this.props;
     const {
       stage,
       connect,
@@ -400,6 +429,7 @@ class ActionBarContainer extends Component {
       txHash,
       errorMessage,
       txHeight,
+      bandwidth,
     } = this.state;
 
     if (addAddress) {
@@ -413,11 +443,23 @@ class ActionBarContainer extends Component {
         </ActionBar>
       );
     }
+
+    if (importLink && stage === STAGE_INIT) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={this.importCli}>use CLI</Button>
+            <Button onClick={this.onClickInitLedger}>use Ledger</Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
     if (!addAddress && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={e => this.onClickSend(e)}>
+            <Button onClick={e => this.onClickInitLedger(e)}>
               {T.actionBar.pocket.send}
             </Button>
           </Pane>
@@ -436,6 +478,14 @@ class ActionBarContainer extends Component {
             this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
           }
         />
+      );
+    }
+
+    if (importLink && stage === STAGE_READY) {
+      return (
+        <div>
+          <button onClick={this.generateTxImport}>ok</button>
+        </div>
       );
     }
 
