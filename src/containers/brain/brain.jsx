@@ -10,6 +10,7 @@ import {
   Button,
   ActionBar,
 } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
@@ -114,7 +115,6 @@ class Brain extends React.Component {
     };
   }
 
-
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     this.getStatisticsBrain();
@@ -126,11 +126,11 @@ class Brain extends React.Component {
     const dataTx = await getTxCosmos();
     console.log(dataTx);
     if (dataTx !== null) {
-      this.getAmountATOM(dataTx.txs);
+      this.getATOM(dataTx.txs);
     }
   };
 
-  getAmountATOM = async dataTxs => {
+  getATOM = async dataTxs => {
     let amount = 0;
     let won = 0;
     let currentPrice = 0;
@@ -326,6 +326,7 @@ class Brain extends React.Component {
       communityPool,
       inlfation,
     } = this.state;
+    const { block } = this.props;
 
     let content;
 
@@ -545,10 +546,7 @@ class Brain extends React.Component {
           >
             <div />
             <Link to="/network/euler-5/block">
-              <CardStatisics
-                title={chainId}
-                value={formatNumber(blockNumber)}
-              />
+              <CardStatisics title={chainId} value={formatNumber(block)} />
             </Link>
             <div />
           </Pane>
@@ -599,4 +597,10 @@ class Brain extends React.Component {
   }
 }
 
-export default Brain;
+const mapStateToProps = store => {
+  return {
+    block: store.block.block,
+  };
+};
+
+export default connect(mapStateToProps)(Brain);
