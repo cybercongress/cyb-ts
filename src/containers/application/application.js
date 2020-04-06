@@ -4,6 +4,7 @@ import {
   AppSideBar,
   NavigationLeft,
   Pane,
+  Battery,
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
@@ -231,7 +232,7 @@ class App extends Component {
               backgroundColor="#000"
               borderRadius={20}
               width="60%"
-              className="box-shadow-input"
+              // className="box-shadow-input"
               height="100%"
             >
               <input
@@ -257,7 +258,15 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-
+          <Pane className="battery-container" width="60px" marginRight="10px">
+            <Battery
+              height="10px"
+              styleText={{ whiteSpace: 'nowrap' }}
+              fontSize={9}
+              colorText="#000"
+              bwPercent={50}
+            />
+          </Pane>
           <MenuButton
             to="/pocket"
             imgLogo={ipfsStatus ? cybTrue : cybFalse}

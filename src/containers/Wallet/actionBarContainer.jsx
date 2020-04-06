@@ -449,7 +449,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={this.importCli}>use CLI</Button>
-            <Button onClick={this.onClickInitLedger}>use Ledger</Button>
+            {/* <Button onClick={this.onClickInitLedger}>use Ledger</Button> */}
           </Pane>
         </ActionBar>
       );
@@ -481,13 +481,13 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (importLink && stage === STAGE_READY) {
-      return (
-        <div>
-          <button onClick={this.generateTxImport}>ok</button>
-        </div>
-      );
-    }
+    // if (importLink && stage === STAGE_READY) {
+    //   return (
+    //     <div>
+    //       <button onClick={this.generateTxImport}>ok</button>
+    //     </div>
+    //   );
+    // }
 
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       // if (this.state.stage === STAGE_READY) {
