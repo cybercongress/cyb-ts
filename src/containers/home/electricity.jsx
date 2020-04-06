@@ -1,5 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { CYBER } from '../../utils/config';
+import { setBlock } from '../../redux/actions/block';
 
 const { CYBER_WEBSOCKET_URL } = CYBER;
 
@@ -20,6 +22,8 @@ class Electricity extends React.Component {
   }
 
   getDataWS = () => {
+    const { setBlockProps } = this.props;
+
     this.ws.onopen = () => {
       console.log('connected');
       this.ws.send(
@@ -32,8 +36,11 @@ class Electricity extends React.Component {
       );
     };
     this.ws.onmessage = async evt => {
-      // const message = JSON.parse(evt.data);
-      // console.log('message', message);
+      const message = JSON.parse(evt.data);
+      if (message.result.data.value.header.height) {
+        const block = message.result.data.value.header.height;
+        setBlockProps(block);
+      }
       this.run();
     };
 
@@ -135,4 +142,10 @@ class Electricity extends React.Component {
   }
 }
 
-export default Electricity;
+const mapDispatchprops = dispatch => {
+  return {
+    setBlockProps: block => dispatch(setBlock(block)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(Electricity);

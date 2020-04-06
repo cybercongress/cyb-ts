@@ -41,7 +41,7 @@ export const Row = ({ value, title, marginBottom }) => (
   </Pane>
 );
 
-const InformationBlock = ({ data, marginBottom }) => {
+const InformationBlock = ({ data, numbTx, marginBottom }) => {
   return (
     <CardTemplate
       marginBottom={marginBottom}
@@ -54,7 +54,7 @@ const InformationBlock = ({ data, marginBottom }) => {
         title="Block Time"
       />
       <Row value={trimString(data.hash, 6, 6)} title="Block Hash" />
-      <Row value={data.num_txs} title="Number of Transactions" />
+      <Row value={Object.keys(numbTx).length} title="Number of Transactions" />
     </CardTemplate>
   );
 };
