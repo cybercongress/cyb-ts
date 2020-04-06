@@ -35,7 +35,7 @@ const TAKEOFF = {
 };
 
 const COSMOS = {
-  ADDR_FUNDING: 'cosmos16ahkkv0jzhtp73z83qlhqrypss6jpjm862zjst',
+  ADDR_FUNDING: 'cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq',
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
