@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Navigation,
   AppSideBar,
   NavigationLeft,
   Pane,
-  Battery,
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
-import { connect } from 'react-redux';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { MenuButton } from '../../components';
+import { MenuButton, BandwidthBar } from '../../components';
 import Electricity from '../home/electricity';
+import { getAccountBandwidth } from '../../utils/search/utils';
+import { setBandwidth } from '../../redux/actions/bandwidth';
 
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');
@@ -54,12 +55,15 @@ class App extends Component {
       story,
       valueSearchInput: '',
       home: false,
+      battery: false,
+      address: null,
     };
     this.routeChange = this.routeChange.bind(this);
   }
 
   componentDidMount() {
     this.chekHomePage();
+    this.checkAddressLocalStorage();
   }
 
   componentDidUpdate(prevProps) {
@@ -72,11 +76,42 @@ class App extends Component {
       if (location.pathname.indexOf(valueSearchInput) === -1) {
         this.clearInrut();
       }
+      this.getBandwidth();
       // document.onkeypress = e => {
       //   document.getElementById('search-input-searchBar').focus();
       // };
     }
   }
+
+  checkAddressLocalStorage = async () => {
+    let address = [];
+
+    const localStorageStory = localStorage.getItem('pocket');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      if (address.cyber.bech32) {
+        this.setState({ address: address.cyber.bech32, battery: true });
+        this.getBandwidth();
+      }
+    } else {
+      this.setState({
+        battery: false,
+      });
+    }
+  };
+
+  getBandwidth = async () => {
+    const { address } = this.state;
+    const { setBandwidthProps } = this.props;
+    if (address !== null) {
+      const dataAccountBandwidth = await getAccountBandwidth(address);
+
+      if (dataAccountBandwidth !== null) {
+        const { remained, max_value: maxValue } = dataAccountBandwidth;
+        setBandwidthProps(remained, maxValue);
+      }
+    }
+  };
 
   updateInput = () => {
     const { query } = this.props;
@@ -164,8 +199,10 @@ class App extends Component {
   };
 
   render() {
-    const { openMenu, story, home, valueSearchInput } = this.state;
-    const { children, location, ipfsStatus } = this.props;
+    const { openMenu, story, home, valueSearchInput, battery } = this.state;
+    const { children, location, ipfsStatus, bandwidth } = this.props;
+
+    console.log('bandwidth', bandwidth);
 
     if (!story && home) {
       this.routeChange('/episode-1');
@@ -258,15 +295,18 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Pane className="battery-container" width="60px" marginRight="10px">
-            <Battery
-              height="10px"
-              styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={9}
-              colorText="#000"
-              bwPercent={50}
-            />
-          </Pane>
+          {battery && (
+            <Pane className="battery-container" width="60px" marginRight="10px">
+              <BandwidthBar
+                height="10px"
+                styleText={{ whiteSpace: 'nowrap' }}
+                fontSize={9}
+                colorText="#000"
+                bwRemained={bandwidth.remained}
+                bwMaxValue={bandwidth.maxValue}
+              />
+            </Pane>
+          )}
           <MenuButton
             to="/pocket"
             imgLogo={ipfsStatus ? cybTrue : cybFalse}
@@ -295,7 +335,15 @@ class App extends Component {
 const mapStateToProps = store => {
   return {
     ipfsStatus: store.ipfs.statusIpfs,
+    bandwidth: store.bandwidth.bandwidth,
   };
 };
 
-export default connect(mapStateToProps)(App);
+const mapDispatchprops = dispatch => {
+  return {
+    setBandwidthProps: (remained, maxValue) =>
+      dispatch(setBandwidth(remained, maxValue)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(App);

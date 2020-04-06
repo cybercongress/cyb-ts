@@ -28,6 +28,7 @@ import MsgType from './msgType/msgType';
 import TextTable from './text/textTable';
 import StatusTx from './statusTx';
 import Vitalik from './vitalik';
+import BandwidthBar from './BandwidthBar';
 
 export {
   RowTableTakeoff,
@@ -58,6 +59,7 @@ export {
   StatusTx,
   Vitalik,
   ContributeATOMs,
+  BandwidthBar,
 };
 
 export { Nums } from './ui/Numbers';
