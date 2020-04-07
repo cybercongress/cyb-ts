@@ -543,7 +543,6 @@ export const getDrop = async address => {
     });
     return response.data;
   } catch (e) {
-    console.log(e);
     return 0;
   }
 };

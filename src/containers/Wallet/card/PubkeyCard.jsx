@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { PocketCard } from '../components';
-import { Copy } from '../../../components';
-import { trimString, formatCurrency } from '../../../utils/utils';
+import { Copy, Dots } from '../../../components';
+import { trimString, formatCurrency, getDelegator } from '../../../utils/utils';
+import { getDrop } from '../../../utils/search/utils';
 
 const imgLedger = require('../../../image/ledger.svg');
 
@@ -17,13 +18,29 @@ const Row = ({ title, value, marginBottomValue, fontSizeValue, ...props }) => (
 );
 
 function PubkeyCard({ pocket, ...props }) {
+  const [gift, setGift] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const feachData = async () => {
+      if (pocket.cosmos) {
+        const dataDrop = await getDrop(pocket.cosmos.address);
+        if (dataDrop !== 0) {
+          setGift(dataDrop.gift);
+        }
+        setLoading(false);
+      }
+    };
+    feachData();
+  }, []);
+
   return (
     <PocketCard
       display="flex"
       flexDirection="column"
       paddingTop={15}
       paddingBottom={40}
-      height="200px"
+      minHeight="200px"
       {...props}
     >
       <Row
@@ -77,8 +94,28 @@ function PubkeyCard({ pocket, ...props }) {
         }
         title={
           <div>
-            {pocket.cosmos.amount.toPrecision(2)} {pocket.cosmos.token}
+            {pocket.cosmos.amount.toPrecision(2)}{' '}
+            {pocket.cosmos.token.toUpperCase()}
           </div>
+        }
+      />
+      <Row
+        marginBottomValue={5}
+        alignItems="center"
+        justifyContent="space-between"
+        value={
+          <Pane display="flex" alignItems="center">
+            <div>{trimString(pocket.cyber.address, 11, 6)}</div>
+          </Pane>
+        }
+        title={
+          loading ? (
+            <span>
+              <Dots /> CYB
+            </span>
+          ) : (
+            formatCurrency(gift, 'CYB')
+          )
         }
       />
     </PocketCard>

@@ -76,7 +76,7 @@ class App extends Component {
       if (location.pathname.indexOf(valueSearchInput) === -1) {
         this.clearInrut();
       }
-      this.getBandwidth();
+      this.checkAddressLocalStorage();
       // document.onkeypress = e => {
       //   document.getElementById('search-input-searchBar').focus();
       // };
@@ -84,24 +84,21 @@ class App extends Component {
   }
 
   checkAddressLocalStorage = async () => {
+    const { setBandwidthProps } = this.props;
     let address = [];
 
     const localStorageStory = localStorage.getItem('pocket');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       if (address.cyber.bech32) {
-        this.setState({ address: address.cyber.bech32, battery: true });
-        this.getBandwidth();
+        this.getBandwidth(address.cyber.bech32);
       }
     } else {
-      this.setState({
-        battery: false,
-      });
+      setBandwidthProps(0, 0);
     }
   };
 
-  getBandwidth = async () => {
-    const { address } = this.state;
+  getBandwidth = async address => {
     const { setBandwidthProps } = this.props;
     if (address !== null) {
       const dataAccountBandwidth = await getAccountBandwidth(address);
@@ -202,8 +199,6 @@ class App extends Component {
     const { openMenu, story, home, valueSearchInput, battery } = this.state;
     const { children, location, ipfsStatus, bandwidth } = this.props;
 
-    console.log('bandwidth', bandwidth);
-
     if (!story && home) {
       this.routeChange('/episode-1');
     }
@@ -295,18 +290,16 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          {battery && (
-            <Pane className="battery-container" width="60px" marginRight="10px">
-              <BandwidthBar
-                height="10px"
-                styleText={{ whiteSpace: 'nowrap' }}
-                fontSize={9}
-                colorText="#000"
-                bwRemained={bandwidth.remained}
-                bwMaxValue={bandwidth.maxValue}
-              />
-            </Pane>
-          )}
+          <Pane className="battery-container" width="60px" marginRight="10px">
+            <BandwidthBar
+              height="10px"
+              styleText={{ whiteSpace: 'nowrap' }}
+              fontSize={9}
+              colorText="#000"
+              bwRemained={bandwidth.remained}
+              bwMaxValue={bandwidth.maxValue}
+            />
+          </Pane>
           <MenuButton
             to="/pocket"
             imgLogo={ipfsStatus ? cybTrue : cybFalse}

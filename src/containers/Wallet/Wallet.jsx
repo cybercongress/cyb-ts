@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { CosmosDelegateTool } from '../../utils/ledger';
 import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
+import { setBandwidth } from '../../redux/actions/bandwidth';
 
 import { LEDGER, COSMOS } from '../../utils/config';
 import { i18n } from '../../i18n/en';
@@ -14,6 +16,7 @@ import {
   getBalance,
   getTotalEUL,
   getImportLink,
+  getAccountBandwidth,
 } from '../../utils/search/utils';
 import { PocketCard } from './components';
 import { PubkeyCard, GolCard, ImportLinkLedger } from './card';
@@ -101,10 +104,10 @@ class Wallet extends React.Component {
   };
 
   checkAddressLocalStorage = async () => {
+    const { setBandwidthProps } = this.props;
     let address = [];
 
     const localStorageStory = await localStorage.getItem('pocket');
-    console.log('localStorageStory', localStorageStory);
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
@@ -119,6 +122,8 @@ class Wallet extends React.Component {
       this.getLocalStorageLink();
       this.getAddressInfo();
     } else {
+      setBandwidthProps(0, 0);
+
       this.setState({
         addAddress: true,
         stage: STAGE_INIT,
@@ -236,6 +241,8 @@ class Wallet extends React.Component {
 
   getAddressInfo = async () => {
     const { accounts } = this.state;
+    const { setBandwidthProps } = this.props;
+
     const pocket = {};
     const addressInfo = {
       address: '',
@@ -244,10 +251,16 @@ class Wallet extends React.Component {
       keys: '',
     };
     const responseCyber = await getBalance(accounts.cyber.bech32);
+    const responseBandwidth = await getAccountBandwidth(accounts.cyber.bech32);
     const responseCosmos = await getBalance(
       accounts.cosmos.bech32,
       COSMOS.GAIA_NODE_URL_LSD
     );
+
+    if (responseBandwidth !== null) {
+      const { remained, max_value: maxValue } = responseBandwidth;
+      setBandwidthProps(remained, maxValue);
+    }
 
     const totalCyber = await getTotalEUL(responseCyber);
     pocket.cyber = {
@@ -520,4 +533,11 @@ class Wallet extends React.Component {
   }
 }
 
-export default Wallet;
+const mapDispatchprops = dispatch => {
+  return {
+    setBandwidthProps: (remained, maxValue) =>
+      dispatch(setBandwidth(remained, maxValue)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(Wallet);
