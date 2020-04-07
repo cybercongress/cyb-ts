@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -243,9 +244,8 @@ class ActionBarContainer extends Component {
   };
 
   generateTxImport = async () => {
-    const { links, addressTable } = this.props;
+    const { linkSelected, addressTable } = this.props;
     const { ledger, address, addressInfo } = this.state;
-
     const txContext = {
       accountNumber: addressInfo.account_number,
       chainId: addressInfo.chainId,
@@ -255,7 +255,12 @@ class ActionBarContainer extends Component {
       path: address.path,
     };
     // console.log('txContext', txContext);
-    const tx = await ledger.importLink(txContext, addressTable, links, MEMO);
+    const tx = await ledger.importLink(
+      txContext,
+      addressTable,
+      linkSelected,
+      MEMO
+    );
     console.log('tx', tx);
     await this.setState({
       txMsg: tx,
@@ -313,7 +318,7 @@ class ActionBarContainer extends Component {
   };
 
   confirmTx = async () => {
-    const { updateAddress } = this.props;
+    const { updateAddress, selectedIndex } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
@@ -324,6 +329,14 @@ class ActionBarContainer extends Component {
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
+
+        const localStorageStoryLink = localStorage.getItem('linksImport');
+        if (localStorageStoryLink !== null) {
+          const linksLocal = JSON.parse(localStorageStoryLink);
+          linksLocal.splice(selectedIndex, 1);
+          localStorage.setItem('linksImport', JSON.stringify(linksLocal));
+        }
+
         if (updateAddress) {
           updateAddress();
         }
@@ -373,7 +386,16 @@ class ActionBarContainer extends Component {
     const { links, addressTable } = this.props;
 
     if (links !== null) {
-      const tx = await ledger.importLink(null, addressTable, links, MEMO, true);
+      const allItem = [].concat.apply([], links);
+
+      console.log(allItem);
+      const tx = await ledger.importLink(
+        null,
+        addressTable,
+        allItem,
+        MEMO,
+        true
+      );
       downloadObjectAsJson(tx, 'tx_links');
     }
   };
@@ -407,6 +429,16 @@ class ActionBarContainer extends Component {
     return this.state.addressInfo !== null;
   }
 
+  deletPubkey = () => {
+    const { updateAddress } = this.props;
+
+    localStorage.removeItem('pocket');
+    localStorage.removeItem('ledger');
+    if (updateAddress) {
+      updateAddress();
+    }
+  };
+
   render() {
     const {
       onClickAddressLedger,
@@ -415,6 +447,8 @@ class ActionBarContainer extends Component {
       send,
       addressInfo,
       importLink,
+      linkSelected,
+      selectCard,
     } = this.props;
     const {
       stage,
@@ -429,7 +463,6 @@ class ActionBarContainer extends Component {
       txHash,
       errorMessage,
       txHeight,
-      bandwidth,
     } = this.state;
 
     if (addAddress) {
@@ -444,18 +477,58 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (importLink && stage === STAGE_INIT) {
+    if (selectCard === 'pubkey' && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={this.importCli}>use CLI</Button>
-            {/* <Button onClick={this.onClickInitLedger}>use Ledger</Button> */}
+            <Button marginX={10} onClick={this.deletPubkey}>
+              delete pubkey
+            </Button>
+            <Button marginX={10} onClick={e => this.onClickInitLedger(e)}>
+              {T.actionBar.pocket.send}
+            </Button>
           </Pane>
         </ActionBar>
       );
     }
 
-    if (!addAddress && stage === STAGE_INIT) {
+    if (selectCard === 'gol' && stage === STAGE_INIT) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Link
+              style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
+              className="btn"
+              to="/gol"
+            >
+              go and play
+            </Link>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (selectCard === 'importCli' && stage === STAGE_INIT) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={this.importCli}>use CLI</Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (selectCard === 'importLedger' && stage === STAGE_INIT) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={this.onClickInitLedger}>sing ledger</Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (selectCard === '' && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <Pane>
@@ -481,15 +554,23 @@ class ActionBarContainer extends Component {
       );
     }
 
-    // if (importLink && stage === STAGE_READY) {
-    //   return (
-    //     <div>
-    //       <button onClick={this.generateTxImport}>ok</button>
-    //     </div>
-    //   );
-    // }
+    if (selectCard === 'importLedger' && stage === STAGE_READY) {
+      return (
+        <ActionBar>
+          <Pane flex={1} textAlign="center" fontSize="18px">
+            sign {linkSelected.length} CyberLink
+          </Pane>
+          <Button onClick={this.generateTxImport}>sing</Button>
+        </ActionBar>
+      );
+    }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (
+      (selectCard === '' || selectCard === 'pubkey') &&
+      stage === STAGE_READY &&
+      this.hasKey() &&
+      this.hasWallet()
+    ) {
       // if (this.state.stage === STAGE_READY) {
       return (
         <SendLedger

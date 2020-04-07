@@ -275,7 +275,7 @@ function createSend(txContext, validatorBech32, uatomAmount, memo) {
 }
 
 function createSendCyber(txContext, validatorBech32, uatomAmount, memo, denom) {
-  const txSkeleton = createSkeletonCyber(txContext, denom);
+  const txSkeleton = createSkeletonCyber(txContext);
 
   const txMsg = {
     type: 'cosmos-sdk/MsgSend',

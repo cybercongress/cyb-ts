@@ -244,3 +244,16 @@
 .btn-add-close:hover {
   opacity: 0.8;
 }
+
+.hover-row:hover {
+  box-shadow: 0px 0px 7px #3ab793db;
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 1;
+}

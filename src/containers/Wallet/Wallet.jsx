@@ -1,48 +1,22 @@
 import React from 'react';
-import { Pane, Text, TableEv as Table, Battery } from '@cybercongress/gravity';
+import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import {
-  FormatNumber,
-  Loading,
-  ConnectLadger,
-  Copy,
-  LinkWindow,
-} from '../../components';
-import withWeb3 from '../../components/web3/withWeb3';
+import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
-import {
-  formatNumber,
-  getDecimal,
-  trimString,
-  formatCurrency,
-} from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
-import {
-  CYBER,
-  LEDGER,
-  COSMOS,
-  PATTERN_COSMOS,
-  PATTERN_CYBER,
-} from '../../utils/config';
+import { LEDGER, COSMOS } from '../../utils/config';
 import { i18n } from '../../i18n/en';
 import {
   getBalance,
   getTotalEUL,
-  getAccountBandwidth,
-  getCurrentBandwidthPrice,
-  getParamBandwidth,
   getImportLink,
 } from '../../utils/search/utils';
-
-import { downloadObjectAsJson } from '../../utils/utils';
-
-const fs = require('fs');
-
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+import { PocketCard } from './components';
+import { PubkeyCard, GolCard, ImportLinkLedger } from './card';
 
 const T = new LocalizedStrings(i18n);
 
@@ -55,41 +29,6 @@ const {
   STAGE_READY,
   LEDGER_VERSION_REQ,
 } = LEDGER;
-
-const imgLedger = require('../../image/ledger.svg');
-
-const Row = ({ title, value, marginBottomValue, fontSizeValue, ...props }) => (
-  <Pane width="100%" display="flex" alignItems="center" {...props}>
-    <Pane fontSize={fontSizeValue} marginBottom={marginBottomValue}>
-      {value}
-    </Pane>
-    <Pane>{title}</Pane>
-  </Pane>
-);
-
-const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
-  <Pane
-    minWidth={200}
-    paddingX={18}
-    paddingY={14}
-    borderRadius={4}
-    backgroundColor="#fff"
-  >
-    <Pane marginBottom={12}>
-      <Text size={300}>
-        You have {bwRemained} BP out of {bwMaxValue} BP.
-      </Text>
-    </Pane>
-    <Pane marginBottom={12}>
-      <Text size={300}>
-        Full regeneration of bandwidth points or BP happens in 24 hours.
-      </Text>
-    </Pane>
-    <Pane display="flex" marginBottom={12}>
-      <Text size={300}>Current rate for 1 cyberlink is {linkPrice} BP.</Text>
-    </Pane>
-  </Pane>
-);
 
 class Wallet extends React.Component {
   constructor(props) {
@@ -106,14 +45,15 @@ class Wallet extends React.Component {
       addAddress: false,
       loading: true,
       accounts: null,
-      linkPrice: 0,
       link: null,
-      importLink: false,
+      selectedIndex: '',
+      importLinkCli: false,
+      linkSelected: null,
+      selectCard: '',
     };
   }
 
   async componentDidMount() {
-    await this.getLinkPrice();
     await this.checkAddressLocalStorage();
   }
 
@@ -152,31 +92,6 @@ class Wallet extends React.Component {
     }
   }
 
-  getLinkPrice = async () => {
-    let linkMsgCost = 0;
-    let txCost = 0;
-    let currentBandwidthPrice = 0;
-    let linkPrice = 0;
-
-    const dataParamBandwidth = await getParamBandwidth();
-    if (dataParamBandwidth !== null) {
-      linkMsgCost = dataParamBandwidth.link_msg_cost;
-      txCost = dataParamBandwidth.tx_cost;
-    }
-    const dataCurrentBandwidthPrice = await getCurrentBandwidthPrice();
-    if (dataCurrentBandwidthPrice !== null) {
-      currentBandwidthPrice = dataCurrentBandwidthPrice;
-    }
-
-    linkPrice =
-      (parseFloat(linkMsgCost) + parseFloat(txCost)) *
-      parseFloat(currentBandwidthPrice);
-
-    this.setState({
-      linkPrice,
-    });
-  };
-
   compareVersion = async () => {
     const test = this.state.ledgerVersion;
     const target = LEDGER_VERSION_REQ;
@@ -189,25 +104,69 @@ class Wallet extends React.Component {
     let address = [];
 
     const localStorageStory = await localStorage.getItem('pocket');
+    console.log('localStorageStory', localStorageStory);
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      this.setState({ accounts: address });
+      this.setState({
+        accounts: address,
+        link: null,
+        selectedIndex: '',
+        importLinkCli: false,
+        linkSelected: null,
+        selectCard: '',
+      });
+      this.getLocalStorageLink();
       this.getAddressInfo();
-      this.getLink();
     } else {
       this.setState({
         addAddress: true,
+        stage: STAGE_INIT,
         loading: false,
+        pocket: [],
+        ledger: null,
+        returnCode: null,
+        addressInfo: null,
+        addressLedger: null,
+        ledgerVersion: [0, 0, 0],
+        time: 0,
+        accounts: null,
+        link: null,
+        selectedIndex: '',
+        importLinkCli: false,
+        linkSelected: null,
+        selectCard: '',
       });
+    }
+  };
+
+  getLocalStorageLink = () => {
+    const localStorageStoryLink = localStorage.getItem('linksImport');
+
+    if (localStorageStoryLink === null) {
+      this.getLink();
+    } else {
+      const link = JSON.parse(localStorageStoryLink);
+      if (Object.keys(link).length > 0) {
+        this.setState({ link });
+      } else {
+        this.setState({ link: null });
+      }
     }
   };
 
   getLink = async () => {
     const { accounts } = this.state;
-
     const dataLink = await getImportLink(accounts.cyber.bech32);
+    const link = [];
+
     if (dataLink !== null) {
+      const size = 7;
+      for (let i = 0; i < Math.ceil(dataLink.length / size); i += 1) {
+        link[i] = dataLink.slice(i * size, i * size + size);
+      }
+
+      localStorage.setItem('linksImport', JSON.stringify(link));
       this.setState({
         link: dataLink,
       });
@@ -263,6 +222,7 @@ class Wallet extends React.Component {
 
       localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
       localStorage.setItem('pocket', JSON.stringify(accounts));
+      this.getLocalStorageLink();
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
@@ -284,7 +244,6 @@ class Wallet extends React.Component {
       keys: '',
     };
     const responseCyber = await getBalance(accounts.cyber.bech32);
-    const bandwidth = await getAccountBandwidth(accounts.cyber.bech32);
     const responseCosmos = await getBalance(
       accounts.cosmos.bech32,
       COSMOS.GAIA_NODE_URL_LSD
@@ -295,7 +254,6 @@ class Wallet extends React.Component {
       address: accounts.cyber.bech32,
       amount: totalCyber.total,
       token: 'eul',
-      bandwidth,
     };
     const totalCosmos = await getTotalEUL(responseCosmos);
     pocket.cosmos = {
@@ -339,28 +297,103 @@ class Wallet extends React.Component {
   };
 
   onClickImportLink = () => {
-    const { importLink } = this.state;
+    const { importLinkCli, selectCard } = this.state;
+    let select = 'importCli';
+
+    if (selectCard === 'importCli') {
+      select = '';
+    }
 
     this.setState({
-      importLink: !importLink,
+      linkSelected: null,
+      selectedIndex: '',
+      selectCard: select,
+      importLinkCli: !importLinkCli,
+    });
+  };
+
+  selectLink = (link, index) => {
+    const { linkSelected, selectedIndex } = this.state;
+
+    let selectLink = null;
+
+    this.setState({
+      importLinkCli: false,
+    });
+
+    if (selectedIndex === index) {
+      this.setState({
+        selectedIndex: '',
+        selectCard: '',
+      });
+    } else {
+      this.setState({
+        selectedIndex: index,
+        selectCard: 'importLedger',
+      });
+    }
+
+    if (linkSelected !== link) {
+      selectLink = link;
+      return this.setState({
+        linkSelected: selectLink,
+      });
+    }
+    return this.setState({
+      linkSelected: selectLink,
+    });
+  };
+
+  onClickCardPubKey = () => {
+    const { selectCard } = this.state;
+    let select = 'pubkey';
+
+    if (selectCard === select) {
+      select = '';
+    }
+
+    this.setState({
+      linkSelected: null,
+      selectedIndex: '',
+      selectCard: select,
+    });
+  };
+
+  onClickCardGol = () => {
+    const { selectCard } = this.state;
+    let select = 'gol';
+
+    if (selectCard === select) {
+      select = '';
+    }
+
+    this.setState({
+      linkSelected: null,
+      selectedIndex: '',
+      selectCard: select,
     });
   };
 
   render() {
     const {
       pocket,
-      addressLedger,
       loading,
       addAddress,
       stage,
       returnCode,
       ledgerVersion,
       accounts,
-      linkPrice,
       link,
-      bandwidth,
-      importLink,
+      importLinkCli,
+      selectedIndex,
+      linkSelected,
+      selectCard,
     } = this.state;
+
+    let countLink = 0;
+    if (link !== null) {
+      countLink = [].concat.apply([], link).length;
+    }
 
     if (loading) {
       return (
@@ -383,6 +416,18 @@ class Wallet extends React.Component {
       return (
         <div>
           <main className="block-body-home">
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginY={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                This is your pocket. If you put you pubkey here I can help
+                cyberlink, track your balances, participate in{' '}
+                <Link to="/gol">Game of Links</Link> and more.
+              </Text>
+            </Pane>
             <NotFound text={T.pocket.hurry} />
           </main>
           <ActionBarContainer
@@ -413,21 +458,8 @@ class Wallet extends React.Component {
         <div>
           <main
             style={{ minHeight: 'calc(100vh - 162px)', alignItems: 'center' }}
-            className="block-body-home"
+            className="block-body"
           >
-            <Pane
-              boxShadow="0px 0px 5px #36d6ae"
-              paddingX={20}
-              paddingY={20}
-              marginY={20}
-            >
-              <Text fontSize="16px" color="#fff">
-                You do not have control over the brain. You need EUL tokens to
-                let she hear you. If you came from Ethereum or Cosmos you can
-                claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: <a href="gol">Game of Links</a>.
-              </Text>
-            </Pane>
             <Pane
               width="60%"
               display="flex"
@@ -436,129 +468,48 @@ class Wallet extends React.Component {
               flexDirection="column"
               height="100%"
             >
-              <Pane
-                display="flex"
-                flexDirection="column"
-                className="container-card"
-                paddingX={20}
-                paddingTop={15}
-                paddingBottom={40}
-                height="200px"
-                width="100%"
-                maxWidth="unset"
-              >
-                <Row
-                  marginBottom={25}
-                  fontSizeValue="18px"
-                  flexDirection="column"
-                  alignItems="flex-start"
-                  value={
-                    <Pane display="flex" alignItems="center">
-                      <img
-                        style={{ width: 20, height: 20, marginRight: 5 }}
-                        src={imgLedger}
-                        alt="ledger"
-                      />
-                      <div>{trimString(pocket.pk, 6, 6)}</div>
-                    </Pane>
-                  }
-                  title="pubkey"
-                />
-                <Row
-                  marginBottom={20}
-                  marginBottomValue={5}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  value={
-                    <Pane display="flex" alignItems="center">
-                      <Link
-                        to={`/network/euler-5/contract/${pocket.cyber.address}`}
-                      >
-                        <div>{trimString(pocket.cyber.address, 11, 6)}</div>
-                      </Link>
-                      <Copy text={pocket.cyber.address} />
-                    </Pane>
-                  }
-                  title={formatCurrency(
-                    pocket.cyber.amount,
-                    pocket.cyber.token
-                  )}
-                />
-                <Row
-                  marginBottom={20}
-                  marginBottomValue={5}
-                  alignItems="center"
-                  justifyContent="space-between"
-                  value={
-                    <Pane display="flex" alignItems="center">
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={`https://www.mintscan.io/account/${pocket.cosmos.address}`}
-                      >
-                        <div>{trimString(pocket.cosmos.address, 12, 6)}</div>
-                      </a>
-                      <Copy text={pocket.cosmos.address} />
-                    </Pane>
-                  }
-                  title={
-                    <div>
-                      {pocket.cosmos.amount.toPrecision(2)}{' '}
-                      {pocket.cosmos.token}
-                    </div>
-                  }
-                />
-              </Pane>
-              <Pane
-                boxShadow="0px 0px 5px #36d6ae"
-                className="container-card"
-                width="100%"
-                maxWidth="unset"
-                paddingX={20}
-                paddingY={20}
+              <PubkeyCard
+                onClick={this.onClickCardPubKey}
+                select={selectCard === 'pubkey'}
+                pocket={pocket}
+              />
+              <GolCard
+                onClick={this.onClickCardGol}
+                select={selectCard === 'gol'}
                 marginY={20}
-              >
-                <Text fontSize="16px" color="#fff">
-                  Welcome to the intergalactic tournament - Game of Links. GoL -
-                  is the main preparation before{' '}
-                  <Link to="/search/genesis">the main network launch</Link> of{' '}
-                  <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-                    the cyber protocol
-                  </LinkWindow>
-                  . Main goal of the tournament is to collectively bootstrap{' '}
-                  <Link to="/brain">Superintelligence</Link>. Everyone can find
-                  themselves in this fascinating process: we need to setup
-                  physical infrastructure, upload initial knowledge, and create
-                  a reserve for sustaining the project during infancy. Athletes
-                  must solve different parts of the puzzle and could win up to
-                  10% of CYB in the Genesis. <Link to="/gol">Go and play</Link>.
-                </Text>
-              </Pane>
+              />
               {link !== null && (
-                <Pane
-                  boxShadow="0px 0px 5px #36d6ae"
-                  className="container-card"
-                  width="100%"
-                  maxWidth="unset"
-                  paddingX={20}
-                  paddingY={20}
+                <PocketCard
+                  marginBottom={20}
+                  select={selectCard === 'importCli'}
                   onClick={this.onClickImportLink}
                 >
                   <Text fontSize="16px" color="#fff">
-                    You created {link !== null && Object.keys(link).length}{' '}
-                    cyberlinks in euler-5. Import
+                    You created {link !== null && countLink} cyberlinks in
+                    euler-5. Import CLI
                   </Text>
-                </Pane>
+                </PocketCard>
+              )}
+              {link !== null && (
+                <ImportLinkLedger
+                  link={link}
+                  countLink={countLink}
+                  select={selectCard === 'importLedger'}
+                  selectedIndex={selectedIndex}
+                  selectLink={this.selectLink}
+                />
               )}
             </Pane>
           </main>
           <ActionBarContainer
+            selectCard={selectCard}
             links={link}
-            importLink={importLink}
+            importLink={importLinkCli}
             addressTable={accounts.cyber.bech32}
             onClickAddressLedger={this.onClickGetAddressLedger}
             addAddress={addAddress}
-            bandwidth={bandwidth}
+            linkSelected={linkSelected}
+            selectedIndex={selectedIndex}
             updateAddress={this.checkAddressLocalStorage}
             // onClickSend={}
           />

@@ -78,7 +78,7 @@ const Unbonding = ({ amount, stages, entries }) => (
 );
 
 const Heroes = ({ data, ...props }) => {
-  console.log(data);
+  console.log('data.delegations', data.delegations);
   const delegations = data.delegations.map(item => {
     let amount = 0;
     if (item.entries !== undefined) {
@@ -129,13 +129,13 @@ const Heroes = ({ data, ...props }) => {
         <Table.TextCell textAlign="end">
           <Tooltip
             content={`${formatNumber(
-              parseFloat(item.balance)
+              parseFloat(item.balance.amount)
             )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
             position="bottom"
           >
             <TextTable>
               {formatCurrency(
-                parseFloat(item.balance),
+                parseFloat(item.balance.amount),
                 CYBER.DENOM_CYBER.toUpperCase()
               )}
             </TextTable>
