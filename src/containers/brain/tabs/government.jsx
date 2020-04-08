@@ -20,7 +20,7 @@ function GovernmentTab({ communityPool }) {
             value={formatNumber(communityPool)}
           />
         </Link>
-        <Link to="network/euler-5/parameters">
+        <Link to="/network/euler/parameters">
           <CardStatisics title="Network parameters" value={30} />
         </Link>
       </Pane>
