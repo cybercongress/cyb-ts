@@ -67,7 +67,7 @@ function PubkeyCard({ pocket, ...props }) {
         justifyContent="space-between"
         value={
           <Pane display="flex" alignItems="center">
-            <Link to={`/network/euler-5/contract/${pocket.cyber.address}`}>
+            <Link to={`/network/euler/contract/${pocket.cyber.address}`}>
               <div>{trimString(pocket.cyber.address, 11, 6)}</div>
             </Link>
             <Copy text={pocket.cyber.address} />

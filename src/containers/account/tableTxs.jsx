@@ -58,7 +58,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler-5/tx/${item.txhash}`}>
+          <Link to={`/network/euler/tx/${item.txhash}`}>
             {trimString(item.txhash, 6, 6)}
           </Link>
         </TextTable>

@@ -31,7 +31,7 @@ function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
           title="inlfation"
           value={`${formatNumber(inlfation * 100, 2)} %`}
         />
-        <Link to="/network/euler-5/tx">
+        <Link to="/network/euler/tx">
           <CardStatisics title="transactions" value={<Txs />} />
         </Link>
       </Pane>

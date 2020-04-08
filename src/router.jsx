@@ -284,29 +284,29 @@ class AppRouter extends React.Component {
           <Route path="/pocket" component={Wallet} />
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
-          <Route exact path="/network/euler-5/tx" component={Txs} />
+          <Route exact path="/network/euler/tx" component={Txs} />
           <Route exact path="/gol" component={GOL} />
           <Route path="/gol/delegation" component={GolDelegation} />
           <Route path="/gol/lifetime" component={GolLifetime} />
           <Route path="/gol/relevance" component={GolRelevance} />
           <Route path="/gol/load" component={GolLoad} />
-          <Route path="/network/euler-5/tx/:txHash" component={TxsDetails} />
+          <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
           <Route
-            path="/network/euler-5/contract/:address"
+            path="/network/euler/contract/:address"
             component={AccountDetails}
           />
           <Route
-            path="/network/euler-5/hero/:address"
+            path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
           <Route path="/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
-          <Route exact path="/network/euler-5/block" component={Block} />
+          <Route exact path="/network/euler/block" component={Block} />
           <Route
-            path="/network/euler-5/block/:idBlock"
+            path="/network/euler/block/:idBlock"
             component={BlockDetails}
           />
-          <Route path="/network/euler-5/parameters" component={ParamNetwork} />
+          <Route path="/network/euler/parameters" component={ParamNetwork} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>

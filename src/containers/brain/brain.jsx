@@ -374,14 +374,12 @@ class Brain extends React.Component {
           <Pane
             marginY={20}
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-            gridGap="20px"
+            gridTemplateColumns="max-content"
+            justifyContent="center"
           >
-            <div />
-            <Link to="/network/euler-5/block">
+            <Link to="/network/euler/block">
               <CardStatisics title={chainId} value={formatNumber(block)} />
             </Link>
-            <div />
           </Pane>
 
           <Tablist
@@ -408,7 +406,7 @@ class Brain extends React.Component {
             />
             <TabBtn
               text="Government"
-              isSelected={selected === 'government '}
+              isSelected={selected === 'government'}
               to="/brain/government"
             />
           </Tablist>

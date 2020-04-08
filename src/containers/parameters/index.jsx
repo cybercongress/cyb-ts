@@ -124,7 +124,7 @@ function ParamNetwork({ location }) {
   if (selected === 'slashing') {
     content = (
       <Route
-        path="/network/euler-5/parameters/slashing"
+        path="/network/euler/parameters/slashing"
         render={() => <SlashingParam data={dataParam.slashing} />}
       />
     );
@@ -133,7 +133,7 @@ function ParamNetwork({ location }) {
   if (selected === 'staking') {
     content = (
       <Route
-        path="/network/euler-5/parameters/staking"
+        path="/network/euler/parameters/staking"
         render={() => <StakingParam data={dataParam.staking} />}
       />
     );
@@ -142,7 +142,7 @@ function ParamNetwork({ location }) {
   if (selected === 'distribution') {
     content = (
       <Route
-        path="/network/euler-5/parameters/distribution"
+        path="/network/euler/parameters/distribution"
         render={() => <DistributionParam data={dataParam.distribution} />}
       />
     );
@@ -151,7 +151,7 @@ function ParamNetwork({ location }) {
   if (selected === 'gov') {
     content = (
       <Route
-        path="/network/euler-5/parameters/gov"
+        path="/network/euler/parameters/gov"
         render={() => <GovParam data={dataParam.gov} />}
       />
     );
@@ -160,7 +160,7 @@ function ParamNetwork({ location }) {
   if (selected === 'rank') {
     content = (
       <Route
-        path="/network/euler-5/parameters/rank"
+        path="/network/euler/parameters/rank"
         render={() => <RankParam data={dataParam.rank} />}
       />
     );
@@ -169,7 +169,7 @@ function ParamNetwork({ location }) {
   if (selected === 'inlfation') {
     content = (
       <Route
-        path="/network/euler-5/parameters/inlfation"
+        path="/network/euler/parameters/inlfation"
         render={() => <InlfationParam data={dataParam.inlfation} />}
       />
     );
@@ -196,37 +196,37 @@ function ParamNetwork({ location }) {
         <TabBtn
           text="Staking"
           isSelected={selected === 'staking'}
-          to="/network/euler-5/parameters/staking"
+          to="/network/euler/parameters/staking"
         />
         <TabBtn
           text="Slashing"
           isSelected={selected === 'slashing'}
-          to="/network/euler-5/parameters/slashing"
+          to="/network/euler/parameters/slashing"
         />
         <TabBtn
           text="Distribution"
           isSelected={selected === 'distribution'}
-          to="/network/euler-5/parameters/distribution"
+          to="/network/euler/parameters/distribution"
         />
         <TabBtn
           text="Bandwidth"
           isSelected={selected === 'bandwidth'}
-          to="/network/euler-5/parameters"
+          to="/network/euler/parameters"
         />
         <TabBtn
           text="Governance"
           isSelected={selected === 'gov'}
-          to="/network/euler-5/parameters/gov"
+          to="/network/euler/parameters/gov"
         />
         <TabBtn
           text="Rank"
           isSelected={selected === 'rank'}
-          to="/network/euler-5/parameters/rank"
+          to="/network/euler/parameters/rank"
         />
         <TabBtn
           text="Inlfation"
           isSelected={selected === 'inlfation'}
-          to="/network/euler-5/parameters/inlfation"
+          to="/network/euler/parameters/inlfation"
         />
       </Tablist>
       <Pane

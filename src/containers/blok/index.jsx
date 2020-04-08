@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
 import {
@@ -49,9 +50,9 @@ const GET_CHARACTERS = `
   }
 `;
 
-const QueryAddress = offset =>
+const QueryAddress = block =>
   ` query MyQuery {
-    block(limit: 50, order_by: {height: desc}, offset: ${offset}) {
+    block(limit: 20, order_by: {height: desc}, where: {height: {_lte: ${block}}}, offset: 1) {
       hash
       height
       proposer_address
@@ -66,16 +67,35 @@ const QueryAddress = offset =>
   }
   `;
 
-const Block = () => {
-  const [page, setPage] = useState(0);
+const Block = ({ blockThis }) => {
+  const [page, setPage] = useState(1);
+  const [lastBlockQuery, setlastBlockQuery] = useState(0);
   const [items, setItems] = useState([]);
   const [allPage, setAllPage] = useState(1);
+
+  // useEffect(() => {
+  //   const thisBlock = [
+  //     {
+  //       hash: `AADKSKLFA${blockThis}`,
+  //       height: blockThis,
+  //       transactions_aggregate: {
+  //         aggregate: {
+  //           count: 0,
+  //         },
+  //       },
+  //       proposer_address: `AADKSKLFA${blockThis}`,
+  //       timestamp: '2020-04-08T12:18:31.001035',
+  //     },
+  //   ];
+  //   setItems([...thisBlock, ...items]);
+  // }, [blockThis]);
 
   useEffect(() => {
     const feachData = async () => {
       const data = await getGraphQLQuery(GET_CHARACTERS);
       setItems(data.block);
-      setAllPage(Math.ceil(parseInt(data.block[0].height, 10) / 50));
+      setlastBlockQuery(data.block[data.block.length - 1].height);
+      setAllPage(Math.ceil(parseInt(data.block[0].height, 10) / 20));
     };
     feachData();
   }, []);
@@ -87,9 +107,12 @@ const Block = () => {
   const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
-    const data = await getGraphQLQuery(QueryAddress(page));
+    console.log('lastBlockQuery', lastBlockQuery);
+    const data = await getGraphQLQuery(QueryAddress(lastBlockQuery));
+    console.log('data', data);
 
     setTimeout(() => {
+      setlastBlockQuery(data.block[data.block.length - 1].height);
       setItems(items.concat(data.block));
       setPage(page + 1);
     }, 1500);
@@ -165,7 +188,7 @@ const Block = () => {
                   </Table.TextCell>
                   <Table.TextCell textAlign="end">
                     <TextTable>
-                      <Link to={`/network/euler-5/block/${item.height}`}>
+                      <Link to={`/network/euler/block/${item.height}`}>
                         {formatNumber(item.height)}
                       </Link>
                     </TextTable>
@@ -198,4 +221,10 @@ const Block = () => {
   );
 };
 
-export default Block;
+const mapStateToProps = store => {
+  return {
+    blockThis: store.block.block,
+  };
+};
+
+export default connect(mapStateToProps)(Block);

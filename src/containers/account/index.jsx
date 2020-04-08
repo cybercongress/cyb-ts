@@ -282,7 +282,7 @@ class AccountDetails extends React.Component {
     if (selected === 'heroes') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/heroes"
+          path="/network/euler/contract/:address/heroes"
           render={() => <Heroes data={staking} />}
         />
       );
@@ -295,7 +295,7 @@ class AccountDetails extends React.Component {
     if (selected === 'cyberlink') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/cyberlink"
+          path="/network/euler/contract/:address/cyberlink"
           render={() => <GetLink accountUser={account} />}
         />
       );
@@ -304,7 +304,7 @@ class AccountDetails extends React.Component {
     if (selected === 'txs') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/txs"
+          path="/network/euler/contract/:address/txs"
           render={() => <GetTxs accountUser={account} />}
         />
       );
@@ -313,7 +313,7 @@ class AccountDetails extends React.Component {
     if (selected === 'mentions') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/mentions"
+          path="/network/euler/contract/:address/mentions"
           render={() => <GetMentions accountUser={keywordHash} />}
         />
       );
@@ -322,7 +322,7 @@ class AccountDetails extends React.Component {
     if (selected === 'gol') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/gol"
+          path="/network/euler/contract/:address/gol"
           render={() => (
             <TableDiscipline
               addressLedger={account}
@@ -356,32 +356,32 @@ class AccountDetails extends React.Component {
             <TabBtn
               text="Cyberlinks"
               isSelected={selected === 'cyberlink'}
-              to={`/network/euler-5/contract/${account}/cyberlink`}
+              to={`/network/euler/contract/${account}/cyberlink`}
             />
             <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
-              to={`/network/euler-5/contract/${account}/heroes`}
+              to={`/network/euler/contract/${account}/heroes`}
             />
             <TabBtn
               text="Main"
               isSelected={selected === 'main'}
-              to={`/network/euler-5/contract/${account}`}
+              to={`/network/euler/contract/${account}`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
-              to={`/network/euler-5/contract/${account}/txs`}
+              to={`/network/euler/contract/${account}/txs`}
             />
             <TabBtn
               text="Mentions"
               isSelected={selected === 'mentions'}
-              to={`/network/euler-5/contract/${account}/mentions`}
+              to={`/network/euler/contract/${account}/mentions`}
             />
             <TabBtn
               text="GOL"
               isSelected={selected === 'gol'}
-              to={`/network/euler-5/contract/${account}/gol`}
+              to={`/network/euler/contract/${account}/gol`}
             />
           </Tablist>
           <Pane

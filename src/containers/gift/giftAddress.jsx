@@ -235,7 +235,7 @@ function GiftAddress({ address }) {
             {loading ? (
               <Dots />
             ) : (
-              <Link to={`/network/euler-5/contract/${drop.cyberAddress}`}>
+              <Link to={`/network/euler/contract/${drop.cyberAddress}`}>
                 {trimString(drop.cyberAddress, 10, 6)}
               </Link>
             )}{' '}

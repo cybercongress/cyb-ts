@@ -327,7 +327,7 @@ class Validators extends Component {
               <TextTable>
                 <StatusTooltip status={validator.status} />
                 <Link
-                  to={`/network/euler-5/hero/${validator.operator_address}`}
+                  to={`/network/euler/hero/${validator.operator_address}`}
                 >
                   {validator.description.moniker}
                 </Link>

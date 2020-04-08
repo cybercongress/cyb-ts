@@ -101,7 +101,7 @@ export const Confirmed = ({
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
         {T.actionBar.confirmedTX.blockTX}{' '}
         <Link
-          to={`/network/euler-5/block/${txHeight}`}
+          to={`/network/euler/block/${txHeight}`}
           style={{
             marginLeft: '5px',
           }}
@@ -127,7 +127,7 @@ export const Confirmed = ({
         </a>
       ) : (
         <Link
-          to={`/network/euler-5/tx/${txHash}`}
+          to={`/network/euler/tx/${txHash}`}
           className="btn"
           style={{
             display: 'flex',
