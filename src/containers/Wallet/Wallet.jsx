@@ -171,9 +171,11 @@ class Wallet extends React.Component {
         link[i] = dataLink.slice(i * size, i * size + size);
       }
 
+      console.log(link);
+
       localStorage.setItem('linksImport', JSON.stringify(link));
       this.setState({
-        link: dataLink,
+        link,
       });
     }
   };

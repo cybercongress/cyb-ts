@@ -10,6 +10,7 @@ function ImportLinkLedger({
   countLink,
   ...props
 }) {
+  console.log(link);
   return (
     <PocketCard {...props}>
       <Text fontSize="16px" marginBottom={10} color="#fff">

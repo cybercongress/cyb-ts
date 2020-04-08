@@ -114,7 +114,7 @@ function createSkeleton(txContext) {
     throw new Error('txContext does not contain the sequence value');
   }
   const txSkeleton = {
-    type: 'auth/StdTx',
+    type: 'cosmos-sdk/StdTx',
     value: {
       msg: [], // messages
       fee: '',
@@ -163,7 +163,7 @@ const createSkeletonCyber = (txContext, cli = false) => {
   }
 
   const txSkeleton = {
-    type: 'auth/StdTx',
+    type: 'cosmos-sdk/StdTx',
     value: {
       msg: [], // messages
       fee: '',
