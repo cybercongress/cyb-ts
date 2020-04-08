@@ -20,6 +20,7 @@ const {
   STAGE_INIT,
   STAGE_LEDGER_INIT,
   STAGE_READY,
+  STAGE_ERROR,
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
@@ -107,15 +108,22 @@ class ActionBarContainer extends React.Component {
     try {
       const { ledger } = this.state;
       const { updateFunc } = this.props;
+      const accounts = {};
 
-      const addressLedger = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
-      console.log('address', addressLedger);
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
 
-      localStorage.setItem('ledger', JSON.stringify(addressLedger));
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
       updateFunc();
       this.setState({
-        addressLedger,
+        addressLedger: addressLedgerCyber,
         stage: STAGE_READY,
       });
     } catch (error) {
@@ -125,7 +133,7 @@ class ActionBarContainer extends React.Component {
         // eslint-disable-next-line
         console.error('Problem reading address data', message, statusCode);
       }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+      this.setState({ time: Date.now(), stage: STAGE_ERROR }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -135,8 +143,18 @@ class ActionBarContainer extends React.Component {
     });
   };
 
+  cleatState = () => {
+    this.setState({
+      stage: STAGE_INIT,
+      ledger: null,
+      returnCode: null,
+      addressLedger: null,
+      ledgerVersion: [0, 0, 0],
+    });
+  };
+
   render() {
-    const { addAddress, cleatState } = this.props;
+    const { addAddress } = this.props;
     const { stage, returnCode, ledgerVersion } = this.state;
 
     if (stage === STAGE_LEDGER_INIT) {
@@ -144,7 +162,7 @@ class ActionBarContainer extends React.Component {
         <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
-          onClickBtnCloce={cleatState}
+          onClickBtnCloce={this.cleatState}
           version={
             returnCode === LEDGER_OK &&
             this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)

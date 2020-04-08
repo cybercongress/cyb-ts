@@ -7,7 +7,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
     'Empty battery. You have no power & energy so can not submit cyberlinks. ';
 
   if (bwMaxValue > 0) {
-    text = `You have left 6 kW and can immediately submit ${Math.floor(
+    text = `You have left ${bwRemained} kW and can immediately submit ${Math.floor(
       bwRemained / linkPrice
     )} cyberlinks. `;
   }

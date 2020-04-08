@@ -26,8 +26,8 @@ const TableLink = ({ data }) => {
     itemsToShow,
   ]);
 
-  const validatorRows = displayedPalettes.map(item => (
-    <Table.Row borderBottom="none" display="flex" key={item.txhash}>
+  const validatorRows = displayedPalettes.map((item, i) => (
+    <Table.Row borderBottom="none" display="flex" key={`${item.txhash}_${i}`}>
       <Table.TextCell textAlign="center">
         <TextTable>
           <Link to={`/network/euler-5/tx/${item.txhash}`}>
@@ -42,16 +42,12 @@ const TableLink = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Cid cid={item.object_to}>
-            {trimString(item.object_to, 6, 6)}
-          </Cid>
+          <Cid cid={item.object_to}>{trimString(item.object_to, 6, 6)}</Cid>
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Cid cid={item.object_from}>
-            {trimString(item.object_from, 6, 6)}
-          </Cid>
+          <Cid cid={item.object_from}>{trimString(item.object_from, 6, 6)}</Cid>
         </TextTable>
       </Table.TextCell>
     </Table.Row>

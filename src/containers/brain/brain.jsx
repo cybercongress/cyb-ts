@@ -1,20 +1,7 @@
 import React from 'react';
-import {
-  Text,
-  Pane,
-  Heading,
-  CardHover,
-  Icon,
-  Tablist,
-  Tab,
-  Button,
-  ActionBar,
-} from '@cybercongress/gravity';
+import { Text, Pane, Tablist, Tab } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import LocalizedStrings from 'react-localization';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { Link } from 'react-router-dom';
-import { CosmosDelegateTool } from '../../utils/ledger';
+import { Link, Route } from 'react-router-dom';
 import {
   formatNumber,
   getStatistics,
@@ -27,78 +14,53 @@ import {
   getcommunityPool,
   getTxCosmos,
 } from '../../utils/search/utils';
-import { roundNumber, asyncForEach } from '../../utils/utils';
-import {
-  CardStatisics,
-  ConnectLadger,
-  Loading,
-  FormatNumber,
-} from '../../components';
+import { roundNumber } from '../../utils/utils';
+import { CardStatisics, Loading } from '../../components';
 import { cybWon } from '../../utils/fundingMath';
 
-import { i18n } from '../../i18n/en';
-
-import {
-  CYBER,
-  LEDGER,
-  AUCTION,
-  COSMOS,
-  TAKEOFF,
-  GENESIS_SUPPLY,
-  TOTAL_GOL_GENESIS_SUPPLY,
-} from '../../utils/config';
-import Txs from './tx';
+import { CYBER } from '../../utils/config';
 
 import ActionBarContainer from './actionBarContainer';
+import {
+  GovernmentTab,
+  MainTab,
+  ConsensusTab,
+  CybernomicsTab,
+  KnowledgeTab,
+} from './tabs';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 
-const {
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
-  STAGE_INIT,
-  STAGE_LEDGER_INIT,
-  STAGE_READY,
-  LEDGER_VERSION_REQ,
-} = LEDGER;
-
-const T = new LocalizedStrings(i18n);
-
-const TabBtn = ({ text, isSelected, onSelect }) => (
-  <Tab
-    key={text}
-    isSelected={isSelected}
-    onSelect={onSelect}
-    paddingX={10}
-    paddingY={20}
-    marginX={3}
-    borderRadius={4}
-    color="#36d6ae"
-    boxShadow="0px 0px 5px #36d6ae"
-    fontSize="16px"
-  >
-    {text}
-  </Tab>
+const TabBtn = ({ text, isSelected, onSelect, to }) => (
+  <Link to={to}>
+    <Tab
+      key={text}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      paddingX={10}
+      paddingY={20}
+      marginX={3}
+      borderRadius={4}
+      color="#36d6ae"
+      boxShadow="0px 0px 5px #36d6ae"
+      fontSize="16px"
+      whiteSpace="nowrap"
+      width="100%"
+    >
+      {text}
+    </Tab>
+  </Link>
 );
 
 class Brain extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      stage: STAGE_INIT,
-      ledger: null,
-      returnCode: null,
-      addressInfo: null,
       inlfation: 0,
       addressLedger: null,
-      ledgerVersion: [0, 0, 0],
       linksCount: 0,
       cidsCount: 0,
       accountsCount: 0,
-      blockNumber: 0,
-      linkPrice: 0,
       totalCyb: 0,
       stakedCyb: 0,
       activeValidatorsCount: 0,
@@ -106,21 +68,55 @@ class Brain extends React.Component {
       loading: true,
       chainId: '',
       amount: 0,
-      supplyEUL: 0,
       takeofPrice: 0,
       capATOM: 0,
-      averagePrice: 0,
-      capETH: 0,
       communityPool: 0,
     };
   }
 
   async componentDidMount() {
+    this.chekPathname();
     await this.checkAddressLocalStorage();
     this.getStatisticsBrain();
     // this.getPriceGol();
     this.getTxsCosmos();
   }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (
+      pathname.match(/cybernomics/gm) &&
+      pathname.match(/cybernomics/gm).length > 0
+    ) {
+      this.select('cybernomics');
+    } else if (
+      pathname.match(/knowledge/gm) &&
+      pathname.match(/knowledge/gm).length > 0
+    ) {
+      this.select('knowledge');
+    } else if (
+      pathname.match(/consensus/gm) &&
+      pathname.match(/consensus/gm).length > 0
+    ) {
+      this.select('consensus');
+    } else if (
+      pathname.match(/government/gm) &&
+      pathname.match(/government/gm).length > 0
+    ) {
+      this.select('government');
+    } else {
+      this.select('main');
+    }
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -197,37 +193,11 @@ class Brain extends React.Component {
       total = await getTotalEUL(result);
     }
     this.setState({
-      stage: STAGE_READY,
       addAddress: false,
       loading: false,
       // addressInfo,
       amount: total.total,
     });
-  };
-
-  getAmount = async address => {
-    try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      // this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
   };
 
   getStatisticsBrain = async () => {
@@ -267,8 +237,6 @@ class Brain extends React.Component {
       linksCount,
       cidsCount,
       accountsCount,
-      blockNumber: height,
-      linkPrice,
       totalCyb,
       communityPool,
       stakedCyb,
@@ -282,44 +250,18 @@ class Brain extends React.Component {
     this.setState({ selected });
   };
 
-  onClickGetAddressLedger = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-  };
-
-  cleatState = () => {
-    this.setState({
-      stage: STAGE_INIT,
-      ledger: null,
-      returnCode: null,
-      addressInfo: null,
-      addressLedger: null,
-      ledgerVersion: [0, 0, 0],
-      loading: true,
-    });
-  };
-
   render() {
     const {
       linksCount,
       cidsCount,
       accountsCount,
-      blockNumber,
-      linkPrice,
       totalCyb,
       stakedCyb,
       activeValidatorsCount,
-      stage,
-      returnCode,
-      ledgerVersion,
       addAddress,
       amount,
       loading,
       chainId,
-      averagePrice,
-      capETH,
-      supplyEUL,
       takeofPrice,
       capATOM,
       selected,
@@ -347,177 +289,68 @@ class Brain extends React.Component {
       );
     }
 
-    const Main = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics
-          title={T.brain.cap}
-          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
-        />
-        <Link
-          to="/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-          />
-        </Link>
-      </Pane>
-    );
-
-    const KnowledgeGraph = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics
-          title={T.brain.objects}
-          value={formatNumber(cidsCount)}
-        />
-
-        <CardStatisics
-          title={T.brain.subjects}
-          value={formatNumber(accountsCount)}
-        />
-      </Pane>
-    );
-
-    const Cybernomics = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.supplyEUL}
-          value={formatNumber(totalCyb)}
-        />
-        <CardStatisics
-          title={T.brain.takeofPrice}
-          value={formatNumber(takeofPrice)}
-        />
-        <CardStatisics
-          title={T.brain.cap}
-          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
-        />
-        {/* <CardStatisics
-          title={T.brain.supplyGOL}
-          value={formatNumber(TOTAL_GOL_GENESIS_SUPPLY)}
-        />
-        <CardStatisics
-          title={T.brain.auctionPrice}
-          value={
-            <FormatNumber
-              fontSizeDecimal={18}
-              number={roundNumber(averagePrice, 6)}
-            />
-          }
-        />
-        <CardStatisics
-          title={T.brain.capETH}
-          value={formatNumber(Math.floor(capETH))}
-        /> */}
-      </Pane>
-    );
-
-    const Consensus = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <Link
-          to="/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-          />
-        </Link>
-        <CardStatisics title={T.brain.staked} value={stakedCyb} />
-        <CardStatisics
-          title="inlfation"
-          value={`${formatNumber(inlfation * 100, 2)} %`}
-        />
-        <Link to="/network/euler-5/tx">
-          <CardStatisics title={T.brain.transactions} value={<Txs />} />
-        </Link>
-      </Pane>
-    );
-
-    const Government = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 250px))"
-        gridGap="20px"
-        justifyContent="center"
-      >
-        <Link to="/governance">
-          <CardStatisics
-            title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
-            value={formatNumber(communityPool)}
-          />
-        </Link>
-        <Link to="network/euler-5/parameters">
-          <CardStatisics title="Network parameters" value={30} />
-        </Link>
-      </Pane>
-    );
-
-    if (stage === STAGE_LEDGER_INIT) {
-      return (
-        <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.cleatState}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
+    if (selected === 'main') {
+      content = (
+        <MainTab
+          linksCount={linksCount}
+          capATOM={capATOM}
+          activeValidatorsCount={activeValidatorsCount}
         />
       );
     }
 
-    if (selected === 'main') {
-      content = <Main />;
-    }
-
-    if (selected === 'graph') {
-      content = <KnowledgeGraph />;
+    if (selected === 'knowledge') {
+      content = (
+        <Route
+          path="/brain/knowledge"
+          render={() => (
+            <KnowledgeTab
+              linksCount={linksCount}
+              cidsCount={cidsCount}
+              accountsCount={accountsCount}
+            />
+          )}
+        />
+      );
     }
 
     if (selected === 'cybernomics') {
-      content = <Cybernomics />;
+      content = (
+        <Route
+          path="/brain/cybernomics"
+          render={() => (
+            <CybernomicsTab
+              totalCyb={totalCyb}
+              takeofPrice={takeofPrice}
+              capATOM={capATOM}
+            />
+          )}
+        />
+      );
     }
 
     if (selected === 'consensus') {
-      content = <Consensus />;
+      content = (
+        <Route
+          path="/brain/consensus"
+          render={() => (
+            <ConsensusTab
+              activeValidatorsCount={activeValidatorsCount}
+              stakedCyb={stakedCyb}
+              inlfation={inlfation}
+            />
+          )}
+        />
+      );
     }
 
-    if (selected === 'government ') {
-      content = <Government />;
+    if (selected === 'government') {
+      content = (
+        <Route
+          path="/brain/government"
+          render={() => <GovernmentTab communityPool={communityPool} />}
+        />
+      );
     }
 
     return (
@@ -553,34 +386,30 @@ class Brain extends React.Component {
 
           <Tablist
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
             gridGap="10px"
             marginTop={25}
           >
             <TabBtn
               text="Knowledge"
-              isSelected={selected === 'graph'}
-              onSelect={() => this.select('graph')}
+              isSelected={selected === 'knowledge'}
+              to="/brain/knowledge"
             />
             <TabBtn
               text="Cybernomics"
               isSelected={selected === 'cybernomics'}
-              onSelect={() => this.select('cybernomics')}
+              to="/brain/cybernomics"
             />
-            <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              onSelect={() => this.select('main')}
-            />
+            <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
             <TabBtn
               text="Consensus"
               isSelected={selected === 'consensus'}
-              onSelect={() => this.select('consensus')}
+              to="/brain/consensus"
             />
             <TabBtn
-              text="Government "
+              text="Government"
               isSelected={selected === 'government '}
-              onSelect={() => this.select('government ')}
+              to="/brain/government"
             />
           </Tablist>
           <Pane marginTop={50} marginBottom={50}>
@@ -589,7 +418,6 @@ class Brain extends React.Component {
         </main>
         <ActionBarContainer
           addAddress={addAddress}
-          cleatState={this.cleatState}
           updateFunc={this.checkAddressLocalStorage}
         />
       </div>
