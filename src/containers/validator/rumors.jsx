@@ -7,7 +7,7 @@ import { Loading } from '../../components';
 function Rumors({ accountUser }) {
   const GET_CHARACTERS = gql`
   subscription MyQuery {
-    transaction(order_by: {height: desc}, where: {_and: [{message: {type: {_in: ["cosmos-sdk/MsgDelegate", "cosmos-sdk/MsgUndelegate"]}}}, {message: {value: {_contains: {validator_address: "${accountUser}"}}}}]}) {
+    transaction(order_by: {height: desc}, where: {_and: [{messagesByTxhash: {type: {_in: ["cosmos-sdk/MsgDelegate", "cosmos-sdk/MsgUndelegate"]}}}, {messagesByTxhash: {value: {_contains: {validator_address: "${accountUser}"}}}}]}) {
       txhash
       timestamp
       messages

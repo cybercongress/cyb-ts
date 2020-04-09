@@ -87,14 +87,14 @@ export const getContentByCid = async (
                 }
                 const fileType = `data:${mime};base64,${dataBase64}`;
                 resolve({
-                  status: 'success',
+                  status: 'downloaded',
                   content: fileType,
                 });
               });
             });
           } else {
             resolve({
-              status: 'success',
+              status: 'availableDownload',
               content: `data:,${cid}`,
             });
           }
@@ -162,7 +162,7 @@ export const getString = string =>
 export const search = async keywordHash =>
   axios({
     method: 'get',
-    url: `${CYBER_NODE_URL}/api/search?cid=%22${keywordHash}%22&page=0&perPage=10`,
+    url: `${CYBER_NODE_URL_API}/search?cid=%22${keywordHash}%22&page=0&perPage=1000`,
   }).then(response => (response.data.result ? response.data.result.cids : []));
 
 export const getRankGrade = rank => {
@@ -281,29 +281,50 @@ export const getValidators = async () => {
   }
 };
 
-export const getValidatorsUnbonding = () =>
-  new Promise(resolve =>
-    axios({
+export const getValidatorsUnbonding = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonding`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 
-export const getValidatorsUnbonded = () =>
-  new Promise(resolve =>
-    axios({
+export const getValidatorsUnbonded = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonded`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getAllValidators = async () => {
+  const allValidators = [];
+
+  const responseGetValidators = await getValidators();
+  if (responseGetValidators !== null) {
+    allValidators.push(...responseGetValidators);
+  }
+  const responseGetValidatorsUnbonding = await getValidatorsUnbonding();
+  if (responseGetValidatorsUnbonding !== null) {
+    allValidators.push(...responseGetValidatorsUnbonding);
+  }
+  const responseGetValidatorsUnbonded = await getValidatorsUnbonded();
+  if (responseGetValidatorsUnbonded !== null) {
+    allValidators.push(...responseGetValidatorsUnbonded);
+  }
+
+  return allValidators;
+};
 
 export const selfDelegationShares = async (
   delegatorAddress,
@@ -440,8 +461,15 @@ export const getTotalEUL = async data => {
       data.delegations !== 0
     ) {
       data.delegations.forEach((delegation, i) => {
-        balance.total += Math.floor(parseFloat(delegation.balance));
-        balance.delegation += Math.floor(parseFloat(delegation.balance));
+        if (delegation.balance.amount) {
+          balance.total += Math.floor(parseFloat(delegation.balance.amount));
+          balance.delegation += Math.floor(
+            parseFloat(delegation.balance.amount)
+          );
+        } else {
+          balance.total += Math.floor(parseFloat(delegation.balance));
+          balance.delegation += Math.floor(parseFloat(delegation.balance));
+        }
       });
     }
 
@@ -623,7 +651,7 @@ export const getTotalRewards = async delegatorAddr => {
   }
 };
 
-export const getDelegations = async address => {
+export const getDelegations = async (address, node = CYBER_NODE_URL_LCD) => {
   try {
     const response = await axios({
       method: 'get',
@@ -632,7 +660,7 @@ export const getDelegations = async address => {
     return response.data.result;
   } catch (e) {
     console.log(e);
-    return 0;
+    return null;
   }
 };
 
@@ -732,6 +760,250 @@ export const getGraphQLQuery = async query => {
   }
 };
 
+export const getParamStaking = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/staking/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getSendTxToTakeoff = async (sender, recipient) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
+    });
+    return response.data.txs;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};
+
+export const getCurrentNetworkLoad = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_API}/current_network_load`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamSlashing = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/slashing/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamDistribution = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/distribution/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamBandwidth = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/bandwidth/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamGov = async () => {
+  try {
+    const responseGovDeposit = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/gov/parameters/deposit`,
+    });
+
+    const responseGovTallying = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/gov/parameters/tallying`,
+    });
+
+    const responseGovVoting = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/gov/parameters/voting`,
+    });
+
+    const response = {
+      deposit: responseGovDeposit.data.result,
+      voting: responseGovTallying.data.result,
+      tallying: responseGovVoting.data.result,
+    };
+
+    return response;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamRank = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/rank/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamInlfation = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/minting/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamNetwork = async (address, node) => {
+  try {
+    let staking = null;
+    let slashing = null;
+    let distribution = null;
+    let bandwidth = null;
+    let gov = null;
+    let rank = null;
+    let inlfation = null;
+
+    const dataStaking = await getParamStaking();
+    if (dataStaking !== null) {
+      staking = dataStaking;
+    }
+    const dataSlashing = await getParamSlashing();
+    if (dataSlashing !== null) {
+      slashing = dataSlashing;
+    }
+    const dataDistribution = await getParamDistribution();
+    if (dataDistribution !== null) {
+      distribution = dataDistribution;
+    }
+    const dataGov = await getParamGov();
+    if (dataGov !== null) {
+      gov = dataGov;
+    }
+    const dataBandwidth = await getParamBandwidth();
+    if (dataBandwidth !== null) {
+      bandwidth = dataBandwidth;
+    }
+
+    const dataRank = await getParamRank();
+    if (dataRank !== null) {
+      rank = dataRank;
+    }
+
+    const dataInlfation = await getParamInlfation();
+    if (dataInlfation !== null) {
+      inlfation = dataInlfation;
+    }
+
+    const response = {
+      staking,
+      slashing,
+      distribution,
+      bandwidth,
+      gov,
+      rank,
+      inlfation,
+    };
+
+    return response;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getAvailable = async (address, node = CYBER_NODE_URL_LCD) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${node}/bank/balances/${address}`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getInlfation = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/minting/inflation`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getUnbonding = async (address, node = CYBER_NODE_URL_LCD) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${node}/staking/delegators/${address}/unbonding_delegations`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getRewardsAll = async (address, node = CYBER_NODE_URL_LCD) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${node}/distribution/delegators/${address}/rewards`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getTxCosmos = async () => {
   try {
     const response = await axios({
@@ -739,6 +1011,19 @@ export const getTxCosmos = async () => {
       url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000`,
     });
     return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getcommunityPool = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
+    });
+    return response.data.result;
   } catch (e) {
     console.log(e);
     return null;

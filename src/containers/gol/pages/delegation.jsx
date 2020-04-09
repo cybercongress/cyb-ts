@@ -5,7 +5,8 @@ import { Text, Pane, TableEv as Table } from '@cybercongress/gravity';
 import {
   getAmountATOM,
   getValidatorsInfo,
-  getValidators,
+  getAllValidators,
+  getTxCosmos,
 } from '../../../utils/search/utils';
 import {
   CardStatisics,
@@ -15,7 +16,7 @@ import {
 } from '../../../components';
 import { cybWon, getDisciplinesAllocation } from '../../../utils/fundingMath';
 import TableDiscipline from '../table';
-import { getDelegator, exponentialToDecimal, sort } from '../../../utils/utils';
+import { getDelegator, formatNumber, sort } from '../../../utils/utils';
 
 import { COSMOS, TAKEOFF, DISTRIBUTION } from '../../../utils/config';
 
@@ -40,25 +41,74 @@ class GolDelegation extends React.Component {
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
-    await this.getDataWS();
+    this.getTxsCosmos();
+    this.getDataWS();
     // this.getMyGOLs();
     this.getValidatorsCount();
   }
 
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getAtom(dataTx.txs);
+    }
+  };
+
   getDataWS = async () => {
     this.ws.onopen = () => {
       console.log('connected');
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          id: '0',
+          params: {
+            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
+          },
+        })
+      );
     };
 
     this.ws.onmessage = async evt => {
       const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAtom(message);
+      console.warn('txs', message);
+      if (message.result.events) {
+        this.getAtomWS(message.result.events);
+      }
     };
 
     this.ws.onclose = () => {
       console.log('disconnected');
     };
+  };
+
+  getAtomWS = data => {
+    const { won } = this.state;
+    let amount = 0;
+    console.warn('data', data['transfer.amount']);
+    if (data['transfer.amount']) {
+      console.warn('transfer.amount', data['transfer.amount']);
+      data['transfer.amount'].forEach(element => {
+        let amountWS = 0;
+        if (element.indexOf('uatom') !== -1) {
+          const positionDenom = element.indexOf('uatom');
+          const str = element.slice(0, positionDenom);
+          amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
+        }
+        amount += amountWS;
+      });
+    }
+    const wonWs = cybWon(amount);
+    const newWon = Math.floor(won + parseFloat(wonWs));
+    const currentPrize = Math.floor(
+      (newWon / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+    );
+
+    this.setState({
+      currentPrize,
+      won: newWon,
+    });
   };
 
   checkAddressLocalStorage = async () => {
@@ -87,7 +137,7 @@ class GolDelegation extends React.Component {
     const { validatorAddress } = this.state;
     const dataTable = [];
     let total = 0;
-    const data = await getValidators();
+    const data = await getAllValidators();
     let herosCount = 0;
     if (data !== null) {
       data.forEach(item => {
@@ -182,14 +232,18 @@ class GolDelegation extends React.Component {
         key={item.operatorAddress}
       >
         <Table.TextCell>
-          <TextTable>{item.moniker}</TextTable>
+          <TextTable>
+            <Link to={`/network/euler-5/hero/${item.operatorAddress}`}>
+              {item.moniker}
+            </Link>
+          </TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          <TextTable>{item.tokens}</TextTable>
+          <TextTable>{formatNumber(parseFloat(item.tokens))}</TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           <TextTable>
-            {Math.floor((item.tokens / total) * currentPrize)}
+            {formatNumber(Math.floor((item.tokens / total) * currentPrize))}
           </TextTable>
         </Table.TextCell>
       </Table.Row>
@@ -213,8 +267,10 @@ class GolDelegation extends React.Component {
               TCYB. Huge chunk of CYB stake allocated to all Ethereans and
               Cosmonauts. The more you spread, the more users will claim its
               allocation, the more voting power as validators you will have in
-              Genesis. Details of reward calculation you can find in Game of
-              Links rules
+              Genesis. Details of reward calculation you can find in{' '}
+              <LinkWindow to="https://cybercongress.ai/game-of-links/">
+                Game of Links rules
+              </LinkWindow>
             </Text>
           </Pane>
           <Pane

@@ -1,3 +1,5 @@
+const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0xc13926630c1afa229a0c4df8df2acbff03c4681e',
   ADDR_VESTING: '0x7c2a661dac04aae4381b810c3228ccab1d11deec',
@@ -49,11 +51,11 @@ const CYBER = {
   DENOM_CYBER: 'cyb',
   DENOM_CYBER_G: `GCYB`,
   CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
-  CYBER_NODE_URL: 'https://mars.cybernode.ai',
-  CYBER_NODE_URL_API: 'https://mars.cybernode.ai/dev_api',
-  CYBER_NODE_URL_LCD: 'https://mars.cybernode.ai/dev_lcd',
-  CYBER_INDEX_HTTPS: 'https://mars.cybernode.ai/graphql/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://mars.cybernode.ai/graphql/v1/graphql',
+  CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  CYBER_NODE_URL_API: 'https://titan.cybernode.ai/api',
+  CYBER_NODE_URL_LCD: 'https://titan.cybernode.ai/lcd',
+  CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
@@ -87,6 +89,7 @@ const DISTRIBUTION = {
   'full validator set': 5000000000000,
   'euler 4 rewards': 5000000000000,
   lifetime: 2000000000000,
+  'community pool': 2000000000000,
 };
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
@@ -114,4 +117,5 @@ export {
   PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
   PATTERN_ETH,
+  TIME_START,
 };

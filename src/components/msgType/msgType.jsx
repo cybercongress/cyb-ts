@@ -30,7 +30,7 @@ const ContainerTitle = ({ img, children }) => (
 const MsgType = ({ type }) => {
   switch (type) {
     // cyberd
-    case 'cyberd/Link':
+    case 'cyber/Link':
       return <ContainerTitle img={link}>Link</ContainerTitle>;
 
     // bank

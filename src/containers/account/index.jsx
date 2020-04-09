@@ -8,6 +8,9 @@ import {
   getDistribution,
   getRewards,
   getIpfsHash,
+  getAmountATOM,
+  getValidatorsInfo,
+  getTxCosmos,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -18,6 +21,10 @@ import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
 import Main from './main';
 import GetMentions from './mentions';
+import TableDiscipline from '../gol/table';
+import { cybWon } from '../../utils/fundingMath';
+
+import { COSMOS } from '../../utils/config';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -47,7 +54,11 @@ class AccountDetails extends React.Component {
       account: '',
       keywordHash: '',
       loader: true,
+      loading: true,
+      validatorAddress: null,
+      consensusAddress: null,
       addressLedger: null,
+      takeoffDonations: 0,
       balance: {
         available: 0,
         delegation: 0,
@@ -60,6 +71,7 @@ class AccountDetails extends React.Component {
         unbonding: [],
       },
       selected: 'main',
+      won: 0,
     };
   }
 
@@ -72,6 +84,7 @@ class AccountDetails extends React.Component {
     }
     this.getBalanseAccount();
     this.chekPathname();
+    this.getTxsCosmos();
   }
 
   componentDidUpdate(prevProps) {
@@ -81,6 +94,31 @@ class AccountDetails extends React.Component {
       this.chekPathname();
     }
   }
+
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getAtom(dataTx.txs);
+    }
+  };
+
+  getAtom = async dataTxs => {
+    let amount = 0;
+    let won = 0;
+
+    if (dataTxs) {
+      amount = await getAmountATOM(dataTxs);
+    }
+
+    won = cybWon(amount);
+
+    this.setState({
+      won,
+      loading: false,
+      takeoffDonations: amount,
+    });
+  };
 
   chekPathname = () => {
     const { location } = this.props;
@@ -103,6 +141,8 @@ class AccountDetails extends React.Component {
       pathname.match(/mentions/gm).length > 0
     ) {
       this.select('mentions');
+    } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
+      this.select('gol');
     } else {
       this.select('main');
     }
@@ -118,15 +158,23 @@ class AccountDetails extends React.Component {
     };
 
     const keywordHash = await getIpfsHash(address);
+    let consensusAddress = null;
+    let validatorAddress = null;
 
     await this.setState({ account: address, keywordHash });
 
     const result = await getBalance(address);
     console.log('result', result);
 
-    const validatorAddress = getDelegator(address, 'cybervaloper');
+    const dataValidatorAddress = getDelegator(address, 'cybervaloper');
+    const dataGetValidatorsInfo = await getValidatorsInfo(dataValidatorAddress);
 
-    const resultGetDistribution = await getDistribution(validatorAddress);
+    if (dataGetValidatorsInfo !== null) {
+      consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
+      validatorAddress = dataValidatorAddress;
+    }
+
+    const resultGetDistribution = await getDistribution(dataValidatorAddress);
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -153,7 +201,13 @@ class AccountDetails extends React.Component {
         staking.unbonding = result.unbonding;
       }
     }
-    this.setState({ balance: total, staking, loader: false });
+    this.setState({
+      balance: total,
+      validatorAddress,
+      consensusAddress,
+      staking,
+      loader: false,
+    });
   };
 
   countReward = async (data, address) => {
@@ -190,11 +244,29 @@ class AccountDetails extends React.Component {
       loader,
       keywordHash,
       addressLedger,
+      validatorAddress,
+      consensusAddress,
+      won,
+      loading,
+      takeoffDonations,
     } = this.state;
 
     let content;
 
     if (loader) {
+      return (
+        <div
+          style={{
+            height: '50vh',
+          }}
+          className="container-loading"
+        >
+          <Loading />
+        </div>
+      );
+    }
+
+    if (loading) {
       return (
         <div
           style={{
@@ -247,6 +319,23 @@ class AccountDetails extends React.Component {
       );
     }
 
+    if (selected === 'gol') {
+      content = (
+        <Route
+          path="/network/euler-5/contract/:address/gol"
+          render={() => (
+            <TableDiscipline
+              addressLedger={account}
+              validatorAddress={validatorAddress}
+              consensusAddress={consensusAddress}
+              takeoffDonations={takeoffDonations}
+              won={won}
+            />
+          )}
+        />
+      );
+    }
+
     return (
       <div>
         <main className="block-body">
@@ -288,6 +377,11 @@ class AccountDetails extends React.Component {
               text="Mentions"
               isSelected={selected === 'mentions'}
               to={`/network/euler-5/contract/${account}/mentions`}
+            />
+            <TabBtn
+              text="GOL"
+              isSelected={selected === 'gol'}
+              to={`/network/euler-5/contract/${account}/gol`}
             />
           </Tablist>
           <Pane

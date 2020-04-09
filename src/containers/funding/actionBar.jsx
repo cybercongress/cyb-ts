@@ -10,9 +10,8 @@ import {
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
+  TransactionError,
 } from '../../components';
-
-import { TransactionError } from '../../components';
 
 const {
   STAGE_INIT,

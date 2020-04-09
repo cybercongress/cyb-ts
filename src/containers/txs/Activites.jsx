@@ -169,7 +169,7 @@ function Activites({ msg }) {
   const [seeAll, setSeeAll] = useState(false);
 
   switch (msg.type) {
-    case 'cyberd/Link':
+    case 'cyber/Link':
       return (
         <MsgLink
           msg={msg}

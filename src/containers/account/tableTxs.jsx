@@ -9,7 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
 import {
-  formatValidatorAddress,
+  trimString,
   formatNumber,
   formatCurrency,
 } from '../../utils/utils';
@@ -59,7 +59,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       <Table.TextCell textAlign="center">
         <TextTable>
           <Link to={`/network/euler-5/tx/${item.txhash}`}>
-            {formatValidatorAddress(item.txhash, 6, 6)}
+            {trimString(item.txhash, 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>
