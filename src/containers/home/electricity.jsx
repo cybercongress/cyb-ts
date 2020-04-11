@@ -37,7 +37,7 @@ class Electricity extends React.Component {
     };
     this.ws.onmessage = async evt => {
       const message = JSON.parse(evt.data);
-      if (message.result.data.value.header.height) {
+      if (Object.keys(message.result).length > 0) {
         const block = message.result.data.value.header.height;
         setBlockProps(block);
       }

@@ -7,7 +7,6 @@ import txs from './txs';
 import { CYBER, LEDGER, COSMOS } from './config';
 
 const {
-  CYBER_NODE_URL,
   BECH32_PREFIX_ACC_ADDR_CYBER,
   CYBER_NODE_URL_LCD,
 } = CYBER;

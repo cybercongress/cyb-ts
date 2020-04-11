@@ -142,7 +142,18 @@ class ActionBarTakeOff extends Component {
   getAddress = async () => {
     const { ledger } = this.state;
     try {
+      const accounts = {};
       const address = await ledger.retrieveAddress(HDPATH);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = address;
+
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
       console.log('address', address);
       this.setState({
         address,

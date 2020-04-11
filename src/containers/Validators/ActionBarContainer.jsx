@@ -26,7 +26,7 @@ import { LEDGER, CYBER } from '../../utils/config';
 
 import { i18n } from '../../i18n/en';
 
-const { CYBER_NODE_URL, DENOM_CYBER, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 const {
   MEMO,
   HDPATH,

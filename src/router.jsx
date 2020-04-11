@@ -58,7 +58,6 @@ class AppRouter extends React.Component {
   async componentDidMount() {
     const deadline = `${TIME_START}`;
     const startTime = Date.parse(deadline) - Date.parse(new Date());
-    console.log(startTime);
     if (startTime <= 0) {
       this.setState({
         time: false,
@@ -275,7 +274,7 @@ class AppRouter extends React.Component {
           />
           <Route exact path="/search/:query" component={SearchResults} />
           <Route path="/gift/:address?" component={Gift} />
-          <Route path="/takeoff" component={Funding} />
+          <Route path="/gol/takeoff" component={Funding} />
           <Route path="/tot" component={Got} />
           <Route path="/auction" component={Auction} />
           <Route path="/brain" component={Brain} />

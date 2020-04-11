@@ -35,7 +35,7 @@ const TAKEOFF = {
 };
 
 const COSMOS = {
-  ADDR_FUNDING: 'cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq',
+  ADDR_FUNDING: 'cosmos16ahkkv0jzhtp73z83qlhqrypss6jpjm862zjst',
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
@@ -50,10 +50,9 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'cyb',
   DENOM_CYBER_G: `GCYB`,
-  CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
-  CYBER_NODE_URL: 'https://titan.cybernode.ai',
-  CYBER_NODE_URL_API: 'https://titan.cybernode.ai/api',
-  CYBER_NODE_URL_LCD: 'https://titan.cybernode.ai/lcd',
+  CYBER_WEBSOCKET_URL: 'wss://ws.cyber.cybernode.ai',
+  CYBER_NODE_URL_API: 'https://api.cyber.cybernode.ai',
+  CYBER_NODE_URL_LCD: 'https://lcd.cyber.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
