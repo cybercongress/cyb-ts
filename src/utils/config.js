@@ -7,10 +7,11 @@ const AUCTION = {
   TOPICS_SEND:
     '0x3b599f6217e39be59216b60e543ce0d4c7d534fe64dd9d962334924e7819894e',
   TOPICS_CLAIM:
-    '0x3ed1528b0fdc7c5207c1bf935e34a667e13656b9ed165260c522be0bc544f303',
+    '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
   TOPICS_VESTING:
     '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
   HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
+  ROUND_DURATION: 24 * 60 * 60 * 1000,
 };
 
 const NETWORKSIDS = {
@@ -96,8 +97,9 @@ const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
-const PATTERN_TX = /[0-9A-F]{64}$/g;
+const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
+const PATTERN_BLOCK = /^[0-9]+$/g;
 
 export {
   TAKEOFF,
@@ -116,5 +118,6 @@ export {
   PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
   PATTERN_ETH,
+  PATTERN_BLOCK,
   TIME_START,
 };

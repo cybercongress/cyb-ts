@@ -8,7 +8,7 @@ export class ClaimedRound extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: false
+      status: false,
     };
     this.smart = ADDR_SMART_CONTRACT;
   }
@@ -20,10 +20,10 @@ export class ClaimedRound extends Component {
       web3.eth.sendTransaction({
         from: account,
         to: this.smart,
-        data: contract.methods.claim(day).encodeABI()
+        data: contract.methods.claim(day).encodeABI(),
       });
       this.setState({
-        status: true
+        status: true,
       });
     } catch (e) {
       console.log(e);
@@ -57,7 +57,11 @@ export class ClaimedRound extends Component {
   render() {
     const { children } = this.props;
     return (
-      <button onClick={this.getAccount} className='bnt-claime' disabled={this.state.status}>
+      <button
+        onClick={this.getAccount}
+        className="bnt-claime"
+        disabled={this.state.status}
+      >
         {children}
       </button>
     );

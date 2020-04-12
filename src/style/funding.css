@@ -356,12 +356,13 @@ span.right-input {
     white-space: nowrap;
     background-color: #000;
     color: #36d6ae;
-    /* box-shadow: 0 0 2px 0px #38d6ae; */
+    box-shadow: 0 0 2px 0px #38d6ae;
     text-shadow: 0 0 2px #36d6ae;
     border: none;
     border-radius: 4px;
     font-size: 16px;
     font-family: Play;
+    min-width: 100px;
 }
 
 .btn-view:hover {
@@ -385,6 +386,7 @@ span.right-input {
 
 .cont-btn {
     margin-top: 10px;
+    height: 32px;
     /* position: absolute; */
     z-index: 1;
     bottom: 0;

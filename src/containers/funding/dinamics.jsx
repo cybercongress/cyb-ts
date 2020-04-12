@@ -113,25 +113,6 @@ class Dinamics extends Component {
     });
   };
 
-  state4 = () => {
-    this.setState({
-      share: false,
-      main: false,
-      discount: false,
-      rewards: true,
-      activebtn: 'rewards',
-      textX: 'Donation, ATOMs',
-      textY: `Price, ATOMs/${DENOM_CYBER.toLocaleUpperCase()}`,
-      margin: {
-        l: 60,
-        r: 50,
-        b: 80,
-        t: 10,
-        pad: 4,
-      },
-    });
-  };
-
   render() {
     const {
       center,
@@ -150,12 +131,6 @@ class Dinamics extends Component {
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
     // console.log('dataRewards', dataRewards);
-    let _yaxis = 0;
-    let _xaxis = 0;
-    if (dataRewards[0] !== undefined) {
-      _yaxis = dataRewards[0].y[0] / 0.8;
-      _xaxis = 600000 / 0.95;
-    }
 
     const dataShare = [
       {
@@ -282,11 +257,11 @@ class Dinamics extends Component {
       },
       yaxis: {
         autotick: true,
-        autorange: !rewards,
-        rangemode: 'normal',
-        range: [0, _yaxis],
         title: {
           text: `${textY}`,
+        },
+        tickfont: {
+          color: '#36d6ae',
         },
         gridcolor: '#ffffff66',
         color: '#fff',
@@ -294,11 +269,12 @@ class Dinamics extends Component {
       },
       xaxis: {
         autotick: true,
-        autorange: !rewards,
         title: {
           text: `${textX}`,
         },
-        range: [0, _xaxis],
+        tickfont: {
+          color: '#36d6ae',
+        },
         gridcolor: '#ffffff66',
         color: '#fff',
         zerolinecolor: '#dedede',
@@ -374,9 +350,9 @@ class Dinamics extends Component {
       <div className="cont-btn">
         <div
           style={{
-            left: '70%',
+            left: '50%',
             position: 'absolute',
-            transform: 'translate(-72%, 0)',
+            transform: 'translate(-50%, 0)',
             display: 'flex',
           }}
         >
@@ -407,31 +383,19 @@ class Dinamics extends Component {
           >
             Discount
           </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'rewards' ? 'activebtn' : ''
-            }`}
-            onClick={this.state4}
-          >
-            My {DENOM_CYBER.toLocaleUpperCase()} estimation
-          </button>
         </div>
       </div>
     );
 
     return (
       <div className="container-dinamics">
+        <Btn />
+
         {main && <Plotly data={data} layout={layout} config={config} />}
         {share && <Plotly data={dataShare} layout={layout} config={config} />}
         {discount && (
           <Plotly data={dataDiscount} layout={layout} config={config} />
         )}
-        {rewards && (
-          <Plotly data={dataRewards} layout={layout} config={config} />
-        )}
-
-        <Btn />
       </div>
     );
   }
