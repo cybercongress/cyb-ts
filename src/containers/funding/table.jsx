@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from '@cybercongress/gravity';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
 
 const Order = {
@@ -73,6 +73,20 @@ function Table({ data, fUpin, fPin, update, pin }) {
           <div className="numberType">{formatNumber(item.amount)}</div>
           <Tooltip
             placement="bottom"
+            tooltip={`${formatNumber(Math.floor(item.cybEstimation))} EULs`}
+          >
+            <div className="numberType">
+              <FormatNumber
+                number={formatNumber(
+                  Math.floor((item.cybEstimation / Math.pow(10, 9)) * 1000) /
+                    1000,
+                  3
+                )}
+              />
+            </div>
+          </Tooltip>
+          <Tooltip
+            placement="bottom"
             tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
           >
             <div className="numberType">
@@ -92,6 +106,19 @@ function Table({ data, fUpin, fPin, update, pin }) {
       <div className="numberType">
         {formatNumber(dataTable[key].amountСolumn)}
       </div>
+      <Tooltip
+        placement="bottom"
+        tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} EULs`}
+      >
+        <div className="numberType">
+          <FormatNumber
+            number={formatNumber(
+              Math.floor((dataTable[key].cyb / Math.pow(10, 9)) * 1000) / 1000,
+              3
+            )}
+          />
+        </div>
+      </Tooltip>
       <Tooltip
         placement="bottom"
         tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} CYBs`}
@@ -127,11 +154,26 @@ function Table({ data, fUpin, fPin, update, pin }) {
                   href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
                   target="_blank"
                 >
-                  {item.txhash}
+                  {trimString(item.txhash, 10, 10)}
                 </a>
               </div>
               <div className="numberType">{item.timestamp}</div>
               <div className="numberType">{formatNumber(item.amount)}</div>
+              <Tooltip
+                placement="bottom"
+                tooltip={`${formatNumber(Math.floor(item.cybEstimation))} EULs`}
+              >
+                <div className="numberType">
+                  <FormatNumber
+                    number={formatNumber(
+                      Math.floor(
+                        (item.cybEstimation / Math.pow(10, 9)) * 1000
+                      ) / 1000,
+                      3
+                    )}
+                  />
+                </div>
+              </Tooltip>
               <Tooltip
                 placement="bottom"
                 tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
@@ -156,12 +198,27 @@ function Table({ data, fUpin, fPin, update, pin }) {
           </div>
           <Tooltip
             placement="bottom"
+            tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} EULs`}
+          >
+            <div className="numberType">
+              <FormatNumber
+                number={formatNumber(
+                  Math.floor((dataTable[key].cyb / Math.pow(10, 9)) * 1000) /
+                    1000,
+                  3
+                )}
+              />
+            </div>
+          </Tooltip>
+          <Tooltip
+            placement="bottom"
             tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} CYBs`}
           >
             <div className="numberType">
               <FormatNumber
                 number={formatNumber(
-                  Math.floor((dataTable[key].cyb / Math.pow(10, 9)) * 1000) / 1000,
+                  Math.floor((dataTable[key].cyb / Math.pow(10, 9)) * 1000) /
+                    1000,
                   3
                 )}
               />
@@ -185,6 +242,14 @@ function Table({ data, fUpin, fPin, update, pin }) {
           </div>
           <div className="numberType sort-row">
             ATOMs
+            {/* <Icon
+                icon="double-caret-vertical"
+                color="#3ab793d4"
+                marginLeft={5}
+              /> */}
+          </div>
+          <div className="numberType sort-row">
+            GEUL estimation
             {/* <Icon
                 icon="double-caret-vertical"
                 color="#3ab793d4"

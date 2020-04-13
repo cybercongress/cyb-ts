@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { Input, ActionBar, Pane, Text } from '@cybercongress/gravity';
+import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER } from '../../utils/config';
 import {
@@ -313,6 +313,18 @@ class ActionBarTakeOff extends Component {
       valueSelect: e.target.value,
     });
 
+  handleKeyPressFuckGoogle = e => {
+    const { toSend } = this.state;
+    if (toSend.length > 0) {
+      if (e.key === 'Enter') {
+        this.setState({
+          stage: STAGE_SELECTION,
+          height50: true,
+        });
+      }
+    }
+  };
+
   onClickFuckGoogle = () => {
     this.setState({
       stage: STAGE_SELECTION,
@@ -364,9 +376,9 @@ class ActionBarTakeOff extends Component {
     });
   };
 
-  onChangeInputContributeATOMs = async e => {
+  onChangeInputContributeATOMs = async evt => {
     this.setState({
-      toSend: e.target.value,
+      toSend: evt.target.value,
     });
   };
 
@@ -434,24 +446,25 @@ class ActionBarTakeOff extends Component {
               value={toSend}
               onChange={e => this.onChangeInputContributeATOMs(e)}
               placeholder="amount"
+              onKeyPress={this.handleKeyPressFuckGoogle}
               marginLeft={20}
               marginRight={20}
               width="25%"
               height={42}
               fontSize="20px"
               textAlign="end"
+              autoFocus
             />
             <Text color="#fff" fontSize="20px">
               ATOMs
             </Text>
           </Pane>
-          <button
-            type="button"
-            className="btn"
+          <Button
+            disabled={toSend.length === 0}
             onClick={this.onClickFuckGoogle}
           >
             Fuck Google
-          </button>
+          </Button>
         </ActionBar>
       );
     }

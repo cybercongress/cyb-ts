@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
 import ActionBarTakeOff from './actionBar';
 import { asyncForEach, formatNumber } from '../../utils/utils';
-import { Loading } from '../../components/index';
+import { Loading, LinkWindow } from '../../components/index';
 import { COSMOS, TAKEOFF } from '../../utils/config';
 import {
   cybWon,
@@ -120,7 +121,7 @@ class Funding extends PureComponent {
       amount = parseFloat(str) / COSMOS.DIVISOR_ATOM;
     }
     const d = new Date();
-    const timestamp = dateFormat(d, 'dd/mm/yyyy, h:MM:ss TT');
+    const timestamp = dateFormat(d, 'dd/mm/yyyy, HH:MM:ss');
     const dataTxs = {
       amount,
       txhash: data['tx.hash'][0],
@@ -147,7 +148,6 @@ class Funding extends PureComponent {
     await this.getStatistics(txs);
     this.getTableData();
     this.getData();
-    this.getPlot();
   };
 
   getStatisticsWs = async amountWebSocket => {
@@ -249,133 +249,6 @@ class Funding extends PureComponent {
     });
   };
 
-  getPlot = async () => {
-    const {
-      pocketAdd,
-      dataTxs,
-      currentPrice,
-      currentDiscount,
-      amount,
-    } = this.state;
-    // console.log('dataAllPin', dataAllPin);
-
-    const Plot = [];
-    const dataAxisRewards = {
-      type: 'scatter',
-      x: 0,
-      y: 0,
-      line: {
-        width: 2,
-        color: '#36d6ae',
-      },
-      hoverinfo: 'none',
-    };
-    if (amount <= ATOMsALL) {
-      const rewards = getRewards(currentPrice, currentDiscount, amount, amount);
-      const rewards0 = getRewards(currentPrice, currentDiscount, amount, 0);
-      dataAxisRewards.y = [rewards0, rewards];
-      dataAxisRewards.x = [0, amount];
-    } else {
-      const rewards = getRewards(
-        currentPrice,
-        currentDiscount,
-        ATOMsALL,
-        ATOMsALL
-      );
-      const rewards0 = getRewards(currentPrice, currentDiscount, ATOMsALL, 0);
-      dataAxisRewards.y = [rewards0, rewards];
-      dataAxisRewards.x = [0, ATOMsALL];
-    }
-
-    Plot.push(dataAxisRewards);
-    if (pocketAdd !== null) {
-      // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
-      this.setState({
-        dataRewards: Plot,
-      });
-      let amountAtom = 0;
-      let temp = 0;
-      const group = pocketAdd.cosmos.bech32;
-      // asyncForEach(Array.from(Array(dataTxs.length).keys()), async item => {
-      for (let item = 0; item < dataTxs.length; item++) {
-        let estimation = 0;
-        const colorPlot = group.replace(/[^0-9]/g, '').substr(0, 6);
-        const tempArrPlot = {
-          x: 0,
-          y: 0,
-          estimationPlot: 0,
-          fill: 'tozeroy',
-          type: 'scatter',
-          line: {
-            width: 2,
-            color: '#36d6ae',
-          },
-          hovertemplate: '',
-        };
-        const address = dataTxs[item].tx.value.msg[0].value.from_address;
-        const amou =
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-            10
-          ) / COSMOS.DIVISOR_ATOM;
-        if (address === group) {
-          if (amountAtom <= ATOMsALL) {
-            const x0 = amountAtom;
-            const y0 = getRewards(currentPrice, currentDiscount, amount, x0);
-            amountAtom += amou;
-            const x = amountAtom;
-            const y = getRewards(
-              currentPrice,
-              currentDiscount,
-              amount,
-              amountAtom
-            );
-            // const tempVal = temp + amou;
-            let tempVal = temp + amou;
-            if (tempVal >= ATOMsALL) {
-              tempVal = ATOMsALL;
-            }
-            estimation =
-              getEstimation(currentPrice, currentDiscount, amount, tempVal) -
-              getEstimation(currentPrice, currentDiscount, amount, temp);
-            temp += amou;
-            // console.log('estimation', estimation);
-            tempArrPlot.estimationPlot = estimation;
-            tempArrPlot.hovertemplate =
-              `My CYBs estimation: ${formatNumber(
-                Math.floor(estimation * 10 ** -9 * 1000) / 1000,
-                3
-              )}` +
-              `<br>Atoms: ${formatNumber(
-                Math.floor((x - x0) * 10 ** -3 * 1000) / 1000,
-                3
-              )}k` +
-              '<extra></extra>';
-            tempArrPlot.x = [x0, x];
-            tempArrPlot.y = [y0, y];
-            Plot.push(tempArrPlot);
-          } else {
-            amountAtom += amou;
-            temp += amou;
-            break;
-          }
-        } else {
-          amountAtom += amou;
-          temp += amou;
-        }
-      }
-      // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
-      this.setState({
-        dataRewards: Plot,
-      });
-    } else {
-      // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
-      this.setState({
-        dataRewards: Plot,
-      });
-    }
-  };
-
   getTableData = async () => {
     const {
       dataTxs,
@@ -411,7 +284,7 @@ class Funding extends PureComponent {
           txhash: dataTxs[item].txhash,
           height: dataTxs[item].height,
           from: dataTxs[item].tx.value.msg[0].value.from_address,
-          timestamp: dateFormat(d, 'dd/mm/yyyy, h:MM:ss TT'),
+          timestamp: dateFormat(d, 'dd/mm/yyyy, HH:MM:ss'),
           amount:
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
@@ -497,16 +370,52 @@ class Funding extends PureComponent {
       <span>
         <main className="block-body">
           <Pane
+            borderLeft="3px solid #3ab793e3"
+            paddingY={0}
+            paddingLeft={20}
+            paddingRight={5}
+            marginY={5}
+          >
+            <Pane>
+              We understand that shaking status quo of Google religion will be
+              hard.
+            </Pane>
+            <Pane>But we must.</Pane>
+            <Pane>
+              As this is the only way to provide sustainable future for our
+              generations.
+            </Pane>
+            <Pane>Founders</Pane>
+          </Pane>
+          <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
             paddingY={20}
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              You do not have control over the brain. You need EUL tokens to let
-              she hear you. If you came from Ethereum or Cosmos you can claim
-              the gift of gods. Then start prepare to the greatest tournament in
-              universe: <a href="/gol">Game of Links</a>.
+              Takeoff donations is the first event in{' '}
+              <Link to="/search/roadmap">CYB distribution process</Link>.
+              Takeoff main purpose to involve validators into decentralized
+              launch of <Link to="/search/genesis">Genesis</Link>. Also we want
+              to involve everybody into cyberlinking. So{' '}
+              <Link to="/gol">Game of Links</Link> rewards depends on the
+              Takeoff results. The more will be donated, the more{' '}
+              <Link to="/gol">GoL</Link> participants get rewards. Please keep
+              in mind that you receive CYB in Genesis and EUL after the end of
+              the auction. If you want to test{' '}
+              <Link to="/search/cyberlink">cyberlinking</Link>
+              immediately get some tokens at{' '}
+              <Link to="/auction">test~Auction</Link> instead. By donating you
+              agree with donation terms defined in{' '}
+              <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+                Whitepaper
+              </LinkWindow>{' '}
+              and{' '}
+              <LinkWindow to="https://cybercongress.ai/game-of-links/">
+                Game of Links rules
+              </LinkWindow>
+              .
             </Text>
           </Pane>
           <Statistics
@@ -517,7 +426,7 @@ class Funding extends PureComponent {
             )}
             discount={formatNumber(currentDiscount * 100, 3)}
           />
-          <Dinamics data3d={dataPlot} dataRewards={dataRewards} />
+          <Dinamics data3d={dataPlot} />
 
           {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
         </main>

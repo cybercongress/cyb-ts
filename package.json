@@ -34,7 +34,7 @@
     "identity-obj-proxy": "^3.0.0",
     "mini-css-extract-plugin": "^0.8.0",
     "ncp": "^2.0.0",
-    "plotly.js": "^1.49.4",
+    "plotly.js": "1.53.0",
     "prettier": "^1.15.3",
     "prop-types": "^15.6.2",
     "react-hot-loader": "^4.8.8",
