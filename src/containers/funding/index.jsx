@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Text, Pane } from '@cybercongress/gravity';
+import { Text, Pane, Dialog } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import QRCode from 'qrcode.react';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
@@ -368,6 +369,40 @@ class Funding extends PureComponent {
 
     return (
       <span>
+        <Pane
+          width="100vw"
+          height="calc(100vh - 162px)"
+          position="absolute"
+          zIndex={2}
+          backgroundColor="#020202ba"
+        >
+          <Pane
+            width="350px"
+            height="200px"
+            boxShadow="0 0 6px 1px #3ab793"
+            position="absolute"
+            zIndex={2}
+            backgroundColor="#000"
+            right="50%"
+            transform="translate(50%, -20%)"
+            borderRadius="10px"
+            top="20%"
+            paddingX={20}
+            paddingY={20}
+          >
+            text
+            <QRCode
+              size={128}
+              bgColor="#000"
+              fgColor="#3ab793"
+              level="L"
+              includeMargin
+              renderAs="svg"
+              value={COSMOS.ADDR_FUNDING}
+            />
+          </Pane>
+        </Pane>
+
         <main className="block-body">
           <Pane
             borderLeft="3px solid #3ab793e3"
