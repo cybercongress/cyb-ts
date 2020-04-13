@@ -30,6 +30,7 @@ const {
   STAGE_INIT,
   STAGE_LEDGER_INIT,
   STAGE_READY,
+  STAGE_ERROR,
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
@@ -59,49 +60,6 @@ class Wallet extends React.Component {
   async componentDidMount() {
     await this.checkAddressLocalStorage();
   }
-
-  componentDidUpdate() {
-    const {
-      ledger,
-      stage,
-      returnCode,
-      addressLedger,
-      addressInfo,
-    } = this.state;
-
-    if (stage === STAGE_LEDGER_INIT) {
-      if (ledger === null) {
-        this.pollLedger();
-      }
-      if (ledger !== null) {
-        switch (returnCode) {
-          case LEDGER_OK:
-            if (addressLedger === null) {
-              this.getAddress();
-            }
-            if (addressLedger !== null && addressInfo === null) {
-              this.getAddressInfo();
-            }
-            break;
-          default:
-            console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
-      }
-    }
-  }
-
-  compareVersion = async () => {
-    const test = this.state.ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
 
   checkAddressLocalStorage = async () => {
     const { setBandwidthProps } = this.props;
@@ -180,67 +138,6 @@ class Wallet extends React.Component {
     }
   };
 
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
-
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        this.setState({
-          address: null,
-          returnCode: connect.return_code,
-          ledgerVersion: [connect.major, connect.minor, connect.patch],
-          errorMessage: null,
-        });
-        // eslint-disable-next-line
-
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
-      console.error('Problem with Ledger communication', message, statusCode);
-    }
-  };
-
-  getAddress = async () => {
-    try {
-      const { ledger } = this.state;
-      const accounts = {};
-
-      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
-      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
-
-      accounts.cyber = addressLedgerCyber;
-      accounts.cosmos = addressLedgerCosmos;
-
-      console.log('address', addressLedgerCyber);
-
-      this.setState({
-        addressLedger: addressLedgerCyber,
-        accounts,
-      });
-
-      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
-      localStorage.setItem('pocket', JSON.stringify(accounts));
-      this.getLocalStorageLink();
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   getAddressInfo = async () => {
     const { accounts } = this.state;
     const { setBandwidthProps } = this.props;
@@ -250,7 +147,6 @@ class Wallet extends React.Component {
       address: '',
       amount: '',
       token: '',
-      keys: '',
     };
     const responseCyber = await getBalance(accounts.cyber.bech32);
     const responseBandwidth = await getAccountBandwidth(accounts.cyber.bech32);
@@ -275,10 +171,10 @@ class Wallet extends React.Component {
       address: accounts.cosmos.bech32,
       amount: totalCosmos.total / COSMOS.DIVISOR_ATOM,
       token: 'atom',
-      keys: 'ledger',
     };
 
     pocket.pk = accounts.cyber.pk;
+    pocket.keys = accounts.keys;
 
     console.log(pocket);
 
@@ -302,12 +198,6 @@ class Wallet extends React.Component {
       ledgerVersion: [0, 0, 0],
       time: 0,
       addAddress: true,
-    });
-  };
-
-  onClickGetAddressLedger = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
     });
   };
 
@@ -446,25 +336,10 @@ class Wallet extends React.Component {
             <NotFound text={T.pocket.hurry} />
           </main>
           <ActionBarContainer
-            // address={addressLedger.bech32}
-            onClickAddressLedger={this.onClickGetAddressLedger}
             addAddress={addAddress}
+            updateAddress={this.checkAddressLocalStorage}
           />
         </div>
-      );
-    }
-
-    if (stage === STAGE_LEDGER_INIT) {
-      return (
-        <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.cleatState}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
-        />
       );
     }
 
@@ -505,7 +380,7 @@ class Wallet extends React.Component {
                   </Text>
                 </PocketCard>
               )}
-              {link !== null && (
+              {link !== null && pocket.keys === 'ledger' && (
                 <ImportLinkLedger
                   link={link}
                   countLink={countLink}

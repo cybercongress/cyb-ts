@@ -11,10 +11,11 @@ import {
   SendLedger,
   ConnectLadger,
   TransactionError,
+  Dots,
 } from '../../components';
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, PATTERN_CYBER } from '../../utils/config';
 import { getBalanceWallet, statusNode } from '../../utils/search/utils';
-import { downloadObjectAsJson } from '../../utils/utils';
+import { downloadObjectAsJson, getDelegator } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -38,6 +39,10 @@ const {
   MEMO,
 } = LEDGER;
 
+const STAGE_ADD_ADDRESS_LEDGER = 1.1;
+const STAGE_ADD_ADDRESS_USER = 2.1;
+const STAGE_ADD_ADDRESS_OK = 2.2;
+
 class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
@@ -58,6 +63,7 @@ class ActionBarContainer extends Component {
       txHash: null,
       txHeight: null,
       errorMessage: null,
+      valueInputAddres: '',
     };
     this.gasField = React.createRef();
     this.gasPriceField = React.createRef();
@@ -70,7 +76,12 @@ class ActionBarContainer extends Component {
   }
 
   componentDidUpdate() {
+    const { addAddress } = this.props;
     const { stage, ledger, returnCode, address, addressInfo } = this.state;
+
+    if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
+      this.cleatState();
+    }
 
     if (stage === STAGE_LEDGER_INIT) {
       if (ledger === null) {
@@ -84,6 +95,27 @@ class ActionBarContainer extends Component {
             }
             if (address !== null && addressInfo === null) {
               this.getAddressInfo();
+            }
+            break;
+          default:
+            // console.log('getVersion');
+            this.getVersion();
+            break;
+        }
+      } else {
+        // eslint-disable-next-line
+        console.warn('Still looking for a Ledger device.');
+      }
+    }
+    if (stage === STAGE_ADD_ADDRESS_LEDGER) {
+      if (ledger === null) {
+        this.pollLedger();
+      }
+      if (ledger !== null) {
+        switch (returnCode) {
+          case LEDGER_OK:
+            if (address === null) {
+              this.addAddressLedger();
             }
             break;
           default:
@@ -139,6 +171,41 @@ class ActionBarContainer extends Component {
         ledger: null,
       });
       console.error('Problem with Ledger communication', message, statusCode);
+    }
+  };
+
+  addAddressLedger = async () => {
+    try {
+      const { ledger } = this.state;
+      const { updateAddress } = this.props;
+      const accounts = {};
+
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
+
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
+      accounts.keys = 'ledger';
+
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      if (updateAddress) {
+        updateAddress();
+      }
+      this.setState({
+        stage: STAGE_ADD_ADDRESS_OK,
+      });
+    } catch (error) {
+      const { message, statusCode } = error;
+      if (message !== "Cannot read property 'length' of undefined") {
+        // this just means we haven't found the device yet...
+        // eslint-disable-next-line
+        console.error('Problem reading address data', message, statusCode);
+      }
+      this.setState({ time: Date.now(), stage: STAGE_ERROR }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -403,7 +470,6 @@ class ActionBarContainer extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      errorMessage: null,
       ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
@@ -418,6 +484,8 @@ class ActionBarContainer extends Component {
       txMsg: null,
       txHash: null,
       txHeight: null,
+      errorMessage: null,
+      valueInputAddres: '',
     });
   };
 
@@ -439,9 +507,62 @@ class ActionBarContainer extends Component {
     }
   };
 
+  onClickAddAddressLedger = () => {
+    this.setState({
+      stage: STAGE_ADD_ADDRESS_LEDGER,
+    });
+  };
+
+  onClickAddAddressUser = () => {
+    this.setState({
+      stage: STAGE_ADD_ADDRESS_USER,
+    });
+  };
+
+  onChangeInputAddress = e => {
+    this.setState({
+      valueInputAddres: e.target.value,
+    });
+  };
+
+  onClickAddAddressUserToLocalStr = () => {
+    const { valueInputAddres } = this.state;
+    console.log(valueInputAddres);
+    const { updateAddress } = this.props;
+    const accounts = {
+      cyber: {
+        bech32: '',
+      },
+      cosmos: {
+        bech32: '',
+      },
+    };
+    const addressLedgerCyber = {
+      bech32: '',
+    };
+
+    if (valueInputAddres.match(PATTERN_CYBER)) {
+      const cosmosAddress = getDelegator(valueInputAddres, 'cosmos');
+      accounts.cyber.bech32 = valueInputAddres;
+      addressLedgerCyber.bech32 = valueInputAddres;
+      accounts.cosmos.bech32 = cosmosAddress;
+      accounts.keys = 'user';
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      this.setState({
+        stage: STAGE_ADD_ADDRESS_OK,
+      });
+    }
+
+    if (updateAddress) {
+      updateAddress();
+    }
+  };
+
   render() {
     const {
-      onClickAddressLedger,
       addAddress,
       addressSend,
       send,
@@ -463,13 +584,21 @@ class ActionBarContainer extends Component {
       txHash,
       errorMessage,
       txHeight,
+      valueInputAddres,
     } = this.state;
 
-    if (addAddress) {
+    if (addAddress && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={onClickAddressLedger}>
+            <Button marginX="10px" onClick={this.onClickAddAddressUser}>
+              put only address
+            </Button>
+            <Button
+              paddingX="15px"
+              marginX="10px"
+              onClick={this.onClickAddAddressLedger}
+            >
               {T.actionBar.pocket.put}
             </Button>
           </Pane>
@@ -477,12 +606,61 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (selectCard === 'pubkey' && stage === STAGE_INIT) {
+    if (addAddress && stage === STAGE_ADD_ADDRESS_USER) {
+      return (
+        <ActionBar>
+          <Pane
+            flex={1}
+            justifyContent="center"
+            alignItems="center"
+            fontSize="18px"
+            display="flex"
+          >
+            put cyber address:
+            <input
+              value={valueInputAddres}
+              style={{
+                height: '42px',
+                maxWidth: '200px',
+                marginLeft: '10px',
+                textAlign: 'end',
+              }}
+              onChange={this.onChangeInputAddress}
+              placeholder="address"
+              autoFocus
+            />
+          </Pane>
+
+          <Button
+            disabled={!valueInputAddres.match(PATTERN_CYBER)}
+            onClick={this.onClickAddAddressUserToLocalStr}
+          >
+            add address
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (addAddress && stage === STAGE_ADD_ADDRESS_OK) {
+      return (
+        <ActionBar>
+          <Pane display="flex" alignItems="center">
+            <Pane fontSize={20}>adding address</Pane>
+            <Dots big />
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (
+      selectCard === 'pubkey' &&
+      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
+    ) {
       return (
         <ActionBar>
           <Pane>
             <Button marginX={10} onClick={this.deletPubkey}>
-              delete pubkey
+              delete account
             </Button>
             <Button marginX={10} onClick={e => this.onClickInitLedger(e)}>
               {T.actionBar.pocket.send}
@@ -492,7 +670,10 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (selectCard === 'gol' && stage === STAGE_INIT) {
+    if (
+      selectCard === 'gol' &&
+      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
+    ) {
       return (
         <ActionBar>
           <Pane>
@@ -508,7 +689,10 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (selectCard === 'importCli' && stage === STAGE_INIT) {
+    if (
+      selectCard === 'importCli' &&
+      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
+    ) {
       return (
         <ActionBar>
           <Pane>
@@ -518,7 +702,10 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (selectCard === 'importLedger' && stage === STAGE_INIT) {
+    if (
+      selectCard === 'importLedger' &&
+      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
+    ) {
       return (
         <ActionBar>
           <Pane>
@@ -528,7 +715,10 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (selectCard === '' && stage === STAGE_INIT) {
+    if (
+      selectCard === '' &&
+      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
+    ) {
       return (
         <ActionBar>
           <Pane>
@@ -540,7 +730,7 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_LEDGER_INIT) {
+    if (stage === STAGE_LEDGER_INIT || stage === STAGE_ADD_ADDRESS_LEDGER) {
       return (
         <ConnectLadger
           pin={returnCode >= LEDGER_NOAPP}

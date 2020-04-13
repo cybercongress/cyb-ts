@@ -32,7 +32,7 @@ function PubkeyCard({ pocket, ...props }) {
       }
     };
     feachData();
-  }, []);
+  }, pocket);
 
   return (
     <PocketCard
@@ -40,26 +40,28 @@ function PubkeyCard({ pocket, ...props }) {
       flexDirection="column"
       paddingTop={15}
       paddingBottom={40}
-      minHeight="200px"
+      minHeight={pocket.keys === 'ledger' ? '200px' : '180px'}
       {...props}
     >
-      <Row
-        marginBottom={25}
-        fontSizeValue="18px"
-        flexDirection="column"
-        alignItems="flex-start"
-        value={
-          <Pane display="flex" alignItems="center">
-            <img
-              style={{ width: 20, height: 20, marginRight: 5 }}
-              src={imgLedger}
-              alt="ledger"
-            />
-            <div>{trimString(pocket.pk, 6, 6)}</div>
-          </Pane>
-        }
-        title="pubkey"
-      />
+      {pocket.keys === 'ledger' && (
+        <Row
+          marginBottom={25}
+          fontSizeValue="18px"
+          flexDirection="column"
+          alignItems="flex-start"
+          value={
+            <Pane display="flex" alignItems="center">
+              <img
+                style={{ width: 20, height: 20, marginRight: 5 }}
+                src={imgLedger}
+                alt="ledger"
+              />
+              <div>{trimString(pocket.pk, 6, 6)}</div>
+            </Pane>
+          }
+          title="pubkey"
+        />
+      )}
       <Row
         marginBottom={20}
         marginBottomValue={5}
