@@ -619,7 +619,7 @@ class ActionBarContainer extends Component {
             fontSize="18px"
             display="flex"
           >
-            put cyber address:
+            put cosmos address:
             <input
               value={valueInputAddres}
               style={{
