@@ -3,7 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { PocketCard } from '../components';
 import { Copy, Dots } from '../../../components';
-import { trimString, formatCurrency, getDelegator } from '../../../utils/utils';
+import { trimString, formatCurrency, getDelegator, exponentialToDecimal } from '../../../utils/utils';
 import { getDrop } from '../../../utils/search/utils';
 
 const imgLedger = require('../../../image/ledger.svg');
@@ -96,7 +96,7 @@ function PubkeyCard({ pocket, ...props }) {
         }
         title={
           <div>
-            {pocket.cosmos.amount.toPrecision(2)}{' '}
+            {exponentialToDecimal(pocket.cosmos.amount.toPrecision(2))}{' '}
             {pocket.cosmos.token.toUpperCase()}
           </div>
         }

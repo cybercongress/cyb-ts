@@ -13,7 +13,7 @@ import {
   TransactionError,
   Dots,
 } from '../../components';
-import { LEDGER, CYBER, PATTERN_CYBER } from '../../utils/config';
+import { LEDGER, CYBER, PATTERN_COSMOS } from '../../utils/config';
 import { getBalanceWallet, statusNode } from '../../utils/search/utils';
 import { downloadObjectAsJson, getDelegator } from '../../utils/utils';
 
@@ -541,11 +541,14 @@ class ActionBarContainer extends Component {
       bech32: '',
     };
 
-    if (valueInputAddres.match(PATTERN_CYBER)) {
-      const cosmosAddress = getDelegator(valueInputAddres, 'cosmos');
-      accounts.cyber.bech32 = valueInputAddres;
-      addressLedgerCyber.bech32 = valueInputAddres;
-      accounts.cosmos.bech32 = cosmosAddress;
+    if (valueInputAddres.match(PATTERN_COSMOS)) {
+      const cyberAddress = getDelegator(
+        valueInputAddres,
+        CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+      );
+      accounts.cyber.bech32 = cyberAddress;
+      addressLedgerCyber.bech32 = cyberAddress;
+      accounts.cosmos.bech32 = valueInputAddres;
       accounts.keys = 'user';
 
       localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
@@ -632,7 +635,7 @@ class ActionBarContainer extends Component {
           </Pane>
 
           <Button
-            disabled={!valueInputAddres.match(PATTERN_CYBER)}
+            disabled={!valueInputAddres.match(PATTERN_COSMOS)}
             onClick={this.onClickAddAddressUserToLocalStr}
           >
             add address
