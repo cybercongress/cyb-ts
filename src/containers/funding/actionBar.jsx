@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Input, ActionBar, Pane, Text } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER } from '../../utils/config';
 import {
   ContributeATOMs,
-  TransactionCost,
-  Succesfuuly,
-  SendAmounLadger,
   SendAmount,
-  StartState,
+  ConnectLadger,
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
-} from './stateActionBar';
+  TransactionError,
+} from '../../components';
 
 const {
   STAGE_INIT,
@@ -133,6 +132,9 @@ class ActionBarTakeOff extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -206,13 +208,26 @@ class ActionBarTakeOff extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
@@ -275,6 +290,7 @@ class ActionBarTakeOff extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      errorMessage: null,
     });
     if (update) {
       update();
@@ -390,15 +406,43 @@ class ActionBarTakeOff extends Component {
       txHash,
       txHeight,
       stage,
+      valueAmount,
+      errorMessage,
     } = this.state;
 
     if (stage === STAGE_INIT) {
       return (
-        <StartState
-          onClickBtn={this.onClickFuckGoogle}
-          valueSelect={valueSelect}
-          onChangeSelect={this.onChangeSelect}
-        />
+        <ActionBar>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <span className="actionBar-text">Contribute</span>
+            <Input
+              value={toSend}
+              onChange={e => this.onChangeInputContributeATOMs(e)}
+              placeholder="amount"
+              marginLeft={20}
+              marginRight={20}
+              width="25%"
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+            />
+            <Text color="#fff" fontSize="20px">
+              ATOMs
+            </Text>
+          </Pane>
+          <button
+            type="button"
+            className="btn"
+            onClick={this.onClickFuckGoogle}
+          >
+            Fuck Google
+          </button>
+        </ActionBar>
       );
     }
 
@@ -415,7 +459,7 @@ class ActionBarTakeOff extends Component {
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
+        <ConnectLadger
           onClickBtn={this.onClickSaveAddress}
           status={connect}
           pin={returnCode >= LEDGER_NOAPP}
@@ -472,12 +516,14 @@ class ActionBarTakeOff extends Component {
       );
     }
 
-    if (step === 'transactionCost') {
-      return <TransactionCost onClickBtn={this.onClickTransactionCost} />;
-    }
-
-    if (step === 'succesfuuly') {
-      return <Succesfuuly />;
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
+          onClickBtn={this.onClickInitStage}
+          onClickBtnCloce={this.onClickInitStage}
+        />
+      );
     }
 
     return null;

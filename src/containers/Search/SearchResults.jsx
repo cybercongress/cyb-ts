@@ -1,17 +1,27 @@
 import React from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import Iframe from 'react-iframe';
+import { connect } from 'react-redux';
 import {
   getIpfsHash,
   search,
   getRankGrade,
   getDrop,
   formatNumber as format,
+  getContentByCid,
 } from '../../utils/search/utils';
 import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import { CYBER, PATTERN } from '../../utils/config';
+import {
+  CYBER,
+  PATTERN,
+  PATTERN_CYBER,
+  PATTERN_TX,
+  PATTERN_CYBER_VALOPER,
+} from '../../utils/config';
 import Gift from './gift';
+import SnipitAccount from './snipitAccountPages';
 
 const giftImg = require('../../image/gift.svg');
 
@@ -20,12 +30,16 @@ class SearchResults extends React.Component {
     super(props);
     this.state = {
       result: false,
-      searchResults: [],
+      searchResults: {
+        link: [],
+        drop: [],
+      },
       loading: false,
       keywordHash: '',
       query: '',
       resultNull: false,
       drop: false,
+      dropResults: [],
     };
   }
 
@@ -48,65 +62,104 @@ class SearchResults extends React.Component {
       loading: true,
     });
 
-    this.getSearch(query);
+    this.getSearch(query.toLowerCase());
+  };
+
+  loadContent = async (cids, node, prevState) => {
+    const { query } = this.state;
+    const contentPromises = Object.keys(cids).map(cid =>
+      getContentByCid(cid, node)
+        .then(content => {
+          const { searchResults } = this.state;
+          const links = searchResults.link;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              console.warn({ ...links[cid], ...content });
+              links[cid] = {
+                ...links[cid],
+                status: content.status,
+                content: content.content,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
+        })
+        .catch(() => {
+          const { searchResults } = this.state;
+          const links = searchResults.link;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              links[cid] = {
+                ...links[cid],
+                status: 'failed',
+                content: `data:,${cid}`,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
+        })
+    );
+    Promise.all(contentPromises);
   };
 
   getSearch = async query => {
-    let searchResults = [];
+    const { node } = this.props;
+    const searchResults = {
+      link: [],
+      drop: [],
+    };
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
-    let drop;
     // const { query } = this.state;
-    if (query.match(PATTERN)) {
-      const result = await getDrop(query.toLowerCase());
 
-      console.log('result', result);
+    keywordHash = await getIpfsHash(query);
+    searchResults.link = await search(keywordHash);
+    searchResults.link.map((item, index) => {
+      searchResults.link[index].cid = item.cid;
+      searchResults.link[index].rank = formatNumber(item.rank, 6);
+      searchResults.link[index].grade = getRankGrade(item.rank);
+    });
 
-      if (result === 0) {
-        drop = {
-          address: query,
-          gift: 0,
-        };
-      } else {
-        drop = {
-          address: query,
-          gift: result.gift,
-          ...result,
-        };
-      }
-
-      searchResults.push(drop);
-
-      this.setState({
-        drop: true,
-        loading: false,
+    if (searchResults.link.length === 0) {
+      const queryNull = '0';
+      keywordHashNull = await getIpfsHash(queryNull);
+      searchResults.link = await search(keywordHashNull);
+      searchResults.link.map((item, index) => {
+        searchResults.link[index].cid = item.cid;
+        searchResults.link[index].rank = formatNumber(item.rank, 6);
+        searchResults.link[index].grade = getRankGrade(item.rank);
       });
-    } else {
-      keywordHash = await getIpfsHash(query);
-      searchResults = await search(keywordHash);
-      searchResults.map((item, index) => {
-        searchResults[index].cid = item.cid;
-        searchResults[index].rank = formatNumber(item.rank, 6);
-        searchResults[index].grade = getRankGrade(item.rank);
-      });
-      console.log('searchResults', searchResults);
-
-      if (searchResults.length === 0) {
-        const queryNull = '0';
-        keywordHashNull = await getIpfsHash(queryNull);
-        searchResults = await search(keywordHashNull);
-        searchResults.map((item, index) => {
-          searchResults[index].cid = item.cid;
-          searchResults[index].rank = formatNumber(item.rank, 6);
-          searchResults[index].grade = getRankGrade(item.rank);
-        });
-        resultNull = true;
-      }
-      this.setState({
-        drop: false,
-      });
+      resultNull = true;
     }
+
+    const links = searchResults.link.reduce(
+      (obj, link) => ({
+        ...obj,
+        [link.cid]: {
+          rank: link.rank,
+          grade: link.grade,
+          status: 'loading',
+          query,
+        },
+      }),
+      {}
+    );
+
+    console.log('searchResults', searchResults);
+    searchResults.link = links;
 
     this.setState({
       searchResults,
@@ -116,6 +169,7 @@ class SearchResults extends React.Component {
       query,
       resultNull,
     });
+    this.loadContent(searchResults.link, node);
   };
 
   render() {
@@ -129,9 +183,8 @@ class SearchResults extends React.Component {
       drop,
     } = this.state;
     // console.log(query);
-    console.log(searchResults);
 
-    let searchItems = [];
+    const searchItems = [];
 
     if (loading) {
       return (
@@ -152,23 +205,80 @@ class SearchResults extends React.Component {
         </div>
       );
     }
-    if (drop) {
-      searchItems = searchResults.map(item => <Gift item={item} />);
-    } else {
-      searchItems = searchResults.map(item => (
-        <SearchItem
-          key={item.cid}
-          hash={item.cid}
-          rank={item.rank}
-          grade={item.grade}
-          status="success"
-          // onClick={e => (e, links[cid].content)}
-        >
-          {item.cid}
-        </SearchItem>
-      ));
+
+    if (query.match(PATTERN)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Check your gift"
+          to={`/gift/${query}`}
+          // address={query}
+        />
+      );
     }
-    console.log(searchItems);
+
+    if (query.match(PATTERN_CYBER)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Details address"
+          to={`/network/euler/contract/${query}`}
+          address={query}
+        />
+      );
+    }
+
+    if (query.match(PATTERN_CYBER_VALOPER)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Details a hero"
+          to={`/network/euler/hero/${query}`}
+          address={query}
+        />
+      );
+    }
+
+    if (query.match(PATTERN_TX)) {
+      searchItems.push(
+        <SnipitAccount
+          text="Details Tx"
+          to={`/network/euler/tx/${query}`}
+          address={query}
+        />
+      );
+    }
+
+    const links = searchResults.link;
+    searchItems.push(
+      Object.keys(links).map(key => {
+        let contentItem = false;
+        if (links[key].status === 'success') {
+          if (links[key].content !== undefined) {
+            if (links[key].content.indexOf(key) === -1) {
+              contentItem = true;
+            }
+          }
+        }
+        return (
+          <SearchItem
+            key={key}
+            hash={key}
+            rank={links[key].rank}
+            grade={links[key].grade}
+            status={links[key].status}
+            contentIpfs={links[key].content}
+            // onClick={e => (e, links[cid].content)}
+          >
+            {contentItem && (
+              <Iframe
+                width="100%"
+                height="fit-content"
+                className="iframe-SearchItem"
+                url={links[key].content}
+              />
+            )}
+          </SearchItem>
+        );
+      })
+    );
 
     return (
       <div>
@@ -186,8 +296,9 @@ class SearchResults extends React.Component {
                 marginBottom={20}
                 color="#949292"
                 lineHeight="20px"
+                wordBreak="break-all"
               >
-                {`I found ${searchItems.length} results`}
+                {`I found ${Object.keys(searchResults.link).length} results`}
               </Text>
             )}
 
@@ -197,6 +308,7 @@ class SearchResults extends React.Component {
                 marginBottom={20}
                 color="#949292"
                 lineHeight="20px"
+                wordBreak="break-all"
               >
                 I don't know{' '}
                 <Text fontSize="20px" lineHeight="20px" color="#e80909">
@@ -209,19 +321,23 @@ class SearchResults extends React.Component {
           </Pane>
         </main>
 
-        {!drop && (
-          <ActionBarContainer
-            home={!result}
-            valueSearchInput={query}
-            link={searchResults.length === 0 && result}
-            keywordHash={keywordHash}
-            onCklicBtnSearch={this.onCklicBtn}
-            update={this.getParamsQuery}
-          />
-        )}
+        <ActionBarContainer
+          home={!result}
+          valueSearchInput={query}
+          link={searchResults.length === 0 && result}
+          keywordHash={keywordHash}
+          onCklicBtnSearch={this.onCklicBtn}
+          update={this.getParamsQuery}
+        />
       </div>
     );
   }
 }
 
-export default SearchResults;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(SearchResults);

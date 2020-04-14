@@ -31,10 +31,18 @@ class Story extends React.Component {
     this.setState({
       btnPlay: true,
     });
+    this.chekKeydown();
   }
 
+  chekKeydown = () => {
+    document.addEventListener('keydown', event => {
+      if (event.code === 'Space') {
+        this.swapStory();
+      }
+    });
+  };
+
   startTimer = () => {
-    const { history } = this.props;
     this.setState({
       btnPlay: false,
     });
@@ -64,8 +72,7 @@ class Story extends React.Component {
     }, 75000);
 
     setTimeout(() => {
-      localStorage.setItem('story', JSON.stringify(true));
-      history.push('/');
+      this.swapStory();
     }, 80000);
   };
 
@@ -89,6 +96,12 @@ class Story extends React.Component {
     document.getElementById('sound').play();
     this.audio();
     this.startTimer();
+  };
+
+  swapStory = () => {
+    const { history } = this.props;
+    localStorage.setItem('story', JSON.stringify(true));
+    history.push('/');
   };
 
   render() {

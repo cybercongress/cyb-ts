@@ -9,6 +9,7 @@ import {
   Confirmed,
   SendLedger,
   ConnectLadger,
+  TransactionError,
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -55,6 +56,7 @@ class ActionBarContainer extends Component {
       txMsg: null,
       txHash: null,
       txHeight: null,
+      errorMessage: null,
     };
     this.gasField = React.createRef();
     this.gasPriceField = React.createRef();
@@ -128,6 +130,9 @@ class ActionBarContainer extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -153,7 +158,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -180,6 +185,8 @@ class ActionBarContainer extends Component {
 
   getAddressInfo = async () => {
     const { address } = this.state;
+    const { addressSend } = this.props;
+    let toSendAddres = '';
     let addressInfo = {};
     let balance = 0;
     try {
@@ -193,8 +200,13 @@ class ActionBarContainer extends Component {
       }
       addressInfo.chainId = chainId;
 
+      if (addressSend) {
+        toSendAddres = addressSend;
+      }
+
       this.setState({
         addressInfo,
+        toSendAddres,
         balance,
         stage: STAGE_READY,
       });
@@ -249,19 +261,32 @@ class ActionBarContainer extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -280,8 +305,9 @@ class ActionBarContainer extends Component {
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
@@ -289,7 +315,16 @@ class ActionBarContainer extends Component {
         updateAddress();
         return;
       }
+      if (data.code) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
+        });
+        return;
+      }
     }
+
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
@@ -314,6 +349,7 @@ class ActionBarContainer extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
+      errorMessage: null,
       ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
@@ -340,7 +376,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { onClickAddressLedger, addAddress, send, addressInfo } = this.props;
+    const { onClickAddressLedger, addAddress, addressSend, send, addressInfo } = this.props;
     const {
       stage,
       connect,
@@ -352,6 +388,7 @@ class ActionBarContainer extends Component {
       toSendAddres,
       txMsg,
       txHash,
+      errorMessage,
       txHeight,
     } = this.state;
 
@@ -430,6 +467,16 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.cleatState}
           onClickBtnCloce={this.cleatState}
         />

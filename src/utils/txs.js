@@ -95,12 +95,7 @@ function applyGasCyber(unsignedTx, gas, denom) {
 
   // eslint-disable-next-line no-param-reassign
   unsignedTx.value.fee = {
-    amount: [
-      {
-        amount: '0',
-        denom: denom || DENOM_CYBER,
-      },
-    ],
+    amount: [],
     gas: gas.toString(),
   };
 
@@ -299,7 +294,7 @@ function createLink(txContext, address, fromCid, toCid, memo) {
   const txSkeleton = createSkeletonCyber(txContext);
 
   const txMsg = {
-    type: 'cyberd/Link',
+    type: 'cyber/Link',
     value: {
       address,
       links: [
@@ -457,6 +452,53 @@ function createRedelegate(
   return txSkeleton;
 }
 
+function createWithdrawDelegationReward(txContext, address, memo, rewards) {
+  const txSkeleton = createSkeletonCyber(txContext);
+  txSkeleton.value.msg = [];
+
+  Object.keys(rewards).forEach(key => {
+    txSkeleton.value.msg.push({
+      type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+      value: {
+        delegator_address: address,
+        validator_address: rewards[key].validator_address,
+      },
+    });
+  });
+
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
+function createRedelegateCyber(
+  txContext,
+  validatorSourceBech32,
+  validatorDestBech32,
+  uatomAmount,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgBeginRedelegate',
+    value: {
+      amount: {
+        amount: uatomAmount.toString(),
+        denom: DENOM_CYBER,
+      },
+      delegator_address: txContext.bech32,
+      validator_dst_address: validatorDestBech32,
+      validator_src_address: validatorSourceBech32,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 export default {
   createSkeleton,
   createDelegate,
@@ -471,4 +513,6 @@ export default {
   createTextProposal,
   createCommunityPool,
   createUndelegateCyber,
+  createWithdrawDelegationReward,
+  createRedelegateCyber,
 };

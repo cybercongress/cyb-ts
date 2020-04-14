@@ -11,12 +11,15 @@ import {
   FormatNumber,
   TransactionSubmitted,
   Delegate,
+  ReDelegate,
+  TransactionError,
 } from '../../components';
 
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import { trimString, formatNumber } from '../../utils/utils';
 import {
   getBalanceWallet,
   selfDelegationShares,
+  getValidators,
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
@@ -43,6 +46,7 @@ const T = new LocalizedStrings(i18n);
 
 export const TXTYPE_DELEGATE = 0;
 export const TXTYPE_UNDELEGATE = 1;
+export const TXTYPE_REDELEGATE = 2;
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -78,6 +82,9 @@ class ActionBarContainer extends Component {
       txHash: null,
       error: null,
       txType: null,
+      valueSelect: '',
+      errorMessage: null,
+      validatorsAll: null,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
@@ -139,6 +146,9 @@ class ActionBarContainer extends Component {
     } catch ({ message, statusCode }) {
       // eslint-disable-next-line
       // eslint-disable-next-line
+      this.setState({
+        ledger: null,
+      });
       console.error('Problem with Ledger communication', message, statusCode);
     }
   };
@@ -167,7 +177,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -196,11 +206,11 @@ class ActionBarContainer extends Component {
     const { address } = this.state;
     const { validators } = this.props;
 
-    const validatorAddres = validators[0].operator_address;
+    const validatorAddres = validators.operator_address;
 
     let addressInfo = {};
     let balance = 0;
-
+    let validatorsAll = [];
     try {
       const chainId = await this.getNetworkId();
       const response = await getBalanceWallet(address.bech32);
@@ -208,7 +218,7 @@ class ActionBarContainer extends Component {
         address.bech32,
         validatorAddres
       );
-
+      const validators = await getValidators();
       console.log('delegate', delegate);
 
       if (response) {
@@ -219,10 +229,13 @@ class ActionBarContainer extends Component {
 
       console.log(addressInfo);
 
+      validatorsAll = validators;
+
       this.setState({
         addressInfo,
         balance,
         stage: STAGE_READY,
+        validatorsAll,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -236,12 +249,19 @@ class ActionBarContainer extends Component {
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend, txType } = this.state;
+    const {
+      ledger,
+      address,
+      addressInfo,
+      toSend,
+      txType,
+      valueSelect,
+    } = this.state;
     const { validators } = this.props;
 
     let tx = {};
 
-    const validatorAddres = validators[0].operator_address;
+    const validatorAddres = validators.operator_address;
 
     console.log(validatorAddres);
 
@@ -276,6 +296,15 @@ class ActionBarContainer extends Component {
           MEMO
         );
         break;
+      case TXTYPE_REDELEGATE:
+        tx = await ledger.txCreateRedelegateCyber(
+          txContext,
+          validatorAddres,
+          valueSelect,
+          amount,
+          MEMO
+        );
+        break;
       default:
         break;
     }
@@ -297,19 +326,32 @@ class ActionBarContainer extends Component {
     this.setState({ stage: STAGE_WAIT });
     const sing = await ledger.sign(txMsg, txContext);
     console.log('sing', sing);
-    if (sing !== null) {
+    if (sing.return_code === LEDGER.LEDGER_OK) {
+      const applySignature = await ledger.applySignature(
+        sing,
+        txMsg,
+        txContext
+      );
+      if (applySignature !== null) {
+        this.setState({
+          txMsg: null,
+          txBody: applySignature,
+          stage: STAGE_SUBMITTED,
+        });
+        await this.injectTx();
+      }
+    } else {
       this.setState({
-        txMsg: null,
-        txBody: sing,
-        stage: STAGE_SUBMITTED,
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: sing.error_message,
       });
-      await this.injectTx();
     }
   };
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -327,14 +369,24 @@ class ActionBarContainer extends Component {
     const { updateTable } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.state.ledger.txStatusCyber(this.state.txHash);
-      const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      const data = await this.state.ledger.txStatusCyber(this.state.txHash);
+      // console.log(data);
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        updateTable();
+        if (updateTable) {
+          updateTable();
+        }
+        return;
+      }
+      if (data.code) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
+        });
         return;
       }
     }
@@ -344,6 +396,12 @@ class ActionBarContainer extends Component {
   onChangeInputAmount = e => {
     this.setState({
       toSend: e.target.value,
+    });
+  };
+
+  onChangeReDelegate = e => {
+    this.setState({
+      valueSelect: e.target.value,
     });
   };
 
@@ -362,6 +420,7 @@ class ActionBarContainer extends Component {
       txContext: null,
       txBody: null,
       txHeight: null,
+      errorMessage: null,
       txHash: null,
       error: null,
     });
@@ -403,8 +462,15 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onClickRestake = () => {
+    this.setState({
+      stage: STAGE_LEDGER_INIT,
+      txType: TXTYPE_REDELEGATE,
+    });
+  };
+
   render() {
-    const { validators } = this.props;
+    const { validators, addressLedger, unStake } = this.props;
     const {
       stage,
       ledgerVersion,
@@ -417,11 +483,19 @@ class ActionBarContainer extends Component {
       txHeight,
       txType,
       addressInfo,
+      valueSelect,
+      errorMessage,
+      validatorsAll,
     } = this.state;
+
+    const validRestakeBtn =
+      parseFloat(toSend) > 0 &&
+      valueSelect.length > 0 &&
+      address.bech32 === addressLedger;
 
     const T_AB = T.actionBar.delegate;
 
-    if (validators.length === 0 && stage === STAGE_INIT) {
+    if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -444,7 +518,7 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (validators.length > 0 && stage === STAGE_INIT) {
+    if (Object.keys(validators).length !== 0 && stage === STAGE_INIT) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -452,13 +526,18 @@ class ActionBarContainer extends Component {
               {T_AB.heroes}
             </Text>
             <Text fontSize="18px" color="#fff" fontWeight={600}>
-              {validators[0].description.moniker}
+              {validators.description.moniker}
             </Text>
           </ActionBarContentText>
-          <Button marginRight={30} onClick={this.onClickDelegate}>
-            {T_AB.btnDelegate}
-          </Button>
-          <Button onClick={this.onClickUnDelegate}>{T_AB.btnUnDelegate}</Button>
+          <Button onClick={this.onClickDelegate}>Stake</Button>
+          {(parseFloat(validators.delegation) > 0 || unStake) && (
+            <div>
+              <Button marginX={25} onClick={this.onClickUnDelegate}>
+                Unstake
+              </Button>
+              <Button onClick={this.onClickRestake}>Restake</Button>
+            </div>
+          )}
         </ActionBar>
       );
     }
@@ -474,7 +553,12 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (
+      stage === STAGE_READY &&
+      (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE) &&
+      this.hasKey() &&
+      this.hasWallet()
+    ) {
       // if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       return (
@@ -482,14 +566,38 @@ class ActionBarContainer extends Component {
           address={address.bech32}
           onClickBtnCloce={this.cleatState}
           balance={txType === TXTYPE_DELEGATE ? balance : addressInfo.delegate}
-          moniker={validators[0].description.moniker}
-          operatorAddress={validators[0].operator_address}
+          moniker={validators.description.moniker}
+          operatorAddress={validators.operator_address}
           generateTx={() => this.generateTx()}
           max={e => this.onClickMax(e)}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           toSend={toSend}
           disabledBtn={balance === 0}
           delegate={txType === TXTYPE_DELEGATE}
+        />
+      );
+    }
+
+    if (
+      stage === STAGE_READY &&
+      txType === TXTYPE_REDELEGATE &&
+      this.hasKey() &&
+      this.hasWallet()
+    ) {
+      // if (stage === STAGE_READY) {
+      // if (this.state.stage === STAGE_READY) {
+      return (
+        <ReDelegate
+          address={address.bech32}
+          onClickBtnCloce={this.cleatState}
+          generateTx={() => this.generateTx()}
+          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          toSend={toSend}
+          disabledBtn={!validRestakeBtn}
+          validatorsAll={validatorsAll}
+          validators={validators}
+          onChangeReDelegate={e => this.onChangeReDelegate(e)}
+          valueSelect={valueSelect}
         />
       );
     }
@@ -509,6 +617,16 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
+        />
+      );
+    }
+
+    if (stage === STAGE_ERROR && errorMessage !== null) {
+      return (
+        <TransactionError
+          errorMessage={errorMessage}
           onClickBtn={this.cleatState}
           onClickBtnCloce={this.cleatState}
         />

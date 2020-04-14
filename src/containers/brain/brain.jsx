@@ -10,10 +10,11 @@ import {
   Button,
   ActionBar,
 } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 import LocalizedStrings from 'react-localization';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Link } from 'react-router-dom';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import withWeb3 from '../../components/web3/withWeb3';
 import {
   formatNumber,
   getStatistics,
@@ -22,6 +23,9 @@ import {
   getBalance,
   getTotalEUL,
   getAmountATOM,
+  getInlfation,
+  getcommunityPool,
+  getTxCosmos,
 } from '../../utils/search/utils';
 import { roundNumber, asyncForEach } from '../../utils/utils';
 import {
@@ -43,6 +47,7 @@ import {
   GENESIS_SUPPLY,
   TOTAL_GOL_GENESIS_SUPPLY,
 } from '../../utils/config';
+import Txs from './tx';
 
 import ActionBarContainer from './actionBarContainer';
 
@@ -78,7 +83,6 @@ const TabBtn = ({ text, isSelected, onSelect }) => (
 );
 
 class Brain extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
 
   constructor(props) {
     super(props);
@@ -87,12 +91,12 @@ class Brain extends React.Component {
       ledger: null,
       returnCode: null,
       addressInfo: null,
+      inlfation: 0,
       addressLedger: null,
       ledgerVersion: [0, 0, 0],
       linksCount: 0,
       cidsCount: 0,
-      accsCount: 0,
-      txCount: 0,
+      accountsCount: 0,
       blockNumber: 0,
       linkPrice: 0,
       totalCyb: 0,
@@ -107,36 +111,26 @@ class Brain extends React.Component {
       capATOM: 0,
       averagePrice: 0,
       capETH: 0,
+      communityPool: 0,
     };
-  }
-
-  componentWillMount() {
-    this.getStatisticsBrain();
   }
 
   async componentDidMount() {
     await this.checkAddressLocalStorage();
-    this.getPriceGol();
-    this.getDataWS();
+    this.getStatisticsBrain();
+    // this.getPriceGol();
+    this.getTxsCosmos();
   }
 
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-    };
-
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAmountATOM(message);
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getATOM(dataTx.txs);
+    }
   };
 
-  getAmountATOM = async dataTxs => {
+  getATOM = async dataTxs => {
     let amount = 0;
     let won = 0;
     let currentPrice = 0;
@@ -166,49 +160,6 @@ class Brain extends React.Component {
       supplyEUL,
       takeofPrice,
       capATOM,
-    });
-  };
-
-  getPriceGol = async () => {
-    const {
-      contract: { methods },
-      contractAuctionUtils,
-    } = this.props;
-
-    // const roundThis = parseInt(await methods.today().call());
-    const createPerDay = await methods.createPerDay().call();
-    const createFirstDay = await methods.createFirstDay().call();
-
-    const dailyTotalsUtils = await contractAuctionUtils.methods
-      .dailyTotals()
-      .call();
-    console.log(dailyTotalsUtils.length);
-    let summCurrentPrice = 0;
-
-    await asyncForEach(
-      Array.from(Array(dailyTotalsUtils.length).keys()),
-      async item => {
-        let createOnDay;
-        if (item === 0) {
-          createOnDay = createFirstDay;
-        } else {
-          createOnDay = createPerDay;
-        }
-
-        const currentPrice =
-          dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9));
-
-        summCurrentPrice += currentPrice;
-      }
-    );
-    const averagePrice = summCurrentPrice / dailyTotalsUtils.length;
-    const capETH = (averagePrice * TOTAL_GOL_GENESIS_SUPPLY) / DIVISOR_CYBER_G;
-
-    console.log('averagePrice', averagePrice);
-    console.log('capETH', capETH);
-    this.setState({
-      averagePrice,
-      capETH,
     });
   };
 
@@ -243,34 +194,14 @@ class Brain extends React.Component {
     console.log('result', result);
 
     if (result) {
-      total = getTotalEUL(result);
+      total = await getTotalEUL(result);
     }
-
-    // const response = await fetch(
-    //   `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //   }
-    // );
-    // const data = await response.json();
-
-    // console.log('data', data);
-
-    // addressInfo.address = addressLedger.bech32;
-    // addressInfo.amount = data.result.account.coins[0].amount;
-    // addressInfo.token = data.result.account.coins[0].denom;
-    // addressInfo.keys = 'ledger';
-
     this.setState({
       stage: STAGE_READY,
       addAddress: false,
       loading: false,
       // addressInfo,
-      amount: total,
+      amount: total.total,
     });
   };
 
@@ -303,17 +234,19 @@ class Brain extends React.Component {
     const statisticContainer = await getStatistics();
     const validatorsStatistic = await getValidators();
     const status = await statusNode();
+    const dataInlfation = await getInlfation();
+    const dataCommunityPool = await getcommunityPool();
     const {
       linksCount,
       cidsCount,
-      accsCount,
-      txCount,
+      accountsCount,
       height,
       bandwidthPrice,
       bondedTokens,
       supplyTotal,
     } = statisticContainer;
-
+    let inlfation = 0;
+    let communityPool = 0;
     const activeValidatorsCount = validatorsStatistic;
 
     const chainId = status.node_info.network;
@@ -322,17 +255,26 @@ class Brain extends React.Component {
     const stakedCyb = Math.floor((bondedTokens / totalCyb) * 100 * 1000) / 1000;
     const linkPrice = (400 * +bandwidthPrice).toFixed(0);
 
+    if (dataInlfation !== null) {
+      inlfation = dataInlfation;
+    }
+
+    if (dataCommunityPool !== null) {
+      communityPool = Math.floor(parseFloat(dataCommunityPool[0].amount));
+    }
+
     this.setState({
       linksCount,
       cidsCount,
-      accsCount,
-      txCount,
+      accountsCount,
       blockNumber: height,
       linkPrice,
       totalCyb,
+      communityPool,
       stakedCyb,
       activeValidatorsCount: activeValidatorsCount.length,
       chainId,
+      inlfation,
     });
   };
 
@@ -362,8 +304,7 @@ class Brain extends React.Component {
     const {
       linksCount,
       cidsCount,
-      accsCount,
-      txCount,
+      accountsCount,
       blockNumber,
       linkPrice,
       totalCyb,
@@ -382,7 +323,10 @@ class Brain extends React.Component {
       takeofPrice,
       capATOM,
       selected,
+      communityPool,
+      inlfation,
     } = this.state;
+    const { block } = this.props;
 
     let content;
 
@@ -417,8 +361,8 @@ class Brain extends React.Component {
           title={T.brain.cap}
           value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
         />
-        <a
-          href="/#/heroes"
+        <Link
+          to="/heroes"
           style={{
             display: 'contents',
             textDecoration: 'none',
@@ -429,7 +373,7 @@ class Brain extends React.Component {
             value={activeValidatorsCount}
             icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
           />
-        </a>
+        </Link>
       </Pane>
     );
 
@@ -450,7 +394,7 @@ class Brain extends React.Component {
 
         <CardStatisics
           title={T.brain.subjects}
-          value={formatNumber(accsCount)}
+          value={formatNumber(accountsCount)}
         />
       </Pane>
     );
@@ -499,8 +443,8 @@ class Brain extends React.Component {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <a
-          href="/#/heroes"
+        <Link
+          to="/heroes"
           style={{
             display: 'contents',
             textDecoration: 'none',
@@ -511,23 +455,34 @@ class Brain extends React.Component {
             value={activeValidatorsCount}
             icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
           />
-        </a>
+        </Link>
         <CardStatisics title={T.brain.staked} value={stakedCyb} />
         <CardStatisics
-          title={T.brain.transactions}
-          value={formatNumber(txCount)}
+          title="inlfation"
+          value={`${formatNumber(inlfation * 100, 2)} %`}
         />
+        <Link to="/network/euler/tx">
+          <CardStatisics title={T.brain.transactions} value={<Txs />} />
+        </Link>
       </Pane>
     );
 
-    const Bandwidth = () => (
+    const Government = () => (
       <Pane
         display="grid"
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 250px))"
         gridGap="20px"
         justifyContent="center"
       >
-        <CardStatisics title={T.brain.price} value={linkPrice} />
+        <Link to="/governance">
+          <CardStatisics
+            title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
+            value={formatNumber(communityPool)}
+          />
+        </Link>
+        <Link to="network/euler/parameters">
+          <CardStatisics title="Network parameters" value={30} />
+        </Link>
       </Pane>
     );
 
@@ -561,8 +516,8 @@ class Brain extends React.Component {
       content = <Consensus />;
     }
 
-    if (selected === 'bandwidth') {
-      content = <Bandwidth />;
+    if (selected === 'government ') {
+      content = <Government />;
     }
 
     return (
@@ -579,41 +534,27 @@ class Brain extends React.Component {
                 You do not have control over the brain. You need EUL tokens to
                 let she hear you. If you came from Ethereum or Cosmos you can
                 claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: <a href="#/gol">Game of Links</a>.
+                tournament in universe: <a href="gol">Game of Links</a>.
               </Text>
             </Pane>
           )}
+          <Pane
+            marginY={20}
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridGap="20px"
+          >
+            <div />
+            <Link to="/network/euler/block">
+              <CardStatisics title={chainId} value={formatNumber(block)} />
+            </Link>
+            <div />
+          </Pane>
 
-          {amount > 0 && (
-            <Pane
-              marginY={20}
-              display="grid"
-              gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-              gridGap="20px"
-            >
-              <CardStatisics
-                title={T.brain.yourTotal}
-                value={formatNumber(Math.floor(amount))}
-              />
-              <CardStatisics
-                title={T.brain.percentSupply}
-                value={
-                  <FormatNumber
-                    fontSizeDecimal={18}
-                    number={roundNumber((amount / totalCyb) * 100, 6)}
-                  />
-                }
-              />
-              <CardStatisics
-                title={chainId}
-                value={formatNumber(blockNumber)}
-              />
-            </Pane>
-          )}
           <Tablist
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-            gridGap="20px"
+            gridGap="10px"
             marginTop={25}
           >
             <TabBtn
@@ -637,9 +578,9 @@ class Brain extends React.Component {
               onSelect={() => this.select('consensus')}
             />
             <TabBtn
-              text="Bandwidth"
-              isSelected={selected === 'bandwidth'}
-              onSelect={() => this.select('bandwidth')}
+              text="Government "
+              isSelected={selected === 'government '}
+              onSelect={() => this.select('government ')}
             />
           </Tablist>
           <Pane marginTop={50} marginBottom={50}>
@@ -656,4 +597,10 @@ class Brain extends React.Component {
   }
 }
 
-export default withWeb3(Brain);
+const mapStateToProps = store => {
+  return {
+    block: store.block.block,
+  };
+};
+
+export default connect(mapStateToProps)(Brain);

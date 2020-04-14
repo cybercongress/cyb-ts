@@ -164,27 +164,28 @@ span.right-input {
     font-size: 40px !important;
 }
 
-.loader {
+.loader-dot {
     display: inline-block;
 }
 
-.loader span {
-    color: #90d371;
+.loader-dot span {
+    color: #3ab793;
     font-size: 30px;
-    animation: blink 1.4s infinite;
+    animation: blinkDot 1.4s infinite;
     border-radius: 50%;
     animation-fill-mode: both;
+    line-height: 10px;
 }
 
-.loader span:nth-child(2) {
+.loader-dot span:nth-child(2) {
     animation-delay: 0.2s;
 }
 
-.loader span:nth-child(3) {
+.loader-dot span:nth-child(3) {
     animation-delay: 0.4s;
 }
 
-@keyframes blink {
+@keyframes blinkDot {
     0% {
         opacity: 0.2;
     }
@@ -235,7 +236,7 @@ span.right-input {
 .container-card {
     display: flex;
     flex-direction: column;
-    padding: 45px 0;
+    padding: 25px 0;
     align-items: center;
     background-color: "#000000";
     width: 100%;

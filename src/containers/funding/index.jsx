@@ -552,7 +552,7 @@ class Funding extends PureComponent {
               You do not have control over the brain. You need EUL tokens to let
               she hear you. If you came from Ethereum or Cosmos you can claim
               the gift of gods. Then start prepare to the greatest tournament in
-              universe: <a href="#/gol">Game of Links</a>.
+              universe: <a href="/gol">Game of Links</a>.
             </Text>
           </Pane>
           <Statistics

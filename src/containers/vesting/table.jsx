@@ -2,11 +2,13 @@ import React from 'react';
 import { Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
 
 import {
-  formatValidatorAddress,
+  trimString,
   formatCurrency,
   formatNumber,
 } from '../../utils/utils';
 import { AUCTION, CYBER } from '../../utils/config';
+import { Link } from 'react-router-dom';
+import { Account } from '../../components';
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
@@ -44,13 +46,15 @@ const TableVesting = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell flex={0.6} textAlign="center">
         <TextTable>
-          <a href={`#/account/${item.recipient}`} target="_blank">
-            {formatValidatorAddress(item.recipient, 8, 4)}
-          </a>
+          <Account address={item.recipient} />
         </TextTable>
       </Table.TextCell>
-      <Table.TextCell>
-        <TextTable>{item.proof}</TextTable>
+      <Table.TextCell textAlign="center">
+        <TextTable>
+          <Link to={`/network/euler/tx/${item.proof.toUpperCase()}`}>
+            {trimString(item.proof.toUpperCase(), 6, 6)}
+          </Link>
+        </TextTable>
       </Table.TextCell>
     </Table.Row>
   ));
