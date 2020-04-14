@@ -260,7 +260,7 @@ class Wallet extends React.Component {
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
             {item.address.match(PATTERN_CYBER) && (
-              <Link to={`/network/euler-5/contract/${item.address}`}>
+              <Link to={`/network/euler/contract/${item.address}`}>
                 {item.address}
               </Link>
             )}

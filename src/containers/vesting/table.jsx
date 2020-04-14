@@ -51,7 +51,7 @@ const TableVesting = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler-5/tx/${item.proof.toUpperCase()}`}>
+          <Link to={`/network/euler/tx/${item.proof.toUpperCase()}`}>
             {trimString(item.proof.toUpperCase(), 6, 6)}
           </Link>
         </TextTable>

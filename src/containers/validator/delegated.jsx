@@ -74,7 +74,7 @@ const Delegated = ({ data, marginBottom }) => {
         <Row
           title="Address"
           value={
-            <Link to={`/network/euler-5/contract/${data.delegateAddress}`}>
+            <Link to={`/network/euler/contract/${data.delegateAddress}`}>
               {data.delegateAddress}
             </Link>
           }
