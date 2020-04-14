@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { COSMOS, LEDGER } from '../../utils/config';
+import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER } from '../../utils/config';
+import { getDelegator, downloadObjectAsJson, trimString } from '../../utils/utils';
 import {
   ContributeATOMs,
   SendAmount,
@@ -14,6 +15,7 @@ import {
   ActionBarContentText,
   LinkWindow,
   CheckAddressInfo,
+  Dots,
 } from '../../components';
 
 const {
@@ -32,6 +34,20 @@ const {
   LEDGER_NOAPP,
   MEMO,
 } = LEDGER;
+
+const CUSTOM_TX_CONTROL_PK = 1.1;
+const CUSTOM_TX_UNDERSTAND = 1.2;
+const CUSTOM_TX_TRACK = 1.3;
+const CUSTOM_TX_AGREE = 1.4;
+const CUSTOM_TX_TYPE_TX = 1.5;
+
+const LEDGER_TX_ACOUNT_INFO = 2.2;
+// const LEDGER_TX_ = 2.3;
+// const LEDGER_TX_ = 2.4;
+// const LEDGER_TX_ = 2.5;
+// const LEDGER_TX_ = 2.6;
+
+const SELECT_PATH = 10;
 
 const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
 
@@ -57,6 +73,7 @@ class ActionBarTakeOff extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      trackAddress: '',
     };
     this.ledgerModal = React.createRef();
     this.atomField = React.createRef();
@@ -72,7 +89,7 @@ class ActionBarTakeOff extends Component {
     this.pollLedger();
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     const { ledger, returnCode, address, addressInfo, stage } = this.state;
     if (ledger === null) {
       this.pollLedger();
@@ -85,6 +102,7 @@ class ActionBarTakeOff extends Component {
               this.getAddress();
             }
             if (address !== null && addressInfo === null) {
+              console.log('getWallet');
               this.getWallet();
             }
             break;
@@ -177,6 +195,9 @@ class ActionBarTakeOff extends Component {
 
   getWallet = async () => {
     const { ledger, address } = this.state;
+    this.setState({
+      stage: LEDGER_TX_ACOUNT_INFO,
+    });
 
     const addressInfo = await ledger.getAccountInfo(address);
 
@@ -184,6 +205,27 @@ class ActionBarTakeOff extends Component {
       addressInfo,
       availableStake: parseFloat(addressInfo.balanceuAtom),
       stage: STAGE_READY,
+    });
+  };
+
+  createTxForCLI = async () => {
+    const { ledger, trackAddress, toSend } = this.state;
+    const addressTo = ADDR_FUNDING;
+    const uatomAmount = toSend * DIVISOR_ATOM;
+
+    const tx = await ledger.txCreateSend(
+      null,
+      addressTo,
+      uatomAmount,
+      MEMO,
+      true,
+      trackAddress
+    );
+
+    console.log('tx', tx);
+    downloadObjectAsJson(tx, 'tx_send');
+    this.setState({
+      stage: SELECT_PATH,
     });
   };
 
@@ -341,44 +383,13 @@ class ActionBarTakeOff extends Component {
   onClickInitStage = () => {
     this.cleatState();
     this.setState({
-      stage: STAGE_INIT,
+      stage: SELECT_PATH,
     });
   };
 
-  onClickTrackContribution = () => {
+  onClickSelectLedgerTx = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
-    });
-
-    this.tryConnect().then(connect => {
-      console.log('connect status', connect);
-      this.setState({
-        connect,
-      });
-      // if (connect === undefined) {
-      //   this.onClickTrackContribution();
-      // }
-    });
-  };
-
-  onClickSaveAddress = () => {
-    this.tryConnect().then(connect => {
-      console.log('connect status', connect);
-      if (connect === undefined) {
-        this.onClickSaveAddress();
-        return;
-      }
-      if (connect !== undefined) {
-        this.setState({
-          connect,
-        });
-        if (connect.app === false) {
-          this.onClickSaveAddress();
-        }
-      }
-      this.setState({
-        connect,
-      });
     });
   };
 
@@ -418,6 +429,82 @@ class ActionBarTakeOff extends Component {
     return addressInfo !== null;
   }
 
+  onChangeTrackAddress = e => {
+    this.setState({
+      trackAddress: e.target.value,
+    });
+  };
+
+  onClickSelectCustomTx = () => {
+    this.setState({
+      stage: CUSTOM_TX_CONTROL_PK,
+    });
+  };
+
+  onClickIControl = () => {
+    this.setState({
+      stage: CUSTOM_TX_UNDERSTAND,
+    });
+  };
+
+  onClickIUnderstand = () => {
+    this.setState({
+      stage: CUSTOM_TX_TRACK,
+    });
+  };
+
+  onClickTrack = () => {
+    const { trackAddress } = this.state;
+
+    const addressLedgerCyber = {
+      cyber: {
+        bech32: '',
+      },
+    };
+
+    const accounts = {
+      cyber: {
+        bech32: '',
+      },
+      cosmos: {
+        bech32: '',
+      },
+    };
+
+    if (trackAddress.match(PATTERN_COSMOS)) {
+      const cyberAddress = getDelegator(
+        trackAddress,
+        CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+      );
+      addressLedgerCyber.cyber.bech32 = cyberAddress;
+      accounts.cyber.bech32 = cyberAddress;
+      accounts.cosmos.bech32 = trackAddress;
+      accounts.keys = 'user';
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      this.setState({
+        stage: CUSTOM_TX_AGREE,
+      });
+    }
+  };
+
+  onClickIAgree = () => {
+    this.setState({
+      stage: CUSTOM_TX_TYPE_TX,
+    });
+  };
+
+  onClickShow = () => {
+    const { onClickPopapAdressTrue } = this.props;
+
+    onClickPopapAdressTrue();
+    this.setState({
+      stage: SELECT_PATH,
+    });
+  };
+
   render() {
     const {
       valueSelect,
@@ -436,145 +523,8 @@ class ActionBarTakeOff extends Component {
       txHeight,
       stage,
       errorMessage,
+      trackAddress,
     } = this.state;
-
-    // SELECT
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Custom transaction
-    //       </Button>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Donate with Ledger
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // CUSTOM FLOW
-    //
-    // 1.1
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         You can send donations directly to cyber~Congress multisig only if you control private keys of sending account.
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         I control
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // 1.2
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         CYB will be allocated to sending addresses. All donations from custodial wallets, exchanges and banks will be lost.
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         I understand
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // };
-
-    // 1.3
-    // Put to pocket
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         To track your donation provide your sending address{' '}
-    //         <Input
-    //           placeholder="address"
-    //           maxWidth="170px"
-    //           textAlign="end"
-    //           marginLeft={10}
-    //           autoFocus
-    //           height={42}
-    //           width="unset"
-    //         />
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Track
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // 1.4
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText display="inline">
-    //         <Pane display="inline">
-    //           By donating {toSend} ATOM you agree with donation terms defined in
-    //         </Pane>{' '}
-    //         <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-    //           Whitepaper
-    //         </LinkWindow>{' '}
-    //         <Pane display="inline">and</Pane>{' '}
-    //         <LinkWindow to="https://cybercongress.ai/game-of-links/">
-    //           Game of Links rules
-    //         </LinkWindow>
-    //         .
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         I agree
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // // 1.5
-    // //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         Amazing, now you can send ATOMs
-    //       </ActionBarContentText>
-    //       <Button paddingX={10} marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Copy address
-    //       </Button>
-    //       <Button paddingX={10} marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Show address
-    //       </Button>
-    //       <Button paddingX={10} marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Download tx
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // // 1.6
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         Now its time to choose your path
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Master
-    //       </Button>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Hero
-    //       </Button>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Evangelist
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
 
     // 2.1
     //
@@ -595,31 +545,6 @@ class ActionBarTakeOff extends Component {
     //
     // if (stage === STAGE_INIT) {
     //   return <CheckAddressInfo />;
-    // }
-
-    // 2.3
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText display="inline">
-    //         <Pane display="inline">
-    //           By donating {toSend} ATOM you agree with donation terms defined in
-    //         </Pane>{' '}
-    //         <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-    //           Whitepaper
-    //         </LinkWindow>{' '}
-    //         <Pane display="inline">and</Pane>{' '}
-    //         <LinkWindow to="https://cybercongress.ai/game-of-links/">
-    //           Game of Links rules
-    //         </LinkWindow>
-    //         .
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         I agree
-    //       </Button>
-    //     </ActionBar>
-    //   );
     // }
 
     // 2.4
@@ -725,71 +650,234 @@ class ActionBarTakeOff extends Component {
 
     if (stage === STAGE_SELECTION) {
       return (
-        <SendAmount
-          height={height50}
-          onClickBtn={this.onClickTrackContribution}
-          address={ADDR_FUNDING}
-          onClickBtnCloce={this.onClickInitStage}
-        />
+        <ActionBar>
+          <Button marginX={10} onClick={this.onClickSelectCustomTx}>
+            Custom transaction
+          </Button>
+          <Button marginX={10} onClick={this.onClickSelectLedgerTx}>
+            Donate with Ledger
+          </Button>
+        </ActionBar>
       );
     }
+
+    if (stage === CUSTOM_TX_CONTROL_PK) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            You can send donations directly to cyber~Congress multisig only if
+            you control private keys of sending account.
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickIControl}>
+            I control
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.2
+    //
+    if (stage === CUSTOM_TX_UNDERSTAND) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            CYB will be allocated to sending addresses. All donations from
+            custodial wallets, exchanges and banks will be lost.
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickIUnderstand}>
+            I understand
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.3
+    // Put to pocket
+    if (stage === CUSTOM_TX_TRACK) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            To track your donation provide your sending address{' '}
+            <Input
+              placeholder="address"
+              maxWidth="170px"
+              textAlign="end"
+              marginLeft={10}
+              autoFocus
+              height={42}
+              width="unset"
+              value={trackAddress}
+              onChange={e => this.onChangeTrackAddress(e)}
+            />
+          </ActionBarContentText>
+          <Button
+            marginX={10}
+            disabled={!trackAddress.match(PATTERN_COSMOS)}
+            onClick={this.onClickTrack}
+          >
+            Track
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.4
+    //
+    if (stage === CUSTOM_TX_AGREE) {
+      return (
+        <ActionBar>
+          <ActionBarContentText display="inline">
+            <Pane display="inline">
+              By donating {toSend} ATOM you agree with donation terms defined in
+            </Pane>{' '}
+            <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+              Whitepaper
+            </LinkWindow>{' '}
+            <Pane display="inline">and</Pane>{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </LinkWindow>
+            .
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickIAgree}>
+            I agree
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.5
+    //
+    if (stage === CUSTOM_TX_TYPE_TX) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Amazing, now you can send ATOMs
+          </ActionBarContentText>
+          <Button paddingX={20} marginX={10} onClick={this.onClickShow}>
+            Show address
+          </Button>
+          <Button paddingX={20} marginX={10} onClick={this.createTxForCLI}>
+            Download tx
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // // 1.6
+    //
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
-          onClickBtn={this.onClickSaveAddress}
-          status={connect}
           pin={returnCode >= LEDGER_NOAPP}
           app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
           version={
             returnCode === LEDGER_OK &&
             this.compareVersion(version, LEDGER_VERSION_REQ)
           }
-          address={ADDR_FUNDING}
         />
       );
     }
 
+    if (stage === LEDGER_TX_ACOUNT_INFO) {
+      return <CheckAddressInfo />;
+    }
+
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+      const balance = parseFloat(availableStake) / COSMOS.DIVISOR_ATOM;
       return (
-        <ContributeATOMs
-          onClickBtn={() => this.generateTx()}
-          address={address.bech32}
-          availableStake={
-            Math.floor((availableStake / DIVISOR_ATOM) * 1000) / 1000
-          }
-          gasUAtom={gas * gasPrice}
-          gasAtom={(gas * gasPrice) / DIVISOR_ATOM}
-          onChangeInput={e => this.onChangeInputContributeATOMs(e)}
-          valueInput={toSend}
-          onClickBtnCloce={this.onClickInitStage}
-          onClickMax={this.onClickMax}
-        />
+        <ActionBar>
+          <ActionBarContentText display="inline">
+            <Pane display="inline">
+              By donating {toSend} ATOM you agree with donation terms defined in
+            </Pane>{' '}
+            <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+              Whitepaper
+            </LinkWindow>{' '}
+            <Pane display="inline">and</Pane>{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </LinkWindow>
+            .
+          </ActionBarContentText>
+          <Button
+            marginX={10}
+            disabled={parseFloat(toSend) > balance}
+            onClick={this.generateTx}
+          >
+            I agree
+          </Button>
+        </ActionBar>
       );
     }
 
     if (stage === STAGE_WAIT) {
       return (
-        <JsonTransaction
-          txMsg={txMsg}
-          onClickBtnCloce={this.onClickInitStage}
-        />
+        <ActionBar>
+          <ActionBarContentText>
+            Confirm transaction on your Ledger{' '}
+            <img
+              alt="legder"
+              style={{
+                paddingTop: '8px',
+                marginLeft: '10px',
+                width: '150px',
+                height: '50px',
+              }}
+              src={ledger}
+            />
+          </ActionBarContentText>
+        </ActionBar>
       );
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Please wait while we confirm the transaction on the blockchain{' '}
+            <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
+      );
     }
 
     if (stage === STAGE_CONFIRMED) {
       return (
-        <Confirmed
-          txHash={txHash}
-          txHeight={txHeight}
-          onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
-        />
+        <ActionBar>
+          <ActionBarContentText display="inline">
+            <Pane display="inline">Transaction</Pane>{' '}
+            <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
+              {trimString(txHash, 6, 6)}
+            </LinkWindow>{' '}
+            <Pane display="inline">
+              was included in the block at height {txHeight}
+            </Pane>
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickInitStage}>
+            Fuck Google
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (stage === SELECT_PATH) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Now its time to choose your path
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickFuckGoogle}>
+            Master
+          </Button>
+          <Button marginX={10} onClick={this.onClickFuckGoogle}>
+            Hero
+          </Button>
+          <Button marginX={10} onClick={this.onClickFuckGoogle}>
+            Evangelist
+          </Button>
+        </ActionBar>
       );
     }
 

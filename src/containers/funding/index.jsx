@@ -74,11 +74,6 @@ class Funding extends PureComponent {
   async componentDidMount() {
     await this.getDataWS();
     await this.getTxsCosmos();
-    window.addEventListener('click', this.onClickPopapAdress);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('click', this.onClickPopapAdress);
   }
 
   getTxsCosmos = async () => {
@@ -367,6 +362,8 @@ class Funding extends PureComponent {
       popapAdress,
     } = this.state;
 
+    console.log(popapAdress);
+
     if (loader) {
       return (
         <div
@@ -458,7 +455,9 @@ class Funding extends PureComponent {
 
           {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
         </main>
-        <ActionBarTakeOff />
+        <ActionBarTakeOff
+          onClickPopapAdressTrue={this.onClickPopapAdressTrue}
+        />
       </span>
     );
   }

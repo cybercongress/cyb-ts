@@ -6,10 +6,7 @@ import txs from './txs';
 
 import { CYBER, LEDGER, COSMOS } from './config';
 
-const {
-  BECH32_PREFIX_ACC_ADDR_CYBER,
-  CYBER_NODE_URL_LCD,
-} = CYBER;
+const { BECH32_PREFIX_ACC_ADDR_CYBER, CYBER_NODE_URL_LCD } = CYBER;
 const { LEDGER_VERSION_REQ } = LEDGER;
 const { BECH32_PREFIX_ACC_ADDR_COSMOS } = COSMOS;
 
@@ -439,21 +436,38 @@ class CosmosDelegateTool {
     );
   }
 
-  async txCreateSend(txContext, validatorBech32, uatomAmount, memo) {
-    console.log('txContext', txContext);
-    if (typeof txContext === 'undefined') {
-      throw new Error('undefined txContext');
-    }
-    if (typeof txContext.bech32 === 'undefined') {
-      throw new Error('txContext does not contain the source address (bech32)');
+  txCreateSend = async (
+    txContext,
+    address,
+    uatomAmount,
+    memo,
+    cli,
+    addressFrom
+  ) => {
+    if (!cli) {
+      if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+      }
+      if (typeof txContext.bech32 === 'undefined') {
+        throw new Error(
+          'txContext does not contain the source address (bech32)'
+        );
+      }
     }
     // const accountInfo = await this.getAccountInfo(txContext.bech32);
     // eslint-disable-next-line no-param-reassign
     // txContext.accountNumber = accountInfo.accountNumber;
     // eslint-disable-next-line no-param-reassign
     // txContext.sequence = accountInfo.sequence;
-    return txs.createSend(txContext, validatorBech32, uatomAmount, memo);
-  }
+    return txs.createSend(
+      txContext,
+      address,
+      uatomAmount,
+      memo,
+      cli,
+      addressFrom
+    );
+  };
 
   async txCreateSendCyber(txContext, addressTo, uatomAmount, memo, demon) {
     console.log('txContext', txContext);
