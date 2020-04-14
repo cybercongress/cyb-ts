@@ -51,7 +51,7 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'cyb',
   DENOM_CYBER_G: `GCYB`,
-  CYBER_WEBSOCKET_URL: 'wss://ws.cyber.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://api.cyber.cybernode.ai/websocket',
   CYBER_NODE_URL_API: 'https://api.cyber.cybernode.ai',
   CYBER_NODE_URL_LCD: 'https://lcd.cyber.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',

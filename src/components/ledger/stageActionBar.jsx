@@ -15,6 +15,7 @@ import {
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
 import { Loading } from '../ui/loading';
+import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 
@@ -253,52 +254,20 @@ export const StartState = ({ targetColor, valueSearchInput, onClickBtn }) => (
   </ActionBar>
 );
 
-export const ConnectLadger = ({ pin, app, version, onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        fontSize: '25px',
-      }}
-    >
-      <span className="display-inline-block margin-bottom-10px">
-        {T.actionBar.connectLadger.getStarted}
-      </span>
-    </div>
-    <div className="display-flex flex-direction-column margin-bottom-10px">
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div className={`checkbox ${pin ? 'checked' : ''} margin-right-5px`} />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.connect}
-        </span>
-      </div>
+export const ConnectLadger = ({ pin, app, version }) => (
+  <ActionBar>
+    <ActionBarContentText>
+      Connect Ledger, enter pin and open Cosmos app <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
+);
 
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div className={`checkbox ${app ? 'checked' : ''} margin-right-5px`} />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.openApp}
-        </span>
-      </div>
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div
-          className={`checkbox ${version ? 'checked' : ''} margin-right-5px`}
-        />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.version}
-        </span>
-      </div>
-    </div>
-    {app && version && (
-      <div className="display-flex flex-direction-column align-items-center">
-        <span className="font-size-20 display-inline-block margin-bottom-10px">
-          {T.actionBar.connectLadger.getDetails}
-        </span>
-        <Loading />
-      </div>
-    )}
-    {/* <button onClick={onClickBtn}>1</button> */}
-  </ContainetLedger>
+export const CheckAddressInfo = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      {T.actionBar.connectLadger.getDetails} <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
 );
 
 export const StartStageSearchActionBar = ({

@@ -13,6 +13,7 @@ import {
   TransactionError,
   ActionBarContentText,
   LinkWindow,
+  CheckAddressInfo,
 } from '../../components';
 
 const {
@@ -33,6 +34,8 @@ const {
 } = LEDGER;
 
 const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
+
+const ledger = require('../../image/select-pin-nano2.svg');
 
 class ActionBarTakeOff extends Component {
   constructor(props) {
@@ -513,7 +516,7 @@ class ActionBarTakeOff extends Component {
     //     <ActionBar>
     //       <ActionBarContentText display="inline">
     //         <Pane display="inline">
-    //           By donating ATOM you agree with donation terms defined in
+    //           By donating {toSend} ATOM you agree with donation terms defined in
     //         </Pane>{' '}
     //         <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
     //           Whitepaper
@@ -553,6 +556,116 @@ class ActionBarTakeOff extends Component {
     // }
 
     // // 1.6
+    //
+    // if (stage === STAGE_INIT) {
+    //   return (
+    //     <ActionBar>
+    //       <ActionBarContentText>
+    //         Now its time to choose your path
+    //       </ActionBarContentText>
+    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
+    //         Master
+    //       </Button>
+    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
+    //         Hero
+    //       </Button>
+    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
+    //         Evangelist
+    //       </Button>
+    //     </ActionBar>
+    //   );
+    // }
+
+    // 2.1
+    //
+    // if (stage === STAGE_INIT) {
+    //   return (
+    //     <ConnectLadger
+    //       pin={returnCode >= LEDGER_NOAPP}
+    //       app={returnCode === LEDGER_OK}
+    //       version={
+    //         returnCode === LEDGER_OK &&
+    //         this.compareVersion(version, LEDGER_VERSION_REQ)
+    //       }
+    //     />
+    //   );
+    // }
+
+    // 2.2
+    //
+    // if (stage === STAGE_INIT) {
+    //   return <CheckAddressInfo />;
+    // }
+
+    // 2.3
+    //
+    // if (stage === STAGE_INIT) {
+    //   return (
+    //     <ActionBar>
+    //       <ActionBarContentText display="inline">
+    //         <Pane display="inline">
+    //           By donating {toSend} ATOM you agree with donation terms defined in
+    //         </Pane>{' '}
+    //         <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+    //           Whitepaper
+    //         </LinkWindow>{' '}
+    //         <Pane display="inline">and</Pane>{' '}
+    //         <LinkWindow to="https://cybercongress.ai/game-of-links/">
+    //           Game of Links rules
+    //         </LinkWindow>
+    //         .
+    //       </ActionBarContentText>
+    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
+    //         I agree
+    //       </Button>
+    //     </ActionBar>
+    //   );
+    // }
+
+    // 2.4
+    //
+    // if (stage === STAGE_INIT) {
+    //   return (
+    //     <ActionBar>
+    //       <ActionBarContentText>
+    //         Confirm transaction on your Ledger{' '}
+    //         <img
+    //           alt="legder"
+    //           style={{
+    //             paddingTop: '8px',
+    //             marginLeft: '10px',
+    //             width: '150px',
+    //             height: '50px',
+    //           }}
+    //           src={ledger}
+    //         />
+    //       </ActionBarContentText>
+    //     </ActionBar>
+    //   );
+    // }
+
+    // 2.5
+    //
+    // if (stage === STAGE_INIT) {
+    //   return (
+    //     <ActionBar>
+    //       <ActionBarContentText display="inline">
+    //         <Pane display="inline">Transaction</Pane>{' '}
+    //         <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+    //           1D1..660
+    //         </LinkWindow>{' '}
+    //         <Pane display="inline">
+    //           was included in the block at height 1154168
+    //         </Pane>
+    //       </ActionBarContentText>
+    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
+    //         Fuck Google
+    //       </Button>
+    //     </ActionBar>
+    //   );
+    // }
+
+    // 2.6
     //
     // if (stage === STAGE_INIT) {
     //   return (

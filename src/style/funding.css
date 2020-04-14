@@ -155,13 +155,8 @@ span.right-input {
     line-height: 30px;
 }
 
-.schedule {
-    margin-left: 40px;
-    margin-bottom: 20px;
-}
-
 .schedule span {
-    font-size: 40px !important;
+    font-size: 60px !important;
 }
 
 .loader-dot {
@@ -174,7 +169,7 @@ span.right-input {
     animation: blinkDot 1.4s infinite;
     border-radius: 50%;
     animation-fill-mode: both;
-    line-height: 10px;
+    line-height: 0;
 }
 
 .loader-dot span:nth-child(2) {
