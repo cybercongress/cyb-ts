@@ -2,6 +2,7 @@ import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { IconStatus, ContainerPane, Votes, Deposit } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
+import { CYBER } from '../../utils/config';
 
 const iconPie = require('../../image/ionicons_svg_ios-pie.svg');
 const iconPieActive = require('../../image/ionicons_svg_ios-pie-active.svg');
@@ -49,7 +50,8 @@ const ProposalsDetailProgressBar = ({
           </Text>
           <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit * 10 ** -9)} GCYB MinDeposit
+            {formatNumber(minDeposit * 10 ** -9)} {CYBER.DENOM_CYBER_G}{' '}
+            MinDeposit
           </Text>
         </Pane>
       </ContainerPane>
