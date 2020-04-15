@@ -480,7 +480,7 @@ class Funding extends PureComponent {
               the auction. If you want to test{' '}
               <Link to="/search/cyberlink">cyberlinking</Link>
               immediately get some tokens at{' '}
-              <Link to="/auction">test~Auction</Link> instead. By donating you
+              <Link to="/gol/faucet">test~Auction</Link> instead. By donating you
               agree with donation terms defined in{' '}
               <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
                 Whitepaper
