@@ -322,7 +322,7 @@ class ProposalsDetail extends React.Component {
         </main>
         <ActionBarDetail
           id={id}
-          period='vote'
+          period={period}
           minDeposit={minDeposit}
           totalDeposit={totalDeposit}
         />
