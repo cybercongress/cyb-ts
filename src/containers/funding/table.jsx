@@ -35,7 +35,6 @@ const sort = (profiles, sortKey, ordering = Order.DESC) => {
 
 function Table({ data, fUpin, fPin, update, pin }) {
   const [dataTable, setDataTable] = useState({});
-  console.log(data);
 
   useEffect(() => {
     const keysSorted = Object.keys(data)
