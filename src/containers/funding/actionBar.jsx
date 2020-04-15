@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Link } from 'react-router-dom';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER } from '../../utils/config';
-import { getDelegator, downloadObjectAsJson, trimString } from '../../utils/utils';
+import {
+  getDelegator,
+  downloadObjectAsJson,
+  trimString,
+  getTimeRemaining,
+} from '../../utils/utils';
 import {
   ContributeATOMs,
   SendAmount,
@@ -16,6 +22,7 @@ import {
   LinkWindow,
   CheckAddressInfo,
   Dots,
+  Timer,
 } from '../../components';
 
 const {
@@ -42,10 +49,6 @@ const CUSTOM_TX_AGREE = 1.4;
 const CUSTOM_TX_TYPE_TX = 1.5;
 
 const LEDGER_TX_ACOUNT_INFO = 2.2;
-// const LEDGER_TX_ = 2.3;
-// const LEDGER_TX_ = 2.4;
-// const LEDGER_TX_ = 2.5;
-// const LEDGER_TX_ = 2.6;
 
 const SELECT_PATH = 10;
 
@@ -73,6 +76,11 @@ class ActionBarTakeOff extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      days: '00',
+      hours: '00',
+      seconds: '00',
+      minutes: '00',
+      time: true,
       trackAddress: '',
     };
     this.ledgerModal = React.createRef();
@@ -87,6 +95,16 @@ class ActionBarTakeOff extends Component {
     // eslint-disable-next-line
     console.warn('Looking for Ledger Nano');
     this.pollLedger();
+    const deadline = `${COSMOS.TIME_START}`;
+    console.log(Date.parse(deadline));
+    const startTime = Date.parse(deadline) - Date.parse(new Date());
+    if (startTime <= 0) {
+      this.setState({
+        time: false,
+      });
+    } else {
+      this.initializeClock(deadline);
+    }
   }
 
   componentDidUpdate() {
@@ -117,6 +135,31 @@ class ActionBarTakeOff extends Component {
       }
     }
   }
+
+  initializeClock = endtime => {
+    const { initClock } = this.props;
+    let timeinterval;
+    const updateClock = () => {
+      const t = getTimeRemaining(endtime);
+      if (t.total <= 0) {
+        clearInterval(timeinterval);
+        initClock();
+        this.setState({
+          time: false,
+        });
+        return true;
+      }
+      this.setState({
+        days: t.days,
+        hours: `0${t.hours}`.slice(-2),
+        minutes: `0${t.minutes}`.slice(-2),
+        seconds: `0${t.seconds}`.slice(-2),
+      });
+    };
+
+    updateClock();
+    timeinterval = setInterval(updateClock, 1000);
+  };
 
   compareVersion = async () => {
     const { ledgerVersion } = this.state;
@@ -523,93 +566,32 @@ class ActionBarTakeOff extends Component {
       txHeight,
       stage,
       errorMessage,
+      time,
       trackAddress,
+      days,
+      hours,
+      seconds,
+      minutes,
     } = this.state;
 
-    // 2.1
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ConnectLadger
-    //       pin={returnCode >= LEDGER_NOAPP}
-    //       app={returnCode === LEDGER_OK}
-    //       version={
-    //         returnCode === LEDGER_OK &&
-    //         this.compareVersion(version, LEDGER_VERSION_REQ)
-    //       }
-    //     />
-    //   );
-    // }
-
-    // 2.2
-    //
-    // if (stage === STAGE_INIT) {
-    //   return <CheckAddressInfo />;
-    // }
-
-    // 2.4
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         Confirm transaction on your Ledger{' '}
-    //         <img
-    //           alt="legder"
-    //           style={{
-    //             paddingTop: '8px',
-    //             marginLeft: '10px',
-    //             width: '150px',
-    //             height: '50px',
-    //           }}
-    //           src={ledger}
-    //         />
-    //       </ActionBarContentText>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // 2.5
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText display="inline">
-    //         <Pane display="inline">Transaction</Pane>{' '}
-    //         <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-    //           1D1..660
-    //         </LinkWindow>{' '}
-    //         <Pane display="inline">
-    //           was included in the block at height 1154168
-    //         </Pane>
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Fuck Google
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
-
-    // 2.6
-    //
-    // if (stage === STAGE_INIT) {
-    //   return (
-    //     <ActionBar>
-    //       <ActionBarContentText>
-    //         Now its time to choose your path
-    //       </ActionBarContentText>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Master
-    //       </Button>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Hero
-    //       </Button>
-    //       <Button marginX={10} onClick={this.onClickFuckGoogle}>
-    //         Evangelist
-    //       </Button>
-    //     </ActionBar>
-    //   );
-    // }
+    if (time) {
+      return (
+        <ActionBar>
+          <div
+            className="countdown-time text-glich"
+            data-text="takeoff will start in"
+          >
+            takeoff will start in
+          </div>
+          <Timer
+            days={days}
+            hours={hours}
+            seconds={seconds}
+            minutes={minutes}
+          />
+        </ActionBar>
+      );
+    }
 
     if (stage === STAGE_INIT) {
       return (
@@ -868,15 +850,42 @@ class ActionBarTakeOff extends Component {
           <ActionBarContentText>
             Now its time to choose your path
           </ActionBarContentText>
-          <Button marginX={10} onClick={this.onClickFuckGoogle}>
+          <Link
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0px 10px',
+              padding: '0 30px',
+            }}
+            to="/search/master"
+          >
             Master
-          </Button>
-          <Button marginX={10} onClick={this.onClickFuckGoogle}>
+          </Link>
+          <Link
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0px 10px',
+              padding: '0 30px',
+            }}
+            to="/heroes"
+          >
             Hero
-          </Button>
-          <Button marginX={10} onClick={this.onClickFuckGoogle}>
+          </Link>
+          <Link
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0px 10px',
+              padding: '0px 25px',
+            }}
+            to="/search/evangelist"
+          >
             Evangelist
-          </Button>
+          </Link>
         </ActionBar>
       );
     }

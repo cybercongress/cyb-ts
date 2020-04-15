@@ -6,7 +6,12 @@ import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
 import ActionBarTakeOff from './actionBar';
-import { asyncForEach, formatNumber, trimString } from '../../utils/utils';
+import {
+  asyncForEach,
+  formatNumber,
+  trimString,
+  getTimeRemaining,
+} from '../../utils/utils';
 import { Loading, LinkWindow, Copy } from '../../components';
 import { COSMOS, TAKEOFF } from '../../utils/config';
 import {
@@ -74,7 +79,52 @@ class Funding extends PureComponent {
   async componentDidMount() {
     await this.getDataWS();
     await this.getTxsCosmos();
+    this.initClock();
   }
+
+  initClock = () => {
+    const dataStartTakeoff = COSMOS.TIME_START;
+    const timeStartTakeoff =
+      Date.parse(dataStartTakeoff) - Date.parse(new Date());
+    console.log(timeStartTakeoff);
+    if (timeStartTakeoff <= 0) {
+      const deadline = `${COSMOS.TIME_END}`;
+      const startTime = Date.parse(deadline) - Date.parse(new Date());
+      if (startTime <= 0) {
+        this.setState({
+          time: 'end',
+        });
+      } else {
+        this.initializeClock(deadline);
+      }
+    } else {
+      this.setState({
+        time: '∞',
+      });
+    }
+  };
+
+  initializeClock = endtime => {
+    let timeinterval;
+    const updateClock = () => {
+      const t = getTimeRemaining(endtime);
+      if (t.total <= 0) {
+        clearInterval(timeinterval);
+        this.setState({
+          time: 'end',
+        });
+        return true;
+      }
+      const hours = `0${t.hours}`.slice(-2);
+      const minutes = `0${t.minutes}`.slice(-2);
+      this.setState({
+        time: `${t.days}d:${hours}h:${minutes}m`,
+      });
+    };
+
+    updateClock();
+    timeinterval = setInterval(updateClock, 10000);
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -360,9 +410,8 @@ class Funding extends PureComponent {
       pin,
       loader,
       popapAdress,
+      time,
     } = this.state;
-
-    console.log(popapAdress);
 
     if (loader) {
       return (
@@ -445,6 +494,7 @@ class Funding extends PureComponent {
           </Pane>
           <Statistics
             atomLeff={formatNumber(atomLeff)}
+            time={time}
             won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
             price={formatNumber(
               Math.floor(currentPrice * 10 ** -9 * 1000) / 1000
@@ -456,6 +506,7 @@ class Funding extends PureComponent {
           {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
         </main>
         <ActionBarTakeOff
+          initClock={this.initClock}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
         />
       </span>

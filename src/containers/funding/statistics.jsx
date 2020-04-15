@@ -5,13 +5,13 @@ import { formatNumber } from '../../utils/utils';
 
 const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
 
-const Statistics = ({ atomLeff, won, price, discount }) => (
+const Statistics = ({ atomLeff, won, price, discount, time }) => (
   <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="5">
     <Card
       tooltipValue="The time left to finish funding in case less than 600000 ATOMs donated"
       positionTooltip="bottom"
       title="Funding ends"
-      value="70 days"
+      value={time}
     />
     <Card
       title="ATOMs left"
