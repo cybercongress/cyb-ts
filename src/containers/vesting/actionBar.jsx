@@ -78,7 +78,7 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
         Check TX status:{' '}
         <a
           className="hash"
-          href={`https://rinkeby.etherscan.io/tx/${hash}`}
+          href={`https://etherscan.io/tx/${hash}`}
           target="_blank"
         >
           {hash}
@@ -126,7 +126,7 @@ const CreateVesting = ({
       />
     </ActionBarContentText>
     <Button disabled={disabledBtnCreateVesting} onClick={onClickBtn}>
-      Create Vesting
+      Get EUL
     </Button>
   </ActionBar>
 );

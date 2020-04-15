@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { toBN } from 'web3-utils';
 import { Pane, Text } from '@cybercongress/gravity';
 import injectWeb3Vesting from '../../components/web3/web3Vesting';
-import { Loading } from '../../components/index';
+import { Loading, LinkWindow } from '../../components';
 import { asyncForEach } from '../../utils/utils';
 
 import TableVesting from './table';
@@ -245,10 +245,11 @@ class Vesting extends PureComponent {
           >
             {endTime === null ? (
               <Text fontSize="16px" color="#fff">
-                You do not have control over the brain. You need EUL tokens to
-                let she hear you. If you came from Ethereum or Cosmos you can
-                claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: <a href="/gol">Game of Links</a>.
+                Vesting allow you to get 1 EUL for each vested GOL. Also GOLs
+                allow you to participate in decisions of{' '}
+                <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
+                  Euler Foundation
+                </LinkWindow>
               </Text>
             ) : (
               <Text fontSize="16px" color="#fff">
