@@ -73,22 +73,9 @@ class Auction extends PureComponent {
   }
 
   async componentDidMount() {
-    const { accounts } = this.props;
     this.init();
     this.subscription();
     this.accountsChanged();
-
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
-
-    console.log({
-      youCYB,
-    });
   }
 
   init = async () => {
@@ -154,8 +141,8 @@ class Auction extends PureComponent {
           const day = Number.parseInt(result.topics[1]);
           console.log('day', day);
           this.getDataTableForRound(day);
-          // this.dinamics();
-          run(this.statistics);
+          this.dinamics();
+          this.statistics();
         }
       }
     );
@@ -214,9 +201,9 @@ class Auction extends PureComponent {
     const hours = Math.floor(times / (60 * 60));
     const minutes = Math.floor((times / 60) % 60);
 
-    const h = `0${hours}`.slice(-2);
+    const h = hours;
     const m = `0${minutes}`.slice(-2);
-    const timeLeft = `${h} : ${m}`;
+    const timeLeft = `${h}h : ${m}m`;
     this.setState({
       timeLeft,
     });
@@ -338,13 +325,6 @@ class Auction extends PureComponent {
       contractAuctionUtils,
     } = this.props;
     const { accounts } = this.state;
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
     console.log('accounts', accounts);
     let userBuysAuctionUtils = null;
     let userClaims = null;
@@ -513,7 +493,7 @@ class Auction extends PureComponent {
       startTimeTot,
     } = this.state;
     // console.log(table);
-    const thc = 700 * Math.pow(10, 3);
+
     return (
       <div>
         <main className="block-body auction">
@@ -524,7 +504,7 @@ class Auction extends PureComponent {
             timeLeft={timeLeft}
             currentPrice={exponentialToDecimal(currentPrice.toPrecision(2))}
             raised={exponentialToDecimal(raised.toPrecision(2))}
-            cap={formatNumber(thc * currentPrice)}
+            cap={formatNumber(AUCTION.TOKEN_ALOCATION * currentPrice)}
             TOKEN_NAME={TOKEN_NAME}
           />
           {loading && (
@@ -556,14 +536,16 @@ class Auction extends PureComponent {
             </div>
           )}
         </main>
-        <ActionBarAuction
-          web3={this.props.web3}
-          contract={this.props.contract}
-          minRound={roundThis}
-          maxRound={numberOfDays}
-          claimed={claimedAll}
-          startAuction={typeTime === 'intro'}
-        />
+        {!loading && (
+          <ActionBarAuction
+            web3={this.props.web3}
+            contract={this.props.contract}
+            minRound={roundThis}
+            maxRound={numberOfDays}
+            claimed={claimedAll}
+            startAuction={typeTime === 'intro'}
+          />
+        )}
       </div>
     );
   }

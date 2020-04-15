@@ -145,7 +145,7 @@ export const Community = () => (
       Propose something that matters!
     </Text>
     <Text lineHeight="24px" color="#fff" fontSize="18px">
-      2 TEUL allocated to community pool in euler-5. All governance payouts will
+      2 TEUL allocated to community pool in euler. All governance payouts will
       be migrated to main network. That means that up to 2 TCYB can be allocated
       for community proposals during Game of Links.{' '}
       <a target="_blank" href="https://cybercongress.ai/game-of-links/">

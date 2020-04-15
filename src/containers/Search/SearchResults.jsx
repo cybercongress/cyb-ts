@@ -220,7 +220,7 @@ class SearchResults extends React.Component {
       searchItems.push(
         <SnipitAccount
           text="Details address"
-          to={`/network/euler-5/contract/${query}`}
+          to={`/network/euler/contract/${query}`}
           address={query}
         />
       );
@@ -230,7 +230,7 @@ class SearchResults extends React.Component {
       searchItems.push(
         <SnipitAccount
           text="Details a hero"
-          to={`/network/euler-5/hero/${query}`}
+          to={`/network/euler/hero/${query}`}
           address={query}
         />
       );
@@ -240,7 +240,7 @@ class SearchResults extends React.Component {
       searchItems.push(
         <SnipitAccount
           text="Details Tx"
-          to={`/network/euler-5/tx/${query}`}
+          to={`/network/euler/tx/${query}`}
           address={query}
         />
       );

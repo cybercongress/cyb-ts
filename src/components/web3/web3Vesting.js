@@ -41,7 +41,7 @@ const injectWeb3Vesting = InnerComponent =>
 
         console.log(web3.givenProvider);
         const networkId = await web3.eth.net.getId();
-        const networkContract = NETWORKSIDS.rinkeby;
+        const networkContract = NETWORKSIDS.main;
 
         if (networkContract !== networkId) {
           return this.setState({

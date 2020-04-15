@@ -323,7 +323,7 @@ class GolLoad extends React.Component {
                       <Table.TextCell flex={2}>
                         <TextTable>
                           <Link
-                            to={`/network/euler-5/contract/${item.subject}`}
+                            to={`/network/euler/contract/${item.subject}`}
                           >
                             {item.subject}
                           </Link>

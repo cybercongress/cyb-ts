@@ -63,7 +63,7 @@ const InformationTxs = ({ data, messageError, ...props }) => {
             />
           )}
           {key === 'height' ? (
-            <Link to={`/network/euler-5/block/${data[key]}`}>{item}</Link>
+            <Link to={`/network/euler/block/${data[key]}`}>{item}</Link>
           ) : (
             item
           )}

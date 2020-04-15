@@ -438,7 +438,7 @@ class Brain extends React.Component {
           title="inlfation"
           value={`${formatNumber(inlfation * 100, 2)} %`}
         />
-        <Link to="/network/euler-5/tx">
+        <Link to="/network/euler/tx">
           <CardStatisics title={T.brain.transactions} value={<Txs />} />
         </Link>
       </Pane>
@@ -457,7 +457,7 @@ class Brain extends React.Component {
             value={formatNumber(communityPool)}
           />
         </Link>
-        <Link to="network/euler-5/parameters">
+        <Link to="network/euler/parameters">
           <CardStatisics title="Network parameters" value={30} />
         </Link>
       </Pane>
@@ -522,7 +522,7 @@ class Brain extends React.Component {
             gridGap="20px"
           >
             <div />
-            <Link to="/network/euler-5/block">
+            <Link to="/network/euler/block">
               <CardStatisics title={chainId} value={formatNumber(block)} />
             </Link>
             <div />

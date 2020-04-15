@@ -301,7 +301,7 @@ class GolLifetime extends React.Component {
         >
           <Table.TextCell>
             <TextTable>
-              <Link to={`/network/euler-5/hero/${item.operatorAddress}`}>
+              <Link to={`/network/euler/hero/${item.operatorAddress}`}>
                 {item.moniker}
               </Link>
             </TextTable>

@@ -69,6 +69,7 @@ class Vesting extends PureComponent {
         filter: { lockAddress: accounts },
       },
       (error, event) => {
+        console.log('NewLock', event);
         this.newLockUpdate(event);
       }
     );
@@ -215,6 +216,7 @@ class Vesting extends PureComponent {
       endTime,
     } = this.state;
     const { web3, contractVesting } = this.props;
+    console.log('table', table);
 
     if (loading) {
       return (

@@ -9,7 +9,7 @@ class Account extends React.Component {
     super(props);
     const { address } = this.props;
     this.state = {
-      account: `/network/euler-5/contract/${address}`,
+      account: `/network/euler/contract/${address}`,
       moniker: address,
       loading: true,
     };
@@ -22,7 +22,7 @@ class Account extends React.Component {
         this.updateAccount();
       } else {
         this.setState({
-          account: `/network/euler-5/contract/${address}`,
+          account: `/network/euler/contract/${address}`,
           moniker: `${trimString(address, 9, 6)}`,
           loading: false,
         });
@@ -37,7 +37,7 @@ class Account extends React.Component {
 
     if (result) {
       this.setState({
-        account: `/network/euler-5/hero/${address}`,
+        account: `/network/euler/hero/${address}`,
         moniker: `${result.description.moniker}`,
         loading: false,
       });

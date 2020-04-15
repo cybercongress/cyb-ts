@@ -165,7 +165,7 @@ const Block = () => {
                   </Table.TextCell>
                   <Table.TextCell textAlign="end">
                     <TextTable>
-                      <Link to={`/network/euler-5/block/${item.height}`}>
+                      <Link to={`/network/euler/block/${item.height}`}>
                         {formatNumber(item.height)}
                       </Link>
                     </TextTable>
