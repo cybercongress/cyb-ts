@@ -91,13 +91,17 @@ class ProposalsDetail extends React.Component {
   }
 
   async componentDidMount() {
+    this.init();
+  }
+
+  init = async () => {
     await this.getProposalsInfo();
     this.getTimes();
     this.getStatusVoting();
     this.getVotes();
     this.getDeposit();
     this.getTableVoters();
-  }
+  };
 
   getProposalsInfo = async () => {
     // const proposals = proposalsIdJson[0].result;
@@ -325,6 +329,7 @@ class ProposalsDetail extends React.Component {
           period={period}
           minDeposit={minDeposit}
           totalDeposit={totalDeposit}
+          update={this.init}
         />
       </div>
     );
