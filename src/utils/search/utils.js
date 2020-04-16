@@ -368,9 +368,9 @@ export const getAccountBandwidth = async address => {
   }
 };
 
-export const statusNode = () =>
-  new Promise(resolve =>
-    axios({
+export const statusNode = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/status`,
     })
@@ -685,7 +685,7 @@ export const getCurrentBandwidthPrice = async () => {
     return response.data.result.price;
   } catch (e) {
     console.log(e);
-    return 0;
+    return null;
   }
 };
 
