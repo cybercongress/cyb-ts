@@ -59,7 +59,6 @@ class AppRouter extends React.Component {
   async componentDidMount() {
     const deadline = `${TIME_START}`;
     const startTime = Date.parse(deadline) - Date.parse(new Date());
-    console.log(startTime);
     if (startTime <= 0) {
       this.setState({
         time: false,
@@ -276,9 +275,9 @@ class AppRouter extends React.Component {
           />
           <Route exact path="/search/:query" component={SearchResults} />
           <Route path="/gift/:address?" component={Gift} />
-          <Route path="/takeoff" component={Funding} />
+          <Route path="/gol/takeoff" component={Funding} />
           <Route path="/tot" component={Got} />
-          <Route path="/auction" component={Auction} />
+          <Route path="/gol/faucet" component={Auction} />
           <Route path="/brain" component={Brain} />
           <Route exact path="/governance" component={Governance} />
           <Route path="/governance/:proposal_id" component={ProposalsDetail} />
@@ -300,8 +299,8 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
-          <Route path="/vesting" component={Vesting} />
           <Route path="/graph" component={ForceGraph} />
+          <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />
           <Route

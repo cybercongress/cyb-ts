@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
-import { connect } from 'react-redux';
+import { ActionBar, Input, Button, Pane } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
   JsonTransaction,
   TransactionSubmitted,
   Confirmed,
-  StartStageSearchActionBar,
+  GovernanceStartStageActionBar,
   Cyberlink,
+  CommunityPool,
+  ParamChange,
+  TextProposal,
   TransactionError,
+  ActionBarContentText,
+  Dots,
 } from '../../components';
-import { getIpfsHash, getPin } from '../../utils/search/utils';
 
-import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import { downloadObjectAsJson } from '../../utils/utils';
+
+import { statusNode } from '../../utils/search/utils';
+
+import { LEDGER, CYBER, PATTERN_CYBER } from '../../utils/config';
 
 const {
   MEMO,
@@ -22,6 +29,7 @@ const {
   LEDGER_OK,
   LEDGER_NOAPP,
   STAGE_INIT,
+  STAGE_SELECTION,
   STAGE_LEDGER_INIT,
   STAGE_READY,
   STAGE_WAIT,
@@ -32,37 +40,34 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
-class ActionBarContainer extends Component {
+const STAGE_CLI_INIT = 1.1;
+const STAGE_CLI_VOTE = 1.2;
+const STAGE_CLI_ADD_ADDRESS = 1.3;
+
+class ActionBarDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      init: false,
       ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
-      contentHash: '',
+      valueSelect: 'Yes',
       txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
-      error: null,
+      valueDeposit: '',
       errorMessage: null,
-      file: null,
-      fromCid: null,
-      toCid: null,
+      valueAddress: '',
+      cli: false,
     };
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
-    this.inputOpenFileRef = React.createRef();
   }
 
   async componentDidMount() {
@@ -74,47 +79,21 @@ class ActionBarContainer extends Component {
   }
 
   componentDidUpdate() {
-    const {
-      getIpfsCid,
-      ledger,
-      stage,
-      returnCode,
-      address,
-      addressInfo,
-      fromCid,
-      toCid,
-    } = this.state;
-    if (ledger === null) {
+    if (this.state.ledger === null) {
       this.pollLedger();
     }
-    if (stage === STAGE_LEDGER_INIT) {
-      if (ledger !== null) {
-        switch (returnCode) {
+    if (this.state.stage === STAGE_LEDGER_INIT) {
+      if (this.state.ledger !== null) {
+        switch (this.state.returnCode) {
           case LEDGER_OK:
-            if (address === null) {
+            if (this.state.address === null) {
               this.getAddress();
             }
-            if (address !== null && addressInfo === null) {
+            if (
+              this.state.address !== null &&
+              this.state.addressInfo === null
+            ) {
               this.getAddressInfo();
-            }
-            if (address !== null && addressInfo !== null && toCid === null) {
-              this.calculationIpfsTo();
-            }
-            if (
-              address !== null &&
-              addressInfo !== null &&
-              toCid !== null &&
-              fromCid === null
-            ) {
-              this.calculationIpfsFrom();
-            }
-            if (
-              address !== null &&
-              addressInfo !== null &&
-              toCid !== null &&
-              fromCid !== null
-            ) {
-              this.stageReady();
             }
             break;
           default:
@@ -193,78 +172,14 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  calculationIpfsTo = async () => {
-    const { contentHash, file } = this.state;
-    const { node } = this.props;
-
-    let toCid = contentHash;
-    if (file !== null) {
-      toCid = file;
-    }
-
-    if (file !== null) {
-      toCid = await getPin(node, toCid);
-    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      toCid = await getPin(node, toCid);
-    }
-
-    this.setState({
-      toCid,
-    });
-  };
-
-  calculationIpfsFrom = async () => {
-    const { keywordHash, node } = this.props;
-
-    let fromCid = keywordHash;
-
-    if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      fromCid = await getPin(node, fromCid);
-    }
-
-    this.setState({
-      fromCid,
-    });
-  };
-
-  stageReady = () => {
-    this.setState({
-      stage: STAGE_READY,
-    });
-  };
-
   getNetworkId = async () => {
-    const data = await this.getStatus();
+    const data = await statusNode();
     return data.node_info.network;
   };
 
   getAddressInfo = async () => {
     try {
       const { ledger, address } = this.state;
-
-      this.getBandwidth();
 
       const addressInfo = await ledger.getAccountInfoCyber(address);
       const chainId = await this.getNetworkId();
@@ -273,6 +188,7 @@ class ActionBarContainer extends Component {
 
       this.setState({
         addressInfo,
+        stage: STAGE_READY,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -285,79 +201,94 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getBandwidth = async () => {
-    try {
-      const { address } = this.state;
+  generateTx = async () => {
+    const {
+      address,
+      addressInfo,
+      ledger,
+      valueSelect,
+      valueDeposit,
+      cli,
+      valueAddress,
+    } = this.state;
 
-      const bandwidth = {
-        remained: 0,
-        max_value: 0,
+    const { period, id } = this.props;
+
+    let deposit = [];
+    let tx;
+    let txContext = null;
+    let addressFrom = null;
+
+    if (!cli) {
+      addressFrom = address.bech32;
+      txContext = {
+        accountNumber: addressInfo.accountNumber,
+        chainId: addressInfo.chainId,
+        sequence: addressInfo.sequence,
+        bech32: address.bech32,
+        pk: address.pk,
+        path: address.path,
       };
-
-      const getBandwidth = await fetch(
-        `${CYBER.CYBER_NODE_URL_API}/account_bandwidth?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await getBandwidth.json();
-
-      bandwidth.remained = data.result.remained;
-      bandwidth.max_value = data.result.max_value;
-
-      this.setState({
-        bandwidth,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+    } else {
+      addressFrom = valueAddress;
     }
-  };
 
-  // link = async () => {
-  //   const { valueInput } = this.state;
-  //   console.log('valueInput', valueInput);
-  // };
+    if (valueDeposit > 0) {
+      deposit = [
+        {
+          amount: `${valueDeposit * CYBER.DIVISOR_CYBER_G}`,
+          denom: 'eul',
+        },
+      ];
+    }
 
-  link = async () => {
-    const { address, addressInfo, ledger, fromCid, toCid } = this.state;
+    switch (period) {
+      case 'deposit': {
+        tx = await ledger.txSendDeposit(
+          txContext,
+          id,
+          addressFrom,
+          deposit,
+          MEMO,
+          cli
+        );
+        break;
+      }
+      case 'vote': {
+        tx = await ledger.txVoteProposal(
+          txContext,
+          id,
+          addressFrom,
+          valueSelect,
+          MEMO,
+          cli
+        );
+        break;
+      }
+      default: {
+        tx = [];
+      }
+    }
 
-    const txContext = {
-      accountNumber: addressInfo.accountNumber,
-      chainId: addressInfo.chainId,
-      sequence: addressInfo.sequence,
-      bech32: address.bech32,
-      pk: address.pk,
-      path: address.path,
-    };
-
-    const tx = await ledger.txCreateLink(
-      txContext,
-      address.bech32,
-      fromCid,
-      toCid,
-      MEMO
-    );
     console.log('tx', tx);
 
-    await this.setState({
-      txMsg: tx,
-      txContext,
-      txBody: null,
-      error: null,
-    });
-    // debugger;
-    this.signTx();
+    if (!cli) {
+      await this.setState({
+        txMsg: tx,
+        txContext,
+        txBody: null,
+        error: null,
+      });
+      // debugger;
+      this.signTx();
+    } else {
+      downloadObjectAsJson(tx, `tx_${period}`);
+      this.setState({
+        cli: false,
+        stage: STAGE_INIT,
+        valueDeposit: '',
+      });
+    }
   };
 
   signTx = async () => {
@@ -410,7 +341,6 @@ class ActionBarContainer extends Component {
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
-      console.log('status', status);
       const data = await status;
       if (data.logs) {
         this.setState({
@@ -434,37 +364,39 @@ class ActionBarContainer extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInput = async e => {
+  onChangeSelect = async e => {
     const { value } = e.target;
     this.setState({
-      contentHash: value,
+      valueSelect: value,
+    });
+  };
+
+  onChangeInputDeposit = async e => {
+    const { value } = e.target;
+    this.setState({
+      valueDeposit: value,
     });
   };
 
   cleatState = () => {
     this.setState({
-      init: false,
+      stage: STAGE_INIT,
       ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
-      contentHash: '',
+      valueSelect: 'Yes',
       txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
-      error: null,
+      valueDeposit: '',
       errorMessage: null,
-      file: null,
-      fromCid: null,
-      toCid: null,
+      valueAddress: '',
+      cli: false,
     });
     this.timeOut = null;
   };
@@ -476,71 +408,146 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onClickUsingLedger = () => {
+  onClickPutAddress = () => {
     // this.init();
+    this.setState({
+      stage: STAGE_READY,
+    });
+  };
+
+  onClickSelect = () => {
+    this.setState({
+      stage: STAGE_SELECTION,
+    });
+  };
+
+  onClickUsingCli = () => {
+    this.setState({
+      cli: true,
+      stage: STAGE_CLI_ADD_ADDRESS,
+    });
+  };
+
+  onClickUsingLedger = () => {
     this.setState({
       stage: STAGE_LEDGER_INIT,
     });
   };
 
-  onClickClear = () => {
+  onChangeValueAddress = e => {
+    const { value } = e.target;
     this.setState({
-      file: null,
-    });
-  };
-
-  hasKey() {
-    return this.state.address !== null;
-  }
-
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
-
-  showOpenFileDlg = () => {
-    this.inputOpenFileRef.current.click();
-  };
-
-  onFilePickerChange = files => {
-    const file = files.current.files[0];
-
-    this.setState({
-      file,
+      valueAddress: value,
     });
   };
 
   render() {
     const {
-      address,
-      bandwidth,
-      contentHash,
       returnCode,
       ledgerVersion,
       stage,
       txMsg,
       txHeight,
       txHash,
+      valueSelect,
+      valueDeposit,
       errorMessage,
-      file,
+      valueAddress,
     } = this.state;
+    const { period } = this.props;
 
-    const { valueSearchInput } = this.props;
-
-    if (stage === STAGE_INIT) {
+    if (stage === STAGE_INIT && period.length === 0) {
       return (
-        <StartStageSearchActionBar
-          valueSearchInput={valueSearchInput}
-          onClickBtn={this.onClickUsingLedger}
-          contentHash={
-            file !== null && file !== undefined ? file.name : contentHash
-          }
-          onChangeInputContentHash={this.onChangeInput}
-          inputOpenFileRef={this.inputOpenFileRef}
-          showOpenFileDlg={this.showOpenFileDlg}
-          onChangeInput={this.onFilePickerChange}
-          onClickClear={this.onClickClear}
-          file={file}
-        />
+        <ActionBar>
+          <ActionBarContentText>
+            <Dots />
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && period === 'deposit') {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Pane marginRight={10}>send Deposit</Pane>
+            <Input
+              textAlign="end"
+              value={valueDeposit}
+              onChange={this.onChangeInputDeposit}
+              marginRight={10}
+              width={100}
+              autoFocus
+            />
+            <Pane>{CYBER.DENOM_CYBER_G}</Pane>
+          </ActionBarContentText>
+          <Button
+            disabled={!parseFloat(valueDeposit) > 0}
+            onClick={this.onClickSelect}
+          >
+            Deposit
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && period === 'vote') {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <select
+              style={{ height: 42, width: '200px' }}
+              className="select-green"
+              value={valueSelect}
+              onChange={this.onChangeSelect}
+            >
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Abstain">Abstain</option>
+              <option value="NoWithVeto">NoWithVeto</option>
+            </select>
+          </ActionBarContentText>
+          <Button onClick={this.onClickSelect}>Vote</Button>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_SELECTION) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Button marginX={10} onClick={this.onClickUsingCli}>
+              use Cli
+            </Button>
+            <Button marginX={10} onClick={this.onClickUsingLedger}>
+              use Ledger
+            </Button>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_CLI_ADD_ADDRESS) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Pane marginRight={10}>Put your cyber address</Pane>
+            <Input
+              textAlign="end"
+              value={valueAddress}
+              onChange={this.onChangeValueAddress}
+              marginRight={10}
+              width={170}
+              autoFocus
+            />
+          </ActionBarContentText>
+          <Button
+            disabled={!valueAddress.match(PATTERN_CYBER)}
+            onClick={this.onClickPutAddress}
+          >
+            put
+          </Button>
+        </ActionBar>
       );
     }
 
@@ -558,20 +565,25 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
-      return (
-        <Cyberlink
-          onClickBtnCloce={this.onClickInitStage}
-          query={valueSearchInput}
-          onClickBtn={e => this.link(e)}
-          bandwidth={bandwidth}
-          address={address.bech32}
-          contentHash={file !== null ? file.name : contentHash}
-          disabledBtn={parseFloat(bandwidth.max_value) === 0}
-        />
-      );
+    if (stage === STAGE_READY) {
+      if (period === 'deposit') {
+        return (
+          <ActionBar>
+            <ActionBarContentText>
+              I want to send deposit {`${valueDeposit} ${CYBER.DENOM_CYBER_G}`}
+            </ActionBarContentText>
+            <Button onClick={this.generateTx}>generateTx</Button>
+          </ActionBar>
+        );
+      }
+      if (period === 'vote') {
+        return (
+          <ActionBar>
+            <ActionBarContentText>I vote {valueSelect}</ActionBarContentText>
+            <Button onClick={this.generateTx}>generateTx</Button>
+          </ActionBar>
+        );
+      }
     }
 
     if (stage === STAGE_WAIT) {
@@ -602,8 +614,8 @@ class ActionBarContainer extends Component {
       return (
         <TransactionError
           errorMessage={errorMessage}
-          onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.cleatState}
+          onClickBtnCloce={this.cleatState}
         />
       );
     }
@@ -612,10 +624,4 @@ class ActionBarContainer extends Component {
   }
 }
 
-const mapStateToProps = store => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ActionBarContainer);
+export default ActionBarDetail;

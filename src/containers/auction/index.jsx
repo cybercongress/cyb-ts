@@ -4,7 +4,7 @@ import { fromWei, toBN, toWei } from 'web3-utils';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
-import { Dinamics } from './dinamics';
+import Dinamics from './dinamics';
 import Table from './table';
 import { Loading } from '../../components/index';
 import {
@@ -13,6 +13,7 @@ import {
   roundNumber,
   asyncForEach,
   timer,
+  exponentialToDecimal,
 } from '../../utils/utils';
 import InfoPane from './infoPane';
 
@@ -21,8 +22,13 @@ import { AUCTION } from '../../utils/config';
 const BigNumber = require('bignumber.js');
 const dateFormat = require('dateformat');
 
-const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
-const ROUND_DURATION = 1 * 60 * 60;
+const {
+  ADDR_SMART_CONTRACT,
+  TOKEN_NAME,
+  TOPICS_SEND,
+  TOPICS_CLAIM,
+  ROUND_DURATION,
+} = AUCTION;
 
 export function roundCurrency(value, decimalDigits = 0) {
   return value
@@ -67,22 +73,9 @@ class Auction extends PureComponent {
   }
 
   async componentDidMount() {
-    const { accounts } = this.props;
     this.init();
     this.subscription();
     this.accountsChanged();
-
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
-
-    console.log({
-      youCYB,
-    });
   }
 
   init = async () => {
@@ -145,11 +138,11 @@ class Auction extends PureComponent {
       (error, result) => {
         if (!error) {
           console.log(result);
-          const day = Number.parseInt(result.data.slice(0, 66));
+          const day = Number.parseInt(result.topics[1]);
           console.log('day', day);
           this.getDataTableForRound(day);
-          // this.dinamics();
-          run(this.statistics);
+          this.dinamics();
+          this.statistics();
         }
       }
     );
@@ -205,12 +198,12 @@ class Auction extends PureComponent {
     const times = parseFloat(
       today * ROUND_DURATION - (parseFloat(time) - parseFloat(startTime))
     );
-    const hours = Math.floor((times / (60 * 60)) % 24);
+    const hours = Math.floor(times / (60 * 60));
     const minutes = Math.floor((times / 60) % 60);
 
-    const h = `0${hours}`.slice(-2);
+    const h = hours;
     const m = `0${minutes}`.slice(-2);
-    const timeLeft = `${h} : ${m}`;
+    const timeLeft = `${h}h : ${m}m`;
     this.setState({
       timeLeft,
     });
@@ -226,16 +219,11 @@ class Auction extends PureComponent {
     const createOnDay = await methods.createOnDay(today).call();
     const dailyTotals = await methods.dailyTotals(today).call();
 
-    const currentPrice = roundNumber(
-      dailyTotals / (createOnDay * Math.pow(10, 9)),
-      6
-    );
-
-    const price = new BigNumber(currentPrice);
+    const currentPrice = dailyTotals / (createOnDay * Math.pow(10, 9));
 
     return this.setState({
       roundThis,
-      currentPrice: price,
+      currentPrice,
       numberOfDays,
       dailyTotals: Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000,
     });
@@ -337,13 +325,6 @@ class Auction extends PureComponent {
       contractAuctionUtils,
     } = this.props;
     const { accounts } = this.state;
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
     console.log('accounts', accounts);
     let userBuysAuctionUtils = null;
     let userClaims = null;
@@ -512,7 +493,7 @@ class Auction extends PureComponent {
       startTimeTot,
     } = this.state;
     // console.log(table);
-    const thc = 700 * Math.pow(10, 3);
+
     return (
       <div>
         <main className="block-body auction">
@@ -521,9 +502,9 @@ class Auction extends PureComponent {
             round={roundThis}
             roundAll={numberOfDays}
             timeLeft={timeLeft}
-            currentPrice={currentPrice}
-            raised={Math.round(raised * 10000) / 10000}
-            cap={formatNumber(thc * currentPrice)}
+            currentPrice={exponentialToDecimal(currentPrice.toPrecision(2))}
+            raised={exponentialToDecimal(raised.toPrecision(2))}
+            cap={formatNumber(AUCTION.TOKEN_ALOCATION * currentPrice)}
             TOKEN_NAME={TOKEN_NAME}
           />
           {loading && (
@@ -555,14 +536,16 @@ class Auction extends PureComponent {
             </div>
           )}
         </main>
-        <ActionBarAuction
-          web3={this.props.web3}
-          contract={this.props.contract}
-          minRound={roundThis}
-          maxRound={numberOfDays}
-          claimed={claimedAll}
-          startAuction={typeTime === 'intro'}
-        />
+        {!loading && (
+          <ActionBarAuction
+            web3={this.props.web3}
+            contract={this.props.contract}
+            minRound={roundThis}
+            maxRound={numberOfDays}
+            claimed={claimedAll}
+            startAuction={typeTime === 'intro'}
+          />
+        )}
       </div>
     );
   }

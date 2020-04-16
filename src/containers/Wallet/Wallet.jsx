@@ -20,8 +20,6 @@ import {
 import { i18n } from '../../i18n/en';
 import { getBalance, getTotalEUL } from '../../utils/search/utils';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
-
 const T = new LocalizedStrings(i18n);
 
 const {

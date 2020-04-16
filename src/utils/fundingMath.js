@@ -73,7 +73,9 @@ const cybWon = atom => {
 
 const getDisciplinesAllocation = atom => {
   const allocation =
-    1.2 + ((CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D) * 0.466666);
+    1.2 +
+    (CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D) *
+      0.466666;
   return allocation;
 };
 
@@ -84,7 +86,7 @@ const getRewards = (price, discount, atoms, amount) => {
 };
 
 const getGroupAddress = data => {
-  const groups = data.reverse().reduce((obj, item) => {
+  const groupsAddress = data.reverse().reduce((obj, item) => {
     obj[item.from] = obj[item.from] || [];
     obj[item.from].push({
       amount: item.amount,
@@ -95,6 +97,31 @@ const getGroupAddress = data => {
     });
     return obj;
   }, {});
+  const groups = Object.keys(groupsAddress).reduce(
+    (obj, key) => ({
+      ...obj,
+      [key]: {
+        address: groupsAddress[key],
+        height: null,
+        amountСolumn: null,
+        pin: false,
+        cyb: null,
+      },
+    }),
+    {}
+  );
+
+  Object.keys(groups).forEach(key => {
+    let sum = 0;
+    let sumEstimation = 0;
+    groups[key].address.forEach(addressKey => {
+      sum += addressKey.amount;
+      sumEstimation += addressKey.cybEstimation;
+    });
+    groups[key].height = groups[key].address[0].height;
+    groups[key].amountСolumn = sum;
+    groups[key].cyb = sumEstimation;
+  });
   return groups;
 };
 
