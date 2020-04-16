@@ -202,6 +202,15 @@
   .container-gift {
     padding: 20px 0;
   }
+  .battery-container {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .battery-container {
+    display: none;
+  }
 }
 
 .btn-add-file {
@@ -234,4 +243,17 @@
 
 .btn-add-close:hover {
   opacity: 0.8;
+}
+
+.hover-row:hover {
+  box-shadow: 0px 0px 7px #3ab793db;
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 1;
 }

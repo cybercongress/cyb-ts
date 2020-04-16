@@ -373,12 +373,13 @@ export const statusNode = async () => {
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/status`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 
 export const getRelevance = (page = 0, perPage = 50) =>
   new Promise(resolve =>
@@ -541,7 +542,6 @@ export const getDrop = async address => {
     });
     return response.data;
   } catch (e) {
-    console.log(e);
     return 0;
   }
 };
@@ -1023,6 +1023,19 @@ export const getcommunityPool = async () => {
       url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
     });
     return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getImportLink = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://io.cybernode.ai/api/v0/dag/get?arg=bafyreibnn7bfilbmkrxm2rwk5fe6qzzdvm2xen34cjdktdoex4uylb76z4/${address}`,
+    });
+    return response.data;
   } catch (e) {
     console.log(e);
     return null;

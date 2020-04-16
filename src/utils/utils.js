@@ -235,6 +235,7 @@ function dhm(t) {
   }
   return [`${d}d`, pad(h, 'h'), pad(m, 'm')].join(':');
 }
+
 const sort = (data, sortKey, ordering = ORDER.DESC) => {
   if (ordering === ORDER.NONE) {
     return data;

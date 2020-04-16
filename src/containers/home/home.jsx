@@ -1,51 +1,12 @@
 import React, { PureComponent } from 'react';
-import {
-  Button,
-  Input,
-  Pane,
-  SearchItem,
-  Text,
-  TextInput,
-} from '@cybercongress/gravity';
-import Electricity from './electricity';
-
+import { Pane } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import { StartState } from './stateActionBar';
-
-import {
-  getIpfsHash,
-  getString,
-  search,
-  getRankGrade,
-  getDrop,
-  formatNumber as format,
-} from '../../utils/search/utils';
-import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
-import Gift from '../Search/gift';
-
-import { CYBER, PATTERN } from '../../utils/config';
-
-const giftImg = require('../../image/gift.svg');
-
-// const grade = {
-//   from: 0.0001,
-//   to: 0.1,
-//   value: 4
-// };
-
-const obj = {
-  a: 1,
-  b: [1, 2, 3],
-  c: {
-    ca: [5, 6, 7],
-    cb: 'foo',
-  },
-};
 
 class Home extends PureComponent {
   constructor(props) {
     super(props);
-    localStorage.setItem('LAST_DURA', '');
     this.state = {
       valueSearchInput: '',
       result: false,
@@ -166,17 +127,10 @@ class Home extends PureComponent {
     const {
       valueSearchInput,
       result,
-      searchResults,
       loading,
       targetColor,
       boxShadow,
-      keywordHash,
-      resultNull,
-      query,
-      drop,
     } = this.state;
-
-    let searchItems = [];
 
     if (loading) {
       return (
@@ -198,23 +152,6 @@ class Home extends PureComponent {
       );
     }
 
-    if (drop) {
-      searchItems = searchResults.map(item => <Gift item={item} />);
-    } else {
-      searchItems = searchResults.map(item => (
-        <SearchItem
-          key={item.cid}
-          hash={item.cid}
-          rank={item.rank}
-          grade={item.grade}
-          status="success"
-          // onClick={e => (e, links[cid].content)}
-        >
-          {item.cid}
-        </SearchItem>
-      ));
-    }
-
     return (
       <div style={{ position: `${!result ? 'relative' : ''}` }}>
         <main
@@ -225,6 +162,7 @@ class Home extends PureComponent {
             display="flex"
             alignItems="center"
             justifyContent="center"
+            flexDirection="column"
             flex={result ? 0.3 : 0.9}
             transition="flex 0.5s"
             minHeight={100}
@@ -237,7 +175,6 @@ class Home extends PureComponent {
                 boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
                 textAlign: 'center',
               }}
-              placeholder="joint for validators"
               value={valueSearchInput}
               onChange={e => this.onChangeInput(e)}
               onKeyPress={this.handleKeyPress}
@@ -246,63 +183,16 @@ class Home extends PureComponent {
               autoComplete="off"
               autoFocus
             />
-            {loading && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  bottom: '30%',
-                }}
-              >
-                <Loading />
-              </div>
-            )}
+            <Link style={{ marginTop: 50 }} to="/gol">
+              <Pane>Join Game of Links</Pane>
+            </Link>
           </Pane>
-          {result && (
-            <Pane
-              width="90%"
-              marginX="auto"
-              marginY={0}
-              display="flex"
-              flexDirection="column"
-            >
-              {!resultNull && (
-                <Text
-                  fontSize="20px"
-                  marginBottom={20}
-                  color="#949292"
-                  lineHeight="20px"
-                >
-                  {`I found ${searchItems.length} results`}
-                </Text>
-              )}
-
-              {resultNull && (
-                <Text
-                  fontSize="20px"
-                  marginBottom={20}
-                  color="#949292"
-                  lineHeight="20px"
-                >
-                  I don't know{' '}
-                  <Text fontSize="20px" lineHeight="20px" color="#e80909">
-                    {query}
-                  </Text>
-                  . Please, help me understand.
-                </Text>
-              )}
-              <Pane>{searchItems}</Pane>
-            </Pane>
-          )}
         </main>
-        {!result && (
-          <StartState
-            targetColor={targetColor}
-            valueSearchInput={valueSearchInput}
-            onClickBtn={this.onCklicBtn}
-          />
-        )}
+        <StartState
+          targetColor={targetColor}
+          valueSearchInput={valueSearchInput}
+          onClickBtn={this.onCklicBtn}
+        />
       </div>
     );
   }

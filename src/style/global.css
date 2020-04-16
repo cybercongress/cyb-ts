@@ -37,6 +37,10 @@ a {
     text-decoration: none;
 }
 
+a:hover {
+    opacity: 0.9;
+}
+
 .block-body {
     width: calc(100% - 1em);
     min-height: calc(100vh - 190px);

@@ -144,7 +144,6 @@ function createSkeleton(txContext, cli = false) {
 
 const createSkeletonCyber = (txContext, cli = false) => {
   let signatures = null;
-  console.log(cli);
   if (!cli) {
     if (typeof txContext === 'undefined') {
       throw new Error('undefined txContext');
@@ -289,7 +288,7 @@ function createSend(txContext, toAddress, uatomAmount, memo, cli, addressFrom) {
 }
 
 function createSendCyber(txContext, validatorBech32, uatomAmount, memo, denom) {
-  const txSkeleton = createSkeletonCyber(txContext, denom);
+  const txSkeleton = createSkeletonCyber(txContext);
 
   const txMsg = {
     type: 'cosmos-sdk/MsgSend',
@@ -556,6 +555,30 @@ function createRedelegateCyber(
   return txSkeleton;
 }
 
+function createImportLink(txContext, address, links, memo, cli) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+  txSkeleton.value.msg = [];
+
+  Object.keys(links).forEach(key => {
+    txSkeleton.value.msg.push({
+      type: 'cyber/Link',
+      value: {
+        address,
+        links: [
+          {
+            from: links[key].from,
+            to: links[key].to,
+          },
+        ],
+      },
+    });
+  });
+
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 export default {
   createSkeleton,
   createDelegate,
@@ -572,6 +595,7 @@ export default {
   createUndelegateCyber,
   createWithdrawDelegationReward,
   createRedelegateCyber,
+  createImportLink,
   voteProposal,
   sendDeposit,
 };
