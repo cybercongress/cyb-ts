@@ -15,7 +15,7 @@ import {
   TransactionError,
 } from '../../components';
 
-import { formatValidatorAddress, formatNumber } from '../../utils/utils';
+import { trimString, formatNumber } from '../../utils/utils';
 import {
   getBalanceWallet,
   selfDelegationShares,
@@ -26,7 +26,7 @@ import { LEDGER, CYBER } from '../../utils/config';
 
 import { i18n } from '../../i18n/en';
 
-const { CYBER_NODE_URL, DENOM_CYBER, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 const {
   MEMO,
   HDPATH,
@@ -177,7 +177,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -351,7 +351,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -371,20 +371,21 @@ class ActionBarContainer extends Component {
       this.setState({ stage: STAGE_CONFIRMING });
       const data = await this.state.ledger.txStatusCyber(this.state.txHash);
       // console.log(data);
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        updateTable();
+        if (updateTable) {
+          updateTable();
+        }
         return;
       }
-      if (data.raw_log !== undefined) {
-        const rawLog = await JSON.parse(data.raw_log);
-        console.log(rawLog);
+      if (data.code) {
         this.setState({
           stage: STAGE_ERROR,
-          errorMessage: rawLog.message,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
         });
         return;
       }

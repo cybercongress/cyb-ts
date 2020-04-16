@@ -24,8 +24,6 @@ import {
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 import { formatValidatorAddress } from '../../utils/utils';
 
-const { CYBER_NODE_URL } = CYBER;
-
 const {
   MEMO,
   HDPATH,
@@ -461,7 +459,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -482,7 +480,7 @@ class ActionBarContainer extends Component {
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
       console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
@@ -492,10 +490,11 @@ class ActionBarContainer extends Component {
         }
         return;
       }
-      if (data.logs && data.logs[0].success === false) {
+      if (data.code) {
         this.setState({
           stage: STAGE_ERROR,
           txHeight: data.height,
+          errorMessage: data.raw_log,
         });
         return;
       }

@@ -11,8 +11,6 @@ import { CYBER, LEDGER, AUCTION, COSMOS, TAKEOFF } from '../../utils/config';
 
 import { ConnectLadger } from '../../components';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
-
 const {
   HDPATH,
   LEDGER_OK,

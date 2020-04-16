@@ -1,13 +1,9 @@
 import React from 'react';
 import { Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
-
-import {
-  formatValidatorAddress,
-  formatCurrency,
-  formatNumber,
-} from '../../utils/utils';
-import { AUCTION, CYBER } from '../../utils/config';
 import { Link } from 'react-router-dom';
+
+import { trimString, formatCurrency, formatNumber } from '../../utils/utils';
+import { AUCTION, CYBER } from '../../utils/config';
 import { Account } from '../../components';
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
@@ -51,8 +47,8 @@ const TableVesting = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler-5/tx/${item.proof.toUpperCase()}`}>
-            {formatValidatorAddress(item.proof.toUpperCase(), 6, 6)}
+          <Link to={`/network/euler/tx/${item.proof.toUpperCase()}`}>
+            {trimString(item.proof.toUpperCase(), 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>

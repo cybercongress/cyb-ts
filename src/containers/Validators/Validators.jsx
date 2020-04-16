@@ -27,11 +27,11 @@ import {
   getDelegator,
   formatNumber,
   asyncForEach,
-  formatValidatorAddress,
+  trimString,
   roundNumber,
   formatCurrency,
 } from '../../utils/utils';
-import { FormatNumber, Loading } from '../../components';
+import { FormatNumber, Loading, LinkWindow } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
 import { CYBER } from '../../utils/config';
@@ -327,7 +327,7 @@ class Validators extends Component {
               <TextTable>
                 <StatusTooltip status={validator.status} />
                 <Link
-                  to={`/network/euler-5/hero/${validator.operator_address}`}
+                  to={`/network/euler/hero/${validator.operator_address}`}
                 >
                   {validator.description.moniker}
                 </Link>
@@ -411,6 +411,22 @@ class Validators extends Component {
     return (
       <div>
         <main className="block-body">
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              If all heroes collectively will be able to gather 100 heroes, and
+              this number can last for 10000 blocks, additionally 2 TCYB will be
+              allocated to heroes who take part in{' '}
+              <Link to="/search/Genesis">Genesis</Link>. If the number of heroes
+              will increase to or over 146, additional 3 TCYB will be allocated.
+              All rewards in that discipline will be distributed to validators
+              per capita.
+            </Text>
+          </Pane>
           <Pane
             display="flex"
             flexDirection="column"

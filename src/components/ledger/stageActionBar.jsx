@@ -16,6 +16,7 @@ import {
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
 import { Loading } from '../ui/loading';
+import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 
@@ -102,7 +103,7 @@ export const Confirmed = ({
       <p style={{ marginBottom: 20, textAlign: 'center' }}>
         {T.actionBar.confirmedTX.blockTX}{' '}
         <Link
-          to={`/network/euler-5/block/${txHeight}`}
+          to={`/network/euler/block/${txHeight}`}
           style={{
             marginLeft: '5px',
           }}
@@ -128,7 +129,7 @@ export const Confirmed = ({
         </a>
       ) : (
         <Link
-          to={`/network/euler-5/tx/${txHash}`}
+          to={`/network/euler/tx/${txHash}`}
           className="btn"
           style={{
             display: 'flex',
@@ -254,52 +255,20 @@ export const StartState = ({ targetColor, valueSearchInput, onClickBtn }) => (
   </ActionBar>
 );
 
-export const ConnectLadger = ({ pin, app, version, onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        fontSize: '25px',
-      }}
-    >
-      <span className="display-inline-block margin-bottom-10px">
-        {T.actionBar.connectLadger.getStarted}
-      </span>
-    </div>
-    <div className="display-flex flex-direction-column margin-bottom-10px">
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div className={`checkbox ${pin ? 'checked' : ''} margin-right-5px`} />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.connect}
-        </span>
-      </div>
+export const ConnectLadger = ({ pin, app, version }) => (
+  <ActionBar>
+    <ActionBarContentText>
+      Connect Ledger, enter pin and open Cosmos app <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
+);
 
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div className={`checkbox ${app ? 'checked' : ''} margin-right-5px`} />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.openApp}
-        </span>
-      </div>
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div
-          className={`checkbox ${version ? 'checked' : ''} margin-right-5px`}
-        />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.version}
-        </span>
-      </div>
-    </div>
-    {app && version && (
-      <div className="display-flex flex-direction-column align-items-center">
-        <span className="font-size-20 display-inline-block margin-bottom-10px">
-          {T.actionBar.connectLadger.getDetails}
-        </span>
-        <Loading />
-      </div>
-    )}
-    {/* <button onClick={onClickBtn}>1</button> */}
-  </ContainetLedger>
+export const CheckAddressInfo = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      {T.actionBar.connectLadger.getDetails} <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
 );
 
 export const StartStageSearchActionBar = ({
@@ -957,6 +926,64 @@ export const SendLedgerAtomTot = ({
         </button>
       </div>
     </div>
+  </ContainetLedger>
+);
+
+export const ContributeATOMs = ({
+  onClickBtn,
+  address,
+  availableStake,
+  valueInput,
+  gasUAtom,
+  gasAtom,
+  onChangeInput,
+  onClickBtnCloce,
+  onClickMax,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <div className="display-flex align-items-center">
+      <span className="actionBar-text">{address}</span>
+      <button
+        className="copy-address"
+        onClick={() => {
+          navigator.clipboard.writeText(address);
+        }}
+      />
+    </div>
+    {availableStake > 0 && (
+      <div>
+        <h3 className="text-align-center">Send Details</h3>
+        <p className="text-align-center">Your wallet contains:</p>
+        <span className="actionBar-text">{availableStake}</span>
+        <div style={{ marginTop: '25px', marginBottom: 10 }}>
+          Enter the amount of ATOMs you wish to send to Cyber~Congress:
+        </div>
+        <div className="text-align-center">
+          <input
+            value={valueInput}
+            style={{ marginRight: 10, textAlign: 'end' }}
+            onChange={onChangeInput}
+          />
+          <button
+            type="button"
+            className="btn"
+            onClick={onClickMax}
+            style={{ height: 30 }}
+          >
+            Max
+          </button>
+        </div>
+        <h6 style={{ margin: 20 }}>
+          The fees you will be charged by the network on this transaction will
+          {gasUAtom} uatom ( {gasAtom} ATOMs ).
+        </h6>
+        <div className="text-align-center">
+          <button type="button" className="btn" onClick={onClickBtn}>
+            Generate my transaction
+          </button>
+        </div>
+      </div>
+    )}
   </ContainetLedger>
 );
 

@@ -20,8 +20,6 @@ import {
 import { i18n } from '../../i18n/en';
 import { getBalance, getTotalEUL } from '../../utils/search/utils';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
-
 const T = new LocalizedStrings(i18n);
 
 const {
@@ -188,8 +186,7 @@ class Wallet extends React.Component {
     const responseCyber = await getBalance(accounts.cyber.bech32);
     const responseCosmos = await getBalance(
       accounts.cosmos.bech32,
-      COSMOS.GAIA_NODE_URL_LSD,
-      'gaia_lcd'
+      COSMOS.GAIA_NODE_URL_LSD
     );
 
     const totalCyber = await getTotalEUL(responseCyber);
@@ -261,7 +258,7 @@ class Wallet extends React.Component {
         <Table.TextCell flex={1.3}>
           <Text color="#fff" fontSize="17px">
             {item.address.match(PATTERN_CYBER) && (
-              <Link to={`/network/euler-5/contract/${item.address}`}>
+              <Link to={`/network/euler/contract/${item.address}`}>
                 {item.address}
               </Link>
             )}

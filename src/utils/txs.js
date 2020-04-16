@@ -85,7 +85,7 @@ function applyGas(unsignedTx, gas) {
   return unsignedTx;
 }
 
-function applyGasCyber(unsignedTx, gas, denom) {
+function applyGasCyber(unsignedTx, gas) {
   if (typeof unsignedTx === 'undefined') {
     throw new Error('undefined unsignedTx');
   }
@@ -95,12 +95,7 @@ function applyGasCyber(unsignedTx, gas, denom) {
 
   // eslint-disable-next-line no-param-reassign
   unsignedTx.value.fee = {
-    amount: [
-      {
-        amount: '0',
-        denom: denom || DENOM_CYBER,
-      },
-    ],
+    amount: [],
     gas: gas.toString(),
   };
 
@@ -108,68 +103,81 @@ function applyGasCyber(unsignedTx, gas, denom) {
 }
 
 // Creates a new tx skeleton
-function createSkeleton(txContext) {
-  if (typeof txContext === 'undefined') {
-    throw new Error('undefined txContext');
+function createSkeleton(txContext, cli = false) {
+  let signatures = null;
+
+  if (!cli) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
+
+    signatures = [
+      {
+        signature: 'N/A',
+        account_number: txContext.accountNumber.toString(),
+        sequence: txContext.sequence.toString(),
+        pub_key: {
+          type: 'tendermint/PubKeySecp256k1',
+          value: 'PK',
+        },
+      },
+    ];
   }
-  if (typeof txContext.accountNumber === 'undefined') {
-    throw new Error('txContext does not contain the accountNumber');
-  }
-  if (typeof txContext.sequence === 'undefined') {
-    throw new Error('txContext does not contain the sequence value');
-  }
+
   const txSkeleton = {
-    type: 'auth/StdTx',
+    type: 'cosmos-sdk/StdTx',
     value: {
       msg: [], // messages
       fee: '',
       memo: MEMO,
-      signatures: [
-        {
-          signature: 'N/A',
-          account_number: txContext.accountNumber.toString(),
-          sequence: txContext.sequence.toString(),
-          pub_key: {
-            type: 'tendermint/PubKeySecp256k1',
-            value: 'PK',
-          },
-        },
-      ],
+      signatures,
     },
   };
   return applyGas(txSkeleton, DEFAULT_GAS);
 }
 
-const createSkeletonCyber = (txContext, denom) => {
-  if (typeof txContext === 'undefined') {
-    throw new Error('undefined txContext');
+const createSkeletonCyber = (txContext, cli = false) => {
+  let signatures = null;
+  console.log(cli);
+  if (!cli) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
+    signatures = [
+      {
+        signature: 'N/A',
+        account_number: txContext.accountNumber.toString(),
+        sequence: txContext.sequence.toString(),
+        pub_key: {
+          type: 'tendermint/PubKeySecp256k1',
+          value: 'PK',
+        },
+      },
+    ];
   }
-  if (typeof txContext.accountNumber === 'undefined') {
-    throw new Error('txContext does not contain the accountNumber');
-  }
-  if (typeof txContext.sequence === 'undefined') {
-    throw new Error('txContext does not contain the sequence value');
-  }
+
   const txSkeleton = {
-    type: 'auth/StdTx',
+    type: 'cosmos-sdk/StdTx',
     value: {
       msg: [], // messages
       fee: '',
       memo: MEMO,
-      signatures: [
-        {
-          signature: 'N/A',
-          account_number: txContext.accountNumber.toString(),
-          sequence: txContext.sequence.toString(),
-          pub_key: {
-            type: 'tendermint/PubKeySecp256k1',
-            value: 'PK',
-          },
-        },
-      ],
+      signatures,
     },
   };
-  return applyGasCyber(txSkeleton, DEFAULT_GAS, denom);
+  return applyGasCyber(txSkeleton, DEFAULT_GAS);
 };
 
 function applySignature(unsignedTx, txContext, secp256k1Sig) {
@@ -189,7 +197,7 @@ function applySignature(unsignedTx, txContext, secp256k1Sig) {
     throw new Error('txContext does not contain the sequence value');
   }
 
-  const tmpCopy = Object.assign({}, unsignedTx, {});
+  const tmpCopy = { ...unsignedTx };
 
   tmpCopy.value.signatures = [
     {
@@ -249,8 +257,16 @@ function createDelegateCyber(txContext, validatorBech32, uAmount, memo, denom) {
   return txSkeleton;
 }
 
-function createSend(txContext, validatorBech32, uatomAmount, memo) {
-  const txSkeleton = createSkeleton(txContext);
+function createSend(txContext, toAddress, uatomAmount, memo, cli, addressFrom) {
+  const txSkeleton = createSkeleton(txContext, cli);
+
+  let fromAddress = '';
+
+  if (txContext !== null && !cli) {
+    fromAddress = txContext.bech32;
+  } else {
+    fromAddress = addressFrom;
+  }
 
   const txMsg = {
     type: 'cosmos-sdk/MsgSend',
@@ -261,8 +277,8 @@ function createSend(txContext, validatorBech32, uatomAmount, memo) {
           denom: DENOM_COSMOS,
         },
       ],
-      from_address: txContext.bech32,
-      to_address: validatorBech32,
+      from_address: fromAddress,
+      to_address: toAddress,
     },
   };
 
@@ -299,7 +315,7 @@ function createLink(txContext, address, fromCid, toCid, memo) {
   const txSkeleton = createSkeletonCyber(txContext);
 
   const txMsg = {
-    type: 'cyberd/Link',
+    type: 'cyber/Link',
     value: {
       address,
       links: [
@@ -339,6 +355,42 @@ function createTextProposal(
       },
       initial_deposit: deposit,
       proposer: address,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
+function sendDeposit(txContext, proposalId, depositor, deposit, memo, cli) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgDeposit',
+    value: {
+      amount: deposit,
+      depositor,
+      proposal_id: proposalId,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
+function voteProposal(txContext, proposalId, voter, option, memo, cli) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgVote',
+    value: {
+      option,
+      proposal_id: proposalId,
+      voter,
     },
   };
 
@@ -520,4 +572,6 @@ export default {
   createUndelegateCyber,
   createWithdrawDelegationReward,
   createRedelegateCyber,
+  voteProposal,
+  sendDeposit,
 };

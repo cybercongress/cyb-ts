@@ -13,8 +13,8 @@ function Leadership({ accountUser }) {
         order_by: { height: desc }
         where: {
           _and: [
-            { message: { type: { _in: ${typeTx} } } }
-            { subject: { _eq: "cyber1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq4878e0" } }
+            { messagesByTxhash: { type: { _in: ${typeTx} } } }
+            { subject: { _eq: "${accountUser}" } }
           ]
         }
       ) {

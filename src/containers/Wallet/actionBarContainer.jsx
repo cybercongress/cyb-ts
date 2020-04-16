@@ -17,7 +17,7 @@ import { getBalanceWallet } from '../../utils/search/utils';
 
 import { i18n } from '../../i18n/en';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
 
@@ -158,7 +158,7 @@ class ActionBarContainer extends Component {
 
   getStatus = async () => {
     try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
+      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -286,7 +286,7 @@ class ActionBarContainer extends Component {
 
   injectTx = async () => {
     const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const txSubmit = await ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -305,8 +305,9 @@ class ActionBarContainer extends Component {
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
@@ -314,7 +315,16 @@ class ActionBarContainer extends Component {
         updateAddress();
         return;
       }
+      if (data.code) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
+        });
+        return;
+      }
     }
+
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 

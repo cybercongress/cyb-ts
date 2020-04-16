@@ -17,8 +17,11 @@ import {
   SendLedgerAtomTot,
   SendAmount,
   RewardsDelegators,
+  ContributeATOMs,
   ReDelegate,
   TransactionError,
+  ActionBarContentText,
+  CheckAddressInfo,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -26,6 +29,7 @@ import StatusTooltip from './statusTooltip';
 import MsgType from './msgType/msgType';
 import TextTable from './text/textTable';
 import StatusTx from './statusTx';
+import Vitalik from './vitalik';
 
 export {
   RowTableTakeoff,
@@ -54,6 +58,10 @@ export {
   TransactionError,
   TextTable,
   StatusTx,
+  Vitalik,
+  ContributeATOMs,
+  ActionBarContentText,
+  CheckAddressInfo,
 };
 
 export { Nums } from './ui/Numbers';
@@ -83,4 +91,4 @@ export {
   ContainerPane,
   Item,
 } from './governance/governance';
-export { Link, Cid } from './link/link';
+export { LinkWindow, Cid } from './link/link';
