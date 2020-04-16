@@ -85,7 +85,7 @@ function applyGas(unsignedTx, gas) {
   return unsignedTx;
 }
 
-function applyGasCyber(unsignedTx, gas, denom) {
+function applyGasCyber(unsignedTx, gas) {
   if (typeof unsignedTx === 'undefined') {
     throw new Error('undefined unsignedTx');
   }
@@ -142,36 +142,42 @@ function createSkeleton(txContext, cli = false) {
   return applyGas(txSkeleton, DEFAULT_GAS);
 }
 
-const createSkeletonCyber = (txContext, denom) => {
-  if (typeof txContext === 'undefined') {
-    throw new Error('undefined txContext');
+const createSkeletonCyber = (txContext, cli = false) => {
+  let signatures = null;
+  console.log(cli);
+  if (!cli) {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.accountNumber === 'undefined') {
+      throw new Error('txContext does not contain the accountNumber');
+    }
+    if (typeof txContext.sequence === 'undefined') {
+      throw new Error('txContext does not contain the sequence value');
+    }
+    signatures = [
+      {
+        signature: 'N/A',
+        account_number: txContext.accountNumber.toString(),
+        sequence: txContext.sequence.toString(),
+        pub_key: {
+          type: 'tendermint/PubKeySecp256k1',
+          value: 'PK',
+        },
+      },
+    ];
   }
-  if (typeof txContext.accountNumber === 'undefined') {
-    throw new Error('txContext does not contain the accountNumber');
-  }
-  if (typeof txContext.sequence === 'undefined') {
-    throw new Error('txContext does not contain the sequence value');
-  }
+
   const txSkeleton = {
     type: 'cosmos-sdk/StdTx',
     value: {
       msg: [], // messages
       fee: '',
       memo: MEMO,
-      signatures: [
-        {
-          signature: 'N/A',
-          account_number: txContext.accountNumber.toString(),
-          sequence: txContext.sequence.toString(),
-          pub_key: {
-            type: 'tendermint/PubKeySecp256k1',
-            value: 'PK',
-          },
-        },
-      ],
+      signatures,
     },
   };
-  return applyGasCyber(txSkeleton, DEFAULT_GAS, denom);
+  return applyGasCyber(txSkeleton, DEFAULT_GAS);
 };
 
 function applySignature(unsignedTx, txContext, secp256k1Sig) {
@@ -358,6 +364,42 @@ function createTextProposal(
   return txSkeleton;
 }
 
+function sendDeposit(txContext, proposalId, depositor, deposit, memo, cli) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgDeposit',
+    value: {
+      amount: deposit,
+      depositor,
+      proposal_id: proposalId,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
+function voteProposal(txContext, proposalId, voter, option, memo, cli) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgVote',
+    value: {
+      option,
+      proposal_id: proposalId,
+      voter,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 function createCommunityPool(
   txContext,
   address,
@@ -530,4 +572,6 @@ export default {
   createUndelegateCyber,
   createWithdrawDelegationReward,
   createRedelegateCyber,
+  voteProposal,
+  sendDeposit,
 };
