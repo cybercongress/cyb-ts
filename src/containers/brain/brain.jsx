@@ -97,6 +97,7 @@ class Brain extends React.Component {
     this.getStatisticsBrain();
     // this.getPriceGol();
     this.getTxsCosmos();
+    this.getContract();
   }
 
   componentDidUpdate(prevProps) {
@@ -134,6 +135,10 @@ class Brain extends React.Component {
       this.select('main');
     }
   };
+
+  getContract = async () => {
+
+  }
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
