@@ -326,6 +326,8 @@ class Wallet extends React.Component {
               paddingX={20}
               paddingY={20}
               marginY={20}
+              marginX="auto"
+              width="60%"
             >
               <Text fontSize="16px" color="#fff">
                 This is your pocket. If you put you pubkey here I can help
@@ -333,7 +335,7 @@ class Wallet extends React.Component {
                 <Link to="/gol">Game of Links</Link> and more.
               </Text>
             </Pane>
-            <NotFound text={T.pocket.hurry} />
+            <NotFound text=" " />
           </main>
           <ActionBarContainer
             addAddress={addAddress}

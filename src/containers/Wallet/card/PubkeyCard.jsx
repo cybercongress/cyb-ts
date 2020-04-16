@@ -3,7 +3,12 @@ import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { PocketCard } from '../components';
 import { Copy, Dots } from '../../../components';
-import { trimString, formatCurrency, getDelegator, exponentialToDecimal } from '../../../utils/utils';
+import {
+  trimString,
+  formatCurrency,
+  getDelegator,
+  exponentialToDecimal,
+} from '../../../utils/utils';
 import { getDrop } from '../../../utils/search/utils';
 
 const imgLedger = require('../../../image/ledger.svg');
@@ -40,7 +45,7 @@ function PubkeyCard({ pocket, ...props }) {
       flexDirection="column"
       paddingTop={15}
       paddingBottom={40}
-      minHeight={pocket.keys === 'ledger' ? '200px' : '180px'}
+      minHeight={pocket.keys === 'ledger' ? '200px' : '150px'}
       {...props}
     >
       {pocket.keys === 'ledger' && (
@@ -65,8 +70,8 @@ function PubkeyCard({ pocket, ...props }) {
       <Row
         marginBottom={20}
         marginBottomValue={5}
-        alignItems="center"
         justifyContent="space-between"
+        alignItems="baseline"
         value={
           <Pane display="flex" alignItems="center">
             <Link to={`/network/euler/contract/${pocket.cyber.address}`}>
@@ -75,7 +80,22 @@ function PubkeyCard({ pocket, ...props }) {
             <Copy text={pocket.cyber.address} />
           </Pane>
         }
-        title={formatCurrency(pocket.cyber.amount, pocket.cyber.token)}
+        title={
+          <Pane flexDirection="column" display="flex" alignItems="flex-end">
+            <Pane>
+              {formatCurrency(pocket.cyber.amount, pocket.cyber.token)}
+            </Pane>
+            <Pane>
+              {loading ? (
+                <span>
+                  <Dots /> CYB
+                </span>
+              ) : (
+                formatCurrency(gift, 'CYB')
+              )}
+            </Pane>
+          </Pane>
+        }
       />
       <Row
         marginBottom={20}
@@ -101,7 +121,7 @@ function PubkeyCard({ pocket, ...props }) {
           </div>
         }
       />
-      <Row
+      {/* <Row
         marginBottomValue={5}
         alignItems="center"
         justifyContent="space-between"
@@ -119,7 +139,7 @@ function PubkeyCard({ pocket, ...props }) {
             formatCurrency(gift, 'CYB')
           )
         }
-      />
+      /> */}
     </PocketCard>
   );
 }
