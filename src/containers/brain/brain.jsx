@@ -13,12 +13,13 @@ import {
   getInlfation,
   getcommunityPool,
   getTxCosmos,
+  getTotalSupply,
 } from '../../utils/search/utils';
 import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
 import { cybWon } from '../../utils/fundingMath';
-
-import { CYBER, AUCTION } from '../../utils/config';
+import injectWeb3 from './web3';
+import { CYBER, AUCTION, GENESIS_SUPPLY } from '../../utils/config';
 
 import ActionBarContainer from './actionBarContainer';
 import {
@@ -137,8 +138,33 @@ class Brain extends React.Component {
   };
 
   getContract = async () => {
+    const { cybernomics } = this.state;
+    const {
+      contract: { methods },
+    } = this.props;
+    const roundThis = await methods.today().call();
 
-  }
+    const totalSupplyEul = await getTotalSupply();
+    const createOnDay = await methods.createOnDay(roundThis).call();
+    const dailyTotals = await methods.dailyTotals(roundThis).call();
+
+    const currentPrice = dailyTotals / (createOnDay * Math.pow(10, 9));
+    cybernomics.gol = {
+      supply: parseFloat(AUCTION.TOKEN_ALOCATION * CYBER.DIVISOR_CYBER_G),
+      price: currentPrice,
+      cap: parseFloat(currentPrice * AUCTION.TOKEN_ALOCATION),
+    };
+
+    cybernomics.eul = {
+      supply: parseFloat(totalSupplyEul),
+      price: currentPrice,
+      cap: parseFloat((totalSupplyEul / CYBER.DIVISOR_CYBER_G) * currentPrice),
+    };
+
+    this.setState({
+      cybernomics,
+    });
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -170,15 +196,15 @@ class Brain extends React.Component {
     console.log('won', won);
     console.log('currentPrice', currentPrice);
 
-    const supplyEUL = Math.floor(won);
-    const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
-    const capATOM = (supplyEUL * takeofPrice) / DIVISOR_CYBER_G;
+    const supplyEUL = parseFloat(GENESIS_SUPPLY);
+    const takeofPrice = currentPrice / DIVISOR_CYBER_G;
+    const capATOM = (supplyEUL / DIVISOR_CYBER_G) * takeofPrice;
     console.log('capATOM', capATOM);
 
     cybernomics.cyb = {
       cap: capATOM,
       price: takeofPrice,
-      supply: supplyEUL,
+      supply: GENESIS_SUPPLY,
     };
 
     this.setState({
@@ -451,4 +477,4 @@ const mapStateToProps = store => {
   };
 };
 
-export default connect(mapStateToProps)(Brain);
+export default connect(mapStateToProps)(injectWeb3(Brain));
