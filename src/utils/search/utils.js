@@ -3,7 +3,6 @@ import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import { CYBER, TAKEOFF, COSMOS } from '../config';
 
 const {
-  CYBER_NODE_URL,
   CYBER_NODE_URL_API,
   CYBER_NODE_URL_LCD,
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,

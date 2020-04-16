@@ -16,8 +16,6 @@ import { getIpfsHash, getPin } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 
-const { CYBER_NODE_URL } = CYBER;
-
 const {
   MEMO,
   HDPATH,

@@ -36,7 +36,7 @@ export const Statistics = ({
         />
         <Card
           title="Left in round"
-          value={`${timeLeft} hour`}
+          value={timeLeft}
           tooltipValue="Time left in the current round closing"
           positionTooltip="bottom"
           stylesContainer={{padding: "35px 0"}}

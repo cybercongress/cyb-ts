@@ -51,7 +51,7 @@ import Txs from './tx';
 
 import ActionBarContainer from './actionBarContainer';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
 
 const {
   HDPATH,
@@ -203,31 +203,6 @@ class Brain extends React.Component {
       // addressInfo,
       amount: total.total,
     });
-  };
-
-  getAmount = async address => {
-    try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      // this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
   };
 
   getStatisticsBrain = async () => {

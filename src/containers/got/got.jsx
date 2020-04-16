@@ -11,6 +11,7 @@ import {
   roundNumber,
   run,
 } from '../../utils/utils';
+import { getTxCosmos } from '../../utils/search/utils';
 import { COSMOS, AUCTION } from '../../utils/config';
 
 const BigNumber = require('bignumber.js');
@@ -96,23 +97,21 @@ class Got extends PureComponent {
     // unsubscribes the subscription
   }
 
-  connect = () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-    };
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.setState({
-        dataTxs: message,
-        loading: false,
-      });
-      this.getEthAtomCourse();
-    };
+  connect = async () => {
+    await this.getTxsCosmos();
+    this.getEthAtomCourse();
+    this.setState({
+      loading: false,
+    });
+  };
 
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    if (dataTx !== null) {
+      this.setState({
+        dataTxs: dataTx.txs,
+      });
+    }
   };
 
   getEthAtomCourse = async () => {

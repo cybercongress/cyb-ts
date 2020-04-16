@@ -1,46 +1,32 @@
 import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
+import { exponentialToDecimal } from '../../utils/utils';
 // import { x, y } from './list';
 
-// const arr = [];
-// for (let i = 0, l = 250; i < 300; ++i) {
-//   arr.push(Math.floor(Math.random() * (l - 80)) + 80);
-// }
 Array.prototype.max = function() {
   return Math.max.apply(null, this);
 };
 
-export class Dinamics extends Component {
+class Dinamics extends Component {
   constructor(props) {
     super(props);
     this.state = {
       price: '',
       volume: '',
       round: '',
-      distribution: ''
+      distribution: '',
     };
   }
 
-  // componentDidMount() {
-  //   const { round, price, volume, distribution } = this.props;
-  //   this.setState({
-  //     price,
-  //     round,
-  //     volume,
-  //     distribution
-  //   });
-  // }
-
   plotlyHover = dataPoint => {
     // console.log('dataPoint', dataPoint.points[1].y);
-    if(dataPoint.points[1]) {
+    if (dataPoint.points[1]) {
       this.setState({
-      price: dataPoint.points[0].y,
-      round: dataPoint.points[0].x,
-      volume: dataPoint.points[1].y
-    });
+        price: exponentialToDecimal(dataPoint.points[0].y.toPrecision(2)),
+        round: dataPoint.points[0].x,
+        volume: dataPoint.points[1].y,
+      });
     }
-    
   };
 
   plotUnhover = () => {
@@ -49,7 +35,7 @@ export class Dinamics extends Component {
       price: '',
       round: '',
       volume: '',
-      distribution: ''
+      distribution: '',
     });
   };
 
@@ -68,14 +54,13 @@ export class Dinamics extends Component {
       x,
       y: x1,
       line: {
-        color: '#36d6ae'
+        color: '#36d6ae',
       },
       hovertemplate:
-          `price: ${price}` +
-          `<br>round: ${round}` +
-          `<br>volume, ETH: ${volume}` +
-
-          '<extra></extra>'
+        `price: ${price}` +
+        `<br>round: ${round}` +
+        `<br>volume, ETH: ${volume}` +
+        '<extra></extra>',
       // hoverinfo: 'none'
     };
 
@@ -87,17 +72,9 @@ export class Dinamics extends Component {
       yaxis: 'y2',
       hoverinfo: 'none',
       marker: {
-        color: '#36d6ae'
-      }
+        color: '#36d6ae',
+      },
     };
-
-    // var trace1 = {
-    //     x: x,
-    //     y: y,
-    //     // mode: 'lines',
-    //     type: 'bar',
-    //     name: '2000'
-    // };
 
     const data = [trace1, trace2];
 
@@ -110,8 +87,8 @@ export class Dinamics extends Component {
       hoverlabel: {
         bgcolor: '#000',
         font: {
-          color: '#fff'
-        }
+          color: '#fff',
+        },
       },
       // scene: {
       yaxis: {
@@ -135,8 +112,8 @@ export class Dinamics extends Component {
 
         tickfont: {
           color: '#fff',
-          size: 10
-        }
+          size: 10,
+        },
       },
       yaxis2: {
         title: 'Volume, ETH',
@@ -152,11 +129,10 @@ export class Dinamics extends Component {
         range: [0, _yaxis],
         tickfont: {
           color: '#fff',
-          size: 10
-        }
+          size: 10,
+        },
       },
       xaxis: {
-
         title: 'Round',
         ticklen: 10,
         tickcolor: '#000',
@@ -175,8 +151,8 @@ export class Dinamics extends Component {
         titlefont: { color: '#fff' },
         tickfont: {
           color: '#fff',
-          size: 10
-        }
+          size: 10,
+        },
       },
 
       // }
@@ -194,25 +170,11 @@ export class Dinamics extends Component {
       displayModeBar: false,
       scrollZoom: false,
       responsive: true,
-      showSendToCloud: true
+      showSendToCloud: true,
     };
 
     return (
       <div className="auction-container-dinamics">
-        {/* <div className="statistics-plot">
-          <div>
-            price: <span>{price} ETH/GGOL</span>
-          </div>
-          <div style={{ margin: '0 5px' }}>
-            round: <span>{round}</span>
-          </div>
-          <div>
-            volume: <span>{volume} ETH</span>
-          </div>
-          <div style={{ margin: '0 5px' }}>
-            round distribution: <span>{distribution} GGOL</span>
-          </div>
-        </div> */}
         <Plotly
           data={data}
           layout={layout}
@@ -222,10 +184,12 @@ export class Dinamics extends Component {
           style={{
             position: 'relative',
             display: 'inline-block',
-            width: '100%'
+            width: '100%',
           }}
         />
       </div>
     );
   }
 }
+
+export default Dinamics;

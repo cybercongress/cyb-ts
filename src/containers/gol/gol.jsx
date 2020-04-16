@@ -313,7 +313,7 @@ class GOL extends React.Component {
                 value={`${formatNumber(currentNetworkLoad, 2)} %`}
               />
             </Link>
-            <Link to="/takeoff">
+            <Link to="/gol/takeoff">
               <CardStatisics
                 styleContainer={{ minWidth: '100px' }}
                 styleValue={{ fontSize: '18px', color: '#3ab793' }}

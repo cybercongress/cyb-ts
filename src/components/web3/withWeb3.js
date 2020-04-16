@@ -3,15 +3,12 @@ import waitForWeb3 from './waitForWeb3';
 import abiAuction from '../../../contracts/Auction';
 import abiAuctionUtils from '../../../contracts/AuctionUtils';
 import abiToken from '../../../contracts/Token';
-
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 
 import { AUCTION, NETWORKSIDS } from '../../utils/config';
 
-const {
-  ADDR_SMART_CONTRACT,
-} = AUCTION;
+const { ADDR_SMART_CONTRACT } = AUCTION;
 
 const injectWeb3 = InnerComponent =>
   class extends PureComponent {
@@ -40,9 +37,9 @@ const injectWeb3 = InnerComponent =>
     getWeb3 = async () => {
       try {
         const web3 = await waitForWeb3();
-        console.log(web3.givenProvider);
+        console.log(web3);
         const networkId = await web3.eth.net.getId();
-        const networkContract = NETWORKSIDS.rinkeby;
+        const networkContract = NETWORKSIDS.main;
 
         if (networkContract !== networkId) {
           return this.setState({
@@ -52,7 +49,7 @@ const injectWeb3 = InnerComponent =>
         const contract = await new web3.eth.Contract(abiAuction, this.smart);
 
         const addrAuctionUtils = await contract.methods.utils().call();
-
+console.log(addrAuctionUtils);
         const contractAuctionUtils = await new web3.eth.Contract(
           abiAuctionUtils,
           addrAuctionUtils

@@ -141,6 +141,7 @@ const ContributeETH = ({
         marginLeft={15}
         marginRight={5}
         width="15%"
+        textAlign="end"
         // style={{
         //   width: '15%',
         //   margin: '0 5px 0 15px'
@@ -156,6 +157,7 @@ const ContributeETH = ({
         width="10%"
         marginLeft={15}
         marginRight={10}
+        textAlign="end"
         // style={{
         //   width: '10%',
         //   margin: '0 10px 0 15px'
@@ -180,7 +182,7 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
         Check TX status:{' '}
         <a
           className="hash"
-          href={`https://rinkeby.etherscan.io/tx/${hash}`}
+          href={`https://etherscan.io/tx/${hash}`}
           target="_blank"
         >
           {hash}
@@ -211,13 +213,21 @@ class ActionBarAuction extends Component {
     this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
 
+  componentDidMount() {
+    const { minRound } = this.props;
+
+    this.setState({
+      round: minRound,
+    });
+  }
+
   onChangeRound = e => {
     const { minRound, maxRound } = this.props;
 
-    if (e.target.value < minRound || e.target.value > maxRound - 1) {
+    if (e.target.value < minRound || e.target.value > maxRound) {
       this.setState({
         validInputRound: true,
-        messageRound: `enter round ${minRound} to ${maxRound - 1}`,
+        messageRound: `enter round ${minRound} to ${maxRound}`,
       });
     } else {
       this.setState({
@@ -266,16 +276,11 @@ class ActionBarAuction extends Component {
     } else return console.log('Your metamask is locked!');
   };
 
-  onClickTrackContribution = () =>
-    this.setState({
-      step: 'contributeETH',
-    });
-
   onClickSaveAddress = () => {
-    const { update } = this.props;
+    const { update, minRound } = this.props;
     this.setState({
       step: 'start',
-      round: '',
+      round: minRound,
       amount: '',
     });
     if (update) {
@@ -359,7 +364,8 @@ class ActionBarAuction extends Component {
       claimed,
       contract,
     } = this.props;
-    const btnConfirm = round >= minRound && round <= maxRound - 1 && amount > 0;
+
+    const btnConfirm = round >= minRound && round <= maxRound && amount > 0;
     if (web3.givenProvider === null)
       return (
         <ActionBar>
@@ -377,20 +383,6 @@ class ActionBarAuction extends Component {
 
     if (step === 'start') {
       return (
-        <StartState
-          claimed={claimed}
-          onClickBtn={this.onClickFuckGoogle}
-          contract={contract}
-          web3={web3}
-          round={minRound}
-          roundAll={maxRound}
-          startAuction={startAuction}
-        />
-      );
-    }
-
-    if (step === 'contributeETH') {
-      return (
         <ContributeETH
           valueRound={round}
           valueAmount={amount}
@@ -401,7 +393,7 @@ class ActionBarAuction extends Component {
           onChangeAmount={this.onChangeAmount}
           onChangeRound={this.onChangeRound}
           minValueRound={minRound}
-          maxValueRound={maxRound - 1}
+          maxValueRound={maxRound}
           onClickBtn={this.onClickContributeATOMs}
           disabledBtnConfirm={!btnConfirm}
         />
