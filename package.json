@@ -85,6 +85,7 @@
     "react": "^16.9.0",
     "react-apollo": "^3.1.3",
     "react-dom": "^16.9.0",
+    "react-force-graph": "^1.30.1",
     "react-infinite-scroller": "^1.2.4",
     "react-localization": "^1.0.15",
     "react-onclickoutside": "^6.9.0",
