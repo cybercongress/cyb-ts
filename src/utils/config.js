@@ -11,6 +11,8 @@ const AUCTION = {
   TOPICS_VESTING:
     '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
   HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
+  ROUND_DURATION: 1000 * 60 * 60 * 23 + 1,
+  TOKEN_ALOCATION: 15 * 10 ** 3,
 };
 
 const NETWORKSIDS = {

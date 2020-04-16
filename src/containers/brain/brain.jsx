@@ -18,7 +18,7 @@ import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
 import { cybWon } from '../../utils/fundingMath';
 
-import { CYBER } from '../../utils/config';
+import { CYBER, AUCTION } from '../../utils/config';
 
 import ActionBarContainer from './actionBarContainer';
 import {
@@ -71,6 +71,23 @@ class Brain extends React.Component {
       takeofPrice: 0,
       capATOM: 0,
       communityPool: 0,
+      cybernomics: {
+        gol: {
+          supply: 0,
+          price: 0,
+          cap: 0,
+        },
+        eul: {
+          supply: 0,
+          price: 0,
+          cap: 0,
+        },
+        cyb: {
+          supply: 0,
+          price: 0,
+          cap: 0,
+        },
+      },
     };
   }
 
@@ -127,6 +144,7 @@ class Brain extends React.Component {
   };
 
   getATOM = async dataTxs => {
+    const { cybernomics } = this.state;
     let amount = 0;
     let won = 0;
     let currentPrice = 0;
@@ -152,10 +170,14 @@ class Brain extends React.Component {
     const capATOM = (supplyEUL * takeofPrice) / DIVISOR_CYBER_G;
     console.log('capATOM', capATOM);
 
+    cybernomics.cyb = {
+      cap: capATOM,
+      price: takeofPrice,
+      supply: supplyEUL,
+    };
+
     this.setState({
-      supplyEUL,
-      takeofPrice,
-      capATOM,
+      cybernomics,
     });
   };
 
@@ -267,6 +289,7 @@ class Brain extends React.Component {
       selected,
       communityPool,
       inlfation,
+      cybernomics,
     } = this.state;
     const { block } = this.props;
 
@@ -318,13 +341,7 @@ class Brain extends React.Component {
       content = (
         <Route
           path="/brain/cybernomics"
-          render={() => (
-            <CybernomicsTab
-              totalCyb={totalCyb}
-              takeofPrice={takeofPrice}
-              capATOM={capATOM}
-            />
-          )}
+          render={() => <CybernomicsTab data={cybernomics} />}
         />
       );
     }
