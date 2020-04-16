@@ -228,11 +228,11 @@ class App extends Component {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/cyberd/releases/tag/euler-5"
+                  href="https://github.com/cybercongress/cyberd/releases/tag/euler"
                 >
-                  euler-5
+                  euler
                 </a>{' '}
-                network. Euler-5 is incentivized test network. Be careful.
+                network. euler is incentivized test network. Be careful.
                 Details in{' '}
                 <a
                   target="_blank"

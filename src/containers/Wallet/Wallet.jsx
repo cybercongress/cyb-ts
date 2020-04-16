@@ -295,10 +295,60 @@ class Wallet extends React.Component {
       selectCard,
     } = this.state;
 
-    let countLink = 0;
-    if (link !== null) {
-      countLink = [].concat.apply([], link).length;
-    }
+    const rowsTable = table.map(item => (
+      <Table.Row
+        borderBottom="none"
+        paddingLeft={20}
+        height={50}
+        isSelectable
+        key={item.address}
+      >
+        <Table.TextCell flex={1.3}>
+          <Text color="#fff" fontSize="17px">
+            {item.address.match(PATTERN_CYBER) && (
+              <Link to={`/network/euler/contract/${item.address}`}>
+                {item.address}
+              </Link>
+            )}
+            {item.address.match(PATTERN_COSMOS) && (
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://www.mintscan.io/account/${item.address}`}
+              >
+                {item.address}
+              </a>
+            )}
+          </Text>
+        </Table.TextCell>
+        <Table.TextCell textAlign="end" flex={0.5}>
+          <Text color="#fff" fontSize="17px">
+            <span>{formatNumber(Math.floor(parseFloat(item.amount)))}</span>
+            <span
+              style={{
+                display: 'inline-block',
+                textAlign: 'left',
+                width: '40px',
+              }}
+            >
+              {Math.floor(item.amount) > 0
+                ? ''
+                : `,${getDecimal(formatNumber(item.amount, 3))}`}
+            </span>
+          </Text>
+        </Table.TextCell>
+        <Table.TextCell textAlign="center" flex={0.2}>
+          <Text color="#fff" fontSize="17px">
+            {item.token.toUpperCase()}
+          </Text>
+        </Table.TextCell>
+        <Table.TextCell flex={0.3}>
+          <Text color="#fff" fontSize="17px">
+            {item.keys}
+          </Text>
+        </Table.TextCell>
+      </Table.Row>
+    ));
 
     if (loading) {
       return (

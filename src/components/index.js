@@ -20,6 +20,8 @@ import {
   ContributeATOMs,
   ReDelegate,
   TransactionError,
+  ActionBarContentText,
+  CheckAddressInfo,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -60,6 +62,8 @@ export {
   Vitalik,
   ContributeATOMs,
   BandwidthBar,
+  ActionBarContentText,
+  CheckAddressInfo,
 };
 
 export { Nums } from './ui/Numbers';

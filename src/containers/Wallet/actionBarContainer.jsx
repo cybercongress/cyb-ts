@@ -23,7 +23,7 @@ import { downloadObjectAsJson, getDelegator } from '../../utils/utils';
 
 const imgLedger = require('../../image/ledger.svg');
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 
 const {
   STAGE_INIT,

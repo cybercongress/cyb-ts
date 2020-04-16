@@ -1,11 +1,18 @@
 import React, { PureComponent } from 'react';
-import { Text, Pane } from '@cybercongress/gravity';
+import { Text, Pane, Dialog } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
+import QRCode from 'qrcode.react';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
 import ActionBarTakeOff from './actionBar';
-import { asyncForEach, formatNumber } from '../../utils/utils';
-import { Loading } from '../../components/index';
+import {
+  asyncForEach,
+  formatNumber,
+  trimString,
+  getTimeRemaining,
+} from '../../utils/utils';
+import { Loading, LinkWindow, Copy } from '../../components';
 import { COSMOS, TAKEOFF } from '../../utils/config';
 import {
   cybWon,
@@ -15,6 +22,8 @@ import {
   getRewards,
   getGroupAddress,
 } from '../../utils/fundingMath';
+import { getTxCosmos } from '../../utils/search/utils';
+import PopapAddress from './popap';
 
 const dateFormat = require('dateformat');
 
@@ -31,17 +40,28 @@ const diff = (key, ...arrays) =>
     })
   );
 
+const test = {
+  'tx.hash': [
+    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
+  ],
+  'tx.height': ['1489670'],
+  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
+  'transfer.amount': ['100000000uatom'],
+  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
+  'message.module': ['bank'],
+  'message.action': ['send'],
+  'tm.event': ['Tx'],
+};
+
 class Funding extends PureComponent {
   ws = new WebSocket(GAIA_WEBSOCKET_URL);
 
   constructor(props) {
     super(props);
-    const tempArr = localStorage.getItem('allpin');
-    const allPin = JSON.parse(tempArr);
     this.state = {
       groups: [],
       amount: 0,
-      dataAllPin: allPin,
+      pocketAdd: null,
       dataTxs: null,
       atomLeff: 0,
       won: 0,
@@ -52,67 +72,91 @@ class Funding extends PureComponent {
       dataRewards: [],
       loader: true,
       loading: 0,
+      popapAdress: false,
     };
   }
 
   async componentDidMount() {
-    // const txs = JSON.parse(localStorage.getItem('txs'));
-    // if (txs !== null) {
-    //   this.setState({
-    //     dataTxs: txs
-    //   });
-    // }
-    this.getDataWS();
-    // console.log('groupsDidMount', groups);
-    const dataPin = [];
-    const jsonStr = localStorage.getItem('allpin');
-    dataPin.push(JSON.parse(jsonStr));
-    if (dataPin[0] != null) {
-      if (dataPin[0].length) {
-        // // debugger;
-        // for(let i = 0; i <= groups.length; i++){
-        //   for(let j = 0; j <= dataPin.length; j++){
-        //     if(groups[i].group.indexOf(`${dataPin[j].group}`) !== -1){
-        //       groups.pin = true;
-        //     }
-        //   }
-        // }
-        this.setState({
-          pin: true,
-          // groups
-        });
-      }
-    }
+    await this.getDataWS();
+    await this.getTxsCosmos();
+    this.initClock();
   }
 
-  getDataWS = () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-    };
-    this.ws.onmessage = async evt => {
-      // const txs = JSON.parse(localStorage.getItem('txs'));
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      // if (txs == null) {
-      // localStorage.setItem('txs', JSON.stringify(message));
+  initClock = () => {
+    const dataStartTakeoff = COSMOS.TIME_START;
+    const timeStartTakeoff =
+      Date.parse(dataStartTakeoff) - Date.parse(new Date());
+    console.log(timeStartTakeoff);
+    if (timeStartTakeoff <= 0) {
+      const deadline = `${COSMOS.TIME_END}`;
+      const startTime = Date.parse(deadline) - Date.parse(new Date());
+      if (startTime <= 0) {
+        this.setState({
+          time: 'end',
+        });
+      } else {
+        this.initializeClock(deadline);
+      }
+    } else {
       this.setState({
-        dataTxs: message,
+        time: '∞',
       });
-      this.init(message);
-      // } else if (txs.length !== message.length) {
-      //   console.log('localStorage !== ws');
-      //   const diffTsx = diff('txhash', txs, message);
-      //   this.setState({
-      //     dataTxs: message,
-      //   });
-      //   localStorage.setItem('txs', JSON.stringify(message));
-      //   console.log('txsLocalStorage', diff('txhash', txs, message));
-      //   this.init(diffTsx);
+    }
+  };
 
-      // } else {
-      //   console.log('localStorage == ws');
-      //   this.getItemLocalStorage();
-      // }
+  initializeClock = endtime => {
+    let timeinterval;
+    const updateClock = () => {
+      const t = getTimeRemaining(endtime);
+      if (t.total <= 0) {
+        clearInterval(timeinterval);
+        this.setState({
+          time: 'end',
+        });
+        return true;
+      }
+      const hours = `0${t.hours}`.slice(-2);
+      const minutes = `0${t.minutes}`.slice(-2);
+      this.setState({
+        time: `${t.days}d:${hours}h:${minutes}m`,
+      });
+    };
+
+    updateClock();
+    timeinterval = setInterval(updateClock, 10000);
+  };
+
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    if (dataTx !== null) {
+      this.setState({
+        dataTxs: dataTx.txs,
+      });
+      this.init(dataTx);
+    }
+  };
+
+  getDataWS = async () => {
+    this.ws.onopen = () => {
+      console.log('connected Funding');
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          id: '0',
+          params: {
+            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
+          },
+        })
+      );
+    };
+
+    this.ws.onmessage = async evt => {
+      const message = JSON.parse(evt.data);
+      if (message.id.indexOf('0#event') !== -1) {
+        this.updateWs(message.result.events);
+      }
+      console.warn('txs', message);
     };
 
     this.ws.onclose = () => {
@@ -120,36 +164,101 @@ class Funding extends PureComponent {
     };
   };
 
-  getItemLocalStorage = () => {
-    const statistics = JSON.parse(localStorage.getItem('statistics'));
-    const { amount, atomLeff, won, currentPrice, currentDiscount } = statistics;
-    const groups = JSON.parse(localStorage.getItem('groups'));
-    const dataPlot = JSON.parse(localStorage.getItem('dataPlot'));
-    const dataRewards = JSON.parse(localStorage.getItem('dataRewards'));
+  updateWs = async data => {
+    let amount = 0;
+    const amountWebSocket = data['transfer.amount'][0];
 
-    this.setState({
+    if (amountWebSocket.indexOf('uatom') !== -1) {
+      const positionDenom = amountWebSocket.indexOf('uatom');
+      const str = amountWebSocket.slice(0, positionDenom);
+      amount = parseFloat(str) / COSMOS.DIVISOR_ATOM;
+    }
+    const d = new Date();
+    const timestamp = dateFormat(d, 'dd/mm/yyyy, HH:MM:ss');
+    const dataTxs = {
       amount,
-      atomLeff,
-      won,
-      currentPrice,
-      currentDiscount,
-      groups,
-      dataPlot,
-      dataRewards,
-      loader: false,
-    });
+      txhash: data['tx.hash'][0],
+      height: data['tx.height'][0],
+      timestamp,
+      sender: data['message.sender'][0],
+    };
+    const pocketAddLocal = localStorage.getItem('pocket');
+    if (pocketAddLocal !== null) {
+      const pocketAdd = JSON.parse(pocketAddLocal);
+      this.setState({ pocketAdd });
+    }
+    await this.getStatisticsWs(dataTxs.amount);
+    this.getData();
+    await this.getTableData();
+    this.getTableDataWs(dataTxs);
   };
 
   init = async txs => {
+    console.log(txs);
+    const pocketAddLocal = localStorage.getItem('pocket');
+    const pocketAdd = JSON.parse(pocketAddLocal);
+    this.setState({ pocketAdd });
     await this.getStatistics(txs);
     this.getTableData();
-    this.checkPin();
     this.getData();
-    this.getPlot();
   };
 
-  getStatistics = async txs => {
-    const dataTxs = txs;
+  getStatisticsWs = async amountWebSocket => {
+    const { amount } = this.state;
+    let amountWs = 0;
+
+    amountWs = amount + amountWebSocket;
+    const atomLeffWs = ATOMsALL - amountWs;
+    const currentDiscountWs = funcDiscount(amountWs);
+    const wonWs = cybWon(amountWs);
+    const currentPriceWs = wonWs / amountWs;
+
+    this.setState({
+      amount: amountWs,
+      atomLeff: atomLeffWs,
+      won: wonWs,
+      currentPrice: currentPriceWs,
+      currentDiscount: currentDiscountWs,
+    });
+  };
+
+  getTableDataWs = async dataTxs => {
+    const { currentPrice, currentDiscount, amount, groups } = this.state;
+    try {
+      console.log(groups);
+      const dataWs = dataTxs;
+      const tempData = [];
+      let estimation = 0;
+      if (amount <= ATOMsALL) {
+        let tempVal = amount - dataTxs.amount;
+        if (tempVal >= ATOMsALL) {
+          tempVal = ATOMsALL;
+        }
+        estimation =
+          getEstimation(currentPrice, currentDiscount, amount, amount) -
+          getEstimation(currentPrice, currentDiscount, amount, tempVal);
+        dataWs.cybEstimation = estimation;
+        groups[dataWs.sender].address = [
+          dataWs,
+          ...groups[dataWs.sender].address,
+        ];
+        groups[dataWs.sender].height = dataWs.height;
+        groups[dataWs.sender].amountСolumn += dataWs.amount;
+        groups[dataWs.sender].cyb += estimation;
+      }
+      // const groupsAddress = getGroupAddress(table);
+      // localStorage.setItem(`groups`, JSON.stringify(groups));
+      this.setState({
+        groups,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new Error();
+    }
+  };
+
+  getStatistics = async data => {
+    const dataTxs = data.txs;
     console.log('dataTxs', dataTxs);
     // const statisticsLocalStorage = JSON.parse(
     //   localStorage.getItem('statistics')
@@ -182,13 +291,6 @@ class Funding extends PureComponent {
     currentPrice = won / amount;
     console.log('won', won);
     console.log('currentDiscount', currentDiscount);
-    const statistics = {
-      amount,
-      atomLeff,
-      won,
-      currentPrice,
-      currentDiscount,
-    };
     // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
       amount,
@@ -200,138 +302,6 @@ class Funding extends PureComponent {
     });
   };
 
-  getPlot = async () => {
-    const {
-      dataAllPin,
-      dataTxs,
-      currentPrice,
-      currentDiscount,
-      amount,
-    } = this.state;
-    // console.log('dataAllPin', dataAllPin);
-    const dataPin = dataAllPin;
-
-    const Plot = [];
-    const dataAxisRewards = {
-      type: 'scatter',
-      x: 0,
-      y: 0,
-      line: {
-        width: 2,
-        color: '#36d6ae',
-      },
-      hoverinfo: 'none',
-    };
-    if (amount <= ATOMsALL) {
-      const rewards = getRewards(currentPrice, currentDiscount, amount, amount);
-      const rewards0 = getRewards(currentPrice, currentDiscount, amount, 0);
-      dataAxisRewards.y = [rewards0, rewards];
-      dataAxisRewards.x = [0, amount];
-    } else {
-      const rewards = getRewards(
-        currentPrice,
-        currentDiscount,
-        ATOMsALL,
-        ATOMsALL
-      );
-      const rewards0 = getRewards(currentPrice, currentDiscount, ATOMsALL, 0);
-      dataAxisRewards.y = [rewards0, rewards];
-      dataAxisRewards.x = [0, ATOMsALL];
-    }
-
-    Plot.push(dataAxisRewards);
-    if (dataPin !== null) {
-      if (dataPin[0] === undefined) {
-        // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
-        this.setState({
-          dataRewards: Plot,
-        });
-      }
-      asyncForEach(Array.from(Array(dataPin.length).keys()), async itemsG => {
-        let amountAtom = 0;
-        let temp = 0;
-        const { group } = dataPin[itemsG];
-        // asyncForEach(Array.from(Array(dataTxs.length).keys()), async item => {
-        for (let item = 0; item < dataTxs.length; item++) {
-          let estimation = 0;
-          const colorPlot = group.replace(/[^0-9]/g, '').substr(0, 6);
-          const tempArrPlot = {
-            x: 0,
-            y: 0,
-            estimationPlot: 0,
-            fill: 'tozeroy',
-            type: 'scatter',
-            line: {
-              width: 2,
-              color: '#36d6ae',
-            },
-            hovertemplate: '',
-          };
-          const address = dataTxs[item].tx.value.msg[0].value.from_address;
-          const amou =
-            Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-              10
-            ) / COSMOS.DIVISOR_ATOM;
-          if (address === group) {
-            if (amountAtom <= ATOMsALL) {
-              const x0 = amountAtom;
-              const y0 = getRewards(currentPrice, currentDiscount, amount, x0);
-              amountAtom += amou;
-              const x = amountAtom;
-              const y = getRewards(
-                currentPrice,
-                currentDiscount,
-                amount,
-                amountAtom
-              );
-              // const tempVal = temp + amou;
-              let tempVal = temp + amou;
-              if (tempVal >= ATOMsALL) {
-                tempVal = ATOMsALL;
-              }
-              estimation =
-                getEstimation(currentPrice, currentDiscount, amount, tempVal) -
-                getEstimation(currentPrice, currentDiscount, amount, temp);
-              temp += amou;
-              // console.log('estimation', estimation);
-              tempArrPlot.estimationPlot = estimation;
-              tempArrPlot.hovertemplate =
-                `My CYBs estimation: ${formatNumber(
-                  Math.floor(estimation * 10 ** -9 * 1000) / 1000,
-                  3
-                )}` +
-                `<br>Atoms: ${formatNumber(
-                  Math.floor((x - x0) * 10 ** -3 * 1000) / 1000,
-                  3
-                )}k` +
-                '<extra></extra>';
-              tempArrPlot.x = [x0, x];
-              tempArrPlot.y = [y0, y];
-              Plot.push(tempArrPlot);
-            } else {
-              amountAtom += amou;
-              temp += amou;
-              break;
-            }
-          } else {
-            amountAtom += amou;
-            temp += amou;
-          }
-        }
-        // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
-        this.setState({
-          dataRewards: Plot,
-        });
-      });
-    } else {
-      // localStorage.setItem(`dataRewards`, JSON.stringify(Plot));
-      this.setState({
-        dataRewards: Plot,
-      });
-    }
-  };
-
   getTableData = async () => {
     const {
       dataTxs,
@@ -341,7 +311,6 @@ class Funding extends PureComponent {
       dataAllPin,
     } = this.state;
     try {
-      let estimationTemp = 0;
       const table = [];
       let temp = 0;
       for (let item = 0; item < dataTxs.length; item++) {
@@ -360,7 +329,6 @@ class Funding extends PureComponent {
             getEstimation(currentPrice, currentDiscount, amount, tempVal) -
             getEstimation(currentPrice, currentDiscount, amount, temp);
           temp += val;
-          estimationTemp += estimation;
         } else {
           break;
         }
@@ -369,7 +337,7 @@ class Funding extends PureComponent {
           txhash: dataTxs[item].txhash,
           height: dataTxs[item].height,
           from: dataTxs[item].tx.value.msg[0].value.from_address,
-          timestamp: dateFormat(d, 'dd/mm/yyyy, h:MM:ss TT'),
+          timestamp: dateFormat(d, 'dd/mm/yyyy, HH:MM:ss'),
           amount:
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
@@ -378,54 +346,32 @@ class Funding extends PureComponent {
           estimation,
         });
       }
-      console.log('table', table);
-      console.log('estimationTemp', estimationTemp);
+
       const groupsAddress = getGroupAddress(table);
-      const groups = Object.keys(groupsAddress).map(key => ({
-        group: key,
-        address: groupsAddress[key],
-        height: null,
-        timestamp: null,
-        amountСolumn: null,
-        pin: false,
-        cyb: null,
-      }));
-      for (let i = 0; i < groups.length; i++) {
-        let sum = 0;
-        let sumEstimation = 0;
-        for (let j = 0; j <= groups[i].address.length - 1; j++) {
-          sum += groups[i].address[j].amount;
-          sumEstimation += groups[i].address[j].cybEstimation;
-          groups[i].height = groups[i].address[0].height;
-          groups[i].timestamp = groups[i].address[0].timestamp;
-        }
-        groups[i].amountСolumn = sum;
-        groups[i].cyb = sumEstimation;
-      }
       // localStorage.setItem(`groups`, JSON.stringify(groups));
-      console.log('groups', groups);
+      console.log('groups', groupsAddress);
 
       this.setState({
-        groups,
+        groups: groupsAddress,
       });
+      this.checkPin();
     } catch (error) {
       throw new Error();
     }
   };
 
   checkPin = async () => {
-    const { dataAllPin, groups } = this.state;
-    if (dataAllPin !== null) {
-      await asyncForEach(
-        Array.from(Array(dataAllPin.length).keys()),
-        async pin => {
-          for (let i = 0; i < groups.length; i++) {
-            if (groups[i].group.indexOf(`${dataAllPin[pin].group}`) !== -1) {
-              groups[i].pin = true;
-            }
-          }
-        }
-      );
+    const { pocketAdd, groups } = this.state;
+    let pin = false;
+    if (pocketAdd !== null) {
+      if (groups[pocketAdd.cosmos.bech32]) {
+        groups[pocketAdd.cosmos.bech32].pin = true;
+        pin = true;
+      }
+      this.setState({
+        groups,
+        pin,
+      });
     }
   };
 
@@ -439,70 +385,16 @@ class Funding extends PureComponent {
     });
   };
 
-  updateList = async data => {
-    const tempArr = data;
-    let pin = false;
-    if (tempArr != null) {
-      if (tempArr.length) {
-        pin = true;
-      }
-    }
-    await this.setState({
-      dataAllPin: tempArr,
-      pin,
-    });
-    this.getPlot();
-  };
-
-  pinItem = async item => {
-    // console.log('item', item);
-    const { groups } = this.state;
-    let allPin = JSON.parse(localStorage.getItem('allpin'));
-    if (allPin == null) {
-      allPin = [];
-    }
-    const { group } = item;
-    const value = item;
-    const pin = {
-      group,
-      value,
-    };
-    localStorage.setItem(`item_pin`, JSON.stringify(pin));
-    allPin.push(pin);
-    localStorage.setItem('allpin', JSON.stringify(allPin));
-    this.updateList(allPin);
-    for (let i = 0; i < groups.length; i++) {
-      if (groups[i].group.indexOf(`${item.group}`) !== -1) {
-        groups[i].pin = true;
-      }
-    }
+  onClickPopapAdress = () => {
     this.setState({
-      groups,
+      popapAdress: false,
     });
   };
 
-  unPinItem = item => {
-    const { groups } = this.state;
-    const tempArr = localStorage.getItem('allpin');
-    const allPin = JSON.parse(tempArr);
-    if (allPin != null) {
-      for (let i = 0; i < allPin.length; i++) {
-        const tempindexItem = allPin[i].group.indexOf(`${item.group}`) !== -1;
-        if (tempindexItem) {
-          allPin.splice(i, 1);
-          localStorage.setItem('allpin', JSON.stringify(allPin));
-          this.updateList(allPin);
-        }
-      }
-      for (let i = 0; i < groups.length; i++) {
-        if (groups[i].group.indexOf(`${item.group}`) !== -1) {
-          groups[i].pin = false;
-        }
-      }
-      this.setState({
-        groups,
-      });
-    }
+  onClickPopapAdressTrue = () => {
+    this.setState({
+      popapAdress: true,
+    });
   };
 
   render() {
@@ -517,6 +409,8 @@ class Funding extends PureComponent {
       dataRewards,
       pin,
       loader,
+      popapAdress,
+      time,
     } = this.state;
 
     if (loader) {
@@ -541,7 +435,32 @@ class Funding extends PureComponent {
 
     return (
       <span>
+        {popapAdress && (
+          <PopapAddress
+            address={COSMOS.ADDR_FUNDING}
+            onClickPopapAdress={this.onClickPopapAdress}
+          />
+        )}
+
         <main className="block-body">
+          <Pane
+            borderLeft="3px solid #3ab793e3"
+            paddingY={0}
+            paddingLeft={20}
+            paddingRight={5}
+            marginY={5}
+          >
+            <Pane>
+              We understand that shaking status quo of Google religion will be
+              hard.
+            </Pane>
+            <Pane>But we must.</Pane>
+            <Pane>
+              As this is the only way to provide sustainable future for our
+              generations.
+            </Pane>
+            <Pane>Founders</Pane>
+          </Pane>
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
@@ -549,34 +468,47 @@ class Funding extends PureComponent {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              You do not have control over the brain. You need EUL tokens to let
-              she hear you. If you came from Ethereum or Cosmos you can claim
-              the gift of gods. Then start prepare to the greatest tournament in
-              universe: <a href="/gol">Game of Links</a>.
+              Takeoff donations is the first event in{' '}
+              <Link to="/search/roadmap">CYB distribution process</Link>.
+              Takeoff main purpose to involve validators into decentralized
+              launch of <Link to="/search/genesis">Genesis</Link>. Also we want
+              to involve everybody into cyberlinking. So{' '}
+              <Link to="/gol">Game of Links</Link> rewards depends on the
+              Takeoff results. The more will be donated, the more{' '}
+              <Link to="/gol">GoL</Link> participants get rewards. Please keep
+              in mind that you receive CYB in Genesis and EUL after the end of
+              the auction. If you want to test{' '}
+              <Link to="/search/cyberlink">cyberlinking</Link>
+              immediately get some tokens at{' '}
+              <Link to="/gol/faucet">test~Auction</Link> instead. By donating you
+              agree with donation terms defined in{' '}
+              <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+                Whitepaper
+              </LinkWindow>{' '}
+              and{' '}
+              <LinkWindow to="https://cybercongress.ai/game-of-links/">
+                Game of Links rules
+              </LinkWindow>
+              .
             </Text>
           </Pane>
           <Statistics
             atomLeff={formatNumber(atomLeff)}
+            time={time}
             won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
             price={formatNumber(
               Math.floor(currentPrice * 10 ** -9 * 1000) / 1000
             )}
             discount={formatNumber(currentDiscount * 100, 3)}
           />
-          <Dinamics data3d={dataPlot} dataRewards={dataRewards} />
+          <Dinamics data3d={dataPlot} />
 
-          {groups.length > 0 && (
-            <Table
-              data={groups}
-              dataPinTable={dataAllPin}
-              update={this.updateList}
-              pin={pin}
-              fPin={this.pinItem}
-              fUpin={this.unPinItem}
-            />
-          )}
+          {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
         </main>
-        <ActionBarTakeOff />
+        <ActionBarTakeOff
+          initClock={this.initClock}
+          onClickPopapAdressTrue={this.onClickPopapAdressTrue}
+        />
       </span>
     );
   }

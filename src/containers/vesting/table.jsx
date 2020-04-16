@@ -1,13 +1,9 @@
 import React from 'react';
 import { Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
-
-import {
-  trimString,
-  formatCurrency,
-  formatNumber,
-} from '../../utils/utils';
-import { AUCTION, CYBER } from '../../utils/config';
 import { Link } from 'react-router-dom';
+
+import { trimString, formatCurrency, formatNumber } from '../../utils/utils';
+import { AUCTION, CYBER } from '../../utils/config';
 import { Account } from '../../components';
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
