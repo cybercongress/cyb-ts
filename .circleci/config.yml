@@ -7,7 +7,7 @@ workflows:
       - update_distribution_app:
           filters:
             branches:
-              only: dev
+              only: episode-1
 
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
             yarn build
             cd build
             git init
-            echo "rebyc.cybernode.ai" > CNAME
+            echo "cyber.page" > CNAME
             git config user.email "cybercongress42@gmail.com"
             git config user.name "Cyber Admin"
             git add --all
