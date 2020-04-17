@@ -1,6 +1,5 @@
 const path = require('path');
 
-const TerserPlugin = require('terser-webpack-plugin');
 const SRC = path.resolve(__dirname, 'src/main/js');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
@@ -95,25 +94,6 @@ module.exports = {
     publicPath: '/',
   },
   mode: dev ? 'development' : 'production',
-  optimization: {
-    minimizer: dev
-      ? []
-      : [
-          new TerserPlugin({
-            extractComments: true,
-            cache: true,
-            parallel: true,
-            sourceMap: true, // Must be set to true if using source-maps in production
-            terserOptions: {
-              // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-              extractComments: 'all',
-              compress: {
-                pure_funcs: ['console.info', 'console.debug', 'console.warn'],
-              },
-            },
-          }),
-        ],
-  },
   plugins: dev
     ? [
         HTMLWebpackPluginConfig,
