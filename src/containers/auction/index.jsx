@@ -543,7 +543,6 @@ class Auction extends PureComponent {
             minRound={roundThis}
             maxRound={numberOfDays}
             claimed={claimedAll}
-            startAuction={typeTime === 'intro'}
           />
         )}
       </div>

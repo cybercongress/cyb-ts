@@ -228,7 +228,7 @@ class App extends Component {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/cyberd/releases/tag/euler"
+                  href="https://github.com/cybercongress/cyberd/releases"
                 >
                   euler
                 </a>{' '}

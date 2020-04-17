@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack-dev-server --https -d --disable-host-check",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --hot --https -d --disable-host-check",
     "build": "cross-env NODE_ENV=production webpack -p && ncp build/index.html build/404.html",
     "lint": "eslint src/"
   },

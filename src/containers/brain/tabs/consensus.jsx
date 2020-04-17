@@ -20,11 +20,7 @@ function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
             textDecoration: 'none',
           }}
         >
-          <CardStatisics
-            title="heroes"
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-          />
+          <CardStatisics title="heroes" value={activeValidatorsCount} link />
         </Link>
         <CardStatisics title="% of staked CYB" value={stakedCyb} />
         <CardStatisics
@@ -32,7 +28,7 @@ function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
           value={`${formatNumber(inlfation * 100, 2)} %`}
         />
         <Link to="/network/euler/tx">
-          <CardStatisics title="transactions" value={<Txs />} />
+          <CardStatisics title="transactions" value={<Txs />} link />
         </Link>
       </Pane>
     );

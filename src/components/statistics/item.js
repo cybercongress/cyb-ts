@@ -31,7 +31,13 @@ export const Indicators = ({ title, value, tooltipValue, positionTooltip }) => (
   </div>
 );
 
-export const Card = ({ title, value, tooltipValue, positionTooltip, stylesContainer }) => (
+export const Card = ({
+  title,
+  value,
+  tooltipValue,
+  positionTooltip,
+  stylesContainer,
+}) => (
   <div style={{ ...stylesContainer }} className="container-card">
     <span className="card-title">{value}</span>
     <span className="card-value">
@@ -48,7 +54,7 @@ export const Card = ({ title, value, tooltipValue, positionTooltip, stylesContai
 export const CardStatisics = ({
   title,
   value,
-  icon,
+  link,
   styleContainer,
   styleValue,
   styleTitle,
@@ -61,7 +67,7 @@ export const CardStatisics = ({
       <span style={styleTitle} className="card-statistics-title">
         {title}
       </span>
-      {icon}
+      {link && <Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
     </Pane>
   </div>
 );

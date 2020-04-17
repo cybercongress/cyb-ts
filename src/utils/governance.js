@@ -5,7 +5,7 @@ export const getProposals = () =>
   new Promise(resolve =>
     axios({
       method: 'get',
-      url: `${CYBER.CYBER.CYBER_NODE_URL_LCD_LCD}/gov/proposals`,
+      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals`,
     })
       .then(response => {
         resolve(response.data.result);

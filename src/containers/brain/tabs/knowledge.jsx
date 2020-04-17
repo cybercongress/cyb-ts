@@ -13,7 +13,15 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
         gridGap="20px"
       >
         <CardStatisics title="cyberlinks" value={formatNumber(linksCount)} />
-        <CardStatisics title="objects" value={formatNumber(cidsCount)} />
+        <Link
+          to="/gol/relevance"
+          style={{
+            display: 'contents',
+            textDecoration: 'none',
+          }}
+        >
+          <CardStatisics title="objects" value={formatNumber(cidsCount)} link />
+        </Link>
 
         <CardStatisics title="subjects" value={formatNumber(accountsCount)} />
       </Pane>
