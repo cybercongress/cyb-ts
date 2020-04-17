@@ -10,7 +10,6 @@ import {
 } from '../../utils/search/utils';
 import { getDelegator } from '../../utils/utils';
 import { Loading, Copy } from '../../components';
-import Burden from './burden';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
@@ -87,11 +86,6 @@ class ValidatorsDetails extends React.PureComponent {
       pathname.match(/fans/gm).length > 0
     ) {
       this.select('fans');
-    } else if (
-      pathname.match(/burden/gm) &&
-      pathname.match(/burden/gm).length > 0
-    ) {
-      this.select('burden');
     } else if (
       pathname.match(/rumors/gm) &&
       pathname.match(/rumors/gm).length > 0
@@ -271,14 +265,6 @@ class ValidatorsDetails extends React.PureComponent {
         />
       );
     }
-    if (selected === 'burden') {
-      content = (
-        <Route
-          path="/network/euler/hero/:address/burden"
-          render={() => <Burden accountUser={validatorInfo.consensus_pubkey} />}
-        />
-      );
-    }
     if (selected === 'leadership') {
       content = (
         <Route
@@ -310,11 +296,6 @@ class ValidatorsDetails extends React.PureComponent {
               text="Fans"
               isSelected={selected === 'fans'}
               to={`/network/euler/hero/${address}/fans`}
-            />
-            <TabBtn
-              text="Burden"
-              isSelected={selected === 'burden'}
-              to={`/network/euler/hero/${address}/burden`}
             />
             <TabBtn
               text="Main"

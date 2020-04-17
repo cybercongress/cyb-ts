@@ -22,7 +22,7 @@ import {
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
-import { formatValidatorAddress } from '../../utils/utils';
+import { trimString } from '../../utils/utils';
 
 const {
   MEMO,
@@ -664,7 +664,7 @@ class ActionBarContainer extends Component {
           query={valueSearchInput}
           onClickBtn={this.onClickInitLedger}
           bandwidth={bandwidth}
-          address={formatValidatorAddress(addressLocalStor.bech32, 9, 4)}
+          address={trimString(addressLocalStor.bech32, 9, 4)}
           contentHash={file !== null ? file.name : contentHash}
           disabledBtn={parseFloat(bandwidth.max_value) === 0}
           linkPrice={linkPrice}

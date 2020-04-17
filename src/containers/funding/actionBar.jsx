@@ -795,52 +795,21 @@ class ActionBarTakeOff extends Component {
     }
 
     if (stage === STAGE_WAIT) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            Confirm transaction on your Ledger{' '}
-            <img
-              alt="legder"
-              style={{
-                paddingTop: '8px',
-                marginLeft: '10px',
-                width: '150px',
-                height: '50px',
-              }}
-              src={ledger}
-            />
-          </ActionBarContentText>
-        </ActionBar>
-      );
+      return <JsonTransaction />;
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            Please wait while we confirm the transaction on the blockchain{' '}
-            <Dots big />
-          </ActionBarContentText>
-        </ActionBar>
-      );
+      return <TransactionSubmitted />;
     }
 
     if (stage === STAGE_CONFIRMED) {
       return (
-        <ActionBar>
-          <ActionBarContentText display="inline">
-            <Pane display="inline">Transaction</Pane>{' '}
-            <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
-              {trimString(txHash, 6, 6)}
-            </LinkWindow>{' '}
-            <Pane display="inline">
-              was included in the block at height {txHeight}
-            </Pane>
-          </ActionBarContentText>
-          <Button marginX={10} onClick={this.onClickInitStage}>
-            Fuck Google
-          </Button>
-        </ActionBar>
+        <Confirmed
+          txHash={txHash}
+          txHeight={txHeight}
+          cosmos
+          onClickBtnCloce={this.onClickInitStage}
+        />
       );
     }
 

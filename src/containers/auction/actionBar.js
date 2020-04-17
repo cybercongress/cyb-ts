@@ -75,48 +75,6 @@ const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-const StartState = ({
-  onClickBtn,
-  claimed,
-  web3,
-  contract,
-  round,
-  roundAll,
-  startAuction,
-}) => {
-  if (round <= roundAll)
-    return (
-      <ActionBar>
-        <ActionBarContentText>
-          Contribute ETH using MetaMask, push button
-        </ActionBarContentText>
-        {claimed && (
-          <ClaimedAll contract={contract} web3={web3} marginX={15}>
-            Claim All
-          </ClaimedAll>
-        )}
-        <Button disabled={startAuction} onClick={onClickBtn}>
-          Fuck Google
-        </Button>
-      </ActionBar>
-    );
-  if (round > roundAll)
-    return (
-      <ActionBar>
-        <ActionBarContentText>
-          Auction finished. You have 3 months for claiming GOLs. Else, the
-          tokens will be burned.
-        </ActionBarContentText>
-        {claimed && (
-          <ClaimedAll contract={contract} web3={web3} marginX={15}>
-            Claim All
-          </ClaimedAll>
-        )}
-      </ActionBar>
-    );
-  return null;
-};
-
 const ContributeETH = ({
   onClickBtn,
   valueRound,
@@ -378,6 +336,21 @@ class ActionBarAuction extends Component {
             &nbsp;
             <span>and refresh the page</span>
           </ActionBarContentText>
+        </ActionBar>
+      );
+
+    if (minRound > maxRound)
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Auction finished. You have 3 months for claiming GOLs. Else, the
+            tokens will be burned.
+          </ActionBarContentText>
+          {claimed && (
+            <ClaimedAll contract={contract} web3={web3} marginX={15}>
+              Claim All
+            </ClaimedAll>
+          )}
         </ActionBar>
       );
 

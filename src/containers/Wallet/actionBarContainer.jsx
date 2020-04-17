@@ -831,7 +831,6 @@ class ActionBarContainer extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
-          onClickBtn={this.cleatState}
           onClickBtnCloce={this.cleatState}
         />
       );
