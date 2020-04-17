@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import Iframe from 'react-iframe';
 import { connect } from 'react-redux';
 import {
@@ -10,8 +11,8 @@ import {
   formatNumber as format,
   getContentByCid,
 } from '../../utils/search/utils';
-import { formatNumber } from '../../utils/utils';
-import { Loading } from '../../components';
+import { formatNumber, formatValidatorAddress } from '../../utils/utils';
+import { Loading, Account } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   CYBER,
@@ -19,9 +20,11 @@ import {
   PATTERN_CYBER,
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,
+  PATTERN_BLOCK,
 } from '../../utils/config';
 import Gift from './gift';
 import SnipitAccount from './snipitAccountPages';
+import { object } from 'prop-types';
 
 const giftImg = require('../../image/gift.svg');
 
@@ -101,7 +104,7 @@ class SearchResults extends React.Component {
             if (links[cid].query === query) {
               links[cid] = {
                 ...links[cid],
-                status: 'failed',
+                status: 'impossibleLoad',
                 content: `data:,${cid}`,
               };
               this.setState({
@@ -151,7 +154,7 @@ class SearchResults extends React.Component {
         [link.cid]: {
           rank: link.rank,
           grade: link.grade,
-          status: 'loading',
+          status: 'understandingState',
           query,
         },
       }),
@@ -208,41 +211,72 @@ class SearchResults extends React.Component {
 
     if (query.match(PATTERN)) {
       searchItems.push(
-        <SnipitAccount
-          text="Check your gift"
-          to={`/gift/${query}`}
-          // address={query}
-        />
+        <Link to={`/gift/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN`}
+            text="Don't wait, claim your gift :-) And to the Game of Links!"
+            status="sparkApp"
+            // address={query}
+          />
+        </Link>
       );
     }
 
     if (query.match(PATTERN_CYBER)) {
       searchItems.push(
-        <SnipitAccount
-          text="Details address"
-          to={`/network/euler/contract/${query}`}
-          address={query}
-        />
+        <Link to={`/network/euler/contract/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_CYBER`}
+            text="Explore details of contract"
+            contentApp={
+              <Pane color="#000">{formatValidatorAddress(query, 8, 5)}</Pane>
+            }
+            status="sparkApp"
+          />
+        </Link>
       );
     }
 
     if (query.match(PATTERN_CYBER_VALOPER)) {
       searchItems.push(
-        <SnipitAccount
-          text="Details a hero"
-          to={`/network/euler/hero/${query}`}
-          address={query}
-        />
+        <Link to={`/network/euler/hero/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_CYBER_VALOPER`}
+            text="Explore details of hero"
+            contentApp={<Account colorText="#000" address={query} />}
+            status="sparkApp"
+          />
+        </Link>
       );
     }
 
     if (query.match(PATTERN_TX)) {
       searchItems.push(
-        <SnipitAccount
-          text="Details Tx"
-          to={`/network/euler/tx/${query}`}
-          address={query}
-        />
+        <Link to={`/network/euler/tx/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_TX`}
+            text="Explore details of tx "
+            status="sparkApp"
+            contentApp={
+              <Pane color="#000">{formatValidatorAddress(query, 4, 4)}</Pane>
+            }
+          />
+        </Link>
+      );
+    }
+
+    if (query.match(PATTERN_BLOCK)) {
+      searchItems.push(
+        <Link to={`/network/euler/block/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_BLOCK`}
+            text="Explore details of block "
+            status="sparkApp"
+            contentApp={
+              <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
+            }
+          />
+        </Link>
       );
     }
 
@@ -250,7 +284,7 @@ class SearchResults extends React.Component {
     searchItems.push(
       Object.keys(links).map(key => {
         let contentItem = false;
-        if (links[key].status === 'success') {
+        if (links[key].status === 'downloaded') {
           if (links[key].content !== undefined) {
             if (links[key].content.indexOf(key) === -1) {
               contentItem = true;
@@ -298,7 +332,7 @@ class SearchResults extends React.Component {
                 lineHeight="20px"
                 wordBreak="break-all"
               >
-                {`I found ${Object.keys(searchResults.link).length} results`}
+                {`I found ${Object.keys(searchResults.link).length} answers`}
               </Text>
             )}
 
@@ -308,13 +342,13 @@ class SearchResults extends React.Component {
                 marginBottom={20}
                 color="#949292"
                 lineHeight="20px"
-                wordBreak="break-all"
+                // wordBreak="break-all"
               >
-                I don't know{' '}
+                I don't know what is{' '}
                 <Text fontSize="20px" lineHeight="20px" color="#e80909">
                   {query}
                 </Text>
-                . Please, help me understand.
+                . I find results for 0 instead
               </Text>
             )}
             <Pane>{searchItems}</Pane>

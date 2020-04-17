@@ -685,7 +685,7 @@ export const getCurrentBandwidthPrice = async () => {
     return response.data.result.price;
   } catch (e) {
     console.log(e);
-    return 0;
+    return null;
   }
 };
 
