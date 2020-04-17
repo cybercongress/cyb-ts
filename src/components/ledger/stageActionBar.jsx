@@ -509,12 +509,14 @@ export const Cyberlink = ({
               </Pane>
               <Battery
                 style={{ width: '140px', height: '16px' }}
-                bwPercent={(bandwidth.remained / bandwidth.max_value) * 100}
+                bwPercent={Math.floor(
+                  (bandwidth.remained / bandwidth.max_value) * 100
+                )}
                 contentTooltip={
                   <ContentTooltip
-                    bwRemained={bandwidth.remained}
-                    bwMaxValue={bandwidth.max_value}
-                    linkPrice={linkPrice}
+                    bwRemained={Math.floor(bandwidth.remained)}
+                    bwMaxValue={Math.floor(bandwidth.max_value)}
+                    linkPrice={Math.floor(linkPrice)}
                   />
                 }
               />
