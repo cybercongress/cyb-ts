@@ -73,17 +73,17 @@ class AppRouter extends React.Component {
     const { setIpfsStatusProps, initIpfsProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = this.isMobileTablet();
-    // this.setState({ loader: false });
-    if (!mobile) {
-      try {
-        await this.initIpfsNode();
-      } catch (error) {
-        this.setState({ loader: false });
-        initIpfsProps(null);
-      }
-    } else {
-      this.setState({ loader: false });
-    }
+    this.setState({ loader: false });
+//     if (!mobile) {  // TODO
+//       try {
+//         await this.initIpfsNode();
+//       } catch (error) {
+//         this.setState({ loader: false });
+//         initIpfsProps(null);
+//       }
+//     } else {
+//       this.setState({ loader: false });
+//     }
   };
 
   getTimeRemaining = endtime => {
@@ -224,7 +224,7 @@ class AppRouter extends React.Component {
   render() {
     const { query, loader, time, days, hours, seconds, minutes } = this.state;
 
-    if (time) {
+    if (true) {
       return (
         <div
           style={{
@@ -240,14 +240,8 @@ class AppRouter extends React.Component {
             className="countdown-time text-glich"
             data-text="euler-6 will start in"
           >
-            euler-6 will start in
+           infrastructure under maintenance
           </div>
-          <Timer
-            days={days}
-            hours={hours}
-            seconds={seconds}
-            minutes={minutes}
-          />
         </div>
       );
     }
