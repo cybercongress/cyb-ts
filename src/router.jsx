@@ -239,9 +239,7 @@ class AppRouter extends React.Component {
           <div
             className="countdown-time text-glich"
             data-text="infrastructure under maintenance"
-          >
-           infrastructure under maintenance
-          </div>
+          >infrastructure under maintenance</div>
         </div>
       );
     }
