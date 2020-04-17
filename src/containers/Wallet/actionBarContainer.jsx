@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
-import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -13,15 +12,18 @@ import {
   TransactionError,
   Dots,
 } from '../../components';
-import { LEDGER, CYBER, PATTERN_COSMOS } from '../../utils/config';
+import {
+  LEDGER,
+  CYBER,
+  PATTERN_COSMOS,
+  PATTERN_CYBER,
+} from '../../utils/config';
 import { getBalanceWallet, statusNode } from '../../utils/search/utils';
 import { downloadObjectAsJson, getDelegator } from '../../utils/utils';
 
-import { i18n } from '../../i18n/en';
+const imgLedger = require('../../image/ledger.svg');
 
 const { DIVISOR_CYBER_G } = CYBER;
-
-const T = new LocalizedStrings(i18n);
 
 const {
   STAGE_INIT,
@@ -559,6 +561,21 @@ class ActionBarContainer extends Component {
       });
     }
 
+    if (valueInputAddres.match(PATTERN_CYBER)) {
+      const cosmosAddress = getDelegator(valueInputAddres, 'cosmos');
+      accounts.cyber.bech32 = valueInputAddres;
+      addressLedgerCyber.bech32 = valueInputAddres;
+      accounts.cosmos.bech32 = cosmosAddress;
+      accounts.keys = 'user';
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      this.setState({
+        stage: STAGE_ADD_ADDRESS_OK,
+      });
+    }
+
     if (updateAddress) {
       updateAddress();
     }
@@ -595,14 +612,10 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button marginX="10px" onClick={this.onClickAddAddressUser}>
-              put only address
+              Put read only address
             </Button>
-            <Button
-              paddingX="15px"
-              marginX="10px"
-              onClick={this.onClickAddAddressLedger}
-            >
-              {T.actionBar.pocket.put}
+            <Button marginX="10px" onClick={this.onClickAddAddressLedger}>
+              Put Ledger
             </Button>
           </Pane>
         </ActionBar>
@@ -619,7 +632,7 @@ class ActionBarContainer extends Component {
             fontSize="18px"
             display="flex"
           >
-            put cosmos address:
+            put cosmos or cyber address:
             <input
               value={valueInputAddres}
               style={{
@@ -635,10 +648,13 @@ class ActionBarContainer extends Component {
           </Pane>
 
           <Button
-            disabled={!valueInputAddres.match(PATTERN_COSMOS)}
+            disabled={
+              !valueInputAddres.match(PATTERN_COSMOS) &&
+              !valueInputAddres.match(PATTERN_CYBER)
+            }
             onClick={this.onClickAddAddressUserToLocalStr}
           >
-            add address
+            Add address
           </Button>
         </ActionBar>
       );
@@ -663,10 +679,20 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button marginX={10} onClick={this.deletPubkey}>
-              delete account
+              Drop key
             </Button>
             <Button marginX={10} onClick={e => this.onClickInitLedger(e)}>
-              {T.actionBar.pocket.send}
+              Send EUL{' '}
+              <img
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginLeft: '5px',
+                  paddingTop: '2px',
+                }}
+                src={imgLedger}
+                alt="ledger"
+              />
             </Button>
           </Pane>
         </ActionBar>
@@ -685,7 +711,7 @@ class ActionBarContainer extends Component {
               className="btn"
               to="/gol"
             >
-              go and play
+              Play Game of Links
             </Link>
           </Pane>
         </ActionBar>
@@ -725,9 +751,13 @@ class ActionBarContainer extends Component {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={e => this.onClickInitLedger(e)}>
-              {T.actionBar.pocket.send}
-            </Button>
+            <Link
+              style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
+              className="btn"
+              to="/gol"
+            >
+              Play Game of Links
+            </Link>
           </Pane>
         </ActionBar>
       );
