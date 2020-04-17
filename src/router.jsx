@@ -78,7 +78,7 @@ class AppRouter extends React.Component {
 //       await this.initIpfsNode();
 //     } else {
 //       this.setState({ loader: false });
-    }
+//     }
   };
 
   getTimeRemaining = endtime => {
