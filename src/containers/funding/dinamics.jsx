@@ -9,11 +9,11 @@ class Dinamics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      leaderboard: true,
+      main: true,
       share: false,
       discount: false,
       rewards: false,
-      activebtn: 'leaderboard',
+      activebtn: 'main',
       center: {
         x: 0,
         y: -0.4,
@@ -44,10 +44,10 @@ class Dinamics extends Component {
   state1 = () => {
     this.setState({
       share: false,
-      leaderboard: true,
+      main: true,
       discount: false,
       rewards: false,
-      activebtn: 'leaderboard',
+      activebtn: 'main',
       center: {
         x: 0,
         y: -0.4,
@@ -77,7 +77,7 @@ class Dinamics extends Component {
     this.setState({
       activebtn: 'share',
       share: true,
-      leaderboard: false,
+      main: false,
       discount: false,
       rewards: false,
       textX: 'Donation, ATOMs',
@@ -97,7 +97,7 @@ class Dinamics extends Component {
   state3 = () => {
     this.setState({
       share: false,
-      leaderboard: false,
+      main: false,
       discount: true,
       rewards: false,
       activebtn: 'discount',
@@ -105,25 +105,6 @@ class Dinamics extends Component {
       textY: 'Discount, %',
       margin: {
         l: 50,
-        r: 50,
-        b: 80,
-        t: 10,
-        pad: 4,
-      },
-    });
-  };
-
-  state4 = () => {
-    this.setState({
-      share: false,
-      leaderboard: false,
-      discount: false,
-      rewards: true,
-      activebtn: 'rewards',
-      textX: 'Donation, ATOMs',
-      textY: `Price, ATOMs/${DENOM_CYBER.toLocaleUpperCase()}`,
-      margin: {
-        l: 60,
         r: 50,
         b: 80,
         t: 10,
@@ -142,7 +123,7 @@ class Dinamics extends Component {
       textX,
       textY,
       margin,
-      leaderboard,
+      main,
       share,
       discount,
       rewards,
@@ -150,12 +131,6 @@ class Dinamics extends Component {
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
     // console.log('dataRewards', dataRewards);
-    let _yaxis = 0;
-    let _xaxis = 0;
-    if (dataRewards[0] !== undefined) {
-      _yaxis = dataRewards[0].y[0] / 0.8;
-      _xaxis = 600000 / 0.95;
-    }
 
     const dataShare = [
       {
@@ -282,11 +257,11 @@ class Dinamics extends Component {
       },
       yaxis: {
         autotick: true,
-        autorange: !rewards,
-        rangemode: 'normal',
-        range: [0, _yaxis],
         title: {
           text: `${textY}`,
+        },
+        tickfont: {
+          color: '#36d6ae',
         },
         gridcolor: '#ffffff66',
         color: '#fff',
@@ -294,11 +269,12 @@ class Dinamics extends Component {
       },
       xaxis: {
         autotick: true,
-        autorange: !rewards,
         title: {
           text: `${textX}`,
         },
-        range: [0, _xaxis],
+        tickfont: {
+          color: '#36d6ae',
+        },
         gridcolor: '#ffffff66',
         color: '#fff',
         zerolinecolor: '#dedede',
@@ -374,9 +350,9 @@ class Dinamics extends Component {
       <div className="cont-btn">
         <div
           style={{
-            left: '70%',
+            left: '50%',
             position: 'absolute',
-            transform: 'translate(-72%, 0)',
+            transform: 'translate(-50%, 0)',
             display: 'flex',
           }}
         >
@@ -392,11 +368,11 @@ class Dinamics extends Component {
           <button
             type="button"
             className={`btn-view margin ${
-              activebtn === 'leaderboard' ? 'activebtn' : ''
+              activebtn === 'main' ? 'activebtn' : ''
             }`}
             onClick={this.state1}
           >
-            Leaderboard
+            Main
           </button>
           <button
             type="button"
@@ -407,31 +383,19 @@ class Dinamics extends Component {
           >
             Discount
           </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'rewards' ? 'activebtn' : ''
-            }`}
-            onClick={this.state4}
-          >
-            My {DENOM_CYBER.toLocaleUpperCase()} estimation
-          </button>
         </div>
       </div>
     );
 
     return (
       <div className="container-dinamics">
-        {leaderboard && <Plotly data={data} layout={layout} config={config} />}
+        <Btn />
+
+        {main && <Plotly data={data} layout={layout} config={config} />}
         {share && <Plotly data={dataShare} layout={layout} config={config} />}
         {discount && (
           <Plotly data={dataDiscount} layout={layout} config={config} />
         )}
-        {rewards && (
-          <Plotly data={dataRewards} layout={layout} config={config} />
-        )}
-
-        <Btn />
       </div>
     );
   }

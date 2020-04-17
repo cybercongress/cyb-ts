@@ -94,8 +94,12 @@ a:hover {
     justify-content: center;
 }
 
+.countdown {
+    white-space: nowrap;
+}
+
 .countdown-time {
-    font-size: 38px;
+    font-size: 25px;
     font-weight: 650;
     margin: 0 10px;
 }

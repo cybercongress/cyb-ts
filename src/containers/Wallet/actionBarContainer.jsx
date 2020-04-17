@@ -19,7 +19,7 @@ import { downloadObjectAsJson, getDelegator } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
 

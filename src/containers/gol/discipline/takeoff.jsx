@@ -44,7 +44,7 @@ const Takeoff = ({
 
     return (
       <RowTable
-        text={<Link to="/takeoff">takeoff</Link>}
+        text={<Link to="/gol/takeoff">takeoff</Link>}
         reward={DISTRIBUTION.takeoff}
         currentPrize={currentPrize}
         cybWonAbsolute={
@@ -59,7 +59,7 @@ const Takeoff = ({
     console.warn(error);
     return (
       <RowTable
-        text={<Link to="/takeoff">takeoff</Link>}
+        text={<Link to="/gol/takeoff">takeoff</Link>}
         reward={DISTRIBUTION.takeoff}
         currentPrize={won}
         cybWonAbsolute="∞"

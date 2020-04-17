@@ -15,6 +15,7 @@ import {
   TransactionError,
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
+import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 
 import {
   getBalanceWallet,
@@ -24,7 +25,7 @@ import {
 
 import { i18n } from '../../i18n/en';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
 
@@ -169,31 +170,12 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   getNetworkId = async () => {
-    const data = await this.getStatus();
-    return data.node_info.network;
+    const responseStatusNode = await statusNode();
+    if (responseStatusNode !== null) {
+      return responseStatusNode.node_info.network;
+    }
+    return '';
   };
 
   getAddressInfo = async () => {
@@ -248,21 +230,14 @@ class ActionBarContainer extends Component {
         max_value: 0,
       };
 
-      const getBandwidth = await fetch(
-        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
+      const responseAccountBandwidth = await getAccountBandwidth(
+        address.bech32
       );
 
-      const data = await getBandwidth.json();
-
-      bandwidth.remained = data.result.remained;
-      bandwidth.max_value = data.result.max_value;
+      if (responseAccountBandwidth !== null) {
+        bandwidth.remained = responseAccountBandwidth.remained;
+        bandwidth.max_value = responseAccountBandwidth.max_value;
+      }
 
       this.setState({
         bandwidth,
