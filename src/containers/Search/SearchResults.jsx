@@ -11,7 +11,7 @@ import {
   formatNumber as format,
   getContentByCid,
 } from '../../utils/search/utils';
-import { formatNumber, formatValidatorAddress } from '../../utils/utils';
+import { formatNumber, trimString } from '../../utils/utils';
 import { Loading, Account } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
@@ -229,7 +229,7 @@ class SearchResults extends React.Component {
             hash={`${query}_PATTERN_CYBER`}
             text="Explore details of contract"
             contentApp={
-              <Pane color="#000">{formatValidatorAddress(query, 8, 5)}</Pane>
+              <Pane color="#000">{trimString(query, 8, 5)}</Pane>
             }
             status="sparkApp"
           />
@@ -258,7 +258,7 @@ class SearchResults extends React.Component {
             text="Explore details of tx "
             status="sparkApp"
             contentApp={
-              <Pane color="#000">{formatValidatorAddress(query, 4, 4)}</Pane>
+              <Pane color="#000">{trimString(query, 4, 4)}</Pane>
             }
           />
         </Link>

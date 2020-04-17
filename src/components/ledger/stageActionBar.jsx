@@ -20,7 +20,7 @@ import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 
-import { formatNumber, formatValidatorAddress } from '../../utils/utils';
+import { formatNumber, trimString } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -597,7 +597,7 @@ export const Cyberlink = ({
             <Text color="#fff" marginRight={10} fontSize="16px">
               {T.actionBar.link.from}{' '}
               {contentHash.length > 12
-                ? formatValidatorAddress(contentHash, 6, 6)
+                ? trimString(contentHash, 6, 6)
                 : contentHash}
             </Text>
             <Text color="#fff" fontSize="16px">
