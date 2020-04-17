@@ -88,18 +88,13 @@ class Vesting extends PureComponent {
   newLockUpdate = async dataEvent => {
     const { table, accounts } = this.state;
     const { contractTokenManager } = this.props;
-    if (accounts === dataEvent.returnValues.lockAddress.toLowerCase()) {
+    if (accounts === dataEvent.returnValues.claimer.toLowerCase()) {
       let data = [];
 
-      const {
-        vestingId,
-        lockAddress,
-        amount,
-        account,
-      } = dataEvent.returnValues;
+      const { vestingId, claimer, amount, account } = dataEvent.returnValues;
 
       const { start } = await contractTokenManager.methods
-        .getVesting(lockAddress, vestingId)
+        .getVesting(claimer, parseInt(vestingId, 10))
         .call();
 
       data = [
