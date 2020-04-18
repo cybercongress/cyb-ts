@@ -73,17 +73,17 @@ class AppRouter extends React.Component {
     const { setIpfsStatusProps, initIpfsProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = this.isMobileTablet();
-    this.setState({ loader: false });
-//     if (!mobile) {  // TODO
-//       try {
-//         await this.initIpfsNode();
-//       } catch (error) {
-//         this.setState({ loader: false });
-//         initIpfsProps(null);
-//       }
-//     } else {
-//       this.setState({ loader: false });
-//     }
+//     this.setState({ loader: false });
+    if (!mobile) {  // TODO
+      try {
+        await this.initIpfsNode();
+      } catch (error) {
+        this.setState({ loader: false });
+        initIpfsProps(null);
+      }
+    } else {
+      this.setState({ loader: false });
+    }
   };
 
   getTimeRemaining = endtime => {
@@ -224,25 +224,25 @@ class AppRouter extends React.Component {
   render() {
     const { query, loader, time, days, hours, seconds, minutes } = this.state;
 
-    if (true) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <div
-            className="countdown-time text-glich"
-            data-text="infrastructure under maintenance"
-          >infrastructure under maintenance</div>
-        </div>
-      );
-    }
+//     if (true) {
+//       return (
+//         <div
+//           style={{
+//             width: '100%',
+//             height: '100vh',
+//             display: 'flex',
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//             flexDirection: 'column',
+//           }}
+//         >
+//           <div
+//             className="countdown-time text-glich"
+//             data-text="infrastructure under maintenance"
+//           >infrastructure under maintenance</div>
+//         </div>
+//       );
+//     }
 
     if (loader) {
       return <Dots />;
