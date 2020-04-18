@@ -81,7 +81,7 @@ const ForceGraph = () => {
   }, []);
 
   const handleNodeClick = useCallback(node => {
-    const distance = 120;
+    const distance = 300;
     const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
     fgRef.current.cameraPosition(
@@ -90,7 +90,7 @@ const ForceGraph = () => {
 
   const handleLinkClick = useCallback(link => {
     const node = link.target
-    const distance = 120;
+    const distance = 300;
     const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
     fgRef.current.cameraPosition(
@@ -102,7 +102,7 @@ const ForceGraph = () => {
   }, [fgRef]);
 
   const handleLinkRightClick = useCallback(link => {
-    window.open(`https://cyber.page/network/euler-5/tx/${link.name}`, "_blank")
+    window.open(`https://cyber.page/network/euler/tx/${link.name}`, "_blank")
   }, [fgRef]);
 
   const handleNewLink = useCallback(subscription => {
@@ -113,12 +113,17 @@ const ForceGraph = () => {
         target: link["object_to"],
         name: link["txhash"],
       }
-      console.log("l", l)
+
+      if (!nodes.some(node => node["id"] == l["source"])) {
+        nodes.push({id: l["source"]})
+      }
+
+      if (!nodes.some(node => node["id"] == l["target"])) {
+        nodes.push({id: l["target"]})
+      }
+
       setItems({
-          nodes: [...nodes, 
-            { id: l["source"]},
-            { id: l["target"]} 
-          ],
+          nodes: [...nodes],
           links: [...links, { 
             source: l["source"],
             target: l["target"],
@@ -165,7 +170,10 @@ const ForceGraph = () => {
         
         onLinkClick={handleLinkClick}
         onLinkRightClick={handleLinkRightClick}
-        cooldownTime={5000}
+        
+        cooldownTime={1000}
+        warmupTicks={100}
+        enableNodeDrag={false}
       />
     </div>
   );
