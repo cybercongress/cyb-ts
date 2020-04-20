@@ -12,7 +12,13 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <CardStatisics title="cyberlinks" value={formatNumber(linksCount)} />
+        <Link to="/graph">
+          <CardStatisics
+            title="cyberlinks"
+            link
+            value={formatNumber(linksCount)}
+          />
+        </Link>
         <Link
           to="/gol/relevance"
           style={{

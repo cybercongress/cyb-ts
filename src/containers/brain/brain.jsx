@@ -20,6 +20,7 @@ import { CardStatisics, Loading } from '../../components';
 import { cybWon } from '../../utils/fundingMath';
 import injectWeb3 from './web3';
 import { CYBER, AUCTION, GENESIS_SUPPLY } from '../../utils/config';
+import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
 import {
@@ -72,6 +73,7 @@ class Brain extends React.Component {
       takeofPrice: 0,
       capATOM: 0,
       communityPool: 0,
+      proposals: 0,
       cybernomics: {
         gol: {
           supply: 0,
@@ -259,6 +261,7 @@ class Brain extends React.Component {
     const status = await statusNode();
     const dataInlfation = await getInlfation();
     const dataCommunityPool = await getcommunityPool();
+    const dataProposals = await getProposals();
     const {
       linksCount,
       cidsCount,
@@ -289,6 +292,7 @@ class Brain extends React.Component {
     this.setState({
       linksCount,
       cidsCount,
+      proposals: dataProposals.length,
       accountsCount,
       totalCyb,
       communityPool,
@@ -321,6 +325,7 @@ class Brain extends React.Component {
       communityPool,
       inlfation,
       cybernomics,
+      proposals,
     } = this.state;
     const { block } = this.props;
 
@@ -396,7 +401,12 @@ class Brain extends React.Component {
       content = (
         <Route
           path="/brain/government"
-          render={() => <GovernmentTab communityPool={communityPool} />}
+          render={() => (
+            <GovernmentTab
+              proposals={proposals}
+              communityPool={communityPool}
+            />
+          )}
         />
       );
     }

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import {
   Votes,
   Legend,
@@ -19,6 +21,7 @@ import {
   getProposalsDetailVotes,
   getMinDeposit,
   getTableVoters,
+  getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
 
@@ -29,19 +32,28 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 const dateFormat = require('dateformat');
 
 const finalTallyResult = item => {
-  const finalVotes = {};
+  const finalVotes = {
+    yes: 0,
+    no: 0,
+    abstain: 0,
+    noWithVeto: 0,
+    finalTotalVotes: 0,
+  };
   let finalTotalVotes = 0;
-  const yes = parseInt(item.yes);
-  const abstain = parseInt(item.abstain);
-  const no = parseInt(item.no);
-  const noWithVeto = parseInt(item.no_with_veto);
+  const yes = parseInt(item.yes, 10);
+  const abstain = parseInt(item.abstain, 10);
+  const no = parseInt(item.no, 10);
+  const noWithVeto = parseInt(item.no_with_veto, 10);
 
   finalTotalVotes = yes + abstain + no + noWithVeto;
-  finalVotes.yes = (yes / finalTotalVotes) * 100;
-  finalVotes.no = (no / finalTotalVotes) * 100;
-  finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-  finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
-  finalVotes.finalTotalVotes = finalTotalVotes;
+  if (finalTotalVotes !== 0) {
+    finalVotes.yes = (yes / finalTotalVotes) * 100;
+    finalVotes.no = (no / finalTotalVotes) * 100;
+    finalVotes.abstain = (abstain / finalTotalVotes) * 100;
+    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
+    finalVotes.finalTotalVotes = finalTotalVotes;
+  }
+
   return finalVotes;
 };
 
@@ -72,11 +84,11 @@ class ProposalsDetail extends React.Component {
         veto: '',
       },
       tally: {
-        participation: '',
-        yes: '',
-        abstain: '',
-        no: '',
-        noWithVeto: '',
+        participation: 0,
+        yes: 0,
+        abstain: 0,
+        no: 0,
+        noWithVeto: 0,
       },
       votes: {
         yes: 0,
@@ -130,13 +142,21 @@ class ProposalsDetail extends React.Component {
     let proposalStatus = '';
     let tally = {};
     let participation = 0;
+    let tallyResult = {};
 
     const stakingPool = await getStakingPool();
     const tallying = await getTallying();
-
     proposalStatus = proposals.proposal_status;
 
-    tally = finalTallyResult(proposals.final_tally_result);
+    const responceTallyingProposals = await getTallyingProposals(proposals.id);
+
+    if (responceTallyingProposals !== null) {
+      tallyResult = responceTallyingProposals;
+    } else {
+      tallyResult = proposals.final_tally_result;
+    }
+
+    tally = finalTallyResult(tallyResult);
     participation = (tally.finalTotalVotes / stakingPool.bonded_tokens) * 100;
     tally.participation = participation;
 
@@ -289,11 +309,11 @@ class ProposalsDetail extends React.Component {
                 marginBottom={15}
                 title="Proposer"
                 value={
-                  <a
-                    href={`https://callisto.cybernode.ai/account/${proposalsInfo.proposer}`}
+                  <Link
+                    to={`/network/euler/contract/${proposalsInfo.proposer}`}
                   >
                     {proposalsInfo.proposer}
-                  </a>
+                  </Link>
                 }
               />
               <Item
@@ -301,7 +321,17 @@ class ProposalsDetail extends React.Component {
                 title="Type"
                 value={this.getSubStr(proposalsInfo.type)}
               />
-              <Item title="Description" value={proposalsInfo.description} />
+              <Item
+                title="Description"
+                value={
+                  <Pane className="container-description">
+                    <ReactMarkdown
+                      source={proposalsInfo.description}
+                      escapeHtml={false}
+                    />
+                  </Pane>
+                }
+              />
             </ContainerPane>
 
             <ProposalsIdDetail

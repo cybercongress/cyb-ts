@@ -257,3 +257,17 @@
 .btn:hover {
   opacity: 1;
 }
+
+.container-description p {
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+.container-description h3 {
+  margin-bottom: 20px;
+}
+
+.container-description ul {
+  margin-bottom: 15px;
+  padding-left: 20px;
+}
