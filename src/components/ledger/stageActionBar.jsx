@@ -15,11 +15,10 @@ import {
   Battery,
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
-import { Loading } from '../ui/loading';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
-
+import { LinkWindow } from '../link/link';
 import { formatNumber, trimString } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
@@ -29,6 +28,7 @@ import { CYBER } from '../../utils/config';
 const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
+const ledger = require('../../image/select-pin-nano2.svg');
 
 export const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -44,124 +44,54 @@ export const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-export const JsonTransaction = ({ txMsg, onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div className="text-align-center">
-      <h3 style={{ marginBottom: 20 }}>{T.actionBar.jsonTX.pleaseConfirm}</h3>
-    </div>
-
-    <div className="container-json">
-      <SyntaxHighlighter language="json" style={docco}>
-        {JSON.stringify(txMsg, null, 2)}
-      </SyntaxHighlighter>
-    </div>
-  </ContainetLedger>
-);
-
-export const TransactionSubmitted = ({ onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      {T.actionBar.tXSubmitted.tXSubmitted}
-    </span>
-    <div
-      style={{
-        marginTop: '35px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <span
+export const JsonTransaction = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      Confirm transaction on your Ledger{' '}
+      <img
+        alt="legder"
         style={{
-          marginBottom: '20px',
-          maxWidth: '70%',
-          fontSize: '16px',
+          paddingTop: '8px',
+          marginLeft: '10px',
+          width: '150px',
+          height: '50px',
         }}
-      >
-        {T.actionBar.tXSubmitted.confirmTX}
-      </span>
-      <Loading />
-    </div>
-  </ContainetLedger>
+        src={ledger}
+      />
+    </ActionBarContentText>
+  </ActionBar>
 );
 
-export const Confirmed = ({
-  txHash,
-  txHeight,
-  onClickBtn,
-  onClickBtnCloce,
-  explorer,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      {T.actionBar.confirmedTX.confirmed}
-    </span>
-    <div
-      style={{ marginTop: '25px' }}
-      className="display-flex flex-direction-column"
-    >
-      <p style={{ marginBottom: 20, textAlign: 'center' }}>
-        {T.actionBar.confirmedTX.blockTX}{' '}
-        <Link
-          to={`/network/euler/block/${txHeight}`}
-          style={{
-            marginLeft: '5px',
-          }}
-        >
-          {formatNumber(txHeight)}
-        </Link>
-      </p>
+export const TransactionSubmitted = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      Please wait while we confirm the transaction on the blockchain{' '}
+      <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
+);
 
-      {explorer ? (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto',
-          }}
-          href={`https://${explorer}/transactions/${txHash}`}
-        >
-          {T.actionBar.confirmedTX.viewTX}
-        </a>
+export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
+  <ActionBar>
+    <ActionBarContentText display="inline">
+      <Pane display="inline">Transaction</Pane>{' '}
+      {cosmos ? (
+        <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
+          {trimString(txHash, 6, 6)}
+        </LinkWindow>
       ) : (
-        <Link
-          to={`/network/euler/tx/${txHash}`}
-          className="btn"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto',
-          }}
-        >
-          {T.actionBar.confirmedTX.viewTX}
+        <Link to={`/network/euler/tx/${txHash}`}>
+          {trimString(txHash, 6, 6)}
         </Link>
-      )}
-
-      <div style={{ marginTop: '25px' }}>
-        <span>{T.actionBar.confirmedTX.tXHash}</span>
-        <span
-          style={{
-            fontSize: '12px',
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {txHash}
-        </span>
-      </div>
-
-      <div style={{ marginTop: '25px', textAlign: 'center' }}>
-        <button type="button" className="btn" onClick={onClickBtn}>
-          {T.actionBar.confirmedTX.continue}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+      )}{' '}
+      <Pane display="inline">
+        was included in the block at height {formatNumber(parseFloat(txHeight))}
+      </Pane>
+    </ActionBarContentText>
+    <Button marginX={10} onClick={onClickBtnCloce}>
+      Fuck Google
+    </Button>
+  </ActionBar>
 );
 
 export const TransactionError = ({
@@ -545,10 +475,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
       </Text>
     </Pane>
     <Pane display="flex">
-      <Text size={300}>
-        Current rate for 1 cyberlink is{' '}
-        {linkPrice} BP.
-      </Text>
+      <Text size={300}>Current rate for 1 cyberlink is {linkPrice} BP.</Text>
     </Pane>
   </Pane>
 );
@@ -582,12 +509,14 @@ export const Cyberlink = ({
               </Pane>
               <Battery
                 style={{ width: '140px', height: '16px' }}
-                bwPercent={(bandwidth.remained / bandwidth.max_value) * 100}
+                bwPercent={Math.floor(
+                  (bandwidth.remained / bandwidth.max_value) * 100
+                )}
                 contentTooltip={
                   <ContentTooltip
-                    bwRemained={bandwidth.remained}
-                    bwMaxValue={bandwidth.max_value}
-                    linkPrice={linkPrice}
+                    bwRemained={Math.floor(bandwidth.remained)}
+                    bwMaxValue={Math.floor(bandwidth.max_value)}
+                    linkPrice={Math.floor(linkPrice)}
                   />
                 }
               />

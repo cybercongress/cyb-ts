@@ -160,7 +160,7 @@ class Dinamics extends Component {
       height: 350,
       margin: {
         l: 50,
-        r: 50,
+        r: 65,
         b: 45,
         t: 10,
         pad: 4,
@@ -174,7 +174,7 @@ class Dinamics extends Component {
     };
 
     return (
-      <div className="auction-container-dinamics">
+      <div style={{height: '350px', display: 'block'}} className="auction-container-dinamics">
         <Plotly
           data={data}
           layout={layout}

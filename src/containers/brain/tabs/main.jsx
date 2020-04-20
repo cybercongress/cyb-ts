@@ -14,7 +14,7 @@ function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
       >
         <CardStatisics title="cyberlinks" value={formatNumber(linksCount)} />
         <CardStatisics
-          title="EUL cap in ATOMs"
+          title="EUL cap in ETH"
           value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
         />
         <Link
@@ -24,11 +24,7 @@ function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
             textDecoration: 'none',
           }}
         >
-          <CardStatisics
-            title="heroes"
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-          />
+          <CardStatisics title="heroes" value={activeValidatorsCount} link />
         </Link>
       </Pane>
     );

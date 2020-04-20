@@ -21,6 +21,7 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
+import ForceGraph from './containers/forceGraph/forceGraph';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
@@ -69,15 +70,20 @@ class AppRouter extends React.Component {
   }
 
   init = async () => {
-    const { setIpfsStatusProps } = this.props;
+    const { setIpfsStatusProps, initIpfsProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = this.isMobileTablet();
-    this.setState({ loader: false });
-    // if (!mobile) {
-    //   await this.initIpfsNode();
-    // } else {
-    //   this.setState({ loader: false });
-    // }
+//     this.setState({ loader: false });
+    if (!mobile) {  // TODO
+      try {
+        await this.initIpfsNode();
+      } catch (error) {
+        this.setState({ loader: false });
+        initIpfsProps(null);
+      }
+    } else {
+      this.setState({ loader: false });
+    }
   };
 
   getTimeRemaining = endtime => {
@@ -218,33 +224,25 @@ class AppRouter extends React.Component {
   render() {
     const { query, loader, time, days, hours, seconds, minutes } = this.state;
 
-    if (time) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <div
-            className="countdown-time text-glich"
-            data-text="euler-6 will start in"
-          >
-            euler-6 will start in
-          </div>
-          <Timer
-            days={days}
-            hours={hours}
-            seconds={seconds}
-            minutes={minutes}
-          />
-        </div>
-      );
-    }
+//     if (true) {
+//       return (
+//         <div
+//           style={{
+//             width: '100%',
+//             height: '100vh',
+//             display: 'flex',
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//             flexDirection: 'column',
+//           }}
+//         >
+//           <div
+//             className="countdown-time text-glich"
+//             data-text="infrastructure under maintenance"
+//           >infrastructure under maintenance</div>
+//         </div>
+//       );
+//     }
 
     if (loader) {
       return <Dots />;
@@ -298,6 +296,7 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
+          <Route path="/graph" component={ForceGraph} />
           <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />

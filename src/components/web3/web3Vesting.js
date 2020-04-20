@@ -3,7 +3,7 @@ import { ActionBar } from '@cybercongress/gravity';
 import waitForWeb3 from './waitForWeb3';
 
 import abiToken from '../../../contracts/Token';
-import VestingConstract from '../../../contracts/Vesting.json';
+import abiVesting from '../../../contracts/Vesting';
 import TokenManager from '../../../contracts/TokenManager.json';
 
 import { Loading, ActionBarContentText } from '../index';
@@ -53,9 +53,11 @@ const injectWeb3Vesting = InnerComponent =>
           }
 
           const contractVesting = await new web3.eth.Contract(
-            VestingConstract.abi,
+            abiVesting,
             this.smartVesting
           );
+
+          console.log(contractVesting);
 
           const tokenManagerAddress = await contractVesting.methods
             .tokenManager()

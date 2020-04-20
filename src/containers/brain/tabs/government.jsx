@@ -18,10 +18,11 @@ function GovernmentTab({ communityPool }) {
           <CardStatisics
             title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
             value={formatNumber(communityPool)}
+            link
           />
         </Link>
         <Link to="/network/euler/parameters">
-          <CardStatisics title="Network parameters" value={30} />
+          <CardStatisics title="Network parameters" value={30} link />
         </Link>
       </Pane>
     );

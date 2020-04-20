@@ -347,7 +347,7 @@ class Brain extends React.Component {
       content = (
         <MainTab
           linksCount={linksCount}
-          capATOM={capATOM}
+          capATOM={cybernomics.eul.cap}
           activeValidatorsCount={activeValidatorsCount}
         />
       );
