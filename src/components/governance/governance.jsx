@@ -177,7 +177,7 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
 };
 
 export const ContainerPane = ({ children, ...props }) => (
-  <Pane {...props} paddingX={20} paddingY={20} boxShadow="0 0 3px 0px #3ab793">
+  <Pane {...props} paddingX={30} paddingY={20} boxShadow="0 0 3px 0px #3ab793">
     {children}
   </Pane>
 );
