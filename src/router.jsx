@@ -21,7 +21,7 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
-import ForceGraph from './containers/forceGraph/forceGraph';
+// import ForceGraph from './containers/forceGraph/forceGraph';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
@@ -29,6 +29,7 @@ import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
 import Block from './containers/blok';
 import ParamNetwork from './containers/parameters';
+import Evangelism from './containers/evangelism';
 
 import { TIME_START } from './utils/config';
 
@@ -73,17 +74,17 @@ class AppRouter extends React.Component {
     const { setIpfsStatusProps, initIpfsProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = this.isMobileTablet();
-    // this.setState({ loader: false });
-    if (!mobile) {
-      try {
-        await this.initIpfsNode();
-      } catch (error) {
-        this.setState({ loader: false });
-        initIpfsProps(null);
-      }
-    } else {
-      this.setState({ loader: false });
-    }
+    this.setState({ loader: false });
+    // if (!mobile) {
+    //   try {
+    //     await this.initIpfsNode();
+    //   } catch (error) {
+    //     this.setState({ loader: false });
+    //     initIpfsProps(null);
+    //   }
+    // } else {
+    //   this.setState({ loader: false });
+    // }
   };
 
   getTimeRemaining = endtime => {
@@ -304,7 +305,7 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
-          <Route path="/graph" component={ForceGraph} />
+          {/* <Route path="/graph" component={ForceGraph} /> */}
           <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />
@@ -313,6 +314,7 @@ class AppRouter extends React.Component {
             component={BlockDetails}
           />
           <Route path="/network/euler/parameters" component={ParamNetwork} />
+          <Route path="/evangelism" component={Evangelism} />
 
           <Route exact path="*" component={NotFound} />
         </Switch>
