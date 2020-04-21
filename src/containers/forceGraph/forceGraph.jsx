@@ -1,12 +1,9 @@
-import React, {useEffect, useState, useRef, useCallback} from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
-  ForceGraph2D,
   ForceGraph3D,
-  ForceGraphVR,
-  ForceGraphAR,
 } from 'react-force-graph';
-import { useSubscription } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
+// import { useSubscription } from '@apollo/react-hooks';
+// import gql from 'graphql-tag';
 import { getGraphQLQuery } from '../../utils/search/utils';
 
 const GET_OBJECTS = `
@@ -28,16 +25,16 @@ query Cyberlinks {
 }
 `;
 
-const CYBERLINK_SUBSCRIPTION = gql`
-  subscription newCyberlinkLink {
-    cyberlink(limit: 1, order_by: { height: desc }) {
-      object_from
-      object_to
-      subject
-      txhash
-    }
-  }
-`;
+// const CYBERLINK_SUBSCRIPTION = gql`
+//   subscription newCyberlinkLink {
+//     cyberlink(limit: 1, order_by: { height: desc }) {
+//       object_from
+//       object_to
+//       subject
+//       txhash
+//     }
+//   }
+// `;
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -55,20 +52,6 @@ const ForceGraph = () => {
     const feachData = async () => {
       let {object} = await getGraphQLQuery(GET_OBJECTS);
       let {cyberlink} = await getGraphQLQuery(GET_CYBERLINKS);
-
-      for (let i = 0; i < cyberlink.length; i++) {
-        cyberlink[i] = {
-          source: cyberlink[i]["object_from"],
-          target: cyberlink[i]["object_to"],
-          name: cyberlink[i]["txhash"],
-          curvative: getRandomInt(20,500)/1000
-        }
-      }
-      for (let i = 0; i < object.length; i++) {
-        object[i] = {
-          id: object[i]["object"],
-        }
-      }
 
       graph = {
         nodes: object,
@@ -105,75 +88,84 @@ const ForceGraph = () => {
     window.open(`https://cyber.page/network/euler/tx/${link.name}`, "_blank")
   }, [fgRef]);
 
-  const handleNewLink = useCallback(subscription => {
-    let link = subscription["subscriptionData"].data["cyberlink"][0]
-      let { nodes, links } = data;
-      let l = {
-        source: link["object_from"],
-        target: link["object_to"],
-        name: link["txhash"],
-      }
+  const handleEngineStop = useCallback(() => {
+    console.log("engine stopped!")
+  })
 
-      if (!nodes.some(node => node["id"] == l["source"])) {
-        nodes.push({id: l["source"]})
-      }
+  // const handleNewLink = useCallback(subscription => {
+  //   let link = subscription["subscriptionData"].data["cyberlink"][0]
+  //     let { nodes, links } = data;
+  //     let l = {
+  //       source: link["object_from"],
+  //       target: link["object_to"],
+  //       name: link["txhash"]
+  //     }
 
-      if (!nodes.some(node => node["id"] == l["target"])) {
-        nodes.push({id: l["target"]})
-      }
+  //     if (!nodes.some(node => node["id"] == l["source"])) {
+  //       nodes.push({id: l["source"]})
+  //     }
 
-      setItems({
-          nodes: [...nodes],
-          links: [...links, { 
-            source: l["source"],
-            target: l["target"],
-            name: l["name"],
-            curvative: getRandomInt(20,500)/1000
-          }]
-      })
-  }, [data]) 
+  //     if (!nodes.some(node => node["id"] == l["target"])) {
+  //       nodes.push({id: l["target"]})
+  //     }
 
-  const { loading: loadingLinks, data: dataNew } = useSubscription(CYBERLINK_SUBSCRIPTION, {
-    onSubscriptionData: handleNewLink
-  });
+  //     setItems({
+  //         nodes: [...nodes],
+  //         links: [...links, { 
+  //           source: l["source"],
+  //           target: l["target"],
+  //           name: l["name"],
+  //           curvative: getRandomInt(20,500)/1000
+  //         }]
+  //     })
+  // }, [data]) 
+
+  // const { loading: loadingLinks, data: dataNew } = useSubscription(CYBERLINK_SUBSCRIPTION, {
+  //   onSubscriptionData: handleNewLink
+  // });
 
   if(loading) {
     return <div>...</div>;
   }
+
+  // console.log("pocket", localStorage.getItem('pocket'));
 
   return (
     <div>
       <ForceGraph3D
         graphData={data}
         ref={fgRef}
-        
         showNavInfo
-        nodeLabel="id"
-        nodeAutoColorBy="id"
         backgroundColor="#000000"
-        
+        warmupTicks={800}
+        cooldownTicks={800}
+        // cooldownTime={2000}
+        enableNodeDrag={false}
+        enablePointerInteraction={true}
+
+        nodeId="object"
+        nodeLabel="object"
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
         nodeRelSize={5}
-        
+
+        linkSource="object_from"
+        linkTarget="object_to"
+        linkLabel="txhash"
         linkColor={() => 'rgba(9,255,13,1)'}
         linkWidth={2}
-        linkCurvature={"curvative"}
-        linkOpacity={0.5}
-        
-        linkDirectionalParticleWidth={1.5}
-        linkDirectionalParticleSpeed={0.015}
-        linkDirectionalParticles={3}  
+        linkCurvature={0.2}
+        linkOpacity={0.4}
+        // linkDirectionalParticleWidth={1.5}
+        // linkDirectionalParticleSpeed={0.015}
+        // linkDirectionalParticles={1}  
         
         onNodeClick={handleNodeClick}
         onNodeRightClick={handleNodeRightClick}
-        
         onLinkClick={handleLinkClick}
         onLinkRightClick={handleLinkRightClick}
-        
-        cooldownTime={1000}
-        warmupTicks={100}
-        enableNodeDrag={false}
+        // onBackgroundClick={handleBackgroundClick}
+        onEngineStop={handleEngineStop}
       />
     </div>
   );
