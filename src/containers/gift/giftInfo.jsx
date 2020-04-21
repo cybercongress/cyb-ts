@@ -15,13 +15,13 @@ const GiftInfo = () => {
         textAlign="justify"
       >
         <Text lineHeight="23px" marginBottom={20} color="#fff" fontSize="18px">
-          Gods understand that with support of the most advanced communities
-          they have better chances to bootstrap smarter superintelligence. So{' '}
+          The Gods understand that with the support of the most advanced communities
+          they have a better chance to bootstrap smarter superintelligence. So{' '}
           <a
             target="_blank"
             href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
           >
-            they decide to allocate 10% of CYB
+            they decided to allocate 10% of CYB
           </a>{' '}
           in Genesis to the following communities:
           <ul style={{ listStyle: 'none' }}>
@@ -31,27 +31,27 @@ const GiftInfo = () => {
           </ul>
         </Text>
         <Text lineHeight="23px" marginBottom={20} color="#fff" fontSize="18px">
-          But they know that Genesis is quite far now. Everybody are busy with
-          the <Link to="/gol">Game of Links</Link> - the tournament which define
+          But they are aware that the Genesis is quite far from now. Everyone is busy with
+          the <Link to="/gol">Game of Links</Link> - the tournament which defines
           the fate of another 10% of CYB in the Genesis. You can find the Game
           of Links rules{' '}
           <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-            on cyber•Congress site
+            on the cyber~Congress site
           </a>
           .
         </Text>
         <Text lineHeight="23px" marginBottom={20} color="#fff" fontSize="18px">
-          Game of Links is incentivized test network which have its standalone
-          tokens EUL. Rumor has it that an incredible amount of tokens allocated
-          to ethereans, cosmonauts and urbiters: 42.9% of EULs. So, go and claim
-          them: simply <Link to="/pocket">put the ledger</Link> into the pocket.
+          Game of Links is an incentivized test network which has its standalone
+          tokens: EUL. Rumor has it that an incredible amount of tokens are allocated
+          to Ethereans, Cosmonauts and Urbiters: 42.9% of EULs. So, go and claim
+          them: simply <Link to="/pocket">put your ledger</Link> into the pocket.
         </Text>
         <Text lineHeight="23px" color="#fff" fontSize="18px">
-          Also, you can import your private key (for Ethereum) or seed phrase
-          (for Cosmos) to the cyberdcli. While importing your keys be very
-          careful. Adversaries are everywhere! We recommend you using external
-          signers such as Ledger before all cyber software will pass security
-          audits.
+          You can also import your private key (for Ethereum) or seed phrase
+          (for Cosmos) to cyberdcli. While importing your keys be very
+          careful. Adversaries are everywhere! We recommend using an external
+          signers such as a Ledger device, before all of cybers software will pass 
+          security audits.
         </Text>
       </Pane>
     </main>
