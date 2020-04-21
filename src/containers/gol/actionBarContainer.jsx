@@ -175,7 +175,7 @@ class ActionBarContainer extends React.Component {
                 flex={1}
                 fontSize="18px"
               >
-                You can track your progress
+                Track your progress
               </Text>
               <Button
                 paddingX={20}
