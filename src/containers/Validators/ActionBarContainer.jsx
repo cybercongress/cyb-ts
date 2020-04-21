@@ -265,7 +265,7 @@ class ActionBarContainer extends Component {
 
     console.log(validatorAddres);
 
-    const amount = toSend * DIVISOR_CYBER_G;
+    const amount = Math.floor(parseFloat(toSend) * DIVISOR_CYBER_G);
 
     const { denom } = addressInfo.coins[0];
 
@@ -530,7 +530,7 @@ class ActionBarContainer extends Component {
             </Text>
           </ActionBarContentText>
           <Button onClick={this.onClickDelegate}>Stake</Button>
-          {(parseFloat(validators.delegation) > 0 || unStake) && (
+          {unStake && (
             <div>
               <Button marginX={25} onClick={this.onClickUnDelegate}>
                 Unstake

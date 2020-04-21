@@ -111,6 +111,7 @@ class Validators extends Component {
       language: 'en',
       addressLedger: null,
       selected: 'active',
+      unStake: false,
     };
   }
 
@@ -244,6 +245,7 @@ class Validators extends Component {
     const { validatorSelect, selectedIndex } = this.state;
 
     let selectValidator = {};
+    let stake = false;
 
     if (selectedIndex === index) {
       this.setState({
@@ -256,12 +258,19 @@ class Validators extends Component {
     }
     if (validatorSelect !== validator) {
       selectValidator = validator;
+      if (selectValidator.delegation) {
+        if (parseFloat(selectValidator.delegation.amount) > 0) {
+          stake = true;
+        }
+      }
       return this.setState({
         validatorSelect: selectValidator,
+        unStake: stake,
       });
     }
     return this.setState({
       validatorSelect: selectValidator,
+      unStake: stake,
     });
   };
 
@@ -275,6 +284,7 @@ class Validators extends Component {
       language,
       addressLedger,
       selected,
+      unStake,
     } = this.state;
 
     T.setLanguage(language);
@@ -542,6 +552,7 @@ class Validators extends Component {
           validators={validatorSelect}
           validatorsAll={validators}
           addressLedger={addressLedger}
+          unStake={unStake}
         />
       </div>
     );
