@@ -12,7 +12,13 @@ function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <CardStatisics title="cyberlinks" value={formatNumber(linksCount)} />
+        <Link to="/graph">
+          <CardStatisics
+            title="cyberlinks"
+            value={formatNumber(linksCount)}
+            link
+          />
+        </Link>
         <CardStatisics
           title="EUL cap in ETH"
           value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
