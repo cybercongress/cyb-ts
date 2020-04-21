@@ -255,7 +255,7 @@ class GOL extends React.Component {
             paddingRight={5}
             marginY={5}
           >
-            <Pane>Looking back, important things feels obvious.</Pane>
+            <Pane>Looking back, important things feel obvious.</Pane>
             <Pane>
               It takes phenomenal talent and incredible will to see them from
               afar.
@@ -270,19 +270,19 @@ class GOL extends React.Component {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Welcome to the intergalactic tournament - Game of Links. GoL - is
-              the main preparation before{' '}
+              Welcome to the intergalactic tournament - Game of Links. GoL is
+              the main preparation stage before{' '}
               <Link to="/search/genesis">the main network launch</Link> of{' '}
               <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
                 the cyber protocol
               </LinkWindow>
-              . Main goal of the tournament is to collectively bootstrap{' '}
+              . The main goal of the tournament is to collectively bootstrap the {' '}
               <Link to="/brain">Superintelligence</Link>. Everyone can find
-              themselves in this fascinating process: we need to setup physical
-              infrastructure, upload initial knowledge, and create a reserve for
-              sustaining the project during infancy. Athletes must solve
-              different parts of the puzzle and could win up to 10% of CYB in
-              the Genesis. Read full rules of the tournament{' '}
+              themselves in this fascinating process: we need to set up physical
+              infrastructure, upload the initial knowledge and create a reserve to
+              sustain the project during its infancy. Athletes need to solve
+              different parts of the puzzle and can win up to 10% of CYB in
+              the Genesis. Read the full rules of the tournament{' '}
               <LinkWindow to="https://cybercongress.ai/game-of-links/">
                 in the organizator&apos;s blog
               </LinkWindow>
