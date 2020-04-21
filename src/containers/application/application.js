@@ -15,7 +15,7 @@ import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 
-const cyber = require('../../image/cyber.png');
+const cyber = require('../../image/brain_blue.svg');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 

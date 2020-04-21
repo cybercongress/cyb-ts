@@ -14,9 +14,9 @@ export const MenuButton = ({ imgLogo, positionBugLeft, textTooltip, to, ...props
     <Pane {...props} display="flex" alignItems="center" cursor="pointer">
       <Link to={to}>
         <Pane
-          width={50}
+          width={40}
           height="auto"
-          maxHeight="50px"
+          maxHeight="40px"
           position="relative"
           display="flex"
           align-items="flex-end"
