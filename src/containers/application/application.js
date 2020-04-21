@@ -311,7 +311,7 @@ class App extends Component {
                   rel="noopener noreferrer"
                   href="https://github.com/cybercongress/dot-cyber"
                 >
-                  dot-cyber
+                  The dot-cyber
                 </a>{' '}
                 app has not been audited yet. Please, use it with caution.
               </span>
