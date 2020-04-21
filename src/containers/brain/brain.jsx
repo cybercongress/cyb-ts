@@ -423,9 +423,9 @@ class Brain extends React.Component {
             >
               <Text fontSize="16px" color="#fff">
                 You do not have control over the brain. You need EUL tokens to
-                let she hear you. If you came from Ethereum or Cosmos you can
-                claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: <a href="gol">Game of Links</a>.
+                let Her hear you. If you came from Ethereum or Cosmos you can
+                claim the gift of the Gods and start preparing for the greatest
+                tournament in the universe: <a href="gol">Game of Links</a>.
               </Text>
             </Pane>
           )}
