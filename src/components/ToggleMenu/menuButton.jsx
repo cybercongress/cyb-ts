@@ -4,7 +4,7 @@ import { Pane, Text, Tooltip } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 
 const stausImgCyb = require('../../image/cyb.svg');
-const bug = require('../../image/bug.svg');
+const bug = require('../../image/alert-circle-outline.svg');
 
 export const MenuButton = ({ imgLogo, positionBugLeft, textTooltip, to, ...props }) => (
   <Tooltip
