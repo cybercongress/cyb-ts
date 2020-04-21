@@ -232,12 +232,12 @@ class App extends Component {
                 >
                   euler
                 </a>{' '}
-                network. euler is incentivized test network. Be careful.
-                Details in{' '}
+                network. euler is an incentivized test network. Be careful.
+                Details in the{' '}
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+                  href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
                 >
                   whitepaper
                 </a>{' '}
