@@ -222,8 +222,8 @@ class App extends Component {
         >
           <MenuButton
             to="/brain"
-            size={50}
-            className="pulse"
+            size={55}
+            // className="pulse"
             textTooltip={
               <span>
                 You are on the{' '}
@@ -296,7 +296,7 @@ class App extends Component {
             <MenuButton
               size={60}
               to="/pocket"
-              className="pulse-cyb"
+              // className="pulse-cyb"
               imgLogo={ipfsStatus ? cybTrue : cybFalse}
               positionBugLeft
               bottomBug="0%"
