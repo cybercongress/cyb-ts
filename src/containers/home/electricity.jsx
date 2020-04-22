@@ -54,7 +54,9 @@ class Electricity extends React.Component {
   };
 
   At = (el, a, v) => {
-    el.setAttribute(a, v);
+    if (v > 0) {
+      el.setAttribute(a, v);
+    }
   };
 
   R = (min, max) => {
@@ -71,7 +73,7 @@ class Electricity extends React.Component {
     const l2 = DOC.getElementById('lightning2');
 
     const L = 2050;
-    const C = this.R(30, 3);
+    const C = this.R(9, 10);
     const PC = L / C;
     const A = [];
     const D = 10;
@@ -79,7 +81,7 @@ class Electricity extends React.Component {
     const S = this.R(1, 3) * 0.01;
     const B = this.R(-2, 5);
     const RF = 0.4;
-    const yPos = 0;
+    const yPos = 15;
 
     if (this.state.stage) {
       for (let i = 0; i < C; i += 1) {
