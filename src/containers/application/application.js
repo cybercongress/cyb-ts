@@ -10,13 +10,13 @@ import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { MenuButton, BandwidthBar } from '../../components';
+import { MenuButton, Battery } from '../../components';
 import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 
 const cyber = require('../../image/brain_blue.svg');
-const cybFalse = require('../../image/cyb.svg');
+const cybFalse = require('../../image/logo-cyb-v2.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
@@ -222,6 +222,8 @@ class App extends Component {
         >
           <MenuButton
             to="/brain"
+            size={50}
+            className="pulse"
             textTooltip={
               <span>
                 You are on the{' '}
@@ -232,8 +234,8 @@ class App extends Component {
                 >
                   euler
                 </a>{' '}
-                network. euler is incentivized test network. Be careful.
-                Details in{' '}
+                network. euler is incentivized test network. Be careful. Details
+                in{' '}
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
@@ -290,33 +292,55 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Pane className="battery-container" width="60px" marginRight="10px">
-            <BandwidthBar
-              height="10px"
-              styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={9}
-              colorText="#000"
-              bwRemained={bandwidth.remained}
-              bwMaxValue={bandwidth.maxValue}
+          <Pane display="flex" alignItems="center" flexDirection="column">
+            <MenuButton
+              size={60}
+              to="/pocket"
+              className="pulse-cyb"
+              imgLogo={ipfsStatus ? cybTrue : cybFalse}
+              positionBugLeft
+              bottomBug="0%"
+              textTooltip={
+                <span>
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/cybercongress/dot-cyber"
+                  >
+                    dot-cyber
+                  </a>{' '}
+                  app has not been audited yet. Please, use it with caution.
+                </span>
+              }
             />
+            <Pane
+              className="battery-container"
+              position="absolute"
+              top="70%"
+              width="25px"
+            >
+              <Battery
+                percent={
+                  bandwidth.maxValue > 0
+                    ? Math.floor(
+                        (bandwidth.remained / bandwidth.maxValue) * 100
+                      )
+                    : 0
+                }
+                heightBat={10}
+                borderSize={1}
+                widthBat={25}
+              />
+              {/* <BandwidthBar
+                height="10px"
+                styleText={{ whiteSpace: 'nowrap' }}
+                fontSize={9}
+                colorText="#000"
+                bwRemained={bandwidth.remained}
+                bwMaxValue={bandwidth.maxValue}
+              /> */}
+            </Pane>
           </Pane>
-          <MenuButton
-            to="/pocket"
-            imgLogo={ipfsStatus ? cybTrue : cybFalse}
-            positionBugLeft
-            textTooltip={
-              <span>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/dot-cyber"
-                >
-                  dot-cyber
-                </a>{' '}
-                app has not been audited yet. Please, use it with caution.
-              </span>
-            }
-          />
         </div>
         {/* </Navigation> */}
         {this.props.children}
