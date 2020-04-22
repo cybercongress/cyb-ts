@@ -12,32 +12,32 @@ export const MenuButton = ({
   textTooltip,
   to,
   size = 40,
-  bottomBug = "-10%",
+  bottomBug = '-10%',
   ...props
 }) => (
-  <Pane
-    {...props}
-    display="flex"
-    alignItems="center"
-    cursor="pointer"
-    width={size}
-  >
+  <Tooltip content={textTooltip} position="bottom">
     <Pane
-      width="inherit"
-      height="auto"
-      maxHeight={`${size}px`}
-      position="relative"
+      {...props}
       display="flex"
-      align-items="flex-end"
+      alignItems="center"
+      cursor="pointer"
+      width={size}
     >
-      <Link style={{ width: 'inherit' }} to={to}>
-        <img
-          style={{ width: 'inherit' }}
-          alt="cyb"
-          src={imgLogo || stausImgCyb}
-        />
-      </Link>
-      <Tooltip content={textTooltip} position="bottom">
+      <Pane
+        width="inherit"
+        height="auto"
+        maxHeight={`${size}px`}
+        position="relative"
+        display="flex"
+        align-items="flex-end"
+      >
+        <Link style={{ width: 'inherit' }} to={to}>
+          <img
+            style={{ width: 'inherit' }}
+            alt="cyb"
+            src={imgLogo || stausImgCyb}
+          />
+        </Link>
         <img
           src={bug}
           alt="bug"
@@ -50,7 +50,7 @@ export const MenuButton = ({
             right: positionBugLeft ? '100%' : 'unset',
           }}
         />
-      </Tooltip>
+      </Pane>
     </Pane>
-  </Pane>
+  </Tooltip>
 );
