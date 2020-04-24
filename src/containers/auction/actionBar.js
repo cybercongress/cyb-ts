@@ -182,7 +182,10 @@ class ActionBarAuction extends Component {
   onChangeRound = e => {
     const { minRound, maxRound } = this.props;
 
-    if (e.target.value < minRound || e.target.value > maxRound) {
+    if (
+      Math.floor(parseFloat(e.target.value)) < minRound ||
+      Math.floor(parseFloat(e.target.value)) > maxRound
+    ) {
       this.setState({
         validInputRound: true,
         messageRound: `enter round ${minRound} to ${maxRound}`,
@@ -215,7 +218,7 @@ class ActionBarAuction extends Component {
         if (accounts.length) {
           // console.log(accounts[0]);
           this.setState({
-            step: 'contributeETH',
+            step: 'start',
             round: minRound,
           });
         }
@@ -227,7 +230,7 @@ class ActionBarAuction extends Component {
       if (accounts.length) {
         // console.log(accounts[0]);
         this.setState({
-          step: 'contributeETH',
+          step: 'start',
           round: minRound,
         });
       }
@@ -321,9 +324,14 @@ class ActionBarAuction extends Component {
       startAuction,
       claimed,
       contract,
+      accounts,
     } = this.props;
 
-    const btnConfirm = round >= minRound && round <= maxRound && amount > 0;
+    const btnConfirm =
+      parseFloat(round) >= parseFloat(minRound) &&
+      parseFloat(round) <= parseFloat(maxRound) &&
+      parseFloat(amount) > 0;
+
     if (web3.givenProvider === null)
       return (
         <ActionBar>
@@ -338,6 +346,14 @@ class ActionBarAuction extends Component {
           </ActionBarContentText>
         </ActionBar>
       );
+
+    if (accounts === undefined && web3.givenProvider !== null) {
+      return (
+        <ActionBar>
+          <Button onClick={this.onClickFuckGoogle}>Connect account</Button>
+        </ActionBar>
+      );
+    }
 
     if (minRound > maxRound)
       return (
