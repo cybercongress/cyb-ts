@@ -16,12 +16,12 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
     </Pane>
     <Pane marginBottom={12}>
       <Text size={300}>
-        Full regeneration of bandwidth points or BP happens in 24 hours.
+        Full regeneration of bandwidth or BP will happen in 24 hours.
       </Text>
     </Pane>
     <Pane display="flex" marginBottom={12}>
       <Text size={300}>
-        Current rate for 1 cyberlink is
+        The current rate for 1 cyberlink is
         {linkPrice} BP.
       </Text>
     </Pane>
