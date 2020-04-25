@@ -8,6 +8,10 @@ import { CYBER } from '../../utils/config';
 const statusMapping = ['Believed', 'Blessed', 'Unblessed'];
 
 const noitem = require('../../image/noitem.svg');
+const cosmos = require('../../image/cosmos.svg');
+const eth = require('../../image/Ethereum_logo_2014.svg');
+const gitLogo = require('../../image/logo-github.svg');
+const keybase = require('../../image/keybase.svg');
 
 const Img = ({ img }) => (
   <img style={{ width: '45px', height: '45px' }} src={img} alt="img" />
@@ -30,6 +34,7 @@ function TableEvangelists({ data, blessed }) {
     if (blessed) {
       rowTableEvangelists = Object.keys(data)
         .filter(keys => parseInt(data[keys].status, 10) === 1)
+        .sort((a, b) => data[b].amount - data[a].amount)
         .map(key => {
           return (
             <Table.Row
@@ -42,11 +47,46 @@ function TableEvangelists({ data, blessed }) {
               paddingY={5}
               paddingX={5}
             >
-              <Table.TextCell textAlign="center">
+              <Table.TextCell flex={1.5} textAlign="start">
                 <TextTable>
-                  <Link to={`/network/euler/contract/${key}`}>
+                  <Link
+                    style={{ marginRight: '5px' }}
+                    to={`/network/euler/contract/${data[key].cyberAddress}`}
+                  >
                     {data[key].nickname}
                   </Link>
+                  <LinkWindow
+                    to={`https://www.mintscan.io/account/${data[key].cosmosAddress}`}
+                  >
+                    <img
+                      alt="cosmos"
+                      src={cosmos}
+                      style={{ width: '20px', height: '20px'}}
+                    />
+                  </LinkWindow>
+                  <LinkWindow
+                    to={`https://etherscan.io/address/${data[key].ethereumAddress}`}
+                  >
+                    <img
+                      alt="eth"
+                      src={eth}
+                      style={{ width: '20px', height: '20px', margin: '0 2px' }}
+                    />
+                  </LinkWindow>
+                  <LinkWindow to={`http://github.com/${data[key].github}`}>
+                    <img
+                      alt="gitLogo"
+                      src={gitLogo}
+                      style={{ width: '20px', height: '20px', margin: '0 2px' }}
+                    />
+                  </LinkWindow>
+                  <LinkWindow to={`https://keybase.io/${data[key].keybase}`}>
+                    <img
+                      alt="keybase"
+                      src={keybase}
+                      style={{ width: '20px', height: '20px', margin: '0 2px' }}
+                    />
+                  </LinkWindow>
                 </TextTable>
               </Table.TextCell>
               <Table.TextCell textAlign="end">
@@ -75,6 +115,11 @@ function TableEvangelists({ data, blessed }) {
     } else {
       rowTableEvangelists = Object.keys(data)
         .filter(keys => parseInt(data[keys].status, 10) !== 1)
+        .sort((a, b) => {
+          const x = a.amount;
+          const y = b.amount;
+          return x - y;
+        })
         .map(key => {
           return (
             <Table.Row
@@ -87,11 +132,46 @@ function TableEvangelists({ data, blessed }) {
               paddingY={5}
               paddingX={5}
             >
-              <Table.TextCell textAlign="center">
+              <Table.TextCell flex={1.5} textAlign="start">
                 <TextTable>
-                  <Link to={`/network/euler/contract/${key}`}>
+                  <Link
+                    style={{ marginRight: '5px' }}
+                    to={`/network/euler/contract/${data[key].cyberAddress}`}
+                  >
                     {data[key].nickname}
                   </Link>
+                  <LinkWindow
+                    to={`https://www.mintscan.io/account/${data[key].cosmosAddress}`}
+                  >
+                    <img
+                      alt="cosmos"
+                      src={cosmos}
+                      style={{ width: '20px', height: '20px'}}
+                    />
+                  </LinkWindow>
+                  <LinkWindow
+                    to={`https://etherscan.io/address/${data[key].ethereumAddress}`}
+                  >
+                    <img
+                      alt="eth"
+                      src={eth}
+                      style={{ width: '20px', height: '20px', margin: '0 2px' }}
+                    />
+                  </LinkWindow>
+                  <LinkWindow to={`http://github.com/${data[key].github}`}>
+                    <img
+                      alt="gitLogo"
+                      src={gitLogo}
+                      style={{ width: '20px', height: '20px', margin: '0 2px' }}
+                    />
+                  </LinkWindow>
+                  <LinkWindow to={`https://keybase.io/${data[key].keybase}`}>
+                    <img
+                      alt="keybase"
+                      src={keybase}
+                      style={{ width: '20px', height: '20px', margin: '0 2px' }}
+                    />
+                  </LinkWindow>
                 </TextTable>
               </Table.TextCell>
               <Table.TextCell textAlign="end">
@@ -120,7 +200,7 @@ function TableEvangelists({ data, blessed }) {
     if (blessed) {
       header = (
         <>
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.5} textAlign="center">
             <TextTable>Evangelist</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
@@ -137,7 +217,7 @@ function TableEvangelists({ data, blessed }) {
     } else {
       header = (
         <>
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.5} textAlign="center">
             <TextTable>Evangelist</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">

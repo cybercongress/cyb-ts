@@ -169,24 +169,19 @@ class Evangelism extends React.PureComponent {
     const { dataTxs, dataTable } = this.state;
     const { txs } = dataTxs;
 
-    for (let item = 0; item < txs.length; item += 1) {
-      // let estimation = 0;
-      const val =
-        parseFloat(txs[item].tx.value.msg[0].value.amount[0].amount) /
-        COSMOS.DIVISOR_ATOM;
-      const { memo } = txs[item].tx.value;
-      let thank = '';
-      if (memo.length > 0) {
-        memo.replace(/\s+/g, '');
-        const memoRemoveSpase = memo.replace(/\s+/g, '');
-        if (memoRemoveSpase.indexOf('thanksto') !== -1) {
-          thank = memoRemoveSpase.slice('thanksto'.length);
-          if (dataTable[thank]) {
-            dataTable[thank].amount += parseFloat(val);
+    Object.keys(dataTable).forEach(key => {
+      for (let item = 0; item < txs.length; item += 1) {
+        const val =
+          parseFloat(txs[item].tx.value.msg[0].value.amount[0].amount) /
+          COSMOS.DIVISOR_ATOM;
+        const { memo } = txs[item].tx.value;
+        if (memo.length > 0) {
+          if (memo.indexOf(key) !== -1) {
+            dataTable[key].amount += parseFloat(val);
           }
         }
       }
-    }
+    });
     this.setState({
       dataTable,
       loading: false,
