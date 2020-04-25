@@ -81,9 +81,7 @@ class Dinamics extends Component {
       discount: false,
       rewards: false,
       textX: 'Donation, ATOMs',
-      textY: `${DENOM_CYBER.toLocaleUpperCase()}s won, ${(
-        DENOM_CYBER_G + DENOM_CYBER
-      ).toLocaleUpperCase()}`,
+      textY: 'CYB won, GCYBs',
       margin: {
         l: 50,
         r: 50,
@@ -162,9 +160,7 @@ class Dinamics extends Component {
         // hoverinfo: 'none'
         hovertemplate:
           'ATOMs contributed: %{x}' +
-          `<br>${(
-            DENOM_CYBER_G + DENOM_CYBER
-          ).toLocaleUpperCase()} allocated: %{y: .2f}%` +
+          `<br> GCYB allocated: %{y: .2f}%` +
           '<extra></extra>',
       },
     ];
@@ -216,9 +212,7 @@ class Dinamics extends Component {
           color: '#fff',
         },
         hovertemplate:
-          `${(
-            DENOM_CYBER_G + DENOM_CYBER
-          ).toLocaleUpperCase()} allocated: %{x: .2f}<br>` +
+          `GCYB allocated: %{x: .2f}<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
           '<extra></extra>',
@@ -235,9 +229,7 @@ class Dinamics extends Component {
         },
         ticks: '',
         hovertemplate:
-          `${(
-            DENOM_CYBER_G + DENOM_CYBER
-          ).toLocaleUpperCase()} allocated: %{x: .2f}<br>` +
+          `GCYB allocated: %{x: .2f}<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
           '<extra></extra>',
@@ -299,9 +291,7 @@ class Dinamics extends Component {
           dtick: 1,
           tickcolor: '#000',
           title: {
-            text: `${DENOM_CYBER.toLocaleUpperCase()} won, ${(
-              DENOM_CYBER_G + DENOM_CYBER
-            ).toLocaleUpperCase()}s`,
+            text: `CYB won, GCYBs`,
           },
           gridcolor: '#dedede',
           color: '#fff',

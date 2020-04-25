@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane, TableEv as Table, Text, Tooltip } from '@cybercongress/gravity';
 import { LinkWindow, TextTable } from '../../components';
@@ -24,66 +24,135 @@ const Noitem = ({ text }) => (
 
 function TableEvangelists({ data, blessed }) {
   try {
-    const rowTableEvangelists = Object.keys(data)
-      .filter(keys =>
-        blessed
-          ? parseInt(data[keys].status, 10) === 1
-          : parseInt(data[keys].status, 10) !== 1
-      )
-      .map(key => {
-        return (
-          <Table.Row
-            borderBottom="none"
-            key={key}
-            display="flex"
-            marginBottom={10}
-            minHeight="48px"
-            height="fit-content"
-            paddingY={5}
-            paddingX={5}
-          >
-            <Table.TextCell textAlign="center">
-              <TextTable>
-                <Link to={`/network/euler/contract/${key}`}>
-                  {data[key].nickname}
-                </Link>
-              </TextTable>
-            </Table.TextCell>
-            <Table.TextCell flex={0.7} textAlign="center">
-              <TextTable>{statusMapping[data[key].status]}</TextTable>
-            </Table.TextCell>
-            <Table.TextCell textAlign="end">
-              <TextTable>{formatNumber(data[key].amount, 3)} ATOMs</TextTable>
-            </Table.TextCell>
-            <Table.TextCell textAlign="end">
-              <Tooltip
-                position="bottom"
-                content={`${formatNumber(
-                  Math.floor(data[key].estimation)
-                )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-              >
+    let rowTableEvangelists;
+    let header;
+
+    if (blessed) {
+      rowTableEvangelists = Object.keys(data)
+        .filter(keys => parseInt(data[keys].status, 10) === 1)
+        .map(key => {
+          return (
+            <Table.Row
+              borderBottom="none"
+              key={key}
+              display="flex"
+              marginBottom={10}
+              minHeight="48px"
+              height="fit-content"
+              paddingY={5}
+              paddingX={5}
+            >
+              <Table.TextCell textAlign="center">
                 <TextTable>
-                  {formatCurrency(data[key].estimation, 'CYB', 0)}
+                  <Link to={`/network/euler/contract/${key}`}>
+                    {data[key].nickname}
+                  </Link>
                 </TextTable>
-              </Tooltip>
-            </Table.TextCell>
-            <Table.TextCell textAlign="center">
-              <TextTable>
-                <LinkWindow to={`https://keybase.io/${data[key].keybase}`}>
-                  {data[key].keybase}
-                </LinkWindow>
-              </TextTable>
-            </Table.TextCell>
-            <Table.TextCell textAlign="center">
-              <TextTable>
-                <LinkWindow to={`https://github.com/${data[key].github}`}>
-                  {data[key].github}
-                </LinkWindow>
-              </TextTable>
-            </Table.TextCell>
-          </Table.Row>
-        );
-      });
+              </Table.TextCell>
+              <Table.TextCell textAlign="end">
+                <TextTable>{formatNumber(data[key].amount, 3)} ATOMs</TextTable>
+              </Table.TextCell>
+              <Table.TextCell textAlign="end">
+                <TextTable>
+                  {formatNumber(data[key].amount * 0.1, 3)} ATOMs
+                </TextTable>
+              </Table.TextCell>
+              <Table.TextCell textAlign="end">
+                <Tooltip
+                  position="bottom"
+                  content={`${formatNumber(
+                    Math.floor(
+                      (data[key].amount / 1000) * CYBER.DIVISOR_CYBER_G
+                    )
+                  )} CYB`}
+                >
+                  <TextTable>{`${data[key].amount / 1000} GCYB`}</TextTable>
+                </Tooltip>
+              </Table.TextCell>
+            </Table.Row>
+          );
+        });
+    } else {
+      rowTableEvangelists = Object.keys(data)
+        .filter(keys => parseInt(data[keys].status, 10) !== 1)
+        .map(key => {
+          return (
+            <Table.Row
+              borderBottom="none"
+              key={key}
+              display="flex"
+              marginBottom={10}
+              minHeight="48px"
+              height="fit-content"
+              paddingY={5}
+              paddingX={5}
+            >
+              <Table.TextCell textAlign="center">
+                <TextTable>
+                  <Link to={`/network/euler/contract/${key}`}>
+                    {data[key].nickname}
+                  </Link>
+                </TextTable>
+              </Table.TextCell>
+              <Table.TextCell textAlign="end">
+                <TextTable>{formatNumber(data[key].amount, 3)} ATOMs</TextTable>
+              </Table.TextCell>
+              <Table.TextCell textAlign="end">
+                <Tooltip
+                  position="bottom"
+                  content={`${formatNumber(
+                    Math.floor(data[key].golRewards)
+                  )} CYB`}
+                >
+                  <TextTable>
+                    {formatCurrency(data[key].golRewards, 'CYB')}
+                  </TextTable>
+                </Tooltip>
+              </Table.TextCell>
+              <Table.TextCell textAlign="end">
+                <TextTable>{data[key].karma}</TextTable>
+              </Table.TextCell>
+            </Table.Row>
+          );
+        });
+    }
+
+    if (blessed) {
+      header = (
+        <>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Evangelist</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Donations brought</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>ATOM Rewards</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>CYB rewards</TextTable>
+          </Table.TextHeaderCell>
+        </>
+      );
+    } else {
+      header = (
+        <>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Evangelist</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Donations brought</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>GOL rewards</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Karma</TextTable>
+          </Table.TextHeaderCell>
+        </>
+      );
+    }
+
     return (
       <Table>
         <Table.Head
@@ -95,24 +164,7 @@ function TableEvangelists({ data, blessed }) {
             paddingBottom: '10px',
           }}
         >
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>nickname</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell flex={0.7} textAlign="center">
-            <TextTable>status</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>donations</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>reward</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>keybase</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>github</TextTable>
-          </Table.TextHeaderCell>
+          {header}
         </Table.Head>
         <Table.Body
           style={{

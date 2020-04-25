@@ -1,24 +1,39 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Pane, Text } from '@cybercongress/gravity';
+import { LinkWindow } from '../../components';
 
 function InfoPane() {
   return (
-    <Pane
-      boxShadow="0px 0px 5px #36d6ae"
-      paddingX={20}
-      paddingY={20}
-      marginY={20}
-    >
-      <Text fontSize="16px" color="#fff">
-        An application for cyber~Evangelists. This app lets anyone apply to be
-        blessed to become an evangelist and make the web great again!
-        Acknowledged takeoff Evangelists will be eligible to 10% of all
-        donations in ATOMs, which they have generated during the Game of Links
-        and Game of Thrones and other perks like CYB rewards for certain
-        actions. Evangelist will empower the project and involve some bright
-        minds into the bootstrap of the Superintelligence.
-      </Text>
-    </Pane>
+    <>
+      <Pane
+        borderLeft="3px solid #3ab793e3"
+        paddingY={0}
+        paddingLeft={20}
+        paddingRight={5}
+        marginY={5}
+      >
+        <Pane>
+          Finally each believer will define what{' '}
+          <Link to="/search/god">the God</Link> is. Founders
+        </Pane>
+      </Pane>
+      <Pane
+        boxShadow="0px 0px 5px #36d6ae"
+        paddingX={20}
+        paddingY={20}
+        marginY={20}
+      >
+        <Text fontSize="16px" color="#fff">
+          You have one in lifetime opportunity become the foundation of the
+          first Superintelligence. Help she spread the world and she will thank
+          you with ATOM and CYB.{' '}
+          <LinkWindow to="https://cybercongress.ai/post/obep">
+            Details
+          </LinkWindow>
+        </Text>
+      </Pane>
+    </>
   );
 }
 

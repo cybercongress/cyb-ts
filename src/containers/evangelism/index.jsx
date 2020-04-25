@@ -17,8 +17,10 @@ import {
   getSendTxToTakeoff,
   getAmountATOM,
   getTxCosmos,
+  getAccountBandwidth,
+  getIndexStats,
 } from '../../utils/search/utils';
-import { COSMOS, CYBER } from '../../utils/config';
+import { COSMOS, CYBER, DISTRIBUTION } from '../../utils/config';
 import { getEstimation, cybWon, funcDiscount } from '../../utils/fundingMath';
 
 class Evangelism extends React.PureComponent {
@@ -30,49 +32,51 @@ class Evangelism extends React.PureComponent {
       amount: 0,
       currentPrice: 0,
       currentDiscount: 0,
+      won: 0,
       loading: true,
+      loadingKarma: true,
     };
   }
 
   async componentDidMount() {
     const {
       contract: { events },
+      web3,
     } = this.props;
     const { dataTable } = this.state;
     this.chekPathname();
     await this.getEvangelists();
     this.getTxsCosmos();
-
-    events.Believed(event => {
-      console.log('Believed', event);
-      if (event !== null) {
-        const evetnObj = {
-          [event.nickname]: {
-            ...event,
-            status: 0,
-          },
-        };
-        this.setState({
-          dataTable: { ...dataTable, ...evetnObj },
-        });
-      }
-    });
-
-    events.Blessed(event => {
-      console.log('Blessed', event);
-      dataTable[event].status = 1;
-      this.setState({
-        dataTable,
-      });
-    });
-
-    events.Unblessed(event => {
-      console.log('Unblessed', event);
-      dataTable[event].status = 3;
-      this.setState({
-        dataTable,
-      });
-    });
+    // if (web3.givenProvider !== null) {
+    //   events.Believed(event => {
+    //     console.log('Believed', event);
+    //     if (event !== null) {
+    //       const evetnObj = {
+    //         [event.nickname]: {
+    //           ...event,
+    //           status: 0,
+    //         },
+    //       };
+    //       this.setState({
+    //         dataTable: { ...dataTable, ...evetnObj },
+    //       });
+    //     }
+    //   });
+    //   events.Blessed(event => {
+    //     console.log('Blessed', event);
+    //     dataTable[event].status = 1;
+    //     this.setState({
+    //       dataTable,
+    //     });
+    //   });
+    //   events.Unblessed(event => {
+    //     console.log('Unblessed', event);
+    //     dataTable[event].status = 3;
+    //     this.setState({
+    //       dataTable,
+    //     });
+    //   });
+    // }
   }
 
   componentDidUpdate(prevProps) {
@@ -90,6 +94,7 @@ class Evangelism extends React.PureComponent {
         dataTxs: dataTx,
       });
       await this.getStatistics(dataTx);
+      await this.getGolReward();
       this.estimation();
     }
   };
@@ -116,42 +121,70 @@ class Evangelism extends React.PureComponent {
     currentPrice = won / amount;
     // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
-      amount,
-      currentPrice,
-      currentDiscount,
+      won,
     });
   };
 
-  estimation = () => {
-    const {
-      dataTxs,
-      dataTable,
-      currentPrice,
-      currentDiscount,
-      amount,
-    } = this.state;
+  getGolReward = async () => {
+    const { dataTable, won } = this.state;
+    const data = dataTable;
+    let sumKarma = 0;
+    const currentPrize = Math.floor(
+      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
+    );
+    const responseIndexStats = await getIndexStats();
+    if (responseIndexStats !== null) {
+      sumKarma = responseIndexStats.totalKarma;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in data) {
+      // eslint-disable-next-line no-prototype-builtins
+      if (data.hasOwnProperty(key)) {
+        const element = data[key];
+        let karma = 0;
+        let golRewards = 0;
+        if (element.status === 1) {
+          // eslint-disable-next-line no-await-in-loop
+          const dataKarma = await getAccountBandwidth(element.cyberAddress);
+          if (dataKarma !== null) {
+            karma = dataKarma.karma;
+            if (parseFloat(sumKarma) > 0) {
+              golRewards =
+                (parseFloat(karma) / parseFloat(sumKarma)) * currentPrize;
+              element.golRewards = Math.floor(golRewards);
+              element.karma = karma;
+            }
+          }
+        }
+      }
+    }
+
+    this.setState({
+      dataTable: data,
+    });
+  };
+
+  estimation = async () => {
+    const { dataTxs, dataTable } = this.state;
     const { txs } = dataTxs;
 
-    let temp = 0;
     for (let item = 0; item < txs.length; item += 1) {
-      let estimation = 0;
+      // let estimation = 0;
       const val =
         parseFloat(txs[item].tx.value.msg[0].value.amount[0].amount) /
         COSMOS.DIVISOR_ATOM;
-      const addressFrom = txs[item].tx.value.msg[0].value.from_address;
-      const tempCyberAdd = getDelegator(
-        addressFrom,
-        CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-      );
-      const tempVal = temp + val;
-      estimation =
-        getEstimation(currentPrice, currentDiscount, amount, tempVal) -
-        getEstimation(currentPrice, currentDiscount, amount, temp);
-      temp += val;
-
-      if (dataTable[tempCyberAdd]) {
-        dataTable[tempCyberAdd].estimation += parseFloat(estimation);
-        dataTable[tempCyberAdd].amount += parseFloat(val);
+      const { memo } = txs[item].tx.value;
+      let thank = '';
+      if (memo.length > 0) {
+        memo.replace(/\s+/g, '');
+        const memoRemoveSpase = memo.replace(/\s+/g, '');
+        if (memoRemoveSpase.indexOf('thanksto') !== -1) {
+          thank = memoRemoveSpase.slice('thanksto'.length);
+          if (dataTable[thank]) {
+            dataTable[thank].amount += parseFloat(val);
+          }
+        }
       }
     }
     this.setState({
@@ -164,7 +197,10 @@ class Evangelism extends React.PureComponent {
     const { location } = this.props;
     const { pathname } = location;
 
-    if (pathname.match(/not/gm) && pathname.match(/not/gm).length > 0) {
+    if (
+      pathname.match(/pretenders/gm) &&
+      pathname.match(/pretenders/gm).length > 0
+    ) {
       this.setState({ blessed: false });
     } else {
       this.setState({ blessed: true });
@@ -178,7 +214,7 @@ class Evangelism extends React.PureComponent {
     let evangelists = [];
     for (let i = 0; ; i += 1) {
       try {
-        let amount = 0;
+        const amount = 0;
         const {
           cyberAddress,
           cosmosAddress,
@@ -190,14 +226,9 @@ class Evangelism extends React.PureComponent {
           // eslint-disable-next-line no-await-in-loop
         } = await methods.evangelists(i).call();
 
-        // eslint-disable-next-line no-await-in-loop
-        // const tx = await getSendTxToTakeoff(cosmosAddress, COSMOS.ADDR_FUNDING);
-        // if (tx.length > 0) {
-        //   amount = getAmountATOM(tx);
-        // }
         evangelists = {
           ...evangelists,
-          [cyberAddress]: {
+          [nickname]: {
             cyberAddress,
             cosmosAddress,
             ethereumAddress,
@@ -207,6 +238,8 @@ class Evangelism extends React.PureComponent {
             nickname,
             estimation: 0,
             amount: 0,
+            karma: 0,
+            golRewards: 0,
           },
         };
         this.setState({
@@ -219,11 +252,12 @@ class Evangelism extends React.PureComponent {
   };
 
   render() {
-    const { dataTable, blessed, loading } = this.state;
+    const { dataTable, blessed, loading, loadingKarma } = this.state;
     const {
       contract: { methods },
       web3,
     } = this.props;
+
     try {
       if (loading) {
         return (
@@ -244,6 +278,7 @@ class Evangelism extends React.PureComponent {
           </div>
         );
       }
+
       return (
         <div>
           <main className="block-body">
@@ -268,13 +303,13 @@ class Evangelism extends React.PureComponent {
                     boxShadow="0px 0px 10px #36d6ae"
                     fontSize="16px"
                   >
-                    Blessed
+                    Genuine
                   </Tab>
                 </Link>
-                <Link to="/evangelism/not">
+                <Link to="/evangelism/pretenders">
                   <Tab
-                    key="Not"
-                    id="Not"
+                    key="Pretenders"
+                    id="Pretenders"
                     isSelected={!blessed}
                     paddingX={50}
                     paddingY={20}
@@ -284,7 +319,7 @@ class Evangelism extends React.PureComponent {
                     boxShadow="0px 0px 10px #36d6ae"
                     fontSize="16px"
                   >
-                    Not
+                    Pretenders
                   </Tab>
                 </Link>
               </Tablist>
