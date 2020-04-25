@@ -5,7 +5,7 @@ import { CardStatisics } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
-function GovernmentTab({ communityPool }) {
+function GovernmentTab({ communityPool, proposals }) {
   try {
     return (
       <Pane
@@ -14,10 +14,14 @@ function GovernmentTab({ communityPool }) {
         gridGap="20px"
         justifyContent="center"
       >
+        <CardStatisics
+          title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
+          value={formatNumber(communityPool)}
+        />
         <Link to="/governance">
           <CardStatisics
-            title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
-            value={formatNumber(communityPool)}
+            title="Proposals"
+            value={formatNumber(proposals)}
             link
           />
         </Link>

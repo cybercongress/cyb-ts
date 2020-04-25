@@ -381,7 +381,7 @@ class Validators extends Component {
                   Math.floor(
                     parseFloat(
                       validator.delegation !== undefined
-                        ? validator.delegation
+                        ? validator.delegation.amount
                         : 0
                     )
                   )
@@ -392,7 +392,7 @@ class Validators extends Component {
                   {formatCurrency(
                     parseFloat(
                       validator.delegation !== undefined
-                        ? validator.delegation
+                        ? validator.delegation.amount
                         : 0
                     ),
                     CYBER.DENOM_CYBER.toLocaleUpperCase()

@@ -55,36 +55,25 @@ class AppRouter extends React.Component {
   }
 
   async componentDidMount() {
-    const deadline = `${TIME_START}`;
-    const startTime = Date.parse(deadline) - Date.parse(new Date());
-    if (startTime <= 0) {
-      this.setState({
-        time: false,
-      });
-      this.init();
-    } else {
-      this.setState({
-        time: true,
-        startTime: deadline,
-      });
-    }
+    this.init();
+    this.setState({ time: false });
   }
 
   init = async () => {
-    const { setIpfsStatusProps, initIpfsProps } = this.props;
+    const { setIpfsStatusProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
-    this.setState({ loader: false });
-    // if (!mobile) {
-    //   try {
-    //     await this.initIpfsNode();
-    //   } catch (error) {
-    //     this.setState({ loader: false });
-    //     initIpfsProps(null);
-    //   }
-    // } else {
-    //   this.setState({ loader: false });
-    // }
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // this.setState({ loader: false });
+    if (!mobile) {
+      if (!isSafari) {
+        await this.initIpfsNode();
+      } else {
+        this.setState({ loader: false });
+      }
+    } else {
+      this.setState({ loader: false });
+    }
   };
 
   initIpfsNode = async () => {
@@ -165,29 +154,6 @@ class AppRouter extends React.Component {
 
   render() {
     const { loader, time, startTime } = this.state;
-
-    if (time) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <div
-            className="countdown-time text-glich"
-            data-text="euler-6 will start in"
-          >
-            euler-6 will start in
-          </div>
-          <Timer updateFunc={this.init} startTime={startTime} />
-        </div>
-      );
-    }
 
     if (loader) {
       return <Dots />;

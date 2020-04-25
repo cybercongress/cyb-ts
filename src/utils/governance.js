@@ -96,3 +96,16 @@ export const getTableVoters = id =>
       })
       .catch(e => {})
   );
+
+export const getTallyingProposals = async id => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals/${id}/tally`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

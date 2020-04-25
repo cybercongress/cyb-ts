@@ -1,6 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
-import { IconStatus, ContainerPane, Item, Legend } from '../../components';
+import {
+  IconStatus,
+  ContainerPane,
+  Item,
+  Legend,
+  Account,
+} from '../../components';
 
 const ProposalsIdDetailTableVoters = ({ votes, data, ...props }) => {
   const { yes, abstain, no, noWithVeto } = votes;
@@ -15,9 +22,8 @@ const ProposalsIdDetailTableVoters = ({ votes, data, ...props }) => {
     >
       <Table.TextCell>
         <Text color="#fff">
-          <a href={`https://callisto.cybernode.ai/account/${item.voter}`}>
-            {item.voter}
-          </a>
+          <Account address={item.voter} />
+          {/* <Link to={`/network/euler/contract/${item.voter}`}>{item.voter}</Link> */}
         </Text>
       </Table.TextCell>
       <Table.TextCell>

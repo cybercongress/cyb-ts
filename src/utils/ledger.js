@@ -687,20 +687,6 @@ class CosmosDelegateTool {
     );
   };
 
-  importLink = async (txContext, address, links, memo, cli) => {
-    if (!cli) {
-      if (typeof txContext === 'undefined') {
-        throw new Error('undefined txContext');
-      }
-      if (typeof txContext.bech32 === 'undefined') {
-        throw new Error(
-          'txContext does not contain the source address (bech32)'
-        );
-      }
-    }
-    return txs.createImportLink(txContext, address, links, memo, cli);
-  };
-
   txVoteProposal = (txContext, proposalId, voter, option, memo, cli) => {
     if (!cli) {
       if (typeof txContext === 'undefined') {
@@ -714,6 +700,20 @@ class CosmosDelegateTool {
     }
 
     return txs.voteProposal(txContext, proposalId, voter, option, memo, cli);
+  };
+
+  importLink = async (txContext, address, links, memo, cli) => {
+    if (!cli) {
+      if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+      }
+      if (typeof txContext.bech32 === 'undefined') {
+        throw new Error(
+          'txContext does not contain the source address (bech32)'
+        );
+      }
+    }
+    return txs.createImportLink(txContext, address, links, memo, cli);
   };
 
   // Relays a signed transaction and returns a transaction hash
