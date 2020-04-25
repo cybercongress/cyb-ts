@@ -20,7 +20,7 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
       tooltipValue="The accumulated ATOMs left before the end of Funding, in case less than 90 days funding duration"
     />
     <Card
-      title={`Won ${DENOM_CYBER_G.toUpperCase()}`}
+      title="Won GCYB"
       value={won}
       positionTooltip="bottom"
       tooltipValue={`CYBs won from cyber~Congress. Remaining ${formatNumber(
@@ -37,7 +37,7 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
     />
 
     <Card
-      title={`${DENOM_CYBER_G.toUpperCase()}/ATOM`}
+      title="GCYB/ATOM"
       value={price}
       positionTooltip="bottom"
       tooltipValue="The current CYBs/ATOM price. Calculated as relation between won CYBs and accumulated ATOMs. This price excluding the order of donation advantages."
