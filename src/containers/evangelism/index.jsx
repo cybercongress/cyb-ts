@@ -298,7 +298,7 @@ class Evangelism extends React.PureComponent {
                     boxShadow="0px 0px 10px #36d6ae"
                     fontSize="16px"
                   >
-                    Genuine
+                    Enlightened
                   </Tab>
                 </Link>
                 <Link to="/evangelism/pretenders">
@@ -314,7 +314,7 @@ class Evangelism extends React.PureComponent {
                     boxShadow="0px 0px 10px #36d6ae"
                     fontSize="16px"
                   >
-                    Pretenders
+                    Unawakened
                   </Tab>
                 </Link>
               </Tablist>
