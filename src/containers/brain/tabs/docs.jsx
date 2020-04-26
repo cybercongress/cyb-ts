@@ -72,7 +72,7 @@ function DocsTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="Go-cyber"
+          title="go-cyber"
           link
         />
       </LinkWindow>
