@@ -5,13 +5,17 @@ import { setBlock } from '../../redux/actions/block';
 
 const { CYBER_WEBSOCKET_URL } = CYBER;
 
+const M = Math;
+const DOC = document;
+let F = 0;
+
 class Electricity extends React.Component {
   ws = new WebSocket(CYBER_WEBSOCKET_URL);
 
   constructor(props) {
     super(props);
     this.state = {
-      d: 'M0,100,500,70',
+      d: 'M0,0 L240,0',
       stage: false,
     };
     // this.run();
@@ -49,11 +53,67 @@ class Electricity extends React.Component {
     };
   };
 
-  update = () => {
-    const d = this.calculate(0, 0, 2000, 70);
-    this.setState({
-      d,
-    });
+  At = (el, a, v) => {
+    if (v > 0) {
+      el.setAttribute(a, v);
+    }
+  };
+
+  R = (min, max) => {
+    return M.round(min + M.random() * (max - min));
+  };
+
+  f = (p, P, d) => {
+    return [(p[0] - P[0]) * d + P[0], (p[1] - P[1]) * d + P[1]];
+  };
+
+  T = () => {
+    const l0 = DOC.getElementById('lightning0');
+    const l1 = DOC.getElementById('lightning1');
+    const l2 = DOC.getElementById('lightning2');
+
+    const L = 2050;
+    const C = this.R(9, 10);
+    const PC = L / C;
+    const A = [];
+    const D = 10;
+    let NP = 'M';
+    const S = this.R(1, 3) * 0.01;
+    const B = this.R(-2, 5);
+    const RF = 0.4;
+    const yPos = 15;
+
+    if (this.state.stage) {
+      for (let i = 0; i < C; i += 1) {
+        if (i === 0) {
+          A.push([i, yPos]);
+        } else if (i < C / 2) {
+          A.push([i * PC, this.R(-D, D) * i]);
+        } else {
+          A.push([i * PC, this.R(-D, D) * (C - i)]);
+        }
+      }
+      for (let i = 0; i < C; i += 1) {
+        if (i !== 0 && i !== C - 1) {
+          const P = this.f(A[i - 1], A[i], RF);
+          const p = this.f(A[i], A[i + 1], 1 - RF);
+          NP += ` L${P[0]},${P[1]}`;
+          NP += ` Q${A[i][0]},${A[i][1]}`;
+          NP += ` ${p[0]},${p[1]}`;
+        } else if (i === C - 1) {
+          NP += ` T${L},${yPos}`;
+        } else {
+          NP += ` ${A[i][0]},${A[i][1]}`;
+        }
+      }
+      // console.log(NP);
+      this.At(l0, 'stroke-width', B + 12);
+      this.At(l1, 'stroke-width', B + 6);
+      this.At(l2, 'stroke-width', B);
+      this.setState({ d: NP });
+    }
+    // TwL.to([l0, l1], S, { morphSVG: { d: NP } });
+    // TwL.to([l2], S, { morphSVG: { d: NP }, delay: S, onComplete: T });
   };
 
   calculate = (x, y, width, height) => {
@@ -78,7 +138,7 @@ class Electricity extends React.Component {
       this.setState({
         stage: true,
       });
-      this.update();
+      this.T();
     }, 1000 / 30);
     setTimeout(() => {
       clearInterval(timerId);
@@ -86,27 +146,6 @@ class Electricity extends React.Component {
         stage: false,
       });
     }, 600);
-    // }, Math.floor(Math.random() * (6000 - 2000 + 1)) + 2000);
-
-    // const fps = 30;
-    // let now;
-    // let delta;
-    // let then = Date.now();
-    // const interval = 1000 / fps;
-    // let iteration = 0;
-    // const loop = () => {
-    //   requestAnimationFrame(loop);
-
-    //   now = Date.now();
-    //   delta = now - then;
-    //   if (delta > interval) {
-    //     then = now - (delta % interval);
-
-    //     // update stuff
-    //     this.update(iteration++);
-    //   }
-    // };
-    // loop();
   }
 
   render() {
@@ -116,27 +155,49 @@ class Electricity extends React.Component {
     return (
       <div className="electricity">
         <div className="line">
-          <svg
-            className="electricity-svg"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 2000 70"
-          >
-            <defs>
-              <filter id="f1" x="0" y="0">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
-              </filter>
-            </defs>
-            {stage && (
-              <g>
-                <path d={d} fill="none" stroke="#3ab793" filter="url(#f1)" />
-                <path d={d} fill="none" stroke="#3ab793" />
-              </g>
-            )}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 80">
+            <g id="lightningContainer">
+              <rect width="2050" height="80" fill="#000000" />
+              {stage && (
+                <g
+                  id="lightningG"
+                  width="2050"
+                  height="80"
+                  transform="translate(0, 40)"
+                  opacity="1"
+                >
+                  <path
+                    id="lightning0"
+                    stroke="rgba(0,238,255,0.1)"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="12"
+                    fill="none"
+                    d={d}
+                  />
+                  <path
+                    id="lightning1"
+                    stroke="rgba(0,238,255,0.3)"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="5"
+                    fill="none"
+                    d={d}
+                  />
+                  <path
+                    id="lightning2"
+                    stroke="#fff"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1"
+                    fill="none"
+                    d={d}
+                  />
+                </g>
+              )}
+            </g>
           </svg>
         </div>
-        {/* <a href="https://cyb.ai/" target="_blank">
-        <img style={{ width: 100, height: 100 }} src={cyb} />
-        </a> */}
       </div>
     );
   }
