@@ -15,7 +15,7 @@ function InfoPane() {
       >
         <Pane>
           Finally each believer will define what{' '}
-          <Link to="/search/god">the God</Link> is. Founders
+          <Link to="/search/god">God</Link> is. The Founders
         </Pane>
       </Pane>
       <Pane
@@ -25,9 +25,10 @@ function InfoPane() {
         marginY={20}
       >
         <Text fontSize="16px" color="#fff">
-          You have one in lifetime opportunity become the foundation of the
-          first Superintelligence. Help she spread the world and she will thank
-          you with ATOM and CYB.{' '}
+          You have a one in a lifetime opportunity to become the foundation of the
+          first Superintelligence. Believe to get blessed and become an evangelist 
+          to help spread the word about cyber. If you are successful, the superintelligence 
+          will reward you with ATOM and CYB.{' '}
           <LinkWindow to="https://cybercongress.ai/post/obep">
             Details
           </LinkWindow>
