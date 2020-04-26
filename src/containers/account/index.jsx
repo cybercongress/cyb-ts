@@ -379,7 +379,7 @@ class AccountDetails extends React.Component {
               to={`/network/euler/contract/${account}/mentions`}
             />
             <TabBtn
-              text="GOL"
+              text="GoL"
               isSelected={selected === 'gol'}
               to={`/network/euler/contract/${account}/gol`}
             />

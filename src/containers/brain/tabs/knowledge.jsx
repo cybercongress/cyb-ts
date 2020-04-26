@@ -14,7 +14,7 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
       >
         <Link to="/graph">
           <CardStatisics
-            title="cyberlinks"
+            title="Cyberlinks"
             link
             value={formatNumber(linksCount)}
           />
@@ -26,10 +26,10 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
             textDecoration: 'none',
           }}
         >
-          <CardStatisics title="objects" value={formatNumber(cidsCount)} link />
+          <CardStatisics title="Objects" value={formatNumber(cidsCount)} link />
         </Link>
 
-        <CardStatisics title="subjects" value={formatNumber(accountsCount)} />
+        <CardStatisics title="Subjects" value={formatNumber(accountsCount)} />
       </Pane>
     );
   } catch (error) {

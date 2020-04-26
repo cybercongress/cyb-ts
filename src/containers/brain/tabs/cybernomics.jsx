@@ -16,7 +16,7 @@ function CybernomicsTab({ data }) {
         >
           <CardStatisics title="GOL supply" value={formatNumber(gol.supply)} />
           <CardStatisics
-            title="faucet price of GGOL in ETH"
+            title="Faucet price of GGOL in ETH"
             value={formatNumber(gol.price)}
           />
           <CardStatisics title="GOL cap in ETH" value={formatNumber(gol.cap)} />
@@ -28,7 +28,7 @@ function CybernomicsTab({ data }) {
         >
           <CardStatisics title="EUL supply" value={formatNumber(eul.supply)} />
           <CardStatisics
-            title="faucet price of GEUL in ETH"
+            title="Faucet price of GEUL in ETH"
             value={formatNumber(eul.price)}
           />
           <CardStatisics title="EUL cap in ETH" value={formatNumber(eul.cap)} />
@@ -40,11 +40,11 @@ function CybernomicsTab({ data }) {
         >
           <CardStatisics title="CYB supply" value={formatNumber(cyb.supply)} />
           <CardStatisics
-            title="takeoff price of GCYB in ATOM"
+            title="Takeoff price of GCYB in ATOM"
             value={formatNumber(cyb.price)}
           />
           <CardStatisics
-            title="CYB cap in ATOMs"
+            title="CYB cap in ATOM"
             value={formatNumber(cyb.cap)}
           />
         </Pane>

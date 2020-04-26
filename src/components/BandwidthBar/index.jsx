@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 
 const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
   let text =
-    'Empty battery. You have no power & energy so can not submit cyberlinks. ';
+    'Empty battery. You have no power & energy so you cannot submit cyberlinks. ';
 
   if (bwMaxValue > 0) {
-    text = `You have left ${bwRemained} kW and can immediately submit ${Math.floor(
+    text = `You have ${bwRemained} kW left and can immediately submit ${Math.floor(
       bwRemained / linkPrice
     )} cyberlinks. `;
   }
@@ -22,7 +22,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
       <Pane marginBottom={12}>
         <Text size={300}>
           {text}
-          <Link style={{ color: '#068661', fontSize: '14px' }} to="/search/get">
+          <Link style={{ color: '#068661', fontSize: '14px' }} to="/gol/faucet">
             Get EUL
           </Link>
         </Text>

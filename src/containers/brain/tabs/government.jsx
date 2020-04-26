@@ -15,7 +15,7 @@ function GovernmentTab({ communityPool, proposals }) {
         justifyContent="center"
       >
         <CardStatisics
-          title={`community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
+          title={`Community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
           value={formatNumber(communityPool)}
         />
         <Link to="/governance">

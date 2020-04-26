@@ -20,15 +20,15 @@ function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
             textDecoration: 'none',
           }}
         >
-          <CardStatisics title="heroes" value={activeValidatorsCount} link />
+          <CardStatisics title="Heroes" value={activeValidatorsCount} link />
         </Link>
         <CardStatisics title="% of staked CYB" value={stakedCyb} />
         <CardStatisics
-          title="inlfation"
+          title="Inflation"
           value={`${formatNumber(inlfation * 100, 2)} %`}
         />
         <Link to="/network/euler/tx">
-          <CardStatisics title="transactions" value={<Txs />} link />
+          <CardStatisics title="Transactions" value={<Txs />} link />
         </Link>
       </Pane>
     );

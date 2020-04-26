@@ -50,9 +50,9 @@ const Table = ({ data, TOKEN_NAME, claimed, web3, contract, round }) => {
     <div className={`table ${claimed ? 'claimed' : ''}`}>
       <div className="table-header-rows">
         <div className="numberType">Round</div>
-        <div className="numberType">Distributed, G{TOKEN_NAME}</div>
-        <div className="numberType">Total, ETH</div>
-        <div className="numberType">Price, ETH/G{TOKEN_NAME}</div>
+        <div className="numberType">G{TOKEN_NAME} for distribution</div>
+        <div className="numberType">Total ETH</div>
+        <div className="numberType">Price: ETH/G{TOKEN_NAME}</div>
         <div className="numberType">Closing</div>
         <div className="numberType">Your ETH</div>
         <div className="numberType">Your G{TOKEN_NAME}</div>

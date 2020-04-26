@@ -134,7 +134,7 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
     <ActionBarContentText flexDirection="column">
       <div className="text-default">
         Your TX has been broadcast to the network. It is waiting to be mined &
-        confirned.
+        confirmed.
       </div>
       <div className="text-default">
         Check TX status:{' '}
@@ -336,7 +336,7 @@ class ActionBarAuction extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            <span>Please install</span>
+            <span>Please install the</span>
             &nbsp;
             <a href="https://metamask.io/" target="_blank">
               Metamask extension
@@ -359,7 +359,7 @@ class ActionBarAuction extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            Auction finished. You have 3 months for claiming GOLs. Else, the
+            The Auction is finished. You have 3 months to claim GOL tokens. Else, the
             tokens will be burned.
           </ActionBarContentText>
           {claimed && (

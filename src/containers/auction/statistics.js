@@ -25,28 +25,28 @@ export const Statistics = ({
         <Card
           title="Round"
           value={`${round} of ${roundAll}`}
-          tooltipValue="The current round of total number in the Auction"
+          tooltipValue="The current round out of the total number of rounds in the Auction"
           positionTooltip="bottom"
           stylesContainer={{ padding: '35px 0' }}
         />
         <Card
           title="Raised"
           value={`${raised} ETH`}
-          tooltipValue="The number of total ETH raised currently"
+          tooltipValue="The number of total ETH, currently, raised"
           positionTooltip="bottom"
           stylesContainer={{ padding: '35px 0' }}
         />
         <Card
           title="Current price"
           value={`${currentPrice} ETH/G${TOKEN_NAME}`}
-          tooltipValue="The current price ETH/GOL calculated according to the current round"
+          tooltipValue="The current price of ETH/GOL, calculated according to the current round"
           positionTooltip="bottom"
           stylesContainer={{ padding: '35px 0' }}
         />
         <Card
           title="Left in round"
           value={timeLeft}
-          tooltipValue="Time left in the current round closing"
+          tooltipValue="The time left until the current round is closing"
           positionTooltip="bottom"
           stylesContainer={{ padding: '35px 0' }}
         />
@@ -66,7 +66,7 @@ export const Statistics = ({
         <Card
           title="Raised"
           value={`${raised} ETH`}
-          tooltipValue="The number of total ETH raised currently"
+          tooltipValue="The number of the total ETH, currently, raised"
           positionTooltip="bottom"
         />
       </ContainerCard>

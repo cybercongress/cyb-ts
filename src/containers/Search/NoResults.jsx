@@ -21,7 +21,7 @@ const NoResults = () => (
                     >
                         <Pane width={ 323 } textAlign='center' marginBottom={ 25 }>
                             <Text size={ 600 } color='#fff'>
-                                You are the first one who are searching for
+                                You are the first one searching for
                                 <b>
                                     &nbsp;
                                     {searchQuery}
