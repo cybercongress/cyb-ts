@@ -14,6 +14,7 @@ import {
   asyncForEach,
   timer,
   exponentialToDecimal,
+  getTimeRemaining,
 } from '../../utils/utils';
 import InfoPane from './infoPane';
 
@@ -128,7 +129,7 @@ class Auction extends PureComponent {
   };
 
   subscription = async () => {
-    const { web3 } = this.props;
+    const { web3, accounts } = this.props;
     const subscription = web3.eth.subscribe(
       'logs',
       {
@@ -154,26 +155,30 @@ class Auction extends PureComponent {
       }
     });
 
-    const subscriptionClaim = web3.eth.subscribe(
-      'logs',
-      {
-        address: ADDR_SMART_CONTRACT,
-        topics: [TOPICS_CLAIM],
-      },
-      (error, result) => {
-        if (!error) {
-          console.log(result);
-          run(this.getDataTable);
+    if (accounts && accounts !== null) {
+      const lowerCaseAcc = accounts.toLowerCase();
+      const subscriptionClaim = web3.eth.subscribe(
+        'logs',
+        {
+          address: ADDR_SMART_CONTRACT,
+          topics: [TOPICS_CLAIM],
+        },
+        (error, result) => {
+          if (!error) {
+            console.log(result);
+            if (result.topics[2].indexOf(lowerCaseAcc.slice(2)) !== -1) {
+              run(this.getDataTable);
+            }
+          }
         }
-      }
-    );
-
-    // unsubscribes the subscription
-    subscriptionClaim.unsubscribe((error, success) => {
-      if (success) {
-        console.log('Successfully unsubscribed!');
-      }
-    });
+      );
+      // unsubscribes the subscription
+      subscriptionClaim.unsubscribe((error, success) => {
+        if (success) {
+          console.log('Successfully unsubscribed!');
+        }
+      });
+    }
   };
 
   accountsChanged = () => {
@@ -192,12 +197,15 @@ class Auction extends PureComponent {
     const {
       contract: { methods },
     } = this.props;
-    const today = parseInt(await methods.today().call());
+    const today = await methods.today().call();
     const time = await methods.time().call();
     const startTime = await methods.startTime().call();
+
     const times = parseFloat(
-      today * ROUND_DURATION - (parseFloat(time) - parseFloat(startTime))
+      parseFloat(today) * 23 * 60 * 60 -
+        (parseFloat(time) - parseFloat(startTime))
     );
+
     const hours = Math.floor(times / (60 * 60));
     const minutes = Math.floor((times / 60) % 60);
 
@@ -491,8 +499,8 @@ class Auction extends PureComponent {
       createOnDay,
       typeTime,
       startTimeTot,
+      accounts,
     } = this.state;
-    // console.log(table);
 
     return (
       <div>
@@ -543,6 +551,7 @@ class Auction extends PureComponent {
             minRound={roundThis}
             maxRound={numberOfDays}
             claimed={claimedAll}
+            accounts={accounts}
           />
         )}
       </div>

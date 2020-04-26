@@ -72,13 +72,17 @@ function Table({ data, fUpin, fPin, update, pin }) {
           <div className="numberType">{formatNumber(item.amount)}</div>
           <Tooltip
             placement="bottom"
-            tooltip={`${formatNumber(Math.floor(item.cybEstimation))} EULs`}
+            tooltip={`${formatNumber(
+              Math.floor(item.cybEstimation * 1.666666667)
+            )} EULs`}
           >
             <div className="numberType">
               <FormatNumber
                 number={formatNumber(
-                  Math.floor((item.cybEstimation / Math.pow(10, 9)) * 1000) /
-                    1000,
+                  Math.floor(
+                    ((item.cybEstimation * 1.666666667) / Math.pow(10, 9)) *
+                      1000
+                  ) / 1000,
                   3
                 )}
               />
@@ -107,12 +111,16 @@ function Table({ data, fUpin, fPin, update, pin }) {
       </div>
       <Tooltip
         placement="bottom"
-        tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} EULs`}
+        tooltip={`${formatNumber(
+          Math.floor(dataTable[key].cyb * 1.666666667)
+        )} EULs`}
       >
         <div className="numberType">
           <FormatNumber
             number={formatNumber(
-              Math.floor((dataTable[key].cyb / Math.pow(10, 9)) * 1000) / 1000,
+              Math.floor(
+                ((dataTable[key].cyb * 1.666666667) / Math.pow(10, 9)) * 1000
+              ) / 1000,
               3
             )}
           />
@@ -160,13 +168,16 @@ function Table({ data, fUpin, fPin, update, pin }) {
               <div className="numberType">{formatNumber(item.amount)}</div>
               <Tooltip
                 placement="bottom"
-                tooltip={`${formatNumber(Math.floor(item.cybEstimation))} EULs`}
+                tooltip={`${formatNumber(
+                  Math.floor(item.cybEstimation * 1.666666667)
+                )} EULs`}
               >
                 <div className="numberType">
                   <FormatNumber
                     number={formatNumber(
                       Math.floor(
-                        (item.cybEstimation / Math.pow(10, 9)) * 1000
+                        ((item.cybEstimation * 1.666666667) / Math.pow(10, 9)) *
+                          1000
                       ) / 1000,
                       3
                     )}
@@ -197,13 +208,17 @@ function Table({ data, fUpin, fPin, update, pin }) {
           </div>
           <Tooltip
             placement="bottom"
-            tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} EULs`}
+            tooltip={`${formatNumber(
+              Math.floor(dataTable[key].cyb * 1.666666667)
+            )} EULs`}
           >
             <div className="numberType">
               <FormatNumber
                 number={formatNumber(
-                  Math.floor((dataTable[key].cyb / Math.pow(10, 9)) * 1000) /
-                    1000,
+                  Math.floor(
+                    ((dataTable[key].cyb * 1.666666667) / Math.pow(10, 9)) *
+                      1000
+                  ) / 1000,
                   3
                 )}
               />

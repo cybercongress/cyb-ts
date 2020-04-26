@@ -31,6 +31,7 @@ import TextTable from './text/textTable';
 import StatusTx from './statusTx';
 import Vitalik from './vitalik';
 import BandwidthBar from './BandwidthBar';
+import Timer from './timer';
 
 export {
   RowTableTakeoff,
@@ -64,12 +65,12 @@ export {
   BandwidthBar,
   ActionBarContentText,
   CheckAddressInfo,
+  Timer,
 };
 
 export { Nums } from './ui/Numbers';
 export { Dots } from './ui/Dots';
 export { SeeSaw } from './SeeSaw/SeeSaw';
-export { Timer } from './timer/timer';
 export {
   ContainerCard,
   Indicators,

@@ -76,6 +76,7 @@ class ActionBarTakeOff extends Component {
       txHash: null,
       txHeight: null,
       height50: false,
+      memo: '',
       days: '00',
       hours: '00',
       seconds: '00',
@@ -95,6 +96,14 @@ class ActionBarTakeOff extends Component {
     // eslint-disable-next-line
     console.warn('Looking for Ledger Nano');
     this.pollLedger();
+    const localStorageStory = localStorage.getItem('thanks');
+    if (localStorageStory !== null) {
+      const thanks = JSON.parse(localStorageStory);
+      const memo = `thanks to ${thanks}`;
+      this.setState({ memo });
+    } else {
+      this.setState({ memo: MEMO });
+    }
     const deadline = `${COSMOS.TIME_START}`;
     console.log(Date.parse(deadline));
     const startTime = Date.parse(deadline) - Date.parse(new Date());
@@ -103,7 +112,9 @@ class ActionBarTakeOff extends Component {
         time: false,
       });
     } else {
-      this.initializeClock(deadline);
+      this.setState({
+        time: true,
+      });
     }
   }
 
@@ -135,31 +146,6 @@ class ActionBarTakeOff extends Component {
       }
     }
   }
-
-  initializeClock = endtime => {
-    const { initClock } = this.props;
-    let timeinterval;
-    const updateClock = () => {
-      const t = getTimeRemaining(endtime);
-      if (t.total <= 0) {
-        clearInterval(timeinterval);
-        initClock();
-        this.setState({
-          time: false,
-        });
-        return true;
-      }
-      this.setState({
-        days: t.days,
-        hours: `0${t.hours}`.slice(-2),
-        minutes: `0${t.minutes}`.slice(-2),
-        seconds: `0${t.seconds}`.slice(-2),
-      });
-    };
-
-    updateClock();
-    timeinterval = setInterval(updateClock, 1000);
-  };
 
   compareVersion = async () => {
     const { ledgerVersion } = this.state;
@@ -252,7 +238,7 @@ class ActionBarTakeOff extends Component {
   };
 
   createTxForCLI = async () => {
-    const { ledger, trackAddress, toSend } = this.state;
+    const { ledger, trackAddress, toSend, memo } = this.state;
     const addressTo = ADDR_FUNDING;
     const uatomAmount = toSend * DIVISOR_ATOM;
 
@@ -260,7 +246,7 @@ class ActionBarTakeOff extends Component {
       null,
       addressTo,
       uatomAmount,
-      MEMO,
+      memo,
       true,
       trackAddress
     );
@@ -273,7 +259,7 @@ class ActionBarTakeOff extends Component {
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend } = this.state;
+    const { ledger, address, addressInfo, toSend, memo } = this.state;
     const validatorBech32 = ADDR_FUNDING;
     const uatomAmount = toSend * DIVISOR_ATOM;
     const txContext = {
@@ -290,7 +276,7 @@ class ActionBarTakeOff extends Component {
       txContext,
       validatorBech32,
       uatomAmount,
-      MEMO
+      memo
     );
 
     console.log('tx', tx);
@@ -573,6 +559,7 @@ class ActionBarTakeOff extends Component {
       seconds,
       minutes,
     } = this.state;
+    const { initClock } = this.props;
 
     if (time) {
       return (
@@ -583,12 +570,7 @@ class ActionBarTakeOff extends Component {
           >
             takeoff will start in
           </div>
-          <Timer
-            days={days}
-            hours={hours}
-            seconds={seconds}
-            minutes={minutes}
-          />
+          <Timer updateFunc={initClock} startTime={COSMOS.TIME_START} />
         </ActionBar>
       );
     }
@@ -851,7 +833,7 @@ class ActionBarTakeOff extends Component {
               margin: '0px 10px',
               padding: '0px 25px',
             }}
-            to="/search/evangelist"
+            to="/evangelism"
           >
             Evangelist
           </Link>

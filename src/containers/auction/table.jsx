@@ -36,7 +36,7 @@ const Table = ({ data, TOKEN_NAME, claimed, web3, contract, round }) => {
         <div className="numberType">
           <FormatNumber number={item.youCYB} />
         </div>
-        {item.claimed && (
+        {item.claimed !== false && (
           <div className="table-btn-col">
             <ClaimedRound day={item.claimed} contract={contract} web3={web3}>
               Claim

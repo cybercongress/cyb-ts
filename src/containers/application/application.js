@@ -8,12 +8,14 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import onClickOutside from 'react-onclickoutside';
+import queryString from 'query-string';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import { MenuButton, BandwidthBar } from '../../components';
 import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { setQuery } from '../../redux/actions/query';
 
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');
@@ -63,6 +65,7 @@ class App extends Component {
 
   componentDidMount() {
     this.chekHomePage();
+    this.chekEvangelism();
     this.checkAddressLocalStorage();
   }
 
@@ -73,6 +76,7 @@ class App extends Component {
       this.chekHomePage();
       this.checkStory();
       this.updateInput();
+      this.chekEvangelism();
       if (location.pathname.indexOf(valueSearchInput) === -1) {
         this.clearInrut();
       }
@@ -117,11 +121,10 @@ class App extends Component {
   };
 
   clearInrut = () => {
-    const { funcUpdate } = this.props;
-
+    const { setQueryProps } = this.props;
     const valueSearchInput = '';
+    setQueryProps(valueSearchInput);
     this.setState({ valueSearchInput });
-    funcUpdate(valueSearchInput);
   };
 
   checkStory = () => {
@@ -131,6 +134,17 @@ class App extends Component {
       story = localStorageStory;
     }
     this.setState({ story });
+  };
+
+  chekEvangelism = () => {
+    const { location } = this.props;
+    const { search } = location;
+
+    if (search.match(/thanks=/gm) && search.match(/thanks=/gm).length > 0) {
+      const parsed = queryString.parse(search);
+      console.log('parsed', parsed);
+      localStorage.setItem('thanks', JSON.stringify(parsed.thanks));
+    }
   };
 
   chekHomePage = () => {
@@ -165,27 +179,14 @@ class App extends Component {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
-    const { funcUpdate } = this.props;
+    const { setQueryProps } = this.props;
 
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
         this.routeChange(`/search/${valueSearchInput}`);
-        funcUpdate(valueSearchInput);
+        setQueryProps(valueSearchInput);
       }
     }
-  };
-
-  handleClickOutside = evt => {
-    this.setState({
-      openMenu: false,
-    });
-  };
-
-  toggleMenu = () => {
-    const { openMenu } = this.state;
-    this.setState({
-      openMenu: !openMenu,
-    });
   };
 
   closeStory = () => {
@@ -209,9 +210,6 @@ class App extends Component {
 
     return (
       <div>
-        <AppSideBar onCloseSidebar={this.toggleMenu} openMenu={openMenu}>
-          <AppMenu menuItems={htef} />
-        </AppSideBar>
         <div
           style={{
             display: 'flex',
@@ -232,8 +230,8 @@ class App extends Component {
                 >
                   euler
                 </a>{' '}
-                network. euler is an incentivized test network. Be careful.
-                Details in the{' '}
+                network. euler is incentivized test network. Be careful. Details
+                in{' '}
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
@@ -329,6 +327,7 @@ const mapStateToProps = store => {
   return {
     ipfsStatus: store.ipfs.statusIpfs,
     bandwidth: store.bandwidth.bandwidth,
+    query: store.query.query,
   };
 };
 
@@ -336,6 +335,7 @@ const mapDispatchprops = dispatch => {
   return {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
+    setQueryProps: query => dispatch(setQuery(query)),
   };
 };
 

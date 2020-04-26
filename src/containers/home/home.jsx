@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { StartState } from './stateActionBar';
 import { Loading } from '../../components';
+import { setQuery } from '../../redux/actions/query';
 
 class Home extends PureComponent {
   constructor(props) {
@@ -42,7 +44,7 @@ class Home extends PureComponent {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
-    const { funcUpdate } = this.props;
+    const { setQueryProps } = this.props;
 
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
@@ -54,21 +56,21 @@ class Home extends PureComponent {
           loading: true,
         });
         this.routeChange(`/search/${valueSearchInput}`);
-        funcUpdate(valueSearchInput);
+        setQueryProps(valueSearchInput);
       }
     }
   };
 
   onCklicBtn = () => {
     const { valueSearchInput } = this.state;
-    const { funcUpdate } = this.props;
+    const { setQueryProps } = this.props;
 
     if (valueSearchInput.length > 0) {
       this.setState({
         loading: true,
       });
       this.routeChange(`/search/${valueSearchInput}`);
-      funcUpdate(valueSearchInput);
+      setQueryProps(valueSearchInput);
     }
   };
 
@@ -198,4 +200,10 @@ class Home extends PureComponent {
   }
 }
 
-export default Home;
+const mapDispatchprops = dispatch => {
+  return {
+    setQueryProps: query => dispatch(setQuery(query)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(Home);

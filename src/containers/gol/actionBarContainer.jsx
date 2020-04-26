@@ -227,7 +227,7 @@ class ActionBarContainer extends React.Component {
               >
                 Hero
               </Link>
-              <a
+              <Link
                 style={{
                   fontSize: '18px',
                   padding: '10px 30px',
@@ -235,10 +235,10 @@ class ActionBarContainer extends React.Component {
                   textAlign: 'center',
                 }}
                 className="bnt-claime"
-                href=""
+                to="/evangelism"
               >
                 Evangelist
-              </a>
+              </Link>
             </Pane>
           )}
         </Pane>
