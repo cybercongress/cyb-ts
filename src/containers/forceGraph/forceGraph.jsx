@@ -5,18 +5,13 @@ import {
 // import { useSubscription } from '@apollo/react-hooks';
 // import gql from 'graphql-tag';
 import { getGraphQLQuery } from '../../utils/search/utils';
-
-const GET_OBJECTS = `
-query Objects {
-  object(distinct_on: object) {
-    object
-  }
-}
-`;
+import {
+  Loading,
+} from '../../components';
 
 const GET_CYBERLINKS = `
 query Cyberlinks {
-  cyberlink {
+  cyberlink(limit: 2100, order_by: {height: desc}) {
     object_from
     object_to
     subject
@@ -50,9 +45,24 @@ const ForceGraph = () => {
 
   useEffect(() => {
     const feachData = async () => {
-      let {object} = await getGraphQLQuery(GET_OBJECTS);
-      let {cyberlink} = await getGraphQLQuery(GET_CYBERLINKS);
+      let { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS);
+      let from = cyberlink.map(a => a.object_from);
+      let to = cyberlink.map(a => a.object_to);
+      let set = new Set(from.concat(to))
+      let object = []
+      set.forEach(function(value) {
+        object.push({id: value})
+      });
 
+      for (let i = 0; i < cyberlink.length; i++) {
+        cyberlink[i] = {
+          source: cyberlink[i]["object_from"],
+          target: cyberlink[i]["object_to"],
+          name: cyberlink[i]["txhash"],
+          subject: cyberlink[i]["subject"],
+          curvative: getRandomInt(20,500)/1000
+        }
+      }
       graph = {
         nodes: object,
         links: cyberlink
@@ -124,8 +134,21 @@ const ForceGraph = () => {
   //   onSubscriptionData: handleNewLink
   // });
 
-  if(loading) {
-    return <div>...</div>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Loading />
+      </div>
+    );
   }
 
   // console.log("pocket", localStorage.getItem('pocket'));
@@ -143,16 +166,17 @@ const ForceGraph = () => {
         enableNodeDrag={false}
         enablePointerInteraction={true}
 
-        nodeId="object"
-        nodeLabel="object"
+        // nodeId="object"
+        nodeLabel="id"
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
         nodeRelSize={5}
 
-        linkSource="object_from"
-        linkTarget="object_to"
+        // linkSource="object_from"
+        // linkTarget="object_to"
         linkLabel="txhash"
-        linkColor={() => 'rgba(9,255,13,1)'}
+        // linkColor={() => 'rgba(9,255,13,1)'}
+        linkColor={(link) => ((link["subject"] == localStorage.getItem('pocket').bech32) ? 'white' : 'rgba(9,255,13,1)' )}
         linkWidth={2}
         linkCurvature={0.2}
         linkOpacity={0.4}
