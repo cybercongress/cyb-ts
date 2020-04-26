@@ -482,7 +482,7 @@ class Funding extends PureComponent {
               right now, get some tokens from the{' '}
               <Link to="/gol/faucet">test~Auction</Link> instead. By donating you
               agree with the donation terms defined in our{' '}
-              <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+              <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
                 Whitepaper
               </LinkWindow>{' '}
               and the{' '}
