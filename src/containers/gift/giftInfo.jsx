@@ -19,7 +19,7 @@ const GiftInfo = () => {
           they have a better chance to bootstrap smarter superintelligence. So{' '}
           <a
             target="_blank"
-            href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+            href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
           >
             they decided to allocate 10% of CYB
           </a>{' '}
