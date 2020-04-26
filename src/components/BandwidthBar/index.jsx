@@ -22,7 +22,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
       <Pane marginBottom={12}>
         <Text size={300}>
           {text}
-          <Link style={{ color: '#068661', fontSize: '14px' }} to="https://cyber.page/gol/faucet">
+          <Link style={{ color: '#068661', fontSize: '14px' }} to="/gol/faucet">
             Get EUL
           </Link>
         </Text>
