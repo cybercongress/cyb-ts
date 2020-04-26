@@ -14,7 +14,7 @@ function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
       >
         <Link to="/graph">
           <CardStatisics
-            title="cyberlinks"
+            title="Cyberlinks"
             value={formatNumber(linksCount)}
             link
           />
@@ -30,7 +30,7 @@ function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
             textDecoration: 'none',
           }}
         >
-          <CardStatisics title="heroes" value={activeValidatorsCount} link />
+          <CardStatisics title="Heroes" value={activeValidatorsCount} link />
         </Link>
       </Pane>
     );

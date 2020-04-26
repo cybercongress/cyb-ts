@@ -145,9 +145,9 @@ function GiftAddress({ address }) {
         >
           <TextCustom>Greetings, bearer of strong intelligence!</TextCustom>
           <TextCustom>
-            I am Cyb. I think you search for a gift associated with{' '}
-            <Address address={address} /> address. I heard the gods put some
-            meaning into it ...
+            I am Cyb, your friendly robot. It looks like you searching for a gift associated 
+            with the{' '} <Address address={address} /> address. I heard that the Gods put 
+            meaning to the gift ...
           </TextCustom>
           <ContainerCard col={1}>
             <Card
@@ -156,7 +156,7 @@ function GiftAddress({ address }) {
             />
           </ContainerCard>
           <TextCustom>
-            Anyone who can prove he has private keys of this address will have{' '}
+            Anyone able to prove that he has the private keys to this address, will have{' '}
             {loading ? (
               <Dots />
             ) : (
@@ -164,7 +164,7 @@ function GiftAddress({ address }) {
                 ((drop.gift / GENESIS_SUPPLY) * 10000).toPrecision(1)
               )
             )}{' '}
-            ‱ control over Her mind, and at current network load can submit{' '}
+            ‱ control over Her mind. At the current network load, you can submit{' '}
             {loading ? (
               <Dots />
             ) : (
@@ -172,18 +172,18 @@ function GiftAddress({ address }) {
                 Math.floor(maxAccountBandwidth / (400 * currentBandwidthPrice))
               )
             )}{' '}
-            cyberlinks every day until the end of days.
+            cyberlinks every day until the revelation comes.
           </TextCustom>
           <TextCustom width="100%" fontSize="23px">
-            Why so much?
+            How do you know this?
           </TextCustom>
           <TextCustom>
             The{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-              Great Web scripture
+            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
+              gospel of the Great Web
             </LinkWindow>{' '}
-            says that {formatNumber(100000000000000)} CYB in Genesis will be
-            written to strong intelligences who came from{' '}
+            says that a total of {formatNumber(100000000000000)} CYB in the Genesis will 
+            fall upon the hands of strong intelligence, which came from{' '}
             <LinkWindow to="https://ethereum.org/">Ethereum</LinkWindow>,{' '}
             <LinkWindow to="https://cosmos.network/">Cosmos</LinkWindow>, and{' '}
             <LinkWindow to="https://urbit.org/">Urbit</LinkWindow>.
@@ -191,21 +191,21 @@ function GiftAddress({ address }) {
 
           {address.match(PATTERN_COSMOS) && (
             <TextCustom width="100%">
-              At cosmos-hub-2 block 1110000 the balance was
+              On block 1110000 of Cosmos-hub-2 your Manna was:
             </TextCustom>
           )}
           {address.match(PATTERN_ETH) && (
             <TextCustom width="100%">
-              At Ethereum block {formatNumber(8080808)} the balance was:
+              On block {formatNumber(8080808)} of Ethereum your Manna was:
             </TextCustom>
           )}
           {loading ? <Dots /> : <GiftTable data={drop.drop} />}
           <TextCustom width="100%" fontSize="23px">
-            I have the keys!
+            I have the keys to my wisdom!
           </TextCustom>
           <TextCustom>
-            Great, you can put the Ledger into the{' '}
-            <Link to="/pocket">pocket</Link>, or import{' '}
+            Great! You may put your Ledger into the{' '}
+            <Link to="/pocket">pocket</Link>, or import your{' '}
             <LinkWindow to="https://cybercongress.ai/docs/cyberd/ultimate-commands-guide/#import-an-account-by-seed-phrase-and-store-it-in-local-keystore">
               seed phrase
             </LinkWindow>{' '}
@@ -213,12 +213,12 @@ function GiftAddress({ address }) {
             <LinkWindow to="https://cybercongress.ai/docs/cyberd/ultimate-commands-guide/#import-an-account-by-private-key-and-store-it-in-local-keystore-private-key-could-be-your-eth-private-key">
               private key
             </LinkWindow>{' '}
-            to the cyberdcli.
+            using the CLI.
           </TextCustom>
           <TextCustom>
             While importing your keys be very careful. Adversaries are
-            everywhere! Rumours has it, to not use other software for anything
-            serious. Your CYB wait for you in <Link to="/search/genesis">Genesis</Link>.
+            everywhere! Rumour has it, that you should not import keys with 
+            serious sums. Your CYB awaits you in the <Link to="/search/genesis">Genesis</Link>.
           </TextCustom>
           <TextCustom width="100%" fontSize="23px">
             I can not wait!

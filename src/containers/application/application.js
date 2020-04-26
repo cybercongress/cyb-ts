@@ -235,7 +235,7 @@ class App extends Component {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+                  href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
                 >
                   whitepaper
                 </a>{' '}
@@ -309,7 +309,7 @@ class App extends Component {
                   rel="noopener noreferrer"
                   href="https://github.com/cybercongress/dot-cyber"
                 >
-                  dot-cyber
+                  The dot-cyber
                 </a>{' '}
                 app has not been audited yet. Please, use it with caution.
               </span>

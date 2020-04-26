@@ -612,10 +612,10 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button marginX="10px" onClick={this.onClickAddAddressUser}>
-              Put read only address
+              Put a read-only address
             </Button>
             <Button marginX="10px" onClick={this.onClickAddAddressLedger}>
-              Put Ledger
+              Pocket your Ledger
             </Button>
           </Pane>
         </ActionBar>
@@ -738,7 +738,7 @@ class ActionBarContainer extends Component {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={this.onClickInitLedger}>sing ledger</Button>
+            <Button onClick={this.onClickInitLedger}>sing with ledger</Button>
           </Pane>
         </ActionBar>
       );

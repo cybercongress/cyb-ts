@@ -451,12 +451,12 @@ class Funding extends PureComponent {
             marginY={5}
           >
             <Pane>
-              We understand that shaking status quo of Google religion will be
+              We understand that shaking the status quo of Googles religion will be
               hard.
             </Pane>
             <Pane>But we must.</Pane>
             <Pane>
-              As this is the only way to provide sustainable future for our
+              As this is the only way to provide sustainable future for the next
               generations.
             </Pane>
             <Pane>Founders</Pane>
@@ -468,24 +468,24 @@ class Funding extends PureComponent {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Takeoff donations is the first event in{' '}
-              <Link to="/search/roadmap">CYB distribution process</Link>.
-              Takeoff main purpose to involve validators into decentralized
-              launch of <Link to="/search/genesis">Genesis</Link>. Also we want
-              to involve everybody into cyberlinking. So{' '}
-              <Link to="/gol">Game of Links</Link> rewards depends on the
+              Takeoff donations are the first event in the{' '}
+              <Link to="/search/roadmap">distribution process of CYB</Link>.
+              The main purpose of the Takeoff is to get validators involved in the decentralized
+              launch of <Link to="/search/genesis">The Genesis</Link>. We also want
+              to engage everybody into cyberlinking. The{' '}
+              <Link to="/gol">Game of Links</Link> rewards are dependant on the
               Takeoff results. The more will be donated, the more{' '}
-              <Link to="/gol">GoL</Link> participants get rewards. Please keep
-              in mind that you receive CYB in Genesis and EUL after the end of
+              <Link to="/gol">GoL</Link> rewards the participants get. Please keep
+              in mind, that you will receive CYB in Genesis and EUL after the end of
               the auction. If you want to test{' '}
-              <Link to="/search/cyberlink">cyberlinking</Link>
-              immediately get some tokens at{' '}
+              <Link to="/search/cyberlink">cyberlinking </Link>
+              right now, get some tokens from the{' '}
               <Link to="/gol/faucet">test~Auction</Link> instead. By donating you
-              agree with donation terms defined in{' '}
-              <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+              agree with the donation terms defined in our{' '}
+              <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
                 Whitepaper
               </LinkWindow>{' '}
-              and{' '}
+              and the{' '}
               <LinkWindow to="https://cybercongress.ai/game-of-links/">
                 Game of Links rules
               </LinkWindow>

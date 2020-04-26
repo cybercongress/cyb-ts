@@ -214,7 +214,7 @@ class SearchResults extends React.Component {
         <Link to={`/gift/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN`}
-            text="Don't wait, claim your gift :-) And to the Game of Links!"
+            text="Don't wait! Claim your gift, and join the Game of Links!"
             status="sparkApp"
             // address={query}
           />

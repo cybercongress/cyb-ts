@@ -70,8 +70,8 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
   <ActionBar>
     <ActionBarContentText flexDirection="column">
       <div className="text-default">
-        Your TX has been broadcast to the network. It is waiting to be mined &
-        confirned.
+        Your TX has been broadcasted to the network. It is waiting to be mined &
+        confirmed.
       </div>
       <div className="text-default">
         Check TX status:{' '}
@@ -125,7 +125,7 @@ class ActionBarEvangelism extends Component {
           });
         }
       } catch (error) {
-        console.log('You declined transaction', error);
+        console.log('You declined the transaction', error);
       }
     } else if (window.web3) {
       const accounts = await web3.eth.getAccounts();
@@ -302,10 +302,10 @@ class ActionBarEvangelism extends Component {
             <span>Please install</span>
             &nbsp;
             <a href="https://metamask.io/" target="_blank">
-              Metamask extension
+              Metamask and
             </a>
             &nbsp;
-            <span>and refresh the page</span>
+            <span>refresh the page</span>
           </ActionBarContentText>
         </ActionBar>
       );
@@ -322,7 +322,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            put your cyber address
+            input your cyber address
             <input
               value={cyberAddress}
               style={{
@@ -340,7 +340,7 @@ class ActionBarEvangelism extends Component {
             disabled={!cyberAddress.match(PATTERN_CYBER)}
             onClick={this.onClickCyber}
           >
-            put
+            confirm
           </Button>
         </ActionBar>
       );
@@ -350,7 +350,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            put your cosmos address
+            input your cosmos address
             <input
               value={cosmosAddress}
               style={{
@@ -368,7 +368,7 @@ class ActionBarEvangelism extends Component {
             disabled={!cosmosAddress.match(PATTERN_COSMOS)}
             onClick={this.onClickCosmos}
           >
-            put
+            confirm
           </Button>
         </ActionBar>
       );
@@ -378,7 +378,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            put your nickname
+            input your nickname
             <input
               value={nickname}
               style={{
@@ -396,7 +396,7 @@ class ActionBarEvangelism extends Component {
             disabled={nickname.length === 0}
             onClick={this.onClickNickName}
           >
-            put
+            confirm
           </Button>
         </ActionBar>
       );
@@ -406,7 +406,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            put your github username
+            input your github username
             <input
               value={githubUsername}
               style={{
@@ -424,7 +424,7 @@ class ActionBarEvangelism extends Component {
             disabled={githubUsername.length === 0}
             onClick={this.onClickGit}
           >
-            put
+            confirm
           </Button>
         </ActionBar>
       );
@@ -434,7 +434,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            put your keybase name
+            input your keybase name
             <input
               value={keybaseName}
               style={{
@@ -452,7 +452,7 @@ class ActionBarEvangelism extends Component {
             disabled={keybaseName.length === 0}
             onClick={this.onClickKeyBase}
           >
-            put
+            confirm
           </Button>
         </ActionBar>
       );
@@ -462,14 +462,14 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            This transaction will perform an action on
+            This transaction will call the Gods to consider you
             <LinkWindow
               style={{
                 marginLeft: '5px',
               }}
               to={`https://etherscan.io/address/${this.smart}`}
             >
-              cyber~Evangelism
+              as a cyber~Evangelist
             </LinkWindow>
             .
           </ActionBarContentText>
@@ -482,7 +482,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            sign up Tx
+            sign the Tx
             <Dots big />
           </ActionBarContentText>
         </ActionBar>

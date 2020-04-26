@@ -330,8 +330,8 @@ class Wallet extends React.Component {
               width="60%"
             >
               <Text fontSize="16px" color="#fff">
-                This is your pocket. If you put you pubkey here I can help
-                cyberlink, track your balances, participate in{' '}
+                This is your pocket. If you give me your pubkey I can help
+                cyberlink, track your balances, participate in the{' '}
                 <Link to="/gol">Game of Links</Link> and more.
               </Text>
             </Pane>
@@ -377,8 +377,8 @@ class Wallet extends React.Component {
                   onClick={this.onClickImportLink}
                 >
                   <Text fontSize="16px" color="#fff">
-                    You created {link !== null && countLink} cyberlinks in
-                    euler-5. Import CLI
+                    You have created {link !== null && countLink} cyberlinks in
+                    euler-5. Import using CLI
                   </Text>
                 </PocketCard>
               )}

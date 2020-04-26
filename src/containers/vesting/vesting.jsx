@@ -240,8 +240,8 @@ class Vesting extends PureComponent {
           >
             {endTime === null ? (
               <Text fontSize="16px" color="#fff">
-                Vesting allow you to get 1 EUL for each vested GOL. Also GOLs
-                allow you to participate in decisions of{' '}
+                Vesting allows you to get 1 EUL token for each vested GOL token. GOL tokens
+                also allow you to participate in the decisions of{' '}
                 <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
                   Euler Foundation
                 </LinkWindow>
