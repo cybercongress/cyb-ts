@@ -12,7 +12,7 @@ export const MenuButton = ({
   textTooltip,
   to,
   size = 40,
-  bottomBug = '-10%',
+  bottomBug = '-20%',
   ...props
 }) => (
   <Tooltip content={textTooltip} position="bottom">

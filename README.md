@@ -1,7 +1,7 @@
 
 ## Vision
 
-Deferential, sexy and efficient interface for [cyber protocol](https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ) which answer question better and faster ~~than Google~~. 
+Deferential, sexy and efficient interface for [cyber protocol](https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x) which answer question better and faster ~~than Google~~. 
 
 Built with the help of [gravity](https://github.com/cybercongress/gravity), [cyberindex](https://github.com/cybercongress/cyberindex) and [web3.js](https://github.com/ethereum/web3.js)
 

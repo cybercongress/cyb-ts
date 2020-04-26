@@ -33,7 +33,7 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
       title="Current discount"
       value={`${discount}%`}
       positionTooltip="bottom"
-      tooltipValue="The advantage of price in the first donation of funding over the last one"
+      tooltipValue="The discount of price in the first donation of funding over the last one"
     />
 
     <Card

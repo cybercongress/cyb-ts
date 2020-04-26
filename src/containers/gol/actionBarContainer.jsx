@@ -202,18 +202,18 @@ class ActionBarContainer extends React.Component {
               >
                 Choose you path
               </Text>
-              <a
+              <Link
+                className="btn"
                 style={{
-                  fontSize: '18px',
-                  padding: '10px 30px',
-                  minWidth: '120px',
-                  textAlign: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  margin: '0px 10px',
+                  padding: '0 30px',
                 }}
-                className="bnt-claime"
-                href=""
+                to="/search/master"
               >
                 Master
-              </a>
+              </Link>
               <Link
                 style={{
                   fontSize: '18px',

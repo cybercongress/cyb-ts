@@ -11,7 +11,7 @@ function GolCard({ pocket, ...props }) {
         Welcome to the intergalactic tournament - Game of Links. GoL is the
         main preparation stage before{' '}
         <Link to="/search/genesis">the main network launch</Link> of{' '}
-        <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+        <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
           the cyber protocol
         </LinkWindow>
         . The main goal of the tournament is to collectively bootstrap the{' '}

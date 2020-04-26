@@ -61,6 +61,7 @@ class App extends Component {
       address: null,
     };
     this.routeChange = this.routeChange.bind(this);
+    // this.handleKeyFocus = this.handleKeyFocus.bind(this);
   }
 
   componentDidMount() {
@@ -189,6 +190,10 @@ class App extends Component {
     }
   };
 
+  handleKeyFocus = async e => {
+    console.log(e.key);
+  };
+
   closeStory = () => {
     // console.log('dfd');
     this.setState({
@@ -209,7 +214,7 @@ class App extends Component {
     }
 
     return (
-      <div>
+      <div onKeyPress={e => this.handleKeyFocus(e)}>
         <div
           style={{
             display: 'flex',
@@ -288,11 +293,11 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Pane className="battery-container" width="60px" marginRight="10px">
+          <Pane className="battery-container" width="65px" marginRight="10px">
             <BandwidthBar
-              height="10px"
+              height="15px"
               styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={9}
+              fontSize={12}
               colorText="#000"
               bwRemained={bandwidth.remained}
               bwMaxValue={bandwidth.maxValue}
