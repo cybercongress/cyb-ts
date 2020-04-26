@@ -129,6 +129,10 @@ class ProposalsDetail extends React.Component {
     proposalsInfo.description = proposals.content.value.description;
     proposalsInfo.proposer = proposer.proposer;
 
+    if (proposals.content.value.recipient) {
+      proposalsInfo.recipient = proposals.content.value.recipient;
+    }
+
     this.setState({
       proposals,
       proposalsInfo,
@@ -321,6 +325,19 @@ class ProposalsDetail extends React.Component {
                 title="Type"
                 value={this.getSubStr(proposalsInfo.type)}
               />
+              {proposalsInfo.recipient && (
+                <Item
+                  title="Recipient"
+                  marginBottom={15}
+                  value={
+                    <Link
+                      to={`/network/euler/contract/${proposalsInfo.recipient}`}
+                    >
+                      {proposalsInfo.recipient}
+                    </Link>
+                  }
+                />
+              )}
               <Item
                 title="Description"
                 value={
