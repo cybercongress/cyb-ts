@@ -75,7 +75,6 @@ class App extends Component {
     const { valueSearchInput } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
-      this.checkStory();
       this.updateInput();
       this.chekEvangelism();
       if (location.pathname.indexOf(valueSearchInput) === -1) {
@@ -126,15 +125,6 @@ class App extends Component {
     const valueSearchInput = '';
     setQueryProps(valueSearchInput);
     this.setState({ valueSearchInput });
-  };
-
-  checkStory = () => {
-    let story = false;
-    const localStorageStory = localStorage.getItem('story');
-    if (localStorageStory !== null) {
-      story = localStorageStory;
-    }
-    this.setState({ story });
   };
 
   chekEvangelism = () => {
@@ -190,10 +180,6 @@ class App extends Component {
     }
   };
 
-  handleKeyFocus = async e => {
-    console.log(e.key);
-  };
-
   closeStory = () => {
     // console.log('dfd');
     this.setState({
@@ -205,16 +191,8 @@ class App extends Component {
     const { openMenu, story, home, valueSearchInput, battery } = this.state;
     const { children, location, ipfsStatus, bandwidth } = this.props;
 
-    if (!story && home) {
-      this.routeChange('/episode-1');
-    }
-
-    if (!story && location.pathname === '/episode-1') {
-      return <div>{children}</div>;
-    }
-
     return (
-      <div onKeyPress={e => this.handleKeyFocus(e)}>
+      <div>
         <div
           style={{
             display: 'flex',
