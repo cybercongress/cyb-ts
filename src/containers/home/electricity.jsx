@@ -54,9 +54,9 @@ class Electricity extends React.Component {
   };
 
   At = (el, a, v) => {
-    if (v > 0) {
+    try {
       el.setAttribute(a, v);
-    }
+    } catch (error) {}
   };
 
   R = (min, max) => {
