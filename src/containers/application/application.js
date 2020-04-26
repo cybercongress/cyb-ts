@@ -61,6 +61,7 @@ class App extends Component {
       address: null,
     };
     this.routeChange = this.routeChange.bind(this);
+    // this.handleKeyFocus = this.handleKeyFocus.bind(this);
   }
 
   componentDidMount() {
@@ -74,7 +75,6 @@ class App extends Component {
     const { valueSearchInput } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
-      this.checkStory();
       this.updateInput();
       this.chekEvangelism();
       if (location.pathname.indexOf(valueSearchInput) === -1) {
@@ -125,15 +125,6 @@ class App extends Component {
     const valueSearchInput = '';
     setQueryProps(valueSearchInput);
     this.setState({ valueSearchInput });
-  };
-
-  checkStory = () => {
-    let story = false;
-    const localStorageStory = localStorage.getItem('story');
-    if (localStorageStory !== null) {
-      story = localStorageStory;
-    }
-    this.setState({ story });
   };
 
   chekEvangelism = () => {
@@ -199,14 +190,6 @@ class App extends Component {
   render() {
     const { openMenu, story, home, valueSearchInput, battery } = this.state;
     const { children, location, ipfsStatus, bandwidth } = this.props;
-
-    if (!story && home) {
-      this.routeChange('/episode-1');
-    }
-
-    if (!story && location.pathname === '/episode-1') {
-      return <div>{children}</div>;
-    }
 
     return (
       <div>
@@ -288,11 +271,11 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Pane className="battery-container" width="60px" marginRight="10px">
+          <Pane className="battery-container" width="65px" marginRight="10px">
             <BandwidthBar
-              height="10px"
+              height="15px"
               styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={9}
+              fontSize={12}
               colorText="#000"
               bwRemained={bandwidth.remained}
               bwMaxValue={bandwidth.maxValue}

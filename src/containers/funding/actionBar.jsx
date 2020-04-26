@@ -694,7 +694,7 @@ class ActionBarTakeOff extends Component {
             <Pane display="inline">
               By donating {toSend} ATOM you agree with donation terms defined in
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
               Whitepaper
             </LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
@@ -756,7 +756,7 @@ class ActionBarTakeOff extends Component {
             <Pane display="inline">
               By donating {toSend} ATOM you agree with donation terms defined in
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
               Whitepaper
             </LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}

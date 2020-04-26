@@ -19,7 +19,7 @@ import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
 import { cybWon } from '../../utils/fundingMath';
 import injectWeb3 from './web3';
-import { CYBER, AUCTION, GENESIS_SUPPLY } from '../../utils/config';
+import { CYBER, AUCTION, GENESIS_SUPPLY, TAKEOFF } from '../../utils/config';
 import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
@@ -29,6 +29,8 @@ import {
   ConsensusTab,
   CybernomicsTab,
   KnowledgeTab,
+  CommunityTab,
+  DocsTab,
 } from './tabs';
 
 const { DIVISOR_CYBER_G } = CYBER;
@@ -74,6 +76,7 @@ class Brain extends React.Component {
       capATOM: 0,
       communityPool: 0,
       proposals: 0,
+      donation: 0,
       cybernomics: {
         gol: {
           supply: 0,
@@ -134,6 +137,16 @@ class Brain extends React.Component {
       pathname.match(/government/gm).length > 0
     ) {
       this.select('government');
+    } else if (
+      pathname.match(/community/gm) &&
+      pathname.match(/community/gm).length > 0
+    ) {
+      this.select('community');
+    } else if (
+      pathname.match(/docs/gm) &&
+      pathname.match(/docs/gm).length > 0
+    ) {
+      this.select('docs');
     } else {
       this.select('main');
     }
@@ -199,18 +212,21 @@ class Brain extends React.Component {
     console.log('currentPrice', currentPrice);
 
     const supplyEUL = parseFloat(GENESIS_SUPPLY);
-    const takeofPrice = currentPrice / DIVISOR_CYBER_G;
-    const capATOM = (supplyEUL / DIVISOR_CYBER_G) * takeofPrice;
+    const takeoffPrice = currentPrice / DIVISOR_CYBER_G;
+    const capATOM = (supplyEUL / DIVISOR_CYBER_G) * takeoffPrice;
     console.log('capATOM', capATOM);
 
     cybernomics.cyb = {
       cap: capATOM,
-      price: takeofPrice,
+      price: takeoffPrice,
       supply: GENESIS_SUPPLY,
     };
 
+    const donation = amount / TAKEOFF.ATOMsALL;
+
     this.setState({
       cybernomics,
+      donation,
     });
   };
 
@@ -326,6 +342,8 @@ class Brain extends React.Component {
       inlfation,
       cybernomics,
       proposals,
+      gol,
+      donation,
     } = this.state;
     const { block } = this.props;
 
@@ -352,8 +370,9 @@ class Brain extends React.Component {
       content = (
         <MainTab
           linksCount={linksCount}
-          capATOM={cybernomics.eul.cap}
+          cybernomics={cybernomics}
           activeValidatorsCount={activeValidatorsCount}
+          donation={donation}
         />
       );
     }
@@ -411,6 +430,16 @@ class Brain extends React.Component {
       );
     }
 
+    if (selected === 'community') {
+      content = (
+        <Route path="/brain/community" render={() => <CommunityTab />} />
+      );
+    }
+
+    if (selected === 'docs') {
+      content = <Route path="/brain/docs" render={() => <DocsTab />} />;
+    }
+
     return (
       <div>
         <main className="block-body">
@@ -456,16 +485,26 @@ class Brain extends React.Component {
               isSelected={selected === 'cybernomics'}
               to="/brain/cybernomics"
             />
-            <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
             <TabBtn
               text="Consensus"
               isSelected={selected === 'consensus'}
               to="/brain/consensus"
             />
+            <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
             <TabBtn
               text="Government"
               isSelected={selected === 'government'}
               to="/brain/government"
+            />
+            <TabBtn
+              text="Docs & Code"
+              isSelected={selected === 'docs'}
+              to="/brain/docs"
+            />
+            <TabBtn
+              text="Community"
+              isSelected={selected === 'community'}
+              to="/brain/community"
             />
           </Tablist>
           <Pane marginTop={50} marginBottom={50}>

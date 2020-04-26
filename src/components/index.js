@@ -32,6 +32,7 @@ import StatusTx from './statusTx';
 import Vitalik from './vitalik';
 import BandwidthBar from './BandwidthBar';
 import Timer from './timer';
+import Battery from './battery';
 
 export {
   RowTableTakeoff,
@@ -66,6 +67,7 @@ export {
   ActionBarContentText,
   CheckAddressInfo,
   Timer,
+  Battery,
 };
 
 export { Nums } from './ui/Numbers';

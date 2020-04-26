@@ -60,15 +60,19 @@ export const CardStatisics = ({
   styleTitle,
 }) => (
   <div style={styleContainer} className="container-statistics-card">
-    <span style={styleValue} className="card-statistics-value">
-      {value}
-    </span>
-    <Pane display="flex" alignItems="center">
-      <span style={styleTitle} className="card-statistics-title">
-        {title}
+    {value && (
+      <span style={styleValue} className="card-statistics-value">
+        {value}
       </span>
-      {link && <Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-    </Pane>
+    )}
+    {title && (
+      <Pane display="flex" alignItems="center">
+        <span style={styleTitle} className="card-statistics-title">
+          {title}
+        </span>
+        {link && <Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
+      </Pane>
+    )}
   </div>
 );
 

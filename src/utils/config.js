@@ -40,7 +40,7 @@ const TAKEOFF = {
 const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
-  TIME_END: 'July 07 2020 21:50:00 GMT +3',
+  TIME_END: 'July 25 2020 21:50:00 GMT +3',
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,

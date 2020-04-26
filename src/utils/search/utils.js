@@ -334,7 +334,7 @@ export const selfDelegationShares = async (
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/staking/delegators/${delegatorAddress}/delegations/${operatorAddress}`,
     });
-    return response.data.result.shares;
+    return response.data.result.balance.amount;
   } catch (e) {
     console.log(e);
     return 0;

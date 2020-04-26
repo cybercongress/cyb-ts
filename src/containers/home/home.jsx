@@ -185,9 +185,13 @@ class Home extends PureComponent {
               autoComplete="off"
               autoFocus
             />
-            <Link style={{ marginTop: 50 }} to="/gol">
-              <Pane>Join Game of Links</Pane>
-            </Link>
+            <Pane marginTop={50}>
+              <Link to="/gol/faucet">Get EUL</Link>
+              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
+              <Link to="/gol">Join Game of Links</Link>
+              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
+              <Link to="/gol/takeoff">Takeoff</Link>
+            </Pane>
           </Pane>
         </main>
         <StartState

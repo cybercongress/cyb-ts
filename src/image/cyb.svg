@@ -11,7 +11,7 @@
                 </mask>
                 <path fill="#2B3239" d="M-.96 15.416h24.62V-.96H-.96z" mask="url(#b)"/>
             </g>
-            <ellipse cx="16.239" cy="13.082" fill="#e90000" rx="3" ry="3.84"/>
+            <ellipse cx="16.239" cy="13.082" fill="#e90000" rx="3.5" ry="3.5"/>
         </g>
         <path d="M0 0h32v32H0z"/>
     </g>

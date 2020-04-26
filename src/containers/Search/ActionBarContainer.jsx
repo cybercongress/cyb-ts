@@ -697,7 +697,7 @@ class ActionBarContainer extends Component {
             flexGrow={1}
             marginRight="15px"
           >
-            please confirm the transaction on Ledger
+            please press cyberlink and confirm the transaction on Ledger
           </Pane>
           <button type="button" className="btn" onClick={e => this.link(e)}>
             Cyberlink

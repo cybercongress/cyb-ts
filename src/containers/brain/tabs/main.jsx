@@ -1,22 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane, Icon } from '@cybercongress/gravity';
-import { CardStatisics } from '../../../components';
+import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 
-function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
+function MainTab({ linksCount, cybernomics, activeValidatorsCount, donation }) {
   try {
+    const gol = (donation + activeValidatorsCount / 146) / 2;
     return (
       <Pane
         display="grid"
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <CardStatisics title="Cyberlinks" value={formatNumber(linksCount)} />
-        <CardStatisics
-          title="EUL cap in ETH"
-          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
-        />
+        <Link to="/graph">
+          <CardStatisics
+            title="Cyberlinks"
+            value={formatNumber(linksCount)}
+            link
+          />
+        </Link>
+        <Link to="/gol/takeoff">
+          <CardStatisics
+            title="Takeoff price, GCYB/ATOM"
+            value={formatNumber(cybernomics.cyb.price)}
+            link
+          />
+        </Link>
         <Link
           to="/heroes"
           style={{
@@ -25,6 +35,40 @@ function MainTab({ linksCount, capATOM, activeValidatorsCount }) {
           }}
         >
           <CardStatisics title="Heroes" value={activeValidatorsCount} link />
+        </Link>
+        <LinkWindow to="https://github.com/cybercongress/congress/blob/master/ecosystem/Cyber%20Homestead%20doc.md">
+          <CardStatisics
+            // title="Homestead"
+            styleContainer={{
+              justifyContent: 'center',
+              padding: '65px 0',
+              fontSize: '26px',
+            }}
+            styleTitle={{ fontSize: '26px' }}
+            title="Homestead"
+            link
+          />
+        </LinkWindow>
+        <Link to="/gol">
+          <CardStatisics
+            title="Game of Links Goal"
+            value={`${formatNumber(gol * 100, 2)}%`}
+            link
+          />
+        </Link>
+        <Link
+          to="/gol/faucet"
+          style={{
+            display: 'contents',
+            textDecoration: 'none',
+          }}
+        >
+          <CardStatisics
+            styleContainer={{ justifyContent: 'center', fontSize: '26px' }}
+            styleTitle={{ fontSize: '26px' }}
+            title="Get will"
+            link
+          />
         </Link>
       </Pane>
     );

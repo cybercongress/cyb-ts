@@ -271,3 +271,35 @@
   margin-bottom: 15px;
   padding-left: 20px;
 }
+
+.pulse {
+  background: transparent;
+	border-radius: 50%;
+	box-shadow: 0 0 0 0 rgba(24, 255, 255, 1);
+	height: 50px;
+	width: 40px;
+  animation: pulse-green 4s infinite;
+}
+
+.pulse-cyb {
+  background: transparent;
+	border-radius: 50%;
+	box-shadow: 0 0 0 0 rgba(24, 255, 255, 1);
+	height: 50px;
+	width: 40px;
+  animation: pulse-green 4.5s infinite;
+}
+
+@keyframes pulse-green {
+	0% {
+		box-shadow: 0 0 0 0 rgba(24, 255, 255, 0.54);
+	}
+	
+	70% {
+		box-shadow: 0 0 0 10px rgba(24, 255, 255, 0);
+	}
+	
+	100% {
+		box-shadow: 0 0 0 0 rgba(24, 255, 255, 0);
+	}
+}
