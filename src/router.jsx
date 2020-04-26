@@ -21,7 +21,7 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
-// import ForceGraph from './containers/forceGraph/forceGraph';
+import ForceGraph from './containers/forceGraph/forceGraph';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
@@ -64,16 +64,16 @@ class AppRouter extends React.Component {
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    this.setState({ loader: false });
-    // if (!mobile) {
-    //   if (!isSafari) {
-    //     await this.initIpfsNode();
-    //   } else {
-    //     this.setState({ loader: false });
-    //   }
-    // } else {
-    //   this.setState({ loader: false });
-    // }
+    // this.setState({ loader: false });
+    if (!mobile) {
+      if (!isSafari) {
+        await this.initIpfsNode();
+      } else {
+        this.setState({ loader: false });
+      }
+    } else {
+      this.setState({ loader: false });
+    }
   };
 
   initIpfsNode = async () => {
@@ -190,7 +190,7 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
-          {/* <Route path="/graph" component={ForceGraph} /> */}
+          <Route path="/graph" component={ForceGraph} />
           <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />
