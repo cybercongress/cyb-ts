@@ -7,11 +7,7 @@ import { formatNumber } from '../../../utils/utils';
 function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
   try {
     return (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
+      <>
         <Link to="/graph">
           <CardStatisics
             title="Cyberlinks"
@@ -30,7 +26,7 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
         </Link>
 
         <CardStatisics title="Subjects" value={formatNumber(accountsCount)} />
-      </Pane>
+      </>
     );
   } catch (error) {
     console.log(error);

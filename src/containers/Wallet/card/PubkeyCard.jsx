@@ -8,6 +8,7 @@ import {
   formatCurrency,
   getDelegator,
   exponentialToDecimal,
+  formatNumber,
 } from '../../../utils/utils';
 import { getDrop } from '../../../utils/search/utils';
 
@@ -116,7 +117,7 @@ function PubkeyCard({ pocket, ...props }) {
         }
         title={
           <div>
-            {exponentialToDecimal(pocket.cosmos.amount.toPrecision(2))}{' '}
+            {formatNumber((pocket.cosmos.amount * 1000) / 1000)}{' '}
             {pocket.cosmos.token.toUpperCase()}
           </div>
         }

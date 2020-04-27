@@ -10,7 +10,7 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
     <Card
       tooltipValue="The time left to finish funding in case less than 600000 ATOMs donated"
       positionTooltip="bottom"
-      title="Funding ends"
+      title="Donations ends"
       value={time}
     />
     <Card

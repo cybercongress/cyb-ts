@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
-import { x, y, z } from '../../utils/list';
+import { x, y, z, p } from '../../utils/list';
 import { CYBER } from '../../utils/config';
+import { formatNumber } from '../../utils/utils';
 
 const { DENOM_CYBER_G, DENOM_CYBER } = CYBER;
 
@@ -14,6 +15,7 @@ class Dinamics extends Component {
       discount: false,
       rewards: false,
       activebtn: 'main',
+      price: '',
       center: {
         x: 0,
         y: -0.4,
@@ -111,6 +113,27 @@ class Dinamics extends Component {
     });
   };
 
+  plotlyHover = dataPoint => {
+    if (dataPoint.points[0]) {
+      if (
+        y.indexOf(dataPoint.points[0].y) !== -1 &&
+        p[y.indexOf(dataPoint.points[0].y)]
+      ) {
+        const price = p[y.indexOf(dataPoint.points[0].y)];
+        this.setState({
+          price: formatNumber(price, 5),
+        });
+      }
+    }
+  };
+
+  plotUnhover = () => {
+    // const { round, price, volume, distribution } = this.props;
+    this.setState({
+      price: '',
+    });
+  };
+
   render() {
     const {
       center,
@@ -125,6 +148,7 @@ class Dinamics extends Component {
       share,
       discount,
       rewards,
+      price,
     } = this.state;
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
@@ -206,6 +230,7 @@ class Dinamics extends Component {
         x,
         y,
         z,
+        p,
         line: {
           width: 8,
           opacity: 1,
@@ -291,7 +316,7 @@ class Dinamics extends Component {
           dtick: 1,
           tickcolor: '#000',
           title: {
-            text: `CYB won, GCYBs`,
+            text: `CYB won, %`,
           },
           gridcolor: '#dedede',
           color: '#fff',
@@ -381,7 +406,15 @@ class Dinamics extends Component {
       <div className="container-dinamics">
         <Btn />
 
-        {main && <Plotly data={data} layout={layout} config={config} />}
+        {main && (
+          <Plotly
+            data={data}
+            layout={layout}
+            onHover={figure => this.plotlyHover(figure)}
+            onUnhover={figure => this.plotUnhover(figure)}
+            config={config}
+          />
+        )}
         {share && <Plotly data={dataShare} layout={layout} config={config} />}
         {discount && (
           <Plotly data={dataDiscount} layout={layout} config={config} />

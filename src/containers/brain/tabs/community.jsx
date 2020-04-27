@@ -6,11 +6,7 @@ import { formatNumber } from '../../../utils/utils';
 
 function CommunityTab() {
   return (
-    <Pane
-      display="grid"
-      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-      gridGap="20px"
-    >
+    <>
       <LinkWindow to="https://cybercongress.ai/post/">
         <CardStatisics
           // title="Homestead"
@@ -89,7 +85,7 @@ function CommunityTab() {
           link
         />
       </LinkWindow>
-    </Pane>
+    </>
   );
 }
 

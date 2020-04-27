@@ -279,10 +279,14 @@ class GOL extends React.Component {
               . The main goal of the tournament is to collectively bootstrap the{' '}
               <Link to="/brain">Superintelligence</Link>. Everyone can find
               themselves in this fascinating process: we need to set up physical
-              infrastructure, upload the initial knowledge and create a reserve to
-              sustain the project during its infancy. Athletes need to solve
-              different parts of the puzzle and can win up to 10% of CYB in
-              the Genesis. Read the full rules of the tournament{' '}
+              infrastructure, upload the initial knowledge and create a reserve
+              to sustain the project during its infancy. Athletes need to solve
+              different parts of the puzzle and can win up to 10% of CYB in the
+              Genesis.Participation requere EUL tokens which you can get by{' '}
+              <Link to="/gift">claiming gift</Link>, using{' '}
+              <Link to="/gol/faucet">ETH faucet</Link> or{' '}
+              <Link to="/gol/takeoff">donating ATOM</Link> during Takeoff. Read
+              the full rules of the tournament{' '}
               <LinkWindow to="https://cybercongress.ai/game-of-links/">
                 in the organizator&apos;s blog
               </LinkWindow>

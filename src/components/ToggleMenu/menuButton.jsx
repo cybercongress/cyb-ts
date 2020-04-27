@@ -11,7 +11,7 @@ export const MenuButton = ({
   positionBugLeft,
   textTooltip,
   to,
-  size = 40,
+  size = 50,
   bottomBug = '-20%',
   ...props
 }) => (

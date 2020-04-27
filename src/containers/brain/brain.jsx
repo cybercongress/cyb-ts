@@ -294,7 +294,7 @@ class Brain extends React.Component {
     const chainId = status.node_info.network;
 
     const totalCyb = supplyTotal;
-    const stakedCyb = Math.floor((bondedTokens / totalCyb) * 100 * 1000) / 1000;
+    const stakedCyb = bondedTokens / totalCyb;
     const linkPrice = (400 * +bandwidthPrice).toFixed(0);
 
     if (dataInlfation !== null) {
@@ -369,7 +369,7 @@ class Brain extends React.Component {
     if (selected === 'main') {
       content = (
         <MainTab
-          linksCount={linksCount}
+          linksCount={parseInt(linksCount, 10)}
           cybernomics={cybernomics}
           activeValidatorsCount={activeValidatorsCount}
           donation={donation}
@@ -383,9 +383,9 @@ class Brain extends React.Component {
           path="/brain/knowledge"
           render={() => (
             <KnowledgeTab
-              linksCount={linksCount}
-              cidsCount={cidsCount}
-              accountsCount={accountsCount}
+              linksCount={parseInt(linksCount, 10)}
+              cidsCount={parseInt(cidsCount, 10)}
+              accountsCount={parseInt(accountsCount, 10)}
             />
           )}
         />
@@ -452,9 +452,12 @@ class Brain extends React.Component {
             >
               <Text fontSize="16px" color="#fff">
                 You do not have control over the brain. You need EUL tokens to
-                let Her hear you. If you came from Ethereum or Cosmos you can
-                claim the gift of the Gods and start preparing for the greatest
-                tournament in the universe: <a href="gol">Game of Links</a>.
+                let Her hear you. If you came from Ethereum or Cosmos you can{' '}
+                <Link to="/gift">claim the gift</Link> of the Gods,{' '}
+                <Link to="/gol/faucet">get with ETH</Link>
+                on faucet or <Link to="/gol/takeoff">donate ATOM</Link> during
+                takeoff. Then enjoy the greatest tournament in the universe:{' '}
+                <Link to="/gol">Game of Links</Link>.
               </Text>
             </Pane>
           )}
@@ -507,7 +510,13 @@ class Brain extends React.Component {
               to="/brain/community"
             />
           </Tablist>
-          <Pane marginTop={50} marginBottom={50}>
+          <Pane
+            marginTop={50}
+            marginBottom={50}
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridGap="20px"
+          >
             {content}
           </Pane>
         </main>
