@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -11,6 +12,7 @@ import {
   StartStageSearchActionBar,
   Cyberlink,
   TransactionError,
+  ActionBarContentText,
 } from '../../components';
 
 import {
@@ -614,11 +616,34 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
         <ActionBar>
-          <Pane>
-            <Button onClick={this.addAddressOnClick}>
-              Put Ledger into the pocket
-            </Button>
-          </Pane>
+          <ActionBarContentText>
+            Play Game of Links. Get EUL with
+            <Link
+              style={{
+                paddingTop: 10,
+                margin: '0 15px',
+                paddingBottom: 10,
+                display: 'block',
+              }}
+              className="btn"
+              to="/gol/faucet"
+            >
+              ETH
+            </Link>{' '}
+            or
+            <Link
+              style={{
+                paddingTop: 10,
+                margin: '0 15px',
+                paddingBottom: 10,
+                display: 'block',
+              }}
+              className="btn"
+              to="/gol/takeoff"
+            >
+              ATOM
+            </Link>
+          </ActionBarContentText>
         </ActionBar>
       );
     }
