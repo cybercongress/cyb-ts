@@ -86,11 +86,7 @@ class Funding extends PureComponent {
   }
 
   initClock = () => {
-    const dataStartTakeoff = COSMOS.TIME_START;
-    const timeStartTakeoff =
-      Date.parse(dataStartTakeoff) - Date.parse(new Date());
-    console.log(timeStartTakeoff);
-    if (timeStartTakeoff <= 0) {
+    try {
       const deadline = `${COSMOS.TIME_END}`;
       const startTime = Date.parse(deadline) - Date.parse(new Date());
       if (startTime <= 0) {
@@ -100,7 +96,7 @@ class Funding extends PureComponent {
       } else {
         this.initializeClock(deadline);
       }
-    } else {
+    } catch (error) {
       this.setState({
         time: '∞',
       });
@@ -209,18 +205,21 @@ class Funding extends PureComponent {
   getStatisticsWs = async amountWebSocket => {
     const { amount } = this.state;
     let amountWs = 0;
+    let currentPrice = 0;
 
     amountWs = amount + amountWebSocket;
     const atomLeffWs = ATOMsALL - amountWs;
     const currentDiscountWs = funcDiscountRevers(amountWs);
     const wonWs = cybWon(amountWs);
     const currentPriceWs = wonWs / amountWs;
+    currentPrice = amountWs / wonWs;
 
     this.setState({
       amount: amountWs,
       atomLeff: atomLeffWs,
       won: wonWs,
-      currentPrice: currentPriceWs,
+      currentPrice,
+      currentPriceEstimation: currentPriceWs,
       currentDiscountRevers: currentDiscountWs,
     });
   };
@@ -228,7 +227,7 @@ class Funding extends PureComponent {
   getTableDataWs = async dataTxs => {
     const {
       currentDiscountRevers,
-      currentDiscount,
+      currentPriceEstimation,
       amount,
       groups,
     } = this.state;
@@ -246,14 +245,14 @@ class Funding extends PureComponent {
         }
         estimation =
           getEstimation(
+            currentPriceEstimation,
             currentDiscountRevers,
-            currentDiscount,
             amount,
             amount
           ) -
           getEstimation(
+            currentPriceEstimation,
             currentDiscountRevers,
-            currentDiscount,
             amount,
             tempVal
           );
@@ -365,7 +364,7 @@ class Funding extends PureComponent {
               amount,
               temp
             );
-            temE += estimation;
+          temE += estimation;
           temp += val;
         } else {
           break;
