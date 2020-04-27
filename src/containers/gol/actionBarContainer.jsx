@@ -222,7 +222,7 @@ class ActionBarContainer extends React.Component {
                   minWidth: '120px',
                   textAlign: 'center',
                 }}
-                className="bnt-claime"
+                className="btn"
                 to="/heroes"
               >
                 Hero
@@ -234,7 +234,7 @@ class ActionBarContainer extends React.Component {
                   minWidth: '120px',
                   textAlign: 'center',
                 }}
-                className="bnt-claime"
+                className="btn"
                 to="/evangelism"
               >
                 Evangelist

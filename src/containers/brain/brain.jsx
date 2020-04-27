@@ -369,7 +369,7 @@ class Brain extends React.Component {
     if (selected === 'main') {
       content = (
         <MainTab
-          linksCount={linksCount}
+          linksCount={parseInt(linksCount, 10)}
           cybernomics={cybernomics}
           activeValidatorsCount={activeValidatorsCount}
           donation={donation}

@@ -58,7 +58,12 @@ const getEstimation = (price, discount, atoms, value) => {
 };
 
 const funcDiscount = atom => {
-  const discount = (5 / Math.pow(10, 7)) * atom;
+  const discount = -(5 / 10 ** 7) * atom + 30;
+  return discount;
+};
+
+const funcDiscountRevers = atom => {
+  const discount = (5 / 10 ** 7) * atom;
   return discount;
 };
 
@@ -134,4 +139,5 @@ export {
   getRewards,
   getGroupAddress,
   getDisciplinesAllocation,
+  funcDiscountRevers,
 };

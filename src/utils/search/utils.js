@@ -170,40 +170,50 @@ export const getRankGrade = rank => {
   let value;
 
   switch (true) {
-    case rank > 0.01:
-      from = 0.01;
-      to = 1;
-      value = 1;
-      break;
     case rank > 0.001:
       from = 0.001;
+      to = 1;
+      value = 0;
+      break;
+    case rank > 0.0006180469716:
+      from = 0.0006180469716;
       to = 0.01;
+      value = 1;
+      break;
+    case rank > 0.0003819820591:
+      from = 0.0003819820591;
+      to = 0.0006180469716;
       value = 2;
       break;
-    case rank > 0.000001:
-      from = 0.000001;
-      to = 0.001;
+    case rank > 0.0002360828548:
+      from = 0.0002360828548;
+      to = 0.0003819820591;
       value = 3;
       break;
-    case rank > 0.0000000001:
-      from = 0.0000000001;
-      to = 0.000001;
+    case rank > 0.0001459102934:
+      from = 0.0001459102934;
+      to = 0.0002360828548;
       value = 4;
       break;
-    case rank > 0.000000000000001:
-      from = 0.000000000000001;
-      to = 0.0000000001;
+    case rank > 0.00009017941499:
+      from = 0.00009017941499;
+      to = 0.0001459102934;
       value = 5;
       break;
-    case rank > 0.0000000000000000001:
-      from = 0.0000000000000000001;
-      to = 0.000000000000001;
+    case rank > 0.00005573511433:
+      from = 0.00005573511433;
+      to = 0.00009017941499;
       value = 6;
       break;
-    case rank > 0:
-      from = 0;
-      to = 0.0000000000000000001;
+    case rank > 0.00003444691862:
+      from = 0.00003444691862;
+      to = 0.00005573511433;
       value = 7;
+      break;
+    case rank > 0.00002128981373:
+      from = 0.00002128981373;
+      to = 0.00003444691862;
+      value = 8;
       break;
     default:
       from = 'n/a';

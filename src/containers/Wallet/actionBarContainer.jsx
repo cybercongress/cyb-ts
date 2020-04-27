@@ -504,6 +504,7 @@ class ActionBarContainer extends Component {
 
     localStorage.removeItem('pocket');
     localStorage.removeItem('ledger');
+    localStorage.removeItem('linksImport');
     if (updateAddress) {
       updateAddress();
     }

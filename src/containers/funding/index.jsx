@@ -21,6 +21,7 @@ import {
   getDataPlot,
   getRewards,
   getGroupAddress,
+  funcDiscountRevers,
 } from '../../utils/fundingMath';
 import { getTxCosmos } from '../../utils/search/utils';
 import PopapAddress from './popap';
@@ -73,6 +74,7 @@ class Funding extends PureComponent {
       loader: true,
       loading: 0,
       popapAdress: false,
+      currentDiscountRevers: 0,
     };
   }
 
@@ -267,6 +269,7 @@ class Funding extends PureComponent {
     let amount = 0;
     let atomLeff = 0;
     let currentDiscount = 0;
+    let currentDiscountRevers = 0;
     let won = 0;
     let currentPrice = 0;
     for (let item = 0; item < dataTxs.length; item++) {
@@ -287,6 +290,7 @@ class Funding extends PureComponent {
     console.log('amount', amount);
     atomLeff = ATOMsALL - amount;
     currentDiscount = funcDiscount(amount);
+    currentDiscountRevers = funcDiscountRevers(amount);
     won = cybWon(amount);
     currentPrice = won / amount;
     console.log('won', won);
@@ -295,6 +299,7 @@ class Funding extends PureComponent {
     this.setState({
       amount,
       atomLeff,
+      currentDiscountRevers,
       won,
       currentPrice,
       currentDiscount,
@@ -306,7 +311,7 @@ class Funding extends PureComponent {
     const {
       dataTxs,
       currentPrice,
-      currentDiscount,
+      currentDiscountRevers,
       amount,
       dataAllPin,
     } = this.state;
@@ -326,8 +331,13 @@ class Funding extends PureComponent {
             tempVal = ATOMsALL;
           }
           estimation =
-            getEstimation(currentPrice, currentDiscount, amount, tempVal) -
-            getEstimation(currentPrice, currentDiscount, amount, temp);
+            getEstimation(
+              currentPrice,
+              currentDiscountRevers,
+              amount,
+              tempVal
+            ) -
+            getEstimation(currentPrice, currentDiscountRevers, amount, temp);
           temp += val;
         } else {
           break;
@@ -451,8 +461,8 @@ class Funding extends PureComponent {
             marginY={5}
           >
             <Pane>
-              We understand that shaking the status quo of Googles religion will be
-              hard.
+              We understand that shaking the status quo of Googles religion will
+              be hard.
             </Pane>
             <Pane>But we must.</Pane>
             <Pane>
@@ -469,19 +479,20 @@ class Funding extends PureComponent {
           >
             <Text fontSize="16px" color="#fff">
               Takeoff donations are the first event in the{' '}
-              <Link to="/search/roadmap">distribution process of CYB</Link>.
-              The main purpose of the Takeoff is to get validators involved in the decentralized
-              launch of <Link to="/search/genesis">The Genesis</Link>. We also want
-              to engage everybody into cyberlinking. The{' '}
+              <Link to="/search/roadmap">distribution process of CYB</Link>. The
+              main purpose of the Takeoff is to get validators involved in the
+              decentralized launch of{' '}
+              <Link to="/search/genesis">The Genesis</Link>. We also want to
+              engage everybody into cyberlinking. The{' '}
               <Link to="/gol">Game of Links</Link> rewards are dependant on the
               Takeoff results. The more will be donated, the more{' '}
-              <Link to="/gol">GoL</Link> rewards the participants get. Please keep
-              in mind, that you will receive CYB in Genesis and EUL after the end of
-              the auction. If you want to test{' '}
+              <Link to="/gol">GoL</Link> rewards the participants get. Please
+              keep in mind, that you will receive CYB in Genesis and EUL after
+              the end of the auction. If you want to test{' '}
               <Link to="/search/cyberlink">cyberlinking </Link>
               right now, get some tokens from the{' '}
-              <Link to="/gol/faucet">test~Auction</Link> instead. By donating you
-              agree with the donation terms defined in our{' '}
+              <Link to="/gol/faucet">test~Auction</Link> instead. By donating
+              you agree with the donation terms defined in our{' '}
               <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
                 Whitepaper
               </LinkWindow>{' '}
@@ -499,7 +510,7 @@ class Funding extends PureComponent {
             price={formatNumber(
               Math.floor(currentPrice * 10 ** -9 * 1000) / 1000
             )}
-            discount={formatNumber(currentDiscount * 100, 3)}
+            discount={formatNumber(currentDiscount, 3)}
           />
           <Dinamics data3d={dataPlot} />
 
