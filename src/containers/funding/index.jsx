@@ -211,7 +211,7 @@ class Funding extends PureComponent {
 
     amountWs = amount + amountWebSocket;
     const atomLeffWs = ATOMsALL - amountWs;
-    const currentDiscountWs = funcDiscount(amountWs);
+    const currentDiscountWs = funcDiscountRevers(amountWs);
     const wonWs = cybWon(amountWs);
     const currentPriceWs = wonWs / amountWs;
 
@@ -220,12 +220,17 @@ class Funding extends PureComponent {
       atomLeff: atomLeffWs,
       won: wonWs,
       currentPrice: currentPriceWs,
-      currentDiscount: currentDiscountWs,
+      currentDiscountRevers: currentDiscountWs,
     });
   };
 
   getTableDataWs = async dataTxs => {
-    const { currentPrice, currentDiscount, amount, groups } = this.state;
+    const {
+      currentDiscountRevers,
+      currentDiscount,
+      amount,
+      groups,
+    } = this.state;
     try {
       console.log(groups);
       const dataWs = dataTxs;
@@ -237,8 +242,8 @@ class Funding extends PureComponent {
           tempVal = ATOMsALL;
         }
         estimation =
-          getEstimation(currentPrice, currentDiscount, amount, amount) -
-          getEstimation(currentPrice, currentDiscount, amount, tempVal);
+          getEstimation(currentDiscountRevers, currentDiscount, amount, amount) -
+          getEstimation(currentDiscountRevers, currentDiscount, amount, tempVal);
         dataWs.cybEstimation = estimation;
         groups[dataWs.sender].address = [
           dataWs,
