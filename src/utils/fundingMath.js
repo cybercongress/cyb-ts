@@ -1,5 +1,5 @@
 import { TAKEOFF } from './config';
-import { x, y, z } from './list';
+import { x, y, z, p } from './list';
 
 const {
   CYBWON_A,
@@ -33,19 +33,24 @@ const getDataPlot = atoms => {
     y: [],
     x: [],
     z: [],
+    p: [],
   };
   const indexArr = y.indexOf(Math.floor(atoms / 1000) * 1000);
   const newArrY = y.slice(0, indexArr + 1);
   const newArrX = x.slice(0, indexArr + 1);
   const newArrZ = z.slice(0, indexArr + 1);
+  const newArrP = p.slice(0, indexArr + 1);
+
   data = {
     x: newArrX,
     y: newArrY,
     z: newArrZ,
+    p: newArrP,
   };
   data.x.push(getShares(atoms));
   data.y.push(atoms);
   data.z.push(getDiscountPlot(atoms));
+  data.p.push(atoms);
   return data;
 };
 
