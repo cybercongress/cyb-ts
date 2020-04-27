@@ -240,7 +240,6 @@ class Dinamics extends Component {
           `GCYB allocated: %{x: .2f}<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
-          `price: ${price}` +
           '<extra></extra>',
       },
       {
@@ -258,7 +257,6 @@ class Dinamics extends Component {
           `GCYB allocated: %{x: .2f}<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
-          `price: ${price}` +
           '<extra></extra>',
       },
     ];
