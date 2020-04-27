@@ -37,10 +37,10 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
     />
 
     <Card
-      title="GCYB/ATOM"
+      title="ATOM/GCYB"
       value={price}
       positionTooltip="bottom"
-      tooltipValue="The current CYBs/ATOM price. Calculated as relation between won CYBs and accumulated ATOMs. This price excluding the order of donation advantages."
+      tooltipValue="The current ATOM/GCYBs price. Calculated as relation between won CYBs and accumulated ATOMs. This price excluding the order of donation advantages."
     />
   </ContainerCard>
 );

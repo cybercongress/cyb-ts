@@ -69,6 +69,7 @@ class Funding extends PureComponent {
       pin: false,
       currentPrice: 0,
       currentDiscount: 0,
+      currentPriceEstimation: 0,
       dataPlot: [],
       dataRewards: [],
       loader: true,
@@ -233,6 +234,8 @@ class Funding extends PureComponent {
     } = this.state;
     try {
       console.log(groups);
+      console.log(dataTxs);
+
       const dataWs = dataTxs;
       const tempData = [];
       let estimation = 0;
@@ -242,8 +245,18 @@ class Funding extends PureComponent {
           tempVal = ATOMsALL;
         }
         estimation =
-          getEstimation(currentDiscountRevers, currentDiscount, amount, amount) -
-          getEstimation(currentDiscountRevers, currentDiscount, amount, tempVal);
+          getEstimation(
+            currentDiscountRevers,
+            currentDiscount,
+            amount,
+            amount
+          ) -
+          getEstimation(
+            currentDiscountRevers,
+            currentDiscount,
+            amount,
+            tempVal
+          );
         dataWs.cybEstimation = estimation;
         groups[dataWs.sender].address = [
           dataWs,
@@ -277,6 +290,7 @@ class Funding extends PureComponent {
     let currentDiscountRevers = 0;
     let won = 0;
     let currentPrice = 0;
+    let currentPriceEstimation = 0;
     for (let item = 0; item < dataTxs.length; item++) {
       if (amount <= ATOMsALL) {
         amount +=
@@ -297,7 +311,8 @@ class Funding extends PureComponent {
     currentDiscount = funcDiscount(amount);
     currentDiscountRevers = funcDiscountRevers(amount);
     won = cybWon(amount);
-    currentPrice = won / amount;
+    currentPrice = amount / won;
+    currentPriceEstimation = won / amount;
     console.log('won', won);
     console.log('currentDiscount', currentDiscount);
     // localStorage.setItem(`statistics`, JSON.stringify(statistics));
@@ -308,6 +323,7 @@ class Funding extends PureComponent {
       won,
       currentPrice,
       currentDiscount,
+      currentPriceEstimation,
       loader: false,
     });
   };
@@ -315,14 +331,15 @@ class Funding extends PureComponent {
   getTableData = async () => {
     const {
       dataTxs,
-      currentPrice,
       currentDiscountRevers,
       amount,
+      currentPriceEstimation,
       dataAllPin,
     } = this.state;
     try {
       const table = [];
       let temp = 0;
+      let temE = 0;
       for (let item = 0; item < dataTxs.length; item++) {
         let estimation = 0;
         if (temp <= ATOMsALL) {
@@ -337,12 +354,18 @@ class Funding extends PureComponent {
           }
           estimation =
             getEstimation(
-              currentPrice,
+              currentPriceEstimation,
               currentDiscountRevers,
               amount,
               tempVal
             ) -
-            getEstimation(currentPrice, currentDiscountRevers, amount, temp);
+            getEstimation(
+              currentPriceEstimation,
+              currentDiscountRevers,
+              amount,
+              temp
+            );
+            temE += estimation;
           temp += val;
         } else {
           break;
@@ -361,6 +384,7 @@ class Funding extends PureComponent {
           estimation,
         });
       }
+      console.log('estimation', temE);
 
       const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
@@ -513,7 +537,7 @@ class Funding extends PureComponent {
             time={time}
             won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
             price={formatNumber(
-              Math.floor(currentPrice * 10 ** -9 * 1000) / 1000
+              Math.floor(currentPrice * 10 ** 9 * 1000) / 1000
             )}
             discount={formatNumber(currentDiscount, 3)}
           />
