@@ -18,7 +18,7 @@ function MainTab({ linksCount, cybernomics, activeValidatorsCount, donation }) {
         </Link>
         <Link to="/gol/takeoff">
           <CardStatisics
-            title="Takeoff price, GCYB/ATOM"
+            title="Takeoff price, ATOM/GCYB"
             value={formatNumber(cybernomics.cyb.price)}
             link
           />

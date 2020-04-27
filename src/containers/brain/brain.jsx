@@ -205,14 +205,14 @@ class Brain extends React.Component {
     if (amount === 0) {
       currentPrice = 0;
     } else {
-      currentPrice = won / amount;
+      currentPrice = amount / won;
     }
 
     console.log('won', won);
     console.log('currentPrice', currentPrice);
 
     const supplyEUL = parseFloat(GENESIS_SUPPLY);
-    const takeoffPrice = currentPrice / DIVISOR_CYBER_G;
+    const takeoffPrice = currentPrice * DIVISOR_CYBER_G;
     const capATOM = (supplyEUL / DIVISOR_CYBER_G) * takeoffPrice;
     console.log('capATOM', capATOM);
 

@@ -63,12 +63,12 @@ const getEstimation = (price, discount, atoms, value) => {
 };
 
 const funcDiscount = atom => {
-  const discount = -(5 / 10 ** 7) * atom + 30;
+  const discount = -(5 / 10 ** 5) * atom + 30;
   return discount;
 };
 
 const funcDiscountRevers = atom => {
-  const discount = (5 / 10 ** 7) * atom;
+  const discount = (5 / 10 ** 5) * atom;
   return discount;
 };
 
