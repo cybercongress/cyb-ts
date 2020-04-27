@@ -619,7 +619,7 @@ class ActionBarTakeOff extends Component {
             Custom transaction
           </Button>
           <Button marginX={10} onClick={this.onClickSelectLedgerTx}>
-            Donate with Ledger
+            Donate using Ledger
           </Button>
         </ActionBar>
       );
@@ -630,7 +630,7 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText>
             You can send donations directly to cyber~Congress multisig only if
-            you control private keys of sending account.
+            you control the private keys of the sending account!
           </ActionBarContentText>
           <Button marginX={10} onClick={this.onClickIControl}>
             I control
@@ -645,7 +645,7 @@ class ActionBarTakeOff extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            CYB will be allocated to sending addresses. All donations from
+            CYB will be allocated to the sending addresses. Any donations from
             custodial wallets, exchanges and banks will be lost.
           </ActionBarContentText>
           <Button marginX={10} onClick={this.onClickIUnderstand}>
@@ -692,7 +692,7 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with donation terms defined in
+              By donating {toSend} ATOM you agree with the donation terms defined in the
             </Pane>{' '}
             <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
               Whitepaper
@@ -754,7 +754,7 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with donation terms defined in
+              By donating {toSend} ATOM you agree with the donation terms defined in the
             </Pane>{' '}
             <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
               Whitepaper
