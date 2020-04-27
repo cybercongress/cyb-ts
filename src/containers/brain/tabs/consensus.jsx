@@ -8,11 +8,7 @@ import Txs from '../tx';
 function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
   try {
     return (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
+      <>
         <Link
           to="/heroes"
           style={{
@@ -22,7 +18,10 @@ function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
         >
           <CardStatisics title="Heroes" value={activeValidatorsCount} link />
         </Link>
-        <CardStatisics title="% of staked CYB" value={stakedCyb} />
+        <CardStatisics
+          title="% of staked EUL"
+          value={formatNumber(stakedCyb * 100, 3)}
+        />
         <CardStatisics
           title="Inflation"
           value={`${formatNumber(inlfation * 100, 2)} %`}
@@ -30,7 +29,7 @@ function ConsensusTab({ activeValidatorsCount, stakedCyb, inlfation }) {
         <Link to="/network/euler/tx">
           <CardStatisics title="Transactions" value={<Txs />} link />
         </Link>
-      </Pane>
+      </>
     );
   } catch (error) {
     console.log(error);

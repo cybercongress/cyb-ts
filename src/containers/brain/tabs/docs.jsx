@@ -6,11 +6,7 @@ import { formatNumber } from '../../../utils/utils';
 
 function DocsTab() {
   return (
-    <Pane
-      display="grid"
-      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-      gridGap="20px"
-    >
+    <>
       <LinkWindow to="https://github.com/cybercongress/congress/blob/master/ecosystem/ELI-5%20FAQ.md">
         <CardStatisics
           // title="Homestead"
@@ -89,7 +85,7 @@ function DocsTab() {
           link
         />
       </LinkWindow>
-    </Pane>
+    </>
   );
 }
 

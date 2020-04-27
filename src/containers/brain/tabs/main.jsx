@@ -8,11 +8,7 @@ function MainTab({ linksCount, cybernomics, activeValidatorsCount, donation }) {
   try {
     const gol = (donation + activeValidatorsCount / 146) / 2;
     return (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
+      <>
         <Link to="/graph">
           <CardStatisics
             title="Cyberlinks"
@@ -70,7 +66,7 @@ function MainTab({ linksCount, cybernomics, activeValidatorsCount, donation }) {
             link
           />
         </Link>
-      </Pane>
+      </>
     );
   } catch (error) {
     console.log(error);
