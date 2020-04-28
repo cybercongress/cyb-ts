@@ -8,7 +8,7 @@ const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
 const Statistics = ({ atomLeff, won, price, discount, time }) => (
   <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="5">
     <Card
-      tooltipValue="The time left to finish funding in case less than 600000 ATOMs donated"
+      tooltipValue="The time left untill the end of the donations, in the case where less than 600000 ATOMs are donated"
       positionTooltip="bottom"
       title="Donations ends"
       value={time}
@@ -17,30 +17,30 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
       title="ATOMs left"
       value={atomLeff}
       positionTooltip="bottom"
-      tooltipValue="The accumulated ATOMs left before the end of Funding, in case less than 90 days funding duration"
+      tooltipValue="The accumulated ATOMs left before the end of the donations, in the case where less than 90 days pass from the start"
     />
     <Card
       title="Won GCYB"
       value={won}
       positionTooltip="bottom"
-      tooltipValue={`CYBs won from cyber~Congress. Remaining ${formatNumber(
+      tooltipValue={`CYBs won from cyber~Congress. The remaining ${formatNumber(
         DISTRIBUTION.takeoff / CYBER.DIVISOR_CYBER_G - won,
         3
-      )}GCYB will be distributed between cyber~Congress seed donors if funding end at this amount.`}
+      )}GCYB will be distributed between cyber~Congress seed donors if donations end at this amount.`}
     />
 
     <Card
       title="Current discount"
       value={`${discount}%`}
       positionTooltip="bottom"
-      tooltipValue="The discount of price in the first donation of funding over the last one"
+      tooltipValue="The current, accumulated discount"
     />
 
     <Card
       title="ATOM/GCYB"
       value={price}
       positionTooltip="bottom"
-      tooltipValue="The current ATOM/GCYBs price. Calculated as relation between won CYBs and accumulated ATOMs. This price excluding the order of donation advantages."
+      tooltipValue="The current ATOM/GCYBs price. 1 Giga CYB = 1,000,000,000 CYB. Calculated as a relation between the won CYBs and accumulated ATOMs. This price excludes the order of donation advantages."
     />
   </ContainerCard>
 );
