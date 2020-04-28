@@ -40,7 +40,7 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
       title="ATOM/GCYB"
       value={price}
       positionTooltip="bottom"
-      tooltipValue="The current ATOM/GCYBs price. Calculated as a relation between the won CYBs and accumulated ATOMs. This price excludes the order of donation advantages."
+      tooltipValue="The current ATOM/GCYBs price. 1 Giga CYB = 1,000,000,000 CYB. Calculated as a relation between the won CYBs and accumulated ATOMs. This price excludes the order of donation advantages."
     />
   </ContainerCard>
 );
