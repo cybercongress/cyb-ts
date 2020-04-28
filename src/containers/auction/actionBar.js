@@ -325,6 +325,7 @@ class ActionBarAuction extends Component {
       claimed,
       contract,
       accounts,
+      selected,
     } = this.props;
 
     const btnConfirm =
@@ -359,8 +360,8 @@ class ActionBarAuction extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            The Auction is finished. You have 3 months to claim GOL tokens. Else, the
-            tokens will be burned.
+            The Auction is finished. You have 3 months to claim GOL tokens.
+            Else, the tokens will be burned.
           </ActionBarContentText>
           {claimed && (
             <ClaimedAll contract={contract} web3={web3} marginX={15}>
@@ -369,6 +370,18 @@ class ActionBarAuction extends Component {
           )}
         </ActionBar>
       );
+
+    if (selected === 'claim' && claimed) {
+      return (
+        <ActionBar>
+          {claimed && (
+            <ClaimedAll contract={contract} web3={web3} marginX={15}>
+              Claim All
+            </ClaimedAll>
+          )}
+        </ActionBar>
+      );
+    }
 
     if (step === 'start') {
       return (

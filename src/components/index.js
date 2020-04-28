@@ -33,6 +33,7 @@ import Vitalik from './vitalik';
 import BandwidthBar from './BandwidthBar';
 import Timer from './timer';
 import Battery from './battery';
+import TabBtn from './tabBtn';
 
 export {
   RowTableTakeoff,
@@ -68,6 +69,7 @@ export {
   CheckAddressInfo,
   Timer,
   Battery,
+  TabBtn,
 };
 
 export { Nums } from './ui/Numbers';
