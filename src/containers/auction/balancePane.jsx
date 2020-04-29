@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Tooltip, Icon } from '@cybercongress/gravity';
+import { Text, Tooltip, Icon, Pane } from '@cybercongress/gravity';
 import { Card, ContainerCard } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { AUCTION } from '../../utils/config';
@@ -31,9 +31,10 @@ const BalancePane = ({ spendableBalance, balance, accounts, ...props }) => {
   const items = Object.keys(data).map(key => (
     <Card
       key={key}
-      title={<TextHeader>{key}</TextHeader>}
+      title={key}
+      stylesContainer={{ padding: '35px 0', maxWidth: '250px' }}
       value={
-        <TextNumber>
+        <Pane display="flex" alignItems="center">
           {formatCurrency(data[key])}
           <Tooltip
             position="bottom"
@@ -43,7 +44,7 @@ const BalancePane = ({ spendableBalance, balance, accounts, ...props }) => {
           >
             <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
           </Tooltip>
-        </TextNumber>
+        </Pane>
       }
     />
   ));

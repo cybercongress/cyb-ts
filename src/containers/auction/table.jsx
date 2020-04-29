@@ -47,7 +47,7 @@ const Table = ({
           <div className="numberType">
             <FormatNumber number={item.youCYB} />
           </div>
-          {onlyClaim && item.claimed !== false && (
+          {claimed && item.claimed !== false && (
             <div className="table-btn-col">
               <ClaimedRound day={item.claimed} contract={contract} web3={web3}>
                 Claim
@@ -59,7 +59,7 @@ const Table = ({
     });
 
   return (
-    <div className={`table ${onlyClaim ? 'claimed' : ''}`}>
+    <div className={`table ${claimed ? 'claimed' : ''}`}>
       <div className="table-header-rows">
         <div className="numberType">Round</div>
         <div className="numberType">G{TOKEN_NAME} for distribution</div>

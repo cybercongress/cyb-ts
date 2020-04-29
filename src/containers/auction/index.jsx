@@ -543,7 +543,6 @@ class Auction extends PureComponent {
         <Table
           data={table}
           TOKEN_NAME={TOKEN_NAME}
-          claimed={claimedAll}
           web3={web3}
           contract={contract}
           round={roundThis}
@@ -577,7 +576,18 @@ class Auction extends PureComponent {
 
     if (selected === 'bid') {
       content = <Bid />;
-      contentInfoPane = 'bid GOL with ETH every round';
+      contentInfoPane = (
+        <Pane>
+          The smart contract for the faucet is implemented using Ethereum. It
+          consist of {numberOfDays} rounds every 23 hour. The more ETH bid every
+          round - higher the price of GoL. All procedding goes to test{' '}
+          <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
+            Euler Foundation
+          </LinkWindow>{' '}
+          and will be spend on the development and security audit of
+          cyberFoundation.
+        </Pane>
+      );
       contentStatistics = (
         <Statistics
           round={roundThis}
@@ -593,7 +603,8 @@ class Auction extends PureComponent {
 
     if (selected === 'claim') {
       content = <Route path="/gol/faucet/claim" render={() => <Claim />} />;
-      contentInfoPane = 'claim GOL after the end of each round.';
+      contentInfoPane =
+        'You can claim GoL after every round end. After claim GoL tokens will become transferable in Ethereum network.';
       contentStatistics = (
         <StatisticsClaim
           round={roundThis}
@@ -608,12 +619,13 @@ class Auction extends PureComponent {
       content = <Route path="/gol/faucet/vest" render={() => <Vesting />} />;
       contentInfoPane = (
         <Pane>
-          Vesting allow you to get 1 EUL for each vested GOL. Also GOLs allow
+          Vesting allow you to get 1 EUL for each vested GOL. Also GoLs allow
           you to participate in decisions of{' '}
           <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
             Euler Foundation
-          </LinkWindow>
-          .
+          </LinkWindow>{' '}
+          during the Game of Links. Keep in mind that after the end of the Game
+          of Linnks GoL tokens become useless.
         </Pane>
       );
       contentStatistics = (

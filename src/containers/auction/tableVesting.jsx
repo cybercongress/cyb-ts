@@ -10,7 +10,7 @@ const DEFAULT_PROOF = 'Processing';
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
-    fontSize={`${fontSize || 14}px`}
+    fontSize={`${fontSize || 16}px`}
     color={`${color || '#fff'}`}
     display={`${display || 'inline-flex'}`}
     {...props}

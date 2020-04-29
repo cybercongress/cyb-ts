@@ -220,8 +220,8 @@ class AccountDetails extends React.Component {
           address,
           delegations[item].validator_address
         );
-        if (resultRewards.amount) {
-          reward = parseFloat(resultRewards.amount);
+        if (resultRewards[0] && resultRewards[0].amount) {
+          reward = parseFloat(resultRewards[0].amount);
           delegations[item].reward = Math.floor(reward);
         } else {
           delegations[item].reward = reward;
