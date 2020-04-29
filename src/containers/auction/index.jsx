@@ -7,7 +7,7 @@ import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
 import Dinamics from './dinamics';
 import Table from './table';
-import { Loading, TabBtn } from '../../components';
+import { Loading, TabBtn, LinkWindow } from '../../components';
 import {
   run,
   formatNumber,
@@ -26,12 +26,10 @@ import {
 import InfoPane from './infoPane';
 import TableVesting from './tableVesting';
 import BalancePane from './balancePane';
-import InfoPaneVesting from './infoPaneVesting';
 import ActionBarVesting from './actionBarVesting';
 import StatisticsClaim from './statisticsClaim';
-import InfoPaneClaim from './infoPaneClaim';
 
-import { AUCTION } from '../../utils/config';
+import { AUCTION, CYBER } from '../../utils/config';
 
 const dateFormat = require('dateformat');
 
@@ -45,6 +43,24 @@ const {
   TOPICS_CLAIM,
   ROUND_DURATION,
 } = AUCTION;
+
+const Pill = ({ children, active, ...props }) => (
+  <Pane
+    display="flex"
+    fontSize="14px"
+    borderRadius="20px"
+    paddingY="5px"
+    paddingX="8px"
+    alignItems="center"
+    lineHeight="1"
+    justifyContent="center"
+    backgroundColor={active ? '#000' : '#36d6ae'}
+    color={active ? '#36d6ae' : '#000'}
+    {...props}
+  >
+    {children}
+  </Pane>
+);
 
 class Auction extends PureComponent {
   constructor(props) {
@@ -256,16 +272,24 @@ class Auction extends PureComponent {
     const { contractTokenManager, contractToken } = this.props;
     const { accounts } = this.state;
 
-    const balance = await contractToken.methods.balanceOf(accounts).call();
-    const spendableBalance = await contractTokenManager.methods
-      .spendableBalanceOf(accounts)
-      .call();
+    if (accounts) {
+      const balance = await contractToken.methods.balanceOf(accounts).call();
+      const spendableBalance = await contractTokenManager.methods
+        .spendableBalanceOf(accounts)
+        .call();
 
-    this.setState({
-      balanceVesting: balance,
-      loadingVesting: false,
-      spendableBalance,
-    });
+      this.setState({
+        balanceVesting: balance,
+        loadingVesting: false,
+        spendableBalance,
+      });
+    } else {
+      this.setState({
+        balanceVesting: 0,
+        loadingVesting: false,
+        spendableBalance: 0,
+      });
+    }
   };
 
   getVesting = async () => {
@@ -332,20 +356,17 @@ class Auction extends PureComponent {
   };
 
   accountsChanged = () => {
-    const { accounts } = this.props;
-    if (accounts) {
-      window.ethereum.on('accountsChanged', async accountsChanged => {
-        const defaultAccounts = accountsChanged[0];
-        const tmpAccount = defaultAccounts;
-        // console.log(tmpAccount);
-        await this.setState({
-          accounts: tmpAccount,
-        });
-        this.getDataTable();
-        this.getBalance();
-        this.getVesting();
+    window.ethereum.on('accountsChanged', async accountsChanged => {
+      const defaultAccounts = accountsChanged[0];
+      const tmpAccount = defaultAccounts;
+      // console.log(tmpAccount);
+      await this.setState({
+        accounts: tmpAccount,
       });
-    }
+      this.getDataTable();
+      this.getBalance();
+      this.getVesting();
+    });
   };
 
   getTimeEndRound = async () => {
@@ -556,9 +577,7 @@ class Auction extends PureComponent {
 
     if (selected === 'bid') {
       content = <Bid />;
-      contentInfoPane = (
-        <InfoPane openTime={typeTime} startTimeTot={startTimeTot} />
-      );
+      contentInfoPane = 'bid GOL with ETH every round';
       contentStatistics = (
         <Statistics
           round={roundThis}
@@ -574,9 +593,7 @@ class Auction extends PureComponent {
 
     if (selected === 'claim') {
       content = <Route path="/gol/faucet/claim" render={() => <Claim />} />;
-      contentInfoPane = (
-        <InfoPaneClaim openTime={typeTime} startTimeTot={startTimeTot} />
-      );
+      contentInfoPane = 'claim GOL after the end of each round.';
       contentStatistics = (
         <StatisticsClaim
           round={roundThis}
@@ -589,7 +606,16 @@ class Auction extends PureComponent {
 
     if (selected === 'vest') {
       content = <Route path="/gol/faucet/vest" render={() => <Vesting />} />;
-      contentInfoPane = <InfoPaneVesting endTime={endTimeVesting} />;
+      contentInfoPane = (
+        <Pane>
+          Vesting allow you to get 1 EUL for each vested GOL. Also GOLs allow
+          you to participate in decisions of{' '}
+          <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
+            Euler Foundation
+          </LinkWindow>
+          .
+        </Pane>
+      );
       contentStatistics = (
         <BalancePane
           marginTop={30}
@@ -604,30 +630,71 @@ class Auction extends PureComponent {
     return (
       <div>
         <main className="block-body auction">
-          {contentInfoPane}
-          {contentStatistics}
+          <InfoPane openTime={typeTime} startTimeTot={startTimeTot} />
           <Tablist
             display="grid"
             gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
             gridGap="10px"
-            marginY={20}
+            marginBottom={20}
           >
             <TabBtn
-              text="Bid"
+              text={
+                <Pane display="flex">
+                  <Pane>1 step: Bid</Pane>
+                  {parseFloat(raisedToken) > 0.001 && (
+                    <Pill marginLeft={5} active={selected === 'bid'}>
+                      {formatNumber(raisedToken, 3)} GGoL
+                    </Pill>
+                  )}
+                </Pane>
+              }
               isSelected={selected === 'bid'}
               to="/gol/faucet"
             />
             <TabBtn
-              text="Claim"
+              text={
+                <Pane display="flex">
+                  <Pane>2 step: Claim</Pane>
+                  {parseFloat(canClaim) > 0.001 && (
+                    <Pill marginLeft={5} active={selected === 'claim'}>
+                      {formatNumber(canClaim, 3)} GGoL
+                    </Pill>
+                  )}
+                </Pane>
+              }
               isSelected={selected === 'claim'}
               to="/gol/faucet/claim"
             />
             <TabBtn
-              text="Vest"
+              text={
+                <Pane display="flex">
+                  <Pane>3 step: Vest</Pane>
+                  {parseFloat(spendableBalance) > 0.001 && (
+                    <Pill marginLeft={5} active={selected === 'vest'}>
+                      {formatNumber(
+                        spendableBalance / CYBER.DIVISOR_CYBER_G,
+                        3
+                      )}{' '}
+                      GGoL
+                    </Pill>
+                  )}
+                </Pane>
+              }
               isSelected={selected === 'vest'}
               to="/gol/faucet/vest"
             />
           </Tablist>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginBottom={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              {contentInfoPane}
+            </Text>
+          </Pane>
+          {contentStatistics}
           {loading && (
             <div className="container-loading">
               <Loading />
@@ -635,25 +702,26 @@ class Auction extends PureComponent {
           )}
           {!loading && content}
         </main>
-        {!loading && selected !== 'vest' ? (
-          <ActionBarAuction
-            web3={web3}
-            contract={contract}
-            minRound={roundThis}
-            maxRound={numberOfDays}
-            claimed={claimedAll}
-            accounts={accounts}
-            selected={selected}
-          />
-        ) : (
-          <ActionBarVesting
-            available={spendableBalance}
-            contractVesting={contractVesting}
-            web3={web3}
-            accounts={accounts}
-            endTime={endTimeVesting}
-          />
-        )}
+        {!loading &&
+          (selected !== 'vest' ? (
+            <ActionBarAuction
+              web3={web3}
+              contract={contract}
+              minRound={roundThis}
+              maxRound={numberOfDays}
+              claimed={claimedAll}
+              accounts={accounts}
+              selected={selected}
+            />
+          ) : (
+            <ActionBarVesting
+              available={spendableBalance}
+              contractVesting={contractVesting}
+              web3={web3}
+              accounts={accounts}
+              endTime={endTimeVesting}
+            />
+          ))}
       </div>
     );
   }

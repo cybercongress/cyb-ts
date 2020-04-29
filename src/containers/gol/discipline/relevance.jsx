@@ -135,6 +135,7 @@ const RelevanceC = ({
   }
 
   const fetchData = async () => {
+    console.log('dataRelevance, dataQ', dataRelevance, dataQ);
     const data = await getRelevance(dataRelevance, dataQ);
     console.log(data);
     const cybAbsolute = data * prize;

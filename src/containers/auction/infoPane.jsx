@@ -17,11 +17,9 @@ const InfoPane = ({ openTime, startTimeTot }) => {
     default:
       content = (
         <Pane>
-          You can get GOL tokens here and then participate in the{' '}
-          <Link to="/gol">Game of Links</Link>.{' '}
-          <Link to="/gol/vesting">Vesting</Link> allows you to get 1 EUL token for each
-          GOL token. Don't forget to vest your GOL tokens as they become useless 10 days
-          after the end of the auction.
+          Here you can get EUL for ETH during{' '}
+          <Link to="/gol">Game of Links</Link>. The process consist of 3 steps:
+          Bid, Claim, Vest.
         </Pane>
       );
       break;

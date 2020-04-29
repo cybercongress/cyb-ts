@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Indicators, Card, ContainerCard } from '../../components';
+import { formatNumber } from '../../utils/utils';
 
 const StatisticsClaim = ({ canClaim, raisedToken, roundAll, round }) => {
   if (round <= roundAll) {
@@ -11,22 +12,22 @@ const StatisticsClaim = ({ canClaim, raisedToken, roundAll, round }) => {
         display="grid"
         justifyItems="center"
         width="100%"
-        gridTemplateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         marginBottom="20px"
       >
         <Card
-          title="Raised GOL"
-          value={raisedToken}
+          title="Awaiting claim"
+          value={`${formatNumber(raisedToken, 3)} GGOL`}
           tooltipValue="The number of total ETH, currently, raised"
           positionTooltip="bottom"
-          stylesContainer={{ padding: '35px 0', maxWidth: '300px' }}
+          stylesContainer={{ padding: '35px 0', maxWidth: '250px' }}
         />
         <Card
           title="One can Claim"
-          value={canClaim}
+          value={`${formatNumber(canClaim, 3)} GGOL`}
           tooltipValue="The current round out of the total number of rounds in the Auction"
           positionTooltip="bottom"
-          stylesContainer={{ padding: '35px 0', maxWidth: '300px' }}
+          stylesContainer={{ padding: '35px 0', maxWidth: '250px' }}
         />
       </Pane>
     );

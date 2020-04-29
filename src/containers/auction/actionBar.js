@@ -375,7 +375,7 @@ class ActionBarAuction extends Component {
       return (
         <ActionBar>
           {claimed && (
-            <ClaimedAll contract={contract} web3={web3} marginX={15}>
+            <ClaimedAll contract={contract} web3={web3}>
               Claim All
             </ClaimedAll>
           )}
@@ -383,7 +383,7 @@ class ActionBarAuction extends Component {
       );
     }
 
-    if (step === 'start') {
+    if (selected === 'bid' && step === 'start') {
       return (
         <ContributeETH
           valueRound={round}

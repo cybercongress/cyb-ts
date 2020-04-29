@@ -166,7 +166,9 @@ export const getTableData = async (accounts, methods, contractAuctionUtils) => {
           canClaim += parseFloat(youCYB);
         }
 
-        raisedToken += parseFloat(youCYB);
+        if (item >= roundThis) {
+          raisedToken += parseFloat(youCYB);
+        }
 
         table.push({
           period: item,
