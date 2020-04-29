@@ -17,10 +17,10 @@ const InfoPane = ({ openTime, startTimeTot }) => {
     default:
       content = (
         <Pane>
-          Here you can get EUL for ETH during{' '}
+          Here you can get EUL in exchnage for ETH during{' '}
           <Link to="/gol">Game of Links</Link>. The process consist of 3 steps:
-          (1) Bid some GOL on auction in ethereum network, (2) Claim GOL from
-          smart contract after round end, (3) Get 1 EUL in cyber network for
+          (1) Bid for GOL during the auction in Ethereum network, (2) Claim GOL from
+          a smart contract after the round ends, (3) Get 1 EUL in cyber network
           each vested GOL.
         </Pane>
       );
