@@ -3,6 +3,9 @@ import waitForWeb3 from './waitForWeb3';
 import abiAuction from '../../../contracts/Auction';
 import abiAuctionUtils from '../../../contracts/AuctionUtils';
 import abiToken from '../../../contracts/Token';
+import abiVesting from '../../../contracts/Vesting';
+import TokenManager from '../../../contracts/TokenManager.json';
+
 import { Loading } from '../index';
 import NotFound from '../../containers/application/notFound';
 
@@ -24,9 +27,12 @@ const injectWeb3 = InnerComponent =>
         isCorrectNetwork: true,
         contractAuctionUtils: null,
         contractToken: null,
+        contractVesting: null,
+        contractTokenManager: null,
       };
       this.getWeb3 = this.getWeb3.bind(this);
       this.smart = ADDR_SMART_CONTRACT;
+      this.smartVesting = AUCTION.ADDR_VESTING;
     }
 
     componentDidMount() {
@@ -49,21 +55,40 @@ const injectWeb3 = InnerComponent =>
         const contract = await new web3.eth.Contract(abiAuction, this.smart);
 
         const addrAuctionUtils = await contract.methods.utils().call();
-console.log(addrAuctionUtils);
+
         const contractAuctionUtils = await new web3.eth.Contract(
           abiAuctionUtils,
           addrAuctionUtils
         );
 
-        const addrToken = await contract.methods.token().call();
+        const contractVesting = await new web3.eth.Contract(
+          abiVesting,
+          this.smartVesting
+        );
 
-        const contractToken = await new web3.eth.Contract(abiToken, addrToken);
+        const tokenManagerAddress = await contractVesting.methods
+          .tokenManager()
+          .call();
+
+        const contractTokenManager = await new web3.eth.Contract(
+          TokenManager.abi,
+          tokenManagerAddress
+        );
+
+        const tokenAddress = await contractTokenManager.methods.token().call();
+
+        const contractToken = await new web3.eth.Contract(
+          abiToken,
+          tokenAddress
+        );
 
         if (web3.givenProvider === null) {
           return this.setState({
             web3,
             contract,
             contractAuctionUtils,
+            contractTokenManager,
+            contractVesting,
             contractToken,
             accounts: null,
             networkId: null,
@@ -76,6 +101,8 @@ console.log(addrAuctionUtils);
           web3,
           contract,
           contractAuctionUtils,
+          contractTokenManager,
+          contractVesting,
           contractToken,
           accounts: accounts[0],
           networkId,
@@ -96,11 +123,11 @@ console.log(addrAuctionUtils);
         isCorrectNetwork,
         buyTransactionSuccess,
         contractToken,
+        contractVesting,
+        contractTokenManager,
       } = this.state;
       if (!isCorrectNetwork) {
-        return (
-          <NotFound text="Please connect to the Ethereum Rinkeby Network" />
-        );
+        return <NotFound text="Please connect to the Ethereum Network" />;
       }
       if (loading) {
         return (
@@ -126,6 +153,8 @@ console.log(addrAuctionUtils);
           contractAuctionUtils={contractAuctionUtils}
           buyTransactionSuccess={buyTransactionSuccess}
           contractToken={contractToken}
+          contractVesting={contractVesting}
+          contractTokenManager={contractTokenManager}
           {...this.props}
         />
       );

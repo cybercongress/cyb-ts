@@ -21,21 +21,22 @@
     height: 30px;
     align-items: center;
     grid-gap: 5px;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #ffffff80;
     margin-bottom: 10px;
     grid-template-columns: 0.5fr 0.9fr 0.7fr 1fr 0.7fr 0.6fr 0.7fr;
     font-size: 16px;
-    padding-bottom: 5px;
+    padding: 7px 7px 10px 7px;
 }
 
 
 .auction .table-header-rows .numberType {
     justify-content: center;
+    font-size: 16px;
 }
 
 .auction .table.claimed .table-body .table-rows {
     display: grid;
-    grid-template-columns: 0.6fr 1fr 1fr 1fr 1fr 0.7fr 0.7fr 0.7fr;
+    grid-template-columns: 0.6fr 1.2fr 0.8fr 1fr 1fr 0.7fr 0.7fr 0.7fr;
     width: 100%;
     height: 30px;
     align-items: center;
@@ -51,11 +52,15 @@
 
 .auction .table.claimed .table-header-rows {
     display: grid;
-    grid-template-columns: 0.6fr 1fr 1fr 1fr 1fr 0.7fr 0.7fr 0.7fr;
     width: 100%;
-    border-bottom: 1px solid #fff;
+    height: 30px;
+    align-items: center;
+    grid-gap: 5px;
+    border-bottom: 1px solid #ffffff80;
     margin-bottom: 10px;
-    padding-bottom: 5px;
+    grid-template-columns: 0.6fr 1.2fr 0.8fr 1fr 1fr 0.7fr 0.7fr 0.7fr;
+    font-size: 16px;
+    padding: 7px 7px 10px 7px;
 }
 
 .auction-container-dinamics{

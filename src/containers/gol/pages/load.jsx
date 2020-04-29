@@ -31,7 +31,7 @@ query MyQuery {
 
 const Query = page =>
   `query MyQuery {
-    karma_view(order_by: {karma: desc}, limit: 50, offset: ${page}) {
+    karma_view(order_by: {karma: desc}, limit: 50, offset: ${50 * page}) {
       karma
       subject
     }
@@ -187,7 +187,7 @@ class GolLoad extends React.Component {
       items: items.concat(itemsData),
       sumKarma,
       page: page + 1,
-      allPage: Math.ceil(parseFloat(allPage) / 1),
+      allPage: Math.ceil(parseFloat(allPage) / 50),
     });
   };
 

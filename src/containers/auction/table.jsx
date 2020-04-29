@@ -2,50 +2,62 @@ import React, { Component } from 'react';
 import { ClaimedRound } from './claimed';
 import { FormatNumber } from '../../components/index';
 
-const Table = ({ data, TOKEN_NAME, claimed, web3, contract, round }) => {
-  const tableRow = data.map(item => {
-    let closing;
-    if (item.closing > 0) {
-      closing = `${item.closing} day ago`;
-    } else if (item.closing < 0) {
-      closing = `in ${item.closing * -1} days`;
-    } else {
-      closing = 'now';
-    }
-    return (
-      <div
-        className={`table-rows ${item.period === round ? 'active-row' : ''}`}
-        key={item.period}
-      >
-        <div className="table-index-col">{item.period}</div>
-        <div className="numberType">
-          <FormatNumber number={item.dist} />
-        </div>
-        <div className="numberType">
-          <FormatNumber number={item.total} />
-        </div>
-        <div className="numberType">
-          <FormatNumber number={item.price} />
-        </div>
-        <div className="numberType" style={{ justifyContent: 'center' }}>
-          {closing}
-        </div>
-        <div className="numberType">
-          <FormatNumber number={item.youETH} />
-        </div>
-        <div className="numberType">
-          <FormatNumber number={item.youCYB} />
-        </div>
-        {item.claimed !== false && (
-          <div className="table-btn-col">
-            <ClaimedRound day={item.claimed} contract={contract} web3={web3}>
-              Claim
-            </ClaimedRound>
+const Table = ({
+  data,
+  TOKEN_NAME,
+  claimed,
+  web3,
+  contract,
+  onlyClaim,
+  round,
+}) => {
+
+  const tableRow = data
+    .filter(row => (onlyClaim ? parseFloat(row.youCYB) > 0 : row))
+    .map(item => {
+      let closing;
+      if (item.closing > 0) {
+        closing = `${item.closing} day ago`;
+      } else if (item.closing < 0) {
+        closing = `in ${item.closing * -1} days`;
+      } else {
+        closing = 'now';
+      }
+      return (
+        <div
+          className={`table-rows ${item.period === round ? 'active-row' : ''}`}
+          key={item.period}
+        >
+          <div className="table-index-col">{item.period}</div>
+          <div className="numberType">
+            <FormatNumber number={item.dist} />
           </div>
-        )}
-      </div>
-    );
-  });
+          <div className="numberType">
+            <FormatNumber number={item.total} />
+          </div>
+          <div className="numberType">
+            <FormatNumber number={item.price} />
+          </div>
+          <div className="numberType" style={{ justifyContent: 'center' }}>
+            {closing}
+          </div>
+          <div className="numberType">
+            <FormatNumber number={item.youETH} />
+          </div>
+          <div className="numberType">
+            <FormatNumber number={item.youCYB} />
+          </div>
+          {claimed && item.claimed !== false && (
+            <div className="table-btn-col">
+              <ClaimedRound day={item.claimed} contract={contract} web3={web3}>
+                Claim
+              </ClaimedRound>
+            </div>
+          )}
+        </div>
+      );
+    });
+
   return (
     <div className={`table ${claimed ? 'claimed' : ''}`}>
       <div className="table-header-rows">
