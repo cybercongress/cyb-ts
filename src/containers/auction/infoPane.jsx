@@ -20,8 +20,8 @@ const InfoPane = ({ openTime, startTimeTot }) => {
           Here you can get EUL for ETH during{' '}
           <Link to="/gol">Game of Links</Link>. The process consist of 3 steps:
           (1) Bid some GOL on auction in ethereum network, (2) Claim GOL from
-          smart contract after round end , Get 1 EUL in cyber network for each
-          vested GOL.
+          smart contract after round end, (3) Get 1 EUL in cyber network for
+          each vested GOL.
         </Pane>
       );
       break;
