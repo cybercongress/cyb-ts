@@ -198,6 +198,7 @@ class App extends Component {
             display: 'flex',
             justifyContent: 'space-between',
             position: 'relative',
+            padding: 0,
           }}
           className="container-distribution"
         >
@@ -271,7 +272,12 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Pane className="battery-container" width="65px" marginRight="10px">
+          <Pane
+            className="battery-container"
+            width="65px"
+            position="absolute"
+            right="60px"
+          >
             <BandwidthBar
               height="15px"
               styleText={{ whiteSpace: 'nowrap' }}

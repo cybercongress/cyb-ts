@@ -153,7 +153,15 @@ class Electricity extends React.Component {
     const { left, right } = this.props;
 
     return (
-      <div className="electricity">
+      <div
+        style={{
+          zIndex: '-1',
+          width: '100%',
+          padding: ' 0 20px',
+          position: 'absolute',
+        }}
+        className="electricity"
+      >
         <div className="line">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 80">
             <g id="lightningContainer">
