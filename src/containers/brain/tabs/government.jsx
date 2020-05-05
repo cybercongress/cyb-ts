@@ -5,7 +5,13 @@ import { CardStatisics } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
-function GovernmentTab({ communityPool, proposals }) {
+function GovernmentTab({
+  communityPool,
+  proposals,
+  activeValidatorsCount,
+  stakedCyb,
+  inlfation,
+}) {
   try {
     return (
       <>
@@ -23,6 +29,23 @@ function GovernmentTab({ communityPool, proposals }) {
         <Link to="/network/euler/parameters">
           <CardStatisics title="Network parameters" value={30} link />
         </Link>
+        <Link
+          to="/heroes"
+          style={{
+            display: 'contents',
+            textDecoration: 'none',
+          }}
+        >
+          <CardStatisics title="Heroes" value={activeValidatorsCount} link />
+        </Link>
+        <CardStatisics
+          title="% of staked EUL"
+          value={formatNumber(stakedCyb * 100, 3)}
+        />
+        <CardStatisics
+          title="Inflation"
+          value={`${formatNumber(inlfation * 100, 2)} %`}
+        />
       </>
     );
   } catch (error) {

@@ -20,7 +20,7 @@ const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
 const GET_CHARACTERS = gql`
   subscription Query {
-    transaction(offset: 0, limit: 50, order_by: { height: desc }) {
+    transaction(offset: 0, limit: 200, order_by: { height: desc }) {
       height
       txhash
       messages

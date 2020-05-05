@@ -26,7 +26,6 @@ import ActionBarContainer from './actionBarContainer';
 import {
   GovernmentTab,
   MainTab,
-  ConsensusTab,
   CybernomicsTab,
   KnowledgeTab,
   CommunityTab,
@@ -127,11 +126,6 @@ class Brain extends React.Component {
       pathname.match(/knowledge/gm).length > 0
     ) {
       this.select('knowledge');
-    } else if (
-      pathname.match(/consensus/gm) &&
-      pathname.match(/consensus/gm).length > 0
-    ) {
-      this.select('consensus');
     } else if (
       pathname.match(/government/gm) &&
       pathname.match(/government/gm).length > 0
@@ -401,21 +395,6 @@ class Brain extends React.Component {
       );
     }
 
-    if (selected === 'consensus') {
-      content = (
-        <Route
-          path="/brain/consensus"
-          render={() => (
-            <ConsensusTab
-              activeValidatorsCount={activeValidatorsCount}
-              stakedCyb={stakedCyb}
-              inlfation={inlfation}
-            />
-          )}
-        />
-      );
-    }
-
     if (selected === 'government') {
       content = (
         <Route
@@ -424,6 +403,9 @@ class Brain extends React.Component {
             <GovernmentTab
               proposals={proposals}
               communityPool={communityPool}
+              activeValidatorsCount={activeValidatorsCount}
+              stakedCyb={stakedCyb}
+              inlfation={inlfation}
             />
           )}
         />
@@ -487,11 +469,6 @@ class Brain extends React.Component {
               text="Cybernomics"
               isSelected={selected === 'cybernomics'}
               to="/brain/cybernomics"
-            />
-            <TabBtn
-              text="Consensus"
-              isSelected={selected === 'consensus'}
-              to="/brain/consensus"
             />
             <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
             <TabBtn

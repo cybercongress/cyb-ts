@@ -10,24 +10,45 @@ function CybernomicsTab({ data }) {
     return (
       <>
         <CardStatisics title="GOL supply" value={formatNumber(gol.supply)} />
-        <CardStatisics
-          title="Faucet price of GGOL in ETH"
-          value={formatNumber(gol.price)}
-        />
+        <Link
+          to="/gol/faucet"
+          style={{
+            display: 'contents',
+            textDecoration: 'none',
+          }}
+        >
+          <CardStatisics
+            title="Faucet price of GGOL in ETH"
+            value={formatNumber(gol.price)}
+            link
+          />
+        </Link>
         <CardStatisics title="GOL cap in ETH" value={formatNumber(gol.cap)} />
 
         <CardStatisics title="EUL supply" value={formatNumber(eul.supply)} />
-        <CardStatisics
-          title="Faucet price of GEUL in ETH"
-          value={formatNumber(eul.price)}
-        />
+        <Link
+          to="/gol/faucet"
+          style={{
+            display: 'contents',
+            textDecoration: 'none',
+          }}
+        >
+          <CardStatisics
+            title="Faucet price of GEUL in ETH"
+            value={formatNumber(eul.price)}
+            link
+          />
+        </Link>
         <CardStatisics title="EUL cap in ETH" value={formatNumber(eul.cap)} />
 
         <CardStatisics title="CYB supply" value={formatNumber(cyb.supply)} />
-        <CardStatisics
-          title="Takeoff price of GCYB in ATOM"
-          value={formatNumber(cyb.price)}
-        />
+        <Link to="/gol/takeoff">
+          <CardStatisics
+            title="Takeoff price of GCYB in ATOM"
+            value={formatNumber(cyb.price)}
+            link
+          />
+        </Link>
         <CardStatisics title="CYB cap in ATOM" value={formatNumber(cyb.cap)} />
       </>
     );
