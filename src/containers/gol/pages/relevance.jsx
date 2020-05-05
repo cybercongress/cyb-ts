@@ -1,8 +1,14 @@
 import React from 'react';
 import { render } from 'react-dom';
+import { connect } from 'react-redux';
 import { SearchItem, Pane, Text } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { getRelevance, getRankGrade } from '../../../utils/search/utils';
+import Iframe from 'react-iframe';
+import {
+  getRelevance,
+  getRankGrade,
+  getContentByCid,
+} from '../../../utils/search/utils';
 import { Dots, LinkWindow } from '../../../components';
 
 const style = {
@@ -23,23 +29,91 @@ class GolRelevance extends React.Component {
 
   async componentDidMount() {
     const { page } = this.state;
+    const { node } = this.props;
+
     const data = await getRelevance(page);
+    const links = data.cids.reduce(
+      (obj, link) => ({
+        ...obj,
+        [link.cid]: {
+          rank: link.rank,
+          status: 'understandingState',
+        },
+      }),
+      {}
+    );
+
     this.setState({
-      items: data.cids,
+      items: links,
       page: page + 1,
       allPage: Math.ceil(parseFloat(data.total) / 50),
     });
+    this.loadContent(links, node);
   }
+
+  loadContent = async (cids, node, prevState) => {
+    const contentPromises = Object.keys(cids).map(cid =>
+      getContentByCid(cid, node)
+        .then(content => {
+          const { items } = this.state;
+          if (
+            Object.keys(items[cid]) !== null &&
+            typeof Object.keys(items[cid]) !== 'undefined' &&
+            Object.keys(items[cid]).length > 0
+          ) {
+            items[cid] = {
+              ...items[cid],
+              status: content.status,
+              content: content.content,
+            };
+            this.setState({
+              items,
+            });
+          }
+        })
+        .catch(e => {
+          // console.log(e);
+          const { items } = this.state;
+          if (
+            Object.keys(items[cid]) !== null &&
+            typeof Object.keys(items[cid]) !== 'undefined' &&
+            Object.keys(items[cid]).length > 0
+          ) {
+            items[cid] = {
+              ...items[cid],
+              status: 'impossibleLoad',
+              content: `data:,${cid}`,
+            };
+            this.setState({
+              items,
+            });
+          }
+        })
+    );
+    Promise.all(contentPromises);
+  };
 
   fetchMoreData = async () => {
     const { page, items } = this.state;
+    const { node } = this.props;
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     const data = await getRelevance(page);
+    const links = data.cids.reduce(
+      (obj, link) => ({
+        ...obj,
+        [link.cid]: {
+          rank: link.rank,
+          status: 'understandingState',
+        },
+      }),
+      {}
+    );
+    this.loadContent(links, node);
 
     setTimeout(() => {
       this.setState({
-        items: items.concat(data.cids),
+        items: { ...items, ...links },
         page: page + 1,
       });
     }, 500);
@@ -47,7 +121,7 @@ class GolRelevance extends React.Component {
 
   render() {
     const { page, allPage, items } = this.state;
-    console.log(items);
+
     return (
       <main
         style={{
@@ -76,7 +150,7 @@ class GolRelevance extends React.Component {
           style={{ height: '100%', padding: '0 10px', overflow: 'auto' }}
         >
           <InfiniteScroll
-            dataLength={items.length}
+            dataLength={Object.keys(items).length}
             next={this.fetchMoreData}
             hasMore={page < allPage}
             loader={
@@ -87,14 +161,34 @@ class GolRelevance extends React.Component {
             }
             scrollableTarget="scrollableDiv"
           >
-            {items.map((item, index) => (
-              <SearchItem
-                hash={item.cid}
-                rank={item.rank}
-                grade={getRankGrade(item.rank)}
-                // status="success"
-              />
-            ))}
+            {Object.keys(items).map(keys => {
+              let contentItem = false;
+              if (items[keys].status === 'downloaded') {
+                if (items[keys].content !== undefined) {
+                  if (items[keys].content.indexOf(keys) === -1) {
+                    contentItem = true;
+                  }
+                }
+              }
+              return (
+                <SearchItem
+                  hash={keys}
+                  key={keys}
+                  rank={items[keys].rank}
+                  grade={getRankGrade(items[keys].rank)}
+                  status={items[keys].status}
+                >
+                  {contentItem && (
+                    <Iframe
+                      width="100%"
+                      height="fit-content"
+                      className="iframe-SearchItem"
+                      url={items[keys].content}
+                    />
+                  )}
+                </SearchItem>
+              );
+            })}
           </InfiniteScroll>
         </div>
       </main>
@@ -102,4 +196,10 @@ class GolRelevance extends React.Component {
   }
 }
 
-export default GolRelevance;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(GolRelevance);
