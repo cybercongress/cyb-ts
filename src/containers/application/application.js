@@ -60,6 +60,7 @@ class App extends Component {
       battery: false,
       address: null,
     };
+    this.textInput = React.createRef();
     this.routeChange = this.routeChange.bind(this);
     // this.handleKeyFocus = this.handleKeyFocus.bind(this);
   }
@@ -68,6 +69,11 @@ class App extends Component {
     this.chekHomePage();
     this.chekEvangelism();
     this.checkAddressLocalStorage();
+    document.onkeypress = e => {
+      if (e.key === '/') {
+        document.getElementById('search-input-searchBar').focus();
+      }
+    };
   }
 
   componentDidUpdate(prevProps) {
@@ -81,9 +87,11 @@ class App extends Component {
         this.clearInrut();
       }
       this.checkAddressLocalStorage();
-      // document.onkeypress = e => {
-      //   document.getElementById('search-input-searchBar').focus();
-      // };
+      document.onkeypress = e => {
+        if (e.key === '/') {
+          document.getElementById('search-input-searchBar').focus();
+        }
+      };
     }
   }
 
@@ -161,11 +169,18 @@ class App extends Component {
   };
 
   onChangeInput = async e => {
+    const { valueSearchInput } = this.state;
     const { value } = e.target;
 
-    await this.setState({
-      valueSearchInput: value,
-    });
+    if (valueSearchInput.length === 0 && value === '/') {
+      await this.setState({
+        valueSearchInput: '',
+      });
+    } else {
+      await this.setState({
+        valueSearchInput: value,
+      });
+    }
   };
 
   handleKeyPress = async e => {
@@ -253,6 +268,7 @@ class App extends Component {
                 onChange={e => this.onChangeInput(e)}
                 onKeyPress={this.handleKeyPress}
                 className="search-input"
+                ref={this.textInput}
                 value={valueSearchInput}
                 autoComplete="off"
                 id="search-input-searchBar"

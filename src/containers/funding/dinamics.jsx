@@ -237,7 +237,7 @@ class Dinamics extends Component {
           color: '#fff',
         },
         hovertemplate:
-          `GCYB allocated: %{x: .2f}<br>` +
+          `GCYB allocated: %{x: .2f}%<br>` +
           'ATOMs contributed: %{y}<br>' +
           'Personal discount: %{z:.2f%}%<br>' +
           `price: ${price}ATOMs` +
