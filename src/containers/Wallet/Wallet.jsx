@@ -35,9 +35,10 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
-const GET_LINK = `
+const QueryAddress = address =>
+  `
   query MyQuery {
-    cyberlink(where: {subject: {_eq: "cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky"}}) {
+    cyberlink(where: {subject: {_eq: "${address}"}}) {
       object_from
       object_to
     }
@@ -144,9 +145,10 @@ class Wallet extends React.Component {
   };
 
   getLocalStorageLink = async () => {
+    const { accounts } = this.state;
     const localStorageStoryLink = localStorage.getItem('linksImport');
     let linkUser = [];
-    const dataLink = await getGraphQLQuery(GET_LINK);
+    const dataLink = await getGraphQLQuery(QueryAddress(accounts.cyber.bech32));
 
     if (dataLink.cyberlink && dataLink.cyberlink.length > 0) {
       linkUser = dataLink.cyberlink;
