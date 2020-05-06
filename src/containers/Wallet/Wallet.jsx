@@ -17,6 +17,7 @@ import {
   getTotalEUL,
   getImportLink,
   getAccountBandwidth,
+  getGraphQLQuery,
 } from '../../utils/search/utils';
 import { PocketCard } from './components';
 import { PubkeyCard, GolCard, ImportLinkLedger } from './card';
@@ -33,6 +34,45 @@ const {
   STAGE_ERROR,
   LEDGER_VERSION_REQ,
 } = LEDGER;
+
+const GET_LINK = `
+  query MyQuery {
+    cyberlink(where: {subject: {_eq: "cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky"}}) {
+      object_from
+      object_to
+    }
+  }`;
+
+function flatten(data, outputArray) {
+  data.forEach(element => {
+    if (Array.isArray(element)) {
+      flatten(element, outputArray);
+    } else {
+      outputArray.push(element);
+    }
+  });
+}
+
+const comparer = otherArray => {
+  return current => {
+    return (
+      otherArray.filter(other => {
+        return (
+          other.object_from === current.from && other.object_to === current.to
+        );
+      }).length === 0
+    );
+  };
+};
+
+const groupLink = linkArr => {
+  const link = [];
+  const size = 7;
+  for (let i = 0; i < Math.ceil(linkArr.length / size); i += 1) {
+    link[i] = linkArr.slice(i * size, i * size + size);
+  }
+  return link;
+};
 
 class Wallet extends React.Component {
   constructor(props) {
@@ -103,38 +143,63 @@ class Wallet extends React.Component {
     }
   };
 
-  getLocalStorageLink = () => {
+  getLocalStorageLink = async () => {
     const localStorageStoryLink = localStorage.getItem('linksImport');
+    let linkUser = [];
+    const dataLink = await getGraphQLQuery(GET_LINK);
+
+    if (dataLink.cyberlink && dataLink.cyberlink.length > 0) {
+      linkUser = dataLink.cyberlink;
+    }
 
     if (localStorageStoryLink === null) {
-      this.getLink();
+      this.getLink(linkUser);
     } else {
-      const link = JSON.parse(localStorageStoryLink);
-      if (Object.keys(link).length > 0) {
-        this.setState({ link });
+      const linkData = JSON.parse(localStorageStoryLink);
+      if (linkData.length > 0) {
+        const flattened = [];
+
+        flatten(linkData, flattened);
+        let onlyInB = [];
+        if (linkUser.length > 0) {
+          onlyInB = flattened.filter(comparer(linkUser));
+        }
+        if (onlyInB.length > 0) {
+          const link = groupLink(onlyInB);
+          this.setState({ link });
+        } else {
+          this.setState({ link: null });
+        }
       } else {
         this.setState({ link: null });
       }
     }
   };
 
-  getLink = async () => {
+  getLink = async dataLinkUser => {
     const { accounts } = this.state;
     const dataLink = await getImportLink(accounts.cyber.bech32);
-    const link = [];
+    let link = [];
 
     if (dataLink !== null) {
-      const size = 7;
-      for (let i = 0; i < Math.ceil(dataLink.length / size); i += 1) {
-        link[i] = dataLink.slice(i * size, i * size + size);
+      let onlyInB = [];
+      if (dataLinkUser.length > 0) {
+        onlyInB = dataLink.filter(comparer(dataLinkUser));
+      }
+      if (onlyInB.length > 0) {
+        link = groupLink(onlyInB);
       }
 
-      console.log(link);
-
       localStorage.setItem('linksImport', JSON.stringify(link));
-      this.setState({
-        link,
-      });
+      if (link.length > 0) {
+        this.setState({
+          link,
+        });
+      } else {
+        this.setState({
+          link: null,
+        });
+      }
     }
   };
 
