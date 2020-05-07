@@ -42,12 +42,12 @@ const TableLink = ({ data }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Cid cid={item.object_to}>{trimString(item.object_to, 6, 6)}</Cid>
+          <Cid cid={item.object_from}>{trimString(item.object_from, 6, 6)}</Cid>
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Cid cid={item.object_from}>{trimString(item.object_from, 6, 6)}</Cid>
+          <Cid cid={item.object_to}>{trimString(item.object_to, 6, 6)}</Cid>
         </TextTable>
       </Table.TextCell>
     </Table.Row>
