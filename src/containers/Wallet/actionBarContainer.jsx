@@ -582,6 +582,26 @@ class ActionBarContainer extends Component {
     }
   };
 
+  onClickConnect = async () => {
+    const { web3 } = this.props;
+    if (web3.currentProvider.host) {
+      console.log(
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
+      );
+    }
+    if (window.ethereum) {
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        console.log('You declined transaction', error);
+      }
+    } else if (window.web3) {
+      await web3.eth.getAccounts();
+    } else {
+      console.log('Your metamask is locked!');
+    }
+  };
+
   render() {
     const {
       addAddress,
@@ -591,6 +611,7 @@ class ActionBarContainer extends Component {
       importLink,
       linkSelected,
       selectCard,
+      accountsETH,
     } = this.props;
     const {
       stage,
@@ -740,6 +761,20 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <Pane>
             <Button onClick={this.onClickInitLedger}>sing with ledger</Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (
+      selectCard === 'сonnectEth' &&
+      accountsETH === undefined &&
+      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
+    ) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={this.onClickConnect}>Connect</Button>
           </Pane>
         </ActionBar>
       );

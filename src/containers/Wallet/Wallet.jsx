@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import Web3Utils from 'web3-utils';
 import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -9,6 +10,7 @@ import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import withWeb3 from '../../components/web3/withWeb3';
 
 import { LEDGER, COSMOS } from '../../utils/config';
 import { i18n } from '../../i18n/en';
@@ -20,7 +22,7 @@ import {
   getGraphQLQuery,
 } from '../../utils/search/utils';
 import { PocketCard } from './components';
-import { PubkeyCard, GolCard, ImportLinkLedger } from './card';
+import { PubkeyCard, GolCard, ImportLinkLedger, GolBalance } from './card';
 
 const T = new LocalizedStrings(i18n);
 
@@ -90,17 +92,70 @@ class Wallet extends React.Component {
       addAddress: false,
       loading: true,
       accounts: null,
+      accountsETH: null,
       link: null,
       selectedIndex: '',
       importLinkCli: false,
       linkSelected: null,
       selectCard: '',
+      balanceEthAccount: {
+        eth: 0,
+        gol: 0,
+      },
     };
   }
 
   async componentDidMount() {
+    const { accounts, web3 } = this.props;
+
+    await this.setState({
+      accountsETH: accounts,
+    });
+
+    if (accounts && accounts !== null) {
+      this.getBalanceEth();
+    }
+
     await this.checkAddressLocalStorage();
+    if (web3.givenProvider !== null) {
+      this.accountsChanged();
+    }
   }
+
+  accountsChanged = () => {
+    window.ethereum.on('accountsChanged', async accountsChanged => {
+      const defaultAccounts = accountsChanged[0];
+      const tmpAccount = defaultAccounts;
+      this.setState({
+        accountsETH: tmpAccount,
+      });
+      this.getBalanceEth();
+    });
+  };
+
+  getBalanceEth = async () => {
+    const { accountsETH } = this.state;
+    const { web3, contractToken } = this.props;
+    const balanceEthAccount = {
+      eth: 0,
+      gol: 0,
+    };
+    console.log(accountsETH);
+
+    if (accountsETH && accountsETH !== null) {
+      const responseGol = await contractToken.methods
+        .balanceOf(accountsETH)
+        .call();
+      balanceEthAccount.gol = responseGol;
+      const responseEth = await web3.eth.getBalance(accountsETH);
+      const eth = Web3Utils.fromWei(responseEth, 'ether');
+      balanceEthAccount.eth = eth;
+    }
+
+    this.setState({
+      balanceEthAccount,
+    });
+  };
 
   checkAddressLocalStorage = async () => {
     const { setBandwidthProps } = this.props;
@@ -316,33 +371,18 @@ class Wallet extends React.Component {
     });
   };
 
-  onClickCardPubKey = () => {
+  onClickSelect = select => {
     const { selectCard } = this.state;
-    let select = 'pubkey';
+    let selectd = select;
 
     if (selectCard === select) {
-      select = '';
+      selectd = '';
     }
 
     this.setState({
       linkSelected: null,
       selectedIndex: '',
-      selectCard: select,
-    });
-  };
-
-  onClickCardGol = () => {
-    const { selectCard } = this.state;
-    let select = 'gol';
-
-    if (selectCard === select) {
-      select = '';
-    }
-
-    this.setState({
-      linkSelected: null,
-      selectedIndex: '',
-      selectCard: select,
+      selectCard: selectd,
     });
   };
 
@@ -360,7 +400,10 @@ class Wallet extends React.Component {
       selectedIndex,
       linkSelected,
       selectCard,
+      balanceEthAccount,
+      accountsETH,
     } = this.state;
+    const { web3 } = this.props;
 
     let countLink = 0;
     if (link !== null) {
@@ -428,14 +471,39 @@ class Wallet extends React.Component {
               height="100%"
             >
               <PubkeyCard
-                onClick={this.onClickCardPubKey}
+                onClick={() => this.onClickSelect('pubkey')}
                 select={selectCard === 'pubkey'}
                 pocket={pocket}
+                marginBottom={20}
               />
+
+              {accountsETH === undefined && web3.givenProvider !== null && (
+                <PocketCard
+                  marginBottom={20}
+                  select={selectCard === 'сonnectEth'}
+                  onClick={() => this.onClickSelect('сonnectEth')}
+                >
+                  <Text fontSize="16px" color="#fff">
+                    Connect ETH account
+                  </Text>
+                </PocketCard>
+              )}
+
+              {accountsETH !== undefined && web3.givenProvider !== null && (
+                <GolBalance
+                  balance={balanceEthAccount}
+                  accounts={accountsETH}
+                  pocket={pocket}
+                  marginBottom={20}
+                  onClick={() => this.onClickSelect('accountsETH')}
+                  select={selectCard === 'accountsETH'}
+                />
+              )}
+
               <GolCard
-                onClick={this.onClickCardGol}
+                onClick={() => this.onClickSelect('gol')}
                 select={selectCard === 'gol'}
-                marginY={20}
+                marginBottom={20}
               />
               {link !== null && (
                 <PocketCard
@@ -470,6 +538,8 @@ class Wallet extends React.Component {
             linkSelected={linkSelected}
             selectedIndex={selectedIndex}
             updateAddress={this.checkAddressLocalStorage}
+            web3={web3}
+            accountsETH={accountsETH}
             // onClickSend={}
           />
         </div>
@@ -486,4 +556,4 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(Wallet);
+export default connect(null, mapDispatchprops)(withWeb3(Wallet));

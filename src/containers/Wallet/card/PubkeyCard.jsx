@@ -3,14 +3,9 @@ import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { PocketCard } from '../components';
 import { Copy, Dots } from '../../../components';
-import {
-  trimString,
-  formatCurrency,
-  getDelegator,
-  exponentialToDecimal,
-  formatNumber,
-} from '../../../utils/utils';
+import { trimString, formatCurrency, formatNumber } from '../../../utils/utils';
 import { getDrop } from '../../../utils/search/utils';
+import useGetGol from '../../gol/getGolHooks';
 
 const imgLedger = require('../../../image/ledger.svg');
 
@@ -26,6 +21,8 @@ const Row = ({ title, value, marginBottomValue, fontSizeValue, ...props }) => (
 function PubkeyCard({ pocket, ...props }) {
   const [gift, setGift] = useState(0);
   const [loading, setLoading] = useState(true);
+  const gol = useGetGol(pocket.cyber.address);
+  console.log(gol);
 
   useEffect(() => {
     const feachData = async () => {
@@ -92,7 +89,7 @@ function PubkeyCard({ pocket, ...props }) {
                   <Dots /> CYB
                 </span>
               ) : (
-                formatCurrency(gift, 'CYB')
+                formatCurrency(Math.floor(gift + gol), 'CYB')
               )}
             </Pane>
           </Pane>

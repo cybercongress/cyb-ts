@@ -12,7 +12,7 @@ const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps, lifetime }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const currentPrize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
   );
 
   useEffect(() => {
