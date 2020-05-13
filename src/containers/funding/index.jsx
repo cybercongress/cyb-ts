@@ -535,9 +535,7 @@ class Funding extends PureComponent {
             atomLeff={formatNumber(atomLeff)}
             time={time}
             won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
-            price={formatNumber(
-              Math.floor(currentPrice * 10 ** 9 * 1000) / 1000
-            )}
+            price={currentPrice * 10 ** 9}
             discount={formatNumber(currentDiscount, 3)}
           />
           <Dinamics data3d={dataPlot} />

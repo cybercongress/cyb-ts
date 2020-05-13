@@ -1,6 +1,6 @@
 import React from 'react';
 import { Indicators, Card, ContainerCard } from '../../components/index';
-import { CYBER, DISTRIBUTION } from '../../utils/config';
+import { CYBER, DISTRIBUTION, GENESIS_SUPPLY } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
 
 const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
@@ -20,13 +20,13 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
       tooltipValue="The accumulated ATOMs left before the end of the donations, in the case where less than 90 days pass from the start"
     />
     <Card
-      title="Won GCYB"
-      value={won}
-      positionTooltip="bottom"
-      tooltipValue={`CYBs won from cyber~Congress. The remaining ${formatNumber(
-        DISTRIBUTION.takeoff / CYBER.DIVISOR_CYBER_G - won,
-        3
-      )}GCYB will be distributed between cyber~Congress seed donors if donations end at this amount.`}
+      title="CYB cap in ATOM"
+      value={formatNumber((price * GENESIS_SUPPLY) / CYBER.DIVISOR_CYBER_G)}
+      // positionTooltip="bottom"
+      // tooltipValue={`CYBs won from cyber~Congress. The remaining ${formatNumber(
+      //   DISTRIBUTION.takeoff / CYBER.DIVISOR_CYBER_G - won,
+      //   3
+      // )}GCYB will be distributed between cyber~Congress seed donors if donations end at this amount.`}
     />
 
     <Card
@@ -38,7 +38,7 @@ const Statistics = ({ atomLeff, won, price, discount, time }) => (
 
     <Card
       title="ATOM/GCYB"
-      value={price}
+      value={formatNumber(Math.floor(price * 1000) / 1000)}
       positionTooltip="bottom"
       tooltipValue="The current ATOM/GCYBs price. 1 Giga CYB = 1,000,000,000 CYB. Calculated as a relation between the won CYBs and accumulated ATOMs. This price excludes the order of donation advantages."
     />

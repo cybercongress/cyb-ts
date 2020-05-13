@@ -75,25 +75,6 @@ class Dinamics extends Component {
     });
   };
 
-  state2 = () => {
-    this.setState({
-      activebtn: 'share',
-      share: true,
-      main: false,
-      discount: false,
-      rewards: false,
-      textX: 'Donation, ATOMs',
-      textY: 'CYB won, GCYBs',
-      margin: {
-        l: 50,
-        r: 50,
-        b: 80,
-        t: 10,
-        pad: 4,
-      },
-    });
-  };
-
   state3 = () => {
     this.setState({
       share: false,
@@ -153,41 +134,6 @@ class Dinamics extends Component {
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
     // console.log('dataRewards', dataRewards);
-
-    const dataShare = [
-      {
-        type: 'scatter',
-        mode: 'lines+points',
-        opacity: 0.45,
-        x: y,
-        y: x,
-        line: {
-          width: 2,
-          opacity: 1,
-          color: '#fff',
-        },
-        hoverinfo: 'none',
-        // hovertemplate:
-        //   'ATOMs contributed: %{x}' +
-        //   '<br>TCYB allocated: %{y: .2f}%' +
-        //   '<extra></extra>'
-      },
-      {
-        type: 'scatter',
-        mode: 'lines+points',
-        x: data3d.y,
-        y: data3d.x,
-        line: {
-          width: 2,
-          color: '#36d6ae',
-        },
-        // hoverinfo: 'none'
-        hovertemplate:
-          'ATOMs contributed: %{x}' +
-          `<br> GCYB allocated: %{y: .2f}%` +
-          '<extra></extra>',
-      },
-    ];
 
     const dataDiscount = [
       {
@@ -376,15 +322,6 @@ class Dinamics extends Component {
           <button
             type="button"
             className={`btn-view margin ${
-              activebtn === 'share' ? 'activebtn' : ''
-            }`}
-            onClick={this.state2}
-          >
-            Share
-          </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
               activebtn === 'main' ? 'activebtn' : ''
             }`}
             onClick={this.state1}
@@ -417,7 +354,6 @@ class Dinamics extends Component {
             config={config}
           />
         )}
-        {share && <Plotly data={dataShare} layout={layout} config={config} />}
         {discount && (
           <Plotly data={dataDiscount} layout={layout} config={config} />
         )}
