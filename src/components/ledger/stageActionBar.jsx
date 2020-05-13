@@ -94,37 +94,13 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
   </ActionBar>
 );
 
-export const TransactionError = ({
-  onClickBtn,
-  onClickBtnCloce,
-  errorMessage,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      Transaction Error:
-    </span>
-    <div
-      style={{ marginTop: '25px', width: '80%', margin: '0 auto' }}
-      className="display-flex flex-direction-column"
-    >
-      <p style={{ marginBottom: 20, textAlign: 'center' }}>
-        Message:
-        <span
-          style={{
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {errorMessage}
-        </span>
-      </p>
-      <div style={{ marginTop: '25px', textAlign: 'center' }}>
-        <button type="button" className="btn" onClick={onClickBtn}>
-          {T.actionBar.confirmedTX.continue}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+export const TransactionError = ({ onClickBtn, errorMessage }) => (
+  <ActionBar>
+    <ActionBarContentText>Message Error: {errorMessage}</ActionBarContentText>
+    <Button marginX={10} onClick={onClickBtn}>
+      {T.actionBar.confirmedTX.continue}
+    </Button>
+  </ActionBar>
 );
 
 export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
@@ -634,7 +610,7 @@ export const ReDelegate = ({
         </Text>
       </Text>
       <Text marginX={5} fontSize="16px" color="#fff">
-       to:
+        to:
       </Text>
       <select
         style={{

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Text, Pane, Tab } from '@cybercongress/gravity';
+import { Link, Route } from 'react-router-dom';
+import { Text, Pane, Tablist } from '@cybercongress/gravity';
 import {
   getAmountATOM,
   getValidatorsInfo,
@@ -9,7 +9,7 @@ import {
   getTxCosmos,
   getCurrentNetworkLoad,
 } from '../../utils/search/utils';
-import { CardStatisics, Loading, LinkWindow } from '../../components';
+import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
 import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 import TableDiscipline from './table';
 import {
@@ -18,6 +18,8 @@ import {
   formatNumber,
 } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
+import LoadTab from './tab/loadTab';
+import RelevanceTab from './tab/relevance';
 
 import { COSMOS, TAKEOFF } from '../../utils/config';
 
@@ -40,6 +42,7 @@ class GOL extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      selected: 'disciplines',
       addressLedger: null,
       validatorAddress: null,
       consensusAddress: null,
@@ -54,6 +57,7 @@ class GOL extends React.Component {
   }
 
   async componentDidMount() {
+    this.chekPathname();
     await this.checkAddressLocalStorage();
     await this.getTxsCosmos();
     await this.getDataWS();
@@ -61,6 +65,32 @@ class GOL extends React.Component {
     this.checkCurrentNetworkLoad();
     this.getValidatorsCount();
   }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (
+      pathname.match(/leaderboard/gm) &&
+      pathname.match(/leaderboard/gm).length > 0
+    ) {
+      this.select('leaderboard');
+    } else if (
+      pathname.match(/content/gm) &&
+      pathname.match(/content/gm).length > 0
+    ) {
+      this.select('content');
+    } else {
+      this.select('disciplines');
+    }
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -200,6 +230,10 @@ class GOL extends React.Component {
     });
   };
 
+  select = selected => {
+    this.setState({ selected });
+  };
+
   render() {
     const {
       loading,
@@ -212,18 +246,11 @@ class GOL extends React.Component {
       consensusAddress,
       addAddress,
       currentNetworkLoad,
+      selected,
     } = this.state;
 
-    const {
-      load,
-      takeoff,
-      relevance,
-      delegation,
-      lifetime,
-      euler4Rewards,
-    } = this.props;
-
     console.log(takeoffDonations, won);
+    let content;
 
     if (loading) {
       return (
@@ -240,6 +267,28 @@ class GOL extends React.Component {
           <Loading />
         </div>
       );
+    }
+
+    if (selected === 'leaderboard') {
+      content = (
+        <Route path="/gol/leaderboard" render={() => <LoadTab won={won} />} />
+      );
+    }
+
+    if (selected === 'disciplines') {
+      content = (
+        <TableDiscipline
+          addressLedger={addressLedger}
+          validatorAddress={validatorAddress}
+          consensusAddress={consensusAddress}
+          won={won}
+          takeoffDonations={takeoffDonations}
+        />
+      );
+    }
+
+    if (selected === 'content') {
+      content = <Route path="/gol/content" render={() => <RelevanceTab />} />;
     }
 
     return (
@@ -339,19 +388,30 @@ class GOL extends React.Component {
               />
             </Link>
           </Pane>
-          <Pane
-            display="flex"
-            marginTop={20}
-            marginBottom={50}
-            justifyContent="center"
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+            gridGap="10px"
+            marginY={20}
           >
-            <TableDiscipline
-              addressLedger={addressLedger}
-              validatorAddress={validatorAddress}
-              consensusAddress={consensusAddress}
-              won={won}
-              takeoffDonations={takeoffDonations}
+            <TabBtn
+              text="Leaderboard"
+              isSelected={selected === 'leaderboard'}
+              to="/gol/leaderboard"
             />
+            <TabBtn
+              text="Disciplines"
+              isSelected={selected === 'disciplines'}
+              to="/gol"
+            />
+            <TabBtn
+              text="Content"
+              isSelected={selected === 'content'}
+              to="/gol/content"
+            />
+          </Tablist>
+          <Pane display="flex" marginBottom={50} justifyContent="center">
+            {content}
           </Pane>
         </main>
         <ActionBarContainer
