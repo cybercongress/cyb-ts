@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane, TableEv as Table, Text, Tooltip } from '@cybercongress/gravity';
-import { LinkWindow, TextTable } from '../../components';
+import { LinkWindow, TextTable, Copy } from '../../components';
 import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 
@@ -61,7 +61,7 @@ function TableEvangelists({ data, blessed }) {
                     <img
                       alt="cosmos"
                       src={cosmos}
-                      style={{ width: '20px', height: '20px'}}
+                      style={{ width: '20px', height: '20px' }}
                     />
                   </LinkWindow>
                   <LinkWindow
@@ -87,6 +87,14 @@ function TableEvangelists({ data, blessed }) {
                       style={{ width: '20px', height: '20px', margin: '0 2px' }}
                     />
                   </LinkWindow>
+                  <Copy
+                    style={{
+                      margin: '0px 2px 3px',
+                      width: '18px',
+                      height: '18px',
+                    }}
+                    text={`https://cyber.page/?thanks=${data[key].nickname}`}
+                  />
                 </TextTable>
               </Table.TextCell>
               <Table.TextCell textAlign="end">
@@ -101,12 +109,12 @@ function TableEvangelists({ data, blessed }) {
                 <Tooltip
                   position="bottom"
                   content={`${formatNumber(
-                    Math.floor(
-                      (data[key].amount / 1000) * CYBER.DIVISOR_CYBER_G
-                    )
+                    Math.floor(data[key].amount / 1000) * CYBER.DIVISOR_CYBER_G
                   )} CYB`}
                 >
-                  <TextTable>{`${data[key].amount / 1000} GCYB`}</TextTable>
+                  <TextTable>{`${Math.floor(
+                    data[key].amount / 1000
+                  )} GCYB`}</TextTable>
                 </Tooltip>
               </Table.TextCell>
             </Table.Row>
@@ -146,7 +154,7 @@ function TableEvangelists({ data, blessed }) {
                     <img
                       alt="cosmos"
                       src={cosmos}
-                      style={{ width: '20px', height: '20px'}}
+                      style={{ width: '20px', height: '20px' }}
                     />
                   </LinkWindow>
                   <LinkWindow
@@ -175,7 +183,7 @@ function TableEvangelists({ data, blessed }) {
                 </TextTable>
               </Table.TextCell>
               <Table.TextCell textAlign="end">
-                <TextTable>{formatNumber(data[key].amount, 3)} ATOMs</TextTable>
+                <TextTable>0 ATOMs</TextTable>
               </Table.TextCell>
               <Table.TextCell textAlign="end">
                 <Tooltip

@@ -3,7 +3,9 @@ import CybernomicsTab from './cybernomics';
 import KnowledgeTab from './knowledge';
 import GovernmentTab from './government';
 import CommunityTab from './community';
-import DocsTab from './docs';
+import AppsTab from './apps';
+import HelpTab from './help';
+import PathTab from './path';
 
 export {
   GovernmentTab,
@@ -11,5 +13,7 @@ export {
   CybernomicsTab,
   KnowledgeTab,
   CommunityTab,
-  DocsTab,
+  AppsTab,
+  HelpTab,
+  PathTab,
 };

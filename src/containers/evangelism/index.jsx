@@ -34,7 +34,11 @@ class Evangelism extends React.PureComponent {
       currentDiscount: 0,
       won: 0,
       loading: true,
-      loadingKarma: true,
+      addressLedger: null,
+      evangelist: {
+        status: '',
+        nickname: '',
+      },
     };
   }
 
@@ -45,6 +49,7 @@ class Evangelism extends React.PureComponent {
     } = this.props;
     const { dataTable } = this.state;
     this.chekPathname();
+    await this.checkAddressLocalStorage();
     await this.getEvangelists();
     this.getTxsCosmos();
     // if (web3.givenProvider !== null) {
@@ -85,6 +90,17 @@ class Evangelism extends React.PureComponent {
       this.chekPathname();
     }
   }
+
+  checkAddressLocalStorage = () => {
+    let address = [];
+
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address });
+    }
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -203,13 +219,17 @@ class Evangelism extends React.PureComponent {
   };
 
   getEvangelists = async () => {
+    const { addressLedger } = this.state;
     const {
       contract: { methods },
     } = this.props;
     let evangelists = [];
+    let address = '';
+    if (addressLedger !== null) {
+      address = addressLedger.bech32;
+    }
     for (let i = 0; ; i += 1) {
       try {
-        const amount = 0;
         const {
           cyberAddress,
           cosmosAddress,
@@ -220,6 +240,15 @@ class Evangelism extends React.PureComponent {
           nickname,
           // eslint-disable-next-line no-await-in-loop
         } = await methods.evangelists(i).call();
+
+        if (address === cyberAddress) {
+          this.setState({
+            evangelist: {
+              status: parseFloat(status),
+              nickname,
+            },
+          });
+        }
 
         evangelists = {
           ...evangelists,
@@ -247,7 +276,7 @@ class Evangelism extends React.PureComponent {
   };
 
   render() {
-    const { dataTable, blessed, loading, loadingKarma } = this.state;
+    const { dataTable, blessed, loading, evangelist } = this.state;
     const {
       contract: { methods },
       web3,
@@ -277,7 +306,7 @@ class Evangelism extends React.PureComponent {
       return (
         <div>
           <main className="block-body">
-            <InfoPane />
+            <InfoPane evangelist={evangelist} />
             <Pane
               display="flex"
               flexDirection="column"

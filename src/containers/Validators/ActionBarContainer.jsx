@@ -20,6 +20,7 @@ import {
   getBalanceWallet,
   selfDelegationShares,
   getValidators,
+  statusNode,
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
@@ -175,30 +176,8 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER.CYBER_NODE_URL_API}/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   getNetworkId = async () => {
-    const data = await this.getStatus();
+    const data = await statusNode();
     return data.node_info.network;
   };
 
@@ -470,7 +449,7 @@ class ActionBarContainer extends Component {
   };
 
   render() {
-    const { validators, addressLedger, unStake } = this.props;
+    const { validators, addressLedger, unStake, validatorsAll } = this.props;
     const {
       stage,
       ledgerVersion,
@@ -485,8 +464,9 @@ class ActionBarContainer extends Component {
       addressInfo,
       valueSelect,
       errorMessage,
-      validatorsAll,
     } = this.state;
+
+    console.log(validatorsAll);
 
     const validRestakeBtn =
       parseFloat(toSend) > 0 &&
@@ -563,16 +543,11 @@ class ActionBarContainer extends Component {
       // if (this.state.stage === STAGE_READY) {
       return (
         <Delegate
-          address={address.bech32}
-          onClickBtnCloce={this.cleatState}
-          balance={txType === TXTYPE_DELEGATE ? balance : addressInfo.delegate}
           moniker={validators.description.moniker}
-          operatorAddress={validators.operator_address}
-          generateTx={() => this.generateTx()}
-          max={e => this.onClickMax(e)}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           toSend={toSend}
-          disabledBtn={balance === 0}
+          disabledBtn={toSend.length === 0}
+          generateTx={() => this.generateTx()}
           delegate={txType === TXTYPE_DELEGATE}
         />
       );
@@ -588,7 +563,6 @@ class ActionBarContainer extends Component {
       // if (this.state.stage === STAGE_READY) {
       return (
         <ReDelegate
-          address={address.bech32}
           onClickBtnCloce={this.cleatState}
           generateTx={() => this.generateTx()}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}

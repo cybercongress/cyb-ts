@@ -29,7 +29,9 @@ import {
   CybernomicsTab,
   KnowledgeTab,
   CommunityTab,
-  DocsTab,
+  AppsTab,
+  HelpTab,
+  PathTab,
 } from './tabs';
 
 const { DIVISOR_CYBER_G } = CYBER;
@@ -40,7 +42,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={10}
+      paddingX={5}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -137,10 +139,20 @@ class Brain extends React.Component {
     ) {
       this.select('community');
     } else if (
-      pathname.match(/docs/gm) &&
-      pathname.match(/docs/gm).length > 0
+      pathname.match(/apps/gm) &&
+      pathname.match(/apps/gm).length > 0
     ) {
-      this.select('docs');
+      this.select('apps');
+    } else if (
+      pathname.match(/help/gm) &&
+      pathname.match(/help/gm).length > 0
+    ) {
+      this.select('help');
+    } else if (
+      pathname.match(/path/gm) &&
+      pathname.match(/path/gm).length > 0
+    ) {
+      this.select('path');
     } else {
       this.select('main');
     }
@@ -418,8 +430,16 @@ class Brain extends React.Component {
       );
     }
 
-    if (selected === 'docs') {
-      content = <Route path="/brain/docs" render={() => <DocsTab />} />;
+    if (selected === 'apps') {
+      content = <Route path="/brain/apps" render={() => <AppsTab />} />;
+    }
+
+    if (selected === 'help') {
+      content = <Route path="/brain/help" render={() => <HelpTab />} />;
+    }
+
+    if (selected === 'path') {
+      content = <Route path="/brain/path" render={() => <PathTab />} />;
     }
 
     return (
@@ -456,7 +476,7 @@ class Brain extends React.Component {
 
           <Tablist
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
             gridGap="10px"
             marginTop={25}
           >
@@ -464,6 +484,11 @@ class Brain extends React.Component {
               text="Knowledge"
               isSelected={selected === 'knowledge'}
               to="/brain/knowledge"
+            />
+            <TabBtn
+              text="Path"
+              isSelected={selected === 'path'}
+              to="/brain/path"
             />
             <TabBtn
               text="Cybernomics"
@@ -477,9 +502,14 @@ class Brain extends React.Component {
               to="/brain/government"
             />
             <TabBtn
-              text="Docs & Code"
-              isSelected={selected === 'docs'}
-              to="/brain/docs"
+              text="Apps"
+              isSelected={selected === 'apps'}
+              to="/brain/apps"
+            />
+            <TabBtn
+              text="Help"
+              isSelected={selected === 'help'}
+              to="/brain/help"
             />
             <TabBtn
               text="Community"

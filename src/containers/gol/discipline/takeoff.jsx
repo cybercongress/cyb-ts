@@ -9,7 +9,6 @@ import RowTable from '../components/row';
 import { setGolTakeOff } from '../../../redux/actions/gol';
 
 const Takeoff = ({
-  won = 0,
   takeoffDonations,
   addressLedger,
   setGolTakeOffProps,
@@ -18,7 +17,7 @@ const Takeoff = ({
   try {
     const [loading, setLoading] = useState(true);
     const [cybWonPercent, setCybWonPercent] = useState(0);
-    const currentPrize = Math.floor(won);
+    const currentPrize = DISTRIBUTION.takeoff;
 
     useEffect(() => {
       if (addressLedger !== null) {
@@ -40,7 +39,7 @@ const Takeoff = ({
         setGolTakeOffProps(0, currentPrize);
         setLoading(false);
       }
-    }, [won, addressLedger]);
+    }, [addressLedger]);
 
     return (
       <RowTable
