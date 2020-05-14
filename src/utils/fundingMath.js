@@ -1,5 +1,5 @@
-import { TAKEOFF } from './config';
-import { x, y, z, p } from './list';
+import { TAKEOFF, TAKEOFF_SUPPLY, CYBER, GENESIS_SUPPLY } from './config';
+import { x, cap, p } from './list';
 
 const {
   CYBWON_A,
@@ -32,33 +32,30 @@ const getDataPlot = atoms => {
   let data = {
     y: [],
     x: [],
-    z: [],
-    p: [],
+    cap: [],
   };
-  const indexArr = y.indexOf(Math.floor(atoms / 1000) * 1000);
-  const newArrY = y.slice(0, indexArr + 1);
+  const indexArr = x.indexOf(Math.floor(atoms / 1000) * 1000);
+  const newArrY = p.slice(0, indexArr + 1);
   const newArrX = x.slice(0, indexArr + 1);
-  const newArrZ = z.slice(0, indexArr + 1);
-  const newArrP = p.slice(0, indexArr + 1);
+  const newArrCap = cap.slice(0, indexArr + 1);
 
   data = {
     x: newArrX,
     y: newArrY,
-    z: newArrZ,
-    p: newArrP,
+    cap: newArrCap,
   };
-  data.x.push(getShares(atoms));
-  data.y.push(atoms);
-  data.z.push(getDiscountPlot(atoms));
-  data.p.push(atoms);
+  data.x.push(atoms);
+  const price = (atoms / TAKEOFF_SUPPLY) * CYBER.DIVISOR_CYBER_G;
+  data.y.push(price);
+  data.cap.push((atoms / TAKEOFF_SUPPLY) * GENESIS_SUPPLY);
   return data;
 };
 
-const getEstimation = (price, discount, atoms, value) => {
+const getEstimation = (price, atoms, value) => {
   const estimation =
     price * value +
-    ((price * discount) / 2) * value -
-    ((price * discount) / (2 * atoms)) * Math.pow(value, 2);
+    ((price * TAKEOFF.DISCOUNT) / 2) * value -
+    ((price * TAKEOFF.DISCOUNT) / (2 * atoms)) * Math.pow(value, 2);
   return estimation;
 };
 

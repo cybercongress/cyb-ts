@@ -13,7 +13,13 @@ import {
   getTimeRemaining,
 } from '../../utils/utils';
 import { Loading, LinkWindow, Copy } from '../../components';
-import { COSMOS, TAKEOFF } from '../../utils/config';
+import {
+  COSMOS,
+  TAKEOFF,
+  TAKEOFF_SUPPLY,
+  GENESIS_SUPPLY,
+  CYBER,
+} from '../../utils/config';
 import {
   cybWon,
   funcDiscount,
@@ -41,19 +47,6 @@ const diff = (key, ...arrays) =>
     })
   );
 
-const test = {
-  'tx.hash': [
-    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
-  ],
-  'tx.height': ['1489670'],
-  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
-  'transfer.amount': ['100000000uatom'],
-  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
-  'message.module': ['bank'],
-  'message.action': ['send'],
-  'tm.event': ['Tx'],
-};
-
 class Funding extends PureComponent {
   ws = new WebSocket(GAIA_WEBSOCKET_URL);
 
@@ -65,17 +58,14 @@ class Funding extends PureComponent {
       pocketAdd: null,
       dataTxs: null,
       atomLeff: 0,
-      won: 0,
       pin: false,
       currentPrice: 0,
-      currentDiscount: 0,
       currentPriceEstimation: 0,
       dataPlot: [],
       dataRewards: [],
       loader: true,
       loading: 0,
       popapAdress: false,
-      currentDiscountRevers: 0,
     };
   }
 
@@ -209,28 +199,19 @@ class Funding extends PureComponent {
 
     amountWs = amount + amountWebSocket;
     const atomLeffWs = ATOMsALL - amountWs;
-    const currentDiscountWs = funcDiscountRevers(amountWs);
-    const wonWs = cybWon(amountWs);
-    const currentPriceWs = wonWs / amountWs;
-    currentPrice = amountWs / wonWs;
+    const currentPriceWs = TAKEOFF_SUPPLY / amountWs;
+    currentPrice = amountWs / TAKEOFF_SUPPLY;
 
     this.setState({
       amount: amountWs,
       atomLeff: atomLeffWs,
-      won: wonWs,
       currentPrice,
       currentPriceEstimation: currentPriceWs,
-      currentDiscountRevers: currentDiscountWs,
     });
   };
 
   getTableDataWs = async dataTxs => {
-    const {
-      currentDiscountRevers,
-      currentPriceEstimation,
-      amount,
-      groups,
-    } = this.state;
+    const { currentPriceEstimation, amount, groups } = this.state;
     try {
       console.log(groups);
       console.log(dataTxs);
@@ -239,23 +220,11 @@ class Funding extends PureComponent {
       const tempData = [];
       let estimation = 0;
       if (amount <= ATOMsALL) {
-        let tempVal = amount - dataTxs.amount;
+        let tempVal = dataTxs.amount;
         if (tempVal >= ATOMsALL) {
-          tempVal = ATOMsALL;
+          tempVal = 0;
         }
-        estimation =
-          getEstimation(
-            currentPriceEstimation,
-            currentDiscountRevers,
-            amount,
-            amount
-          ) -
-          getEstimation(
-            currentPriceEstimation,
-            currentDiscountRevers,
-            amount,
-            tempVal
-          );
+        estimation = (tempVal / amount) * TAKEOFF_SUPPLY;
         dataWs.cybEstimation = estimation;
         groups[dataWs.sender].address = [
           dataWs,
@@ -285,9 +254,6 @@ class Funding extends PureComponent {
 
     let amount = 0;
     let atomLeff = 0;
-    let currentDiscount = 0;
-    let currentDiscountRevers = 0;
-    let won = 0;
     let currentPrice = 0;
     let currentPriceEstimation = 0;
     for (let item = 0; item < dataTxs.length; item++) {
@@ -307,34 +273,20 @@ class Funding extends PureComponent {
     // }
     console.log('amount', amount);
     atomLeff = ATOMsALL - amount;
-    currentDiscount = funcDiscount(amount);
-    currentDiscountRevers = funcDiscountRevers(amount);
-    won = cybWon(amount);
-    currentPrice = amount / won;
-    currentPriceEstimation = won / amount;
-    console.log('won', won);
-    console.log('currentDiscount', currentDiscount);
+    currentPrice = amount / TAKEOFF_SUPPLY;
+    currentPriceEstimation = TAKEOFF_SUPPLY / amount;
     // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
       amount,
       atomLeff,
-      currentDiscountRevers,
-      won,
       currentPrice,
-      currentDiscount,
       currentPriceEstimation,
       loader: false,
     });
   };
 
   getTableData = async () => {
-    const {
-      dataTxs,
-      currentDiscountRevers,
-      amount,
-      currentPriceEstimation,
-      dataAllPin,
-    } = this.state;
+    const { dataTxs, amount } = this.state;
     try {
       const table = [];
       let temp = 0;
@@ -347,25 +299,9 @@ class Funding extends PureComponent {
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
               10
             ) / COSMOS.DIVISOR_ATOM;
-          let tempVal = temp + val;
-          if (tempVal >= ATOMsALL) {
-            tempVal = ATOMsALL;
-          }
-          estimation =
-            getEstimation(
-              currentPriceEstimation,
-              currentDiscountRevers,
-              amount,
-              tempVal
-            ) -
-            getEstimation(
-              currentPriceEstimation,
-              currentDiscountRevers,
-              amount,
-              temp
-            );
+
+          estimation = (val / amount) * TAKEOFF_SUPPLY;
           temE += estimation;
-          temp += val;
         } else {
           break;
         }
@@ -439,9 +375,7 @@ class Funding extends PureComponent {
     const {
       groups,
       atomLeff,
-      won,
       currentPrice,
-      currentDiscount,
       dataPlot,
       dataAllPin,
       dataRewards,
@@ -534,11 +468,10 @@ class Funding extends PureComponent {
           <Statistics
             atomLeff={formatNumber(atomLeff)}
             time={time}
-            won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
             price={currentPrice * 10 ** 9}
-            discount={formatNumber(currentDiscount, 3)}
+            discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
           />
-          <Dinamics data3d={dataPlot} />
+          <Dinamics cap={currentPrice * GENESIS_SUPPLY} data3d={dataPlot} />
 
           {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
         </main>
