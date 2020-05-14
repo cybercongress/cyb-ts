@@ -19,7 +19,13 @@ import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
 import { cybWon } from '../../utils/fundingMath';
 import injectWeb3 from './web3';
-import { CYBER, AUCTION, GENESIS_SUPPLY, TAKEOFF } from '../../utils/config';
+import {
+  CYBER,
+  AUCTION,
+  GENESIS_SUPPLY,
+  TAKEOFF,
+  TAKEOFF_SUPPLY,
+} from '../../utils/config';
 import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
@@ -192,7 +198,6 @@ class Brain extends React.Component {
   getATOM = async dataTxs => {
     const { cybernomics } = this.state;
     let amount = 0;
-    let won = 0;
     let currentPrice = 0;
 
     if (dataTxs) {
@@ -201,14 +206,12 @@ class Brain extends React.Component {
 
     console.log('amount', amount);
 
-    won = cybWon(amount);
     if (amount === 0) {
       currentPrice = 0;
     } else {
-      currentPrice = amount / won;
+      currentPrice = amount / TAKEOFF_SUPPLY;
     }
 
-    console.log('won', won);
     console.log('currentPrice', currentPrice);
 
     const supplyEUL = parseFloat(GENESIS_SUPPLY);
