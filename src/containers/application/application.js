@@ -11,7 +11,7 @@ import onClickOutside from 'react-onclickoutside';
 import queryString from 'query-string';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { MenuButton, BandwidthBar } from '../../components';
+import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
@@ -20,6 +20,7 @@ import { setQuery } from '../../redux/actions/query';
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
+const bug = require('../../image/alert-circle-outline.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
@@ -217,40 +218,83 @@ class App extends Component {
           }}
           className="container-distribution"
         >
-          <MenuButton
-            to="/brain"
-            textTooltip={
-              <span>
-                You are on the{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/cyberd/releases"
-                >
-                  euler
-                </a>{' '}
-                network. euler is incentivized test network. Be careful. Details
-                in{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
-                >
-                  whitepaper
-                </a>{' '}
-                and{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://cybercongress.ai/game-of-links/"
-                >
-                  Game of links
-                </a>{' '}
-                rules.
-              </span>
-            }
-            imgLogo={cyber}
-          />
+          <Pane position="relative">
+            <MenuButton
+              to="/brain"
+              textTooltip={
+                <span>
+                  You are on the{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/cybercongress/cyberd/releases"
+                  >
+                    euler
+                  </a>{' '}
+                  network. euler is incentivized test network. Be careful.
+                  Details in{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
+                  >
+                    whitepaper
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://cybercongress.ai/game-of-links/"
+                  >
+                    Game of links
+                  </a>{' '}
+                  rules.
+                </span>
+              }
+              imgLogo={cyber}
+            />
+            <Pane bottom="-10px" right="-20%" position="absolute">
+              <Tooltip
+                placement="bottom"
+                tooltip={
+                  <span>
+                    You are on the{' '}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://github.com/cybercongress/cyberd/releases"
+                    >
+                      euler
+                    </a>{' '}
+                    network. euler is incentivized test network. Be careful.
+                    Details in{' '}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
+                    >
+                      whitepaper
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://cybercongress.ai/game-of-links/"
+                    >
+                      Game of links
+                    </a>{' '}
+                    rules.
+                  </span>
+                }
+              >
+                <img
+                  alt="bugs"
+                  style={{ width: '20px', height: '20px' }}
+                  src={bug}
+                />
+              </Tooltip>
+            </Pane>
+          </Pane>
           {!home && (
             <Pane
               position="absolute"
@@ -303,23 +347,36 @@ class App extends Component {
               bwMaxValue={bandwidth.maxValue}
             />
           </Pane>
-          <MenuButton
-            to="/pocket"
-            imgLogo={ipfsStatus ? cybTrue : cybFalse}
-            positionBugLeft
-            textTooltip={
-              <span>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/dot-cyber"
-                >
-                  The dot-cyber
-                </a>{' '}
-                app has not been audited yet. Please, use it with caution.
-              </span>
-            }
-          />
+          <Pane position="relative">
+            <MenuButton
+              to="/pocket"
+              imgLogo={ipfsStatus ? cybTrue : cybFalse}
+              positionBugLeft
+            />
+            <Pane bottom="-10px" left="-20%" position="absolute">
+              <Tooltip
+                placement="bottom"
+                tooltip={
+                  <span>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://github.com/cybercongress/dot-cyber"
+                    >
+                      The dot-cyber
+                    </a>{' '}
+                    app has not been audited yet. Please, use it with caution.
+                  </span>
+                }
+              >
+                <img
+                  alt="bugs"
+                  style={{ width: '20px', height: '20px' }}
+                  src={bug}
+                />
+              </Tooltip>
+            </Pane>
+          </Pane>
         </div>
         {/* </Navigation> */}
         {this.props.children}

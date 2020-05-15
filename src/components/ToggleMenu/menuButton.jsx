@@ -15,7 +15,6 @@ export const MenuButton = ({
   bottomBug = '-20%',
   ...props
 }) => (
-  <Tooltip content={textTooltip} position="bottom">
     <Pane
       {...props}
       display="flex"
@@ -38,19 +37,6 @@ export const MenuButton = ({
             src={imgLogo || stausImgCyb}
           />
         </Link>
-        <img
-          src={bug}
-          alt="bug"
-          style={{
-            // width: 15,
-            height: 20,
-            position: 'absolute',
-            bottom: bottomBug,
-            left: positionBugLeft ? 'unset' : '100%',
-            right: positionBugLeft ? '100%' : 'unset',
-          }}
-        />
       </Pane>
     </Pane>
-  </Tooltip>
 );
