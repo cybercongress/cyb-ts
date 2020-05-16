@@ -65,6 +65,7 @@ class Funding extends PureComponent {
       dataRewards: [],
       loader: true,
       loading: 0,
+      estimation: 0,
       popapAdress: false,
     };
   }
@@ -211,33 +212,41 @@ class Funding extends PureComponent {
   };
 
   getTableDataWs = async dataTxs => {
-    const { currentPriceEstimation, amount, groups } = this.state;
+    const { currentPriceEstimation, estimation, amount, groups } = this.state;
     try {
       console.log(groups);
       console.log(dataTxs);
 
       const dataWs = dataTxs;
       const tempData = [];
-      let estimation = 0;
+      let estimationEUL = 0;
+      let estimationCyb = 0;
+      let price = 0;
       if (amount <= ATOMsALL) {
         let tempVal = dataTxs.amount;
         if (tempVal >= ATOMsALL) {
           tempVal = 0;
         }
-        estimation = (tempVal / amount) * TAKEOFF_SUPPLY;
-        dataWs.cybEstimation = estimation;
+        estimationCyb = getEstimation(estimation, tempVal);
+        estimationEUL = (tempVal / amount) * TAKEOFF_SUPPLY;
+        price = tempVal / estimationCyb / 1000;
+        dataWs.cybEstimation = Math.floor(estimationCyb * 10 ** 12);
+        dataWs.estimationEUL = estimationEUL;
+        dataWs.price = price;
         groups[dataWs.sender].address = [
           dataWs,
           ...groups[dataWs.sender].address,
         ];
         groups[dataWs.sender].height = dataWs.height;
         groups[dataWs.sender].amountСolumn += dataWs.amount;
-        groups[dataWs.sender].cyb += estimation;
+        groups[dataWs.sender].cyb += Math.floor(estimationCyb * 10 ** 12);
+        groups[dataWs.sender].eul += estimationEUL;
       }
       // const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       this.setState({
         groups,
+        estimation: estimation + estimationCyb,
       });
     } catch (error) {
       console.log(error);
@@ -293,14 +302,17 @@ class Funding extends PureComponent {
       let temE = 0;
       for (let item = 0; item < dataTxs.length; item++) {
         let estimation = 0;
+        let price = 0;
+        let estimationEUL = 0;
         if (temp <= ATOMsALL) {
           const val =
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
               10
             ) / COSMOS.DIVISOR_ATOM;
-
-          estimation = (val / amount) * TAKEOFF_SUPPLY;
+          estimation = getEstimation(temE, val);
+          price = val / estimation / 1000;
+          estimationEUL = (val / amount) * TAKEOFF_SUPPLY;
           temE += estimation;
         } else {
           break;
@@ -310,16 +322,17 @@ class Funding extends PureComponent {
           txhash: dataTxs[item].txhash,
           height: dataTxs[item].height,
           from: dataTxs[item].tx.value.msg[0].value.from_address,
+          price,
           timestamp: dateFormat(d, 'dd/mm/yyyy, HH:MM:ss'),
           amount:
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
               10
             ) / COSMOS.DIVISOR_ATOM,
-          estimation,
+          estimation: estimation * 10 ** 12,
+          estimationEUL,
         });
       }
-      console.log('estimation', temE);
 
       const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
@@ -327,6 +340,7 @@ class Funding extends PureComponent {
 
       this.setState({
         groups: groupsAddress,
+        estimation: temE,
       });
       this.checkPin();
     } catch (error) {

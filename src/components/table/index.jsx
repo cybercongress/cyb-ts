@@ -6,7 +6,10 @@ const RowTableTakeoff = ({ item, children, statePin }) => {
   return (
     <div>
       <div className="container-row-pin-padding0">
-        <div onClick={() => setOpen(!open)} className="table-rows-box">
+        <div
+          onClick={() => setOpen(!open)}
+          className={`table-rows-box ${open ? 'table-rows-box-open' : ''}`}
+        >
           {children}
         </div>
       </div>

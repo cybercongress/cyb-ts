@@ -51,11 +51,13 @@ const getDataPlot = atoms => {
   return data;
 };
 
-const getEstimation = (price, atoms, value) => {
+const getEstimation = (x0, value) => {
+  const X_POW = x0 ** 2;
   const estimation =
-    price * value +
-    ((price * TAKEOFF.DISCOUNT) / 2) * value -
-    ((price * TAKEOFF.DISCOUNT) / (2 * atoms)) * Math.pow(value, 2);
+    0.1 *
+    (Math.sqrt(5) * Math.sqrt(value + 20 * X_POW + 1000 * x0 + 12500) -
+      10 * x0 -
+      250);
   return estimation;
 };
 
@@ -97,10 +99,12 @@ const getGroupAddress = data => {
     obj[item.from] = obj[item.from] || [];
     obj[item.from].push({
       amount: item.amount,
+      price: item.price,
       txhash: item.txhash,
       height: item.height,
       timestamp: item.timestamp,
       cybEstimation: item.estimation,
+      estimationEUL: item.estimationEUL,
     });
     return obj;
   }, {});
@@ -113,6 +117,7 @@ const getGroupAddress = data => {
         amountСolumn: null,
         pin: false,
         cyb: null,
+        eul: null,
       },
     }),
     {}
@@ -121,13 +126,16 @@ const getGroupAddress = data => {
   Object.keys(groups).forEach(key => {
     let sum = 0;
     let sumEstimation = 0;
+    let eul = 0;
     groups[key].address.forEach(addressKey => {
       sum += addressKey.amount;
       sumEstimation += addressKey.cybEstimation;
+      eul += addressKey.estimationEUL;
     });
     groups[key].height = groups[key].address[0].height;
     groups[key].amountСolumn = sum;
     groups[key].cyb = sumEstimation;
+    groups[key].eul = eul;
   });
   return groups;
 };

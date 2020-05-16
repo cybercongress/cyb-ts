@@ -142,9 +142,7 @@ class Dinamics extends Component {
         },
       },
       yaxis: {
-        // autotick: true,
-        autotick: false,
-        dtick: 0.25,
+        autotick: true,
         fixedrange: true,
         title: {
           text: `Price, ATOMs/GCYB`,
@@ -157,9 +155,7 @@ class Dinamics extends Component {
         zerolinecolor: '#dedede',
       },
       xaxis: {
-        // autotick: true,
-        autotick: false,
-        dtick: 50000,
+        autotick: true,
         fixedrange: true,
         title: {
           text: `Donation, ATOMs`,
