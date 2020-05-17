@@ -82,7 +82,7 @@ class Dinamics extends Component {
         // hoverinfo: 'none'
         hovertemplate:
           'Price: %{y:.2f%} ATOMs/GCYB<br>' +
-          'ATOMs contributed: %{x} ATOMs<br>' +
+          'Tokens sold: %{x} GCYB<br>' +
           `Cap: ${caps} ATOMs` +
           '<extra></extra>',
       },
@@ -158,7 +158,7 @@ class Dinamics extends Component {
         autotick: true,
         fixedrange: true,
         title: {
-          text: `Donation, ATOMs`,
+          text: `Tokens sold, GCYB`,
         },
         tickfont: {
           color: '#36d6ae',

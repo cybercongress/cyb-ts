@@ -3,50 +3,22 @@ import { Icon } from '@cybercongress/gravity';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
 
-const Order = {
-  NONE: 'NONE',
-  ASC: 'ASC',
-  DESC: 'DESC',
-};
-
-const sort = (profiles, sortKey, ordering = Order.DESC) => {
-  if (ordering === Order.NONE) {
-    return profiles;
-  }
-  if (sortKey === 'timestamp') {
-    return profiles.sort((a, b) => {
-      const x = new Date(a[sortKey]);
-      const y = new Date(b[sortKey]);
-      if (ordering === Order.ASC) {
-        return x - y;
-      }
-      return y - x;
-    });
-  }
-  return profiles.sort((a, b) => {
-    const x = a[sortKey];
-    const y = b[sortKey];
-    if (ordering === Order.ASC) {
-      return x - y;
-    }
-    return y - x;
-  });
-};
-
 function Table({ data, fUpin, fPin, update, pin }) {
   const [dataTable, setDataTable] = useState({});
 
   useEffect(() => {
-    const keysSorted = Object.keys(data)
-      .sort((a, b) => data[b].amountСolumn - data[a].amountСolumn)
-      .reduce(
-        (_sortedObj, key) => ({
-          ..._sortedObj,
-          [key]: data[key],
-        }),
-        {}
-      );
-    setDataTable(keysSorted);
+    if (Object.keys(data).length > 0) {
+      const keysSorted = Object.keys(data)
+        .sort((a, b) => data[b].amountСolumn - data[a].amountСolumn)
+        .reduce(
+          (_sortedObj, key) => ({
+            ..._sortedObj,
+            [key]: data[key],
+          }),
+          {}
+        );
+      setDataTable(keysSorted);
+    }
   }, [data]);
 
   const tableRow = Object.keys(dataTable).map((key, index) => (

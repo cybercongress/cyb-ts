@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Text, Pane, Dialog } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
+import { Text, Pane, Dialog, Tablist } from '@cybercongress/gravity';
+import { Link, Switch, Route, Router } from 'react-router-dom';
 import QRCode from 'qrcode.react';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
@@ -12,7 +12,7 @@ import {
   trimString,
   getTimeRemaining,
 } from '../../utils/utils';
-import { Loading, LinkWindow, Copy } from '../../components';
+import { Loading, LinkWindow, Copy, TabBtn } from '../../components';
 import {
   COSMOS,
   TAKEOFF,
@@ -67,14 +67,39 @@ class Funding extends PureComponent {
       loading: 0,
       estimation: 0,
       popapAdress: false,
+      selected: 'donate',
     };
   }
 
   async componentDidMount() {
+    this.chekPathname();
     await this.getDataWS();
     await this.getTxsCosmos();
     this.initClock();
   }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (pathname.match(/details/gm) && pathname.match(/details/gm).length > 0) {
+      this.select('details');
+    } else if (
+      pathname.match(/leaderboard/gm) &&
+      pathname.match(/leaderboard/gm).length > 0
+    ) {
+      this.select('leaderboard');
+    } else {
+      this.select('donate');
+    }
+  };
 
   initClock = () => {
     try {
@@ -196,18 +221,11 @@ class Funding extends PureComponent {
   getStatisticsWs = async amountWebSocket => {
     const { amount } = this.state;
     let amountWs = 0;
-    let currentPrice = 0;
 
     amountWs = amount + amountWebSocket;
-    const atomLeffWs = ATOMsALL - amountWs;
-    const currentPriceWs = TAKEOFF_SUPPLY / amountWs;
-    currentPrice = amountWs / TAKEOFF_SUPPLY;
 
     this.setState({
       amount: amountWs,
-      atomLeff: atomLeffWs,
-      currentPrice,
-      currentPriceEstimation: currentPriceWs,
     });
   };
 
@@ -244,9 +262,12 @@ class Funding extends PureComponent {
       }
       // const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
+      const temE = estimationCyb * 1000 + estimation;
+      const currentPrice = 0.00004 * (temE / 1000) + 1;
       this.setState({
         groups,
-        estimation: estimation + estimationCyb,
+        estimation: temE,
+        currentPrice,
       });
     } catch (error) {
       console.log(error);
@@ -262,9 +283,6 @@ class Funding extends PureComponent {
     // );
 
     let amount = 0;
-    let atomLeff = 0;
-    let currentPrice = 0;
-    let currentPriceEstimation = 0;
     for (let item = 0; item < dataTxs.length; item++) {
       if (amount <= ATOMsALL) {
         amount +=
@@ -277,20 +295,8 @@ class Funding extends PureComponent {
         break;
       }
     }
-    // if (statisticsLocalStorage !== null) {
-    //   amount += statisticsLocalStorage.amount;
-    // }
-    console.log('amount', amount);
-    atomLeff = ATOMsALL - amount;
-    currentPrice = amount / TAKEOFF_SUPPLY;
-    currentPriceEstimation = TAKEOFF_SUPPLY / amount;
-    // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
       amount,
-      atomLeff,
-      currentPrice,
-      currentPriceEstimation,
-      loader: false,
     });
   };
 
@@ -338,9 +344,12 @@ class Funding extends PureComponent {
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       console.log('groups', groupsAddress);
 
+      const currentPrice = 0.00004 * (temE / 1000) + 1;
       this.setState({
         groups: groupsAddress,
-        estimation: temE,
+        estimation: temE * 1000,
+        currentPrice,
+        loader: false,
       });
       this.checkPin();
     } catch (error) {
@@ -364,9 +373,11 @@ class Funding extends PureComponent {
   };
 
   getData = async () => {
-    const { amount } = this.state;
+    const { estimation } = this.state;
     let dataPlot = [];
-    dataPlot = getDataPlot(amount);
+    dataPlot = getDataPlot(estimation);
+    console.log(dataPlot);
+
     // localStorage.setItem(`dataPlot`, JSON.stringify(dataPlot));
     this.setState({
       dataPlot,
@@ -385,6 +396,10 @@ class Funding extends PureComponent {
     });
   };
 
+  select = selected => {
+    this.setState({ selected });
+  };
+
   render() {
     const {
       groups,
@@ -397,7 +412,10 @@ class Funding extends PureComponent {
       loader,
       popapAdress,
       time,
+      selected,
+      estimation,
     } = this.state;
+    const { match } = this.props;
 
     if (loader) {
       return (
@@ -454,40 +472,59 @@ class Funding extends PureComponent {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
-              Takeoff donations are the first event in the{' '}
-              <Link to="/search/roadmap">distribution process of CYB</Link>. The
-              main purpose of the Takeoff is to get validators involved in the
-              decentralized launch of{' '}
-              <Link to="/search/genesis">The Genesis</Link>. We also want to
-              engage everybody into cyberlinking. The{' '}
-              <Link to="/gol">Game of Links</Link> rewards are dependant on the
-              Takeoff results. The more will be donated, the more{' '}
-              <Link to="/gol">GoL</Link> rewards the participants get. Please
-              keep in mind, that you will receive CYB in Genesis and EUL after
-              the end of the auction. If you want to test{' '}
-              <Link to="/search/cyberlink">cyberlinking </Link>
-              right now, get some tokens from the{' '}
-              <Link to="/gol/faucet">test~Auction</Link> instead. By donating
-              you agree with the donation terms defined in our{' '}
-              <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-                Whitepaper
-              </LinkWindow>{' '}
-              and the{' '}
-              <LinkWindow to="https://cybercongress.ai/game-of-links/">
-                Game of Links rules
-              </LinkWindow>
-              .
+              Takeoff is the key element during the{' '}
+              <Link to="/gol">Game of Links</Link> on the path for deploying
+              Superintelligence. Please, thoroughly{' '}
+              <Link to="/gol/takeoff/details">study details</Link> before
+              donating. But remember - the more you wait, the higher the price.
+              Takeoff donations are the first event in the.
             </Text>
           </Pane>
           <Statistics
-            atomLeff={formatNumber(atomLeff)}
+            atomLeff={formatNumber(100000 - estimation)}
             time={time}
-            price={currentPrice * 10 ** 9}
+            price={currentPrice}
             discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
           />
-          <Dinamics cap={currentPrice * GENESIS_SUPPLY} data3d={dataPlot} />
-
-          {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+            gridGap="15px"
+            marginY={20}
+          >
+            <TabBtn
+              text="Leaderboard"
+              isSelected={selected === 'leaderboard'}
+              to="/gol/takeoff/leaderboard"
+            />
+            <TabBtn
+              text="Donate"
+              isSelected={selected === 'donate'}
+              to="/gol/takeoff"
+            />
+            <TabBtn
+              text="Details"
+              isSelected={selected === 'details'}
+              to="/gol/takeoff/details"
+            />
+          </Tablist>
+          <Switch>
+            <Route
+              path={`${match.path}`}
+              exact
+              render={() => (
+                <Dinamics cap={40 * estimation + 1000000} data3d={dataPlot} />
+              )}
+            />
+            <Route
+              path={`${match.path}/leaderboard`}
+              render={() => <Table data={groups} pin={pin} />}
+            />
+            <Route
+              path={`${match.path}/details`}
+              render={() => <Pane>Details</Pane>}
+            />
+          </Switch>
         </main>
         <ActionBarTakeOff
           initClock={this.initClock}

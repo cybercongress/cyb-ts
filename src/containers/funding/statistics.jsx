@@ -20,7 +20,7 @@ const Statistics = ({ atomLeff, price, discount, time }) => (
       tooltipValue="The current ATOM/GCYBs price. 1 Giga CYB = 1,000,000,000 CYB. Calculated as a relation between the won CYBs and accumulated ATOMs. This price excludes the order of donation advantages."
     />
     <Card
-      title="ATOMs left"
+      title="GCYB left"
       value={atomLeff}
       positionTooltip="bottom"
       tooltipValue="The accumulated ATOMs left before the end of the donations, in the case where less than 90 days pass from the start"

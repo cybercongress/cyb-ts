@@ -28,13 +28,13 @@ const getDiscountPlot = atoms => {
   return discount;
 };
 
-const getDataPlot = atoms => {
+const getDataPlot = tokens => {
   let data = {
     y: [],
     x: [],
     cap: [],
   };
-  const indexArr = x.indexOf(Math.floor(atoms / 1000) * 1000);
+  const indexArr = x.indexOf(Math.floor(tokens / 1000) * 1000);
   const newArrY = p.slice(0, indexArr + 1);
   const newArrX = x.slice(0, indexArr + 1);
   const newArrCap = cap.slice(0, indexArr + 1);
@@ -44,10 +44,10 @@ const getDataPlot = atoms => {
     y: newArrY,
     cap: newArrCap,
   };
-  data.x.push(atoms);
-  const price = (atoms / TAKEOFF_SUPPLY) * CYBER.DIVISOR_CYBER_G;
+  data.x.push(tokens);
+  const price = 0.00004 * tokens + 1;
   data.y.push(price);
-  data.cap.push((atoms / TAKEOFF_SUPPLY) * GENESIS_SUPPLY);
+  data.cap.push(price * 1000);
   return data;
 };
 
