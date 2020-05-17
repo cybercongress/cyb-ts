@@ -3,12 +3,19 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER } from '../../utils/config';
+import {
+  COSMOS,
+  LEDGER,
+  PATTERN_COSMOS,
+  CYBER,
+  TAKEOFF,
+} from '../../utils/config';
 import {
   getDelegator,
   downloadObjectAsJson,
   trimString,
   getTimeRemaining,
+  formatNumber,
 } from '../../utils/utils';
 import {
   ContributeATOMs,
@@ -103,18 +110,6 @@ class ActionBarTakeOff extends Component {
       this.setState({ memo });
     } else {
       this.setState({ memo: MEMO });
-    }
-    const deadline = `${COSMOS.TIME_START}`;
-    console.log(Date.parse(deadline));
-    const startTime = Date.parse(deadline) - Date.parse(new Date());
-    if (startTime <= 0) {
-      this.setState({
-        time: false,
-      });
-    } else {
-      this.setState({
-        time: true,
-      });
     }
   }
 
@@ -216,9 +211,12 @@ class ActionBarTakeOff extends Component {
       if (message !== "Cannot read property 'length' of undefined") {
         // this just means we haven't found the device yet...
         // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
+        console.error('Problem reading address data', message, statusCode); 
       }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+      this.setState({
+        stage: STAGE_ERROR,
+        errorMessage: message,
+      }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -552,25 +550,42 @@ class ActionBarTakeOff extends Component {
       txHeight,
       stage,
       errorMessage,
-      time,
       trackAddress,
       days,
       hours,
       seconds,
       minutes,
+      loading,
     } = this.state;
-    const { initClock } = this.props;
+    const { block } = this.props;
+    let timeStart = true;
 
-    if (time) {
+    if (block === 0) {
+      return (
+        <ActionBar>
+          <Dots />
+        </ActionBar>
+      );
+    }
+
+    if (block > 0) {
+      if (TAKEOFF.BLOCK_START - block <= 0) {
+        timeStart = false;
+      }
+    }
+
+    if (timeStart) {
       return (
         <ActionBar>
           <div
             className="countdown-time text-glich"
-            data-text="takeoff will start in"
+            data-text={`Before the start is left ${formatNumber(
+              TAKEOFF.BLOCK_START - block
+            )} blocks`}
           >
-            takeoff will start in
+            Before the start is left {formatNumber(TAKEOFF.BLOCK_START - block)}{' '}
+            blocks
           </div>
-          <Timer updateFunc={initClock} startTime={COSMOS.TIME_START} />
         </ActionBar>
       );
     }
@@ -692,7 +707,8 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with the donation terms defined in the
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
             </Pane>{' '}
             <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
               Whitepaper
@@ -754,7 +770,8 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with the donation terms defined in the
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
             </Pane>{' '}
             <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
               Whitepaper

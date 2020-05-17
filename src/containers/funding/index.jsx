@@ -47,6 +47,19 @@ const diff = (key, ...arrays) =>
     })
   );
 
+  const test = {
+    'tx.hash': [
+      '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
+    ],
+    'tx.height': ['1489670'],
+    'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
+    'transfer.amount': ['100000000uatom'],
+    'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
+    'message.module': ['bank'],
+    'message.action': ['send'],
+    'tm.event': ['Tx'],
+  };
+
 class Funding extends PureComponent {
   ws = new WebSocket(GAIA_WEBSOCKET_URL);
 
@@ -68,11 +81,13 @@ class Funding extends PureComponent {
       estimation: 0,
       popapAdress: false,
       selected: 'donate',
+      block: 0,
     };
   }
 
   async componentDidMount() {
     this.chekPathname();
+    // this.getBlockWS();
     await this.getDataWS();
     await this.getTxsCosmos();
     this.initClock();
@@ -164,14 +179,59 @@ class Funding extends PureComponent {
           },
         })
       );
+      this.ws.send(
+        JSON.stringify({
+          method: 'subscribe',
+          params: ["tm.event='NewBlockHeader'"],
+          id: 'block',
+          jsonrpc: '2.0',
+        })
+      );
     };
 
     this.ws.onmessage = async evt => {
       const message = JSON.parse(evt.data);
       if (message.id.indexOf('0#event') !== -1) {
         this.updateWs(message.result.events);
+        console.warn('txs', message);
       }
-      console.warn('txs', message);
+      if (message.id.indexOf('block#event') !== -1) {
+        // this.updateWs(message.result.events);
+        if (Object.keys(message.result).length > 0) {
+          const block = message.result.data.value.header.height;
+          this.setState({
+            block,
+          });
+        }
+      }
+    };
+
+    this.ws.onclose = () => {
+      console.log('disconnected');
+    };
+  };
+
+  getBlockWS = async () => {
+    this.ws.onopen = () => {
+      console.log('connected Funding');
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          id: '0',
+          params: {
+            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
+          },
+        })
+      );
+    };
+
+    this.ws.onmessage = async evt => {
+      const message = JSON.parse(evt.data);
+      // if (message.id.indexOf('0#event') !== -1) {
+      //   this.updateWs(message.result.events);
+      // }
+      console.warn('block', message);
     };
 
     this.ws.onclose = () => {
@@ -232,7 +292,7 @@ class Funding extends PureComponent {
   getTableDataWs = async dataTxs => {
     const { currentPriceEstimation, estimation, amount, groups } = this.state;
     try {
-      console.log(groups);
+      console.log(estimation);
       console.log(dataTxs);
 
       const dataWs = dataTxs;
@@ -247,7 +307,7 @@ class Funding extends PureComponent {
         }
         estimationCyb = getEstimation(estimation, tempVal);
         estimationEUL = (tempVal / amount) * TAKEOFF_SUPPLY;
-        price = tempVal / estimationCyb / 1000;
+        price = 0.00004 * estimationCyb + 1;
         dataWs.cybEstimation = Math.floor(estimationCyb * 10 ** 12);
         dataWs.estimationEUL = estimationEUL;
         dataWs.price = price;
@@ -317,7 +377,7 @@ class Funding extends PureComponent {
               10
             ) / COSMOS.DIVISOR_ATOM;
           estimation = getEstimation(temE, val);
-          price = val / estimation / 1000;
+          price = 0.00004 * estimation + 1;
           estimationEUL = (val / amount) * TAKEOFF_SUPPLY;
           temE += estimation;
         } else {
@@ -414,6 +474,7 @@ class Funding extends PureComponent {
       time,
       selected,
       estimation,
+      block,
     } = this.state;
     const { match } = this.props;
 
@@ -483,6 +544,7 @@ class Funding extends PureComponent {
           <Statistics
             atomLeff={formatNumber(100000 - estimation)}
             time={time}
+            block={block}
             price={currentPrice}
             discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
           />
@@ -528,6 +590,7 @@ class Funding extends PureComponent {
         </main>
         <ActionBarTakeOff
           initClock={this.initClock}
+          block={block}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
         />
       </span>
