@@ -31,6 +31,7 @@ import {
 } from '../../utils/fundingMath';
 import { getTxCosmos } from '../../utils/search/utils';
 import PopapAddress from './popap';
+import Details from './details';
 
 const dateFormat = require('dateformat');
 
@@ -47,18 +48,18 @@ const diff = (key, ...arrays) =>
     })
   );
 
-  const test = {
-    'tx.hash': [
-      '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
-    ],
-    'tx.height': ['1489670'],
-    'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
-    'transfer.amount': ['100000000uatom'],
-    'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
-    'message.module': ['bank'],
-    'message.action': ['send'],
-    'tm.event': ['Tx'],
-  };
+const test = {
+  'tx.hash': [
+    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
+  ],
+  'tx.height': ['1489670'],
+  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
+  'transfer.amount': ['100000000uatom'],
+  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
+  'message.module': ['bank'],
+  'message.action': ['send'],
+  'tm.event': ['Tx'],
+};
 
 class Funding extends PureComponent {
   ws = new WebSocket(GAIA_WEBSOCKET_URL);
@@ -307,7 +308,7 @@ class Funding extends PureComponent {
         }
         estimationCyb = getEstimation(estimation, tempVal);
         estimationEUL = (tempVal / amount) * TAKEOFF_SUPPLY;
-        price = 0.00004 * estimationCyb + 1;
+        price = tempVal / estimationCyb / 1000;
         dataWs.cybEstimation = Math.floor(estimationCyb * 10 ** 12);
         dataWs.estimationEUL = estimationEUL;
         dataWs.price = price;
@@ -377,7 +378,7 @@ class Funding extends PureComponent {
               10
             ) / COSMOS.DIVISOR_ATOM;
           estimation = getEstimation(temE, val);
-          price = 0.00004 * estimation + 1;
+          price = val / estimation / 1000;
           estimationEUL = (val / amount) * TAKEOFF_SUPPLY;
           temE += estimation;
         } else {
@@ -582,10 +583,7 @@ class Funding extends PureComponent {
               path={`${match.path}/leaderboard`}
               render={() => <Table data={groups} pin={pin} />}
             />
-            <Route
-              path={`${match.path}/details`}
-              render={() => <Pane>Details</Pane>}
-            />
+            <Route path={`${match.path}/details`} render={() => <Details />} />
           </Switch>
         </main>
         <ActionBarTakeOff

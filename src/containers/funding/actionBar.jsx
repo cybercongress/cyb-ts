@@ -211,11 +211,11 @@ class ActionBarTakeOff extends Component {
       if (message !== "Cannot read property 'length' of undefined") {
         // this just means we haven't found the device yet...
         // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode); 
+        console.error('Problem reading address data', message, statusCode);
       }
       this.setState({
+        time: Date.now(),
         stage: STAGE_ERROR,
-        errorMessage: message,
       }); // cause componentWillUpdate to call again.
     }
   };
