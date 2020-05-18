@@ -3,7 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 
 const Details = () => {
   return (
-    <Pane>
+    <Pane width="80%" marginX="auto" marginY="0" textAlign="justify">
       The takeoff donations have 3 key goals:
       <Pane>Bootstrapping the genesis validator set</Pane>
       <Pane>
