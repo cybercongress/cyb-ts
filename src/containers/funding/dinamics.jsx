@@ -63,7 +63,7 @@ class Dinamics extends Component {
         // hoverinfo: 'none',
         hovertemplate:
           'Price: %{y:.2f%} ATOMs/GCYB<br>' +
-          'ATOMs contributed: %{x} ATOMs<br>' +
+          'Tokens sold: %{x} GCYB<br>' +
           `Cap: ${caps} ATOMs` +
           '<extra></extra>',
         // hovertemplate:
