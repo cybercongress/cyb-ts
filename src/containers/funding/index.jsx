@@ -324,7 +324,7 @@ class Funding extends PureComponent {
       // const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       const temE = estimationCyb * 1000 + estimation;
-      const currentPrice = 0.00004 * (temE / 1000) + 1;
+      const currentPrice = (40 * (temE / 1000) + 1000) / 1000;
       this.setState({
         groups,
         estimation: temE,
@@ -405,7 +405,8 @@ class Funding extends PureComponent {
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       console.log('groups', groupsAddress);
 
-      const currentPrice = 0.00004 * (temE / 1000) + 1;
+      const currentPrice = (40 * temE + 1000) / 1000;
+      console.log(temE * 1000);
       this.setState({
         groups: groupsAddress,
         estimation: temE * 1000,
