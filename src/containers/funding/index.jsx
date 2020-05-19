@@ -32,6 +32,7 @@ import {
 import { getTxCosmos } from '../../utils/search/utils';
 import PopapAddress from './popap';
 import Details from './details';
+import Quotes from './quotes';
 
 const dateFormat = require('dateformat');
 
@@ -528,6 +529,7 @@ class Funding extends PureComponent {
             </Pane>
             <Pane>Founders</Pane>
           </Pane>
+          <Quotes />
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
@@ -540,7 +542,6 @@ class Funding extends PureComponent {
               Superintelligence. Please, thoroughly{' '}
               <Link to="/gol/takeoff/details">study details</Link> before
               donating. But remember - the more you wait, the higher the price.
-              Takeoff donations are the first event in the.
             </Text>
           </Pane>
           <Statistics
@@ -577,7 +578,10 @@ class Funding extends PureComponent {
               path={`${match.path}`}
               exact
               render={() => (
-                <Dinamics cap={40 * estimation + 1000000} data3d={dataPlot} />
+                <>
+                  <Dinamics cap={40 * estimation + 1000000} data3d={dataPlot} />
+                  {pin && <Table data={groups} onlyPin pin={pin} />}
+                </>
               )}
             />
             <Route

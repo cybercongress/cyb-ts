@@ -579,12 +579,12 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <div
             className="countdown-time text-glich"
-            data-text={`Before the start is left ${formatNumber(
+            data-text={`Before the start is ${formatNumber(
               TAKEOFF.BLOCK_START - block
-            )} blocks`}
+            )} blocks left`}
           >
-            Before the start is left {formatNumber(TAKEOFF.BLOCK_START - block)}{' '}
-            blocks
+            Before the start is {formatNumber(TAKEOFF.BLOCK_START - block)}{' '}
+            blocks left
           </div>
         </ActionBar>
       );
@@ -621,7 +621,7 @@ class ActionBarTakeOff extends Component {
             disabled={toSend.length === 0}
             onClick={this.onClickFuckGoogle}
           >
-            Fuck Google
+            Donate
           </Button>
         </ActionBar>
       );

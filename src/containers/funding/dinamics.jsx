@@ -51,7 +51,7 @@ class Dinamics extends Component {
 
     const dataDiscount = [
       {
-        type: 'scatter',
+        mode: 'line',
         x,
         y: p,
         opacity: 0.45,
@@ -62,28 +62,29 @@ class Dinamics extends Component {
         },
         // hoverinfo: 'none',
         hovertemplate:
-          'Price: %{y:.2f%} ATOMs/GCYB<br>' +
+          'Price: %{y:.2f%} ATOM/GCYB<br>' +
           'Tokens sold: %{x} GCYB<br>' +
-          `Cap: ${caps} ATOMs` +
+          `Cap: ${caps} ATOM` +
           '<extra></extra>',
         // hovertemplate:
-        //   'ATOMs contributed: %{x}<br>' +
+        //   'ATOM contributed: %{x}<br>' +
         //   'Personal discount: %{y:.2f%}%<br>' +
         //   '<extra></extra>'
       },
       {
         type: 'scatter',
+        mode: 'lines',
+        line: {
+          color: '#36d6ae',
+          width: 3,
+        },
         x: data3d.x,
         y: data3d.y,
-        line: {
-          width: 2,
-          color: '#36d6ae',
-        },
         // hoverinfo: 'none'
         hovertemplate:
-          'Price: %{y:.2f%} ATOMs/GCYB<br>' +
+          'Price: %{y:.2f%} ATOM/GCYB<br>' +
           'Tokens sold: %{x} GCYB<br>' +
-          `Cap: ${caps} ATOMs` +
+          `Cap: ${caps} ATOM` +
           '<extra></extra>',
       },
     ];
@@ -104,9 +105,9 @@ class Dinamics extends Component {
     //     },
     //     hovertemplate:
     //       `GCYB allocated: %{x: .2f}<br>` +
-    //       'ATOMs contributed: %{y}<br>' +
+    //       'ATOM contributed: %{y}<br>' +
     //       'Personal discount: %{z:.2f%}%<br>' +
-    //       `price: ${price}ATOMs` +
+    //       `price: ${price}ATOM` +
     //       '<extra></extra>',
     //   },
     //   {
@@ -122,9 +123,9 @@ class Dinamics extends Component {
     //     ticks: '',
     //     hovertemplate:
     //       `GCYB allocated: %{x: .2f}<br>` +
-    //       'ATOMs contributed: %{y}<br>' +
+    //       'ATOM contributed: %{y}<br>' +
     //       'Personal discount: %{z:.2f%}%<br>' +
-    //       `price: ${price}ATOMs` +
+    //       `price: ${price}ATOM` +
     //       '<extra></extra>',
     //   },
     // ];
@@ -145,7 +146,7 @@ class Dinamics extends Component {
         autotick: true,
         fixedrange: true,
         title: {
-          text: `Price, ATOMs/GCYB`,
+          text: `Price, ATOM/GCYB`,
         },
         tickfont: {
           color: '#36d6ae',
@@ -168,11 +169,11 @@ class Dinamics extends Component {
         zerolinecolor: '#dedede',
       },
       width: 890,
-      height: 400,
+      height: 350,
       margin: {
         l: 50,
         r: 50,
-        b: 80,
+        b: 40,
         t: 10,
         pad: 4,
       },
