@@ -25,7 +25,7 @@ const Statistics = ({ atomLeff, price, discount, time, block }) => {
         tooltipValue="The time left untill the end of the donations, in the case the price will not raise 5x"
         positionTooltip="bottom"
         title="Donations ends"
-        value={timeStart}
+        value={atomLeff >= 0 ? timeStart : '∞'}
       />
       <Card
         title="ATOM/GCYB"
@@ -49,7 +49,7 @@ const Statistics = ({ atomLeff, price, discount, time, block }) => {
       />
       <Card
         title="GCYB left"
-        value={atomLeff}
+        value={atomLeff >= 0 ? formatNumber(atomLeff) : 0}
         positionTooltip="bottom"
         tooltipValue="The GCYB left before the end of the donations, in the case where less than 146 days pass from the start"
       />

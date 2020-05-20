@@ -558,7 +558,7 @@ class ActionBarTakeOff extends Component {
       minutes,
       loading,
     } = this.state;
-    const { block } = this.props;
+    const { block, end } = this.props;
     let timeStart = true;
 
     if (block === 0) {
@@ -586,6 +586,19 @@ class ActionBarTakeOff extends Component {
           >
             Before the start is {formatNumber(TAKEOFF.BLOCK_START - block)}{' '}
             blocks left
+          </div>
+        </ActionBar>
+      );
+    }
+
+    if (end <= 0) {
+      return (
+        <ActionBar>
+          <div
+            className="countdown-time text-glich"
+            data-text="Takeoff was successful"
+          >
+            Takeoff was successful
           </div>
         </ActionBar>
       );

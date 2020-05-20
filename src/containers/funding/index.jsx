@@ -551,7 +551,7 @@ class Funding extends PureComponent {
             />
           )}
           <Statistics
-            atomLeff={formatNumber(100000 - estimation)}
+            atomLeff={100000 - estimation}
             time={time}
             block={block}
             price={currentPrice}
@@ -584,6 +584,7 @@ class Funding extends PureComponent {
         <ActionBarTakeOff
           initClock={this.initClock}
           block={block}
+          end={100000 - estimation}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
         />
       </span>
