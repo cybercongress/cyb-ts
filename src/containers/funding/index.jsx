@@ -479,7 +479,7 @@ class Funding extends PureComponent {
       estimation,
       block,
     } = this.state;
-    const { match } = this.props;
+    let content;
 
     if (loader) {
       return (
@@ -501,6 +501,18 @@ class Funding extends PureComponent {
       );
     }
 
+    if (selected === 'donate') {
+      content = <Dinamics cap={40 * estimation + 1000000} data3d={dataPlot} />;
+    }
+
+    if (selected === 'leaderboard') {
+      content = <Table data={groups} pin={pin} />;
+    }
+
+    if (selected === 'details') {
+      content = <Details />;
+    }
+
     return (
       <span>
         {popapAdress && (
@@ -512,21 +524,32 @@ class Funding extends PureComponent {
 
         <main className="block-body">
           <Quotes />
-          <Pane
-            boxShadow="0px 0px 5px #36d6ae"
-            paddingX={20}
-            paddingY={20}
-            marginTop={5}
-            marginBottom={20}
-          >
-            <Text fontSize="16px" color="#fff">
-              Takeoff is the key element during the{' '}
-              <Link to="/gol">Game of Links</Link> on the path for deploying
-              Superintelligence. Please, thoroughly{' '}
-              <Link to="/gol/takeoff/details">study details</Link> before
-              donating. But remember - the more you wait, the higher the price.
-            </Text>
-          </Pane>
+          {!pin && (
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginTop={5}
+              marginBottom={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                Takeoff is the key element during the{' '}
+                <Link to="/gol">Game of Links</Link> on the path for deploying
+                Superintelligence. Please, thoroughly{' '}
+                <Link to="/gol/takeoff/details">study details</Link> before
+                donating. But remember - the more you wait, the higher the
+                price.
+              </Text>
+            </Pane>
+          )}
+          {pin && (
+            <Table
+              styles={{ marginBottom: 20, marginTop: 0 }}
+              data={groups}
+              onlyPin
+              pin={pin}
+            />
+          )}
           <Statistics
             atomLeff={formatNumber(100000 - estimation)}
             time={time}
@@ -556,23 +579,7 @@ class Funding extends PureComponent {
               to="/gol/takeoff/details"
             />
           </Tablist>
-          <Switch>
-            <Route
-              path={`${match.path}`}
-              exact
-              render={() => (
-                <>
-                  <Dinamics cap={40 * estimation + 1000000} data3d={dataPlot} />
-                  {pin && <Table data={groups} onlyPin pin={pin} />}
-                </>
-              )}
-            />
-            <Route
-              path={`${match.path}/leaderboard`}
-              render={() => <Table data={groups} pin={pin} />}
-            />
-            <Route path={`${match.path}/details`} render={() => <Details />} />
-          </Switch>
+          {content}
         </main>
         <ActionBarTakeOff
           initClock={this.initClock}

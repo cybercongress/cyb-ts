@@ -111,9 +111,6 @@ const Quote = ({
 }) => (
   <LinkWindow
     style={{
-      marginTop: 5,
-      marginBottom: 5,
-      transition: '5s',
       minHeight: '100px',
     }}
     to={link}
@@ -139,11 +136,11 @@ const Quote = ({
         flexDirection="column"
         alignItems="center"
         marginX="5px"
-        flexBasis="60px"
+        flexBasis="65px"
       >
         <Pane
-          height="60px"
-          width="60px"
+          height="65px"
+          width="65px"
           position="relative"
           borderRadius="9999px"
           backgroundColor="#000"

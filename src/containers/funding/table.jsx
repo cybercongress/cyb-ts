@@ -3,7 +3,7 @@ import { Icon } from '@cybercongress/gravity';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
 
-function Table({ data, fUpin, fPin, onlyPin, update, pin }) {
+function Table({ data, onlyPin, pin, styles }) {
   const [dataTable, setDataTable] = useState({});
   let tableRow;
 
@@ -25,13 +25,8 @@ function Table({ data, fUpin, fPin, onlyPin, update, pin }) {
   if (!onlyPin) {
     tableRow = Object.keys(dataTable).map((key, index) => (
       <RowTableTakeoff
-        pin={key}
-        unPin
-        unPinFunc={fUpin}
-        pinFunc={fPin}
-        updateList={update}
+        pinAddress={dataTable[key].pin}
         key={key}
-        statePin={dataTable[key].pin}
         item={dataTable[key].address.map((item, index) => (
           <div className="table-rows-child" key={index}>
             <div className="numberType hash">
@@ -131,10 +126,6 @@ function Table({ data, fUpin, fPin, onlyPin, update, pin }) {
       .map((key, index) => (
         <RowTableTakeoff
           pin={key}
-          unPin
-          unPinFunc={fUpin}
-          pinFunc={fPin}
-          updateList={update}
           key={key}
           statePin={dataTable[key].pin}
           item={dataTable[key].address.map((item, index) => (
@@ -230,65 +221,28 @@ function Table({ data, fUpin, fPin, onlyPin, update, pin }) {
       ));
 
   return (
-    <div>
-      <div className="table">
-        <div className="table-header-rows">
-          <div className="numberType address">Address (TX id)</div>
-          <div className="numberType sort-row">
-            Height
-            {/* <Icon
-                icon="double-caret-vertical"
-                color="#3ab793d4"
-                marginLeft={5}
-              /> */}
-          </div>
-          <div className="numberType sort-row">
-            Price, ATOM
-            {/* <Icon
-                icon="double-caret-vertical"
-                color="#3ab793d4"
-                marginLeft={5}
-              /> */}
-          </div>
-          <div className="numberType sort-row">
-            ATOM
-            {/* <Icon
-                icon="double-caret-vertical"
-                color="#3ab793d4"
-                marginLeft={5}
-              /> */}
-          </div>
-          <div className="numberType sort-row">
-            GCYB
-            {/* <Icon
-                icon="double-caret-vertical"
-                color="#3ab793d4"
-                marginLeft={5}
-              /> */}
-          </div>
-          <div className="numberType sort-row">
-            GEUL
-            {/* <Icon
-                icon="double-caret-vertical"
-                color="#3ab793d4"
-                marginLeft={5}
-              /> */}
-          </div>
-        </div>
-        {pin && (
-          <div
-            className="table-body"
-            style={{
-              marginBottom: 10,
-              paddingBottom: 10,
-              borderBottom: onlyPin ? 'none' : '1px solid #fff',
-            }}
-          >
-            {tableRowPin()}
-          </div>
-        )}
-        {!onlyPin && <div className="table-body">{tableRow}</div>}
+    <div style={styles} className="table">
+      <div className="table-header-rows">
+        <div className="numberType address">Address (TX id)</div>
+        <div className="numberType sort-row">Height</div>
+        <div className="numberType sort-row">Price, ATOM</div>
+        <div className="numberType sort-row">ATOM</div>
+        <div className="numberType sort-row">GCYB</div>
+        <div className="numberType sort-row">GEUL</div>
       </div>
+      {pin && onlyPin && (
+        <div
+          className="table-body"
+          style={{
+            marginBottom: 10,
+            paddingBottom: 10,
+            borderBottom: onlyPin ? 'none' : '1px solid #fff',
+          }}
+        >
+          {tableRowPin()}
+        </div>
+      )}
+      {!onlyPin && <div className="table-body">{tableRow}</div>}
     </div>
   );
 }
