@@ -511,30 +511,13 @@ class Funding extends PureComponent {
         )}
 
         <main className="block-body">
-          <Pane
-            borderLeft="3px solid #3ab793e3"
-            paddingY={0}
-            paddingLeft={20}
-            paddingRight={5}
-            marginY={5}
-          >
-            <Pane>
-              We understand that shaking the status quo of Googles religion will
-              be hard.
-            </Pane>
-            <Pane>But we must.</Pane>
-            <Pane>
-              As this is the only way to provide sustainable future for the next
-              generations.
-            </Pane>
-            <Pane>Founders</Pane>
-          </Pane>
           <Quotes />
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
             paddingY={20}
-            marginY={20}
+            marginTop={5}
+            marginBottom={20}
           >
             <Text fontSize="16px" color="#fff">
               Takeoff is the key element during the{' '}
