@@ -9,6 +9,7 @@ import {
   PATTERN_COSMOS,
   CYBER,
   TAKEOFF,
+  WP,
 } from '../../utils/config';
 import {
   getDelegator,
@@ -710,9 +711,7 @@ class ActionBarTakeOff extends Component {
               By donating {toSend} ATOM you agree with the donation terms
               defined in the
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-              Whitepaper
-            </LinkWindow>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
             <LinkWindow to="https://cybercongress.ai/game-of-links/">
               Game of Links rules
@@ -773,9 +772,7 @@ class ActionBarTakeOff extends Component {
               By donating {toSend} ATOM you agree with the donation terms
               defined in the
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-              Whitepaper
-            </LinkWindow>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
             <LinkWindow to="https://cybercongress.ai/game-of-links/">
               Game of Links rules

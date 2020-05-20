@@ -1,4 +1,6 @@
 const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const WP =
+  'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
 
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0x0b1f54be915e77d9bf14268f94f8a26afab11296',
@@ -129,4 +131,5 @@ export {
   PATTERN_BLOCK,
   TIME_START,
   TAKEOFF_SUPPLY,
+  WP,
 };

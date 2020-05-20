@@ -16,6 +16,7 @@ import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setQuery } from '../../redux/actions/query';
+import { WP } from '../../utils/config';
 
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');
@@ -215,11 +216,7 @@ class App extends Component {
                 </a>{' '}
                 network. euler is incentivized test network. Be careful. Details
                 in{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
-                >
+                <a target="_blank" rel="noopener noreferrer" href={WP}>
                   whitepaper
                 </a>{' '}
                 and{' '}

@@ -19,7 +19,7 @@ import {
 } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 
-import { COSMOS, TAKEOFF } from '../../utils/config';
+import { COSMOS, TAKEOFF, WP } from '../../utils/config';
 
 const test = {
   'tx.hash': [
@@ -273,7 +273,7 @@ class GOL extends React.Component {
               Welcome to the intergalactic tournament - Game of Links. GoL is
               the main preparation stage before{' '}
               <Link to="/search/genesis">the main network launch</Link> of{' '}
-              <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
+              <LinkWindow to={WP}>
                 the cyber protocol
               </LinkWindow>
               . The main goal of the tournament is to collectively bootstrap the{' '}
