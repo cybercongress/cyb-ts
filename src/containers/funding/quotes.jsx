@@ -5,7 +5,7 @@ import { LinkWindow } from '../../components';
 const defaultImg = require('../../image/person-outline.svg');
 const EthanBuchman = require('../../image/EthanBuchman.jpg');
 const WilliamMougayar = require('../../image/WilliamMougayar.jpg');
-const gavin = require('../../image/gavin.jpg');
+const gavin = require('../../image/gavin.jpeg');
 const JaeKwon = require('../../image/JaeKwon.jpeg');
 const Buterin = require('../../image/buterin.jpg');
 const Juan = require('../../image/juan.png');
@@ -29,7 +29,7 @@ const quote = [
     name: 'Gavin Wood',
     description: 'Ethereum co-founder, Building Polkadot, Web3',
     img: gavin,
-    link: 'https://ipfs.io/ipfs/QmbzqDkzH73bzuB4QingYbVN9VrGFyFMgr3wbKZyBrCEs1',
+    link: 'https://ipfs.io/ipfs/QmUzgjbNS4u9xYCK36wiyJ97vsv2KR5ktsjMxirqjYzP1V',
   },
   {
     text:
