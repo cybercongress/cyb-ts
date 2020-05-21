@@ -215,6 +215,11 @@ export const getRankGrade = rank => {
       to = 0.00003444691862;
       value = 8;
       break;
+    case rank < 0.00002128981373:
+      from = 0.00002128981373;
+      to = 0;
+      value = 8;
+      break;
     default:
       from = 'n/a';
       to = 'n/a';
