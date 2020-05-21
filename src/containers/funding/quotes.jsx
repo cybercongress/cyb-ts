@@ -66,7 +66,7 @@ const quote = [
   {
     text:
       'We understand that shaking the status quo of Googles religion will be hard.\n But we must.\n As this is the only way to provide sustainable future for the next generations.',
-    name: 'Dima Starodubcev and Valery Litvinv',
+    name: 'Dima Starodubcev and Valery Litvin',
     description: 'Cyber inventors',
     link: 'https://ipfs.io/ipfs/QmWuKo4TR9RJyqbeK4z2FaBRvMqKfJaMNL3bXGVrswrsGf',
     img: dimaValera,
@@ -109,12 +109,7 @@ const Quote = ({
   link,
   description,
 }) => (
-  <LinkWindow
-    style={{
-      minHeight: '100px',
-    }}
-    to={link}
-  >
+  <LinkWindow to={link} className="container-quote">
     <Pane
       display="flex"
       borderLeft="3px solid #3ab793e3"

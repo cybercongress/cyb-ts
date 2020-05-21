@@ -29,6 +29,7 @@ const TableDiscipline = ({
   validatorAddress,
   consensusAddress,
   takeoffDonations,
+  estimation,
 }) => {
   try {
     const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
@@ -82,6 +83,7 @@ const TableDiscipline = ({
             <Takeoff
               takeoffDonations={takeoffDonations}
               addressLedger={addressLedger}
+              estimation={estimation}
             />
             <Relevance
               dataBlock={dataBlock.block[0].height}

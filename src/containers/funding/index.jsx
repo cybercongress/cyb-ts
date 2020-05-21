@@ -492,7 +492,6 @@ class Funding extends PureComponent {
       block,
     } = this.state;
     const { mobile } = this.props;
-    console.log(mobile);
     let content;
 
     if (loader) {

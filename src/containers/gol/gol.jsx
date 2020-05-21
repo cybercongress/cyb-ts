@@ -12,12 +12,14 @@ import {
 import { CardStatisics, Loading, LinkWindow } from '../../components';
 import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 import TableDiscipline from './table';
+import { getEstimation } from '../../utils/fundingMath';
 import {
   getDelegator,
   exponentialToDecimal,
   formatNumber,
 } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
+import { setGolTakeOff } from '../../redux/actions/gol';
 
 import { COSMOS, TAKEOFF, WP } from '../../utils/config';
 
@@ -44,7 +46,7 @@ class GOL extends React.Component {
       validatorAddress: null,
       consensusAddress: null,
       loading: true,
-      won: 0,
+      estimation: 0,
       takeoffDonations: 0,
       herosCount: 0,
       dataTable: [],
@@ -56,7 +58,7 @@ class GOL extends React.Component {
   async componentDidMount() {
     await this.checkAddressLocalStorage();
     await this.getTxsCosmos();
-    await this.getDataWS();
+    // await this.getDataWS();
     // this.getMyGOLs();
     this.checkCurrentNetworkLoad();
     this.getValidatorsCount();
@@ -70,33 +72,33 @@ class GOL extends React.Component {
     }
   };
 
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
-          id: '0',
-          params: {
-            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
-          },
-        })
-      );
-    };
+  // getDataWS = async () => {
+  //   this.ws.onopen = () => {
+  //     console.log('connected');
+  //     this.ws.send(
+  //       JSON.stringify({
+  //         jsonrpc: '2.0',
+  //         method: 'subscribe',
+  //         id: '0',
+  //         params: {
+  //           query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
+  //         },
+  //       })
+  //     );
+  //   };
 
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.warn('txs', message);
-      if (message.result.events) {
-        this.getAtomWS(message.result.events);
-      }
-    };
+  //   this.ws.onmessage = async evt => {
+  //     const message = JSON.parse(evt.data);
+  //     console.warn('txs', message);
+  //     if (message.result.events) {
+  //       this.getAtomWS(message.result.events);
+  //     }
+  //   };
 
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
+  //   this.ws.onclose = () => {
+  //     console.log('disconnected');
+  //   };
+  // };
 
   checkAddressLocalStorage = async () => {
     let address = [];
@@ -153,36 +155,70 @@ class GOL extends React.Component {
     });
   };
 
-  getAtomWS = data => {
-    const { takeoffDonations } = this.state;
-    let amount = takeoffDonations;
-    console.warn('data', data['transfer.amount']);
-    if (data['transfer.amount']) {
-      console.warn('transfer.amount', data['transfer.amount']);
-      data['transfer.amount'].forEach(element => {
-        let amountWS = 0;
-        if (element.indexOf('uatom') !== -1) {
-          const positionDenom = element.indexOf('uatom');
-          const str = element.slice(0, positionDenom);
-          amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
-        }
-        amount += amountWS;
-      });
-    }
-    this.setState({
-      takeoffDonations: amount,
-    });
-  };
+  // getAtomWS = data => {
+  //   const { takeoffDonations, estimation } = this.state;
+  //   let amount = takeoffDonations;
+  //   let temE = 0;
+  //   console.warn('data', data['transfer.amount']);
+  //   if (data['transfer.amount']) {
+  //     console.warn('transfer.amount', data['transfer.amount']);
+  //     data['transfer.amount'].forEach(element => {
+  //       let amountWS = 0;
+  //       if (element.indexOf('uatom') !== -1) {
+  //         const positionDenom = element.indexOf('uatom');
+  //         const str = element.slice(0, positionDenom);
+  //         amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
+  //       }
+  //       temE = getEstimation(estimation, amountWS);
+  //       amount += amountWS;
+  //     });
+  //   }
+  //   this.setState({
+  //     takeoffDonations: amount,
+  //     estimation: estimation + temE,
+  //   });
+  // };
 
   getAtom = async dataTxs => {
+    const { addressLedger } = this.state;
+    const { setGolTakeOffProps } = this.props;
     let amount = 0;
 
-    if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
+    let estimation = 0;
+    let addEstimation = 0;
+    let addressCosmos = null;
+
+    if (addressLedger !== null) {
+      addressCosmos = getDelegator(addressLedger.bech32, 'cosmos');
     }
 
+    if (dataTxs) {
+      for (let item = 0; item < dataTxs.length; item += 1) {
+        let temE = 0;
+        const address = dataTxs[item].tx.value.msg[0].value.from_address;
+        const val =
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
+        temE = getEstimation(estimation, val);
+        if (address === addressCosmos) {
+          addEstimation += temE;
+        }
+        amount += val;
+        estimation += temE;
+      }
+    }
+
+    setGolTakeOffProps(
+      Math.floor(addEstimation * 10 ** 12),
+      Math.floor(estimation * 10 ** 12)
+    );
+
+    console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
     this.setState({
       takeoffDonations: amount,
+      estimation,
       loading: false,
     });
   };
@@ -197,6 +233,7 @@ class GOL extends React.Component {
       consensusAddress,
       addAddress,
       currentNetworkLoad,
+      estimation,
     } = this.state;
 
     console.log(takeoffDonations);
@@ -249,10 +286,8 @@ class GOL extends React.Component {
               Welcome to the intergalactic tournament - Game of Links. GoL is
               the main preparation stage before{' '}
               <Link to="/search/genesis">the main network launch</Link> of{' '}
-              <LinkWindow to={WP}>
-                the cyber protocol
-              </LinkWindow>
-              . The main goal of the tournament is to collectively bootstrap the{' '}
+              <LinkWindow to={WP}>the cyber protocol</LinkWindow>. The main goal
+              of the tournament is to collectively bootstrap the{' '}
               <Link to="/brain">Superintelligence</Link>. Everyone can find
               themselves in this fascinating process: we need to set up physical
               infrastructure, upload the initial knowledge and create a reserve
@@ -326,6 +361,7 @@ class GOL extends React.Component {
               validatorAddress={validatorAddress}
               consensusAddress={consensusAddress}
               takeoffDonations={takeoffDonations}
+              estimation={estimation}
             />
           </Pane>
         </main>
@@ -350,4 +386,11 @@ const mapStateToProps = store => {
   };
 };
 
-export default connect(mapStateToProps)(GOL);
+const mapDispatchprops = dispatch => {
+  return {
+    setGolTakeOffProps: (amount, prize) =>
+      dispatch(setGolTakeOff(amount, prize)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(GOL);

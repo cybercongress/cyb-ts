@@ -773,7 +773,11 @@ select {
   grid-gap: 15px;
 }
 
-@media (max-width: 400px) {
+.container-quote {
+  min-height: 100px;
+}
+
+@media (max-width: 500px) {
   .takeoff .container-card {
     max-width: unset;
   }
@@ -807,5 +811,10 @@ select {
   .takeoff .tab-list {
     grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
     gap: 10px;
+  }
+
+  .container-quote {
+    min-height: 160px;
+    font-size: 14px;
   }
 }
