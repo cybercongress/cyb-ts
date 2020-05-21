@@ -555,7 +555,7 @@ class Funding extends PureComponent {
               <Text fontSize="16px" color="#fff">
                 Takeoff is the key element during the{' '}
                 <Link to="/gol">Game of Links</Link> on the path for deploying
-                Superintelligence. Please, thoroughly >study details before
+                Superintelligence. Please, thoroughly study details before
                 donating. But remember - the more you wait, the higher the
                 price.
               </Text>

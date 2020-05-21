@@ -91,7 +91,7 @@ class Dinamics extends Component {
         // hoverinfo: 'none',
         hovertemplate:
           'Price: %{y:.2f%} ATOM/GCYB<br>' +
-          'Tokens sold: %{x} GCYB<br>' +
+          'Tokens claimed: %{x} GCYB<br>' +
           `Cap: ${caps} ATOM` +
           '<extra></extra>',
         // hovertemplate:
@@ -111,7 +111,7 @@ class Dinamics extends Component {
         // hoverinfo: 'none'
         hovertemplate:
           'Price: %{y:.2f%} ATOM/GCYB<br>' +
-          'Tokens sold: %{x} GCYB<br>' +
+          'Tokens claimed: %{x} GCYB<br>' +
           `Cap: ${caps} ATOM` +
           '<extra></extra>',
       },
@@ -190,7 +190,7 @@ class Dinamics extends Component {
         autotick: true,
         fixedrange: true,
         title: {
-          text: `Tokens sold, GCYB`,
+          text: `Tokens claimed, GCYB`,
         },
         titlefont: {
           size,
