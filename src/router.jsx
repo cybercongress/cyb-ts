@@ -192,7 +192,6 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
-<!--           <Route path="/graph" component={ForceGraph} /> -->
           <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />
