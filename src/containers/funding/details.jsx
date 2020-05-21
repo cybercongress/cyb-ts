@@ -3,22 +3,25 @@ import { Pane, Code } from '@cybercongress/gravity';
 import { LinkWindow } from '../../components';
 import { trimString } from '../../utils/utils';
 
-const Text = ({ children, size = '18px', ...props }) => (
-  <Pane fontSize={size} marginBottom="10px" {...props}>
+const Text = ({ children, ...props }) => (
+  <Pane marginBottom="10px" {...props}>
+    {children}
+  </Pane>
+);
+
+const Title = ({ children, ...props }) => (
+  <Pane className="title-manifest" marginBottom="10px" {...props}>
     {children}
   </Pane>
 );
 
 const Ul = ({ children }) => (
-  <ul style={{ fontSize: 18, paddingLeft: 20, marginBottom: 10 }}>
-    {children}
-  </ul>
+  <ul style={{ paddingLeft: 20, marginBottom: 10 }}>{children}</ul>
 );
 
 const Details = () => {
   return (
-    <Pane width="80%" marginX="auto" marginY="0" textAlign="justify">
-      <Text size="25px">Manifest</Text>
+    <Pane className="contaiter-manifest" textAlign="justify">
       <Text>
         <LinkWindow to="https://mainnet.aragon.org/#/cybercongress">
           cyber~Congress
@@ -63,7 +66,7 @@ const Details = () => {
         .
       </Text>
 
-      <Text size="25px"> The Great Web</Text>
+      <Title>The Great Web</Title>
 
       <Text>
         It seems that we stand on the verge of creating the Great Web. The Great
@@ -89,7 +92,7 @@ const Details = () => {
         during this time.
       </Text>
 
-      <Text size="25px"> Software 2.0</Text>
+      <Title> Software 2.0</Title>
 
       <Text>The software we offer resembles a decentralized google:</Text>
       <Ul>
@@ -171,7 +174,7 @@ const Details = () => {
         with. The interesting thing is that such a simple mechanism allows
         creating a lot of powerful tools as a result.
       </Text>
-      <Text size="25px"> Value proposition</Text>
+      <Title> Value proposition</Title>
       <Text>
         The key uniqueness of the proposed blockchain computer is that
         everything is optimised for web3 search and AI applications: data
@@ -221,7 +224,7 @@ const Details = () => {
         blockchain computers with an architecture that at least approximately
         reminiscent of Cyber.
       </Text>
-      <Text size="25px">Focus on what matters</Text>
+      <Title>Focus on what matters</Title>
       <Text>
         It seems that blockchain builders are split into two groups. L1 builders
         are involved in an arms race: harder, better, faster, stronger. L2
@@ -256,7 +259,7 @@ const Details = () => {
         less exciting than a city on Mars. Who knows? Maybe with a shared
         Superintelegnce, we can achieve even crazier things.
       </Text>
-      <Text size="25px">Welcome to DeMa</Text>
+      <Title>Welcome to DeMa</Title>
       <Text>
         The digital marketing industry is probably the most powerful and
         impactful industry out there. With the help of RTB, Google Ads, Facebook
@@ -307,7 +310,7 @@ const Details = () => {
         power and energy to attribute and predict conversions precisely and
         provably.
       </Text>
-      <Text size="25px">Investment</Text>
+      <Title>Investment</Title>
       <Text>
         <LinkWindow to="https://github.com/cybercongress/congress/blob/master/ecosystem/ELI-5%20FAQ.md">
           Cyber
@@ -363,7 +366,7 @@ const Details = () => {
         operators with the necessity to support the continuous distribution of
         CYB to the broad public at a continuously rising price.
       </Text>
-      <Text size="25px">Complexities</Text>
+      <Title>Complexities</Title>
       <Text>
         It would be a lie that everything about Cyber is perfectly bright.
         Looking ahead, we would like to warn you about the dark side.
@@ -400,7 +403,7 @@ const Details = () => {
         One more time we have to jump a wave right now: the earlier we start
         cyberlinking, the earlier we will win this hidden war.
       </Text>
-      <Text size="25px">People</Text>
+      <Title>People</Title>
       <Text>
         Who are we? We are primary, the generation who was born on the edge of
         the new millennium: humans who believe in math, cryptographic proofs and

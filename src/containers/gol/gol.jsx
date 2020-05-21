@@ -169,33 +169,20 @@ class GOL extends React.Component {
         amount += amountWS;
       });
     }
-    const wonWs = cybWon(amount);
     this.setState({
       takeoffDonations: amount,
-      won: Math.floor(wonWs),
     });
   };
 
   getAtom = async dataTxs => {
-    const { takeoffDonations } = this.state;
-    let amount = takeoffDonations;
-    let won = 0;
-    let allocation = 0;
-    let currentPrize = 0;
+    let amount = 0;
 
     if (dataTxs) {
       amount = await getAmountATOM(dataTxs);
     }
 
-    won = Math.floor(cybWon(amount));
-    allocation = getDisciplinesAllocation(amount);
-
-    currentPrize = won + allocation;
-
     this.setState({
       takeoffDonations: amount,
-      currentPrize,
-      won,
       loading: false,
     });
   };
@@ -204,8 +191,6 @@ class GOL extends React.Component {
     const {
       loading,
       takeoffDonations,
-      won,
-      dataTable,
       addressLedger,
       validatorAddress,
       herosCount,
@@ -214,16 +199,7 @@ class GOL extends React.Component {
       currentNetworkLoad,
     } = this.state;
 
-    const {
-      load,
-      takeoff,
-      relevance,
-      delegation,
-      lifetime,
-      euler4Rewards,
-    } = this.props;
-
-    console.log(takeoffDonations, won);
+    console.log(takeoffDonations);
 
     if (loading) {
       return (
@@ -349,7 +325,6 @@ class GOL extends React.Component {
               addressLedger={addressLedger}
               validatorAddress={validatorAddress}
               consensusAddress={consensusAddress}
-              won={won}
               takeoffDonations={takeoffDonations}
             />
           </Pane>

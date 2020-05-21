@@ -558,7 +558,7 @@ class ActionBarTakeOff extends Component {
       minutes,
       loading,
     } = this.state;
-    const { block, end } = this.props;
+    const { block, end, mobile } = this.props;
     let timeStart = true;
 
     if (block === 0) {
@@ -580,12 +580,11 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <div
             className="countdown-time text-glich"
-            data-text={`Before the start is ${formatNumber(
+            data-text={` ${formatNumber(
               TAKEOFF.BLOCK_START - block
             )} blocks left`}
           >
-            Before the start is {formatNumber(TAKEOFF.BLOCK_START - block)}{' '}
-            blocks left
+            {formatNumber(TAKEOFF.BLOCK_START - block)} blocks left
           </div>
         </ActionBar>
       );
@@ -600,6 +599,16 @@ class ActionBarTakeOff extends Component {
           >
             Takeoff was successful
           </div>
+        </ActionBar>
+      );
+    }
+
+    if (mobile) {
+      return (
+        <ActionBar>
+          <Button paddingX={20} marginX={10} onClick={this.onClickShow}>
+            Show address
+          </Button>
         </ActionBar>
       );
     }

@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import { Text, Pane, Dialog, Tablist } from '@cybercongress/gravity';
 import { Link, Switch, Route, Router } from 'react-router-dom';
 import QRCode from 'qrcode.react';
@@ -55,7 +56,7 @@ const test = {
   ],
   'tx.height': ['1489670'],
   'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
-  'transfer.amount': ['100000000uatom'],
+  'transfer.amount': ['310000000000uatom'],
   'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
   'message.module': ['bank'],
   'message.action': ['send'],
@@ -82,7 +83,7 @@ class Funding extends PureComponent {
       loading: 0,
       estimation: 0,
       popapAdress: false,
-      selected: 'donate',
+      selected: 'manifest',
       block: 0,
     };
   }
@@ -106,15 +107,18 @@ class Funding extends PureComponent {
     const { location } = this.props;
     const { pathname } = location;
 
-    if (pathname.match(/details/gm) && pathname.match(/details/gm).length > 0) {
-      this.select('details');
+    if (
+      pathname.match(/progress/gm) &&
+      pathname.match(/progress/gm).length > 0
+    ) {
+      this.select('progress');
     } else if (
       pathname.match(/leaderboard/gm) &&
       pathname.match(/leaderboard/gm).length > 0
     ) {
       this.select('leaderboard');
     } else {
-      this.select('donate');
+      this.select('manifest');
     }
   };
 
@@ -264,10 +268,10 @@ class Funding extends PureComponent {
       const pocketAdd = JSON.parse(pocketAddLocal);
       this.setState({ pocketAdd });
     }
-    await this.getStatisticsWs(dataTxs.amount);
-    this.getData();
+    this.getStatisticsWs(dataTxs.amount);
     await this.getTableData();
-    this.getTableDataWs(dataTxs);
+    await this.getTableDataWs(dataTxs);
+    this.getData();
   };
 
   init = async txs => {
@@ -285,6 +289,10 @@ class Funding extends PureComponent {
     let amountWs = 0;
 
     amountWs = amount + amountWebSocket;
+
+    if (amountWs >= ATOMsALL) {
+      amountWs = ATOMsALL;
+    }
 
     this.setState({
       amount: amountWs,
@@ -305,9 +313,10 @@ class Funding extends PureComponent {
       if (amount <= ATOMsALL) {
         let tempVal = dataTxs.amount;
         if (tempVal >= ATOMsALL) {
-          tempVal = 0;
+          tempVal = ATOMsALL;
         }
-        estimationCyb = getEstimation(estimation, tempVal);
+        console.log(tempVal);
+        estimationCyb = getEstimation(estimation / 1000, tempVal);
         estimationEUL = (tempVal / amount) * TAKEOFF_SUPPLY;
         price = tempVal / estimationCyb / 1000;
         dataWs.cybEstimation = Math.floor(estimationCyb * 10 ** 12);
@@ -325,7 +334,10 @@ class Funding extends PureComponent {
       // const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       const temE = estimationCyb * 1000 + estimation;
+      console.log('estimationCyb', estimationCyb);
       const currentPrice = (40 * (temE / 1000) + 1000) / 1000;
+      console.log(temE);
+      console.log(currentPrice);
       this.setState({
         groups,
         estimation: temE,
@@ -366,7 +378,7 @@ class Funding extends PureComponent {
     const { dataTxs, amount } = this.state;
     try {
       const table = [];
-      let temp = 0;
+      const temp = 0;
       let temE = 0;
       for (let item = 0; item < dataTxs.length; item++) {
         let estimation = 0;
@@ -479,6 +491,8 @@ class Funding extends PureComponent {
       estimation,
       block,
     } = this.state;
+    const { mobile } = this.props;
+    console.log(mobile);
     let content;
 
     if (loader) {
@@ -501,15 +515,21 @@ class Funding extends PureComponent {
       );
     }
 
-    if (selected === 'donate') {
-      content = <Dinamics cap={40 * estimation + 1000000} data3d={dataPlot} />;
+    if (selected === 'progress') {
+      content = (
+        <Dinamics
+          mobile={mobile}
+          cap={40 * estimation + 1000000}
+          data3d={dataPlot}
+        />
+      );
     }
 
     if (selected === 'leaderboard') {
-      content = <Table data={groups} pin={pin} />;
+      content = <Table mobile={mobile} data={groups} pin={pin} />;
     }
 
-    if (selected === 'details') {
+    if (selected === 'manifest') {
       content = <Details />;
     }
 
@@ -522,7 +542,7 @@ class Funding extends PureComponent {
           />
         )}
 
-        <main className="block-body">
+        <main className="block-body takeoff">
           <Quotes />
           {!pin && (
             <Pane
@@ -535,8 +555,7 @@ class Funding extends PureComponent {
               <Text fontSize="16px" color="#fff">
                 Takeoff is the key element during the{' '}
                 <Link to="/gol">Game of Links</Link> on the path for deploying
-                Superintelligence. Please, thoroughly{' '}
-                <Link to="/gol/takeoff/details">study details</Link> before
+                Superintelligence. Please, thoroughly >study details before
                 donating. But remember - the more you wait, the higher the
                 price.
               </Text>
@@ -557,26 +576,21 @@ class Funding extends PureComponent {
             price={currentPrice}
             discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
           />
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
-            gridGap="15px"
-            marginY={20}
-          >
+          <Tablist className="tab-list" marginY={20}>
             <TabBtn
               text="Leaderboard"
               isSelected={selected === 'leaderboard'}
               to="/gol/takeoff/leaderboard"
             />
             <TabBtn
-              text="Donate"
-              isSelected={selected === 'donate'}
+              text="Manifest"
+              isSelected={selected === 'manifest'}
               to="/gol/takeoff"
             />
             <TabBtn
-              text="Details"
-              isSelected={selected === 'details'}
-              to="/gol/takeoff/details"
+              text="Progress"
+              isSelected={selected === 'progress'}
+              to="/gol/takeoff/progress"
             />
           </Tablist>
           {content}
@@ -586,10 +600,17 @@ class Funding extends PureComponent {
           block={block}
           end={100000 - estimation}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
+          mobile={mobile}
         />
       </span>
     );
   }
 }
 
-export default Funding;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(Funding);

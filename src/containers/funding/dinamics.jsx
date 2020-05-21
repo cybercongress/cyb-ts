@@ -11,7 +11,35 @@ class Dinamics extends Component {
     super(props);
     this.state = {
       caps: '',
+      width: 890,
+      height: 350,
+      size: 16,
+      margin: {
+        l: 40,
+        r: 20,
+        b: 40,
+        t: 10,
+        pad: 4,
+      },
     };
+  }
+
+  componentDidMount() {
+    const { mobile } = this.props;
+    if (mobile) {
+      this.setState({
+        width: 360,
+        height: 250,
+        size: 14,
+        margin: {
+          l: 30,
+          r: 8,
+          b: 35,
+          t: 0,
+          pad: 2,
+        },
+      });
+    }
   }
 
   plotlyHover = dataPoint => {
@@ -44,7 +72,7 @@ class Dinamics extends Component {
   };
 
   render() {
-    const { caps } = this.state;
+    const { caps, width, height, size, margin } = this.state;
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
     // console.log('dataRewards', dataRewards);
@@ -151,6 +179,9 @@ class Dinamics extends Component {
         tickfont: {
           color: '#36d6ae',
         },
+        titlefont: {
+          size,
+        },
         gridcolor: '#ffffff66',
         color: '#fff',
         zerolinecolor: '#dedede',
@@ -161,6 +192,9 @@ class Dinamics extends Component {
         title: {
           text: `Tokens sold, GCYB`,
         },
+        titlefont: {
+          size,
+        },
         tickfont: {
           color: '#36d6ae',
         },
@@ -168,15 +202,9 @@ class Dinamics extends Component {
         color: '#fff',
         zerolinecolor: '#dedede',
       },
-      width: 890,
-      height: 350,
-      margin: {
-        l: 50,
-        r: 50,
-        b: 40,
-        t: 10,
-        pad: 4,
-      },
+      width,
+      height,
+      margin,
     };
     const config = {
       displayModeBar: false,

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { DISTRIBUTION } from '../../../utils/config';
+import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLoad } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolLoad } from '../../../redux/actions/gol';
 
-const Load = ({ addressLedger, won = 0, golLoadProps, load }) => {
+const Load = ({ addressLedger, takeoffDonations = 0, golLoadProps, load }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const currentPrize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
+    (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * takeoffDonations
   );
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Load = ({ addressLedger, won = 0, golLoadProps, load }) => {
       golLoadProps(0, currentPrize);
       setLoading(false);
     }
-  }, [won, addressLedger]);
+  }, [takeoffDonations, addressLedger]);
 
   return (
     <RowTable

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { DISTRIBUTION } from '../../../utils/config';
+import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getDelegation } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
@@ -11,15 +11,14 @@ import { setGolDelegation } from '../../../redux/actions/gol';
 const Delegation = ({
   validatorAddress,
   reward = 0,
-  won = 0,
+  takeoffDonations = 0,
   setDelegationProps,
   delegation,
 }) => {
   const [loading, setLoading] = useState(true);
-  const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const currentPrize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+    (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * takeoffDonations
   );
 
   useEffect(() => {
@@ -39,14 +38,14 @@ const Delegation = ({
       setDelegationProps(0, currentPrize);
       setLoading(false);
     }
-  }, [won, validatorAddress]);
+  }, [takeoffDonations, validatorAddress]);
 
   return (
     <RowTable
       text={<Link to="/gol/delegation">delegation</Link>}
       reward={DISTRIBUTION.delegation}
       currentPrize={currentPrize}
-      cybWonAbsolute={loading ? <Dots /> : delegation.cybAbsolute}
+      cybWonAbsolute={loading ? <Dots /> : formatNumber(delegation.cybAbsolute)}
       cybWonPercent={loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`}
     />
   );

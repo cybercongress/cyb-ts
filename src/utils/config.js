@@ -92,13 +92,13 @@ const GENESIS_SUPPLY = 1000000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
 const DISTRIBUTION = {
-  takeoff: 60000000000000,
-  relevance: 15000000000000,
-  load: 6000000000000,
+  takeoff: 100000000000000,
+  relevance: 20000000000000,
+  load: 10000000000000,
   delegation: 5000000000000,
   'full validator set': 5000000000000,
   'euler 4 rewards': 5000000000000,
-  lifetime: 2000000000000,
+  lifetime: 3000000000000,
   'community pool': 2000000000000,
 };
 

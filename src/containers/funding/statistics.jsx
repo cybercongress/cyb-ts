@@ -1,4 +1,5 @@
 import React from 'react';
+import { Pane } from '@cybercongress/gravity';
 import { Indicators, Card, ContainerCard, LinkWindow } from '../../components';
 import {
   CYBER,
@@ -20,7 +21,14 @@ const Statistics = ({ atomLeff, price, discount, time, block }) => {
   }
 
   return (
-    <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="3">
+    // <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="3">
+    <Pane
+      marginBottom={10}
+      display="grid"
+      justifyItems="center"
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridGap="20px"
+    >
       <Card
         tooltipValue="The time left untill the end of the donations, in the case the price will not raise 5x"
         positionTooltip="bottom"
@@ -53,7 +61,8 @@ const Statistics = ({ atomLeff, price, discount, time, block }) => {
         positionTooltip="bottom"
         tooltipValue="The GCYB left before the end of the donations, in the case where less than 146 days pass from the start"
       />
-    </ContainerCard>
+      {/* // </ContainerCard> */}
+    </Pane>
   );
 };
 

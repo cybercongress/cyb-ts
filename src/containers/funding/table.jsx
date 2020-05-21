@@ -3,7 +3,7 @@ import { Icon } from '@cybercongress/gravity';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
 
-function Table({ data, onlyPin, pin, styles }) {
+function Table({ data, onlyPin, pin, mobile, styles }) {
   const [dataTable, setDataTable] = useState({});
   let tableRow;
 
@@ -34,10 +34,10 @@ function Table({ data, onlyPin, pin, styles }) {
                 href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
                 target="_blank"
               >
-                {trimString(item.txhash, 10, 10)}
+                {trimString(item.txhash, 8, 8)}
               </a>
             </div>
-            <div className="numberType">{item.timestamp}</div>
+            <div className="numberType display-none-mob">{item.timestamp}</div>
             <Tooltip
               placement="bottom"
               tooltip={`${formatNumber(item.price, 10)} ATOM`}
@@ -70,7 +70,10 @@ function Table({ data, onlyPin, pin, styles }) {
               placement="bottom"
               tooltip={`${formatNumber(Math.floor(item.estimationEUL))} EULs`}
             >
-              <div style={{ fontSize: 14 }} className="numberType">
+              <div
+                style={{ fontSize: 14 }}
+                className="numberType display-none-mob"
+              >
                 {item.estimationEUL / 10 ** 9 < 1
                   ? formatNumber(
                       Math.floor((item.estimationEUL / 10 ** 9) * 1000) / 1000
@@ -81,7 +84,9 @@ function Table({ data, onlyPin, pin, styles }) {
           </div>
         ))}
       >
-        <div className="numberType address">{key}</div>
+        <div className="numberType address">
+          {mobile ? trimString(key, 10, 8) : key}
+        </div>
         <Tooltip
           placement="bottom"
           tooltip={`${formatNumber(dataTable[key].amountСolumn)} ATOM`}
@@ -108,7 +113,7 @@ function Table({ data, onlyPin, pin, styles }) {
           placement="bottom"
           tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} EULs`}
         >
-          <div style={{ fontSize: 14 }} className="numberType">
+          <div style={{ fontSize: 14 }} className="numberType display-none-mob">
             {dataTable[key].eul / 10 ** 9 < 1
               ? formatNumber(
                   Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
@@ -138,7 +143,9 @@ function Table({ data, onlyPin, pin, styles }) {
                   {trimString(item.txhash, 10, 10)}
                 </a>
               </div>
-              <div className="numberType">{item.timestamp}</div>
+              <div className="numberType display-none-mob">
+                {item.timestamp}
+              </div>
               <Tooltip
                 placement="bottom"
                 tooltip={`${formatNumber(item.price, 10)} ATOM`}
@@ -209,7 +216,10 @@ function Table({ data, onlyPin, pin, styles }) {
             placement="bottom"
             tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} EULs`}
           >
-            <div style={{ fontSize: 14 }} className="numberType">
+            <div
+              style={{ fontSize: 14 }}
+              className="numberType display-none-mob"
+            >
               {dataTable[key].eul / 10 ** 9 < 1
                 ? formatNumber(
                     Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
@@ -224,11 +234,11 @@ function Table({ data, onlyPin, pin, styles }) {
     <div style={styles} className="table">
       <div className="table-header-rows">
         <div className="numberType address">Address (TX id)</div>
-        <div className="numberType sort-row">Height</div>
-        <div className="numberType sort-row">Price, ATOM</div>
-        <div className="numberType sort-row">ATOM</div>
-        <div className="numberType sort-row">GCYB</div>
-        <div className="numberType sort-row">GEUL</div>
+        <div className="numberType display-none-mob">Height</div>
+        <div className="numberType">Price, ATOM</div>
+        <div className="numberType">ATOM</div>
+        <div className="numberType">GCYB</div>
+        <div className="numberType display-none-mob">GEUL</div>
       </div>
       {pin && onlyPin && (
         <div

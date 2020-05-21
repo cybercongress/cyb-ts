@@ -25,6 +25,7 @@ import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+import { setTypeDevice } from './redux/actions/settings';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
 import Block from './containers/blok';
@@ -60,9 +61,10 @@ class AppRouter extends React.Component {
   }
 
   init = async () => {
-    const { setIpfsStatusProps } = this.props;
+    const { setIpfsStatusProps, setTypeDeviceProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
+    setTypeDeviceProps(mobile);
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     this.setState({ loader: false });
     // if (!mobile) {
@@ -212,6 +214,7 @@ const mapDispatchprops = dispatch => {
   return {
     initIpfsProps: ipfsNode => dispatch(initIpfs(ipfsNode)),
     setIpfsStatusProps: status => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: type => dispatch(setTypeDevice(type)),
   };
 };
 
