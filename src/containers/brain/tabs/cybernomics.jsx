@@ -26,7 +26,7 @@ function CybernomicsTab({ data }) {
         <CardStatisics title="CYB supply" value={formatNumber(cyb.supply)} />
         <CardStatisics
           title="Takeoff price of GCYB in ATOM"
-          value={formatNumber(cyb.price)}
+          value={formatNumber(Math.floor(cyb.price * 1000) / 1000)}
         />
         <CardStatisics title="CYB cap in ATOM" value={formatNumber(cyb.cap)} />
       </>

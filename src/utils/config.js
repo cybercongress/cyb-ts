@@ -1,4 +1,6 @@
 const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const WP =
+  'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
 
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0x0b1f54be915e77d9bf14268f94f8a26afab11296',
@@ -24,7 +26,7 @@ const NETWORKSIDS = {
 };
 
 const TAKEOFF = {
-  ATOMsALL: 600000,
+  ATOMsALL: 300000,
   CYBWON_A: 0.000740464,
   CYBWON_B: -666.418,
   CYBWON_C: 2.3328 * 10 ** 8,
@@ -35,6 +37,9 @@ const TAKEOFF = {
   GETSHARES_D: 7.332 * 10 ** -17,
   DISCOUNT_TG: -0.00005,
   DISCOUNT_TILT_ANGLE: 30,
+  DISCOUNT: 0.3,
+  SQRT_5: 2.23606797749979,
+  BLOCK_START: 2000000,
 };
 
 const COSMOS = {
@@ -82,17 +87,18 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
+const TAKEOFF_SUPPLY = 100000000000000;
 const GENESIS_SUPPLY = 1000000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
 const DISTRIBUTION = {
-  takeoff: 60000000000000,
-  relevance: 15000000000000,
-  load: 6000000000000,
+  takeoff: 100000000000000,
+  relevance: 20000000000000,
+  load: 10000000000000,
   delegation: 5000000000000,
   'full validator set': 5000000000000,
   'euler 4 rewards': 5000000000000,
-  lifetime: 2000000000000,
+  lifetime: 3000000000000,
   'community pool': 2000000000000,
 };
 
@@ -124,4 +130,6 @@ export {
   PATTERN_ETH,
   PATTERN_BLOCK,
   TIME_START,
+  TAKEOFF_SUPPLY,
+  WP,
 };

@@ -70,9 +70,7 @@ class GolLifetime extends React.Component {
       loadingAtom: false,
       loadingValidator: true,
       sumPrecommits: 0,
-      won: 0,
       currentPrize: 0,
-      takeoffDonations: 0,
       herosCount: 0,
       dataTable: [],
       total: 0,
@@ -124,7 +122,6 @@ class GolLifetime extends React.Component {
   };
 
   getAtomWS = data => {
-    const { won } = this.state;
     let amount = 0;
     console.warn('data', data['transfer.amount']);
     if (data['transfer.amount']) {
@@ -139,15 +136,13 @@ class GolLifetime extends React.Component {
         amount += amountWS;
       });
     }
-    const wonWs = cybWon(amount);
-    const newWon = Math.floor(won + parseFloat(wonWs));
+
     const currentPrize = Math.floor(
-      (newWon / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
+      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
     );
 
     this.setState({
       currentPrize,
-      won: newWon,
     });
   };
 
@@ -224,20 +219,16 @@ class GolLifetime extends React.Component {
 
   getAtom = async dataTxs => {
     let amount = 0;
-    let won = 0;
 
     if (dataTxs) {
       amount = getAmountATOM(dataTxs);
     }
 
-    won = cybWon(amount);
-
     const currentPrize = Math.floor(
-      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
+      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
     );
 
     this.setState({
-      won,
       loadingAtom: true,
       currentPrize,
     });
@@ -246,7 +237,6 @@ class GolLifetime extends React.Component {
   render() {
     const {
       loading,
-      won,
       dataTable,
       sumPrecommits,
       total,

@@ -3,12 +3,20 @@ import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { Link } from 'react-router-dom';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER } from '../../utils/config';
+import {
+  COSMOS,
+  LEDGER,
+  PATTERN_COSMOS,
+  CYBER,
+  TAKEOFF,
+  WP,
+} from '../../utils/config';
 import {
   getDelegator,
   downloadObjectAsJson,
   trimString,
   getTimeRemaining,
+  formatNumber,
 } from '../../utils/utils';
 import {
   ContributeATOMs,
@@ -103,18 +111,6 @@ class ActionBarTakeOff extends Component {
       this.setState({ memo });
     } else {
       this.setState({ memo: MEMO });
-    }
-    const deadline = `${COSMOS.TIME_START}`;
-    console.log(Date.parse(deadline));
-    const startTime = Date.parse(deadline) - Date.parse(new Date());
-    if (startTime <= 0) {
-      this.setState({
-        time: false,
-      });
-    } else {
-      this.setState({
-        time: true,
-      });
     }
   }
 
@@ -218,7 +214,10 @@ class ActionBarTakeOff extends Component {
         // eslint-disable-next-line
         console.error('Problem reading address data', message, statusCode);
       }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+      this.setState({
+        time: Date.now(),
+        stage: STAGE_ERROR,
+      }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -552,25 +551,64 @@ class ActionBarTakeOff extends Component {
       txHeight,
       stage,
       errorMessage,
-      time,
       trackAddress,
       days,
       hours,
       seconds,
       minutes,
+      loading,
     } = this.state;
-    const { initClock } = this.props;
+    const { block, end, mobile } = this.props;
+    let timeStart = true;
 
-    if (time) {
+    if (block === 0) {
+      return (
+        <ActionBar>
+          <Dots />
+        </ActionBar>
+      );
+    }
+
+    if (block > 0) {
+      if (TAKEOFF.BLOCK_START - block <= 0) {
+        timeStart = false;
+      }
+    }
+
+    if (timeStart) {
       return (
         <ActionBar>
           <div
             className="countdown-time text-glich"
-            data-text="takeoff will start in"
+            data-text={` ${formatNumber(
+              TAKEOFF.BLOCK_START - block
+            )} blocks left`}
           >
-            takeoff will start in
+            {formatNumber(TAKEOFF.BLOCK_START - block)} blocks left
           </div>
-          <Timer updateFunc={initClock} startTime={COSMOS.TIME_START} />
+        </ActionBar>
+      );
+    }
+
+    if (end <= 0) {
+      return (
+        <ActionBar>
+          <div
+            className="countdown-time text-glich"
+            data-text="Takeoff was successful"
+          >
+            Takeoff was successful
+          </div>
+        </ActionBar>
+      );
+    }
+
+    if (mobile) {
+      return (
+        <ActionBar>
+          <Button paddingX={20} marginX={10} onClick={this.onClickShow}>
+            Show address
+          </Button>
         </ActionBar>
       );
     }
@@ -606,7 +644,7 @@ class ActionBarTakeOff extends Component {
             disabled={toSend.length === 0}
             onClick={this.onClickFuckGoogle}
           >
-            Fuck Google
+            Donate
           </Button>
         </ActionBar>
       );
@@ -692,11 +730,10 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with the donation terms defined in the
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-              Whitepaper
-            </LinkWindow>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
             <LinkWindow to="https://cybercongress.ai/game-of-links/">
               Game of Links rules
@@ -754,11 +791,10 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with the donation terms defined in the
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-              Whitepaper
-            </LinkWindow>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
             <LinkWindow to="https://cybercongress.ai/game-of-links/">
               Game of Links rules

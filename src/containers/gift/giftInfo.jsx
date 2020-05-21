@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { Link, useHistory } from 'react-router-dom';
 import { LinkWindow, ActionBarContentText } from '../../components';
-import { PATTERN_ETH, PATTERN_COSMOS } from '../../utils/config';
+import { PATTERN_ETH, PATTERN_COSMOS, WP } from '../../utils/config';
 
 const GiftInfo = () => {
   const [valueInputAddres, setValueInputAddres] = useState('');
@@ -33,7 +33,7 @@ const GiftInfo = () => {
             The Gods understand that with the support of the most advanced
             communities they have a better chance to bootstrap smarter
             superintelligence. So{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
+            <LinkWindow to={WP}>
               they decided to allocate 10% of CYB
             </LinkWindow>{' '}
             in Genesis to the following communities:

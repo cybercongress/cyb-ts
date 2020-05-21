@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
-import { x, y, z, p } from '../../utils/list';
+import { x, cap, p } from '../../utils/list';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
 
@@ -10,260 +10,156 @@ class Dinamics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      main: true,
-      share: false,
-      discount: false,
-      rewards: false,
-      activebtn: 'main',
-      price: '',
-      center: {
-        x: 0,
-        y: -0.4,
-        z: -1.5,
-      },
-      eye: {
-        x: 1,
-        y: -0.4,
-        z: -5,
-      },
-      up: {
-        x: 0,
-        y: 0,
-        z: 1,
-      },
-      textX: 'x',
-      textY: 'y',
+      caps: '',
+      width: 890,
+      height: 350,
+      size: 16,
       margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0,
+        l: 40,
+        r: 20,
+        b: 40,
+        t: 10,
         pad: 4,
       },
     };
   }
 
-  state1 = () => {
-    this.setState({
-      share: false,
-      main: true,
-      discount: false,
-      rewards: false,
-      activebtn: 'main',
-      center: {
-        x: 0,
-        y: -0.4,
-        z: -1.5,
-      },
-      eye: {
-        x: 1,
-        y: -0.4,
-        z: -5,
-      },
-      up: {
-        x: 0,
-        y: 0,
-        z: 1,
-      },
-      margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0,
-        pad: 4,
-      },
-    });
-  };
-
-  state2 = () => {
-    this.setState({
-      activebtn: 'share',
-      share: true,
-      main: false,
-      discount: false,
-      rewards: false,
-      textX: 'Donation, ATOMs',
-      textY: 'CYB won, GCYBs',
-      margin: {
-        l: 50,
-        r: 50,
-        b: 80,
-        t: 10,
-        pad: 4,
-      },
-    });
-  };
-
-  state3 = () => {
-    this.setState({
-      share: false,
-      main: false,
-      discount: true,
-      rewards: false,
-      activebtn: 'discount',
-      textX: 'Donation, ATOMs',
-      textY: 'Discount, %',
-      margin: {
-        l: 50,
-        r: 50,
-        b: 80,
-        t: 10,
-        pad: 4,
-      },
-    });
-  };
+  componentDidMount() {
+    const { mobile } = this.props;
+    if (mobile) {
+      this.setState({
+        width: 360,
+        height: 250,
+        size: 14,
+        margin: {
+          l: 30,
+          r: 8,
+          b: 35,
+          t: 0,
+          pad: 2,
+        },
+      });
+    }
+  }
 
   plotlyHover = dataPoint => {
-    if (dataPoint.points[0]) {
-      if (
-        y.indexOf(dataPoint.points[0].y) !== -1 &&
-        p[y.indexOf(dataPoint.points[0].y)]
-      ) {
-        const price = p[y.indexOf(dataPoint.points[0].y)];
-        this.setState({
-          price: formatNumber(price, 5),
-        });
+    const { cap: capProps } = this.props;
+    try {
+      if (dataPoint.points[0]) {
+        if (x.indexOf(dataPoint.points[0].x) !== -1) {
+          const capPoint = cap[x.indexOf(dataPoint.points[0].x)];
+          this.setState({
+            caps: formatNumber(capPoint),
+          });
+        } else {
+          this.setState({
+            caps: formatNumber(capProps),
+          });
+        }
       }
+    } catch (error) {
+      this.setState({
+        caps: formatNumber(capProps),
+      });
     }
   };
 
   plotUnhover = () => {
     // const { round, price, volume, distribution } = this.props;
     this.setState({
-      price: '',
+      caps: '',
     });
   };
 
   render() {
-    const {
-      center,
-      eye,
-      up,
-      activebtn,
-      // data,
-      textX,
-      textY,
-      margin,
-      main,
-      share,
-      discount,
-      rewards,
-      price,
-    } = this.state;
+    const { caps, width, height, size, margin } = this.state;
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
     // console.log('dataRewards', dataRewards);
 
-    const dataShare = [
-      {
-        type: 'scatter',
-        mode: 'lines+points',
-        opacity: 0.45,
-        x: y,
-        y: x,
-        line: {
-          width: 2,
-          opacity: 1,
-          color: '#fff',
-        },
-        hoverinfo: 'none',
-        // hovertemplate:
-        //   'ATOMs contributed: %{x}' +
-        //   '<br>TCYB allocated: %{y: .2f}%' +
-        //   '<extra></extra>'
-      },
-      {
-        type: 'scatter',
-        mode: 'lines+points',
-        x: data3d.y,
-        y: data3d.x,
-        line: {
-          width: 2,
-          color: '#36d6ae',
-        },
-        // hoverinfo: 'none'
-        hovertemplate:
-          'ATOMs contributed: %{x}' +
-          `<br> GCYB allocated: %{y: .2f}%` +
-          '<extra></extra>',
-      },
-    ];
-
     const dataDiscount = [
       {
-        type: 'scatter',
-        x: y,
-        y: z,
+        mode: 'line',
+        x,
+        y: p,
         opacity: 0.45,
         line: {
           width: 2,
           opacity: 1,
           color: '#fff',
         },
-        hoverinfo: 'none',
+        // hoverinfo: 'none',
+        hovertemplate:
+          'Price: %{y:.2f%} ATOM/GCYB<br>' +
+          'Tokens claimed: %{x} GCYB<br>' +
+          `Cap: ${caps} ATOM` +
+          '<extra></extra>',
         // hovertemplate:
-        //   'ATOMs contributed: %{x}<br>' +
+        //   'ATOM contributed: %{x}<br>' +
         //   'Personal discount: %{y:.2f%}%<br>' +
         //   '<extra></extra>'
       },
       {
         type: 'scatter',
-        x: data3d.y,
-        y: data3d.z,
+        mode: 'lines',
         line: {
-          width: 2,
           color: '#36d6ae',
+          width: 3,
         },
-        // hoverinfo: 'none'
-        hovertemplate:
-          'ATOMs contributed: %{x}<br>' +
-          'Personal discount: %{y:.2f%}%<br>' +
-          '<extra></extra>',
-      },
-    ];
-
-    const data = [
-      {
-        type: 'scatter3d',
-        mode: 'lines',
-        opacity: 0.45,
-        x,
-        y,
-        z,
-        p,
-        line: {
-          width: 8,
-          opacity: 1,
-          color: '#fff',
-        },
-        hovertemplate:
-          `GCYB allocated: %{x: .2f}<br>` +
-          'ATOMs contributed: %{y}<br>' +
-          'Personal discount: %{z:.2f%}%<br>' +
-          `price: ${price}ATOMs` +
-          '<extra></extra>',
-      },
-      {
-        type: 'scatter3d',
-        mode: 'lines',
         x: data3d.x,
         y: data3d.y,
-        z: data3d.z,
-        line: {
-          width: 8,
-          color: '#36d6ae',
-        },
-        ticks: '',
+        // hoverinfo: 'none'
         hovertemplate:
-          `GCYB allocated: %{x: .2f}<br>` +
-          'ATOMs contributed: %{y}<br>' +
-          'Personal discount: %{z:.2f%}%<br>' +
-          `price: ${price}ATOMs` +
+          'Price: %{y:.2f%} ATOM/GCYB<br>' +
+          'Tokens claimed: %{x} GCYB<br>' +
+          `Cap: ${caps} ATOM` +
           '<extra></extra>',
       },
     ];
 
+    // const data = [
+    //   {
+    //     type: 'scatter3d',
+    //     mode: 'lines',
+    //     opacity: 0.45,
+    //     x,
+    //     y,
+    //     z,
+    //     p,
+    //     line: {
+    //       width: 8,
+    //       opacity: 1,
+    //       color: '#fff',
+    //     },
+    //     hovertemplate:
+    //       `GCYB allocated: %{x: .2f}<br>` +
+    //       'ATOM contributed: %{y}<br>' +
+    //       'Personal discount: %{z:.2f%}%<br>' +
+    //       `price: ${price}ATOM` +
+    //       '<extra></extra>',
+    //   },
+    //   {
+    //     type: 'scatter3d',
+    //     mode: 'lines',
+    //     x: data3d.x,
+    //     y: data3d.y,
+    //     z: data3d.z,
+    //     line: {
+    //       width: 8,
+    //       color: '#36d6ae',
+    //     },
+    //     ticks: '',
+    //     hovertemplate:
+    //       `GCYB allocated: %{x: .2f}<br>` +
+    //       'ATOM contributed: %{y}<br>' +
+    //       'Personal discount: %{z:.2f%}%<br>' +
+    //       `price: ${price}ATOM` +
+    //       '<extra></extra>',
+    //   },
+    // ];
+
     const layout = {
+      bargap: 0,
       paper_bgcolor: '#000',
       plot_bgcolor: '#000',
       showlegend: false,
@@ -276,11 +172,15 @@ class Dinamics extends Component {
       },
       yaxis: {
         autotick: true,
+        fixedrange: true,
         title: {
-          text: `${textY}`,
+          text: `Price, ATOM/GCYB`,
         },
         tickfont: {
           color: '#36d6ae',
+        },
+        titlefont: {
+          size,
         },
         gridcolor: '#ffffff66',
         color: '#fff',
@@ -288,8 +188,12 @@ class Dinamics extends Component {
       },
       xaxis: {
         autotick: true,
+        fixedrange: true,
         title: {
-          text: `${textX}`,
+          text: `Tokens claimed, GCYB`,
+        },
+        titlefont: {
+          size,
         },
         tickfont: {
           color: '#36d6ae',
@@ -298,129 +202,25 @@ class Dinamics extends Component {
         color: '#fff',
         zerolinecolor: '#dedede',
       },
-      scene: {
-        dragmode: false,
-        yaxis: {
-          autotick: false,
-          dtick: 50000,
-          title: {
-            text: 'Donation, ATOMs',
-          },
-          gridcolor: '#dedede',
-          color: '#fff',
-          tickfont: {
-            color: '#36d6ae',
-          },
-          zerolinecolor: '#000',
-        },
-        xaxis: {
-          autotick: false,
-          dtick: 1,
-          tickcolor: '#000',
-          title: {
-            text: `CYB won, %`,
-          },
-          gridcolor: '#dedede',
-          color: '#fff',
-          tickfont: {
-            color: '#36d6ae',
-          },
-          zerolinecolor: '#000',
-        },
-        zaxis: {
-          title: {
-            text: 'Discount, %',
-          },
-          gridcolor: '#dedede',
-          // autorange: 'reversed',
-          color: '#fff',
-          tickfont: {
-            color: '#36d6ae',
-          },
-          zerolinecolor: '#000',
-        },
-        aspectratio: {
-          x: 2.6,
-          y: 6.5,
-          z: 2,
-        },
-        font: {
-          family: 'Play',
-        },
-        camera: {
-          center,
-          up,
-          eye,
-        },
-      },
-      width: 890,
-      height: 400,
+      width,
+      height,
       margin,
     };
     const config = {
       displayModeBar: false,
-      // scrollZoom: false
-      // staticPlot: true,
+      scrollZoom: false,
+      showSendToCloud: true,
     };
-
-    const Btn = () => (
-      <div className="cont-btn">
-        <div
-          style={{
-            left: '50%',
-            position: 'absolute',
-            transform: 'translate(-50%, 0)',
-            display: 'flex',
-          }}
-        >
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'share' ? 'activebtn' : ''
-            }`}
-            onClick={this.state2}
-          >
-            Share
-          </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'main' ? 'activebtn' : ''
-            }`}
-            onClick={this.state1}
-          >
-            Main
-          </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'discount' ? 'activebtn' : ''
-            }`}
-            onClick={this.state3}
-          >
-            Discount
-          </button>
-        </div>
-      </div>
-    );
 
     return (
       <div className="container-dinamics">
-        <Btn />
-
-        {main && (
-          <Plotly
-            data={data}
-            layout={layout}
-            onHover={figure => this.plotlyHover(figure)}
-            onUnhover={figure => this.plotUnhover(figure)}
-            config={config}
-          />
-        )}
-        {share && <Plotly data={dataShare} layout={layout} config={config} />}
-        {discount && (
-          <Plotly data={dataDiscount} layout={layout} config={config} />
-        )}
+        <Plotly
+          data={dataDiscount}
+          layout={layout}
+          onHover={figure => this.plotlyHover(figure)}
+          onUnhover={figure => this.plotUnhover(figure)}
+          config={config}
+        />
       </div>
     );
   }

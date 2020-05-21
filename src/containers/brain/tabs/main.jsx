@@ -19,7 +19,9 @@ function MainTab({ linksCount, cybernomics, activeValidatorsCount, donation }) {
         <Link to="/gol/takeoff">
           <CardStatisics
             title="Takeoff price, ATOM/GCYB"
-            value={formatNumber(cybernomics.cyb.price)}
+            value={formatNumber(
+              Math.floor(cybernomics.cyb.price * 1000) / 1000
+            )}
             link
           />
         </Link>

@@ -105,7 +105,6 @@ class GolLoad extends React.Component {
   };
 
   getAtomWS = data => {
-    const { won } = this.state;
     let amount = 0;
     console.warn('data', data['transfer.amount']);
     if (data['transfer.amount']) {
@@ -120,36 +119,30 @@ class GolLoad extends React.Component {
         amount += amountWS;
       });
     }
-    const wonWs = cybWon(amount);
-    const newWon = Math.floor(won + parseFloat(wonWs));
+
     const currentPrize = Math.floor(
-      (newWon / DISTRIBUTION.takeoff) * DISTRIBUTION.load
+      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amount
     );
 
     this.setState({
       currentPrize,
-      won: newWon,
     });
   };
 
   getAtom = async dataTxs => {
     let amount = 0;
-    let won = 0;
 
     if (dataTxs) {
       amount = getAmountATOM(dataTxs);
     }
 
-    won = cybWon(amount);
-
     const currentPrize = Math.floor(
-      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
+      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amount
     );
 
     this.setState({
       loadingAtom: false,
       currentPrize,
-      won,
     });
   };
 
@@ -213,7 +206,6 @@ class GolLoad extends React.Component {
       currentPrize,
       sumKarma,
       loadingAtom,
-      won,
     } = this.state;
     console.log(items);
 

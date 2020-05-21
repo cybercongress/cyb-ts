@@ -3,7 +3,7 @@ import { useQuery, useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { DISTRIBUTION } from '../../../utils/config';
+import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getRelevance } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
@@ -13,7 +13,7 @@ import { setGolRelevance } from '../../../redux/actions/gol';
 const Relevance = ({
   addressLedger,
   reward = 0,
-  won = 0,
+  takeoffDonations = 0,
   setGolRelevanceProps,
   dataBlock,
 }) => {
@@ -22,7 +22,7 @@ const Relevance = ({
       <RelevanceC
         dataBlock={dataBlock}
         dataRelevance={null}
-        won={won}
+        takeoffDonations={takeoffDonations}
         arrLink={null}
         addressLedger={addressLedger}
         setGolRelevanceProps={setGolRelevanceProps}
@@ -71,7 +71,7 @@ const Relevance = ({
     <RelevanceC
       dataBlock={dataBlock}
       dataRelevance={dataQ}
-      won={won}
+      takeoffDonations={takeoffDonations}
       setGolRelevanceProps={setGolRelevanceProps}
       arrLink={arrLink}
     />
@@ -79,7 +79,7 @@ const Relevance = ({
 };
 
 const RelevanceC = ({
-  won = 0,
+  takeoffDonations = 0,
   dataRelevance,
   addressLedger,
   dataBlock,
@@ -91,7 +91,7 @@ const RelevanceC = ({
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const prize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.relevance
+    (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * takeoffDonations
   );
 
   if (addressLedger === null) {

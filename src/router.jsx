@@ -21,10 +21,11 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Vesting from './containers/vesting/vesting';
-import ForceGraph from './containers/forceGraph/forceGraph';
+// import ForceGraph from './containers/forceGraph/forceGraph';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+import { setTypeDevice } from './redux/actions/settings';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
 import Block from './containers/blok';
@@ -60,20 +61,21 @@ class AppRouter extends React.Component {
   }
 
   init = async () => {
-    const { setIpfsStatusProps } = this.props;
+    const { setIpfsStatusProps, setTypeDeviceProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
+    setTypeDeviceProps(mobile);
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    // this.setState({ loader: false });
-    if (!mobile) {
-      if (!isSafari) {
-        await this.initIpfsNode();
-      } else {
-        this.setState({ loader: false });
-      }
-    } else {
-      this.setState({ loader: false });
-    }
+    this.setState({ loader: false });
+    // if (!mobile) {
+    //   if (!isSafari) {
+    //     await this.initIpfsNode();
+    //   } else {
+    //     this.setState({ loader: false });
+    //   }
+    // } else {
+    //   this.setState({ loader: false });
+    // }
   };
 
   initIpfsNode = async () => {
@@ -190,7 +192,7 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
-          <Route path="/graph" component={ForceGraph} />
+          {/* <Route path="/graph" component={ForceGraph} /> */}
           <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />
@@ -212,6 +214,7 @@ const mapDispatchprops = dispatch => {
   return {
     initIpfsProps: ipfsNode => dispatch(initIpfs(ipfsNode)),
     setIpfsStatusProps: status => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: type => dispatch(setTypeDevice(type)),
   };
 };
 
