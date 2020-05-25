@@ -185,14 +185,6 @@ class Funding extends PureComponent {
           },
         })
       );
-      this.ws.send(
-        JSON.stringify({
-          method: 'subscribe',
-          params: ["tm.event='NewBlockHeader'"],
-          id: 'block',
-          jsonrpc: '2.0',
-        })
-      );
     };
 
     this.ws.onmessage = async evt => {
@@ -201,43 +193,6 @@ class Funding extends PureComponent {
         this.updateWs(message.result.events);
         console.warn('txs', message);
       }
-      if (message.id.indexOf('block#event') !== -1) {
-        // this.updateWs(message.result.events);
-        if (Object.keys(message.result).length > 0) {
-          const block = message.result.data.value.header.height;
-          this.setState({
-            block,
-          });
-        }
-      }
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
-
-  getBlockWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected Funding');
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
-          id: '0',
-          params: {
-            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
-          },
-        })
-      );
-    };
-
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      // if (message.id.indexOf('0#event') !== -1) {
-      //   this.updateWs(message.result.events);
-      // }
-      console.warn('block', message);
     };
 
     this.ws.onclose = () => {
@@ -369,6 +324,7 @@ class Funding extends PureComponent {
         break;
       }
     }
+    console.log('amount', amount);
     this.setState({
       amount,
     });
@@ -419,7 +375,7 @@ class Funding extends PureComponent {
       console.log('groups', groupsAddress);
 
       const currentPrice = (40 * temE + 1000) / 1000;
-      console.log(temE * 1000);
+      console.log(temE);
       this.setState({
         groups: groupsAddress,
         estimation: temE * 1000,
@@ -489,7 +445,6 @@ class Funding extends PureComponent {
       time,
       selected,
       estimation,
-      block,
     } = this.state;
     const { mobile } = this.props;
     let content;
@@ -571,7 +526,6 @@ class Funding extends PureComponent {
           <Statistics
             atomLeff={100000 - estimation}
             time={time}
-            block={block}
             price={currentPrice}
             discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
           />
@@ -596,7 +550,6 @@ class Funding extends PureComponent {
         </main>
         <ActionBarTakeOff
           initClock={this.initClock}
-          block={block}
           end={100000 - estimation}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
           mobile={mobile}

@@ -1,7 +1,6 @@
 const TIME_START = 'April 4 2020 18:00:00 GMT +3';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
-
 const AUCTION = {
   ADDR_SMART_CONTRACT: '0x0b1f54be915e77d9bf14268f94f8a26afab11296',
   ADDR_VESTING: '0xd84469ecd96825c956d7ae8b072209ca89ae37e2',
@@ -45,7 +44,7 @@ const TAKEOFF = {
 const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
-  TIME_END: 'July 26 2020 21:50:00 GMT +3',
+  TIME_END: 'October 17 2020 06:19:07 GMT +3',
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,

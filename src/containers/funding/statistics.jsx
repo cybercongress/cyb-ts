@@ -12,13 +12,6 @@ import { formatNumber } from '../../utils/utils';
 const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
 
 const Statistics = ({ atomLeff, price, discount, time, block }) => {
-  let timeStart = '∞';
-
-  if (block > 0) {
-    if (TAKEOFF.BLOCK_START - block <= 0) {
-      timeStart = time;
-    }
-  }
 
   return (
     // <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="3">
@@ -33,7 +26,7 @@ const Statistics = ({ atomLeff, price, discount, time, block }) => {
         tooltipValue="The time left untill the end of the donations, in the case the price will not raise 5x"
         positionTooltip="bottom"
         title="Donations ends"
-        value={atomLeff >= 0 ? timeStart : '∞'}
+        value={atomLeff >= 0 ? time : '∞'}
       />
       <Card
         title="ATOM/GCYB"
