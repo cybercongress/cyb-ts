@@ -818,3 +818,17 @@ select {
     font-size: 14px;
   }
 }
+
+.container-actionBar-mobile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* font-size: 14px; */
+  align-items: center;
+}
+
+.text-actionBar-mob {
+  margin-bottom: 10px;
+  font-size: 15px !important;
+  margin-right: 0 !important;
+}

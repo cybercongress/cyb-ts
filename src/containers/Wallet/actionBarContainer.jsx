@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+// import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import CosmosApp from 'ledger-cosmos-js';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -73,7 +75,7 @@ class ActionBarContainer extends Component {
     this.haveDocument = typeof document !== 'undefined';
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.pollLedger();
   }
 
@@ -141,7 +143,7 @@ class ActionBarContainer extends Component {
   };
 
   pollLedger = async () => {
-    const transport = await TransportU2F.create();
+    const transport = await TransportWebUSB.create();
     this.setState({ ledger: new CosmosDelegateTool(transport) });
   };
 
@@ -183,13 +185,12 @@ class ActionBarContainer extends Component {
       const accounts = {};
 
       const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      console.log('addressLedgerCyber', addressLedgerCyber);
       const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
       accounts.cyber = addressLedgerCyber;
       accounts.cosmos = addressLedgerCosmos;
       accounts.keys = 'ledger';
-
-      console.log('address', addressLedgerCyber);
 
       localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
       localStorage.setItem('pocket', JSON.stringify(accounts));
@@ -207,7 +208,7 @@ class ActionBarContainer extends Component {
         // eslint-disable-next-line
         console.error('Problem reading address data', message, statusCode);
       }
-      this.setState({ time: Date.now(), stage: STAGE_ERROR }); // cause componentWillUpdate to call again.
+      this.setState({ time: Date.now()}); // cause componentWillUpdate to call again.
     }
   };
 
