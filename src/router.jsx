@@ -65,17 +65,17 @@ class AppRouter extends React.Component {
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
     setTypeDeviceProps(mobile);
-    this.setState({ loader: false });
-    // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    // if (!mobile) {
-    //   if (!isSafari) {
-    //     await this.initIpfsNode();
-    //   } else {
-    //     this.setState({ loader: false });
-    //   }
-    // } else {
-    //   this.setState({ loader: false });
-    // }
+//     this.setState({ loader: false });
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (!mobile) {
+      if (!isSafari) {
+        await this.initIpfsNode();
+      } else {
+        this.setState({ loader: false });
+      }
+    } else {
+      this.setState({ loader: false });
+    }
   };
 
   initIpfsNode = async () => {
