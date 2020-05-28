@@ -161,11 +161,21 @@ export const StartState = ({ targetColor, valueSearchInput, onClickBtn }) => (
   </ActionBar>
 );
 
-export const ConnectLadger = ({ pin, app, version }) => (
+export const ConnectLadger = ({ connectLedger, onClickConnect }) => (
   <ActionBar>
-    <ActionBarContentText>
-      Connect Ledger, enter pin and open Cosmos app <Dots big />
+    <ActionBarContentText display="inline-flex" flexDirection="column">
+      <div>
+        Connect Ledger, enter pin and open Cosmos app <Dots big />
+      </div>
+      {connectLedger === false && (
+        <Pane fontSize="14px" color="#f00">
+          Cosmos app is not open
+        </Pane>
+      )}
     </ActionBarContentText>
+    {connectLedger === false && (
+      <Button onClick={onClickConnect}>Connect</Button>
+    )}
   </ActionBar>
 );
 

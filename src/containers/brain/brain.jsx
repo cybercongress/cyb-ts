@@ -17,9 +17,16 @@ import {
 } from '../../utils/search/utils';
 import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
-import { cybWon } from '../../utils/fundingMath';
+import { getEstimation } from '../../utils/fundingMath';
 import injectWeb3 from './web3';
-import { CYBER, AUCTION, GENESIS_SUPPLY, TAKEOFF } from '../../utils/config';
+import {
+  CYBER,
+  AUCTION,
+  GENESIS_SUPPLY,
+  TAKEOFF,
+  TAKEOFF_SUPPLY,
+  COSMOS,
+} from '../../utils/config';
 import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
@@ -198,33 +205,34 @@ class Brain extends React.Component {
   getATOM = async dataTxs => {
     const { cybernomics } = this.state;
     let amount = 0;
-    let won = 0;
     let currentPrice = 0;
+    let estimation = 0;
 
     if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
+      for (let item = 0; item < dataTxs.length; item += 1) {
+        let temE = 0;
+        const val =
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
+        temE = getEstimation(estimation, val);
+        amount += val;
+        estimation += temE;
+      }
     }
 
-    console.log('amount', amount);
+    currentPrice = (40 * estimation + 1000) / 1000;
 
-    won = cybWon(amount);
-    if (amount === 0) {
-      currentPrice = 0;
-    } else {
-      currentPrice = amount / won;
-    }
-
-    console.log('won', won);
-    console.log('currentPrice', currentPrice);
+    console.log('currentPrice', currentPrice, amount);
 
     const supplyEUL = parseFloat(GENESIS_SUPPLY);
-    const takeoffPrice = currentPrice * DIVISOR_CYBER_G;
-    const capATOM = (supplyEUL / DIVISOR_CYBER_G) * takeoffPrice;
+    const capATOM = (supplyEUL / DIVISOR_CYBER_G) * currentPrice;
     console.log('capATOM', capATOM);
 
     cybernomics.cyb = {
       cap: capATOM,
-      price: takeoffPrice,
+      price: currentPrice,
       supply: GENESIS_SUPPLY,
     };
 

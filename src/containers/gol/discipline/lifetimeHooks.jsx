@@ -12,7 +12,7 @@ const BLOCK_SUBSCRIPTION = gql`
   }
 `;
 
-function LifetimeHooks({ consensusAddress, won }) {
+function LifetimeHooks({ consensusAddress, takeoffDonations = 0 }) {
   const GET_CHARACTERS = gql`
     query lifetimeRate {
       pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
@@ -26,14 +26,14 @@ function LifetimeHooks({ consensusAddress, won }) {
     }
   `;
   if (consensusAddress === null) {
-    return <Lifetime dataQ={null} won={won} />;
+    return <Lifetime dataQ={null} takeoffDonations={takeoffDonations} />;
   }
   const { loading, data: dataQ } = useQuery(GET_CHARACTERS);
 
   if (loading) {
     return <Dots />;
   }
-  return <Lifetime dataQ={dataQ} won={won} />;
+  return <Lifetime dataQ={dataQ} takeoffDonations={takeoffDonations} />;
 }
 
 export default LifetimeHooks;

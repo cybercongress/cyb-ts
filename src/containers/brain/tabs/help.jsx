@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Pane, Icon } from '@cybercongress/gravity';
 import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
+import { WP } from '../../../utils/config';
 
 function HelpTab() {
   return (
@@ -46,7 +47,7 @@ function HelpTab() {
           link
         />
       </LinkWindow>
-      <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
+      <LinkWindow to={WP}>
         <CardStatisics
           // title="Homestead"
           styleContainer={{

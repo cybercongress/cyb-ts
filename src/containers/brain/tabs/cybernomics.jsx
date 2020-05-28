@@ -42,13 +42,10 @@ function CybernomicsTab({ data }) {
         <CardStatisics title="EUL cap in ETH" value={formatNumber(eul.cap)} />
 
         <CardStatisics title="CYB supply" value={formatNumber(cyb.supply)} />
-        <Link to="/gol/takeoff">
-          <CardStatisics
-            title="Takeoff price of GCYB in ATOM"
-            value={formatNumber(cyb.price)}
-            link
-          />
-        </Link>
+        <CardStatisics
+          title="Takeoff price of GCYB in ATOM"
+          value={formatNumber(Math.floor(cyb.price * 1000) / 1000)}
+        />
         <CardStatisics title="CYB cap in ATOM" value={formatNumber(cyb.cap)} />
       </>
     );

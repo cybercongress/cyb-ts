@@ -13,6 +13,7 @@ import {
   CYBER,
   PATTERN_COSMOS,
   PATTERN_ETH,
+  WP,
 } from '../../utils/config';
 import {
   trimString,
@@ -179,7 +180,7 @@ function GiftAddress({ address }) {
           </TextCustom>
           <TextCustom>
             The{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
+            <LinkWindow to={WP}>
               gospel of the Great Web
             </LinkWindow>{' '}
             says that a total of {formatNumber(100000000000000)} CYB in the Genesis will 

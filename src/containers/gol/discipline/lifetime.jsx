@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { DISTRIBUTION } from '../../../utils/config';
+import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLifetime } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolLifeTime } from '../../../redux/actions/gol';
 
-const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps, lifetime }) => {
+const Lifetime = ({
+  takeoffDonations = 0,
+  dataQ,
+  setGolLifeTimeProps,
+  lifetime,
+}) => {
   const [loading, setLoading] = useState(true);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const currentPrize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
+    (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * takeoffDonations
   );
 
   useEffect(() => {
@@ -36,14 +41,14 @@ const Lifetime = ({ won = 0, dataQ, setGolLifeTimeProps, lifetime }) => {
       setGolLifeTimeProps(0, currentPrize);
       setLoading(false);
     }
-  }, [won, dataQ]);
+  }, [takeoffDonations, dataQ]);
 
   return (
     <RowTable
       text={<Link to="/gol/lifetime">lifetime</Link>}
       reward={DISTRIBUTION.lifetime}
       currentPrize={currentPrize}
-      cybWonAbsolute={loading ? <Dots /> : lifetime.cybAbsolute}
+      cybWonAbsolute={loading ? <Dots /> : formatNumber(lifetime.cybAbsolute)}
       cybWonPercent={loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`}
     />
   );

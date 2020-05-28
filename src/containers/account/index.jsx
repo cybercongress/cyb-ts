@@ -2,6 +2,7 @@ import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import GetLink from './link';
+import { connect } from 'react-redux';
 import {
   getBalance,
   getTotalEUL,
@@ -22,7 +23,8 @@ import GetTxs from './txs';
 import Main from './main';
 import GetMentions from './mentions';
 import TableDiscipline from '../gol/table';
-import { cybWon } from '../../utils/fundingMath';
+import { getEstimation } from '../../utils/fundingMath';
+import { setGolTakeOff } from '../../redux/actions/gol';
 
 import { COSMOS } from '../../utils/config';
 
@@ -104,17 +106,39 @@ class AccountDetails extends React.Component {
   };
 
   getAtom = async dataTxs => {
+    const { match } = this.props;
+    const { address } = match.params;
+    const { setGolTakeOffProps } = this.props;
     let amount = 0;
-    let won = 0;
+
+    let estimation = 0;
+    let addEstimation = 0;
+    const addressCosmos = getDelegator(address, 'cosmos');
 
     if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
+      for (let item = 0; item < dataTxs.length; item += 1) {
+        let temE = 0;
+        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
+        const val =
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
+        temE = getEstimation(estimation, val);
+        if (addressTx === addressCosmos) {
+          addEstimation += temE;
+        }
+        amount += val;
+        estimation += temE;
+      }
     }
 
-    won = cybWon(amount);
+    setGolTakeOffProps(
+      Math.floor(addEstimation * 10 ** 12),
+      Math.floor(estimation * 10 ** 12)
+    );
 
     this.setState({
-      won,
       loading: false,
       takeoffDonations: amount,
     });
@@ -405,4 +429,11 @@ class AccountDetails extends React.Component {
   }
 }
 
-export default AccountDetails;
+const mapDispatchprops = dispatch => {
+  return {
+    setGolTakeOffProps: (amount, prize) =>
+      dispatch(setGolTakeOff(amount, prize)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(AccountDetails);

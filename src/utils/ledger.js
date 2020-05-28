@@ -1,8 +1,11 @@
-import CosmosApp, { getBech32FromPK } from 'ledger-cosmos-js';
+import CosmosApp from 'ledger-cosmos-js';
 import axios from 'axios';
 import Big from 'big.js';
 import secp256k1 from 'secp256k1';
 import txs from './txs';
+import * as Ripemd160 from 'ripemd160';
+import * as bech32 from 'bech32';
+import * as crypto from 'crypto';
 
 import { CYBER, LEDGER, COSMOS } from './config';
 
@@ -79,10 +82,6 @@ class CosmosDelegateTool {
   async connect() {
     this.connected = false;
     this.lastError = null;
-    const connectedLog = {
-      pin: false,
-      app: false,
-    };
     this.app = new CosmosApp(this.transport);
     if (this.checkAppInfo) {
       const appInfo = await this.app.appInfo();
@@ -102,7 +101,6 @@ class CosmosDelegateTool {
     if (version.return_code === 28160) {
       return version;
     }
-
     if (version.error_message !== 'No errors') {
       console.log(`Error [${version.error_message}] ${version.error_message}`);
       return;
@@ -122,11 +120,6 @@ class CosmosDelegateTool {
       return false;
     }
 
-    // Mark as connected
-    this.connected = true;
-    connectedLog.pin = true;
-    connectedLog.app = true;
-    console.log(connectedLog);
     return version;
   }
 
@@ -165,14 +158,30 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(BECH32_PREFIX_ACC_ADDR_COSMOS, pk.compressed_pk),
+      bech32: this.getBech32FromPK(
+        BECH32_PREFIX_ACC_ADDR_COSMOS,
+        pk.compressed_pk
+      ),
     };
   }
+
+  getBech32FromPK = (hrp, pk) => {
+    if (pk.length !== 33) {
+      console.log('Expected compressed public key [31 bytes]');
+    }
+    const hashSha256 = crypto
+      .createHash('sha256')
+      .update(pk)
+      .digest();
+    const hashRip = new Ripemd160().update(hashSha256).digest();
+    return bech32.encode(hrp, bech32.toWords(hashRip));
+  };
 
   async retrieveAddressCyber(path) {
     // this.connectedOrThrow(this);
     // console.log(this.app);
     const pk = await this.app.publicKey(path);
+    console.log(pk);
     if (pk.return_code !== 0x9000) {
       this.lastError = pk.error_message;
       throw new Error(pk.error_message);
@@ -180,7 +189,10 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(BECH32_PREFIX_ACC_ADDR_CYBER, pk.compressed_pk),
+      bech32: this.getBech32FromPK(
+        BECH32_PREFIX_ACC_ADDR_CYBER,
+        pk.compressed_pk
+      ),
     };
   }
 

@@ -99,15 +99,13 @@ class GolDelegation extends React.Component {
         amount += amountWS;
       });
     }
-    const wonWs = cybWon(amount);
-    const newWon = Math.floor(won + parseFloat(wonWs));
+
     const currentPrize = Math.floor(
-      (newWon / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+      (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * amount
     );
 
     this.setState({
       currentPrize,
-      won: newWon,
     });
   };
 
@@ -137,11 +135,15 @@ class GolDelegation extends React.Component {
     const { validatorAddress } = this.state;
     const dataTable = [];
     let total = 0;
+    let total2 = 0;
     const data = await getAllValidators();
+    console.log('data', data);
     let herosCount = 0;
     if (data !== null) {
       data.forEach(item => {
         total += parseFloat(item.tokens);
+        total2 += parseFloat(item.delegator_shares);
+
         let addressStorage = false;
         if (validatorAddress === item.operator_address) {
           addressStorage = true;
@@ -158,7 +160,7 @@ class GolDelegation extends React.Component {
 
     sort(dataTable, 'tokens');
     sort(dataTable, 'addressStorage');
-
+console.log(total, 'total2', total2);
     this.setState({
       dataTable,
       herosCount,
@@ -168,20 +170,16 @@ class GolDelegation extends React.Component {
 
   getAtom = async dataTxs => {
     let amount = 0;
-    let won = 0;
 
     if (dataTxs) {
       amount = getAmountATOM(dataTxs);
     }
 
-    won = cybWon(amount);
-
     const currentPrize = Math.floor(
-      (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+      (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * amount
     );
 
     this.setState({
-      won,
       loading: false,
       currentPrize,
     });

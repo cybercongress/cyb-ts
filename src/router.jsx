@@ -25,6 +25,7 @@ import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+import { setTypeDevice } from './redux/actions/settings';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
 import Block from './containers/blok';
@@ -40,6 +41,7 @@ import GolLoad from './containers/gol/pages/load';
 import { isMobileTablet } from './utils/utils';
 
 const IPFS = require('ipfs');
+const DetectRTC = require('detectrtc');
 
 export const history = createBrowserHistory({});
 
@@ -60,20 +62,23 @@ class AppRouter extends React.Component {
   }
 
   init = async () => {
-    const { setIpfsStatusProps } = this.props;
+    const { setIpfsStatusProps, setTypeDeviceProps } = this.props;
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     this.setState({ loader: false });
-    // if (!mobile) {
-    //   if (!isSafari) {
-    //     await this.initIpfsNode();
-    //   } else {
-    //     this.setState({ loader: false });
-    //   }
-    // } else {
-    //   this.setState({ loader: false });
-    // }
+    setTypeDeviceProps(mobile);
+    // this.setState({ loader: false });
+    console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
+    if (!mobile) {
+      if (DetectRTC.isWebRTCSupported && !isSafari) {
+        await this.initIpfsNode();
+      } else {
+        this.setState({ loader: false });
+      }
+    } else {
+      this.setState({ loader: false });
+    }
   };
 
   initIpfsNode = async () => {
@@ -212,6 +217,7 @@ const mapDispatchprops = dispatch => {
   return {
     initIpfsProps: ipfsNode => dispatch(initIpfs(ipfsNode)),
     setIpfsStatusProps: status => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: type => dispatch(setTypeDevice(type)),
   };
 };
 

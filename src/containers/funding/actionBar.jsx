@@ -1,18 +1,11 @@
 import React, { Component } from 'react';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER } from '../../utils/config';
+import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER, WP } from '../../utils/config';
+import { getDelegator, downloadObjectAsJson } from '../../utils/utils';
 import {
-  getDelegator,
-  downloadObjectAsJson,
-  trimString,
-  getTimeRemaining,
-} from '../../utils/utils';
-import {
-  ContributeATOMs,
-  SendAmount,
   ConnectLadger,
   JsonTransaction,
   Confirmed,
@@ -21,8 +14,6 @@ import {
   ActionBarContentText,
   LinkWindow,
   CheckAddressInfo,
-  Dots,
-  Timer,
 } from '../../components';
 
 const {
@@ -35,10 +26,8 @@ const {
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
   HDPATH,
   LEDGER_OK,
-  LEDGER_NOAPP,
   MEMO,
 } = LEDGER;
 
@@ -53,9 +42,7 @@ const LEDGER_TX_ACOUNT_INFO = 2.2;
 
 const SELECT_PATH = 10;
 
-const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
-
-const ledger = require('../../image/select-pin-nano2.svg');
+const { ADDR_FUNDING, DIVISOR_ATOM } = COSMOS;
 
 class ActionBarTakeOff extends Component {
   constructor(props) {
@@ -63,41 +50,26 @@ class ActionBarTakeOff extends Component {
     this.state = {
       stage: STAGE_INIT,
       hdpath: [44, 118, 0, 0, 0],
-      ledger: null,
-      ledgerVersion: [0, 0, 0],
-      returnCode: null,
       addressInfo: null,
       address: null,
       availableStake: 0,
-      time: 0,
-      gas: DEFAULT_GAS,
-      gasPrice: DEFAULT_GAS_PRICE,
       toSend: '',
       txBody: null,
       txContext: null,
       txHash: null,
       txHeight: null,
-      height50: false,
+      connectLedger: null,
       memo: '',
-      days: '00',
-      hours: '00',
-      seconds: '00',
-      minutes: '00',
-      time: true,
       trackAddress: '',
     };
-    this.ledgerModal = React.createRef();
-    this.atomField = React.createRef();
-    this.gasField = React.createRef();
-    this.gasPriceField = React.createRef();
     this.timeOut = null;
-    this.haveDocument = typeof document !== 'undefined';
+    this.transport = null;
+    this.ledger = null;
   }
 
   componentDidMount() {
     // eslint-disable-next-line
     console.warn('Looking for Ledger Nano');
-    this.pollLedger();
     const localStorageStory = localStorage.getItem('thanks');
     if (localStorageStory !== null) {
       const thanks = JSON.parse(localStorageStory);
@@ -106,99 +78,21 @@ class ActionBarTakeOff extends Component {
     } else {
       this.setState({ memo: MEMO });
     }
-    const deadline = `${COSMOS.TIME_START}`;
-    console.log(Date.parse(deadline));
-    const startTime = Date.parse(deadline) - Date.parse(new Date());
-    if (startTime <= 0) {
-      this.setState({
-        time: false,
-      });
-    } else {
-      this.setState({
-        time: true,
-      });
-    }
   }
 
-  componentDidUpdate() {
-    const { ledger, returnCode, address, addressInfo, stage } = this.state;
-    if (ledger === null) {
-      this.pollLedger();
-    }
-    if (stage === STAGE_LEDGER_INIT) {
-      if (ledger !== null) {
-        switch (returnCode) {
-          case LEDGER_OK:
-            if (address === null) {
-              this.getAddress();
-            }
-            if (address !== null && addressInfo === null) {
-              console.log('getWallet');
-              this.getWallet();
-            }
-            break;
-          default:
-            // console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
-      }
-    }
-  }
+  getLedgerAddress = async () => {
+    const accounts = {};
+    this.transport = await TransportWebUSB.create(120 * 1000);
+    this.ledger = new CosmosDelegateTool(this.transport);
 
-  compareVersion = async () => {
-    const { ledgerVersion } = this.state;
-    const test = ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
-
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
-
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        const { major, minor, patch } = connect;
-        const ledgerVersion = [major, minor, patch];
-
-        this.setState({
-          txMsg: null,
-          address: null,
-          txBody: null,
-          returnCode: connect.return_code,
-          ledgerVersion,
-        });
-        // eslint-disable-next-line
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
+    const connect = await this.ledger.connect();
+    console.log(connect);
+    if (connect.return_code === LEDGER_OK) {
       this.setState({
-        ledger: null,
+        connectLedger: true,
       });
-      console.error('Problem with Ledger communication', message, statusCode);
-    }
-  };
-
-  getAddress = async () => {
-    const { ledger, hdpath } = this.state;
-    try {
-      const accounts = {};
-      const address = await ledger.retrieveAddress(hdpath);
-      const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
+      const address = await this.ledger.retrieveAddress(HDPATH);
+      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
 
       accounts.cyber = addressLedgerCyber;
       accounts.cosmos = address;
@@ -213,24 +107,23 @@ class ActionBarTakeOff extends Component {
       this.setState({
         address,
       });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+      this.getAddressInfo();
+    } else {
+      this.setState({
+        connectLedger: false,
+      });
     }
   };
 
-  getWallet = async () => {
-    const { ledger, address } = this.state;
+  getAddressInfo = async () => {
+    const { address } = this.state;
     this.setState({
       stage: LEDGER_TX_ACOUNT_INFO,
     });
 
-    const addressInfo = await ledger.getAccountInfo(address);
+    const addressInfo = await this.ledger.getAccountInfo(address);
+
+    console.log(addressInfo);
 
     if (addressInfo.balanceuAtom && addressInfo.balanceuAtom > 0) {
       this.setState({
@@ -247,11 +140,11 @@ class ActionBarTakeOff extends Component {
   };
 
   createTxForCLI = async () => {
-    const { ledger, trackAddress, toSend, memo } = this.state;
+    const { trackAddress, toSend, memo } = this.state;
     const addressTo = ADDR_FUNDING;
     const uatomAmount = toSend * DIVISOR_ATOM;
 
-    const tx = await ledger.txCreateSend(
+    const tx = await this.ledger.txCreateSend(
       null,
       addressTo,
       uatomAmount,
@@ -268,7 +161,7 @@ class ActionBarTakeOff extends Component {
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend, memo } = this.state;
+    const { address, addressInfo, toSend, memo } = this.state;
     const validatorBech32 = ADDR_FUNDING;
     const uatomAmount = toSend * DIVISOR_ATOM;
     const txContext = {
@@ -281,7 +174,7 @@ class ActionBarTakeOff extends Component {
       path: address.path,
     };
 
-    const tx = await ledger.txCreateSend(
+    const tx = await this.ledger.txCreateSend(
       txContext,
       validatorBech32,
       uatomAmount,
@@ -300,13 +193,13 @@ class ActionBarTakeOff extends Component {
   };
 
   signTx = async () => {
-    const { txMsg, ledger, txContext } = this.state;
+    const { txMsg, txContext } = this.state;
     // console.log('txContext', txContext);
     this.setState({ stage: STAGE_WAIT });
-    const sing = await ledger.sign(txMsg, txContext);
+    const sing = await this.ledger.sign(txMsg, txContext);
     console.log('sing', sing);
     if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await ledger.applySignature(
+      const applySignature = await this.ledger.applySignature(
         sing,
         txMsg,
         txContext
@@ -329,8 +222,8 @@ class ActionBarTakeOff extends Component {
   };
 
   injectTx = async () => {
-    const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmit(txBody);
+    const { txBody } = this.state;
+    const txSubmit = await this.ledger.txSubmit(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -345,51 +238,46 @@ class ActionBarTakeOff extends Component {
   };
 
   confirmTx = async () => {
-    const { txHash, ledger } = this.state;
+    const { txHash } = this.state;
     const { update } = this.props;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await ledger.txStatus(txHash);
+      const status = await this.ledger.txStatus(txHash);
       const data = await status;
       if (data.logs && data.logs[0].success === true) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-
+        if (update) {
+          update();
+        }
         return;
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  tryConnect = async () => {
-    const { ledger } = this.state;
-    const connect = await ledger.connect();
-    return connect;
-  };
-
   cleatState = () => {
     const { update } = this.props;
     this.setState({
-      ledger: null,
-      ledgerVersion: [0, 0, 0],
-      returnCode: null,
+      stage: STAGE_INIT,
       addressInfo: null,
       address: null,
       hdpath: HDPATH,
       availableStake: 0,
-      time: 0,
-      gas: DEFAULT_GAS,
-      gasPrice: DEFAULT_GAS_PRICE,
       toSend: '',
       txBody: null,
       txContext: null,
       txHash: null,
       txHeight: null,
-      height50: false,
-      errorMessage: null,
+      connectLedger: null,
+      memo: '',
+      trackAddress: '',
     });
+    this.timeOut = null;
+    this.transport = null;
+    this.ledger = null;
     if (update) {
       update();
     }
@@ -406,7 +294,6 @@ class ActionBarTakeOff extends Component {
       if (e.key === 'Enter') {
         this.setState({
           stage: STAGE_SELECTION,
-          height50: true,
         });
       }
     }
@@ -415,7 +302,6 @@ class ActionBarTakeOff extends Component {
   onClickFuckGoogle = () => {
     this.setState({
       stage: STAGE_SELECTION,
-      height50: true,
     });
   };
 
@@ -426,14 +312,8 @@ class ActionBarTakeOff extends Component {
     });
   };
 
-  onClickConfirmed = () => {
-    this.cleatState();
-    this.setState({
-      stage: SELECT_PATH,
-    });
-  };
-
   onClickSelectLedgerTx = () => {
+    this.getLedgerAddress();
     this.setState({
       stage: STAGE_HDPATH,
     });
@@ -444,26 +324,6 @@ class ActionBarTakeOff extends Component {
       toSend: evt.target.value,
     });
   };
-
-  onClickMax = () => {
-    const { gas, gasPrice } = this.state;
-    this.setState(prevState => ({
-      toSend:
-        Math.floor(
-          ((prevState.availableStake - gas * gasPrice) / DIVISOR_ATOM) * 1000
-        ) / 1000,
-    }));
-  };
-
-  onClickContributeATOMs = () =>
-    this.setState({
-      step: 'transactionCost',
-    });
-
-  onClickTransactionCost = () =>
-    this.setState({
-      step: 'succesfuuly',
-    });
 
   hasKey() {
     const { address } = this.state;
@@ -542,6 +402,12 @@ class ActionBarTakeOff extends Component {
     });
   };
 
+  onClickShowMob = () => {
+    this.setState({
+      stage: CUSTOM_TX_CONTROL_PK,
+    });
+  };
+
   onClickShow = () => {
     const { onClickPopapAdressTrue } = this.props;
 
@@ -590,44 +456,100 @@ class ActionBarTakeOff extends Component {
     });
   };
 
+  onClickToPath = () => {
+    const { onClickPopapAdressTrue } = this.props;
+
+    this.cleatState();
+    this.setState({
+      stage: SELECT_PATH,
+    });
+  };
+
+  onClickIUnderstandMob = () => {
+    const { onClickPopapAdressTrue } = this.props;
+
+    onClickPopapAdressTrue();
+    this.setState({
+      stage: STAGE_INIT,
+    });
+  };
+
   render() {
     const {
-      valueSelect,
-      step,
-      height50,
-      connect,
-      returnCode,
-      version,
       availableStake,
-      address,
-      gasPrice,
-      gas,
       toSend,
-      txMsg,
       txHash,
       txHeight,
       stage,
       errorMessage,
-      time,
       trackAddress,
-      days,
-      hours,
-      seconds,
-      minutes,
       hdpath,
+      connectLedger,
     } = this.state;
-    const { initClock } = this.props;
+    const { end, mobile } = this.props;
+    console.log('connectLedger', connectLedger);
 
-    if (time) {
+    if (end <= 0) {
       return (
         <ActionBar>
           <div
             className="countdown-time text-glich"
-            data-text="takeoff will start in"
+            data-text="Takeoff was successful"
           >
-            takeoff will start in
+            Takeoff was successful
           </div>
-          <Timer updateFunc={initClock} startTime={COSMOS.TIME_START} />
+        </ActionBar>
+      );
+    }
+
+    if (mobile && stage === STAGE_INIT) {
+      return (
+        <ActionBar>
+          <Button paddingX={20} marginX={10} onClick={this.onClickShowMob}>
+            Show address
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (mobile && stage === CUSTOM_TX_CONTROL_PK) {
+      return (
+        <ActionBar>
+          <Pane className="container-actionBar-mobile">
+            <ActionBarContentText className="text-actionBar-mob">
+              You can send donations directly to cyber~Congress multisig only if
+              you control the private keys of the sending account!
+            </ActionBarContentText>
+            <Button
+              fontSize="15px;"
+              height="32px"
+              lineHeight="30px"
+              onClick={this.onClickIControl}
+            >
+              I control
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (mobile && stage === CUSTOM_TX_UNDERSTAND) {
+      return (
+        <ActionBar>
+          <Pane className="container-actionBar-mobile">
+            <ActionBarContentText className="text-actionBar-mob">
+              CYB will be allocated to the sending addresses. Any donations from
+              custodial wallets, exchanges and banks will be lost.
+            </ActionBarContentText>
+            <Button
+              fontSize="15px;"
+              height="32px"
+              lineHeight="30px"
+              onClick={this.onClickIUnderstandMob}
+            >
+              I understand
+            </Button>
+          </Pane>
         </ActionBar>
       );
     }
@@ -663,7 +585,7 @@ class ActionBarTakeOff extends Component {
             disabled={toSend.length === 0}
             onClick={this.onClickFuckGoogle}
           >
-            Fuck Google
+            Donate
           </Button>
         </ActionBar>
       );
@@ -676,7 +598,7 @@ class ActionBarTakeOff extends Component {
             Custom transaction
           </Button>
           <Button marginX={10} onClick={this.onClickSelectLedgerTx}>
-            Donate with Ledger
+            Donate using Ledger
           </Button>
         </ActionBar>
       );
@@ -729,7 +651,7 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText>
             You can send donations directly to cyber~Congress multisig only if
-            you control private keys of sending account.
+            you control the private keys of the sending account!
           </ActionBarContentText>
           <Button marginX={10} onClick={this.onClickIControl}>
             I control
@@ -744,7 +666,7 @@ class ActionBarTakeOff extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            CYB will be allocated to sending addresses. All donations from
+            CYB will be allocated to the sending addresses. Any donations from
             custodial wallets, exchanges and banks will be lost.
           </ActionBarContentText>
           <Button marginX={10} onClick={this.onClickIUnderstand}>
@@ -791,11 +713,10 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with donation terms defined in
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-              Whitepaper
-            </LinkWindow>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
             <LinkWindow to="https://cybercongress.ai/game-of-links/">
               Game of Links rules
@@ -833,12 +754,8 @@ class ActionBarTakeOff extends Component {
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(version, LEDGER_VERSION_REQ)
-          }
+          onClickConnect={() => this.getLedgerAddress()}
+          connectLedger={connectLedger}
         />
       );
     }
@@ -853,11 +770,10 @@ class ActionBarTakeOff extends Component {
         <ActionBar>
           <ActionBarContentText display="inline">
             <Pane display="inline">
-              By donating {toSend} ATOM you agree with donation terms defined in
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
             </Pane>{' '}
-            <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-              Whitepaper
-            </LinkWindow>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
             <Pane display="inline">and</Pane>{' '}
             <LinkWindow to="https://cybercongress.ai/game-of-links/">
               Game of Links rules
@@ -889,7 +805,7 @@ class ActionBarTakeOff extends Component {
           txHash={txHash}
           txHeight={txHeight}
           cosmos
-          onClickBtnCloce={this.onClickConfirmed}
+          onClickBtnCloce={this.onClickToPath}
         />
       );
     }

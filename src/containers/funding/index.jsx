@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Text, Pane, Dialog } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Text, Pane, Dialog, Tablist } from '@cybercongress/gravity';
+import { Link, Switch, Route, Router } from 'react-router-dom';
 import QRCode from 'qrcode.react';
 import Dinamics from './dinamics';
 import Statistics from './statistics';
@@ -12,8 +13,14 @@ import {
   trimString,
   getTimeRemaining,
 } from '../../utils/utils';
-import { Loading, LinkWindow, Copy } from '../../components';
-import { COSMOS, TAKEOFF } from '../../utils/config';
+import { Loading, LinkWindow, Copy, TabBtn } from '../../components';
+import {
+  COSMOS,
+  TAKEOFF,
+  TAKEOFF_SUPPLY,
+  GENESIS_SUPPLY,
+  CYBER,
+} from '../../utils/config';
 import {
   cybWon,
   funcDiscount,
@@ -25,6 +32,8 @@ import {
 } from '../../utils/fundingMath';
 import { getTxCosmos } from '../../utils/search/utils';
 import PopapAddress from './popap';
+import Details from './details';
+import Quotes from './quotes';
 
 const dateFormat = require('dateformat');
 
@@ -47,7 +56,7 @@ const test = {
   ],
   'tx.height': ['1489670'],
   'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
-  'transfer.amount': ['100000000uatom'],
+  'transfer.amount': ['310000000000uatom'],
   'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
   'message.module': ['bank'],
   'message.action': ['send'],
@@ -65,25 +74,53 @@ class Funding extends PureComponent {
       pocketAdd: null,
       dataTxs: null,
       atomLeff: 0,
-      won: 0,
       pin: false,
       currentPrice: 0,
-      currentDiscount: 0,
       currentPriceEstimation: 0,
       dataPlot: [],
       dataRewards: [],
       loader: true,
       loading: 0,
+      estimation: 0,
       popapAdress: false,
-      currentDiscountRevers: 0,
+      selected: 'manifest',
+      block: 0,
     };
   }
 
   async componentDidMount() {
+    this.chekPathname();
+    // this.getBlockWS();
     await this.getDataWS();
     await this.getTxsCosmos();
     this.initClock();
   }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (
+      pathname.match(/progress/gm) &&
+      pathname.match(/progress/gm).length > 0
+    ) {
+      this.select('progress');
+    } else if (
+      pathname.match(/leaderboard/gm) &&
+      pathname.match(/leaderboard/gm).length > 0
+    ) {
+      this.select('leaderboard');
+    } else {
+      this.select('manifest');
+    }
+  };
 
   initClock = () => {
     try {
@@ -154,8 +191,8 @@ class Funding extends PureComponent {
       const message = JSON.parse(evt.data);
       if (message.id.indexOf('0#event') !== -1) {
         this.updateWs(message.result.events);
+        console.warn('txs', message);
       }
-      console.warn('txs', message);
     };
 
     this.ws.onclose = () => {
@@ -186,10 +223,10 @@ class Funding extends PureComponent {
       const pocketAdd = JSON.parse(pocketAddLocal);
       this.setState({ pocketAdd });
     }
-    await this.getStatisticsWs(dataTxs.amount);
-    this.getData();
+    this.getStatisticsWs(dataTxs.amount);
     await this.getTableData();
-    this.getTableDataWs(dataTxs);
+    await this.getTableDataWs(dataTxs);
+    this.getData();
   };
 
   init = async txs => {
@@ -205,70 +242,61 @@ class Funding extends PureComponent {
   getStatisticsWs = async amountWebSocket => {
     const { amount } = this.state;
     let amountWs = 0;
-    let currentPrice = 0;
 
     amountWs = amount + amountWebSocket;
-    const atomLeffWs = ATOMsALL - amountWs;
-    const currentDiscountWs = funcDiscountRevers(amountWs);
-    const wonWs = cybWon(amountWs);
-    const currentPriceWs = wonWs / amountWs;
-    currentPrice = amountWs / wonWs;
+
+    if (amountWs >= ATOMsALL) {
+      amountWs = ATOMsALL;
+    }
 
     this.setState({
       amount: amountWs,
-      atomLeff: atomLeffWs,
-      won: wonWs,
-      currentPrice,
-      currentPriceEstimation: currentPriceWs,
-      currentDiscountRevers: currentDiscountWs,
     });
   };
 
   getTableDataWs = async dataTxs => {
-    const {
-      currentDiscountRevers,
-      currentPriceEstimation,
-      amount,
-      groups,
-    } = this.state;
+    const { currentPriceEstimation, estimation, amount, groups } = this.state;
     try {
-      console.log(groups);
+      console.log(estimation);
       console.log(dataTxs);
 
       const dataWs = dataTxs;
       const tempData = [];
-      let estimation = 0;
+      let estimationEUL = 0;
+      let estimationCyb = 0;
+      let price = 0;
       if (amount <= ATOMsALL) {
-        let tempVal = amount - dataTxs.amount;
+        let tempVal = dataTxs.amount;
         if (tempVal >= ATOMsALL) {
           tempVal = ATOMsALL;
         }
-        estimation =
-          getEstimation(
-            currentPriceEstimation,
-            currentDiscountRevers,
-            amount,
-            amount
-          ) -
-          getEstimation(
-            currentPriceEstimation,
-            currentDiscountRevers,
-            amount,
-            tempVal
-          );
-        dataWs.cybEstimation = estimation;
+        console.log(tempVal);
+        estimationCyb = getEstimation(estimation / 1000, tempVal);
+        estimationEUL = (tempVal / amount) * TAKEOFF_SUPPLY;
+        price = tempVal / estimationCyb / 1000;
+        dataWs.cybEstimation = Math.floor(estimationCyb * 10 ** 12);
+        dataWs.estimationEUL = estimationEUL;
+        dataWs.price = price;
         groups[dataWs.sender].address = [
           dataWs,
           ...groups[dataWs.sender].address,
         ];
         groups[dataWs.sender].height = dataWs.height;
         groups[dataWs.sender].amountСolumn += dataWs.amount;
-        groups[dataWs.sender].cyb += estimation;
+        groups[dataWs.sender].cyb += Math.floor(estimationCyb * 10 ** 12);
+        groups[dataWs.sender].eul += estimationEUL;
       }
       // const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
+      const temE = estimationCyb * 1000 + estimation;
+      console.log('estimationCyb', estimationCyb);
+      const currentPrice = (40 * (temE / 1000) + 1000) / 1000;
+      console.log(temE);
+      console.log(currentPrice);
       this.setState({
         groups,
+        estimation: temE,
+        currentPrice,
       });
     } catch (error) {
       console.log(error);
@@ -284,12 +312,6 @@ class Funding extends PureComponent {
     // );
 
     let amount = 0;
-    let atomLeff = 0;
-    let currentDiscount = 0;
-    let currentDiscountRevers = 0;
-    let won = 0;
-    let currentPrice = 0;
-    let currentPriceEstimation = 0;
     for (let item = 0; item < dataTxs.length; item++) {
       if (amount <= ATOMsALL) {
         amount +=
@@ -302,70 +324,32 @@ class Funding extends PureComponent {
         break;
       }
     }
-    // if (statisticsLocalStorage !== null) {
-    //   amount += statisticsLocalStorage.amount;
-    // }
     console.log('amount', amount);
-    atomLeff = ATOMsALL - amount;
-    currentDiscount = funcDiscount(amount);
-    currentDiscountRevers = funcDiscountRevers(amount);
-    won = cybWon(amount);
-    currentPrice = amount / won;
-    currentPriceEstimation = won / amount;
-    console.log('won', won);
-    console.log('currentDiscount', currentDiscount);
-    // localStorage.setItem(`statistics`, JSON.stringify(statistics));
     this.setState({
       amount,
-      atomLeff,
-      currentDiscountRevers,
-      won,
-      currentPrice,
-      currentDiscount,
-      currentPriceEstimation,
-      loader: false,
     });
   };
 
   getTableData = async () => {
-    const {
-      dataTxs,
-      currentDiscountRevers,
-      amount,
-      currentPriceEstimation,
-      dataAllPin,
-    } = this.state;
+    const { dataTxs, amount } = this.state;
     try {
       const table = [];
-      let temp = 0;
+      const temp = 0;
       let temE = 0;
       for (let item = 0; item < dataTxs.length; item++) {
         let estimation = 0;
+        let price = 0;
+        let estimationEUL = 0;
         if (temp <= ATOMsALL) {
           const val =
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
               10
             ) / COSMOS.DIVISOR_ATOM;
-          let tempVal = temp + val;
-          if (tempVal >= ATOMsALL) {
-            tempVal = ATOMsALL;
-          }
-          estimation =
-            getEstimation(
-              currentPriceEstimation,
-              currentDiscountRevers,
-              amount,
-              tempVal
-            ) -
-            getEstimation(
-              currentPriceEstimation,
-              currentDiscountRevers,
-              amount,
-              temp
-            );
+          estimation = getEstimation(temE, val);
+          price = val / estimation / 1000;
+          estimationEUL = (val / amount) * TAKEOFF_SUPPLY;
           temE += estimation;
-          temp += val;
         } else {
           break;
         }
@@ -374,23 +358,29 @@ class Funding extends PureComponent {
           txhash: dataTxs[item].txhash,
           height: dataTxs[item].height,
           from: dataTxs[item].tx.value.msg[0].value.from_address,
+          price,
           timestamp: dateFormat(d, 'dd/mm/yyyy, HH:MM:ss'),
           amount:
             Number.parseInt(
               dataTxs[item].tx.value.msg[0].value.amount[0].amount,
               10
             ) / COSMOS.DIVISOR_ATOM,
-          estimation,
+          estimation: estimation * 10 ** 12,
+          estimationEUL,
         });
       }
-      console.log('estimation', temE);
 
       const groupsAddress = getGroupAddress(table);
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       console.log('groups', groupsAddress);
 
+      const currentPrice = (40 * temE + 1000) / 1000;
+      console.log(temE);
       this.setState({
         groups: groupsAddress,
+        estimation: temE * 1000,
+        currentPrice,
+        loader: false,
       });
       this.checkPin();
     } catch (error) {
@@ -414,9 +404,11 @@ class Funding extends PureComponent {
   };
 
   getData = async () => {
-    const { amount } = this.state;
+    const { estimation } = this.state;
     let dataPlot = [];
-    dataPlot = getDataPlot(amount);
+    dataPlot = getDataPlot(estimation);
+    console.log(dataPlot);
+
     // localStorage.setItem(`dataPlot`, JSON.stringify(dataPlot));
     this.setState({
       dataPlot,
@@ -435,13 +427,15 @@ class Funding extends PureComponent {
     });
   };
 
+  select = selected => {
+    this.setState({ selected });
+  };
+
   render() {
     const {
       groups,
       atomLeff,
-      won,
       currentPrice,
-      currentDiscount,
       dataPlot,
       dataAllPin,
       dataRewards,
@@ -449,7 +443,11 @@ class Funding extends PureComponent {
       loader,
       popapAdress,
       time,
+      selected,
+      estimation,
     } = this.state;
+    const { mobile } = this.props;
+    let content;
 
     if (loader) {
       return (
@@ -471,6 +469,24 @@ class Funding extends PureComponent {
       );
     }
 
+    if (selected === 'progress') {
+      content = (
+        <Dinamics
+          mobile={mobile}
+          cap={40 * estimation + 1000000}
+          data3d={dataPlot}
+        />
+      );
+    }
+
+    if (selected === 'leaderboard') {
+      content = <Table mobile={mobile} data={groups} pin={pin} />;
+    }
+
+    if (selected === 'manifest') {
+      content = <Details />;
+    }
+
     return (
       <span>
         {popapAdress && (
@@ -480,77 +496,73 @@ class Funding extends PureComponent {
           />
         )}
 
-        <main className="block-body">
-          <Pane
-            borderLeft="3px solid #3ab793e3"
-            paddingY={0}
-            paddingLeft={20}
-            paddingRight={5}
-            marginY={5}
-          >
-            <Pane>
-              We understand that shaking the status quo of Googles religion will
-              be hard.
+        <main className="block-body takeoff">
+          <Quotes />
+          {!pin && (
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginTop={5}
+              marginBottom={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                Takeoff is the key element during the{' '}
+                <Link to="/gol">Game of Links</Link> on the path for deploying
+                Superintelligence. Please, thoroughly study details before
+                donating. But remember - the more you wait, the higher the
+                price.
+              </Text>
             </Pane>
-            <Pane>But we must.</Pane>
-            <Pane>
-              As this is the only way to provide sustainable future for the next
-              generations.
-            </Pane>
-            <Pane>Founders</Pane>
-          </Pane>
-          <Pane
-            boxShadow="0px 0px 5px #36d6ae"
-            paddingX={20}
-            paddingY={20}
-            marginY={20}
-          >
-            <Text fontSize="16px" color="#fff">
-              Takeoff donations are the first event in the{' '}
-              <Link to="/search/roadmap">distribution process of CYB</Link>. The
-              main purpose of the Takeoff is to get validators involved in the
-              decentralized launch of{' '}
-              <Link to="/search/genesis">The Genesis</Link>. We also want to
-              engage everybody into cyberlinking. The{' '}
-              <Link to="/gol">Game of Links</Link> rewards are dependant on the
-              Takeoff results. The more will be donated, the more{' '}
-              <Link to="/gol">GoL</Link> rewards the participants get. Please
-              keep in mind, that you will receive CYB in Genesis and EUL after
-              the end of the auction. If you want to test{' '}
-              <Link to="/search/cyberlink">cyberlinking </Link>
-              right now, get some tokens from the{' '}
-              <Link to="/gol/faucet">test~Auction</Link> instead. By donating
-              you agree with the donation terms defined in our{' '}
-              <LinkWindow to="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x">
-                Whitepaper
-              </LinkWindow>{' '}
-              and the{' '}
-              <LinkWindow to="https://cybercongress.ai/game-of-links/">
-                Game of Links rules
-              </LinkWindow>
-              .
-            </Text>
-          </Pane>
+          )}
+          {pin && (
+            <Table
+              styles={{ marginBottom: 20, marginTop: 0 }}
+              data={groups}
+              onlyPin
+              pin={pin}
+            />
+          )}
           <Statistics
-            atomLeff={formatNumber(atomLeff)}
+            atomLeff={100000 - estimation}
             time={time}
-            won={formatNumber(Math.floor(won * 10 ** -9 * 1000) / 1000)}
-            price={formatNumber(
-              Math.floor(currentPrice * 10 ** 9 * 1000) / 1000
-            )}
-            discount={formatNumber(currentDiscount, 3)}
+            price={currentPrice}
+            discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
           />
-          <Dinamics data3d={dataPlot} />
-
-          {Object.keys(groups).length > 0 && <Table data={groups} pin={pin} />}
+          <Tablist className="tab-list" marginY={20}>
+            <TabBtn
+              text="Leaderboard"
+              isSelected={selected === 'leaderboard'}
+              to="/gol/takeoff/leaderboard"
+            />
+            <TabBtn
+              text="Manifest"
+              isSelected={selected === 'manifest'}
+              to="/gol/takeoff"
+            />
+            <TabBtn
+              text="Progress"
+              isSelected={selected === 'progress'}
+              to="/gol/takeoff/progress"
+            />
+          </Tablist>
+          {content}
         </main>
         <ActionBarTakeOff
           initClock={this.initClock}
+          end={100000 - estimation}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
+          mobile={mobile}
         />
       </span>
     );
   }
 }
 
-export default Funding;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(Funding);

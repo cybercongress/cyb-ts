@@ -16,6 +16,7 @@ import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setQuery } from '../../redux/actions/query';
+import { WP } from '../../utils/config';
 
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');

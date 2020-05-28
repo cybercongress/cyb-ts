@@ -8,50 +8,18 @@ import { formatNumber, getDelegator } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolTakeOff } from '../../../redux/actions/gol';
 
-const Takeoff = ({
-  takeoffDonations,
-  addressLedger,
-  setGolTakeOffProps,
-  takeoff,
-}) => {
+const Takeoff = ({ takeoff }) => {
   try {
-    const [loading, setLoading] = useState(true);
-    const [cybWonPercent, setCybWonPercent] = useState(0);
-    const currentPrize = DISTRIBUTION.takeoff;
-
-    useEffect(() => {
-      if (addressLedger !== null) {
-        const fetchData = async () => {
-          const takeoffAccount = await getTakeoff(
-            addressLedger.bech32 || addressLedger,
-            takeoffDonations
-          );
-          const cybAbsolute = takeoffAccount * currentPrize;
-          setGolTakeOffProps(Math.floor(cybAbsolute), currentPrize);
-          if (cybAbsolute !== 0) {
-            const cybPercent = (cybAbsolute / currentPrize) * 100;
-            setCybWonPercent(cybPercent);
-          }
-          setLoading(false);
-        };
-        fetchData();
-      } else {
-        setGolTakeOffProps(0, currentPrize);
-        setLoading(false);
-      }
-    }, [addressLedger]);
-
     return (
       <RowTable
         text={<Link to="/gol/takeoff">takeoff</Link>}
         reward={DISTRIBUTION.takeoff}
-        currentPrize={currentPrize}
-        cybWonAbsolute={
-          loading ? <Dots /> : formatNumber(Math.floor(takeoff.cybAbsolute))
-        }
-        cybWonPercent={
-          loading ? <Dots /> : `${formatNumber(cybWonPercent, 2)}%`
-        }
+        currentPrize={takeoff.currentPrize}
+        cybWonAbsolute={formatNumber(Math.floor(takeoff.cybAbsolute))}
+        cybWonPercent={`${formatNumber(
+          (takeoff.cybAbsolute / takeoff.currentPrize) * 100,
+          2
+        )}%`}
       />
     );
   } catch (error) {
@@ -60,7 +28,7 @@ const Takeoff = ({
       <RowTable
         text={<Link to="/gol/takeoff">takeoff</Link>}
         reward={DISTRIBUTION.takeoff}
-        currentPrize={won}
+        currentPrize={takeoff.currentPrize}
         cybWonAbsolute="∞"
         cybWonPercent="∞"
       />

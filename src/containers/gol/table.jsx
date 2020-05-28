@@ -24,11 +24,12 @@ const BLOCK_SUBSCRIPTION = gql`
 `;
 
 const TableDiscipline = ({
-  won,
+  won = 0,
   addressLedger,
   validatorAddress,
   consensusAddress,
   takeoffDonations,
+  estimation,
 }) => {
   try {
     const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
@@ -81,18 +82,30 @@ const TableDiscipline = ({
           >
             <Takeoff
               takeoffDonations={takeoffDonations}
-              won={won}
               addressLedger={addressLedger}
+              estimation={estimation}
             />
             <Relevance
               dataBlock={dataBlock.block[0].height}
               addressLedger={addressLedger}
-              won={won}
+              takeoffDonations={takeoffDonations}
             />
-            <Load addressLedger={addressLedger} won={won} />
-            <Delegation validatorAddress={validatorAddress} won={won} />
-            <LifetimeHooks consensusAddress={consensusAddress} won={won} />
-            <Rewards validatorAddress={validatorAddress} won={won} />
+            <Load
+              addressLedger={addressLedger}
+              takeoffDonations={takeoffDonations}
+            />
+            <Delegation
+              validatorAddress={validatorAddress}
+              takeoffDonations={takeoffDonations}
+            />
+            <LifetimeHooks
+              consensusAddress={consensusAddress}
+              takeoffDonations={takeoffDonations}
+            />
+            <Rewards
+              validatorAddress={validatorAddress}
+              takeoffDonations={takeoffDonations}
+            />
             <FVS />
             <CommunityPool />
             <Total />
