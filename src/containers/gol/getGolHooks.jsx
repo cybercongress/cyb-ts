@@ -6,8 +6,8 @@ import {
   getGraphQLQuery,
   getValidatorsInfo,
 } from '../../utils/search/utils';
-import { cybWon } from '../../utils/fundingMath';
-import { DISTRIBUTION } from '../../utils/config';
+import { getEstimation } from '../../utils/fundingMath';
+import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../utils/config';
 import {
   getRelevance,
   getLoad,
@@ -74,25 +74,42 @@ query lifetimeRate {
 }
 `;
 
-function useGetAtom() {
+function useGetAtom(addressCyber) {
   const [atom, setAtom] = useState(0);
-  const [won, setWon] = useState(0);
+  const [estimation, setEstimation] = useState(0);
 
   useEffect(() => {
     const feachData = async () => {
-      const dataTx = await getTxCosmos();
-      if (dataTx !== null) {
-        if (dataTx) {
-          const dataAtom = getAmountATOM(dataTx.txs);
-          setAtom(dataAtom);
-          setWon(Math.floor(cybWon(dataAtom)));
+      let estimationAll = 0;
+      let amount = 0;
+      let addEstimation = 0;
+
+      const dataTxs = await getTxCosmos();
+      const addressCosmos = getDelegator(addressCyber, 'cosmos');
+      if (dataTxs && Object.keys(dataTxs.txs).length > 0) {
+        const dataTx = dataTxs.txs;
+        for (let item = 0; item < dataTx.length; item += 1) {
+          let temE = 0;
+          const address = dataTx[item].tx.value.msg[0].value.from_address;
+          const val =
+            Number.parseInt(
+              dataTx[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM;
+          temE = getEstimation(estimationAll, val);
+          if (address === addressCosmos) {
+            addEstimation += temE;
+          }
+          amount += val;
+          estimationAll += temE;
         }
       }
+      setAtom(amount);
+      setEstimation(addEstimation);
     };
     feachData();
   }, []);
-
-  return { atom, won };
+  return { atom, estimation };
 }
 
 const getJson = data => {
@@ -125,7 +142,7 @@ const getRelevanceData = async (address, block) => {
 };
 
 function useGetGol(address) {
-  const { won } = useGetAtom();
+  const { estimation, atom } = useGetAtom(address);
   const [validatorAddress, setValidatorAddress] = useState(null);
   const [consensusAddress, setConsensusAddress] = useState(null);
   const [gol, setGol] = useState({
@@ -158,7 +175,7 @@ function useGetGol(address) {
       const feachData = async () => {
         const relevance = await getRelevanceData(address, block);
         const prize = Math.floor(
-          (won / DISTRIBUTION.takeoff) * DISTRIBUTION.relevance
+          (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * atom
         );
         if (Object.keys(relevance).length > 0) {
           const data = await getRelevance(
@@ -175,13 +192,11 @@ function useGetGol(address) {
       };
       feachData();
     }
-  }, [block, address, won]);
+  }, [block, address, atom]);
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(
-        (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
-      );
+      const prize = Math.floor((DISTRIBUTION.load / TAKEOFF.ATOMsALL) * atom);
       const data = await getLoad(address);
       console.log('getLoad', data * prize);
       if (data > 0 && prize > 0) {
@@ -191,27 +206,24 @@ function useGetGol(address) {
       }
     };
     feachData();
-  }, [address, won]);
+  }, [address, atom]);
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(won);
-      const data = await getTakeoff(address);
-      console.log('getTakeoff', data * prize);
-
-      if (data > 0 && prize > 0) {
-        const cybAbsolute = data * prize;
-        setTotal(stateTotal => stateTotal + cybAbsolute);
+      const prize = Math.floor(estimation * 10 ** 12);
+      console.log('Takeoff', prize);
+      if (prize > 0) {
+        setTotal(stateTotal => stateTotal + prize);
       }
     };
     feachData();
-  }, [address, won]);
+  }, [estimation]);
 
   useEffect(() => {
     if (validatorAddress !== null) {
       const feachData = async () => {
         const prize = Math.floor(
-          (won / DISTRIBUTION.takeoff) * DISTRIBUTION.delegation
+          (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * atom
         );
         const data = await getDelegation(validatorAddress);
         console.log('getDelegation', data * prize);
@@ -222,7 +234,7 @@ function useGetGol(address) {
       };
       feachData();
     }
-  }, [won, validatorAddress]);
+  }, [atom, validatorAddress]);
 
   useEffect(() => {
     if (validatorAddress !== null) {
@@ -242,7 +254,7 @@ function useGetGol(address) {
     if (consensusAddress !== null) {
       const feachData = async () => {
         const prize = Math.floor(
-          (won / DISTRIBUTION.takeoff) * DISTRIBUTION.lifetime
+          (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * atom
         );
         const dataLifeTime = await getGraphQLQuery(
           getQueryLifeTime(consensusAddress)
@@ -262,7 +274,7 @@ function useGetGol(address) {
       };
       feachData();
     }
-  }, [won, consensusAddress]);
+  }, [atom, consensusAddress]);
 
   return total;
 }

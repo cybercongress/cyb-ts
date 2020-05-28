@@ -487,7 +487,6 @@ class ActionBarTakeOff extends Component {
       connectLedger,
     } = this.state;
     const { end, mobile } = this.props;
-    console.log('connectLedger', connectLedger);
 
     if (end <= 0) {
       return (

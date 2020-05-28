@@ -2,14 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { TableEv as Table } from '@cybercongress/gravity';
 import { Loading, TextTable } from '../../../components';
-import { DISTRIBUTION } from '../../../utils/config';
+import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { formatNumber, trimString } from '../../../utils/utils';
 import useLoad from '../hooks/loadHooks';
 
-function LoadTab({ won = 0 }) {
+function LoadTab({ takeoffDonations = 0 }) {
   const { data, loading, sumKarma } = useLoad();
   const currentPrize = Math.floor(
-    (won / DISTRIBUTION.takeoff) * DISTRIBUTION.load
+    (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * takeoffDonations
   );
   if (loading) {
     return (

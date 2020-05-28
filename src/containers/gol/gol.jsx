@@ -294,7 +294,15 @@ class GOL extends React.Component {
 
     if (selected === 'leaderboard') {
       content = (
-        <Route path="/gol/leaderboard" render={() => <LoadTab won={won} />} />
+        <Route
+          path="/gol/leaderboard"
+          render={() => (
+            <LoadTab
+              takeoffDonations={takeoffDonations}
+              estimation={estimation}
+            />
+          )}
+        />
       );
     }
 
