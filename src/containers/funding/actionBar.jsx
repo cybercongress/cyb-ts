@@ -3,24 +3,9 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
+import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER, WP } from '../../utils/config';
+import { getDelegator, downloadObjectAsJson } from '../../utils/utils';
 import {
-  COSMOS,
-  LEDGER,
-  PATTERN_COSMOS,
-  CYBER,
-  TAKEOFF,
-  WP,
-} from '../../utils/config';
-import {
-  getDelegator,
-  downloadObjectAsJson,
-  trimString,
-  getTimeRemaining,
-  formatNumber,
-} from '../../utils/utils';
-import {
-  ContributeATOMs,
-  SendAmount,
   ConnectLadger,
   JsonTransaction,
   Confirmed,
@@ -29,8 +14,6 @@ import {
   ActionBarContentText,
   LinkWindow,
   CheckAddressInfo,
-  Dots,
-  Timer,
 } from '../../components';
 
 const {
@@ -43,10 +26,8 @@ const {
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
   HDPATH,
   LEDGER_OK,
-  LEDGER_NOAPP,
   MEMO,
 } = LEDGER;
 
@@ -60,9 +41,7 @@ const LEDGER_TX_ACOUNT_INFO = 2.2;
 
 const SELECT_PATH = 10;
 
-const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
-
-const ledger = require('../../image/select-pin-nano2.svg');
+const { ADDR_FUNDING, DIVISOR_ATOM } = COSMOS;
 
 class ActionBarTakeOff extends Component {
   constructor(props) {

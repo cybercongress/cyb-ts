@@ -41,6 +41,7 @@ import GolLoad from './containers/gol/pages/load';
 import { isMobileTablet } from './utils/utils';
 
 const IPFS = require('ipfs');
+const DetectRTC = require('detectrtc');
 
 export const history = createBrowserHistory({});
 
@@ -66,9 +67,8 @@ class AppRouter extends React.Component {
     const mobile = isMobileTablet();
     setTypeDeviceProps(mobile);
     this.setState({ loader: false });
-    // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     // if (!mobile) {
-    //   if (!isSafari) {
+    //   if (DetectRTC.isWebRTCSupported) {
     //     await this.initIpfsNode();
     //   } else {
     //     this.setState({ loader: false });
