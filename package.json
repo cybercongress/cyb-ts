@@ -71,6 +71,7 @@
     "core-util-is": "^1.0.2",
     "crypto": "^1.0.1",
     "dateformat": "^3.0.3",
+    "detectrtc": "^1.4.0",
     "dot-prop": "^5.2.0",
     "eslint-config-airbnb-standard": "^3.0.1",
     "eslint-plugin-react-hooks": "^2.2.0",
