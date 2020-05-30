@@ -384,7 +384,7 @@ class ActionBarContainer extends Component {
       stage: STAGE_LEDGER_INIT,
       txType: TXTYPE_UNDELEGATE,
     });
-    this.getLedgerAddress()
+    this.getLedgerAddress();
   };
 
   onClickRestake = async () => {
@@ -392,11 +392,11 @@ class ActionBarContainer extends Component {
       stage: STAGE_LEDGER_INIT,
       txType: TXTYPE_REDELEGATE,
     });
-    this.getLedgerAddress()
+    this.getLedgerAddress();
   };
 
   render() {
-    const { validators, addressLedger, unStake } = this.props;
+    const { validators, addressLedger, unStake, mobile } = this.props;
     const {
       stage,
       ledgerVersion,
@@ -421,6 +421,24 @@ class ActionBarContainer extends Component {
       address.bech32 === addressLedger;
 
     const T_AB = T.actionBar.delegate;
+
+    if (mobile) {
+      return (
+        <ActionBar>
+          <a
+            className="btn"
+            target="_blank"
+            href="https://cybercongress.ai/docs/cyberd/run_validator/"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {T_AB.btnBecome}
+          </a>
+        </ActionBar>
+      );
+    }
 
     if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
       return (

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import ValidatorInfo from './validatorInfo';
 import {
   getValidatorsInfo,
@@ -8,7 +9,7 @@ import {
   selfDelegationShares,
   getDelegators,
 } from '../../utils/search/utils';
-import { getDelegator } from '../../utils/utils';
+import { getDelegator, trimString } from '../../utils/utils';
 import { Loading, Copy } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
@@ -31,7 +32,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
-      minWidth="150px"
+      width="100%"
     >
       {text}
     </Tab>
@@ -223,7 +224,7 @@ class ValidatorsDetails extends React.PureComponent {
       addressLedger,
       unStake,
     } = this.state;
-    const { match } = this.props;
+    const { match, mobile } = this.props;
     const { address } = match.params;
     // console.log('validatorInfo', validatorInfo.consensus_pubkey);
     let content;
@@ -286,12 +287,18 @@ class ValidatorsDetails extends React.PureComponent {
             alignItems="center"
           >
             <Text color="#fff" fontSize="18px">
-              {validatorInfo.operator_address}{' '}
+              {mobile
+                ? trimString(validatorInfo.operator_address, 16, 5)
+                : validatorInfo.operator_address}{' '}
               <Copy text={validatorInfo.operator_address} />
             </Text>
           </Pane>
           <ValidatorInfo data={validatorInfo} marginBottom={20} />
-          <Tablist display="flex" justifyContent="center">
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+            gridGap="10px"
+          >
             <TabBtn
               text="Fans"
               isSelected={selected === 'fans'}
@@ -335,4 +342,10 @@ class ValidatorsDetails extends React.PureComponent {
   }
 }
 
-export default ValidatorsDetails;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(ValidatorsDetails);

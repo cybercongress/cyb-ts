@@ -30,6 +30,7 @@ const TableDiscipline = ({
   consensusAddress,
   takeoffDonations,
   estimation,
+  mobile,
 }) => {
   try {
     const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
@@ -45,6 +46,7 @@ const TableDiscipline = ({
               backgroundColor: '#000',
               borderBottom: '1px solid #ffffff80',
               paddingBottom: '15px',
+              height: 'auto',
             }}
           >
             <Table.TextHeaderCell textAlign="center">
@@ -62,16 +64,20 @@ const TableDiscipline = ({
                 Current CYB reward
               </Text>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="18px" color="#fff">
-                CYB won
-              </Text>
-            </Table.TextHeaderCell>
-            <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="18px" color="#fff">
-                CYB won, %
-              </Text>
-            </Table.TextHeaderCell>
+            {!mobile && (
+              <>
+                <Table.TextHeaderCell textAlign="center">
+                  <Text fontSize="18px" color="#fff">
+                    CYB won
+                  </Text>
+                </Table.TextHeaderCell>
+                <Table.TextHeaderCell textAlign="center">
+                  <Text fontSize="18px" color="#fff">
+                    CYB won, %
+                  </Text>
+                </Table.TextHeaderCell>
+              </>
+            )}
           </Table.Head>
           <Table.Body
             style={{

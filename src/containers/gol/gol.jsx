@@ -236,6 +236,8 @@ class GOL extends React.Component {
       estimation,
     } = this.state;
 
+    const { mobile } = this.props;
+
     console.log(takeoffDonations);
 
     if (loading) {
@@ -306,7 +308,7 @@ class GOL extends React.Component {
           </Pane>
           <Pane
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
             gridGap="20px"
             width="100%"
             marginY={20}
@@ -362,14 +364,17 @@ class GOL extends React.Component {
               consensusAddress={consensusAddress}
               takeoffDonations={takeoffDonations}
               estimation={estimation}
+              mobile={mobile}
             />
           </Pane>
         </main>
-        <ActionBarContainer
-          addAddress={addAddress}
-          cleatState={this.cleatState}
-          updateFunc={this.checkAddressLocalStorage}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            addAddress={addAddress}
+            cleatState={this.cleatState}
+            updateFunc={this.checkAddressLocalStorage}
+          />
+        )}
       </div>
     );
   }
@@ -383,6 +388,7 @@ const mapStateToProps = store => {
     delegation: store.gol.delegation,
     lifetime: store.gol.lifetime,
     euler4Rewards: store.gol.euler4Rewards,
+    mobile: store.settings.mobile,
   };
 };
 
