@@ -4,28 +4,12 @@ import { TableEv as Table } from '@cybercongress/gravity';
 import { Loading, TextTable } from '../../../components';
 import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { formatNumber, trimString } from '../../../utils/utils';
-import useLoad from '../hooks/loadHooks';
+import setLeaderboard from '../hooks/leaderboard';
 
 function LoadTab({ takeoffDonations = 0 }) {
-  const { data, loading, sumKarma } = useLoad();
-  const currentPrize = Math.floor(
-    (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * takeoffDonations
-  );
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <Loading />
-      </div>
-    );
-  }
+  const data = setLeaderboard(takeoffDonations);
+
+  console.log('LoadTab', data);
 
   return (
     <Table width="100%">
@@ -51,7 +35,7 @@ function LoadTab({ takeoffDonations = 0 }) {
           <TextTable>CYB won</TextTable>
         </Table.TextHeaderCell>
       </Table.Head>
-      <Table.Body
+      {/* <Table.Body
         style={{
           backgroundColor: '#000',
           overflowY: 'hidden',
@@ -99,7 +83,7 @@ function LoadTab({ takeoffDonations = 0 }) {
             </Table.Row>
           );
         })}
-      </Table.Body>
+      </Table.Body> */}
     </Table>
   );
 }

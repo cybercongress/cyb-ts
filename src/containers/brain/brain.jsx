@@ -35,7 +35,6 @@ import {
   MainTab,
   CybernomicsTab,
   KnowledgeTab,
-  CommunityTab,
   AppsTab,
   HelpTab,
   PathTab,
@@ -140,11 +139,6 @@ class Brain extends React.Component {
       pathname.match(/government/gm).length > 0
     ) {
       this.select('government');
-    } else if (
-      pathname.match(/community/gm) &&
-      pathname.match(/community/gm).length > 0
-    ) {
-      this.select('community');
     } else if (
       pathname.match(/apps/gm) &&
       pathname.match(/apps/gm).length > 0
@@ -432,12 +426,6 @@ class Brain extends React.Component {
       );
     }
 
-    if (selected === 'community') {
-      content = (
-        <Route path="/brain/community" render={() => <CommunityTab />} />
-      );
-    }
-
     if (selected === 'apps') {
       content = <Route path="/brain/apps" render={() => <AppsTab />} />;
     }
@@ -518,11 +506,6 @@ class Brain extends React.Component {
               text="Help"
               isSelected={selected === 'help'}
               to="/brain/help"
-            />
-            <TabBtn
-              text="Community"
-              isSelected={selected === 'community'}
-              to="/brain/community"
             />
           </Tablist>
           <Pane
