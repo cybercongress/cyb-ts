@@ -46,8 +46,8 @@ export const MenuButton = ({
             height: 20,
             position: 'absolute',
             bottom: bottomBug,
-            left: positionBugLeft ? 'unset' : '100%',
-            right: positionBugLeft ? '100%' : 'unset',
+            left: positionBugLeft ? 'unset' : '75%',
+            right: positionBugLeft ? '75%' : 'unset',
           }}
         />
       </Pane>
