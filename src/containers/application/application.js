@@ -256,7 +256,7 @@ class App extends Component {
                   width: '100%',
                   height: 41,
                   fontSize: 20,
-                  boxShadow: `0 0 5px 0 #00ffa387`,
+                  boxShadow: `0 0 8px 2px #00ffa387`,
                   textAlign: 'center',
                   position: 'absolute',
                   top: '50%',

@@ -185,6 +185,7 @@ class SearchResults extends React.Component {
       resultNull,
       drop,
     } = this.state;
+    const { mobile } = this.props;
     // console.log(query);
 
     const searchItems = [];
@@ -228,9 +229,7 @@ class SearchResults extends React.Component {
           <SearchItem
             hash={`${query}_PATTERN_CYBER`}
             text="Explore details of contract"
-            contentApp={
-              <Pane color="#000">{trimString(query, 8, 5)}</Pane>
-            }
+            contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
             status="sparkApp"
           />
         </Link>
@@ -257,9 +256,7 @@ class SearchResults extends React.Component {
             hash={`${query}_PATTERN_TX`}
             text="Explore details of tx "
             status="sparkApp"
-            contentApp={
-              <Pane color="#000">{trimString(query, 4, 4)}</Pane>
-            }
+            contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
           />
         </Link>
       );
@@ -355,14 +352,16 @@ class SearchResults extends React.Component {
           </Pane>
         </main>
 
-        <ActionBarContainer
-          home={!result}
-          valueSearchInput={query}
-          link={searchResults.length === 0 && result}
-          keywordHash={keywordHash}
-          onCklicBtnSearch={this.onCklicBtn}
-          update={this.getParamsQuery}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            home={!result}
+            valueSearchInput={query}
+            link={searchResults.length === 0 && result}
+            keywordHash={keywordHash}
+            onCklicBtnSearch={this.onCklicBtn}
+            update={this.getParamsQuery}
+          />
+        )}
       </div>
     );
   }
@@ -371,6 +370,7 @@ class SearchResults extends React.Component {
 const mapStateToProps = store => {
   return {
     node: store.ipfs.ipfs,
+    mobile: store.settings.mobile,
   };
 };
 

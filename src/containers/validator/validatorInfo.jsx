@@ -54,10 +54,20 @@ const ValidatorInfo = ({ data }) => {
   const { moniker, identity, website, details } = data.description;
 
   return (
-    <ContainerCard styles={{ marginBottom: '50px' }} col={3}>
+    <Pane
+      marginBottom="50px"
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridGap="10px"
+    >
       <Card
         title="Voting Power"
         value={`${formatNumber(data.votingPower, 3)} %`}
+        stylesContainer={{
+          width: '100%',
+          maxWidth: 'unset',
+          margin: 0,
+        }}
       />
       <Pane display="flex" flexDirection="column" alignItems="center">
         <Pane
@@ -79,8 +89,13 @@ const ValidatorInfo = ({ data }) => {
       <Card
         title="Uptime"
         value={<UptimeHook accountUser={data.consensus_pubkey} />}
+        stylesContainer={{
+          width: '100%',
+          maxWidth: 'unset',
+          margin: 0,
+        }}
       />
-    </ContainerCard>
+    </Pane>
   );
 };
 

@@ -15,7 +15,7 @@ class Home extends PureComponent {
       searchResults: [],
       loading: false,
       targetColor: false,
-      boxShadow: 3,
+      boxShadow: 10,
       keywordHash: '',
       resultNull: false,
       query: '',
@@ -114,7 +114,7 @@ class Home extends PureComponent {
     // consoleelement = document.getElementById('some-id');.log(width, height);
     // console.log(`X coords: ${x}, Y coords: ${y}`);
     if (width > hypot) {
-      boxShadow = ((width - hypot) / 100) * 2.5;
+      boxShadow = ((width - hypot) / 100) * 3;
     }
 
     if (boxShadow < 5) {
@@ -174,7 +174,7 @@ class Home extends PureComponent {
                 width: '60%',
                 height: 41,
                 fontSize: 20,
-                boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
+                boxShadow: `0 0 ${boxShadow}px 1.5px #00ffa387`,
                 textAlign: 'center',
               }}
               value={valueSearchInput}

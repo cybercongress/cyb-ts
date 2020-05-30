@@ -11,6 +11,7 @@ import {
   Text,
   Icon,
 } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 
 import { Link, Route } from 'react-router-dom';
 
@@ -286,6 +287,7 @@ class Validators extends Component {
       selected,
       unStake,
     } = this.state;
+    const { mobile } = this.props;
 
     T.setLanguage(language);
 
@@ -327,7 +329,7 @@ class Validators extends Component {
             <Table.TextCell
               paddingX={5}
               textAlign="start"
-              flexBasis={60}
+              flexBasis={mobile ? 30 : 60}
               flex="none"
               isNumber
             >
@@ -336,9 +338,7 @@ class Validators extends Component {
             <Table.TextCell paddingX={5}>
               <TextTable>
                 <StatusTooltip status={validator.status} />
-                <Link
-                  to={`/network/euler/hero/${validator.operator_address}`}
-                >
+                <Link to={`/network/euler/hero/${validator.operator_address}`}>
                   {validator.description.moniker}
                 </Link>
               </TextTable>
@@ -367,49 +367,53 @@ class Validators extends Component {
                 </Tooltip>
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end" isNumber>
-              <TextTable>
-                <FormatNumber
-                  number={validator.stakingPool}
-                  fontSizeDecimal={11.5}
-                />
-                &ensp;%
-              </TextTable>
-            </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end">
-              <TextTable>
-                <FormatNumber
-                  number={validator.shares}
-                  fontSizeDecimal={11.5}
-                />
-                &ensp;%
-              </TextTable>
-            </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end" isNumber>
-              <Tooltip
-                content={`${formatNumber(
-                  Math.floor(
-                    parseFloat(
-                      validator.delegation !== undefined
-                        ? validator.delegation.amount
-                        : 0
-                    )
-                  )
-                )} 
+            {!mobile && (
+              <>
+                <Table.TextCell paddingX={5} textAlign="end" isNumber>
+                  <TextTable>
+                    <FormatNumber
+                      number={validator.stakingPool}
+                      fontSizeDecimal={11.5}
+                    />
+                    &ensp;%
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell paddingX={5} textAlign="end">
+                  <TextTable>
+                    <FormatNumber
+                      number={validator.shares}
+                      fontSizeDecimal={11.5}
+                    />
+                    &ensp;%
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell paddingX={5} textAlign="end" isNumber>
+                  <Tooltip
+                    content={`${formatNumber(
+                      Math.floor(
+                        parseFloat(
+                          validator.delegation !== undefined
+                            ? validator.delegation.amount
+                            : 0
+                        )
+                      )
+                    )} 
                 ${CYBER.DENOM_CYBER.toUpperCase()}`}
-              >
-                <TextTable>
-                  {formatCurrency(
-                    parseFloat(
-                      validator.delegation !== undefined
-                        ? validator.delegation.amount
-                        : 0
-                    ),
-                    CYBER.DENOM_CYBER.toLocaleUpperCase()
-                  )}
-                </TextTable>
-              </Tooltip>
-            </Table.TextCell>
+                  >
+                    <TextTable>
+                      {formatCurrency(
+                        parseFloat(
+                          validator.delegation !== undefined
+                            ? validator.delegation.amount
+                            : 0
+                        ),
+                        CYBER.DENOM_CYBER.toLocaleUpperCase()
+                      )}
+                    </TextTable>
+                  </Tooltip>
+                </Table.TextCell>
+              </>
+            )}
             {showJailed && (
               <Table.TextCell paddingX={5} flex={1} textAlign="end" isNumber>
                 <TextTable>{validator.height}</TextTable>
@@ -491,7 +495,7 @@ class Validators extends Component {
               <Table.TextHeaderCell
                 paddingX={5}
                 textAlign="center"
-                flexBasis={60}
+                flexBasis={mobile ? 30 : 60}
                 flex="none"
               >
                 <TextTable fontSize={14}>#</TextTable>
@@ -509,25 +513,34 @@ class Validators extends Component {
               <Table.TextHeaderCell paddingX={5} textAlign="center">
                 <TextTable fontSize={13}>{T.validators.table.power}</TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="center">
-                <TextTable fontSize={13}>Power, %</TextTable>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="center">
-                <TextTable fontSize={14}>
-                  {T.validators.table.selfProcent}
-                </TextTable>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="center">
-                <TextTable fontSize={14}>
-                  {T.validators.table.bondedTokens}{' '}
-                  <Tooltip
-                    position="bottom"
-                    content="Amount of EUL ( tokens you bonded to validator in )"
-                  >
-                    <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-                  </Tooltip>
-                </TextTable>
-              </Table.TextHeaderCell>
+              {!mobile && (
+                <>
+                  {' '}
+                  <Table.TextHeaderCell paddingX={5} textAlign="center">
+                    <TextTable fontSize={13}>Power, %</TextTable>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell paddingX={5} textAlign="center">
+                    <TextTable fontSize={14}>
+                      {T.validators.table.selfProcent}
+                    </TextTable>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell paddingX={5} textAlign="center">
+                    <TextTable fontSize={14}>
+                      {T.validators.table.bondedTokens}{' '}
+                      <Tooltip
+                        position="bottom"
+                        content="Amount of EUL ( tokens you bonded to validator in )"
+                      >
+                        <Icon
+                          icon="info-sign"
+                          color="#3ab793d4"
+                          marginLeft={5}
+                        />
+                      </Tooltip>
+                    </TextTable>
+                  </Table.TextHeaderCell>{' '}
+                </>
+              )}
               {showJailed && (
                 <Table.TextHeaderCell paddingX={5} flex={1} textAlign="end">
                   <TextTable fontSize={14}>
@@ -553,10 +566,17 @@ class Validators extends Component {
           validatorsAll={validators}
           addressLedger={addressLedger}
           unStake={unStake}
+          mobile={mobile}
         />
       </div>
     );
   }
 }
 
-export default Validators;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(Validators);
