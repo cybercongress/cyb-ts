@@ -353,7 +353,7 @@ class Brain extends React.Component {
       gol,
       donation,
     } = this.state;
-    const { block } = this.props;
+    const { block, mobile } = this.props;
 
     let content;
 
@@ -518,10 +518,12 @@ class Brain extends React.Component {
             {content}
           </Pane>
         </main>
-        <ActionBarContainer
-          addAddress={addAddress}
-          updateFunc={this.checkAddressLocalStorage}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            addAddress={addAddress}
+            updateFunc={this.checkAddressLocalStorage}
+          />
+        )}
       </div>
     );
   }
@@ -530,6 +532,7 @@ class Brain extends React.Component {
 const mapStateToProps = store => {
   return {
     block: store.block.block,
+    mobile: store.settings.mobile,
   };
 };
 

@@ -37,6 +37,18 @@ export const MenuButton = ({
             src={imgLogo || stausImgCyb}
           />
         </Link>
+        <img
+          src={bug}
+          alt="bug"
+          style={{
+            // width: 15,
+            height: 20,
+            position: 'absolute',
+            bottom: bottomBug,
+            left: positionBugLeft ? 'unset' : '75%',
+            right: positionBugLeft ? '75%' : 'unset',
+          }}
+        />
       </Pane>
     </Pane>
 );

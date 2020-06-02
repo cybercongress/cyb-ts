@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Text, TableEv as Table } from '@cybercongress/gravity';
 import { formatNumber } from '../../../utils/utils';
 
@@ -8,6 +9,7 @@ const RowTable = ({
   currentPrize,
   cybWonAbsolute,
   cybWonPercent,
+  mobile,
 }) => (
   <Table.Row borderBottom="none">
     <Table.TextCell>
@@ -26,19 +28,30 @@ const RowTable = ({
         {formatNumber(currentPrize)}
       </Text>
     </Table.TextCell>
-    <Table.TextCell textAlign="end">
-      <Text fontSize="16px" color="#fff">
-        {/* {Math.floor((won / DISTRIBUTION.takeoff) * DISTRIBUTION[key])} */}
-        {cybWonAbsolute}
-      </Text>
-    </Table.TextCell>
-    <Table.TextCell textAlign="end">
-      <Text fontSize="16px" color="#fff">
-        {/* {Math.floor((won / DISTRIBUTION.takeoff) * DISTRIBUTION[key])} */}
-        {cybWonPercent}
-      </Text>
-    </Table.TextCell>
+    {!mobile && (
+      <>
+        {' '}
+        <Table.TextCell textAlign="end">
+          <Text fontSize="16px" color="#fff">
+            {/* {Math.floor((won / DISTRIBUTION.takeoff) * DISTRIBUTION[key])} */}
+            {cybWonAbsolute}
+          </Text>
+        </Table.TextCell>
+        <Table.TextCell textAlign="end">
+          <Text fontSize="16px" color="#fff">
+            {/* {Math.floor((won / DISTRIBUTION.takeoff) * DISTRIBUTION[key])} */}
+            {cybWonPercent}
+          </Text>
+        </Table.TextCell>
+      </>
+    )}
   </Table.Row>
 );
 
-export default RowTable;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(RowTable);

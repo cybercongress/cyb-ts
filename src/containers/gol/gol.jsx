@@ -39,7 +39,7 @@ const test = {
   'tm.event': ['Tx'],
 };
 
-function GOL({ setGolTakeOffProps }) {
+function GOL({ setGolTakeOffProps, mobile }) {
   const {
     data: dataLeaderboard,
     loading: loadingLeaderboard,
@@ -240,6 +240,7 @@ function GOL({ setGolTakeOffProps }) {
         consensusAddress={address.consensusAddress}
         takeoffDonations={takeoff.amount}
         estimation={takeoff.estimation}
+        mobile={mobile}
       />
     );
   }
@@ -362,13 +363,21 @@ function GOL({ setGolTakeOffProps }) {
           {content}
         </Pane>
       </main>
-      <ActionBarContainer
-        addAddress={addAddress}
-        updateFunc={checkAddressLocalStorage}
-      />
+      {!mobile && (
+        <ActionBarContainer
+          addAddress={addAddress}
+          updateFunc={checkAddressLocalStorage}
+        />
+      )}
     </div>
   );
 }
+
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
 
 const mapDispatchprops = dispatch => {
   return {
@@ -377,4 +386,4 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(GOL);
+export default connect(mapStateToProps, mapDispatchprops)(GOL);
