@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import Web3Utils from 'web3-utils';
 import { Link } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -9,6 +10,7 @@ import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import withWeb3 from '../../components/web3/withWeb3';
 
 import { LEDGER, COSMOS } from '../../utils/config';
 import { i18n } from '../../i18n/en';
@@ -17,9 +19,10 @@ import {
   getTotalEUL,
   getImportLink,
   getAccountBandwidth,
+  getGraphQLQuery,
 } from '../../utils/search/utils';
 import { PocketCard } from './components';
-import { PubkeyCard, GolCard, ImportLinkLedger } from './card';
+import { PubkeyCard, GolCard, ImportLinkLedger, GolBalance } from './card';
 
 const T = new LocalizedStrings(i18n);
 
@@ -33,6 +36,46 @@ const {
   STAGE_ERROR,
   LEDGER_VERSION_REQ,
 } = LEDGER;
+
+const QueryAddress = address =>
+  `
+  query MyQuery {
+    cyberlink(where: {subject: {_eq: "${address}"}}) {
+      object_from
+      object_to
+    }
+  }`;
+
+function flatten(data, outputArray) {
+  data.forEach(element => {
+    if (Array.isArray(element)) {
+      flatten(element, outputArray);
+    } else {
+      outputArray.push(element);
+    }
+  });
+}
+
+const comparer = otherArray => {
+  return current => {
+    return (
+      otherArray.filter(other => {
+        return (
+          other.object_from === current.from && other.object_to === current.to
+        );
+      }).length === 0
+    );
+  };
+};
+
+const groupLink = linkArr => {
+  const link = [];
+  const size = 7;
+  for (let i = 0; i < Math.ceil(linkArr.length / size); i += 1) {
+    link[i] = linkArr.slice(i * size, i * size + size);
+  }
+  return link;
+};
 
 class Wallet extends React.Component {
   constructor(props) {
@@ -49,17 +92,70 @@ class Wallet extends React.Component {
       addAddress: false,
       loading: true,
       accounts: null,
+      accountsETH: null,
       link: null,
       selectedIndex: '',
       importLinkCli: false,
       linkSelected: null,
       selectCard: '',
+      balanceEthAccount: {
+        eth: 0,
+        gol: 0,
+      },
     };
   }
 
   async componentDidMount() {
+    const { accounts, web3 } = this.props;
+
+    await this.setState({
+      accountsETH: accounts,
+    });
+
+    if (accounts && accounts !== null) {
+      this.getBalanceEth();
+    }
+
     await this.checkAddressLocalStorage();
+    if (web3.givenProvider !== null) {
+      this.accountsChanged();
+    }
   }
+
+  accountsChanged = () => {
+    window.ethereum.on('accountsChanged', async accountsChanged => {
+      const defaultAccounts = accountsChanged[0];
+      const tmpAccount = defaultAccounts;
+      this.setState({
+        accountsETH: tmpAccount,
+      });
+      this.getBalanceEth();
+    });
+  };
+
+  getBalanceEth = async () => {
+    const { accountsETH } = this.state;
+    const { web3, contractToken } = this.props;
+    const balanceEthAccount = {
+      eth: 0,
+      gol: 0,
+    };
+    console.log(accountsETH);
+
+    if (accountsETH && accountsETH !== null) {
+      const responseGol = await contractToken.methods
+        .balanceOf(accountsETH)
+        .call();
+      balanceEthAccount.gol = responseGol;
+      const responseEth = await web3.eth.getBalance(accountsETH);
+      const eth = Web3Utils.fromWei(responseEth, 'ether');
+      balanceEthAccount.eth = eth;
+    }
+
+    this.setState({
+      balanceEthAccount,
+    });
+  };
 
   checkAddressLocalStorage = async () => {
     const { setBandwidthProps } = this.props;
@@ -103,38 +199,64 @@ class Wallet extends React.Component {
     }
   };
 
-  getLocalStorageLink = () => {
+  getLocalStorageLink = async () => {
+    const { accounts } = this.state;
     const localStorageStoryLink = localStorage.getItem('linksImport');
+    let linkUser = [];
+    const dataLink = await getGraphQLQuery(QueryAddress(accounts.cyber.bech32));
+
+    if (dataLink.cyberlink && dataLink.cyberlink.length > 0) {
+      linkUser = dataLink.cyberlink;
+    }
 
     if (localStorageStoryLink === null) {
-      this.getLink();
+      this.getLink(linkUser);
     } else {
-      const link = JSON.parse(localStorageStoryLink);
-      if (Object.keys(link).length > 0) {
-        this.setState({ link });
+      const linkData = JSON.parse(localStorageStoryLink);
+      if (linkData.length > 0) {
+        const flattened = [];
+
+        flatten(linkData, flattened);
+        let onlyInB = [];
+        if (linkUser.length > 0) {
+          onlyInB = flattened.filter(comparer(linkUser));
+        }
+        if (onlyInB.length > 0) {
+          const link = groupLink(onlyInB);
+          this.setState({ link });
+        } else {
+          this.setState({ link: null });
+        }
       } else {
         this.setState({ link: null });
       }
     }
   };
 
-  getLink = async () => {
+  getLink = async dataLinkUser => {
     const { accounts } = this.state;
     const dataLink = await getImportLink(accounts.cyber.bech32);
-    const link = [];
+    let link = [];
 
     if (dataLink !== null) {
-      const size = 7;
-      for (let i = 0; i < Math.ceil(dataLink.length / size); i += 1) {
-        link[i] = dataLink.slice(i * size, i * size + size);
+      let onlyInB = [];
+      if (dataLinkUser.length > 0) {
+        onlyInB = dataLink.filter(comparer(dataLinkUser));
+      }
+      if (onlyInB.length > 0) {
+        link = groupLink(onlyInB);
       }
 
-      console.log(link);
-
       localStorage.setItem('linksImport', JSON.stringify(link));
-      this.setState({
-        link,
-      });
+      if (link.length > 0) {
+        this.setState({
+          link,
+        });
+      } else {
+        this.setState({
+          link: null,
+        });
+      }
     }
   };
 
@@ -249,33 +371,18 @@ class Wallet extends React.Component {
     });
   };
 
-  onClickCardPubKey = () => {
+  onClickSelect = select => {
     const { selectCard } = this.state;
-    let select = 'pubkey';
+    let selectd = select;
 
     if (selectCard === select) {
-      select = '';
+      selectd = '';
     }
 
     this.setState({
       linkSelected: null,
       selectedIndex: '',
-      selectCard: select,
-    });
-  };
-
-  onClickCardGol = () => {
-    const { selectCard } = this.state;
-    let select = 'gol';
-
-    if (selectCard === select) {
-      select = '';
-    }
-
-    this.setState({
-      linkSelected: null,
-      selectedIndex: '',
-      selectCard: select,
+      selectCard: selectd,
     });
   };
 
@@ -293,7 +400,10 @@ class Wallet extends React.Component {
       selectedIndex,
       linkSelected,
       selectCard,
+      balanceEthAccount,
+      accountsETH,
     } = this.state;
+    const { web3 } = this.props;
 
     let countLink = 0;
     if (link !== null) {
@@ -361,14 +471,39 @@ class Wallet extends React.Component {
               height="100%"
             >
               <PubkeyCard
-                onClick={this.onClickCardPubKey}
+                onClick={() => this.onClickSelect('pubkey')}
                 select={selectCard === 'pubkey'}
                 pocket={pocket}
+                marginBottom={20}
               />
+
+              {accountsETH === undefined && web3.givenProvider !== null && (
+                <PocketCard
+                  marginBottom={20}
+                  select={selectCard === 'сonnectEth'}
+                  onClick={() => this.onClickSelect('сonnectEth')}
+                >
+                  <Text fontSize="16px" color="#fff">
+                    Connect ETH account
+                  </Text>
+                </PocketCard>
+              )}
+
+              {accountsETH !== undefined && web3.givenProvider !== null && (
+                <GolBalance
+                  balance={balanceEthAccount}
+                  accounts={accountsETH}
+                  pocket={pocket}
+                  marginBottom={20}
+                  onClick={() => this.onClickSelect('accountsETH')}
+                  select={selectCard === 'accountsETH'}
+                />
+              )}
+
               <GolCard
-                onClick={this.onClickCardGol}
+                onClick={() => this.onClickSelect('gol')}
                 select={selectCard === 'gol'}
-                marginY={20}
+                marginBottom={20}
               />
               {link !== null && (
                 <PocketCard
@@ -403,6 +538,8 @@ class Wallet extends React.Component {
             linkSelected={linkSelected}
             selectedIndex={selectedIndex}
             updateAddress={this.checkAddressLocalStorage}
+            web3={web3}
+            accountsETH={accountsETH}
             // onClickSend={}
           />
         </div>
@@ -419,4 +556,4 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(Wallet);
+export default connect(null, mapDispatchprops)(withWeb3(Wallet));

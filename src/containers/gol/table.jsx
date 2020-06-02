@@ -39,7 +39,7 @@ const TableDiscipline = ({
       return <Dots />;
     }
     return (
-      <Pane width="100%">
+      <Pane marginTop={15} width="100%">
         <Table>
           <Table.Head
             style={{
@@ -50,17 +50,17 @@ const TableDiscipline = ({
             }}
           >
             <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="18px" color="#fff">
+              <Text fontSize="16px" color="#fff">
                 Discipline
               </Text>
             </Table.TextHeaderCell>
             <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="18px" color="#fff">
+              <Text fontSize="16px" color="#fff">
                 Max CYB reward
               </Text>
             </Table.TextHeaderCell>
             <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="18px" color="#fff">
+              <Text fontSize="16px" color="#fff">
                 Current CYB reward
               </Text>
             </Table.TextHeaderCell>

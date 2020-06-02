@@ -33,11 +33,11 @@ import ActionBarContainer from './actionBarContainer';
 import {
   GovernmentTab,
   MainTab,
-  ConsensusTab,
   CybernomicsTab,
   KnowledgeTab,
-  CommunityTab,
-  DocsTab,
+  AppsTab,
+  HelpTab,
+  PathTab,
 } from './tabs';
 
 const { DIVISOR_CYBER_G } = CYBER;
@@ -48,7 +48,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={10}
+      paddingX={5}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -135,25 +135,25 @@ class Brain extends React.Component {
     ) {
       this.select('knowledge');
     } else if (
-      pathname.match(/consensus/gm) &&
-      pathname.match(/consensus/gm).length > 0
-    ) {
-      this.select('consensus');
-    } else if (
       pathname.match(/government/gm) &&
       pathname.match(/government/gm).length > 0
     ) {
       this.select('government');
     } else if (
-      pathname.match(/community/gm) &&
-      pathname.match(/community/gm).length > 0
+      pathname.match(/apps/gm) &&
+      pathname.match(/apps/gm).length > 0
     ) {
-      this.select('community');
+      this.select('apps');
     } else if (
-      pathname.match(/docs/gm) &&
-      pathname.match(/docs/gm).length > 0
+      pathname.match(/help/gm) &&
+      pathname.match(/help/gm).length > 0
     ) {
-      this.select('docs');
+      this.select('help');
+    } else if (
+      pathname.match(/path/gm) &&
+      pathname.match(/path/gm).length > 0
+    ) {
+      this.select('path');
     } else {
       this.select('main');
     }
@@ -409,12 +409,14 @@ class Brain extends React.Component {
       );
     }
 
-    if (selected === 'consensus') {
+    if (selected === 'government') {
       content = (
         <Route
-          path="/brain/consensus"
+          path="/brain/government"
           render={() => (
-            <ConsensusTab
+            <GovernmentTab
+              proposals={proposals}
+              communityPool={communityPool}
               activeValidatorsCount={activeValidatorsCount}
               stakedCyb={stakedCyb}
               inlfation={inlfation}
@@ -424,28 +426,16 @@ class Brain extends React.Component {
       );
     }
 
-    if (selected === 'government') {
-      content = (
-        <Route
-          path="/brain/government"
-          render={() => (
-            <GovernmentTab
-              proposals={proposals}
-              communityPool={communityPool}
-            />
-          )}
-        />
-      );
+    if (selected === 'apps') {
+      content = <Route path="/brain/apps" render={() => <AppsTab />} />;
     }
 
-    if (selected === 'community') {
-      content = (
-        <Route path="/brain/community" render={() => <CommunityTab />} />
-      );
+    if (selected === 'help') {
+      content = <Route path="/brain/help" render={() => <HelpTab />} />;
     }
 
-    if (selected === 'docs') {
-      content = <Route path="/brain/docs" render={() => <DocsTab />} />;
+    if (selected === 'path') {
+      content = <Route path="/brain/path" render={() => <PathTab />} />;
     }
 
     return (
@@ -482,7 +472,7 @@ class Brain extends React.Component {
 
           <Tablist
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
             gridGap="10px"
             marginTop={25}
           >
@@ -492,14 +482,14 @@ class Brain extends React.Component {
               to="/brain/knowledge"
             />
             <TabBtn
+              text="Path"
+              isSelected={selected === 'path'}
+              to="/brain/path"
+            />
+            <TabBtn
               text="Cybernomics"
               isSelected={selected === 'cybernomics'}
               to="/brain/cybernomics"
-            />
-            <TabBtn
-              text="Consensus"
-              isSelected={selected === 'consensus'}
-              to="/brain/consensus"
             />
             <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
             <TabBtn
@@ -508,14 +498,14 @@ class Brain extends React.Component {
               to="/brain/government"
             />
             <TabBtn
-              text="Docs & Code"
-              isSelected={selected === 'docs'}
-              to="/brain/docs"
+              text="Apps"
+              isSelected={selected === 'apps'}
+              to="/brain/apps"
             />
             <TabBtn
-              text="Community"
-              isSelected={selected === 'community'}
-              to="/brain/community"
+              text="Help"
+              isSelected={selected === 'help'}
+              to="/brain/help"
             />
           </Tablist>
           <Pane

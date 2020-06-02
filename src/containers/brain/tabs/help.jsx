@@ -5,7 +5,7 @@ import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import { WP } from '../../../utils/config';
 
-function DocsTab() {
+function HelpTab() {
   return (
     <>
       <LinkWindow to="https://github.com/cybercongress/congress/blob/master/ecosystem/ELI-5%20FAQ.md">
@@ -60,7 +60,7 @@ function DocsTab() {
           link
         />
       </LinkWindow>
-      <LinkWindow to="https://github.com/cybercongress/go-cyber">
+      <LinkWindow to="https://cybercongress.ai/post/">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
@@ -69,11 +69,11 @@ function DocsTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="go-cyber"
+          title="Blog"
           link
         />
       </LinkWindow>
-      <LinkWindow to="https://github.com/cybercongress/dot-cyber">
+      <LinkWindow to="https://t.me/fuckgoogle">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
@@ -82,7 +82,59 @@ function DocsTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="dot-cyber"
+          title="Telegram"
+          link
+        />
+      </LinkWindow>
+      <LinkWindow to="https://ai.cybercongress.ai/">
+        <CardStatisics
+          // title="Homestead"
+          styleContainer={{
+            justifyContent: 'center',
+            padding: '65px 0',
+            fontSize: '26px',
+          }}
+          styleTitle={{ fontSize: '26px' }}
+          title="Forum"
+          link
+        />
+      </LinkWindow>
+      <LinkWindow to="https://www.reddit.com/r/cybercongress/">
+        <CardStatisics
+          // title="Homestead"
+          styleContainer={{
+            justifyContent: 'center',
+            padding: '65px 0',
+            fontSize: '26px',
+          }}
+          styleTitle={{ fontSize: '26px' }}
+          title="Reddit"
+          link
+        />
+      </LinkWindow>
+      <LinkWindow to="https://twitter.com/cyber_devs">
+        <CardStatisics
+          // title="Homestead"
+          styleContainer={{
+            justifyContent: 'center',
+            padding: '65px 0',
+            fontSize: '26px',
+          }}
+          styleTitle={{ fontSize: '26px' }}
+          title="Twitter"
+          link
+        />
+      </LinkWindow>
+      <LinkWindow to="https://www.youtube.com/channel/UCUfxwbONrtEFeCHOA3gHT-g">
+        <CardStatisics
+          // title="Homestead"
+          styleContainer={{
+            justifyContent: 'center',
+            padding: '65px 0',
+            fontSize: '26px',
+          }}
+          styleTitle={{ fontSize: '26px' }}
+          title="Cyberacademy"
           link
         />
       </LinkWindow>
@@ -90,4 +142,4 @@ function DocsTab() {
   );
 }
 
-export default DocsTab;
+export default HelpTab;

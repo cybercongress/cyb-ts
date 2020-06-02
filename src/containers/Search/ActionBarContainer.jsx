@@ -13,6 +13,7 @@ import {
   Cyberlink,
   TransactionError,
   ActionBarContentText,
+  Dots,
   CheckAddressInfo,
 } from '../../components';
 
@@ -167,8 +168,8 @@ class ActionBarContainer extends Component {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
       this.setState({ addressLocalStor: address });
-      this.getBandwidth();
-      this.getLinkPrice();
+      // this.getBandwidth();
+      // this.getLinkPrice();
     } else {
       this.setState({
         addressLocalStor: null,
@@ -211,9 +212,7 @@ class ActionBarContainer extends Component {
   };
 
   stageReady = () => {
-    this.setState({
-      stage: STAGE_READY,
-    });
+    this.link();
   };
 
   getNetworkId = async () => {
@@ -234,6 +233,7 @@ class ActionBarContainer extends Component {
 
       this.setState({
         addressInfo,
+        stage: STAGE_READY,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -241,51 +241,6 @@ class ActionBarContainer extends Component {
         // this just means we haven't found the device yet...
         // eslint-disable-next-line
         console.error('getAddressInfo', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  getLinkPrice = async () => {
-    let linkPrice = 0;
-
-    const data = await getCurrentBandwidthPrice();
-
-    if (data !== null) {
-      linkPrice = data * 400;
-    }
-
-    this.setState({
-      linkPrice,
-    });
-  };
-
-  getBandwidth = async () => {
-    try {
-      const { addressLocalStor } = this.state;
-
-      const bandwidth = {
-        remained: 0,
-        max_value: 0,
-      };
-
-      let data = null;
-
-      if (addressLocalStor !== null) {
-        data = await getAccountBandwidth(addressLocalStor.bech32);
-
-        if (data !== null) {
-          bandwidth.remained = data.remained;
-          bandwidth.max_value = data.max_value;
-        }
-      }
-      this.setState({
-        bandwidth,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== 'getBandwidth') {
-        console.error('getBandwidth', message, statusCode);
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
@@ -439,7 +394,7 @@ class ActionBarContainer extends Component {
   onClickUsingLedger = () => {
     // this.init();
     this.setState({
-      stage: CREATE_LINK,
+      stage: STAGE_LEDGER_INIT,
     });
   };
 
@@ -570,23 +525,6 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === CREATE_LINK) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
-      return (
-        <Cyberlink
-          onClickBtnCloce={this.onClickInitStage}
-          query={valueSearchInput}
-          onClickBtn={this.onClickInitLedger}
-          bandwidth={bandwidth}
-          address={trimString(addressLocalStor.bech32, 9, 4)}
-          contentHash={file !== null ? file.name : contentHash}
-          disabledBtn={parseFloat(bandwidth.max_value) === 0}
-          linkPrice={linkPrice}
-        />
-      );
-    }
-
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
@@ -603,19 +541,9 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
       return (
         <ActionBar>
-          <Pane
-            display="flex"
-            fontSize="20px"
-            justifyContent="center"
-            alignItems="center"
-            flexGrow={1}
-            marginRight="15px"
-          >
-            please press cyberlink and confirm the transaction on Ledger
-          </Pane>
-          <button type="button" className="btn" onClick={e => this.link(e)}>
-            Cyberlink
-          </button>
+          <ActionBarContentText>
+            transaction generation <Dots big />
+          </ActionBarContentText>
         </ActionBar>
       );
     }

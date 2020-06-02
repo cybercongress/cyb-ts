@@ -94,37 +94,13 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
   </ActionBar>
 );
 
-export const TransactionError = ({
-  onClickBtn,
-  onClickBtnCloce,
-  errorMessage,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      Transaction Error:
-    </span>
-    <div
-      style={{ marginTop: '25px', width: '80%', margin: '0 auto' }}
-      className="display-flex flex-direction-column"
-    >
-      <p style={{ marginBottom: 20, textAlign: 'center' }}>
-        Message:
-        <span
-          style={{
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {errorMessage}
-        </span>
-      </p>
-      <div style={{ marginTop: '25px', textAlign: 'center' }}>
-        <button type="button" className="btn" onClick={onClickBtn}>
-          {T.actionBar.confirmedTX.continue}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+export const TransactionError = ({ onClickBtn, errorMessage }) => (
+  <ActionBar>
+    <ActionBarContentText>Message Error: {errorMessage}</ActionBarContentText>
+    <Button marginX={10} onClick={onClickBtn}>
+      {T.actionBar.confirmedTX.continue}
+    </Button>
+  </ActionBar>
 );
 
 export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
@@ -569,101 +545,50 @@ export const Cyberlink = ({
 };
 
 export const Delegate = ({
-  address,
-  onClickBtnCloce,
-  balance,
   moniker,
-  operatorAddress,
   generateTx,
-  max,
   onChangeInputAmount,
   toSend,
   disabledBtn,
   delegate,
 }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <Pane display="flex" flexDirection="column" alignItems="center">
-      <Text
-        marginBottom={20}
-        fontSize="16px"
-        lineHeight="25.888px"
-        color="#fff"
-      >
-        {address}
-      </Text>
-      <Text fontSize="30px" lineHeight="40px" color="#fff">
+  <ActionBar>
+    <ActionBarContentText>
+      <Text fontSize="16px" color="#fff">
+        {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
         {delegate
-          ? T.actionBar.delegate.details
-          : T.actionBar.delegate.detailsUnDelegate}
-      </Text>
-
-      <Text fontSize="18px" lineHeight="30px" color="#fff">
-        {delegate
-          ? T.actionBar.delegate.wallet
-          : T.actionBar.delegate.yourDelegated}
-      </Text>
-      <Text
-        display="flex"
-        justifyContent="center"
-        fontSize="20px"
-        lineHeight="25.888px"
-        color="#3ab793"
-      >
-        <FormatNumber
-          marginRight={5}
-          number={formatNumber(balance / DIVISOR_CYBER_G, 6)}
-        />
-        {DENOM_CYBER_G.toUpperCase()}
-      </Text>
-
-      <Pane marginTop={20}>
-        <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
-          {delegate
-            ? T.actionBar.delegate.delegate
-            : T.actionBar.delegate.unDelegateFrom}{' '}
-          <Text fontSize="20px" color="#fff" fontWeight={600}>
-            {moniker}
-          </Text>
+          ? T.actionBar.delegate.delegate
+          : T.actionBar.delegate.unDelegateFrom}{' '}
+        <Text fontSize="20px" color="#fff" fontWeight={600}>
+          {moniker}
         </Text>
-      </Pane>
-      <Text color="#fff">{operatorAddress}</Text>
-      <Pane marginY={30} display="flex">
-        <input
-          value={toSend}
-          style={{
-            height: 42,
-            width: '60%',
-            marginRight: 20,
-          }}
-          onChange={onChangeInputAmount}
-          placeholder="amount"
-        />
-        <button
-          type="button"
-          className="btn"
-          onClick={max}
-          style={{ height: 42, maxWidth: '200px' }}
-        >
-          {T.actionBar.delegate.max}
-        </button>
-      </Pane>
-      <button
-        type="button"
-        className="btn-disabled"
-        onClick={generateTx}
-        style={{ height: 42, maxWidth: '200px' }}
-        disabled={disabledBtn}
-      >
-        {T.actionBar.delegate.generate}
-      </button>
-    </Pane>
-  </ContainetLedger>
+      </Text>
+      <input
+        value={toSend}
+        style={{
+          height: 42,
+          width: '100px',
+          marginLeft: 20,
+          textAlign: 'end',
+        }}
+        autoFocus
+        onChange={onChangeInputAmount}
+        placeholder="amount"
+      />
+    </ActionBarContentText>
+    <button
+      type="button"
+      className="btn-disabled"
+      onClick={generateTx}
+      style={{ height: 42, maxWidth: '200px' }}
+      disabled={disabledBtn}
+    >
+      {T.actionBar.delegate.generate}
+    </button>
+  </ActionBar>
 );
 
 export const ReDelegate = ({
-  address,
-  onClickBtnCloce,
   generateTx,
   onChangeInputAmount,
   toSend,
@@ -673,91 +598,66 @@ export const ReDelegate = ({
   valueSelect,
   onChangeReDelegate,
 }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <Pane display="flex" flexDirection="column" alignItems="center">
-      <Text
-        marginBottom={20}
-        fontSize="16px"
-        lineHeight="25.888px"
-        color="#fff"
-      >
-        {address}
-      </Text>
-      <Text fontSize="30px" lineHeight="40px" color="#fff">
-        Restake details
-      </Text>
-
-      <Text fontSize="18px" lineHeight="30px" color="#fff">
-        {T.actionBar.delegate.yourDelegated}
-      </Text>
-      <Text
-        display="flex"
-        justifyContent="center"
-        fontSize="20px"
-        lineHeight="25.888px"
-        color="#3ab793"
-      >
-        <FormatNumber
-          marginRight={5}
-          number={formatNumber(validators.delegation / DIVISOR_CYBER_G, 6)}
-        />
-        {DENOM_CYBER_G.toUpperCase()}
-      </Text>
-
-      <Pane marginY={20}>
-        <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
-          restake from{' '}
-          <Text fontSize="20px" color="#fff" fontWeight={600}>
-            {validators.description.moniker}
-          </Text>
-        </Text>
-      </Pane>
-      <Pane marginBottom={30} display="flex" alignItems="center">
+  <ActionBar>
+    <ActionBarContentText>
+      <Text fontSize="16px" color="#fff">
+        Enter the amount{' '}
         <input
           value={toSend}
+          autoFocus
           style={{
             height: 32,
             width: '70px',
-            marginRight: 10,
+            margin: '0px 5px',
+            textAlign: 'end',
           }}
           onChange={onChangeInputAmount}
           placeholder="amount"
-        />
-        <Pane display="flex" alignItems="center">
-          to:{' '}
-          <select value={valueSelect} onChange={onChangeReDelegate}>
-            <option value="">pick hero</option>
-            {validatorsAll
-              .filter(validator => validator.status > 0)
-              .map(item => (
-                <option
-                  key={item.operator_address}
-                  value={item.operator_address}
-                  style={{
-                    display:
-                      validators.operator_address === item.operator_address
-                        ? 'none'
-                        : 'block',
-                  }}
-                >
-                  {item.description.moniker}
-                </option>
-              ))}
-          </select>
-        </Pane>
-      </Pane>
-      <button
-        type="button"
-        className="btn-disabled"
-        onClick={generateTx}
-        style={{ height: 42, maxWidth: '200px' }}
-        disabled={disabledBtn}
+        />{' '}
+        {DENOM_CYBER_G.toUpperCase()} restake from{' '}
+        <Text fontSize="20px" color="#fff" fontWeight={600}>
+          {validators.description.moniker}
+        </Text>
+      </Text>
+      <Text marginX={5} fontSize="16px" color="#fff">
+        to:
+      </Text>
+      <select
+        style={{
+          width: '120px',
+        }}
+        value={valueSelect}
+        onChange={onChangeReDelegate}
       >
-        {T.actionBar.delegate.generate}
-      </button>
-    </Pane>
-  </ContainetLedger>
+        <option value="">pick hero</option>
+        {validatorsAll
+          .filter(validator => validator.status > 0)
+          .map(item => (
+            <option
+              key={item.operator_address}
+              value={item.operator_address}
+              style={{
+                display:
+                  validators.operator_address === item.operator_address
+                    ? 'none'
+                    : 'block',
+              }}
+            >
+              {item.description.moniker}
+            </option>
+          ))}
+      </select>
+    </ActionBarContentText>
+    <button
+      type="button"
+      className="btn-disabled"
+      onClick={generateTx}
+      style={{ height: 42, maxWidth: '200px' }}
+      disabled={disabledBtn}
+    >
+      {T.actionBar.delegate.generate}
+    </button>
+  </ActionBar>
 );
 
 export const SendLedger = ({

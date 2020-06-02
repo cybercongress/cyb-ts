@@ -11,7 +11,7 @@ import onClickOutside from 'react-onclickoutside';
 import queryString from 'query-string';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { MenuButton, BandwidthBar } from '../../components';
+import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
@@ -21,6 +21,7 @@ import { WP } from '../../utils/config';
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
+const bug = require('../../image/alert-circle-outline.svg');
 
 const Item = ({ to, selected, nameApp, onClick }) => (
   <a
@@ -61,6 +62,7 @@ class App extends Component {
       battery: false,
       address: null,
     };
+    this.textInput = React.createRef();
     this.routeChange = this.routeChange.bind(this);
     // this.handleKeyFocus = this.handleKeyFocus.bind(this);
   }
@@ -69,6 +71,11 @@ class App extends Component {
     this.chekHomePage();
     this.chekEvangelism();
     this.checkAddressLocalStorage();
+    document.onkeypress = e => {
+      if (e.key === '/') {
+        document.getElementById('search-input-searchBar').focus();
+      }
+    };
   }
 
   componentDidUpdate(prevProps) {
@@ -82,9 +89,11 @@ class App extends Component {
         this.clearInrut();
       }
       this.checkAddressLocalStorage();
-      // document.onkeypress = e => {
-      //   document.getElementById('search-input-searchBar').focus();
-      // };
+      document.onkeypress = e => {
+        if (e.key === '/') {
+          document.getElementById('search-input-searchBar').focus();
+        }
+      };
     }
   }
 
@@ -162,11 +171,18 @@ class App extends Component {
   };
 
   onChangeInput = async e => {
+    const { valueSearchInput } = this.state;
     const { value } = e.target;
 
-    await this.setState({
-      valueSearchInput: value,
-    });
+    if (valueSearchInput.length === 0 && value === '/') {
+      await this.setState({
+        valueSearchInput: '',
+      });
+    } else {
+      await this.setState({
+        valueSearchInput: value,
+      });
+    }
   };
 
   handleKeyPress = async e => {
@@ -199,39 +215,87 @@ class App extends Component {
             display: 'flex',
             justifyContent: 'space-between',
             position: 'relative',
+            padding: 0,
           }}
           className="container-distribution"
         >
-          <MenuButton
-            to="/brain"
-            textTooltip={
-              <span>
-                You are on the{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/cyberd/releases"
-                >
-                  euler
-                </a>{' '}
-                network. euler is incentivized test network. Be careful. Details
-                in{' '}
-                <a target="_blank" rel="noopener noreferrer" href={WP}>
-                  whitepaper
-                </a>{' '}
-                and{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://cybercongress.ai/game-of-links/"
-                >
-                  Game of links
-                </a>{' '}
-                rules.
-              </span>
-            }
-            imgLogo={cyber}
-          />
+          <Pane position="relative">
+            <MenuButton
+              to="/brain"
+              textTooltip={
+                <span>
+                  You are on the{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/cybercongress/cyberd/releases"
+                  >
+                    euler
+                  </a>{' '}
+                  network. euler is incentivized test network. Be careful.
+                  Details in{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
+                  >
+                    whitepaper
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://cybercongress.ai/game-of-links/"
+                  >
+                    Game of links
+                  </a>{' '}
+                  rules.
+                </span>
+              }
+              imgLogo={cyber}
+            />
+            <Pane bottom="-10px" right="-20%" position="absolute">
+              <Tooltip
+                placement="bottom"
+                tooltip={
+                  <span>
+                    You are on the{' '}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://github.com/cybercongress/cyberd/releases"
+                    >
+                      euler
+                    </a>{' '}
+                    network. euler is incentivized test network. Be careful.
+                    Details in{' '}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
+                    >
+                      whitepaper
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://cybercongress.ai/game-of-links/"
+                    >
+                      Game of links
+                    </a>{' '}
+                    rules.
+                  </span>
+                }
+              >
+                <img
+                  alt="bugs"
+                  style={{ width: '20px', height: '20px' }}
+                  src={bug}
+                />
+              </Tooltip>
+            </Pane>
+          </Pane>
           {!home && (
             <Pane
               position="absolute"
@@ -249,6 +313,7 @@ class App extends Component {
                 onChange={e => this.onChangeInput(e)}
                 onKeyPress={this.handleKeyPress}
                 className="search-input"
+                ref={this.textInput}
                 value={valueSearchInput}
                 autoComplete="off"
                 id="search-input-searchBar"
@@ -267,7 +332,12 @@ class App extends Component {
             </Pane>
           )}
           <Electricity />
-          <Pane className="battery-container" width="65px" marginRight="10px">
+          <Pane
+            className="battery-container"
+            width="65px"
+            position="absolute"
+            right="60px"
+          >
             <BandwidthBar
               height="15px"
               styleText={{ whiteSpace: 'nowrap' }}
@@ -277,23 +347,36 @@ class App extends Component {
               bwMaxValue={bandwidth.maxValue}
             />
           </Pane>
-          <MenuButton
-            to="/pocket"
-            imgLogo={ipfsStatus ? cybTrue : cybFalse}
-            positionBugLeft
-            textTooltip={
-              <span>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://github.com/cybercongress/dot-cyber"
-                >
-                  The dot-cyber
-                </a>{' '}
-                app has not been audited yet. Please, use it with caution.
-              </span>
-            }
-          />
+          <Pane position="relative">
+            <MenuButton
+              to="/pocket"
+              imgLogo={ipfsStatus ? cybTrue : cybFalse}
+              positionBugLeft
+            />
+            <Pane bottom="-10px" left="-20%" position="absolute">
+              <Tooltip
+                placement="bottom"
+                tooltip={
+                  <span>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://github.com/cybercongress/dot-cyber"
+                    >
+                      The dot-cyber
+                    </a>{' '}
+                    app has not been audited yet. Please, use it with caution.
+                  </span>
+                }
+              >
+                <img
+                  alt="bugs"
+                  style={{ width: '20px', height: '20px' }}
+                  src={bug}
+                />
+              </Tooltip>
+            </Pane>
+          </Pane>
         </div>
         {/* </Navigation> */}
         {this.props.children}

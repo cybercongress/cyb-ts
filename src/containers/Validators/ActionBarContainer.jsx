@@ -134,7 +134,6 @@ class ActionBarContainer extends Component {
 
     let addressInfo = {};
     let balance = 0;
-    let validatorsAll = [];
     try {
       const chainId = await this.getNetworkId();
       console.log(chainId);
@@ -146,9 +145,6 @@ class ActionBarContainer extends Component {
       );
       console.log(delegate);
 
-      const validatorsData = await getValidators();
-      console.log('delegate', validatorsData);
-
       if (response) {
         const data = response.account;
         addressInfo = { chainId, ...data, delegate };
@@ -157,13 +153,10 @@ class ActionBarContainer extends Component {
 
       console.log(addressInfo);
 
-      validatorsAll = validatorsData;
-
       this.setState({
         addressInfo,
         balance,
         stage: STAGE_READY,
-        validatorsAll,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -396,7 +389,14 @@ class ActionBarContainer extends Component {
   };
 
   render() {
-    const { validators, addressLedger, unStake, mobile } = this.props;
+    const {
+      validators,
+      addressLedger,
+      unStake,
+      mobile,
+      validatorsAll,
+    } = this.props;
+
     const {
       stage,
       ledgerVersion,
@@ -411,9 +411,10 @@ class ActionBarContainer extends Component {
       addressInfo,
       valueSelect,
       errorMessage,
-      validatorsAll,
       connectLedger,
     } = this.state;
+
+    console.log(validatorsAll);
 
     const validRestakeBtn =
       parseFloat(toSend) > 0 &&
@@ -510,16 +511,11 @@ class ActionBarContainer extends Component {
       // if (this.state.stage === STAGE_READY) {
       return (
         <Delegate
-          address={address.bech32}
-          onClickBtnCloce={this.cleatState}
-          balance={txType === TXTYPE_DELEGATE ? balance : addressInfo.delegate}
           moniker={validators.description.moniker}
-          operatorAddress={validators.operator_address}
-          generateTx={() => this.generateTx()}
-          max={e => this.onClickMax(e)}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}
           toSend={toSend}
-          disabledBtn={balance === 0}
+          disabledBtn={toSend.length === 0}
+          generateTx={() => this.generateTx()}
           delegate={txType === TXTYPE_DELEGATE}
         />
       );
@@ -535,7 +531,6 @@ class ActionBarContainer extends Component {
       // if (this.state.stage === STAGE_READY) {
       return (
         <ReDelegate
-          address={address.bech32}
           onClickBtnCloce={this.cleatState}
           generateTx={() => this.generateTx()}
           onChangeInputAmount={e => this.onChangeInputAmount(e)}

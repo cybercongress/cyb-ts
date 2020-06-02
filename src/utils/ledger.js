@@ -230,6 +230,7 @@ class CosmosDelegateTool {
   }
 
   async getAccountInfo(addr) {
+    console.log(addr);
     const url = `${nodeURL(this)}/api/cosmos/account/${addr.bech32}`;
     const txContext = {
       sequence: '0',
@@ -249,12 +250,14 @@ class CosmosDelegateTool {
             txContext.accountNumber = Number(
               r.data.value.account_number
             ).toString();
-            if (r.data.value.coins !== null) {
+            if (r.data.value.coins !== null && r.data.value.coins.length > 0) {
               const tmp = [];
               tmp.push(r.data.value.coins[0]);
               if (tmp.length > 0) {
                 txContext.balanceuAtom = Big(tmp[0].amount).toString();
               }
+            } else {
+              return txContext;
             }
           }
         } catch (e) {

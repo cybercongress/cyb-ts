@@ -36,6 +36,7 @@ const CUSTOM_TX_UNDERSTAND = 1.2;
 const CUSTOM_TX_TRACK = 1.3;
 const CUSTOM_TX_AGREE = 1.4;
 const CUSTOM_TX_TYPE_TX = 1.5;
+const STAGE_HDPATH = 1.7;
 
 const LEDGER_TX_ACOUNT_INFO = 2.2;
 
@@ -48,6 +49,7 @@ class ActionBarTakeOff extends Component {
     super(props);
     this.state = {
       stage: STAGE_INIT,
+      hdpath: [44, 118, 0, 0, 0],
       addressInfo: null,
       address: null,
       availableStake: 0,
@@ -123,11 +125,18 @@ class ActionBarTakeOff extends Component {
 
     console.log(addressInfo);
 
-    this.setState({
-      addressInfo,
-      availableStake: parseFloat(addressInfo.balanceuAtom),
-      stage: STAGE_READY,
-    });
+    if (addressInfo.balanceuAtom && addressInfo.balanceuAtom > 0) {
+      this.setState({
+        addressInfo,
+        availableStake: parseFloat(addressInfo.balanceuAtom),
+        stage: STAGE_READY,
+      });
+    } else {
+      this.setState({
+        errorMessage: 'balance of this account 0 ATOMs',
+        stage: STAGE_ERROR,
+      });
+    }
   };
 
   createTxForCLI = async () => {
@@ -255,6 +264,7 @@ class ActionBarTakeOff extends Component {
       stage: STAGE_INIT,
       addressInfo: null,
       address: null,
+      hdpath: HDPATH,
       availableStake: 0,
       toSend: '',
       txBody: null,
@@ -305,7 +315,7 @@ class ActionBarTakeOff extends Component {
   onClickSelectLedgerTx = () => {
     this.getLedgerAddress();
     this.setState({
-      stage: STAGE_LEDGER_INIT,
+      stage: STAGE_HDPATH,
     });
   };
 
@@ -407,6 +417,45 @@ class ActionBarTakeOff extends Component {
     });
   };
 
+  onClickApply = () => {
+    const { hdpath } = this.state;
+    if (parseFloat(hdpath[2]) >= 0 && parseFloat(hdpath[4]) >= 0) {
+      hdpath[2] = parseFloat(hdpath[2]);
+      hdpath[4] = parseFloat(hdpath[4]);
+      this.setState({
+        hdpath,
+        stage: STAGE_LEDGER_INIT,
+      });
+    } else {
+      this.setState({
+        hdpath: HDPATH,
+        stage: STAGE_LEDGER_INIT,
+      });
+    }
+  };
+
+  onChangeAccount = e => {
+    const { hdpath } = this.state;
+    const { value } = e.target;
+
+    hdpath[2] = value;
+
+    this.setState({
+      hdpath,
+    });
+  };
+
+  onChangeIndex = e => {
+    const { hdpath } = this.state;
+    const { value } = e.target;
+
+    hdpath[4] = value;
+
+    this.setState({
+      hdpath,
+    });
+  };
+
   onClickToPath = () => {
     const { onClickPopapAdressTrue } = this.props;
 
@@ -434,10 +483,10 @@ class ActionBarTakeOff extends Component {
       stage,
       errorMessage,
       trackAddress,
+      hdpath,
       connectLedger,
     } = this.state;
     const { end, mobile } = this.props;
-    console.log('connectLedger', connectLedger);
 
     if (end <= 0) {
       return (
@@ -549,6 +598,48 @@ class ActionBarTakeOff extends Component {
           </Button>
           <Button marginX={10} onClick={this.onClickSelectLedgerTx}>
             Donate using Ledger
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_HDPATH) {
+      return (
+        <ActionBar>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <Text color="#fff" fontSize="20px">
+              HD derivation path: {hdpath[0]}/{hdpath[1]}/
+            </Text>
+            <Input
+              value={hdpath[2]}
+              onChange={e => this.onChangeAccount(e)}
+              width="50px"
+              height={42}
+              marginLeft={3}
+              marginRight={3}
+              fontSize="20px"
+              textAlign="end"
+            />
+            <Text color="#fff" fontSize="20px">
+              /{hdpath[3]}/
+            </Text>
+            <Input
+              value={hdpath[4]}
+              onChange={e => this.onChangeIndex(e)}
+              width="50px"
+              marginLeft={3}
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+            />
+          </Pane>
+          <Button disabled={toSend.length === 0} onClick={this.onClickApply}>
+            Apply
           </Button>
         </ActionBar>
       );
@@ -769,7 +860,6 @@ class ActionBarTakeOff extends Component {
         <TransactionError
           errorMessage={errorMessage}
           onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
         />
       );
     }

@@ -1,11 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane, Icon } from '@cybercongress/gravity';
-import { CardStatisics } from '../../../components';
+import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
-function GovernmentTab({ communityPool, proposals }) {
+function GovernmentTab({
+  communityPool,
+  proposals,
+  activeValidatorsCount,
+  stakedCyb,
+  inlfation,
+}) {
   try {
     return (
       <>
@@ -23,6 +29,36 @@ function GovernmentTab({ communityPool, proposals }) {
         <Link to="/network/euler/parameters">
           <CardStatisics title="Network parameters" value={30} link />
         </Link>
+        <Link
+          to="/heroes"
+          style={{
+            display: 'contents',
+            textDecoration: 'none',
+          }}
+        >
+          <CardStatisics title="Heroes" value={activeValidatorsCount} link />
+        </Link>
+        <CardStatisics
+          title="% of staked EUL"
+          value={formatNumber(stakedCyb * 100, 3)}
+        />
+        <CardStatisics
+          title="Inflation"
+          value={`${formatNumber(inlfation * 100, 2)} %`}
+        />
+        <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
+          <CardStatisics
+            // title="Homestead"
+            styleContainer={{
+              justifyContent: 'center',
+              padding: '65px 0',
+              fontSize: '26px',
+            }}
+            styleTitle={{ fontSize: '26px' }}
+            title="Euler Foundation"
+            link
+          />
+        </LinkWindow>
       </>
     );
   } catch (error) {

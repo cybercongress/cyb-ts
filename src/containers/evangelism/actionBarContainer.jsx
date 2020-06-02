@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 import { AUCTION, PATTERN_COSMOS, PATTERN_CYBER } from '../../utils/config';
 import { Dots, LinkWindow } from '../../components';
@@ -12,6 +13,7 @@ const STAGE_ADD_KEYBASE = 6;
 const STAGE_SING = 7;
 const STAGE_SUBMITTED = 8;
 const STAGE_CONFIRM = 9;
+const STAGE_THANK = 10;
 
 function lament(error) {
   if (error) {
@@ -88,6 +90,27 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
   </ActionBar>
 );
 
+const ThankSubmit = () => (
+  <ActionBar>
+    <ActionBarContentText flexDirection="column">
+      thank you for submitting! Now cyberlink something to get acknowledgement
+      faster
+    </ActionBarContentText>
+    <Link
+      style={{
+        paddingTop: 10,
+        margin: '0 15px',
+        paddingBottom: 10,
+        display: 'block',
+      }}
+      className="btn"
+      to="/gol"
+    >
+      Play Game of Links
+    </Link>
+  </ActionBar>
+);
+
 class ActionBarEvangelism extends Component {
   constructor(props) {
     super(props);
@@ -141,7 +164,7 @@ class ActionBarEvangelism extends Component {
 
   onClickSaveAddress = () => {
     this.setState({
-      step: STAGE_START,
+      step: STAGE_THANK,
       tx: null,
       keybaseName: '',
       githubUsername: '',
@@ -350,7 +373,7 @@ class ActionBarEvangelism extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            input your cosmos address
+            input your cosmos address for payouts
             <input
               value={cosmosAddress}
               style={{
@@ -491,6 +514,10 @@ class ActionBarEvangelism extends Component {
 
     if (step === STAGE_CONFIRM) {
       return <Succesfuuly hash={tx} onClickBtn={this.onClickSaveAddress} />;
+    }
+
+    if (step === STAGE_THANK) {
+      return <ThankSubmit />;
     }
 
     return null;

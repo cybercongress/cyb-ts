@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Text, Pane, Tab } from '@cybercongress/gravity';
+import { Link, Route, useLocation } from 'react-router-dom';
+import { Text, Pane, Tablist } from '@cybercongress/gravity';
 import {
   getAmountATOM,
   getValidatorsInfo,
@@ -9,7 +9,7 @@ import {
   getTxCosmos,
   getCurrentNetworkLoad,
 } from '../../utils/search/utils';
-import { CardStatisics, Loading, LinkWindow } from '../../components';
+import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
 import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 import TableDiscipline from './table';
 import { getEstimation } from '../../utils/fundingMath';
@@ -19,7 +19,10 @@ import {
   formatNumber,
 } from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
+import LoadTab from './tab/loadTab';
+import RelevanceTab from './tab/relevance';
 import { setGolTakeOff } from '../../redux/actions/gol';
+import setLeaderboard from './hooks/leaderboard';
 
 import { COSMOS, TAKEOFF, WP } from '../../utils/config';
 
@@ -36,80 +39,84 @@ const test = {
   'tm.event': ['Tx'],
 };
 
-class GOL extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
+function GOL({ setGolTakeOffProps, mobile }) {
+  const {
+    data: dataLeaderboard,
+    loading: loadingLeaderboard,
+    progress: progressLeaderboard,
+  } = setLeaderboard();
+  const location = useLocation();
+  const [selected, setSelected] = useState('disciplines');
+  const [address, setAddress] = useState({
+    addressLedger: null,
+    validatorAddress: null,
+    consensusAddress: null,
+  });
+  const [takeoff, setTakeoff] = useState({
+    estimation: 0,
+    amount: 0,
+  });
+  const [addAddress, setAddAddress] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [herosCount, setHerosCount] = useState(0);
+  const [currentNetworkLoad, setCurrentNetworkLoad] = useState(0);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      addressLedger: null,
-      validatorAddress: null,
-      consensusAddress: null,
-      loading: true,
-      estimation: 0,
-      takeoffDonations: 0,
-      herosCount: 0,
-      dataTable: [],
-      addAddress: false,
-      currentNetworkLoad: 0,
+  useEffect(() => {
+    const feachData = async () => {
+      chekPathname();
+      await checkAddressLocalStorage();
+      await getTxsCosmos();
+      // await this.getDataWS();
+      // this.getMyGOLs();
+      checkCurrentNetworkLoad();
+      getValidatorsCount();
     };
-  }
+    feachData();
+  }, []);
 
-  async componentDidMount() {
-    await this.checkAddressLocalStorage();
-    await this.getTxsCosmos();
-    // await this.getDataWS();
-    // this.getMyGOLs();
-    this.checkCurrentNetworkLoad();
-    this.getValidatorsCount();
-  }
+  useEffect(() => {
+    chekPathname();
+  }, [location.pathname]);
 
-  getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    console.log(dataTx);
-    if (dataTx !== null) {
-      this.getAtom(dataTx.txs);
+  const chekPathname = () => {
+    const { pathname } = location;
+
+    if (
+      pathname.match(/leaderboard/gm) &&
+      pathname.match(/leaderboard/gm).length > 0
+    ) {
+      setSelected('leaderboard');
+    } else if (
+      pathname.match(/content/gm) &&
+      pathname.match(/content/gm).length > 0
+    ) {
+      setSelected('content');
+    } else {
+      setSelected('disciplines');
     }
   };
 
-  // getDataWS = async () => {
-  //   this.ws.onopen = () => {
-  //     console.log('connected');
-  //     this.ws.send(
-  //       JSON.stringify({
-  //         jsonrpc: '2.0',
-  //         method: 'subscribe',
-  //         id: '0',
-  //         params: {
-  //           query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
-  //         },
-  //       })
-  //     );
-  //   };
+  const getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      getAtom(dataTx.txs);
+    }
+  };
 
-  //   this.ws.onmessage = async evt => {
-  //     const message = JSON.parse(evt.data);
-  //     console.warn('txs', message);
-  //     if (message.result.events) {
-  //       this.getAtomWS(message.result.events);
-  //     }
-  //   };
-
-  //   this.ws.onclose = () => {
-  //     console.log('disconnected');
-  //   };
-  // };
-
-  checkAddressLocalStorage = async () => {
-    let address = [];
+  const checkAddressLocalStorage = async () => {
+    let addressLocalStorage = [];
     let consensusAddress = null;
     let validatorAddress = null;
 
     const localStorageStory = await localStorage.getItem('ledger');
     if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      const dataValidatorAddress = getDelegator(address.bech32, 'cybervaloper');
+      addressLocalStorage = JSON.parse(localStorageStory);
+      console.log('address', addressLocalStorage);
+      const dataValidatorAddress = getDelegator(
+        addressLocalStorage.bech32,
+        'cybervaloper'
+      );
       const dataGetValidatorsInfo = await getValidatorsInfo(
         dataValidatorAddress
       );
@@ -119,69 +126,40 @@ class GOL extends React.Component {
         validatorAddress = dataValidatorAddress;
       }
 
-      this.setState({
-        addressLedger: address,
+      setAddAddress(false);
+      setAddress({
+        addressLedger: addressLocalStorage,
         validatorAddress,
         consensusAddress,
-        addAddress: false,
       });
     } else {
-      this.setState({
-        addAddress: true,
-        loading: false,
-      });
+      setAddAddress(true);
+      // setLoading(false);
     }
   };
 
-  checkCurrentNetworkLoad = async () => {
-    let currentNetworkLoad = 0;
+  const checkCurrentNetworkLoad = async () => {
+    let load = 0;
     const dataCurrentNetworkLoad = await getCurrentNetworkLoad();
     if (dataCurrentNetworkLoad !== null) {
-      currentNetworkLoad = parseFloat(dataCurrentNetworkLoad.load) * 100;
+      load = parseFloat(dataCurrentNetworkLoad.load) * 100;
     }
-    this.setState({
-      currentNetworkLoad,
-    });
+
+    setCurrentNetworkLoad(load);
   };
 
-  getValidatorsCount = async () => {
+  const getValidatorsCount = async () => {
     const data = await getValidators();
-    let herosCount = 0;
+    let count = 0;
     if (data !== null) {
-      herosCount = data.length;
+      count = data.length;
     }
-    this.setState({
-      herosCount,
-    });
+
+    setHerosCount(count);
   };
 
-  // getAtomWS = data => {
-  //   const { takeoffDonations, estimation } = this.state;
-  //   let amount = takeoffDonations;
-  //   let temE = 0;
-  //   console.warn('data', data['transfer.amount']);
-  //   if (data['transfer.amount']) {
-  //     console.warn('transfer.amount', data['transfer.amount']);
-  //     data['transfer.amount'].forEach(element => {
-  //       let amountWS = 0;
-  //       if (element.indexOf('uatom') !== -1) {
-  //         const positionDenom = element.indexOf('uatom');
-  //         const str = element.slice(0, positionDenom);
-  //         amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
-  //       }
-  //       temE = getEstimation(estimation, amountWS);
-  //       amount += amountWS;
-  //     });
-  //   }
-  //   this.setState({
-  //     takeoffDonations: amount,
-  //     estimation: estimation + temE,
-  //   });
-  // };
-
-  getAtom = async dataTxs => {
-    const { addressLedger } = this.state;
-    const { setGolTakeOffProps } = this.props;
+  const getAtom = async dataTxs => {
+    const { addressLedger } = address;
     let amount = 0;
 
     let estimation = 0;
@@ -195,14 +173,14 @@ class GOL extends React.Component {
     if (dataTxs) {
       for (let item = 0; item < dataTxs.length; item += 1) {
         let temE = 0;
-        const address = dataTxs[item].tx.value.msg[0].value.from_address;
+        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
         const val =
           Number.parseInt(
             dataTxs[item].tx.value.msg[0].value.amount[0].amount,
             10
           ) / COSMOS.DIVISOR_ATOM;
         temE = getEstimation(estimation, val);
-        if (address === addressCosmos) {
+        if (addressTx === addressCosmos) {
           addEstimation += temE;
         }
         amount += val;
@@ -216,178 +194,187 @@ class GOL extends React.Component {
     );
 
     console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
-    this.setState({
-      takeoffDonations: amount,
-      estimation,
-      loading: false,
-    });
+    setTakeoff(prevState => ({ ...prevState, estimation, amount }));
+    setLoading(false);
   };
 
-  render() {
-    const {
-      loading,
-      takeoffDonations,
-      addressLedger,
-      validatorAddress,
-      herosCount,
-      consensusAddress,
-      addAddress,
-      currentNetworkLoad,
-      estimation,
-    } = this.state;
+  let content;
 
-    const { mobile } = this.props;
-
-    console.log(takeoffDonations);
-
-    if (loading) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <Loading />
-        </div>
-      );
-    }
-
+  if (loading) {
     return (
-      <div>
-        <main
-          // style={{ justifyContent: 'space-between' }}
-          className="block-body"
-        >
-          <Pane
-            borderLeft="3px solid #3ab793e3"
-            paddingY={0}
-            paddingLeft={20}
-            paddingRight={5}
-            marginY={5}
-          >
-            <Pane>Looking back, important things feel obvious.</Pane>
-            <Pane>
-              It takes phenomenal talent and incredible will to see them from
-              afar.
-            </Pane>
-            <Pane>Those who can, define the future.</Pane>
-            <Pane>Founders</Pane>
-          </Pane>
-          <Pane
-            boxShadow="0px 0px 5px #36d6ae"
-            paddingX={20}
-            paddingY={20}
-            marginY={20}
-          >
-            <Text fontSize="16px" color="#fff">
-              Welcome to the intergalactic tournament - Game of Links. GoL is
-              the main preparation stage before{' '}
-              <Link to="/search/genesis">the main network launch</Link> of{' '}
-              <LinkWindow to={WP}>the cyber protocol</LinkWindow>. The main goal
-              of the tournament is to collectively bootstrap the{' '}
-              <Link to="/brain">Superintelligence</Link>. Everyone can find
-              themselves in this fascinating process: we need to set up physical
-              infrastructure, upload the initial knowledge and create a reserve
-              to sustain the project during its infancy. Athletes need to solve
-              different parts of the puzzle and can win up to 10% of CYB in the
-              Genesis.Participation requere EUL tokens which you can get by{' '}
-              <Link to="/gift">claiming gift</Link>, using{' '}
-              <Link to="/gol/faucet">ETH faucet</Link> or{' '}
-              <Link to="/gol/takeoff">donating ATOM</Link> during Takeoff. Read
-              the full rules of the tournament{' '}
-              <LinkWindow to="https://cybercongress.ai/game-of-links/">
-                in the organizator&apos;s blog
-              </LinkWindow>
-              .
-            </Text>
-          </Pane>
-          <Pane
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
-            gridGap="20px"
-            width="100%"
-            marginY={20}
-            alignItems="center"
-          >
-            {/* <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Total"
-              value={`${formatNumber(total)} CYB`}
-            /> */}
-            <Link to="/gol/load">
-              <CardStatisics
-                styleContainer={{ minWidth: '100px' }}
-                styleValue={{ fontSize: '18px', color: '#3ab793' }}
-                styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-                title="Network load"
-                value={`${formatNumber(currentNetworkLoad, 2)} %`}
-              />
-            </Link>
-            <Link to="/gol/takeoff">
-              <CardStatisics
-                styleContainer={{ minWidth: '100px' }}
-                styleValue={{ fontSize: '18px', color: '#3ab793' }}
-                styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-                title="Donation goal"
-                value={`${formatNumber(
-                  (takeoffDonations / TAKEOFF.ATOMsALL) * 100,
-                  2
-                )} %`}
-              />
-            </Link>
-            <Link to="/heroes">
-              <CardStatisics
-                styleContainer={{ minWidth: '100px' }}
-                styleValue={{ fontSize: '18px', color: '#3ab793' }}
-                styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-                title="Validator set"
-                value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
-              />
-            </Link>
-          </Pane>
-          <Pane
-            display="flex"
-            marginTop={20}
-            marginBottom={50}
-            justifyContent="center"
-          >
-            <TableDiscipline
-              addressLedger={addressLedger}
-              validatorAddress={validatorAddress}
-              consensusAddress={consensusAddress}
-              takeoffDonations={takeoffDonations}
-              estimation={estimation}
-              mobile={mobile}
-            />
-          </Pane>
-        </main>
-        {!mobile && (
-          <ActionBarContainer
-            addAddress={addAddress}
-            cleatState={this.cleatState}
-            updateFunc={this.checkAddressLocalStorage}
-          />
-        )}
+      <div
+        style={{
+          width: '100%',
+          height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Loading />
       </div>
     );
   }
+
+  if (selected === 'leaderboard') {
+    content = (
+      <Route
+        path="/gol/leaderboard"
+        render={() => (
+          <LoadTab
+            data={dataLeaderboard}
+            loading={loadingLeaderboard}
+            progress={progressLeaderboard}
+          />
+        )}
+      />
+    );
+  }
+
+  if (selected === 'disciplines') {
+    content = (
+      <TableDiscipline
+        addressLedger={address.addressLedger}
+        validatorAddress={address.validatorAddress}
+        consensusAddress={address.consensusAddress}
+        takeoffDonations={takeoff.amount}
+        estimation={takeoff.estimation}
+        mobile={mobile}
+      />
+    );
+  }
+
+  if (selected === 'content') {
+    content = <Route path="/gol/content" render={() => <RelevanceTab />} />;
+  }
+
+  return (
+    <div>
+      <main
+        // style={{ justifyContent: 'space-between' }}
+        className="block-body"
+      >
+        <Pane
+          borderLeft="3px solid #3ab793e3"
+          paddingY={0}
+          paddingLeft={20}
+          paddingRight={5}
+          marginY={5}
+        >
+          <Pane>Looking back, important things feel obvious.</Pane>
+          <Pane>
+            It takes phenomenal talent and incredible will to see them from
+            afar.
+          </Pane>
+          <Pane>Those who can, define the future.</Pane>
+          <Pane>Founders</Pane>
+        </Pane>
+        <Pane
+          boxShadow="0px 0px 5px #36d6ae"
+          paddingX={20}
+          paddingY={20}
+          marginY={20}
+        >
+          <Text fontSize="16px" color="#fff">
+            Welcome to the intergalactic tournament - Game of Links. GoL is the
+            main preparation stage before{' '}
+            <Link to="/search/genesis">the main network launch</Link> of{' '}
+            <LinkWindow to={WP}>the cyber protocol</LinkWindow>. The main goal
+            of the tournament is to collectively bootstrap the{' '}
+            <Link to="/brain">Superintelligence</Link>. Everyone can find
+            themselves in this fascinating process: we need to set up physical
+            infrastructure, upload the initial knowledge and create a reserve to
+            sustain the project during its infancy. Athletes need to solve
+            different parts of the puzzle and can win up to 10% of CYB in the
+            Genesis.Participation requere EUL tokens which you can get by{' '}
+            <Link to="/gift">claiming gift</Link>, using{' '}
+            <Link to="/gol/faucet">ETH faucet</Link> or{' '}
+            <Link to="/gol/takeoff">donating ATOM</Link> during Takeoff. Read
+            the full rules of the tournament{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              in the organizator&apos;s blog
+            </LinkWindow>
+            .
+          </Text>
+        </Pane>
+        <Pane
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+          gridGap="20px"
+          width="100%"
+          marginY={20}
+          alignItems="center"
+        >
+          <Link to="/gol/load">
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Network load"
+              value={`${formatNumber(currentNetworkLoad, 2)} %`}
+            />
+          </Link>
+          <Link to="/gol/takeoff">
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Donation goal"
+              value={`${formatNumber(
+                (takeoff.amount / TAKEOFF.ATOMsALL) * 100,
+                2
+              )} %`}
+            />
+          </Link>
+          <Link to="/heroes">
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Validator set"
+              value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
+            />
+          </Link>
+        </Pane>
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+          gridGap="10px"
+          marginY={20}
+        >
+          <TabBtn
+            text="Leaderboard"
+            isSelected={selected === 'leaderboard'}
+            to="/gol/leaderboard"
+          />
+          <TabBtn
+            text="Disciplines"
+            isSelected={selected === 'disciplines'}
+            to="/gol"
+          />
+          <TabBtn
+            text="Content"
+            isSelected={selected === 'content'}
+            to="/gol/content"
+          />
+        </Tablist>
+        <Pane display="flex" marginBottom={50} justifyContent="center">
+          {content}
+        </Pane>
+      </main>
+      {!mobile && (
+        <ActionBarContainer
+          addAddress={addAddress}
+          updateFunc={checkAddressLocalStorage}
+        />
+      )}
+    </div>
+  );
 }
 
 const mapStateToProps = store => {
   return {
-    load: store.gol.load,
-    takeoff: store.gol.takeoff,
-    relevance: store.gol.relevance,
-    delegation: store.gol.delegation,
-    lifetime: store.gol.lifetime,
-    euler4Rewards: store.gol.euler4Rewards,
     mobile: store.settings.mobile,
   };
 };

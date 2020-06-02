@@ -180,11 +180,11 @@ class AppRouter extends React.Component {
           <Route path="/heroes" component={Validators} />
           <Route path="/episode-1" component={Story} />
           <Route exact path="/network/euler/tx" component={Txs} />
-          <Route exact path="/gol" component={GOL} />
           <Route path="/gol/delegation" component={GolDelegation} />
           <Route path="/gol/lifetime" component={GolLifetime} />
           <Route path="/gol/relevance" component={GolRelevance} />
           <Route path="/gol/load" component={GolLoad} />
+          <Route path="/gol" component={GOL} />
           <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
           <Route
             path="/network/euler/contract/:address"
@@ -194,6 +194,7 @@ class AppRouter extends React.Component {
             path="/network/euler/hero/:address"
             component={ValidatorsDetails}
           />
+          {/* <Route path="/graph" component={ForceGraph} /> */}
           <Route path="/gol/vesting" component={Vesting} />
           <Route path="/ipfs" component={Ipfs} />
           <Route exact path="/network/euler/block" component={Block} />

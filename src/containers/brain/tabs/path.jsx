@@ -4,10 +4,10 @@ import { Pane, Icon } from '@cybercongress/gravity';
 import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 
-function CommunityTab() {
+function PathTab() {
   return (
     <>
-      <LinkWindow to="https://cybercongress.ai/post/">
+      <Link to="/search/master">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
@@ -16,11 +16,11 @@ function CommunityTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="Blog"
+          title="Master"
           link
         />
-      </LinkWindow>
-      <LinkWindow to="https://t.me/fuckgoogle">
+      </Link>
+      <Link to="/heroes">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
@@ -29,11 +29,11 @@ function CommunityTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="Telegram"
+          title="Hero"
           link
         />
-      </LinkWindow>
-      <LinkWindow to="https://ai.cybercongress.ai/">
+      </Link>
+      <Link to="/evangelism">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
@@ -42,11 +42,11 @@ function CommunityTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="Forum"
+          title="Evangelist"
           link
         />
-      </LinkWindow>
-      <LinkWindow to="https://www.reddit.com/r/cybercongress/">
+      </Link>
+      <Link to="/gol/takeoff">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
@@ -55,38 +55,12 @@ function CommunityTab() {
             fontSize: '26px',
           }}
           styleTitle={{ fontSize: '26px' }}
-          title="Reddit"
+          title="Merchant"
           link
         />
-      </LinkWindow>
-      <LinkWindow to="https://twitter.com/cyber_devs">
-        <CardStatisics
-          // title="Homestead"
-          styleContainer={{
-            justifyContent: 'center',
-            padding: '65px 0',
-            fontSize: '26px',
-          }}
-          styleTitle={{ fontSize: '26px' }}
-          title="Twitter"
-          link
-        />
-      </LinkWindow>
-      <LinkWindow to="https://www.youtube.com/channel/UCUfxwbONrtEFeCHOA3gHT-g">
-        <CardStatisics
-          // title="Homestead"
-          styleContainer={{
-            justifyContent: 'center',
-            padding: '65px 0',
-            fontSize: '26px',
-          }}
-          styleTitle={{ fontSize: '26px' }}
-          title="Cyberacademy"
-          link
-        />
-      </LinkWindow>
+      </Link>
     </>
   );
 }
 
-export default CommunityTab;
+export default PathTab;
