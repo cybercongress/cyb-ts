@@ -1,19 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TableEv as Table } from '@cybercongress/gravity';
-import { Loading, TextTable } from '../../../components';
+import { Loading, TextTable, Dots } from '../../../components';
 import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { formatNumber, trimString } from '../../../utils/utils';
 import setLeaderboard from '../hooks/leaderboard';
 
 function LoadTab({ takeoffDonations = 0 }) {
   const { data, loading } = setLeaderboard(takeoffDonations);
-
-  console.log('LoadTab', data);
-
-  if (loading) {
-    return <div>...</div>;
-  }
+  console.log(loading);
 
   const itemTable = Object.keys(data)
     .sort((a, b) => data[b].cybWon - data[a].cybWon)
@@ -63,7 +58,7 @@ function LoadTab({ takeoffDonations = 0 }) {
           padding: 7,
         }}
       >
-        {Object.keys(data).length > 0 && itemTable}
+        {loading ? <Dots /> : Object.keys(data).length > 0 && itemTable}
       </Table.Body>
     </Table>
   );

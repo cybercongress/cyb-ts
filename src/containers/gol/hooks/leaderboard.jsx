@@ -38,7 +38,7 @@ function setLeaderboard() {
   const [data, setData] = useState({});
   const [dataLoad, setDataLoad] = useState({});
   const [amount, setAmount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [discipline, setDiscipline] = useState({
     lifetime: false,
     delegation: false,
@@ -230,7 +230,6 @@ function setLeaderboard() {
         }
         getDelegation(validators, total, dataLoad);
         getLifetime(validators, dataLoad);
-        setLoading(false);
       }
     };
     feachData();
