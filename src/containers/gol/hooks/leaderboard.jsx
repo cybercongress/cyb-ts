@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   getGraphQLQuery,
   getIndexStats,
   getAllValidators,
+  getTxCosmos,
 } from '../../../utils/search/utils';
-import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
+import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../../utils/config';
 import { getDelegator } from '../../../utils/utils';
+import { getEstimation } from '../../../utils/fundingMath';
 
 const GET_LOAD = `
 query MyQuery {
@@ -32,9 +34,17 @@ const GET_LIFETIME = `
   }
   `;
 
-function setLeaderboard(amount) {
+function setLeaderboard() {
   const [data, setData] = useState({});
   const [dataLoad, setDataLoad] = useState({});
+  const [amount, setAmount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [discipline, setDiscipline] = useState({
+    lifetime: false,
+    delegation: false,
+    takeoff: false,
+    load: false,
+  });
 
   const getLoad = async amountTakeoff => {
     let load = [];
@@ -50,14 +60,32 @@ function setLeaderboard(amount) {
     const loadObj = await load.reduce((obj, item) => {
       const cybWon =
         (parseFloat(item.karma) / parseFloat(sumKarma)) * currentPrize;
+      if (data[item.subject]) {
+        data[item.subject] = {
+          loadObj: cybWon,
+          ...data[item.subject],
+          cybWon: data[item.subject].cybWon + cybWon,
+        };
+      } else {
+        data[item.subject] = {
+          address: item.subject,
+          cybWon,
+          loadObj: cybWon,
+        };
+      }
       return {
         ...obj,
         [item.subject]: {
           address: item.subject,
           cybWon,
+          loadObj: cybWon,
         },
       };
     }, {});
+    setDiscipline(item => ({
+      ...item,
+      load: true,
+    }));
     setDataLoad(loadObj);
   };
 
@@ -65,26 +93,30 @@ function setLeaderboard(amount) {
     const currentPrize = Math.floor(
       (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * amount
     );
-    const tempData = dataV;
-    if (validators.length > 0 && Object.keys(tempData).length > 0) {
+
+    if (validators.length > 0) {
       validators.forEach(item => {
         const cyb = (item.tokens / total) * currentPrize;
-        if (tempData[item.cyberAddress]) {
-          tempData[item.cyberAddress] = {
-            getDelegation: 0,
-            ...tempData[item.cyberAddress],
-            cybWon: tempData[item.cyberAddress].cybWon + cyb,
+        if (data[item.cyberAddress]) {
+          data[item.cyberAddress] = {
+            getDelegation: cyb,
+            ...data[item.cyberAddress],
+            cybWon: data[item.cyberAddress].cybWon + cyb,
           };
         } else {
-          tempData[item.cyberAddress] = {
-            getDelegation: 0,
+          data[item.cyberAddress] = {
+            getDelegation: cyb,
             address: item.cyberAddress,
             cybWon: cyb,
           };
         }
       });
+      setDiscipline(item => ({
+        ...item,
+        delegation: true,
+      }));
       // setData(tempData);
-      setData(temp => ({ ...temp, ...tempData }));
+      // setData(temp => ({ ...temp, ...data }));
     }
   };
 
@@ -93,7 +125,6 @@ function setLeaderboard(amount) {
       (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
     );
     const dataGraphQL = await getGraphQLQuery(GET_LIFETIME);
-    const tempData = dataV;
     if (Object.keys(dataGraphQL.pre_commit_view).length > 0) {
       const sumPrecommits =
         dataGraphQL.pre_commit_view_aggregate.aggregate.sum.precommits;
@@ -102,20 +133,72 @@ function setLeaderboard(amount) {
         const cyb = (itemQ.precommits / sumPrecommits) * currentPrize;
         validators.forEach(itemRPC => {
           if (itemRPC.consensusPubkey === itemQ.consensus_pubkey) {
-            if (tempData[itemRPC.cyberAddress]) {
-              tempData[itemRPC.cyberAddress] = {
-                cybLifeTime: 0,
-                ...tempData[itemRPC.cyberAddress],
-                cybWon: tempData[itemRPC.cyberAddress].cybWon + cyb,
+            if (data[itemRPC.cyberAddress]) {
+              data[itemRPC.cyberAddress] = {
+                cybLifeTime: cyb,
+                ...data[itemRPC.cyberAddress],
+                cybWon: data[itemRPC.cyberAddress].cybWon + cyb,
+              };
+            } else {
+              data[itemRPC.cyberAddress] = {
+                cybLifeTime: cyb,
+                address: itemRPC.cyberAddress,
+                cybWon: cyb,
               };
             }
           }
         });
       });
-      setData(temp => ({ ...temp, ...tempData }));
-      // console.log(tempData);
+      setDiscipline(item => ({
+        ...item,
+        lifetime: true,
+      }));
+      // setData(temp => ({ ...temp, ...tempData }));
     }
   };
+
+  useEffect(() => {
+    const feachData = async () => {
+      const dataTx = await getTxCosmos();
+      let amountTakeoff = 0;
+      if (dataTx !== null && dataTx.count > 0) {
+        const { txs } = dataTx;
+        let temE = 0;
+        for (let item = 0; item < txs.length; item += 1) {
+          let estimation = 0;
+          const address = txs[item].tx.value.msg[0].value.from_address;
+          const cyberAddress = getDelegator(address, 'cyber');
+          const val =
+            Number.parseInt(
+              txs[item].tx.value.msg[0].value.amount[0].amount,
+              10
+            ) / COSMOS.DIVISOR_ATOM;
+          estimation = getEstimation(temE, val);
+          amountTakeoff += val;
+          temE += estimation;
+          if (data[cyberAddress]) {
+            data[cyberAddress] = {
+              ...data[cyberAddress],
+              takeoff: data[cyberAddress].takeoff + estimation * 10 ** 12,
+              cybWon: data[cyberAddress].cybWon + estimation * 10 ** 12,
+            };
+          } else {
+            data[cyberAddress] = {
+              takeoff: estimation * 10 ** 12,
+              address: cyberAddress,
+              cybWon: estimation * 10 ** 12,
+            };
+          }
+        }
+      }
+      setAmount(amountTakeoff);
+      setDiscipline(item => ({
+        ...item,
+        takeoff: true,
+      }));
+    };
+    feachData();
+  }, []);
 
   useEffect(() => {
     const feachData = async () => {
@@ -147,12 +230,21 @@ function setLeaderboard(amount) {
         }
         getDelegation(validators, total, dataLoad);
         getLifetime(validators, dataLoad);
+        setLoading(false);
       }
     };
     feachData();
   }, [dataLoad]);
 
-  return data;
+  useEffect(() => {
+    const { lifetime, delegation, takeoff, load } = discipline;
+    console.log(lifetime, delegation, takeoff, load);
+    if (lifetime && delegation && takeoff && load) {
+      setLoading(false);
+    }
+  }, [discipline]);
+
+  return { data, loading };
 }
 
 export default setLeaderboard;

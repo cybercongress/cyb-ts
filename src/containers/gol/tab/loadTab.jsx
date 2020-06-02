@@ -7,9 +7,36 @@ import { formatNumber, trimString } from '../../../utils/utils';
 import setLeaderboard from '../hooks/leaderboard';
 
 function LoadTab({ takeoffDonations = 0 }) {
-  const data = setLeaderboard(takeoffDonations);
+  const { data, loading } = setLeaderboard(takeoffDonations);
 
   console.log('LoadTab', data);
+
+  if (loading) {
+    return <div>...</div>;
+  }
+
+  const itemTable = Object.keys(data)
+    .sort((a, b) => data[b].cybWon - data[a].cybWon)
+    .map(key => (
+      <Table.Row
+        paddingX={0}
+        paddingY={5}
+        display="flex"
+        minHeight="48px"
+        borderBottom="none"
+        height="fit-content"
+        key={key}
+      >
+        <Table.TextCell flex={2}>
+          <TextTable>
+            <Link to={`/network/euler/contract/${key}`}>{key}</Link>
+          </TextTable>
+        </Table.TextCell>
+        <Table.TextCell flex={0.5} textAlign="end">
+          <TextTable>{formatNumber(Math.floor(data[key].cybWon))}</TextTable>
+        </Table.TextCell>
+      </Table.Row>
+    ));
 
   return (
     <Table width="100%">
@@ -26,64 +53,18 @@ function LoadTab({ takeoffDonations = 0 }) {
           <TextTable>Address</TextTable>
         </Table.TextHeaderCell>
         <Table.TextHeaderCell flex={0.5} textAlign="center">
-          <TextTable>Load, ‱</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={0.5} textAlign="center">
-          <TextTable>Karma</TextTable>
-        </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={0.5} textAlign="center">
           <TextTable>CYB won</TextTable>
         </Table.TextHeaderCell>
       </Table.Head>
-      {/* <Table.Body
+      <Table.Body
         style={{
           backgroundColor: '#000',
           overflowY: 'hidden',
           padding: 7,
         }}
       >
-        {data.map((item, index) => {
-          let load = 0;
-          let cybWonAbsolute = 0;
-          let control = 0;
-          if (sumKarma > 0) {
-            load = parseFloat(item.karma) / parseFloat(sumKarma);
-            cybWonAbsolute = load * currentPrize;
-            control = (cybWonAbsolute / DISTRIBUTION.load) * 10000;
-          }
-
-          return (
-            <Table.Row
-              paddingX={0}
-              paddingY={5}
-              borderBottom={item.local ? '1px solid #3ab793bf' : 'none'}
-              display="flex"
-              minHeight="48px"
-              height="fit-content"
-              key={(item.subject, index)}
-            >
-              <Table.TextCell flex={2}>
-                <TextTable>
-                  <Link to={`/network/euler/contract/${item.subject}`}>
-                    {item.subject}
-                  </Link>
-                </TextTable>
-              </Table.TextCell>
-              <Table.TextCell flex={0.5} textAlign="end">
-                <TextTable>{formatNumber(control, 4)}</TextTable>
-              </Table.TextCell>
-              <Table.TextCell flex={0.5} textAlign="end">
-                <TextTable>{formatNumber(item.karma)}</TextTable>
-              </Table.TextCell>
-              <Table.TextCell flex={0.5} textAlign="end">
-                <TextTable>
-                  {formatNumber(Math.floor(cybWonAbsolute))}
-                </TextTable>
-              </Table.TextCell>
-            </Table.Row>
-          );
-        })}
-      </Table.Body> */}
+        {Object.keys(data).length > 0 && itemTable}
+      </Table.Body>
     </Table>
   );
 }

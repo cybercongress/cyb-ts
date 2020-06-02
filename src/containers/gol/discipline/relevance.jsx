@@ -17,7 +17,56 @@ const Relevance = ({
   setGolRelevanceProps,
   dataBlock,
 }) => {
-  if (addressLedger === null) {
+  try {
+    const GET_CHARACTERS = gql`
+    query newBlock {
+      relevance_aggregate(where: {height: {_eq: ${dataBlock}}}) {
+        aggregate {
+          sum {
+            rank
+          }
+        }
+      }
+      rewards_view(where: {_and: [{block: {_eq: ${dataBlock}}}, {subject: {_eq: "${addressLedger.bech32 ||
+      addressLedger}"}}]}) {
+        object
+        subject
+        rank
+        order_number
+      }
+    }
+  `;
+
+    const { loading, data: dataQ } = useQuery(GET_CHARACTERS);
+
+    if (loading) {
+      return <Dots />;
+    }
+
+    let arrLink = [];
+    dataQ.rewards_view.forEach(item => {
+      arrLink.push({
+        object: {
+          _eq: item.object,
+        },
+      });
+    });
+
+    const object = arrLink;
+    const json = JSON.stringify(object);
+    const unquoted = json.replace(/"([^"]+)":/g, '$1:');
+    arrLink = unquoted;
+
+    return (
+      <RelevanceC
+        dataBlock={dataBlock}
+        dataRelevance={dataQ}
+        takeoffDonations={takeoffDonations}
+        setGolRelevanceProps={setGolRelevanceProps}
+        arrLink={arrLink}
+      />
+    );
+  } catch (error) {
     return (
       <RelevanceC
         dataBlock={dataBlock}
@@ -29,53 +78,6 @@ const Relevance = ({
       />
     );
   }
-  const GET_CHARACTERS = gql`
-  query newBlock {
-    relevance_aggregate(where: {height: {_eq: ${dataBlock}}}) {
-      aggregate {
-        sum {
-          rank
-        }
-      }
-    }
-    rewards_view(where: {_and: [{block: {_eq: ${dataBlock}}}, {subject: {_eq: "${addressLedger.bech32 ||
-    addressLedger}"}}]}) {
-      object
-      subject
-      rank
-      order_number
-    }
-  }
-`;
-  const { loading, data: dataQ } = useQuery(GET_CHARACTERS);
-
-  if (loading) {
-    return <Dots />;
-  }
-
-  let arrLink = [];
-  dataQ.rewards_view.forEach(item => {
-    arrLink.push({
-      object: {
-        _eq: item.object,
-      },
-    });
-  });
-
-  const object = arrLink;
-  const json = JSON.stringify(object);
-  const unquoted = json.replace(/"([^"]+)":/g, '$1:');
-  arrLink = unquoted;
-
-  return (
-    <RelevanceC
-      dataBlock={dataBlock}
-      dataRelevance={dataQ}
-      takeoffDonations={takeoffDonations}
-      setGolRelevanceProps={setGolRelevanceProps}
-      arrLink={arrLink}
-    />
-  );
 };
 
 const RelevanceC = ({
@@ -94,9 +96,10 @@ const RelevanceC = ({
     (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * takeoffDonations
   );
 
-  if (addressLedger === null) {
+  if (addressLedger === null || dataRelevance === null) {
     useEffect(() => {
       setGolRelevanceProps(0, prize);
+      setLoadingCalc(false);
     }, [prize]);
 
     // setLoadingCalc(false);
