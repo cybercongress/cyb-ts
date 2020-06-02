@@ -133,7 +133,7 @@ function GOL({ setGolTakeOffProps }) {
       });
     } else {
       setAddAddress(true);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
