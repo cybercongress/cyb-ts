@@ -6,9 +6,7 @@ import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { formatNumber, trimString } from '../../../utils/utils';
 import setLeaderboard from '../hooks/leaderboard';
 
-function LoadTab({ takeoffDonations = 0 }) {
-  const { data, loading } = setLeaderboard(takeoffDonations);
-  console.log(data);
+function LoadTab({ loading, data }) {
 
   const itemTable = Object.keys(data)
     .sort((a, b) => data[b].cybWon - data[a].cybWon)

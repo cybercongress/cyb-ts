@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   getGraphQLQuery,
   getIndexStats,
