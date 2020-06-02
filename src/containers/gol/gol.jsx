@@ -43,6 +43,7 @@ function GOL({ setGolTakeOffProps }) {
   const {
     data: dataLeaderboard,
     loading: loadingLeaderboard,
+    progress: progressLeaderboard,
   } = setLeaderboard();
   const location = useLocation();
   const [selected, setSelected] = useState('disciplines');
@@ -221,7 +222,11 @@ function GOL({ setGolTakeOffProps }) {
       <Route
         path="/gol/leaderboard"
         render={() => (
-          <LoadTab data={dataLeaderboard} loading={loadingLeaderboard} />
+          <LoadTab
+            data={dataLeaderboard}
+            loading={loadingLeaderboard}
+            progress={progressLeaderboard}
+          />
         )}
       />
     );

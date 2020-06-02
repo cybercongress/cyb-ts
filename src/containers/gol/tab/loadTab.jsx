@@ -1,13 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { TableEv as Table } from '@cybercongress/gravity';
+import { TableEv as Table, Pane } from '@cybercongress/gravity';
 import { Loading, TextTable, Dots } from '../../../components';
 import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { formatNumber, trimString } from '../../../utils/utils';
 import setLeaderboard from '../hooks/leaderboard';
 
-function LoadTab({ loading, data }) {
+const Loader = ({ progress = 0 }) => (
+  <Pane
+    display="flex"
+    flexDirection="column"
+    justifyContent="center"
+    alignItems="center"
+    marginTop={10}
+  >
+    <Loading />
+    <Pane marginY={10} fontSize="20px">
+      {progress}%
+    </Pane>
+    <Pane textAlign="center">
+      Currently I compute rewards based on cyberlinks.
+      <br />
+      Keep tight. It could take several minutes.
+    </Pane>
+  </Pane>
+);
 
+function LoadTab({ loading, data, progress }) {
   const itemTable = Object.keys(data)
     .sort((a, b) => data[b].cybWon - data[a].cybWon)
     .map(key => (
@@ -56,7 +75,11 @@ function LoadTab({ loading, data }) {
           padding: 7,
         }}
       >
-        {loading ? <Dots /> : Object.keys(data).length > 0 && itemTable}
+        {loading ? (
+          <Loader progress={progress} />
+        ) : (
+          Object.keys(data).length > 0 && itemTable
+        )}
       </Table.Body>
     </Table>
   );

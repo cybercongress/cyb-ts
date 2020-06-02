@@ -111,6 +111,7 @@ const getRelevanceData = async (address, block) => {
 
 function setLeaderboard() {
   const [data, setData] = useState({});
+  const [progress, setProgress] = useState(0);
   const [block, setBlock] = useState(null);
   const [dataLoad, setDataLoad] = useState({});
   const [amount, setAmount] = useState(0);
@@ -325,11 +326,15 @@ function setLeaderboard() {
         const lastItem = Object.keys(dataLoad)
           .slice(-1)
           .pop();
+        const allItem = Object.keys(dataLoad).length;
+        let index = 0;
         // eslint-disable-next-line no-restricted-syntax
         // eslint-disable-next-line guard-for-in
         for (const key in dataLoad) {
           // eslint-disable-next-line no-prototype-builtins
           if (dataLoad.hasOwnProperty(key)) {
+            const status = Math.round((index / allItem) * 100);
+            setProgress(status);
             // eslint-disable-next-line no-await-in-loop
             const relevance = await getRelevanceData(key, block);
             if (
@@ -350,6 +355,7 @@ function setLeaderboard() {
                 };
               }
             }
+            index += 1;
             if (lastItem === key) {
               setDiscipline(item => ({
                 ...item,
@@ -370,7 +376,7 @@ function setLeaderboard() {
     }
   }, [discipline]);
 
-  return { data, loading };
+  return { data, loading, progress };
 }
 
 export default setLeaderboard;
