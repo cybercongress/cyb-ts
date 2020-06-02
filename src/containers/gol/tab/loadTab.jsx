@@ -8,7 +8,7 @@ import setLeaderboard from '../hooks/leaderboard';
 
 function LoadTab({ takeoffDonations = 0 }) {
   const { data, loading } = setLeaderboard(takeoffDonations);
-  console.log(loading);
+  console.log(data);
 
   const itemTable = Object.keys(data)
     .sort((a, b) => data[b].cybWon - data[a].cybWon)

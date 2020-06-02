@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { useState, useEffect, useMemo } from 'react';
 import {
   getGraphQLQuery,
@@ -8,6 +9,7 @@ import {
 import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../../utils/config';
 import { getDelegator } from '../../../utils/utils';
 import { getEstimation } from '../../../utils/fundingMath';
+import { getRelevance } from '../../../utils/game-monitors';
 
 const GET_LOAD = `
 query MyQuery {
@@ -16,6 +18,14 @@ query MyQuery {
     subject
   }
 }
+`;
+
+const BLOCK_SUBSCRIPTION = `
+  query newBlock {
+    block(limit: 1, order_by: { height: desc }) {
+      height
+    }
+  }
 `;
 
 const GET_LIFETIME = `
@@ -34,8 +44,74 @@ const GET_LIFETIME = `
   }
   `;
 
+const getQuerySubject = (address, block) => `
+query newBlock {
+  relevance_aggregate(where: {height: {_eq: ${block}}}) {
+    aggregate {
+      sum {
+        rank
+      }
+    }
+  }
+  rewards_view(where: {_and: [{block: {_eq: ${block}}}, {subject: {_eq: "${address}"}}]}) {
+    object
+    subject
+    rank
+    order_number
+  }
+}
+`;
+
+const getQueryLinkages = (arrLink, block) => `
+query linkages {
+  linkages_view(
+    where: {
+      _and: [
+        { height: { _eq: ${block} } }
+        {
+          _or: ${arrLink}
+        }
+      ]
+    }
+  ) {
+    object
+    linkages
+  }
+}
+`;
+
+const getJson = data => {
+  const json = JSON.stringify(data);
+  const unquoted = json.replace(/"([^"]+)":/g, '$1:');
+  return unquoted;
+};
+
+const getRelevanceData = async (address, block) => {
+  const responseRelevance = await getGraphQLQuery(
+    getQuerySubject(address, block)
+  );
+  if (responseRelevance !== null) {
+    const arrLink = [];
+    responseRelevance.rewards_view.forEach(item => {
+      arrLink.push({
+        object: {
+          _eq: item.object,
+        },
+      });
+    });
+
+    const arrLinkQuery = getJson(arrLink);
+
+    const dataQ = await getGraphQLQuery(getQueryLinkages(arrLinkQuery, block));
+
+    return { dataQ, responseRelevance };
+  }
+  return [];
+};
+
 function setLeaderboard() {
   const [data, setData] = useState({});
+  const [block, setBlock] = useState(null);
   const [dataLoad, setDataLoad] = useState({});
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -44,6 +120,7 @@ function setLeaderboard() {
     delegation: false,
     takeoff: false,
     load: false,
+    relevance: false,
   });
 
   const getLoad = async amountTakeoff => {
@@ -159,6 +236,10 @@ function setLeaderboard() {
 
   useEffect(() => {
     const feachData = async () => {
+      const responseBlock = await getGraphQLQuery(BLOCK_SUBSCRIPTION);
+      if (responseBlock !== null) {
+        setBlock(responseBlock.block[0].height);
+      }
       const dataTx = await getTxCosmos();
       let amountTakeoff = 0;
       if (dataTx !== null && dataTx.count > 0) {
@@ -228,17 +309,63 @@ function setLeaderboard() {
             });
           });
         }
-        getDelegation(validators, total, dataLoad);
-        getLifetime(validators, dataLoad);
+        getDelegation(validators, total);
+        getLifetime(validators);
       }
     };
     feachData();
   }, [dataLoad]);
 
   useEffect(() => {
-    const { lifetime, delegation, takeoff, load } = discipline;
-    console.log(lifetime, delegation, takeoff, load);
-    if (lifetime && delegation && takeoff && load) {
+    const prize = Math.floor(
+      (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
+    );
+    const feachData = async () => {
+      if (block > 0 && Object.keys(dataLoad).length > 0) {
+        const lastItem = Object.keys(dataLoad)
+          .slice(-1)
+          .pop();
+        // eslint-disable-next-line no-restricted-syntax
+        // eslint-disable-next-line guard-for-in
+        for (const key in dataLoad) {
+          // eslint-disable-next-line no-prototype-builtins
+          if (dataLoad.hasOwnProperty(key)) {
+            // eslint-disable-next-line no-await-in-loop
+            const relevance = await getRelevanceData(key, block);
+            if (
+              Object.keys(relevance).length > 0 &&
+              Object.keys(relevance.dataQ.linkages_view).length > 0
+            ) {
+              // eslint-disable-next-line no-await-in-loop
+              const dataRelevance = await getRelevance(
+                relevance.responseRelevance,
+                relevance.dataQ
+              );
+              if (dataRelevance > 0 && prize > 0) {
+                const cybAbsolute = dataRelevance * prize;
+                data[key] = {
+                  ...data[key],
+                  relevance: cybAbsolute,
+                  cybWon: data[key].cybWon + cybAbsolute,
+                };
+              }
+            }
+            if (lastItem === key) {
+              setDiscipline(item => ({
+                ...item,
+                relevance: true,
+              }));
+            }
+          }
+        }
+      }
+    };
+    feachData();
+  }, [dataLoad]);
+
+  useEffect(() => {
+    const { lifetime, delegation, takeoff, load, relevance } = discipline;
+    if (lifetime && delegation && takeoff && load && relevance) {
       setLoading(false);
     }
   }, [discipline]);
