@@ -65,14 +65,18 @@ function GOL({ setGolTakeOffProps, mobile }) {
     const feachData = async () => {
       chekPathname();
       await checkAddressLocalStorage();
-      await getTxsCosmos();
-      // await this.getDataWS();
-      // this.getMyGOLs();
       checkCurrentNetworkLoad();
       getValidatorsCount();
     };
     feachData();
   }, []);
+
+  useEffect(() => {
+    const feachData = async () => {
+      await getTxsCosmos();
+    };
+    feachData();
+  }, [address]);
 
   useEffect(() => {
     chekPathname();
