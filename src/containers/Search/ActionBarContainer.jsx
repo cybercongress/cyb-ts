@@ -13,8 +13,8 @@ import {
   Cyberlink,
   TransactionError,
   ActionBarContentText,
-  Dots,
   CheckAddressInfo,
+  Dots,
 } from '../../components';
 
 import {
@@ -90,7 +90,11 @@ class ActionBarContainer extends Component {
 
   componentDidUpdate() {
     const { stage, address, addressInfo, fromCid, toCid } = this.state;
-    if (stage === STAGE_LEDGER_INIT || stage === LEDGER_TX_ACOUNT_INFO) {
+    if (
+      stage === STAGE_LEDGER_INIT ||
+      stage === STAGE_READY ||
+      stage === LEDGER_TX_ACOUNT_INFO
+    ) {
       if (
         address !== null &&
         addressInfo !== null &&
@@ -131,35 +135,6 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getAddAddress = async () => {
-    try {
-      const accounts = {};
-
-      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
-      const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
-
-      accounts.cyber = addressLedgerCyber;
-      accounts.cosmos = addressLedgerCosmos;
-
-      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
-      localStorage.setItem('pocket', JSON.stringify(accounts));
-
-      this.setState({
-        address: addressLedgerCyber,
-        stage: STAGE_INIT,
-      });
-      this.checkAddressLocalStorage();
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   checkAddressLocalStorage = async () => {
     let address = [];
 
@@ -168,8 +143,6 @@ class ActionBarContainer extends Component {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
       this.setState({ addressLocalStor: address });
-      // this.getBandwidth();
-      // this.getLinkPrice();
     } else {
       this.setState({
         addressLocalStor: null,
@@ -391,13 +364,6 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onClickUsingLedger = () => {
-    // this.init();
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-  };
-
   onClickInitLedger = async () => {
     // this.init();
     await this.setState({
@@ -429,12 +395,6 @@ class ActionBarContainer extends Component {
 
     this.setState({
       file,
-    });
-  };
-
-  addAddressOnClick = () => {
-    this.setState({
-      stage: ADD_ADDRESS,
     });
   };
 
@@ -493,25 +453,11 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === ADD_ADDRESS) {
-      return (
-        <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
-        />
-      );
-    }
-
     if (stage === STAGE_INIT) {
       return (
         <StartStageSearchActionBar
           valueSearchInput={valueSearchInput}
-          onClickBtn={this.onClickUsingLedger}
+          onClickBtn={this.onClickInitLedger}
           contentHash={
             file !== null && file !== undefined ? file.name : contentHash
           }
