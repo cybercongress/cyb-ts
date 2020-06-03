@@ -59,7 +59,7 @@ function Ipfs({ node }) {
   }
 
   return (
-    <div style={{ textAlign: 'center', height: '100%' }}>
+    <div style={{ textAlign: 'center', height: 'calc(100% - 70px)' }}>
       <Iframe
         width="100%"
         height="100%"
