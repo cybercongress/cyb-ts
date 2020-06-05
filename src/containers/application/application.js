@@ -230,14 +230,14 @@ class App extends Component {
                     rel="noopener noreferrer"
                     href="https://github.com/cybercongress/cyberd/releases"
                   >
-                    euler
+                    euler-6
                   </a>{' '}
-                  network. euler is incentivized test network. Be careful.
+                  network. euler-6 is incentivized test network. Be careful.
                   Details in{' '}
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
+                    href="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
                   >
                     whitepaper
                   </a>{' '}
@@ -265,14 +265,14 @@ class App extends Component {
                       rel="noopener noreferrer"
                       href="https://github.com/cybercongress/cyberd/releases"
                     >
-                      euler
+                      euler-6
                     </a>{' '}
-                    network. euler is incentivized test network. Be careful.
+                    network. euler-6 is incentivized test network. Be careful.
                     Details in{' '}
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
-                      href="https://ipfs.io/ipfs/QmPjbx76LycfzSSWMcnni6YVvV3UNhTrYzyPMuiA9UQM3x"
+                      href="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
                     >
                       whitepaper
                     </a>{' '}
