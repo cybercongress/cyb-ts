@@ -86,9 +86,9 @@ Intro, avatar, nick, contract
 - Society. Pin citizen (Send mail, Send message, Send token)
 
 ## Brain
-Impress and inspire citizens self governance of the system
+Impress and inspire citizens
 
-9 metaphors are mandatory for autonomous ecosystem:
+10 metaphors are mandatory for autonomous ecosystem:
 - Hall of Fame
 - Library
 - University
@@ -98,11 +98,14 @@ Impress and inspire citizens self governance of the system
 - Temple
 - Laboratory
 - Garden
+- Arena
 
 ### Hall of Fame
 Define your Heroes of the Great Web
 
 ### University
+Learn new skills
+
 Understand how the one can develop self after joining the force
 
 Citizen init:
@@ -135,13 +138,19 @@ Hacker path:
 ### Bazaar
 Simplify value exchange
 
-Currently key purpose of bazaar is to create liquidity for CYB. Hence all interface considerations have to be around this goal. The following exchange directions have to be supported:
-- Fiat
-- Crypto
-- Internal tokens
+Currently key purpose of bazaar is to create internal and over-the-counter liquidity for CYB. Hence all interface considerations have to be around this goal.
 
-Make decision on buy and sell Understand value behind tokens, forecast indicators,
-impact price, supply
+The philosophy behind bazaar is to as dumb as possible and follows 3 basic principles:
+- must not require arbitrage. Because it's possible thanks to 2of2 scheme with delayed return.
+- must not require integrations. Trade details have to be exchanged using encrypted messages.
+- must not require administration. Trade directions have to be dynamic without any third party.
+
+The following exchange directions have to be initially supported:
+- Physical cash
+- Gold and silver
+- Electronic payments
+- Leading crypto
+- Internal tokens
 
 ### Tower
 Inspire content creators
@@ -150,17 +159,22 @@ Inspire content creators
 Discovery the glory of your knowledge and connect the dots
 
 ### Government
-
 Define your future
 
 ### Temple
-
 Inspire evangelists
 
 ### Laboratory
-
 Inspire app creation
 
 ### Garden
-
 Facilitate use of apps
+
+### Arena
+Facilitate distribution games
+
+- Game of Links
+- cyber~Auction
+- Gift of Gods
+
+Understand value behind token, forecast indicators, push price, impact supply
