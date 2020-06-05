@@ -20,25 +20,32 @@ So I asked a question is that possible to have one consistent experience which w
 - explain complicated tech through metaphors
 
 ## Files
-Types:
-- Video
-- Text
-- Picture
-- Music
-- Pdf
-- Spark with payment
+
+### Sparks
+
+- video
+- audio
+- image
+- text
+- code
+- doc
+- tx
+- block
+- em
+- citizen
 
 ### Answers
 
 => Subscribe to answers
 
-### Backlinks
-
-=> Subscribe to backlinks
-
 ### Rank
 
+=> Subscribe to backlinks
 => Improve the rank
+
+### Recent
+
+=> Post
 
 ### Community
 
@@ -46,7 +53,7 @@ Types:
 
 ### Meta
 
-=>
+=> Cyerlink
 
 ## Citizens
 
@@ -103,6 +110,10 @@ Impress and inspire citizens
 ### Hall of Fame
 Define your Heroes of the Great Web
 
+- Hall
+- Incubator
+- Jail
+
 ### University
 Learn new skills
 
@@ -140,7 +151,7 @@ Simplify value exchange
 
 Currently key purpose of bazaar is to create internal and over-the-counter liquidity for CYB. Hence all interface considerations have to be around this goal.
 
-The philosophy behind bazaar is to as dumb as possible and follows 3 basic principles:
+The philosophy behind bazaar is to be as dumb as possible and follows 3 basic principles:
 - must not require arbitrage. Because it's possible thanks to 2of2 scheme with delayed return.
 - must not require integrations. Trade details have to be exchanged using encrypted messages.
 - must not require administration. Trade directions have to be dynamic without any third party.
@@ -151,6 +162,8 @@ The following exchange directions have to be initially supported:
 - Electronic payments
 - Leading crypto
 - Internal tokens
+
+List of tokens is managed by simple shelling game in which proposers stake tokens for every change in the registry.
 
 ### Tower
 Inspire content creators
@@ -174,7 +187,7 @@ Facilitate use of apps
 Facilitate distribution games
 
 - Game of Links
-- cyber~Auction
+- Great Vesting
 - Gift of Gods
 
 Understand value behind token, forecast indicators, push price, impact supply
