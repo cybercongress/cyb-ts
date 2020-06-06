@@ -11,6 +11,8 @@ I have 25 year experience of using computers. I used a lot of programs in my lif
 
 Together these seven web apps form my environment. But my experience sucks. All these apps share one particular pattern. They share 3 essential functions which are messages, feeds and contacts. The only app which do not follow this pattern is google search. That explain me a lot: I ask questions and have results which primary unaware of the most important staff for me. Data is fragmented and much of data is locked. I use 6 different icons for essentially the same stuff.
 
+Another thing I realised after nearly 10 years of using crypto is that trading become kinda basic and essential for my survival. So I decided to combine functions of bisq (otc) and 1inch (on-chain) exchanges in one convenient screen with one significant limitation that the medium of exchange will be CYB, because otherwise it will be technically infeasible to implement. CYB as the only medium of exchange to be honest is enough for our task.
+
 So I asked a question is that possible to have one consistent experience which will replace all these programs at once? It turns out that the app that will solve all the tasks at once does not have to be complicated. So I decide to start the design of such app from defining philosophic consideration, conceptual semantics and functional bounds. I hope this doc will help not only with initial implementation, but with advancing the idea further.
 
 ## Idea
@@ -19,6 +21,21 @@ So I asked a question is that possible to have one consistent experience which w
 - fix broken meatspace with the help of gamification
 - explain complicated tech through metaphors
 
+## My Robot
+Gadget which help
+
+- Timeline
+- Pocket (energy, power, keys/networks, memory)
+- Equipment (state, connections, root, resources, sparks, about)
+
+## My files
+
+
+- My feed
+- Public Pin file (Post, Upload file, Cyberlink)
+- Private
+- Society. Pin citizen (Send mail, Send message, Send token)
+
 ## Files
 
 ### Sparks
@@ -26,6 +43,7 @@ So I asked a question is that possible to have one consistent experience which w
 - video
 - audio
 - image
+- uri
 - text
 - code
 - doc
@@ -34,26 +52,26 @@ So I asked a question is that possible to have one consistent experience which w
 - em
 - citizen
 
-### Answers
+### Optimisation
 
-=> Subscribe to answers
+=> Follow backlinks
+=> Improve rank
 
-### Rank
-
-=> Subscribe to backlinks
-=> Improve the rank
-
-### Recent
+### Discussion
 
 => Post
 
+### Answers
+
+=> Follow answers
+
 ### Community
 
-=>
+=> Cyberlink
 
 ### Meta
 
-=> Cyerlink
+=> Cyberlink
 
 ## Citizens
 
@@ -61,9 +79,14 @@ Intro, avatar, nick, contract
 
 ### Timeline
 
-### Heroes
+=> New issue
+=> New event
 
-### Files
+### Heroes
+Display heros
+
+### Knowledge
+Display knowledge graph
 
 ### Society
 - subscriptions
@@ -80,17 +103,6 @@ Intro, avatar, nick, contract
 - Staking rewards
 - Evangelism rewards
 - Hackers rewards
-
-## My Robot
-- Timeline
-- Pocket (energy, power, keys/networks, memory)
-- Equipment (state, connections, root, resources, sparks, about)
-
-## My Files
-- My feed
-- Public Pin file (Post, Upload file, Cyberlink)
-- Private
-- Society. Pin citizen (Send mail, Send message, Send token)
 
 ## Brain
 Impress and inspire citizens
@@ -111,8 +123,15 @@ Impress and inspire citizens
 Define your Heroes of the Great Web
 
 - Hall
+
+=> Become Hero of Great Web
+=> onClick: Stake, Unstake, Restake
+
 - Incubator
+=> Become Hero of Great Web
+
 - Jail
+=> onClick: Unstake, Restake
 
 ### University
 Learn new skills
@@ -167,6 +186,14 @@ List of tokens is managed by simple shelling game in which proposers stake token
 
 ### Tower
 Inspire content creators
+
+Masters with the most rank of created files
+
+Cre
+
+The most payed masters What is matter is total value of CYB which came to the account with memo field of the created files by account.
+
+=> Post
 
 ### Library
 Discovery the glory of your knowledge and connect the dots
