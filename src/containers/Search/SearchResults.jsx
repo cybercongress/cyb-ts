@@ -289,24 +289,26 @@ class SearchResults extends React.Component {
           }
         }
         return (
-          <SearchItem
-            key={key}
-            hash={key}
-            rank={links[key].rank}
-            grade={links[key].grade}
-            status={links[key].status}
-            contentIpfs={links[key].content}
-            // onClick={e => (e, links[cid].content)}
-          >
-            {contentItem && (
-              <Iframe
-                width="100%"
-                height="fit-content"
-                className="iframe-SearchItem"
-                url={links[key].content}
-              />
-            )}
-          </SearchItem>
+          <Link to={`/ipfs/${key}`}>
+            <SearchItem
+              key={key}
+              hash={key}
+              rank={links[key].rank}
+              grade={links[key].grade}
+              status={links[key].status}
+              contentIpfs={links[key].content}
+              // onClick={e => (e, links[cid].content)}
+            >
+              {contentItem && (
+                <Iframe
+                  width="100%"
+                  height="fit-content"
+                  className="iframe-SearchItem"
+                  url={links[key].content}
+                />
+              )}
+            </SearchItem>
+          </Link>
         );
       })
     );

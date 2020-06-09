@@ -108,13 +108,13 @@
 
 .ValidatorInfo__moniker-wrapper {
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: space-between;
 }
 
 .ValidatorInfo__moniker-wrapper-resonsive {
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -126,7 +126,7 @@
   display: none;
 }
 
-.ValidatorInfo__Delegated-MissedBlocks-wrapper{
+.ValidatorInfo__Delegated-MissedBlocks-wrapper {
   display: grid;
   grid-template-columns: 2fr 1fr;
   grid-gap: 15px;
@@ -190,7 +190,7 @@
     align-items: flex-start;
   }
 
-  .ValidatorInfo__Delegated-MissedBlocks-wrapper{
+  .ValidatorInfo__Delegated-MissedBlocks-wrapper {
     grid-template-columns: repeat(1, 1fr);
   }
 }
@@ -198,6 +198,11 @@
 .iframe-SearchItem {
   border: none;
 }
+
+.iframe-SearchItem pre {
+  color: #fff !important;
+}
+
 @media (max-width: 500px) {
   .container-gift {
     padding: 20px 0;
@@ -274,32 +279,82 @@
 
 .pulse {
   background: transparent;
-	border-radius: 50%;
-	box-shadow: 0 0 0 0 rgba(24, 255, 255, 1);
-	height: 50px;
-	width: 40px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(24, 255, 255, 1);
+  height: 50px;
+  width: 40px;
   animation: pulse-green 4s infinite;
 }
 
 .pulse-cyb {
   background: transparent;
-	border-radius: 50%;
-	box-shadow: 0 0 0 0 rgba(24, 255, 255, 1);
-	height: 50px;
-	width: 40px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(24, 255, 255, 1);
+  height: 50px;
+  width: 40px;
   animation: pulse-green 4.5s infinite;
 }
 
 @keyframes pulse-green {
-	0% {
-		box-shadow: 0 0 0 0 rgba(24, 255, 255, 0.54);
-	}
-	
-	70% {
-		box-shadow: 0 0 0 10px rgba(24, 255, 255, 0);
-	}
-	
-	100% {
-		box-shadow: 0 0 0 0 rgba(24, 255, 255, 0);
-	}
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 255, 255, 0.54);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(24, 255, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 255, 255, 0);
+  }
+}
+
+.markdown p {
+  margin-bottom: 10px;
+  text-align: justify;
+}
+
+.markdown a {
+  margin-bottom: 10px;
+}
+.markdown h1 {
+  margin-bottom: 10px;
+}
+.markdown h2 {
+  margin-bottom: 10px;
+}
+.markdown h3 {
+  margin-bottom: 10px;
+}
+.markdown table {
+  margin-bottom: 10px;
+}
+.markdown hr {
+  margin-bottom: 10px;
+}
+.markdown div {
+  margin-bottom: 10px;
+}
+
+.markdown ul {
+  margin-bottom: 10px;
+  padding-left: 20px;
+}
+
+.markdown blockquote {
+  margin: 10px 0;
+  padding: 10px 5px 10px 20px;
+  border-left: 3px solid #3ab793e3;
+}
+
+.markdown table {
+  border-collapse: separate;
+  border-spacing: 0 5px;
+  border: 0;
+}
+
+.markdown th {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-collapse: separate;
+  border-spacing: 5px 5px;
 }

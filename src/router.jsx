@@ -60,8 +60,8 @@ function AppRouter({
     const mobile = isMobileTablet();
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     setTypeDeviceProps(mobile);
-    //     this.setState({ loader: false });
-    //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
+    // setLoader(false);
+    // //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
     if (!mobile) {
       if (DetectRTC.isWebRTCSupported && !isSafari) {
         await initIpfsNode();
