@@ -6,10 +6,12 @@ import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { getToLink, getFromLink } from '../../utils/search/utils';
+import { search, getRankGrade } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
+import { formatNumber } from '../../utils/utils';
+import { PATTERN_HTTP } from '../../utils/config';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -30,33 +32,20 @@ function Ipfs({ nodeIpfs }) {
       }
     }
   `;
-  const GET_TO_LINK = gql`
-    query MyQuery {
-      cyberlink(
-        where: {
-          object_from: { _eq: "${cid}" }
-        }
-      ) {
-        object_to
-      }
-    }
-  `;
+
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
 
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState('content');
   const [gateway, setGateway] = useState(null);
+  const [dataToLink, setDataToLink] = useState([]);
   const { data: dataFromLink, loading: loadingFromLink } = useQuery(
     GET_FROM_LINK
   );
-  const { data: dataToLink, loading: loadingToLink } = useQuery(GET_TO_LINK);
   let linksFrom;
   let linksTo;
   let contentTab;
-
-  console.log('dataFromLink', dataFromLink);
-  console.log('dataToLink', dataToLink);
 
   useEffect(() => {
     const feacData = async () => {
@@ -65,14 +54,12 @@ function Ipfs({ nodeIpfs }) {
         const responseDag = await nodeIpfs.dag.get(cid, {
           localResolve: false,
         });
-        console.log('responseDag', responseDag);
         if (responseDag.value.size < 10 * 10 ** 6) {
           const responseCat = await nodeIpfs.cat(cid);
           const bufs = [];
           bufs.push(responseCat);
           const data = Buffer.concat(bufs);
           const dataFileType = await FileType.fromBuffer(data);
-
           if (dataFileType !== undefined) {
             const { mime } = dataFileType;
             const dataBase64 = data.toString('base64');
@@ -86,8 +73,7 @@ function Ipfs({ nodeIpfs }) {
             }
           } else {
             const dataBase64 = data.toString();
-
-            if (dataBase64.indexOf('https://') !== -1) {
+            if (dataBase64.match(PATTERN_HTTP)) {
               setTypeContent('link');
             } else {
               setTypeContent('text');
@@ -104,6 +90,14 @@ function Ipfs({ nodeIpfs }) {
         setLoading(false);
         setGateway(true);
       }
+    };
+    feacData();
+  }, [cid]);
+
+  useEffect(() => {
+    const feacData = async () => {
+      const responseSearch = await search(cid);
+      setDataToLink(responseSearch);
     };
     feacData();
   }, [cid]);
@@ -155,7 +149,6 @@ function Ipfs({ nodeIpfs }) {
       </div>
     );
   }
-  console.log(content);
 
   if (!loadingFromLink) {
     const { cyberlink } = dataFromLink;
@@ -170,17 +163,19 @@ function Ipfs({ nodeIpfs }) {
     }
   }
 
-  if (!loadingToLink) {
-    const { cyberlink } = dataToLink;
-    if (cyberlink.length > 0) {
-      linksTo = cyberlink.map(item => (
-        <Link key={item.object_to} to={`/ipfs/${item.object_to}`}>
-          <SearchItem key={item.object_to} hash={item.object_to} />
-        </Link>
-      ));
-    } else {
-      linksTo = <Noitem text="No cyberLinks" />;
-    }
+  if (dataToLink.length > 0) {
+    linksTo = dataToLink.map(item => (
+      <Link key={item.cid} to={`/ipfs/${item.cid}`}>
+        <SearchItem
+          key={item.cid}
+          hash={item.cid}
+          rank={formatNumber(item.rank, 6)}
+          grade={getRankGrade(item.rank)}
+        />
+      </Link>
+    ));
+  } else {
+    linksTo = <Noitem text="No cyberLinks" />;
   }
 
   // if (!loadingToLink) {

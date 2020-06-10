@@ -109,6 +109,7 @@ const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
+const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 
 export {
   TAKEOFF,
@@ -131,4 +132,5 @@ export {
   TIME_START,
   TAKEOFF_SUPPLY,
   WP,
+  PATTERN_HTTP,
 };
