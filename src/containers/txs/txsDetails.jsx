@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { getTxs } from '../../utils/search/utils';
 import InformationTxs from './informationTxs';
+import { connect } from 'react-redux';
 import Msgs from './msgs';
 import ActionBarContainer from '../../containers/Search/ActionBarContainer';
 
@@ -84,7 +85,7 @@ class TxsDetails extends React.Component {
 
   render() {
     const { information, messageError, msgs } = this.state;
-    const { match } = this.props;
+    const { match, mobile } = this.props;
     const { txHash } = match.params;
 
     return (
@@ -97,10 +98,18 @@ class TxsDetails extends React.Component {
           />
           {msgs.length > 0 && <Msgs data={msgs} />}
         </main>
+        {!mobile && (
         <ActionBarContainer valueSearchInput={txHash} keywordHash={txHash} />
+         )}
       </div>
     );
   }
 }
 
-export default TxsDetails;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(TxsDetails);
