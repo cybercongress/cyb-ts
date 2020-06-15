@@ -15,14 +15,14 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
   if (gateway) {
     return (
       <>
-        <Pane
+        {/* <Pane
           position="absolute"
           zIndex="2"
           top="100px"
           left="0"
           bottom="0"
           right="0"
-        >
+        > */}
           <div
             style={{
               textAlign: 'center',
@@ -38,8 +38,8 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
               src={`https://io.cybernode.ai/ipfs/${cid}`}
             />
           </div>
-        </Pane>
-        <Dots big />
+        {/* </Pane> */}
+        {/* <Dots big /> */}
       </>
     );
   }
