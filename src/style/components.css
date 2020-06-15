@@ -136,6 +136,11 @@
   padding: 20px 20%;
 }
 
+.container-contentItem {
+  width: 60%;
+  margin: 0 auto;
+}
+
 @media (max-width: 979px) {
   .txs-contaiter-row {
     flex-direction: column;
@@ -201,21 +206,6 @@
 
 .iframe-SearchItem pre {
   color: #fff !important;
-}
-
-@media (max-width: 500px) {
-  .container-gift {
-    padding: 20px 0;
-  }
-  .battery-container {
-    display: none;
-  }
-}
-
-@media (max-width: 650px) {
-  .battery-container {
-    display: none;
-  }
 }
 
 .btn-add-file {
@@ -309,6 +299,16 @@
   }
 }
 
+.markdown {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.markdown code {
+  white-space: normal;
+  line-height: 20px;
+}
+
 .markdown p {
   margin-bottom: 10px;
   text-align: justify;
@@ -357,4 +357,35 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   border-collapse: separate;
   border-spacing: 5px 5px;
+}
+
+.markdown ol {
+  padding-left: 20px;
+}
+
+@media (max-width: 500px) {
+  .container-gift {
+    padding: 20px 0;
+  }
+  .battery-container {
+    display: none;
+  }
+
+  .markdown {
+    width: 100%;
+  }
+}
+
+@media (max-width: 650px) {
+  .battery-container {
+    display: none;
+  }
+  
+  .container-contentItem {
+    width: 100%;
+  }
+  
+  .block-body {
+    width: 100%;
+  }
 }
