@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
-import { Pane, SearchItem, Tablist } from '@cybercongress/gravity';
+import {
+  Pane,
+  SearchItem,
+  Tablist,
+  TableEv as Table,
+} from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { search, getRankGrade } from '../../utils/search/utils';
-import { Dots, TabBtn, Loading } from '../../components';
+import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, trimString } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
-
-const htmlParser = require('react-markdown/plugins/html-parser');
+import {
+  DiscussionTab,
+  CommunityTab,
+  AnswersTab,
+  ContentTab,
+  OptimisationTab,
+} from './tab';
 
 const FileType = require('file-type');
 
@@ -28,14 +38,28 @@ function Ipfs({ nodeIpfs }) {
           object_to: { _eq: "${cid}" }
         }
       ) {
+        subject
         object_from
+        object_to
       }
     }
   `;
-
+  const GET_TO_LINK = gql`
+    query MyQuery {
+      cyberlink(
+        where: {
+          object_from: { _eq: "${cid}" }
+        }
+      ) {
+        subject
+        object_from
+        object_to
+      }
+    }
+  `;
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
-
+  const [communityData, setCommunityData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState('content');
   const [gateway, setGateway] = useState(null);
@@ -43,8 +67,7 @@ function Ipfs({ nodeIpfs }) {
   const { data: dataFromLink, loading: loadingFromLink } = useQuery(
     GET_FROM_LINK
   );
-  let linksFrom;
-  let linksTo;
+  const { data: dataQueryToLink } = useQuery(GET_TO_LINK);
   let contentTab;
 
   useEffect(() => {
@@ -54,8 +77,10 @@ function Ipfs({ nodeIpfs }) {
         const responseDag = await nodeIpfs.dag.get(cid, {
           localResolve: false,
         });
+        console.log('responseDag', responseDag);
         if (responseDag.value.size < 10 * 10 ** 6) {
           const responseCat = await nodeIpfs.cat(cid);
+          console.log('responseCat', responseCat);
           const bufs = [];
           bufs.push(responseCat);
           const data = Buffer.concat(bufs);
@@ -103,6 +128,20 @@ function Ipfs({ nodeIpfs }) {
   }, [cid]);
 
   useEffect(() => {
+    const tempArr = [];
+
+    if (dataFromLink && dataFromLink.cyberlink.length > 0) {
+      tempArr.push(...dataFromLink.cyberlink);
+    }
+
+    if (dataQueryToLink && dataQueryToLink.cyberlink.length > 0) {
+      tempArr.push(...dataQueryToLink.cyberlink);
+    }
+
+    setCommunityData(tempArr);
+  }, [dataFromLink, dataQueryToLink]);
+
+  useEffect(() => {
     chekPathname();
   }, [location.pathname]);
 
@@ -110,10 +149,10 @@ function Ipfs({ nodeIpfs }) {
     const { pathname } = location;
 
     if (
-      pathname.match(/backlinks/gm) &&
-      pathname.match(/backlinks/gm).length > 0
+      pathname.match(/optimisation/gm) &&
+      pathname.match(/optimisation/gm).length > 0
     ) {
-      setSelected('backlinks');
+      setSelected('optimisation');
     } else if (
       pathname.match(/community/gm) &&
       pathname.match(/community/gm).length > 0
@@ -124,14 +163,15 @@ function Ipfs({ nodeIpfs }) {
       pathname.match(/answers/gm).length > 0
     ) {
       setSelected('answers');
+    } else if (
+      pathname.match(/discussion/gm) &&
+      pathname.match(/discussion/gm).length > 0
+    ) {
+      setSelected('discussion');
     } else {
       setSelected('content');
     }
   };
-
-  const parseHtml = htmlParser({
-    isValidNode: node => node.type !== 'script',
-  });
 
   if (loading) {
     return (
@@ -150,119 +190,31 @@ function Ipfs({ nodeIpfs }) {
     );
   }
 
-  if (!loadingFromLink) {
-    const { cyberlink } = dataFromLink;
-    if (cyberlink.length > 0) {
-      linksFrom = cyberlink.map(item => (
-        <Link key={item.object_from} to={`/ipfs/${item.object_from}`}>
-          <SearchItem key={item.object_from} hash={item.object_from} />
-        </Link>
-      ));
-    } else {
-      linksFrom = <Noitem text="No cyberLinks" />;
-    }
-  }
-
-  if (dataToLink.length > 0) {
-    linksTo = dataToLink.map(item => (
-      <Link key={item.cid} to={`/ipfs/${item.cid}`}>
-        <SearchItem
-          key={item.cid}
-          hash={item.cid}
-          rank={formatNumber(item.rank, 6)}
-          grade={getRankGrade(item.rank)}
-        />
-      </Link>
-    ));
-  } else {
-    linksTo = <Noitem text="No cyberLinks" />;
-  }
-
-  // if (!loadingToLink) {
-  //   const { cyberlink } = dataToLink;
-  //   linksTo = cyberlink.map(item => (
-  //     <Link key={item.object_to} to={`/ipfs/${item.object_to}`}>
-  //       <SearchItem key={item.object_to} hash={item.object_to} />
-  //     </Link>
-  //   ));
-  // }
-
-  if (selected === 'backlinks') {
-    contentTab = linksFrom;
+  if (selected === 'optimisation') {
+    contentTab = <OptimisationTab data={dataFromLink} nodeIpfs={nodeIpfs} />;
   }
 
   if (selected === 'answers') {
-    contentTab = linksTo;
+    contentTab = <AnswersTab data={dataToLink} nodeIpfs={nodeIpfs} />;
+  }
+
+  if (selected === 'community') {
+    contentTab = <CommunityTab data={communityData} />;
+  }
+
+  if (selected === 'discussion') {
+    contentTab = <DiscussionTab data={dataQueryToLink} nodeIpfs={nodeIpfs} />;
   }
 
   if (selected === 'content') {
-    if (gateway) {
-      contentTab = (
-        <>
-          <Pane
-            position="absolute"
-            zIndex="2"
-            top="100px"
-            left="0"
-            bottom="0"
-            right="0"
-          >
-            <div
-              style={{
-                textAlign: 'center',
-                backgroundColor: '#000',
-                height: '100%',
-              }}
-            >
-              <Iframe
-                width="100%"
-                height="100%"
-                id="iframeCid"
-                className="iframe-SearchItem"
-                src={`https://io.cybernode.ai/ipfs/${cid}`}
-              />
-            </div>
-          </Pane>
-          <Dots big />
-        </>
-      );
-    } else if (typeContent === 'image') {
-      contentTab = (
-        <img alt="content" style={{ width: '100%' }} src={content} />
-      );
-    } else if (typeContent === 'link') {
-      contentTab = (
-        <div
-          style={{
-            textAlign: 'center',
-            backgroundColor: '#000',
-            height: '100%',
-          }}
-        >
-          <Iframe
-            width="100%"
-            height="100%"
-            id="iframeCid"
-            className="iframe-SearchItem"
-            src={content}
-          />
-        </div>
-      );
-    } else {
-      contentTab = (
-        <div className="markdown">
-          <ReactMarkdown
-            source={content}
-            escapeHtml={false}
-            skipHtml={false}
-            astPlugins={[parseHtml]}
-            renderers={{ code: CodeBlock }}
-            // plugins={[toc]}
-            // escapeHtml={false}
-          />
-        </div>
-      );
-    }
+    contentTab = (
+      <ContentTab
+        typeContent={typeContent}
+        gateway={gateway}
+        content={content}
+        cid={cid}
+      />
+    );
   }
 
   return (
@@ -286,14 +238,19 @@ function Ipfs({ nodeIpfs }) {
           to={`/ipfs/${cid}/answers`}
         />
         <TabBtn
+          text="discussion"
+          isSelected={selected === 'discussion'}
+          to={`/ipfs/${cid}/discussion`}
+        />
+        <TabBtn
           text="content"
           isSelected={selected === 'content'}
           to={`/ipfs/${cid}`}
         />
         <TabBtn
-          text="backlinks"
-          isSelected={selected === 'backlinks'}
-          to={`/ipfs/${cid}/backlinks`}
+          text="optimisation"
+          isSelected={selected === 'optimisation'}
+          to={`/ipfs/${cid}/optimisation`}
         />
         <TabBtn
           text="community"
