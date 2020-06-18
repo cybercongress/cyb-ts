@@ -77,7 +77,7 @@ const ContentItem = ({ item, cid, nodeIpfs }) => {
     >
       {typeContent === 'image' && (
         <img
-          style={{ height: '200px', paddingTop: 10 }}
+          style={{ width: '100%', paddingTop: 10 }}
           alt="img"
           src={content}
         />
