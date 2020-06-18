@@ -23,21 +23,21 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
           bottom="0"
           right="0"
         > */}
-          <div
-            style={{
-              textAlign: 'center',
-              backgroundColor: '#000',
-              height: '100%',
-            }}
-          >
-            <Iframe
-              width="100%"
-              height="100%"
-              id="iframeCid"
-              className="iframe-SearchItem"
-              src={`https://io.cybernode.ai/ipfs/${cid}`}
-            />
-          </div>
+        <div
+          style={{
+            textAlign: 'center',
+            backgroundColor: '#000',
+            height: '100%',
+          }}
+        >
+          <Iframe
+            width="100%"
+            height="100%"
+            id="iframeCid"
+            className="iframe-SearchItem"
+            src={`https://io.cybernode.ai/ipfs/${cid}`}
+          />
+        </div>
         {/* </Pane> */}
         {/* <Dots big /> */}
       </>

@@ -363,6 +363,10 @@
   padding-left: 20px;
 }
 
+.objectInspector li {
+  background-color: #000 !important;
+}
+
 @media (max-width: 500px) {
   .container-gift {
     padding: 20px 0;

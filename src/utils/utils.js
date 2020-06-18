@@ -63,10 +63,11 @@ const PREFIXES = [
 export function formatCurrency(
   value,
   currency = DEFAULT_CURRENCY,
-  decimalDigits = DEFAULT_DECIMAL_DIGITS
+  decimalDigits = DEFAULT_DECIMAL_DIGITS,
+  prefixCustom = PREFIXES
 ) {
   const { prefix = '', power = 1 } =
-    PREFIXES.find(({ power }) => value >= power) || {};
+    prefixCustom.find(({ power }) => value >= power) || {};
 
   return `${roundNumber(
     value / power,

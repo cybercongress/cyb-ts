@@ -10,12 +10,13 @@ import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import { useQuery } from '@apollo/react-hooks';
+import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
 import { search, getRankGrade } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
-import { formatNumber, trimString } from '../../utils/utils';
+import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
   DiscussionTab,
@@ -23,9 +24,25 @@ import {
   AnswersTab,
   ContentTab,
   OptimisationTab,
+  MetaTab,
 } from './tab';
 
 const FileType = require('file-type');
+
+const testData = {
+  data: { type: 'Buffer', data: [8, 1] },
+  links: [],
+  cid: 'QmYPNmahJAvkMTU6tDx5zvhEkoLzEFeTDz6azDCSNqzKkW',
+  size: 10016715,
+};
+
+const objectInspectorTheme = {
+  ...chromeDark,
+  BASE_FONT_SIZE: '13px',
+  BASE_LINE_HEIGHT: '19px',
+  TREENODE_FONT_SIZE: '13px',
+  TREENODE_LINE_HEIGHT: '19px',
+};
 
 function Ipfs({ nodeIpfs }) {
   const { cid } = useParams();
@@ -64,6 +81,12 @@ function Ipfs({ nodeIpfs }) {
   const [selected, setSelected] = useState('content');
   const [gateway, setGateway] = useState(null);
   const [dataToLink, setDataToLink] = useState([]);
+  const [metaData, setMetaData] = useState({
+    type: 'file',
+    size: 0,
+    blockSizes: [],
+    data: '',
+  });
   const { data: dataFromLink, loading: loadingFromLink } = useQuery(
     GET_FROM_LINK
   );
@@ -78,8 +101,27 @@ function Ipfs({ nodeIpfs }) {
           localResolve: false,
         });
         console.log('responseDag', responseDag);
+        const link = [];
+        if (responseDag.value.Links && responseDag.value.Links.length > 0) {
+          responseDag.value.Links.forEach((item, index) => {
+            if (item.Name.length > 0) {
+              link.push({ name: item.Name, size: item.Tsize });
+            } else {
+              link.push(item.Tsize);
+            }
+          });
+        }
+        setMetaData(item => ({
+          ...item,
+          size: responseDag.value.size,
+          blockSizes: link,
+        }));
         if (responseDag.value.size < 10 * 10 ** 6) {
           const responseCat = await nodeIpfs.cat(cid);
+          setMetaData(item => ({
+            ...item,
+            data: responseCat,
+          }));
           console.log('responseCat', responseCat);
           const bufs = [];
           bufs.push(responseCat);
@@ -168,6 +210,11 @@ function Ipfs({ nodeIpfs }) {
       pathname.match(/discussion/gm).length > 0
     ) {
       setSelected('discussion');
+    } else if (
+      pathname.match(/meta/gm) &&
+      pathname.match(/meta/gm).length > 0
+    ) {
+      setSelected('meta');
     } else {
       setSelected('content');
     }
@@ -217,6 +264,10 @@ function Ipfs({ nodeIpfs }) {
     );
   }
 
+  if (selected === 'meta') {
+    contentTab = <MetaTab cid={cid} data={metaData} />;
+  }
+
   return (
     <main
       className="block-body"
@@ -256,6 +307,11 @@ function Ipfs({ nodeIpfs }) {
           text="community"
           isSelected={selected === 'community'}
           to={`/ipfs/${cid}/community`}
+        />
+        <TabBtn
+          text="meta"
+          isSelected={selected === 'meta'}
+          to={`/ipfs/${cid}/meta`}
         />
       </Tablist>
       {contentTab}
