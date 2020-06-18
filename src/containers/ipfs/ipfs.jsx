@@ -78,7 +78,7 @@ function Ipfs({ nodeIpfs }) {
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState('content');
+  const [selected, setSelected] = useState('optimisation');
   const [gateway, setGateway] = useState(null);
   const [dataToLink, setDataToLink] = useState([]);
   const [metaData, setMetaData] = useState({
@@ -190,21 +190,13 @@ function Ipfs({ nodeIpfs }) {
   const chekPathname = () => {
     const { pathname } = location;
 
-    if (
-      pathname.match(/optimisation/gm) &&
-      pathname.match(/optimisation/gm).length > 0
-    ) {
-      setSelected('optimisation');
+    if (pathname.match(/answers/gm) && pathname.match(/answers/gm).length > 0) {
+      setSelected('answers');
     } else if (
       pathname.match(/community/gm) &&
       pathname.match(/community/gm).length > 0
     ) {
       setSelected('community');
-    } else if (
-      pathname.match(/answers/gm) &&
-      pathname.match(/answers/gm).length > 0
-    ) {
-      setSelected('answers');
     } else if (
       pathname.match(/discussion/gm) &&
       pathname.match(/discussion/gm).length > 0
@@ -216,7 +208,7 @@ function Ipfs({ nodeIpfs }) {
     ) {
       setSelected('meta');
     } else {
-      setSelected('content');
+      setSelected('optimisation');
     }
   };
 
@@ -253,16 +245,16 @@ function Ipfs({ nodeIpfs }) {
     contentTab = <DiscussionTab data={dataQueryToLink} nodeIpfs={nodeIpfs} />;
   }
 
-  if (selected === 'content') {
-    contentTab = (
-      <ContentTab
-        typeContent={typeContent}
-        gateway={gateway}
-        content={content}
-        cid={cid}
-      />
-    );
-  }
+  // if (selected === 'content') {
+  //   contentTab = (
+  //     <ContentTab
+  //       typeContent={typeContent}
+  //       gateway={gateway}
+  //       content={content}
+  //       cid={cid}
+  //     />
+  //   );
+  // }
 
   if (selected === 'meta') {
     contentTab = <MetaTab cid={cid} data={metaData} />;
@@ -277,6 +269,12 @@ function Ipfs({ nodeIpfs }) {
         height: '1px',
       }}
     >
+      <ContentTab
+        typeContent={typeContent}
+        gateway={gateway}
+        content={content}
+        cid={cid}
+      />
       <Tablist
         display="grid"
         gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -293,15 +291,15 @@ function Ipfs({ nodeIpfs }) {
           isSelected={selected === 'discussion'}
           to={`/ipfs/${cid}/discussion`}
         />
-        <TabBtn
+        {/* <TabBtn
           text="content"
           isSelected={selected === 'content'}
           to={`/ipfs/${cid}`}
-        />
+        /> */}
         <TabBtn
           text="optimisation"
           isSelected={selected === 'optimisation'}
-          to={`/ipfs/${cid}/optimisation`}
+          to={`/ipfs/${cid}`}
         />
         <TabBtn
           text="community"

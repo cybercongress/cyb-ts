@@ -86,6 +86,7 @@ class SearchResults extends React.Component {
                 ...links[cid],
                 status: content.status,
                 content: content.content,
+                text: content.text,
               };
               this.setState({
                 searchResults,
@@ -105,7 +106,8 @@ class SearchResults extends React.Component {
               links[cid] = {
                 ...links[cid],
                 status: 'impossibleLoad',
-                content: `data:,${cid}`,
+                content: false,
+                text: cid,
               };
               this.setState({
                 searchResults,
@@ -156,12 +158,12 @@ class SearchResults extends React.Component {
           grade: link.grade,
           status: 'understandingState',
           query,
+          text: link.cid,
+          content: false,
         },
       }),
       {}
     );
-
-    console.log('searchResults', searchResults);
     searchResults.link = links;
 
     this.setState({
@@ -187,6 +189,8 @@ class SearchResults extends React.Component {
     } = this.state;
     const { mobile } = this.props;
     // console.log(query);
+
+    console.log('searchResults', searchResults);
 
     const searchItems = [];
 
@@ -280,33 +284,24 @@ class SearchResults extends React.Component {
     const links = searchResults.link;
     searchItems.push(
       Object.keys(links).map(key => {
-        let contentItem = false;
-        if (links[key].status === 'downloaded') {
-          if (links[key].content !== undefined) {
-            if (links[key].content.indexOf(key) === -1) {
-              contentItem = true;
-            }
-          }
-        }
         return (
           <Link to={`/ipfs/${key}`}>
             <SearchItem
               key={key}
-              hash={key}
               rank={links[key].rank}
               grade={links[key].grade}
               status={links[key].status}
-              contentIpfs={links[key].content}
+              text={links[key].text}
               // onClick={e => (e, links[cid].content)}
             >
-              {contentItem && (
-                <Iframe
-                  width="100%"
-                  height="fit-content"
-                  className="iframe-SearchItem"
-                  url={links[key].content}
-                />
-              )}
+              {links[key].content &&
+                links[key].content.indexOf('image') !== -1 && (
+                  <img
+                    style={{ height: '200px', paddingTop: 10 }}
+                    alt="img"
+                    src={links[key].content}
+                  />
+                )}
             </SearchItem>
           </Link>
         );

@@ -27,7 +27,8 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
           style={{
             textAlign: 'center',
             backgroundColor: '#000',
-            height: '100%',
+
+            minHeight: '100%',
           }}
         >
           <Iframe

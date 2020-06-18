@@ -42,7 +42,7 @@ function MetaTab({ data, cid }) {
   try {
     return (
       <>
-        <Pane>
+        <Pane paddingX={10} paddingY={10}>
           <RowItem text="CID" value={cid} />
           <RowItem
             text="SIZE"
@@ -51,7 +51,7 @@ function MetaTab({ data, cid }) {
           <RowItem text="LINKS" value={data.blockSizes.length} />
           <RowItem text="DATA" value="" />
         </Pane>
-        <div className="objectInspector">
+        <div style={{ padding: '20px' }} className="objectInspector">
           <ObjectInspector
             showMaxKeys={100}
             data={data}
