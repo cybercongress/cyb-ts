@@ -15,7 +15,11 @@ function AnswersTab({ data, nodeIpfs }) {
       </div>
     );
   }
-  return <Noitem text="No cyberLinks" />;
+  return (
+    <div className="container-contentItem">
+      <Noitem text="No cyberLinks" />
+    </div>
+  );
 }
 
 export default AnswersTab;

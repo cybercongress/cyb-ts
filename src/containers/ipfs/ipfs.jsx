@@ -99,7 +99,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     blockSizes: [],
     data: '',
   });
-  const [textBtn, setTextBtn] = useState('comment');
+  const [textBtn, setTextBtn] = useState(false);
   const { data: dataFromLink, loading: loadingFromLink } = useQuery(
     GET_FROM_LINK
   );

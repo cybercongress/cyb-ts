@@ -12,22 +12,55 @@ const parseHtml = htmlParser({
 });
 
 function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
-  if (gateway) {
-    return (
-      <>
-        {/* <Pane
-          position="absolute"
-          zIndex="2"
-          top="100px"
-          left="0"
-          bottom="0"
-          right="0"
-        > */}
+  try {
+    if (gateway) {
+      return (
+        <>
+          {/* <Pane
+            position="absolute"
+            zIndex="2"
+            top="100px"
+            left="0"
+            bottom="0"
+            right="0"
+          > */}
+          <div
+            style={{
+              textAlign: 'center',
+              backgroundColor: '#000',
+
+              minHeight: 'calc(100% - 100px)',
+            }}
+          >
+            <Iframe
+              width="100%"
+              height="100%"
+              // loading={<Dots />}
+              id="iframeCid"
+              className="iframe-SearchItem"
+              src={`https://io.cybernode.ai/ipfs/${cid}`}
+            />
+          </div>
+          {/* </Pane> */}
+          {/* <Dots big /> */}
+        </>
+      );
+    }
+    if (typeContent === 'image') {
+      return (
+        <img
+          alt="content"
+          style={stylesImg || { width: '100%' }}
+          src={content}
+        />
+      );
+    }
+    if (typeContent === 'link') {
+      return (
         <div
           style={{
             textAlign: 'center',
             backgroundColor: '#000',
-
             minHeight: '100%',
           }}
         >
@@ -35,52 +68,69 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
             width="100%"
             height="100%"
             id="iframeCid"
+            loading={<Dots />}
+            className="iframe-SearchItem"
+            src={content}
+          />
+        </div>
+      );
+    }
+    if (content.indexOf('<!DOCTYPE') !== -1) {
+      return (
+        <div
+          style={{
+            textAlign: 'center',
+            backgroundColor: '#000',
+
+            minHeight: 'calc(100% - 100px)',
+          }}
+        >
+          <Iframe
+            width="100%"
+            height="100%"
+            loading={<Dots />}
+            id="iframeCid"
             className="iframe-SearchItem"
             src={`https://io.cybernode.ai/ipfs/${cid}`}
           />
         </div>
-        {/* </Pane> */}
-        {/* <Dots big /> */}
-      </>
-    );
-  }
-  if (typeContent === 'image') {
+      );
+    }
+
     return (
-      <img alt="content" style={stylesImg || { width: '100%' }} src={content} />
+      <div className="markdown">
+        <ReactMarkdown
+          source={content}
+          escapeHtml={false}
+          skipHtml={false}
+          astPlugins={[parseHtml]}
+          renderers={{ code: CodeBlock }}
+          // plugins={[toc]}
+          // escapeHtml={false}
+        />
+      </div>
     );
-  }
-  if (typeContent === 'link') {
+  } catch (error) {
     return (
       <div
         style={{
           textAlign: 'center',
           backgroundColor: '#000',
-          height: '100%',
+
+          minHeight: 'calc(100% - 100px)',
         }}
       >
         <Iframe
           width="100%"
           height="100%"
+          loading={<Dots />}
           id="iframeCid"
           className="iframe-SearchItem"
-          src={content}
+          src={`https://io.cybernode.ai/ipfs/${cid}`}
         />
       </div>
     );
   }
-  return (
-    <div className="markdown">
-      <ReactMarkdown
-        source={content}
-        escapeHtml={false}
-        skipHtml={false}
-        astPlugins={[parseHtml]}
-        renderers={{ code: CodeBlock }}
-        // plugins={[toc]}
-        // escapeHtml={false}
-      />
-    </div>
-  );
 }
 
 export default ContentTab;
