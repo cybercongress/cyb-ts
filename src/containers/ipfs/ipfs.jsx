@@ -27,6 +27,8 @@ import {
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
+import ContentItem from './contentItem';
+const dateFormat = require('dateformat');
 
 const FileType = require('file-type');
 
@@ -60,6 +62,7 @@ function Ipfs({ nodeIpfs, mobile }) {
         subject
         object_from
         object_to
+        timestamp
       }
     }
   `;
@@ -74,6 +77,7 @@ function Ipfs({ nodeIpfs, mobile }) {
         subject
         object_from
         object_to
+        timestamp
       }
     }
   `;

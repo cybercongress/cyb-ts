@@ -385,13 +385,17 @@
   .battery-container {
     display: none;
   }
-  
+
   .container-contentItem {
     width: 100%;
     padding-bottom: 10px;
   }
-  
+
   .block-body {
     width: 100%;
+  }
+
+  .time-discussion {
+    display: none;
   }
 }
