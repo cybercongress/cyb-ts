@@ -76,7 +76,7 @@ function Ipfs({ nodeIpfs }) {
   `;
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
-  const [communityData, setCommunityData] = useState([]);
+  const [communityData, setCommunityData] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState('optimisation');
   const [gateway, setGateway] = useState(null);
@@ -91,6 +91,8 @@ function Ipfs({ nodeIpfs }) {
     GET_FROM_LINK
   );
   const { data: dataQueryToLink } = useQuery(GET_TO_LINK);
+  const { data: dataQueryCommunity } = useQuery(GET_TO_LINK);
+
   let contentTab;
 
   useEffect(() => {
@@ -170,18 +172,23 @@ function Ipfs({ nodeIpfs }) {
   }, [cid]);
 
   useEffect(() => {
-    const tempArr = [];
-
-    if (dataFromLink && dataFromLink.cyberlink.length > 0) {
-      tempArr.push(...dataFromLink.cyberlink);
+    let dataTemp = {};
+    if (dataQueryCommunity && dataQueryCommunity.cyberlink.length > 0) {
+      dataQueryCommunity.cyberlink.forEach(item => {
+        if (dataTemp[item.subject]) {
+          dataTemp[item.subject].amount += 1;
+        } else {
+          dataTemp = {
+            ...dataTemp,
+            [item.subject]: {
+              amount: 1,
+            },
+          };
+        }
+      });
+      setCommunityData(dataTemp);
     }
-
-    if (dataQueryToLink && dataQueryToLink.cyberlink.length > 0) {
-      tempArr.push(...dataQueryToLink.cyberlink);
-    }
-
-    setCommunityData(tempArr);
-  }, [dataFromLink, dataQueryToLink]);
+  }, [dataQueryCommunity]);
 
   useEffect(() => {
     chekPathname();
