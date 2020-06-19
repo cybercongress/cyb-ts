@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
 
@@ -8,16 +7,12 @@ const OptimisationTab = ({ data, nodeIpfs }) => {
     return (
       <div className="container-contentItem">
         {data.cyberlink.map((item, i) => (
-          <Link
+          <ContentItem
             key={`${item.object_from}_${i}`}
-            to={`/ipfs/${item.object_from}`}
-          >
-            <ContentItem
-              nodeIpfs={nodeIpfs}
-              cid={item.object_from}
-              item={item}
-            />
-          </Link>
+            nodeIpfs={nodeIpfs}
+            cid={item.object_from}
+            item={item}
+          />
         ))}
       </div>
     );

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
 import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
 
@@ -10,30 +9,27 @@ function DiscussionTab({ data, nodeIpfs }) {
   if (data && data.cyberlink.length > 0) {
     return (
       <div className="container-contentItem">
-        {data.cyberlink.map((item, i) => (
-          <Pane position="relative" display="flex" alignItems="center">
-            <Link
-              style={{ width: '100%' }}
-              key={`${item.object_to}_${i}`}
-              to={`/ipfs/${item.object_to}`}
-            >
+        {data.cyberlink.map((item, i) => {
+          return (
+            <Pane position="relative" display="flex" alignItems="center">
               <ContentItem
+                key={`${item.object_to}_${i}`}
                 nodeIpfs={nodeIpfs}
                 cid={item.object_to}
                 item={item}
               />
-            </Link>
-            <Pane
-              className="time-discussion"
-              position="absolute"
-              left="100%"
-              fontSize={12}
-              top="5px"
-            >
-              {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM')}
+              <Pane
+                className="time-discussion"
+                position="absolute"
+                left="100%"
+                fontSize={12}
+                top="5px"
+              >
+                {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM')}
+              </Pane>
             </Pane>
-          </Pane>
-        ))}
+          );
+        })}
       </div>
     );
   }

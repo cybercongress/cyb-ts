@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { SearchItem } from '@cybercongress/gravity';
 import { getRankGrade } from '../../utils/search/utils';
 import { PATTERN_HTTP } from '../../utils/config';
@@ -10,6 +11,7 @@ const ContentItem = ({ item, cid, nodeIpfs }) => {
   const [text, setText] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
   const [status, setStatus] = useState('understandingState');
+  const [link, setLink] = useState(`/ipfs/${cid}`);
 
   useEffect(() => {
     const feachData = async () => {
@@ -42,6 +44,11 @@ const ContentItem = ({ item, cid, nodeIpfs }) => {
             }
           } else {
             const dataBase64 = data.toString();
+            if (dataBase64.length > 42) {
+              setLink(`/ipfs/${cid}`);
+            } else {
+              setLink(`/search/${dataBase64}`);
+            }
             if (dataBase64.length > 300) {
               setText(`${dataBase64.slice(0, 300)}...`);
             } else {
@@ -68,21 +75,23 @@ const ContentItem = ({ item, cid, nodeIpfs }) => {
   }, [cid, nodeIpfs]);
 
   return (
-    <SearchItem
-      key={cid}
-      text={text}
-      status={status}
-      rank={item.rank ? item.rank : false}
-      grade={item.rank ? getRankGrade(item.rank) : false}
-    >
-      {typeContent === 'image' && (
-        <img
-          style={{ width: '100%', paddingTop: 10 }}
-          alt="img"
-          src={content}
-        />
-      )}
-    </SearchItem>
+    <Link style={{ width: '100%' }} to={link}>
+      <SearchItem
+        key={cid}
+        text={text}
+        status={status}
+        rank={item.rank ? item.rank : false}
+        grade={item.rank ? getRankGrade(item.rank) : false}
+      >
+        {typeContent === 'image' && (
+          <img
+            style={{ width: '100%', paddingTop: 10 }}
+            alt="img"
+            src={content}
+          />
+        )}
+      </SearchItem>
+    </Link>
   );
 };
 
