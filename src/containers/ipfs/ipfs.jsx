@@ -26,6 +26,7 @@ import {
   OptimisationTab,
   MetaTab,
 } from './tab';
+import ActionBarContainer from '../Search/ActionBarContainer';
 
 const FileType = require('file-type');
 
@@ -44,16 +45,17 @@ const objectInspectorTheme = {
   TREENODE_LINE_HEIGHT: '19px',
 };
 
-function Ipfs({ nodeIpfs }) {
+function Ipfs({ nodeIpfs, mobile }) {
   const { cid } = useParams();
   const location = useLocation();
 
   const GET_FROM_LINK = gql`
-    query MyQuery {
+  query MyQuery {
       cyberlink(
         where: {
           object_to: { _eq: "${cid}" }
-        }
+        },
+        order_by: {timestamp: desc}
       ) {
         subject
         object_from
@@ -62,11 +64,12 @@ function Ipfs({ nodeIpfs }) {
     }
   `;
   const GET_TO_LINK = gql`
-    query MyQuery {
+  query MyQuery {
       cyberlink(
         where: {
           object_from: { _eq: "${cid}" }
-        }
+        },
+        order_by: {timestamp: desc}
       ) {
         subject
         object_from
@@ -74,6 +77,15 @@ function Ipfs({ nodeIpfs }) {
       }
     }
   `;
+
+  const GET_LINK = gql`
+  query MyQuery {
+      cyberlink(where: {_or: [{object_to: {_eq: "${cid}"}}, {object_from: {_eq: "${cid}"}}]}, order_by: {timestamp: desc}) {
+        subject
+      }
+    }
+  `;
+
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
@@ -87,11 +99,12 @@ function Ipfs({ nodeIpfs }) {
     blockSizes: [],
     data: '',
   });
+  const [textBtn, setTextBtn] = useState('comment');
   const { data: dataFromLink, loading: loadingFromLink } = useQuery(
     GET_FROM_LINK
   );
   const { data: dataQueryToLink } = useQuery(GET_TO_LINK);
-  const { data: dataQueryCommunity } = useQuery(GET_TO_LINK);
+  const { data: dataQueryCommunity } = useQuery(GET_LINK);
 
   let contentTab;
 
@@ -198,6 +211,7 @@ function Ipfs({ nodeIpfs }) {
     const { pathname } = location;
 
     if (pathname.match(/answers/gm) && pathname.match(/answers/gm).length > 0) {
+      setTextBtn('add answer');
       setSelected('answers');
     } else if (
       pathname.match(/community/gm) &&
@@ -208,6 +222,7 @@ function Ipfs({ nodeIpfs }) {
       pathname.match(/discussion/gm) &&
       pathname.match(/discussion/gm).length > 0
     ) {
+      setTextBtn('add comment');
       setSelected('discussion');
     } else if (
       pathname.match(/meta/gm) &&
@@ -268,65 +283,71 @@ function Ipfs({ nodeIpfs }) {
   }
 
   return (
-    <main
-      className="block-body"
-      style={{
-        minHeight: 'calc(100vh - 70px)',
-        paddingBottom: '5px',
-        height: '1px',
-      }}
-    >
-      <ContentTab
-        typeContent={typeContent}
-        gateway={gateway}
-        content={content}
-        cid={cid}
-      />
-      <Tablist
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-        gridGap="10px"
-        marginY={25}
+    <>
+      <main
+        className="block-body"
+        style={{
+          minHeight: 'calc(100vh - 70px)',
+          paddingBottom: '5px',
+          height: '1px',
+        }}
       >
-        <TabBtn
-          text="answers"
-          isSelected={selected === 'answers'}
-          to={`/ipfs/${cid}/answers`}
+        <ContentTab
+          typeContent={typeContent}
+          gateway={gateway}
+          content={content}
+          cid={cid}
         />
-        <TabBtn
-          text="discussion"
-          isSelected={selected === 'discussion'}
-          to={`/ipfs/${cid}/discussion`}
-        />
-        {/* <TabBtn
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+          gridGap="10px"
+          marginY={25}
+        >
+          <TabBtn
+            text="answers"
+            isSelected={selected === 'answers'}
+            to={`/ipfs/${cid}/answers`}
+          />
+          <TabBtn
+            text="discussion"
+            isSelected={selected === 'discussion'}
+            to={`/ipfs/${cid}/discussion`}
+          />
+          {/* <TabBtn
           text="content"
           isSelected={selected === 'content'}
           to={`/ipfs/${cid}`}
         /> */}
-        <TabBtn
-          text="optimisation"
-          isSelected={selected === 'optimisation'}
-          to={`/ipfs/${cid}`}
-        />
-        <TabBtn
-          text="community"
-          isSelected={selected === 'community'}
-          to={`/ipfs/${cid}/community`}
-        />
-        <TabBtn
-          text="meta"
-          isSelected={selected === 'meta'}
-          to={`/ipfs/${cid}/meta`}
-        />
-      </Tablist>
-      {contentTab}
-    </main>
+          <TabBtn
+            text="optimisation"
+            isSelected={selected === 'optimisation'}
+            to={`/ipfs/${cid}`}
+          />
+          <TabBtn
+            text="community"
+            isSelected={selected === 'community'}
+            to={`/ipfs/${cid}/community`}
+          />
+          <TabBtn
+            text="meta"
+            isSelected={selected === 'meta'}
+            to={`/ipfs/${cid}/meta`}
+          />
+        </Tablist>
+        {contentTab}
+      </main>
+      {!mobile && (selected === 'discussion' || selected === 'answers') && (
+        <ActionBarContainer textBtn={textBtn} keywordHash={cid} />
+      )}
+    </>
   );
 }
 
 const mapStateToProps = store => {
   return {
     nodeIpfs: store.ipfs.ipfs,
+    mobile: store.settings.mobile,
   };
 };
 

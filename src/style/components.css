@@ -139,6 +139,7 @@
 .container-contentItem {
   width: 60%;
   margin: 0 auto;
+  padding-bottom: 100px;
 }
 
 @media (max-width: 979px) {
@@ -387,6 +388,7 @@
   
   .container-contentItem {
     width: 100%;
+    padding-bottom: 10px;
   }
   
   .block-body {

@@ -196,6 +196,7 @@ export const StartStageSearchActionBar = ({
   onChangeInput,
   onClickClear,
   file,
+  textBtn = T.actionBar.startSearch.cyberlink,
 }) => {
   return (
     <ActionBar>
@@ -247,7 +248,7 @@ export const StartStageSearchActionBar = ({
         </Pane>
       </ActionBarContentText>
       <Button disabled={!contentHash.length} onClick={onClickBtn}>
-        {T.actionBar.startSearch.cyberlink}
+        {textBtn}
       </Button>
     </ActionBar>
   );
