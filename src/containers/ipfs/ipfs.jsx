@@ -316,6 +316,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           minHeight: 'calc(100vh - 70px)',
           paddingBottom: '5px',
           height: '1px',
+          width: '100%',
         }}
       >
         <ContentTab
