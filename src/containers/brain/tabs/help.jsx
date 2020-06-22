@@ -34,7 +34,7 @@ function HelpTab() {
           link
         />
       </LinkWindow>
-      <LinkWindow to="https://cybercongress.ai/docs/cyberd/run_validator/">
+      <LinkWindow to="https://cybercongress.ai/docs/go-cyber/run_validator/">
         <CardStatisics
           // title="Homestead"
           styleContainer={{
