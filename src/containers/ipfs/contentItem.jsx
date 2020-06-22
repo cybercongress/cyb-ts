@@ -80,8 +80,12 @@ const ContentItem = ({ item, cid, nodeIpfs }) => {
         key={cid}
         text={text}
         status={status}
-        rank={item.rank ? item.rank : false}
-        grade={item.rank ? getRankGrade(item.rank) : false}
+        rank={item.rank ? item.rank : 'n/a'}
+        grade={
+          item.rank
+            ? getRankGrade(item.rank)
+            : { from: 'n/a', to: 'n/a', value: 'n/a' }
+        }
       >
         {typeContent === 'image' && (
           <img

@@ -25,6 +25,7 @@ import {
 import Gift from './gift';
 import SnipitAccount from './snipitAccountPages';
 import { object } from 'prop-types';
+import { setQuery } from '../../redux/actions/query';
 
 const giftImg = require('../../image/gift.svg');
 
@@ -59,12 +60,12 @@ class SearchResults extends React.Component {
   }
 
   getParamsQuery = async () => {
-    const { match } = this.props;
+    const { match, setQueryProps } = this.props;
     const { query } = match.params;
     this.setState({
       loading: true,
     });
-
+    setQueryProps(query);
     this.getSearch(query.toLowerCase());
   };
 
@@ -371,4 +372,10 @@ const mapStateToProps = store => {
   };
 };
 
-export default connect(mapStateToProps)(SearchResults);
+const mapDispatchprops = dispatch => {
+  return {
+    setQueryProps: query => dispatch(setQuery(query)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(SearchResults);

@@ -79,13 +79,12 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    const { valueSearchInput } = this.state;
+    const { location, query } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
       this.updateInput();
       this.chekEvangelism();
-      if (location.pathname.indexOf(valueSearchInput) === -1) {
+      if (location.pathname.indexOf(query) === -1) {
         this.clearInrut();
       }
       this.checkAddressLocalStorage();
@@ -125,16 +124,14 @@ class App extends Component {
   };
 
   updateInput = () => {
-    const { query } = this.props;
+    const { query, setQueryProps } = this.props;
 
-    this.setState({ valueSearchInput: query });
+    setQueryProps(query);
   };
 
   clearInrut = () => {
     const { setQueryProps } = this.props;
-    const valueSearchInput = '';
-    setQueryProps(valueSearchInput);
-    this.setState({ valueSearchInput });
+    setQueryProps('');
   };
 
   chekEvangelism = () => {
@@ -171,28 +168,23 @@ class App extends Component {
   };
 
   onChangeInput = async e => {
-    const { valueSearchInput } = this.state;
+    const { query, setQueryProps } = this.props;
     const { value } = e.target;
 
-    if (valueSearchInput.length === 0 && value === '/') {
-      await this.setState({
-        valueSearchInput: '',
-      });
+    if (query.length === 0 && value === '/') {
+      setQueryProps('');
     } else {
-      await this.setState({
-        valueSearchInput: value,
-      });
+      setQueryProps(value);
     }
   };
 
   handleKeyPress = async e => {
-    const { valueSearchInput } = this.state;
-    const { setQueryProps } = this.props;
+    const { query, setQueryProps } = this.props;
 
-    if (valueSearchInput.length > 0) {
+    if (query.length > 0) {
       if (e.key === 'Enter') {
-        this.routeChange(`/search/${valueSearchInput}`);
-        setQueryProps(valueSearchInput);
+        this.routeChange(`/search/${query}`);
+        setQueryProps(query);
       }
     }
   };
@@ -206,7 +198,7 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput, battery } = this.state;
-    const { children, location, ipfsStatus, bandwidth } = this.props;
+    const { children, query, ipfsStatus, bandwidth } = this.props;
 
     return (
       <div>
@@ -314,7 +306,7 @@ class App extends Component {
                 onKeyPress={this.handleKeyPress}
                 className="search-input"
                 ref={this.textInput}
-                value={valueSearchInput}
+                value={query}
                 autoComplete="off"
                 id="search-input-searchBar"
                 style={{
