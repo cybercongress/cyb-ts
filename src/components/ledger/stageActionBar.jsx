@@ -218,7 +218,7 @@ export const StartStageSearchActionBar = ({
               paddingRight: '35px',
             }}
             onChange={e => onChangeInputContentHash(e)}
-            placeholder="paste a hash"
+            placeholder="add keywords, hash or file"
           />
           <Pane
             position="absolute"
