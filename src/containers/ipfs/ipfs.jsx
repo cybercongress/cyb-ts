@@ -47,6 +47,25 @@ const objectInspectorTheme = {
   TREENODE_LINE_HEIGHT: '19px',
 };
 
+const Pill = ({ children, active, ...props }) => (
+  <Pane
+    display="flex"
+    fontSize="14px"
+    borderRadius="20px"
+    height="20px"
+    paddingY="5px"
+    paddingX="8px"
+    alignItems="center"
+    lineHeight="1"
+    justifyContent="center"
+    backgroundColor={active ? '#000' : '#36d6ae'}
+    color={active ? '#36d6ae' : '#000'}
+    {...props}
+  >
+    {children}
+  </Pane>
+);
+
 function Ipfs({ nodeIpfs, mobile }) {
   const { cid } = useParams();
   const location = useLocation();
@@ -94,7 +113,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState('optimisation');
+  const [selected, setSelected] = useState('answers');
   const [gateway, setGateway] = useState(null);
   const [dataToLink, setDataToLink] = useState([]);
   const [metaData, setMetaData] = useState({
@@ -214,9 +233,11 @@ function Ipfs({ nodeIpfs, mobile }) {
   const chekPathname = () => {
     const { pathname } = location;
 
-    if (pathname.match(/answers/gm) && pathname.match(/answers/gm).length > 0) {
-      setTextBtn('add answer');
-      setSelected('answers');
+    if (
+      pathname.match(/optimisation/gm) &&
+      pathname.match(/optimisation/gm).length > 0
+    ) {
+      setSelected('optimisation');
     } else if (
       pathname.match(/community/gm) &&
       pathname.match(/community/gm).length > 0
@@ -234,7 +255,8 @@ function Ipfs({ nodeIpfs, mobile }) {
     ) {
       setSelected('meta');
     } else {
-      setSelected('optimisation');
+      setTextBtn('add answer');
+      setSelected('answers');
     }
   };
 
@@ -309,12 +331,17 @@ function Ipfs({ nodeIpfs, mobile }) {
           marginY={25}
         >
           <TabBtn
-            text="answers"
-            isSelected={selected === 'answers'}
-            to={`/ipfs/${cid}/answers`}
-          />
-          <TabBtn
-            text="discussion"
+            // text="discussion"
+            text={
+              <Pane display="flex" alignItems="center">
+                <Pane>discussion</Pane>
+                {dataQueryToLink && dataQueryToLink.cyberlink.length > 0 && (
+                  <Pill marginLeft={5} active={selected === 'discussion'}>
+                    {formatNumber(dataQueryToLink.cyberlink.length)}
+                  </Pill>
+                )}
+              </Pane>
+            }
             isSelected={selected === 'discussion'}
             to={`/ipfs/${cid}/discussion`}
           />
@@ -324,12 +351,47 @@ function Ipfs({ nodeIpfs, mobile }) {
           to={`/ipfs/${cid}`}
         /> */}
           <TabBtn
-            text="optimisation"
+            // text="optimisation"
+            text={
+              <Pane display="flex" alignItems="center">
+                <Pane>optimisation</Pane>
+                {dataFromLink && dataFromLink.cyberlink.length > 0 && (
+                  <Pill marginLeft={5} active={selected === 'optimisation'}>
+                    {formatNumber(dataFromLink.cyberlink.length)}
+                  </Pill>
+                )}
+              </Pane>
+            }
             isSelected={selected === 'optimisation'}
+            to={`/ipfs/${cid}/optimisation`}
+          />
+          <TabBtn
+            // text="answers"
+            text={
+              <Pane display="flex" alignItems="center">
+                <Pane>answers</Pane>
+                {dataToLink.length > 0 && (
+                  <Pill marginLeft={5} active={selected === 'answers'}>
+                    {formatNumber(dataToLink.length)}
+                  </Pill>
+                )}
+              </Pane>
+            }
+            isSelected={selected === 'answers'}
             to={`/ipfs/${cid}`}
           />
           <TabBtn
-            text="community"
+            // text="community"
+            text={
+              <Pane display="flex" alignItems="center">
+                <Pane>community</Pane>
+                {Object.keys(communityData).length > 0 && (
+                  <Pill marginLeft={5} active={selected === 'community'}>
+                    {formatNumber(Object.keys(communityData).length)}
+                  </Pill>
+                )}
+              </Pane>
+            }
             isSelected={selected === 'community'}
             to={`/ipfs/${cid}/community`}
           />
