@@ -21,6 +21,7 @@ import {
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,
   PATTERN_BLOCK,
+  PATTERN_IPFS_HASH,
 } from '../../utils/config';
 import Gift from './gift';
 import SnipitAccount from './snipitAccountPages';
@@ -66,7 +67,7 @@ class SearchResults extends React.Component {
       loading: true,
     });
     setQueryProps(query);
-    this.getSearch(query.toLowerCase());
+    this.getSearch(query);
   };
 
   loadContent = async (cids, node, prevState) => {
@@ -131,7 +132,12 @@ class SearchResults extends React.Component {
     let keywordHashNull = '';
     // const { query } = this.state;
 
-    keywordHash = await getIpfsHash(query);
+    if (query.match(PATTERN_IPFS_HASH)) {
+      keywordHash = query;
+    } else {
+      keywordHash = await getIpfsHash(query.toLowerCase());
+    }
+
     searchResults.link = await search(keywordHash);
     searchResults.link.map((item, index) => {
       searchResults.link[index].cid = item.cid;
@@ -157,7 +163,7 @@ class SearchResults extends React.Component {
         [link.cid]: {
           rank: link.rank,
           grade: link.grade,
-          status: 'understandingState',
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
           query,
           text: link.cid,
           content: false,
@@ -175,7 +181,10 @@ class SearchResults extends React.Component {
       query,
       resultNull,
     });
-    this.loadContent(searchResults.link, node);
+
+    if (node !== null) {
+      this.loadContent(searchResults.link, node);
+    }
   };
 
   render() {
