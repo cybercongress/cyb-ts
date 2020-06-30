@@ -23,7 +23,7 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
                   className="time-discussion rank-contentItem"
                   position="absolute"
                 >
-                  <Rank rank={item.rank} grade={grade} />
+                  <Rank hash={item.cid} rank={item.rank} grade={grade} />
                 </Pane>
               )}
               <ContentItem

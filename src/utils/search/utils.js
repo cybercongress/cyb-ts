@@ -69,8 +69,12 @@ export const getContentByCid = async (
         .then(dagGet => {
           clearTimeout(timerId);
           const { value: dagGetValue } = dagGet;
-          const link = dagGetValue._links;
-          if (link.length < 1) {
+          console.log(dagGetValue);
+          if (
+            dagGetValue &&
+            dagGetValue.size &&
+            dagGetValue.size <= 1 * 10 ** 6
+          ) {
             let mime;
             ipfs.cat(cid).then(dataCat => {
               const buf = dataCat;

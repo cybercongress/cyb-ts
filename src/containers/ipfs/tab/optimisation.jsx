@@ -21,6 +21,7 @@ const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
                 position="absolute"
               >
                 <Rank
+                  hash={item.object_from}
                   rank="n/a"
                   grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
                 />

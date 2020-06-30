@@ -314,7 +314,11 @@ class SearchResults extends React.Component {
                 className="time-discussion rank-contentItem"
                 position="absolute"
               >
-                <Rank rank={links[key].rank} grade={links[key].grade} />
+                <Rank
+                  hash={key}
+                  rank={links[key].rank}
+                  grade={links[key].grade}
+                />
               </Pane>
             )}
             <Link className="SearchItem" to={`/ipfs/${key}`}>

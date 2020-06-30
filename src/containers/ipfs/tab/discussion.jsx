@@ -59,6 +59,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
                   position="absolute"
                 >
                   <Rank
+                    hash={item.object_to}
                     rank="n/a"
                     grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
                   />
