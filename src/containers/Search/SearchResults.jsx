@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { Pane, SearchItem, Text, Rank } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Iframe from 'react-iframe';
 import { connect } from 'react-redux';
+import ReactMarkdown from 'react-markdown';
 import {
   getIpfsHash,
   search,
@@ -27,8 +28,14 @@ import Gift from './gift';
 import SnipitAccount from './snipitAccountPages';
 import { object } from 'prop-types';
 import { setQuery } from '../../redux/actions/query';
+import CodeBlock from '../ipfs/codeBlock';
 
 const giftImg = require('../../image/gift.svg');
+const htmlParser = require('react-markdown/plugins/html-parser');
+
+const parseHtml = htmlParser({
+  isValidNode: node => node.type !== 'script',
+});
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -295,25 +302,53 @@ class SearchResults extends React.Component {
     searchItems.push(
       Object.keys(links).map(key => {
         return (
-          <Link to={`/ipfs/${key}`}>
-            <SearchItem
-              key={key}
-              rank={links[key].rank}
-              grade={links[key].grade}
-              status={links[key].status}
-              text={links[key].text}
-              // onClick={e => (e, links[cid].content)}
-            >
-              {links[key].content &&
-                links[key].content.indexOf('image') !== -1 && (
-                  <img
-                    style={{ height: '200px', paddingTop: 10 }}
-                    alt="img"
-                    src={links[key].content}
-                  />
-                )}
-            </SearchItem>
-          </Link>
+          <Pane
+            position="relative"
+            className="hover-rank"
+            display="flex"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            {!mobile && (
+              <Pane
+                className="time-discussion rank-contentItem"
+                position="absolute"
+              >
+                <Rank rank={links[key].rank} grade={links[key].grade} />
+              </Pane>
+            )}
+            <Link className="SearchItem" to={`/ipfs/${key}`}>
+              <SearchItem
+                key={key}
+                rank={links[key].rank}
+                grade={links[key].grade}
+                status={links[key].status}
+                text={
+                  <div className="container-text-SearchItem">
+                    <ReactMarkdown
+                      source={links[key].text}
+                      escapeHtml={false}
+                      skipHtml={false}
+                      astPlugins={[parseHtml]}
+                      renderers={{ code: CodeBlock }}
+                      // plugins={[toc]}
+                      // escapeHtml={false}
+                    />
+                  </div>
+                }
+                // onClick={e => (e, links[cid].content)}
+              >
+                {links[key].content &&
+                  links[key].content.indexOf('image') !== -1 && (
+                    <img
+                      style={{ width: '100%', paddingTop: 10 }}
+                      alt="img"
+                      src={links[key].content}
+                    />
+                  )}
+              </SearchItem>
+            </Link>
+          </Pane>
         );
       })
     );
@@ -355,7 +390,9 @@ class SearchResults extends React.Component {
                 . I find results for 0 instead
               </Text>
             )}
-            <Pane>{searchItems}</Pane>
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {searchItems}
+            </div>
           </Pane>
         </main>
 
