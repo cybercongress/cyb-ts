@@ -5,6 +5,8 @@ import {
   SearchItem,
   Tablist,
   TableEv as Table,
+  Rank,
+  Text,
 } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
@@ -46,6 +48,50 @@ const objectInspectorTheme = {
   TREENODE_FONT_SIZE: '13px',
   TREENODE_LINE_HEIGHT: '19px',
 };
+
+const GradeTooltipContent = ({ grade, color, rank }) => (
+  <Pane paddingX={15} paddingY={15}>
+    <Pane marginBottom={12}>
+      <Text>Answer rank is {rank}</Text>
+    </Pane>
+    <Pane display="flex" marginBottom={12}>
+      <Text>
+        Answers between &nbsp;
+        {grade.from}
+        &nbsp; and &nbsp;
+        {grade.to}
+        &nbsp; recieve grade
+        <Pill
+          paddingX={8}
+          paddingY={5}
+          width={25}
+          height={16}
+          display="inline-flex"
+          marginLeft={5}
+          alignItems="center"
+          style={{ color: '#fff', backgroundColor: color }}
+          isSolid
+        >
+          {grade.value}
+        </Pill>
+      </Text>
+    </Pane>
+    <Pane>
+      <Text>
+        More about{' '}
+        <Link
+          textDecoration="none"
+          href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
+          color="green"
+          cursor="pointer"
+          target="_blank"
+        >
+          cyber~Rank
+        </Link>
+      </Text>
+    </Pane>
+  </Pane>
+);
 
 const Pill = ({ children, active, ...props }) => (
   <Pane
@@ -278,11 +324,19 @@ function Ipfs({ nodeIpfs, mobile }) {
   }
 
   if (selected === 'optimisation') {
-    contentTab = <OptimisationTab data={dataFromLink} nodeIpfs={nodeIpfs} />;
+    contentTab = (
+      <OptimisationTab
+        data={dataFromLink}
+        mobile={mobile}
+        nodeIpfs={nodeIpfs}
+      />
+    );
   }
 
   if (selected === 'answers') {
-    contentTab = <AnswersTab data={dataToLink} nodeIpfs={nodeIpfs} />;
+    contentTab = (
+      <AnswersTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
+    );
   }
 
   if (selected === 'community') {
@@ -290,7 +344,13 @@ function Ipfs({ nodeIpfs, mobile }) {
   }
 
   if (selected === 'discussion') {
-    contentTab = <DiscussionTab data={dataQueryToLink} nodeIpfs={nodeIpfs} />;
+    contentTab = (
+      <DiscussionTab
+        data={dataQueryToLink}
+        mobile={mobile}
+        nodeIpfs={nodeIpfs}
+      />
+    );
   }
 
   // if (selected === 'content') {

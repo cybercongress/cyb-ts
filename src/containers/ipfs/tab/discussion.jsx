@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pane } from '@cybercongress/gravity';
+import { Pane, Rank } from '@cybercongress/gravity';
 import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
 
@@ -34,11 +34,11 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function DiscussionTab({ data, nodeIpfs }) {
+function DiscussionTab({ data, mobile, nodeIpfs }) {
   if (data && data.cyberlink.length > 0) {
     const d = new Date();
     return (
-      <div className="container-contentItem">
+      <div className="container-contentItem" style={{ width: '100%' }}>
         {data.cyberlink.map((item, i) => {
           let timeAgoInMS = 0;
           const time = Date.parse(d) - Date.parse(item.timestamp);
@@ -46,17 +46,35 @@ function DiscussionTab({ data, nodeIpfs }) {
             timeAgoInMS = time;
           }
           return (
-            <Pane position="relative" display="flex" alignItems="center">
+            <Pane
+              position="relative"
+              className="hover-rank"
+              display="flex"
+              alignItems="center"
+              marginBottom="10px"
+            >
+              {!mobile && (
+                <Pane
+                  className="time-discussion rank-contentItem"
+                  position="absolute"
+                >
+                  <Rank
+                    rank="n/a"
+                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+                  />
+                </Pane>
+              )}
               <ContentItem
                 key={`${item.object_to}_${i}`}
                 nodeIpfs={nodeIpfs}
                 cid={item.object_to}
                 item={item}
+                className="contentItem-discussion"
               />
               <Pane
                 className="time-discussion"
                 position="absolute"
-                left="100%"
+                right="0"
                 fontSize={12}
                 whiteSpace="nowrap"
                 top="5px"

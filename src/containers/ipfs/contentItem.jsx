@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { SearchItem } from '@cybercongress/gravity';
 import { getRankGrade } from '../../utils/search/utils';
 import { PATTERN_HTTP } from '../../utils/config';
+import CodeBlock from './codeBlock';
 
 const FileType = require('file-type');
 
-const ContentItem = ({ item, cid, nodeIpfs }) => {
+const htmlParser = require('react-markdown/plugins/html-parser');
+
+const parseHtml = htmlParser({
+  isValidNode: node => node.type !== 'script',
+});
+
+const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
@@ -75,10 +83,22 @@ const ContentItem = ({ item, cid, nodeIpfs }) => {
   }, [cid, nodeIpfs]);
 
   return (
-    <Link style={{ width: '100%' }} to={link}>
+    <Link {...props} to={link}>
       <SearchItem
         key={cid}
-        text={text}
+        text={
+          <div className="container-text-SearchItem">
+            <ReactMarkdown
+              source={text}
+              escapeHtml={false}
+              skipHtml={false}
+              astPlugins={[parseHtml]}
+              renderers={{ code: CodeBlock }}
+              // plugins={[toc]}
+              // escapeHtml={false}
+            />
+          </div>
+        }
         status={status}
         rank={item.rank ? item.rank : 'n/a'}
         grade={
