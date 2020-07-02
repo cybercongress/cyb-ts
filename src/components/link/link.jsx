@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const LinkWindow = ({ to, children, ...props }) => (
   <a target="_blank" {...props} rel="noopener noreferrer" href={to}>
@@ -7,7 +8,5 @@ export const LinkWindow = ({ to, children, ...props }) => (
 );
 
 export const Cid = ({ cid, children }) => (
-  <a target="_blank" href={`https://ipfs.io/ipfs/${cid}`}>
-    {children || cid}
-  </a>
+  <Link to={`/ipfs/${cid}`}>{children || cid}</Link>
 );

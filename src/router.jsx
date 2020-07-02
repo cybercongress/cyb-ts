@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { hashHistory, IndexRoute, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
@@ -31,9 +31,7 @@ import Txs from './containers/txs';
 import Block from './containers/blok';
 import ParamNetwork from './containers/parameters';
 import Evangelism from './containers/evangelism';
-
 import { TIME_START } from './utils/config';
-
 import GolDelegation from './containers/gol/pages/delegation';
 import GolLifetime from './containers/gol/pages/lifetime';
 import GolRelevance from './containers/gol/pages/relevance';
@@ -45,43 +43,37 @@ const DetectRTC = require('detectrtc');
 
 export const history = createBrowserHistory({});
 
-class AppRouter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ipfs: null,
-      loader: true,
-      startTime: '',
-      time: true,
-    };
-  }
+function AppRouter({
+  nodeIpfs,
+  initIpfsProps,
+  setIpfsStatusProps,
+  setTypeDeviceProps,
+}) {
+  const [loader, setLoader] = useState(true);
 
-  async componentDidMount() {
-    this.init();
-    this.setState({ time: false });
-  }
+  useEffect(() => {
+    init();
+  }, []);
 
-  init = async () => {
-    const { setIpfsStatusProps, setTypeDeviceProps } = this.props;
+  const init = async () => {
     setIpfsStatusProps(false);
     const mobile = isMobileTablet();
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     setTypeDeviceProps(mobile);
-//     this.setState({ loader: false });
-//     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
+    // setLoader(false);
+    // //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
     if (!mobile) {
       if (DetectRTC.isWebRTCSupported && !isSafari) {
-        await this.initIpfsNode();
+        await initIpfsNode();
       } else {
-        this.setState({ loader: false });
+        setLoader(false);
       }
     } else {
-      this.setState({ loader: false });
+      setLoader(false);
     }
   };
 
-  initIpfsNode = async () => {
-    const { initIpfsProps, setIpfsStatusProps } = this.props;
+  const initIpfsNode = async () => {
     try {
       const node = await IPFS.create({
         repo: 'ipfs-repo-cyber',
@@ -116,7 +108,7 @@ class AppRouter extends React.Component {
         const status = await node.isOnline();
         setIpfsStatusProps(status);
       }
-      this.setState({ loader: false });
+      setLoader(false);
     } catch (error) {
       console.log(error);
       const node = await IPFS.create({
@@ -152,64 +144,57 @@ class AppRouter extends React.Component {
         const status = await node.isOnline();
         setIpfsStatusProps(status);
       }
-      this.setState({ loader: false });
+      setLoader(false);
     }
   };
 
-  render() {
-    const { loader, time, startTime } = this.state;
-
-    if (loader) {
-      return <Dots />;
-    }
-
-    return (
-      <Router history={history}>
-        <Route path="/" component={App} />
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route exact path="/search/:query" component={SearchResults} />
-          <Route path="/gift/:address?" component={Gift} />
-          <Route path="/gol/takeoff" component={Funding} />
-          <Route path="/tot" component={Got} />
-          <Route path="/gol/faucet" component={Auction} />
-          <Route path="/brain" component={Brain} />
-          <Route exact path="/governance" component={Governance} />
-          <Route path="/governance/:proposal_id" component={ProposalsDetail} />
-          <Route path="/pocket" component={Wallet} />
-          <Route path="/heroes" component={Validators} />
-          <Route path="/episode-1" component={Story} />
-          <Route exact path="/network/euler/tx" component={Txs} />
-          <Route path="/gol/delegation" component={GolDelegation} />
-          <Route path="/gol/lifetime" component={GolLifetime} />
-          <Route path="/gol/relevance" component={GolRelevance} />
-          <Route path="/gol/load" component={GolLoad} />
-          <Route path="/gol" component={GOL} />
-          <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
-          <Route
-            path="/network/euler/contract/:address"
-            component={AccountDetails}
-          />
-          <Route
-            path="/network/euler/hero/:address"
-            component={ValidatorsDetails}
-          />
-          {/* <Route path="/graph" component={ForceGraph} /> */}
-          <Route path="/gol/vesting" component={Vesting} />
-          <Route path="/ipfs" component={Ipfs} />
-          <Route exact path="/network/euler/block" component={Block} />
-          <Route
-            path="/network/euler/block/:idBlock"
-            component={BlockDetails}
-          />
-          <Route path="/network/euler/parameters" component={ParamNetwork} />
-          <Route path="/evangelism" component={Evangelism} />
-
-          <Route exact path="*" component={NotFound} />
-        </Switch>
-      </Router>
-    );
+  if (loader) {
+    return <Dots />;
   }
+
+  return (
+    <Router history={history}>
+      <Route path="/" component={App} />
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route exact path="/search/:query" component={SearchResults} />
+        <Route path="/gift/:address?" component={Gift} />
+        <Route path="/gol/takeoff" component={Funding} />
+        <Route path="/tot" component={Got} />
+        <Route path="/gol/faucet" component={Auction} />
+        <Route path="/brain" component={Brain} />
+        <Route exact path="/governance" component={Governance} />
+        <Route path="/governance/:proposal_id" component={ProposalsDetail} />
+        <Route path="/pocket" component={Wallet} />
+        <Route path="/heroes" component={Validators} />
+        <Route path="/episode-1" component={Story} />
+        <Route exact path="/network/euler/tx" component={Txs} />
+        <Route path="/gol/delegation" component={GolDelegation} />
+        <Route path="/gol/lifetime" component={GolLifetime} />
+        <Route path="/gol/relevance" component={GolRelevance} />
+        <Route path="/gol/load" component={GolLoad} />
+        <Route path="/gol" component={GOL} />
+        <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
+        <Route
+          path="/network/euler/contract/:address"
+          component={AccountDetails}
+        />
+        <Route
+          path="/network/euler/hero/:address"
+          component={ValidatorsDetails}
+        />
+        {/* <Route path="/graph" component={ForceGraph} /> */}
+        <Route path="/gol/vesting" component={Vesting} />
+        <Route path="/ipfs/:cid" component={Ipfs} />
+        <Route exact path="/network/euler/block" component={Block} />
+        <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
+        <Route path="/network/euler/parameters" component={ParamNetwork} />
+        <Route path="/evangelism" component={Evangelism} />
+
+        <Route exact path="*" component={NotFound} />
+      </Switch>
+    </Router>
+  );
 }
 
 const mapDispatchprops = dispatch => {
@@ -220,4 +205,10 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(AppRouter);
+const mapStateToProps = store => {
+  return {
+    nodeIpfs: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(AppRouter);

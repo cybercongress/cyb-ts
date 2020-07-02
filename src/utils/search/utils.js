@@ -69,8 +69,12 @@ export const getContentByCid = async (
         .then(dagGet => {
           clearTimeout(timerId);
           const { value: dagGetValue } = dagGet;
-          const link = dagGetValue._links;
-          if (link.length < 1) {
+          console.log(dagGetValue);
+          if (
+            dagGetValue &&
+            dagGetValue.size &&
+            dagGetValue.size <= 1.5 * 10 ** 6
+          ) {
             let mime;
             ipfs.cat(cid).then(dataCat => {
               const buf = dataCat;
@@ -78,23 +82,53 @@ export const getContentByCid = async (
               bufs.push(buf);
               const data = Buffer.concat(bufs);
               FileType.fromBuffer(data).then(dataFileType => {
-                const dataBase64 = data.toString('base64');
+                let fileType;
                 if (dataFileType !== undefined) {
                   mime = dataFileType.mime;
+                  if (mime.indexOf('image') !== -1) {
+                    const dataBase64 = data.toString('base64');
+                    fileType = `data:${mime};base64,${dataBase64}`;
+                    resolve({
+                      status: 'downloaded',
+                      content: fileType,
+                      text: false,
+                    });
+                  } else if (mime.indexOf('application/pdf') !== -1) {
+                    const dataBase64 = data.toString('base64');
+                    fileType = `data:${mime};base64,${dataBase64}`;
+                    resolve({
+                      status: 'downloaded',
+                      content: fileType,
+                      text: false,
+                    });
+                  } else {
+                    resolve({
+                      status: 'downloaded',
+                      content: false,
+                      text: `${cid} ${mime}`,
+                    });
+                  }
                 } else {
-                  mime = 'text/plain';
+                  const dataBase64 = data.toString();
+                  let text;
+                  if (dataBase64.length > 300) {
+                    text = `${dataBase64.slice(0, 300)}...`;
+                  } else {
+                    text = dataBase64;
+                  }
+                  resolve({
+                    status: 'downloaded',
+                    content: false,
+                    text,
+                  });
                 }
-                const fileType = `data:${mime};base64,${dataBase64}`;
-                resolve({
-                  status: 'downloaded',
-                  content: fileType,
-                });
               });
             });
           } else {
             resolve({
               status: 'availableDownload',
-              content: `data:,${cid}`,
+              content: false,
+              text: cid,
             });
           }
         });
@@ -1049,6 +1083,32 @@ export const getImportLink = async address => {
     const response = await axios({
       method: 'get',
       url: `https://io.cybernode.ai/api/v0/dag/get?arg=bafyreibnn7bfilbmkrxm2rwk5fe6qzzdvm2xen34cjdktdoex4uylb76z4/${address}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getFromLink = async cid => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectTo=${cid}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getToLink = async cid => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectFrom=${cid}&limit=1000000000`,
     });
     return response.data;
   } catch (e) {

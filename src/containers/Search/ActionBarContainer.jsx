@@ -416,7 +416,7 @@ class ActionBarContainer extends Component {
       addressLocalStor,
     } = this.state;
 
-    const { valueSearchInput } = this.props;
+    const { textBtn } = this.props;
 
     if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
@@ -456,7 +456,7 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_INIT) {
       return (
         <StartStageSearchActionBar
-          valueSearchInput={valueSearchInput}
+          textBtn={textBtn}
           onClickBtn={this.onClickInitLedger}
           contentHash={
             file !== null && file !== undefined ? file.name : contentHash

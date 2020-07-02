@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { Pane, SearchItem, Text, Rank } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Iframe from 'react-iframe';
 import { connect } from 'react-redux';
+import ReactMarkdown from 'react-markdown';
 import {
   getIpfsHash,
   search,
@@ -21,12 +22,20 @@ import {
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,
   PATTERN_BLOCK,
+  PATTERN_IPFS_HASH,
 } from '../../utils/config';
 import Gift from './gift';
 import SnipitAccount from './snipitAccountPages';
 import { object } from 'prop-types';
+import { setQuery } from '../../redux/actions/query';
+import CodeBlock from '../ipfs/codeBlock';
 
 const giftImg = require('../../image/gift.svg');
+const htmlParser = require('react-markdown/plugins/html-parser');
+
+const parseHtml = htmlParser({
+  isValidNode: node => node.type !== 'script',
+});
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -59,13 +68,13 @@ class SearchResults extends React.Component {
   }
 
   getParamsQuery = async () => {
-    const { match } = this.props;
+    const { match, setQueryProps } = this.props;
     const { query } = match.params;
     this.setState({
       loading: true,
     });
-
-    this.getSearch(query.toLowerCase());
+    setQueryProps(query);
+    this.getSearch(query);
   };
 
   loadContent = async (cids, node, prevState) => {
@@ -86,6 +95,7 @@ class SearchResults extends React.Component {
                 ...links[cid],
                 status: content.status,
                 content: content.content,
+                text: content.text,
               };
               this.setState({
                 searchResults,
@@ -105,7 +115,8 @@ class SearchResults extends React.Component {
               links[cid] = {
                 ...links[cid],
                 status: 'impossibleLoad',
-                content: `data:,${cid}`,
+                content: false,
+                text: cid,
               };
               this.setState({
                 searchResults,
@@ -128,7 +139,12 @@ class SearchResults extends React.Component {
     let keywordHashNull = '';
     // const { query } = this.state;
 
-    keywordHash = await getIpfsHash(query);
+    if (query.match(PATTERN_IPFS_HASH)) {
+      keywordHash = query;
+    } else {
+      keywordHash = await getIpfsHash(query.toLowerCase());
+    }
+
     searchResults.link = await search(keywordHash);
     searchResults.link.map((item, index) => {
       searchResults.link[index].cid = item.cid;
@@ -154,14 +170,14 @@ class SearchResults extends React.Component {
         [link.cid]: {
           rank: link.rank,
           grade: link.grade,
-          status: 'understandingState',
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
           query,
+          text: link.cid,
+          content: false,
         },
       }),
       {}
     );
-
-    console.log('searchResults', searchResults);
     searchResults.link = links;
 
     this.setState({
@@ -172,7 +188,10 @@ class SearchResults extends React.Component {
       query,
       resultNull,
     });
-    this.loadContent(searchResults.link, node);
+
+    if (node !== null) {
+      this.loadContent(searchResults.link, node);
+    }
   };
 
   render() {
@@ -187,6 +206,8 @@ class SearchResults extends React.Component {
     } = this.state;
     const { mobile } = this.props;
     // console.log(query);
+
+    console.log('searchResults', searchResults);
 
     const searchItems = [];
 
@@ -280,33 +301,67 @@ class SearchResults extends React.Component {
     const links = searchResults.link;
     searchItems.push(
       Object.keys(links).map(key => {
-        let contentItem = false;
-        if (links[key].status === 'downloaded') {
-          if (links[key].content !== undefined) {
-            if (links[key].content.indexOf(key) === -1) {
-              contentItem = true;
-            }
-          }
-        }
         return (
-          <SearchItem
-            key={key}
-            hash={key}
-            rank={links[key].rank}
-            grade={links[key].grade}
-            status={links[key].status}
-            contentIpfs={links[key].content}
-            // onClick={e => (e, links[cid].content)}
+          <Pane
+            position="relative"
+            className="hover-rank"
+            display="flex"
+            alignItems="center"
+            marginBottom="10px"
           >
-            {contentItem && (
-              <Iframe
-                width="100%"
-                height="fit-content"
-                className="iframe-SearchItem"
-                url={links[key].content}
-              />
+            {!mobile && (
+              <Pane
+                className="time-discussion rank-contentItem"
+                position="absolute"
+              >
+                <Rank
+                  hash={key}
+                  rank={links[key].rank}
+                  grade={links[key].grade}
+                />
+              </Pane>
             )}
-          </SearchItem>
+            <Link className="SearchItem" to={`/ipfs/${key}`}>
+              <SearchItem
+                key={key}
+                rank={links[key].rank}
+                grade={links[key].grade}
+                status={links[key].status}
+                text={
+                  <div className="container-text-SearchItem">
+                    <ReactMarkdown
+                      source={links[key].text}
+                      escapeHtml={false}
+                      skipHtml={false}
+                      astPlugins={[parseHtml]}
+                      renderers={{ code: CodeBlock }}
+                      // plugins={[toc]}
+                      // escapeHtml={false}
+                    />
+                  </div>
+                }
+                // onClick={e => (e, links[cid].content)}
+              >
+                {links[key].content &&
+                  links[key].content.indexOf('image') !== -1 && (
+                    <img
+                      style={{ width: '100%', paddingTop: 10 }}
+                      alt="img"
+                      src={links[key].content}
+                    />
+                  )}
+                {links[key].content &&
+                  links[key].content.indexOf('application/pdf') !== -1 && (
+                    <Iframe
+                      width="100%"
+                      height="400px"
+                      className="iframe-SearchItem"
+                      url={links[key].content}
+                    />
+                  )}
+              </SearchItem>
+            </Link>
+          </Pane>
         );
       })
     );
@@ -348,7 +403,9 @@ class SearchResults extends React.Component {
                 . I find results for 0 instead
               </Text>
             )}
-            <Pane>{searchItems}</Pane>
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {searchItems}
+            </div>
           </Pane>
         </main>
 
@@ -374,4 +431,10 @@ const mapStateToProps = store => {
   };
 };
 
-export default connect(mapStateToProps)(SearchResults);
+const mapDispatchprops = dispatch => {
+  return {
+    setQueryProps: query => dispatch(setQuery(query)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(SearchResults);
