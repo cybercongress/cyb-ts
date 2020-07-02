@@ -73,7 +73,7 @@ export const getContentByCid = async (
           if (
             dagGetValue &&
             dagGetValue.size &&
-            dagGetValue.size <= 1 * 10 ** 6
+            dagGetValue.size <= 1.5 * 10 ** 6
           ) {
             let mime;
             ipfs.cat(cid).then(dataCat => {
@@ -86,6 +86,14 @@ export const getContentByCid = async (
                 if (dataFileType !== undefined) {
                   mime = dataFileType.mime;
                   if (mime.indexOf('image') !== -1) {
+                    const dataBase64 = data.toString('base64');
+                    fileType = `data:${mime};base64,${dataBase64}`;
+                    resolve({
+                      status: 'downloaded',
+                      content: fileType,
+                      text: false,
+                    });
+                  } else if (mime.indexOf('application/pdf') !== -1) {
                     const dataBase64 = data.toString('base64');
                     fileType = `data:${mime};base64,${dataBase64}`;
                     resolve({

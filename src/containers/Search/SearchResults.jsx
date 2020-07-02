@@ -350,6 +350,15 @@ class SearchResults extends React.Component {
                       src={links[key].content}
                     />
                   )}
+                {links[key].content &&
+                  links[key].content.indexOf('application/pdf') !== -1 && (
+                    <Iframe
+                      width="100%"
+                      height="400px"
+                      className="iframe-SearchItem"
+                      url={links[key].content}
+                    />
+                  )}
               </SearchItem>
             </Link>
           </Pane>

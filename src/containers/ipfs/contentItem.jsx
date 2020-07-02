@@ -5,6 +5,7 @@ import { SearchItem } from '@cybercongress/gravity';
 import { getRankGrade } from '../../utils/search/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import CodeBlock from './codeBlock';
+import Iframe from 'react-iframe';
 
 const FileType = require('file-type');
 
@@ -32,7 +33,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
           localResolve: false,
         });
         clearTimeout(timerId);
-        if (responseDag.value.size < 10 * 10 ** 6) {
+        if (responseDag.value.size < 1.5 * 10 ** 6) {
           const responseCat = await nodeIpfs.cat(cid);
           const bufs = [];
           bufs.push(responseCat);
@@ -45,6 +46,12 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
               setText(false);
               const file = `data:${mime};base64,${dataBase64}`;
               setTypeContent('image');
+              setContent(file);
+              setStatus('downloaded');
+            } else if (mime.indexOf('application/pdf') !== -1) {
+              setText(false);
+              const file = `data:${mime};base64,${dataBase64}`;
+              setTypeContent('application/pdf');
               setContent(file);
               setStatus('downloaded');
             } else {
@@ -112,6 +119,14 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
             style={{ width: '100%', paddingTop: 10 }}
             alt="img"
             src={content}
+          />
+        )}
+        {typeContent === 'application/pdf' && (
+          <Iframe
+            width="100%"
+            height="400px"
+            className="iframe-SearchItem"
+            url={content}
           />
         )}
       </SearchItem>
