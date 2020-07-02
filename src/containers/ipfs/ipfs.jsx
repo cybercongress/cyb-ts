@@ -200,7 +200,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           size: responseDag.value.size,
           blockSizes: link,
         }));
-        if (responseDag.value.size < 1 * 10 ** 6) {
+        if (responseDag.value.size < 10 * 10 ** 6) {
           const responseCat = await nodeIpfs.cat(cid);
           setMetaData(item => ({
             ...item,
