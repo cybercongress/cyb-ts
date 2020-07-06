@@ -318,7 +318,7 @@ export const TextProposal = ({
           />
         </Pane>
         <Pane width="100%">
-          <Text color="#fff">deposit, EUL</Text>
+          <Text color="#fff">deposit, GEUL</Text>
           <input
             value={valueDeposit}
             style={{
