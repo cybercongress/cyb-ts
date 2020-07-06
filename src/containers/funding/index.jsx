@@ -445,6 +445,7 @@ class Funding extends PureComponent {
       time,
       selected,
       estimation,
+      amount,
     } = this.state;
     const { mobile } = this.props;
     let content;
@@ -528,6 +529,7 @@ class Funding extends PureComponent {
             time={time}
             price={currentPrice}
             discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
+            amount={amount}
           />
           <Tablist className="tab-list" marginY={20}>
             <TabBtn

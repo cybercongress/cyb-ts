@@ -320,12 +320,14 @@ span.right-input {
   padding: 20px 0;
   position: fixed;
   bottom: 0;
+  display: flex;
+  left: 0;
+  right: 0;
   background-color: #000;
   z-index: 3;
   min-height: 5%;
   height: 1%;
   transition: min-height 2s;
-  display: flex;
   align-items: center;
   justify-content: center;
 }
