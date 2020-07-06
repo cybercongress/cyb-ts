@@ -11,15 +11,14 @@ import { formatNumber } from '../../utils/utils';
 
 const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
 
-const Statistics = ({ atomLeff, price, discount, time, block }) => {
-
+const Statistics = ({ atomLeff, price, discount, time, amount }) => {
   return (
     // <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="3">
     <Pane
       marginBottom={10}
       display="grid"
       justifyItems="center"
-      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
       gridGap="20px"
     >
       <Card
@@ -53,6 +52,12 @@ const Statistics = ({ atomLeff, price, discount, time, block }) => {
         value={atomLeff >= 0 ? formatNumber(atomLeff) : 0}
         positionTooltip="bottom"
         tooltipValue="The GCYB left before the end of the donations, in the case where less than 146 days pass from the start"
+      />
+      <Card
+        title="Donations, ATOMs"
+        value={formatNumber(Math.floor(amount * 1000) / 1000)}
+        positionTooltip="bottom"
+        // tooltipValue="The GCYB left before the end of the donations, in the case where less than 146 days pass from the start"
       />
       {/* // </ContainerCard> */}
     </Pane>
