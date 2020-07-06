@@ -10,8 +10,7 @@ import {
   ContainerPane,
   Item,
 } from '../../components';
-import proposalsIdJson from './proposalsId';
-import proposerJson from './proposer';
+
 import {
   getProposals,
   getStakingPool,

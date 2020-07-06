@@ -8,6 +8,33 @@ import { getProposals } from '../../utils/governance';
 
 const dateFormat = require('dateformat');
 
+const finalTallyResult = item => {
+  const finalVotes = {};
+  let finalTotalVotes = 0;
+  const yes = parseInt(item.yes);
+  const abstain = parseInt(item.abstain);
+  const no = parseInt(item.no);
+  const noWithVeto = parseInt(item.no_with_veto);
+
+  finalTotalVotes = yes + abstain + no + noWithVeto;
+  finalVotes.yes = (yes / finalTotalVotes) * 100;
+  finalVotes.no = (no / finalTotalVotes) * 100;
+  finalVotes.abstain = (abstain / finalTotalVotes) * 100;
+  finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
+  return finalVotes;
+};
+
+const AcceptedCard = ({ id, name, votes, type, amount, timeEnd }) => (
+  <Pane paddingX={10} paddingY={10}>
+    <Pane>{type}</Pane>
+    <Pane>
+      {id} {name}
+    </Pane>
+    <Votes finalVotes={finalTallyResult(votes)} />
+    <Pane>{amount}</Pane>
+    <Pane>{timeEnd}</Pane>
+  </Pane>
+);
 class Governance extends React.Component {
   constructor(props) {
     super(props);
@@ -54,69 +81,42 @@ class Governance extends React.Component {
 
   render() {
     const { table } = this.state;
-    // console.log('table', table.length);
-    const rowsTable = table.reverse().map(item => (
-      <Table.Row
-        borderBottom="none"
-        width="fit-content"
-        paddingLeft={20}
-        height={50}
-        isSelectable
-        onSelect={() => this.routeChange(`/governance/${item.id}`)}
-        key={item.id}
-      >
-        <Table.TextCell flex="none" width={50}>
-          <Text color="#fff">{item.id}</Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={150}>
-          <Text color="#fff">{item.content.value.title}</Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={170}>
-          <Text color="#fff">{item.content.type}</Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={150}>
-          <Pane display="flex" alignItems="center" marginBottom={5}>
-            <IconStatus status={item.proposal_status} marginRight={5} />
-            <Text color="#fff">{item.proposal_status}</Text>
-          </Pane>
-          <Votes finalVotes={this.finalTallyResult(item.final_tally_result)} />
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff">
-            {dateFormat(new Date(item.submit_time), 'dd/mm/yyyy, h:MM:ss TT')}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff">
-            {dateFormat(
-              new Date(item.deposit_end_time),
-              'dd/mm/yyyy, h:MM:ss TT'
-            )}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff" flexShrink={0} flexGrow={0}>
-            {dateFormat(
-              new Date(item.voting_start_time),
-              'dd/mm/yyyy, h:MM:ss TT'
-            )}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff" flexShrink={0} flexGrow={0}>
-            {dateFormat(
-              new Date(item.voting_end_time),
-              'dd/mm/yyyy, h:MM:ss TT'
-            )}
-          </Text>
-        </Table.TextCell>
-      </Table.Row>
-    ));
+
+    const active = table
+      .reverse()
+      .filter(
+        item =>
+          item.proposal_status !== 'Passed' &&
+          item.proposal_status !== 'Rejected'
+      )
+      .map(item => <div>fgf</div>);
+
+    const accepted = table
+      .filter(item => item.proposal_status === 'Passed')
+      .map(item => (
+        <AcceptedCard
+          id={item.id}
+          name={item.content.value.title}
+          votes={item.final_tally_result}
+          type={item.content.type}
+          amount={item.total_deposit[0].amount}
+          timeEnd={dateFormat(
+            new Date(item.voting_end_time),
+            'dd/mm/yyyy, h:MM:ss TT'
+          )}
+        />
+      ));
+
+    const rejected = table
+      .reverse()
+      .filter(item => item.proposal_status === 'Rejected')
+      .map(item => <Pane></Pane>);
 
     return (
       <div>
         <main className="block-body-home">
           <Pane>
+            {accepted}
             {/* <Pane
               height={70}
               display="flex"
@@ -142,65 +142,7 @@ class Governance extends React.Component {
               // height="100%"
               display="flex"
               paddingBottom={50}
-            >
-              <Table overflowX="auto">
-                <Table.Head
-                  width="fit-content"
-                  style={{
-                    backgroundColor: '#000',
-                    borderBottom: '1px solid #ffffff80',
-                  }}
-                  paddingLeft={20}
-                >
-                  <Table.TextHeaderCell flex="none" width={50}>
-                    <Text color="#fff" fontSize="17px">
-                      ID
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={150}>
-                    <Text color="#fff" fontSize="17px">
-                      Title
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={170}>
-                    <Text color="#fff" fontSize="17px">
-                      Type
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={150}>
-                    <Text color="#fff" fontSize="17px">
-                      Status
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Submit_Time
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Deposit_Endtime
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Voting_Starttime
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Voting_Endtime
-                    </Text>
-                  </Table.TextHeaderCell>
-                </Table.Head>
-                <Table.Body
-                  width="fit-content"
-                  style={{ backgroundColor: '#000', overflow: 'hidden' }}
-                >
-                  {rowsTable}
-                </Table.Body>
-              </Table>
-            </Pane>
+            ></Pane>
           </Pane>
         </main>
         <ActionBar update={this.init} />
