@@ -117,7 +117,7 @@ class Governance extends React.Component {
       <div>
         <main className="block-body-home">
           <Pane>
-            <Pane
+            {/* <Pane
               height={70}
               display="flex"
               justifyContent="space-between"
@@ -137,7 +137,7 @@ class Governance extends React.Component {
                 <Legend color="#ffcf65" text="No" marginLeft={50} />
                 <Legend color="#fe8a8a" text="NoWithVeto" marginLeft={50} />
               </Pane>
-            </Pane>
+            </Pane> */}
             <Pane
               // height="100%"
               display="flex"
