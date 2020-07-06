@@ -19,19 +19,6 @@ const ActionBarContainer = ({ addAddress }) => {
                 display: 'block',
               }}
               className="btn"
-              to="/gol/faucet"
-            >
-              ETH
-            </Link>{' '}
-            or
-            <Link
-              style={{
-                paddingTop: 10,
-                margin: '0 15px',
-                paddingBottom: 10,
-                display: 'block',
-              }}
-              className="btn"
               to="/gol/takeoff"
             >
               ATOM
