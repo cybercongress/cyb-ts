@@ -47,11 +47,11 @@ function Governance() {
           state={item.proposal_status}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
-            'dd/mm/yyyy, h:MM:ss TT'
+            'dd/mm/yyyy, HH:MM:ss'
           )}
           timeEndVoting={dateFormat(
             new Date(item.voting_end_time),
-            'dd/mm/yyyy, h:MM:ss TT'
+            'dd/mm/yyyy, HH:MM:ss'
           )}
           amount={item.total_deposit[0]}
         />
@@ -71,7 +71,7 @@ function Governance() {
           amount={item.total_deposit[0]}
           timeEnd={dateFormat(
             new Date(item.voting_end_time),
-            'dd/mm/yyyy, h:MM:ss TT'
+            'dd/mm/yyyy, HH:MM:ss'
           )}
         />
       </Link>
@@ -91,7 +91,7 @@ function Governance() {
           amount={item.total_deposit[0]}
           timeEnd={dateFormat(
             new Date(item.voting_end_time),
-            'dd/mm/yyyy, h:MM:ss TT'
+            'dd/mm/yyyy, HH:MM:ss'
           )}
         />
       </Link>
