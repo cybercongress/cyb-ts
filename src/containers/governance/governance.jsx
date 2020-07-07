@@ -1,233 +1,49 @@
-import React from 'react';
-import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
-import { Votes, Legend, IconStatus, Tooltip } from '../../components';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
 import ActionBar from './actionBar';
-import { formatCurrency } from '../../utils/utils';
-
-import { getProposals } from '../../utils/governance';
+import { getProposals, getMinDeposit } from '../../utils/governance';
+import Columns from './components/columns';
+import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 
 const dateFormat = require('dateformat');
 
-const textPropsImg = require('../../image/reader-outline.svg');
-const paramChangePropsImg = require('../../image/cog-outline.svg');
-const comPropsImg = require('../../image/wallet-outline.svg');
+function Governance() {
+  const [tableData, setTableData] = useState([]);
+  const [minDeposit, setMinDeposit] = useState(0);
 
-const TypeProps = ({ type }) => {
-  let typeImg;
-  let textType;
-
-  switch (type) {
-    case 'cosmos-sdk/ParameterChangeProposal':
-      typeImg = paramChangePropsImg;
-      textType = 'Parameter Change Proposal';
-      break;
-    case 'cosmos-sdk/CommunityPoolSpendProposal':
-      typeImg = comPropsImg;
-      textType = 'Community Pool Spend Proposal';
-
-      break;
-
-    default:
-      typeImg = textPropsImg;
-      textType = 'Text Proposal';
-      break;
-  }
-  return (
-    <Tooltip placement="bottom" tooltip={textType}>
-      <img style={{ width: 30, height: 30 }} src={typeImg} alt="type" />
-    </Tooltip>
-  );
-};
-
-const finalTallyResult = item => {
-  const finalVotes = {};
-  let finalTotalVotes = 0;
-  const yes = parseInt(item.yes);
-  const abstain = parseInt(item.abstain);
-  const no = parseInt(item.no);
-  const noWithVeto = parseInt(item.no_with_veto);
-
-  finalTotalVotes = yes + abstain + no + noWithVeto;
-  finalVotes.yes = (yes / finalTotalVotes) * 100;
-  finalVotes.no = (no / finalTotalVotes) * 100;
-  finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-  finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
-  return finalVotes;
-};
-
-const AcceptedCard = ({ id, name, votes, type, amount, timeEnd }) => (
-  <Pane
-    position="relative"
-    paddingRight="35px"
-    boxShadow="0 0 5px 0px #3ab793"
-    paddingBottom="20px"
-    paddingLeft="15px"
-    paddingTop="10px"
-    borderRadius="5px"
-  >
-    <Pane position="absolute" right="5px" top="5px">
-      <TypeProps type={type} />
-    </Pane>
-    <Pane fontSize="20px" marginBottom={15}>
-      #{id} {name}
-    </Pane>
-    <Pane marginBottom={5}>
-      <Pane marginBottom={2}>Votes:</Pane>
-      <Votes finalVotes={finalTallyResult(votes)} />
-    </Pane>
-    <Pane>Amount: {formatCurrency(amount.amount, amount.denom)}</Pane>
-    <Pane>
-      <Pane marginBottom={2}>Time accepted:</Pane>
-      <Pane>{timeEnd}</Pane>
-    </Pane>
-  </Pane>
-);
-
-const RejectedCard = ({ id, name, votes, type, amount, timeEnd }) => (
-  <Pane
-    position="relative"
-    paddingRight="35px"
-    boxShadow="0 0 5px 0px #3ab793"
-    paddingBottom="20px"
-    paddingLeft="15px"
-    paddingTop="10px"
-    borderRadius="5px"
-  >
-    <Pane position="absolute" right="5px" top="5px">
-      <TypeProps type={type} />
-    </Pane>
-    <Pane fontSize="20px" marginBottom={15}>
-      #{id} {name}
-    </Pane>
-    <Pane marginBottom={5}>
-      <Pane marginBottom={2}>Votes:</Pane>
-      <Votes finalVotes={finalTallyResult(votes)} />
-    </Pane>
-    <Pane>Amount: {formatCurrency(amount.amount, amount.denom)}</Pane>
-    <Pane>
-      <Pane marginBottom={2}>Time rejected:</Pane>
-      <Pane>{timeEnd}</Pane>
-    </Pane>
-  </Pane>
-);
-
-const ActiveCard = ({
-  id,
-  name,
-  state,
-  votes,
-  type = '',
-  amount = 0,
-  timeEndDeposit,
-  timeEndVoting,
-}) => (
-  <Pane
-    position="relative"
-    paddingRight="35px"
-    boxShadow="0 0 5px 0px #3ab793"
-    paddingBottom="20px"
-    paddingLeft="15px"
-    paddingTop="10px"
-    borderRadius="5px"
-  >
-    <Pane position="absolute" right="5px" top="5px">
-      <TypeProps type={type} />
-    </Pane>
-    <Pane fontSize="20px" marginBottom={15}>
-      #{id} {name}
-    </Pane>
-    <Pane marginBottom={2}>
-      <Pane alignItems="center" display="flex" marginBottom={2}>
-        State:
-        <IconStatus marginLeft={10} marginRight={5} size={25} status={state} />
-        {state}
-      </Pane>
-    </Pane>
-
-    {state === 'VotingPeriod' && (
-      <Pane marginBottom={2}>
-        <Pane marginBottom={2}>Votes:</Pane>
-        {/* <Votes finalVotes={finalTallyResult(votes)} /> */}
-      </Pane>
-    )}
-    {state === 'DepositPeriod' && (
-      <Pane>Amount: {formatCurrency(amount.amount, amount.denom)}</Pane>
-    )}
-
-    {state === 'DepositPeriod' && (
-      <Pane>
-        <Pane marginBottom={2}>Deposit End Time:</Pane>
-        <Pane>{timeEndDeposit}</Pane>
-      </Pane>
-    )}
-    {state === 'VotingPeriod' && (
-      <Pane>
-        <Pane marginBottom={2}>Voting End Time:</Pane>
-        <Pane>{timeEndVoting}</Pane>
-      </Pane>
-    )}
-  </Pane>
-);
-
-class Governance extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      table: [],
+  useEffect(() => {
+    const feachgetMinDeposit = async () => {
+      const response = await getMinDeposit();
+      if (response !== null) {
+        setMinDeposit(parseFloat(response.min_deposit[0].amount));
+      }
     };
+    feachgetMinDeposit();
+    feachData();
+  }, []);
 
-    this.routeChange = this.routeChange.bind(this);
-  }
-
-  componentDidMount() {
-    this.init();
-  }
-
-  init = async () => {
-    const proposals = await getProposals();
-    this.setState({
-      // table: proposals[0].result,
-      table: proposals,
-    });
+  const feachData = async () => {
+    const responseProposals = await getProposals();
+    if (responseProposals !== null) {
+      setTableData(responseProposals);
+    }
   };
 
-  routeChange = newPath => {
-    const { history } = this.props;
-    const path = newPath;
-    history.push(path);
-  };
-
-  finalTallyResult = item => {
-    const finalVotes = {};
-    let finalTotalVotes = 0;
-    const yes = parseInt(item.yes);
-    const abstain = parseInt(item.abstain);
-    const no = parseInt(item.no);
-    const noWithVeto = parseInt(item.no_with_veto);
-
-    finalTotalVotes = yes + abstain + no + noWithVeto;
-    finalVotes.yes = (yes / finalTotalVotes) * 100;
-    finalVotes.no = (no / finalTotalVotes) * 100;
-    finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
-    return finalVotes;
-  };
-
-  render() {
-    const { table } = this.state;
-
-    const active = table
-      .reverse()
-      .filter(
-        item =>
-          item.proposal_status !== 'Passed' &&
-          item.proposal_status !== 'Rejected'
-      )
-      .map(item => (
+  const active = tableData
+    .reverse()
+    .filter(
+      item =>
+        item.proposal_status !== 'Passed' && item.proposal_status !== 'Rejected'
+    )
+    .map(item => (
+      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
         <ActiveCard
           key={item.id}
           id={item.id}
           name={item.content.value.title}
+          minDeposit={minDeposit}
+          totalDeposit={parseFloat(item.total_deposit[0].amount)}
           state={item.proposal_status}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
@@ -239,11 +55,13 @@ class Governance extends React.Component {
           )}
           amount={item.total_deposit[0]}
         />
-      ));
+      </Link>
+    ));
 
-    const accepted = table
-      .filter(item => item.proposal_status === 'Passed')
-      .map(item => (
+  const accepted = tableData
+    .filter(item => item.proposal_status === 'Passed')
+    .map(item => (
+      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
         <AcceptedCard
           key={item.id}
           id={item.id}
@@ -256,12 +74,14 @@ class Governance extends React.Component {
             'dd/mm/yyyy, h:MM:ss TT'
           )}
         />
-      ));
+      </Link>
+    ));
 
-    const rejected = table
-      .reverse()
-      .filter(item => item.proposal_status === 'Rejected')
-      .map(item => (
+  const rejected = tableData
+    .reverse()
+    .filter(item => item.proposal_status === 'Rejected')
+    .map(item => (
+      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
         <RejectedCard
           key={item.id}
           id={item.id}
@@ -274,62 +94,26 @@ class Governance extends React.Component {
             'dd/mm/yyyy, h:MM:ss TT'
           )}
         />
-      ));
+      </Link>
+    ));
 
-    return (
-      <div>
-        <main className="block-body">
-          <Pane
-            display="grid"
-            justifyItems="center"
-            gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
-            gridGap="20px"
-          >
-            <Pane
-              width="100%"
-              display="grid"
-              gridTemplateColumns="100%"
-              gridGap="20px"
-              gridTemplateRows="max-content"
-              alignItems="flex-start"
-            >
-              <Pane maxHeight="20px" fontSize={20}>
-                Active
-              </Pane>
-              {active}
-            </Pane>
-            <Pane
-              width="100%"
-              display="grid"
-              gridTemplateColumns="100%"
-              gridGap="20px"
-              gridTemplateRows="max-content"
-              alignItems="flex-start"
-            >
-              <Pane maxHeight="20px" fontSize={20}>
-                Accepted
-              </Pane>
-              {accepted}
-            </Pane>
-            <Pane
-              width="100%"
-              display="grid"
-              gridTemplateColumns="100%"
-              gridGap="20px"
-              gridTemplateRows="max-content"
-              alignItems="flex-start"
-            >
-              <Pane maxHeight="20px" fontSize={20}>
-                Rejected
-              </Pane>
-              {rejected}
-            </Pane>
-          </Pane>
-        </main>
-        <ActionBar update={this.init} />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <main className="block-body">
+        <Pane
+          display="grid"
+          justifyItems="center"
+          gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
+          gridGap="20px"
+        >
+          <Columns title="Active">{active}</Columns>
+          <Columns title="Accepted">{accepted}</Columns>
+          <Columns title="Rejected">{rejected}</Columns>
+        </Pane>
+      </main>
+      <ActionBar update={feachData} />
+    </div>
+  );
 }
 
 export default Governance;
