@@ -488,6 +488,40 @@ function createParamChange(
   return txSkeleton;
 }
 
+function createSoftwareUpgrade(
+  txContext,
+  address,
+  title,
+  description,
+  name,
+  height,
+  deposit,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgSubmitProposal',
+    value: {
+      content: {
+        type: 'cosmos-sdk/SoftwareUpgradeProposal',
+        value: {
+          description,
+          title,
+          plan: { name, height },
+        },
+      },
+      initial_deposit: deposit,
+      proposer: address,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 // Creates a new undelegation tx based on the input parameters
 // the function expects a complete txContext
 function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
@@ -653,4 +687,5 @@ export default {
   voteProposal,
   sendDeposit,
   createParamChange,
+  createSoftwareUpgrade,
 };

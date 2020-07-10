@@ -581,7 +581,6 @@ class CosmosDelegateTool {
     description,
     changeParam,
     deposit,
-    amount,
     memo
   ) => {
     console.log('txContext', txContext);
@@ -597,6 +596,35 @@ class CosmosDelegateTool {
       title,
       description,
       changeParam,
+      deposit,
+      memo
+    );
+  };
+
+  softwareUpgrade = async (
+    txContext,
+    address,
+    title,
+    description,
+    nameUpgrade,
+    heightUpgrade,
+    deposit,
+    memo
+  ) => {
+    console.log('txContext', txContext);
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createSoftwareUpgrade(
+      txContext,
+      address,
+      title,
+      description,
+      nameUpgrade,
+      heightUpgrade,
       deposit,
       memo
     );

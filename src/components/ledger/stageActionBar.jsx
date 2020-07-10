@@ -30,6 +30,61 @@ import { CYBER } from '../../utils/config';
 
 const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
 
+const param = {
+  slashing: [
+    'signed_blocks_window',
+    'min_signed_per_window',
+    'downtime_jail_duration',
+    'slash_fraction_double_sign',
+    'slash_fraction_downtime',
+  ],
+  bandwidth: [
+    'tx_cost',
+    'link_msg_cost',
+    'non_link_msg_cost',
+    'recovery_period',
+    'adjust_price_period',
+    'base_credit_price',
+    'desirable_bandwidth',
+    'max_block_bandwidth',
+  ],
+  distribution: [
+    'community_tax',
+    'base_proposer_reward',
+    'bonus_proposer_reward',
+    'withdraw_addr_enabled',
+  ],
+  mint: [
+    'mint_denom',
+    'inflation_rate_change',
+    'inflation_max',
+    'inflation_min',
+    'goal_bonded',
+    'blocks_per_year',
+  ],
+  evidence: ['max_evidence_age'],
+  auth: [
+    'max_memo_characters',
+    'tx_sig_limit',
+    'tx_size_cost_per_byte',
+    'sig_verify_cost_ed25519',
+    'sig_verify_cost_secp256k1',
+  ],
+  rank: ['calculation_period', 'damping_factor', 'tolerance'],
+  staking: [
+    'unbonding_time',
+    'max_validators',
+    'max_entries',
+    'historical_entries',
+    'bond_denom',
+  ],
+  gov: {
+    deposit_params: ['min_deposit', 'max_deposit_period'],
+    voting_params: ['voting_period'],
+    tally_params: ['quorum', 'threshold', 'veto'],
+  },
+};
+
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
 
@@ -277,68 +332,14 @@ export const GovernanceStartStageActionBar = ({
         onChange={onChangeSelect}
       >
         <option value="textProposal">Text Proposal</option>
-        <option value="paramChange">Param Change</option>
         <option value="communityPool">Community Pool Spend</option>
+        <option value="paramChange">Param Change</option>
+        <option value="softwareUpgrade">Software Upgrade</option>
       </select>
     </ActionBarContentText>
     <Button onClick={onClickBtn}>Propose</Button>
   </ActionBar>
 );
-
-const param = {
-  slashing: [
-    'signed_blocks_window',
-    'min_signed_per_window',
-    'downtime_jail_duration',
-    'slash_fraction_double_sign',
-    'slash_fraction_downtime',
-  ],
-  bandwidth: [
-    'tx_cost',
-    'link_msg_cost',
-    'non_link_msg_cost',
-    'recovery_period',
-    'adjust_price_period',
-    'base_credit_price',
-    'desirable_bandwidth',
-    'max_block_bandwidth',
-  ],
-  distribution: [
-    'community_tax',
-    'base_proposer_reward',
-    'bonus_proposer_reward',
-    'withdraw_addr_enabled',
-  ],
-  mint: [
-    'mint_denom',
-    'inflation_rate_change',
-    'inflation_max',
-    'inflation_min',
-    'goal_bonded',
-    'blocks_per_year',
-  ],
-  evidence: ['max_evidence_age'],
-  auth: [
-    'max_memo_characters',
-    'tx_sig_limit',
-    'tx_size_cost_per_byte',
-    'sig_verify_cost_ed25519',
-    'sig_verify_cost_secp256k1',
-  ],
-  rank: ['calculation_period', 'damping_factor', 'tolerance'],
-  staking: [
-    'unbonding_time',
-    'max_validators',
-    'max_entries',
-    'historical_entries',
-    'bond_denom',
-  ],
-  gov: {
-    deposit_params: ['min_deposit', 'max_deposit_period'],
-    voting_params: ['voting_period'],
-    tally_params: ['quorum', 'threshold', 'veto'],
-  },
-};
 
 export const GovernanceChangeParam = ({
   valueSelect,

@@ -15,6 +15,7 @@ import {
   TransactionError,
   CheckAddressInfo,
   GovernanceChangeParam,
+  // GovernanceSoftwareUpgrade,
 } from '../../components';
 import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 
@@ -63,6 +64,8 @@ class ActionBar extends Component {
       valueSelectChangeParam: '',
       selectedParam: {},
       changeParam: [],
+      nameUpgrade: '',
+      heightUpgrade: '',
     };
     this.timeOut = null;
     this.ledger = null;
@@ -143,6 +146,8 @@ class ActionBar extends Component {
       valueAmountRecipient,
       valueAddressRecipient,
       changeParam,
+      nameUpgrade,
+      heightUpgrade,
     } = this.state;
 
     let deposit = [];
@@ -220,6 +225,20 @@ class ActionBar extends Component {
         );
         break;
       }
+
+      case 'softwareUpgrade': {
+        tx = await this.ledger.softwareUpgrade(
+          txContext,
+          address.bech32,
+          title,
+          description,
+          nameUpgrade,
+          heightUpgrade,
+          deposit,
+          MEMO
+        );
+        break;
+      }
       default: {
         tx = [];
       }
@@ -286,7 +305,7 @@ class ActionBar extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      const status = await this.ledger.txStatusCyber(this.state.txHash);
       const data = await status;
       if (data.logs) {
         this.setState({
@@ -362,9 +381,7 @@ class ActionBar extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      ledger: null,
       address: null,
-      errorMessage: null,
       addressInfo: null,
       valueSelect: 'textProposal',
       txMsg: null,
@@ -377,6 +394,12 @@ class ActionBar extends Component {
       valueDeposit: '',
       valueAmountRecipient: '',
       valueAddressRecipient: '',
+      errorMessage: null,
+      valueSelectChangeParam: '',
+      selectedParam: {},
+      changeParam: [],
+      nameUpgrade: '',
+      heightUpgrade: '',
     });
     this.timeOut = null;
     this.ledger = null;
@@ -428,7 +451,7 @@ class ActionBar extends Component {
 
     this.setState({
       valueParam: value,
-      selectedParam: { ...selectedParam, value },
+      selectedParam: { ...selectedParam, value: `\\"${value}\\"` },
     });
   };
 
@@ -469,9 +492,10 @@ class ActionBar extends Component {
       errorMessage,
       connectLedger,
       valueSelectChangeParam,
-      selectedParam,
       valueParam,
       changeParam,
+      nameUpgrade,
+      heightUpgrade,
     } = this.state;
 
     if (stage === STAGE_INIT) {
@@ -532,6 +556,7 @@ class ActionBar extends Component {
         />
       );
     }
+
     if (valueSelect === 'paramChange' && stage === STAGE_TYPE_GOV) {
       return (
         <GovernanceChangeParam
@@ -553,6 +578,21 @@ class ActionBar extends Component {
         />
       );
     }
+
+    // if (valueSelect === 'softwareUpgrade' && stage === STAGE_TYPE_GOV) {
+    //   return (
+    //     <GovernanceSoftwareUpgrade
+    //       onChangeInputTitle={this.onChangeInputTitle}
+    //       onChangeInputDescription={this.onChangeInputDescription}
+    //       onChangeInputDeposit={this.onChangeInputDeposit}
+    //       valueDescription={valueDescription}
+    //       valueTitle={valueTitle}
+    //       valueDeposit={valueDeposit}
+    //       onClickBtnCloce={this.onClickInitStage}
+    //       onClickBtn={this.generateTx}
+    //     />
+    //   );
+    // }
 
     if (stage === STAGE_WAIT) {
       return (
