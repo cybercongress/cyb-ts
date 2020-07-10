@@ -343,7 +343,7 @@ class ProposalsDetail extends React.Component {
                 value={
                   <Pane className="container-description">
                     <ReactMarkdown
-                      source={proposalsInfo.description}
+                      source={proposalsInfo.description.replace(/\\n/g, '\n')}
                       escapeHtml={false}
                     />
                   </Pane>
