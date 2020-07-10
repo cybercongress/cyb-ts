@@ -7,7 +7,7 @@ const Columns = ({ title, children }) => (
     display="grid"
     gridTemplateColumns="100%"
     gridGap="20px"
-    gridTemplateRows="max-content"
+    gridAutoRows="max-content"
     alignItems="flex-start"
     boxShadow="0 0 3px 0px #fff"
     paddingX={10}
