@@ -9,7 +9,12 @@ const paramChangePropsImg = require('../../../image/cog-outline.svg');
 const comPropsImg = require('../../../image/wallet-outline.svg');
 
 const finalTallyResult = item => {
-  const finalVotes = {};
+  const finalVotes = {
+    yes: 0,
+    no: 0,
+    abstain: 0,
+    noWithVeto: 0,
+  };
   let finalTotalVotes = 0;
   const yes = parseFloat(item.yes);
   const abstain = parseFloat(item.abstain);
@@ -17,10 +22,12 @@ const finalTallyResult = item => {
   const noWithVeto = parseFloat(item.no_with_veto);
 
   finalTotalVotes = yes + abstain + no + noWithVeto;
-  finalVotes.yes = (yes / finalTotalVotes) * 100;
-  finalVotes.no = (no / finalTotalVotes) * 100;
-  finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-  finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
+  if (finalTotalVotes !== 0) {
+    finalVotes.yes = (yes / finalTotalVotes) * 100;
+    finalVotes.no = (no / finalTotalVotes) * 100;
+    finalVotes.abstain = (abstain / finalTotalVotes) * 100;
+    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
+  }
   return finalVotes;
 };
 
@@ -142,12 +149,12 @@ const ActiveCard = ({
       </Pane>
     </Pane>
 
-    {state === 'VotingPeriod' && (
+    {/* {state === 'VotingPeriod' && (
       <Pane marginBottom={2}>
         <Pane marginBottom={2}>Status:</Pane>
         <Votes finalVotes={finalTallyResult(votes)} />
       </Pane>
-    )}
+    )} */}
 
     {state === 'DepositPeriod' && (
       <Pane marginBottom={30}>

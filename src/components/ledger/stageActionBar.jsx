@@ -1,6 +1,6 @@
 import React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
@@ -13,6 +13,9 @@ import {
   Textarea,
   FilePicker,
   Battery,
+  Icon,
+  IconButton,
+  Tooltip,
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
@@ -29,6 +32,12 @@ const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
+
+const toPascalCase = str =>
+  str
+    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[a-zA-Z0-9]+/g)
+    .map(cht => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
+    .join('');
 
 export const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -268,13 +277,232 @@ export const GovernanceStartStageActionBar = ({
         onChange={onChangeSelect}
       >
         <option value="textProposal">Text Proposal</option>
-        {/* <option value="paramChange">Param Change</option> */}
+        <option value="paramChange">Param Change</option>
         <option value="communityPool">Community Pool Spend</option>
       </select>
     </ActionBarContentText>
-    <Button onClick={onClickBtn}>Create Governance</Button>
+    <Button onClick={onClickBtn}>Propose</Button>
   </ActionBar>
 );
+
+const param = {
+  slashing: [
+    'signed_blocks_window',
+    'min_signed_per_window',
+    'downtime_jail_duration',
+    'slash_fraction_double_sign',
+    'slash_fraction_downtime',
+  ],
+  bandwidth: [
+    'tx_cost',
+    'link_msg_cost',
+    'non_link_msg_cost',
+    'recovery_period',
+    'adjust_price_period',
+    'base_credit_price',
+    'desirable_bandwidth',
+    'max_block_bandwidth',
+  ],
+  distribution: [
+    'community_tax',
+    'base_proposer_reward',
+    'bonus_proposer_reward',
+    'withdraw_addr_enabled',
+  ],
+  mint: [
+    'mint_denom',
+    'inflation_rate_change',
+    'inflation_max',
+    'inflation_min',
+    'goal_bonded',
+    'blocks_per_year',
+  ],
+  evidence: ['max_evidence_age'],
+  auth: [
+    'max_memo_characters',
+    'tx_sig_limit',
+    'tx_size_cost_per_byte',
+    'sig_verify_cost_ed25519',
+    'sig_verify_cost_secp256k1',
+  ],
+  rank: ['calculation_period', 'damping_factor', 'tolerance'],
+  staking: [
+    'unbonding_time',
+    'max_validators',
+    'max_entries',
+    'historical_entries',
+    'bond_denom',
+  ],
+  gov: {
+    deposit_params: ['min_deposit', 'max_deposit_period'],
+    voting_params: ['voting_period'],
+    tally_params: ['quorum', 'threshold', 'veto'],
+  },
+};
+
+export const GovernanceChangeParam = ({
+  valueSelect,
+  onChangeSelect,
+  onClickBtn,
+  onClickBtnAddParam,
+  valueParam = '',
+  onChangeInputParam,
+  changeParam,
+  onClickDeleteParam,
+  onClickBtnCloce,
+  valueTitle,
+  onChangeInputTitle,
+  onChangeInputDescription,
+  valueDescription,
+  valueDeposit,
+  onChangeInputDeposit,
+}) => {
+  const item = [];
+  let itemChangeParam = [];
+
+  Object.keys(param).map(key => {
+    if (param[key].constructor.name === 'Array') {
+      item.push(
+        <option
+          style={{ color: '#fff', fontSize: '20px' }}
+          disabled="disabled"
+          key={key}
+          value=""
+        >
+          {key}
+        </option>
+      );
+      const temp = param[key].map(items => (
+        <option
+          key={items}
+          value={JSON.stringify({
+            subspace: key,
+            key: toPascalCase(items),
+            value: '',
+          })}
+        >
+          {toPascalCase(items)}
+        </option>
+      ));
+      if (temp) {
+        item.push(...temp);
+      }
+    }
+  });
+
+  if (changeParam.length > 0) {
+    itemChangeParam = changeParam.map((items, index) => (
+      <Pane width="100%" display="flex" key={items.key}>
+        <Pane flex={1}>{items.key}</Pane>
+        <Pane flex={1}>{items.value}</Pane>
+        <IconButton
+          onClick={() => onClickDeleteParam(index)}
+          appearance="minimal"
+          height={24}
+          icon="trash"
+          intent="danger"
+        />
+      </Pane>
+    ));
+  }
+
+  return (
+    <ActionBar>
+      <ContainetLedger
+        styles={{ height: 'unset' }}
+        logo
+        onClickBtnCloce={onClickBtnCloce}
+      >
+        <Pane display="flex" flexDirection="column" alignItems="center">
+          <Text fontSize="25px" lineHeight="40px" color="#fff">
+            Parameter Change Proposal
+          </Text>
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">title</Text>
+            <input
+              value={valueTitle}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputTitle}
+              placeholder="title"
+            />
+          </Pane>
+          <Pane width="100%">
+            <Text color="#fff">description</Text>
+            <textarea
+              onChange={onChangeInputDescription}
+              value={valueDescription}
+              className="resize-none"
+            />
+          </Pane>
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">deposit, GEUL</Text>
+            <input
+              value={valueDeposit}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputDeposit}
+              placeholder="amount, GEUL"
+            />
+          </Pane>
+          <Pane marginBottom={10}>
+            <Text color="#fff">parameters</Text>
+            <Pane display="flex">
+              <select
+                style={{ height: 42, marginLeft: 0, width: '210px' }}
+                className="select-green"
+                value={valueSelect}
+                onChange={onChangeSelect}
+              >
+                {item !== undefined && item}
+              </select>
+              <input
+                value={valueParam}
+                disabled={valueSelect.length === 0}
+                style={{
+                  height: 42,
+                  width: '200px',
+                  marginRight: 15,
+                }}
+                onChange={onChangeInputParam}
+                placeholder="value"
+              />
+              <Button
+                disabled={valueSelect.length === 0 || valueParam.length === 0}
+                onClick={onClickBtnAddParam}
+              >
+                Add
+              </Button>
+            </Pane>
+          </Pane>
+          {itemChangeParam.length > 0 && (
+            <>
+              <Pane marginBottom={10} width="100%" display="flex">
+                <Pane flex={1}>Change Param</Pane>
+                <Pane flex={1}>Value</Pane>
+              </Pane>
+              <Pane marginBottom={20} width="100%">
+                {itemChangeParam}
+              </Pane>
+            </>
+          )}
+
+          <Button
+            disabled={itemChangeParam.length === 0}
+            marginTop={25}
+            onClick={onClickBtn}
+          >
+            Create Governance
+          </Button>
+        </Pane>
+      </ContainetLedger>
+    </ActionBar>
+  );
+};
 
 export const TextProposal = ({
   onClickBtn,

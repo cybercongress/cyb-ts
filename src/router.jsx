@@ -56,11 +56,11 @@ function AppRouter({
   }, []);
 
   const init = async () => {
-    setIpfsStatusProps(false);
-    const mobile = isMobileTablet();
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    setTypeDeviceProps(mobile);
-    setLoader(false);
+    // setIpfsStatusProps(false);
+    // setLoader(false);
+    // const mobile = isMobileTablet();
+    // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // setTypeDeviceProps(mobile);
     // //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
     // if (!mobile) {
     //   if (DetectRTC.isWebRTCSupported && !isSafari) {
@@ -148,9 +148,9 @@ function AppRouter({
     }
   };
 
-  if (loader) {
-    return <Dots />;
-  }
+  // if (loader) {
+  //   return <Dots />;
+  // }
 
   return (
     <Router history={history}>

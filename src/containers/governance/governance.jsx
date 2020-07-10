@@ -5,25 +5,52 @@ import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
+import { Card, ContainerCard } from '../../components';
+import { CYBER } from '../../utils/config';
+import { formatNumber } from '../../utils/utils';
+import { getcommunityPool } from '../../utils/search/utils';
 
 const dateFormat = require('dateformat');
+
+const Statistics = ({ communityPoolCyber }) => (
+  <ContainerCard styles={{ alignItems: 'center' }} col="1">
+    <Card
+      title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+      value={formatNumber(communityPoolCyber)}
+      // tooltipValue="The number of the total ETH, currently, raised"
+      positionTooltip="bottom"
+    />
+  </ContainerCard>
+);
 
 function Governance() {
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
+  const [communityPoolCyber, steCommunityPoolCyber] = useState(0);
 
   useEffect(() => {
-    const feachgetMinDeposit = async () => {
-      const response = await getMinDeposit();
-      if (response !== null) {
-        setMinDeposit(parseFloat(response.min_deposit[0].amount));
-      }
-    };
-    feachgetMinDeposit();
-    feachData();
+    feachCommunityPool();
+    feachMinDeposit();
+    feachProposals();
   }, []);
 
-  const feachData = async () => {
+  const feachMinDeposit = async () => {
+    const responseMinDeposit = await getMinDeposit();
+
+    if (responseMinDeposit !== null) {
+      setMinDeposit(parseFloat(responseMinDeposit.min_deposit[0].amount));
+    }
+  };
+
+  const feachCommunityPool = async () => {
+    const responseCommunityPool = await getcommunityPool();
+
+    if (responseCommunityPool !== null) {
+      steCommunityPoolCyber(Math.floor(responseCommunityPool[0].amount));
+    }
+  };
+
+  const feachProposals = async () => {
     const responseProposals = await getProposals();
     if (responseProposals !== null) {
       setTableData(responseProposals);
@@ -100,6 +127,7 @@ function Governance() {
   return (
     <div>
       <main className="block-body">
+        <Statistics communityPoolCyber={communityPoolCyber} />
         <Pane
           display="grid"
           justifyItems="center"
@@ -111,7 +139,7 @@ function Governance() {
           <Columns title="Rejected">{rejected}</Columns>
         </Pane>
       </main>
-      <ActionBar update={feachData} />
+      <ActionBar update={feachProposals} />
     </div>
   );
 }

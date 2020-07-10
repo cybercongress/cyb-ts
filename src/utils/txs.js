@@ -19,6 +19,27 @@ const { DENOM_COSMOS, DEFAULT_GAS, DEFAULT_GAS_PRICE } = COSMOS;
 const { DENOM_CYBER } = CYBER;
 const { MEMO } = LEDGER;
 
+function isObject(v) {
+  return Object.prototype.toString.call(v) === '[object Object]';
+}
+
+const sortJson = o => {
+  if (Array.isArray(o)) {
+    return o.sort().map(sortJson);
+  }
+  if (isObject(o)) {
+    return Object.keys(o)
+      .sort()
+      .reduce((a, k) => {
+        a[k] = sortJson(o[k]);
+
+        return a;
+      }, {});
+  }
+
+  return o;
+};
+
 function canonicalizeJson(jsonTx) {
   if (Array.isArray(jsonTx)) {
     return jsonTx.map(canonicalizeJson);
@@ -60,7 +81,7 @@ function getBytesToSign(tx, txContext) {
     sequence: txContext.sequence.toString(),
   };
 
-  return JSON.stringify(canonicalizeJson(txFieldsToSign));
+  return JSON.stringify(canonicalizeJson(sortJson(txFieldsToSign)));
 }
 
 function applyGas(unsignedTx, gas) {
@@ -434,6 +455,39 @@ function createCommunityPool(
   return txSkeleton;
 }
 
+function createParamChange(
+  txContext,
+  address,
+  title,
+  description,
+  changes,
+  deposit,
+  memo
+) {
+  const txSkeleton = createSkeletonCyber(txContext);
+
+  const txMsg = {
+    type: 'cosmos-sdk/MsgSubmitProposal',
+    value: {
+      content: {
+        type: 'cosmos-sdk/ParameterChangeProposal',
+        value: {
+          changes,
+          description,
+          title,
+        },
+      },
+      initial_deposit: deposit,
+      proposer: address,
+    },
+  };
+
+  txSkeleton.value.msg = [txMsg];
+  txSkeleton.value.memo = memo || '';
+
+  return txSkeleton;
+}
+
 // Creates a new undelegation tx based on the input parameters
 // the function expects a complete txContext
 function createUndelegate(txContext, validatorBech32, uatomAmount, memo) {
@@ -598,4 +652,5 @@ export default {
   createImportLink,
   voteProposal,
   sendDeposit,
+  createParamChange,
 };

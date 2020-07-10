@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { CosmosDelegateTool } from '../../utils/ledger';
+import { Button } from '@cybercongress/gravity';
 import {
   ConnectLadger,
   JsonTransaction,
@@ -13,6 +14,7 @@ import {
   TextProposal,
   TransactionError,
   CheckAddressInfo,
+  GovernanceChangeParam,
 } from '../../components';
 import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 
@@ -58,6 +60,9 @@ class ActionBar extends Component {
       valueAddressRecipient: '',
       errorMessage: null,
       connectLedger: null,
+      valueSelectChangeParam: '',
+      selectedParam: {},
+      changeParam: [],
     };
     this.timeOut = null;
     this.ledger = null;
@@ -137,6 +142,7 @@ class ActionBar extends Component {
       valueDeposit,
       valueAmountRecipient,
       valueAddressRecipient,
+      changeParam,
     } = this.state;
 
     let deposit = [];
@@ -198,6 +204,18 @@ class ActionBar extends Component {
           recipient,
           deposit,
           amount,
+          MEMO
+        );
+        break;
+      }
+      case 'paramChange': {
+        tx = await this.ledger.paramChange(
+          txContext,
+          address.bech32,
+          title,
+          description,
+          changeParam,
+          deposit,
           MEMO
         );
         break;
@@ -379,13 +397,61 @@ class ActionBar extends Component {
     });
   };
 
-  hasKey() {
-    return this.state.address !== null;
-  }
+  onFilePickerChange = files => {
+    const reader = new FileReader();
 
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
+    reader.readAsText(files[0], 'UTF-8');
+    reader.onload = evt => {
+      console.log(evt.target.result);
+
+      const loadedJson = JSON.parse(evt.target.result);
+      console.log('loadedJson', loadedJson);
+    };
+
+    reader.onerror = evt => {
+      console.log('error', evt);
+    };
+  };
+
+  onChangeSelectParam = e => {
+    const { value } = e.target;
+    this.setState({
+      valueSelectChangeParam: value,
+      selectedParam: JSON.parse(value),
+      valueParam: '',
+    });
+  };
+
+  onChangeInputParam = e => {
+    const { selectedParam } = this.state;
+    const { value } = e.target;
+
+    this.setState({
+      valueParam: value,
+      selectedParam: { ...selectedParam, value },
+    });
+  };
+
+  onClickBtnAddParam = () => {
+    const { selectedParam, changeParam } = this.state;
+
+    this.setState({
+      changeParam: [...changeParam, selectedParam],
+      valueParam: '',
+      valueSelectChangeParam: '',
+    });
+  };
+
+  onClickDeleteParam = index => {
+    const { changeParam } = this.state;
+    const tempArr = changeParam;
+
+    tempArr.splice(index, 1);
+
+    this.setState({
+      changeParam: tempArr,
+    });
+  };
 
   render() {
     const {
@@ -402,6 +468,10 @@ class ActionBar extends Component {
       valueAddressRecipient,
       errorMessage,
       connectLedger,
+      valueSelectChangeParam,
+      selectedParam,
+      valueParam,
+      changeParam,
     } = this.state;
 
     if (stage === STAGE_INIT) {
@@ -459,6 +529,27 @@ class ActionBar extends Component {
           onChangeInputAddressRecipient={this.onChangeInputAddressRecipient}
           valueAmountRecipient={valueAmountRecipient}
           onChangeInputAmountRecipient={this.onChangeInputAmountRecipient}
+        />
+      );
+    }
+    if (valueSelect === 'paramChange' && stage === STAGE_TYPE_GOV) {
+      return (
+        <GovernanceChangeParam
+          valueSelect={valueSelectChangeParam}
+          onChangeSelect={this.onChangeSelectParam}
+          onClickBtnAddParam={this.onClickBtnAddParam}
+          onChangeInputParam={e => this.onChangeInputParam(e)}
+          valueParam={valueParam}
+          changeParam={changeParam}
+          onClickDeleteParam={this.onClickDeleteParam}
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
+          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.generateTx}
         />
       );
     }
