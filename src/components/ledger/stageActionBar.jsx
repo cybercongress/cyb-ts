@@ -505,6 +505,92 @@ export const GovernanceChangeParam = ({
   );
 };
 
+export const GovernanceSoftwareUpgrade = ({
+  onClickBtn,
+  onClickBtnCloce,
+  onChangeInputTitle,
+  onChangeInputDescription,
+  onChangeInputDeposit,
+  valueDescription,
+  valueTitle,
+  valueDeposit,
+  valueHeightUpgrade,
+  valueNameUpgrade,
+  onChangeInputValueNameUpgrade,
+  onChangeInputValueHeightUpgrade,
+}) => {
+  return (
+    <ActionBar>
+      <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+        <Pane display="flex" flexDirection="column" alignItems="center">
+          <Text fontSize="25px" lineHeight="40px" color="#fff">
+            Software Upgrade Proposal
+          </Text>
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">title</Text>
+            <input
+              value={valueTitle}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputTitle}
+              placeholder="title"
+            />
+          </Pane>
+          <Pane marginBottom={10} width="100%">
+            <Text color="#fff">description</Text>
+            <textarea
+              onChange={onChangeInputDescription}
+              value={valueDescription}
+              className="resize-none"
+            />
+          </Pane>
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">Upgrade name</Text>
+            <input
+              value={valueNameUpgrade}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputValueNameUpgrade}
+              placeholder="title"
+            />
+          </Pane>
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">Upgrade height</Text>
+            <input
+              value={valueHeightUpgrade}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputValueHeightUpgrade}
+              placeholder="title"
+            />
+          </Pane>
+          <Pane width="100%">
+            <Text color="#fff">deposit, GEUL</Text>
+            <input
+              value={valueDeposit}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputDeposit}
+              placeholder="amount, GEUL"
+            />
+          </Pane>
+          <Button marginTop={25} onClick={onClickBtn}>
+            Create Governance
+          </Button>
+        </Pane>
+      </ContainetLedger>
+    </ActionBar>
+  );
+};
+
 export const TextProposal = ({
   onClickBtn,
   addrProposer,

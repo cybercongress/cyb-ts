@@ -15,7 +15,7 @@ import {
   TransactionError,
   CheckAddressInfo,
   GovernanceChangeParam,
-  // GovernanceSoftwareUpgrade,
+  GovernanceSoftwareUpgrade,
 } from '../../components';
 import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 
@@ -451,7 +451,7 @@ class ActionBar extends Component {
 
     this.setState({
       valueParam: value,
-      selectedParam: { ...selectedParam, value: `\\"${value}\\"` },
+      selectedParam: { ...selectedParam, value: `"${value}"` },
     });
   };
 
@@ -473,6 +473,22 @@ class ActionBar extends Component {
 
     this.setState({
       changeParam: tempArr,
+    });
+  };
+
+  onChangeInputValueNameUpgrade = e => {
+    const { value } = e.target;
+
+    this.setState({
+      nameUpgrade: value,
+    });
+  };
+
+  onChangeInputValueHeightUpgrade = e => {
+    const { value } = e.target;
+
+    this.setState({
+      heightUpgrade: value,
     });
   };
 
@@ -579,20 +595,28 @@ class ActionBar extends Component {
       );
     }
 
-    // if (valueSelect === 'softwareUpgrade' && stage === STAGE_TYPE_GOV) {
-    //   return (
-    //     <GovernanceSoftwareUpgrade
-    //       onChangeInputTitle={this.onChangeInputTitle}
-    //       onChangeInputDescription={this.onChangeInputDescription}
-    //       onChangeInputDeposit={this.onChangeInputDeposit}
-    //       valueDescription={valueDescription}
-    //       valueTitle={valueTitle}
-    //       valueDeposit={valueDeposit}
-    //       onClickBtnCloce={this.onClickInitStage}
-    //       onClickBtn={this.generateTx}
-    //     />
-    //   );
-    // }
+    if (valueSelect === 'softwareUpgrade' && stage === STAGE_TYPE_GOV) {
+      return (
+        <GovernanceSoftwareUpgrade
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
+          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.generateTx}
+          valueNameUpgrade={nameUpgrade}
+          valueHeightUpgrade={heightUpgrade}
+          onChangeInputValueNameUpgrade={e =>
+            this.onChangeInputValueNameUpgrade(e)
+          }
+          onChangeInputValueHeightUpgrade={e =>
+            this.onChangeInputValueHeightUpgrade(e)
+          }
+        />
+      );
+    }
 
     if (stage === STAGE_WAIT) {
       return (

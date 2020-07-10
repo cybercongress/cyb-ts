@@ -81,7 +81,7 @@ function getBytesToSign(tx, txContext) {
     sequence: txContext.sequence.toString(),
   };
 
-  return JSON.stringify(canonicalizeJson(sortJson(txFieldsToSign)));
+  return JSON.stringify(sortJson(txFieldsToSign));
 }
 
 function applyGas(unsignedTx, gas) {

@@ -23,6 +23,7 @@ import {
   ActionBarContentText,
   CheckAddressInfo,
   GovernanceChangeParam,
+  GovernanceSoftwareUpgrade,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -72,6 +73,7 @@ export {
   Timer,
   Battery,
   TabBtn,
+  GovernanceSoftwareUpgrade,
 };
 
 export { Nums } from './ui/Numbers';
