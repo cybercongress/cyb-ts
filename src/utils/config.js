@@ -1,14 +1,20 @@
+const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const WP =
+  'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
 const AUCTION = {
-  ADDR_SMART_CONTRACT: '0xedd9ac4d6bbcac74fbbdcede0c934f69b3cdfa98',
-  ADDR_VESTING: '0x2c1b8763e6d291e24cb3241918d75d74f7945794',
+  ADDR_SMART_CONTRACT: '0x0b1f54be915e77d9bf14268f94f8a26afab11296',
+  ADDR_VESTING: '0xd84469ecd96825c956d7ae8b072209ca89ae37e2',
+  ADDR_EVANGELISM: '0xfc3849b9711f69ddb677facff0cd6755a981a1f0',
   TOKEN_NAME: 'GOL',
   TOPICS_SEND:
-    '0xe054057d0479c6218d6ec87be73f88230a7e4e1f064cee6e7504e2c4cd9d6150',
+    '0x3b599f6217e39be59216b60e543ce0d4c7d534fe64dd9d962334924e7819894e',
   TOPICS_CLAIM:
-    '0x51223fdc0a25891366fb358b4af9fe3c381b1566e287c61a29d01c8a173fe4f4',
+    '0x3ed1528b0fdc7c5207c1bf935e34a667e13656b9ed165260c522be0bc544f303',
   TOPICS_VESTING:
     '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
-  HTTP_PROVIDER_URL: 'https://rinkeby.infura.io/metamask',
+  HTTP_PROVIDER_URL: 'https://mars.cybernode.ai/geth/',
+  ROUND_DURATION: 1000 * 60 * 60 * 23 + 1,
+  TOKEN_ALOCATION: 15 * 10 ** 3,
 };
 
 const NETWORKSIDS = {
@@ -19,7 +25,7 @@ const NETWORKSIDS = {
 };
 
 const TAKEOFF = {
-  ATOMsALL: 600000,
+  ATOMsALL: 300000,
   CYBWON_A: 0.000740464,
   CYBWON_B: -666.418,
   CYBWON_C: 2.3328 * 10 ** 8,
@@ -30,15 +36,20 @@ const TAKEOFF = {
   GETSHARES_D: 7.332 * 10 ** -17,
   DISCOUNT_TG: -0.00005,
   DISCOUNT_TILT_ANGLE: 30,
+  DISCOUNT: 0.3,
+  SQRT_5: 2.23606797749979,
+  BLOCK_START: 2000000,
 };
 
 const COSMOS = {
-  ADDR_FUNDING: 'cosmos18d2wdn0k70ll75ev3wu73yzazsprxeylv7mvd6',
+  ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
+  TIME_START: 'April 27 2020 21:50:00 GMT +3',
+  TIME_END: 'October 17 2020 06:19:07 GMT +3',
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd/',
-  GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/',
+  GAIA_NODE_URL_LSD: 'https://deimos.cybernode.ai/gaia_lcd',
+  GAIA_WEBSOCKET_URL: 'wss://deimos.cybernode.ai/gaia_websocket',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
@@ -48,8 +59,11 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: `GEUL`,
-  CYBER_WEBSOCKET_URL: 'wss://titan.cybernode.ai/websocket',
-  CYBER_NODE_URL: 'https://titan.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://api.cyber.cybernode.ai/websocket',
+  CYBER_NODE_URL_API: 'https://api.cyber.cybernode.ai',
+  CYBER_NODE_URL_LCD: 'https://lcd.cyber.cybernode.ai',
+  CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
 };
@@ -72,49 +86,30 @@ const LEDGER = {
   MEMO: 'cyber.page, using Ledger',
 };
 
-const GENESIS_SUPPLY = 100000000000000;
+const TAKEOFF_SUPPLY = 100000000000000;
+const GENESIS_SUPPLY = 1000000000000000;
 const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
 
-const DISTRIBUTION = [
-  {
-    group: 'takeoff donations',
-    amount: '60000000000000',
-  },
-  {
-    group: 'relevance',
-    amount: '15000000000000',
-  },
-  {
-    group: 'load',
-    amount: '6000000000000',
-  },
-  {
-    group: 'delegation',
-    amount: '5000000000000',
-  },
-  {
-    group: 'full validator set',
-    amount: '5000000000000',
-  },
-  {
-    group: 'euler-4 rewards',
-    amount: '5000000000000',
-  },
-  {
-    group: 'lifetime',
-    amount: '2000000000000',
-  },
-  {
-    group: 'community pool',
-    amount: '2000000000000',
-  },
-];
+const DISTRIBUTION = {
+  takeoff: 100000000000000,
+  relevance: 20000000000000,
+  load: 10000000000000,
+  delegation: 5000000000000,
+  'full validator set': 5000000000000,
+  'euler 4 rewards': 5000000000000,
+  lifetime: 3000000000000,
+  'community pool': 2000000000000,
+};
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
+const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
-const PATTERN_TX = /[0-9A-F]{64}$/g;
+const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
+const PATTERN_BLOCK = /^[0-9]+$/g;
+const PATTERN_HTTP = /^https:\/\/|^http:\/\//g;
 
 export {
   TAKEOFF,
@@ -131,4 +126,11 @@ export {
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
   PATTERN_IPFS_HASH,
+  PATTERN_COSMOS,
+  PATTERN_ETH,
+  PATTERN_BLOCK,
+  TIME_START,
+  TAKEOFF_SUPPLY,
+  WP,
+  PATTERN_HTTP,
 };

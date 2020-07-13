@@ -1,14 +1,19 @@
 import React from 'react';
-import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { Pane, SearchItem, Text, Rank } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
+import Iframe from 'react-iframe';
+import { connect } from 'react-redux';
+import ReactMarkdown from 'react-markdown';
 import {
   getIpfsHash,
   search,
   getRankGrade,
   getDrop,
   formatNumber as format,
+  getContentByCid,
 } from '../../utils/search/utils';
-import { formatNumber } from '../../utils/utils';
-import { Loading } from '../../components';
+import { formatNumber, trimString } from '../../utils/utils';
+import { Loading, Account } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   CYBER,
@@ -16,11 +21,21 @@ import {
   PATTERN_CYBER,
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,
+  PATTERN_BLOCK,
+  PATTERN_IPFS_HASH,
 } from '../../utils/config';
 import Gift from './gift';
 import SnipitAccount from './snipitAccountPages';
+import { object } from 'prop-types';
+import { setQuery } from '../../redux/actions/query';
+import CodeBlock from '../ipfs/codeBlock';
 
 const giftImg = require('../../image/gift.svg');
+const htmlParser = require('react-markdown/plugins/html-parser');
+
+const parseHtml = htmlParser({
+  isValidNode: node => node.type !== 'script',
+});
 
 class SearchResults extends React.Component {
   constructor(props) {
@@ -53,47 +68,83 @@ class SearchResults extends React.Component {
   }
 
   getParamsQuery = async () => {
-    const { match } = this.props;
+    const { match, setQueryProps } = this.props;
     const { query } = match.params;
     this.setState({
       loading: true,
     });
-
+    setQueryProps(query);
     this.getSearch(query);
   };
 
+  loadContent = async (cids, node, prevState) => {
+    const { query } = this.state;
+    const contentPromises = Object.keys(cids).map(cid =>
+      getContentByCid(cid, node)
+        .then(content => {
+          const { searchResults } = this.state;
+          const links = searchResults.link;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              console.warn({ ...links[cid], ...content });
+              links[cid] = {
+                ...links[cid],
+                status: content.status,
+                content: content.content,
+                text: content.text,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
+        })
+        .catch(() => {
+          const { searchResults } = this.state;
+          const links = searchResults.link;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            if (links[cid].query === query) {
+              links[cid] = {
+                ...links[cid],
+                status: 'impossibleLoad',
+                content: false,
+                text: cid,
+              };
+              this.setState({
+                searchResults,
+              });
+            }
+          }
+        })
+    );
+    Promise.all(contentPromises);
+  };
+
   getSearch = async query => {
-    let searchResults = {
+    const { node } = this.props;
+    const searchResults = {
       link: [],
       drop: [],
     };
     let resultNull = false;
     let keywordHash = '';
     let keywordHashNull = '';
-    let drop;
     // const { query } = this.state;
-    if (query.match(PATTERN)) {
-      const result = await getDrop(query.toLowerCase());
 
-      console.log('result', result);
-
-      if (result === 0) {
-        drop = {
-          address: query,
-          gift: 0,
-        };
-      } else {
-        drop = {
-          address: query,
-          gift: result.gift,
-          ...result,
-        };
-      }
-
-      searchResults.drop = [drop];
+    if (query.match(PATTERN_IPFS_HASH)) {
+      keywordHash = query;
+    } else {
+      keywordHash = await getIpfsHash(query.toLowerCase());
     }
 
-    keywordHash = await getIpfsHash(query);
     searchResults.link = await search(keywordHash);
     searchResults.link.map((item, index) => {
       searchResults.link[index].cid = item.cid;
@@ -113,7 +164,22 @@ class SearchResults extends React.Component {
       resultNull = true;
     }
 
-    console.log('searchResults', searchResults);
+    const links = searchResults.link.reduce(
+      (obj, link) => ({
+        ...obj,
+        [link.cid]: {
+          rank: link.rank,
+          grade: link.grade,
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          query,
+          text: link.cid,
+          content: false,
+        },
+      }),
+      {}
+    );
+    searchResults.link = links;
+
     this.setState({
       searchResults,
       keywordHash,
@@ -122,6 +188,10 @@ class SearchResults extends React.Component {
       query,
       resultNull,
     });
+
+    if (node !== null) {
+      this.loadContent(searchResults.link, node);
+    }
   };
 
   render() {
@@ -134,8 +204,10 @@ class SearchResults extends React.Component {
       resultNull,
       drop,
     } = this.state;
+    const { mobile } = this.props;
     // console.log(query);
-    console.log('searchResults render', searchResults);
+
+    console.log('searchResults', searchResults);
 
     const searchItems = [];
 
@@ -159,52 +231,140 @@ class SearchResults extends React.Component {
       );
     }
 
-    if (searchResults.drop.length > 0) {
-      searchItems.push(searchResults.drop.map(item => <Gift item={item} />));
+    if (query.match(PATTERN)) {
+      searchItems.push(
+        <Link to={`/gift/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN`}
+            text="Don't wait! Claim your gift, and join the Game of Links!"
+            status="sparkApp"
+            // address={query}
+          />
+        </Link>
+      );
     }
 
     if (query.match(PATTERN_CYBER)) {
       searchItems.push(
-        <SnipitAccount
-          text="Details address"
-          to={`/network/euler-5/contract/${query}`}
-          address={query}
-        />
+        <Link to={`/network/euler/contract/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_CYBER`}
+            text="Explore details of contract"
+            contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
+            status="sparkApp"
+          />
+        </Link>
       );
     }
 
     if (query.match(PATTERN_CYBER_VALOPER)) {
       searchItems.push(
-        <SnipitAccount
-          text="Details a hero"
-          to={`/network/euler-5/hero/${query}`}
-          address={query}
-        />
+        <Link to={`/network/euler/hero/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_CYBER_VALOPER`}
+            text="Explore details of hero"
+            contentApp={<Account colorText="#000" address={query} />}
+            status="sparkApp"
+          />
+        </Link>
       );
     }
 
     if (query.match(PATTERN_TX)) {
       searchItems.push(
-        <SnipitAccount text="Details Tx" to={`/network/euler-5/tx/${query}`} address={query} />
+        <Link to={`/network/euler/tx/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_TX`}
+            text="Explore details of tx "
+            status="sparkApp"
+            contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
+          />
+        </Link>
       );
     }
 
+    if (query.match(PATTERN_BLOCK)) {
+      searchItems.push(
+        <Link to={`/network/euler/block/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_BLOCK`}
+            text="Explore details of block "
+            status="sparkApp"
+            contentApp={
+              <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
+            }
+          />
+        </Link>
+      );
+    }
+
+    const links = searchResults.link;
     searchItems.push(
-      searchResults.link.map(item => (
-        <SearchItem
-          key={item.cid}
-          hash={item.cid}
-          rank={item.rank}
-          grade={item.grade}
-          status="success"
-          // onClick={e => (e, links[cid].content)}
-        >
-          {item.cid}
-        </SearchItem>
-      ))
+      Object.keys(links).map(key => {
+        return (
+          <Pane
+            position="relative"
+            className="hover-rank"
+            display="flex"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            {!mobile && (
+              <Pane
+                className="time-discussion rank-contentItem"
+                position="absolute"
+              >
+                <Rank
+                  hash={key}
+                  rank={links[key].rank}
+                  grade={links[key].grade}
+                />
+              </Pane>
+            )}
+            <Link className="SearchItem" to={`/ipfs/${key}`}>
+              <SearchItem
+                key={key}
+                rank={links[key].rank}
+                grade={links[key].grade}
+                status={links[key].status}
+                text={
+                  <div className="container-text-SearchItem">
+                    <ReactMarkdown
+                      source={links[key].text}
+                      escapeHtml={false}
+                      skipHtml={false}
+                      astPlugins={[parseHtml]}
+                      renderers={{ code: CodeBlock }}
+                      // plugins={[toc]}
+                      // escapeHtml={false}
+                    />
+                  </div>
+                }
+                // onClick={e => (e, links[cid].content)}
+              >
+                {links[key].content &&
+                  links[key].content.indexOf('image') !== -1 && (
+                    <img
+                      style={{ width: '100%', paddingTop: 10 }}
+                      alt="img"
+                      src={links[key].content}
+                    />
+                  )}
+                {links[key].content &&
+                  links[key].content.indexOf('application/pdf') !== -1 && (
+                    <Iframe
+                      width="100%"
+                      height="400px"
+                      className="iframe-SearchItem"
+                      url={links[key].content}
+                    />
+                  )}
+              </SearchItem>
+            </Link>
+          </Pane>
+        );
+      })
     );
-    // }
-    // console.log(searchItems);
 
     return (
       <div>
@@ -224,7 +384,7 @@ class SearchResults extends React.Component {
                 lineHeight="20px"
                 wordBreak="break-all"
               >
-                {`I found ${searchItems.length} results`}
+                {`I found ${Object.keys(searchResults.link).length} answers`}
               </Text>
             )}
 
@@ -234,30 +394,47 @@ class SearchResults extends React.Component {
                 marginBottom={20}
                 color="#949292"
                 lineHeight="20px"
-                wordBreak="break-all"
+                // wordBreak="break-all"
               >
-                I don't know{' '}
+                I don't know what is{' '}
                 <Text fontSize="20px" lineHeight="20px" color="#e80909">
                   {query}
                 </Text>
-                . Please, help me understand.
+                . I find results for 0 instead
               </Text>
             )}
-            <Pane>{searchItems}</Pane>
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {searchItems}
+            </div>
           </Pane>
         </main>
 
-        <ActionBarContainer
-          home={!result}
-          valueSearchInput={query}
-          link={searchResults.length === 0 && result}
-          keywordHash={keywordHash}
-          onCklicBtnSearch={this.onCklicBtn}
-          update={this.getParamsQuery}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            home={!result}
+            valueSearchInput={query}
+            link={searchResults.length === 0 && result}
+            keywordHash={keywordHash}
+            onCklicBtnSearch={this.onCklicBtn}
+            update={this.getParamsQuery}
+          />
+        )}
       </div>
     );
   }
 }
 
-export default SearchResults;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+    mobile: store.settings.mobile,
+  };
+};
+
+const mapDispatchprops = dispatch => {
+  return {
+    setQueryProps: query => dispatch(setQuery(query)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(SearchResults);

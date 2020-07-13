@@ -1,58 +1,21 @@
 import React, { PureComponent } from 'react';
-import {
-  Button,
-  Input,
-  Pane,
-  SearchItem,
-  Text,
-  TextInput,
-} from '@cybercongress/gravity';
-import Electricity from './electricity';
-
+import { connect } from 'react-redux';
+import { Pane } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import { StartState } from './stateActionBar';
-
-import {
-  getIpfsHash,
-  getString,
-  search,
-  getRankGrade,
-  getDrop,
-  formatNumber as format,
-} from '../../utils/search/utils';
-import { formatNumber } from '../../utils/utils';
 import { Loading } from '../../components';
-import Gift from '../Search/gift';
-
-import { CYBER, PATTERN } from '../../utils/config';
-
-const giftImg = require('../../image/gift.svg');
-
-// const grade = {
-//   from: 0.0001,
-//   to: 0.1,
-//   value: 4
-// };
-
-const obj = {
-  a: 1,
-  b: [1, 2, 3],
-  c: {
-    ca: [5, 6, 7],
-    cb: 'foo',
-  },
-};
+import { setQuery } from '../../redux/actions/query';
 
 class Home extends PureComponent {
   constructor(props) {
     super(props);
-    localStorage.setItem('LAST_DURA', '');
     this.state = {
       valueSearchInput: '',
       result: false,
       searchResults: [],
       loading: false,
       targetColor: false,
-      boxShadow: 3,
+      boxShadow: 10,
       keywordHash: '',
       resultNull: false,
       query: '',
@@ -81,7 +44,7 @@ class Home extends PureComponent {
 
   handleKeyPress = async e => {
     const { valueSearchInput } = this.state;
-    const { funcUpdate } = this.props;
+    const { setQueryProps } = this.props;
 
     if (valueSearchInput.length > 0) {
       if (e.key === 'Enter') {
@@ -93,21 +56,21 @@ class Home extends PureComponent {
           loading: true,
         });
         this.routeChange(`/search/${valueSearchInput}`);
-        funcUpdate(valueSearchInput);
+        setQueryProps(valueSearchInput);
       }
     }
   };
 
   onCklicBtn = () => {
     const { valueSearchInput } = this.state;
-    const { funcUpdate } = this.props;
+    const { setQueryProps } = this.props;
 
     if (valueSearchInput.length > 0) {
       this.setState({
         loading: true,
       });
       this.routeChange(`/search/${valueSearchInput}`);
-      funcUpdate(valueSearchInput);
+      setQueryProps(valueSearchInput);
     }
   };
 
@@ -151,7 +114,7 @@ class Home extends PureComponent {
     // consoleelement = document.getElementById('some-id');.log(width, height);
     // console.log(`X coords: ${x}, Y coords: ${y}`);
     if (width > hypot) {
-      boxShadow = ((width - hypot) / 100) * 2.5;
+      boxShadow = ((width - hypot) / 100) * 3;
     }
 
     if (boxShadow < 5) {
@@ -166,17 +129,10 @@ class Home extends PureComponent {
     const {
       valueSearchInput,
       result,
-      searchResults,
       loading,
       targetColor,
       boxShadow,
-      keywordHash,
-      resultNull,
-      query,
-      drop,
     } = this.state;
-
-    let searchItems = [];
 
     if (loading) {
       return (
@@ -198,23 +154,6 @@ class Home extends PureComponent {
       );
     }
 
-    if (drop) {
-      searchItems = searchResults.map(item => <Gift item={item} />);
-    } else {
-      searchItems = searchResults.map(item => (
-        <SearchItem
-          key={item.cid}
-          hash={item.cid}
-          rank={item.rank}
-          grade={item.grade}
-          status="success"
-          // onClick={e => (e, links[cid].content)}
-        >
-          {item.cid}
-        </SearchItem>
-      ));
-    }
-
     return (
       <div style={{ position: `${!result ? 'relative' : ''}` }}>
         <main
@@ -225,6 +164,7 @@ class Home extends PureComponent {
             display="flex"
             alignItems="center"
             justifyContent="center"
+            flexDirection="column"
             flex={result ? 0.3 : 0.9}
             transition="flex 0.5s"
             minHeight={100}
@@ -234,10 +174,9 @@ class Home extends PureComponent {
                 width: '60%',
                 height: 41,
                 fontSize: 20,
-                boxShadow: `0 0 ${boxShadow}px 0 #00ffa387`,
+                boxShadow: `0 0 ${boxShadow}px 1.5px #00ffa387`,
                 textAlign: 'center',
               }}
-              placeholder="joint for validators"
               value={valueSearchInput}
               onChange={e => this.onChangeInput(e)}
               onKeyPress={this.handleKeyPress}
@@ -246,66 +185,29 @@ class Home extends PureComponent {
               autoComplete="off"
               autoFocus
             />
-            {loading && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  bottom: '30%',
-                }}
-              >
-                <Loading />
-              </div>
-            )}
-          </Pane>
-          {result && (
-            <Pane
-              width="90%"
-              marginX="auto"
-              marginY={0}
-              display="flex"
-              flexDirection="column"
-            >
-              {!resultNull && (
-                <Text
-                  fontSize="20px"
-                  marginBottom={20}
-                  color="#949292"
-                  lineHeight="20px"
-                >
-                  {`I found ${searchItems.length} results`}
-                </Text>
-              )}
-
-              {resultNull && (
-                <Text
-                  fontSize="20px"
-                  marginBottom={20}
-                  color="#949292"
-                  lineHeight="20px"
-                >
-                  I don't know{' '}
-                  <Text fontSize="20px" lineHeight="20px" color="#e80909">
-                    {query}
-                  </Text>
-                  . Please, help me understand.
-                </Text>
-              )}
-              <Pane>{searchItems}</Pane>
+            <Pane marginTop={50}>
+              <Link to="/gol/faucet">Get EUL</Link>
+              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
+              <Link to="/gol">Join Game of Links</Link>
+              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
+              <Link to="/gol/takeoff">Takeoff</Link>
             </Pane>
-          )}
+          </Pane>
         </main>
-        {!result && (
-          <StartState
-            targetColor={targetColor}
-            valueSearchInput={valueSearchInput}
-            onClickBtn={this.onCklicBtn}
-          />
-        )}
+        <StartState
+          targetColor={targetColor}
+          valueSearchInput={valueSearchInput}
+          onClickBtn={this.onCklicBtn}
+        />
       </div>
     );
   }
 }
 
-export default Home;
+const mapDispatchprops = dispatch => {
+  return {
+    setQueryProps: query => dispatch(setQuery(query)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(Home);

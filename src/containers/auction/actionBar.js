@@ -75,48 +75,6 @@ const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-const StartState = ({
-  onClickBtn,
-  claimed,
-  web3,
-  contract,
-  round,
-  roundAll,
-  startAuction,
-}) => {
-  if (round <= roundAll)
-    return (
-      <ActionBar>
-        <ActionBarContentText>
-          Contribute ETH using MetaMask, push button
-        </ActionBarContentText>
-        {claimed && (
-          <ClaimedAll contract={contract} web3={web3} marginX={15}>
-            Claim All
-          </ClaimedAll>
-        )}
-        <Button disabled={startAuction} onClick={onClickBtn}>
-          Fuck Google
-        </Button>
-      </ActionBar>
-    );
-  if (round > roundAll)
-    return (
-      <ActionBar>
-        <ActionBarContentText>
-          Auction finished. You have 3 months for claiming GOLs. Else, the
-          tokens will be burned.
-        </ActionBarContentText>
-        {claimed && (
-          <ClaimedAll contract={contract} web3={web3} marginX={15}>
-            Claim All
-          </ClaimedAll>
-        )}
-      </ActionBar>
-    );
-  return null;
-};
-
 const ContributeETH = ({
   onClickBtn,
   valueRound,
@@ -141,6 +99,7 @@ const ContributeETH = ({
         marginLeft={15}
         marginRight={5}
         width="15%"
+        textAlign="end"
         // style={{
         //   width: '15%',
         //   margin: '0 5px 0 15px'
@@ -156,6 +115,7 @@ const ContributeETH = ({
         width="10%"
         marginLeft={15}
         marginRight={10}
+        textAlign="end"
         // style={{
         //   width: '10%',
         //   margin: '0 10px 0 15px'
@@ -174,13 +134,13 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
     <ActionBarContentText flexDirection="column">
       <div className="text-default">
         Your TX has been broadcast to the network. It is waiting to be mined &
-        confirned.
+        confirmed.
       </div>
       <div className="text-default">
         Check TX status:{' '}
         <a
           className="hash"
-          href={`https://rinkeby.etherscan.io/tx/${hash}`}
+          href={`https://etherscan.io/tx/${hash}`}
           target="_blank"
         >
           {hash}
@@ -211,13 +171,24 @@ class ActionBarAuction extends Component {
     this.smart = AUCTION.ADDR_SMART_CONTRACT;
   }
 
+  componentDidMount() {
+    const { minRound } = this.props;
+
+    this.setState({
+      round: minRound,
+    });
+  }
+
   onChangeRound = e => {
     const { minRound, maxRound } = this.props;
 
-    if (e.target.value < minRound || e.target.value > maxRound - 1) {
+    if (
+      Math.floor(parseFloat(e.target.value)) < minRound ||
+      Math.floor(parseFloat(e.target.value)) > maxRound
+    ) {
       this.setState({
         validInputRound: true,
-        messageRound: `enter round ${minRound} to ${maxRound - 1}`,
+        messageRound: `enter round ${minRound} to ${maxRound}`,
       });
     } else {
       this.setState({
@@ -247,7 +218,7 @@ class ActionBarAuction extends Component {
         if (accounts.length) {
           // console.log(accounts[0]);
           this.setState({
-            step: 'contributeETH',
+            step: 'start',
             round: minRound,
           });
         }
@@ -259,23 +230,18 @@ class ActionBarAuction extends Component {
       if (accounts.length) {
         // console.log(accounts[0]);
         this.setState({
-          step: 'contributeETH',
+          step: 'start',
           round: minRound,
         });
       }
     } else return console.log('Your metamask is locked!');
   };
 
-  onClickTrackContribution = () =>
-    this.setState({
-      step: 'contributeETH',
-    });
-
   onClickSaveAddress = () => {
-    const { update } = this.props;
+    const { update, minRound } = this.props;
     this.setState({
       step: 'start',
-      round: '',
+      round: minRound,
       amount: '',
     });
     if (update) {
@@ -358,13 +324,20 @@ class ActionBarAuction extends Component {
       startAuction,
       claimed,
       contract,
+      accounts,
+      selected,
     } = this.props;
-    const btnConfirm = round >= minRound && round <= maxRound - 1 && amount > 0;
+
+    const btnConfirm =
+      parseFloat(round) >= parseFloat(minRound) &&
+      parseFloat(round) <= parseFloat(maxRound) &&
+      parseFloat(amount) > 0;
+
     if (web3.givenProvider === null)
       return (
         <ActionBar>
           <ActionBarContentText>
-            <span>Please install</span>
+            <span>Please install the</span>
             &nbsp;
             <a href="https://metamask.io/" target="_blank">
               Metamask extension
@@ -375,21 +348,42 @@ class ActionBarAuction extends Component {
         </ActionBar>
       );
 
-    if (step === 'start') {
+    if (accounts === undefined && web3.givenProvider !== null) {
       return (
-        <StartState
-          claimed={claimed}
-          onClickBtn={this.onClickFuckGoogle}
-          contract={contract}
-          web3={web3}
-          round={minRound}
-          roundAll={maxRound}
-          startAuction={startAuction}
-        />
+        <ActionBar>
+          <Button onClick={this.onClickFuckGoogle}>Connect account</Button>
+        </ActionBar>
       );
     }
 
-    if (step === 'contributeETH') {
+    if (minRound > maxRound)
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            The Auction is finished. You have 3 months to claim GOL tokens.
+            Else, the tokens will be burned.
+          </ActionBarContentText>
+          {claimed && (
+            <ClaimedAll contract={contract} web3={web3} marginX={15}>
+              Claim All
+            </ClaimedAll>
+          )}
+        </ActionBar>
+      );
+
+    if (selected === 'claim' && claimed) {
+      return (
+        <ActionBar>
+          {claimed && (
+            <ClaimedAll contract={contract} web3={web3}>
+              Claim All
+            </ClaimedAll>
+          )}
+        </ActionBar>
+      );
+    }
+
+    if (selected === 'bid' && step === 'start') {
       return (
         <ContributeETH
           valueRound={round}
@@ -401,7 +395,7 @@ class ActionBarAuction extends Component {
           onChangeAmount={this.onChangeAmount}
           onChangeRound={this.onChangeRound}
           minValueRound={minRound}
-          maxValueRound={maxRound - 1}
+          maxValueRound={maxRound}
           onClickBtn={this.onClickContributeATOMs}
           disabledBtnConfirm={!btnConfirm}
         />

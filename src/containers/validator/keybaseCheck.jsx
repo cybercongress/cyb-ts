@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { keybaseCheck } from '../../utils/search/utils';
-import { Link, Dots } from '../../components';
+import { LinkWindow, Dots } from '../../components';
 
 const success = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const warning = require('../../image/ionicons_svg_ios-warning.svg');
@@ -45,7 +45,8 @@ function KeybaseCheck({ identity }) {
   if (verified) {
     return (
       <Pane display="flex" alignItems="center">
-        <Link to={keybaseUrl}>{identity}</Link> <Img img={success} />
+        <LinkWindow to={keybaseUrl}>{identity}</LinkWindow>{' '}
+        <Img img={success} />
       </Pane>
     );
   }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -12,11 +12,11 @@ import {
   ParamChange,
   TextProposal,
   TransactionError,
+  CheckAddressInfo,
 } from '../../components';
+import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
-
-const { CYBER_NODE_URL } = CYBER;
 
 const STAGE_TYPE_GOV = 9;
 
@@ -36,186 +36,73 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
+const LEDGER_TX_ACOUNT_INFO = 10;
+
 class ActionBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      init: false,
-      ledger: null,
       address: null,
-      returnCode: null,
       addressInfo: null,
-      ledgerVersion: [0, 0, 0],
-      time: 0,
       valueSelect: 'textProposal',
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
-      contentHash: '',
       txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
-      error: null,
       valueDescription: '',
       valueTitle: '',
       valueDeposit: '',
       valueAmountRecipient: '',
       valueAddressRecipient: '',
       errorMessage: null,
+      connectLedger: null,
     };
     this.timeOut = null;
-    this.haveDocument = typeof document !== 'undefined';
+    this.ledger = null;
+    this.transport = null;
   }
 
-  async componentDidMount() {
-    console.warn('Looking for Ledger Nano');
-    this.pollLedger();
-    // await this.getVersion();
-    // await this.getAddress();
-    // await this.getAddressInfo();
-  }
+  getLedgerAddress = async () => {
+    this.transport = await TransportWebUSB.create(120 * 1000);
+    this.ledger = new CosmosDelegateTool(this.transport);
 
-  componentDidUpdate() {
-    if (this.state.ledger === null) {
-      this.pollLedger();
-    }
-    if (this.state.stage === STAGE_LEDGER_INIT) {
-      if (this.state.ledger !== null) {
-        switch (this.state.returnCode) {
-          case LEDGER_OK:
-            if (this.state.address === null) {
-              this.getAddress();
-            }
-            if (
-              this.state.address !== null &&
-              this.state.addressInfo === null
-            ) {
-              this.getAddressInfo();
-            }
-            break;
-          default:
-            console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
-      }
-    }
-  }
-
-  init = async () => {
-    const { stage, ledger, address, addressInfo, returnCode } = this.state;
-
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-      init: true,
-    });
-  };
-
-  compareVersion = async () => {
-    const test = this.state.ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
-
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
-
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        this.setState({
-          address: null,
-          returnCode: connect.return_code,
-          ledgerVersion: [connect.major, connect.minor, connect.patch],
-          txMsg: null,
-          txBody: null,
-          errorMessage: null,
-        });
-        // eslint-disable-next-line
-
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
+    const connect = await this.ledger.connect();
+    if (connect.return_code === LEDGER_OK) {
       this.setState({
-        ledger: null,
+        connectLedger: true,
       });
-      console.error('Problem with Ledger communication', message, statusCode);
-    }
-  };
 
-  getAddress = async () => {
-    try {
-      const { ledger } = this.state;
-
-      const address = await ledger.retrieveAddressCyber(HDPATH);
-
+      const address = await this.ledger.retrieveAddressCyber(HDPATH);
       console.log('address', address);
-
       this.setState({
         address,
       });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+      this.getAddressInfo();
+    } else {
+      this.setState({
+        connectLedger: false,
       });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
   getNetworkId = async () => {
-    const data = await this.getStatus();
-    return data.node_info.network;
+    const responseStatusNode = await statusNode();
+    if (responseStatusNode !== null) {
+      return responseStatusNode.node_info.network;
+    }
+    return '';
   };
 
   getAddressInfo = async () => {
     try {
-      const { ledger, address } = this.state;
+      const { address } = this.state;
+      this.setState({
+        stage: LEDGER_TX_ACOUNT_INFO,
+      });
 
-      this.getBandwidth();
-
-      const addressInfo = await ledger.getAccountInfoCyber(address);
+      const addressInfo = await this.ledger.getAccountInfoCyber(address);
       const chainId = await this.getNetworkId();
 
       addressInfo.chainId = chainId;
@@ -223,45 +110,6 @@ class ActionBar extends Component {
       this.setState({
         addressInfo,
         stage: STAGE_TYPE_GOV,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  getBandwidth = async () => {
-    try {
-      const { address } = this.state;
-
-      const bandwidth = {
-        remained: 0,
-        max_value: 0,
-      };
-
-      const getBandwidth = await fetch(
-        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await getBandwidth.json();
-
-      bandwidth.remained = data.result.remained;
-      bandwidth.max_value = data.result.max_value;
-
-      this.setState({
-        bandwidth,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -283,8 +131,6 @@ class ActionBar extends Component {
     const {
       address,
       addressInfo,
-      ledger,
-      contentHash,
       valueSelect,
       valueDescription,
       valueTitle,
@@ -292,11 +138,6 @@ class ActionBar extends Component {
       valueAmountRecipient,
       valueAddressRecipient,
     } = this.state;
-
-    const { keywordHash } = this.props;
-
-    const fromCid = keywordHash;
-    const toCid = contentHash;
 
     let deposit = [];
     let title = '';
@@ -338,7 +179,7 @@ class ActionBar extends Component {
 
     switch (valueSelect) {
       case 'textProposal': {
-        tx = await ledger.textProposal(
+        tx = await this.ledger.textProposal(
           txContext,
           address.bech32,
           title,
@@ -348,18 +189,8 @@ class ActionBar extends Component {
         );
         break;
       }
-      case 'paramChange': {
-        tx = await ledger.paramChange(
-          txContext,
-          address.bech32,
-          fromCid,
-          toCid,
-          MEMO
-        );
-        break;
-      }
       case 'communityPool': {
-        tx = await ledger.communityPool(
+        tx = await this.ledger.communityPool(
           txContext,
           address.bech32,
           title,
@@ -389,13 +220,13 @@ class ActionBar extends Component {
   };
 
   signTx = async () => {
-    const { txMsg, ledger, txContext } = this.state;
+    const { txMsg, txContext } = this.state;
     // console.log('txContext', txContext);
     this.setState({ stage: STAGE_WAIT });
-    const sing = await ledger.sign(txMsg, txContext);
+    const sing = await this.ledger.sign(txMsg, txContext);
     console.log('sing', sing);
     if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await ledger.applySignature(
+      const applySignature = await this.ledger.applySignature(
         sing,
         txMsg,
         txContext
@@ -418,8 +249,8 @@ class ActionBar extends Component {
   };
 
   injectTx = async () => {
-    const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyber(txBody);
+    const { txBody } = this.state;
+    const txSubmit = await this.ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -439,22 +270,33 @@ class ActionBar extends Component {
       this.setState({ stage: STAGE_CONFIRMING });
       const status = await this.state.ledger.txStatusCyber(this.state.txHash);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        update();
+        if (update) {
+          update();
+        }
+        return;
+      }
+      if (data.code) {
+        this.setState({
+          stage: STAGE_ERROR,
+          txHeight: data.height,
+          errorMessage: data.raw_log,
+        });
         return;
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onClickSelect = () => {
-    this.setState({
+  onClickSelect = async () => {
+    await this.setState({
       stage: STAGE_LEDGER_INIT,
     });
+    this.getLedgerAddress();
   };
 
   onChangeSelect = async e => {
@@ -502,26 +344,16 @@ class ActionBar extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      init: false,
       ledger: null,
       address: null,
       errorMessage: null,
-      returnCode: null,
       addressInfo: null,
-      ledgerVersion: [0, 0, 0],
-      time: 0,
       valueSelect: 'textProposal',
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
-      contentHash: '',
       txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
-      error: null,
       valueDescription: '',
       valueTitle: '',
       valueDeposit: '',
@@ -529,6 +361,8 @@ class ActionBar extends Component {
       valueAddressRecipient: '',
     });
     this.timeOut = null;
+    this.ledger = null;
+    this.transport = null;
   };
 
   onClickInitStage = () => {
@@ -556,10 +390,6 @@ class ActionBar extends Component {
   render() {
     const {
       address,
-      bandwidth,
-      contentHash,
-      returnCode,
-      ledgerVersion,
       stage,
       txMsg,
       txHeight,
@@ -571,8 +401,8 @@ class ActionBar extends Component {
       valueAmountRecipient,
       valueAddressRecipient,
       errorMessage,
+      connectLedger,
     } = this.state;
-    const { valueSearchInput } = this.props;
 
     if (stage === STAGE_INIT) {
       return (
@@ -587,15 +417,14 @@ class ActionBar extends Component {
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
+          onClickConnect={() => this.getLedgerAddress()}
+          connectLedger={connectLedger}
         />
       );
+    }
+
+    if (stage === LEDGER_TX_ACOUNT_INFO) {
+      return <CheckAddressInfo />;
     }
 
     if (valueSelect === 'textProposal' && stage === STAGE_TYPE_GOV) {
@@ -630,22 +459,6 @@ class ActionBar extends Component {
           onChangeInputAddressRecipient={this.onChangeInputAddressRecipient}
           valueAmountRecipient={valueAmountRecipient}
           onChangeInputAmountRecipient={this.onChangeInputAmountRecipient}
-        />
-      );
-    }
-
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
-      return (
-        <Cyberlink
-          onClickBtnCloce={this.onClickInitStage}
-          query={valueSearchInput}
-          onClickBtn={e => this.link(e)}
-          bandwidth={bandwidth}
-          address={address.bech32}
-          contentHash={contentHash}
-          disabledBtn={parseFloat(bandwidth.max_value) === 0}
         />
       );
     }

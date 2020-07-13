@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getValidatorsInfo } from '../../utils/search/utils';
-import { formatValidatorAddress } from '../../utils/utils';
+import { trimString } from '../../utils/utils';
 import { Dots } from '../ui/Dots';
 
 class Account extends React.Component {
@@ -9,7 +9,7 @@ class Account extends React.Component {
     super(props);
     const { address } = this.props;
     this.state = {
-      account: `/network/euler-5/contract/${address}`,
+      account: `/network/euler/contract/${address}`,
       moniker: address,
       loading: true,
     };
@@ -22,8 +22,8 @@ class Account extends React.Component {
         this.updateAccount();
       } else {
         this.setState({
-          account: `/network/euler-5/contract/${address}`,
-          moniker: `${formatValidatorAddress(address, 9, 6)}`,
+          account: `/network/euler/contract/${address}`,
+          moniker: `${trimString(address, 9, 6)}`,
           loading: false,
         });
       }
@@ -37,7 +37,7 @@ class Account extends React.Component {
 
     if (result) {
       this.setState({
-        account: `/network/euler-5/hero/${address}`,
+        account: `/network/euler/hero/${address}`,
         moniker: `${result.description.moniker}`,
         loading: false,
       });
@@ -46,7 +46,7 @@ class Account extends React.Component {
 
   render() {
     const { moniker, account, loading } = this.state;
-    const { children } = this.props;
+    const { children, colorText } = this.props;
 
     if (loading) {
       return <Dots />;
@@ -54,7 +54,9 @@ class Account extends React.Component {
 
     return (
       <span>
-        <Link to={account}>{moniker}</Link>
+        <Link style={{ color: colorText || '#36d6ae' }} to={account}>
+          {moniker}
+        </Link>
         {children}
       </span>
     );

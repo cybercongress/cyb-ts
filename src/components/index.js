@@ -17,13 +17,23 @@ import {
   SendLedgerAtomTot,
   SendAmount,
   RewardsDelegators,
+  ContributeATOMs,
   ReDelegate,
   TransactionError,
+  ActionBarContentText,
+  CheckAddressInfo,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
 import StatusTooltip from './statusTooltip';
 import MsgType from './msgType/msgType';
+import TextTable from './text/textTable';
+import StatusTx from './statusTx';
+import Vitalik from './vitalik';
+import BandwidthBar from './BandwidthBar';
+import Timer from './timer';
+import Battery from './battery';
+import TabBtn from './tabBtn';
 
 export {
   RowTableTakeoff,
@@ -50,12 +60,21 @@ export {
   RewardsDelegators,
   ReDelegate,
   TransactionError,
+  TextTable,
+  StatusTx,
+  Vitalik,
+  ContributeATOMs,
+  BandwidthBar,
+  ActionBarContentText,
+  CheckAddressInfo,
+  Timer,
+  Battery,
+  TabBtn,
 };
 
 export { Nums } from './ui/Numbers';
 export { Dots } from './ui/Dots';
 export { SeeSaw } from './SeeSaw/SeeSaw';
-export { Timer } from './timer/timer';
 export {
   ContainerCard,
   Indicators,
@@ -79,4 +98,4 @@ export {
   ContainerPane,
   Item,
 } from './governance/governance';
-export { Link, Cid } from './link/link';
+export { LinkWindow, Cid } from './link/link';

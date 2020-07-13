@@ -1,60 +1,23 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
-class RowTableTakeoff extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-    };
-  }
+const RowTableTakeoff = ({ item, children, pinAddress, statePin }) => {
+  const [open, setOpen] = useState(false);
 
-  open = () => {
-    this.setState({
-      open: !this.state.open,
-    });
-  };
-
-  funcPin = item => {
-    this.props.pinFunc(item);
-  };
-
-  funcUnPin = item => {
-    this.props.unPinFunc(item);
-  };
-
-  render() {
-    const { open } = this.state;
-    const { item, children, pin, statePin } = this.props;
-
-    return (
-      <div>
+  return (
+    <div>
+      <div className="container-row-pin-padding0">
         <div
-          className={`${
-            statePin ? 'container-row-pin-padding0' : 'container-row-pin'
+          onClick={() => setOpen(!open)}
+          className={`table-rows-box ${
+            pinAddress ? 'table-rows-box-open' : ''
           }`}
         >
-          {!statePin && (
-            <button
-              type="button"
-              className="pin"
-              onClick={e => this.funcPin(pin)}
-            />
-          )}
-          {statePin && (
-            <button
-              type="button"
-              className="unpin"
-              onClick={e => this.funcUnPin(pin)}
-            />
-          )}
-          <div onClick={this.open} className="table-rows-box">
-            {children}
-          </div>
+          {children}
         </div>
-        <div className={`box ${open ? 'open' : 'close'}`}>{item}</div>
       </div>
-    );
-  }
-}
+      <div className={`box ${open ? 'open' : 'close'}`}>{item}</div>
+    </div>
+  );
+};
 
 export default RowTableTakeoff;

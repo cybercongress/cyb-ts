@@ -11,13 +11,15 @@ import {
   Text,
   Select,
   Textarea,
+  FilePicker,
+  Battery,
 } from '@cybercongress/gravity';
 import { ContainetLedger } from './container';
-import { Loading } from '../ui/loading';
+import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
-
-import { formatNumber } from '../../utils/utils';
+import { LinkWindow } from '../link/link';
+import { formatNumber, trimString } from '../../utils/utils';
 
 import { i18n } from '../../i18n/en';
 
@@ -26,6 +28,7 @@ import { CYBER } from '../../utils/config';
 const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
+const ledger = require('../../image/select-pin-nano2.svg');
 
 export const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -41,157 +44,63 @@ export const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-export const JsonTransaction = ({ txMsg, onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div className="text-align-center">
-      <h3 style={{ marginBottom: 20 }}>{T.actionBar.jsonTX.pleaseConfirm}</h3>
-    </div>
-
-    <div className="container-json">
-      <SyntaxHighlighter language="json" style={docco}>
-        {JSON.stringify(txMsg, null, 2)}
-      </SyntaxHighlighter>
-    </div>
-  </ContainetLedger>
-);
-
-export const TransactionSubmitted = ({ onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      {T.actionBar.tXSubmitted.tXSubmitted}
-    </span>
-    <div
-      style={{
-        marginTop: '35px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
-      <span
+export const JsonTransaction = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      Confirm transaction on your Ledger{' '}
+      <img
+        alt="legder"
         style={{
-          marginBottom: '20px',
-          maxWidth: '70%',
-          fontSize: '16px',
+          paddingTop: '8px',
+          marginLeft: '10px',
+          width: '150px',
+          height: '50px',
         }}
-      >
-        {T.actionBar.tXSubmitted.confirmTX}
-      </span>
-      <Loading />
-    </div>
-  </ContainetLedger>
+        src={ledger}
+      />
+    </ActionBarContentText>
+  </ActionBar>
 );
 
-export const Confirmed = ({
-  txHash,
-  txHeight,
-  onClickBtn,
-  onClickBtnCloce,
-  explorer,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      {T.actionBar.confirmedTX.confirmed}
-    </span>
-    <div
-      style={{ marginTop: '25px' }}
-      className="display-flex flex-direction-column"
-    >
-      <p style={{ marginBottom: 20, textAlign: 'center' }}>
-        {T.actionBar.confirmedTX.blockTX}{' '}
-        <span
-          style={{
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {formatNumber(txHeight)}
-        </span>
-      </p>
+export const TransactionSubmitted = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      Please wait while we confirm the transaction on the blockchain{' '}
+      <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
+);
 
-      {explorer ? (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto',
-          }}
-          href={`https://${explorer}/transactions/${txHash}`}
-        >
-          {T.actionBar.confirmedTX.viewTX}
-        </a>
+export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
+  <ActionBar>
+    <ActionBarContentText display="inline">
+      <Pane display="inline">Transaction</Pane>{' '}
+      {cosmos ? (
+        <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
+          {trimString(txHash, 6, 6)}
+        </LinkWindow>
       ) : (
-        <Link
-          to={`/network/euler-5/tx/${txHash}`}
-          className="btn"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto',
-          }}
-        >
-          {T.actionBar.confirmedTX.viewTX}
+        <Link to={`/network/euler/tx/${txHash}`}>
+          {trimString(txHash, 6, 6)}
         </Link>
-      )}
-
-      <div style={{ marginTop: '25px' }}>
-        <span>{T.actionBar.confirmedTX.tXHash}</span>
-        <span
-          style={{
-            fontSize: '12px',
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {txHash}
-        </span>
-      </div>
-
-      <div style={{ marginTop: '25px', textAlign: 'center' }}>
-        <button type="button" className="btn" onClick={onClickBtn}>
-          {T.actionBar.confirmedTX.continue}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+      )}{' '}
+      <Pane display="inline">
+        was included in the block at height {formatNumber(parseFloat(txHeight))}
+      </Pane>
+    </ActionBarContentText>
+    <Button marginX={10} onClick={onClickBtnCloce}>
+      Fuck Google
+    </Button>
+  </ActionBar>
 );
 
-export const TransactionError = ({
-  onClickBtn,
-  onClickBtnCloce,
-  errorMessage,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <span className="font-size-20 display-inline-block text-align-center">
-      Transaction Error:
-    </span>
-    <div
-      style={{ marginTop: '25px' }}
-      className="display-flex flex-direction-column"
-    >
-      <p style={{ marginBottom: 20, textAlign: 'center' }}>
-        Message:
-        <span
-          style={{
-            color: '#3ab793',
-            marginLeft: '5px',
-          }}
-        >
-          {errorMessage}
-        </span>
-      </p>
-      <div style={{ marginTop: '25px', textAlign: 'center' }}>
-        <button type="button" className="btn" onClick={onClickBtn}>
-          {T.actionBar.confirmedTX.continue}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+export const TransactionError = ({ onClickBtn, errorMessage }) => (
+  <ActionBar>
+    <ActionBarContentText>Message Error: {errorMessage}</ActionBarContentText>
+    <Button marginX={10} onClick={onClickBtn}>
+      {T.actionBar.confirmedTX.continue}
+    </Button>
+  </ActionBar>
 );
 
 export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
@@ -252,73 +161,98 @@ export const StartState = ({ targetColor, valueSearchInput, onClickBtn }) => (
   </ActionBar>
 );
 
-export const ConnectLadger = ({ pin, app, version, onClickBtnCloce }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        fontSize: '25px',
-      }}
-    >
-      <span className="display-inline-block margin-bottom-10px">
-        {T.actionBar.connectLadger.getStarted}
-      </span>
-    </div>
-    <div className="display-flex flex-direction-column margin-bottom-10px">
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div className={`checkbox ${pin ? 'checked' : ''} margin-right-5px`} />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.connect}
-        </span>
+export const ConnectLadger = ({ connectLedger, onClickConnect }) => (
+  <ActionBar>
+    <ActionBarContentText display="inline-flex" flexDirection="column">
+      <div>
+        Connect Ledger, enter pin and open Cosmos app <Dots big />
       </div>
-
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div className={`checkbox ${app ? 'checked' : ''} margin-right-5px`} />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.openApp}
-        </span>
-      </div>
-      <div className="display-flex align-items-center margin-bottom-10px">
-        <div
-          className={`checkbox ${version ? 'checked' : ''} margin-right-5px`}
-        />
-        <span className="font-size-20 display-inline-block">
-          {T.actionBar.connectLadger.version}
-        </span>
-      </div>
-    </div>
-    {app && version && (
-      <div className="display-flex flex-direction-column align-items-center">
-        <span className="font-size-20 display-inline-block margin-bottom-10px">
-          {T.actionBar.connectLadger.getDetails}
-        </span>
-        <Loading />
-      </div>
+      {connectLedger === false && (
+        <Pane fontSize="14px" color="#f00">
+          Cosmos app is not open
+        </Pane>
+      )}
+    </ActionBarContentText>
+    {connectLedger === false && (
+      <Button onClick={onClickConnect}>Connect</Button>
     )}
-    {/* <button onClick={onClickBtn}>1</button> */}
-  </ContainetLedger>
+  </ActionBar>
+);
+
+export const CheckAddressInfo = () => (
+  <ActionBar>
+    <ActionBarContentText>
+      {T.actionBar.connectLadger.getDetails} <Dots big />
+    </ActionBarContentText>
+  </ActionBar>
 );
 
 export const StartStageSearchActionBar = ({
   onClickBtn,
   contentHash,
   onChangeInputContentHash,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <input
-        value={contentHash}
-        style={{ height: 42, width: '60%' }}
-        onChange={e => onChangeInputContentHash(e)}
-        placeholder="paste a hash"
-      />
-    </ActionBarContentText>
-    <Button disabled={!contentHash.length} onClick={onClickBtn}>
-      {T.actionBar.startSearch.cyberlink}
-    </Button>
-  </ActionBar>
-);
+  showOpenFileDlg,
+  inputOpenFileRef,
+  onChangeInput,
+  onClickClear,
+  file,
+  textBtn = T.actionBar.startSearch.cyberlink,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          flexDirection="column"
+          position="relative"
+          width="60%"
+        >
+          <input
+            value={contentHash}
+            style={{
+              height: 42,
+              width: '100%',
+              paddingLeft: '10px',
+              borderRadius: '20px',
+              textAlign: 'center',
+              paddingRight: '35px',
+            }}
+            onChange={e => onChangeInputContentHash(e)}
+            placeholder="add keywords, hash or file"
+          />
+          <Pane
+            position="absolute"
+            right="0"
+            top="50%"
+            transform="translate(0, -50%)"
+          >
+            <input
+              ref={inputOpenFileRef}
+              onChange={() => onChangeInput(inputOpenFileRef)}
+              type="file"
+              style={{ display: 'none' }}
+            />
+            <button
+              className={
+                file !== null && file !== undefined
+                  ? 'btn-add-close'
+                  : 'btn-add-file'
+              }
+              onClick={
+                file !== null && file !== undefined
+                  ? onClickClear
+                  : showOpenFileDlg
+              }
+            />
+          </Pane>
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={!contentHash.length} onClick={onClickBtn}>
+        {textBtn}
+      </Button>
+    </ActionBar>
+  );
+};
 
 export const GovernanceStartStageActionBar = ({
   valueSelect,
@@ -384,7 +318,7 @@ export const TextProposal = ({
           />
         </Pane>
         <Pane width="100%">
-          <Text color="#fff">deposit, EUL</Text>
+          <Text color="#fff">deposit, GEUL</Text>
           <input
             value={valueDeposit}
             style={{
@@ -509,6 +443,30 @@ export const CommunityPool = ({
   </ActionBar>
 );
 
+const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
+  <Pane
+    minWidth={200}
+    paddingX={18}
+    paddingY={14}
+    borderRadius={4}
+    backgroundColor="#fff"
+  >
+    <Pane marginBottom={5}>
+      <Text size={300}>
+        You have {bwRemained} BP out of {bwMaxValue} BP.
+      </Text>
+    </Pane>
+    <Pane marginBottom={5}>
+      <Text size={300}>
+        Full regeneration of bandwidth points or BP happens in 24 hours.
+      </Text>
+    </Pane>
+    <Pane display="flex">
+      <Text size={300}>Current rate for 1 cyberlink is {linkPrice} BP.</Text>
+    </Pane>
+  </Pane>
+);
+
 export const Cyberlink = ({
   bandwidth,
   onClickBtnCloce,
@@ -517,47 +475,60 @@ export const Cyberlink = ({
   onClickBtn,
   query,
   disabledBtn,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <Pane
-      marginBottom={20}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-    >
-      <Text fontSize="25px" lineHeight="40px" color="#fff">
-        {T.actionBar.link.addr}
-      </Text>
-      <Text fontSize="16px" lineHeight="25.888px" color="#fff">
-        {address}
-      </Text>
-    </Pane>
-    <Pane
-      marginBottom={25}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-    >
-      <Text fontSize="25px" lineHeight="40px" color="#fff">
-        {T.actionBar.link.bandwidth}
-      </Text>
-      <Text fontSize="16px" lineHeight="25.888px" color="#3ab793">
-        {bandwidth.remained}/{bandwidth.max_value}
-      </Text>
-    </Pane>
-    <Text color="#fff" fontSize="16px">
-      {T.actionBar.link.from} {query}
-    </Text>
-    <Text marginBottom={10} color="#fff" fontSize="16px">
-      {T.actionBar.link.to} {contentHash}
-    </Text>
-    <Pane marginTop={30}>
+  linkPrice,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText flexDirection="column">
+        <Pane>
+          <Pane display="flex">
+            <Pane display="flex" alignItems="center" marginRight={10}>
+              <Pane fontSize="16px" marginRight={5}>
+                address:
+              </Pane>
+              <Text fontSize="16px" lineHeight="25.888px" color="#fff">
+                {address}
+              </Text>
+            </Pane>
+            <Pane display="flex" alignItems="center">
+              <Pane fontSize="16px" marginRight={5}>
+                bandwidth:
+              </Pane>
+              <Battery
+                style={{ width: '140px', height: '16px' }}
+                bwPercent={Math.floor(
+                  (bandwidth.remained / bandwidth.max_value) * 100
+                )}
+                contentTooltip={
+                  <ContentTooltip
+                    bwRemained={Math.floor(bandwidth.remained)}
+                    bwMaxValue={Math.floor(bandwidth.max_value)}
+                    linkPrice={Math.floor(linkPrice)}
+                  />
+                }
+              />
+            </Pane>
+          </Pane>
+          <Pane display="flex" flexDirection="column">
+            <Text color="#fff" marginRight={10} fontSize="16px">
+              {T.actionBar.link.from}{' '}
+              {contentHash.length > 12
+                ? trimString(contentHash, 6, 6)
+                : contentHash}
+            </Text>
+            <Text color="#fff" fontSize="16px">
+              {T.actionBar.link.to} {query}
+            </Text>
+          </Pane>
+        </Pane>
+      </ActionBarContentText>
+
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          width: '100%',
+          // width: '100%',
         }}
       >
         <button
@@ -570,106 +541,55 @@ export const Cyberlink = ({
           {T.actionBar.link.cyberIt}
         </button>
       </div>
-    </Pane>
-  </ContainetLedger>
-);
+    </ActionBar>
+  );
+};
 
 export const Delegate = ({
-  address,
-  onClickBtnCloce,
-  balance,
   moniker,
-  operatorAddress,
   generateTx,
-  max,
   onChangeInputAmount,
   toSend,
   disabledBtn,
   delegate,
 }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <Pane display="flex" flexDirection="column" alignItems="center">
-      <Text
-        marginBottom={20}
-        fontSize="16px"
-        lineHeight="25.888px"
-        color="#fff"
-      >
-        {address}
-      </Text>
-      <Text fontSize="30px" lineHeight="40px" color="#fff">
+  <ActionBar>
+    <ActionBarContentText>
+      <Text fontSize="16px" color="#fff">
+        {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
         {delegate
-          ? T.actionBar.delegate.details
-          : T.actionBar.delegate.detailsUnDelegate}
-      </Text>
-
-      <Text fontSize="18px" lineHeight="30px" color="#fff">
-        {delegate
-          ? T.actionBar.delegate.wallet
-          : T.actionBar.delegate.yourDelegated}
-      </Text>
-      <Text
-        display="flex"
-        justifyContent="center"
-        fontSize="20px"
-        lineHeight="25.888px"
-        color="#3ab793"
-      >
-        <FormatNumber
-          marginRight={5}
-          number={formatNumber(balance / DIVISOR_CYBER_G, 6)}
-        />
-        {DENOM_CYBER_G.toUpperCase()}
-      </Text>
-
-      <Pane marginTop={20}>
-        <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
-          {delegate
-            ? T.actionBar.delegate.delegate
-            : T.actionBar.delegate.unDelegateFrom}{' '}
-          <Text fontSize="20px" color="#fff" fontWeight={600}>
-            {moniker}
-          </Text>
+          ? T.actionBar.delegate.delegate
+          : T.actionBar.delegate.unDelegateFrom}{' '}
+        <Text fontSize="20px" color="#fff" fontWeight={600}>
+          {moniker}
         </Text>
-      </Pane>
-      <Text color="#fff">{operatorAddress}</Text>
-      <Pane marginY={30} display="flex">
-        <input
-          value={toSend}
-          style={{
-            height: 42,
-            width: '60%',
-            marginRight: 20,
-          }}
-          onChange={onChangeInputAmount}
-          placeholder="amount"
-        />
-        <button
-          type="button"
-          className="btn"
-          onClick={max}
-          style={{ height: 42, maxWidth: '200px' }}
-        >
-          {T.actionBar.delegate.max}
-        </button>
-      </Pane>
-      <button
-        type="button"
-        className="btn-disabled"
-        onClick={generateTx}
-        style={{ height: 42, maxWidth: '200px' }}
-        disabled={disabledBtn}
-      >
-        {T.actionBar.delegate.generate}
-      </button>
-    </Pane>
-  </ContainetLedger>
+      </Text>
+      <input
+        value={toSend}
+        style={{
+          height: 42,
+          width: '100px',
+          marginLeft: 20,
+          textAlign: 'end',
+        }}
+        autoFocus
+        onChange={onChangeInputAmount}
+        placeholder="amount"
+      />
+    </ActionBarContentText>
+    <button
+      type="button"
+      className="btn-disabled"
+      onClick={generateTx}
+      style={{ height: 42, maxWidth: '200px' }}
+      disabled={disabledBtn}
+    >
+      {T.actionBar.delegate.generate}
+    </button>
+  </ActionBar>
 );
 
 export const ReDelegate = ({
-  address,
-  onClickBtnCloce,
   generateTx,
   onChangeInputAmount,
   toSend,
@@ -679,91 +599,66 @@ export const ReDelegate = ({
   valueSelect,
   onChangeReDelegate,
 }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <Pane display="flex" flexDirection="column" alignItems="center">
-      <Text
-        marginBottom={20}
-        fontSize="16px"
-        lineHeight="25.888px"
-        color="#fff"
-      >
-        {address}
-      </Text>
-      <Text fontSize="30px" lineHeight="40px" color="#fff">
-        Restake details
-      </Text>
-
-      <Text fontSize="18px" lineHeight="30px" color="#fff">
-        {T.actionBar.delegate.yourDelegated}
-      </Text>
-      <Text
-        display="flex"
-        justifyContent="center"
-        fontSize="20px"
-        lineHeight="25.888px"
-        color="#3ab793"
-      >
-        <FormatNumber
-          marginRight={5}
-          number={formatNumber(validators.delegation / DIVISOR_CYBER_G, 6)}
-        />
-        {DENOM_CYBER_G.toUpperCase()}
-      </Text>
-
-      <Pane marginY={20}>
-        <Text fontSize="16px" color="#fff">
-          {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
-          restake from{' '}
-          <Text fontSize="20px" color="#fff" fontWeight={600}>
-            {validators.description.moniker}
-          </Text>
-        </Text>
-      </Pane>
-      <Pane marginBottom={30} display="flex" alignItems="center">
+  <ActionBar>
+    <ActionBarContentText>
+      <Text fontSize="16px" color="#fff">
+        Enter the amount{' '}
         <input
           value={toSend}
+          autoFocus
           style={{
             height: 32,
             width: '70px',
-            marginRight: 10,
+            margin: '0px 5px',
+            textAlign: 'end',
           }}
           onChange={onChangeInputAmount}
           placeholder="amount"
-        />
-        <Pane display="flex" alignItems="center">
-          to:{' '}
-          <select value={valueSelect} onChange={onChangeReDelegate}>
-            <option value="">pick hero</option>
-            {validatorsAll
-              .filter(validator => validator.status > 0)
-              .map(item => (
-                <option
-                  key={item.operator_address}
-                  value={item.operator_address}
-                  style={{
-                    display:
-                      validators.operator_address === item.operator_address
-                        ? 'none'
-                        : 'block',
-                  }}
-                >
-                  {item.description.moniker}
-                </option>
-              ))}
-          </select>
-        </Pane>
-      </Pane>
-      <button
-        type="button"
-        className="btn-disabled"
-        onClick={generateTx}
-        style={{ height: 42, maxWidth: '200px' }}
-        disabled={disabledBtn}
+        />{' '}
+        {DENOM_CYBER_G.toUpperCase()} restake from{' '}
+        <Text fontSize="20px" color="#fff" fontWeight={600}>
+          {validators.description.moniker}
+        </Text>
+      </Text>
+      <Text marginX={5} fontSize="16px" color="#fff">
+        to:
+      </Text>
+      <select
+        style={{
+          width: '120px',
+        }}
+        value={valueSelect}
+        onChange={onChangeReDelegate}
       >
-        {T.actionBar.delegate.generate}
-      </button>
-    </Pane>
-  </ContainetLedger>
+        <option value="">pick hero</option>
+        {validatorsAll
+          .filter(validator => validator.status > 0)
+          .map(item => (
+            <option
+              key={item.operator_address}
+              value={item.operator_address}
+              style={{
+                display:
+                  validators.operator_address === item.operator_address
+                    ? 'none'
+                    : 'block',
+              }}
+            >
+              {item.description.moniker}
+            </option>
+          ))}
+      </select>
+    </ActionBarContentText>
+    <button
+      type="button"
+      className="btn-disabled"
+      onClick={generateTx}
+      style={{ height: 42, maxWidth: '200px' }}
+      disabled={disabledBtn}
+    >
+      {T.actionBar.delegate.generate}
+    </button>
+  </ActionBar>
 );
 
 export const SendLedger = ({
@@ -871,6 +766,64 @@ export const SendLedgerAtomTot = ({
         </button>
       </div>
     </div>
+  </ContainetLedger>
+);
+
+export const ContributeATOMs = ({
+  onClickBtn,
+  address,
+  availableStake,
+  valueInput,
+  gasUAtom,
+  gasAtom,
+  onChangeInput,
+  onClickBtnCloce,
+  onClickMax,
+}) => (
+  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+    <div className="display-flex align-items-center">
+      <span className="actionBar-text">{address}</span>
+      <button
+        className="copy-address"
+        onClick={() => {
+          navigator.clipboard.writeText(address);
+        }}
+      />
+    </div>
+    {availableStake > 0 && (
+      <div>
+        <h3 className="text-align-center">Send Details</h3>
+        <p className="text-align-center">Your wallet contains:</p>
+        <span className="actionBar-text">{availableStake}</span>
+        <div style={{ marginTop: '25px', marginBottom: 10 }}>
+          Enter the amount of ATOMs you wish to send to Cyber~Congress:
+        </div>
+        <div className="text-align-center">
+          <input
+            value={valueInput}
+            style={{ marginRight: 10, textAlign: 'end' }}
+            onChange={onChangeInput}
+          />
+          <button
+            type="button"
+            className="btn"
+            onClick={onClickMax}
+            style={{ height: 30 }}
+          >
+            Max
+          </button>
+        </div>
+        <h6 style={{ margin: 20 }}>
+          The fees you will be charged by the network on this transaction will
+          {gasUAtom} uatom ( {gasAtom} ATOMs ).
+        </h6>
+        <div className="text-align-center">
+          <button type="button" className="btn" onClick={onClickBtn}>
+            Generate my transaction
+          </button>
+        </div>
+      </div>
+    )}
   </ContainetLedger>
 );
 

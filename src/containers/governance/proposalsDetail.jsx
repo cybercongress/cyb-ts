@@ -1,5 +1,7 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import {
   Votes,
   Legend,
@@ -19,7 +21,9 @@ import {
   getProposalsDetailVotes,
   getMinDeposit,
   getTableVoters,
+  getTallyingProposals,
 } from '../../utils/governance';
+import ActionBarDetail from './actionBarDatail';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
@@ -28,19 +32,28 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 const dateFormat = require('dateformat');
 
 const finalTallyResult = item => {
-  const finalVotes = {};
+  const finalVotes = {
+    yes: 0,
+    no: 0,
+    abstain: 0,
+    noWithVeto: 0,
+    finalTotalVotes: 0,
+  };
   let finalTotalVotes = 0;
-  const yes = parseInt(item.yes);
-  const abstain = parseInt(item.abstain);
-  const no = parseInt(item.no);
-  const noWithVeto = parseInt(item.no_with_veto);
+  const yes = parseInt(item.yes, 10);
+  const abstain = parseInt(item.abstain, 10);
+  const no = parseInt(item.no, 10);
+  const noWithVeto = parseInt(item.no_with_veto, 10);
 
   finalTotalVotes = yes + abstain + no + noWithVeto;
-  finalVotes.yes = (yes / finalTotalVotes) * 100;
-  finalVotes.no = (no / finalTotalVotes) * 100;
-  finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-  finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
-  finalVotes.finalTotalVotes = finalTotalVotes;
+  if (finalTotalVotes !== 0) {
+    finalVotes.yes = (yes / finalTotalVotes) * 100;
+    finalVotes.no = (no / finalTotalVotes) * 100;
+    finalVotes.abstain = (abstain / finalTotalVotes) * 100;
+    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
+    finalVotes.finalTotalVotes = finalTotalVotes;
+  }
+
   return finalVotes;
 };
 
@@ -71,11 +84,11 @@ class ProposalsDetail extends React.Component {
         veto: '',
       },
       tally: {
-        participation: '',
-        yes: '',
-        abstain: '',
-        no: '',
-        noWithVeto: '',
+        participation: 0,
+        yes: 0,
+        abstain: 0,
+        no: 0,
+        noWithVeto: 0,
       },
       votes: {
         yes: 0,
@@ -85,17 +98,22 @@ class ProposalsDetail extends React.Component {
         voter: '',
       },
       tableVoters: [],
+      period: '',
     };
   }
 
   async componentDidMount() {
+    this.init();
+  }
+
+  init = async () => {
     await this.getProposalsInfo();
     this.getTimes();
     this.getStatusVoting();
     this.getVotes();
     this.getDeposit();
     this.getTableVoters();
-  }
+  };
 
   getProposalsInfo = async () => {
     // const proposals = proposalsIdJson[0].result;
@@ -111,6 +129,10 @@ class ProposalsDetail extends React.Component {
     proposalsInfo.description = proposals.content.value.description;
     proposalsInfo.proposer = proposer.proposer;
 
+    if (proposals.content.value.recipient) {
+      proposalsInfo.recipient = proposals.content.value.recipient;
+    }
+
     this.setState({
       proposals,
       proposalsInfo,
@@ -124,13 +146,21 @@ class ProposalsDetail extends React.Component {
     let proposalStatus = '';
     let tally = {};
     let participation = 0;
+    let tallyResult = {};
 
     const stakingPool = await getStakingPool();
     const tallying = await getTallying();
-
     proposalStatus = proposals.proposal_status;
 
-    tally = finalTallyResult(proposals.final_tally_result);
+    const responceTallyingProposals = await getTallyingProposals(proposals.id);
+
+    if (responceTallyingProposals !== null) {
+      tallyResult = responceTallyingProposals;
+    } else {
+      tallyResult = proposals.final_tally_result;
+    }
+
+    tally = finalTallyResult(tallyResult);
     participation = (tally.finalTotalVotes / stakingPool.bonded_tokens) * 100;
     tally.participation = participation;
 
@@ -143,18 +173,29 @@ class ProposalsDetail extends React.Component {
 
   getDeposit = async () => {
     const { proposals } = this.state;
+    let period = '';
+    let minDeposit = 0;
 
     let totalDeposit = 0;
 
-    const minDeposit = await getMinDeposit();
+    const minDepositData = await getMinDeposit();
 
     if (proposals.total_deposit.length) {
-      totalDeposit = proposals.total_deposit[0].amount;
+      totalDeposit = parseFloat(proposals.total_deposit[0].amount);
+    }
+
+    minDeposit = parseFloat(minDepositData.min_deposit[0].amount);
+
+    if (totalDeposit < minDeposit) {
+      period = 'deposit';
+    } else {
+      period = 'vote';
     }
 
     this.setState({
+      period,
       totalDeposit,
-      minDeposit: minDeposit.min_deposit[0].amount,
+      minDeposit,
     });
   };
 
@@ -251,60 +292,93 @@ class ProposalsDetail extends React.Component {
       minDeposit,
       tallying,
       tableVoters,
+      period,
     } = this.state;
 
     return (
-      <main className="block-body-home">
-        <Pane paddingBottom={50}>
-          <Pane height={70} display="flex" alignItems="center">
-            <Text paddingLeft={20} fontSize="18px" color="#fff">
-              #{id} {proposalsInfo.title}
-            </Text>
-          </Pane>
-          <Pane display="flex" marginBottom={10} paddingLeft={20}>
-            <IconStatus status={proposalStatus} marginRight={8} />
-            <Text color="#fff">{proposalStatus}</Text>
-          </Pane>
-          <ContainerPane marginBottom={20}>
-            <Item
-              marginBottom={15}
-              title="Proposer"
-              value={
-                <a
-                  href={`https://callisto.cybernode.ai/account/${proposalsInfo.proposer}`}
-                >
-                  {proposalsInfo.proposer}
-                </a>
-              }
+      <div>
+        <main className="block-body">
+          <Pane paddingBottom={50}>
+            <Pane height={70} display="flex" alignItems="center">
+              <Text paddingLeft={20} fontSize="18px" color="#fff">
+                #{id} {proposalsInfo.title}
+              </Text>
+            </Pane>
+            <Pane display="flex" marginBottom={10} paddingLeft={20}>
+              <IconStatus status={proposalStatus} marginRight={8} />
+              <Text color="#fff">{proposalStatus}</Text>
+            </Pane>
+            <ContainerPane marginBottom={20}>
+              <Item
+                marginBottom={15}
+                title="Proposer"
+                value={
+                  <Link
+                    to={`/network/euler/contract/${proposalsInfo.proposer}`}
+                  >
+                    {proposalsInfo.proposer}
+                  </Link>
+                }
+              />
+              <Item
+                marginBottom={15}
+                title="Type"
+                value={this.getSubStr(proposalsInfo.type)}
+              />
+              {proposalsInfo.recipient && (
+                <Item
+                  title="Recipient"
+                  marginBottom={15}
+                  value={
+                    <Link
+                      to={`/network/euler/contract/${proposalsInfo.recipient}`}
+                    >
+                      {proposalsInfo.recipient}
+                    </Link>
+                  }
+                />
+              )}
+              <Item
+                title="Description"
+                value={
+                  <Pane className="container-description">
+                    <ReactMarkdown
+                      source={proposalsInfo.description.replace(/\\n/g, '\n')}
+                      escapeHtml={false}
+                    />
+                  </Pane>
+                }
+              />
+            </ContainerPane>
+
+            <ProposalsIdDetail
+              time={time}
+              proposalStatus={proposalStatus}
+              tallying={tallying}
+              tally={tally}
+              totalDeposit={totalDeposit}
+              marginBottom={20}
             />
-            <Item
-              marginBottom={15}
-              title="Type"
-              value={this.getSubStr(proposalsInfo.type)}
+
+            <ProposalsDetailProgressBar
+              proposalStatus={proposalStatus}
+              totalDeposit={totalDeposit}
+              minDeposit={minDeposit}
+              tallying={tallying}
+              tally={tally}
             />
-            <Item title="Description" value={proposalsInfo.description} />
-          </ContainerPane>
 
-          <ProposalsIdDetail
-            time={time}
-            proposalStatus={proposalStatus}
-            tallying={tallying}
-            tally={tally}
-            totalDeposit={totalDeposit}
-            marginBottom={20}
-          />
-
-          <ProposalsDetailProgressBar
-            proposalStatus={proposalStatus}
-            totalDeposit={totalDeposit}
-            minDeposit={minDeposit}
-            tallying={tallying}
-            tally={tally}
-          />
-
-          <ProposalsIdDetailTableVoters data={tableVoters} votes={votes} />
-        </Pane>
-      </main>
+            <ProposalsIdDetailTableVoters data={tableVoters} votes={votes} />
+          </Pane>
+        </main>
+        <ActionBarDetail
+          id={id}
+          period={period}
+          minDeposit={minDeposit}
+          totalDeposit={totalDeposit}
+          update={this.init}
+        />
+      </div>
     );
   }
 }

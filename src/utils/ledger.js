@@ -1,12 +1,15 @@
-import CosmosApp, { getBech32FromPK } from 'ledger-cosmos-js';
+import CosmosApp from 'ledger-cosmos-js';
 import axios from 'axios';
 import Big from 'big.js';
 import secp256k1 from 'secp256k1';
 import txs from './txs';
+import * as Ripemd160 from 'ripemd160';
+import * as bech32 from 'bech32';
+import * as crypto from 'crypto';
 
 import { CYBER, LEDGER, COSMOS } from './config';
 
-const { CYBER_NODE_URL, BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
+const { BECH32_PREFIX_ACC_ADDR_CYBER, CYBER_NODE_URL_LCD } = CYBER;
 const { LEDGER_VERSION_REQ } = LEDGER;
 const { BECH32_PREFIX_ACC_ADDR_COSMOS } = COSMOS;
 
@@ -79,10 +82,6 @@ class CosmosDelegateTool {
   async connect() {
     this.connected = false;
     this.lastError = null;
-    const connectedLog = {
-      pin: false,
-      app: false,
-    };
     this.app = new CosmosApp(this.transport);
     if (this.checkAppInfo) {
       const appInfo = await this.app.appInfo();
@@ -102,7 +101,6 @@ class CosmosDelegateTool {
     if (version.return_code === 28160) {
       return version;
     }
-
     if (version.error_message !== 'No errors') {
       console.log(`Error [${version.error_message}] ${version.error_message}`);
       return;
@@ -122,25 +120,18 @@ class CosmosDelegateTool {
       return false;
     }
 
-    // Mark as connected
-    this.connected = true;
-    connectedLog.pin = true;
-    connectedLog.app = true;
-    console.log(connectedLog);
     return version;
   }
 
   // Returns a signed transaction ready to be relayed
   async sign(unsignedTx, txContext) {
     // this.connectedOrThrow(this);
-    console.log(txContext);
     if (typeof txContext.path === 'undefined') {
       this.lastError = 'context should include the account path';
       throw new Error('context should include the account path');
     }
     // console.log('txContext', txContext);
     const bytesToSign = txs.getBytesToSign(unsignedTx, txContext);
-    console.log(bytesToSign);
     const response = await this.app.sign(txContext.path, bytesToSign);
 
     return response;
@@ -167,14 +158,30 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(BECH32_PREFIX_ACC_ADDR_COSMOS, pk.compressed_pk),
+      bech32: this.getBech32FromPK(
+        BECH32_PREFIX_ACC_ADDR_COSMOS,
+        pk.compressed_pk
+      ),
     };
   }
+
+  getBech32FromPK = (hrp, pk) => {
+    if (pk.length !== 33) {
+      console.log('Expected compressed public key [31 bytes]');
+    }
+    const hashSha256 = crypto
+      .createHash('sha256')
+      .update(pk)
+      .digest();
+    const hashRip = new Ripemd160().update(hashSha256).digest();
+    return bech32.encode(hrp, bech32.toWords(hashRip));
+  };
 
   async retrieveAddressCyber(path) {
     // this.connectedOrThrow(this);
     // console.log(this.app);
     const pk = await this.app.publicKey(path);
+    console.log(pk);
     if (pk.return_code !== 0x9000) {
       this.lastError = pk.error_message;
       throw new Error(pk.error_message);
@@ -182,7 +189,10 @@ class CosmosDelegateTool {
     return {
       pk: pk.compressed_pk.toString('hex'),
       path,
-      bech32: getBech32FromPK(BECH32_PREFIX_ACC_ADDR_CYBER, pk.compressed_pk),
+      bech32: this.getBech32FromPK(
+        BECH32_PREFIX_ACC_ADDR_CYBER,
+        pk.compressed_pk
+      ),
     };
   }
 
@@ -220,6 +230,7 @@ class CosmosDelegateTool {
   }
 
   async getAccountInfo(addr) {
+    console.log(addr);
     const url = `${nodeURL(this)}/api/cosmos/account/${addr.bech32}`;
     const txContext = {
       sequence: '0',
@@ -239,12 +250,14 @@ class CosmosDelegateTool {
             txContext.accountNumber = Number(
               r.data.value.account_number
             ).toString();
-            if (r.data.value.coins !== null) {
+            if (r.data.value.coins !== null && r.data.value.coins.length > 0) {
               const tmp = [];
               tmp.push(r.data.value.coins[0]);
               if (tmp.length > 0) {
                 txContext.balanceuAtom = Big(tmp[0].amount).toString();
               }
+            } else {
+              return txContext;
             }
           }
         } catch (e) {
@@ -257,7 +270,7 @@ class CosmosDelegateTool {
   }
 
   async getAccountInfoCyber(addr) {
-    const url = `${CYBER_NODE_URL}/api/account?address="${addr.bech32}"`;
+    const url = `${CYBER.CYBER_NODE_URL_API}/account?address="${addr.bech32}"`;
     const txContext = {
       sequence: '0',
       accountNumber: '0',
@@ -438,21 +451,38 @@ class CosmosDelegateTool {
     );
   }
 
-  async txCreateSend(txContext, validatorBech32, uatomAmount, memo) {
-    console.log('txContext', txContext);
-    if (typeof txContext === 'undefined') {
-      throw new Error('undefined txContext');
-    }
-    if (typeof txContext.bech32 === 'undefined') {
-      throw new Error('txContext does not contain the source address (bech32)');
+  txCreateSend = async (
+    txContext,
+    address,
+    uatomAmount,
+    memo,
+    cli,
+    addressFrom
+  ) => {
+    if (!cli) {
+      if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+      }
+      if (typeof txContext.bech32 === 'undefined') {
+        throw new Error(
+          'txContext does not contain the source address (bech32)'
+        );
+      }
     }
     // const accountInfo = await this.getAccountInfo(txContext.bech32);
     // eslint-disable-next-line no-param-reassign
     // txContext.accountNumber = accountInfo.accountNumber;
     // eslint-disable-next-line no-param-reassign
     // txContext.sequence = accountInfo.sequence;
-    return txs.createSend(txContext, validatorBech32, uatomAmount, memo);
-  }
+    return txs.createSend(
+      txContext,
+      address,
+      uatomAmount,
+      memo,
+      cli,
+      addressFrom
+    );
+  };
 
   async txCreateSendCyber(txContext, addressTo, uatomAmount, memo, demon) {
     console.log('txContext', txContext);
@@ -628,6 +658,79 @@ class CosmosDelegateTool {
     );
   };
 
+  txCreateRedelegateCyber = (
+    txContext,
+    validatorSourceBech32,
+    validatorDestBech32,
+    uatomAmount,
+    memo
+  ) => {
+    if (typeof txContext === 'undefined') {
+      throw new Error('undefined txContext');
+    }
+    if (typeof txContext.bech32 === 'undefined') {
+      throw new Error('txContext does not contain the source address (bech32)');
+    }
+    return txs.createRedelegateCyber(
+      txContext,
+      validatorSourceBech32,
+      validatorDestBech32,
+      uatomAmount,
+      memo
+    );
+  };
+
+  txSendDeposit = (txContext, proposalId, depositor, deposit, memo, cli) => {
+    if (!cli) {
+      if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+      }
+      if (typeof txContext.bech32 === 'undefined') {
+        throw new Error(
+          'txContext does not contain the source address (bech32)'
+        );
+      }
+    }
+
+    return txs.sendDeposit(
+      txContext,
+      proposalId,
+      depositor,
+      deposit,
+      memo,
+      cli
+    );
+  };
+
+  txVoteProposal = (txContext, proposalId, voter, option, memo, cli) => {
+    if (!cli) {
+      if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+      }
+      if (typeof txContext.bech32 === 'undefined') {
+        throw new Error(
+          'txContext does not contain the source address (bech32)'
+        );
+      }
+    }
+
+    return txs.voteProposal(txContext, proposalId, voter, option, memo, cli);
+  };
+
+  importLink = async (txContext, address, links, memo, cli) => {
+    if (!cli) {
+      if (typeof txContext === 'undefined') {
+        throw new Error('undefined txContext');
+      }
+      if (typeof txContext.bech32 === 'undefined') {
+        throw new Error(
+          'txContext does not contain the source address (bech32)'
+        );
+      }
+    }
+    return txs.createImportLink(txContext, address, links, memo, cli);
+  };
+
   // Relays a signed transaction and returns a transaction hash
   async txSubmit(signedTx) {
     const txBody = {
@@ -643,26 +746,12 @@ class CosmosDelegateTool {
     );
   }
 
-  async txSubmitCyberLink(signedTx) {
-    const txBody = {
-      tx: signedTx.value,
-      mode: 'async',
-    };
-    const url = `${CYBER_NODE_URL}/lcd/txs`;
-    // const url = 'https://phobos.cybernode.ai/lcd/txs';
-    console.log(JSON.stringify(txBody));
-    return axios.post(url, JSON.stringify(txBody)).then(
-      r => r,
-      e => wrapError(this, e)
-    );
-  }
-
   async txSubmitCyber(signedTx) {
     const txBody = {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = `${CYBER_NODE_URL}/lcd/txs`;
+    const url = `${CYBER_NODE_URL_LCD}/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
@@ -701,7 +790,7 @@ class CosmosDelegateTool {
   }
 
   async txStatusCyber(txHash) {
-    const url = `${CYBER_NODE_URL}/lcd/txs/${txHash}`;
+    const url = `${CYBER_NODE_URL_LCD}/txs/${txHash}`;
     return axios.get(url).then(
       r => r.data,
       e => wrapError(this, e)

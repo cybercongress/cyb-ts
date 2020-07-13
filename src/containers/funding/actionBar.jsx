@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import { Link } from 'react-router-dom';
+import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { COSMOS, LEDGER } from '../../utils/config';
+import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER, WP } from '../../utils/config';
+import { getDelegator, downloadObjectAsJson } from '../../utils/utils';
 import {
-  ContributeATOMs,
-  TransactionCost,
-  Succesfuuly,
-  SendAmounLadger,
-  SendAmount,
-  StartState,
+  ConnectLadger,
   JsonTransaction,
   Confirmed,
   TransactionSubmitted,
-} from './stateActionBar';
-
-import { TransactionError } from '../../components';
+  TransactionError,
+  ActionBarContentText,
+  LinkWindow,
+  CheckAddressInfo,
+} from '../../components';
 
 const {
   STAGE_INIT,
@@ -26,155 +26,142 @@ const {
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
   HDPATH,
   LEDGER_OK,
-  LEDGER_NOAPP,
   MEMO,
 } = LEDGER;
 
-const { ADDR_FUNDING, DEFAULT_GAS, DEFAULT_GAS_PRICE, DIVISOR_ATOM } = COSMOS;
+const CUSTOM_TX_CONTROL_PK = 1.1;
+const CUSTOM_TX_UNDERSTAND = 1.2;
+const CUSTOM_TX_TRACK = 1.3;
+const CUSTOM_TX_AGREE = 1.4;
+const CUSTOM_TX_TYPE_TX = 1.5;
+const STAGE_HDPATH = 1.7;
+
+const LEDGER_TX_ACOUNT_INFO = 2.2;
+
+const SELECT_PATH = 10;
+
+const { ADDR_FUNDING, DIVISOR_ATOM } = COSMOS;
 
 class ActionBarTakeOff extends Component {
   constructor(props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      ledger: null,
-      ledgerVersion: [0, 0, 0],
-      returnCode: null,
+      hdpath: [44, 118, 0, 0, 0],
       addressInfo: null,
       address: null,
       availableStake: 0,
-      time: 0,
-      gas: DEFAULT_GAS,
-      gasPrice: DEFAULT_GAS_PRICE,
       toSend: '',
       txBody: null,
       txContext: null,
       txHash: null,
       txHeight: null,
-      height50: false,
+      connectLedger: null,
+      memo: '',
+      trackAddress: '',
     };
-    this.ledgerModal = React.createRef();
-    this.atomField = React.createRef();
-    this.gasField = React.createRef();
-    this.gasPriceField = React.createRef();
     this.timeOut = null;
-    this.haveDocument = typeof document !== 'undefined';
+    this.transport = null;
+    this.ledger = null;
   }
 
   componentDidMount() {
     // eslint-disable-next-line
     console.warn('Looking for Ledger Nano');
-    this.pollLedger();
-  }
-
-  componentWillUpdate() {
-    const { ledger, returnCode, address, addressInfo, stage } = this.state;
-    if (ledger === null) {
-      this.pollLedger();
-    }
-    if (stage === STAGE_LEDGER_INIT) {
-      if (ledger !== null) {
-        switch (returnCode) {
-          case LEDGER_OK:
-            if (address === null) {
-              this.getAddress();
-            }
-            if (address !== null && addressInfo === null) {
-              this.getWallet();
-            }
-            break;
-          default:
-            // console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
-      }
+    const localStorageStory = localStorage.getItem('thanks');
+    if (localStorageStory !== null) {
+      const thanks = JSON.parse(localStorageStory);
+      const memo = `thanks to ${thanks}`;
+      this.setState({ memo });
+    } else {
+      this.setState({ memo: MEMO });
     }
   }
 
-  compareVersion = async () => {
-    const { ledgerVersion } = this.state;
-    const test = ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
+  getLedgerAddress = async () => {
+    const accounts = {};
+    this.transport = await TransportWebUSB.create(120 * 1000);
+    this.ledger = new CosmosDelegateTool(this.transport);
 
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
-
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        const { major, minor, patch } = connect;
-        const ledgerVersion = [major, minor, patch];
-
-        this.setState({
-          txMsg: null,
-          address: null,
-          txBody: null,
-          returnCode: connect.return_code,
-          ledgerVersion,
-        });
-        // eslint-disable-next-line
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
+    const connect = await this.ledger.connect();
+    console.log(connect);
+    if (connect.return_code === LEDGER_OK) {
       this.setState({
-        ledger: null,
+        connectLedger: true,
       });
-      console.error('Problem with Ledger communication', message, statusCode);
-    }
-  };
+      const address = await this.ledger.retrieveAddress(HDPATH);
+      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
 
-  getAddress = async () => {
-    const { ledger } = this.state;
-    try {
-      const address = await ledger.retrieveAddress(HDPATH);
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = address;
+      accounts.keys = 'ledger';
+
+      console.log('address', addressLedgerCyber);
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
       console.log('address', address);
       this.setState({
         address,
       });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
+      this.getAddressInfo();
+    } else {
+      this.setState({
+        connectLedger: false,
+      });
     }
   };
 
-  getWallet = async () => {
-    const { ledger, address } = this.state;
-
-    const addressInfo = await ledger.getAccountInfo(address);
-
+  getAddressInfo = async () => {
+    const { address } = this.state;
     this.setState({
-      addressInfo,
-      availableStake: parseFloat(addressInfo.balanceuAtom),
-      stage: STAGE_READY,
+      stage: LEDGER_TX_ACOUNT_INFO,
+    });
+
+    const addressInfo = await this.ledger.getAccountInfo(address);
+
+    console.log(addressInfo);
+
+    if (addressInfo.balanceuAtom && addressInfo.balanceuAtom > 0) {
+      this.setState({
+        addressInfo,
+        availableStake: parseFloat(addressInfo.balanceuAtom),
+        stage: STAGE_READY,
+      });
+    } else {
+      this.setState({
+        errorMessage: 'balance of this account 0 ATOMs',
+        stage: STAGE_ERROR,
+      });
+    }
+  };
+
+  createTxForCLI = async () => {
+    const { trackAddress, toSend, memo } = this.state;
+    const addressTo = ADDR_FUNDING;
+    const uatomAmount = toSend * DIVISOR_ATOM;
+
+    const tx = await this.ledger.txCreateSend(
+      null,
+      addressTo,
+      uatomAmount,
+      memo,
+      true,
+      trackAddress
+    );
+
+    console.log('tx', tx);
+    downloadObjectAsJson(tx, 'tx_send');
+    this.setState({
+      stage: SELECT_PATH,
     });
   };
 
   generateTx = async () => {
-    const { ledger, address, addressInfo, toSend } = this.state;
+    const { address, addressInfo, toSend, memo } = this.state;
     const validatorBech32 = ADDR_FUNDING;
     const uatomAmount = toSend * DIVISOR_ATOM;
     const txContext = {
@@ -187,11 +174,11 @@ class ActionBarTakeOff extends Component {
       path: address.path,
     };
 
-    const tx = await ledger.txCreateSend(
+    const tx = await this.ledger.txCreateSend(
       txContext,
       validatorBech32,
       uatomAmount,
-      MEMO
+      memo
     );
 
     console.log('tx', tx);
@@ -206,13 +193,13 @@ class ActionBarTakeOff extends Component {
   };
 
   signTx = async () => {
-    const { txMsg, ledger, txContext } = this.state;
+    const { txMsg, txContext } = this.state;
     // console.log('txContext', txContext);
     this.setState({ stage: STAGE_WAIT });
-    const sing = await ledger.sign(txMsg, txContext);
+    const sing = await this.ledger.sign(txMsg, txContext);
     console.log('sing', sing);
     if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await ledger.applySignature(
+      const applySignature = await this.ledger.applySignature(
         sing,
         txMsg,
         txContext
@@ -235,8 +222,8 @@ class ActionBarTakeOff extends Component {
   };
 
   injectTx = async () => {
-    const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmit(txBody);
+    const { txBody } = this.state;
+    const txSubmit = await this.ledger.txSubmit(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -251,50 +238,46 @@ class ActionBarTakeOff extends Component {
   };
 
   confirmTx = async () => {
-    const { txHash, ledger } = this.state;
+    const { txHash } = this.state;
     const { update } = this.props;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await ledger.txStatus(txHash);
+      const status = await this.ledger.txStatus(txHash);
       const data = await status;
       if (data.logs && data.logs[0].success === true) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-
+        if (update) {
+          update();
+        }
         return;
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  tryConnect = async () => {
-    const { ledger } = this.state;
-    const connect = await ledger.connect();
-    return connect;
-  };
-
   cleatState = () => {
     const { update } = this.props;
     this.setState({
-      ledger: null,
-      ledgerVersion: [0, 0, 0],
-      returnCode: null,
+      stage: STAGE_INIT,
       addressInfo: null,
       address: null,
+      hdpath: HDPATH,
       availableStake: 0,
-      time: 0,
-      gas: DEFAULT_GAS,
-      gasPrice: DEFAULT_GAS_PRICE,
       toSend: '',
       txBody: null,
       txContext: null,
       txHash: null,
       txHeight: null,
-      height50: false,
-      errorMessage: null,
+      connectLedger: null,
+      memo: '',
+      trackAddress: '',
     });
+    this.timeOut = null;
+    this.transport = null;
+    this.ledger = null;
     if (update) {
       update();
     }
@@ -305,10 +288,20 @@ class ActionBarTakeOff extends Component {
       valueSelect: e.target.value,
     });
 
+  handleKeyPressFuckGoogle = e => {
+    const { toSend } = this.state;
+    if (toSend.length > 0) {
+      if (e.key === 'Enter') {
+        this.setState({
+          stage: STAGE_SELECTION,
+        });
+      }
+    }
+  };
+
   onClickFuckGoogle = () => {
     this.setState({
       stage: STAGE_SELECTION,
-      height50: true,
     });
   };
 
@@ -319,68 +312,18 @@ class ActionBarTakeOff extends Component {
     });
   };
 
-  onClickTrackContribution = () => {
+  onClickSelectLedgerTx = () => {
+    this.getLedgerAddress();
     this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-
-    this.tryConnect().then(connect => {
-      console.log('connect status', connect);
-      this.setState({
-        connect,
-      });
-      // if (connect === undefined) {
-      //   this.onClickTrackContribution();
-      // }
+      stage: STAGE_HDPATH,
     });
   };
 
-  onClickSaveAddress = () => {
-    this.tryConnect().then(connect => {
-      console.log('connect status', connect);
-      if (connect === undefined) {
-        this.onClickSaveAddress();
-        return;
-      }
-      if (connect !== undefined) {
-        this.setState({
-          connect,
-        });
-        if (connect.app === false) {
-          this.onClickSaveAddress();
-        }
-      }
-      this.setState({
-        connect,
-      });
+  onChangeInputContributeATOMs = async evt => {
+    this.setState({
+      toSend: evt.target.value,
     });
   };
-
-  onChangeInputContributeATOMs = async e => {
-    this.setState({
-      toSend: e.target.value,
-    });
-  };
-
-  onClickMax = () => {
-    const { gas, gasPrice } = this.state;
-    this.setState(prevState => ({
-      toSend:
-        Math.floor(
-          ((prevState.availableStake - gas * gasPrice) / DIVISOR_ATOM) * 1000
-        ) / 1000,
-    }));
-  };
-
-  onClickContributeATOMs = () =>
-    this.setState({
-      step: 'transactionCost',
-    });
-
-  onClickTransactionCost = () =>
-    this.setState({
-      step: 'succesfuuly',
-    });
 
   hasKey() {
     const { address } = this.state;
@@ -392,93 +335,467 @@ class ActionBarTakeOff extends Component {
     return addressInfo !== null;
   }
 
+  onChangeTrackAddress = e => {
+    this.setState({
+      trackAddress: e.target.value,
+    });
+  };
+
+  onClickSelectCustomTx = () => {
+    this.setState({
+      stage: CUSTOM_TX_CONTROL_PK,
+    });
+  };
+
+  onClickIControl = () => {
+    this.setState({
+      stage: CUSTOM_TX_UNDERSTAND,
+    });
+  };
+
+  onClickIUnderstand = () => {
+    this.setState({
+      stage: CUSTOM_TX_TRACK,
+    });
+  };
+
+  onClickTrack = () => {
+    const { trackAddress } = this.state;
+
+    const addressLedgerCyber = {
+      cyber: {
+        bech32: '',
+      },
+    };
+
+    const accounts = {
+      cyber: {
+        bech32: '',
+      },
+      cosmos: {
+        bech32: '',
+      },
+    };
+
+    if (trackAddress.match(PATTERN_COSMOS)) {
+      const cyberAddress = getDelegator(
+        trackAddress,
+        CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+      );
+      addressLedgerCyber.cyber.bech32 = cyberAddress;
+      accounts.cyber.bech32 = cyberAddress;
+      accounts.cosmos.bech32 = trackAddress;
+      accounts.keys = 'user';
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      this.setState({
+        stage: CUSTOM_TX_AGREE,
+      });
+    }
+  };
+
+  onClickIAgree = () => {
+    this.setState({
+      stage: CUSTOM_TX_TYPE_TX,
+    });
+  };
+
+  onClickShowMob = () => {
+    this.setState({
+      stage: CUSTOM_TX_CONTROL_PK,
+    });
+  };
+
+  onClickShow = () => {
+    const { onClickPopapAdressTrue } = this.props;
+
+    onClickPopapAdressTrue();
+    this.setState({
+      stage: SELECT_PATH,
+    });
+  };
+
+  onClickApply = () => {
+    const { hdpath } = this.state;
+    if (parseFloat(hdpath[2]) >= 0 && parseFloat(hdpath[4]) >= 0) {
+      hdpath[2] = parseFloat(hdpath[2]);
+      hdpath[4] = parseFloat(hdpath[4]);
+      this.setState({
+        hdpath,
+        stage: STAGE_LEDGER_INIT,
+      });
+    } else {
+      this.setState({
+        hdpath: HDPATH,
+        stage: STAGE_LEDGER_INIT,
+      });
+    }
+  };
+
+  onChangeAccount = e => {
+    const { hdpath } = this.state;
+    const { value } = e.target;
+
+    hdpath[2] = value;
+
+    this.setState({
+      hdpath,
+    });
+  };
+
+  onChangeIndex = e => {
+    const { hdpath } = this.state;
+    const { value } = e.target;
+
+    hdpath[4] = value;
+
+    this.setState({
+      hdpath,
+    });
+  };
+
+  onClickToPath = () => {
+    const { onClickPopapAdressTrue } = this.props;
+
+    this.cleatState();
+    this.setState({
+      stage: SELECT_PATH,
+    });
+  };
+
+  onClickIUnderstandMob = () => {
+    const { onClickPopapAdressTrue } = this.props;
+
+    onClickPopapAdressTrue();
+    this.setState({
+      stage: STAGE_INIT,
+    });
+  };
+
   render() {
     const {
-      valueSelect,
-      step,
-      height50,
-      connect,
-      returnCode,
-      version,
       availableStake,
-      address,
-      gasPrice,
-      gas,
       toSend,
-      txMsg,
       txHash,
       txHeight,
       stage,
       errorMessage,
+      trackAddress,
+      hdpath,
+      connectLedger,
     } = this.state;
+    const { end, mobile } = this.props;
+
+    if (end <= 0) {
+      return (
+        <ActionBar>
+          <div
+            className="countdown-time text-glich"
+            data-text="Takeoff was successful"
+          >
+            Takeoff was successful
+          </div>
+        </ActionBar>
+      );
+    }
+
+    if (mobile && stage === STAGE_INIT) {
+      return (
+        <ActionBar>
+          <Button paddingX={20} marginX={10} onClick={this.onClickShowMob}>
+            Show address
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (mobile && stage === CUSTOM_TX_CONTROL_PK) {
+      return (
+        <ActionBar>
+          <Pane className="container-actionBar-mobile">
+            <ActionBarContentText className="text-actionBar-mob">
+              You can send donations directly to cyber~Congress multisig only if
+              you control the private keys of the sending account!
+            </ActionBarContentText>
+            <Button
+              fontSize="15px;"
+              height="32px"
+              lineHeight="30px"
+              onClick={this.onClickIControl}
+            >
+              I control
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (mobile && stage === CUSTOM_TX_UNDERSTAND) {
+      return (
+        <ActionBar>
+          <Pane className="container-actionBar-mobile">
+            <ActionBarContentText className="text-actionBar-mob">
+              CYB will be allocated to the sending addresses. Any donations from
+              custodial wallets, exchanges and banks will be lost.
+            </ActionBarContentText>
+            <Button
+              fontSize="15px;"
+              height="32px"
+              lineHeight="30px"
+              onClick={this.onClickIUnderstandMob}
+            >
+              I understand
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
 
     if (stage === STAGE_INIT) {
       return (
-        <StartState
-          onClickBtn={this.onClickFuckGoogle}
-          valueSelect={valueSelect}
-          onChangeSelect={this.onChangeSelect}
-        />
+        <ActionBar>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <span className="actionBar-text">Contribute</span>
+            <Input
+              value={toSend}
+              onChange={e => this.onChangeInputContributeATOMs(e)}
+              placeholder="amount"
+              onKeyPress={this.handleKeyPressFuckGoogle}
+              marginLeft={20}
+              marginRight={20}
+              width="25%"
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+              autoFocus
+            />
+            <Text color="#fff" fontSize="20px">
+              ATOMs
+            </Text>
+          </Pane>
+          <Button
+            disabled={toSend.length === 0}
+            onClick={this.onClickFuckGoogle}
+          >
+            Donate
+          </Button>
+        </ActionBar>
       );
     }
 
     if (stage === STAGE_SELECTION) {
       return (
-        <SendAmount
-          height={height50}
-          onClickBtn={this.onClickTrackContribution}
-          address={ADDR_FUNDING}
-          onClickBtnCloce={this.onClickInitStage}
-        />
+        <ActionBar>
+          <Button marginX={10} onClick={this.onClickSelectCustomTx}>
+            Custom transaction
+          </Button>
+          <Button marginX={10} onClick={this.onClickSelectLedgerTx}>
+            Donate using Ledger
+          </Button>
+        </ActionBar>
       );
     }
+
+    if (stage === STAGE_HDPATH) {
+      return (
+        <ActionBar>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <Text color="#fff" fontSize="20px">
+              HD derivation path: {hdpath[0]}/{hdpath[1]}/
+            </Text>
+            <Input
+              value={hdpath[2]}
+              onChange={e => this.onChangeAccount(e)}
+              width="50px"
+              height={42}
+              marginLeft={3}
+              marginRight={3}
+              fontSize="20px"
+              textAlign="end"
+            />
+            <Text color="#fff" fontSize="20px">
+              /{hdpath[3]}/
+            </Text>
+            <Input
+              value={hdpath[4]}
+              onChange={e => this.onChangeIndex(e)}
+              width="50px"
+              marginLeft={3}
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+            />
+          </Pane>
+          <Button disabled={toSend.length === 0} onClick={this.onClickApply}>
+            Apply
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    if (stage === CUSTOM_TX_CONTROL_PK) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            You can send donations directly to cyber~Congress multisig only if
+            you control the private keys of the sending account!
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickIControl}>
+            I control
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.2
+    //
+    if (stage === CUSTOM_TX_UNDERSTAND) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            CYB will be allocated to the sending addresses. Any donations from
+            custodial wallets, exchanges and banks will be lost.
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickIUnderstand}>
+            I understand
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.3
+    // Put to pocket
+    if (stage === CUSTOM_TX_TRACK) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            To track your donation provide your sending address{' '}
+            <Input
+              placeholder="address"
+              maxWidth="170px"
+              textAlign="end"
+              marginLeft={10}
+              autoFocus
+              height={42}
+              width="unset"
+              value={trackAddress}
+              onChange={e => this.onChangeTrackAddress(e)}
+            />
+          </ActionBarContentText>
+          <Button
+            marginX={10}
+            disabled={!trackAddress.match(PATTERN_COSMOS)}
+            onClick={this.onClickTrack}
+          >
+            Track
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.4
+    //
+    if (stage === CUSTOM_TX_AGREE) {
+      return (
+        <ActionBar>
+          <ActionBarContentText display="inline">
+            <Pane display="inline">
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
+            </Pane>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
+            <Pane display="inline">and</Pane>{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </LinkWindow>
+            .
+          </ActionBarContentText>
+          <Button marginX={10} onClick={this.onClickIAgree}>
+            I agree
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // 1.5
+    //
+    if (stage === CUSTOM_TX_TYPE_TX) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Amazing, now you can send ATOMs
+          </ActionBarContentText>
+          <Button paddingX={20} marginX={10} onClick={this.onClickShow}>
+            Show address
+          </Button>
+          <Button paddingX={20} marginX={10} onClick={this.createTxForCLI}>
+            Download tx
+          </Button>
+        </ActionBar>
+      );
+    }
+
+    // // 1.6
+    //
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
-        <SendAmounLadger
-          onClickBtn={this.onClickSaveAddress}
-          status={connect}
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(version, LEDGER_VERSION_REQ)
-          }
-          address={ADDR_FUNDING}
+        <ConnectLadger
+          onClickConnect={() => this.getLedgerAddress()}
+          connectLedger={connectLedger}
         />
       );
     }
 
+    if (stage === LEDGER_TX_ACOUNT_INFO) {
+      return <CheckAddressInfo />;
+    }
+
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+      const balance = parseFloat(availableStake) / COSMOS.DIVISOR_ATOM;
       return (
-        <ContributeATOMs
-          onClickBtn={() => this.generateTx()}
-          address={address.bech32}
-          availableStake={
-            Math.floor((availableStake / DIVISOR_ATOM) * 1000) / 1000
-          }
-          gasUAtom={gas * gasPrice}
-          gasAtom={(gas * gasPrice) / DIVISOR_ATOM}
-          onChangeInput={e => this.onChangeInputContributeATOMs(e)}
-          valueInput={toSend}
-          onClickBtnCloce={this.onClickInitStage}
-          onClickMax={this.onClickMax}
-        />
+        <ActionBar>
+          <ActionBarContentText display="inline">
+            <Pane display="inline">
+              By donating {toSend} ATOM you agree with the donation terms
+              defined in the
+            </Pane>{' '}
+            <LinkWindow to={WP}>Whitepaper</LinkWindow>{' '}
+            <Pane display="inline">and</Pane>{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              Game of Links rules
+            </LinkWindow>
+            .
+          </ActionBarContentText>
+          <Button
+            marginX={10}
+            disabled={parseFloat(toSend) > balance}
+            onClick={this.generateTx}
+          >
+            I agree
+          </Button>
+        </ActionBar>
       );
     }
 
     if (stage === STAGE_WAIT) {
-      return (
-        <JsonTransaction
-          txMsg={txMsg}
-          onClickBtnCloce={this.onClickInitStage}
-        />
-      );
+      return <JsonTransaction />;
     }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;
+      return <TransactionSubmitted />;
     }
 
     if (stage === STAGE_CONFIRMED) {
@@ -486,18 +803,56 @@ class ActionBarTakeOff extends Component {
         <Confirmed
           txHash={txHash}
           txHeight={txHeight}
-          onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
+          cosmos
+          onClickBtnCloce={this.onClickToPath}
         />
       );
     }
 
-    if (step === 'transactionCost') {
-      return <TransactionCost onClickBtn={this.onClickTransactionCost} />;
-    }
-
-    if (step === 'succesfuuly') {
-      return <Succesfuuly />;
+    if (stage === SELECT_PATH) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Now its time to choose your path
+          </ActionBarContentText>
+          <Link
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0px 10px',
+              padding: '0 30px',
+            }}
+            to="/search/master"
+          >
+            Master
+          </Link>
+          <Link
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0px 10px',
+              padding: '0 30px',
+            }}
+            to="/heroes"
+          >
+            Hero
+          </Link>
+          <Link
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0px 10px',
+              padding: '0px 25px',
+            }}
+            to="/evangelism"
+          >
+            Evangelist
+          </Link>
+        </ActionBar>
+      );
     }
 
     if (stage === STAGE_ERROR && errorMessage !== null) {
@@ -505,7 +860,6 @@ class ActionBarTakeOff extends Component {
         <TransactionError
           errorMessage={errorMessage}
           onClickBtn={this.onClickInitStage}
-          onClickBtnCloce={this.onClickInitStage}
         />
       );
     }

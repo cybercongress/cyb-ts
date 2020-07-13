@@ -2,12 +2,16 @@ import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import GetLink from './link';
+import { connect } from 'react-redux';
 import {
   getBalance,
   getTotalEUL,
   getDistribution,
   getRewards,
   getIpfsHash,
+  getAmountATOM,
+  getValidatorsInfo,
+  getTxCosmos,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -18,6 +22,11 @@ import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
 import Main from './main';
 import GetMentions from './mentions';
+import TableDiscipline from '../gol/table';
+import { getEstimation } from '../../utils/fundingMath';
+import { setGolTakeOff } from '../../redux/actions/gol';
+
+import { COSMOS } from '../../utils/config';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -25,7 +34,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={50}
+      paddingX={20}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -33,6 +42,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
+      minWidth="150px"
     >
       {text}
     </Tab>
@@ -46,7 +56,11 @@ class AccountDetails extends React.Component {
       account: '',
       keywordHash: '',
       loader: true,
+      loading: true,
+      validatorAddress: null,
+      consensusAddress: null,
       addressLedger: null,
+      takeoffDonations: 0,
       balance: {
         available: 0,
         delegation: 0,
@@ -59,6 +73,7 @@ class AccountDetails extends React.Component {
         unbonding: [],
       },
       selected: 'main',
+      won: 0,
     };
   }
 
@@ -71,6 +86,7 @@ class AccountDetails extends React.Component {
     }
     this.getBalanseAccount();
     this.chekPathname();
+    this.getTxsCosmos();
   }
 
   componentDidUpdate(prevProps) {
@@ -80,6 +96,53 @@ class AccountDetails extends React.Component {
       this.chekPathname();
     }
   }
+
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getAtom(dataTx.txs);
+    }
+  };
+
+  getAtom = async dataTxs => {
+    const { match } = this.props;
+    const { address } = match.params;
+    const { setGolTakeOffProps } = this.props;
+    let amount = 0;
+
+    let estimation = 0;
+    let addEstimation = 0;
+    const addressCosmos = getDelegator(address, 'cosmos');
+
+    if (dataTxs) {
+      for (let item = 0; item < dataTxs.length; item += 1) {
+        let temE = 0;
+        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
+        const val =
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
+        temE = getEstimation(estimation, val);
+        if (addressTx === addressCosmos) {
+          addEstimation += temE;
+        }
+        amount += val;
+        estimation += temE;
+      }
+    }
+
+    setGolTakeOffProps(
+      Math.floor(addEstimation * 10 ** 12),
+      Math.floor(estimation * 10 ** 12)
+    );
+
+    this.setState({
+      loading: false,
+      takeoffDonations: amount,
+    });
+  };
 
   chekPathname = () => {
     const { location } = this.props;
@@ -102,6 +165,8 @@ class AccountDetails extends React.Component {
       pathname.match(/mentions/gm).length > 0
     ) {
       this.select('mentions');
+    } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
+      this.select('gol');
     } else {
       this.select('main');
     }
@@ -117,15 +182,23 @@ class AccountDetails extends React.Component {
     };
 
     const keywordHash = await getIpfsHash(address);
+    let consensusAddress = null;
+    let validatorAddress = null;
 
     await this.setState({ account: address, keywordHash });
 
     const result = await getBalance(address);
     console.log('result', result);
 
-    const validatorAddress = getDelegator(address, 'cybervaloper');
+    const dataValidatorAddress = getDelegator(address, 'cybervaloper');
+    const dataGetValidatorsInfo = await getValidatorsInfo(dataValidatorAddress);
 
-    const resultGetDistribution = await getDistribution(validatorAddress);
+    if (dataGetValidatorsInfo !== null) {
+      consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
+      validatorAddress = dataValidatorAddress;
+    }
+
+    const resultGetDistribution = await getDistribution(dataValidatorAddress);
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -152,7 +225,13 @@ class AccountDetails extends React.Component {
         staking.unbonding = result.unbonding;
       }
     }
-    this.setState({ balance: total, staking, loader: false });
+    this.setState({
+      balance: total,
+      validatorAddress,
+      consensusAddress,
+      staking,
+      loader: false,
+    });
   };
 
   countReward = async (data, address) => {
@@ -165,7 +244,7 @@ class AccountDetails extends React.Component {
           address,
           delegations[item].validator_address
         );
-        if (resultRewards) {
+        if (resultRewards[0] && resultRewards[0].amount) {
           reward = parseFloat(resultRewards[0].amount);
           delegations[item].reward = Math.floor(reward);
         } else {
@@ -189,6 +268,11 @@ class AccountDetails extends React.Component {
       loader,
       keywordHash,
       addressLedger,
+      validatorAddress,
+      consensusAddress,
+      won,
+      loading,
+      takeoffDonations,
     } = this.state;
 
     let content;
@@ -206,10 +290,23 @@ class AccountDetails extends React.Component {
       );
     }
 
+    if (loading) {
+      return (
+        <div
+          style={{
+            height: '50vh',
+          }}
+          className="container-loading"
+        >
+          <Loading />
+        </div>
+      );
+    }
+
     if (selected === 'heroes') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/heroes"
+          path="/network/euler/contract/:address/heroes"
           render={() => <Heroes data={staking} />}
         />
       );
@@ -222,7 +319,7 @@ class AccountDetails extends React.Component {
     if (selected === 'cyberlink') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/cyberlink"
+          path="/network/euler/contract/:address/cyberlink"
           render={() => <GetLink accountUser={account} />}
         />
       );
@@ -231,7 +328,7 @@ class AccountDetails extends React.Component {
     if (selected === 'txs') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/txs"
+          path="/network/euler/contract/:address/txs"
           render={() => <GetTxs accountUser={account} />}
         />
       );
@@ -240,8 +337,25 @@ class AccountDetails extends React.Component {
     if (selected === 'mentions') {
       content = (
         <Route
-          path="/network/euler-5/contract/:address/mentions"
+          path="/network/euler/contract/:address/mentions"
           render={() => <GetMentions accountUser={keywordHash} />}
+        />
+      );
+    }
+
+    if (selected === 'gol') {
+      content = (
+        <Route
+          path="/network/euler/contract/:address/gol"
+          render={() => (
+            <TableDiscipline
+              addressLedger={account}
+              validatorAddress={validatorAddress}
+              consensusAddress={consensusAddress}
+              takeoffDonations={takeoffDonations}
+              won={won}
+            />
+          )}
         />
       );
     }
@@ -266,27 +380,32 @@ class AccountDetails extends React.Component {
             <TabBtn
               text="Cyberlinks"
               isSelected={selected === 'cyberlink'}
-              to={`/network/euler-5/contract/${account}/cyberlink`}
+              to={`/network/euler/contract/${account}/cyberlink`}
             />
             <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
-              to={`/network/euler-5/contract/${account}/heroes`}
+              to={`/network/euler/contract/${account}/heroes`}
             />
             <TabBtn
               text="Main"
               isSelected={selected === 'main'}
-              to={`/network/euler-5/contract/${account}`}
+              to={`/network/euler/contract/${account}`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
-              to={`/network/euler-5/contract/${account}/txs`}
+              to={`/network/euler/contract/${account}/txs`}
             />
             <TabBtn
               text="Mentions"
               isSelected={selected === 'mentions'}
-              to={`/network/euler-5/contract/${account}/mentions`}
+              to={`/network/euler/contract/${account}/mentions`}
+            />
+            <TabBtn
+              text="GoL"
+              isSelected={selected === 'gol'}
+              to={`/network/euler/contract/${account}/gol`}
             />
           </Tablist>
           <Pane
@@ -310,4 +429,11 @@ class AccountDetails extends React.Component {
   }
 }
 
-export default AccountDetails;
+const mapDispatchprops = dispatch => {
+  return {
+    setGolTakeOffProps: (amount, prize) =>
+      dispatch(setGolTakeOff(amount, prize)),
+  };
+};
+
+export default connect(null, mapDispatchprops)(AccountDetails);

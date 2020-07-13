@@ -1,852 +1,393 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Link, Route, useLocation } from 'react-router-dom';
+import { Text, Pane, Tablist } from '@cybercongress/gravity';
 import {
-  Text,
-  Pane,
-  Heading,
-  CardHover,
-  Icon,
-  Tablist,
-  Tab,
-  Button,
-  ActionBar,
-  SearchItem,
-  TableEv as Table,
-} from '@cybercongress/gravity';
-import LocalizedStrings from 'react-localization';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import InfiniteScroll from 'react-infinite-scroller';
-import { CosmosDelegateTool } from '../../utils/ledger';
-import {
-  formatNumber,
-  getStatistics,
-  getValidators,
-  statusNode,
-  getRelevance,
-  getRankGrade,
-  getTotalEUL,
-  getBalance,
   getAmountATOM,
+  getValidatorsInfo,
+  getValidators,
+  getTxCosmos,
+  getCurrentNetworkLoad,
 } from '../../utils/search/utils';
-import { roundNumber, asyncForEach } from '../../utils/utils';
-import {
-  CardStatisics,
-  ConnectLadger,
-  Loading,
-  FormatNumber,
-  Indicators,
-  Card,
-} from '../../components';
-import Dinamics from './diagram';
+import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
 import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
-
-import { i18n } from '../../i18n/en';
-
+import TableDiscipline from './table';
+import { getEstimation } from '../../utils/fundingMath';
 import {
-  CYBER,
-  LEDGER,
-  AUCTION,
-  COSMOS,
-  TAKEOFF,
-  DISTRIBUTION,
-  GENESIS_SUPPLY,
-} from '../../utils/config';
-
+  getDelegator,
+  exponentialToDecimal,
+  formatNumber,
+} from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
+import LoadTab from './tab/loadTab';
+import RelevanceTab from './tab/relevance';
+import { setGolTakeOff } from '../../redux/actions/gol';
+import setLeaderboard from './hooks/leaderboard';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+import { COSMOS, TAKEOFF, WP } from '../../utils/config';
 
-const {
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
-  STAGE_INIT,
-  STAGE_LEDGER_INIT,
-  STAGE_READY,
-  LEDGER_VERSION_REQ,
-} = LEDGER;
+const test = {
+  'tx.hash': [
+    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
+  ],
+  'tx.height': ['1372872'],
+  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
+  'transfer.amount': ['10000uatom'],
+  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
+  'message.module': ['bank'],
+  'message.action': ['send'],
+  'tm.event': ['Tx'],
+};
 
-const T = new LocalizedStrings(i18n);
+function GOL({ setGolTakeOffProps, mobile }) {
+  const {
+    data: dataLeaderboard,
+    loading: loadingLeaderboard,
+    progress: progressLeaderboard,
+  } = setLeaderboard();
+  const location = useLocation();
+  const [selected, setSelected] = useState('disciplines');
+  const [address, setAddress] = useState({
+    addressLedger: null,
+    validatorAddress: null,
+    consensusAddress: null,
+  });
+  const [takeoff, setTakeoff] = useState({
+    estimation: 0,
+    amount: 0,
+  });
+  const [addAddress, setAddAddress] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [herosCount, setHerosCount] = useState(0);
+  const [currentNetworkLoad, setCurrentNetworkLoad] = useState(0);
 
-const TabBtn = ({ text, isSelected, onSelect }) => (
-  <Tab
-    key={text}
-    isSelected={isSelected}
-    onSelect={onSelect}
-    paddingX={50}
-    paddingY={20}
-    marginX={3}
-    borderRadius={4}
-    color="#36d6ae"
-    boxShadow="0px 0px 5px #36d6ae"
-    fontSize="16px"
-    whiteSpace="nowrap"
-  >
-    {text}
-  </Tab>
-);
-
-class GOL extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      stage: STAGE_INIT,
-      ledger: null,
-      returnCode: null,
-      addressInfo: null,
-      addressLedger: null,
-      accountsETH: null,
-      ledgerVersion: [0, 0, 0],
-      linksCount: 0,
-      cidsCount: 0,
-      accsCount: 0,
-      txCount: 0,
-      blockNumber: 0,
-      linkPrice: 0,
-      totalCyb: 0,
-      stakedCyb: 0,
-      activeValidatorsCount: 0,
-      selectGlobal: 'disciplines',
-      selectedMaster: 'relevance',
-      selectedPlay: 'uptime',
-      selected: '',
-      loading: false,
-      chainId: '',
-      amount: 0,
-      supplyEUL: 0,
-      takeofPrice: 0,
-      capATOM: 0,
-      averagePrice: 0,
-      capETH: 0,
-      myGOLs: 0,
-      topLink: [],
-      takeoffDonations: 0,
-      currentPrize: 0,
-      items: 10,
-      hasMoreItems: true,
-      perPage: 10,
+  useEffect(() => {
+    const feachData = async () => {
+      chekPathname();
+      await checkAddressLocalStorage();
+      checkCurrentNetworkLoad();
+      getValidatorsCount();
     };
-  }
+    feachData();
+  }, []);
 
-  async componentDidMount() {
-    await this.checkAddressLocalStorage();
-    this.getRelevance();
-    // this.getMyGOLs();
-    this.getMyEULs();
-    this.getDataWS();
-  }
-
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
+  useEffect(() => {
+    const feachData = async () => {
+      await getTxsCosmos();
     };
+    feachData();
+  }, [address]);
 
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAtom(message);
-    };
+  useEffect(() => {
+    chekPathname();
+  }, [location.pathname]);
 
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
+  const chekPathname = () => {
+    const { pathname } = location;
+
+    if (
+      pathname.match(/leaderboard/gm) &&
+      pathname.match(/leaderboard/gm).length > 0
+    ) {
+      setSelected('leaderboard');
+    } else if (
+      pathname.match(/content/gm) &&
+      pathname.match(/content/gm).length > 0
+    ) {
+      setSelected('content');
+    } else {
+      setSelected('disciplines');
+    }
   };
 
-  checkAddressLocalStorage = async () => {
-    let address = [];
+  const getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      getAtom(dataTx.txs);
+    }
+  };
+
+  const checkAddressLocalStorage = async () => {
+    let addressLocalStorage = [];
+    let consensusAddress = null;
+    let validatorAddress = null;
 
     const localStorageStory = await localStorage.getItem('ledger');
     if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address });
-      this.getMyEULs();
-    } else {
-      this.setState({
-        addAddress: true,
-        loading: false,
+      addressLocalStorage = JSON.parse(localStorageStory);
+      console.log('address', addressLocalStorage);
+      const dataValidatorAddress = getDelegator(
+        addressLocalStorage.bech32,
+        'cybervaloper'
+      );
+      const dataGetValidatorsInfo = await getValidatorsInfo(
+        dataValidatorAddress
+      );
+
+      if (dataGetValidatorsInfo !== null) {
+        consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
+        validatorAddress = dataValidatorAddress;
+      }
+
+      setAddAddress(false);
+      setAddress({
+        addressLedger: addressLocalStorage,
+        validatorAddress,
+        consensusAddress,
       });
+    } else {
+      setAddAddress(true);
+      // setLoading(false);
     }
   };
 
-  // getMyGOLs = async () => {
-  //   const { accounts, contractToken } = this.props;
-
-  //   let myGOLs = 0;
-
-  //   const balanceOfTx = await contractToken.methods.balanceOf(accounts).call();
-
-  //   if (balanceOfTx) {
-  //     myGOLs = balanceOfTx;
-  //   }
-
-  //   this.setState({
-  //     myGOLs,
-  //   });
-  // };
-
-  getMyEULs = async () => {
-    const { addressLedger } = this.state;
-
-    let myEULs = 0;
-
-    const result = await getBalance(addressLedger.bech32);
-
-    if (result) {
-      myEULs = getTotalEUL(result);
+  const checkCurrentNetworkLoad = async () => {
+    let load = 0;
+    const dataCurrentNetworkLoad = await getCurrentNetworkLoad();
+    if (dataCurrentNetworkLoad !== null) {
+      load = parseFloat(dataCurrentNetworkLoad.load) * 100;
     }
 
-    this.setState({
-      myEULs: Math.floor(myEULs),
-    });
+    setCurrentNetworkLoad(load);
   };
 
-  getAtom = async dataTxs => {
+  const getValidatorsCount = async () => {
+    const data = await getValidators();
+    let count = 0;
+    if (data !== null) {
+      count = data.length;
+    }
+
+    setHerosCount(count);
+  };
+
+  const getAtom = async dataTxs => {
+    const { addressLedger } = address;
     let amount = 0;
-    let won = 0;
-    let allocation = 0;
-    let currentPrize = 0;
+
+    let estimation = 0;
+    let addEstimation = 0;
+    let addressCosmos = null;
+
+    if (addressLedger !== null) {
+      addressCosmos = getDelegator(addressLedger.bech32, 'cosmos');
+    }
 
     if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
-    }
-
-    won = cybWon(amount);
-    allocation = getDisciplinesAllocation(amount);
-
-    currentPrize = won + allocation;
-
-    this.setState({
-      takeoffDonations: amount,
-      currentPrize,
-    });
-  };
-
-  getRelevance = async () => {
-    let topLink = [];
-    const { perPage } = this.state;
-
-    const data = await getRelevance(perPage);
-
-    if (data) {
-      topLink = data.cids;
-    }
-
-    this.setState({
-      topLink,
-      loading: false,
-    });
-  };
-
-  select = selected => {
-    this.setState({ selected });
-  };
-
-  selectedMaster = selectedMaster => {
-    this.setState({ selectedMaster });
-  };
-
-  selectedPlay = selectedPlay => {
-    this.setState({ selectedPlay });
-  };
-
-  selectGlobal = selectGlobal => {
-    this.setState({ selectGlobal });
-  };
-
-  onClickGetAddressLedger = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-  };
-
-  cleatState = () => {
-    this.setState({
-      stage: STAGE_INIT,
-      ledger: null,
-      returnCode: null,
-      addressInfo: null,
-      addressLedger: null,
-      ledgerVersion: [0, 0, 0],
-      loading: true,
-    });
-  };
-
-  fetchMoreData = () => {
-    console.log('fetchMoreData');
-    this.setState({
-      items: this.state.items + 10,
-    });
-  };
-
-  showItems() {
-    const topLinkItems = [];
-    const { topLink, items } = this.state;
-
-    let linkData = items;
-
-    if (items > topLink.length) {
-      linkData = topLink.length;
-    }
-
-    if (topLink.length > 0) {
-      for (let index = 0; index < linkData; index += 1) {
-        const item = (
-          <Pane
-            display="grid"
-            gridTemplateColumns="50px 1fr"
-            alignItems="baseline"
-            gridGap="5px"
-          >
-            <Text textAlign="end" fontSize="16px" color="#fff">
-              #{index + 1}
-            </Text>
-            <Pane marginY={0} marginX="auto" width="70%">
-              <SearchItem
-                key={topLink[index].cid}
-                hash={topLink[index].cid}
-                rank={topLink[index].rank}
-                grade={getRankGrade(topLink[index].rank)}
-                status="success"
-                width="70%"
-              >
-                {topLink[index].cid}
-              </SearchItem>
-            </Pane>
-          </Pane>
-        );
-
-        topLinkItems.push(item);
+      for (let item = 0; item < dataTxs.length; item += 1) {
+        let temE = 0;
+        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
+        const val =
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
+        temE = getEstimation(estimation, val);
+        if (addressTx === addressCosmos) {
+          addEstimation += temE;
+        }
+        amount += val;
+        estimation += temE;
       }
     }
-    return topLinkItems;
-  }
 
-  loadMore(page) {
-    const { items, perPage } = this.state;
-    console.log('df');
-    if (items > 50 || items === 50) {
-      this.setState({ hasMoreItems: false });
-    } else {
-      this.setState({ items: items + 10, perPage: perPage + 10 });
-    }
-  }
+    setGolTakeOffProps(
+      Math.floor(addEstimation * 10 ** 12),
+      Math.floor(estimation * 10 ** 12)
+    );
 
-  render() {
-    const {
-      loading,
-      selectedMaster,
-      myGOLs,
-      myEULs,
-      takeoffDonations,
-      currentPrize,
-      hasMoreItems,
-      selectGlobal,
-      selectedPlay,
-    } = this.state;
+    console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
+    setTakeoff(prevState => ({ ...prevState, estimation, amount }));
+    setLoading(false);
+  };
 
-    let content;
-    let contentPlay;
-    let contentMaster;
+  let content;
 
-    if (loading) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <Loading />
-        </div>
-      );
-    }
-
-    // const topLinkItems = topLink.map(item => (
-    //   <SearchItem
-    //     key={item.cid}
-    //     hash={item.cid}
-    //     rank={item.rank}
-    //     grade={item.grade}
-    //     status="success"
-    //   >
-    //     {item.cid}
-    //   </SearchItem>
-    // ));
-
-    const Master = () => (
-      <div style={{ width: '100%' }}>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-          gridGap="10px"
-          width="100%"
-          marginBottom={20}
-          // marginTop={25}
-        >
-          <TabBtn
-            text="Community"
-            isSelected={selectedMaster === 'community'}
-            onSelect={() => this.selectedMaster('community')}
-          />
-          <TabBtn
-            text="Load"
-            isSelected={selectedMaster === 'load'}
-            onSelect={() => this.selectedMaster('load')}
-          />
-          <TabBtn
-            text="Relevance"
-            isSelected={selectedMaster === 'relevance'}
-            onSelect={() => this.selectedMaster('relevance')}
-          />
-          <TabBtn
-            text="Takeoff"
-            isSelected={selectedMaster === 'takeoff'}
-            onSelect={() => this.selectedMaster('takeoff')}
-          />
-        </Tablist>
-        {contentMaster}
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Loading />
       </div>
     );
+  }
 
-    const Play = () => (
-      <div style={{ width: '100%' }}>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-          gridGap="10px"
-          width="100%"
-          marginBottom={20}
+  if (selected === 'leaderboard') {
+    content = (
+      <Route
+        path="/gol/leaderboard"
+        render={() => (
+          <LoadTab
+            data={dataLeaderboard}
+            loading={loadingLeaderboard}
+            progress={progressLeaderboard}
+          />
+        )}
+      />
+    );
+  }
+
+  if (selected === 'disciplines') {
+    content = (
+      <TableDiscipline
+        addressLedger={address.addressLedger}
+        validatorAddress={address.validatorAddress}
+        consensusAddress={address.consensusAddress}
+        takeoffDonations={takeoff.amount}
+        estimation={takeoff.estimation}
+        mobile={mobile}
+      />
+    );
+  }
+
+  if (selected === 'content') {
+    content = <Route path="/gol/content" render={() => <RelevanceTab />} />;
+  }
+
+  return (
+    <div>
+      <main
+        // style={{ justifyContent: 'space-between' }}
+        className="block-body"
+      >
+        <Pane
+          borderLeft="3px solid #3ab793e3"
+          paddingY={0}
+          paddingLeft={20}
+          paddingRight={5}
+          marginY={5}
         >
-          <TabBtn
-            text="Uptime"
-            isSelected={selectedPlay === 'uptime'}
-            onSelect={() => this.selectedPlay('uptime')}
-          />
-          <TabBtn
-            text="FVS"
-            isSelected={selectedPlay === 'FVS'}
-            onSelect={() => this.selectedPlay('FVS')}
-          />
-          <TabBtn
-            text="Euler-4"
-            isSelected={selectedPlay === 'euler4'}
-            onSelect={() => this.selectedPlay('euler4')}
-          />
-
-          <TabBtn
-            text="Delegation"
-            isSelected={selectedPlay === 'delegation'}
-            onSelect={() => this.selectedPlay('delegation')}
-          />
-        </Tablist>
-        {contentPlay}
-      </div>
-    );
-
-    const Delegation = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
-          Get more voting power for your validator - get more rewards!
-        </Text>
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          This disciplines is social discipline with max prize of 5 TCYB. Huge
-          chunk of CYB stake allocated to all Ethereans and Cosmonauts. The more
-          you spread, the more users will claim its allocation, the more voting
-          power as validators you will have in Genesis. Details of reward
-          calculation you can find in{' '}
-          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-            Game of Links rules
-          </a>
-        </Text>
-      </Pane>
-    );
-
-    const Load = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
-          Submit as much cyberlinks as possible!
-        </Text>
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          We need to test the network under heavy load. Testing of decentralized
-          networks under load near real conditions is hard and expensive. So we
-          invite you to submit as much cyberlinks as possible. Max reward for
-          this discipline is 6 TCYB. Details of reward calculation you can find
-          in{' '}
-          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-            Game of Links rules
-          </a>
-        </Text>
-      </Pane>
-    );
-
-    const Uptime = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
-          Setup you validator and get rewards for precommit counts!
-        </Text>
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Max rewards for uptime is 2 TCYB.{' '}
-          <a
-            target="_blank"
-            href="https://cybercongress.ai/docs/cyberd/run_validator/"
-          >
-            Run validator, become the hero!
-          </a>
-        </Text>
-      </Pane>
-    );
-    const FVS = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
-          Go on and convince your friend to become a hero!
-        </Text>
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Full Validator Set discipline. We want to bootstrap the cyber main
-          network with full validators set. So we assign group bonus to all
-          validators for self-organization. If the set of validators will
-          increase over or is equal to 100, and this number of validators can
-          last for 10000 blocks, we will allocate an additional 2 TCYB to
-          validators who take part in genesis. If the number of validators will
-          increase to or over 146, under the same conditions we will allocate an
-          additional 3 TCYB. All rewards in that discipline will be distributed
-          to validators per capita. Details of reward calculation you can find
-          in{' '}
-          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-            Game of Links rules
-          </a>
-        </Text>
-      </Pane>
-    );
-    const Euler4 = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Oh! You miss the boat. This discipline is the reward for validators
-          who helped us test the network during 2019 year. Thank you for
-          participation.
-        </Text>
-      </Pane>
-    );
-
-    const Community = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
-          Propose something that matters!
-        </Text>
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          2 TEUL allocated to community pool in euler-5. All governance payouts
-          will be migrated to main network. That means that up to 2 TCYB can be
-          allocated for community proposals during Game of Links.{' '}
-          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-            Details here
-          </a>
-        </Text>
-      </Pane>
-    );
-
-    const Takeoff = () => (
-      <Pane
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        display="flex"
-        paddingY="20px"
-        paddingX="20%"
-        textAlign="justify"
-        width="100%"
-      >
-        <Text lineHeight="24px" marginBottom={20} color="#fff" fontSize="18px">
-          Help sustain the project, get the will!
-        </Text>
-        <Text lineHeight="24px" color="#fff" fontSize="18px">
-          Without takeoff round it is impossible for cyber•Congress to continue
-          development of the project. Overall Game of Links rewards depends on
-          the Takeoff donations results. Takeoff round will be launched after
-          the network accept the proposal with the hash of the cyber.page app
-          with donation functionality. Details of Takeoff donations in{' '}
-          <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-            Game of Links
-          </a>{' '}
-          rules. Subscribe to our{' '}
-          <a target="_blank" href="https://cybercongress.ai/post/">
-            blog
-          </a>{' '}
-          to get updates.
-        </Text>
-      </Pane>
-    );
-
-    const Relevance = () => (
-      <Pane width="100%">
-        <Pane textAlign="center" marginBottom={10} paddingX="20%" width="100%">
-          <Text lineHeight="24px" color="#fff" fontSize="18px">
-            Submit the most ranked content first!
-            <br /> Details of reward calculation you can find in{' '}
-            <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-              Game of Links rules
-            </a>
+          <Pane>Looking back, important things feel obvious.</Pane>
+          <Pane>
+            It takes phenomenal talent and incredible will to see them from
+            afar.
+          </Pane>
+          <Pane>Those who can, define the future.</Pane>
+          <Pane>Founders</Pane>
+        </Pane>
+        <Pane
+          boxShadow="0px 0px 5px #36d6ae"
+          paddingX={20}
+          paddingY={20}
+          marginY={20}
+        >
+          <Text fontSize="16px" color="#fff">
+            Welcome to the intergalactic tournament - Game of Links. GoL is the
+            main preparation stage before{' '}
+            <Link to="/search/genesis">the main network launch</Link> of{' '}
+            <LinkWindow to={WP}>the cyber protocol</LinkWindow>. The main goal
+            of the tournament is to collectively bootstrap the{' '}
+            <Link to="/brain">Superintelligence</Link>. Everyone can find
+            themselves in this fascinating process: we need to set up physical
+            infrastructure, upload the initial knowledge and create a reserve to
+            sustain the project during its infancy. Athletes need to solve
+            different parts of the puzzle and can win up to 10% of CYB in the
+            Genesis.Participation requere EUL tokens which you can get by{' '}
+            <Link to="/gift">claiming gift</Link>, using{' '}
+            <Link to="/gol/faucet">ETH faucet</Link> or{' '}
+            <Link to="/gol/takeoff">donating ATOM</Link> during Takeoff. Read
+            the full rules of the tournament{' '}
+            <LinkWindow to="https://cybercongress.ai/game-of-links/">
+              in the organizator&apos;s blog
+            </LinkWindow>
+            .
           </Text>
         </Pane>
-        <InfiniteScroll
-          // pageStart={0}
-          loadMore={this.loadMore.bind(this)}
-          hasMore={hasMoreItems}
-          loader={
-            <Pane textAlign="center">
-              <Loading />
-            </Pane>
-          }
-          useWindow={false}
+        <Pane
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+          gridGap="20px"
+          width="100%"
+          marginY={20}
+          alignItems="center"
         >
-          {this.showItems()}
-        </InfiniteScroll>
-      </Pane>
-    );
-
-    if (selectedPlay === 'delegation') {
-      contentPlay = <Delegation />;
-    }
-
-    if (selectedMaster === 'load') {
-      contentMaster = <Load />;
-    }
-
-    if (selectedMaster === 'relevance') {
-      contentMaster = <Relevance />;
-    }
-
-    if (selectedMaster === 'community') {
-      contentMaster = <Community />;
-    }
-
-    if (selectedMaster === 'takeoff') {
-      contentMaster = <Takeoff />;
-    }
-
-    if (selectGlobal === 'master') {
-      content = <Master />;
-    }
-
-    if (selectGlobal === 'play') {
-      content = <Play />;
-    }
-
-    if (selectGlobal === 'disciplines') {
-      content = (
-        <Pane width="100%">
-          <Pane textAlign="center" width="100%">
-            <Text lineHeight="24px" color="#fff" fontSize="18px">
-              Allocations of CYB rewards by discipline
-            </Text>
-          </Pane>
-
-          <Dinamics />
-          <Table>
-            <Table.Head
-              style={{
-                backgroundColor: '#000',
-                borderBottom: '1px solid #ffffff80',
-              }}
-            >
-              <Table.TextHeaderCell textAlign="center">
-                <Text fontSize="18px" color="#fff">
-                  Discipline
-                </Text>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell textAlign="center">
-                <Text fontSize="18px" color="#fff">
-                  CYB reward
-                </Text>
-              </Table.TextHeaderCell>
-            </Table.Head>
-            <Table.Body
-              style={{
-                backgroundColor: '#000',
-                overflowY: 'hidden',
-                padding: 7,
-              }}
-            >
-              {DISTRIBUTION.map((item, index) => (
-                <Table.Row key={index} borderBottom="none">
-                  <Table.TextCell>
-                    <Text fontSize="16px" color="#fff">
-                      {item.group}
-                    </Text>
-                  </Table.TextCell>
-                  <Table.TextCell textAlign="end">
-                    <Text fontSize="16px" color="#fff">
-                      {`${formatNumber(item.amount)} (${roundNumber(
-                        (item.amount / GENESIS_SUPPLY) * 100,
-                        3
-                      )}%)`}
-                    </Text>
-                  </Table.TextCell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </Pane>
-      );
-    }
-
-    if (selectedPlay === 'uptime') {
-      contentPlay = <Uptime />;
-    }
-
-    if (selectedPlay === 'FVS') {
-      contentPlay = <FVS />;
-    }
-
-    if (selectedPlay === 'euler4') {
-      contentPlay = <Euler4 />;
-    }
-
-    // if (selected === 'communityPool') {
-    //   content = <CybernomicsGOL />;
-    // }
-
-    return (
-      <div>
-        <main
-          // style={{ justifyContent: 'space-between' }}
-          className="block-body"
-        >
-          <Pane
-            boxShadow="0px 0px 5px #36d6ae"
-            paddingX={20}
-            paddingY={20}
-            marginY={20}
-          >
-            <Text fontSize="16px" color="#fff">
-              Game of Links is main preparation before cyber main network
-              launch. Participants of takeoff donations and 7 disciplines could
-              get max prize in terms of 10% of CYB in Genesis.{' '}
-              <a target="_blank" href="https://cybercongress.ai/game-of-links/">
-                Details here
-              </a>
-            </Text>
-          </Pane>
-          <Pane
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-            gridGap="20px"
-            width="100%"
-            marginY={50}
-            alignItems="center"
-          >
-            <Indicators title={T.gol.myGOLs} value="∞" />
-            <Indicators title={T.gol.myEULs} value={formatNumber(myEULs)} />
+          <Link to="/gol/load">
             <CardStatisics
               styleContainer={{ minWidth: '100px' }}
               styleValue={{ fontSize: '18px', color: '#3ab793' }}
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title={T.gol.maxPrize}
-              value="100 TCYB"
+              title="Network load"
+              value={`${formatNumber(currentNetworkLoad, 2)} %`}
             />
-            <Indicators title={T.gol.currentPrize} value="12 TCYB" />
-            <Indicators
-              title={T.gol.takeoff}
-              value={`${formatNumber(takeoffDonations)} ATOMs`}
+          </Link>
+          <Link to="/gol/takeoff">
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Donation goal"
+              value={`${formatNumber(
+                (takeoff.amount / TAKEOFF.ATOMsALL) * 100,
+                2
+              )} %`}
             />
-          </Pane>
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-            gridGap="10px"
-            // marginTop={25}
-          >
-            <TabBtn
-              text="Master's path"
-              isSelected={selectGlobal === 'master'}
-              onSelect={() => this.selectGlobal('master')}
+          </Link>
+          <Link to="/heroes">
+            <CardStatisics
+              styleContainer={{ minWidth: '100px' }}
+              styleValue={{ fontSize: '18px', color: '#3ab793' }}
+              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+              title="Validator set"
+              value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
             />
-            <TabBtn
-              text="Disciplines"
-              isSelected={selectGlobal === 'disciplines'}
-              onSelect={() => this.selectGlobal('disciplines')}
-            />
-            <TabBtn
-              text="Hero's path"
-              isSelected={selectGlobal === 'play'}
-              onSelect={() => this.selectGlobal('play')}
-            />
-          </Tablist>
-          <Pane
-            display="flex"
-            marginTop={20}
-            marginBottom={50}
-            justifyContent="center"
-          >
-            {content}
-          </Pane>
-        </main>
-        {/* <ActionBarContainer
+          </Link>
+        </Pane>
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+          gridGap="10px"
+          marginY={20}
+        >
+          <TabBtn
+            text="Leaderboard"
+            isSelected={selected === 'leaderboard'}
+            to="/gol/leaderboard"
+          />
+          <TabBtn
+            text="Disciplines"
+            isSelected={selected === 'disciplines'}
+            to="/gol"
+          />
+          <TabBtn
+            text="Content"
+            isSelected={selected === 'content'}
+            to="/gol/content"
+          />
+        </Tablist>
+        <Pane display="flex" marginBottom={50} justifyContent="center">
+          {content}
+        </Pane>
+      </main>
+      {!mobile && (
+        <ActionBarContainer
           addAddress={addAddress}
-          cleatState={this.cleatState}
-          updateFunc={this.checkAddressLocalStorage}
-        /> */}
-      </div>
-    );
-  }
+          updateFunc={checkAddressLocalStorage}
+        />
+      )}
+    </div>
+  );
 }
 
-export default GOL;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+const mapDispatchprops = dispatch => {
+  return {
+    setGolTakeOffProps: (amount, prize) =>
+      dispatch(setGolTakeOff(amount, prize)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(GOL);

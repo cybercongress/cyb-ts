@@ -1,5 +1,5 @@
-import { TAKEOFF } from './config';
-import { x, y, z } from './list';
+import { TAKEOFF, TAKEOFF_SUPPLY, CYBER, GENESIS_SUPPLY } from './config';
+import { x, cap, p } from './list';
 
 const {
   CYBWON_A,
@@ -28,37 +28,46 @@ const getDiscountPlot = atoms => {
   return discount;
 };
 
-const getDataPlot = atoms => {
+const getDataPlot = tokens => {
   let data = {
     y: [],
     x: [],
-    z: [],
+    cap: [],
   };
-  const indexArr = y.indexOf(Math.floor(atoms / 1000) * 1000);
-  const newArrY = y.slice(0, indexArr + 1);
+  const indexArr = x.indexOf(Math.floor(tokens / 1000) * 1000);
+  const newArrY = p.slice(0, indexArr + 1);
   const newArrX = x.slice(0, indexArr + 1);
-  const newArrZ = z.slice(0, indexArr + 1);
+  const newArrCap = cap.slice(0, indexArr + 1);
+
   data = {
     x: newArrX,
     y: newArrY,
-    z: newArrZ,
+    cap: newArrCap,
   };
-  data.x.push(getShares(atoms));
-  data.y.push(atoms);
-  data.z.push(getDiscountPlot(atoms));
+  data.x.push(tokens);
+  const price = 0.00004 * tokens + 1;
+  data.y.push(price);
+  data.cap.push(price * 1000);
   return data;
 };
 
-const getEstimation = (price, discount, atoms, value) => {
+const getEstimation = (x0, value) => {
+  const X_POW = x0 ** 2;
   const estimation =
-    price * value +
-    ((price * discount) / 2) * value -
-    ((price * discount) / (2 * atoms)) * Math.pow(value, 2);
+    0.1 *
+    (Math.sqrt(5) * Math.sqrt(value + 20 * X_POW + 1000 * x0 + 12500) -
+      10 * x0 -
+      250);
   return estimation;
 };
 
 const funcDiscount = atom => {
-  const discount = (5 / Math.pow(10, 7)) * atom;
+  const discount = -(5 / 10 ** 5) * atom + 30;
+  return discount;
+};
+
+const funcDiscountRevers = atom => {
+  const discount = (5 / 10 ** 5) * atom;
   return discount;
 };
 
@@ -73,7 +82,9 @@ const cybWon = atom => {
 
 const getDisciplinesAllocation = atom => {
   const allocation =
-    1.2 + ((CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D) * 0.466666);
+    1.2 +
+    (CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D) *
+      0.466666;
   return allocation;
 };
 
@@ -84,17 +95,48 @@ const getRewards = (price, discount, atoms, amount) => {
 };
 
 const getGroupAddress = data => {
-  const groups = data.reverse().reduce((obj, item) => {
+  const groupsAddress = data.reverse().reduce((obj, item) => {
     obj[item.from] = obj[item.from] || [];
     obj[item.from].push({
       amount: item.amount,
+      price: item.price,
       txhash: item.txhash,
       height: item.height,
       timestamp: item.timestamp,
       cybEstimation: item.estimation,
+      estimationEUL: item.estimationEUL,
     });
     return obj;
   }, {});
+  const groups = Object.keys(groupsAddress).reduce(
+    (obj, key) => ({
+      ...obj,
+      [key]: {
+        address: groupsAddress[key],
+        height: null,
+        amountСolumn: null,
+        pin: false,
+        cyb: null,
+        eul: null,
+      },
+    }),
+    {}
+  );
+
+  Object.keys(groups).forEach(key => {
+    let sum = 0;
+    let sumEstimation = 0;
+    let eul = 0;
+    groups[key].address.forEach(addressKey => {
+      sum += addressKey.amount;
+      sumEstimation += addressKey.cybEstimation;
+      eul += addressKey.estimationEUL;
+    });
+    groups[key].height = groups[key].address[0].height;
+    groups[key].amountСolumn = sum;
+    groups[key].cyb = sumEstimation;
+    groups[key].eul = eul;
+  });
   return groups;
 };
 
@@ -107,4 +149,5 @@ export {
   getRewards,
   getGroupAddress,
   getDisciplinesAllocation,
+  funcDiscountRevers,
 };

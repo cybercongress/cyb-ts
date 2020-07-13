@@ -1,42 +1,66 @@
 import React, { PureComponent } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import { Link, Route } from 'react-router-dom';
+import { Pane, Text, Tablist } from '@cybercongress/gravity';
 import { fromWei, toBN, toWei } from 'web3-utils';
 import withWeb3 from '../../components/web3/withWeb3';
 import { Statistics } from './statistics';
 import ActionBarAuction from './actionBar';
-import { Dinamics } from './dinamics';
+import Dinamics from './dinamics';
 import Table from './table';
-import { Loading } from '../../components/index';
+import { Loading, TabBtn, LinkWindow } from '../../components';
 import {
   run,
   formatNumber,
   roundNumber,
   asyncForEach,
   timer,
+  exponentialToDecimal,
+  getTimeRemaining,
 } from '../../utils/utils';
+import {
+  getDinamics,
+  getTableData,
+  getDataTableRound,
+  getVestingDataTable,
+} from './utils';
 import InfoPane from './infoPane';
+import TableVesting from './tableVesting';
+import BalancePane from './balancePane';
+import ActionBarVesting from './actionBarVesting';
+import StatisticsClaim from './statisticsClaim';
 
-import { AUCTION } from '../../utils/config';
+import { AUCTION, CYBER } from '../../utils/config';
 
-const BigNumber = require('bignumber.js');
 const dateFormat = require('dateformat');
 
-const { ADDR_SMART_CONTRACT, TOKEN_NAME, TOPICS_SEND, TOPICS_CLAIM } = AUCTION;
-const ROUND_DURATION = 1 * 60 * 60;
+const DEFAULT_PROOF = 'Processing';
+const MILLISECONDS_IN_SECOND = 1000;
 
-export function roundCurrency(value, decimalDigits = 0) {
-  return value
-    .toFixed(decimalDigits)
-    .replace(/(\.\d{0,})0+$/, '$1')
-    .replace(/\.$/, '');
-}
+const {
+  ADDR_SMART_CONTRACT,
+  TOKEN_NAME,
+  TOPICS_SEND,
+  TOPICS_CLAIM,
+  ROUND_DURATION,
+} = AUCTION;
 
-export function formatCurrency(value, decimalDigits = 0) {
-  return roundCurrency(
-    parseFloat(fromWei(value.toString(), 'ether')),
-    decimalDigits
-  );
-}
+const Pill = ({ children, active, ...props }) => (
+  <Pane
+    display="flex"
+    fontSize="14px"
+    borderRadius="20px"
+    paddingY="5px"
+    paddingX="8px"
+    alignItems="center"
+    lineHeight="1"
+    justifyContent="center"
+    backgroundColor={active ? '#000' : '#36d6ae'}
+    color={active ? '#36d6ae' : '#000'}
+    {...props}
+  >
+    {children}
+  </Pane>
+);
 
 class Auction extends PureComponent {
   constructor(props) {
@@ -52,11 +76,20 @@ class Auction extends PureComponent {
       loading: true,
       numberOfDays: 0,
       claimedAll: false,
+      endTimeVesting: null,
       createOnDay: 0,
+      raisedToken: 0,
+      canClaim: 0,
+      balanceVesting: 0,
+      loadingVesting: true,
+      spendableBalance: 0,
+      tableVestingLoading: true,
+      tableVesting: [],
       popupsBuy: false,
       roundTable: null,
       typeTime: 'start',
       startTimeTot: null,
+      selected: '',
       dynamics: {
         x: [],
         y: [],
@@ -67,28 +100,40 @@ class Auction extends PureComponent {
   }
 
   async componentDidMount() {
-    const { accounts } = this.props;
+    this.chekPathname();
     this.init();
     this.subscription();
     this.accountsChanged();
-
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
-
-    console.log({
-      youCYB,
-    });
   }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
+
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
+
+    if (pathname.match(/claim/gm) && pathname.match(/claim/gm).length > 0) {
+      this.setState({ selected: 'claim' });
+    } else if (
+      pathname.match(/vest/gm) &&
+      pathname.match(/vest/gm).length > 0
+    ) {
+      this.setState({ selected: 'vest' });
+    } else {
+      this.setState({ selected: 'bid' });
+    }
+  };
 
   init = async () => {
     const {
       accounts,
       contract: { methods },
+      contractVesting,
     } = this.props;
     await this.setState({
       accounts,
@@ -98,6 +143,17 @@ class Auction extends PureComponent {
     const openTime = await methods.openTime().call();
     let startTimeTot;
     let typeTime;
+
+    const end = await contractVesting.methods.vestingEnd().call();
+    if (end * MILLISECONDS_IN_SECOND < Date.parse(new Date())) {
+      const endTime = dateFormat(
+        new Date(end * MILLISECONDS_IN_SECOND),
+        'dd/mm/yyyy, HH:MM:ss'
+      );
+      this.setState({
+        endTimeVesting: endTime,
+      });
+    }
 
     if (new Date(openTime * 1000) > Date.now()) {
       typeTime = 'intro';
@@ -122,12 +178,17 @@ class Auction extends PureComponent {
         this.statistics();
         this.dinamics();
         this.getDataTable();
+        this.setState({
+          tableVestingLoading: false,
+        });
       } else {
         console.log('accounts');
         timer(this.getTimeEndRound);
         this.statistics();
         this.dinamics();
         this.getDataTable();
+        this.getBalance();
+        this.getVesting();
       }
     } else {
       this.setState({ loading: false });
@@ -135,7 +196,7 @@ class Auction extends PureComponent {
   };
 
   subscription = async () => {
-    const { web3 } = this.props;
+    const { web3, accounts, contractVesting } = this.props;
     const subscription = web3.eth.subscribe(
       'logs',
       {
@@ -145,11 +206,11 @@ class Auction extends PureComponent {
       (error, result) => {
         if (!error) {
           console.log(result);
-          const day = Number.parseInt(result.data.slice(0, 66));
+          const day = Number.parseInt(result.topics[1]);
           console.log('day', day);
           this.getDataTableForRound(day);
-          // this.dinamics();
-          run(this.statistics);
+          this.dinamics();
+          this.statistics();
         }
       }
     );
@@ -161,26 +222,137 @@ class Auction extends PureComponent {
       }
     });
 
-    const subscriptionClaim = web3.eth.subscribe(
-      'logs',
-      {
-        address: ADDR_SMART_CONTRACT,
-        topics: [TOPICS_CLAIM],
-      },
-      (error, result) => {
-        if (!error) {
-          console.log(result);
-          run(this.getDataTable);
+    if (accounts && accounts !== null) {
+      contractVesting.events.NewLock(
+        {
+          filter: { lockAddress: accounts },
+        },
+        (error, event) => {
+          console.log('NewLock', event);
+          this.newLockUpdate(event);
         }
-      }
+      );
+
+      contractVesting.events.NewProof(
+        {
+          filter: { lockAddress: accounts },
+        },
+        (error, event) => {
+          this.newProofUpdate(event);
+          console.log('NewProof', event);
+        }
+      );
+      const lowerCaseAcc = accounts.toLowerCase();
+      const subscriptionClaim = web3.eth.subscribe(
+        'logs',
+        {
+          address: ADDR_SMART_CONTRACT,
+          topics: [TOPICS_CLAIM],
+        },
+        (error, result) => {
+          if (!error) {
+            console.log(result);
+            if (result.topics[2].indexOf(lowerCaseAcc.slice(2)) !== -1) {
+              this.getBalance();
+              run(this.getDataTable);
+            }
+          }
+        }
+      );
+      // unsubscribes the subscription
+      subscriptionClaim.unsubscribe((error, success) => {
+        if (success) {
+          console.log('Successfully unsubscribed!');
+        }
+      });
+    }
+  };
+
+  getBalance = async () => {
+    const { contractTokenManager, contractToken } = this.props;
+    const { accounts } = this.state;
+
+    if (accounts) {
+      const balance = await contractToken.methods.balanceOf(accounts).call();
+      const spendableBalance = await contractTokenManager.methods
+        .spendableBalanceOf(accounts)
+        .call();
+
+      this.setState({
+        balanceVesting: balance,
+        loadingVesting: false,
+        spendableBalance,
+      });
+    } else {
+      this.setState({
+        balanceVesting: 0,
+        loadingVesting: false,
+        spendableBalance: 0,
+      });
+    }
+  };
+
+  getVesting = async () => {
+    const { contractTokenManager, contractVesting } = this.props;
+    const { accounts } = this.state;
+    let table = [];
+
+    const dataTable = await getVestingDataTable(
+      accounts,
+      contractTokenManager,
+      contractVesting
     );
 
-    // unsubscribes the subscription
-    subscriptionClaim.unsubscribe((error, success) => {
-      if (success) {
-        console.log('Successfully unsubscribed!');
-      }
-    });
+    if (dataTable !== undefined) {
+      table = dataTable.table.reverse();
+    }
+
+    this.setState({ tableVesting: table, tableVestingLoading: false });
+  };
+
+  newLockUpdate = async dataEvent => {
+    const { tableVesting, accounts } = this.state;
+    const { contractTokenManager } = this.props;
+    if (accounts === dataEvent.returnValues.claimer.toLowerCase()) {
+      let data = [];
+
+      const { vestingId, claimer, amount, account } = dataEvent.returnValues;
+
+      const { start } = await contractTokenManager.methods
+        .getVesting(claimer, parseInt(vestingId, 10))
+        .call();
+
+      data = [
+        {
+          id: parseInt(vestingId, 10),
+          amount,
+          start: dateFormat(
+            new Date(start * MILLISECONDS_IN_SECOND),
+            'dd/mm/yyyy, hh:MM:ss tt'
+          ),
+          recipient: account,
+          proof: DEFAULT_PROOF,
+        },
+        ...tableVesting,
+      ];
+
+      this.setState({ tableVesting: data });
+      this.getBalance();
+    }
+  };
+
+  newProofUpdate = async dataEvent => {
+    const { tableVesting, accounts } = this.state;
+    const data = [...tableVesting];
+    if (accounts === dataEvent.returnValues.claimer.toLowerCase()) {
+      data.forEach((element, index) => {
+        if (element.id === parseInt(dataEvent.returnValues.vestingId, 10)) {
+          tableVesting[index].proof = dataEvent.returnValues.proofTx;
+        }
+      });
+      console.log('newProofUpdate', data);
+      this.setState({ tableVesting: data });
+    }
   };
 
   accountsChanged = () => {
@@ -191,7 +363,9 @@ class Auction extends PureComponent {
       await this.setState({
         accounts: tmpAccount,
       });
-      run(this.getDataTable);
+      this.getDataTable();
+      this.getBalance();
+      this.getVesting();
     });
   };
 
@@ -199,18 +373,21 @@ class Auction extends PureComponent {
     const {
       contract: { methods },
     } = this.props;
-    const today = parseInt(await methods.today().call());
+    const today = await methods.today().call();
     const time = await methods.time().call();
     const startTime = await methods.startTime().call();
+
     const times = parseFloat(
-      today * ROUND_DURATION - (parseFloat(time) - parseFloat(startTime))
+      parseFloat(today) * 23 * 60 * 60 -
+        (parseFloat(time) - parseFloat(startTime))
     );
-    const hours = Math.floor((times / (60 * 60)) % 24);
+
+    const hours = Math.floor(times / (60 * 60));
     const minutes = Math.floor((times / 60) % 60);
 
-    const h = `0${hours}`.slice(-2);
+    const h = hours;
     const m = `0${minutes}`.slice(-2);
-    const timeLeft = `${h} : ${m}`;
+    const timeLeft = `${h}h : ${m}m`;
     this.setState({
       timeLeft,
     });
@@ -220,24 +397,19 @@ class Auction extends PureComponent {
     const {
       contract: { methods },
     } = this.props;
-    const roundThis = parseInt(await methods.today().call());
+    const roundThis = await methods.today().call();
     const numberOfDays = await methods.numberOfDays().call();
-    const today = roundThis;
+    const today = parseInt(roundThis, 10);
     const createOnDay = await methods.createOnDay(today).call();
     const dailyTotals = await methods.dailyTotals(today).call();
 
-    const currentPrice = roundNumber(
-      dailyTotals / (createOnDay * Math.pow(10, 9)),
-      6
-    );
-
-    const price = new BigNumber(currentPrice);
+    const currentPrice = dailyTotals / (createOnDay * 10 ** 9);
 
     return this.setState({
-      roundThis,
-      currentPrice: price,
+      roundThis: parseInt(roundThis, 10),
+      currentPrice,
       numberOfDays,
-      dailyTotals: Math.floor((dailyTotals / Math.pow(10, 18)) * 10000) / 10000,
+      dailyTotals: Math.floor((dailyTotals / 10 ** 18) * 10000) / 10000,
     });
   };
 
@@ -246,84 +418,18 @@ class Auction extends PureComponent {
       contract: { methods },
       contractAuctionUtils,
     } = this.props;
-    const { roundThis } = this.state;
+    let dynamics = [];
     let raised = 0;
-    const dynamics = {
-      x: [],
-      y: [],
-      x1: [],
-      y1: [],
-      time: [],
-    };
 
-    const startTime = await methods.startTime().call();
-    const createPerDay = await methods.createPerDay().call();
-    const createFirstDay = await methods.createFirstDay().call();
-
-    const dailyTotalsUtils = await contractAuctionUtils.methods
-      .dailyTotals()
-      .call();
-
-    if (roundThis === 0) {
-      this.setState({
-        createOnDay: createFirstDay,
-      });
-    } else {
-      this.setState({
-        createOnDay: createPerDay,
-      });
-    }
-    await asyncForEach(
-      Array.from(Array(dailyTotalsUtils.length).keys()),
-      async item => {
-        let createOnDay;
-        if (item === 0) {
-          createOnDay = createFirstDay;
-        } else {
-          createOnDay = createPerDay;
-        }
-
-        const currentPrice = roundNumber(
-          dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9)),
-          10
-        );
-        // TODO
-        // if (item <= today) {
-        const dt = dailyTotalsUtils[item];
-        raised += parseFloat(dt) / Math.pow(10, 18);
-
-        const _raised = parseFloat(dt) / Math.pow(10, 18);
-
-        if (item === 0) {
-          dynamics.x.push(
-            item
-            // new Date(startTime * 1000 + 1000 * 60 * 60).toShortFormat()
-          );
-          dynamics.y.push(_raised);
-          dynamics.time.push(startTime * 1000 + 1000 * 60 * 60);
-
-          dynamics.y1.push(
-            item
-            // new Date(startTime * 1000 + 1000 * 60 * 60).toShortFormat()
-          );
-          dynamics.x1.push(currentPrice);
-        } else {
-          const nextTime = dynamics.time[dynamics.time.length - 1];
-
-          dynamics.x.push(
-            item
-            // new Date(nextTime + 1000 * 23 * 60 * 60).toShortFormat()
-          );
-          dynamics.y.push(_raised);
-
-          dynamics.y1.push(
-            item
-            // new Date(nextTime + 1000 * 23 * 60 * 60).toShortFormat()
-          );
-          dynamics.x1.push(currentPrice);
-        }
-      }
+    const { dynamics: dynamicsData, raised: raisedData } = await getDinamics(
+      methods,
+      contractAuctionUtils
     );
+
+    if (dynamicsData && raisedData) {
+      dynamics = dynamicsData;
+      raised = raisedData;
+    }
 
     this.setState({ dynamics, loading: false });
     this.setState({ raised });
@@ -337,162 +443,60 @@ class Auction extends PureComponent {
       contractAuctionUtils,
     } = this.props;
     const { accounts } = this.state;
-    const { contract } = this.props;
-    const youCYB = (
-      await contract.getPastEvents('LogClaim', {
-        fromBlock: 0,
-        toBlock: 'latest',
-      })
-    ).filter(i => i.returnValues.user === accounts);
-    console.log('accounts', accounts);
-    let userBuysAuctionUtils = null;
-    let userClaims = null;
-    const table = [];
-    const roundThis = parseInt(await methods.today().call());
-    const createPerDay = await methods.createPerDay().call();
-    const createFirstDay = await methods.createFirstDay().call();
-    const dailyTotalsUtils = await contractAuctionUtils.methods
-      .dailyTotals()
-      .call();
 
-    if (accounts !== null && accounts !== undefined) {
-      userClaims = await contractAuctionUtils.methods
-        .userClaims(accounts)
-        .call();
-      userBuysAuctionUtils = await contractAuctionUtils.methods
-        .userBuys(accounts)
-        .call();
-    }
-
-    await asyncForEach(
-      Array.from(Array(dailyTotalsUtils.length).keys()),
-      async item => {
-        let createOnDay;
-        let userBuy = 0;
-        if (item === 0) {
-          createOnDay = createFirstDay;
-          this.setState({
-            createOnDay,
-          });
-        } else {
-          createOnDay = createPerDay;
-          this.setState({
-            createOnDay,
-          });
-        }
-        // if (item <= roundThis) {
-        const currentPrice = roundNumber(
-          dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9)),
-          10
-        );
-
-        const distValue =
-          Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100;
-        const dailyValue =
-          Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
-          10000;
-        if (accounts === null || accounts === undefined) {
-          userBuy = 0;
-        } else {
-          userBuy = userBuysAuctionUtils[item] / Math.pow(10, 18);
-        }
-        let cyb;
-        if (!userBuy || userClaims[item] === true) {
-          cyb = 0;
-        } else {
-          cyb = (distValue / dailyValue) * userBuy;
-        }
-        let claimedItem;
-        if (cyb === 0 || item >= roundThis) {
-          claimedItem = false;
-        } else {
-          claimedItem = item;
-        }
-
-        table.push({
-          period: item,
-          dist: formatNumber(
-            Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100,
-            3
-          ),
-          total: formatNumber(
-            Math.floor((dailyTotalsUtils[item] / Math.pow(10, 18)) * 10000) /
-              10000,
-            3
-          ),
-          price: formatNumber(currentPrice, 7),
-          closing: (23 * (roundThis - item)) / 23,
-          youETH: formatNumber(userBuy, 7),
-          youCYB: formatNumber(Math.floor(cyb * 100) / 100, 3),
-          claimed: claimedItem,
-          // _youCYB.length ? _youCYB[0].returnValues.amount : '0'
-        });
-        // console.log('CR', {_createOnDay, _dailyTotals, today}, (_createOnDay/Math.pow(10,18)  +  _dailyTotals/2) /_dailyTotals);
-        // }
-      }
+    const { table, raisedToken, canClaim } = await getTableData(
+      accounts,
+      methods,
+      contractAuctionUtils
     );
-    if (table.some(this.even)) {
-      this.setState({
-        claimedAll: true,
-      });
+
+    if (table && table.length > 0) {
+      if (table.some(this.even)) {
+        this.setState({
+          claimedAll: true,
+          table,
+          raisedToken,
+          canClaim,
+        });
+      } else {
+        this.setState({
+          claimedAll: false,
+          table,
+          raisedToken,
+          canClaim,
+        });
+      }
     } else {
-      this.setState({
-        claimedAll: false,
-      });
+      this.setState({ table, raisedToken, canClaim });
     }
-    this.setState({ table });
   };
 
   getDataTableForRound = async round => {
     const {
       contract: { methods },
     } = this.props;
-    const { accounts, table, dynamics } = this.state;
-    const userBuys = await methods.userBuys(round, accounts).call();
-    const dailyTotals = await methods.dailyTotals(round).call();
-    const createPerDay = await methods.createPerDay().call();
-    const createFirstDay = await methods.createFirstDay().call();
-    let createOnDay;
-    if (round === 0) {
-      createOnDay = createFirstDay;
-    } else {
-      createOnDay = createPerDay;
-    }
-    const currentPrice = roundNumber(dailyTotals / (createOnDay * 10 ** 9), 6);
-    const distValue = Math.floor(createOnDay * 10 ** -9 * 100) / 100;
-    const dailyValue = Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000;
-    const userBuy = userBuys * 10 ** -18;
-    let cyb;
-    if (userBuys === '0') {
-      cyb = 0;
-    } else {
-      cyb = (distValue / dailyValue) * userBuy;
-    }
-    const roundTable = {
+    const {
+      accounts,
+      raisedToken,
+      table: tableState,
+      dynamics: dynamicsState,
+    } = this.state;
+
+    const { table, dynamics, token } = await getDataTableRound(
       round,
-      createPerDay: formatNumber(
-        Math.floor(createOnDay * 10 ** -9 * 100) / 100,
-        2
-      ),
-      dailyTotals: formatNumber(
-        Math.floor(dailyTotals * 10 ** -18 * 10000) / 10000,
-        2
-      ),
-      currentPrice,
-      userBuys: formatNumber(userBuys * 10 ** -18, 6),
-      cyb: formatNumber(Math.floor(cyb * 100) / 100, 2),
-    };
-    table[round].dist = roundTable.createPerDay;
-    table[round].total = roundTable.dailyTotals;
-    table[round].price = roundTable.currentPrice;
-    table[round].youCYB = roundTable.cyb;
-    table[round].youETH = roundTable.userBuys;
-    dynamics.y[round] = parseFloat(roundTable.dailyTotals);
-    dynamics.x1[round] = parseFloat(roundTable.currentPrice);
-    this.setState({
-      table,
-      dynamics,
-    });
+      methods,
+      tableState,
+      dynamicsState,
+      accounts
+    );
+
+    if (table !== null && dynamics !== null) {
+      this.setState({
+        table,
+        dynamics,
+        raisedToken: raisedToken + token,
+      });
+    }
   };
 
   render() {
@@ -510,59 +514,226 @@ class Auction extends PureComponent {
       createOnDay,
       typeTime,
       startTimeTot,
+      accounts,
+      selected,
+      balanceVesting,
+      loadingVesting,
+      spendableBalance,
+      raisedToken,
+      tableVestingLoading,
+      tableVesting,
+      endTimeVesting,
+      canClaim,
     } = this.state;
-    // console.log(table);
-    const thc = 700 * Math.pow(10, 3);
+    let content;
+    let contentStatistics;
+    let contentInfoPane;
+
+    const { contract, web3, contractVesting } = this.props;
+
+    const Bid = () => (
+      <>
+        <Dinamics
+          data={dynamics}
+          price={currentPrice}
+          volume={dailyTotals}
+          round={roundThis}
+          distribution={Math.floor((createOnDay / 10 ** 9) * 100) / 100}
+        />
+        <Table
+          data={table}
+          TOKEN_NAME={TOKEN_NAME}
+          web3={web3}
+          contract={contract}
+          round={roundThis}
+        />
+      </>
+    );
+
+    const Claim = () => (
+      <Table
+        data={table}
+        TOKEN_NAME={TOKEN_NAME}
+        claimed={claimedAll}
+        web3={web3}
+        contract={contract}
+        round={roundThis}
+        onlyClaim
+      />
+    );
+
+    const Vesting = () => {
+      if (tableVestingLoading) {
+        return (
+          <div className="container-loading">
+            <Loading />
+          </div>
+        );
+      }
+
+      return <TableVesting data={tableVesting} />;
+    };
+
+    if (selected === 'bid') {
+      content = <Bid />;
+      contentInfoPane = (
+        <Pane>
+          The smart contract for the faucet is implemented using Ethereum. It
+          consists of {numberOfDays} rounds, lasting 23 hours each. The more ETH has been bid on every
+          round - the higher the price of GOL. All procedding goes to test{' '}
+          <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
+            Euler~Foundation
+          </LinkWindow>{' '}
+          and will be spend on the development and security audit of
+          cyber~Foundation.
+        </Pane>
+      );
+      contentStatistics = (
+        <Statistics
+          round={roundThis}
+          roundAll={numberOfDays}
+          timeLeft={timeLeft}
+          currentPrice={exponentialToDecimal(currentPrice.toPrecision(2))}
+          raised={exponentialToDecimal(raised.toPrecision(2))}
+          cap={formatNumber(AUCTION.TOKEN_ALOCATION * currentPrice)}
+          TOKEN_NAME={TOKEN_NAME}
+        />
+      );
+    }
+
+    if (selected === 'claim') {
+      content = <Route path="/gol/faucet/claim" render={() => <Claim />} />;
+      contentInfoPane =
+        'You can claim GOL after the end of every round. Claimed GOL tokens will become transferable on Ethereum network.';
+      contentStatistics = (
+        <StatisticsClaim
+          round={roundThis}
+          roundAll={numberOfDays}
+          canClaim={canClaim}
+          raisedToken={raisedToken}
+        />
+      );
+    }
+
+    if (selected === 'vest') {
+      content = <Route path="/gol/faucet/vest" render={() => <Vesting />} />;
+      contentInfoPane = (
+        <Pane>
+          Vesting allow you to get 1 EUL for each vested GOL. Also GOLs allow
+          you to participate in the decisions of{' '}
+          <LinkWindow to="https://mainnet.aragon.org/#/eulerfoundation/home/">
+            Euler~Foundation
+          </LinkWindow>{' '}
+          during the Game of Links. Keep in mind that after the end of the Game
+          of Links, GOL tokens become useless.
+        </Pane>
+      );
+      contentStatistics = (
+        <BalancePane
+          marginTop={30}
+          marginBottom={50}
+          balance={balanceVesting}
+          spendableBalance={spendableBalance}
+          accounts={accounts}
+        />
+      );
+    }
+
     return (
       <div>
         <main className="block-body auction">
           <InfoPane openTime={typeTime} startTimeTot={startTimeTot} />
-          <Statistics
-            round={roundThis}
-            roundAll={numberOfDays}
-            timeLeft={timeLeft}
-            currentPrice={currentPrice}
-            raised={Math.round(raised * 10000) / 10000}
-            cap={formatNumber(thc * currentPrice)}
-            TOKEN_NAME={TOKEN_NAME}
-          />
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+            gridGap="10px"
+            marginBottom={20}
+          >
+            <TabBtn
+              text={
+                <Pane display="flex">
+                  <Pane>1 step: Bid</Pane>
+                  {parseFloat(raisedToken) > 0.001 && (
+                    <Pill marginLeft={5} active={selected === 'bid'}>
+                      {formatNumber(raisedToken, 3)} GGoL
+                    </Pill>
+                  )}
+                </Pane>
+              }
+              isSelected={selected === 'bid'}
+              to="/gol/faucet"
+            />
+            <TabBtn
+              text={
+                <Pane display="flex">
+                  <Pane>2 step: Claim</Pane>
+                  {parseFloat(canClaim) > 0.001 && (
+                    <Pill marginLeft={5} active={selected === 'claim'}>
+                      {formatNumber(canClaim, 3)} GGoL
+                    </Pill>
+                  )}
+                </Pane>
+              }
+              isSelected={selected === 'claim'}
+              to="/gol/faucet/claim"
+            />
+            <TabBtn
+              text={
+                <Pane display="flex">
+                  <Pane>3 step: Vest</Pane>
+                  {parseFloat(spendableBalance) > 0.001 && (
+                    <Pill marginLeft={5} active={selected === 'vest'}>
+                      {formatNumber(
+                        spendableBalance / CYBER.DIVISOR_CYBER_G,
+                        3
+                      )}{' '}
+                      GGoL
+                    </Pill>
+                  )}
+                </Pane>
+              }
+              isSelected={selected === 'vest'}
+              to="/gol/faucet/vest"
+            />
+          </Tablist>
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginBottom={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              {contentInfoPane}
+            </Text>
+          </Pane>
+          {contentStatistics}
           {loading && (
             <div className="container-loading">
               <Loading />
             </div>
           )}
-          {!loading && (
-            <Dinamics
-              data={dynamics}
-              price={currentPrice}
-              volume={dailyTotals}
-              round={roundThis}
-              distribution={
-                Math.floor((createOnDay / Math.pow(10, 9)) * 100) / 100
-              }
-            />
-          )}
-          {!loading && (
-            <div style={{ marginTop: '0px', width: '100%' }}>
-              <Table
-                data={table}
-                TOKEN_NAME={TOKEN_NAME}
-                claimed={claimedAll}
-                web3={this.props.web3}
-                contract={this.props.contract}
-                round={roundThis}
-              />
-            </div>
-          )}
+          {!loading && content}
         </main>
-        <ActionBarAuction
-          web3={this.props.web3}
-          contract={this.props.contract}
-          minRound={roundThis}
-          maxRound={numberOfDays}
-          claimed={claimedAll}
-          startAuction={typeTime === 'intro'}
-        />
+        {!loading &&
+          (selected !== 'vest' ? (
+            <ActionBarAuction
+              web3={web3}
+              contract={contract}
+              minRound={roundThis}
+              maxRound={numberOfDays}
+              claimed={claimedAll}
+              accounts={accounts}
+              selected={selected}
+            />
+          ) : (
+            <ActionBarVesting
+              available={spendableBalance}
+              contractVesting={contractVesting}
+              web3={web3}
+              accounts={accounts}
+              endTime={endTimeVesting}
+            />
+          ))}
       </div>
     );
   }

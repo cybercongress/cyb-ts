@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pane, Text, Tooltip } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
+import { CYBER } from '../../utils/config';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
 const voting = require('../../image/ionicons_svg_ios-people.svg');
@@ -117,7 +118,6 @@ export const IconStatus = ({ status, size, ...props }) => {
   );
 };
 
-
 export const Deposit = ({ totalDeposit, minDeposit }) => {
   let procentDeposit = 0;
 
@@ -154,7 +154,8 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
             width="100%"
             className="tooltip-text-deposit"
           >
-            Total Deposit {formatNumber(totalDeposit * 10 ** -9)} GCYB
+            Total Deposit {formatNumber(totalDeposit * 10 ** -9)}{' '}
+            {CYBER.DENOM_CYBER_G}
           </Text>
         </Pane>
       </Pane>
@@ -176,7 +177,7 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
 };
 
 export const ContainerPane = ({ children, ...props }) => (
-  <Pane {...props} paddingX={20} paddingY={20} boxShadow="0 0 3px 0px #3ab793">
+  <Pane {...props} paddingX={30} paddingY={20} boxShadow="0 0 3px 0px #3ab793">
     {children}
   </Pane>
 );

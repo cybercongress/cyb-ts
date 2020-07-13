@@ -78,7 +78,7 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
         Check TX status:{' '}
         <a
           className="hash"
-          href={`https://rinkeby.etherscan.io/tx/${hash}`}
+          href={`https://etherscan.io/tx/${hash}`}
           target="_blank"
         >
           {hash}
@@ -126,7 +126,7 @@ const CreateVesting = ({
       />
     </ActionBarContentText>
     <Button disabled={disabledBtnCreateVesting} onClick={onClickBtn}>
-      Create Vesting
+      Get EUL
     </Button>
   </ActionBar>
 );
@@ -169,7 +169,7 @@ class ActionBarVesting extends Component {
     const getData = await contractVesting.methods
       .lock(valueAmount, valueAddr)
       .encodeABI();
-
+    console.log(getData);
     try {
       web3.eth.sendTransaction(
         {
@@ -253,11 +253,19 @@ class ActionBarVesting extends Component {
 
   render() {
     const { step, tx, valueAmount, valueAddr } = this.state;
-    const { web3, available } = this.props;
+    const { web3, available, endTime } = this.props;
     const btnCreateVesting =
       valueAmount > 0 &&
       valueAddr.match(PATTERN_CYBER) &&
       valueAmount <= parseFloat(available);
+
+    if (endTime !== null) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>Vecting end {endTime}</ActionBarContentText>
+        </ActionBar>
+      );
+    }
 
     if (web3.givenProvider === null) {
       return (

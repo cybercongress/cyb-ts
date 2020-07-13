@@ -4,6 +4,12 @@ import { CYBER } from './config';
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GOL';
 
+const ORDER = {
+  NONE: 'NONE',
+  ASC: 'ASC',
+  DESC: 'DESC',
+};
+
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
 const roundNumber = (num, scale) => {
@@ -57,12 +63,16 @@ const PREFIXES = [
 export function formatCurrency(
   value,
   currency = DEFAULT_CURRENCY,
-  decimalDigits = DEFAULT_DECIMAL_DIGITS
+  decimalDigits = DEFAULT_DECIMAL_DIGITS,
+  prefixCustom = PREFIXES
 ) {
   const { prefix = '', power = 1 } =
-    PREFIXES.find(({ power }) => value >= power) || {};
+    prefixCustom.find(({ power }) => value >= power) || {};
 
-  return `${roundNumber(value / power, decimalDigits)} ${prefix}${currency}`;
+  return `${roundNumber(
+    value / power,
+    decimalDigits
+  )} ${prefix}${currency.toLocaleUpperCase()}`;
 }
 
 const getDecimal = (number, toFixed) => {
@@ -95,7 +105,7 @@ const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   return bech32.encode(prefix, address.words);
 };
 
-const formatValidatorAddress = (address, firstArg, secondArg) => {
+const trimString = (address, firstArg, secondArg) => {
   const first = firstArg || 3;
   const second = secondArg || 8;
 
@@ -165,14 +175,157 @@ const msgType = type => {
   }
 };
 
+const exponentialToDecimal = exponential => {
+  let decimal = exponential.toString().toLowerCase();
+  if (decimal.includes('e+')) {
+    const exponentialSplitted = decimal.split('e+');
+    let postfix = '';
+    for (
+      let i = 0;
+      i <
+      +exponentialSplitted[1] -
+        (exponentialSplitted[0].includes('.')
+          ? exponentialSplitted[0].split('.')[1].length
+          : 0);
+      i++
+    ) {
+      postfix += '0';
+    }
+    const addCommas = text => {
+      let j = 3;
+      let textLength = text.length;
+      while (j < textLength) {
+        text = `${text.slice(0, textLength - j)},${text.slice(
+          textLength - j,
+          textLength
+        )}`;
+        textLength++;
+        j += 3 + 1;
+      }
+      return text;
+    };
+    decimal = addCommas(exponentialSplitted[0].replace('.', '') + postfix);
+  }
+  if (decimal.toLowerCase().includes('e-')) {
+    const exponentialSplitted = decimal.split('e-');
+    let prefix = '0.';
+    for (let i = 0; i < +exponentialSplitted[1] - 1; i++) {
+      prefix += '0';
+    }
+    decimal = prefix + exponentialSplitted[0].replace('.', '');
+  }
+  return decimal;
+};
+
+function dhm(t) {
+  const cd = 24 * 60 * 60 * 1000;
+  const ch = 60 * 60 * 1000;
+  let d = Math.floor(t / cd);
+  let h = Math.floor((t - d * cd) / ch);
+  let m = Math.round((t - d * cd - h * ch) / 60000);
+  const pad = function(n, unit) {
+    return n < 10 ? `0${n}${unit}` : n;
+  };
+  if (m === 60) {
+    h++;
+    m = 0;
+  }
+  if (h === 24) {
+    d++;
+    h = 0;
+  }
+  return [`${d}d`, pad(h, 'h'), pad(m, 'm')].join(':');
+}
+
+const sort = (data, sortKey, ordering = ORDER.DESC) => {
+  if (ordering === ORDER.NONE) {
+    return data;
+  }
+  if (sortKey === 'timestamp') {
+    return data.sort((a, b) => {
+      const x = new Date(a[sortKey]);
+      const y = new Date(b[sortKey]);
+      if (ordering === ORDER.ASC) {
+        return x - y;
+      }
+      return y - x;
+    });
+  }
+  return data.sort((a, b) => {
+    const x = a[sortKey];
+    const y = b[sortKey];
+    if (ordering === ORDER.ASC) {
+      return x - y;
+    }
+    return y - x;
+  });
+};
+
+const downloadObjectAsJson = (exportObj, exportName) => {
+  const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+    JSON.stringify(exportObj)
+  )}`;
+  const downloadAnchorNode = document.createElement('a');
+
+  downloadAnchorNode.setAttribute('href', dataStr);
+  downloadAnchorNode.setAttribute('download', `${exportName}.json`);
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+};
+
+const getTimeRemaining = endtime => {
+  const t = Date.parse(endtime) - Date.parse(new Date());
+  const seconds = Math.floor((t / 1000) % 60);
+  const minutes = Math.floor((t / 1000 / 60) % 60);
+  const hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(t / (1000 * 60 * 60 * 24));
+  return {
+    total: t,
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+};
+
+const isMobileTablet = () => {
+  let hasTouchScreen = false;
+  if ('maxTouchPoints' in navigator) {
+    hasTouchScreen = navigator.maxTouchPoints > 0;
+  } else if ('msMaxTouchPoints' in navigator) {
+    hasTouchScreen = navigator.msMaxTouchPoints > 0;
+  } else {
+    const mQ = window.matchMedia && matchMedia('(pointer:coarse)');
+    if (mQ && mQ.media === '(pointer:coarse)') {
+      hasTouchScreen = !!mQ.matches;
+    } else if ('orientation' in window) {
+      hasTouchScreen = true; // deprecated, but good fallback
+    } else {
+      // Only as a last resort, fall back to user agent sniffing
+      const UA = navigator.userAgent;
+      hasTouchScreen =
+        /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
+        /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
+    }
+  }
+  return hasTouchScreen;
+};
+
 export {
   run,
+  sort,
   roundNumber,
   formatNumber,
   asyncForEach,
   timer,
   getDecimal,
   getDelegator,
-  formatValidatorAddress,
+  trimString,
   msgType,
+  exponentialToDecimal,
+  dhm,
+  downloadObjectAsJson,
+  getTimeRemaining,
+  isMobileTablet,
 };

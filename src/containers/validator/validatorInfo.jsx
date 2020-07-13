@@ -1,11 +1,18 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { CardTemplate, StatusTooltip, FormatNumber } from '../../components';
+import {
+  CardTemplate,
+  ContainerCard,
+  Card,
+  StatusTooltip,
+  FormatNumber,
+} from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import KeybaseCheck from './keybaseCheck';
 import KeybaseAvatar from './keybaseAvatar';
+import UptimeHook from './UptimeHook';
 
 export const Row = ({ value, title, marginBottom }) => (
   <Pane
@@ -43,91 +50,52 @@ export const Row = ({ value, title, marginBottom }) => (
   </Pane>
 );
 
-const ValidatorInfo = ({ data, marginBottom }) => {
-  const {
-    rate,
-    max_rate: maxRate,
-    max_change_rate: maxChangeRate,
-  } = data.commission.commission_rates;
-
+const ValidatorInfo = ({ data }) => {
   const { moniker, identity, website, details } = data.description;
 
   return (
-    <CardTemplate marginBottom={marginBottom} paddingBottom={20}>
-      <Pane className="ValidatorInfo__info-wrapper" display="flex">
-        <Pane className="ValidatorInfo__moniker-avatar-wrapper-mobi">
-          <Pane
-            width={80}
-            height={80}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <KeybaseAvatar identity={identity} />
-          </Pane>
-          <Pane className="ValidatorInfo__moniker-wrapper-mobi">
-            <Pane fontSize="25px">{moniker}</Pane>
-
-            <StatusTooltip status={data.status} size={10} />
-          </Pane>
+    <Pane
+      marginBottom="50px"
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridGap="10px"
+    >
+      <Card
+        title="Voting Power"
+        value={`${formatNumber(data.votingPower, 3)} %`}
+        stylesContainer={{
+          width: '100%',
+          maxWidth: 'unset',
+          margin: 0,
+        }}
+      />
+      <Pane display="flex" flexDirection="column" alignItems="center">
+        <Pane
+          width={80}
+          height={80}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <KeybaseAvatar identity={identity} />
         </Pane>
-        <Pane width="100%" className="ValidatorInfo__addrs-wrapper">
-          <Pane marginBottom={15} className="ValidatorInfo__moniker-wrapper">
-            <Pane fontSize="25px">{moniker}</Pane>
-
-            <StatusTooltip status={data.status} size={10} />
-          </Pane>
-          <Pane className="ValidatorInfo__addr-wrapper">
-            <Pane>
-              <Pane fontSize={15} marginBottom={5}>
-                Operator Address:
-              </Pane>
-              <Pane fontSize={14}>{data.operator_address}</Pane>
-            </Pane>
-            <Pane>
-              <Pane fontSize={15} marginBottom={5}>
-                Address:
-              </Pane>
-              <Pane fontSize={14}>
-                <Link to={`/network/euler-5/contract/${data.delegateAddress}`}>
-                  {data.delegateAddress}
-                </Link>
-              </Pane>
-            </Pane>
+        <Pane display="flex" alignItems="center">
+          <StatusTooltip status={data.status} size={10} />
+          <Pane marginLeft={10} fontSize="25px">
+            {website.length > 0 ? <a href={website}>{moniker}</a> : moniker}
           </Pane>
         </Pane>
       </Pane>
-      <Pane>
-        {website.length > 0 && <Row title="Website" value={website} />}
-        {identity.length > 0 && (
-          <Row title="Identity" value={<KeybaseCheck identity={identity} />} />
-        )}
-        <Row
-          title="Voting Power"
-          value={
-            <Pane display="flex">
-              {formatNumber(data.votingPower, 3)}% (
-              <FormatNumber
-                fontSizeDecimal={12}
-                number={formatNumber(data.tokens / CYBER.DIVISOR_CYBER_G, 6)}
-                currency={CYBER.DENOM_CYBER_G}
-              />
-              )
-            </Pane>
-          }
-        />
-        <Row
-          title="Commission Rate"
-          value={`${formatNumber(rate * 100, 2)}%`}
-        />
-        <Row title="Max Rate" value={`${formatNumber(maxRate * 100, 2)}%`} />
-        <Row
-          title="Max Change Rate"
-          value={`${formatNumber(maxChangeRate * 100, 2)}%`}
-        />
-        {details.length > 0 && <Row title="Details" value={details} />}
-      </Pane>
-    </CardTemplate>
+      <Card
+        title="Uptime"
+        value={<UptimeHook accountUser={data.consensus_pubkey} />}
+        stylesContainer={{
+          width: '100%',
+          maxWidth: 'unset',
+          margin: 0,
+        }}
+      />
+    </Pane>
   );
 };
 

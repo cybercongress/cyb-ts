@@ -37,8 +37,12 @@ a {
     text-decoration: none;
 }
 
+a:hover {
+    opacity: 0.9;
+}
+
 .block-body {
-    width: calc(100% - 2em);
+    width: calc(100% - 1em);
     min-height: calc(100vh - 190px);
     max-width: 1000px;
     margin: 0 auto;
@@ -90,8 +94,12 @@ a {
     justify-content: center;
 }
 
+.countdown {
+    white-space: nowrap;
+}
+
 .countdown-time {
-    font-size: 38px;
+    font-size: 25px;
     font-weight: 650;
     margin: 0 10px;
 }
@@ -348,7 +356,9 @@ input:active {
     font-family: 'Play', sans-serif;
     outline: 0;
     outline-offset: 0;
-    box-shadow: 0 0 2px #fff;
+    -moz-box-shadow: 0 0 8px 2px #00ffa387;
+    -webkit-box-shadow: 0 0 8px 2px #00ffa387;
+    box-shadow: 0 0 8px 2px #00ffa387;
     caret-color: #36d6ae;
 }
 

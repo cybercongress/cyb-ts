@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
-import { x, y, z } from '../../utils/list';
+import { x, cap, p } from '../../utils/list';
 import { CYBER } from '../../utils/config';
+import { formatNumber } from '../../utils/utils';
 
 const { DENOM_CYBER_G, DENOM_CYBER } = CYBER;
 
@@ -9,267 +10,156 @@ class Dinamics extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      leaderboard: true,
-      share: false,
-      discount: false,
-      rewards: false,
-      activebtn: 'leaderboard',
-      center: {
-        x: 0,
-        y: 0,
-        z: 0,
-      },
-      eye: {
-        x: 1,
-        y: 0,
-        z: -5,
-      },
-      up: {
-        x: 0,
-        y: 0,
-        z: 1,
-      },
-      textX: 'x',
-      textY: 'y',
+      caps: '',
+      width: 890,
+      height: 350,
+      size: 16,
       margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0,
+        l: 40,
+        r: 20,
+        b: 40,
+        t: 10,
         pad: 4,
       },
     };
   }
 
-  state1 = () => {
-    this.setState({
-      share: false,
-      leaderboard: true,
-      discount: false,
-      rewards: false,
-      activebtn: 'leaderboard',
-      center: {
-        x: 0,
-        y: 0,
-        z: 0,
-      },
-      eye: {
-        x: 1,
-        y: 0,
-        z: -5,
-      },
-      up: {
-        x: 0,
-        y: 0,
-        z: 1,
-      },
-      margin: {
-        l: 0,
-        r: 0,
-        b: 0,
-        t: 0,
-        pad: 4,
-      },
-    });
+  componentDidMount() {
+    const { mobile } = this.props;
+    if (mobile) {
+      this.setState({
+        width: 360,
+        height: 250,
+        size: 14,
+        margin: {
+          l: 30,
+          r: 8,
+          b: 35,
+          t: 0,
+          pad: 2,
+        },
+      });
+    }
+  }
+
+  plotlyHover = dataPoint => {
+    const { cap: capProps } = this.props;
+    try {
+      if (dataPoint.points[0]) {
+        if (x.indexOf(dataPoint.points[0].x) !== -1) {
+          const capPoint = cap[x.indexOf(dataPoint.points[0].x)];
+          this.setState({
+            caps: formatNumber(capPoint),
+          });
+        } else {
+          this.setState({
+            caps: formatNumber(capProps),
+          });
+        }
+      }
+    } catch (error) {
+      this.setState({
+        caps: formatNumber(capProps),
+      });
+    }
   };
 
-  state2 = () => {
+  plotUnhover = () => {
+    // const { round, price, volume, distribution } = this.props;
     this.setState({
-      activebtn: 'share',
-      share: true,
-      leaderboard: false,
-      discount: false,
-      rewards: false,
-      textX: 'Donation, ATOMs',
-      textY: `${DENOM_CYBER.toLocaleUpperCase()}s won, ${(
-        DENOM_CYBER_G + DENOM_CYBER
-      ).toLocaleUpperCase()}`,
-      margin: {
-        l: 50,
-        r: 50,
-        b: 50,
-        t: 50,
-        pad: 4,
-      },
-    });
-  };
-
-  state3 = () => {
-    this.setState({
-      share: false,
-      leaderboard: false,
-      discount: true,
-      rewards: false,
-      activebtn: 'discount',
-      textX: 'Donation, ATOMs',
-      textY: 'Discount, %',
-      margin: {
-        l: 50,
-        r: 50,
-        b: 50,
-        t: 50,
-        pad: 4,
-      },
-    });
-  };
-
-  state4 = () => {
-    this.setState({
-      share: false,
-      leaderboard: false,
-      discount: false,
-      rewards: true,
-      activebtn: 'rewards',
-      textX: 'Donation, ATOMs',
-      textY: `Price, ATOMs/${DENOM_CYBER.toLocaleUpperCase()}`,
-      margin: {
-        l: 60,
-        r: 50,
-        b: 50,
-        t: 50,
-        pad: 4,
-      },
+      caps: '',
     });
   };
 
   render() {
-    const {
-      center,
-      eye,
-      up,
-      activebtn,
-      // data,
-      textX,
-      textY,
-      margin,
-      leaderboard,
-      share,
-      discount,
-      rewards,
-    } = this.state;
+    const { caps, width, height, size, margin } = this.state;
     const { data3d, dataRewards } = this.props;
     // console.log('data3d', data3d);
     // console.log('dataRewards', dataRewards);
-    let _yaxis = 0;
-    let _xaxis = 0;
-    if (dataRewards[0] !== undefined) {
-      _yaxis = dataRewards[0].y[0] / 0.8;
-      _xaxis = 600000 / 0.95;
-    }
-
-    const dataShare = [
-      {
-        type: 'scatter',
-        mode: 'lines+points',
-        opacity: 0.45,
-        x: y,
-        y: x,
-        line: {
-          width: 2,
-          opacity: 1,
-          color: '#fff',
-        },
-        hoverinfo: 'none',
-        // hovertemplate:
-        //   'ATOMs contributed: %{x}' +
-        //   '<br>TCYB allocated: %{y: .2f}%' +
-        //   '<extra></extra>'
-      },
-      {
-        type: 'scatter',
-        mode: 'lines+points',
-        x: data3d.y,
-        y: data3d.x,
-        line: {
-          width: 2,
-          color: '#36d6ae',
-        },
-        // hoverinfo: 'none'
-        hovertemplate:
-          'ATOMs contributed: %{x}' +
-          `<br>${(
-            DENOM_CYBER_G + DENOM_CYBER
-          ).toLocaleUpperCase()} allocated: %{y: .2f}%` +
-          '<extra></extra>',
-      },
-    ];
 
     const dataDiscount = [
       {
-        type: 'scatter',
-        x: y,
-        y: z,
+        mode: 'line',
+        x,
+        y: p,
         opacity: 0.45,
         line: {
           width: 2,
           opacity: 1,
           color: '#fff',
         },
-        hoverinfo: 'none',
+        // hoverinfo: 'none',
+        hovertemplate:
+          'Price: %{y:.2f%} ATOM/GCYB<br>' +
+          'Tokens claimed: %{x} GCYB<br>' +
+          `Cap: ${caps} ATOM` +
+          '<extra></extra>',
         // hovertemplate:
-        //   'ATOMs contributed: %{x}<br>' +
+        //   'ATOM contributed: %{x}<br>' +
         //   'Personal discount: %{y:.2f%}%<br>' +
         //   '<extra></extra>'
       },
       {
         type: 'scatter',
-        x: data3d.y,
-        y: data3d.z,
+        mode: 'lines',
         line: {
-          width: 2,
           color: '#36d6ae',
+          width: 3,
         },
-        // hoverinfo: 'none'
-        hovertemplate:
-          'ATOMs contributed: %{x}<br>' +
-          'Personal discount: %{y:.2f%}%<br>' +
-          '<extra></extra>',
-      },
-    ];
-
-    const data = [
-      {
-        type: 'scatter3d',
-        mode: 'lines',
-        opacity: 0.45,
-        x,
-        y,
-        z,
-        line: {
-          width: 8,
-          opacity: 1,
-          color: '#fff',
-        },
-        hovertemplate:
-          `${(
-            DENOM_CYBER_G + DENOM_CYBER
-          ).toLocaleUpperCase()} allocated: %{x: .2f}<br>` +
-          'ATOMs contributed: %{y}<br>' +
-          'Personal discount: %{z:.2f%}%<br>' +
-          '<extra></extra>',
-      },
-      {
-        type: 'scatter3d',
-        mode: 'lines',
         x: data3d.x,
         y: data3d.y,
-        z: data3d.z,
-        line: {
-          width: 8,
-          color: '#36d6ae',
-        },
-        ticks: '',
+        // hoverinfo: 'none'
         hovertemplate:
-          `${(
-            DENOM_CYBER_G + DENOM_CYBER
-          ).toLocaleUpperCase()} allocated: %{x: .2f}<br>` +
-          'ATOMs contributed: %{y}<br>' +
-          'Personal discount: %{z:.2f%}%<br>' +
+          'Price: %{y:.2f%} ATOM/GCYB<br>' +
+          'Tokens claimed: %{x} GCYB<br>' +
+          `Cap: ${caps} ATOM` +
           '<extra></extra>',
       },
     ];
 
+    // const data = [
+    //   {
+    //     type: 'scatter3d',
+    //     mode: 'lines',
+    //     opacity: 0.45,
+    //     x,
+    //     y,
+    //     z,
+    //     p,
+    //     line: {
+    //       width: 8,
+    //       opacity: 1,
+    //       color: '#fff',
+    //     },
+    //     hovertemplate:
+    //       `GCYB allocated: %{x: .2f}<br>` +
+    //       'ATOM contributed: %{y}<br>' +
+    //       'Personal discount: %{z:.2f%}%<br>' +
+    //       `price: ${price}ATOM` +
+    //       '<extra></extra>',
+    //   },
+    //   {
+    //     type: 'scatter3d',
+    //     mode: 'lines',
+    //     x: data3d.x,
+    //     y: data3d.y,
+    //     z: data3d.z,
+    //     line: {
+    //       width: 8,
+    //       color: '#36d6ae',
+    //     },
+    //     ticks: '',
+    //     hovertemplate:
+    //       `GCYB allocated: %{x: .2f}<br>` +
+    //       'ATOM contributed: %{y}<br>' +
+    //       'Personal discount: %{z:.2f%}%<br>' +
+    //       `price: ${price}ATOM` +
+    //       '<extra></extra>',
+    //   },
+    // ];
+
     const layout = {
+      bargap: 0,
       paper_bgcolor: '#000',
       plot_bgcolor: '#000',
       showlegend: false,
@@ -282,11 +172,15 @@ class Dinamics extends Component {
       },
       yaxis: {
         autotick: true,
-        autorange: !rewards,
-        rangemode: 'normal',
-        range: [0, _yaxis],
+        fixedrange: true,
         title: {
-          text: `${textY}`,
+          text: `Price, ATOM/GCYB`,
+        },
+        tickfont: {
+          color: '#36d6ae',
+        },
+        titlefont: {
+          size,
         },
         gridcolor: '#ffffff66',
         color: '#fff',
@@ -294,144 +188,39 @@ class Dinamics extends Component {
       },
       xaxis: {
         autotick: true,
-        autorange: !rewards,
+        fixedrange: true,
         title: {
-          text: `${textX}`,
+          text: `Tokens claimed, GCYB`,
         },
-        range: [0, _xaxis],
+        titlefont: {
+          size,
+        },
+        tickfont: {
+          color: '#36d6ae',
+        },
         gridcolor: '#ffffff66',
         color: '#fff',
         zerolinecolor: '#dedede',
       },
-      scene: {
-        dragmode: false,
-        yaxis: {
-          autotick: false,
-          dtick: 50000,
-          title: {
-            text: 'Donation, ATOMs',
-          },
-          gridcolor: '#dedede',
-          color: '#fff',
-          tickfont: {
-            color: '#36d6ae',
-          },
-          zerolinecolor: '#000',
-        },
-        xaxis: {
-          autotick: false,
-          dtick: 1,
-          tickcolor: '#000',
-          title: {
-            text: `${DENOM_CYBER.toLocaleUpperCase()} won, ${(
-              DENOM_CYBER_G + DENOM_CYBER
-            ).toLocaleUpperCase()}s`,
-          },
-          gridcolor: '#dedede',
-          color: '#fff',
-          tickfont: {
-            color: '#36d6ae',
-          },
-          zerolinecolor: '#000',
-        },
-        zaxis: {
-          title: {
-            text: 'Discount, %',
-          },
-          gridcolor: '#dedede',
-          // autorange: 'reversed',
-          color: '#fff',
-          tickfont: {
-            color: '#36d6ae',
-          },
-          zerolinecolor: '#000',
-        },
-        aspectratio: {
-          x: 2,
-          y: 6,
-          z: 2,
-        },
-        font: {
-          family: 'Play',
-        },
-        camera: {
-          center,
-          up,
-          eye,
-        },
-      },
-      width: 890,
-      height: 400,
+      width,
+      height,
       margin,
     };
     const config = {
       displayModeBar: false,
-      // scrollZoom: false
-      // staticPlot: true,
+      scrollZoom: false,
+      showSendToCloud: true,
     };
-
-    const Btn = () => (
-      <div className="cont-btn">
-        <div
-          style={{
-            left: '70%',
-            position: 'absolute',
-            transform: 'translate(-72%, 0)',
-            display: 'flex',
-          }}
-        >
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'share' ? 'activebtn' : ''
-            }`}
-            onClick={this.state2}
-          >
-            Share
-          </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'leaderboard' ? 'activebtn' : ''
-            }`}
-            onClick={this.state1}
-          >
-            Leaderboard
-          </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'discount' ? 'activebtn' : ''
-            }`}
-            onClick={this.state3}
-          >
-            Discount
-          </button>
-          <button
-            type="button"
-            className={`btn-view margin ${
-              activebtn === 'rewards' ? 'activebtn' : ''
-            }`}
-            onClick={this.state4}
-          >
-            My {DENOM_CYBER.toLocaleUpperCase()} estimation
-          </button>
-        </div>
-      </div>
-    );
 
     return (
       <div className="container-dinamics">
-        {leaderboard && <Plotly data={data} layout={layout} config={config} />}
-        {share && <Plotly data={dataShare} layout={layout} config={config} />}
-        {discount && (
-          <Plotly data={dataDiscount} layout={layout} config={config} />
-        )}
-        {rewards && (
-          <Plotly data={dataRewards} layout={layout} config={config} />
-        )}
-
-        <Btn />
+        <Plotly
+          data={dataDiscount}
+          layout={layout}
+          onHover={figure => this.plotlyHover(figure)}
+          onUnhover={figure => this.plotUnhover(figure)}
+          config={config}
+        />
       </div>
     );
   }

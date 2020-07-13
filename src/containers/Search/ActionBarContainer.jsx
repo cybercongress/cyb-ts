@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -10,11 +12,21 @@ import {
   StartStageSearchActionBar,
   Cyberlink,
   TransactionError,
+  ActionBarContentText,
+  CheckAddressInfo,
+  Dots,
 } from '../../components';
 
-import { LEDGER, CYBER } from '../../utils/config';
+import {
+  getIpfsHash,
+  getPin,
+  statusNode,
+  getAccountBandwidth,
+  getCurrentBandwidthPrice,
+} from '../../utils/search/utils';
 
-const { CYBER_NODE_URL } = CYBER;
+import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import { trimString } from '../../utils/utils';
 
 const {
   MEMO,
@@ -32,6 +44,10 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
+const CREATE_LINK = 10;
+const ADD_ADDRESS = 11;
+const LEDGER_TX_ACOUNT_INFO = 12;
+
 class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +56,7 @@ class ActionBarContainer extends Component {
       init: false,
       ledger: null,
       address: null,
+      addressLocalStor: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
@@ -48,6 +65,7 @@ class ActionBarContainer extends Component {
         remained: 0,
         max_value: 0,
       },
+      linkPrice: 0,
       contentHash: '',
       txMsg: null,
       txContext: null,
@@ -56,156 +74,132 @@ class ActionBarContainer extends Component {
       txHash: null,
       error: null,
       errorMessage: null,
+      file: null,
+      connectLedger: null,
+      fromCid: null,
+      toCid: null,
     };
     this.timeOut = null;
-    this.haveDocument = typeof document !== 'undefined';
+    this.inputOpenFileRef = React.createRef();
   }
 
   async componentDidMount() {
     console.warn('Looking for Ledger Nano');
-    this.pollLedger();
-    // await this.getVersion();
-    // await this.getAddress();
-    // await this.getAddressInfo();
+    await this.checkAddressLocalStorage();
   }
 
   componentDidUpdate() {
-    if (this.state.ledger === null) {
-      this.pollLedger();
-    }
-    if (this.state.stage === STAGE_LEDGER_INIT) {
-      if (this.state.ledger !== null) {
-        switch (this.state.returnCode) {
-          case LEDGER_OK:
-            if (this.state.address === null) {
-              this.getAddress();
-            }
-            if (
-              this.state.address !== null &&
-              this.state.addressInfo === null
-            ) {
-              this.getAddressInfo();
-            }
-            break;
-          default:
-            console.log('getVersion');
-            this.getVersion();
-            break;
-        }
-      } else {
-        // eslint-disable-next-line
-        console.warn('Still looking for a Ledger device.');
+    const { stage, address, addressInfo, fromCid, toCid } = this.state;
+    if (
+      stage === STAGE_LEDGER_INIT ||
+      stage === STAGE_READY ||
+      stage === LEDGER_TX_ACOUNT_INFO
+    ) {
+      if (
+        address !== null &&
+        addressInfo !== null &&
+        toCid !== null &&
+        fromCid !== null
+      ) {
+        this.stageReady();
       }
     }
   }
 
-  init = async () => {
-    const { stage, ledger, address, addressInfo, returnCode } = this.state;
+  getLedgerAddress = async () => {
+    const { stage } = this.state;
+
+    this.transport = await TransportWebUSB.create(120 * 1000);
+    this.ledger = new CosmosDelegateTool(this.transport);
+
+    const connectLedger = await this.ledger.connect();
+    console.log(connectLedger, stage);
+    if (connectLedger.return_code === LEDGER_OK) {
+      this.setState({
+        connectLedger: true,
+      });
+      if (stage === STAGE_LEDGER_INIT) {
+        const address = await this.ledger.retrieveAddressCyber(HDPATH);
+        console.log('address', address);
+        this.setState({
+          address,
+        });
+        this.getAddressInfo();
+        this.calculationIpfsFrom();
+        this.calculationIpfsTo();
+      }
+    } else {
+      this.setState({
+        connectLedger: false,
+      });
+    }
+  };
+
+  checkAddressLocalStorage = async () => {
+    let address = [];
+
+    const localStorageStory = await localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLocalStor: address });
+    } else {
+      this.setState({
+        addressLocalStor: null,
+      });
+    }
+  };
+
+  calculationIpfsTo = async () => {
+    const { contentHash, file } = this.state;
+    const { node } = this.props;
+
+    let toCid = contentHash;
+    if (file !== null) {
+      toCid = file;
+    }
+
+    if (file !== null) {
+      toCid = await getPin(node, toCid);
+    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
+      toCid = await getPin(node, toCid);
+    }
 
     this.setState({
-      stage: STAGE_LEDGER_INIT,
-      init: true,
+      toCid,
     });
   };
 
-  compareVersion = async () => {
-    const test = this.state.ledgerVersion;
-    const target = LEDGER_VERSION_REQ;
-    const testInt = 10000 * test[0] + 100 * test[1] + test[2];
-    const targetInt = 10000 * target[0] + 100 * target[1] + target[2];
-    return testInt >= targetInt;
-  };
+  calculationIpfsFrom = async () => {
+    const { keywordHash, node } = this.props;
 
-  pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
-  };
+    let fromCid = keywordHash;
 
-  getVersion = async () => {
-    const { ledger, returnCode } = this.state;
-    try {
-      const connect = await ledger.connect();
-      if (returnCode === null || connect.return_code !== returnCode) {
-        this.setState({
-          address: null,
-          returnCode: connect.return_code,
-          ledgerVersion: [connect.major, connect.minor, connect.patch],
-          txMsg: null,
-          txBody: null,
-          errorMessage: null,
-        });
-        // eslint-disable-next-line
-
-        console.warn('Ledger app return_code', this.state.returnCode);
-      } else {
-        this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-      }
-    } catch ({ message, statusCode }) {
-      // eslint-disable-next-line
-      // eslint-disable-next-line
-      this.setState({
-        ledger: null,
-      });
-      console.error('Problem with Ledger communication', message, statusCode);
+    if (!fromCid.match(PATTERN_IPFS_HASH)) {
+      fromCid = await getPin(node, fromCid);
     }
+
+    this.setState({
+      fromCid,
+    });
   };
 
-  getAddress = async () => {
-    try {
-      const { ledger } = this.state;
-
-      const address = await ledger.retrieveAddressCyber(HDPATH);
-
-      console.log('address', address);
-
-      this.setState({
-        address,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  getStatus = async () => {
-    try {
-      const response = await fetch(`${CYBER_NODE_URL}/api/status`, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
+  stageReady = () => {
+    this.link();
   };
 
   getNetworkId = async () => {
-    const data = await this.getStatus();
+    const data = await statusNode();
     return data.node_info.network;
   };
 
   getAddressInfo = async () => {
     try {
-      const { ledger, address } = this.state;
-
-      this.getBandwidth();
-
-      const addressInfo = await ledger.getAccountInfoCyber(address);
+      const { address } = this.state;
+      this.setState({
+        stage: LEDGER_TX_ACOUNT_INFO,
+      });
+      const addressInfo = await this.ledger.getAccountInfoCyber(address);
       const chainId = await this.getNetworkId();
 
       addressInfo.chainId = chainId;
@@ -216,66 +210,17 @@ class ActionBarContainer extends Component {
       });
     } catch (error) {
       const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
+      if (message !== 'getAddressInfo') {
         // this just means we haven't found the device yet...
         // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
+        console.error('getAddressInfo', message, statusCode);
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
-
-  getBandwidth = async () => {
-    try {
-      const { address } = this.state;
-
-      const bandwidth = {
-        remained: 0,
-        max_value: 0,
-      };
-
-      const getBandwidth = await fetch(
-        `${CYBER_NODE_URL}/api/account_bandwidth?address="${address.bech32}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await getBandwidth.json();
-
-      bandwidth.remained = data.result.remained;
-      bandwidth.max_value = data.result.max_value;
-
-      this.setState({
-        bandwidth,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  // link = async () => {
-  //   const { valueInput } = this.state;
-  //   console.log('valueInput', valueInput);
-  // };
 
   link = async () => {
-    const { address, addressInfo, ledger, contentHash } = this.state;
-
-    const { keywordHash } = this.props;
-
-    const fromCid = keywordHash;
-    const toCid = contentHash;
+    const { address, addressInfo, fromCid, toCid } = this.state;
 
     const txContext = {
       accountNumber: addressInfo.accountNumber,
@@ -286,7 +231,7 @@ class ActionBarContainer extends Component {
       path: address.path,
     };
 
-    const tx = await ledger.txCreateLink(
+    const tx = await this.ledger.txCreateLink(
       txContext,
       address.bech32,
       fromCid,
@@ -306,13 +251,13 @@ class ActionBarContainer extends Component {
   };
 
   signTx = async () => {
-    const { txMsg, ledger, txContext } = this.state;
+    const { txMsg, txContext } = this.state;
     // console.log('txContext', txContext);
     this.setState({ stage: STAGE_WAIT });
-    const sing = await ledger.sign(txMsg, txContext);
+    const sing = await this.ledger.sign(txMsg, txContext);
     console.log('sing', sing);
     if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await ledger.applySignature(
+      const applySignature = await this.ledger.applySignature(
         sing,
         txMsg,
         txContext
@@ -335,8 +280,8 @@ class ActionBarContainer extends Component {
   };
 
   injectTx = async () => {
-    const { ledger, txBody } = this.state;
-    const txSubmit = await ledger.txSubmitCyberLink(txBody);
+    const { txBody } = this.state;
+    const txSubmit = await this.ledger.txSubmitCyber(txBody);
     const data = txSubmit;
     console.log('data', data);
     if (data.error) {
@@ -354,21 +299,24 @@ class ActionBarContainer extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      const status = await this.ledger.txStatusCyber(this.state.txHash);
       console.log('status', status);
       const data = await status;
-      if (data.logs && data.logs[0].success === true) {
+      if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
           txHeight: data.height,
         });
-        update();
+        if (update) {
+          update();
+        }
         return;
       }
-      if (data.logs && data.logs[0].success === false) {
+      if (data.code) {
         this.setState({
           stage: STAGE_ERROR,
           txHeight: data.height,
+          errorMessage: data.raw_log,
         });
         return;
       }
@@ -385,26 +333,26 @@ class ActionBarContainer extends Component {
 
   cleatState = () => {
     this.setState({
+      stage: STAGE_INIT,
+      init: false,
       ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
-      errorMessage: null,
-      txMsg: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
-      bandwidth: {
-        remained: 0,
-        max_value: 0,
-      },
+      linkPrice: 0,
       contentHash: '',
+      txMsg: null,
       txContext: null,
       txBody: null,
       txHeight: null,
       txHash: null,
-      errorMessage: null,
       error: null,
-      init: false,
+      errorMessage: null,
+      file: null,
+      fromCid: null,
+      toCid: null,
     });
     this.timeOut = null;
   };
@@ -416,10 +364,17 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onClickUsingLedger = () => {
+  onClickInitLedger = async () => {
     // this.init();
-    this.setState({
+    await this.setState({
       stage: STAGE_LEDGER_INIT,
+    });
+    this.getLedgerAddress();
+  };
+
+  onClickClear = () => {
+    this.setState({
+      file: null,
     });
   };
 
@@ -431,9 +386,22 @@ class ActionBarContainer extends Component {
     return this.state.addressInfo !== null;
   }
 
+  showOpenFileDlg = () => {
+    this.inputOpenFileRef.current.click();
+  };
+
+  onFilePickerChange = files => {
+    const file = files.current.files[0];
+
+    this.setState({
+      file,
+    });
+  };
+
   render() {
     const {
       address,
+      connectLedger,
       bandwidth,
       contentHash,
       returnCode,
@@ -443,19 +411,49 @@ class ActionBarContainer extends Component {
       txHeight,
       txHash,
       errorMessage,
+      file,
+      linkPrice,
+      addressLocalStor,
     } = this.state;
 
-    console.log('bandwidth', bandwidth);
+    const { textBtn } = this.props;
 
-    const { valueSearchInput } = this.props;
+    if (stage === STAGE_INIT && addressLocalStor === null) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            Play Game of Links. Get EUL with
+            <Link
+              style={{
+                paddingTop: 10,
+                margin: '0 15px',
+                paddingBottom: 10,
+                display: 'block',
+              }}
+              className="btn"
+              to="/gol/takeoff"
+            >
+              ATOM
+            </Link>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
 
     if (stage === STAGE_INIT) {
       return (
         <StartStageSearchActionBar
-          valueSearchInput={valueSearchInput}
-          onClickBtn={this.onClickUsingLedger}
-          contentHash={contentHash}
+          textBtn={textBtn}
+          onClickBtn={this.onClickInitLedger}
+          contentHash={
+            file !== null && file !== undefined ? file.name : contentHash
+          }
           onChangeInputContentHash={this.onChangeInput}
+          inputOpenFileRef={this.inputOpenFileRef}
+          showOpenFileDlg={this.showOpenFileDlg}
+          onChangeInput={this.onFilePickerChange}
+          onClickClear={this.onClickClear}
+          file={file}
         />
       );
     }
@@ -463,30 +461,23 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.onClickInitStage}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
+          onClickConnect={() => this.getLedgerAddress()}
+          connectLedger={connectLedger}
         />
       );
     }
 
+    if (stage === LEDGER_TX_ACOUNT_INFO) {
+      return <CheckAddressInfo />;
+    }
+
     if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
       return (
-        <Cyberlink
-          onClickBtnCloce={this.onClickInitStage}
-          query={valueSearchInput}
-          onClickBtn={e => this.link(e)}
-          bandwidth={bandwidth}
-          address={address.bech32}
-          contentHash={contentHash}
-          disabledBtn={parseFloat(bandwidth.max_value) === 0}
-        />
+        <ActionBar>
+          <ActionBarContentText>
+            transaction generation <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
       );
     }
 
@@ -528,4 +519,10 @@ class ActionBarContainer extends Component {
   }
 }
 
-export default ActionBarContainer;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(ActionBarContainer);

@@ -1,18 +1,7 @@
 import React from 'react';
-import {
-  Text,
-  Pane,
-  Heading,
-  CardHover,
-  Icon,
-  Tablist,
-  Tab,
-  Button,
-  ActionBar,
-} from '@cybercongress/gravity';
-import LocalizedStrings from 'react-localization';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
-import { CosmosDelegateTool } from '../../utils/ledger';
+import { Text, Pane, Tablist, Tab } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
+import { Link, Route } from 'react-router-dom';
 import {
   formatNumber,
   getStatistics,
@@ -21,79 +10,68 @@ import {
   getBalance,
   getTotalEUL,
   getAmountATOM,
+  getInlfation,
+  getcommunityPool,
+  getTxCosmos,
+  getTotalSupply,
 } from '../../utils/search/utils';
-import { roundNumber, asyncForEach } from '../../utils/utils';
-import {
-  CardStatisics,
-  ConnectLadger,
-  Loading,
-  FormatNumber,
-} from '../../components';
-import { cybWon } from '../../utils/fundingMath';
-
-import { i18n } from '../../i18n/en';
-
+import { roundNumber } from '../../utils/utils';
+import { CardStatisics, Loading } from '../../components';
+import { getEstimation } from '../../utils/fundingMath';
+import injectWeb3 from './web3';
 import {
   CYBER,
-  LEDGER,
   AUCTION,
-  COSMOS,
-  TAKEOFF,
   GENESIS_SUPPLY,
-  TOTAL_GOL_GENESIS_SUPPLY,
+  TAKEOFF,
+  TAKEOFF_SUPPLY,
+  COSMOS,
 } from '../../utils/config';
+import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
+import {
+  GovernmentTab,
+  MainTab,
+  CybernomicsTab,
+  KnowledgeTab,
+  AppsTab,
+  HelpTab,
+  PathTab,
+} from './tabs';
 
-const { CYBER_NODE_URL, DIVISOR_CYBER_G, DENOM_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G } = CYBER;
 
-const {
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
-  STAGE_INIT,
-  STAGE_LEDGER_INIT,
-  STAGE_READY,
-  LEDGER_VERSION_REQ,
-} = LEDGER;
-
-const T = new LocalizedStrings(i18n);
-
-const TabBtn = ({ text, isSelected, onSelect }) => (
-  <Tab
-    key={text}
-    isSelected={isSelected}
-    onSelect={onSelect}
-    paddingX={10}
-    paddingY={20}
-    marginX={3}
-    borderRadius={4}
-    color="#36d6ae"
-    boxShadow="0px 0px 5px #36d6ae"
-    fontSize="16px"
-  >
-    {text}
-  </Tab>
+const TabBtn = ({ text, isSelected, onSelect, to }) => (
+  <Link to={to}>
+    <Tab
+      key={text}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      paddingX={5}
+      paddingY={20}
+      marginX={3}
+      borderRadius={4}
+      color="#36d6ae"
+      boxShadow="0px 0px 5px #36d6ae"
+      fontSize="16px"
+      whiteSpace="nowrap"
+      width="100%"
+    >
+      {text}
+    </Tab>
+  </Link>
 );
 
 class Brain extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
-
   constructor(props) {
     super(props);
     this.state = {
-      stage: STAGE_INIT,
-      ledger: null,
-      returnCode: null,
-      addressInfo: null,
+      inlfation: 0,
       addressLedger: null,
-      ledgerVersion: [0, 0, 0],
       linksCount: 0,
       cidsCount: 0,
-      accsCount: 0,
-      txCount: 0,
-      blockNumber: 0,
-      linkPrice: 0,
+      accountsCount: 0,
       totalCyb: 0,
       stakedCyb: 0,
       activeValidatorsCount: 0,
@@ -101,115 +79,164 @@ class Brain extends React.Component {
       loading: true,
       chainId: '',
       amount: 0,
-      supplyEUL: 0,
       takeofPrice: 0,
       capATOM: 0,
-      averagePrice: 0,
-      capETH: 0,
+      communityPool: 0,
+      proposals: 0,
+      donation: 0,
+      cybernomics: {
+        gol: {
+          supply: 0,
+          price: 0,
+          cap: 0,
+        },
+        eul: {
+          supply: 0,
+          price: 0,
+          cap: 0,
+        },
+        cyb: {
+          supply: 0,
+          price: 0,
+          cap: 0,
+        },
+      },
     };
-  }
-
-  componentWillMount() {
-    this.getStatisticsBrain();
   }
 
   async componentDidMount() {
+    this.chekPathname();
     await this.checkAddressLocalStorage();
+    this.getStatisticsBrain();
     // this.getPriceGol();
-    this.getDataWS();
+    this.getTxsCosmos();
+    this.getContract();
   }
 
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-    };
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+    if (prevProps.location.pathname !== location.pathname) {
+      this.chekPathname();
+    }
+  }
 
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.log('txs', message);
-      this.getAmountATOM(message);
-    };
+  chekPathname = () => {
+    const { location } = this.props;
+    const { pathname } = location;
 
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
+    if (
+      pathname.match(/cybernomics/gm) &&
+      pathname.match(/cybernomics/gm).length > 0
+    ) {
+      this.select('cybernomics');
+    } else if (
+      pathname.match(/knowledge/gm) &&
+      pathname.match(/knowledge/gm).length > 0
+    ) {
+      this.select('knowledge');
+    } else if (
+      pathname.match(/government/gm) &&
+      pathname.match(/government/gm).length > 0
+    ) {
+      this.select('government');
+    } else if (
+      pathname.match(/apps/gm) &&
+      pathname.match(/apps/gm).length > 0
+    ) {
+      this.select('apps');
+    } else if (
+      pathname.match(/help/gm) &&
+      pathname.match(/help/gm).length > 0
+    ) {
+      this.select('help');
+    } else if (
+      pathname.match(/path/gm) &&
+      pathname.match(/path/gm).length > 0
+    ) {
+      this.select('path');
+    } else {
+      this.select('main');
+    }
   };
 
-  getAmountATOM = async dataTxs => {
-    let amount = 0;
-    let won = 0;
-    let currentPrice = 0;
+  getContract = async () => {
+    const { cybernomics } = this.state;
+    const {
+      contract: { methods },
+    } = this.props;
+    const roundThis = await methods.today().call();
 
-    if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
-    }
+    const totalSupplyEul = await getTotalSupply();
+    const createOnDay = await methods.createOnDay(roundThis).call();
+    const dailyTotals = await methods.dailyTotals(roundThis).call();
 
-    console.log('amount', amount);
+    const currentPrice = dailyTotals / (createOnDay * Math.pow(10, 9));
+    cybernomics.gol = {
+      supply: parseFloat(AUCTION.TOKEN_ALOCATION * CYBER.DIVISOR_CYBER_G),
+      price: currentPrice,
+      cap: parseFloat(currentPrice * AUCTION.TOKEN_ALOCATION),
+    };
 
-    won = cybWon(amount);
-    if (amount === 0) {
-      currentPrice = 0;
-    } else {
-      currentPrice = won / amount;
-    }
-
-    console.log('won', won);
-    console.log('currentPrice', currentPrice);
-
-    const supplyEUL = Math.floor(won);
-    const takeofPrice = roundNumber(currentPrice / DIVISOR_CYBER_G, 6);
-    const capATOM = (supplyEUL * takeofPrice) / DIVISOR_CYBER_G;
-    console.log('capATOM', capATOM);
+    cybernomics.eul = {
+      supply: parseFloat(totalSupplyEul),
+      price: currentPrice,
+      cap: parseFloat((totalSupplyEul / CYBER.DIVISOR_CYBER_G) * currentPrice),
+    };
 
     this.setState({
-      supplyEUL,
-      takeofPrice,
-      capATOM,
+      cybernomics,
     });
   };
 
-  // getPriceGol = async () => {
-  //   const {
-  //     contract: { methods },
-  //     contractAuctionUtils,
-  //   } = this.props;
+  getTxsCosmos = async () => {
+    const dataTx = await getTxCosmos();
+    console.log(dataTx);
+    if (dataTx !== null) {
+      this.getATOM(dataTx.txs);
+    }
+  };
 
-  //   // const roundThis = parseInt(await methods.today().call());
-  //   const createPerDay = await methods.createPerDay().call();
-  //   const createFirstDay = await methods.createFirstDay().call();
+  getATOM = async dataTxs => {
+    const { cybernomics } = this.state;
+    let amount = 0;
+    let currentPrice = 0;
+    let estimation = 0;
 
-  //   const dailyTotalsUtils = await contractAuctionUtils.methods
-  //     .dailyTotals()
-  //     .call();
-  //   console.log(dailyTotalsUtils.length);
-  //   let summCurrentPrice = 0;
+    if (dataTxs) {
+      for (let item = 0; item < dataTxs.length; item += 1) {
+        let temE = 0;
+        const val =
+          Number.parseInt(
+            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
+            10
+          ) / COSMOS.DIVISOR_ATOM;
+        temE = getEstimation(estimation, val);
+        amount += val;
+        estimation += temE;
+      }
+    }
 
-  //   await asyncForEach(
-  //     Array.from(Array(dailyTotalsUtils.length).keys()),
-  //     async item => {
-  //       let createOnDay;
-  //       if (item === 0) {
-  //         createOnDay = createFirstDay;
-  //       } else {
-  //         createOnDay = createPerDay;
-  //       }
+    currentPrice = (40 * estimation + 1000) / 1000;
 
-  //       const currentPrice =
-  //         dailyTotalsUtils[item] / (createOnDay * Math.pow(10, 9));
+    console.log('currentPrice', currentPrice, amount);
 
-  //       summCurrentPrice += currentPrice;
-  //     }
-  //   );
-  //   const averagePrice = summCurrentPrice / dailyTotalsUtils.length;
-  //   const capETH = (averagePrice * TOTAL_GOL_GENESIS_SUPPLY) / DIVISOR_CYBER_G;
+    const supplyEUL = parseFloat(GENESIS_SUPPLY);
+    const capATOM = (supplyEUL / DIVISOR_CYBER_G) * currentPrice;
+    console.log('capATOM', capATOM);
 
-  //   console.log('averagePrice', averagePrice);
-  //   console.log('capETH', capETH);
-  //   this.setState({
-  //     averagePrice,
-  //     capETH,
-  //   });
-  // };
+    cybernomics.cyb = {
+      cap: capATOM,
+      price: currentPrice,
+      supply: GENESIS_SUPPLY,
+    };
+
+    const donation = amount / TAKEOFF.ATOMsALL;
+
+    this.setState({
+      cybernomics,
+      donation,
+    });
+  };
 
   checkAddressLocalStorage = async () => {
     let address = [];
@@ -244,28 +271,7 @@ class Brain extends React.Component {
     if (result) {
       total = await getTotalEUL(result);
     }
-
-    // const response = await fetch(
-    //   `${CYBER_NODE_URL}/api/account?address="${addressLedger.bech32}"`,
-    //   {
-    //     method: 'GET',
-    //     headers: {
-    //       Accept: 'application/json',
-    //       'Content-Type': 'application/json',
-    //     },
-    //   }
-    // );
-    // const data = await response.json();
-
-    // console.log('data', data);
-
-    // addressInfo.address = addressLedger.bech32;
-    // addressInfo.amount = data.result.account.coins[0].amount;
-    // addressInfo.token = data.result.account.coins[0].denom;
-    // addressInfo.keys = 'ledger';
-
     this.setState({
-      stage: STAGE_READY,
       addAddress: false,
       loading: false,
       // addressInfo,
@@ -273,65 +279,51 @@ class Brain extends React.Component {
     });
   };
 
-  getAmount = async address => {
-    try {
-      const response = await fetch(
-        `${CYBER_NODE_URL}/api/account?address="${address}"`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      const data = await response.json();
-      return data.result;
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      // this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
   getStatisticsBrain = async () => {
     const statisticContainer = await getStatistics();
     const validatorsStatistic = await getValidators();
     const status = await statusNode();
+    const dataInlfation = await getInlfation();
+    const dataCommunityPool = await getcommunityPool();
+    const dataProposals = await getProposals();
     const {
       linksCount,
       cidsCount,
-      accsCount,
-      txCount,
+      accountsCount,
       height,
       bandwidthPrice,
       bondedTokens,
       supplyTotal,
     } = statisticContainer;
-
+    let inlfation = 0;
+    let communityPool = 0;
     const activeValidatorsCount = validatorsStatistic;
 
     const chainId = status.node_info.network;
 
     const totalCyb = supplyTotal;
-    const stakedCyb = Math.floor((bondedTokens / totalCyb) * 100 * 1000) / 1000;
+    const stakedCyb = bondedTokens / totalCyb;
     const linkPrice = (400 * +bandwidthPrice).toFixed(0);
+
+    if (dataInlfation !== null) {
+      inlfation = dataInlfation;
+    }
+
+    if (dataCommunityPool !== null) {
+      communityPool = Math.floor(parseFloat(dataCommunityPool[0].amount));
+    }
 
     this.setState({
       linksCount,
       cidsCount,
-      accsCount,
-      txCount,
-      blockNumber: height,
-      linkPrice,
+      proposals: dataProposals.length,
+      accountsCount,
       totalCyb,
+      communityPool,
       stakedCyb,
       activeValidatorsCount: activeValidatorsCount.length,
       chainId,
+      inlfation,
     });
   };
 
@@ -339,49 +331,29 @@ class Brain extends React.Component {
     this.setState({ selected });
   };
 
-  onClickGetAddressLedger = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-  };
-
-  cleatState = () => {
-    this.setState({
-      stage: STAGE_INIT,
-      ledger: null,
-      returnCode: null,
-      addressInfo: null,
-      addressLedger: null,
-      ledgerVersion: [0, 0, 0],
-      loading: true,
-    });
-  };
-
   render() {
     const {
       linksCount,
       cidsCount,
-      accsCount,
-      txCount,
-      blockNumber,
-      linkPrice,
+      accountsCount,
       totalCyb,
       stakedCyb,
       activeValidatorsCount,
-      stage,
-      returnCode,
-      ledgerVersion,
       addAddress,
       amount,
       loading,
       chainId,
-      averagePrice,
-      capETH,
-      supplyEUL,
       takeofPrice,
       capATOM,
       selected,
+      communityPool,
+      inlfation,
+      cybernomics,
+      proposals,
+      gol,
+      donation,
     } = this.state;
+    const { block, mobile } = this.props;
 
     let content;
 
@@ -402,166 +374,68 @@ class Brain extends React.Component {
       );
     }
 
-    const Main = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics
-          title={T.brain.cap}
-          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
-        />
-        <a
-          href="/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-          />
-        </a>
-      </Pane>
-    );
-
-    const KnowledgeGraph = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.cyberlinks}
-          value={formatNumber(linksCount)}
-        />
-        <CardStatisics
-          title={T.brain.objects}
-          value={formatNumber(cidsCount)}
-        />
-
-        <CardStatisics
-          title={T.brain.subjects}
-          value={formatNumber(accsCount)}
-        />
-      </Pane>
-    );
-
-    const Cybernomics = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <CardStatisics
-          title={T.brain.supplyEUL}
-          value={formatNumber(totalCyb)}
-        />
-        <CardStatisics
-          title={T.brain.takeofPrice}
-          value={formatNumber(takeofPrice)}
-        />
-        <CardStatisics
-          title={T.brain.cap}
-          value={formatNumber(Math.floor(capATOM * 1000) / 1000)}
-        />
-        {/* <CardStatisics
-          title={T.brain.supplyGOL}
-          value={formatNumber(TOTAL_GOL_GENESIS_SUPPLY)}
-        />
-        <CardStatisics
-          title={T.brain.auctionPrice}
-          value={
-            <FormatNumber
-              fontSizeDecimal={18}
-              number={roundNumber(averagePrice, 6)}
-            />
-          }
-        />
-        <CardStatisics
-          title={T.brain.capETH}
-          value={formatNumber(Math.floor(capETH))}
-        /> */}
-      </Pane>
-    );
-
-    const Consensus = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-        gridGap="20px"
-      >
-        <a
-          href="/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            title={T.brain.heroes}
-            value={activeValidatorsCount}
-            icon={<Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-          />
-        </a>
-        <CardStatisics title={T.brain.staked} value={stakedCyb} />
-        <CardStatisics
-          title={T.brain.transactions}
-          value={formatNumber(txCount)}
-        />
-      </Pane>
-    );
-
-    const Bandwidth = () => (
-      <Pane
-        display="grid"
-        gridTemplateColumns="repeat(auto-fit, minmax(250px, 250px))"
-        gridGap="20px"
-        justifyContent="center"
-      >
-        <CardStatisics title={T.brain.price} value={linkPrice} />
-      </Pane>
-    );
-
-    if (stage === STAGE_LEDGER_INIT) {
-      return (
-        <ConnectLadger
-          pin={returnCode >= LEDGER_NOAPP}
-          app={returnCode === LEDGER_OK}
-          onClickBtnCloce={this.cleatState}
-          version={
-            returnCode === LEDGER_OK &&
-            this.compareVersion(ledgerVersion, LEDGER_VERSION_REQ)
-          }
+    if (selected === 'main') {
+      content = (
+        <MainTab
+          linksCount={parseInt(linksCount, 10)}
+          cybernomics={cybernomics}
+          activeValidatorsCount={activeValidatorsCount}
+          donation={donation}
         />
       );
     }
 
-    if (selected === 'main') {
-      content = <Main />;
-    }
-
-    if (selected === 'graph') {
-      content = <KnowledgeGraph />;
+    if (selected === 'knowledge') {
+      content = (
+        <Route
+          path="/brain/knowledge"
+          render={() => (
+            <KnowledgeTab
+              linksCount={parseInt(linksCount, 10)}
+              cidsCount={parseInt(cidsCount, 10)}
+              accountsCount={parseInt(accountsCount, 10)}
+            />
+          )}
+        />
+      );
     }
 
     if (selected === 'cybernomics') {
-      content = <Cybernomics />;
+      content = (
+        <Route
+          path="/brain/cybernomics"
+          render={() => <CybernomicsTab data={cybernomics} />}
+        />
+      );
     }
 
-    if (selected === 'consensus') {
-      content = <Consensus />;
+    if (selected === 'government') {
+      content = (
+        <Route
+          path="/brain/government"
+          render={() => (
+            <GovernmentTab
+              proposals={proposals}
+              communityPool={communityPool}
+              activeValidatorsCount={activeValidatorsCount}
+              stakedCyb={stakedCyb}
+              inlfation={inlfation}
+            />
+          )}
+        />
+      );
     }
 
-    if (selected === 'bandwidth') {
-      content = <Bandwidth />;
+    if (selected === 'apps') {
+      content = <Route path="/brain/apps" render={() => <AppsTab />} />;
+    }
+
+    if (selected === 'help') {
+      content = <Route path="/brain/help" render={() => <HelpTab />} />;
+    }
+
+    if (selected === 'path') {
+      content = <Route path="/brain/path" render={() => <PathTab />} />;
     }
 
     return (
@@ -576,83 +450,90 @@ class Brain extends React.Component {
             >
               <Text fontSize="16px" color="#fff">
                 You do not have control over the brain. You need EUL tokens to
-                let she hear you. If you came from Ethereum or Cosmos you can
-                claim the gift of gods. Then start prepare to the greatest
-                tournament in universe: <a href="gol">Game of Links</a>.
+                let Her hear you. If you came from Ethereum or Cosmos you can{' '}
+                <Link to="/gift">claim the gift</Link> of the Gods,{' '}
+                <Link to="/gol/faucet">get with ETH</Link>
+                on faucet or <Link to="/gol/takeoff">donate ATOM</Link> during
+                takeoff. Then enjoy the greatest tournament in the universe:{' '}
+                <Link to="/gol">Game of Links</Link>.
               </Text>
             </Pane>
           )}
+          <Pane
+            marginY={20}
+            display="grid"
+            gridTemplateColumns="max-content"
+            justifyContent="center"
+          >
+            <Link to="/network/euler/block">
+              <CardStatisics title={chainId} value={formatNumber(block)} />
+            </Link>
+          </Pane>
 
-          {amount > 0 && (
-            <Pane
-              marginY={20}
-              display="grid"
-              gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-              gridGap="20px"
-            >
-              <CardStatisics
-                title={T.brain.yourTotal}
-                value={formatNumber(Math.floor(amount))}
-              />
-              <CardStatisics
-                title={T.brain.percentSupply}
-                value={
-                  <FormatNumber
-                    fontSizeDecimal={18}
-                    number={roundNumber((amount / totalCyb) * 100, 6)}
-                  />
-                }
-              />
-              <CardStatisics
-                title={chainId}
-                value={formatNumber(blockNumber)}
-              />
-            </Pane>
-          )}
           <Tablist
             display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-            gridGap="20px"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+            gridGap="10px"
             marginTop={25}
           >
             <TabBtn
               text="Knowledge"
-              isSelected={selected === 'graph'}
-              onSelect={() => this.select('graph')}
+              isSelected={selected === 'knowledge'}
+              to="/brain/knowledge"
+            />
+            <TabBtn
+              text="Path"
+              isSelected={selected === 'path'}
+              to="/brain/path"
             />
             <TabBtn
               text="Cybernomics"
               isSelected={selected === 'cybernomics'}
-              onSelect={() => this.select('cybernomics')}
+              to="/brain/cybernomics"
+            />
+            <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
+            <TabBtn
+              text="Government"
+              isSelected={selected === 'government'}
+              to="/brain/government"
             />
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
-              onSelect={() => this.select('main')}
+              text="Apps"
+              isSelected={selected === 'apps'}
+              to="/brain/apps"
             />
             <TabBtn
-              text="Consensus"
-              isSelected={selected === 'consensus'}
-              onSelect={() => this.select('consensus')}
-            />
-            <TabBtn
-              text="Bandwidth"
-              isSelected={selected === 'bandwidth'}
-              onSelect={() => this.select('bandwidth')}
+              text="Help"
+              isSelected={selected === 'help'}
+              to="/brain/help"
             />
           </Tablist>
-          <Pane marginTop={50} marginBottom={50}>
+          <Pane
+            marginTop={50}
+            marginBottom={50}
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+            gridGap="20px"
+          >
             {content}
           </Pane>
         </main>
-        <ActionBarContainer
-          addAddress={addAddress}
-          cleatState={this.cleatState}
-          updateFunc={this.checkAddressLocalStorage}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            addAddress={addAddress}
+            updateFunc={this.checkAddressLocalStorage}
+          />
+        )}
       </div>
     );
   }
 }
 
-export default Brain;
+const mapStateToProps = store => {
+  return {
+    block: store.block.block,
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(injectWeb3(Brain));

@@ -22,7 +22,7 @@ const KEY_NAME = {
   planets_gift: 'planets gift',
 };
 
-const SnipitAccount = ({ to, text, address, children }) => {
+const SnipitAccount = ({ to, text, content, children }) => {
   return (
     <Link to={`${to}`}>
       <Pane
@@ -30,16 +30,16 @@ const SnipitAccount = ({ to, text, address, children }) => {
         paddingY={20}
         paddingX={20}
         borderRadius={5}
-        key={address}
+        key={content}
         display="flex"
         flexDirection="row"
         marginBottom={15}
         color="#000"
       >
         <Pane display="flex" flexDirection="column" marginRight={10}>
-          <Pane>{text}</Pane>
-          <Pane fontSize="14px" lineHeight="25px">
-            {children || address}
+          <Pane fontSize="16px">{text}</Pane>
+          <Pane fontSize="16px" lineHeight="25px">
+            {children || content}
           </Pane>
         </Pane>
       </Pane>

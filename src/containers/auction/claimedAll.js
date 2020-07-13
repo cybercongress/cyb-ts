@@ -14,14 +14,16 @@ export class ClaimedAll extends Component {
     this.smart = ADDR_SMART_CONTRACT;
   }
 
-  claimedToken = account => {
+  claimedToken = async account => {
     const { web3, contract } = this.props;
     console.log(account);
+    const getData = await contract.methods.claimAll().encodeABI();
+    console.log(getData);
     try {
       web3.eth.sendTransaction({
         from: account,
         to: this.smart,
-        data: contract.methods.claimAll().encodeABI()
+        data: getData,
       });
       this.setState({
         status: true

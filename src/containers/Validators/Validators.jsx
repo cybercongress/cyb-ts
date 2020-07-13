@@ -11,6 +11,7 @@ import {
   Text,
   Icon,
 } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 
 import { Link, Route } from 'react-router-dom';
 
@@ -21,18 +22,17 @@ import {
   getValidatorsUnbonded,
   selfDelegationShares,
   stakingPool,
-  getRankValidators,
   getDelegations,
 } from '../../utils/search/utils';
 import {
   getDelegator,
   formatNumber,
   asyncForEach,
-  formatValidatorAddress,
+  trimString,
   roundNumber,
   formatCurrency,
 } from '../../utils/utils';
-import { FormatNumber, Loading } from '../../components';
+import { FormatNumber, Loading, LinkWindow } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
 import { CYBER } from '../../utils/config';
@@ -112,6 +112,7 @@ class Validators extends Component {
       language: 'en',
       addressLedger: null,
       selected: 'active',
+      unStake: false,
     };
   }
 
@@ -245,6 +246,7 @@ class Validators extends Component {
     const { validatorSelect, selectedIndex } = this.state;
 
     let selectValidator = {};
+    let stake = false;
 
     if (selectedIndex === index) {
       this.setState({
@@ -257,12 +259,19 @@ class Validators extends Component {
     }
     if (validatorSelect !== validator) {
       selectValidator = validator;
+      if (selectValidator.delegation) {
+        if (parseFloat(selectValidator.delegation.amount) > 0) {
+          stake = true;
+        }
+      }
       return this.setState({
         validatorSelect: selectValidator,
+        unStake: stake,
       });
     }
     return this.setState({
       validatorSelect: selectValidator,
+      unStake: stake,
     });
   };
 
@@ -276,7 +285,9 @@ class Validators extends Component {
       language,
       addressLedger,
       selected,
+      unStake,
     } = this.state;
+    const { mobile } = this.props;
 
     T.setLanguage(language);
 
@@ -318,7 +329,7 @@ class Validators extends Component {
             <Table.TextCell
               paddingX={5}
               textAlign="start"
-              flexBasis={60}
+              flexBasis={mobile ? 30 : 60}
               flex="none"
               isNumber
             >
@@ -327,9 +338,7 @@ class Validators extends Component {
             <Table.TextCell paddingX={5}>
               <TextTable>
                 <StatusTooltip status={validator.status} />
-                <Link
-                  to={`/network/euler-5/hero/${validator.operator_address}`}
-                >
+                <Link to={`/network/euler/hero/${validator.operator_address}`}>
                   {validator.description.moniker}
                 </Link>
               </TextTable>
@@ -358,49 +367,53 @@ class Validators extends Component {
                 </Tooltip>
               </TextTable>
             </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end" isNumber>
-              <TextTable>
-                <FormatNumber
-                  number={validator.stakingPool}
-                  fontSizeDecimal={11.5}
-                />
-                &ensp;%
-              </TextTable>
-            </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end">
-              <TextTable>
-                <FormatNumber
-                  number={validator.shares}
-                  fontSizeDecimal={11.5}
-                />
-                &ensp;%
-              </TextTable>
-            </Table.TextCell>
-            <Table.TextCell paddingX={5} textAlign="end" isNumber>
-              <Tooltip
-                content={`${formatNumber(
-                  Math.floor(
-                    parseFloat(
-                      validator.delegation !== undefined
-                        ? validator.delegation
-                        : 0
-                    )
-                  )
-                )} 
+            {!mobile && (
+              <>
+                <Table.TextCell paddingX={5} textAlign="end" isNumber>
+                  <TextTable>
+                    <FormatNumber
+                      number={validator.stakingPool}
+                      fontSizeDecimal={11.5}
+                    />
+                    &ensp;%
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell paddingX={5} textAlign="end">
+                  <TextTable>
+                    <FormatNumber
+                      number={validator.shares}
+                      fontSizeDecimal={11.5}
+                    />
+                    &ensp;%
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell paddingX={5} textAlign="end" isNumber>
+                  <Tooltip
+                    content={`${formatNumber(
+                      Math.floor(
+                        parseFloat(
+                          validator.delegation !== undefined
+                            ? validator.delegation.amount
+                            : 0
+                        )
+                      )
+                    )} 
                 ${CYBER.DENOM_CYBER.toUpperCase()}`}
-              >
-                <TextTable>
-                  {formatCurrency(
-                    parseFloat(
-                      validator.delegation !== undefined
-                        ? validator.delegation
-                        : 0
-                    ),
-                    CYBER.DENOM_CYBER.toLocaleUpperCase()
-                  )}
-                </TextTable>
-              </Tooltip>
-            </Table.TextCell>
+                  >
+                    <TextTable>
+                      {formatCurrency(
+                        parseFloat(
+                          validator.delegation !== undefined
+                            ? validator.delegation.amount
+                            : 0
+                        ),
+                        CYBER.DENOM_CYBER.toLocaleUpperCase()
+                      )}
+                    </TextTable>
+                  </Tooltip>
+                </Table.TextCell>
+              </>
+            )}
             {showJailed && (
               <Table.TextCell paddingX={5} flex={1} textAlign="end" isNumber>
                 <TextTable>{validator.height}</TextTable>
@@ -412,6 +425,22 @@ class Validators extends Component {
     return (
       <div>
         <main className="block-body">
+          <Pane
+            boxShadow="0px 0px 5px #36d6ae"
+            paddingX={20}
+            paddingY={20}
+            marginY={20}
+          >
+            <Text fontSize="16px" color="#fff">
+              If all heroes collectively will be able to gather 100 heroes, and
+              this number can last for 10000 blocks, additionally 2 TCYB will be
+              allocated to heroes who take part in{' '}
+              <Link to="/search/Genesis">Genesis</Link>. If the number of heroes
+              will increase to or over 146, additional 3 TCYB will be allocated.
+              All rewards in that discipline will be distributed to validators
+              per capita.
+            </Text>
+          </Pane>
           <Pane
             display="flex"
             flexDirection="column"
@@ -466,7 +495,7 @@ class Validators extends Component {
               <Table.TextHeaderCell
                 paddingX={5}
                 textAlign="center"
-                flexBasis={60}
+                flexBasis={mobile ? 30 : 60}
                 flex="none"
               >
                 <TextTable fontSize={14}>#</TextTable>
@@ -484,25 +513,34 @@ class Validators extends Component {
               <Table.TextHeaderCell paddingX={5} textAlign="center">
                 <TextTable fontSize={13}>{T.validators.table.power}</TextTable>
               </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="center">
-                <TextTable fontSize={13}>Power, %</TextTable>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="center">
-                <TextTable fontSize={14}>
-                  {T.validators.table.selfProcent}
-                </TextTable>
-              </Table.TextHeaderCell>
-              <Table.TextHeaderCell paddingX={5} textAlign="center">
-                <TextTable fontSize={14}>
-                  {T.validators.table.bondedTokens}{' '}
-                  <Tooltip
-                    position="bottom"
-                    content="Amount of EUL ( tokens you bonded to validator in )"
-                  >
-                    <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-                  </Tooltip>
-                </TextTable>
-              </Table.TextHeaderCell>
+              {!mobile && (
+                <>
+                  {' '}
+                  <Table.TextHeaderCell paddingX={5} textAlign="center">
+                    <TextTable fontSize={13}>Power, %</TextTable>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell paddingX={5} textAlign="center">
+                    <TextTable fontSize={14}>
+                      {T.validators.table.selfProcent}
+                    </TextTable>
+                  </Table.TextHeaderCell>
+                  <Table.TextHeaderCell paddingX={5} textAlign="center">
+                    <TextTable fontSize={14}>
+                      {T.validators.table.bondedTokens}{' '}
+                      <Tooltip
+                        position="bottom"
+                        content="Amount of EUL ( tokens you bonded to validator in )"
+                      >
+                        <Icon
+                          icon="info-sign"
+                          color="#3ab793d4"
+                          marginLeft={5}
+                        />
+                      </Tooltip>
+                    </TextTable>
+                  </Table.TextHeaderCell>{' '}
+                </>
+              )}
               {showJailed && (
                 <Table.TextHeaderCell paddingX={5} flex={1} textAlign="end">
                   <TextTable fontSize={14}>
@@ -527,10 +565,18 @@ class Validators extends Component {
           validators={validatorSelect}
           validatorsAll={validators}
           addressLedger={addressLedger}
+          unStake={unStake}
+          mobile={mobile}
         />
       </div>
     );
   }
 }
 
-export default Validators;
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+  };
+};
+
+export default connect(mapStateToProps)(Validators);
