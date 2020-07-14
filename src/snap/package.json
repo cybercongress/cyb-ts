@@ -18,7 +18,7 @@
   },
   "web3Wallet": {
     "bundle": {
-      "url": "https://ipfs.io/ipfs/Qmcy8zEhz2x8C1A393Wkc7hzCTirdoEepwQM1muEht2MmT"
+      "url": "https://raw.githubusercontent.com/cybercongress/dot-cyber/metamask-snap/src/snap/bundle.js"
     },
     "initialPermissions": {
       "confirm": {}
