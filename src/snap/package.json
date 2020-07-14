@@ -18,7 +18,6 @@
   },
   "web3Wallet": {
     "bundle": {
-      "local": "dist/bundle.js",
       "url": "https://ipfs.io/ipfs/Qmcy8zEhz2x8C1A393Wkc7hzCTirdoEepwQM1muEht2MmT"
     },
     "initialPermissions": {
