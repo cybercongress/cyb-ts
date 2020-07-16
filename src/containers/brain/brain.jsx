@@ -14,6 +14,10 @@ import {
   getcommunityPool,
   getTxCosmos,
   getTotalSupply,
+  getFollows,
+  getTwit,
+  getContentByCid,
+  getContent,
 } from '../../utils/search/utils';
 import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
@@ -26,6 +30,7 @@ import {
   TAKEOFF,
   TAKEOFF_SUPPLY,
   COSMOS,
+  PATTERN_CYBER,
 } from '../../utils/config';
 import { getProposals } from '../../utils/governance';
 
@@ -84,6 +89,8 @@ class Brain extends React.Component {
       communityPool: 0,
       proposals: 0,
       donation: 0,
+      twit: {},
+      loadingTwit: true,
       cybernomics: {
         gol: {
           supply: 0,
@@ -107,10 +114,15 @@ class Brain extends React.Component {
   async componentDidMount() {
     this.chekPathname();
     await this.checkAddressLocalStorage();
+    this.getFollow();
     this.getStatisticsBrain();
     // this.getPriceGol();
     this.getTxsCosmos();
     this.getContract();
+    const data = await getContent(
+      'QmT9U6Umr73ugK27pM4R1xAvGUBenyXvXgeBZ1t3geS3zh'
+    );
+    console.log('data :>> ', data);
   }
 
   componentDidUpdate(prevProps) {
@@ -119,6 +131,118 @@ class Brain extends React.Component {
       this.chekPathname();
     }
   }
+
+  loadContent = async (cids, node, prevState) => {
+    const contentPromises = Object.keys(cids).map(cid =>
+      getContentByCid(cid, node)
+        .then(content => {
+          const { twit } = this.state;
+          const links = twit;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            console.warn({ ...links[cid], ...content });
+            links[cid] = {
+              ...links[cid],
+              status: content.status,
+              content: content.content,
+              text: content.text,
+            };
+            this.setState({
+              twit,
+            });
+          }
+        })
+        .catch(() => {
+          const { twit } = this.state;
+          const links = twit;
+          if (
+            Object.keys(links[cid]) !== null &&
+            typeof Object.keys(links[cid]) !== 'undefined' &&
+            Object.keys(links[cid]).length > 0
+          ) {
+            links[cid] = {
+              ...links[cid],
+              status: 'impossibleLoad',
+              content: false,
+              text: cid,
+            };
+            this.setState({
+              twit,
+            });
+          }
+        })
+    );
+    Promise.all(contentPromises);
+  };
+
+  getFollow = async () => {
+    const { addressLedger } = this.state;
+    const { node } = this.props;
+    let responseFollows = null;
+    let twitData = [];
+    let twit = {};
+
+    if (addressLedger.bech32) {
+      responseFollows = await getFollows(addressLedger.bech32);
+    }
+    const dataStart = new Date();
+
+    console.log('object :>> ', dataStart);
+
+    if (responseFollows !== null && responseFollows.txs) {
+      for (const item of responseFollows.txs) {
+        const cid = item.tx.value.msg[0].value.links[0].to;
+        const addressResolve = await getContent(cid);
+        console.log('addressResolve :>> ', addressResolve);
+        if (addressResolve) {
+          const addressFollow = addressResolve;
+          console.log('addressResolve :>> ', addressResolve);
+          if (addressFollow.match(PATTERN_CYBER)) {
+            const responseTwit = await getTwit(addressFollow);
+            if (
+              responseTwit &&
+              responseTwit.txs &&
+              responseTwit.txs.length > 0
+            ) {
+              twitData = [...twitData, ...responseTwit.txs];
+            }
+          }
+        }
+      }
+    }
+const dataEnd = new Date();
+console.log('dataEnd :>> ', dataEnd);
+console.log('dataEnd - dataStart :>> ', dataEnd - dataStart);
+    console.log('twitData :>> ', twitData);
+
+    if (twitData.length > 0) {
+      twit = twitData.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.tx.value.msg[0].value.links[0].to]: {
+            status: node !== null ? 'understandingState' : 'impossibleLoad',
+            text: item.tx.value.msg[0].value.links[0].to,
+            address: item.tx.value.msg[0].value.address,
+            content: false,
+            time: item.timestamp,
+          },
+        }),
+        {}
+      );
+    }
+
+    this.setState({
+      twit,
+      loadingTwit: false,
+    });
+
+    if (node !== null && Object.keys(twit).length > 0) {
+      this.loadContent(twit, node);
+    }
+  };
 
   chekPathname = () => {
     const { location } = this.props;
@@ -149,11 +273,8 @@ class Brain extends React.Component {
       pathname.match(/help/gm).length > 0
     ) {
       this.select('help');
-    } else if (
-      pathname.match(/path/gm) &&
-      pathname.match(/path/gm).length > 0
-    ) {
-      this.select('path');
+    } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
+      this.select('gol');
     } else {
       this.select('main');
     }
@@ -352,6 +473,8 @@ class Brain extends React.Component {
       proposals,
       gol,
       donation,
+      twit,
+      loadingTwit,
     } = this.state;
     const { block, mobile } = this.props;
 
@@ -375,14 +498,7 @@ class Brain extends React.Component {
     }
 
     if (selected === 'main') {
-      content = (
-        <MainTab
-          linksCount={parseInt(linksCount, 10)}
-          cybernomics={cybernomics}
-          activeValidatorsCount={activeValidatorsCount}
-          donation={donation}
-        />
-      );
+      content = <MainTab twit={twit} loadingTwit={loadingTwit} />;
     }
 
     if (selected === 'knowledge') {
@@ -434,8 +550,19 @@ class Brain extends React.Component {
       content = <Route path="/brain/help" render={() => <HelpTab />} />;
     }
 
-    if (selected === 'path') {
-      content = <Route path="/brain/path" render={() => <PathTab />} />;
+    if (selected === 'gol') {
+      content = (
+        <Route
+          path="/brain/gol"
+          render={() => (
+            <PathTab
+              cybernomics={cybernomics}
+              activeValidatorsCount={activeValidatorsCount}
+              donation={donation}
+            />
+          )}
+        />
+      );
     }
 
     return (
@@ -459,7 +586,7 @@ class Brain extends React.Component {
               </Text>
             </Pane>
           )}
-          <Pane
+          {/* <Pane
             marginY={20}
             display="grid"
             gridTemplateColumns="max-content"
@@ -468,7 +595,7 @@ class Brain extends React.Component {
             <Link to="/network/euler/block">
               <CardStatisics title={chainId} value={formatNumber(block)} />
             </Link>
-          </Pane>
+          </Pane> */}
 
           <Tablist
             display="grid"
@@ -482,9 +609,9 @@ class Brain extends React.Component {
               to="/brain/knowledge"
             />
             <TabBtn
-              text="Path"
-              isSelected={selected === 'path'}
-              to="/brain/path"
+              text="Game of Links"
+              isSelected={selected === 'gol'}
+              to="/brain/gol"
             />
             <TabBtn
               text="Cybernomics"
@@ -533,6 +660,7 @@ const mapStateToProps = store => {
   return {
     block: store.block.block,
     mobile: store.settings.mobile,
+    node: store.ipfs.ipfs,
   };
 };
 

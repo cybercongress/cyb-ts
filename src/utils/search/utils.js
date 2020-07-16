@@ -8,7 +8,7 @@ const {
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
 } = CYBER;
 
-const SEARCH_RESULT_TIMEOUT_MS = 15000;
+const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
 const IPFS = require('ipfs-api');
 
@@ -1100,4 +1100,50 @@ export const getToLink = async cid => {
     console.log(e);
     return null;
   }
+};
+
+export const getFollows = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&limit=1000000000`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getTwit = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=Qmd1w8t5GEjwycYdETHdQM9dH14FuEpWbKRv56bFq5Rmn4&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
+  let timerId;
+  const timeoutPromise = () =>
+    new Promise(reject => {
+      timerId = setTimeout(reject, timeout);
+    });
+
+  const ipfsGetPromise = () =>
+    new Promise((resolve, reject) => {
+      axios({
+        method: 'get',
+        url: `https://ipfs.io/ipfs/${cid}`,
+      }).then(response => {
+        clearTimeout(timerId);
+        resolve(response.data);
+      });
+    });
+  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
 };

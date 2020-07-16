@@ -1,74 +1,83 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Pane, Icon } from '@cybercongress/gravity';
+import ReactMarkdown from 'react-markdown';
+import { Pane, Icon, SearchItem } from '@cybercongress/gravity';
 import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
+import CodeBlock from '../../ipfs/codeBlock';
+import Iframe from 'react-iframe';
 
-function MainTab({ linksCount, cybernomics, activeValidatorsCount, donation }) {
+const htmlParser = require('react-markdown/plugins/html-parser');
+
+const parseHtml = htmlParser({
+  isValidNode: node => node.type !== 'script',
+});
+
+function MainTab({ loadingTwit, twit }) {
   try {
-    const gol = (donation + activeValidatorsCount / 146) / 2;
+    const searchItems = [];
+
+    if (loadingTwit) {
+      return <div>...</div>;
+    }
+
+    searchItems.push(
+      Object.keys(twit).map(key => {
+        return (
+          <Pane
+            position="relative"
+            className="hover-rank"
+            display="flex"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            <Link className="SearchItem" to={`/ipfs/${key}`}>
+              <SearchItem
+                key={key}
+                status={twit[key].status}
+                text={
+                  <div className="container-text-SearchItem">
+                    <ReactMarkdown
+                      source={twit[key].text}
+                      escapeHtml={false}
+                      skipHtml={false}
+                      astPlugins={[parseHtml]}
+                      renderers={{ code: CodeBlock }}
+                      // plugins={[toc]}
+                      // escapeHtml={false}
+                    />
+                  </div>
+                }
+                // onClick={e => (e, twit[cid].content)}
+              >
+                {twit[key].content &&
+                  twit[key].content.indexOf('image') !== -1 && (
+                    <img
+                      style={{ width: '100%', paddingTop: 10 }}
+                      alt="img"
+                      src={twit[key].content}
+                    />
+                  )}
+                {twit[key].content &&
+                  twit[key].content.indexOf('application/pdf') !== -1 && (
+                    <Iframe
+                      width="100%"
+                      height="400px"
+                      className="iframe-SearchItem"
+                      url={twit[key].content}
+                    />
+                  )}
+              </SearchItem>
+            </Link>
+          </Pane>
+        );
+      })
+    );
+
     return (
-      <>
-        <Link to="/graph">
-          <CardStatisics
-            title="Cyberlinks"
-            value={formatNumber(linksCount)}
-            link
-          />
-        </Link>
-        <Link to="/gol/takeoff">
-          <CardStatisics
-            title="Takeoff price, ATOM/GCYB"
-            value={formatNumber(
-              Math.floor(cybernomics.cyb.price * 1000) / 1000
-            )}
-            link
-          />
-        </Link>
-        <Link
-          to="/heroes"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics title="Heroes" value={activeValidatorsCount} link />
-        </Link>
-        <LinkWindow to="https://github.com/cybercongress/congress/blob/master/ecosystem/Cyber%20Homestead%20doc.md">
-          <CardStatisics
-            // title="Homestead"
-            styleContainer={{
-              justifyContent: 'center',
-              padding: '65px 0',
-              fontSize: '26px',
-            }}
-            styleTitle={{ fontSize: '26px' }}
-            title="Homestead"
-            link
-          />
-        </LinkWindow>
-        <Link to="/gol">
-          <CardStatisics
-            title="Game of Links Goal"
-            value={`${formatNumber(gol * 100, 2)}%`}
-            link
-          />
-        </Link>
-        <Link
-          to="/gol/faucet"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
-          <CardStatisics
-            styleContainer={{ justifyContent: 'center', fontSize: '26px' }}
-            styleTitle={{ fontSize: '26px' }}
-            title="Get will"
-            link
-          />
-        </Link>
-      </>
+      <div className="container-contentItem" style={{ width: '100%' }}>
+        {searchItems}
+      </div>
     );
   } catch (error) {
     console.log(error);

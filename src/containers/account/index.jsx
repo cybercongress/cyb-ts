@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
-import GetLink from './link';
 import { connect } from 'react-redux';
+import GetLink from './link';
 import {
   getBalance,
   getTotalEUL,
@@ -72,7 +72,7 @@ class AccountDetails extends React.Component {
         delegations: [],
         unbonding: [],
       },
-      selected: 'main',
+      selected: 'cyberlink',
       won: 0,
     };
   }
@@ -151,10 +151,10 @@ class AccountDetails extends React.Component {
     if (pathname.match(/txs/gm) && pathname.match(/txs/gm).length > 0) {
       this.select('txs');
     } else if (
-      pathname.match(/cyberlink/gm) &&
-      pathname.match(/cyberlink/gm).length > 0
+      pathname.match(/wallet/gm) &&
+      pathname.match(/wallet/gm).length > 0
     ) {
-      this.select('cyberlink');
+      this.select('wallet');
     } else if (
       pathname.match(/heroes/gm) &&
       pathname.match(/heroes/gm).length > 0
@@ -168,7 +168,7 @@ class AccountDetails extends React.Component {
     } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
       this.select('gol');
     } else {
-      this.select('main');
+      this.select('cyberlink');
     }
   };
 
@@ -312,17 +312,12 @@ class AccountDetails extends React.Component {
       );
     }
 
-    if (selected === 'main') {
+    if (selected === 'wallet') {
       content = <Main balance={balance} />;
     }
 
     if (selected === 'cyberlink') {
-      content = (
-        <Route
-          path="/network/euler/contract/:address/cyberlink"
-          render={() => <GetLink accountUser={account} />}
-        />
-      );
+      content = <GetLink accountUser={account} />;
     }
 
     if (selected === 'txs') {
@@ -378,18 +373,18 @@ class AccountDetails extends React.Component {
           </ContainerCard>
           <Tablist display="flex" justifyContent="center">
             <TabBtn
-              text="Cyberlinks"
-              isSelected={selected === 'cyberlink'}
-              to={`/network/euler/contract/${account}/cyberlink`}
-            />
-            <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
               to={`/network/euler/contract/${account}/heroes`}
             />
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
+              text="wallet"
+              isSelected={selected === 'wallet'}
+              to={`/network/euler/contract/${account}/wallet`}
+            />
+            <TabBtn
+              text="Cyberlinks"
+              isSelected={selected === 'cyberlink'}
               to={`/network/euler/contract/${account}`}
             />
             <TabBtn

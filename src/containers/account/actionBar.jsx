@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
+import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -14,6 +15,8 @@ import {
   StartStageSearchActionBar,
   TransactionError,
   CheckAddressInfo,
+  Dots,
+  ActionBarContentText,
 } from '../../components';
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -23,6 +26,7 @@ import {
   getIpfsHash,
   getAccountBandwidth,
   statusNode,
+  getPin,
 } from '../../utils/search/utils';
 
 import { i18n } from '../../i18n/en';
@@ -81,6 +85,19 @@ class ActionBarContainer extends Component {
     this.gasPriceField = React.createRef();
     this.timeOut = null;
     this.haveDocument = typeof document !== 'undefined';
+  }
+
+  componentDidUpdate() {
+    const { stage, address, addressInfo } = this.state;
+    const { type } = this.props;
+    if (
+      (stage === STAGE_LEDGER_INIT || stage === STAGE_READY) &&
+      type === 'cyberlink'
+    ) {
+      if (address !== null && addressInfo !== null) {
+        this.generateTx();
+      }
+    }
   }
 
   getLedgerAddress = async () => {
@@ -201,7 +218,7 @@ class ActionBarContainer extends Component {
       toSendAddres,
       contentHash,
     } = this.state;
-    const { addressSend } = this.props;
+    const { addressSend, node } = this.props;
     const uatomAmount = toSend * DIVISOR_CYBER_G;
 
     const { denom } = addressInfo.coins[0];
@@ -215,9 +232,19 @@ class ActionBarContainer extends Component {
         MEMO,
         rewards.rewards
       );
-    } else if (type === 'cyberlink' || type === 'mentions') {
+    } else if (type === 'mentions') {
       const fromCid = await getIpfsHash(addressSend);
       const toCid = contentHash;
+      tx = await this.ledger.txCreateLink(
+        txContext,
+        address.bech32,
+        fromCid,
+        toCid,
+        MEMO
+      );
+    } else if (type === 'cyberlink') {
+      const fromCid = await getPin(node, 'follow');
+      const toCid = await getPin(node, addressSend);
       tx = await this.ledger.txCreateLink(
         txContext,
         address.bech32,
@@ -249,7 +276,7 @@ class ActionBarContainer extends Component {
       pk: address.pk,
       path: address.path,
     };
-
+    console.log('txContext :>> ', txContext);
     const tx = await this.getTxType(type, txContext);
 
     console.log('tx', tx);
@@ -425,7 +452,17 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_INIT && (type === 'cyberlink' || type === 'mentions')) {
+    if (stage === STAGE_INIT && type === 'cyberlink') {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={e => this.onClickSend(e)}>Follow</Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && type === 'mentions') {
       return (
         <StartStageSearchActionBar
           onClickBtn={this.onClickSend}
@@ -475,7 +512,7 @@ class ActionBarContainer extends Component {
           />
         );
       }
-      if (type === 'cyberlink' || type === 'mentions') {
+      if (type === 'mentions') {
         return (
           <Cyberlink
             onClickBtnCloce={this.cleatState}
@@ -486,6 +523,15 @@ class ActionBarContainer extends Component {
             contentHash={contentHash}
             disabledBtn={parseFloat(bandwidth.max_value) === 0}
           />
+        );
+      }
+      if (type === 'cyberlink') {
+        return (
+          <ActionBar>
+            <ActionBarContentText>
+              transaction generation <Dots big />
+            </ActionBarContentText>
+          </ActionBar>
         );
       }
       return (
@@ -544,4 +590,10 @@ class ActionBarContainer extends Component {
   }
 }
 
-export default ActionBarContainer;
+const mapStateToProps = store => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(ActionBarContainer);
