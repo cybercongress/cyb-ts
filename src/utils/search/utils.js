@@ -1119,7 +1119,7 @@ export const getTwit = async address => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=Qmd1w8t5GEjwycYdETHdQM9dH14FuEpWbKRv56bFq5Rmn4&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
