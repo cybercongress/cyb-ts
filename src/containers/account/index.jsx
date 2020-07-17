@@ -46,7 +46,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={20}
+      paddingX={5}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -54,7 +54,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
-      minWidth="150px"
+      width="100%"
     >
       {text}
     </Tab>
@@ -595,9 +595,17 @@ class AccountDetails extends React.Component {
               alt="img-avatar"
               src={avatar !== null ? avatar : img}
             />
-            <Card title="total, EUL" value={formatNumber(balance.total)} />
+            <Card title="total, EUL" value={formatNumber(balance.total)} stylesContainer={{
+                width: '100%',
+                maxWidth: 'unset',
+                margin: 0,
+              }} />
           </ContainerCard>
-          <Tablist display="flex" justifyContent="center">
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+            gridGap="10px"
+          >
             <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
@@ -605,7 +613,7 @@ class AccountDetails extends React.Component {
             />
             <TabBtn
               text="wallet"
-              isSelected={selected === 'wallet'}
+              isSelected={selected === 'Wallet'}
               to={`/network/euler/contract/${account}/wallet`}
             />
             <TabBtn

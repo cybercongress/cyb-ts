@@ -290,19 +290,19 @@ function Ipfs({ nodeIpfs, mobile }) {
     ) {
       setSelected('community');
     } else if (
-      pathname.match(/discussion/gm) &&
-      pathname.match(/discussion/gm).length > 0
+      pathname.match(/answers/gm) &&
+      pathname.match(/answers/gm).length > 0
     ) {
-      setTextBtn('add comment');
-      setSelected('discussion');
+      setTextBtn('add answer');
+      setSelected('answers');
     } else if (
       pathname.match(/meta/gm) &&
       pathname.match(/meta/gm).length > 0
     ) {
       setSelected('meta');
     } else {
-      setTextBtn('add answer');
-      setSelected('answers');
+      setTextBtn('add comment');
+      setSelected('discussion');
     }
   };
 
@@ -391,21 +391,6 @@ function Ipfs({ nodeIpfs, mobile }) {
           gridGap="10px"
           marginY={25}
         >
-          <TabBtn
-            // text="discussion"
-            text={
-              <Pane display="flex" alignItems="center">
-                <Pane>discussion</Pane>
-                {dataQueryToLink && dataQueryToLink.cyberlink.length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'discussion'}>
-                    {formatNumber(dataQueryToLink.cyberlink.length)}
-                  </Pill>
-                )}
-              </Pane>
-            }
-            isSelected={selected === 'discussion'}
-            to={`/ipfs/${cid}/discussion`}
-          />
           {/* <TabBtn
           text="content"
           isSelected={selected === 'content'}
@@ -439,6 +424,21 @@ function Ipfs({ nodeIpfs, mobile }) {
               </Pane>
             }
             isSelected={selected === 'answers'}
+            to={`/ipfs/${cid}/answers`}
+          />
+          <TabBtn
+            // text="discussion"
+            text={
+              <Pane display="flex" alignItems="center">
+                <Pane>discussion</Pane>
+                {dataQueryToLink && dataQueryToLink.cyberlink.length > 0 && (
+                  <Pill marginLeft={5} active={selected === 'discussion'}>
+                    {formatNumber(dataQueryToLink.cyberlink.length)}
+                  </Pill>
+                )}
+              </Pane>
+            }
+            isSelected={selected === 'discussion'}
             to={`/ipfs/${cid}`}
           />
           <TabBtn
