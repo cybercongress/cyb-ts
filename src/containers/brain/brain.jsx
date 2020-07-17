@@ -618,7 +618,7 @@ console.log('dataEnd - dataStart :>> ', dataEnd - dataStart);
               isSelected={selected === 'cybernomics'}
               to="/brain/cybernomics"
             />
-            <TabBtn text="Main" isSelected={selected === 'main'} to="/brain" />
+            <TabBtn text="Feed" isSelected={selected === 'main'} to="/brain" />
             <TabBtn
               text="Government"
               isSelected={selected === 'government'}

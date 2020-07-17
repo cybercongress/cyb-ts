@@ -197,6 +197,7 @@ export const StartStageSearchActionBar = ({
   onClickClear,
   file,
   textBtn = T.actionBar.startSearch.cyberlink,
+  placeholder = 'add keywords, hash or file',
 }) => {
   return (
     <ActionBar>
@@ -218,7 +219,7 @@ export const StartStageSearchActionBar = ({
               paddingRight: '35px',
             }}
             onChange={e => onChangeInputContentHash(e)}
-            placeholder="add keywords, hash or file"
+            placeholder={placeholder}
           />
           <Pane
             position="absolute"

@@ -12,6 +12,9 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getTxCosmos,
+  getFollows,
+  getContent,
+  getTwit,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -25,8 +28,10 @@ import GetMentions from './mentions';
 import TableDiscipline from '../gol/table';
 import { getEstimation } from '../../utils/fundingMath';
 import { setGolTakeOff } from '../../redux/actions/gol';
+import FeedsTab from './feeds';
+import FollowsTab from './follows';
 
-import { COSMOS } from '../../utils/config';
+import { COSMOS, PATTERN_CYBER } from '../../utils/config';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -60,6 +65,10 @@ class AccountDetails extends React.Component {
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
+      addressFollows: [],
+      dataTweet: [],
+      follow: true,
+      tweets: false,
       takeoffDonations: 0,
       balance: {
         available: 0,
@@ -72,30 +81,115 @@ class AccountDetails extends React.Component {
         delegations: [],
         unbonding: [],
       },
-      selected: 'cyberlink',
+      selected: 'tweets',
       won: 0,
     };
   }
 
   componentDidMount() {
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      const address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address.bech32 });
-    }
-    this.getBalanseAccount();
-    this.chekPathname();
-    this.getTxsCosmos();
+    this.init();
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props;
+    const { location, match } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.getBalanseAccount();
       this.chekPathname();
+      this.chekAddress();
+    }
+    if (prevProps.match.params.address !== match.params.address) {
+      this.init();
     }
   }
+
+  init = async () => {
+    this.setState({
+      loading: true,
+    });
+    await this.chekAddress();
+    this.getBalanseAccount();
+    this.chekPathname();
+    this.getTxsCosmos();
+    this.getFollow();
+    this.getFeeds();
+  };
+
+  chekAddress = async () => {
+    const { location } = this.props;
+    const { pathname } = location;
+    let address;
+    let locationAddress;
+    if (
+      pathname.match(/cyber[a-zA-Z0-9]{39}/gm) &&
+      pathname.match(/cyber[a-zA-Z0-9]{39}/gm).length > 0
+    ) {
+      locationAddress = pathname.match(/cyber[a-zA-Z0-9]{39}/gm);
+    }
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address.bech32 });
+    }
+
+    if (address.bech32 === locationAddress[0]) {
+      this.setState({
+        follow: false,
+        tweets: true,
+      });
+    } else {
+      this.setState({
+        follow: true,
+        tweets: false,
+      });
+    }
+  };
+
+  getFollow = async () => {
+    const { match } = this.props;
+    const { address } = match.params;
+    let responseFollows = null;
+    const addressFollows = [];
+
+    if (address) {
+      responseFollows = await getFollows(address);
+    }
+
+    if (responseFollows !== null && responseFollows.txs) {
+      responseFollows.txs.forEach(async item => {
+        const cid = item.tx.value.msg[0].value.links[0].to;
+        const addressResolve = await getContent(cid);
+        console.log('addressResolve :>> ', addressResolve);
+        if (addressResolve) {
+          const addressFollow = addressResolve;
+          console.log('addressResolve :>> ', addressResolve);
+          if (addressFollow.match(PATTERN_CYBER)) {
+            addressFollows.push(addressFollow);
+            this.setState({
+              addressFollows,
+            });
+          }
+        }
+      });
+    }
+  };
+
+  getFeeds = async () => {
+    const { match } = this.props;
+    const { address } = match.params;
+    let responseTweet = null;
+    let dataTweet = [];
+
+    responseTweet = await getTwit(address);
+
+    if (responseTweet && responseTweet.txs && responseTweet.txs.length > 0) {
+      dataTweet = [...dataTweet, ...responseTweet.txs];
+    }
+
+    this.setState({
+      dataTweet,
+    });
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -167,8 +261,18 @@ class AccountDetails extends React.Component {
       this.select('mentions');
     } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
       this.select('gol');
-    } else {
+    } else if (
+      pathname.match(/cyberlink/gm) &&
+      pathname.match(/cyberlink/gm).length > 0
+    ) {
       this.select('cyberlink');
+    } else if (
+      pathname.match(/follows/gm) &&
+      pathname.match(/follows/gm).length > 0
+    ) {
+      this.select('follows');
+    } else {
+      this.select('tweets');
     }
   };
 
@@ -273,7 +377,13 @@ class AccountDetails extends React.Component {
       won,
       loading,
       takeoffDonations,
+      addressFollows,
+      dataTweet,
+      follow,
+      tweets,
     } = this.state;
+
+    const { node } = this.props;
 
     let content;
 
@@ -355,6 +465,26 @@ class AccountDetails extends React.Component {
       );
     }
 
+    if (selected === 'tweets') {
+      content = (
+        <Route
+          path="/network/euler/contract/:address"
+          render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
+        />
+      );
+      // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
+    }
+
+    if (selected === 'follows') {
+      content = (
+        <Route
+          path="/network/euler/contract/:address/follows"
+          render={() => <FollowsTab data={addressFollows} />}
+        />
+      );
+      // connect = <FollowsTab data={addressFollows} />;
+    }
+
     return (
       <div>
         <main className="block-body">
@@ -385,7 +515,17 @@ class AccountDetails extends React.Component {
             <TabBtn
               text="Cyberlinks"
               isSelected={selected === 'cyberlink'}
+              to={`/network/euler/contract/${account}/cyberlink`}
+            />
+            <TabBtn
+              text="Tweets"
+              isSelected={selected === 'tweets'}
               to={`/network/euler/contract/${account}`}
+            />
+            <TabBtn
+              text="Follows"
+              isSelected={selected === 'follows'}
+              to={`/network/euler/contract/${account}/follows`}
             />
             <TabBtn
               text="Txs"
@@ -414,15 +554,24 @@ class AccountDetails extends React.Component {
           </Pane>
         </main>
         <ActionBarContainer
-          updateAddress={this.getBalanseAccount}
+          updateAddress={this.init}
           addressSend={account}
           type={selected}
           addressLedger={addressLedger}
+          follow={follow}
+          tweets={tweets}
         />
       </div>
     );
   }
 }
+
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+    node: store.ipfs.ipfs,
+  };
+};
 
 const mapDispatchprops = dispatch => {
   return {
@@ -431,4 +580,4 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(AccountDetails);
+export default connect(mapStateToProps, mapDispatchprops)(AccountDetails);

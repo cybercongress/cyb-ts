@@ -18,7 +18,7 @@ import {
   Dots,
   ActionBarContentText,
 } from '../../components';
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 
 import {
   getBalanceWallet,
@@ -63,6 +63,7 @@ class ActionBarContainer extends Component {
       returnCode: null,
       addressInfo: null,
       address: null,
+      file: null,
       balance: 0,
       time: 0,
       toSend: '',
@@ -92,7 +93,7 @@ class ActionBarContainer extends Component {
     const { type } = this.props;
     if (
       (stage === STAGE_LEDGER_INIT || stage === STAGE_READY) &&
-      type === 'cyberlink'
+      type === 'tweets'
     ) {
       if (address !== null && addressInfo !== null) {
         this.generateTx();
@@ -209,6 +210,24 @@ class ActionBarContainer extends Component {
     }
   };
 
+  calculationIpfsTo = async contentHash => {
+    const { file } = this.state;
+    const { node } = this.props;
+
+    let toCid = contentHash;
+    if (file !== null) {
+      toCid = file;
+    }
+
+    if (file !== null) {
+      toCid = await getPin(node, toCid);
+    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
+      toCid = await getPin(node, toCid);
+    }
+
+    return toCid;
+  };
+
   getTxType = async (type, txContext) => {
     const {
       address,
@@ -218,7 +237,7 @@ class ActionBarContainer extends Component {
       toSendAddres,
       contentHash,
     } = this.state;
-    const { addressSend, node } = this.props;
+    const { addressSend, node, follow, tweets } = this.props;
     const uatomAmount = toSend * DIVISOR_CYBER_G;
 
     const { denom } = addressInfo.coins[0];
@@ -242,9 +261,19 @@ class ActionBarContainer extends Component {
         toCid,
         MEMO
       );
-    } else if (type === 'cyberlink') {
+    } else if (type === 'tweets' && follow) {
       const fromCid = await getPin(node, 'follow');
       const toCid = await getPin(node, addressSend);
+      tx = await this.ledger.txCreateLink(
+        txContext,
+        address.bech32,
+        fromCid,
+        toCid,
+        MEMO
+      );
+    } else if (type === 'tweets' && tweets) {
+      const fromCid = await getPin(node, 'tweet');
+      const toCid = await this.calculationIpfsTo(contentHash);
       tx = await this.ledger.txCreateLink(
         txContext,
         address.bech32,
@@ -399,6 +428,7 @@ class ActionBarContainer extends Component {
       txMsg: null,
       txHash: null,
       txHeight: null,
+      contentHash: '',
     });
     this.timeOut = null;
     this.ledger = null;
@@ -421,7 +451,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { type, addressSend, addressLedger } = this.props;
+    const { type, addressSend, addressLedger, tweets, follow } = this.props;
     const {
       stage,
       address,
@@ -452,13 +482,25 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_INIT && type === 'cyberlink') {
+    if (stage === STAGE_INIT && type === 'tweets' && follow) {
       return (
         <ActionBar>
           <Pane>
             <Button onClick={e => this.onClickSend(e)}>Follow</Button>
           </Pane>
         </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && type === 'tweets' && tweets) {
+      return (
+        <StartStageSearchActionBar
+          onClickBtn={this.onClickSend}
+          contentHash={contentHash}
+          onChangeInputContentHash={this.onChangeInput}
+          textBtn="Tweet"
+          placeholder="What's happening?"
+        />
       );
     }
 
@@ -525,7 +567,7 @@ class ActionBarContainer extends Component {
           />
         );
       }
-      if (type === 'cyberlink') {
+      if (type === 'tweets') {
         return (
           <ActionBar>
             <ActionBarContentText>

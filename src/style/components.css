@@ -354,6 +354,10 @@
   padding-left: 20px;
 }
 
+.container-text-SearchItem img {
+  width: 100%;
+}
+
 .SearchItem {
   width: 70%;
   margin: 0 auto;
