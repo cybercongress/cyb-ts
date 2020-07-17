@@ -1147,3 +1147,17 @@ export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
     });
   return Promise.race([timeoutPromise(), ipfsGetPromise()]);
 };
+
+export const chekFollow = async (address, addressFollowHash) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressFollowHash}&limit=1000000000
+      `,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}

@@ -15,6 +15,7 @@ import {
   getFollows,
   getContent,
   getTwit,
+  chekFollow,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -95,7 +96,6 @@ class AccountDetails extends React.Component {
     if (prevProps.location.pathname !== location.pathname) {
       this.getBalanseAccount();
       this.chekPathname();
-      this.chekAddress();
     }
     if (prevProps.match.params.address !== match.params.address) {
       this.init();
@@ -107,11 +107,29 @@ class AccountDetails extends React.Component {
       loading: true,
     });
     await this.chekAddress();
+    this.chekFollowAddress();
     this.getBalanseAccount();
     this.chekPathname();
     this.getTxsCosmos();
     this.getFollow();
     this.getFeeds();
+  };
+
+  chekFollowAddress = async () => {
+    const { match } = this.props;
+    const { address: addressProps } = match.params;
+    const { addressLedger } = this.state;
+    const address = await getIpfsHash(addressProps);
+
+    if (addressLedger !== null) {
+      const response = await chekFollow(addressLedger, address);
+      if (response !== null && response.txs.length > 0) {
+        this.setState({
+          follow: false,
+          tweets: false,
+        });
+      }
+    }
   };
 
   chekAddress = async () => {
