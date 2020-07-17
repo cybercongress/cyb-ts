@@ -1160,4 +1160,17 @@ export const chekFollow = async (address, addressFollowHash) => {
     console.log(error);
     return null;
   }
-}
+};
+
+export const getAvatar = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

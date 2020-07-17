@@ -16,6 +16,9 @@ import {
   getContent,
   getTwit,
   chekFollow,
+  getIndexStats,
+  getGraphQLQuery,
+  getAvatar,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -33,6 +36,9 @@ import FeedsTab from './feeds';
 import FollowsTab from './follows';
 
 import { COSMOS, PATTERN_CYBER } from '../../utils/config';
+
+const FileType = require('file-type');
+const img = require('../../image/logo-cyb-v3.svg');
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -55,6 +61,15 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
+const QueryAddress = address =>
+  `query cyberlink {
+    cyberlink_aggregate(where: {subject: {_eq: "${address}"}}) {
+      aggregate {
+        count
+      }
+    }
+  }`;
+
 class AccountDetails extends React.Component {
   constructor(props) {
     super(props);
@@ -67,7 +82,9 @@ class AccountDetails extends React.Component {
       consensusAddress: null,
       addressLedger: null,
       addressFollows: [],
+      avatar: null,
       dataTweet: [],
+      linksCount: 0,
       follow: true,
       tweets: false,
       takeoffDonations: 0,
@@ -113,6 +130,38 @@ class AccountDetails extends React.Component {
     this.getTxsCosmos();
     this.getFollow();
     this.getFeeds();
+    this.getAvatarUser();
+  };
+
+  getAvatarUser = async () => {
+    const { match, node } = this.props;
+    const { address: addressProps } = match.params;
+    const response = await getAvatar(addressProps);
+    if (response !== null && response.txs.length > 0) {
+      const cidTo =
+        response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0].to;
+      const responseDag = await node.dag.get(cidTo, {
+        localResolve: false,
+      });
+      if (responseDag.value.size < 1.5 * 10 ** 6) {
+        const responseCat = await node.cat(cidTo);
+        const bufs = [];
+        bufs.push(responseCat);
+        const data = Buffer.concat(bufs);
+        const dataFileType = await FileType.fromBuffer(data);
+        if (dataFileType !== undefined) {
+          const { mime } = dataFileType;
+          const dataBase64 = data.toString('base64');
+          if (mime.indexOf('image') !== -1) {
+            const file = `data:${mime};base64,${dataBase64}`;
+            this.setState({
+              avatar: file,
+            });
+          }
+        }
+      }
+      console.log('cidTo >>>', cidTo);
+    }
   };
 
   chekFollowAddress = async () => {
@@ -297,6 +346,8 @@ class AccountDetails extends React.Component {
   getBalanseAccount = async () => {
     const { match } = this.props;
     const { address } = match.params;
+
+    let linksCount = 0;
     let total;
     const staking = {
       delegations: [],
@@ -321,6 +372,12 @@ class AccountDetails extends React.Component {
     }
 
     const resultGetDistribution = await getDistribution(dataValidatorAddress);
+
+    const indexStats = await getGraphQLQuery(QueryAddress(address));
+
+    if (indexStats !== null && indexStats.cyberlink_aggregate) {
+      linksCount = indexStats.cyberlink_aggregate.aggregate.count;
+    }
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -352,6 +409,7 @@ class AccountDetails extends React.Component {
       validatorAddress,
       consensusAddress,
       staking,
+      linksCount,
       loader: false,
     });
   };
@@ -399,6 +457,8 @@ class AccountDetails extends React.Component {
       dataTweet,
       follow,
       tweets,
+      avatar,
+      linksCount,
     } = this.state;
 
     const { node } = this.props;
@@ -516,7 +576,25 @@ class AccountDetails extends React.Component {
               {account} <Copy text={account} />
             </Text>
           </Pane>
-          <ContainerCard col={1}>
+          <ContainerCard col={3}>
+            <Card
+              title="cyberlinks"
+              value={formatNumber(linksCount)}
+              stylesContainer={{
+                width: '100%',
+                maxWidth: 'unset',
+                margin: 0,
+              }}
+            />
+            <img
+              style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: avatar !== null ? '50%' : 'none',
+              }}
+              alt="img-avatar"
+              src={avatar !== null ? avatar : img}
+            />
             <Card title="total, EUL" value={formatNumber(balance.total)} />
           </ContainerCard>
           <Tablist display="flex" justifyContent="center">
