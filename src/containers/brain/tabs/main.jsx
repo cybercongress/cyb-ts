@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { Pane, Icon, SearchItem } from '@cybercongress/gravity';
+import { Pane, Rank, SearchItem } from '@cybercongress/gravity';
 import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import CodeBlock from '../../ipfs/codeBlock';
@@ -44,7 +44,7 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function MainTab({ loadingTwit, twit }) {
+function MainTab({ loadingTwit, mobile, twit }) {
   try {
     const searchItems = [];
     const d = new Date();
@@ -74,6 +74,18 @@ function MainTab({ loadingTwit, twit }) {
               alignItems="center"
               marginBottom="10px"
             >
+              {!mobile && (
+                <Pane
+                  className="time-discussion rank-contentItem"
+                  position="absolute"
+                >
+                  <Rank
+                    hash={key}
+                    rank="n/a"
+                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+                  />
+                </Pane>
+              )}
               <Link className="SearchItem" to={`/ipfs/${key}`}>
                 <SearchItem
                   key={key}
@@ -128,9 +140,17 @@ function MainTab({ loadingTwit, twit }) {
     );
 
     return (
-      <div className="container-contentItem" style={{ width: '100%' }}>
-        {searchItems}
-      </div>
+      <Pane
+        width="90%"
+        marginX="auto"
+        marginY={0}
+        display="flex"
+        flexDirection="column"
+      >
+        <div className="container-contentItem" style={{ width: '100%' }}>
+          {searchItems}
+        </div>
+      </Pane>
     );
   } catch (error) {
     console.log(error);

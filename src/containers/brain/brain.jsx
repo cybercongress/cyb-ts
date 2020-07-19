@@ -213,9 +213,9 @@ class Brain extends React.Component {
         }
       }
     }
-const dataEnd = new Date();
-console.log('dataEnd :>> ', dataEnd);
-console.log('dataEnd - dataStart :>> ', dataEnd - dataStart);
+    const dataEnd = new Date();
+    console.log('dataEnd :>> ', dataEnd);
+    console.log('dataEnd - dataStart :>> ', dataEnd - dataStart);
     console.log('twitData :>> ', twitData);
 
     if (twitData.length > 0) {
@@ -498,7 +498,9 @@ console.log('dataEnd - dataStart :>> ', dataEnd - dataStart);
     }
 
     if (selected === 'main') {
-      content = <MainTab twit={twit} loadingTwit={loadingTwit} />;
+      content = (
+        <MainTab twit={twit} mobile={mobile} loadingTwit={loadingTwit} />
+      );
     }
 
     if (selected === 'knowledge') {
