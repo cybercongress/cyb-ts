@@ -410,3 +410,7 @@ input:focus:-ms-input-placeholder {
 .resize-none {
     resize: none;
 }
+
+.minHeightTextarea {
+    min-height: 42px !important;
+}

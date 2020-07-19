@@ -90,7 +90,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
   }
   return (
     <div className="container-contentItem">
-      <Noitem text="No cyberLinks" />
+      <Noitem text="no comments" />
     </div>
   );
 }

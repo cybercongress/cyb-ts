@@ -416,7 +416,7 @@ class ActionBarContainer extends Component {
       addressLocalStor,
     } = this.state;
 
-    const { textBtn } = this.props;
+    const { textBtn, placeholder } = this.props;
 
     if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
@@ -454,6 +454,7 @@ class ActionBarContainer extends Component {
           onChangeInput={this.onFilePickerChange}
           onClickClear={this.onClickClear}
           file={file}
+          placeholder={placeholder}
         />
       );
     }

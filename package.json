@@ -100,6 +100,7 @@
     "react-router-dom": "^5.1.2",
     "react-showdown": "^2.0.3",
     "react-syntax-highlighter": "^11.0.2",
+    "react-textarea-autosize": "^8.2.0",
     "remark-toc": "^7.0.0",
     "ripemd160": "^2.0.2",
     "secp256k1": "^3.7.1",

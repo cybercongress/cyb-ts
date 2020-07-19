@@ -159,8 +159,10 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState('answers');
+  const [selected, setSelected] = useState('discussion');
+  const [selectedMeta, setSelectedMeta] = useState('size');
   const [gateway, setGateway] = useState(null);
+  const [placeholder, setPlaceholder] = useState('');
   const [dataToLink, setDataToLink] = useState([]);
   const [metaData, setMetaData] = useState({
     type: 'file',
@@ -283,25 +285,30 @@ function Ipfs({ nodeIpfs, mobile }) {
       pathname.match(/optimisation/gm) &&
       pathname.match(/optimisation/gm).length > 0
     ) {
-      setSelected('optimisation');
+      setSelectedMeta('optimisation');
+      setSelected('meta');
     } else if (
       pathname.match(/community/gm) &&
       pathname.match(/community/gm).length > 0
     ) {
-      setSelected('community');
+      setSelectedMeta('community');
+      setSelected('meta');
     } else if (
       pathname.match(/answers/gm) &&
       pathname.match(/answers/gm).length > 0
     ) {
       setTextBtn('add answer');
+      setPlaceholder('add keywords, hash or file');
       setSelected('answers');
     } else if (
       pathname.match(/meta/gm) &&
       pathname.match(/meta/gm).length > 0
     ) {
       setSelected('meta');
+      setSelectedMeta('size');
     } else {
-      setTextBtn('add comment');
+      setPlaceholder('add message');
+      setTextBtn('Comment');
       setSelected('discussion');
     }
   };
@@ -323,7 +330,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     );
   }
 
-  if (selected === 'optimisation') {
+  if (selected === 'meta' && selectedMeta === 'optimisation') {
     contentTab = (
       <OptimisationTab
         data={dataFromLink}
@@ -339,7 +346,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     );
   }
 
-  if (selected === 'community') {
+  if (selected === 'meta' && selectedMeta === 'community') {
     contentTab = <CommunityTab data={communityData} />;
   }
 
@@ -364,7 +371,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   //   );
   // }
 
-  if (selected === 'meta') {
+  if (selected === 'meta' && selectedMeta === 'size') {
     contentTab = <MetaTab cid={cid} data={metaData} />;
   }
 
@@ -389,28 +396,15 @@ function Ipfs({ nodeIpfs, mobile }) {
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
           gridGap="10px"
-          marginY={25}
+          marginTop={25}
+          width="62%"
+          marginX="auto"
         >
           {/* <TabBtn
           text="content"
           isSelected={selected === 'content'}
           to={`/ipfs/${cid}`}
         /> */}
-          <TabBtn
-            // text="optimisation"
-            text={
-              <Pane display="flex" alignItems="center">
-                <Pane>optimisation</Pane>
-                {dataFromLink && dataFromLink.cyberlink.length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'optimisation'}>
-                    {formatNumber(dataFromLink.cyberlink.length)}
-                  </Pill>
-                )}
-              </Pane>
-            }
-            isSelected={selected === 'optimisation'}
-            to={`/ipfs/${cid}/optimisation`}
-          />
           <TabBtn
             // text="answers"
             text={
@@ -442,30 +436,63 @@ function Ipfs({ nodeIpfs, mobile }) {
             to={`/ipfs/${cid}`}
           />
           <TabBtn
-            // text="community"
-            text={
-              <Pane display="flex" alignItems="center">
-                <Pane>community</Pane>
-                {Object.keys(communityData).length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'community'}>
-                    {formatNumber(Object.keys(communityData).length)}
-                  </Pill>
-                )}
-              </Pane>
-            }
-            isSelected={selected === 'community'}
-            to={`/ipfs/${cid}/community`}
-          />
-          <TabBtn
             text="meta"
             isSelected={selected === 'meta'}
             to={`/ipfs/${cid}/meta`}
           />
         </Tablist>
+        {selected === 'meta' && (
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+            gridGap="10px"
+            marginY={25}
+          >
+            <TabBtn
+              text="Size"
+              isSelected={selectedMeta === 'size'}
+              to={`/ipfs/${cid}/meta`}
+            />
+            <TabBtn
+              // text="optimisation"
+              text={
+                <Pane display="flex" alignItems="center">
+                  <Pane>optimisation</Pane>
+                  {dataFromLink && dataFromLink.cyberlink.length > 0 && (
+                    <Pill marginLeft={5} active={selected === 'optimisation'}>
+                      {formatNumber(dataFromLink.cyberlink.length)}
+                    </Pill>
+                  )}
+                </Pane>
+              }
+              isSelected={selectedMeta === 'optimisation'}
+              to={`/ipfs/${cid}/meta/optimisation`}
+            />
+            <TabBtn
+              // text="community"
+              text={
+                <Pane display="flex" alignItems="center">
+                  <Pane>community</Pane>
+                  {Object.keys(communityData).length > 0 && (
+                    <Pill marginLeft={5} active={selected === 'community'}>
+                      {formatNumber(Object.keys(communityData).length)}
+                    </Pill>
+                  )}
+                </Pane>
+              }
+              isSelected={selectedMeta === 'community'}
+              to={`/ipfs/${cid}/meta/community`}
+            />
+          </Tablist>
+        )}
         {contentTab}
       </main>
       {!mobile && (selected === 'discussion' || selected === 'answers') && (
-        <ActionBarContainer textBtn={textBtn} keywordHash={cid} />
+        <ActionBarContainer
+          placeholder={placeholder}
+          textBtn={textBtn}
+          keywordHash={cid}
+        />
       )}
     </>
   );

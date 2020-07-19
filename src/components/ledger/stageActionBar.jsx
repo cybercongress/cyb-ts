@@ -14,6 +14,7 @@ import {
   FilePicker,
   Battery,
 } from '@cybercongress/gravity';
+import TextareaAutosize from 'react-textarea-autosize';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -201,56 +202,60 @@ export const StartStageSearchActionBar = ({
 }) => {
   return (
     <ActionBar>
-      <ActionBarContentText>
-        <Pane
-          display="flex"
-          flexDirection="column"
-          position="relative"
-          width="60%"
-        >
-          <input
-            value={contentHash}
-            style={{
-              height: 42,
-              width: '100%',
-              paddingLeft: '10px',
-              borderRadius: '20px',
-              textAlign: 'center',
-              paddingRight: '35px',
-            }}
-            onChange={e => onChangeInputContentHash(e)}
-            placeholder={placeholder}
-          />
+      <Pane width="65%" display="flex">
+        <ActionBarContentText>
           <Pane
-            position="absolute"
-            right="0"
-            top="50%"
-            transform="translate(0, -50%)"
+            display="flex"
+            flexDirection="column"
+            position="relative"
+            width="100%"
           >
-            <input
-              ref={inputOpenFileRef}
-              onChange={() => onChangeInput(inputOpenFileRef)}
-              type="file"
-              style={{ display: 'none' }}
+            <TextareaAutosize
+              value={contentHash}
+              style={{
+                height: 42,
+                width: '100%',
+                paddingLeft: '10px',
+                borderRadius: '20px',
+                textAlign: 'center',
+                paddingRight: '35px',
+                paddingTop: '10px',
+              }}
+              className="resize-none minHeightTextarea"
+              onChange={e => onChangeInputContentHash(e)}
+              placeholder={placeholder}
             />
-            <button
-              className={
-                file !== null && file !== undefined
-                  ? 'btn-add-close'
-                  : 'btn-add-file'
-              }
-              onClick={
-                file !== null && file !== undefined
-                  ? onClickClear
-                  : showOpenFileDlg
-              }
-            />
+            <Pane
+              position="absolute"
+              right="0"
+              top="50%"
+              transform="translate(0, -50%)"
+            >
+              <input
+                ref={inputOpenFileRef}
+                onChange={() => onChangeInput(inputOpenFileRef)}
+                type="file"
+                style={{ display: 'none' }}
+              />
+              <button
+                className={
+                  file !== null && file !== undefined
+                    ? 'btn-add-close'
+                    : 'btn-add-file'
+                }
+                onClick={
+                  file !== null && file !== undefined
+                    ? onClickClear
+                    : showOpenFileDlg
+                }
+              />
+            </Pane>
           </Pane>
-        </Pane>
-      </ActionBarContentText>
-      <Button disabled={!contentHash.length} onClick={onClickBtn}>
-        {textBtn}
-      </Button>
+        </ActionBarContentText>
+        <Button disabled={!contentHash.length} onClick={onClickBtn}>
+          {textBtn}
+        </Button>
+      </Pane>
     </ActionBar>
   );
 };
