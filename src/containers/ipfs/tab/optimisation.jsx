@@ -6,7 +6,7 @@ import ContentItem from '../contentItem';
 const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
   if (data && data.cyberlink.length > 0) {
     return (
-      <div className="container-contentItem" style={{ width: '100%' }}>
+      <div style={{ width: '100%' }}>
         {data.cyberlink.map((item, i) => (
           <Pane
             position="relative"

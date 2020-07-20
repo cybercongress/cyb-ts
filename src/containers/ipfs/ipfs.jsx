@@ -282,10 +282,10 @@ function Ipfs({ nodeIpfs, mobile }) {
     const { pathname } = location;
 
     if (
-      pathname.match(/optimisation/gm) &&
-      pathname.match(/optimisation/gm).length > 0
+      pathname.match(/baclinks/gm) &&
+      pathname.match(/baclinks/gm).length > 0
     ) {
-      setSelectedMeta('optimisation');
+      setSelectedMeta('baclinks');
       setSelected('meta');
     } else if (
       pathname.match(/community/gm) &&
@@ -330,24 +330,10 @@ function Ipfs({ nodeIpfs, mobile }) {
     );
   }
 
-  if (selected === 'meta' && selectedMeta === 'optimisation') {
-    contentTab = (
-      <OptimisationTab
-        data={dataFromLink}
-        mobile={mobile}
-        nodeIpfs={nodeIpfs}
-      />
-    );
-  }
-
   if (selected === 'answers') {
     contentTab = (
       <AnswersTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
     );
-  }
-
-  if (selected === 'meta' && selectedMeta === 'community') {
-    contentTab = <CommunityTab data={communityData} />;
   }
 
   if (selected === 'discussion') {
@@ -371,8 +357,24 @@ function Ipfs({ nodeIpfs, mobile }) {
   //   );
   // }
 
-  if (selected === 'meta' && selectedMeta === 'size') {
-    contentTab = <MetaTab cid={cid} data={metaData} />;
+  if (selected === 'meta') {
+    contentTab = (
+      <>
+        <CommunityTab data={communityData} />
+        <Pane width="60%" marginX="auto" marginBottom="15px" fontSize="18px">
+          Baclinks
+        </Pane>
+        <OptimisationTab
+          data={dataFromLink}
+          mobile={mobile}
+          nodeIpfs={nodeIpfs}
+        />
+        <Pane width="60%" marginX="auto" fontSize="18px">
+          Meta
+        </Pane>
+        <MetaTab cid={cid} data={metaData} />
+      </>
+    );
   }
 
   return (
@@ -397,6 +399,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
           gridGap="10px"
           marginTop={25}
+          marginBottom={selected !== 'meta' ? 25 : 0}
           width="62%"
           marginX="auto"
         >
@@ -441,50 +444,6 @@ function Ipfs({ nodeIpfs, mobile }) {
             to={`/ipfs/${cid}/meta`}
           />
         </Tablist>
-        {selected === 'meta' && (
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-            gridGap="10px"
-            marginY={25}
-          >
-            <TabBtn
-              text="Size"
-              isSelected={selectedMeta === 'size'}
-              to={`/ipfs/${cid}/meta`}
-            />
-            <TabBtn
-              // text="optimisation"
-              text={
-                <Pane display="flex" alignItems="center">
-                  <Pane>optimisation</Pane>
-                  {dataFromLink && dataFromLink.cyberlink.length > 0 && (
-                    <Pill marginLeft={5} active={selected === 'optimisation'}>
-                      {formatNumber(dataFromLink.cyberlink.length)}
-                    </Pill>
-                  )}
-                </Pane>
-              }
-              isSelected={selectedMeta === 'optimisation'}
-              to={`/ipfs/${cid}/meta/optimisation`}
-            />
-            <TabBtn
-              // text="community"
-              text={
-                <Pane display="flex" alignItems="center">
-                  <Pane>community</Pane>
-                  {Object.keys(communityData).length > 0 && (
-                    <Pill marginLeft={5} active={selected === 'community'}>
-                      {formatNumber(Object.keys(communityData).length)}
-                    </Pill>
-                  )}
-                </Pane>
-              }
-              isSelected={selectedMeta === 'community'}
-              to={`/ipfs/${cid}/meta/community`}
-            />
-          </Tablist>
-        )}
         {contentTab}
       </main>
       {!mobile && (selected === 'discussion' || selected === 'answers') && (

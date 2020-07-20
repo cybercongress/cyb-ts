@@ -202,7 +202,7 @@ export const StartStageSearchActionBar = ({
 }) => {
   return (
     <ActionBar>
-      <Pane width="65%" display="flex">
+      <Pane width="65%" alignItems="flex-end" display="flex">
         <ActionBarContentText>
           <Pane
             display="flex"
@@ -215,21 +215,24 @@ export const StartStageSearchActionBar = ({
               style={{
                 height: 42,
                 width: '100%',
+                color: '#fff',
                 paddingLeft: '10px',
                 borderRadius: '20px',
-                textAlign: 'center',
+                textAlign: 'start',
                 paddingRight: '35px',
                 paddingTop: '10px',
+                paddingBottom: '10px',
               }}
               className="resize-none minHeightTextarea"
               onChange={e => onChangeInputContentHash(e)}
               placeholder={placeholder}
+              onfocus="this.placeholder = ''"
             />
             <Pane
               position="absolute"
               right="0"
-              top="50%"
-              transform="translate(0, -50%)"
+              bottom="0"
+              transform="translate(0, -7px)"
             >
               <input
                 ref={inputOpenFileRef}

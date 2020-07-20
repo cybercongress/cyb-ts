@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { TableEv as Table } from '@cybercongress/gravity';
+import { TableEv as Table, Pane } from '@cybercongress/gravity';
 import { TextTable, Cid } from '../../../components';
 import { trimString } from '../../../utils/utils';
 import Noitem from '../../account/noItem';
@@ -24,32 +24,35 @@ function CommunityTab({ data }) {
       ));
 
     return (
-      <Table>
-        <Table.Head
-          style={{
-            backgroundColor: '#000',
-            borderBottom: '1px solid #ffffff80',
-            marginTop: '10px',
-            paddingBottom: '10px',
-          }}
-        >
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>accounts</TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
-            <TextTable>amount of links</TextTable>
-          </Table.TextHeaderCell>
-        </Table.Head>
-        <Table.Body
-          style={{
-            backgroundColor: '#000',
-            overflowY: 'hidden',
-            padding: 7,
-          }}
-        >
-          {rowItem}
-        </Table.Body>
-      </Table>
+      <Pane marginX="auto" width="60%" marginY={25}>
+        <Pane fontSize="18px">Community</Pane>
+        <Table>
+          <Table.Head
+            style={{
+              backgroundColor: '#000',
+              borderBottom: '1px solid #ffffff80',
+              marginTop: '10px',
+              paddingBottom: '10px',
+            }}
+          >
+            <Table.TextHeaderCell textAlign="center">
+              <TextTable>accounts</TextTable>
+            </Table.TextHeaderCell>
+            <Table.TextHeaderCell textAlign="center">
+              <TextTable>amount of links</TextTable>
+            </Table.TextHeaderCell>
+          </Table.Head>
+          <Table.Body
+            style={{
+              backgroundColor: '#000',
+              overflowY: 'hidden',
+              padding: 7,
+            }}
+          >
+            {rowItem}
+          </Table.Body>
+        </Table>
+      </Pane>
     );
   }
   return <Noitem text="No cyberLinks" />;

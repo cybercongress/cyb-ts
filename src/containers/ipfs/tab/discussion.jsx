@@ -73,7 +73,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
                 className="contentItem-discussion"
               />
               <Pane
-                className="time-discussion"
+                className="time-discussion rank-contentItem"
                 position="absolute"
                 right="0"
                 fontSize={12}

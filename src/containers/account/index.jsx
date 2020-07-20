@@ -321,11 +321,11 @@ class AccountDetails extends React.Component {
       pathname.match(/heroes/gm).length > 0
     ) {
       this.select('heroes');
-    } else if (
-      pathname.match(/mentions/gm) &&
-      pathname.match(/mentions/gm).length > 0
-    ) {
-      this.select('mentions');
+    // } else if (
+    //   pathname.match(/mentions/gm) &&
+    //   pathname.match(/mentions/gm).length > 0
+    // ) {
+    //   this.select('mentions');
     } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
       this.select('gol');
     } else if (
@@ -517,14 +517,14 @@ class AccountDetails extends React.Component {
       );
     }
 
-    if (selected === 'mentions') {
-      content = (
-        <Route
-          path="/network/euler/contract/:address/mentions"
-          render={() => <GetMentions accountUser={keywordHash} />}
-        />
-      );
-    }
+    // if (selected === 'mentions') {
+    //   content = (
+    //     <Route
+    //       path="/network/euler/contract/:address/mentions"
+    //       render={() => <GetMentions accountUser={keywordHash} />}
+    //     />
+    //   );
+    // }
 
     if (selected === 'gol') {
       content = (
@@ -636,11 +636,11 @@ class AccountDetails extends React.Component {
               isSelected={selected === 'txs'}
               to={`/network/euler/contract/${account}/txs`}
             />
-            <TabBtn
+            {/* <TabBtn
               text="Mentions"
               isSelected={selected === 'mentions'}
               to={`/network/euler/contract/${account}/mentions`}
-            />
+            /> */}
             <TabBtn
               text="GoL"
               isSelected={selected === 'gol'}
