@@ -45,8 +45,9 @@ const {
 } = LEDGER;
 
 const CREATE_LINK = 10;
-const ADD_ADDRESS = 11;
+const ADD_ADDRESS = 2.1;
 const LEDGER_TX_ACOUNT_INFO = 12;
+const STAGE_ADD_ADDRESS_OK = 2.2;
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -90,6 +91,7 @@ class ActionBarContainer extends Component {
 
   componentDidUpdate() {
     const { stage, address, addressInfo, fromCid, toCid } = this.state;
+    const { addAddress } = this.props;
     if (
       stage === STAGE_LEDGER_INIT ||
       stage === STAGE_READY ||
@@ -104,6 +106,9 @@ class ActionBarContainer extends Component {
         this.stageReady();
       }
     }
+    if (!addAddress && stage === STAGE_ADD_ADDRESS_OK) {
+      this.cleatState();
+    }
   }
 
   getLedgerAddress = async () => {
@@ -115,6 +120,7 @@ class ActionBarContainer extends Component {
     const connectLedger = await this.ledger.connect();
     console.log(connectLedger, stage);
     if (connectLedger.return_code === LEDGER_OK) {
+      console.log(' :>> ', stage);
       this.setState({
         connectLedger: true,
       });
@@ -128,10 +134,47 @@ class ActionBarContainer extends Component {
         this.calculationIpfsFrom();
         this.calculationIpfsTo();
       }
+      if (stage === ADD_ADDRESS) {
+        console.log('1 :>> ', stage);
+        this.addAddressLedger();
+      }
     } else {
       this.setState({
         connectLedger: false,
       });
+    }
+  };
+
+  addAddressLedger = async () => {
+    try {
+      const { updateFunc } = this.props;
+      const accounts = {};
+
+      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
+      console.log('addressLedgerCyber', addressLedgerCyber);
+      const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
+
+      accounts.cyber = addressLedgerCyber;
+      accounts.cosmos = addressLedgerCosmos;
+      accounts.keys = 'ledger';
+
+      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
+      localStorage.setItem('pocket', JSON.stringify(accounts));
+
+      if (updateFunc) {
+        updateFunc();
+      }
+      this.setState({
+        stage: STAGE_ADD_ADDRESS_OK,
+      });
+    } catch (error) {
+      const { message, statusCode } = error;
+      if (message !== "Cannot read property 'length' of undefined") {
+        // this just means we haven't found the device yet...
+        // eslint-disable-next-line
+        console.error('Problem reading address data', message, statusCode);
+      }
+      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -365,6 +408,7 @@ class ActionBarContainer extends Component {
   };
 
   onClickInitLedger = async () => {
+    const { stage } = this.state;
     // this.init();
     await this.setState({
       stage: STAGE_LEDGER_INIT,
@@ -398,6 +442,13 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onClickConnect = async () => {
+    await this.setState({
+      stage: ADD_ADDRESS,
+    });
+    this.getLedgerAddress();
+  };
+
   render() {
     const {
       address,
@@ -415,8 +466,23 @@ class ActionBarContainer extends Component {
       linkPrice,
       addressLocalStor,
     } = this.state;
+    console.log('stage :>> ', stage);
 
-    if (stage === STAGE_INIT) {
+    const { addAddress } = this.props;
+
+    console.log('addAddress :>> ', addAddress);
+
+    if (stage === STAGE_INIT && addAddress) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Button onClick={() => this.onClickConnect()}>Connect</Button>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && !addAddress) {
       return (
         <StartStageSearchActionBar
           onClickBtn={this.onClickInitLedger}
@@ -435,12 +501,23 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_LEDGER_INIT) {
+    if (stage === STAGE_LEDGER_INIT || stage === ADD_ADDRESS) {
       return (
         <ConnectLadger
           onClickConnect={() => this.getLedgerAddress()}
           connectLedger={connectLedger}
         />
+      );
+    }
+
+    if (addAddress && stage === STAGE_ADD_ADDRESS_OK) {
+      return (
+        <ActionBar>
+          <Pane display="flex" alignItems="center">
+            <Pane fontSize={20}>adding address</Pane>
+            <Dots big />
+          </Pane>
+        </ActionBar>
       );
     }
 

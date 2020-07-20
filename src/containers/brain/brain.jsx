@@ -132,6 +132,12 @@ class Brain extends React.Component {
     }
   }
 
+  update = async () => {
+    console.log('object :>> ');
+    await this.checkAddressLocalStorage();
+    this.getFollow();
+  };
+
   loadContent = async (cids, node, prevState) => {
     const contentPromises = Object.keys(cids).map(cid =>
       getContentByCid(cid, node)
@@ -185,7 +191,10 @@ class Brain extends React.Component {
     let twitData = [];
     let twit = {};
 
-    if (addressLedger && addressLedger === null && addressLedger.bech32) {
+    if (
+      addressLedger !== null &&
+      addressLedger.bech32 !== CYBER.CYBER_CONGRESS_ADDRESS
+    ) {
       responseFollows = await getFollows(addressLedger.bech32);
     } else {
       responseFollows = await getFollows(CYBER.CYBER_CONGRESS_ADDRESS);
@@ -371,6 +380,10 @@ class Brain extends React.Component {
       console.log('address', address);
       this.setState({ addressLedger: address });
       this.getAddressInfo();
+      this.setState({
+        addAddress: false,
+        loading: false,
+      });
     } else {
       this.setState({
         addAddress: true,
@@ -478,6 +491,7 @@ class Brain extends React.Component {
       donation,
       twit,
       loadingTwit,
+      addressLedger,
     } = this.state;
     const { block, mobile } = this.props;
 
@@ -573,34 +587,41 @@ class Brain extends React.Component {
     return (
       <div>
         <main className="block-body">
-          {amount === 0 && (
-            <Pane
-              boxShadow="0px 0px 5px #36d6ae"
-              paddingX={20}
-              paddingY={20}
-              marginY={20}
-            >
-              <Text fontSize="16px" color="#fff">
-                You do not have control over the brain. You need EUL tokens to
-                let Her hear you. If you came from Ethereum or Cosmos you can{' '}
-                <Link to="/gift">claim the gift</Link> of the Gods,{' '}
-                <Link to="/gol/faucet">get with ETH</Link>
-                on faucet or <Link to="/gol/takeoff">donate ATOM</Link> during
-                takeoff. Then enjoy the greatest tournament in the universe:{' '}
-                <Link to="/gol">Game of Links</Link>.
-              </Text>
-            </Pane>
-          )}
-          {/* <Pane
-            marginY={20}
-            display="grid"
-            gridTemplateColumns="max-content"
-            justifyContent="center"
-          >
-            <Link to="/network/euler/block">
-              <CardStatisics title={chainId} value={formatNumber(block)} />
-            </Link>
-          </Pane> */}
+          {amount === 0 &&
+            addressLedger !== null &&
+            addressLedger.bech32 !== CYBER.CYBER_CONGRESS_ADDRESS && (
+              <Pane
+                boxShadow="0px 0px 5px #36d6ae"
+                paddingX={20}
+                paddingY={20}
+                marginY={20}
+              >
+                <Text fontSize="16px" color="#fff">
+                  You do not have control over the brain. You need EUL tokens to
+                  let Her hear you. If you came from Ethereum or Cosmos you can{' '}
+                  <Link to="/gift">claim the gift</Link> of the Gods,{' '}
+                  <Link to="/gol/faucet">get with ETH</Link>
+                  on faucet or <Link to="/gol/takeoff">donate ATOM</Link> during
+                  takeoff. Then enjoy the greatest tournament in the universe:{' '}
+                  <Link to="/gol">Game of Links</Link>.
+                </Text>
+              </Pane>
+            )}
+          {amount === 0 &&
+            (addressLedger === null ||
+              addressLedger.bech32 === CYBER.CYBER_CONGRESS_ADDRESS) && (
+              <Pane
+                boxShadow="0px 0px 5px #36d6ae"
+                paddingX={20}
+                paddingY={20}
+                marginY={20}
+              >
+                <Text fontSize="16px" color="#fff">
+                  To make feed work you need to subscibe to sobody. Add your
+                  leger to pocket
+                </Text>
+              </Pane>
+            )}
 
           <Tablist
             display="grid"
@@ -653,7 +674,7 @@ class Brain extends React.Component {
         {!mobile && (
           <ActionBarContainer
             addAddress={addAddress}
-            updateFunc={this.checkAddressLocalStorage}
+            updateFunc={this.update}
           />
         )}
       </div>
@@ -662,7 +683,7 @@ class Brain extends React.Component {
 }
 
 const mapStateToProps = store => {
-  return { 
+  return {
     block: store.block.block,
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
