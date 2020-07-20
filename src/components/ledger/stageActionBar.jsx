@@ -226,7 +226,8 @@ export const StartStageSearchActionBar = ({
               className="resize-none minHeightTextarea"
               onChange={e => onChangeInputContentHash(e)}
               placeholder={placeholder}
-              onfocus="this.placeholder = ''"
+              onFocus={e => (e.target.placeholder = '')}
+              onBlur={e => (e.target.placeholder = placeholder)}
             />
             <Pane
               position="absolute"
