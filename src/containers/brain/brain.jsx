@@ -185,9 +185,12 @@ class Brain extends React.Component {
     let twitData = [];
     let twit = {};
 
-    if (addressLedger.bech32) {
+    if (addressLedger && addressLedger === null && addressLedger.bech32) {
       responseFollows = await getFollows(addressLedger.bech32);
+    } else {
+      responseFollows = await getFollows(CYBER.CYBER_CONGRESS_ADDRESS);
     }
+
     const dataStart = new Date();
 
     console.log('object :>> ', dataStart);
@@ -659,7 +662,7 @@ class Brain extends React.Component {
 }
 
 const mapStateToProps = store => {
-  return {
+  return { 
     block: store.block.block,
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,

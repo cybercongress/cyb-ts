@@ -6,6 +6,7 @@ import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import CodeBlock from '../../ipfs/codeBlock';
 import Iframe from 'react-iframe';
+import Noitem from '../../account/noItem';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -148,7 +149,11 @@ function MainTab({ loadingTwit, mobile, twit }) {
         flexDirection="column"
       >
         <div className="container-contentItem" style={{ width: '100%' }}>
-          {searchItems}
+          {Object.keys(twit).length > 0 ? (
+            searchItems
+          ) : (
+            <Noitem text="No feeds" />
+          )}
         </div>
       </Pane>
     );

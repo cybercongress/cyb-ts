@@ -612,8 +612,8 @@ class AccountDetails extends React.Component {
               to={`/network/euler/contract/${account}/heroes`}
             />
             <TabBtn
-              text="wallet"
-              isSelected={selected === 'Wallet'}
+              text="Wallet"
+              isSelected={selected === 'wallet'}
               to={`/network/euler/contract/${account}/wallet`}
             />
             <TabBtn

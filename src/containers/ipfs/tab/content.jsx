@@ -39,6 +39,9 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
               id="iframeCid"
               className="iframe-SearchItem"
               src={`https://io.cybernode.ai/ipfs/${cid}`}
+              style={{
+                backgroundColor: '#fff',
+              }}
             />
           </div>
           {/* </Pane> */}
