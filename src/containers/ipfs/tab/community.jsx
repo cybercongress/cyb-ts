@@ -14,7 +14,9 @@ function CommunityTab({ data }) {
         <Table.Row borderBottom="none" display="flex" key={key}>
           <Table.TextCell textAlign="center">
             <TextTable>
-              <Link to={`/network/euler/contract/${key}`}>{key}</Link>
+              <Link to={`/network/euler/contract/${key}`}>
+                {trimString(key, 9, 8)}
+              </Link>
             </TextTable>
           </Table.TextCell>
           <Table.TextCell textAlign="end">
