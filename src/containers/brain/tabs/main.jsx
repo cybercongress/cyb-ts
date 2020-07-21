@@ -7,6 +7,7 @@ import { formatNumber } from '../../../utils/utils';
 import CodeBlock from '../../ipfs/codeBlock';
 import Iframe from 'react-iframe';
 import Noitem from '../../account/noItem';
+import { Dots } from '../../../components';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -51,7 +52,7 @@ function MainTab({ loadingTwit, mobile, twit }) {
     const d = new Date();
 
     if (loadingTwit) {
-      return <div>...</div>;
+      return <Dots />;
     }
 
     searchItems.push(

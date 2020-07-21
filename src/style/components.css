@@ -368,6 +368,10 @@
   margin: 0 auto;
 }
 
+.markdown img {
+  width: 100%;
+}
+
 .markdown pre {
   margin: 10px 0;
   background-color: #343a40;

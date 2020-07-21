@@ -11,6 +11,7 @@ const {
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
 const IPFS = require('ipfs-api');
+const isSvg = require('is-svg');
 
 const Unixfs = require('ipfs-unixfs');
 const FileType = require('file-type');
@@ -111,16 +112,24 @@ export const getContentByCid = async (
                 } else {
                   const dataBase64 = data.toString();
                   let text;
-                  if (dataBase64.length > 300) {
-                    text = `${dataBase64.slice(0, 300)}...`;
+                  if (isSvg(dataBase64)) {
+                    resolve({
+                      status: 'downloaded',
+                      content: false,
+                      text: dataBase64,
+                    });
                   } else {
-                    text = dataBase64;
+                    if (dataBase64.length > 300) {
+                      text = `${dataBase64.slice(0, 300)}...`;
+                    } else {
+                      text = dataBase64;
+                    }
+                    resolve({
+                      status: 'downloaded',
+                      content: false,
+                      text,
+                    });
                   }
-                  resolve({
-                    status: 'downloaded',
-                    content: false,
-                    text,
-                  });
                 }
               });
             });
@@ -1115,7 +1124,7 @@ export const getFollows = async address => {
   }
 };
 
-export const getTwit = async address => {
+export const getTweet = async address => {
   try {
     const response = await axios({
       method: 'get',

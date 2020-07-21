@@ -81,7 +81,7 @@ const LEDGER = {
   STAGE_CONFIRMED: 8,
   STAGE_ERROR: 15,
   LEDGER_VERSION_REQ: [1, 1, 1],
-  HDPATH: [44, 118, 0, 0, 0],
+  HDPATH: [44, 118, 0, 0, 1],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
   MEMO: 'cyber.page, using Ledger',
@@ -100,6 +100,14 @@ const DISTRIBUTION = {
   'euler 4 rewards': 5000000000000,
   lifetime: 3000000000000,
   'community pool': 2000000000000,
+};
+
+const POCKET = {
+  STAGE_TWEET_ACTION_BAR: {
+    ADD_AVATAR: 'addAvatar',
+    FOLLOW: 'follow',
+    TWEET: 'tweet',
+  },
 };
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
@@ -134,4 +142,5 @@ export {
   TAKEOFF_SUPPLY,
   WP,
   PATTERN_HTTP,
+  POCKET,
 };

@@ -86,6 +86,7 @@
     "ipfs-http-client": "^40.2.1",
     "ipfs-unixfs": "^0.2.0",
     "ipld-dag-pb": "0.15.3",
+    "is-svg": "^4.2.1",
     "ledger-cosmos-js": "2.1.7",
     "qrcode.react": "^1.0.0",
     "query-string": "^6.12.1",

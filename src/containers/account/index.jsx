@@ -14,7 +14,7 @@ import {
   getTxCosmos,
   getFollows,
   getContent,
-  getTwit,
+  getTweet,
   chekFollow,
   getIndexStats,
   getGraphQLQuery,
@@ -38,6 +38,7 @@ import FollowsTab from './follows';
 import { COSMOS, PATTERN_CYBER } from '../../utils/config';
 
 const FileType = require('file-type');
+const isSvg = require('is-svg');
 const img = require('../../image/logo-cyb-v3.svg');
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -158,6 +159,13 @@ class AccountDetails extends React.Component {
               avatar: file,
             });
           }
+        } else {
+          const dataBase64 = data.toString();
+          if (isSvg(dataBase64)) {
+            this.setState({
+              avatar: `data:image/svg+xml;base64,${data.toString('base64')}`,
+            });
+          }
         }
       }
       console.log('cidTo >>>', cidTo);
@@ -247,7 +255,7 @@ class AccountDetails extends React.Component {
     let responseTweet = null;
     let dataTweet = [];
 
-    responseTweet = await getTwit(address);
+    responseTweet = await getTweet(address);
 
     if (responseTweet && responseTweet.txs && responseTweet.txs.length > 0) {
       dataTweet = [...dataTweet, ...responseTweet.txs];
@@ -321,11 +329,11 @@ class AccountDetails extends React.Component {
       pathname.match(/heroes/gm).length > 0
     ) {
       this.select('heroes');
-    // } else if (
-    //   pathname.match(/mentions/gm) &&
-    //   pathname.match(/mentions/gm).length > 0
-    // ) {
-    //   this.select('mentions');
+      // } else if (
+      //   pathname.match(/mentions/gm) &&
+      //   pathname.match(/mentions/gm).length > 0
+      // ) {
+      //   this.select('mentions');
     } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
       this.select('gol');
     } else if (
@@ -595,11 +603,15 @@ class AccountDetails extends React.Component {
               alt="img-avatar"
               src={avatar !== null ? avatar : img}
             />
-            <Card title="total, EUL" value={formatNumber(balance.total)} stylesContainer={{
+            <Card
+              title="total, EUL"
+              value={formatNumber(balance.total)}
+              stylesContainer={{
                 width: '100%',
                 maxWidth: 'unset',
                 margin: 0,
-              }} />
+              }}
+            />
           </ContainerCard>
           <Tablist
             display="grid"

@@ -15,7 +15,7 @@ import {
   getTxCosmos,
   getTotalSupply,
   getFollows,
-  getTwit,
+  getTweet,
   getContentByCid,
   getContent,
 } from '../../utils/search/utils';
@@ -191,6 +191,10 @@ class Brain extends React.Component {
     let twitData = [];
     let twit = {};
 
+    this.setState({
+      loadingTwit: true,
+    });
+
     if (
       addressLedger !== null &&
       addressLedger.bech32 !== CYBER.CYBER_CONGRESS_ADDRESS
@@ -213,7 +217,7 @@ class Brain extends React.Component {
           const addressFollow = addressResolve;
           console.log('addressResolve :>> ', addressResolve);
           if (addressFollow.match(PATTERN_CYBER)) {
-            const responseTwit = await getTwit(addressFollow);
+            const responseTwit = await getTweet(addressFollow);
             if (
               responseTwit &&
               responseTwit.txs &&
@@ -382,7 +386,6 @@ class Brain extends React.Component {
       this.getAddressInfo();
       this.setState({
         addAddress: false,
-        loading: false,
       });
     } else {
       this.setState({
@@ -587,41 +590,38 @@ class Brain extends React.Component {
     return (
       <div>
         <main className="block-body">
-          {amount === 0 &&
-            addressLedger !== null &&
-            addressLedger.bech32 !== CYBER.CYBER_CONGRESS_ADDRESS && (
-              <Pane
-                boxShadow="0px 0px 5px #36d6ae"
-                paddingX={20}
-                paddingY={20}
-                marginY={20}
-              >
-                <Text fontSize="16px" color="#fff">
-                  You do not have control over the brain. You need EUL tokens to
-                  let Her hear you. If you came from Ethereum or Cosmos you can{' '}
-                  <Link to="/gift">claim the gift</Link> of the Gods,{' '}
-                  <Link to="/gol/faucet">get with ETH</Link>
-                  on faucet or <Link to="/gol/takeoff">donate ATOM</Link> during
-                  takeoff. Then enjoy the greatest tournament in the universe:{' '}
-                  <Link to="/gol">Game of Links</Link>.
-                </Text>
-              </Pane>
-            )}
-          {amount === 0 &&
-            (addressLedger === null ||
-              addressLedger.bech32 === CYBER.CYBER_CONGRESS_ADDRESS) && (
-              <Pane
-                boxShadow="0px 0px 5px #36d6ae"
-                paddingX={20}
-                paddingY={20}
-                marginY={20}
-              >
-                <Text fontSize="16px" color="#fff">
-                  To make feed work you need to subscibe to sobody. Add your
-                  leger to pocket
-                </Text>
-              </Pane>
-            )}
+          {amount === 0 && !addAddress && (
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginY={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                You do not have control over the brain. You need EUL tokens to
+                let Her hear you. If you came from Ethereum or Cosmos you can{' '}
+                <Link to="/gift">claim the gift</Link> of the Gods,{' '}
+                <Link to="/gol/faucet">get with ETH</Link>
+                on faucet or <Link to="/gol/takeoff">donate ATOM</Link> during
+                takeoff. Then enjoy the greatest tournament in the universe:{' '}
+                <Link to="/gol">Game of Links</Link>.
+              </Text>
+            </Pane>
+          )}
+
+          {addAddress && (
+            <Pane
+              boxShadow="0px 0px 5px #36d6ae"
+              paddingX={20}
+              paddingY={20}
+              marginY={20}
+            >
+              <Text fontSize="16px" color="#fff">
+                To make feed work you need to subscibe to sobody. Add your leger
+                to pocket
+              </Text>
+            </Pane>
+          )}
 
           <Tablist
             display="grid"
