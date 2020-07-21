@@ -1,17 +1,19 @@
 import axios from 'axios';
 import { CYBER } from './config';
 
-export const getProposals = () =>
-  new Promise(resolve =>
-    axios({
+export const getProposals = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+
+    return response.data.result;
+  } catch (error) {
+    console.log('getProposals error', error);
+    return [];
+  }
+};
 
 export const getProposalsDetail = id =>
   new Promise(resolve =>
@@ -73,17 +75,18 @@ export const getProposalsDetailVotes = id =>
       .catch(e => {})
   );
 
-export const getMinDeposit = () =>
-  new Promise(resolve =>
-    axios({
+export const getMinDeposit = async () => {
+  try {
+    const response = await axios({
       method: 'get',
       url: `${CYBER.CYBER_NODE_URL_LCD}/gov/parameters/deposit`,
-    })
-      .then(response => {
-        resolve(response.data.result);
-      })
-      .catch(e => {})
-  );
+    });
+    return response.data.result;
+  } catch (error) {
+    console.log('error :>> ', error);
+    return null;
+  }
+};
 
 export const getTableVoters = id =>
   new Promise(resolve =>

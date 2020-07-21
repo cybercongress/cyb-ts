@@ -1,212 +1,147 @@
-import React from 'react';
-import { Pane, Text, TableEv as Table, Tooltip } from '@cybercongress/gravity';
-import { Votes, Legend, IconStatus } from '../../components';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
 import ActionBar from './actionBar';
-
-// import proposals from './test';
-import { getProposals } from '../../utils/governance';
+import { getProposals, getMinDeposit } from '../../utils/governance';
+import Columns from './components/columns';
+import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
+import { Card, ContainerCard } from '../../components';
+import { CYBER } from '../../utils/config';
+import { formatNumber } from '../../utils/utils';
+import { getcommunityPool } from '../../utils/search/utils';
 
 const dateFormat = require('dateformat');
 
-class Governance extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      table: [],
-    };
+const Statistics = ({ communityPoolCyber }) => (
+  <ContainerCard styles={{ alignItems: 'center' }} col="1">
+    <Card
+      title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+      value={formatNumber(communityPoolCyber)}
+      // tooltipValue="The number of the total ETH, currently, raised"
+      positionTooltip="bottom"
+    />
+  </ContainerCard>
+);
 
-    this.routeChange = this.routeChange.bind(this);
-  }
+function Governance() {
+  const [tableData, setTableData] = useState([]);
+  const [minDeposit, setMinDeposit] = useState(0);
+  const [communityPoolCyber, steCommunityPoolCyber] = useState(0);
 
-  componentDidMount() {
-    this.init();
-  }
+  useEffect(() => {
+    feachCommunityPool();
+    feachMinDeposit();
+    feachProposals();
+  }, []);
 
-  init = async () => {
-    const proposals = await getProposals();
-    this.setState({
-      // table: proposals[0].result,
-      table: proposals,
-    });
+  const feachMinDeposit = async () => {
+    const responseMinDeposit = await getMinDeposit();
+
+    if (responseMinDeposit !== null) {
+      setMinDeposit(parseFloat(responseMinDeposit.min_deposit[0].amount));
+    }
   };
 
-  routeChange = newPath => {
-    const { history } = this.props;
-    const path = newPath;
-    history.push(path);
+  const feachCommunityPool = async () => {
+    const responseCommunityPool = await getcommunityPool();
+
+    if (responseCommunityPool !== null) {
+      steCommunityPoolCyber(Math.floor(responseCommunityPool[0].amount));
+    }
   };
 
-  finalTallyResult = item => {
-    const finalVotes = {};
-    let finalTotalVotes = 0;
-    const yes = parseInt(item.yes);
-    const abstain = parseInt(item.abstain);
-    const no = parseInt(item.no);
-    const noWithVeto = parseInt(item.no_with_veto);
-
-    finalTotalVotes = yes + abstain + no + noWithVeto;
-    finalVotes.yes = (yes / finalTotalVotes) * 100;
-    finalVotes.no = (no / finalTotalVotes) * 100;
-    finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
-    return finalVotes;
+  const feachProposals = async () => {
+    const responseProposals = await getProposals();
+    if (responseProposals !== null) {
+      setTableData(responseProposals);
+    }
   };
 
-  render() {
-    const { table } = this.state;
-    // console.log('table', table.length);
-    const rowsTable = table.reverse().map(item => (
-      <Table.Row
-        borderBottom="none"
-        width="fit-content"
-        paddingLeft={20}
-        height={50}
-        isSelectable
-        onSelect={() => this.routeChange(`/governance/${item.id}`)}
-        key={item.id}
-      >
-        <Table.TextCell flex="none" width={50}>
-          <Text color="#fff">{item.id}</Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={150}>
-          <Text color="#fff">{item.content.value.title}</Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={170}>
-          <Text color="#fff">{item.content.type}</Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={150}>
-          <Pane display="flex" alignItems="center" marginBottom={5}>
-            <IconStatus status={item.proposal_status} marginRight={5} />
-            <Text color="#fff">{item.proposal_status}</Text>
-          </Pane>
-          <Votes finalVotes={this.finalTallyResult(item.final_tally_result)} />
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff">
-            {dateFormat(new Date(item.submit_time), 'dd/mm/yyyy, h:MM:ss TT')}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff">
-            {dateFormat(
-              new Date(item.deposit_end_time),
-              'dd/mm/yyyy, h:MM:ss TT'
-            )}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff" flexShrink={0} flexGrow={0}>
-            {dateFormat(
-              new Date(item.voting_start_time),
-              'dd/mm/yyyy, h:MM:ss TT'
-            )}
-          </Text>
-        </Table.TextCell>
-        <Table.TextCell flex="none" width={200}>
-          <Text color="#fff" flexShrink={0} flexGrow={0}>
-            {dateFormat(
-              new Date(item.voting_end_time),
-              'dd/mm/yyyy, h:MM:ss TT'
-            )}
-          </Text>
-        </Table.TextCell>
-      </Table.Row>
+  const active = tableData
+    .reverse()
+    .filter(
+      item =>
+        item.proposal_status !== 'Passed' && item.proposal_status !== 'Rejected'
+    )
+    .map(item => (
+      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
+        <ActiveCard
+          key={item.id}
+          id={item.id}
+          name={item.content.value.title}
+          minDeposit={minDeposit}
+          totalDeposit={parseFloat(item.total_deposit[0].amount)}
+          state={item.proposal_status}
+          timeEndDeposit={dateFormat(
+            new Date(item.deposit_end_time),
+            'dd/mm/yyyy, HH:MM:ss'
+          )}
+          timeEndVoting={dateFormat(
+            new Date(item.voting_end_time),
+            'dd/mm/yyyy, HH:MM:ss'
+          )}
+          amount={item.total_deposit[0]}
+        />
+      </Link>
     ));
 
-    return (
-      <div>
-        <main className="block-body-home">
-          <Pane>
-            <Pane
-              height={70}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Text
-                marginRight={50}
-                marginLeft={20}
-                color="#fff"
-                fontSize="18px"
-              >
-                {table.length} Proposals
-              </Text>
-              <Pane display="flex">
-                <Legend color="#3ab793" text="Yes" />
-                <Legend color="#ccdcff" text="Abstain" marginLeft={50} />
-                <Legend color="#ffcf65" text="No" marginLeft={50} />
-                <Legend color="#fe8a8a" text="NoWithVeto" marginLeft={50} />
-              </Pane>
-            </Pane>
-            <Pane
-              // height="100%"
-              display="flex"
-              paddingBottom={50}
-            >
-              <Table overflowX="auto">
-                <Table.Head
-                  width="fit-content"
-                  style={{
-                    backgroundColor: '#000',
-                    borderBottom: '1px solid #ffffff80',
-                  }}
-                  paddingLeft={20}
-                >
-                  <Table.TextHeaderCell flex="none" width={50}>
-                    <Text color="#fff" fontSize="17px">
-                      ID
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={150}>
-                    <Text color="#fff" fontSize="17px">
-                      Title
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={170}>
-                    <Text color="#fff" fontSize="17px">
-                      Type
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={150}>
-                    <Text color="#fff" fontSize="17px">
-                      Status
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Submit_Time
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Deposit_Endtime
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Voting_Starttime
-                    </Text>
-                  </Table.TextHeaderCell>
-                  <Table.TextHeaderCell flex="none" width={200}>
-                    <Text color="#fff" fontSize="17px">
-                      Voting_Endtime
-                    </Text>
-                  </Table.TextHeaderCell>
-                </Table.Head>
-                <Table.Body
-                  width="fit-content"
-                  style={{ backgroundColor: '#000', overflow: 'hidden' }}
-                >
-                  {rowsTable}
-                </Table.Body>
-              </Table>
-            </Pane>
-          </Pane>
-        </main>
-        <ActionBar update={this.init} />
-      </div>
-    );
-  }
+  const accepted = tableData
+    .filter(item => item.proposal_status === 'Passed')
+    .map(item => (
+      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
+        <AcceptedCard
+          key={item.id}
+          id={item.id}
+          name={item.content.value.title}
+          votes={item.final_tally_result}
+          type={item.content.type}
+          amount={item.total_deposit[0]}
+          timeEnd={dateFormat(
+            new Date(item.voting_end_time),
+            'dd/mm/yyyy, HH:MM:ss'
+          )}
+        />
+      </Link>
+    ));
+
+  const rejected = tableData
+    .reverse()
+    .filter(item => item.proposal_status === 'Rejected')
+    .map(item => (
+      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
+        <RejectedCard
+          key={item.id}
+          id={item.id}
+          name={item.content.value.title}
+          votes={item.final_tally_result}
+          type={item.content.type}
+          amount={item.total_deposit[0]}
+          timeEnd={dateFormat(
+            new Date(item.voting_end_time),
+            'dd/mm/yyyy, HH:MM:ss'
+          )}
+        />
+      </Link>
+    ));
+
+  return (
+    <div>
+      <main className="block-body">
+        <Statistics communityPoolCyber={communityPoolCyber} />
+        <Pane
+          display="grid"
+          justifyItems="center"
+          gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))"
+          gridGap="20px"
+        >
+          <Columns title="Active">{active}</Columns>
+          <Columns title="Accepted">{accepted}</Columns>
+          <Columns title="Rejected">{rejected}</Columns>
+        </Pane>
+      </main>
+      <ActionBar update={feachProposals} />
+    </div>
+  );
 }
 
 export default Governance;

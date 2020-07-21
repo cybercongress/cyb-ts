@@ -10,8 +10,7 @@ import {
   ContainerPane,
   Item,
 } from '../../components';
-import proposalsIdJson from './proposalsId';
-import proposerJson from './proposer';
+
 import {
   getProposals,
   getStakingPool,
@@ -56,6 +55,9 @@ const finalTallyResult = item => {
 
   return finalVotes;
 };
+
+const description =
+  '\nSummary of the proposal:\n\n- Change Signed Blocks Window from 300 to 1200.\n\nCurrent Network slashing parameters define that each validator must sign at least 70% of blocks in 300-block window.\n\n Converting those parameters into time, implying average block time of 5.75 seconds, gives us around 8.5 minutes of continuous downtime for each validator without jailing. But assuming current state of the chain, with almost half-million links in it, simply restart the node requires from 10 to 15 minutes even on the most nodes. That simply means that validator cannot restart the node without being jailed.\n\nHereby i propose to change Signed Blocks Window key of slashing module to value 1200 blocks. That will allow ~35 minutes of continuous downtime for validator before being jailed.\n\nThus validator operator will get enough time to perform hardware of software upgrades without fine for jailing.';
 
 class ProposalsDetail extends React.Component {
   constructor(props) {

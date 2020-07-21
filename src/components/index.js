@@ -22,6 +22,8 @@ import {
   TransactionError,
   ActionBarContentText,
   CheckAddressInfo,
+  GovernanceChangeParam,
+  GovernanceSoftwareUpgrade,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -36,6 +38,7 @@ import Battery from './battery';
 import TabBtn from './tabBtn';
 
 export {
+  GovernanceChangeParam,
   RowTableTakeoff,
   Account,
   CardTemplate,
@@ -70,6 +73,7 @@ export {
   Timer,
   Battery,
   TabBtn,
+  GovernanceSoftwareUpgrade,
 };
 
 export { Nums } from './ui/Numbers';

@@ -30,8 +30,8 @@ const LogoLedger = () => (
   </svg>
 );
 
-export const ContainetLedger = ({ logo, children, onClickBtnCloce }) => (
-  <div className="container-action height50 box-shadow-1px">
+export const ContainetLedger = ({ logo, children, onClickBtnCloce, styles }) => (
+  <div style={{...styles}} className="container-action height50 box-shadow-1px">
    <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
       <span>
         [

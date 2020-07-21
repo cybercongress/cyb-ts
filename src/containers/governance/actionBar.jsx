@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { CosmosDelegateTool } from '../../utils/ledger';
+import { Button } from '@cybercongress/gravity';
 import {
   ConnectLadger,
   JsonTransaction,
@@ -13,6 +14,8 @@ import {
   TextProposal,
   TransactionError,
   CheckAddressInfo,
+  GovernanceChangeParam,
+  GovernanceSoftwareUpgrade,
 } from '../../components';
 import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 
@@ -58,6 +61,11 @@ class ActionBar extends Component {
       valueAddressRecipient: '',
       errorMessage: null,
       connectLedger: null,
+      valueSelectChangeParam: '',
+      selectedParam: {},
+      changeParam: [],
+      nameUpgrade: '',
+      heightUpgrade: '',
     };
     this.timeOut = null;
     this.ledger = null;
@@ -137,6 +145,9 @@ class ActionBar extends Component {
       valueDeposit,
       valueAmountRecipient,
       valueAddressRecipient,
+      changeParam,
+      nameUpgrade,
+      heightUpgrade,
     } = this.state;
 
     let deposit = [];
@@ -198,6 +209,32 @@ class ActionBar extends Component {
           recipient,
           deposit,
           amount,
+          MEMO
+        );
+        break;
+      }
+      case 'paramChange': {
+        tx = await this.ledger.paramChange(
+          txContext,
+          address.bech32,
+          title,
+          description,
+          changeParam,
+          deposit,
+          MEMO
+        );
+        break;
+      }
+
+      case 'softwareUpgrade': {
+        tx = await this.ledger.softwareUpgrade(
+          txContext,
+          address.bech32,
+          title,
+          description,
+          nameUpgrade,
+          heightUpgrade,
+          deposit,
           MEMO
         );
         break;
@@ -268,7 +305,7 @@ class ActionBar extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.state.ledger.txStatusCyber(this.state.txHash);
+      const status = await this.ledger.txStatusCyber(this.state.txHash);
       const data = await status;
       if (data.logs) {
         this.setState({
@@ -344,9 +381,7 @@ class ActionBar extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      ledger: null,
       address: null,
-      errorMessage: null,
       addressInfo: null,
       valueSelect: 'textProposal',
       txMsg: null,
@@ -359,6 +394,12 @@ class ActionBar extends Component {
       valueDeposit: '',
       valueAmountRecipient: '',
       valueAddressRecipient: '',
+      errorMessage: null,
+      valueSelectChangeParam: '',
+      selectedParam: {},
+      changeParam: [],
+      nameUpgrade: '',
+      heightUpgrade: '',
     });
     this.timeOut = null;
     this.ledger = null;
@@ -379,13 +420,77 @@ class ActionBar extends Component {
     });
   };
 
-  hasKey() {
-    return this.state.address !== null;
-  }
+  onFilePickerChange = files => {
+    const reader = new FileReader();
 
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
+    reader.readAsText(files[0], 'UTF-8');
+    reader.onload = evt => {
+      console.log(evt.target.result);
+
+      const loadedJson = JSON.parse(evt.target.result);
+      console.log('loadedJson', loadedJson);
+    };
+
+    reader.onerror = evt => {
+      console.log('error', evt);
+    };
+  };
+
+  onChangeSelectParam = e => {
+    const { value } = e.target;
+    this.setState({
+      valueSelectChangeParam: value,
+      selectedParam: JSON.parse(value),
+      valueParam: '',
+    });
+  };
+
+  onChangeInputParam = e => {
+    const { selectedParam } = this.state;
+    const { value } = e.target;
+
+    this.setState({
+      valueParam: value,
+      selectedParam: { ...selectedParam, value: `"${value}"` },
+    });
+  };
+
+  onClickBtnAddParam = () => {
+    const { selectedParam, changeParam } = this.state;
+
+    this.setState({
+      changeParam: [...changeParam, selectedParam],
+      valueParam: '',
+      valueSelectChangeParam: '',
+    });
+  };
+
+  onClickDeleteParam = index => {
+    const { changeParam } = this.state;
+    const tempArr = changeParam;
+
+    tempArr.splice(index, 1);
+
+    this.setState({
+      changeParam: tempArr,
+    });
+  };
+
+  onChangeInputValueNameUpgrade = e => {
+    const { value } = e.target;
+
+    this.setState({
+      nameUpgrade: value,
+    });
+  };
+
+  onChangeInputValueHeightUpgrade = e => {
+    const { value } = e.target;
+
+    this.setState({
+      heightUpgrade: value,
+    });
+  };
 
   render() {
     const {
@@ -402,6 +507,11 @@ class ActionBar extends Component {
       valueAddressRecipient,
       errorMessage,
       connectLedger,
+      valueSelectChangeParam,
+      valueParam,
+      changeParam,
+      nameUpgrade,
+      heightUpgrade,
     } = this.state;
 
     if (stage === STAGE_INIT) {
@@ -459,6 +569,51 @@ class ActionBar extends Component {
           onChangeInputAddressRecipient={this.onChangeInputAddressRecipient}
           valueAmountRecipient={valueAmountRecipient}
           onChangeInputAmountRecipient={this.onChangeInputAmountRecipient}
+        />
+      );
+    }
+
+    if (valueSelect === 'paramChange' && stage === STAGE_TYPE_GOV) {
+      return (
+        <GovernanceChangeParam
+          valueSelect={valueSelectChangeParam}
+          onChangeSelect={this.onChangeSelectParam}
+          onClickBtnAddParam={this.onClickBtnAddParam}
+          onChangeInputParam={e => this.onChangeInputParam(e)}
+          valueParam={valueParam}
+          changeParam={changeParam}
+          onClickDeleteParam={this.onClickDeleteParam}
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
+          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.generateTx}
+        />
+      );
+    }
+
+    if (valueSelect === 'softwareUpgrade' && stage === STAGE_TYPE_GOV) {
+      return (
+        <GovernanceSoftwareUpgrade
+          onChangeInputTitle={this.onChangeInputTitle}
+          onChangeInputDescription={this.onChangeInputDescription}
+          onChangeInputDeposit={this.onChangeInputDeposit}
+          valueDescription={valueDescription}
+          valueTitle={valueTitle}
+          valueDeposit={valueDeposit}
+          onClickBtnCloce={this.onClickInitStage}
+          onClickBtn={this.generateTx}
+          valueNameUpgrade={nameUpgrade}
+          valueHeightUpgrade={heightUpgrade}
+          onChangeInputValueNameUpgrade={e =>
+            this.onChangeInputValueNameUpgrade(e)
+          }
+          onChangeInputValueHeightUpgrade={e =>
+            this.onChangeInputValueHeightUpgrade(e)
+          }
         />
       );
     }
