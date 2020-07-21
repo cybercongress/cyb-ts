@@ -56,21 +56,21 @@ function AppRouter({
   }, []);
 
   const init = async () => {
-    // setIpfsStatusProps(false);
-    // setLoader(false);
-    // const mobile = isMobileTablet();
-    // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    // setTypeDeviceProps(mobile);
+    setIpfsStatusProps(false);
+    const mobile = isMobileTablet();
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    setTypeDeviceProps(mobile);
+//     setLoader(false);
     // //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
-    // if (!mobile) {
-    //   if (DetectRTC.isWebRTCSupported && !isSafari) {
-    //     await initIpfsNode();
-    //   } else {
-    //     setLoader(false);
-    //   }
-    // } else {
-    //   setLoader(false);
-    // }
+    if (!mobile) {
+      if (DetectRTC.isWebRTCSupported && !isSafari) {
+        await initIpfsNode();
+      } else {
+        setLoader(false);
+      }
+    } else {
+      setLoader(false);
+    }
   };
 
   const initIpfsNode = async () => {
