@@ -81,7 +81,7 @@ const LEDGER = {
   STAGE_CONFIRMED: 8,
   STAGE_ERROR: 15,
   LEDGER_VERSION_REQ: [1, 1, 1],
-  HDPATH: [44, 118, 0, 0, 1],
+  HDPATH: [44, 118, 0, 0, 0],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
   MEMO: 'cyber.page, using Ledger',
