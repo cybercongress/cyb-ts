@@ -148,9 +148,9 @@ function AppRouter({
     }
   };
 
-  // if (loader) {
-  //   return <Dots />;
-  // }
+  if (loader) {
+    return <Dots />;
+  }
 
   return (
     <Router history={history}>
