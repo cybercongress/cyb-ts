@@ -11,7 +11,7 @@ import {
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
 import { search, getRankGrade, getCreator } from '../../utils/search/utils';
@@ -133,7 +133,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     }
   `;
   const GET_TO_LINK = gql`
-  query MyQuery {
+  subscription MyQuery {
       cyberlink(
         where: {
           object_from: { _eq: "${cid}" }
@@ -149,7 +149,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   `;
 
   const GET_LINK = gql`
-  query MyQuery {
+  subscription MyQuery {
       cyberlink(where: {_or: [{object_to: {_eq: "${cid}"}}, {object_from: {_eq: "${cid}"}}]}, order_by: {timestamp: desc}) {
         subject
       }
@@ -177,11 +177,11 @@ function Ipfs({ nodeIpfs, mobile }) {
     data: '',
   });
   const [textBtn, setTextBtn] = useState(false);
-  const { data: dataFromLink, loading: loadingFromLink } = useQuery(
+  const { data: dataFromLink, loading: loadingFromLink } = useSubscription(
     GET_FROM_LINK
   );
-  const { data: dataQueryToLink } = useQuery(GET_TO_LINK);
-  const { data: dataQueryCommunity } = useQuery(GET_LINK);
+  const { data: dataQueryToLink } = useSubscription(GET_TO_LINK);
+  const { data: dataQueryCommunity } = useSubscription(GET_LINK);
 
   let contentTab;
 
@@ -254,12 +254,13 @@ function Ipfs({ nodeIpfs, mobile }) {
   }, [cid]);
 
   useEffect(() => {
-    const feacData = async () => {
-      const responseSearch = await search(cid);
-      setDataToLink(responseSearch);
-    };
-    feacData();
+    feacDataSearch();
   }, [cid]);
+
+  const feacDataSearch = async () => {
+    const responseSearch = await search(cid);
+    setDataToLink(responseSearch);
+  };
 
   useEffect(() => {
     const feacData = async () => {
@@ -514,6 +515,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           placeholder={placeholder}
           textBtn={textBtn}
           keywordHash={cid}
+          update={() => feacDataSearch()}
         />
       )}
     </>

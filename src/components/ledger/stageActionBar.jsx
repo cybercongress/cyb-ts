@@ -86,7 +86,8 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
         </Link>
       )}{' '}
       <Pane display="inline">
-        was included in the block at height {formatNumber(parseFloat(txHeight))}
+        was included in the block <br /> at height{' '}
+        {formatNumber(parseFloat(txHeight))}
       </Pane>
     </ActionBarContentText>
     <Button marginX={10} onClick={onClickBtnCloce}>
