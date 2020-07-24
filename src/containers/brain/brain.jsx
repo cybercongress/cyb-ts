@@ -119,10 +119,6 @@ class Brain extends React.Component {
     // this.getPriceGol();
     this.getTxsCosmos();
     this.getContract();
-    const data = await getContent(
-      'QmT9U6Umr73ugK27pM4R1xAvGUBenyXvXgeBZ1t3geS3zh'
-    );
-    console.log('data :>> ', data);
   }
 
   componentDidUpdate(prevProps) {
@@ -195,44 +191,36 @@ class Brain extends React.Component {
       loadingTwit: true,
     });
 
-    if (
-      addressLedger !== null &&
-      addressLedger.bech32 !== CYBER.CYBER_CONGRESS_ADDRESS
-    ) {
+    if (addressLedger !== null) {
       responseFollows = await getFollows(addressLedger.bech32);
-    } else {
-      responseFollows = await getFollows(CYBER.CYBER_CONGRESS_ADDRESS);
-    }
 
-    const dataStart = new Date();
-
-    console.log('object :>> ', dataStart);
-
-    if (responseFollows !== null && responseFollows.txs) {
-      for (const item of responseFollows.txs) {
-        const cid = item.tx.value.msg[0].value.links[0].to;
-        const addressResolve = await getContent(cid);
-        console.log('addressResolve :>> ', addressResolve);
-        if (addressResolve) {
-          const addressFollow = addressResolve;
+      if (responseFollows !== null && responseFollows.txs) {
+        for (const item of responseFollows.txs) {
+          const cid = item.tx.value.msg[0].value.links[0].to;
+          const addressResolve = await getContent(cid);
           console.log('addressResolve :>> ', addressResolve);
-          if (addressFollow.match(PATTERN_CYBER)) {
-            const responseTwit = await getTweet(addressFollow);
-            if (
-              responseTwit &&
-              responseTwit.txs &&
-              responseTwit.txs.length > 0
-            ) {
-              twitData = [...twitData, ...responseTwit.txs];
+          if (addressResolve) {
+            const addressFollow = addressResolve;
+            console.log('addressResolve :>> ', addressResolve);
+            if (addressFollow.match(PATTERN_CYBER)) {
+              const responseTwit = await getTweet(addressFollow);
+              if (
+                responseTwit &&
+                responseTwit.txs &&
+                responseTwit.txs.length > 0
+              ) {
+                twitData = [...twitData, ...responseTwit.txs];
+              }
             }
           }
         }
       }
+    } else {
+      const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
+      if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
+        twitData = [...twitData, ...responseTwit.txs];
+      }
     }
-    const dataEnd = new Date();
-    console.log('dataEnd :>> ', dataEnd);
-    console.log('dataEnd - dataStart :>> ', dataEnd - dataStart);
-    console.log('twitData :>> ', twitData);
 
     if (twitData.length > 0) {
       twit = twitData.reduce(

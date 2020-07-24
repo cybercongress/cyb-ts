@@ -16,6 +16,7 @@ import {
 } from '../../../utils/search/utils';
 import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
+import AvatarIpfs from '../../account/avatarIpfs';
 
 const FileType = require('file-type');
 const isSvg = require('is-svg');
@@ -109,7 +110,7 @@ function TweetCard({
   );
   const [stage, setStage] = useState(STAGE_ADD_AVATAR);
   const [loading, setLoading] = useState(true);
-  const [avatar, setAvatar] = useState({ loading: true, img: null });
+  const [avatar, setAvatar] = useState(false);
   const [myTweet, setMyTweet] = useState(0);
   const [followers, setFollowers] = useState(0);
 
@@ -125,19 +126,19 @@ function TweetCard({
 
   useEffect(() => {
     if (!avatar.loading) {
-      if (avatar.img !== null && myTweet !== 0 && followers !== 0) {
+      if (avatar && myTweet !== 0 && followers !== 0) {
         setStage(STAGE_READY);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.TWEET);
       }
-      if (avatar.img !== null && myTweet === 0 && followers !== 0) {
+      if (avatar && myTweet === 0 && followers !== 0) {
         setStage(STAGE_ADD_FIRST_TWEET);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.TWEET);
       }
-      if (avatar.img !== null && myTweet === 0 && followers === 0) {
+      if (avatar && myTweet === 0 && followers === 0) {
         setStage(STAGE_ADD_FIRST_FOLLOWER);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW);
       }
-      if (avatar.img === null && myTweet === 0 && followers === 0) {
+      if (!avatar && myTweet === 0 && followers === 0) {
         setStage(STAGE_ADD_AVATAR);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.ADD_AVATAR);
       }
@@ -149,42 +150,7 @@ function TweetCard({
     const response = await getAvatar(address);
 
     if (response !== null && response.txs.length > 0) {
-      if (node !== null) {
-        setAvatar({ img, loading: false });
-        const cidTo =
-          response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0]
-            .to;
-        const responseDag = await node.dag.get(cidTo, {
-          localResolve: false,
-        });
-        if (responseDag.value.size < 1.5 * 10 ** 6) {
-          const responseCat = await node.cat(cidTo);
-          const bufs = [];
-          bufs.push(responseCat);
-          const data = Buffer.concat(bufs);
-          const dataFileType = await FileType.fromBuffer(data);
-          if (dataFileType !== undefined) {
-            const { mime } = dataFileType;
-            const dataBase64 = data.toString('base64');
-            if (mime.indexOf('image') !== -1) {
-              const imgAvatar = `data:${mime};base64,${dataBase64}`;
-              setAvatar(item => ({ ...item, img: imgAvatar }));
-            }
-          } else {
-            const dataBase64 = data.toString();
-            if (isSvg(dataBase64)) {
-              const svg = `data:image/svg+xml;base64,${data.toString(
-                'base64'
-              )}`;
-              setAvatar(item => ({ ...item, img: svg }));
-            }
-          }
-        }
-      } else {
-        setAvatar({ img, loading: false });
-      }
-    } else {
-      setAvatar(item => ({ ...item, loading: false }));
+      setAvatar(true);
     }
   };
 
@@ -273,18 +239,8 @@ function TweetCard({
   if (stage === STAGE_READY) {
     return (
       <PocketCard display="flex" flexDirection="row" {...props}>
-        <Pane flex={1}>
-          <Link to={`/network/euler/contract/${account}`}>
-            <img
-              style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: avatar !== null ? '50%' : 'none',
-              }}
-              alt="img-avatar"
-              src={avatar.img !== null ? avatar.img : img}
-            />
-          </Link>
+        <Pane display="flex" flex={1}>
+          <AvatarIpfs addressCyber={account} node={node} />
         </Pane>
         <Link style={{ margin: '0 10px' }} to="/brain">
           <Pane
@@ -342,8 +298,8 @@ const mapStateToProps = store => {
 
 const mapDispatchprops = dispatch => {
   return {
-    setStageTweetActionBarProps: (amount, prize) =>
-      dispatch(setStageTweetActionBar(amount, prize)),
+    setStageTweetActionBarProps: stage =>
+      dispatch(setStageTweetActionBar(stage)),
   };
 };
 

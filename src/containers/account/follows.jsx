@@ -51,7 +51,7 @@ function FollowsTab({ following, followers, node }) {
   });
 
   return (
-    <Pane width="60%" marginX="auto">
+    <Pane className="contentItem">
       <Pane marginBottom="20px">
         <Pane marginBottom="10px" fontSize="20px">
           Friends

@@ -189,7 +189,7 @@ class AccountDetails extends React.Component {
   chekAddress = async () => {
     const { location } = this.props;
     const { pathname } = location;
-    let address;
+    let address = null;
     let locationAddress;
     if (
       pathname.match(/cyber[a-zA-Z0-9]{39}/gm) &&
@@ -204,7 +204,7 @@ class AccountDetails extends React.Component {
       this.setState({ addressLedger: address.bech32 });
     }
 
-    if (address.bech32 === locationAddress[0]) {
+    if (address !== null && address.bech32 === locationAddress[0]) {
       this.setState({
         follow: false,
         tweets: true,
@@ -489,7 +489,7 @@ class AccountDetails extends React.Component {
       followers,
     } = this.state;
 
-    const { node } = this.props;
+    const { node, mobile } = this.props;
 
     let content;
 
@@ -687,14 +687,16 @@ class AccountDetails extends React.Component {
             {content}
           </Pane>
         </main>
-        <ActionBarContainer
-          updateAddress={this.init}
-          addressSend={account}
-          type={selected}
-          addressLedger={addressLedger}
-          follow={follow}
-          tweets={tweets}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            updateAddress={this.init}
+            addressSend={account}
+            type={selected}
+            addressLedger={addressLedger}
+            follow={follow}
+            tweets={tweets}
+          />
+        )}
       </div>
     );
   }

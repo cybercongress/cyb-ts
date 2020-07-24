@@ -53,7 +53,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
       return (
         <img
           alt="content"
-          style={stylesImg || { width: '100%' }}
+          style={stylesImg || { objectFit: 'contain', width: '100%' }}
           src={content}
         />
       );
