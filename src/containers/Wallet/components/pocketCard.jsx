@@ -8,6 +8,7 @@ function PocketCard({ children, select, ...props }) {
       className="container-card cursor-pointer"
       width="100%"
       maxWidth="unset"
+      height="auto"
       paddingX={20}
       paddingY={20}
       {...props}

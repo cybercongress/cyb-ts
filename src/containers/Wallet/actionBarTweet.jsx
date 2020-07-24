@@ -127,7 +127,7 @@ class ActionBarTweet extends Component {
         placeholder: 'Select an avatar',
       });
     }
-  }
+  };
 
   getLedgerAddress = async () => {
     const { stage } = this.state;
@@ -478,7 +478,9 @@ class ActionBarTweet extends Component {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={this.onClickInitLedger}>Follow</Button>
+            <Button onClick={this.onClickInitLedger}>
+              Follow cyber~Congress
+            </Button>
           </Pane>
         </ActionBar>
       );

@@ -30,13 +30,9 @@ function GolBalance({ balance, accounts, ...props }) {
     <PocketCard
       display="flex"
       flexDirection="column"
-      paddingTop={15}
-      paddingBottom={40}
-      minHeight="100px"
       {...props}
     >
       <Row
-        marginBottom={20}
         marginBottomValue={5}
         justifyContent="space-between"
         alignItems="baseline"

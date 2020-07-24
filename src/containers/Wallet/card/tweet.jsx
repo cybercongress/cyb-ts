@@ -8,9 +8,11 @@ import { formatNumber } from '../../../utils/utils';
 import {
   getAvatar,
   getFollows,
+  getFollowers,
   getTweet,
   getContent,
   getGraphQLQuery,
+  getIpfsHash,
 } from '../../../utils/search/utils';
 import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
@@ -188,12 +190,15 @@ function TweetCard({
 
   const getFollow = async address => {
     let count = 0;
-    const response = await getFollows(address);
+    if (address) {
+      const addressHash = await getIpfsHash(address);
+      const response = await getFollowers(addressHash);
 
-    if (response !== null && response.txs.length > 0) {
-      count = response.txs.length;
+      if (response !== null && response.txs.length > 0) {
+        count = response.txs.length;
+      }
+      setFollowers(count);
     }
-    setFollowers(count);
   };
 
   const getMyTweet = async address => {
@@ -213,9 +218,6 @@ function TweetCard({
       <PocketCard
         display="flex"
         flexDirection="column"
-        paddingTop={15}
-        paddingBottom={40}
-        minHeight="100px"
         alignItems="flex-start"
         {...props}
       >
@@ -226,14 +228,7 @@ function TweetCard({
 
   if (stage === STAGE_ADD_AVATAR) {
     return (
-      <PocketCard
-        display="flex"
-        paddingY={20}
-        paddingX={20}
-        minHeight="100px"
-        alignItems="flex-start"
-        {...props}
-      >
+      <PocketCard display="flex" alignItems="flex-start" {...props}>
         <Text fontSize="16px" color="#fff">
           You can start{' '}
           <Link to={`/network/euler/contract/${account}`}>tweet</Link> right
@@ -248,15 +243,13 @@ function TweetCard({
       <PocketCard
         display="flex"
         flexDirection="column"
-        paddingTop={15}
-        paddingBottom={40}
-        minHeight="100px"
         alignItems="flex-start"
         {...props}
       >
         <Text fontSize="16px" color="#fff">
-          If you will follow somebody. <Link to="/brain">Feed</Link> will help
-          you stay on track. Try, by following cyberCongress blog
+          You can follow anybody while discovering content.{' '}
+          <Link to="/brain">Feed</Link> will help you stay on track. Try, by
+          following cyberCongress blog
         </Text>
       </PocketCard>
     );
@@ -267,9 +260,6 @@ function TweetCard({
       <PocketCard
         display="flex"
         flexDirection="column"
-        paddingTop={15}
-        paddingBottom={40}
-        minHeight="100px"
         alignItems="flex-start"
         {...props}
       >
@@ -282,64 +272,60 @@ function TweetCard({
 
   if (stage === STAGE_READY) {
     return (
-      <PocketCard
-        display="flex"
-        flexDirection="row"
-        paddingTop={15}
-        paddingBottom={40}
-        minHeight="100px"
-        {...props}
-      >
+      <PocketCard display="flex" flexDirection="row" {...props}>
         <Pane flex={1}>
-          <img
-            style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: avatar !== null ? '50%' : 'none',
-            }}
-            alt="img-avatar"
-            src={avatar.img !== null ? avatar.img : img}
-          />
+          <Link to={`/network/euler/contract/${account}`}>
+            <img
+              style={{
+                width: '80px',
+                height: '80px',
+                borderRadius: avatar !== null ? '50%' : 'none',
+              }}
+              alt="img-avatar"
+              src={avatar.img !== null ? avatar.img : img}
+            />
+          </Link>
         </Pane>
-        <Pane
-          marginX={10}
-          alignItems="center"
-          display="flex"
-          flexDirection="column"
+        <Link style={{ margin: '0 10px' }} to="/brain">
+          <Pane
+            marginX={10}
+            alignItems="center"
+            display="flex"
+            flexDirection="column"
+          >
+            <Pane fontSize="20px">
+              {loadingNewsToday ? (
+                <Dots />
+              ) : (
+                formatNumber(parseFloat(countNewsToday))
+              )}
+            </Pane>
+            <Pane color="#fff">News today</Pane>
+          </Pane>
+        </Link>
+        <Link
+          style={{ margin: '0 10px' }}
+          to={`/network/euler/contract/${account}`}
         >
-          <Pane fontSize="20px">
-            {loadingNewsToday ? (
-              <Dots />
-            ) : (
-              formatNumber(parseFloat(countNewsToday))
-            )}
+          <Pane alignItems="center" display="flex" flexDirection="column">
+            <Pane fontSize="20px">{formatNumber(myTweet)}</Pane>
+            <Pane color="#fff">My tweet</Pane>
           </Pane>
-          <Pane>
-            <Link to="/brain">News today</Link>
-          </Pane>
-        </Pane>
-        <Pane
-          marginX={10}
-          alignItems="center"
-          display="flex"
-          flexDirection="column"
+        </Link>
+        <Link
+          style={{ margin: '0 10px' }}
+          to={`/network/euler/contract/${account}/follows`}
         >
-          <Pane fontSize="20px">{formatNumber(myTweet)}</Pane>
-          <Pane>
-            <Link to={`/network/euler/contract/${account}`}>My tweet</Link>
+          <Pane
+            marginX={10}
+            alignItems="center"
+            display="flex"
+            flexDirection="column"
+          >
+            <Pane fontSize="20px">{formatNumber(followers)}</Pane>
+            <Pane color="#fff">Followers</Pane>
           </Pane>
-        </Pane>
-        <Pane
-          marginX={10}
-          alignItems="center"
-          display="flex"
-          flexDirection="column"
-        >
-          <Pane fontSize="20px">{formatNumber(followers)}</Pane>
-          <Pane>
-            <Link to={`/network/euler/contract/${account}`}>Followers</Link>
-          </Pane>
-        </Pane>
+        </Link>
       </PocketCard>
     );
   }

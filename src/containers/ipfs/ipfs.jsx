@@ -14,7 +14,7 @@ import Iframe from 'react-iframe';
 import { useQuery } from '@apollo/react-hooks';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
-import { search, getRankGrade } from '../../utils/search/utils';
+import { search, getRankGrade, getCreator } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
@@ -29,6 +29,7 @@ import {
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
+import AvatarIpfs from '../account/avatarIpfs';
 import ContentItem from './contentItem';
 const dateFormat = require('dateformat');
 
@@ -164,6 +165,11 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [gateway, setGateway] = useState(null);
   const [placeholder, setPlaceholder] = useState('');
   const [dataToLink, setDataToLink] = useState([]);
+  const [creator, setCreator] = useState({
+    address: '',
+    timestamp: '',
+  });
+
   const [metaData, setMetaData] = useState({
     type: 'file',
     size: 0,
@@ -251,6 +257,27 @@ function Ipfs({ nodeIpfs, mobile }) {
     const feacData = async () => {
       const responseSearch = await search(cid);
       setDataToLink(responseSearch);
+    };
+    feacData();
+  }, [cid]);
+
+  useEffect(() => {
+    const feacData = async () => {
+      const responseCreator = await getCreator(cid);
+      console.log('responseCreator :>> ', responseCreator);
+      if (
+        responseCreator !== null &&
+        responseCreator.txs &&
+        responseCreator.txs.length > 0
+      ) {
+        const addressCreator =
+          responseCreator.txs[0].tx.value.msg[0].value.address;
+        const timeCreate = responseCreator.txs[0].timestamp;
+        setCreator({
+          address: addressCreator,
+          timestamp: timeCreate,
+        });
+      }
     };
     feacData();
   }, [cid]);
@@ -360,7 +387,43 @@ function Ipfs({ nodeIpfs, mobile }) {
   if (selected === 'meta') {
     contentTab = (
       <>
-        <CommunityTab data={communityData} />
+        <Pane
+          width="60%"
+          marginX="auto"
+          marginTop="25px"
+          fontSize="18px"
+        >
+          Creator
+        </Pane>
+        <Pane
+          alignItems="center"
+          width="60%"
+          marginX="auto"
+          justifyContent="center"
+          display="flex"
+          flexDirection="column"
+        >
+          <Link to={`/network/euler/contract/${creator.address}`}>
+            <Pane
+              alignItems="center"
+              marginX="auto"
+              justifyContent="center"
+              display="flex"
+            >
+              {creator.address.length > 11 && (
+                <Pane> {creator.address.slice(0, 7)}</Pane>
+              )}
+              <AvatarIpfs node={nodeIpfs} addressCyber={creator.address} />
+              {creator.address.length > 11 && (
+                <Pane> {creator.address.slice(-6)}</Pane>
+              )}
+            </Pane>
+          </Link>
+          {creator.timestamp.length > 0 && (
+            <Pane>{dateFormat(creator.timestamp, 'dd/mm/yyyy, HH:MM:ss')}</Pane>
+          )}
+        </Pane>
+        <CommunityTab node={nodeIpfs} data={communityData} />
         <Pane width="60%" marginX="auto" marginBottom="15px" fontSize="18px">
           Baclinks
         </Pane>

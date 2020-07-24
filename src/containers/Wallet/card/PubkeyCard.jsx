@@ -38,14 +38,7 @@ function PubkeyCard({ pocket, ...props }) {
   }, pocket);
 
   return (
-    <PocketCard
-      display="flex"
-      flexDirection="column"
-      paddingTop={15}
-      paddingBottom={40}
-      minHeight={pocket.keys === 'ledger' ? '200px' : '150px'}
-      {...props}
-    >
+    <PocketCard display="flex" flexDirection="column" {...props}>
       {pocket.keys === 'ledger' && (
         <Row
           marginBottom={25}
@@ -66,7 +59,7 @@ function PubkeyCard({ pocket, ...props }) {
         />
       )}
       <Row
-        marginBottom={20}
+        marginBottom={10}
         marginBottomValue={5}
         justifyContent="space-between"
         alignItems="baseline"
@@ -96,7 +89,6 @@ function PubkeyCard({ pocket, ...props }) {
         }
       />
       <Row
-        marginBottom={20}
         marginBottomValue={5}
         alignItems="center"
         justifyContent="space-between"

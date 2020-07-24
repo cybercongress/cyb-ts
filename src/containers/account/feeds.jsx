@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Pane, Rank } from '@cybercongress/gravity';
 import Noitem from './noItem';
 import ContentItem from '../ipfs/contentItem';
@@ -59,6 +60,7 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
                 display="flex"
                 alignItems="center"
                 marginBottom="10px"
+                key={`${cid}_${i}`}
               >
                 {/* {!mobile && (
                 <Pane
@@ -73,7 +75,6 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
                 </Pane>
               )} */}
                 <ContentItem
-                  key={`${cid}_${i}`}
                   nodeIpfs={nodeIpfs}
                   cid={cid}
                   item={item}

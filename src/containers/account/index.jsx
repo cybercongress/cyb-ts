@@ -19,6 +19,7 @@ import {
   getIndexStats,
   getGraphQLQuery,
   getAvatar,
+  getFollowers,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -34,6 +35,7 @@ import { getEstimation } from '../../utils/fundingMath';
 import { setGolTakeOff } from '../../redux/actions/gol';
 import FeedsTab from './feeds';
 import FollowsTab from './follows';
+import AvatarIpfs from './avatarIpfs';
 
 import { COSMOS, PATTERN_CYBER } from '../../utils/config';
 
@@ -82,7 +84,8 @@ class AccountDetails extends React.Component {
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
-      addressFollows: [],
+      following: [],
+      followers: [],
       avatar: null,
       dataTweet: [],
       linksCount: 0,
@@ -116,6 +119,7 @@ class AccountDetails extends React.Component {
       this.chekPathname();
     }
     if (prevProps.match.params.address !== match.params.address) {
+      this.clearState();
       this.init();
     }
   }
@@ -129,47 +133,40 @@ class AccountDetails extends React.Component {
     this.getBalanseAccount();
     this.chekPathname();
     this.getTxsCosmos();
-    this.getFollow();
+    this.getFollowing();
+    this.getFollowersAddress();
     this.getFeeds();
-    this.getAvatarUser();
   };
 
-  getAvatarUser = async () => {
-    const { match, node } = this.props;
-    const { address: addressProps } = match.params;
-    const response = await getAvatar(addressProps);
-    if (response !== null && response.txs.length > 0) {
-      const cidTo =
-        response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0].to;
-      const responseDag = await node.dag.get(cidTo, {
-        localResolve: false,
-      });
-      if (responseDag.value.size < 1.5 * 10 ** 6) {
-        const responseCat = await node.cat(cidTo);
-        const bufs = [];
-        bufs.push(responseCat);
-        const data = Buffer.concat(bufs);
-        const dataFileType = await FileType.fromBuffer(data);
-        if (dataFileType !== undefined) {
-          const { mime } = dataFileType;
-          const dataBase64 = data.toString('base64');
-          if (mime.indexOf('image') !== -1) {
-            const file = `data:${mime};base64,${dataBase64}`;
-            this.setState({
-              avatar: file,
-            });
-          }
-        } else {
-          const dataBase64 = data.toString();
-          if (isSvg(dataBase64)) {
-            this.setState({
-              avatar: `data:image/svg+xml;base64,${data.toString('base64')}`,
-            });
-          }
-        }
-      }
-      console.log('cidTo >>>', cidTo);
-    }
+  clearState = () => {
+    this.setState({
+      account: '',
+      keywordHash: '',
+      loader: true,
+      loading: true,
+      validatorAddress: null,
+      consensusAddress: null,
+      addressLedger: null,
+      addressFollows: [],
+      avatar: null,
+      dataTweet: [],
+      linksCount: 0,
+      follow: true,
+      tweets: false,
+      takeoffDonations: 0,
+      balance: {
+        available: 0,
+        delegation: 0,
+        unbonding: 0,
+        rewards: 0,
+        total: 0,
+      },
+      staking: {
+        delegations: [],
+        unbonding: [],
+      },
+      selected: 'tweets',
+    });
   };
 
   chekFollowAddress = async () => {
@@ -220,11 +217,33 @@ class AccountDetails extends React.Component {
     }
   };
 
-  getFollow = async () => {
+  getFollowing = async () => {
     const { match } = this.props;
     const { address } = match.params;
     let responseFollows = null;
-    const addressFollows = [];
+    const followers = [];
+
+    if (address) {
+      const addressHash = await getIpfsHash(address);
+      responseFollows = await getFollowers(addressHash);
+    }
+
+    if (responseFollows !== null && responseFollows.txs) {
+      responseFollows.txs.forEach(async item => {
+        const addressFollowers = item.tx.value.msg[0].value.address;
+        followers.push(addressFollowers);
+      });
+      this.setState({
+        followers,
+      });
+    }
+  };
+
+  getFollowersAddress = async () => {
+    const { match } = this.props;
+    const { address } = match.params;
+    let responseFollows = null;
+    const following = [];
 
     if (address) {
       responseFollows = await getFollows(address);
@@ -239,9 +258,9 @@ class AccountDetails extends React.Component {
           const addressFollow = addressResolve;
           console.log('addressResolve :>> ', addressResolve);
           if (addressFollow.match(PATTERN_CYBER)) {
-            addressFollows.push(addressFollow);
+            following.push(addressFollow);
             this.setState({
-              addressFollows,
+              following,
             });
           }
         }
@@ -342,10 +361,10 @@ class AccountDetails extends React.Component {
     ) {
       this.select('cyberlink');
     } else if (
-      pathname.match(/follows/gm) &&
-      pathname.match(/follows/gm).length > 0
+      pathname.match(/community/gm) &&
+      pathname.match(/community/gm).length > 0
     ) {
-      this.select('follows');
+      this.select('community');
     } else {
       this.select('tweets');
     }
@@ -461,12 +480,13 @@ class AccountDetails extends React.Component {
       won,
       loading,
       takeoffDonations,
-      addressFollows,
       dataTweet,
       follow,
       tweets,
       avatar,
       linksCount,
+      following,
+      followers,
     } = this.state;
 
     const { node } = this.props;
@@ -561,11 +581,17 @@ class AccountDetails extends React.Component {
       // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
     }
 
-    if (selected === 'follows') {
+    if (selected === 'community') {
       content = (
         <Route
-          path="/network/euler/contract/:address/follows"
-          render={() => <FollowsTab data={addressFollows} />}
+          path="/network/euler/contract/:address/community"
+          render={() => (
+            <FollowsTab
+              node={node}
+              following={following}
+              followers={followers}
+            />
+          )}
         />
       );
       // connect = <FollowsTab data={addressFollows} />;
@@ -594,15 +620,7 @@ class AccountDetails extends React.Component {
                 margin: 0,
               }}
             />
-            <img
-              style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: avatar !== null ? '50%' : 'none',
-              }}
-              alt="img-avatar"
-              src={avatar !== null ? avatar : img}
-            />
+            <AvatarIpfs addressCyber={account} node={node} />
             <Card
               title="total, EUL"
               value={formatNumber(balance.total)}
@@ -639,9 +657,9 @@ class AccountDetails extends React.Component {
               to={`/network/euler/contract/${account}`}
             />
             <TabBtn
-              text="Follows"
-              isSelected={selected === 'follows'}
-              to={`/network/euler/contract/${account}/follows`}
+              text="Community"
+              isSelected={selected === 'community'}
+              to={`/network/euler/contract/${account}/community`}
             />
             <TabBtn
               text="Txs"

@@ -1161,8 +1161,7 @@ export const chekFollow = async (address, addressFollowHash) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressFollowHash}&limit=1000000000
-      `,
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressFollowHash}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -1182,4 +1181,90 @@ export const getAvatar = async address => {
     console.log(error);
     return null;
   }
+};
+
+export const getFollowers = async addressHash => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressHash}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getCreator = async cid => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectTo=${cid}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getAvatarIpfs = async (
+  cid,
+  ipfs,
+  timeout = SEARCH_RESULT_TIMEOUT_MS
+) => {
+  let timerId;
+  const timeoutPromise = () =>
+    new Promise(reject => {
+      timerId = setTimeout(reject, timeout);
+    });
+
+  const ipfsGetPromise = () =>
+    new Promise((resolve, reject) => {
+      ipfs.dag
+        .get(cid, {
+          localResolve: false,
+        })
+        .then(dagGet => {
+          clearTimeout(timerId);
+          const { value: dagGetValue } = dagGet;
+
+          if (
+            dagGetValue &&
+            dagGetValue.size &&
+            dagGetValue.size <= 1.5 * 10 ** 6
+          ) {
+            let mime;
+            ipfs.cat(cid).then(dataCat => {
+              const buf = dataCat;
+              const bufs = [];
+              bufs.push(buf);
+              const data = Buffer.concat(bufs);
+              FileType.fromBuffer(data).then(dataFileType => {
+                let file;
+                if (dataFileType !== undefined) {
+                  mime = dataFileType.mime;
+                  if (mime.indexOf('image') !== -1) {
+                    const dataBase64 = data.toString('base64');
+                    file = `data:${mime};base64,${dataBase64}`;
+                    resolve(file);
+                  }
+                } else {
+                  const dataBase64 = data.toString();
+                  if (isSvg(dataBase64)) {
+                    const svg = `data:image/svg+xml;base64,${data.toString(
+                      'base64'
+                    )}`;
+                    resolve(svg);
+                  }
+                }
+              });
+            });
+          } else {
+            resolve(null);
+          }
+        });
+    });
+  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
 };
