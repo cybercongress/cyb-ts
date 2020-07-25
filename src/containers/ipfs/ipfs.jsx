@@ -426,7 +426,7 @@ function Ipfs({ nodeIpfs, mobile }) {
         </Pane>
         <CommunityTab node={nodeIpfs} data={communityData} />
         <Pane width="60%" marginX="auto" marginBottom="15px" fontSize="18px">
-          Baclinks
+          Backlinks
         </Pane>
         <OptimisationTab
           data={dataFromLink}
