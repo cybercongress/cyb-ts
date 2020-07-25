@@ -41,7 +41,7 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
   }
   return (
     <div className="container-contentItem">
-      <Noitem text="No cyberLinks" />
+      <Noitem text="no answers" />
     </div>
   );
 }

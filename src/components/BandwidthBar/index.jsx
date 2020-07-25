@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Battery, Pane, Heading, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import { Tooltip } from '..';
 
 const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
   let text =
@@ -12,17 +13,11 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
     )} cyberlinks. `;
   }
   return (
-    <Pane
-      minWidth={200}
-      paddingX={18}
-      paddingY={14}
-      borderRadius={4}
-      backgroundColor="#fff"
-    >
+    <Pane zIndex={4} paddingX={10} paddingY={10} minWidth={200}>
       <Pane marginBottom={12}>
-        <Text size={300}>
+        <Text color="#fff" size={400}>
           {text}
-          <Link style={{ color: '#068661', fontSize: '14px' }} to="/gol/faucet">
+          <Link to="/gol/faucet">
             Get EUL
           </Link>
         </Text>
@@ -41,20 +36,24 @@ const BandwidthBar = ({ bwRemained = 0, bwMaxValue = 0, ...props }) => {
   // }, [])
 
   return (
-    <Battery
-      {...props}
-      bwPercent={bwPercent}
-      bwRemained={bwRemained}
-      bwMaxValue={bwMaxValue}
-      linkPrice={linkPrice}
-      contentTooltip={
+    <Tooltip
+      placement="bottom"
+      tooltip={
         <ContentTooltip
           bwRemained={bwRemained}
           bwMaxValue={bwMaxValue}
           linkPrice={linkPrice}
         />
       }
-    />
+    >
+      <Battery
+        {...props}
+        bwPercent={bwPercent}
+        bwRemained={bwRemained}
+        bwMaxValue={bwMaxValue}
+        linkPrice={linkPrice}
+      />
+    </Tooltip>
   );
 };
 

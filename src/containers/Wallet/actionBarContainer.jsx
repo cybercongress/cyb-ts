@@ -18,6 +18,7 @@ import {
   CYBER,
   PATTERN_COSMOS,
   PATTERN_CYBER,
+  POCKET,
 } from '../../utils/config';
 import { getBalanceWallet, statusNode } from '../../utils/search/utils';
 import { downloadObjectAsJson, getDelegator } from '../../utils/utils';

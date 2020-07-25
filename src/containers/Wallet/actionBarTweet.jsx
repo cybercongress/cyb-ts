@@ -25,7 +25,7 @@ import {
   getCurrentBandwidthPrice,
 } from '../../utils/search/utils';
 
-import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import { LEDGER, CYBER, PATTERN_IPFS_HASH, POCKET } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 
 const {
@@ -45,11 +45,10 @@ const {
 } = LEDGER;
 
 const CREATE_LINK = 10;
-const ADD_ADDRESS = 2.1;
+const ADD_ADDRESS = 11;
 const LEDGER_TX_ACOUNT_INFO = 12;
-const STAGE_ADD_ADDRESS_OK = 2.2;
 
-class ActionBarContainer extends Component {
+class ActionBarTweet extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -79,19 +78,22 @@ class ActionBarContainer extends Component {
       connectLedger: null,
       fromCid: null,
       toCid: null,
+      textBtn: '',
+      placeholder: '',
     };
     this.timeOut = null;
     this.inputOpenFileRef = React.createRef();
   }
 
   async componentDidMount() {
+    this.getNameBtn();
     console.warn('Looking for Ledger Nano');
     await this.checkAddressLocalStorage();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { stage, address, addressInfo, fromCid, toCid } = this.state;
-    const { addAddress } = this.props;
+    const { refresh } = this.props;
     if (
       stage === STAGE_LEDGER_INIT ||
       stage === STAGE_READY ||
@@ -105,11 +107,27 @@ class ActionBarContainer extends Component {
       ) {
         this.stageReady();
       }
-    }
-    if (!addAddress && stage === STAGE_ADD_ADDRESS_OK) {
-      this.cleatState();
+      if (prevProps.refresh !== refresh) {
+        this.getNameBtn();
+      }
     }
   }
+
+  getNameBtn = () => {
+    const { stageTweetActionBar } = this.props;
+
+    if (stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.TWEET) {
+      this.setState({
+        textBtn: 'Tweet',
+        placeholder: "What's happening?",
+      });
+    } else {
+      this.setState({
+        textBtn: 'add Avatar',
+        placeholder: 'Select an avatar',
+      });
+    }
+  };
 
   getLedgerAddress = async () => {
     const { stage } = this.state;
@@ -120,7 +138,6 @@ class ActionBarContainer extends Component {
     const connectLedger = await this.ledger.connect();
     console.log(connectLedger, stage);
     if (connectLedger.return_code === LEDGER_OK) {
-      console.log(' :>> ', stage);
       this.setState({
         connectLedger: true,
       });
@@ -134,47 +151,10 @@ class ActionBarContainer extends Component {
         this.calculationIpfsFrom();
         this.calculationIpfsTo();
       }
-      if (stage === ADD_ADDRESS) {
-        console.log('1 :>> ', stage);
-        this.addAddressLedger();
-      }
     } else {
       this.setState({
         connectLedger: false,
       });
-    }
-  };
-
-  addAddressLedger = async () => {
-    try {
-      const { updateFunc } = this.props;
-      const accounts = {};
-
-      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
-      console.log('addressLedgerCyber', addressLedgerCyber);
-      const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
-
-      accounts.cyber = addressLedgerCyber;
-      accounts.cosmos = addressLedgerCosmos;
-      accounts.keys = 'ledger';
-
-      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
-      localStorage.setItem('pocket', JSON.stringify(accounts));
-
-      if (updateFunc) {
-        updateFunc();
-      }
-      this.setState({
-        stage: STAGE_ADD_ADDRESS_OK,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
@@ -195,9 +175,14 @@ class ActionBarContainer extends Component {
 
   calculationIpfsTo = async () => {
     const { contentHash, file } = this.state;
-    const { node } = this.props;
+    const { node, stageTweetActionBar } = this.props;
 
     let toCid = contentHash;
+
+    if (stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW) {
+      toCid = CYBER.CYBER_CONGRESS_ADDRESS;
+    }
+
     if (file !== null) {
       toCid = file;
     }
@@ -214,13 +199,22 @@ class ActionBarContainer extends Component {
   };
 
   calculationIpfsFrom = async () => {
-    const { node } = this.props;
+    const { stageTweetActionBar, node } = this.props;
+    let type = '';
 
-    let fromCid = 'tweet';
-
-    if (!fromCid.match(PATTERN_IPFS_HASH)) {
-      fromCid = await getPin(node, fromCid);
+    if (stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.ADD_AVATAR) {
+      type = 'avatar';
     }
+
+    if (stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW) {
+      type = POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW;
+    }
+
+    if (stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.TWEET) {
+      type = POCKET.STAGE_TWEET_ACTION_BAR.TWEET;
+    }
+
+    const fromCid = await getPin(node, type);
 
     this.setState({
       fromCid,
@@ -408,7 +402,6 @@ class ActionBarContainer extends Component {
   };
 
   onClickInitLedger = async () => {
-    const { stage } = this.state;
     // this.init();
     await this.setState({
       stage: STAGE_LEDGER_INIT,
@@ -422,14 +415,6 @@ class ActionBarContainer extends Component {
     });
   };
 
-  hasKey() {
-    return this.state.address !== null;
-  }
-
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
-
   showOpenFileDlg = () => {
     this.inputOpenFileRef.current.click();
   };
@@ -440,13 +425,6 @@ class ActionBarContainer extends Component {
     this.setState({
       file,
     });
-  };
-
-  onClickConnect = async () => {
-    await this.setState({
-      stage: ADD_ADDRESS,
-    });
-    this.getLedgerAddress();
   };
 
   render() {
@@ -465,26 +443,57 @@ class ActionBarContainer extends Component {
       file,
       linkPrice,
       addressLocalStor,
+      textBtn,
+      placeholder,
     } = this.state;
-    console.log('stage :>> ', stage);
 
-    const { addAddress } = this.props;
+    const { stageTweetActionBar, test } = this.props;
 
-    console.log('addAddress :>> ', addAddress);
-
-    if (stage === STAGE_INIT && addAddress) {
+    if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
         <ActionBar>
           <ActionBarContentText>
-            <Button onClick={() => this.onClickConnect()}>Connect</Button>
+            Play Game of Links. Get EUL with
+            <Link
+              style={{
+                paddingTop: 10,
+                margin: '0 15px',
+                paddingBottom: 10,
+                display: 'block',
+              }}
+              className="btn"
+              to="/gol/takeoff"
+            >
+              ATOM
+            </Link>
           </ActionBarContentText>
         </ActionBar>
       );
     }
 
-    if (stage === STAGE_INIT && !addAddress) {
+    if (
+      stage === STAGE_INIT &&
+      stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW
+    ) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button onClick={this.onClickInitLedger}>
+              Follow cyber~Congress
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
+
+    if (
+      stage === STAGE_INIT &&
+      stageTweetActionBar !== POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW
+    ) {
       return (
         <StartStageSearchActionBar
+          textBtn={textBtn}
+          placeholder={placeholder}
           onClickBtn={this.onClickInitLedger}
           contentHash={
             file !== null && file !== undefined ? file.name : contentHash
@@ -495,13 +504,11 @@ class ActionBarContainer extends Component {
           onChangeInput={this.onFilePickerChange}
           onClickClear={this.onClickClear}
           file={file}
-          placeholder="What's happening?"
-          textBtn="Tweet"
         />
       );
     }
 
-    if (stage === STAGE_LEDGER_INIT || stage === ADD_ADDRESS) {
+    if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
           onClickConnect={() => this.getLedgerAddress()}
@@ -510,22 +517,11 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (addAddress && stage === STAGE_ADD_ADDRESS_OK) {
-      return (
-        <ActionBar>
-          <Pane display="flex" alignItems="center">
-            <Pane fontSize={20}>adding address</Pane>
-            <Dots big />
-          </Pane>
-        </ActionBar>
-      );
-    }
-
     if (stage === LEDGER_TX_ACOUNT_INFO) {
       return <CheckAddressInfo />;
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (stage === STAGE_READY) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -576,7 +572,8 @@ class ActionBarContainer extends Component {
 const mapStateToProps = store => {
   return {
     node: store.ipfs.ipfs,
+    stageTweetActionBar: store.pocket.actionBar.tweet,
   };
 };
 
-export default connect(mapStateToProps)(ActionBarContainer);
+export default connect(mapStateToProps)(ActionBarTweet);

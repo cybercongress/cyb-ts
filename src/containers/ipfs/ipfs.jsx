@@ -11,10 +11,10 @@ import {
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
-import { search, getRankGrade } from '../../utils/search/utils';
+import { search, getRankGrade, getCreator } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
@@ -29,6 +29,7 @@ import {
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
+import AvatarIpfs from '../account/avatarIpfs';
 import ContentItem from './contentItem';
 const dateFormat = require('dateformat');
 
@@ -132,7 +133,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     }
   `;
   const GET_TO_LINK = gql`
-  query MyQuery {
+  subscription MyQuery {
       cyberlink(
         where: {
           object_from: { _eq: "${cid}" }
@@ -148,7 +149,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   `;
 
   const GET_LINK = gql`
-  query MyQuery {
+  subscription MyQuery {
       cyberlink(where: {_or: [{object_to: {_eq: "${cid}"}}, {object_from: {_eq: "${cid}"}}]}, order_by: {timestamp: desc}) {
         subject
       }
@@ -159,9 +160,16 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState('answers');
+  const [selected, setSelected] = useState('discussion');
+  const [selectedMeta, setSelectedMeta] = useState('size');
   const [gateway, setGateway] = useState(null);
+  const [placeholder, setPlaceholder] = useState('');
   const [dataToLink, setDataToLink] = useState([]);
+  const [creator, setCreator] = useState({
+    address: '',
+    timestamp: '',
+  });
+
   const [metaData, setMetaData] = useState({
     type: 'file',
     size: 0,
@@ -169,11 +177,11 @@ function Ipfs({ nodeIpfs, mobile }) {
     data: '',
   });
   const [textBtn, setTextBtn] = useState(false);
-  const { data: dataFromLink, loading: loadingFromLink } = useQuery(
+  const { data: dataFromLink, loading: loadingFromLink } = useSubscription(
     GET_FROM_LINK
   );
-  const { data: dataQueryToLink } = useQuery(GET_TO_LINK);
-  const { data: dataQueryCommunity } = useQuery(GET_LINK);
+  const { data: dataQueryToLink } = useSubscription(GET_TO_LINK);
+  const { data: dataQueryCommunity } = useSubscription(GET_LINK);
 
   let contentTab;
 
@@ -246,9 +254,31 @@ function Ipfs({ nodeIpfs, mobile }) {
   }, [cid]);
 
   useEffect(() => {
+    feacDataSearch();
+  }, [cid]);
+
+  const feacDataSearch = async () => {
+    const responseSearch = await search(cid);
+    setDataToLink(responseSearch);
+  };
+
+  useEffect(() => {
     const feacData = async () => {
-      const responseSearch = await search(cid);
-      setDataToLink(responseSearch);
+      const responseCreator = await getCreator(cid);
+      console.log('responseCreator :>> ', responseCreator);
+      if (
+        responseCreator !== null &&
+        responseCreator.txs &&
+        responseCreator.txs.length > 0
+      ) {
+        const addressCreator =
+          responseCreator.txs[0].tx.value.msg[0].value.address;
+        const timeCreate = responseCreator.txs[0].timestamp;
+        setCreator({
+          address: addressCreator,
+          timestamp: timeCreate,
+        });
+      }
     };
     feacData();
   }, [cid]);
@@ -280,29 +310,34 @@ function Ipfs({ nodeIpfs, mobile }) {
     const { pathname } = location;
 
     if (
-      pathname.match(/optimisation/gm) &&
-      pathname.match(/optimisation/gm).length > 0
+      pathname.match(/baclinks/gm) &&
+      pathname.match(/baclinks/gm).length > 0
     ) {
-      setSelected('optimisation');
+      setSelectedMeta('baclinks');
+      setSelected('meta');
     } else if (
       pathname.match(/community/gm) &&
       pathname.match(/community/gm).length > 0
     ) {
-      setSelected('community');
+      setSelectedMeta('community');
+      setSelected('meta');
     } else if (
-      pathname.match(/discussion/gm) &&
-      pathname.match(/discussion/gm).length > 0
+      pathname.match(/answers/gm) &&
+      pathname.match(/answers/gm).length > 0
     ) {
-      setTextBtn('add comment');
-      setSelected('discussion');
+      setTextBtn('add answer');
+      setPlaceholder('add keywords, hash or file');
+      setSelected('answers');
     } else if (
       pathname.match(/meta/gm) &&
       pathname.match(/meta/gm).length > 0
     ) {
       setSelected('meta');
+      setSelectedMeta('size');
     } else {
-      setTextBtn('add answer');
-      setSelected('answers');
+      setPlaceholder('add message');
+      setTextBtn('Comment');
+      setSelected('discussion');
     }
   };
 
@@ -323,24 +358,10 @@ function Ipfs({ nodeIpfs, mobile }) {
     );
   }
 
-  if (selected === 'optimisation') {
-    contentTab = (
-      <OptimisationTab
-        data={dataFromLink}
-        mobile={mobile}
-        nodeIpfs={nodeIpfs}
-      />
-    );
-  }
-
   if (selected === 'answers') {
     contentTab = (
       <AnswersTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
     );
-  }
-
-  if (selected === 'community') {
-    contentTab = <CommunityTab data={communityData} />;
   }
 
   if (selected === 'discussion') {
@@ -365,7 +386,59 @@ function Ipfs({ nodeIpfs, mobile }) {
   // }
 
   if (selected === 'meta') {
-    contentTab = <MetaTab cid={cid} data={metaData} />;
+    contentTab = (
+      <>
+        <Pane
+          width="60%"
+          marginX="auto"
+          marginTop="25px"
+          fontSize="18px"
+        >
+          Creator
+        </Pane>
+        <Pane
+          alignItems="center"
+          width="60%"
+          marginX="auto"
+          justifyContent="center"
+          display="flex"
+          flexDirection="column"
+        >
+          <Link to={`/network/euler/contract/${creator.address}`}>
+            <Pane
+              alignItems="center"
+              marginX="auto"
+              justifyContent="center"
+              display="flex"
+            >
+              {creator.address.length > 11 && (
+                <Pane> {creator.address.slice(0, 7)}</Pane>
+              )}
+              <AvatarIpfs node={nodeIpfs} addressCyber={creator.address} />
+              {creator.address.length > 11 && (
+                <Pane> {creator.address.slice(-6)}</Pane>
+              )}
+            </Pane>
+          </Link>
+          {creator.timestamp.length > 0 && (
+            <Pane>{dateFormat(creator.timestamp, 'dd/mm/yyyy, HH:MM:ss')}</Pane>
+          )}
+        </Pane>
+        <CommunityTab node={nodeIpfs} data={communityData} />
+        <Pane width="60%" marginX="auto" marginBottom="15px" fontSize="18px">
+          Baclinks
+        </Pane>
+        <OptimisationTab
+          data={dataFromLink}
+          mobile={mobile}
+          nodeIpfs={nodeIpfs}
+        />
+        <Pane width="60%" marginX="auto" fontSize="18px">
+          Meta
+        </Pane>
+        <MetaTab cid={cid} data={metaData} />
+      </>
+    );
   }
 
   return (
@@ -389,43 +462,16 @@ function Ipfs({ nodeIpfs, mobile }) {
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
           gridGap="10px"
-          marginY={25}
+          marginTop={25}
+          marginBottom={selected !== 'meta' ? 25 : 0}
+          width="62%"
+          marginX="auto"
         >
-          <TabBtn
-            // text="discussion"
-            text={
-              <Pane display="flex" alignItems="center">
-                <Pane>discussion</Pane>
-                {dataQueryToLink && dataQueryToLink.cyberlink.length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'discussion'}>
-                    {formatNumber(dataQueryToLink.cyberlink.length)}
-                  </Pill>
-                )}
-              </Pane>
-            }
-            isSelected={selected === 'discussion'}
-            to={`/ipfs/${cid}/discussion`}
-          />
           {/* <TabBtn
           text="content"
           isSelected={selected === 'content'}
           to={`/ipfs/${cid}`}
         /> */}
-          <TabBtn
-            // text="optimisation"
-            text={
-              <Pane display="flex" alignItems="center">
-                <Pane>optimisation</Pane>
-                {dataFromLink && dataFromLink.cyberlink.length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'optimisation'}>
-                    {formatNumber(dataFromLink.cyberlink.length)}
-                  </Pill>
-                )}
-              </Pane>
-            }
-            isSelected={selected === 'optimisation'}
-            to={`/ipfs/${cid}/optimisation`}
-          />
           <TabBtn
             // text="answers"
             text={
@@ -439,22 +485,22 @@ function Ipfs({ nodeIpfs, mobile }) {
               </Pane>
             }
             isSelected={selected === 'answers'}
-            to={`/ipfs/${cid}`}
+            to={`/ipfs/${cid}/answers`}
           />
           <TabBtn
-            // text="community"
+            // text="discussion"
             text={
               <Pane display="flex" alignItems="center">
-                <Pane>community</Pane>
-                {Object.keys(communityData).length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'community'}>
-                    {formatNumber(Object.keys(communityData).length)}
+                <Pane>discussion</Pane>
+                {dataQueryToLink && dataQueryToLink.cyberlink.length > 0 && (
+                  <Pill marginLeft={5} active={selected === 'discussion'}>
+                    {formatNumber(dataQueryToLink.cyberlink.length)}
                   </Pill>
                 )}
               </Pane>
             }
-            isSelected={selected === 'community'}
-            to={`/ipfs/${cid}/community`}
+            isSelected={selected === 'discussion'}
+            to={`/ipfs/${cid}`}
           />
           <TabBtn
             text="meta"
@@ -465,7 +511,12 @@ function Ipfs({ nodeIpfs, mobile }) {
         {contentTab}
       </main>
       {!mobile && (selected === 'discussion' || selected === 'answers') && (
-        <ActionBarContainer textBtn={textBtn} keywordHash={cid} />
+        <ActionBarContainer
+          placeholder={placeholder}
+          textBtn={textBtn}
+          keywordHash={cid}
+          update={() => feacDataSearch()}
+        />
       )}
     </>
   );

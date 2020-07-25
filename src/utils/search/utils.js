@@ -8,9 +8,10 @@ const {
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
 } = CYBER;
 
-const SEARCH_RESULT_TIMEOUT_MS = 15000;
+const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
 const IPFS = require('ipfs-api');
+const isSvg = require('is-svg');
 
 const Unixfs = require('ipfs-unixfs');
 const FileType = require('file-type');
@@ -111,16 +112,24 @@ export const getContentByCid = async (
                 } else {
                   const dataBase64 = data.toString();
                   let text;
-                  if (dataBase64.length > 300) {
-                    text = `${dataBase64.slice(0, 300)}...`;
+                  if (isSvg(dataBase64)) {
+                    resolve({
+                      status: 'downloaded',
+                      content: false,
+                      text: dataBase64,
+                    });
                   } else {
-                    text = dataBase64;
+                    if (dataBase64.length > 300) {
+                      text = `${dataBase64.slice(0, 300)}...`;
+                    } else {
+                      text = dataBase64;
+                    }
+                    resolve({
+                      status: 'downloaded',
+                      content: false,
+                      text,
+                    });
                   }
-                  resolve({
-                    status: 'downloaded',
-                    content: false,
-                    text,
-                  });
                 }
               });
             });
@@ -1100,4 +1109,162 @@ export const getToLink = async cid => {
     console.log(e);
     return null;
   }
+};
+
+export const getFollows = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&limit=1000000000`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getTweet = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
+  let timerId;
+  const timeoutPromise = () =>
+    new Promise(reject => {
+      timerId = setTimeout(reject, timeout);
+    });
+
+  const ipfsGetPromise = () =>
+    new Promise((resolve, reject) => {
+      axios({
+        method: 'get',
+        url: `https://ipfs.io/ipfs/${cid}`,
+      }).then(response => {
+        clearTimeout(timerId);
+        resolve(response.data);
+      });
+    });
+  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
+};
+
+export const chekFollow = async (address, addressFollowHash) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressFollowHash}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getAvatar = async address => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getFollowers = async addressHash => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressHash}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getCreator = async cid => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectTo=${cid}&limit=1000000000`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getAvatarIpfs = async (
+  cid,
+  ipfs,
+  timeout = SEARCH_RESULT_TIMEOUT_MS
+) => {
+  let timerId;
+  const timeoutPromise = () =>
+    new Promise(reject => {
+      timerId = setTimeout(reject, timeout);
+    });
+
+  const ipfsGetPromise = () =>
+    new Promise((resolve, reject) => {
+      ipfs.dag
+        .get(cid, {
+          localResolve: false,
+        })
+        .then(dagGet => {
+          clearTimeout(timerId);
+          const { value: dagGetValue } = dagGet;
+
+          if (
+            dagGetValue &&
+            dagGetValue.size &&
+            dagGetValue.size <= 1.5 * 10 ** 6
+          ) {
+            let mime;
+            ipfs.cat(cid).then(dataCat => {
+              const buf = dataCat;
+              const bufs = [];
+              bufs.push(buf);
+              const data = Buffer.concat(bufs);
+              FileType.fromBuffer(data).then(dataFileType => {
+                let file;
+                if (dataFileType !== undefined) {
+                  mime = dataFileType.mime;
+                  if (mime.indexOf('image') !== -1) {
+                    const dataBase64 = data.toString('base64');
+                    file = `data:${mime};base64,${dataBase64}`;
+                    resolve(file);
+                  }
+                } else {
+                  const dataBase64 = data.toString();
+                  if (isSvg(dataBase64)) {
+                    const svg = `data:image/svg+xml;base64,${data.toString(
+                      'base64'
+                    )}`;
+                    resolve(svg);
+                  }
+                }
+              });
+            });
+          } else {
+            resolve(null);
+          }
+        });
+    });
+  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
 };

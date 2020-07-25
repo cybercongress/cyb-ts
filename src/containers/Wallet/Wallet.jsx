@@ -4,8 +4,6 @@ import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import Web3Utils from 'web3-utils';
 import { Link } from 'react-router-dom';
-import LocalizedStrings from 'react-localization';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
@@ -13,7 +11,6 @@ import { setBandwidth } from '../../redux/actions/bandwidth';
 import withWeb3 from '../../components/web3/withWeb3';
 
 import { LEDGER, COSMOS } from '../../utils/config';
-import { i18n } from '../../i18n/en';
 import {
   getBalance,
   getTotalEUL,
@@ -22,9 +19,14 @@ import {
   getGraphQLQuery,
 } from '../../utils/search/utils';
 import { PocketCard } from './components';
-import { PubkeyCard, GolCard, ImportLinkLedger, GolBalance } from './card';
-
-const T = new LocalizedStrings(i18n);
+import {
+  PubkeyCard,
+  GolCard,
+  ImportLinkLedger,
+  GolBalance,
+  TweetCard,
+} from './card';
+import ActionBarTweet from './actionBarTweet';
 
 const {
   HDPATH,
@@ -83,6 +85,7 @@ class Wallet extends React.Component {
     this.state = {
       stage: STAGE_INIT,
       pocket: [],
+      refreshTweet: 0,
       ledger: null,
       returnCode: null,
       addressInfo: null,
@@ -386,6 +389,13 @@ class Wallet extends React.Component {
     });
   };
 
+  refreshTweetFunc = () => {
+    const { refreshTweet } = this.state;
+    this.setState({
+      refreshTweet: refreshTweet + 1,
+    });
+  };
+
   render() {
     const {
       pocket,
@@ -402,8 +412,9 @@ class Wallet extends React.Component {
       selectCard,
       balanceEthAccount,
       accountsETH,
+      refreshTweet,
     } = this.state;
-    const { web3 } = this.props;
+    const { web3, stageActionBar } = this.props;
 
     let countLink = 0;
     if (link !== null) {
@@ -470,6 +481,13 @@ class Wallet extends React.Component {
               flexDirection="column"
               height="100%"
             >
+              <TweetCard
+                refresh={refreshTweet}
+                select={selectCard === 'tweet'}
+                onClick={() => this.onClickSelect('tweet')}
+                account={accounts.cyber.bech32}
+                marginBottom={20}
+              />
               <PubkeyCard
                 onClick={() => this.onClickSelect('pubkey')}
                 select={selectCard === 'pubkey'}
@@ -528,20 +546,27 @@ class Wallet extends React.Component {
               )}
             </Pane>
           </main>
-          <ActionBarContainer
-            selectCard={selectCard}
-            links={link}
-            importLink={importLinkCli}
-            addressTable={accounts.cyber.bech32}
-            onClickAddressLedger={this.onClickGetAddressLedger}
-            addAddress={addAddress}
-            linkSelected={linkSelected}
-            selectedIndex={selectedIndex}
-            updateAddress={this.checkAddressLocalStorage}
-            web3={web3}
-            accountsETH={accountsETH}
-            // onClickSend={}
-          />
+          {selectCard === 'tweet' ? (
+            <ActionBarTweet
+              refresh={refreshTweet}
+              update={this.refreshTweetFunc}
+            />
+          ) : (
+            <ActionBarContainer
+              selectCard={selectCard}
+              links={link}
+              importLink={importLinkCli}
+              addressTable={accounts.cyber.bech32}
+              onClickAddressLedger={this.onClickGetAddressLedger}
+              addAddress={addAddress}
+              linkSelected={linkSelected}
+              selectedIndex={selectedIndex}
+              updateAddress={this.checkAddressLocalStorage}
+              web3={web3}
+              accountsETH={accountsETH}
+              // onClickSend={}
+            />
+          )}
         </div>
       );
     }

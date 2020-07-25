@@ -6,6 +6,7 @@ import bandwidthReducer from './bandwidth';
 import accountReducer from './account';
 import queryReducer from './query';
 import settingsReducer from './settings';
+import pocketReducer from './pocket';
 
 const rootReducer = combineReducers({
   ipfs: ipfsReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   account: accountReducer,
   query: queryReducer,
   settings: settingsReducer,
+  pocket: pocketReducer,
 });
 
 export default rootReducer;

@@ -17,6 +17,7 @@ import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setQuery } from '../../redux/actions/query';
 import { WP } from '../../utils/config';
+import { formatNumber } from '../../utils/utils';
 
 const cyber = require('../../image/cyber.png');
 const cybFalse = require('../../image/cyb.svg');
@@ -198,7 +199,7 @@ class App extends Component {
 
   render() {
     const { openMenu, story, home, valueSearchInput, battery } = this.state;
-    const { children, query, ipfsStatus, bandwidth } = this.props;
+    const { children, query, ipfsStatus, bandwidth, block = 0 } = this.props;
 
     return (
       <div>
@@ -224,8 +225,8 @@ class App extends Component {
                   >
                     euler-6
                   </a>{' '}
-                  network. euler-6 is incentivized test network. Be careful.
-                  Details in{' '}
+                  network at block {formatNumber(block)}. euler-6 is
+                  incentivized test network. Be careful. Details in{' '}
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
@@ -259,8 +260,12 @@ class App extends Component {
                     >
                       euler-6
                     </a>{' '}
-                    network. euler-6 is incentivized test network. Be careful.
-                    Details in{' '}
+                    network at block{' '}
+                    <span style={{ color: '#4ed6ae' }}>
+                      {formatNumber(parseFloat(block))}
+                    </span>
+                    . euler-6 is incentivized test network. Be careful. Details
+                    in{' '}
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
@@ -383,6 +388,7 @@ const mapStateToProps = store => {
     bandwidth: store.bandwidth.bandwidth,
     query: store.query.query,
     mobile: store.settings.mobile,
+    block: store.block.block,
   };
 };
 

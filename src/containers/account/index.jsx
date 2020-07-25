@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
-import GetLink from './link';
 import { connect } from 'react-redux';
+import GetLink from './link';
 import {
   getBalance,
   getTotalEUL,
@@ -12,6 +12,14 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getTxCosmos,
+  getFollows,
+  getContent,
+  getTweet,
+  chekFollow,
+  getIndexStats,
+  getGraphQLQuery,
+  getAvatar,
+  getFollowers,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -25,8 +33,15 @@ import GetMentions from './mentions';
 import TableDiscipline from '../gol/table';
 import { getEstimation } from '../../utils/fundingMath';
 import { setGolTakeOff } from '../../redux/actions/gol';
+import FeedsTab from './feeds';
+import FollowsTab from './follows';
+import AvatarIpfs from './avatarIpfs';
 
-import { COSMOS } from '../../utils/config';
+import { COSMOS, PATTERN_CYBER } from '../../utils/config';
+
+const FileType = require('file-type');
+const isSvg = require('is-svg');
+const img = require('../../image/logo-cyb-v3.svg');
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -34,7 +49,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       key={text}
       isSelected={isSelected}
       onSelect={onSelect}
-      paddingX={20}
+      paddingX={5}
       paddingY={20}
       marginX={3}
       borderRadius={4}
@@ -42,12 +57,21 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       boxShadow="0px 0px 5px #36d6ae"
       fontSize="16px"
       whiteSpace="nowrap"
-      minWidth="150px"
+      width="100%"
     >
       {text}
     </Tab>
   </Link>
 );
+
+const QueryAddress = address =>
+  `query cyberlink {
+    cyberlink_aggregate(where: {subject: {_eq: "${address}"}}) {
+      aggregate {
+        count
+      }
+    }
+  }`;
 
 class AccountDetails extends React.Component {
   constructor(props) {
@@ -60,6 +84,13 @@ class AccountDetails extends React.Component {
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
+      following: [],
+      followers: [],
+      avatar: null,
+      dataTweet: [],
+      linksCount: 0,
+      follow: true,
+      tweets: false,
       takeoffDonations: 0,
       balance: {
         available: 0,
@@ -72,30 +103,187 @@ class AccountDetails extends React.Component {
         delegations: [],
         unbonding: [],
       },
-      selected: 'main',
+      selected: 'tweets',
       won: 0,
     };
   }
 
   componentDidMount() {
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      const address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address.bech32 });
-    }
-    this.getBalanseAccount();
-    this.chekPathname();
-    this.getTxsCosmos();
+    this.init();
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props;
+    const { location, match } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.getBalanseAccount();
       this.chekPathname();
     }
+    if (prevProps.match.params.address !== match.params.address) {
+      this.clearState();
+      this.init();
+    }
   }
+
+  init = async () => {
+    this.setState({
+      loading: true,
+    });
+    await this.chekAddress();
+    this.chekFollowAddress();
+    this.getBalanseAccount();
+    this.chekPathname();
+    this.getTxsCosmos();
+    this.getFollowing();
+    this.getFollowersAddress();
+    this.getFeeds();
+  };
+
+  clearState = () => {
+    this.setState({
+      account: '',
+      keywordHash: '',
+      loader: true,
+      loading: true,
+      validatorAddress: null,
+      consensusAddress: null,
+      addressLedger: null,
+      addressFollows: [],
+      avatar: null,
+      dataTweet: [],
+      linksCount: 0,
+      follow: true,
+      tweets: false,
+      takeoffDonations: 0,
+      balance: {
+        available: 0,
+        delegation: 0,
+        unbonding: 0,
+        rewards: 0,
+        total: 0,
+      },
+      staking: {
+        delegations: [],
+        unbonding: [],
+      },
+      selected: 'tweets',
+    });
+  };
+
+  chekFollowAddress = async () => {
+    const { match } = this.props;
+    const { address: addressProps } = match.params;
+    const { addressLedger } = this.state;
+    const address = await getIpfsHash(addressProps);
+
+    if (addressLedger !== null) {
+      const response = await chekFollow(addressLedger, address);
+      if (response !== null && response.txs.length > 0) {
+        this.setState({
+          follow: false,
+          tweets: false,
+        });
+      }
+    }
+  };
+
+  chekAddress = async () => {
+    const { location } = this.props;
+    const { pathname } = location;
+    let address = null;
+    let locationAddress;
+    if (
+      pathname.match(/cyber[a-zA-Z0-9]{39}/gm) &&
+      pathname.match(/cyber[a-zA-Z0-9]{39}/gm).length > 0
+    ) {
+      locationAddress = pathname.match(/cyber[a-zA-Z0-9]{39}/gm);
+    }
+    const localStorageStory = localStorage.getItem('ledger');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLedger: address.bech32 });
+    }
+
+    if (address !== null && address.bech32 === locationAddress[0]) {
+      this.setState({
+        follow: false,
+        tweets: true,
+      });
+    } else {
+      this.setState({
+        follow: true,
+        tweets: false,
+      });
+    }
+  };
+
+  getFollowing = async () => {
+    const { match } = this.props;
+    const { address } = match.params;
+    let responseFollows = null;
+    const followers = [];
+
+    if (address) {
+      const addressHash = await getIpfsHash(address);
+      responseFollows = await getFollowers(addressHash);
+    }
+
+    if (responseFollows !== null && responseFollows.txs) {
+      responseFollows.txs.forEach(async item => {
+        const addressFollowers = item.tx.value.msg[0].value.address;
+        followers.push(addressFollowers);
+      });
+      this.setState({
+        followers,
+      });
+    }
+  };
+
+  getFollowersAddress = async () => {
+    const { match } = this.props;
+    const { address } = match.params;
+    let responseFollows = null;
+    const following = [];
+
+    if (address) {
+      responseFollows = await getFollows(address);
+    }
+
+    if (responseFollows !== null && responseFollows.txs) {
+      responseFollows.txs.forEach(async item => {
+        const cid = item.tx.value.msg[0].value.links[0].to;
+        const addressResolve = await getContent(cid);
+        console.log('addressResolve :>> ', addressResolve);
+        if (addressResolve) {
+          const addressFollow = addressResolve;
+          console.log('addressResolve :>> ', addressResolve);
+          if (addressFollow.match(PATTERN_CYBER)) {
+            following.push(addressFollow);
+            this.setState({
+              following,
+            });
+          }
+        }
+      });
+    }
+  };
+
+  getFeeds = async () => {
+    const { match } = this.props;
+    const { address } = match.params;
+    let responseTweet = null;
+    let dataTweet = [];
+
+    responseTweet = await getTweet(address);
+
+    if (responseTweet && responseTweet.txs && responseTweet.txs.length > 0) {
+      dataTweet = [...dataTweet, ...responseTweet.txs];
+    }
+
+    this.setState({
+      dataTweet,
+    });
+  };
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
@@ -151,30 +339,42 @@ class AccountDetails extends React.Component {
     if (pathname.match(/txs/gm) && pathname.match(/txs/gm).length > 0) {
       this.select('txs');
     } else if (
-      pathname.match(/cyberlink/gm) &&
-      pathname.match(/cyberlink/gm).length > 0
+      pathname.match(/wallet/gm) &&
+      pathname.match(/wallet/gm).length > 0
     ) {
-      this.select('cyberlink');
+      this.select('wallet');
     } else if (
       pathname.match(/heroes/gm) &&
       pathname.match(/heroes/gm).length > 0
     ) {
       this.select('heroes');
-    } else if (
-      pathname.match(/mentions/gm) &&
-      pathname.match(/mentions/gm).length > 0
-    ) {
-      this.select('mentions');
+      // } else if (
+      //   pathname.match(/mentions/gm) &&
+      //   pathname.match(/mentions/gm).length > 0
+      // ) {
+      //   this.select('mentions');
     } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
       this.select('gol');
+    } else if (
+      pathname.match(/cyberlink/gm) &&
+      pathname.match(/cyberlink/gm).length > 0
+    ) {
+      this.select('cyberlink');
+    } else if (
+      pathname.match(/community/gm) &&
+      pathname.match(/community/gm).length > 0
+    ) {
+      this.select('community');
     } else {
-      this.select('main');
+      this.select('tweets');
     }
   };
 
   getBalanseAccount = async () => {
     const { match } = this.props;
     const { address } = match.params;
+
+    let linksCount = 0;
     let total;
     const staking = {
       delegations: [],
@@ -199,6 +399,12 @@ class AccountDetails extends React.Component {
     }
 
     const resultGetDistribution = await getDistribution(dataValidatorAddress);
+
+    const indexStats = await getGraphQLQuery(QueryAddress(address));
+
+    if (indexStats !== null && indexStats.cyberlink_aggregate) {
+      linksCount = indexStats.cyberlink_aggregate.aggregate.count;
+    }
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -230,6 +436,7 @@ class AccountDetails extends React.Component {
       validatorAddress,
       consensusAddress,
       staking,
+      linksCount,
       loader: false,
     });
   };
@@ -273,7 +480,16 @@ class AccountDetails extends React.Component {
       won,
       loading,
       takeoffDonations,
+      dataTweet,
+      follow,
+      tweets,
+      avatar,
+      linksCount,
+      following,
+      followers,
     } = this.state;
+
+    const { node, mobile } = this.props;
 
     let content;
 
@@ -312,17 +528,12 @@ class AccountDetails extends React.Component {
       );
     }
 
-    if (selected === 'main') {
+    if (selected === 'wallet') {
       content = <Main balance={balance} />;
     }
 
     if (selected === 'cyberlink') {
-      content = (
-        <Route
-          path="/network/euler/contract/:address/cyberlink"
-          render={() => <GetLink accountUser={account} />}
-        />
-      );
+      content = <GetLink accountUser={account} />;
     }
 
     if (selected === 'txs') {
@@ -334,14 +545,14 @@ class AccountDetails extends React.Component {
       );
     }
 
-    if (selected === 'mentions') {
-      content = (
-        <Route
-          path="/network/euler/contract/:address/mentions"
-          render={() => <GetMentions accountUser={keywordHash} />}
-        />
-      );
-    }
+    // if (selected === 'mentions') {
+    //   content = (
+    //     <Route
+    //       path="/network/euler/contract/:address/mentions"
+    //       render={() => <GetMentions accountUser={keywordHash} />}
+    //     />
+    //   );
+    // }
 
     if (selected === 'gol') {
       content = (
@@ -360,6 +571,32 @@ class AccountDetails extends React.Component {
       );
     }
 
+    if (selected === 'tweets') {
+      content = (
+        <Route
+          path="/network/euler/contract/:address"
+          render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
+        />
+      );
+      // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
+    }
+
+    if (selected === 'community') {
+      content = (
+        <Route
+          path="/network/euler/contract/:address/community"
+          render={() => (
+            <FollowsTab
+              node={node}
+              following={following}
+              followers={followers}
+            />
+          )}
+        />
+      );
+      // connect = <FollowsTab data={addressFollows} />;
+    }
+
     return (
       <div>
         <main className="block-body">
@@ -373,35 +610,67 @@ class AccountDetails extends React.Component {
               {account} <Copy text={account} />
             </Text>
           </Pane>
-          <ContainerCard col={1}>
-            <Card title="total, EUL" value={formatNumber(balance.total)} />
-          </ContainerCard>
-          <Tablist display="flex" justifyContent="center">
-            <TabBtn
-              text="Cyberlinks"
-              isSelected={selected === 'cyberlink'}
-              to={`/network/euler/contract/${account}/cyberlink`}
+          <ContainerCard col={3}>
+            <Card
+              title="cyberlinks"
+              value={formatNumber(linksCount)}
+              stylesContainer={{
+                width: '100%',
+                maxWidth: 'unset',
+                margin: 0,
+              }}
             />
+            <AvatarIpfs addressCyber={account} node={node} />
+            <Card
+              title="total, EUL"
+              value={formatNumber(balance.total)}
+              stylesContainer={{
+                width: '100%',
+                maxWidth: 'unset',
+                margin: 0,
+              }}
+            />
+          </ContainerCard>
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+            gridGap="10px"
+          >
             <TabBtn
               text="Heroes"
               isSelected={selected === 'heroes'}
               to={`/network/euler/contract/${account}/heroes`}
             />
             <TabBtn
-              text="Main"
-              isSelected={selected === 'main'}
+              text="Wallet"
+              isSelected={selected === 'wallet'}
+              to={`/network/euler/contract/${account}/wallet`}
+            />
+            <TabBtn
+              text="Cyberlinks"
+              isSelected={selected === 'cyberlink'}
+              to={`/network/euler/contract/${account}/cyberlink`}
+            />
+            <TabBtn
+              text="Tweets"
+              isSelected={selected === 'tweets'}
               to={`/network/euler/contract/${account}`}
+            />
+            <TabBtn
+              text="Community"
+              isSelected={selected === 'community'}
+              to={`/network/euler/contract/${account}/community`}
             />
             <TabBtn
               text="Txs"
               isSelected={selected === 'txs'}
               to={`/network/euler/contract/${account}/txs`}
             />
-            <TabBtn
+            {/* <TabBtn
               text="Mentions"
               isSelected={selected === 'mentions'}
               to={`/network/euler/contract/${account}/mentions`}
-            />
+            /> */}
             <TabBtn
               text="GoL"
               isSelected={selected === 'gol'}
@@ -418,16 +687,27 @@ class AccountDetails extends React.Component {
             {content}
           </Pane>
         </main>
-        <ActionBarContainer
-          updateAddress={this.getBalanseAccount}
-          addressSend={account}
-          type={selected}
-          addressLedger={addressLedger}
-        />
+        {!mobile && (
+          <ActionBarContainer
+            updateAddress={this.init}
+            addressSend={account}
+            type={selected}
+            addressLedger={addressLedger}
+            follow={follow}
+            tweets={tweets}
+          />
+        )}
       </div>
     );
   }
 }
+
+const mapStateToProps = store => {
+  return {
+    mobile: store.settings.mobile,
+    node: store.ipfs.ipfs,
+  };
+};
 
 const mapDispatchprops = dispatch => {
   return {
@@ -436,4 +716,4 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(AccountDetails);
+export default connect(mapStateToProps, mapDispatchprops)(AccountDetails);

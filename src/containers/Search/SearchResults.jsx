@@ -233,68 +233,108 @@ class SearchResults extends React.Component {
 
     if (query.match(PATTERN)) {
       searchItems.push(
-        <Link to={`/gift/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN`}
-            text="Don't wait! Claim your gift, and join the Game of Links!"
-            status="sparkApp"
-            // address={query}
-          />
-        </Link>
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
+        >
+          <Link className="SearchItem" to={`/gift/${query}`}>
+            <SearchItem
+              hash={`${query}_PATTERN`}
+              text="Don't wait! Claim your gift, and join the Game of Links!"
+              status="sparkApp"
+              // address={query}
+            />
+          </Link>
+        </Pane>
       );
     }
 
     if (query.match(PATTERN_CYBER)) {
       searchItems.push(
-        <Link to={`/network/euler/contract/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_CYBER`}
-            text="Explore details of contract"
-            contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
-            status="sparkApp"
-          />
-        </Link>
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
+        >
+          <Link className="SearchItem" to={`/network/euler/contract/${query}`}>
+            <SearchItem
+              hash={`${query}_PATTERN_CYBER`}
+              text="Explore details of contract"
+              contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
+              status="sparkApp"
+            />
+          </Link>
+        </Pane>
       );
     }
 
     if (query.match(PATTERN_CYBER_VALOPER)) {
       searchItems.push(
-        <Link to={`/network/euler/hero/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_CYBER_VALOPER`}
-            text="Explore details of hero"
-            contentApp={<Account colorText="#000" address={query} />}
-            status="sparkApp"
-          />
-        </Link>
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
+        >
+          <Link className="SearchItem" to={`/network/euler/hero/${query}`}>
+            <SearchItem
+              hash={`${query}_PATTERN_CYBER_VALOPER`}
+              text="Explore details of hero"
+              contentApp={<Account colorText="#000" address={query} />}
+              status="sparkApp"
+            />
+          </Link>
+        </Pane>
       );
     }
 
     if (query.match(PATTERN_TX)) {
       searchItems.push(
-        <Link to={`/network/euler/tx/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_TX`}
-            text="Explore details of tx "
-            status="sparkApp"
-            contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
-          />
-        </Link>
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
+        >
+          <Link className="SearchItem" to={`/network/euler/tx/${query}`}>
+            <SearchItem
+              hash={`${query}_PATTERN_TX`}
+              text="Explore details of tx "
+              status="sparkApp"
+              contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
+            />
+          </Link>
+        </Pane>
       );
     }
 
     if (query.match(PATTERN_BLOCK)) {
       searchItems.push(
-        <Link to={`/network/euler/block/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN_BLOCK`}
-            text="Explore details of block "
-            status="sparkApp"
-            contentApp={
-              <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
-            }
-          />
-        </Link>
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
+        >
+          <Link className="SearchItem" to={`/network/euler/block/${query}`}>
+            <SearchItem
+              hash={`${query}_PATTERN_BLOCK`}
+              text="Explore details of block "
+              status="sparkApp"
+              contentApp={
+                <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
+              }
+            />
+          </Link>
+        </Pane>
       );
     }
 
@@ -376,33 +416,6 @@ class SearchResults extends React.Component {
             display="flex"
             flexDirection="column"
           >
-            {!resultNull && (
-              <Text
-                fontSize="20px"
-                marginBottom={20}
-                color="#949292"
-                lineHeight="20px"
-                wordBreak="break-all"
-              >
-                {`I found ${Object.keys(searchResults.link).length} answers`}
-              </Text>
-            )}
-
-            {resultNull && (
-              <Text
-                fontSize="20px"
-                marginBottom={20}
-                color="#949292"
-                lineHeight="20px"
-                // wordBreak="break-all"
-              >
-                I don't know what is{' '}
-                <Text fontSize="20px" lineHeight="20px" color="#e80909">
-                  {query}
-                </Text>
-                . I find results for 0 instead
-              </Text>
-            )}
             <div className="container-contentItem" style={{ width: '100%' }}>
               {searchItems}
             </div>

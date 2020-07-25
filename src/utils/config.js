@@ -56,6 +56,7 @@ const COSMOS = {
 };
 
 const CYBER = {
+  CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: `GEUL`,
@@ -101,6 +102,14 @@ const DISTRIBUTION = {
   'community pool': 2000000000000,
 };
 
+const POCKET = {
+  STAGE_TWEET_ACTION_BAR: {
+    ADD_AVATAR: 'addAvatar',
+    FOLLOW: 'follow',
+    TWEET: 'tweet',
+  },
+};
+
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
@@ -133,4 +142,5 @@ export {
   TAKEOFF_SUPPLY,
   WP,
   PATTERN_HTTP,
+  POCKET,
 };
