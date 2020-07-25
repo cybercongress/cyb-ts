@@ -605,8 +605,9 @@ class Brain extends React.Component {
               marginY={20}
             >
               <Text fontSize="16px" color="#fff">
-                To make feed work you need to subscibe to sobody. Add your leger
-                to pocket
+                Subscribe to someone to make your feed work. Until then, we'll
+                show you the project feed. Start by adding a ledger to{' '}
+                <Link to="/pocket">your pocket</Link>.
               </Text>
             </Pane>
           )}

@@ -492,3 +492,7 @@
     margin: 0 auto;
   }
 }
+
+.tooltip-container {
+  z-index: 4;
+}
