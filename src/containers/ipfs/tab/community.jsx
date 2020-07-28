@@ -7,7 +7,6 @@ import Noitem from '../../account/noItem';
 import AvatarIpfs from '../../account/avatarIpfs';
 
 function CommunityTab({ data, node }) {
-  console.log('data', data);
   if (Object.keys(data).length > 0) {
     const rowItem = Object.keys(data)
       .sort((a, b) => data[b].amount - data[a].amount)
