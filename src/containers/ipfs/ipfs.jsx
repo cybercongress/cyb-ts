@@ -156,28 +156,20 @@ function Ipfs({ nodeIpfs, mobile }) {
     feacData();
   }, [cid]);
 
-  const updateFunc = () => {
+  useEffect(() => {
+    getLinks();
+  }, [cid]);
+
+  const getLinks = () => {
     feacDataSearch();
     feachCidTo();
     feachCidFrom();
   };
-
-  useEffect(() => {
-    feacDataSearch();
-  }, [cid]);
 
   const feacDataSearch = async () => {
     const responseSearch = await search(cid);
     setDataAnswers(responseSearch);
   };
-
-  useEffect(() => {
-    feachCidTo();
-  }, [cid]);
-
-  useEffect(() => {
-    feachCidFrom();
-  }, [cid]);
 
   const feachCidTo = async () => {
     const response = await getToLink(cid);
@@ -426,7 +418,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           placeholder={placeholder}
           textBtn={textBtn}
           keywordHash={cid}
-          update={() => updateFunc()}
+          update={() => getLinks()}
         />
       )}
     </>
