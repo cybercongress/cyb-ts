@@ -156,6 +156,12 @@ function Ipfs({ nodeIpfs, mobile }) {
     feacData();
   }, [cid]);
 
+  const updateFunc = () => {
+    feacDataSearch();
+    feachCidTo();
+    feachCidFrom();
+  };
+
   useEffect(() => {
     feacDataSearch();
   }, [cid]);
@@ -420,7 +426,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           placeholder={placeholder}
           textBtn={textBtn}
           keywordHash={cid}
-          update={() => feacDataSearch()}
+          update={() => updateFunc()}
         />
       )}
     </>
