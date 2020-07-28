@@ -182,7 +182,6 @@ function useGetGol(address) {
             relevance.responseRelevance,
             relevance.dataQ
           );
-          console.log('getRelevance', data * prize);
           if (data > 0 && prize > 0) {
             const cybAbsolute = data * prize;
             setTotal(stateTotal => stateTotal + cybAbsolute);
@@ -198,7 +197,6 @@ function useGetGol(address) {
     const feachData = async () => {
       const prize = Math.floor((DISTRIBUTION.load / TAKEOFF.ATOMsALL) * atom);
       const data = await getLoad(address);
-      console.log('getLoad', data * prize);
       if (data > 0 && prize > 0) {
         const cybAbsolute = data * prize;
         setTotal(stateTotal => stateTotal + cybAbsolute);
@@ -211,7 +209,6 @@ function useGetGol(address) {
   useEffect(() => {
     const feachData = async () => {
       const prize = Math.floor(estimation * 10 ** 12);
-      console.log('Takeoff', prize);
       if (prize > 0) {
         setTotal(stateTotal => stateTotal + prize);
       }
@@ -226,7 +223,6 @@ function useGetGol(address) {
           (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * atom
         );
         const data = await getDelegation(validatorAddress);
-        console.log('getDelegation', data * prize);
         if (data > 0 && prize > 0) {
           const cybAbsolute = data * prize;
           setTotal(stateTotal => stateTotal + cybAbsolute);
@@ -240,7 +236,6 @@ function useGetGol(address) {
     if (validatorAddress !== null) {
       const feachData = async () => {
         const data = await getRewards(validatorAddress);
-        console.log('getRewards', data);
         if (data > 0) {
           const cybAbsolute = data;
           setTotal(stateTotal => stateTotal + cybAbsolute);
@@ -265,7 +260,6 @@ function useGetGol(address) {
             preCommit: dataLifeTime.pre_commit_view[0].precommits,
           });
 
-          console.log('getLifetime', data * prize);
           if (data > 0 && prize > 0) {
             const cybAbsolute = data * prize;
             setTotal(stateTotal => stateTotal + cybAbsolute);

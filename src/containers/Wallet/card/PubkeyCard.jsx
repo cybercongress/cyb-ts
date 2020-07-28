@@ -22,7 +22,6 @@ function PubkeyCard({ pocket, ...props }) {
   const [gift, setGift] = useState(0);
   const [loading, setLoading] = useState(true);
   const gol = useGetGol(pocket.cyber.address);
-  console.log(gol);
 
   useEffect(() => {
     const feachData = async () => {

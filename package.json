@@ -70,6 +70,7 @@
     "big.js": "^5.2.2",
     "bignumber.js": "^9.0.0",
     "core-util-is": "^1.0.2",
+    "@chainapsis/cosmosjs": "git+https://github.com/litvintech/cosmosjs-dist.git",
     "crypto": "^1.0.1",
     "dateformat": "^3.0.3",
     "detectrtc": "^1.4.0",

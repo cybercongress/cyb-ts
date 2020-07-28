@@ -23,7 +23,6 @@ export const getLoad = async address => {
     // sumKarma = responseIndexStats.totalKarma;
     sumKarma = responseIndexStats.totalKarma;
     load = parseFloat(karma) / parseFloat(sumKarma);
-    console.log('load', load);
   }
   return load;
 };

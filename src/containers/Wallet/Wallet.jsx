@@ -4,6 +4,7 @@ import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import Web3Utils from 'web3-utils';
 import { Link } from 'react-router-dom';
+
 import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
@@ -27,6 +28,8 @@ import {
   TweetCard,
 } from './card';
 import ActionBarTweet from './actionBarTweet';
+
+const { GaiaApi } = require('@chainapsis/cosmosjs/gaia/api');
 
 const {
   HDPATH,
@@ -110,6 +113,18 @@ class Wallet extends React.Component {
 
   async componentDidMount() {
     const { accounts, web3 } = this.props;
+
+    console.log('window :>> ', window.cosmosJSWalletProvider);
+
+    if (window.cosmosJSWalletProvider) {
+      const cosmosJS = new GaiaApi({
+        chainId: 'euler-6',
+        walletProvider: window.cosmosJSWalletProvider,
+        rpc: 'https://api.cyber.cybernode.ai',
+        rest: 'https://titan.cybernode.ai/lcd',
+      });
+      console.log('cosmosJS :>> ', cosmosJS);
+    }
 
     await this.setState({
       accountsETH: accounts,
@@ -300,8 +315,6 @@ class Wallet extends React.Component {
 
     pocket.pk = accounts.cyber.pk;
     pocket.keys = accounts.keys;
-
-    console.log(pocket);
 
     this.setState({
       pocket,

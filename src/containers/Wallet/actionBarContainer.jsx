@@ -93,7 +93,6 @@ class ActionBarContainer extends Component {
     this.ledger = new CosmosDelegateTool(this.transport);
 
     const connect = await this.ledger.connect();
-    console.log(connect);
     if (connect.return_code === LEDGER_OK) {
       if (stage === STAGE_LEDGER_INIT) {
         this.setState({
@@ -101,7 +100,6 @@ class ActionBarContainer extends Component {
         });
 
         const address = await this.ledger.retrieveAddressCyber(HDPATH);
-        console.log('address', address);
         this.setState({
           address,
         });
@@ -126,7 +124,6 @@ class ActionBarContainer extends Component {
       const accounts = {};
 
       const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
-      console.log('addressLedgerCyber', addressLedgerCyber);
       const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
 
       accounts.cyber = addressLedgerCyber;
@@ -461,7 +458,6 @@ class ActionBarContainer extends Component {
 
   onClickAddAddressUserToLocalStr = () => {
     const { valueInputAddres } = this.state;
-    console.log(valueInputAddres);
     const { updateAddress } = this.props;
     const accounts = {
       cyber: {
