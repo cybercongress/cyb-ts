@@ -14,7 +14,13 @@ import Iframe from 'react-iframe';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
-import { search, getRankGrade, getCreator } from '../../utils/search/utils';
+import {
+  search,
+  getRankGrade,
+  getToLink,
+  getCreator,
+  getFromLink,
+} from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
@@ -34,65 +40,6 @@ import ContentItem from './contentItem';
 const dateFormat = require('dateformat');
 
 const FileType = require('file-type');
-
-const testData = {
-  data: { type: 'Buffer', data: [8, 1] },
-  links: [],
-  cid: 'QmYPNmahJAvkMTU6tDx5zvhEkoLzEFeTDz6azDCSNqzKkW',
-  size: 10016715,
-};
-
-const objectInspectorTheme = {
-  ...chromeDark,
-  BASE_FONT_SIZE: '13px',
-  BASE_LINE_HEIGHT: '19px',
-  TREENODE_FONT_SIZE: '13px',
-  TREENODE_LINE_HEIGHT: '19px',
-};
-
-const GradeTooltipContent = ({ grade, color, rank }) => (
-  <Pane paddingX={15} paddingY={15}>
-    <Pane marginBottom={12}>
-      <Text>Answer rank is {rank}</Text>
-    </Pane>
-    <Pane display="flex" marginBottom={12}>
-      <Text>
-        Answers between &nbsp;
-        {grade.from}
-        &nbsp; and &nbsp;
-        {grade.to}
-        &nbsp; recieve grade
-        <Pill
-          paddingX={8}
-          paddingY={5}
-          width={25}
-          height={16}
-          display="inline-flex"
-          marginLeft={5}
-          alignItems="center"
-          style={{ color: '#fff', backgroundColor: color }}
-          isSolid
-        >
-          {grade.value}
-        </Pill>
-      </Text>
-    </Pane>
-    <Pane>
-      <Text>
-        More about{' '}
-        <Link
-          textDecoration="none"
-          href="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ"
-          color="green"
-          cursor="pointer"
-          target="_blank"
-        >
-          cyber~Rank
-        </Link>
-      </Text>
-    </Pane>
-  </Pane>
-);
 
 const Pill = ({ children, active, ...props }) => (
   <Pane
@@ -117,59 +64,20 @@ function Ipfs({ nodeIpfs, mobile }) {
   const { cid } = useParams();
   const location = useLocation();
 
-  const GET_FROM_LINK = gql`
-  query MyQuery {
-      cyberlink(
-        where: {
-          object_to: { _eq: "${cid}" }
-        },
-        order_by: {timestamp: desc}
-      ) {
-        subject
-        object_from
-        object_to
-        timestamp
-      }
-    }
-  `;
-  const GET_TO_LINK = gql`
-  subscription MyQuery {
-      cyberlink(
-        where: {
-          object_from: { _eq: "${cid}" }
-        },
-        order_by: {timestamp: desc}
-      ) {
-        subject
-        object_from
-        object_to
-        timestamp
-      }
-    }
-  `;
-
-  const GET_LINK = gql`
-  subscription MyQuery {
-      cyberlink(where: {_or: [{object_to: {_eq: "${cid}"}}, {object_from: {_eq: "${cid}"}}]}, order_by: {timestamp: desc}) {
-        subject
-      }
-    }
-  `;
-
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState('discussion');
-  const [selectedMeta, setSelectedMeta] = useState('size');
   const [gateway, setGateway] = useState(null);
   const [placeholder, setPlaceholder] = useState('');
   const [dataToLink, setDataToLink] = useState([]);
+  const [dataFromLink, setDataFromLink] = useState([]);
+  const [dataAnswers, setDataAnswers] = useState([]);
   const [creator, setCreator] = useState({
     address: '',
     timestamp: '',
   });
-
   const [metaData, setMetaData] = useState({
     type: 'file',
     size: 0,
@@ -177,11 +85,6 @@ function Ipfs({ nodeIpfs, mobile }) {
     data: '',
   });
   const [textBtn, setTextBtn] = useState(false);
-  const { data: dataFromLink, loading: loadingFromLink } = useSubscription(
-    GET_FROM_LINK
-  );
-  const { data: dataQueryToLink } = useSubscription(GET_TO_LINK);
-  const { data: dataQueryCommunity } = useSubscription(GET_LINK);
 
   let contentTab;
 
@@ -259,40 +162,54 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   const feacDataSearch = async () => {
     const responseSearch = await search(cid);
-    setDataToLink(responseSearch);
+    setDataAnswers(responseSearch);
   };
 
   useEffect(() => {
-    const feacData = async () => {
-      const responseCreator = await getCreator(cid);
-      console.log('responseCreator :>> ', responseCreator);
-      if (
-        responseCreator !== null &&
-        responseCreator.txs &&
-        responseCreator.txs.length > 0
-      ) {
-        const addressCreator =
-          responseCreator.txs[0].tx.value.msg[0].value.address;
-        const timeCreate = responseCreator.txs[0].timestamp;
-        setCreator({
-          address: addressCreator,
-          timestamp: timeCreate,
-        });
-      }
-    };
-    feacData();
+    feachCidTo();
   }, [cid]);
 
   useEffect(() => {
+    feachCidFrom();
+  }, [cid]);
+
+  const feachCidTo = async () => {
+    const response = await getToLink(cid);
+    if (response !== null && response.txs && response.txs.length > 0) {
+      console.log('response To :>> ', response);
+      setDataToLink(response.txs.reverse());
+    }
+  };
+
+  const feachCidFrom = async () => {
+    const response = await getFromLink(cid);
+    if (response !== null && response.txs && response.txs.length > 0) {
+      console.log('response From :>> ', response);
+      const addressCreator = response.txs[0].tx.value.msg[0].value.address;
+      const timeCreate = response.txs[0].timestamp;
+      setCreator({
+        address: addressCreator,
+        timestamp: timeCreate,
+      });
+      const responseDataFromLink = response.txs.slice();
+      responseDataFromLink.reverse();
+      console.log('responseDataFromLink :>> ', responseDataFromLink);
+      setDataFromLink(responseDataFromLink);
+    }
+  };
+
+  useEffect(() => {
     let dataTemp = {};
-    if (dataQueryCommunity && dataQueryCommunity.cyberlink.length > 0) {
-      dataQueryCommunity.cyberlink.forEach(item => {
-        if (dataTemp[item.subject]) {
-          dataTemp[item.subject].amount += 1;
+    const tempArr = [...dataToLink, ...dataFromLink];
+    if (tempArr.length > 0) {
+      tempArr.forEach(item => {
+        const subject = item.tx.value.msg[0].value.address;
+        if (dataTemp[subject]) {
+          dataTemp[subject].amount += 1;
         } else {
           dataTemp = {
             ...dataTemp,
-            [item.subject]: {
+            [subject]: {
               amount: 1,
             },
           };
@@ -300,7 +217,7 @@ function Ipfs({ nodeIpfs, mobile }) {
       });
       setCommunityData(dataTemp);
     }
-  }, [dataQueryCommunity]);
+  }, [dataToLink, dataFromLink]);
 
   useEffect(() => {
     chekPathname();
@@ -313,13 +230,11 @@ function Ipfs({ nodeIpfs, mobile }) {
       pathname.match(/baclinks/gm) &&
       pathname.match(/baclinks/gm).length > 0
     ) {
-      setSelectedMeta('baclinks');
       setSelected('meta');
     } else if (
       pathname.match(/community/gm) &&
       pathname.match(/community/gm).length > 0
     ) {
-      setSelectedMeta('community');
       setSelected('meta');
     } else if (
       pathname.match(/answers/gm) &&
@@ -333,7 +248,6 @@ function Ipfs({ nodeIpfs, mobile }) {
       pathname.match(/meta/gm).length > 0
     ) {
       setSelected('meta');
-      setSelectedMeta('size');
     } else {
       setPlaceholder('add message');
       setTextBtn('Comment');
@@ -360,17 +274,13 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   if (selected === 'answers') {
     contentTab = (
-      <AnswersTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
+      <AnswersTab data={dataAnswers} mobile={mobile} nodeIpfs={nodeIpfs} />
     );
   }
 
   if (selected === 'discussion') {
     contentTab = (
-      <DiscussionTab
-        data={dataQueryToLink}
-        mobile={mobile}
-        nodeIpfs={nodeIpfs}
-      />
+      <DiscussionTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
     );
   }
 
@@ -388,12 +298,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   if (selected === 'meta') {
     contentTab = (
       <>
-        <Pane
-          width="60%"
-          marginX="auto"
-          marginTop="25px"
-          fontSize="18px"
-        >
+        <Pane width="60%" marginX="auto" marginTop="25px" fontSize="18px">
           Creator
         </Pane>
         <Pane
@@ -477,9 +382,9 @@ function Ipfs({ nodeIpfs, mobile }) {
             text={
               <Pane display="flex" alignItems="center">
                 <Pane>answers</Pane>
-                {dataToLink.length > 0 && (
+                {dataAnswers.length > 0 && (
                   <Pill marginLeft={5} active={selected === 'answers'}>
-                    {formatNumber(dataToLink.length)}
+                    {formatNumber(dataAnswers.length)}
                   </Pill>
                 )}
               </Pane>
@@ -492,9 +397,9 @@ function Ipfs({ nodeIpfs, mobile }) {
             text={
               <Pane display="flex" alignItems="center">
                 <Pane>discussion</Pane>
-                {dataQueryToLink && dataQueryToLink.cyberlink.length > 0 && (
+                {dataToLink && dataToLink.length > 0 && (
                   <Pill marginLeft={5} active={selected === 'discussion'}>
-                    {formatNumber(dataQueryToLink.cyberlink.length)}
+                    {formatNumber(dataToLink.length)}
                   </Pill>
                 )}
               </Pane>
