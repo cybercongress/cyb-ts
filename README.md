@@ -9,7 +9,7 @@ Built with the help of [gravity](https://github.com/cybercongress/gravity), [cyb
 - search
 - cyberlinking
 - transfer and stake CYBs
-- brain monitoring.
+- brain monitoring
 
 ## Build
 
@@ -19,9 +19,9 @@ yarn start
 ```
 
 ## Develop
-- [discussion of the next release](https://github.com/cybercongress/dot-cyber/issues/63) 
-- [roadmap](https://github.com/cybercongress/dot-cyber/projects?query=is%3Aopen+sort%3Aname-asc)
-- [documented errors](https://github.com/cybercongress/dot-cyber/issues?q=is%3Aopen+is%3Aissue+label%3Aerror)
+
+- [ ] Feed is slow
+- [ ] 
 
 ## Team
 - [@xhipster](https://github.com/xhipster)
