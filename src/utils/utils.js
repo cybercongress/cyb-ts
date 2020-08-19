@@ -100,7 +100,7 @@ const timer = func => {
   setInterval(func, 1000);
 };
 
-const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
+const fromBech32 = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   const address = bech32.decode(operatorAddr);
   return bech32.encode(prefix, address.words);
 };
@@ -320,7 +320,7 @@ export {
   asyncForEach,
   timer,
   getDecimal,
-  getDelegator,
+  fromBech32,
   trimString,
   msgType,
   exponentialToDecimal,

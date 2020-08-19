@@ -21,7 +21,7 @@ import {
   POCKET,
 } from '../../utils/config';
 import { getBalanceWallet, statusNode } from '../../utils/search/utils';
-import { downloadObjectAsJson, getDelegator } from '../../utils/utils';
+import { downloadObjectAsJson, fromBech32 } from '../../utils/utils';
 
 const imgLedger = require('../../image/ledger.svg');
 
@@ -472,7 +472,7 @@ class ActionBarContainer extends Component {
     };
 
     if (valueInputAddres.match(PATTERN_COSMOS)) {
-      const cyberAddress = getDelegator(
+      const cyberAddress = fromBech32(
         valueInputAddres,
         CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
       );
@@ -490,7 +490,7 @@ class ActionBarContainer extends Component {
     }
 
     if (valueInputAddres.match(PATTERN_CYBER)) {
-      const cosmosAddress = getDelegator(valueInputAddres, 'cosmos');
+      const cosmosAddress = fromBech32(valueInputAddres, 'cosmos');
       accounts.cyber.bech32 = valueInputAddres;
       addressLedgerCyber.bech32 = valueInputAddres;
       accounts.cosmos.bech32 = cosmosAddress;

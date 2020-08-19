@@ -9,7 +9,7 @@ import {
 } from '@cybercongress/gravity';
 import injectWeb3 from '../../components/web3/web3Evangelism';
 import { LinkWindow, Loading } from '../../components';
-import { trimString, formatNumber, getDelegator } from '../../utils/utils';
+import { trimString, formatNumber, fromBech32 } from '../../utils/utils';
 import TableEvangelists from './table';
 import InfoPane from './infoPane';
 import ActionBarEvangelism from './actionBarContainer';

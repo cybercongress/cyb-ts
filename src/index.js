@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
@@ -18,7 +20,7 @@ import './image/favicon.ico';
 
 const root = document.getElementById('root');
 
-const getHeaders = token => {
+const getHeaders = (token) => {
   const headers = {
     'content-type': 'application/json',
     'x-hasura-admin-secret': 'token',

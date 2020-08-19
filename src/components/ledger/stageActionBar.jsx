@@ -1,6 +1,4 @@
 import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {

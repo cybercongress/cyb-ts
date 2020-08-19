@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Input, ActionBar, Pane, Text, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER, PATTERN_COSMOS, CYBER, WP } from '../../utils/config';
-import { getDelegator, downloadObjectAsJson } from '../../utils/utils';
+import { fromBech32, downloadObjectAsJson } from '../../utils/utils';
 import {
   ConnectLadger,
   JsonTransaction,
@@ -378,7 +378,7 @@ class ActionBarTakeOff extends Component {
     };
 
     if (trackAddress.match(PATTERN_COSMOS)) {
-      const cyberAddress = getDelegator(
+      const cyberAddress = fromBech32(
         trackAddress,
         CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
       );

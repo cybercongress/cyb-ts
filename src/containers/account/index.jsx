@@ -24,7 +24,7 @@ import {
 // import Balance fro./mainnce';
 import Heroes from './heroes';
 import Unbondings from './unbondings';
-import { getDelegator, formatNumber, asyncForEach } from '../../utils/utils';
+import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading, Copy, ContainerCard, Card } from '../../components';
 import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
@@ -301,7 +301,7 @@ class AccountDetails extends React.Component {
 
     let estimation = 0;
     let addEstimation = 0;
-    const addressCosmos = getDelegator(address, 'cosmos');
+    const addressCosmos = fromBech32(address, 'cosmos');
 
     if (dataTxs) {
       for (let item = 0; item < dataTxs.length; item += 1) {
@@ -390,7 +390,7 @@ class AccountDetails extends React.Component {
     const result = await getBalance(address);
     console.log('result', result);
 
-    const dataValidatorAddress = getDelegator(address, 'cybervaloper');
+    const dataValidatorAddress = fromBech32(address, 'cybervaloper');
     const dataGetValidatorsInfo = await getValidatorsInfo(dataValidatorAddress);
 
     if (dataGetValidatorsInfo !== null) {

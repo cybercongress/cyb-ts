@@ -9,7 +9,7 @@ import {
   selfDelegationShares,
   getDelegators,
 } from '../../utils/search/utils';
-import { getDelegator, trimString } from '../../utils/utils';
+import { fromBech32, trimString } from '../../utils/utils';
 import { Loading, Copy } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
@@ -149,7 +149,7 @@ class ValidatorsDetails extends React.PureComponent {
       return this.setState({ error: true, loader: false });
     }
 
-    const delegateAddress = getDelegator(result.operator_address);
+    const delegateAddress = fromBech32(result.operator_address);
 
     const votingPower = (result.tokens / resultStakingPool) * 100;
     const delegated = await this.getDelegated(

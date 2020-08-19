@@ -14,7 +14,7 @@ import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
 import TableDiscipline from './table';
 import { getEstimation } from '../../utils/fundingMath';
 import {
-  getDelegator,
+  fromBech32,
   exponentialToDecimal,
   formatNumber,
 } from '../../utils/utils';
@@ -117,7 +117,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     if (localStorageStory !== null) {
       addressLocalStorage = JSON.parse(localStorageStory);
       console.log('address', addressLocalStorage);
-      const dataValidatorAddress = getDelegator(
+      const dataValidatorAddress = fromBech32(
         addressLocalStorage.bech32,
         'cybervaloper'
       );
@@ -171,7 +171,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     let addressCosmos = null;
 
     if (addressLedger !== null) {
-      addressCosmos = getDelegator(addressLedger.bech32, 'cosmos');
+      addressCosmos = fromBech32(addressLedger.bech32, 'cosmos');
     }
 
     if (dataTxs) {

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
@@ -10,6 +11,7 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import withWeb3 from '../../components/web3/withWeb3';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 import { LEDGER, COSMOS } from '../../utils/config';
 import {
@@ -28,8 +30,16 @@ import {
   TweetCard,
 } from './card';
 import ActionBarTweet from './actionBarTweet';
+import ActionBarConnect from './actionBarConnect';
+import ActionBarKeplr from './actionBarKeplr';
 
 const { GaiaApi } = require('@chainapsis/cosmosjs/gaia/api');
+const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const { MsgSend } = require('@chainapsis/cosmosjs/x/bank');
+const {
+  defaultBech32Config,
+} = require('@chainapsis/cosmosjs/core/bech32Config');
 
 const {
   HDPATH,
@@ -42,7 +52,7 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
-const QueryAddress = address =>
+const QueryAddress = (address) =>
   `
   query MyQuery {
     cyberlink(where: {subject: {_eq: "${address}"}}) {
@@ -52,7 +62,7 @@ const QueryAddress = address =>
   }`;
 
 function flatten(data, outputArray) {
-  data.forEach(element => {
+  data.forEach((element) => {
     if (Array.isArray(element)) {
       flatten(element, outputArray);
     } else {
@@ -61,10 +71,10 @@ function flatten(data, outputArray) {
   });
 }
 
-const comparer = otherArray => {
-  return current => {
+const comparer = (otherArray) => {
+  return (current) => {
     return (
-      otherArray.filter(other => {
+      otherArray.filter((other) => {
         return (
           other.object_from === current.from && other.object_to === current.to
         );
@@ -73,7 +83,7 @@ const comparer = otherArray => {
   };
 };
 
-const groupLink = linkArr => {
+const groupLink = (linkArr) => {
   const link = [];
   const size = 7;
   for (let i = 0; i < Math.ceil(linkArr.length / size); i += 1) {
@@ -90,6 +100,7 @@ class Wallet extends React.Component {
       pocket: [],
       refreshTweet: 0,
       ledger: null,
+      accountKeplr: null,
       returnCode: null,
       addressInfo: null,
       addressLedger: null,
@@ -112,23 +123,17 @@ class Wallet extends React.Component {
   }
 
   async componentDidMount() {
-    const { accounts, web3 } = this.props;
-
-    console.log('window :>> ', window.cosmosJSWalletProvider);
-
-    if (window.cosmosJSWalletProvider) {
-      const cosmosJS = new GaiaApi({
-        chainId: 'euler-6',
-        walletProvider: window.cosmosJSWalletProvider,
-        rpc: 'https://api.cyber.cybernode.ai',
-        rest: 'https://titan.cybernode.ai/lcd',
-      });
-      console.log('cosmosJS :>> ', cosmosJS);
-    }
+    const { accountKeplr, accounts, web3 } = this.props;
 
     await this.setState({
       accountsETH: accounts,
     });
+
+    if (accountKeplr && accountKeplr !== null) {
+      this.setState({
+        accountKeplr,
+      });
+    }
 
     if (accounts && accounts !== null) {
       this.getBalanceEth();
@@ -141,7 +146,7 @@ class Wallet extends React.Component {
   }
 
   accountsChanged = () => {
-    window.ethereum.on('accountsChanged', async accountsChanged => {
+    window.ethereum.on('accountsChanged', async (accountsChanged) => {
       const defaultAccounts = accountsChanged[0];
       const tmpAccount = defaultAccounts;
       this.setState({
@@ -251,7 +256,7 @@ class Wallet extends React.Component {
     }
   };
 
-  getLink = async dataLinkUser => {
+  getLink = async (dataLinkUser) => {
     const { accounts } = this.state;
     const dataLink = await getImportLink(accounts.cyber.bech32);
     let link = [];
@@ -387,7 +392,7 @@ class Wallet extends React.Component {
     });
   };
 
-  onClickSelect = select => {
+  onClickSelect = (select) => {
     const { selectCard } = this.state;
     let selectd = select;
 
@@ -426,8 +431,11 @@ class Wallet extends React.Component {
       balanceEthAccount,
       accountsETH,
       refreshTweet,
+      accountKeplr,
     } = this.state;
-    const { web3, stageActionBar } = this.props;
+    const { web3, keplr, stageActionBar } = this.props;
+
+    console.log('addAddress :>> ', addAddress);
 
     let countLink = 0;
     if (link !== null) {
@@ -451,6 +459,8 @@ class Wallet extends React.Component {
       );
     }
 
+    console.log('pocket.keys :>> ', pocket.keys);
+
     if (addAddress && stage === STAGE_INIT) {
       return (
         <div>
@@ -471,8 +481,9 @@ class Wallet extends React.Component {
             </Pane>
             <NotFound text=" " />
           </main>
-          <ActionBarContainer
-            addAddress={addAddress}
+          <ActionBarConnect
+            keplr={keplr}
+            accountKeplr={accountKeplr}
             updateAddress={this.checkAddressLocalStorage}
           />
         </div>
@@ -559,7 +570,7 @@ class Wallet extends React.Component {
               )}
             </Pane>
           </main>
-          {selectCard === 'tweet' ? (
+          {/* {selectCard === 'tweet' ? (
             <ActionBarTweet
               refresh={refreshTweet}
               update={this.refreshTweetFunc}
@@ -579,6 +590,13 @@ class Wallet extends React.Component {
               accountsETH={accountsETH}
               // onClickSend={}
             />
+          )} */}
+          {pocket.keys && pocket.keys === 'keplr' && (
+            <ActionBarKeplr
+              accountKeplr={accountKeplr}
+              keplr={keplr}
+              selectCard={selectCard}
+            />
           )}
         </div>
       );
@@ -587,11 +605,11 @@ class Wallet extends React.Component {
   }
 }
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
   };
 };
 
-export default connect(null, mapDispatchprops)(withWeb3(Wallet));
+export default connect(null, mapDispatchprops)(withWeb3(injectKeplr(Wallet)));

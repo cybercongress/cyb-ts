@@ -25,7 +25,7 @@ import {
   getDelegations,
 } from '../../utils/search/utils';
 import {
-  getDelegator,
+  fromBech32,
   formatNumber,
   asyncForEach,
   trimString,
@@ -197,7 +197,7 @@ class Validators extends Component {
     await asyncForEach(
       Array.from(Array(validators.length).keys()),
       async item => {
-        const delegatorAddress = getDelegator(
+        const delegatorAddress = fromBech32(
           validators[item].operator_address
         );
         let shares = 0;

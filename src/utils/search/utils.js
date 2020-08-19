@@ -536,7 +536,7 @@ export const getTotalEUL = async data => {
       );
       balance.total += Math.floor(parseFloat(data.val_commission[0].amount));
     }
-    // const validatorAddress = getDelegator(account, 'cybervaloper');
+    // const validatorAddress = fromBech32(account, 'cybervaloper');
     // const resultGetDistribution = await getDistribution(validatorAddress);
     // if (resultGetDistribution) {
     //   balance.commission += Math.floor(

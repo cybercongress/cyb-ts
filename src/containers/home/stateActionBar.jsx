@@ -1,6 +1,4 @@
 import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { ActionBar, Button, Input, Pane, Text } from '@cybercongress/gravity';
 import { ContainetLedger, Loading } from '../../components/index';
 import { formatNumber } from '../../utils/search/utils';

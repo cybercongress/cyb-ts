@@ -67,6 +67,7 @@ const CYBER = {
   CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
+  CHAIN_ID: 'euler-6',
 };
 
 const LEDGER = {
