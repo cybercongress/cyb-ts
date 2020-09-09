@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureCompoment } from 'react';
 import { connect } from 'react-redux';
 import { CYBER } from '../../utils/config';
 import { setBlock } from '../../redux/actions/block';
@@ -9,7 +9,7 @@ const M = Math;
 const DOC = document;
 let F = 0;
 
-class Electricity extends React.Component {
+class Electricity extends React.PureComponent {
   ws = new WebSocket(CYBER_WEBSOCKET_URL);
 
   constructor(props) {

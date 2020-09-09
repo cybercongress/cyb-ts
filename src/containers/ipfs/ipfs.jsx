@@ -31,6 +31,8 @@ import {
 import ActionBarContainer from '../Search/ActionBarContainer';
 import AvatarIpfs from '../account/avatarIpfs';
 import ContentItem from './contentItem';
+import useGetIpfsContent from './useGetIpfsContentHook';
+
 const dateFormat = require('dateformat');
 
 const FileType = require('file-type');
@@ -116,6 +118,7 @@ const Pill = ({ children, active, ...props }) => (
 function Ipfs({ nodeIpfs, mobile }) {
   const { cid } = useParams();
   const location = useLocation();
+  const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs, 10);
 
   const GET_FROM_LINK = gql`
   query MyQuery {
@@ -185,73 +188,16 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   let contentTab;
 
-  useEffect(() => {
-    const feacData = async () => {
-      setLoading(true);
-      if (nodeIpfs !== null) {
-        const responseDag = await nodeIpfs.dag.get(cid, {
-          localResolve: false,
-        });
-        console.log('responseDag', responseDag);
-        const link = [];
-        if (responseDag.value.Links && responseDag.value.Links.length > 0) {
-          responseDag.value.Links.forEach((item, index) => {
-            if (item.Name.length > 0) {
-              link.push({ name: item.Name, size: item.Tsize });
-            } else {
-              link.push(item.Tsize);
-            }
-          });
-        }
-        setMetaData(item => ({
-          ...item,
-          size: responseDag.value.size,
-          blockSizes: link,
-        }));
-        if (responseDag.value.size < 10 * 10 ** 6) {
-          const responseCat = await nodeIpfs.cat(cid);
-          setMetaData(item => ({
-            ...item,
-            data: responseCat,
-          }));
-          console.log('responseCat', responseCat);
-          const bufs = [];
-          bufs.push(responseCat);
-          const data = Buffer.concat(bufs);
-          const dataFileType = await FileType.fromBuffer(data);
-          if (dataFileType !== undefined) {
-            const { mime } = dataFileType;
-            const dataBase64 = data.toString('base64');
-            if (mime.indexOf('image') !== -1) {
-              const file = `data:${mime};base64,${dataBase64}`;
-              setTypeContent('image');
-              setContent(file);
-              setGateway(false);
-            } else {
-              setGateway(true);
-            }
-          } else {
-            const dataBase64 = data.toString();
-            if (dataBase64.match(PATTERN_HTTP)) {
-              setTypeContent('link');
-            } else {
-              setTypeContent('text');
-            }
+  console.log('dataGetIpfsContent :>> ', dataGetIpfsContent);
 
-            setContent(dataBase64);
-            setGateway(false);
-          }
-        } else {
-          setGateway(true);
-        }
-        setLoading(false);
-      } else {
-        setLoading(false);
-        setGateway(true);
-      }
-    };
-    feacData();
-  }, [cid]);
+  useEffect(() => {
+    setLoading(true);
+    setContent(dataGetIpfsContent.content);
+    setTypeContent(dataGetIpfsContent.typeContent);
+    setGateway(dataGetIpfsContent.gateway);
+    setLoading(dataGetIpfsContent.loading);
+    setMetaData(dataGetIpfsContent.metaData);
+  }, [dataGetIpfsContent]);
 
   useEffect(() => {
     feacDataSearch();
@@ -388,12 +334,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   if (selected === 'meta') {
     contentTab = (
       <>
-        <Pane
-          width="60%"
-          marginX="auto"
-          marginTop="25px"
-          fontSize="18px"
-        >
+        <Pane width="60%" marginX="auto" marginTop="25px" fontSize="18px">
           Creator
         </Pane>
         <Pane

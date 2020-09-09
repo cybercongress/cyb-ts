@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import React from 'react';
 import { Text, Pane, Tablist, Tab } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
@@ -45,6 +46,8 @@ import {
   PathTab,
 } from './tabs';
 
+import db from '../../db';
+
 const { DIVISOR_CYBER_G } = CYBER;
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -68,7 +71,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
-class Brain extends React.Component {
+class Brain extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -134,52 +137,6 @@ class Brain extends React.Component {
     this.getFollow();
   };
 
-  loadContent = async (cids, node, prevState) => {
-    const contentPromises = Object.keys(cids).map(cid =>
-      getContentByCid(cid, node)
-        .then(content => {
-          const { twit } = this.state;
-          const links = twit;
-          if (
-            Object.keys(links[cid]) !== null &&
-            typeof Object.keys(links[cid]) !== 'undefined' &&
-            Object.keys(links[cid]).length > 0
-          ) {
-            console.warn({ ...links[cid], ...content });
-            links[cid] = {
-              ...links[cid],
-              status: content.status,
-              content: content.content,
-              text: content.text,
-            };
-            this.setState({
-              twit,
-            });
-          }
-        })
-        .catch(() => {
-          const { twit } = this.state;
-          const links = twit;
-          if (
-            Object.keys(links[cid]) !== null &&
-            typeof Object.keys(links[cid]) !== 'undefined' &&
-            Object.keys(links[cid]).length > 0
-          ) {
-            links[cid] = {
-              ...links[cid],
-              status: 'impossibleLoad',
-              content: false,
-              text: cid,
-            };
-            this.setState({
-              twit,
-            });
-          }
-        })
-    );
-    Promise.all(contentPromises);
-  };
-
   getFollow = async () => {
     const { addressLedger } = this.state;
     const { node } = this.props;
@@ -192,16 +149,32 @@ class Brain extends React.Component {
     });
 
     if (addressLedger !== null) {
-      responseFollows = await getFollows(addressLedger.bech32);
-
+      responseFollows = await getFollows(addressLedger.cyber.bech32);
+      // db.table('following').toArray();
       if (responseFollows !== null && responseFollows.txs) {
+        // eslint-disable-next-line no-restricted-syntax
         for (const item of responseFollows.txs) {
+          let addressResolve;
           const cid = item.tx.value.msg[0].value.links[0].to;
-          const addressResolve = await getContent(cid);
+          const dataIndexdDb = await db.table('following').get({ cid });
+          if (dataIndexdDb !== undefined) {
+            addressResolve = dataIndexdDb.content;
+          } else {
+            const responseGetContent = await getContent(cid);
+            addressResolve = responseGetContent;
+            const ipfsContentAddtToInddexdDB = {
+              cid,
+              content: addressResolve,
+            };
+            db.table('following')
+              .add(ipfsContentAddtToInddexdDB)
+              .then(id => {
+                console.log('item :>> ', id);
+              });
+          }
           console.log('addressResolve :>> ', addressResolve);
-          if (addressResolve) {
+          if (addressResolve && addressResolve !== null) {
             const addressFollow = addressResolve;
-            console.log('addressResolve :>> ', addressResolve);
             if (addressFollow.match(PATTERN_CYBER)) {
               const responseTwit = await getTweet(addressFollow);
               if (
@@ -242,10 +215,6 @@ class Brain extends React.Component {
       twit,
       loadingTwit: false,
     });
-
-    if (node !== null && Object.keys(twit).length > 0) {
-      this.loadContent(twit, node);
-    }
   };
 
   chekPathname = () => {
@@ -366,7 +335,7 @@ class Brain extends React.Component {
   checkAddressLocalStorage = async () => {
     let address = [];
 
-    const localStorageStory = await localStorage.getItem('ledger');
+    const localStorageStory = await localStorage.getItem('pocket');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
@@ -385,26 +354,22 @@ class Brain extends React.Component {
 
   getAddressInfo = async () => {
     const { addressLedger } = this.state;
-    const addressInfo = {
-      address: '',
-      amount: '',
-      token: '',
-      keys: '',
-    };
+
     let total = 0;
+    if (addressLedger !== null) {
+      const result = await getBalance(addressLedger.cyber.bech32);
+      console.log('result', result);
 
-    const result = await getBalance(addressLedger.bech32);
-    console.log('result', result);
-
-    if (result) {
-      total = await getTotalEUL(result);
+      if (result) {
+        total = await getTotalEUL(result);
+      }
+      this.setState({
+        addAddress: false,
+        loading: false,
+        // addressInfo,
+        amount: total.total,
+      });
     }
-    this.setState({
-      addAddress: false,
-      loading: false,
-      // addressInfo,
-      amount: total.total,
-    });
   };
 
   getStatisticsBrain = async () => {
@@ -484,7 +449,7 @@ class Brain extends React.Component {
       loadingTwit,
       addressLedger,
     } = this.state;
-    const { block, mobile } = this.props;
+    const { mobile, node } = this.props;
 
     let content;
 
@@ -507,7 +472,12 @@ class Brain extends React.Component {
 
     if (selected === 'main') {
       content = (
-        <MainTab twit={twit} mobile={mobile} loadingTwit={loadingTwit} />
+        <MainTab
+          twit={twit}
+          mobile={mobile}
+          nodeIpfs={node}
+          loadingTwit={loadingTwit}
+        />
       );
     }
 
@@ -673,7 +643,6 @@ class Brain extends React.Component {
 
 const mapStateToProps = store => {
   return {
-    block: store.block.block,
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
   };

@@ -36,121 +36,27 @@ import GolDelegation from './containers/gol/pages/delegation';
 import GolLifetime from './containers/gol/pages/lifetime';
 import GolRelevance from './containers/gol/pages/relevance';
 import GolLoad from './containers/gol/pages/load';
-import { isMobileTablet } from './utils/utils';
-
-const IPFS = require('ipfs');
-const DetectRTC = require('detectrtc');
+import useIpfsStart from './ipfsHook';
+import db from './db';
 
 export const history = createBrowserHistory({});
 
-function AppRouter({
-  nodeIpfs,
-  initIpfsProps,
-  setIpfsStatusProps,
-  setTypeDeviceProps,
-}) {
-  const [loader, setLoader] = useState(true);
+function AppRouter({ initIpfsProps, setIpfsStatusProps, setTypeDeviceProps }) {
+  // const dataIpfsStart = useIpfsStart();
+  // const [loader, setLoader] = useState(true);
 
-  useEffect(() => {
-    init();
-  }, []);
+  // // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  const init = async () => {
-    setIpfsStatusProps(false);
-    const mobile = isMobileTablet();
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    setTypeDeviceProps(mobile);
-//     setLoader(false);
-    // //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
-    if (!mobile) {
-      if (DetectRTC.isWebRTCSupported && !isSafari) {
-        await initIpfsNode();
-      } else {
-        setLoader(false);
-      }
-    } else {
-      setLoader(false);
-    }
-  };
+  // useEffect(() => {
+  //   initIpfsProps(dataIpfsStart.node);
+  //   setIpfsStatusProps(dataIpfsStart.status);
+  //   setTypeDeviceProps(dataIpfsStart.mobile);
+  //   setLoader(dataIpfsStart.loader);
+  // }, [dataIpfsStart]);
 
-  const initIpfsNode = async () => {
-    try {
-      const node = await IPFS.create({
-        repo: 'ipfs-repo-cyber',
-        init: false,
-        start: true,
-        relay: {
-          enabled: true,
-          hop: {
-            enabled: true,
-          },
-        },
-        config: {
-          Addresses: {
-            Swarm: [
-              '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-              '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            ],
-          },
-          Bootstrap: [
-            '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
-            '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
-            '/dns4/nyc-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
-            '/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
-            '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-            '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-          ],
-        },
-      });
-      console.log('node init false', node);
-      initIpfsProps(node);
-      if (node !== null) {
-        const status = await node.isOnline();
-        setIpfsStatusProps(status);
-      }
-      setLoader(false);
-    } catch (error) {
-      console.log(error);
-      const node = await IPFS.create({
-        repo: 'ipfs-repo-cyber',
-        init: true,
-        start: true,
-        relay: {
-          enabled: true,
-          hop: {
-            enabled: true,
-          },
-        },
-        config: {
-          Addresses: {
-            Swarm: [
-              '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-              '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            ],
-          },
-          Bootstrap: [
-            '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
-            '/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3',
-            '/dns4/nyc-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm',
-            '/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
-            '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-            '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-          ],
-        },
-      });
-      console.log('node init true', node);
-      initIpfsProps(node);
-      if (node !== null) {
-        const status = await node.isOnline();
-        setIpfsStatusProps(status);
-      }
-      setLoader(false);
-    }
-  };
-
-  if (loader) {
-    return <Dots />;
-  }
+  // if (loader) {
+  //   return <Dots />;
+  // }
 
   return (
     <Router history={history}>
@@ -205,10 +111,4 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-const mapStateToProps = store => {
-  return {
-    nodeIpfs: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchprops)(AppRouter);
+export default connect(null, mapDispatchprops)(AppRouter);
