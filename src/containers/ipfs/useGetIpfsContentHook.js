@@ -4,7 +4,7 @@ import db from '../../db';
 
 const FileType = require('file-type');
 
-const getTypeContent = async (dataCid, cid) => {
+export const getTypeContent = async (dataCid, cid) => {
   const response = {
     text: '',
     type: '',
@@ -60,7 +60,7 @@ const getTypeContent = async (dataCid, cid) => {
     }
     if (dataBase64.match(PATTERN_HTTP)) {
       response.type = 'link';
-      response.gateway = true;
+      response.gateway = false;
       response.content = dataBase64;
     } else {
       response.type = 'text';

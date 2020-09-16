@@ -5,7 +5,8 @@ import { SearchItem } from '@cybercongress/gravity';
 import Iframe from 'react-iframe';
 import { getRankGrade } from '../../utils/search/utils';
 import CodeBlock from './codeBlock';
-import useGetIpfsContent from './useGetIpfsContentHook';
+import { getTypeContent } from './useGetIpfsContentHook';
+import db from '../../db';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -14,7 +15,6 @@ const parseHtml = htmlParser({
 });
 
 const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
-  const data = useGetIpfsContent(cid, nodeIpfs);
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
@@ -22,12 +22,87 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
   const [link, setLink] = useState(`/ipfs/${cid}`);
 
   useEffect(() => {
-    setContent(data.content);
-    setText(data.text);
-    setTypeContent(data.typeContent);
-    setStatus(data.status);
-    setLink(data.link);
-  }, [data]);
+    const feachData = async () => {
+      const dataIndexdDb = await db.table('test').get({ cid });
+      console.log('dataIndexdDb :>> ', dataIndexdDb);
+      if (dataIndexdDb !== undefined && dataIndexdDb.content) {
+        const contentCidDB = Buffer.from(dataIndexdDb.content);
+        const dataTypeContent = await getTypeContent(contentCidDB, cid);
+        const {
+          text: textContent,
+          type,
+          content: contentCid,
+          link: linkContent,
+        } = dataTypeContent;
+        setText(textContent);
+        setTypeContent(type);
+        setContent(contentCid);
+        setLink(linkContent);
+        setStatus('downloaded');
+      } else if (nodeIpfs !== null) {
+        const timerId = setTimeout(() => {
+          setStatus('impossibleLoad');
+          setContent(cid);
+        }, 15000);
+        const responseDag = await nodeIpfs.dag.get(cid, {
+          localResolve: false,
+        });
+        const meta = {
+          type: 'file',
+          size: 0,
+          blockSizes: [],
+          data: '',
+        };
+        const linksCid = [];
+        if (responseDag.value.Links && responseDag.value.Links.length > 0) {
+          responseDag.value.Links.forEach((itemResponseDag, index) => {
+            if (itemResponseDag.Name.length > 0) {
+              linksCid.push({ name: itemResponseDag.Name, size: itemResponseDag.Tsize });
+            } else {
+              linksCid.push(itemResponseDag.Tsize);
+            }
+          });
+        }
+        meta.size = responseDag.value.size;
+        meta.blockSizes = linksCid;
+        clearTimeout(timerId);
+        if (responseDag.value.size < 1.5 * 10 ** 6) {
+          const responseCat = await nodeIpfs.cat(cid);
+          meta.data = responseCat;
+          const ipfsContentAddtToInddexdDB = {
+            cid,
+            content: responseCat,
+            meta,
+          };
+          // await db.table('test').add(ipfsContentAddtToInddexdDB);
+          db.table('test')
+            .add(ipfsContentAddtToInddexdDB)
+            .then(id => {
+              console.log('item :>> ', id);
+            });
+          const dataTypeContent = await getTypeContent(responseCat, cid);
+          const {
+            text: textContent,
+            type,
+            content: contentCid,
+            linkContent,
+          } = dataTypeContent;
+          setText(textContent);
+          setTypeContent(type);
+          setContent(contentCid);
+          setLink(linkContent);
+          setStatus('downloaded');
+        } else {
+          setStatus('availableDownload');
+          setText(cid);
+        }
+      } else {
+        setText(cid);
+        setStatus('impossibleLoad');
+      }
+    };
+    feachData();
+  }, [cid, nodeIpfs]);
 
   return (
     <Link {...props} to={link}>

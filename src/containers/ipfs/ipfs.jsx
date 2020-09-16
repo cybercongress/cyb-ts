@@ -136,7 +136,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     }
   `;
   const GET_TO_LINK = gql`
-  subscription MyQuery {
+  query MyQuery {
       cyberlink(
         where: {
           object_from: { _eq: "${cid}" }
@@ -152,7 +152,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   `;
 
   const GET_LINK = gql`
-  subscription MyQuery {
+  query MyQuery {
       cyberlink(where: {_or: [{object_to: {_eq: "${cid}"}}, {object_from: {_eq: "${cid}"}}]}, order_by: {timestamp: desc}) {
         subject
       }
@@ -180,15 +180,13 @@ function Ipfs({ nodeIpfs, mobile }) {
     data: '',
   });
   const [textBtn, setTextBtn] = useState(false);
-  const { data: dataFromLink, loading: loadingFromLink } = useSubscription(
+  const { data: dataFromLink, loading: loadingFromLink } = useQuery(
     GET_FROM_LINK
   );
-  const { data: dataQueryToLink } = useSubscription(GET_TO_LINK);
-  const { data: dataQueryCommunity } = useSubscription(GET_LINK);
+  const { data: dataQueryToLink } = useQuery(GET_TO_LINK);
+  const { data: dataQueryCommunity } = useQuery(GET_LINK);
 
   let contentTab;
-
-  console.log('dataGetIpfsContent :>> ', dataGetIpfsContent);
 
   useEffect(() => {
     setLoading(true);
