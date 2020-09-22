@@ -60,6 +60,10 @@ class ActionBarDetail extends Component {
     this.ledger = null;
     this.transport = null;
   }
+  
+  componentDidMount() {
+    this.ledger = new CosmosDelegateTool(this.transport);
+  }
 
   getLedgerAddress = async () => {
     this.transport = await TransportWebUSB.create(120 * 1000);
