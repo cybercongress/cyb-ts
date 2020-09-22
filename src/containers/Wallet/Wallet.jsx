@@ -570,7 +570,7 @@ class Wallet extends React.Component {
               )}
             </Pane>
           </main>
-          {/* {selectCard === 'tweet' ? (
+          {selectCard === 'tweet' ? (
             <ActionBarTweet
               refresh={refreshTweet}
               update={this.refreshTweetFunc}
@@ -590,12 +590,13 @@ class Wallet extends React.Component {
               accountsETH={accountsETH}
               // onClickSend={}
             />
-          )} */}
+          )}
           {pocket.keys && pocket.keys === 'keplr' && (
             <ActionBarKeplr
               accountKeplr={accountKeplr}
               keplr={keplr}
               selectCard={selectCard}
+              updateAddress={this.checkAddressLocalStorage}
             />
           )}
         </div>

@@ -357,13 +357,13 @@ class ActionBarContainer extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInputAmount = e => {
+  onChangeInputAmount = (e) => {
     this.setState({
       toSend: e.target.value,
     });
   };
 
-  onChangeInputInputAddressT = e => {
+  onChangeInputInputAddressT = (e) => {
     this.setState({
       toSendAddres: e.target.value,
     });
@@ -450,7 +450,7 @@ class ActionBarContainer extends Component {
     });
   };
 
-  onChangeInputAddress = e => {
+  onChangeInputAddress = (e) => {
     this.setState({
       valueInputAddres: e.target.value,
     });
@@ -535,6 +535,7 @@ class ActionBarContainer extends Component {
       linkSelected,
       selectCard,
       accountsETH,
+      updateAddress,
     } = this.props;
     const {
       stage,
@@ -621,7 +622,10 @@ class ActionBarContainer extends Component {
       return (
         <ActionBar>
           <Pane>
-            <Button marginX={10} onClick={this.deletPubkey}>
+            <Button
+              marginX={10}
+              onClick={() => this.deletPubkey(updateAddress)}
+            >
               Drop key
             </Button>
             <Button marginX={10} onClick={() => this.onClickInitLedger()}>
@@ -760,11 +764,11 @@ class ActionBarContainer extends Component {
               ? Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000
               : 0
           }
-          onChangeInputAmount={e => this.onChangeInputAmount(e)}
+          onChangeInputAmount={(e) => this.onChangeInputAmount(e)}
           valueInputAmount={toSend}
           onClickBtnCloce={this.cleatState}
           valueInputAddressTo={toSendAddres}
-          onChangeInputAddressTo={e => this.onChangeInputInputAddressT(e)}
+          onChangeInputAddressTo={(e) => this.onChangeInputInputAddressT(e)}
           disabledBtn={
             toSend.length === 0 || toSendAddres.length === 0 || balance === 0
           }

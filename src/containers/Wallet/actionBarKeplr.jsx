@@ -3,7 +3,14 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button, Input } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { ConnectLadger, Dots, ActionBarContentText } from '../../components';
+import {
+  ConnectLadger,
+  Dots,
+  ActionBarContentText,
+  TransactionSubmitted,
+  Confirmed,
+  TransactionError,
+} from '../../components';
 import {
   LEDGER,
   CYBER,
@@ -11,7 +18,7 @@ import {
   PATTERN_CYBER,
   POCKET,
 } from '../../utils/config';
-import { fromBech32 } from '../../utils/utils';
+import { getTxs } from '../../utils/search/utils';
 import { deletPubkey } from './utils';
 
 const { GaiaApi } = require('@chainapsis/cosmosjs/gaia/api');
@@ -22,75 +29,41 @@ const {
   defaultBech32Config,
 } = require('@chainapsis/cosmosjs/core/bech32Config');
 
-const imgLedger = require('../../image/ledger.svg');
-
-const { DIVISOR_CYBER_G } = CYBER;
-
 const {
   STAGE_INIT,
-  STAGE_LEDGER_INIT,
-  HDPATH,
-  LEDGER_OK,
   STAGE_ERROR,
+  STAGE_SUBMITTED,
+  STAGE_CONFIRMING,
+  STAGE_CONFIRMED,
 } = LEDGER;
 
 const STAGE_SEND = 1.1;
-const STAGE_ADD_ADDRESS_USER = 2.1;
-const STAGE_ADD_ADDRESS_OK = 2.2;
-const LEDGER_TX_ACOUNT_INFO = 2.5;
 
-const generateTxSend = () => {
-  let recipient = 'cyber1hq8d6pu2l6wkrwu9jxcqjcu55g8l43zxlm7p6t';
-  let amount = '10';
+function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
+  const [stage, setStage] = useState(STAGE_INIT);
+  const [amountSend, setAmountSend] = useState('');
+  const [recipient, setRecipient] = useState('');
+  const [recipientInputValid, setRecipientInputValid] = useState(null);
+  const [amountSendInputValid, setAmountSendInputValid] = useState(null);
+  const [txHash, setTxHash] = useState(null);
+  const [txHeight, setTxHeight] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [disabledGenerate, setDisabledGenerate] = useState(true);
 
-  try {
-    // Parse bech32 address and validate it.
-    recipient = AccAddress.fromBech32(recipient, 'cyber');
-  } catch {
-    alert('Invalid bech32 address');
-    return false;
-  }
+  const generateTxSend = async () => {
+    const amount = parseFloat(amountSend);
+    setStage(STAGE_SUBMITTED);
+    await keplr.enable();
 
-  amount = parseFloat(amount);
-  if (isNaN(amount)) {
-    alert('Invalid amount');
-    return false;
-  }
-
-  (async () => {
-    // See above.
-    const cosmosJS = new GaiaApi(
-      {
-        chainId: 'euler-6',
-        walletProvider: window.cosmosJSWalletProvider,
-        rpc: 'https://api.cyber.cybernode.ai',
-        rest: 'https://titan.cybernode.ai/lcd',
-      },
-      {
-        bech32Config: defaultBech32Config('cyber'),
-      }
-    );
-
-    // See above.
-    await cosmosJS.enable();
-
-    // Get the user's key.
-    // And, parse bech32 address and validate it.
     const sender = AccAddress.fromBech32(
-      (await cosmosJS.getKeys())[0].bech32Address,
+      (await keplr.getKeys())[0].bech32Address,
       'cyber'
     );
-    console.log('recipient :>> ', recipient);
-    console.log('sender', sender);
-    console.log('new Coin("eul", amount)', amount, new Coin('eul', amount));
-    // Make send message for bank module.
-    const msg = new MsgSend(sender, recipient, [new Coin('eul', amount)]);
+    const msg = new MsgSend(sender, AccAddress.fromBech32(recipient, 'cyber'), [
+      new Coin('eul', amount),
+    ]);
 
-    console.log('msg: ', msg);
-    // Request sending messages.
-    // Fee will be set by the Keplr extension.
-    // The gas adjustment has not been implemented yet, so please set the gas manually.
-    const result = await cosmosJS.sendMsgs(
+    const result = await keplr.sendMsgs(
       [msg],
       {
         gas: 100000,
@@ -99,25 +72,74 @@ const generateTxSend = () => {
       },
       'async'
     );
-
     console.log('result: ', result);
+    const hash = result.hash.toString('hex').toUpperCase();
+    console.log('hash :>> ', hash);
+    setTxHash(hash);
+  };
 
-    if (result.code !== undefined && result.code !== 0) {
-      alert('Failed to send tx: ' + result.log);
+  const cleatState = () => {
+    setStage(STAGE_INIT);
+    setRecipientInputValid(null);
+    setAmountSendInputValid(null);
+    setRecipient('');
+    setAmountSend('');
+    setErrorMessage(null);
+    setTxHeight(null);
+    setTxHash(null);
+  };
+
+  useEffect(() => {
+    const confirmTx = async () => {
+      console.log('txHash :>> ', txHash);
+      if (txHash && txHash !== null) {
+        setStage(STAGE_CONFIRMING);
+        const response = await getTxs(txHash);
+        console.log('response :>> ', response);
+        if (response && response !== null) {
+          if (response.logs) {
+            setStage(STAGE_CONFIRMED);
+            setTxHeight(response.height);
+            return;
+          }
+          if (response.code) {
+            setStage(STAGE_ERROR);
+            setTxHeight(response.height);
+            setErrorMessage(response.raw_log);
+            return;
+          }
+        }
+        setTimeout(confirmTx, 1500);
+      }
+    };
+    confirmTx();
+  }, [txHash]);
+
+  useEffect(() => {
+    if (parseFloat(amountSend) === 0) {
+      setAmountSendInputValid('Invalid amount');
+    } else {
+      setAmountSendInputValid(null);
     }
+  }, [amountSend]);
 
-    alert('Succeed to send tx');
-  })();
+  useEffect(() => {
+    if (recipient !== '') {
+      if (!recipient.match(PATTERN_CYBER)) {
+        setRecipientInputValid('Invalid bech32 address');
+      } else {
+        setRecipientInputValid(null);
+      }
+    }
+  }, [recipient]);
 
-  return false;
-};
-
-function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
-  const [stage, setStage] = useState(STAGE_INIT);
-  const [amountSend, setAmountSend] = useState('');
-  const [recipient, setRecipient] = useState('');
-  const [recipientInputValid, setRecipientInputValid] = useState(false);
-  const [amountSendInputValid, setAmountSendInputValid] = useState(false);
+  useEffect(() => {
+    if (recipient.match(PATTERN_CYBER) && parseFloat(amountSend) > 0) {
+      setDisabledGenerate(false);
+    } else {
+      setDisabledGenerate(true);
+    }
+  }, [recipient, amountSend]);
 
   if (selectCard === '' && stage === STAGE_INIT) {
     return (
@@ -139,7 +161,7 @@ function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
     return (
       <ActionBar>
         <Pane>
-          <Button marginX={10} onClick={deletPubkey}>
+          <Button marginX={10} onClick={() => deletPubkey(updateAddress)}>
             Drop key
           </Button>
           <Button marginX={10} onClick={() => setStage(STAGE_SEND)}>
@@ -178,8 +200,8 @@ function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
               width="300px"
               onChange={(e) => setRecipient(e.target.value)}
               placeholder="cyber address To"
-              isInvalid={recipientInputValid}
-              message="Invalid addressTo"
+              isInvalid={recipientInputValid !== null}
+              message={recipientInputValid}
             />
 
             <Input
@@ -188,21 +210,53 @@ function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
               width="24%"
               onChange={(e) => setAmountSend(e.target.value)}
               placeholder="EUL"
-              isInvalid={amountSendInputValid}
-              message="Invalid amount"
+              isInvalid={amountSendInputValid !== null}
+              message={amountSendInputValid}
             />
           </ActionBarContentText>
 
           <button
             type="button"
             className="btn-disabled"
-            // disabled={recipient.length === 0 || amountSend.length === 0}
-            onClick={generateTxSend}
+            disabled={disabledGenerate}
+            onClick={() => generateTxSend()}
           >
             Generate Tx
           </button>
         </Pane>
       </ActionBar>
+    );
+  }
+  if (stage === STAGE_SUBMITTED) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          check the transaction <Dots big />
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (stage === STAGE_CONFIRMING) {
+    return <TransactionSubmitted />;
+  }
+
+  if (stage === STAGE_CONFIRMED) {
+    return (
+      <Confirmed
+        txHash={txHash}
+        txHeight={txHeight}
+        onClickBtnCloce={() => cleatState()}
+      />
+    );
+  }
+
+  if (stage === STAGE_ERROR && errorMessage !== null) {
+    return (
+      <TransactionError
+        errorMessage={errorMessage}
+        onClickBtn={() => cleatState()}
+      />
     );
   }
 

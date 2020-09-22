@@ -61,6 +61,10 @@ class ActionBarDetail extends Component {
     this.transport = null;
   }
 
+  componentDidMount() {
+    this.ledger = new CosmosDelegateTool(this.transport);
+  }
+
   getLedgerAddress = async () => {
     this.transport = await TransportWebUSB.create(120 * 1000);
     this.ledger = new CosmosDelegateTool(this.transport);
@@ -155,7 +159,7 @@ class ActionBarDetail extends Component {
         },
       ];
     }
-
+console.log('period :>> ', period);
     switch (period) {
       case 'deposit': {
         tx = await this.ledger.txSendDeposit(
