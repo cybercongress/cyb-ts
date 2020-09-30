@@ -2,8 +2,7 @@
   "presets": [
     ["@babel/preset-env", {
       "shippedProposals": true,
-      "useBuiltIns": "entry",
-      "corejs": "3.6",
+      "useBuiltIns": "usage",
       "targets": {
         "browsers": [
           "last 2 versions"
@@ -17,4 +16,3 @@
     "@babel/plugin-proposal-class-properties"
   ]
 }
-

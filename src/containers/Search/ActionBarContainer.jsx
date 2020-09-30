@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link } from 'react-router-dom';
+import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -28,6 +28,10 @@ import {
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 
+const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
+
 const {
   MEMO,
   HDPATH,
@@ -47,6 +51,8 @@ const {
 const CREATE_LINK = 10;
 const ADD_ADDRESS = 11;
 const LEDGER_TX_ACOUNT_INFO = 12;
+const STAGE_IPFS_HASH = 3.1;
+const STAGE_KEPLR_APPROVE = 3.2;
 
 class ActionBarContainer extends Component {
   constructor(props) {
@@ -54,7 +60,6 @@ class ActionBarContainer extends Component {
     this.state = {
       stage: STAGE_INIT,
       init: false,
-      ledger: null,
       address: null,
       addressLocalStor: null,
       returnCode: null,
@@ -81,11 +86,14 @@ class ActionBarContainer extends Component {
     };
     this.timeOut = null;
     this.inputOpenFileRef = React.createRef();
+    this.ledger = null;
+    this.transport = null;
   }
 
   async componentDidMount() {
     console.warn('Looking for Ledger Nano');
     await this.checkAddressLocalStorage();
+    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate() {
@@ -104,7 +112,28 @@ class ActionBarContainer extends Component {
         this.stageReady();
       }
     }
+
+    if (stage === STAGE_IPFS_HASH) {
+      if (toCid !== null && fromCid !== null) {
+        this.generateTxSend();
+      }
+    }
   }
+
+  checkAddressLocalStorage = async () => {
+    let address = [];
+
+    const localStorageStory = await localStorage.getItem('pocket');
+    if (localStorageStory !== null) {
+      address = JSON.parse(localStorageStory);
+      console.log('address', address);
+      this.setState({ addressLocalStor: address });
+    } else {
+      this.setState({
+        addressLocalStor: null,
+      });
+    }
+  };
 
   getLedgerAddress = async () => {
     const { stage } = this.state;
@@ -131,21 +160,6 @@ class ActionBarContainer extends Component {
     } else {
       this.setState({
         connectLedger: false,
-      });
-    }
-  };
-
-  checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLocalStor: address });
-    } else {
-      this.setState({
-        addressLocalStor: null,
       });
     }
   };
@@ -217,6 +231,46 @@ class ActionBarContainer extends Component {
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
+  };
+
+  onClickInitKeplr = () => {
+    this.calculationIpfsFrom();
+    this.calculationIpfsTo();
+    this.setState({
+      stage: STAGE_IPFS_HASH,
+    });
+  };
+
+  generateTxSend = async () => {
+    const { keplr } = this.props;
+    const { fromCid, toCid } = this.state;
+
+    this.setState({
+      stage: STAGE_KEPLR_APPROVE,
+    });
+
+    await keplr.enable();
+
+    const sender = AccAddress.fromBech32(
+      (await keplr.getKeys())[0].bech32Address,
+      'cyber'
+    );
+    const msg = new MsgLink(sender, [new Link(fromCid, toCid)]);
+
+    const result = await keplr.sendMsgs(
+      [msg],
+      {
+        gas: 100000,
+        memo: '',
+        fee: new Coin('eul', 200),
+      },
+      'async'
+    );
+    console.log('result: ', result);
+    const hash = result.hash.toString('hex').toUpperCase();
+    console.log('hash :>> ', hash);
+    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+    this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
   link = async () => {
@@ -324,7 +378,7 @@ class ActionBarContainer extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInput = async e => {
+  onChangeInput = async (e) => {
     const { value } = e.target;
     this.setState({
       contentHash: value,
@@ -378,19 +432,11 @@ class ActionBarContainer extends Component {
     });
   };
 
-  hasKey() {
-    return this.state.address !== null;
-  }
-
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
-
   showOpenFileDlg = () => {
     this.inputOpenFileRef.current.click();
   };
 
-  onFilePickerChange = files => {
+  onFilePickerChange = (files) => {
     const file = files.current.files[0];
 
     this.setState({
@@ -423,7 +469,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             Play Game of Links. Get EUL with
-            <Link
+            <LinkRoute
               style={{
                 paddingTop: 10,
                 margin: '0 15px',
@@ -434,17 +480,36 @@ class ActionBarContainer extends Component {
               to="/gol/takeoff"
             >
               ATOM
-            </Link>
+            </LinkRoute>
           </ActionBarContentText>
         </ActionBar>
       );
     }
 
-    if (stage === STAGE_INIT) {
+    if (stage === STAGE_INIT && addressLocalStor.keys === 'ledger') {
       return (
         <StartStageSearchActionBar
           textBtn={textBtn}
           onClickBtn={this.onClickInitLedger}
+          contentHash={
+            file !== null && file !== undefined ? file.name : contentHash
+          }
+          onChangeInputContentHash={this.onChangeInput}
+          inputOpenFileRef={this.inputOpenFileRef}
+          showOpenFileDlg={this.showOpenFileDlg}
+          onChangeInput={this.onFilePickerChange}
+          onClickClear={this.onClickClear}
+          file={file}
+          placeholder={placeholder}
+        />
+      );
+    }
+
+    if (stage === STAGE_INIT && addressLocalStor.keys === 'keplr') {
+      return (
+        <StartStageSearchActionBar
+          textBtn={textBtn || 'Cyberlink using Keplr'}
+          onClickBtn={this.onClickInitKeplr}
           contentHash={
             file !== null && file !== undefined ? file.name : contentHash
           }
@@ -472,7 +537,27 @@ class ActionBarContainer extends Component {
       return <CheckAddressInfo />;
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (stage === STAGE_IPFS_HASH) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            adding content to IPFS <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_KEPLR_APPROVE) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            approve TX <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_READY) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -520,7 +605,7 @@ class ActionBarContainer extends Component {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
   };

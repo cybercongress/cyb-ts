@@ -24,17 +24,16 @@ import {
   PATTERN_BLOCK,
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
-import Gift from './gift';
-import SnipitAccount from './snipitAccountPages';
-import { object } from 'prop-types';
+
 import { setQuery } from '../../redux/actions/query';
 import CodeBlock from '../ipfs/codeBlock';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 const giftImg = require('../../image/gift.svg');
 const htmlParser = require('react-markdown/plugins/html-parser');
 
 const parseHtml = htmlParser({
-  isValidNode: node => node.type !== 'script',
+  isValidNode: (node) => node.type !== 'script',
 });
 
 class SearchResults extends React.Component {
@@ -55,7 +54,7 @@ class SearchResults extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getParamsQuery();
   }
 
@@ -79,9 +78,9 @@ class SearchResults extends React.Component {
 
   loadContent = async (cids, node, prevState) => {
     const { query } = this.state;
-    const contentPromises = Object.keys(cids).map(cid =>
+    const contentPromises = Object.keys(cids).map((cid) =>
       getContentByCid(cid, node)
-        .then(content => {
+        .then((content) => {
           const { searchResults } = this.state;
           const links = searchResults.link;
           if (
@@ -128,7 +127,7 @@ class SearchResults extends React.Component {
     Promise.all(contentPromises);
   };
 
-  getSearch = async query => {
+  getSearch = async (query) => {
     const { node } = this.props;
     const searchResults = {
       link: [],
@@ -204,7 +203,7 @@ class SearchResults extends React.Component {
       resultNull,
       drop,
     } = this.state;
-    const { mobile } = this.props;
+    const { mobile, keplr } = this.props;
     // console.log(query);
 
     console.log('searchResults', searchResults);
@@ -340,7 +339,7 @@ class SearchResults extends React.Component {
 
     const links = searchResults.link;
     searchItems.push(
-      Object.keys(links).map(key => {
+      Object.keys(links).map((key) => {
         return (
           <Pane
             position="relative"
@@ -425,6 +424,7 @@ class SearchResults extends React.Component {
         {!mobile && (
           <ActionBarContainer
             home={!result}
+            keplr={keplr}
             valueSearchInput={query}
             link={searchResults.length === 0 && result}
             keywordHash={keywordHash}
@@ -437,17 +437,20 @@ class SearchResults extends React.Component {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    setQueryProps: query => dispatch(setQuery(query)),
+    setQueryProps: (query) => dispatch(setQuery(query)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchprops)(SearchResults);
+export default connect(
+  mapStateToProps,
+  mapDispatchprops
+)(injectKeplr(SearchResults));
