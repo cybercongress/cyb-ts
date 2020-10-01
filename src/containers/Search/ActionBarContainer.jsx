@@ -115,7 +115,7 @@ class ActionBarContainer extends Component {
 
     if (stage === STAGE_IPFS_HASH) {
       if (toCid !== null && fromCid !== null) {
-        this.generateTxSend();
+        this.generateTx();
       }
     }
   }
@@ -241,7 +241,7 @@ class ActionBarContainer extends Component {
     });
   };
 
-  generateTxSend = async () => {
+  generateTx = async () => {
     const { keplr } = this.props;
     const { fromCid, toCid } = this.state;
 
