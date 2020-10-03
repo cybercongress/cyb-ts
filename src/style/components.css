@@ -496,3 +496,11 @@
 .tooltip-container {
   z-index: 4;
 }
+
+.cosmos-address-container:hover .cosmos-address {
+  opacity: 0.8;
+}
+
+.cosmos-address-container:hover .cosmos-address-balance {
+  opacity: 0.8;
+}

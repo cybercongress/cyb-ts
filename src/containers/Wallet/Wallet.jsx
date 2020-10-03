@@ -106,6 +106,7 @@ class Wallet extends React.Component {
       addressLedger: null,
       ledgerVersion: [0, 0, 0],
       time: 0,
+      selectAddress: '',
       addAddress: false,
       loading: true,
       accounts: null,
@@ -184,10 +185,9 @@ class Wallet extends React.Component {
     const { setBandwidthProps } = this.props;
     let address = [];
 
-    const localStorageStory = await localStorage.getItem('pocket');
+    const localStorageStory = await localStorage.getItem('pocketAccount');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
-      console.log('address', address);
       this.setState({
         accounts: address,
         link: null,
@@ -195,9 +195,10 @@ class Wallet extends React.Component {
         importLinkCli: false,
         linkSelected: null,
         selectCard: '',
+        loading: false,
       });
-      this.getLocalStorageLink();
-      this.getAddressInfo();
+      // this.getLocalStorageLink();
+      // this.getAddressInfo();
     } else {
       setBandwidthProps(0, 0);
 
@@ -281,53 +282,6 @@ class Wallet extends React.Component {
         });
       }
     }
-  };
-
-  getAddressInfo = async () => {
-    const { accounts } = this.state;
-    const { setBandwidthProps } = this.props;
-
-    const pocket = {};
-    const addressInfo = {
-      address: '',
-      amount: '',
-      token: '',
-    };
-    const responseCyber = await getBalance(accounts.cyber.bech32);
-    const responseBandwidth = await getAccountBandwidth(accounts.cyber.bech32);
-    const responseCosmos = await getBalance(
-      accounts.cosmos.bech32,
-      COSMOS.GAIA_NODE_URL_LSD
-    );
-
-    if (responseBandwidth !== null) {
-      const { remained, max_value: maxValue } = responseBandwidth;
-      setBandwidthProps(remained, maxValue);
-    }
-
-    const totalCyber = await getTotalEUL(responseCyber);
-    pocket.cyber = {
-      address: accounts.cyber.bech32,
-      amount: totalCyber.total,
-      token: 'eul',
-    };
-    const totalCosmos = await getTotalEUL(responseCosmos);
-    pocket.cosmos = {
-      address: accounts.cosmos.bech32,
-      amount: totalCosmos.total / COSMOS.DIVISOR_ATOM,
-      token: 'atom',
-    };
-
-    pocket.pk = accounts.cyber.pk;
-    pocket.keys = accounts.keys;
-
-    this.setState({
-      pocket,
-      stage: STAGE_READY,
-      addAddress: false,
-      loading: false,
-      addressInfo,
-    });
   };
 
   cleatState = () => {
@@ -459,8 +413,6 @@ class Wallet extends React.Component {
       );
     }
 
-    console.log('pocket.keys :>> ', pocket.keys);
-
     if (addAddress && stage === STAGE_INIT) {
       return (
         <div>
@@ -509,15 +461,18 @@ class Wallet extends React.Component {
                 refresh={refreshTweet}
                 select={selectCard === 'tweet'}
                 onClick={() => this.onClickSelect('tweet')}
-                account={accounts.cyber.bech32}
+                account={Object.keys(accounts)[0]}
                 marginBottom={20}
               />
-              <PubkeyCard
-                onClick={() => this.onClickSelect('pubkey')}
-                select={selectCard === 'pubkey'}
-                pocket={pocket}
-                marginBottom={20}
-              />
+
+              {Object.keys(accounts).map((key) => (
+                <PubkeyCard
+                  onClick={() => this.onClickSelect(`pubkey_${key}`)}
+                  select={selectCard === `pubkey_${key}`}
+                  pocket={accounts[key]}
+                  marginBottom={20}
+                />
+              ))}
 
               {accountsETH === undefined && web3.givenProvider !== null && (
                 <PocketCard
@@ -580,7 +535,7 @@ class Wallet extends React.Component {
               selectCard={selectCard}
               links={link}
               importLink={importLinkCli}
-              addressTable={accounts.cyber.bech32}
+              // addressTable={accounts.cyber.bech32}
               onClickAddressLedger={this.onClickGetAddressLedger}
               addAddress={addAddress}
               linkSelected={linkSelected}

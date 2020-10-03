@@ -104,8 +104,8 @@ class App extends Component {
     const localStorageStory = localStorage.getItem('pocket');
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
-      if (address.cyber.bech32) {
-        this.getBandwidth(address.cyber.bech32);
+      if (Object.keys(address)[0]) {
+        this.getBandwidth(Object.keys(address)[0]);
       }
     } else {
       setBandwidthProps(0, 0);

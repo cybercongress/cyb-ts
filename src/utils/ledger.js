@@ -186,8 +186,10 @@ class CosmosDelegateTool {
       this.lastError = pk.error_message;
       throw new Error(pk.error_message);
     }
+    const buffer = new Uint8Array(pk.compressed_pk);
+
     return {
-      pk: pk.compressed_pk.toString('hex'),
+      pk: Buffer.from(buffer).toString('hex'),
       path,
       bech32: this.getBech32FromPK(
         BECH32_PREFIX_ACC_ADDR_CYBER,

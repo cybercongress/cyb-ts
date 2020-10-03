@@ -47,9 +47,9 @@ function AppRouter({
 }) {
   const [loader, setLoader] = useState(true);
 
-  useEffect(() => {
-    init();
-  }, []);
+  // useEffect(() => {
+  //   init();
+  // }, []);
 
   const init = async () => {
     setIpfsStatusProps(false);
@@ -144,9 +144,9 @@ function AppRouter({
     }
   };
 
-  if (loader) {
-    return <Dots />;
-  }
+  // if (loader) {
+  //   return <Dots />;
+  // }
   return (
     <Router history={history}>
       <Route path="/" component={App} />
