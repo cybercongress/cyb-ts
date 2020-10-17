@@ -87,10 +87,7 @@ function AppRouter({
         },
         config: {
           Addresses: {
-            Swarm: [
-              '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-              '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            ],
+            Swarm: [],
           },
           Bootstrap: [
             '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
@@ -123,10 +120,7 @@ function AppRouter({
         },
         config: {
           Addresses: {
-            Swarm: [
-              '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-              '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            ],
+            Swarm: [],
           },
           Bootstrap: [
             '/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
