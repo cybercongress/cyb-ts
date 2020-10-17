@@ -243,7 +243,7 @@ class ProposalsDetail extends React.Component {
       yes = getVotes.filter(item => item.option === 'Yes').length;
       no = getVotes.filter(item => item.option === 'No').length;
       abstain = getVotes.filter(item => item.option === 'Abstain').length;
-      noWithVeto = getVotes.filter(item => item.option === 'noWithVeto').length;
+      noWithVeto = getVotes.filter(item => item.option === 'NoWithVeto').length;
     }
 
     votes.voter = getVotes;
