@@ -509,34 +509,8 @@ class ActionBarContainer extends Component {
     }
   };
 
-  onClickConnect = async () => {
-    const { web3 } = this.props;
-    if (web3.currentProvider.host) {
-      console.log(
-        'Non-Ethereum browser detected. You should consider trying MetaMask!'
-      );
-    }
-    if (window.ethereum) {
-      try {
-        await window.ethereum.enable();
-      } catch (error) {
-        console.log('You declined transaction', error);
-      }
-    } else if (window.web3) {
-      await web3.eth.getAccounts();
-    } else {
-      console.log('Your metamask is locked!');
-    }
-  };
-
   render() {
-    const {
-      addAddress,
-      linkSelected,
-      selectCard,
-      accountsETH,
-      updateAddress,
-    } = this.props;
+    const { addAddress, linkSelected, selectCard, updateAddress } = this.props;
     const {
       stage,
       connectLedger,
@@ -551,72 +525,8 @@ class ActionBarContainer extends Component {
       valueInputAddres,
     } = this.state;
 
-    if (addAddress && stage === STAGE_INIT) {
-      return (
-        <ActionBar>
-          <Pane>
-            <Button marginX="10px" onClick={this.onClickAddAddressUser}>
-              Put a read-only address
-            </Button>
-            <Button marginX="10px" onClick={this.onClickAddAddressLedger}>
-              Pocket your Ledger
-            </Button>
-          </Pane>
-        </ActionBar>
-      );
-    }
-
-    if (addAddress && stage === STAGE_ADD_ADDRESS_USER) {
-      return (
-        <ActionBar>
-          <Pane
-            flex={1}
-            justifyContent="center"
-            alignItems="center"
-            fontSize="18px"
-            display="flex"
-          >
-            put cosmos or cyber address:
-            <input
-              value={valueInputAddres}
-              style={{
-                height: '42px',
-                maxWidth: '200px',
-                marginLeft: '10px',
-                textAlign: 'end',
-              }}
-              onChange={this.onChangeInputAddress}
-              placeholder="address"
-              autoFocus
-            />
-          </Pane>
-
-          <Button
-            disabled={
-              !valueInputAddres.match(PATTERN_COSMOS) &&
-              !valueInputAddres.match(PATTERN_CYBER)
-            }
-            onClick={this.onClickAddAddressUserToLocalStr}
-          >
-            Add address
-          </Button>
-        </ActionBar>
-      );
-    }
-
-    if (addAddress && stage === STAGE_ADD_ADDRESS_OK) {
-      return (
-        <ActionBar>
-          <Pane display="flex" alignItems="center">
-            <Pane fontSize={20}>adding address</Pane>
-            <Dots big />
-          </Pane>
-        </ActionBar>
-      );
-    }
-
     if (
-      selectCard === 'pubkey' &&
+      selectCard.indexOf('pubkey') !== -1 &&
       (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
     ) {
       return (
@@ -641,25 +551,6 @@ class ActionBarContainer extends Component {
                 alt="ledger"
               />
             </Button>
-          </Pane>
-        </ActionBar>
-      );
-    }
-
-    if (
-      selectCard === 'gol' &&
-      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
-    ) {
-      return (
-        <ActionBar>
-          <Pane>
-            <Link
-              style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
-              className="btn"
-              to="/gol"
-            >
-              Play Game of Links
-            </Link>
           </Pane>
         </ActionBar>
       );
@@ -691,39 +582,6 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (
-      selectCard === 'сonnectEth' &&
-      accountsETH === undefined &&
-      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
-    ) {
-      return (
-        <ActionBar>
-          <Pane>
-            <Button onClick={this.onClickConnect}>Connect</Button>
-          </Pane>
-        </ActionBar>
-      );
-    }
-
-    if (
-      selectCard === '' &&
-      (stage === STAGE_INIT || stage === STAGE_ADD_ADDRESS_OK)
-    ) {
-      return (
-        <ActionBar>
-          <Pane>
-            <Link
-              style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
-              className="btn"
-              to="/gol"
-            >
-              Play Game of Links
-            </Link>
-          </Pane>
-        </ActionBar>
-      );
-    }
-
     if (stage === STAGE_LEDGER_INIT || stage === STAGE_ADD_ADDRESS_LEDGER) {
       return (
         <ConnectLadger
@@ -750,9 +608,7 @@ class ActionBarContainer extends Component {
 
     if (
       (selectCard === '' || selectCard === 'pubkey') &&
-      stage === STAGE_READY &&
-      this.hasKey() &&
-      this.hasWallet()
+      stage === STAGE_READY
     ) {
       // if (this.state.stage === STAGE_READY) {
       return (

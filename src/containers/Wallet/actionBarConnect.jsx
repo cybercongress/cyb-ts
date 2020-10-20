@@ -102,8 +102,6 @@ class ActionBarConnect extends Component {
         localStorage.setItem('pocketAccount', JSON.stringify(accounts));
       }
 
-      localStorage.setItem('pocket', JSON.stringify(accounts));
-
       if (updateAddress) {
         updateAddress();
       }
@@ -184,9 +182,9 @@ class ActionBarConnect extends Component {
 
     if (valueInputAddres.match(PATTERN_CYBER)) {
       const cosmosAddress = fromBech32(valueInputAddres, 'cosmos');
+      console.log('cosmosAddress :>> ', cosmosAddress);
       addressLedgerCyber = valueInputAddres;
       const cosmosBech32 = cosmosAddress;
-      localStorage.setItem('pocket', JSON.stringify(accounts));
       accounts = {
         [addressLedgerCyber]: {
           cyber: {
@@ -201,6 +199,9 @@ class ActionBarConnect extends Component {
     }
 
     if (accounts !== null) {
+      this.setState({
+        stage: STAGE_ADD_ADDRESS_OK,
+      });
       const localStorageStory = await localStorage.getItem('pocketAccount');
       if (localStorageStory !== null) {
         const dataPocketAccount = JSON.parse(localStorageStory);
@@ -217,15 +218,14 @@ class ActionBarConnect extends Component {
         localStorage.setItem('pocketAccount', JSON.stringify(accounts));
       }
 
-      localStorage.setItem('pocket', JSON.stringify(accounts));
-      this.setState({
-        stage: STAGE_ADD_ADDRESS_OK,
-      });
     }
 
     if (updateAddress) {
       updateAddress();
     }
+    this.setState({
+      stage: STAGE_INIT,
+    });
   };
 
   connectKeplr = async () => {
@@ -250,7 +250,9 @@ class ActionBarConnect extends Component {
         pk,
       },
     };
-
+    this.setState({
+      stage: STAGE_ADD_ADDRESS_OK,
+    });
     const localStorageStory = await localStorage.getItem('pocketAccount');
     if (localStorageStory !== null) {
       const dataPocketAccount = JSON.parse(localStorageStory);
@@ -263,22 +265,20 @@ class ActionBarConnect extends Component {
     } else {
       localStorage.setItem('pocketAccount', JSON.stringify(accounts));
     }
-    localStorage.setItem('pocket', JSON.stringify(accounts));
-    this.setState({
-      stage: STAGE_ADD_ADDRESS_OK,
-    });
 
     if (updateAddress) {
       updateAddress();
     }
+    this.setState({
+      stage: STAGE_INIT,
+    });
   };
 
   render() {
     const { keplr, accountKeplr } = this.props;
     const { stage, connectLedger, valueInputAddres } = this.state;
 
-    console.log('keplr', keplr);
-    console.log('accountKeplr :>> ', accountKeplr);
+    console.log('stage', stage);
 
     if (stage === STAGE_INIT) {
       return (

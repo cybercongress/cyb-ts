@@ -13,7 +13,7 @@ import { setBandwidth } from '../../redux/actions/bandwidth';
 import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from '../../components/web3/injectKeplr';
 
-import { LEDGER, COSMOS } from '../../utils/config';
+import { LEDGER, COSMOS, PATTERN_CYBER } from '../../utils/config';
 import {
   getBalance,
   getTotalEUL,
@@ -32,6 +32,7 @@ import {
 import ActionBarTweet from './actionBarTweet';
 import ActionBarConnect from './actionBarConnect';
 import ActionBarKeplr from './actionBarKeplr';
+import ActionBar from './actionBar';
 
 const { GaiaApi } = require('@chainapsis/cosmosjs/gaia/api');
 const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
@@ -99,14 +100,12 @@ class Wallet extends React.Component {
       stage: STAGE_INIT,
       pocket: [],
       refreshTweet: 0,
-      ledger: null,
       accountKeplr: null,
       returnCode: null,
-      addressInfo: null,
-      addressLedger: null,
       ledgerVersion: [0, 0, 0],
-      time: 0,
-      selectAddress: '',
+      selectAccount: null,
+      defaultAccounts: null,
+      defaultAccountsKeys: null,
       addAddress: false,
       loading: true,
       accounts: null,
@@ -116,6 +115,7 @@ class Wallet extends React.Component {
       importLinkCli: false,
       linkSelected: null,
       selectCard: '',
+      updateCard: 0,
       balanceEthAccount: {
         eth: 0,
         gol: 0,
@@ -182,23 +182,49 @@ class Wallet extends React.Component {
   };
 
   checkAddressLocalStorage = async () => {
+    const { updateCard } = this.state;
     const { setBandwidthProps } = this.props;
-    let address = [];
+    let localStoragePocketAccountData = [];
+    let defaultAccounts = null;
+    let defaultAccountsKeys = null;
 
-    const localStorageStory = await localStorage.getItem('pocketAccount');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
+    const localStoragePocketAccount = await localStorage.getItem(
+      'pocketAccount'
+    );
+    const localStoragePocket = await localStorage.getItem('pocket');
+
+    if (localStoragePocket !== null) {
+      const localStoragePocketData = JSON.parse(localStoragePocket);
+      const keyPocket = Object.keys(localStoragePocketData)[0];
+      defaultAccounts = keyPocket;
+      defaultAccountsKeys = localStoragePocketData[keyPocket].keys;
+    }
+    if (localStoragePocketAccount !== null) {
+      localStoragePocketAccountData = JSON.parse(localStoragePocketAccount);
+      if (localStoragePocket === null) {
+        const keys0 = Object.keys(localStoragePocketAccountData)[0];
+        localStorage.setItem(
+          'pocket',
+          JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
+        );
+        defaultAccounts = keys0;
+        defaultAccountsKeys = localStoragePocketAccountData[keys0].keys;
+      }
       this.setState({
-        accounts: address,
+        accounts: localStoragePocketAccountData,
         link: null,
         selectedIndex: '',
         importLinkCli: false,
         linkSelected: null,
         selectCard: '',
         loading: false,
+        addAddress: false,
+        defaultAccounts,
+        defaultAccountsKeys,
+        updateCard: updateCard + 1,
       });
       // this.getLocalStorageLink();
-      // this.getAddressInfo();
+      this.accountBandwidth();
     } else {
       setBandwidthProps(0, 0);
 
@@ -220,6 +246,19 @@ class Wallet extends React.Component {
         linkSelected: null,
         selectCard: '',
       });
+    }
+  };
+
+  accountBandwidth = async () => {
+    const { defaultAccounts } = this.state;
+    const { setBandwidthProps } = this.props;
+
+    if (defaultAccounts !== null) {
+      const response = await getAccountBandwidth(defaultAccounts);
+      if (response !== null) {
+        const { remained, max_value: maxValue } = response;
+        setBandwidthProps(remained, maxValue);
+      }
     }
   };
 
@@ -346,18 +385,25 @@ class Wallet extends React.Component {
     });
   };
 
-  onClickSelect = (select) => {
-    const { selectCard } = this.state;
+  onClickSelect = (select, key = '') => {
+    const { selectCard, accounts } = this.state;
     let selectd = select;
+    let selectAccount = null;
+
+    if (key.match(PATTERN_CYBER)) {
+      selectAccount = accounts[key];
+    }
 
     if (selectCard === select) {
       selectd = '';
+      selectAccount = null;
     }
 
     this.setState({
       linkSelected: null,
       selectedIndex: '',
       selectCard: selectd,
+      selectAccount,
     });
   };
 
@@ -386,10 +432,15 @@ class Wallet extends React.Component {
       accountsETH,
       refreshTweet,
       accountKeplr,
+      selectAccount,
+      updateCard,
+      defaultAccounts,
+      defaultAccountsKeys,
     } = this.state;
     const { web3, keplr, stageActionBar } = this.props;
 
     console.log('addAddress :>> ', addAddress);
+    console.log('selectAccount :>> ', selectAccount);
 
     let countLink = 0;
     if (link !== null) {
@@ -457,28 +508,32 @@ class Wallet extends React.Component {
               flexDirection="column"
               height="100%"
             >
-              <TweetCard
-                refresh={refreshTweet}
-                select={selectCard === 'tweet'}
-                onClick={() => this.onClickSelect('tweet')}
-                account={Object.keys(accounts)[0]}
-                marginBottom={20}
-              />
+              {defaultAccounts !== null && (
+                <TweetCard
+                  refresh={refreshTweet}
+                  select={selectCard === 'tweet'}
+                  onClick={() => this.onClickSelect('tweet')}
+                  account={defaultAccounts}
+                  marginBottom={20}
+                />
+              )}
 
               {Object.keys(accounts).map((key) => (
                 <PubkeyCard
-                  onClick={() => this.onClickSelect(`pubkey_${key}`)}
+                  onClick={() => this.onClickSelect(`pubkey_${key}`, key)}
                   select={selectCard === `pubkey_${key}`}
                   pocket={accounts[key]}
                   marginBottom={20}
+                  update={updateCard}
+                  defaultAccounts={defaultAccounts === key}
                 />
               ))}
 
               {accountsETH === undefined && web3.givenProvider !== null && (
                 <PocketCard
                   marginBottom={20}
-                  select={selectCard === 'сonnectEth'}
-                  onClick={() => this.onClickSelect('сonnectEth')}
+                  select={selectCard === 'web3'}
+                  onClick={() => this.onClickSelect('web3')}
                 >
                   <Text fontSize="16px" color="#fff">
                     Connect ETH account
@@ -501,6 +556,7 @@ class Wallet extends React.Component {
                 onClick={() => this.onClickSelect('gol')}
                 select={selectCard === 'gol'}
                 marginBottom={20}
+                defaultAccounts={defaultAccounts}
               />
               {link !== null && (
                 <PocketCard
@@ -525,12 +581,31 @@ class Wallet extends React.Component {
               )}
             </Pane>
           </main>
-          {selectCard === 'tweet' ? (
+          <ActionBar
+            selectCard={selectCard}
+            selectAccount={selectAccount}
+            // actionBar keplr props
+            keplr={keplr}
+            // actionBar web3
+            web3={web3}
+            accountsETH={accountsETH}
+            // actionBar tweet
+            refreshTweet={refreshTweet}
+            updateTweetFunc={this.refreshTweetFunc}
+            // global props
+            updateAddress={this.checkAddressLocalStorage}
+            defaultAccounts={defaultAccounts}
+            defaultAccountsKeys={defaultAccountsKeys}
+          />
+
+          {/* {selectCard === 'tweet' && (
             <ActionBarTweet
               refresh={refreshTweet}
               update={this.refreshTweetFunc}
             />
-          ) : (
+          )}
+
+          {selectCard !== 'tweet' && (
             <ActionBarContainer
               selectCard={selectCard}
               links={link}
@@ -546,14 +621,16 @@ class Wallet extends React.Component {
               // onClickSend={}
             />
           )}
-          {pocket.keys && pocket.keys === 'keplr' && (
-            <ActionBarKeplr
-              accountKeplr={accountKeplr}
-              keplr={keplr}
-              selectCard={selectCard}
-              updateAddress={this.checkAddressLocalStorage}
-            />
-          )}
+          {selectAccount !== null &&
+            selectAccount.keys &&
+            selectAccount.keys === 'keplr' && (
+              <ActionBarKeplr
+                accountKeplr={accountKeplr}
+                keplr={keplr}
+                selectCard={selectCard}
+                updateAddress={this.checkAddressLocalStorage}
+              />
+            )} */}
         </div>
       );
     }

@@ -290,6 +290,10 @@ class AccountDetails extends React.Component {
     console.log(dataTx);
     if (dataTx !== null) {
       this.getAtom(dataTx.txs);
+    } else {
+      this.setState({
+        loading: false,
+      });
     }
   };
 

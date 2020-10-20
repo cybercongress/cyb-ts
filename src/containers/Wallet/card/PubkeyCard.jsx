@@ -17,7 +17,7 @@ const RowBalance = ({ children, ...props }) => (
   </Pane>
 );
 
-const useAddressInfo = (accounts) => {
+const useAddressInfo = (accounts, updateCard) => {
   const [loadingInfo, setLoadingInfo] = useState(true);
   const [totalCyber, setTotalCyber] = useState(0);
   const [totalCosmos, setTotalCosmos] = useState(0);
@@ -39,7 +39,7 @@ const useAddressInfo = (accounts) => {
       setLoadingInfo(false);
     };
     feachData();
-  }, [accounts]);
+  }, [accounts, updateCard]);
 
   return {
     totalCyber,
@@ -218,12 +218,15 @@ const CyberAddressInfo = ({
   );
 };
 
-function PubkeyCard({ pocket, ...props }) {
+function PubkeyCard({ pocket, updateCard, defaultAccounts, ...props }) {
   const [gift, setGift] = useState(0);
   const [loading, setLoading] = useState(true);
   const [pubkeyImg, setPubkeyImg] = useState(false);
   const gol = useGetGol(pocket.cyber.bech32);
-  const { totalCyber, totalCosmos, loadingInfo } = useAddressInfo(pocket);
+  const { totalCyber, totalCosmos, loadingInfo } = useAddressInfo(
+    pocket,
+    updateCard
+  );
 
   useEffect(() => {
     const feachData = async () => {
@@ -253,7 +256,43 @@ function PubkeyCard({ pocket, ...props }) {
   }, [pocket]);
 
   return (
-    <PocketCard display="flex" flexDirection="column" {...props}>
+    <PocketCard
+      display="flex"
+      paddingTop={defaultAccounts ? 30 : 20}
+      flexDirection="column"
+      position="relative"
+      {...props}
+    >
+      {defaultAccounts && (
+        <Pane position="absolute" right="5px" top="5px">
+          <Pane
+            height="23px"
+            width="23px"
+            boxShadow="0 0 2px 1px #009688"
+            borderRadius="50%"
+            display="flex"
+            alignItems="center"
+            justifyContent="space-around"
+          >
+            <Pane
+              height="4px"
+              width="7px"
+              boxShadow="0 0 2px 1px #009688"
+              borderRadius="50%"
+              transform="rotate(25deg)"
+              marginBottom="3px"
+            />
+            <Pane
+              height="4px"
+              width="7px"
+              boxShadow="0 0 2px 1px #009688"
+              borderRadius="50%"
+              transform="rotate(-25deg)"
+              marginBottom="3px"
+            />
+          </Pane>
+        </Pane>
+      )}
       {pubkeyImg && (
         <Pane
           display="flex"

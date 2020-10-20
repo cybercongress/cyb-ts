@@ -37,7 +37,7 @@ const QueryCyberlink = (address, yesterday, time) =>
     }
   }`;
 
-const useNewsToday = account => {
+const useNewsToday = (account) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [follows, setFollows] = useState([]);
@@ -72,7 +72,7 @@ const useNewsToday = account => {
     }
   }, [follows]);
 
-  const feachDataCyberlink = async followsProps => {
+  const feachDataCyberlink = async (followsProps) => {
     const d = new Date();
     const time = dateFormat(d, 'yyyy-mm-dd');
     const yesterday = dateFormat(
@@ -121,6 +121,10 @@ function TweetCard({
     count: 0,
     loading: true,
   });
+  const [follows, setFollows] = useState({
+    count: 0,
+    loading: true,
+  });
 
   useEffect(() => {
     feachData();
@@ -128,32 +132,33 @@ function TweetCard({
 
   const feachData = async () => {
     getAvatarAccounts(account);
-    getFollow(account);
+    getFollowsCount(account);
     getMyTweet(account);
+    getFollow(account);
   };
   useEffect(() => {
-    if (!avatar.loading && !myTweet.loading && !followers.loading) {
-      if (avatar.stage && myTweet.count !== 0 && followers.count !== 0) {
+    if (!avatar.loading && !myTweet.loading && !follows.loading) {
+      if (avatar.stage && myTweet.count !== 0 && follows.count !== 0) {
         setStage(STAGE_READY);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.TWEET);
       }
-      if (avatar.stage && myTweet.count === 0 && followers.count !== 0) {
+      if (avatar.stage && myTweet.count === 0 && follows.count !== 0) {
         setStage(STAGE_ADD_FIRST_TWEET);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.TWEET);
       }
-      if (avatar.stage && myTweet.count === 0 && followers.count === 0) {
+      if (avatar.stage && myTweet.count === 0 && follows.count === 0) {
         setStage(STAGE_ADD_FIRST_FOLLOWER);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW);
       }
-      if (!avatar.stage && myTweet.count === 0 && followers.count === 0) {
+      if (!avatar.stage && myTweet.count === 0 && follows.count === 0) {
         setStage(STAGE_ADD_AVATAR);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.ADD_AVATAR);
       }
       setLoading(false);
     }
-  }, [avatar, myTweet, followers]);
+  }, [avatar, myTweet, follows]);
 
-  const getAvatarAccounts = async address => {
+  const getAvatarAccounts = async (address) => {
     const response = await getAvatar(address);
     if (response !== null && response.txs.length > 0) {
       setAvatar({ stage: true, loading: false });
@@ -162,12 +167,11 @@ function TweetCard({
     }
   };
 
-  const getFollow = async address => {
+  const getFollow = async (address) => {
     let count = 0;
     if (address) {
       const addressHash = await getIpfsHash(address);
       const response = await getFollowers(addressHash);
-
       if (response !== null && response.txs.length > 0) {
         count = response.txs.length;
       }
@@ -175,7 +179,16 @@ function TweetCard({
     }
   };
 
-  const getMyTweet = async address => {
+  const getFollowsCount = async (address) => {
+    let count = 0;
+    const response = await getFollows(address);
+    if (response !== null && response.txs.length > 0) {
+      count = response.txs.length;
+    }
+    setFollows({ loading: false, count });
+  };
+
+  const getMyTweet = async (address) => {
     let count = 0;
     const response = await getTweet(address);
 
@@ -295,16 +308,16 @@ function TweetCard({
   return null;
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    setStageTweetActionBarProps: stage =>
+    setStageTweetActionBarProps: (stage) =>
       dispatch(setStageTweetActionBar(stage)),
   };
 };

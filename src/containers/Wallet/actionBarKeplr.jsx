@@ -29,6 +29,8 @@ const {
   defaultBech32Config,
 } = require('@chainapsis/cosmosjs/core/bech32Config');
 
+const imgKeplr = require('../../image/keplr-icon.svg');
+
 const {
   STAGE_INIT,
   STAGE_ERROR,
@@ -39,7 +41,12 @@ const {
 
 const STAGE_SEND = 1.1;
 
-function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
+function ActionBarKeplr({
+  keplr,
+  updateAddress,
+  selectAccount,
+  defaultAccounts,
+}) {
   const [stage, setStage] = useState(STAGE_INIT);
   const [amountSend, setAmountSend] = useState('');
   const [recipient, setRecipient] = useState('');
@@ -100,6 +107,9 @@ function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
+            if (updateAddress) {
+              updateAddress();
+            }
             return;
           }
           if (response.code) {
@@ -141,54 +151,52 @@ function ActionBarKeplr({ keplr, accountKeplr, updateAddress, selectCard }) {
     }
   }, [recipient, amountSend]);
 
-  if (selectCard === '' && stage === STAGE_INIT) {
-    return (
-      <ActionBar>
-        <Pane>
-          <Link
-            style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
-            className="btn"
-            to="/gol"
-          >
-            Play Game of Links
-          </Link>
-        </Pane>
-      </ActionBar>
-    );
-  }
+  const changeDefaultAccounts = async () => {
+    if (selectAccount !== null && selectAccount.cyber) {
+      localStorage.setItem(
+        'pocket',
+        JSON.stringify({ [selectAccount.cyber.bech32]: selectAccount })
+      );
+    }
+    if (updateAddress) {
+      updateAddress();
+    }
+  };
 
-  if (selectCard === 'pubkey' && stage === STAGE_INIT) {
+  if (stage === STAGE_INIT) {
     return (
       <ActionBar>
         <Pane>
-          <Button marginX={10} onClick={() => deletPubkey(updateAddress)}>
+          <Button
+            marginX={10}
+            onClick={() => deletPubkey(selectAccount, updateAddress)}
+          >
             Drop key
           </Button>
           <Button marginX={10} onClick={() => setStage(STAGE_SEND)}>
             Send EUL{' '}
+            <img
+              style={{
+                width: 20,
+                height: 20,
+                marginLeft: '5px',
+                paddingTop: '2px',
+              }}
+              src={imgKeplr}
+              alt="keplr"
+            />
           </Button>
+          {!defaultAccounts && (
+            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
+              Default Accounts
+            </Button>
+          )}
         </Pane>
       </ActionBar>
     );
   }
 
-  if (selectCard === 'gol' && stage === STAGE_INIT) {
-    return (
-      <ActionBar>
-        <Pane>
-          <Link
-            style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
-            className="btn"
-            to="/gol"
-          >
-            Play Game of Links
-          </Link>
-        </Pane>
-      </ActionBar>
-    );
-  }
-
-  if (selectCard === 'pubkey' && stage === STAGE_SEND) {
+  if (stage === STAGE_SEND) {
     return (
       <ActionBar>
         <Pane display="flex" className="contentItem">

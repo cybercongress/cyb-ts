@@ -30,7 +30,7 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 
 const dateFormat = require('dateformat');
 
-const finalTallyResult = item => {
+const finalTallyResult = (item) => {
   const finalVotes = {
     yes: 0,
     no: 0,
@@ -240,10 +240,11 @@ class ProposalsDetail extends React.Component {
 
     const getVotes = await getProposalsDetailVotes(id);
     if (getVotes) {
-      yes = getVotes.filter(item => item.option === 'Yes').length;
-      no = getVotes.filter(item => item.option === 'No').length;
-      abstain = getVotes.filter(item => item.option === 'Abstain').length;
-      noWithVeto = getVotes.filter(item => item.option === 'noWithVeto').length;
+      yes = getVotes.filter((item) => item.option === 'Yes').length;
+      no = getVotes.filter((item) => item.option === 'No').length;
+      abstain = getVotes.filter((item) => item.option === 'Abstain').length;
+      noWithVeto = getVotes.filter((item) => item.option === 'NoWithVeto')
+        .length;
     }
 
     votes.voter = getVotes;
@@ -273,7 +274,7 @@ class ProposalsDetail extends React.Component {
     });
   };
 
-  getSubStr = str => {
+  getSubStr = (str) => {
     let string = str;
     if (string.indexOf('cosmos-sdk/') !== -1) {
       string = string.slice(string.indexOf('/') + 1);

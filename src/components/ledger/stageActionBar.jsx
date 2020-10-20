@@ -87,10 +87,10 @@ const param = {
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
 
-const toPascalCase = str =>
+const toPascalCase = (str) =>
   str
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[a-zA-Z0-9]+/g)
-    .map(cht => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
+    .map((cht) => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
     .join('');
 
 export const ActionBarContentText = ({ children, ...props }) => (
@@ -287,10 +287,10 @@ export const StartStageSearchActionBar = ({
                 paddingBottom: '10px',
               }}
               className="resize-none minHeightTextarea"
-              onChange={e => onChangeInputContentHash(e)}
+              onChange={(e) => onChangeInputContentHash(e)}
               placeholder={placeholder}
-              onFocus={e => (e.target.placeholder = '')}
-              onBlur={e => (e.target.placeholder = placeholder)}
+              onFocus={(e) => (e.target.placeholder = '')}
+              onBlur={(e) => (e.target.placeholder = placeholder)}
             />
             <Pane
               position="absolute"
@@ -370,7 +370,7 @@ export const GovernanceChangeParam = ({
   const item = [];
   let itemChangeParam = [];
 
-  Object.keys(param).map(key => {
+  Object.keys(param).map((key) => {
     if (param[key].constructor.name === 'Array') {
       item.push(
         <option
@@ -382,7 +382,7 @@ export const GovernanceChangeParam = ({
           {key}
         </option>
       );
-      const temp = param[key].map(items => (
+      const temp = param[key].map((items) => (
         <option
           key={items}
           value={JSON.stringify({
@@ -956,8 +956,8 @@ export const ReDelegate = ({
       >
         <option value="">pick hero</option>
         {validatorsAll
-          .filter(validator => validator.status > 0)
-          .map(item => (
+          .filter((validator) => validator.status > 0)
+          .map((item) => (
             <option
               key={item.operator_address}
               value={item.operator_address}
@@ -987,61 +987,48 @@ export const ReDelegate = ({
 
 export const SendLedger = ({
   onClickBtn,
-  address,
-  availableStake,
   valueInputAmount,
   valueInputAddressTo,
   onChangeInputAmount,
   onChangeInputAddressTo,
-  onClickBtnCloce,
   disabledBtn,
+  addressToValid,
+  amountSendInputValid,
 }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div className="display-flex align-items-center">
-      <span className="actionBar-text">{address}</span>
-      <button
-        className="copy-address"
-        onClick={() => {
-          navigator.clipboard.writeText(address);
-        }}
-      />
-    </div>
-
-    <div>
-      <h3 className="text-align-center">{T.actionBar.send.send}</h3>
-      <p className="text-align-center">{T.actionBar.send.wallet}</p>
-      <span className="actionBar-text">{availableStake}</span>
-
-      <div
-        style={{ marginBottom: 30, marginTop: 30 }}
-        className="text-align-center"
-      >
-        <input
+  <ActionBar>
+    <Pane display="flex" className="contentItem">
+      <ActionBarContentText>
+        <Input
           value={valueInputAddressTo}
-          style={{ marginRight: 10, width: '70%' }}
+          height={42}
+          marginRight={10}
+          width="300px"
           onChange={onChangeInputAddressTo}
-          placeholder="address"
+          placeholder="cyber address To"
+          isInvalid={addressToValid !== null}
+          message={addressToValid}
         />
 
-        <input
+        <Input
           value={valueInputAmount}
-          style={{ width: '24%' }}
+          height={42}
+          width="24%"
           onChange={onChangeInputAmount}
-          placeholder="amount GEUL"
+          placeholder="EUL"
+          isInvalid={amountSendInputValid !== null}
+          message={amountSendInputValid}
         />
-      </div>
-      <div className="text-align-center">
-        <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
-          {T.actionBar.send.generate}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+      </ActionBarContentText>
+      <button
+        type="button"
+        className="btn-disabled"
+        disabled={disabledBtn}
+        onClick={onClickBtn}
+      >
+        Generate Tx
+      </button>
+    </Pane>
+  </ActionBar>
 );
 
 export const SendLedgerAtomTot = ({
@@ -1226,7 +1213,7 @@ export const RewardsDelegators = ({
   onClickBtnCloce,
   disabledBtn,
 }) => {
-  const itemReward = data.rewards.map(item => (
+  const itemReward = data.rewards.map((item) => (
     <Pane
       key={item.validator_address}
       display="flex"

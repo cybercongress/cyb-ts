@@ -127,7 +127,10 @@ class ActionBarContainer extends Component {
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      this.setState({ addressLocalStor: address });
+      const key = Object.keys(address)[0];
+      this.setState({
+        addressLocalStor: { address: key, keys: address[key].keys },
+      });
     } else {
       this.setState({
         addressLocalStor: null,
@@ -463,7 +466,7 @@ class ActionBarContainer extends Component {
     } = this.state;
 
     const { textBtn, placeholder } = this.props;
-
+    console.log('addressLocalStor', addressLocalStor);
     if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
         <ActionBar>
