@@ -217,7 +217,6 @@ class ActionBarConnect extends Component {
       } else {
         localStorage.setItem('pocketAccount', JSON.stringify(accounts));
       }
-
     }
 
     if (updateAddress) {
@@ -266,16 +265,17 @@ class ActionBarConnect extends Component {
       localStorage.setItem('pocketAccount', JSON.stringify(accounts));
     }
 
-    if (updateAddress) {
-      updateAddress();
-    }
     this.setState({
       stage: STAGE_INIT,
     });
+
+    if (updateAddress) {
+      updateAddress();
+    }
   };
 
   render() {
-    const { keplr, accountKeplr } = this.props;
+    const { keplr, brain, accountKeplr } = this.props;
     const { stage, connectLedger, valueInputAddres } = this.state;
 
     console.log('stage', stage);
@@ -284,11 +284,13 @@ class ActionBarConnect extends Component {
       return (
         <ActionBar>
           <Pane>
-            <Button marginX="10px" onClick={this.onClickAddAddressUser}>
-              Put a read-only address
-            </Button>
+            {!brain && (
+              <Button marginX="10px" onClick={this.onClickAddAddressUser}>
+                Put a read-only address
+              </Button>
+            )}
             <Button marginX="10px" onClick={this.onClickAddAddressLedger}>
-              Pocket your Ledger
+              Connect your Ledger
             </Button>
             {keplr && (
               <Button marginX="10px" onClick={this.connectKeplr}>

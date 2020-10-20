@@ -23,6 +23,8 @@ import { roundNumber } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
 import { getEstimation } from '../../utils/fundingMath';
 import injectWeb3 from './web3';
+import injectKeplr from '../../components/web3/injectKeplr';
+
 import {
   CYBER,
   AUCTION,
@@ -35,6 +37,7 @@ import {
 import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
+import ActionBarConnect from '../Wallet/actionBarConnect';
 import {
   GovernmentTab,
   MainTab,
@@ -73,7 +76,7 @@ class Brain extends React.Component {
     super(props);
     this.state = {
       inlfation: 0,
-      addressLedger: null,
+      addressPocket: null,
       linksCount: 0,
       cidsCount: 0,
       accountsCount: 0,
@@ -135,9 +138,9 @@ class Brain extends React.Component {
   };
 
   loadContent = async (cids, node, prevState) => {
-    const contentPromises = Object.keys(cids).map(cid =>
+    const contentPromises = Object.keys(cids).map((cid) =>
       getContentByCid(cid, node)
-        .then(content => {
+        .then((content) => {
           const { twit } = this.state;
           const links = twit;
           if (
@@ -181,7 +184,7 @@ class Brain extends React.Component {
   };
 
   getFollow = async () => {
-    const { addressLedger } = this.state;
+    const { addressPocket } = this.state;
     const { node } = this.props;
     let responseFollows = null;
     let twitData = [];
@@ -191,8 +194,8 @@ class Brain extends React.Component {
       loadingTwit: true,
     });
 
-    if (addressLedger !== null) {
-      responseFollows = await getFollows(addressLedger.bech32);
+    if (addressPocket !== null) {
+      responseFollows = await getFollows(addressPocket.bech32);
 
       if (responseFollows !== null && responseFollows.txs) {
         for (const item of responseFollows.txs) {
@@ -321,7 +324,7 @@ class Brain extends React.Component {
     }
   };
 
-  getATOM = async dataTxs => {
+  getATOM = async (dataTxs) => {
     const { cybernomics } = this.state;
     let amount = 0;
     let currentPrice = 0;
@@ -364,17 +367,40 @@ class Brain extends React.Component {
   };
 
   checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address });
-      this.getAddressInfo();
+    const localStoragePocketAccount = await localStorage.getItem(
+      'pocketAccount'
+    );
+    const localStoragePocket = await localStorage.getItem('pocket');
+    if (localStoragePocket !== null) {
+      const localStoragePocketData = JSON.parse(localStoragePocket);
+      const keyPocket = Object.keys(localStoragePocketData)[0];
       this.setState({
+        addressPocket: {
+          bech32: keyPocket,
+          keys: localStoragePocketData[keyPocket].keys,
+        },
         addAddress: false,
       });
+      this.getAddressInfo();
+    } else if (localStoragePocketAccount !== null) {
+      const localStoragePocketAccountData = JSON.parse(
+        localStoragePocketAccount
+      );
+      if (localStoragePocket === null) {
+        const keys0 = Object.keys(localStoragePocketAccountData)[0];
+        localStorage.setItem(
+          'pocket',
+          JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
+        );
+        await this.setState({
+          addressPocket: {
+            bech32: keys0,
+            keys: localStoragePocketAccountData[keys0].keys,
+          },
+          addAddress: false,
+        });
+        this.getAddressInfo();
+      }
     } else {
       this.setState({
         addAddress: true,
@@ -384,7 +410,7 @@ class Brain extends React.Component {
   };
 
   getAddressInfo = async () => {
-    const { addressLedger } = this.state;
+    const { addressPocket } = this.state;
     const addressInfo = {
       address: '',
       amount: '',
@@ -393,7 +419,7 @@ class Brain extends React.Component {
     };
     let total = 0;
 
-    const result = await getBalance(addressLedger.bech32);
+    const result = await getBalance(addressPocket.bech32);
     console.log('result', result);
 
     if (result) {
@@ -455,7 +481,7 @@ class Brain extends React.Component {
     });
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -482,9 +508,9 @@ class Brain extends React.Component {
       donation,
       twit,
       loadingTwit,
-      addressLedger,
+      addressPocket,
     } = this.state;
-    const { block, mobile } = this.props;
+    const { keplr, mobile } = this.props;
 
     let content;
 
@@ -660,10 +686,19 @@ class Brain extends React.Component {
             {content}
           </Pane>
         </main>
-        {!mobile && (
+        {!mobile && !addAddress && (
           <ActionBarContainer
-            addAddress={addAddress}
+            keplr={keplr}
             updateFunc={this.update}
+            addressPocket={addressPocket}
+          />
+        )}
+        {!mobile && addAddress && (
+          <ActionBarConnect
+            keplr={keplr}
+            addAddress={addAddress}
+            updateAddress={this.update}
+            brain
           />
         )}
       </div>
@@ -671,7 +706,7 @@ class Brain extends React.Component {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     block: store.block.block,
     mobile: store.settings.mobile,
@@ -679,4 +714,4 @@ const mapStateToProps = store => {
   };
 };
 
-export default connect(mapStateToProps)(injectWeb3(Brain));
+export default connect(mapStateToProps)(injectWeb3(injectKeplr(Brain)));
