@@ -93,6 +93,7 @@ class Brain extends React.PureComponent {
       proposals: 0,
       donation: 0,
       twit: {},
+      tweetData: [],
       loadingTwit: true,
       cybernomics: {
         gol: {
@@ -124,10 +125,14 @@ class Brain extends React.PureComponent {
     this.getContract();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { location } = this.props;
+    const { tweetData } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekPathname();
+    }
+    if (prevState.tweetData !== tweetData) {
+      this.convertTweetData();
     }
   }
 
@@ -139,10 +144,7 @@ class Brain extends React.PureComponent {
 
   getFollow = async () => {
     const { addressLedger } = this.state;
-    const { node } = this.props;
     let responseFollows = null;
-    let twitData = [];
-    let twit = {};
 
     this.setState({
       loadingTwit: true,
@@ -150,10 +152,8 @@ class Brain extends React.PureComponent {
 
     if (addressLedger !== null) {
       responseFollows = await getFollows(addressLedger.cyber.bech32);
-      // db.table('following').toArray();
       if (responseFollows !== null && responseFollows.txs) {
-        // eslint-disable-next-line no-restricted-syntax
-        for (const item of responseFollows.txs) {
+        responseFollows.txs.forEach(async item => {
           let addressResolve;
           const cid = item.tx.value.msg[0].value.links[0].to;
           const dataIndexdDb = await db.table('following').get({ cid });
@@ -182,21 +182,35 @@ class Brain extends React.PureComponent {
                 responseTwit.txs &&
                 responseTwit.txs.length > 0
               ) {
-                twitData = [...twitData, ...responseTwit.txs];
+                this.setState(prevState => {
+                  return {
+                    tweetData: [...prevState.tweetData, ...responseTwit.txs],
+                  };
+                });
               }
             }
           }
-        }
+        });
       }
     } else {
       const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
       if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-        twitData = [...twitData, ...responseTwit.txs];
+        this.setState(prevState => {
+          return {
+            tweetData: [...prevState.tweetData, ...responseTwit.txs],
+          };
+        });
       }
     }
+  };
 
-    if (twitData.length > 0) {
-      twit = twitData.reduce(
+  convertTweetData = () => {
+    const { node } = this.props;
+    const { tweetData } = this.state;
+    let twit = {};
+
+    if (tweetData.length > 0) {
+      twit = tweetData.reduce(
         (obj, item) => ({
           ...obj,
           [item.tx.value.msg[0].value.links[0].to]: {
@@ -448,9 +462,9 @@ class Brain extends React.PureComponent {
       twit,
       loadingTwit,
       addressLedger,
+      tweetData,
     } = this.state;
     const { mobile, node } = this.props;
-
     let content;
 
     if (loading) {
