@@ -193,7 +193,7 @@ class ActionBarContainer extends Component {
       });
       let chainId = '';
       const addressInfo = await this.ledger.getAccountInfoCyber(address);
-      const responseStatusNode = await this.statusNode();
+      const responseStatusNode = await statusNode();
       if (responseStatusNode !== null) {
         chainId = responseStatusNode.node_info.network;
       }

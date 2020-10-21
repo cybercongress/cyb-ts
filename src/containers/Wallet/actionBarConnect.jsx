@@ -73,7 +73,9 @@ class ActionBarConnect extends Component {
   addAddressLedger = async () => {
     try {
       const { updateAddress } = this.props;
-
+      this.setState({
+        stage: STAGE_ADD_ADDRESS_OK,
+      });
       const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
       const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
 
@@ -102,12 +104,13 @@ class ActionBarConnect extends Component {
         localStorage.setItem('pocketAccount', JSON.stringify(accounts));
       }
 
+      this.setState({
+        stage: STAGE_INIT,
+      });
+
       if (updateAddress) {
         updateAddress();
       }
-      this.setState({
-        stage: STAGE_ADD_ADDRESS_OK,
-      });
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
@@ -219,12 +222,13 @@ class ActionBarConnect extends Component {
       }
     }
 
+    await this.setState({
+      stage: STAGE_INIT,
+    });
+
     if (updateAddress) {
       updateAddress();
     }
-    this.setState({
-      stage: STAGE_INIT,
-    });
   };
 
   connectKeplr = async () => {
@@ -265,7 +269,7 @@ class ActionBarConnect extends Component {
       localStorage.setItem('pocketAccount', JSON.stringify(accounts));
     }
 
-    this.setState({
+    await this.setState({
       stage: STAGE_INIT,
     });
 
