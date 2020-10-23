@@ -17,6 +17,7 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
               display="flex"
               alignItems="center"
               marginBottom="10px"
+              key={`${item.cid}_${i}`}
             >
               {!mobile && (
                 <Pane
@@ -27,7 +28,6 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
                 </Pane>
               )}
               <ContentItem
-                key={`${item.cid}_${i}`}
                 nodeIpfs={nodeIpfs}
                 cid={item.cid}
                 item={item}

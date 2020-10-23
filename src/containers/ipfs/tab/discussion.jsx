@@ -35,16 +35,18 @@ function timeSince(timeMS) {
 }
 
 function DiscussionTab({ data, mobile, nodeIpfs }) {
-  if (data && data.cyberlink.length > 0) {
+  if (data && data.length > 0) {
     const d = new Date();
     return (
       <div className="container-contentItem" style={{ width: '100%' }}>
-        {data.cyberlink.map((item, i) => {
+        {data.map((item, i) => {
           let timeAgoInMS = 0;
           const time = Date.parse(d) - Date.parse(item.timestamp);
           if (time > 0) {
             timeAgoInMS = time;
           }
+          const cid = item.tx.value.msg[0].value.links[0].to;
+
           return (
             <Pane
               position="relative"
@@ -52,6 +54,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
               display="flex"
               alignItems="center"
               marginBottom="10px"
+              key={`${cid}_${i}`}
             >
               {!mobile && (
                 <Pane
@@ -59,16 +62,15 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
                   position="absolute"
                 >
                   <Rank
-                    hash={item.object_to}
+                    hash={cid}
                     rank="n/a"
                     grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
                   />
                 </Pane>
               )}
               <ContentItem
-                key={`${item.object_to}_${i}`}
                 nodeIpfs={nodeIpfs}
-                cid={item.object_to}
+                cid={cid}
                 item={item}
                 className="contentItem-discussion"
               />
