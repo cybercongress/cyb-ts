@@ -486,9 +486,9 @@ class ActionBarTakeOff extends Component {
       hdpath,
       connectLedger,
     } = this.state;
-    const { end, mobile } = this.props;
+    const { end, mobile, time } = this.props;
 
-    if (end <= 0) {
+    if (end <= 0 || time === 'end') {
       return (
         <ActionBar>
           <div
