@@ -85,6 +85,7 @@ class Funding extends PureComponent {
       popapAdress: false,
       selected: 'manifest',
       block: 0,
+      time: '∞',
     };
   }
 
@@ -555,6 +556,7 @@ class Funding extends PureComponent {
           end={100000 - estimation}
           onClickPopapAdressTrue={this.onClickPopapAdressTrue}
           mobile={mobile}
+          time={time}
         />
       </span>
     );
