@@ -1,6 +1,6 @@
 export const initialState = {
   ipfs: null,
-  statusIpfs: 'fail',
+  statusIpfs: false,
 };
 
 const ipfsReducer = (state = initialState, action) => {

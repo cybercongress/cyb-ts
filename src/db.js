@@ -1,8 +1,8 @@
 import Dexie from 'dexie';
 
-const db = new Dexie('Test1');
+const db = new Dexie('cyber-page-cash');
 db.version(3).stores({
-  test: 'cid',
+  cid: 'cid',
   following: 'cid',
 });
 

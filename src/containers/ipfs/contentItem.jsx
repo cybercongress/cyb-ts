@@ -23,7 +23,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
 
   useEffect(() => {
     const feachData = async () => {
-      const dataIndexdDb = await db.table('test').get({ cid });
+      const dataIndexdDb = await db.table('cid').get({ cid });
       console.log('dataIndexdDb :>> ', dataIndexdDb);
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
@@ -75,7 +75,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
             meta,
           };
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
-          db.table('test')
+          db.table('cid')
             .add(ipfsContentAddtToInddexdDB)
             .then(id => {
               console.log('item :>> ', id);

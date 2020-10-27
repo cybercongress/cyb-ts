@@ -87,7 +87,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
   useEffect(() => {
     const feachData = async () => {
       setLoading(true);
-      const dataIndexdDb = await db.table('test').get({ cid });
+      const dataIndexdDb = await db.table('cid').get({ cid });
       console.log('dataIndexdDb :>> ', dataIndexdDb);
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
@@ -149,7 +149,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
             meta,
           };
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
-          db.table('test')
+          db.table('cid')
             .add(ipfsContentAddtToInddexdDB)
             .then(id => {
               console.log('item :>> ', id);

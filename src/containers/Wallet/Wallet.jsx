@@ -18,6 +18,7 @@ import {
   getAccountBandwidth,
   getGraphQLQuery,
 } from '../../utils/search/utils';
+import { formatCurrency } from '../../utils/utils';
 import { PocketCard } from './components';
 import {
   PubkeyCard,
@@ -27,6 +28,7 @@ import {
   TweetCard,
 } from './card';
 import ActionBarTweet from './actionBarTweet';
+import db from '../../db';
 
 const {
   HDPATH,
@@ -38,6 +40,25 @@ const {
   STAGE_ERROR,
   LEDGER_VERSION_REQ,
 } = LEDGER;
+
+const PREFIXES = [
+  {
+    prefix: 'T',
+    power: 1024 * 10 ** 9,
+  },
+  {
+    prefix: 'G',
+    power: 1024 * 10 ** 6,
+  },
+  {
+    prefix: 'M',
+    power: 1024 * 10 ** 3,
+  },
+  {
+    prefix: 'K',
+    power: 1024,
+  },
+];
 
 const QueryAddress = address =>
   `
@@ -101,6 +122,7 @@ class Wallet extends React.Component {
       importLinkCli: false,
       linkSelected: null,
       selectCard: '',
+      storageManager: null,
       balanceEthAccount: {
         eth: 0,
         gol: 0,
@@ -115,15 +137,36 @@ class Wallet extends React.Component {
       accountsETH: accounts,
     });
 
+    this.checkIndexdDbSize();
+
     if (accounts && accounts !== null) {
       this.getBalanceEth();
     }
 
     await this.checkAddressLocalStorage();
-    if (web3.givenProvider !== null) {
+    if (web3 !== null) {
       this.accountsChanged();
     }
   }
+
+  checkIndexdDbSize = async () => {
+    if (navigator.storage && navigator.storage.estimate) {
+      const estimation = await navigator.storage.estimate();
+      const countCid = await db.table('cid').count();
+      const countFollowing = await db.table('following').count();
+      const count = countCid + countFollowing;
+      const { quota, usage } = estimation;
+      this.setState({
+        storageManager: {
+          quota,
+          usage,
+          count,
+        },
+      });
+    } else {
+      console.warn('StorageManager not found');
+    }
+  };
 
   accountsChanged = () => {
     window.ethereum.on('accountsChanged', async accountsChanged => {
@@ -413,8 +456,11 @@ class Wallet extends React.Component {
       balanceEthAccount,
       accountsETH,
       refreshTweet,
+      storageManager,
     } = this.state;
     const { web3, stageActionBar } = this.props;
+
+    console.log('storageManager :>> ', storageManager);
 
     let countLink = 0;
     if (link !== null) {
@@ -488,6 +534,49 @@ class Wallet extends React.Component {
                 account={accounts.cyber.bech32}
                 marginBottom={20}
               />
+              {storageManager && storageManager !== null && (
+                <PocketCard
+                  marginBottom={20}
+                  select={selectCard === 'storageManager'}
+                  onClick={() => this.onClickSelect('storageManager')}
+                  display="flex"
+                  alignItems="center"
+                  flexDirection="row"
+                >
+                  {/* <Text fontSize="16px" color="#fff">
+                    {formatCurrency(storageManager.quota, 'B', 3, PREFIXES)}
+                  </Text> */}
+                  <Text flex={1} fontSize="18px" color="#fff">
+                    Storage Manager
+                  </Text>
+                  <Pane
+                    alignItems="center"
+                    display="flex"
+                    flexDirection="column"
+                    marginX={5}
+                  >
+                    <Text color="#fff" fontSize="18px">
+                      {storageManager.count}
+                    </Text>
+                    <Text fontSize="16px" color="#fff">
+                      cid
+                    </Text>
+                  </Pane>
+                  <Pane
+                    alignItems="center"
+                    display="flex"
+                    flexDirection="column"
+                    marginX={5}
+                  >
+                    <Text color="#fff" fontSize="18px">
+                      {formatCurrency(storageManager.usage, 'B', 2, PREFIXES)}
+                    </Text>
+                    <Text fontSize="16px" color="#fff">
+                      size
+                    </Text>
+                  </Pane>
+                </PocketCard>
+              )}
               <PubkeyCard
                 onClick={() => this.onClickSelect('pubkey')}
                 select={selectCard === 'pubkey'}
@@ -495,7 +584,7 @@ class Wallet extends React.Component {
                 marginBottom={20}
               />
 
-              {accountsETH === undefined && web3.givenProvider !== null && (
+              {accountsETH !== null && accountsETH === undefined && (
                 <PocketCard
                   marginBottom={20}
                   select={selectCard === 'сonnectEth'}
@@ -507,7 +596,7 @@ class Wallet extends React.Component {
                 </PocketCard>
               )}
 
-              {accountsETH !== undefined && web3.givenProvider !== null && (
+              {accountsETH !== null && accountsETH !== undefined && (
                 <GolBalance
                   balance={balanceEthAccount}
                   accounts={accountsETH}
