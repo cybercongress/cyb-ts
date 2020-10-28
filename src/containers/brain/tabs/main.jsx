@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { Pane, Rank, SearchItem } from '@cybercongress/gravity';
-import { CardStatisics, LinkWindow } from '../../../components';
+import { CardStatisics, LinkWindow, Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import CodeBlock from '../../ipfs/codeBlock';
 import Iframe from 'react-iframe';
 import Noitem from '../../account/noItem';
-import { Dots } from '../../../components';
+import ContentItem from '../../ipfs/contentItem';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -46,7 +46,7 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function MainTab({ loadingTwit, mobile, twit }) {
+function MainTab({ loadingTwit, mobile, twit, nodeIpfs }) {
   try {
     const searchItems = [];
     const d = new Date();
@@ -62,7 +62,7 @@ function MainTab({ loadingTwit, mobile, twit }) {
           const y = Date.parse(twit[b].time);
           return y - x;
         })
-        .map(key => {
+        .map((key, i) => {
           let timeAgoInMS = 0;
           const time = Date.parse(d) - Date.parse(twit[key].time);
           if (time > 0) {
@@ -75,6 +75,7 @@ function MainTab({ loadingTwit, mobile, twit }) {
               display="flex"
               alignItems="center"
               marginBottom="10px"
+              key={`${key}_${i}`}
             >
               {!mobile && (
                 <Pane
@@ -88,44 +89,12 @@ function MainTab({ loadingTwit, mobile, twit }) {
                   />
                 </Pane>
               )}
-              <Link className="SearchItem" to={`/ipfs/${key}`}>
-                <SearchItem
-                  key={key}
-                  status={twit[key].status}
-                  text={
-                    <div className="container-text-SearchItem">
-                      <ReactMarkdown
-                        source={twit[key].text}
-                        escapeHtml={false}
-                        skipHtml={false}
-                        astPlugins={[parseHtml]}
-                        renderers={{ code: CodeBlock }}
-                        // plugins={[toc]}
-                        // escapeHtml={false}
-                      />
-                    </div>
-                  }
-                  // onClick={e => (e, twit[cid].content)}
-                >
-                  {twit[key].content &&
-                    twit[key].content.indexOf('image') !== -1 && (
-                      <img
-                        style={{ width: '100%', paddingTop: 10 }}
-                        alt="img"
-                        src={twit[key].content}
-                      />
-                    )}
-                  {twit[key].content &&
-                    twit[key].content.indexOf('application/pdf') !== -1 && (
-                      <Iframe
-                        width="100%"
-                        height="400px"
-                        className="iframe-SearchItem"
-                        url={twit[key].content}
-                      />
-                    )}
-                </SearchItem>
-              </Link>
+              <ContentItem
+                nodeIpfs={nodeIpfs}
+                cid={key}
+                item={twit[key]}
+                className="contentItem"
+              />
               <Pane
                 className="time-discussion rank-contentItem"
                 position="absolute"

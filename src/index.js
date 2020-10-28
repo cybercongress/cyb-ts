@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 import AppRouter from './router';
 import { CYBER } from './utils/config';
 import store from './redux/store';
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 import './style/main.css';
 import './image/favicon.ico';
@@ -76,13 +77,15 @@ const client = new ApolloClient({
 
 const render = () => {
   ReactDOM.render(
-    <Provider store={store}>
-      <ApolloProvider client={client}>
-        <AppContainer>
-          <AppRouter />
-        </AppContainer>
-      </ApolloProvider>
-    </Provider>,
+    <>
+      <Provider store={store}>
+        <ApolloProvider client={client}>
+          <AppContainer>
+            <AppRouter />
+          </AppContainer>
+        </ApolloProvider>
+      </Provider>
+    </>,
     root
   );
 };

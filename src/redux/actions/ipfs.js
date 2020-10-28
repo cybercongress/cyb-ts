@@ -11,3 +11,10 @@ export const setIpfsStatus = status => {
     payload: status,
   };
 };
+
+export const setIpfsID = status => {
+  return {
+    type: 'SET_ID',
+    payload: status,
+  };
+};

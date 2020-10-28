@@ -18,6 +18,7 @@ import {
   getAccountBandwidth,
   getGraphQLQuery,
 } from '../../utils/search/utils';
+import { formatCurrency } from '../../utils/utils';
 import { PocketCard } from './components';
 import {
   PubkeyCard,
@@ -25,8 +26,10 @@ import {
   ImportLinkLedger,
   GolBalance,
   TweetCard,
+  IpfsCard,
 } from './card';
 import ActionBarTweet from './actionBarTweet';
+import db from '../../db';
 
 const {
   HDPATH,
@@ -101,6 +104,7 @@ class Wallet extends React.Component {
       importLinkCli: false,
       linkSelected: null,
       selectCard: '',
+      storageManager: null,
       balanceEthAccount: {
         eth: 0,
         gol: 0,
@@ -115,15 +119,36 @@ class Wallet extends React.Component {
       accountsETH: accounts,
     });
 
+    this.checkIndexdDbSize();
+
     if (accounts && accounts !== null) {
       this.getBalanceEth();
     }
 
     await this.checkAddressLocalStorage();
-    if (web3.givenProvider !== null) {
+    if (web3 !== null) {
       this.accountsChanged();
     }
   }
+
+  checkIndexdDbSize = async () => {
+    if (navigator.storage && navigator.storage.estimate) {
+      const estimation = await navigator.storage.estimate();
+      const countCid = await db.table('cid').count();
+      const countFollowing = await db.table('following').count();
+      const count = countCid + countFollowing;
+      const { quota, usage } = estimation;
+      this.setState({
+        storageManager: {
+          quota,
+          usage,
+          count,
+        },
+      });
+    } else {
+      console.warn('StorageManager not found');
+    }
+  };
 
   accountsChanged = () => {
     window.ethereum.on('accountsChanged', async accountsChanged => {
@@ -413,8 +438,11 @@ class Wallet extends React.Component {
       balanceEthAccount,
       accountsETH,
       refreshTweet,
+      storageManager,
     } = this.state;
-    const { web3, stageActionBar } = this.props;
+    const { web3, ipfsId } = this.props;
+
+    console.log('ipfsId :>> ', ipfsId);
 
     let countLink = 0;
     if (link !== null) {
@@ -488,6 +516,15 @@ class Wallet extends React.Component {
                 account={accounts.cyber.bech32}
                 marginBottom={20}
               />
+              {storageManager && storageManager !== null && ipfsId !== null && (
+                <IpfsCard
+                  storageManager={storageManager}
+                  ipfsId={ipfsId}
+                  marginBottom={20}
+                  onClick={() => this.onClickSelect('storageManager')}
+                  select={selectCard === 'storageManager'}
+                />
+              )}
               <PubkeyCard
                 onClick={() => this.onClickSelect('pubkey')}
                 select={selectCard === 'pubkey'}
@@ -495,7 +532,7 @@ class Wallet extends React.Component {
                 marginBottom={20}
               />
 
-              {accountsETH === undefined && web3.givenProvider !== null && (
+              {accountsETH !== null && accountsETH === undefined && (
                 <PocketCard
                   marginBottom={20}
                   select={selectCard === 'сonnectEth'}
@@ -507,7 +544,7 @@ class Wallet extends React.Component {
                 </PocketCard>
               )}
 
-              {accountsETH !== undefined && web3.givenProvider !== null && (
+              {accountsETH !== null && accountsETH !== undefined && (
                 <GolBalance
                   balance={balanceEthAccount}
                   accounts={accountsETH}
@@ -581,4 +618,10 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(withWeb3(Wallet));
+const mapStateToProps = store => {
+  return {
+    ipfsId: store.ipfs.id,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(withWeb3(Wallet));
