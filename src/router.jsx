@@ -24,7 +24,7 @@ import Vesting from './containers/vesting/vesting';
 // import ForceGraph from './containers/forceGraph/forceGraph';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
-import { initIpfs, setIpfsStatus } from './redux/actions/ipfs';
+import { initIpfs, setIpfsStatus, setIpfsID } from './redux/actions/ipfs';
 import { setTypeDevice } from './redux/actions/settings';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
@@ -41,7 +41,12 @@ import db from './db';
 
 export const history = createBrowserHistory({});
 
-function AppRouter({ initIpfsProps, setIpfsStatusProps, setTypeDeviceProps }) {
+function AppRouter({
+  initIpfsProps,
+  setIpfsStatusProps,
+  setTypeDeviceProps,
+  setIpfsIDProps,
+}) {
   const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
 
@@ -51,6 +56,7 @@ function AppRouter({ initIpfsProps, setIpfsStatusProps, setTypeDeviceProps }) {
     initIpfsProps(dataIpfsStart.node);
     setIpfsStatusProps(dataIpfsStart.status);
     setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
     setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
 
@@ -108,6 +114,7 @@ const mapDispatchprops = dispatch => {
     initIpfsProps: ipfsNode => dispatch(initIpfs(ipfsNode)),
     setIpfsStatusProps: status => dispatch(setIpfsStatus(status)),
     setTypeDeviceProps: type => dispatch(setTypeDevice(type)),
+    setIpfsIDProps: id => dispatch(setIpfsID(id)),
   };
 };
 

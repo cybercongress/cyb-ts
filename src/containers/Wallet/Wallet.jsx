@@ -26,6 +26,7 @@ import {
   ImportLinkLedger,
   GolBalance,
   TweetCard,
+  IpfsCard,
 } from './card';
 import ActionBarTweet from './actionBarTweet';
 import db from '../../db';
@@ -40,25 +41,6 @@ const {
   STAGE_ERROR,
   LEDGER_VERSION_REQ,
 } = LEDGER;
-
-const PREFIXES = [
-  {
-    prefix: 'T',
-    power: 1024 * 10 ** 9,
-  },
-  {
-    prefix: 'G',
-    power: 1024 * 10 ** 6,
-  },
-  {
-    prefix: 'M',
-    power: 1024 * 10 ** 3,
-  },
-  {
-    prefix: 'K',
-    power: 1024,
-  },
-];
 
 const QueryAddress = address =>
   `
@@ -458,9 +440,9 @@ class Wallet extends React.Component {
       refreshTweet,
       storageManager,
     } = this.state;
-    const { web3, stageActionBar } = this.props;
+    const { web3, ipfsId } = this.props;
 
-    console.log('storageManager :>> ', storageManager);
+    console.log('ipfsId :>> ', ipfsId);
 
     let countLink = 0;
     if (link !== null) {
@@ -534,48 +516,14 @@ class Wallet extends React.Component {
                 account={accounts.cyber.bech32}
                 marginBottom={20}
               />
-              {storageManager && storageManager !== null && (
-                <PocketCard
+              {storageManager && storageManager !== null && ipfsId !== null && (
+                <IpfsCard
+                  storageManager={storageManager}
+                  ipfsId={ipfsId}
                   marginBottom={20}
-                  select={selectCard === 'storageManager'}
                   onClick={() => this.onClickSelect('storageManager')}
-                  display="flex"
-                  alignItems="center"
-                  flexDirection="row"
-                >
-                  {/* <Text fontSize="16px" color="#fff">
-                    {formatCurrency(storageManager.quota, 'B', 3, PREFIXES)}
-                  </Text> */}
-                  <Text flex={1} fontSize="18px" color="#fff">
-                    Storage Manager
-                  </Text>
-                  <Pane
-                    alignItems="center"
-                    display="flex"
-                    flexDirection="column"
-                    marginX={5}
-                  >
-                    <Text color="#fff" fontSize="18px">
-                      {storageManager.count}
-                    </Text>
-                    <Text fontSize="16px" color="#fff">
-                      cid
-                    </Text>
-                  </Pane>
-                  <Pane
-                    alignItems="center"
-                    display="flex"
-                    flexDirection="column"
-                    marginX={5}
-                  >
-                    <Text color="#fff" fontSize="18px">
-                      {formatCurrency(storageManager.usage, 'B', 2, PREFIXES)}
-                    </Text>
-                    <Text fontSize="16px" color="#fff">
-                      size
-                    </Text>
-                  </Pane>
-                </PocketCard>
+                  select={selectCard === 'storageManager'}
+                />
               )}
               <PubkeyCard
                 onClick={() => this.onClickSelect('pubkey')}
@@ -670,4 +618,10 @@ const mapDispatchprops = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchprops)(withWeb3(Wallet));
+const mapStateToProps = store => {
+  return {
+    ipfsId: store.ipfs.id,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(withWeb3(Wallet));
