@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
 import db from '../../db';
 
+const isSvg = require('is-svg');
+
 const FileType = require('file-type');
 
 export const getTypeContent = async (dataCid, cid) => {
@@ -34,6 +36,12 @@ export const getTypeContent = async (dataCid, cid) => {
       response.type = 'application/pdf';
       response.content = file;
       response.gateway = true;
+    } else if (isSvg(data)) {
+      response.text = false;
+      const file = `data:image/svg+xml;base64,${dataBase64}`;
+      response.type = 'image';
+      response.content = file;
+      response.gateway = false;
     } else {
       response.text = cid;
       response.gateway = true;
@@ -41,29 +49,37 @@ export const getTypeContent = async (dataCid, cid) => {
   } else {
     const dataBase64 = data.toString();
     response.content = dataBase64;
-    if (dataBase64.length > 42) {
-      response.link = `/ipfs/${cid}`;
-    } else {
-      response.link = `/search/${dataBase64}`;
-    }
-    if (dataBase64.length > 300) {
-      response.text = `${dataBase64.slice(0, 300)}...`;
-    } else {
-      response.text = dataBase64;
-    }
-    if (dataBase64.match(PATTERN_IPFS_HASH)) {
-      response.gateway = true;
-      response.type = 'link';
-      response.content = `https://io.cybernode.ai/ipfs/${dataBase64}`;
-    } else {
-      response.type = 'text';
-    }
-    if (dataBase64.match(PATTERN_HTTP)) {
-      response.type = 'link';
+    if (isSvg(data)) {
+      response.text = false;
+      const file = `data:image/svg+xml;base64,${data.toString('base64')}`;
+      response.type = 'image';
+      response.content = file;
       response.gateway = false;
-      response.content = dataBase64;
     } else {
-      response.type = 'text';
+      if (dataBase64.length > 42) {
+        response.link = `/ipfs/${cid}`;
+      } else {
+        response.link = `/search/${dataBase64}`;
+      }
+      if (dataBase64.length > 300) {
+        response.text = `${dataBase64.slice(0, 300)}...`;
+      } else {
+        response.text = dataBase64;
+      }
+      if (dataBase64.match(PATTERN_IPFS_HASH)) {
+        response.gateway = true;
+        response.type = 'link';
+        response.content = `https://io.cybernode.ai/ipfs/${dataBase64}`;
+      } else {
+        response.type = 'text';
+      }
+      if (dataBase64.match(PATTERN_HTTP)) {
+        response.type = 'link';
+        response.gateway = false;
+        response.content = dataBase64;
+      } else {
+        response.type = 'text';
+      }
     }
   }
   return response;
