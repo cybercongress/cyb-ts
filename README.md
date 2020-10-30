@@ -8,9 +8,12 @@ Built with the help of [gravity](https://github.com/cybercongress/gravity), [cyb
 
 ## Features
 - search
+- caching of surfed content
 - cyberlinking
-- transfer and stake CYBs
+- transfer and stake EUL
+- ETH, ATOM and EUL balance monitoring
 - brain monitoring
+- and so much more!
 
 ## Build
 
@@ -19,9 +22,10 @@ $ yarn install
 $ yarn start
 ```
 
-## Develop
+## Improve
 
-- [ ] Feed is slow
+We do not use issues as do not work offline. Instead we use plain simple text [roadmap](/roadmap.md). Cool thing that improvement discussion happens using cyber.page itself at [cyber.page feedback](https://cyber.page/search/cyber.page%20feedback) topic in knowledge graph.
+
 
 ## Team
 - [@xhipster](https://github.com/xhipster)
