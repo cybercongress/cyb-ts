@@ -11,7 +11,7 @@ import { CYBER, LEDGER, COSMOS } from './config';
 
 const { BECH32_PREFIX_ACC_ADDR_CYBER, CYBER_NODE_URL_LCD } = CYBER;
 const { LEDGER_VERSION_REQ } = LEDGER;
-const { BECH32_PREFIX_ACC_ADDR_COSMOS } = COSMOS;
+const { BECH32_PREFIX_ACC_ADDR_COSMOS, GAIA_NODE_URL_LSD } = COSMOS;
 
 const compareVersion = async ledgerVersion => {
   const test = ledgerVersion;
@@ -793,7 +793,7 @@ class CosmosDelegateTool {
       tx: signedTx.value,
       mode: 'async',
     };
-    const url = 'https://deimos.cybernode.ai/gaia_lcd/txs';
+    const url = `${GAIA_NODE_URL_LSD}/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(

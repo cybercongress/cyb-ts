@@ -24,7 +24,6 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
   useEffect(() => {
     const feachData = async () => {
       const dataIndexdDb = await db.table('cid').get({ cid });
-      console.log('dataIndexdDb :>> ', dataIndexdDb);
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);
