@@ -21,6 +21,7 @@ import {
   getAccountBandwidth,
   getGraphQLQuery,
 } from '../../utils/search/utils';
+import { formatCurrency } from '../../utils/utils';
 import { PocketCard } from './components';
 import {
   PubkeyCard,
@@ -28,19 +29,12 @@ import {
   ImportLinkLedger,
   GolBalance,
   TweetCard,
+  IpfsCard,
 } from './card';
-import ActionBarTweet from './actionBarTweet';
 import ActionBarConnect from './actionBarConnect';
-import ActionBarKeplr from './actionBarKeplr';
 import ActionBar from './actionBar';
 
-const { GaiaApi } = require('@chainapsis/cosmosjs/gaia/api');
-const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const { MsgSend } = require('@chainapsis/cosmosjs/x/bank');
-const {
-  defaultBech32Config,
-} = require('@chainapsis/cosmosjs/core/bech32Config');
+import db from '../../db';
 
 const {
   HDPATH,
@@ -53,7 +47,7 @@ const {
   LEDGER_VERSION_REQ,
 } = LEDGER;
 
-const QueryAddress = (address) =>
+const QueryAddress = address =>
   `
   query MyQuery {
     cyberlink(where: {subject: {_eq: "${address}"}}) {
@@ -63,7 +57,7 @@ const QueryAddress = (address) =>
   }`;
 
 function flatten(data, outputArray) {
-  data.forEach((element) => {
+  data.forEach(element => {
     if (Array.isArray(element)) {
       flatten(element, outputArray);
     } else {
@@ -72,10 +66,10 @@ function flatten(data, outputArray) {
   });
 }
 
-const comparer = (otherArray) => {
-  return (current) => {
+const comparer = otherArray => {
+  return current => {
     return (
-      otherArray.filter((other) => {
+      otherArray.filter(other => {
         return (
           other.object_from === current.from && other.object_to === current.to
         );
@@ -84,7 +78,7 @@ const comparer = (otherArray) => {
   };
 };
 
-const groupLink = (linkArr) => {
+const groupLink = linkArr => {
   const link = [];
   const size = 7;
   for (let i = 0; i < Math.ceil(linkArr.length / size); i += 1) {
@@ -116,6 +110,7 @@ class Wallet extends React.Component {
       linkSelected: null,
       selectCard: '',
       updateCard: 0,
+      storageManager: null,
       balanceEthAccount: {
         eth: 0,
         gol: 0,
@@ -135,19 +130,39 @@ class Wallet extends React.Component {
         accountKeplr,
       });
     }
+    this.checkIndexdDbSize();
 
     if (accounts && accounts !== null) {
       this.getBalanceEth();
     }
 
     await this.checkAddressLocalStorage();
-    if (web3.givenProvider !== null) {
+    if (web3 !== null) {
       this.accountsChanged();
     }
   }
 
+  checkIndexdDbSize = async () => {
+    if (navigator.storage && navigator.storage.estimate) {
+      const estimation = await navigator.storage.estimate();
+      const countCid = await db.table('cid').count();
+      const countFollowing = await db.table('following').count();
+      const count = countCid + countFollowing;
+      const { quota, usage } = estimation;
+      this.setState({
+        storageManager: {
+          quota,
+          usage,
+          count,
+        },
+      });
+    } else {
+      console.warn('StorageManager not found');
+    }
+  };
+
   accountsChanged = () => {
-    window.ethereum.on('accountsChanged', async (accountsChanged) => {
+    window.ethereum.on('accountsChanged', async accountsChanged => {
       const defaultAccounts = accountsChanged[0];
       const tmpAccount = defaultAccounts;
       this.setState({
@@ -296,7 +311,7 @@ class Wallet extends React.Component {
     }
   };
 
-  getLink = async (dataLinkUser) => {
+  getLink = async dataLinkUser => {
     const { accounts } = this.state;
     const dataLink = await getImportLink(accounts.cyber.bech32);
     let link = [];
@@ -436,11 +451,14 @@ class Wallet extends React.Component {
       updateCard,
       defaultAccounts,
       defaultAccountsKeys,
+      storageManager,
     } = this.state;
-    const { web3, keplr, stageActionBar } = this.props;
+    const { web3, keplr, stageActionBar, ipfsId } = this.props;
 
     console.log('addAddress :>> ', addAddress);
     console.log('selectAccount :>> ', selectAccount);
+
+    console.log('ipfsId :>> ', ipfsId);
 
     let countLink = 0;
     if (link !== null) {
@@ -518,7 +536,17 @@ class Wallet extends React.Component {
                 />
               )}
 
-              {Object.keys(accounts).map((key) => (
+              {storageManager && storageManager !== null && ipfsId !== null && (
+                <IpfsCard
+                  storageManager={storageManager}
+                  ipfsId={ipfsId}
+                  marginBottom={20}
+                  onClick={() => this.onClickSelect('storageManager')}
+                  select={selectCard === 'storageManager'}
+                />
+              )}
+
+              {Object.keys(accounts).map(key => (
                 <PubkeyCard
                   onClick={() => this.onClickSelect(`pubkey_${key}`, key)}
                   select={selectCard === `pubkey_${key}`}
@@ -529,7 +557,7 @@ class Wallet extends React.Component {
                 />
               ))}
 
-              {accountsETH === undefined && web3.givenProvider !== null && (
+              {accountsETH !== null && accountsETH === undefined && (
                 <PocketCard
                   marginBottom={20}
                   select={selectCard === 'web3'}
@@ -541,7 +569,7 @@ class Wallet extends React.Component {
                 </PocketCard>
               )}
 
-              {accountsETH !== undefined && web3.givenProvider !== null && (
+              {accountsETH !== null && accountsETH !== undefined && (
                 <GolBalance
                   balance={balanceEthAccount}
                   accounts={accountsETH}
@@ -638,11 +666,20 @@ class Wallet extends React.Component {
   }
 }
 
-const mapDispatchprops = (dispatch) => {
+const mapDispatchprops = dispatch => {
   return {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
   };
 };
 
-export default connect(null, mapDispatchprops)(withWeb3(injectKeplr(Wallet)));
+const mapStateToProps = store => {
+  return {
+    ipfsId: store.ipfs.id,
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchprops
+)(withWeb3(injectKeplr(Wallet)));

@@ -1,22 +1,12 @@
-import React from 'react';
-import { Pane, SearchItem, Text, Rank } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
-import Iframe from 'react-iframe';
+import React, { useState, useEffect } from 'react';
+import { Pane, SearchItem, Rank } from '@cybercongress/gravity';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import ReactMarkdown from 'react-markdown';
-import {
-  getIpfsHash,
-  search,
-  getRankGrade,
-  getDrop,
-  formatNumber as format,
-  getContentByCid,
-} from '../../utils/search/utils';
+import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Loading, Account } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
-  CYBER,
   PATTERN,
   PATTERN_CYBER,
   PATTERN_TX,
@@ -24,429 +14,258 @@ import {
   PATTERN_BLOCK,
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
-
 import { setQuery } from '../../redux/actions/query';
-import CodeBlock from '../ipfs/codeBlock';
+import ContentItem from '../ipfs/contentItem';
 import injectKeplr from '../../components/web3/injectKeplr';
 
-const giftImg = require('../../image/gift.svg');
-const htmlParser = require('react-markdown/plugins/html-parser');
+function SearchResults({ node, mobile, keplr, setQueryProps }) {
+  const { query } = useParams();
+  const location = useLocation();
+  const [searchResults, setSearchResults] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [keywordHash, setKeywordHash] = useState('');
+  const [update, setUpdate] = useState(1);
 
-const parseHtml = htmlParser({
-  isValidNode: (node) => node.type !== 'script',
-});
+  useEffect(() => {
+    const feachData = async () => {
+      setLoading(true);
+      setQueryProps(query);
+      let keywordHashTemp = '';
+      let keywordHashNull = '';
+      let searchResultsData = [];
+      if (query.match(PATTERN_IPFS_HASH)) {
+        keywordHashTemp = query;
+      } else {
+        keywordHashTemp = await getIpfsHash(query.toLowerCase());
+      }
 
-class SearchResults extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      result: false,
-      searchResults: {
-        link: [],
-        drop: [],
-      },
-      loading: false,
-      keywordHash: '',
-      query: '',
-      resultNull: false,
-      drop: false,
-      dropResults: [],
+      let responseSearchResults = await search(keywordHashTemp);
+      if (responseSearchResults.length === 0) {
+        const queryNull = '0';
+        keywordHashNull = await getIpfsHash(queryNull);
+        responseSearchResults = await search(keywordHashNull);
+      }
+      searchResultsData = responseSearchResults.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.cid]: {
+            cid: item.cid,
+            rank: formatNumber(item.rank, 6),
+            grade: getRankGrade(item.rank),
+            status: node !== null ? 'understandingState' : 'impossibleLoad',
+            query,
+            text: item.cid,
+            content: false,
+          },
+        }),
+        {}
+      );
+      setKeywordHash(keywordHashTemp);
+      setSearchResults(searchResultsData);
+      setLoading(false);
     };
-  }
+    feachData();
+  }, [query, location, update]);
 
-  async componentDidMount() {
-    this.getParamsQuery();
-  }
+  const searchItems = [];
 
-  componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    if (prevProps.location.pathname !== location.pathname) {
-      // this.getSearch(query);
-      this.getParamsQuery();
-    }
-  }
-
-  getParamsQuery = async () => {
-    const { match, setQueryProps } = this.props;
-    const { query } = match.params;
-    this.setState({
-      loading: true,
-    });
-    setQueryProps(query);
-    this.getSearch(query);
-  };
-
-  loadContent = async (cids, node, prevState) => {
-    const { query } = this.state;
-    const contentPromises = Object.keys(cids).map((cid) =>
-      getContentByCid(cid, node)
-        .then((content) => {
-          const { searchResults } = this.state;
-          const links = searchResults.link;
-          if (
-            Object.keys(links[cid]) !== null &&
-            typeof Object.keys(links[cid]) !== 'undefined' &&
-            Object.keys(links[cid]).length > 0
-          ) {
-            if (links[cid].query === query) {
-              console.warn({ ...links[cid], ...content });
-              links[cid] = {
-                ...links[cid],
-                status: content.status,
-                content: content.content,
-                text: content.text,
-              };
-              this.setState({
-                searchResults,
-              });
-            }
-          }
-        })
-        .catch(() => {
-          const { searchResults } = this.state;
-          const links = searchResults.link;
-          if (
-            Object.keys(links[cid]) !== null &&
-            typeof Object.keys(links[cid]) !== 'undefined' &&
-            Object.keys(links[cid]).length > 0
-          ) {
-            if (links[cid].query === query) {
-              links[cid] = {
-                ...links[cid],
-                status: 'impossibleLoad',
-                content: false,
-                text: cid,
-              };
-              this.setState({
-                searchResults,
-              });
-            }
-          }
-        })
-    );
-    Promise.all(contentPromises);
-  };
-
-  getSearch = async (query) => {
-    const { node } = this.props;
-    const searchResults = {
-      link: [],
-      drop: [],
-    };
-    let resultNull = false;
-    let keywordHash = '';
-    let keywordHashNull = '';
-    // const { query } = this.state;
-
-    if (query.match(PATTERN_IPFS_HASH)) {
-      keywordHash = query;
-    } else {
-      keywordHash = await getIpfsHash(query.toLowerCase());
-    }
-
-    searchResults.link = await search(keywordHash);
-    searchResults.link.map((item, index) => {
-      searchResults.link[index].cid = item.cid;
-      searchResults.link[index].rank = formatNumber(item.rank, 6);
-      searchResults.link[index].grade = getRankGrade(item.rank);
-    });
-
-    if (searchResults.link.length === 0) {
-      const queryNull = '0';
-      keywordHashNull = await getIpfsHash(queryNull);
-      searchResults.link = await search(keywordHashNull);
-      searchResults.link.map((item, index) => {
-        searchResults.link[index].cid = item.cid;
-        searchResults.link[index].rank = formatNumber(item.rank, 6);
-        searchResults.link[index].grade = getRankGrade(item.rank);
-      });
-      resultNull = true;
-    }
-
-    const links = searchResults.link.reduce(
-      (obj, link) => ({
-        ...obj,
-        [link.cid]: {
-          rank: link.rank,
-          grade: link.grade,
-          status: node !== null ? 'understandingState' : 'impossibleLoad',
-          query,
-          text: link.cid,
-          content: false,
-        },
-      }),
-      {}
-    );
-    searchResults.link = links;
-
-    this.setState({
-      searchResults,
-      keywordHash,
-      result: true,
-      loading: false,
-      query,
-      resultNull,
-    });
-
-    if (node !== null) {
-      this.loadContent(searchResults.link, node);
-    }
-  };
-
-  render() {
-    const {
-      searchResults,
-      keywordHash,
-      loading,
-      query,
-      result,
-      resultNull,
-      drop,
-    } = this.state;
-    const { mobile, keplr } = this.props;
-    // console.log(query);
-
-    console.log('searchResults', searchResults);
-
-    const searchItems = [];
-
-    if (loading) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <Loading />
-          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-            Searching
-          </div>
-        </div>
-      );
-    }
-
-    if (query.match(PATTERN)) {
-      searchItems.push(
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          <Link className="SearchItem" to={`/gift/${query}`}>
-            <SearchItem
-              hash={`${query}_PATTERN`}
-              text="Don't wait! Claim your gift, and join the Game of Links!"
-              status="sparkApp"
-              // address={query}
-            />
-          </Link>
-        </Pane>
-      );
-    }
-
-    if (query.match(PATTERN_CYBER)) {
-      searchItems.push(
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          <Link className="SearchItem" to={`/network/euler/contract/${query}`}>
-            <SearchItem
-              hash={`${query}_PATTERN_CYBER`}
-              text="Explore details of contract"
-              contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
-              status="sparkApp"
-            />
-          </Link>
-        </Pane>
-      );
-    }
-
-    if (query.match(PATTERN_CYBER_VALOPER)) {
-      searchItems.push(
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          <Link className="SearchItem" to={`/network/euler/hero/${query}`}>
-            <SearchItem
-              hash={`${query}_PATTERN_CYBER_VALOPER`}
-              text="Explore details of hero"
-              contentApp={<Account colorText="#000" address={query} />}
-              status="sparkApp"
-            />
-          </Link>
-        </Pane>
-      );
-    }
-
-    if (query.match(PATTERN_TX)) {
-      searchItems.push(
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          <Link className="SearchItem" to={`/network/euler/tx/${query}`}>
-            <SearchItem
-              hash={`${query}_PATTERN_TX`}
-              text="Explore details of tx "
-              status="sparkApp"
-              contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
-            />
-          </Link>
-        </Pane>
-      );
-    }
-
-    if (query.match(PATTERN_BLOCK)) {
-      searchItems.push(
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          <Link className="SearchItem" to={`/network/euler/block/${query}`}>
-            <SearchItem
-              hash={`${query}_PATTERN_BLOCK`}
-              text="Explore details of block "
-              status="sparkApp"
-              contentApp={
-                <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
-              }
-            />
-          </Link>
-        </Pane>
-      );
-    }
-
-    const links = searchResults.link;
-    searchItems.push(
-      Object.keys(links).map((key) => {
-        return (
-          <Pane
-            position="relative"
-            className="hover-rank"
-            display="flex"
-            alignItems="center"
-            marginBottom="10px"
-          >
-            {!mobile && (
-              <Pane
-                className="time-discussion rank-contentItem"
-                position="absolute"
-              >
-                <Rank
-                  hash={key}
-                  rank={links[key].rank}
-                  grade={links[key].grade}
-                />
-              </Pane>
-            )}
-            <Link className="SearchItem" to={`/ipfs/${key}`}>
-              <SearchItem
-                key={key}
-                rank={links[key].rank}
-                grade={links[key].grade}
-                status={links[key].status}
-                text={
-                  <div className="container-text-SearchItem">
-                    <ReactMarkdown
-                      source={links[key].text}
-                      escapeHtml={false}
-                      skipHtml={false}
-                      astPlugins={[parseHtml]}
-                      renderers={{ code: CodeBlock }}
-                      // plugins={[toc]}
-                      // escapeHtml={false}
-                    />
-                  </div>
-                }
-                // onClick={e => (e, links[cid].content)}
-              >
-                {links[key].content &&
-                  links[key].content.indexOf('image') !== -1 && (
-                    <img
-                      style={{ width: '100%', paddingTop: 10 }}
-                      alt="img"
-                      src={links[key].content}
-                    />
-                  )}
-                {links[key].content &&
-                  links[key].content.indexOf('application/pdf') !== -1 && (
-                    <Iframe
-                      width="100%"
-                      height="400px"
-                      className="iframe-SearchItem"
-                      url={links[key].content}
-                    />
-                  )}
-              </SearchItem>
-            </Link>
-          </Pane>
-        );
-      })
-    );
-
+  if (loading) {
     return (
-      <div>
-        <main className="block-body" style={{ paddingTop: 30 }}>
-          <Pane
-            width="90%"
-            marginX="auto"
-            marginY={0}
-            display="flex"
-            flexDirection="column"
-          >
-            <div className="container-contentItem" style={{ width: '100%' }}>
-              {searchItems}
-            </div>
-          </Pane>
-        </main>
-
-        {!mobile && (
-          <ActionBarContainer
-            home={!result}
-            keplr={keplr}
-            valueSearchInput={query}
-            link={searchResults.length === 0 && result}
-            keywordHash={keywordHash}
-            onCklicBtnSearch={this.onCklicBtn}
-            update={this.getParamsQuery}
-          />
-        )}
+      <div
+        style={{
+          width: '100%',
+          height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        <Loading />
+        <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+          Searching
+        </div>
       </div>
     );
   }
+
+  if (query.match(PATTERN)) {
+    searchItems.push(
+      <Pane
+        position="relative"
+        className="hover-rank"
+        display="flex"
+        alignItems="center"
+        marginBottom="10px"
+      >
+        <Link className="SearchItem" to={`/gift/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN`}
+            text="Don't wait! Claim your gift, and join the Game of Links!"
+            status="sparkApp"
+            // address={query}
+          />
+        </Link>
+      </Pane>
+    );
+  }
+
+  if (query.match(PATTERN_CYBER)) {
+    searchItems.push(
+      <Pane
+        position="relative"
+        className="hover-rank"
+        display="flex"
+        alignItems="center"
+        marginBottom="10px"
+      >
+        <Link className="SearchItem" to={`/network/euler/contract/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_CYBER`}
+            text="Explore details of contract"
+            contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
+            status="sparkApp"
+          />
+        </Link>
+      </Pane>
+    );
+  }
+
+  if (query.match(PATTERN_CYBER_VALOPER)) {
+    searchItems.push(
+      <Pane
+        position="relative"
+        className="hover-rank"
+        display="flex"
+        alignItems="center"
+        marginBottom="10px"
+      >
+        <Link className="SearchItem" to={`/network/euler/hero/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_CYBER_VALOPER`}
+            text="Explore details of hero"
+            contentApp={<Account colorText="#000" address={query} />}
+            status="sparkApp"
+          />
+        </Link>
+      </Pane>
+    );
+  }
+
+  if (query.match(PATTERN_TX)) {
+    searchItems.push(
+      <Pane
+        position="relative"
+        className="hover-rank"
+        display="flex"
+        alignItems="center"
+        marginBottom="10px"
+      >
+        <Link className="SearchItem" to={`/network/euler/tx/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_TX`}
+            text="Explore details of tx "
+            status="sparkApp"
+            contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
+          />
+        </Link>
+      </Pane>
+    );
+  }
+
+  if (query.match(PATTERN_BLOCK)) {
+    searchItems.push(
+      <Pane
+        position="relative"
+        className="hover-rank"
+        display="flex"
+        alignItems="center"
+        marginBottom="10px"
+      >
+        <Link className="SearchItem" to={`/network/euler/block/${query}`}>
+          <SearchItem
+            hash={`${query}_PATTERN_BLOCK`}
+            text="Explore details of block "
+            status="sparkApp"
+            contentApp={
+              <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
+            }
+          />
+        </Link>
+      </Pane>
+    );
+  }
+
+  searchItems.push(
+    Object.keys(searchResults).map(key => {
+      return (
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
+        >
+          {!mobile && (
+            <Pane
+              className="time-discussion rank-contentItem"
+              position="absolute"
+            >
+              <Rank
+                hash={key}
+                rank={searchResults[key].rank}
+                grade={searchResults[key].grade}
+              />
+            </Pane>
+          )}
+          <ContentItem
+            nodeIpfs={node}
+            cid={key}
+            item={searchResults[key]}
+            className="SearchItem"
+          />
+        </Pane>
+      );
+    })
+  );
+
+  return (
+    <div>
+      <main className="block-body" style={{ paddingTop: 30 }}>
+        <Pane
+          width="90%"
+          marginX="auto"
+          marginY={0}
+          display="flex"
+          flexDirection="column"
+        >
+          <div className="container-contentItem" style={{ width: '100%' }}>
+            {searchItems}
+          </div>
+        </Pane>
+      </main>
+
+      {!mobile && (
+        <ActionBarContainer
+          keywordHash={keywordHash}
+          update={() => setUpdate(update + 1)}
+          keplr={keplr}
+        />
+      )}
+    </div>
+  );
 }
 
-const mapStateToProps = (store) => {
+const mapStateToProps = store => {
   return {
     node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };
 
-const mapDispatchprops = (dispatch) => {
+const mapDispatchprops = dispatch => {
   return {
-    setQueryProps: (query) => dispatch(setQuery(query)),
+    setQueryProps: query => dispatch(setQuery(query)),
   };
 };
 

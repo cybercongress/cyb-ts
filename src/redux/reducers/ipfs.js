@@ -1,6 +1,7 @@
 export const initialState = {
   ipfs: null,
   statusIpfs: false,
+  id: null,
 };
 
 const ipfsReducer = (state = initialState, action) => {
@@ -16,6 +17,13 @@ const ipfsReducer = (state = initialState, action) => {
       return {
         ...state,
         statusIpfs: action.payload,
+      };
+    }
+
+    case 'SET_ID': {
+      return {
+        ...state,
+        id: action.payload,
       };
     }
 

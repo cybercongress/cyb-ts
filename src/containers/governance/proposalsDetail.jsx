@@ -240,11 +240,10 @@ class ProposalsDetail extends React.Component {
 
     const getVotes = await getProposalsDetailVotes(id);
     if (getVotes) {
-      yes = getVotes.filter((item) => item.option === 'Yes').length;
-      no = getVotes.filter((item) => item.option === 'No').length;
-      abstain = getVotes.filter((item) => item.option === 'Abstain').length;
-      noWithVeto = getVotes.filter((item) => item.option === 'NoWithVeto')
-        .length;
+      yes = getVotes.filter(item => item.option === 'Yes').length;
+      no = getVotes.filter(item => item.option === 'No').length;
+      abstain = getVotes.filter(item => item.option === 'Abstain').length;
+      noWithVeto = getVotes.filter(item => item.option === 'NoWithVeto').length;
     }
 
     votes.voter = getVotes;

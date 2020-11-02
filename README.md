@@ -1,27 +1,31 @@
+# [.cyber](https://cyber.page)
 
 ## Vision
 
-Deferential, sexy and efficient interface for [cyber protocol](https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3) which answer question better and faster ~~than Google~~. 
+Deferential, sexy and efficient interface for the [cyber protocol](https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3) which answers questions (like a search engine) ~~better and faster than Google~~.
 
 Built with the help of [gravity](https://github.com/cybercongress/gravity), [cyberindex](https://github.com/cybercongress/cyberindex) and [web3.js](https://github.com/ethereum/web3.js)
 
 ## Features
 - search
+- caching of surfed content
 - cyberlinking
-- transfer and stake CYBs
-- brain monitoring.
+- transfer and stake EUL
+- ETH, ATOM and EUL balance monitoring
+- brain monitoring
+- and so much more!
 
 ## Build
 
-```
-yarn install
-yarn start
+```sh
+$ yarn install
+$ yarn start
 ```
 
-## Develop
-- [discussion of the next release](https://github.com/cybercongress/dot-cyber/issues/63) 
-- [roadmap](https://github.com/cybercongress/dot-cyber/projects?query=is%3Aopen+sort%3Aname-asc)
-- [documented errors](https://github.com/cybercongress/dot-cyber/issues?q=is%3Aopen+is%3Aissue+label%3Aerror)
+## Improve
+
+We do not use issues as do not work offline. Instead we use plain simple text [roadmap](/roadmap.md). Cool thing that improvement discussion happens using cyber.page itself at [cyber.page feedback](https://cyber.page/search/cyber.page%20feedback) topic in knowledge graph.
+
 
 ## Team
 - [@xhipster](https://github.com/xhipster)

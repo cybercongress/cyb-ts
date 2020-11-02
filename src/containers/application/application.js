@@ -46,7 +46,7 @@ const htef = [
   // { id: 7, to: 'euler' }
 ];
 
-class App extends Component {
+class App extends React.PureComponent {
   constructor(props) {
     super(props);
     let story = false;

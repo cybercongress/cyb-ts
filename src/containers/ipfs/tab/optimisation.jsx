@@ -4,38 +4,41 @@ import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
 
 const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
-  if (data && data.cyberlink.length > 0) {
+  if (data && data.length > 0) {
     return (
       <div style={{ width: '100%' }}>
-        {data.cyberlink.map((item, i) => (
-          <Pane
-            position="relative"
-            className="hover-rank"
-            display="flex"
-            alignItems="center"
-            marginBottom="10px"
-          >
-            {!mobile && (
-              <Pane
-                className="time-discussion rank-contentItem"
-                position="absolute"
-              >
-                <Rank
-                  hash={item.object_from}
-                  rank="n/a"
-                  grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
-                />
-              </Pane>
-            )}
-            <ContentItem
-              key={`${item.object_from}_${i}`}
-              nodeIpfs={nodeIpfs}
-              cid={item.object_from}
-              item={item}
-              className="contentItem"
-            />
-          </Pane>
-        ))}
+        {data.map((item, i) => {
+          const cid = item.tx.value.msg[0].value.links[0].from;
+          return (
+            <Pane
+              position="relative"
+              className="hover-rank"
+              display="flex"
+              alignItems="center"
+              marginBottom="10px"
+              key={`${cid}_${i}`}
+            >
+              {!mobile && (
+                <Pane
+                  className="time-discussion rank-contentItem"
+                  position="absolute"
+                >
+                  <Rank
+                    hash={cid}
+                    rank="n/a"
+                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+                  />
+                </Pane>
+              )}
+              <ContentItem
+                nodeIpfs={nodeIpfs}
+                cid={cid}
+                item={item}
+                className="contentItem"
+              />
+            </Pane>
+          );
+        })}
       </div>
     );
   }
