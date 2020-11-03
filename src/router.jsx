@@ -50,8 +50,6 @@ function AppRouter({
   const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
 
-  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
-
   useEffect(() => {
     initIpfsProps(dataIpfsStart.node);
     setIpfsStatusProps(dataIpfsStart.status);
