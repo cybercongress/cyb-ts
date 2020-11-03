@@ -15,7 +15,6 @@ export const getTypeContent = async (dataCid, cid) => {
   const bufs = [];
   bufs.push(dataCid);
   const data = Buffer.concat(bufs);
-  console.log('data :>> ', data);
 
   const dataFileType = await FileType.fromBuffer(data);
   if (dataFileType !== undefined) {
@@ -88,7 +87,6 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
     const feachData = async () => {
       setLoading(true);
       const dataIndexdDb = await db.table('cid').get({ cid });
-      console.log('dataIndexdDb :>> ', dataIndexdDb);
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);

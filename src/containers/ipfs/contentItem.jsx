@@ -24,7 +24,6 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
   useEffect(() => {
     const feachData = async () => {
       const dataIndexdDb = await db.table('cid').get({ cid });
-      console.log('dataIndexdDb :>> ', dataIndexdDb);
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);
@@ -57,7 +56,10 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
         if (responseDag.value.Links && responseDag.value.Links.length > 0) {
           responseDag.value.Links.forEach((itemResponseDag, index) => {
             if (itemResponseDag.Name.length > 0) {
-              linksCid.push({ name: itemResponseDag.Name, size: itemResponseDag.Tsize });
+              linksCid.push({
+                name: itemResponseDag.Name,
+                size: itemResponseDag.Tsize,
+              });
             } else {
               linksCid.push(itemResponseDag.Tsize);
             }

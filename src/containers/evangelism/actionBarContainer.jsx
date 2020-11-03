@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 import { AUCTION, PATTERN_COSMOS, PATTERN_CYBER } from '../../utils/config';
 import { Dots, LinkWindow } from '../../components';
+import injectWeb3 from '../../components/web3/web3Evangelism';
 
 const STAGE_START = 1;
 const STAGE_ADD_CYBER = 2;
@@ -175,7 +176,10 @@ class ActionBarEvangelism extends Component {
   };
 
   sendTransaction = async account => {
-    const { web3, methods } = this.props;
+    const {
+      web3,
+      contract: { methods },
+    } = this.props;
     const {
       cyberAddress,
       cosmosAddress,
@@ -524,4 +528,4 @@ class ActionBarEvangelism extends Component {
   }
 }
 
-export default ActionBarEvangelism;
+export default injectWeb3(ActionBarEvangelism);
