@@ -82,10 +82,8 @@ class ActionBarContainer extends Component {
         max_value: 0,
       },
     };
-    this.gasField = React.createRef();
-    this.gasPriceField = React.createRef();
     this.timeOut = null;
-    this.haveDocument = typeof document !== 'undefined';
+    this.inputOpenFileRef = React.createRef();
   }
 
   componentDidUpdate() {
@@ -442,6 +440,24 @@ class ActionBarContainer extends Component {
     });
   };
 
+  showOpenFileDlg = () => {
+    this.inputOpenFileRef.current.click();
+  };
+
+  onFilePickerChange = files => {
+    const file = files.current.files[0];
+
+    this.setState({
+      file,
+    });
+  };
+
+  onClickClear = () => {
+    this.setState({
+      file: null,
+    });
+  };
+
   hasKey() {
     return this.state.address !== null;
   }
@@ -468,6 +484,7 @@ class ActionBarContainer extends Component {
       contentHash,
       errorMessage,
       connectLedger,
+      file,
     } = this.state;
 
     if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
@@ -496,10 +513,17 @@ class ActionBarContainer extends Component {
       return (
         <StartStageSearchActionBar
           onClickBtn={this.onClickSend}
-          contentHash={contentHash}
+          contentHash={
+            file !== null && file !== undefined ? file.name : contentHash
+          }
           onChangeInputContentHash={this.onChangeInput}
           textBtn="Tweet"
           placeholder="What's happening?"
+          inputOpenFileRef={this.inputOpenFileRef}
+          showOpenFileDlg={this.showOpenFileDlg}
+          onChangeInput={this.onFilePickerChange}
+          onClickClear={this.onClickClear}
+          file={file}
         />
       );
     }
