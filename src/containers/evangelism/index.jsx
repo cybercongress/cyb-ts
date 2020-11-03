@@ -9,7 +9,7 @@ import {
 } from '@cybercongress/gravity';
 import injectWeb3 from '../../components/web3/web3Evangelism';
 import { LinkWindow, Loading } from '../../components';
-import { trimString, formatNumber, getDelegator } from '../../utils/utils';
+import { trimString, formatNumber, fromBech32 } from '../../utils/utils';
 import TableEvangelists from './table';
 import InfoPane from './infoPane';
 import ActionBarEvangelism from './actionBarContainer';
@@ -22,6 +22,7 @@ import {
 } from '../../utils/search/utils';
 import { COSMOS, CYBER, DISTRIBUTION } from '../../utils/config';
 import { getEstimation, cybWon, funcDiscount } from '../../utils/fundingMath';
+import NotFound from '../../containers/application/notFound';
 
 class Evangelism extends React.PureComponent {
   constructor(props) {
@@ -43,45 +44,17 @@ class Evangelism extends React.PureComponent {
   }
 
   async componentDidMount() {
-    const {
-      contract: { events },
-      web3,
-    } = this.props;
-    const { dataTable } = this.state;
-    this.chekPathname();
-    await this.checkAddressLocalStorage();
-    await this.getEvangelists();
-    this.getTxsCosmos();
-    // if (web3.givenProvider !== null) {
-    //   events.Believed(event => {
-    //     console.log('Believed', event);
-    //     if (event !== null) {
-    //       const evetnObj = {
-    //         [event.nickname]: {
-    //           ...event,
-    //           status: 0,
-    //         },
-    //       };
-    //       this.setState({
-    //         dataTable: { ...dataTable, ...evetnObj },
-    //       });
-    //     }
-    //   });
-    //   events.Blessed(event => {
-    //     console.log('Blessed', event);
-    //     dataTable[event].status = 1;
-    //     this.setState({
-    //       dataTable,
-    //     });
-    //   });
-    //   events.Unblessed(event => {
-    //     console.log('Unblessed', event);
-    //     dataTable[event].status = 3;
-    //     this.setState({
-    //       dataTable,
-    //     });
-    //   });
-    // }
+    const { web3 } = this.props;
+    if (web3 !== null) {
+      this.chekPathname();
+      await this.checkAddressLocalStorage();
+      await this.getEvangelists();
+      this.getTxsCosmos();
+    } else {
+      this.setState({
+        loading: false,
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -277,10 +250,7 @@ class Evangelism extends React.PureComponent {
 
   render() {
     const { dataTable, blessed, loading, evangelist } = this.state;
-    const {
-      contract: { methods },
-      web3,
-    } = this.props;
+    const { web3 } = this.props;
 
     try {
       if (loading) {
@@ -300,6 +270,24 @@ class Evangelism extends React.PureComponent {
               Reward calculation
             </div>
           </div>
+        );
+      }
+
+      if (web3 === null) {
+        return (
+          <NotFound
+            text={
+              <>
+                <span>Please install the</span>
+                &nbsp;
+                <a href="https://metamask.io/" target="_blank">
+                  Metamask extension
+                </a>
+                &nbsp;
+                <span>and refresh the page</span>
+              </>
+            }
+          />
         );
       }
 
@@ -350,16 +338,11 @@ class Evangelism extends React.PureComponent {
             </Pane>
             <TableEvangelists data={dataTable} blessed={blessed} />
           </main>
-          <ActionBarEvangelism web3={web3} methods={methods} />
+          <ActionBarEvangelism />
         </div>
       );
     } catch (error) {
-      return (
-        <main className="block-body">
-          <InfoPane />
-          <div>oops...</div>
-        </main>
-      );
+      return <NotFound text="oops..." />;
     }
   }
 }
