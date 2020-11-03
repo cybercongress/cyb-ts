@@ -98,12 +98,12 @@ function AppRouter({
   );
 }
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    initIpfsProps: ipfsNode => dispatch(initIpfs(ipfsNode)),
-    setIpfsStatusProps: status => dispatch(setIpfsStatus(status)),
-    setTypeDeviceProps: type => dispatch(setTypeDevice(type)),
-    setIpfsIDProps: id => dispatch(setIpfsID(id)),
+    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
+    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
+    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
   };
 };
 

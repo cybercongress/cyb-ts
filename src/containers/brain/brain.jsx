@@ -51,7 +51,9 @@ import {
 
 import db from '../../db';
 
-const { DIVISOR_CYBER_G } = CYBER;
+const { DIVISOR_CYBER_G, CYBER_WEBSOCKET_URL } = CYBER;
+
+const dateFormat = require('dateformat');
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -74,7 +76,22 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
+const test = {
+  'tx.hash': [
+    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
+  ],
+  'tx.height': ['1489670'],
+  'cybermeta.subject': ['cyber1gw5kdey7fs9wdh05w66s0h4s24tjdvtcp5fhky'],
+  'cyberlink.objectFrom': ['QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'],
+  'cyberlink.objectTo': ['QmZb8DZvUbHAtiZk529TFV4REeJeJvSnZAfu7bVE4V2wH3'],
+  'message.module': ['bank'],
+  'message.action': ['send'],
+  'tm.event': ['Tx'],
+};
+
 class Brain extends React.PureComponent {
+  ws = new WebSocket(CYBER_WEBSOCKET_URL);
+
   constructor(props) {
     super(props);
     this.state = {
@@ -96,6 +113,7 @@ class Brain extends React.PureComponent {
       proposals: 0,
       donation: 0,
       twit: {},
+      addressFollowData: {},
       tweetData: [],
       loadingTwit: true,
       cybernomics: {
@@ -126,6 +144,7 @@ class Brain extends React.PureComponent {
     // this.getPriceGol();
     this.getTxsCosmos();
     this.getContract();
+    await this.getDataWS();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -177,10 +196,17 @@ class Brain extends React.PureComponent {
                 console.log('item :>> ', id);
               });
           }
-          console.log('addressResolve :>> ', addressResolve);
           if (addressResolve && addressResolve !== null) {
             const addressFollow = addressResolve;
             if (addressFollow.match(PATTERN_CYBER)) {
+              this.setState(itemState => {
+                return {
+                  addressFollowData: {
+                    ...itemState.addressFollowData,
+                    [addressFollow]: cid,
+                  },
+                };
+              });
               const responseTwit = await getTweet(addressFollow);
               if (
                 responseTwit &&
@@ -206,6 +232,62 @@ class Brain extends React.PureComponent {
           };
         });
       }
+    }
+  };
+
+  getDataWS = async () => {
+    this.ws.onopen = () => {
+      console.log('connected Feed');
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          id: '0',
+          params: {
+            query:
+              "tm.event='Tx' AND message.action='link' AND cyberlink.objectFrom='QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx'",
+          },
+        })
+      );
+    };
+
+    this.ws.onmessage = async evt => {
+      const message = JSON.parse(evt.data);
+      if (message.result && Object.keys(message.result).length > 0) {
+        this.updateWs(message.result.events);
+      }
+    };
+
+    this.ws.onclose = () => {
+      console.log('disconnected');
+    };
+  };
+
+  updateWs = async data => {
+    const { addressFollowData } = this.state;
+    const { node } = this.props;
+    const subject = data['cybermeta.subject'][0];
+    const objectTo = data['cyberlink.objectTo'][0];
+    const d = new Date();
+    const timestamp = dateFormat(d, 'isoUtcDateTime');
+    if (
+      Object.keys(addressFollowData).length > 0 &&
+      Object.prototype.hasOwnProperty.call(addressFollowData, subject)
+    ) {
+      this.setState(item => {
+        return {
+          twit: {
+            [objectTo]: {
+              status: node !== null ? 'understandingState' : 'impossibleLoad',
+              text: objectTo,
+              address: subject,
+              content: false,
+              time: timestamp,
+            },
+            ...item.twit,
+          },
+        };
+      });
     }
   };
 

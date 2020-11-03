@@ -18,14 +18,14 @@ const StatisticsClaim = ({ canClaim, raisedToken, roundAll, round }) => {
         <Card
           title="Awaiting claim"
           value={`${formatNumber(raisedToken, 3)} GGOL`}
-          tooltipValue="The number of total ETH, currently, raised"
+          tooltipValue="The number of GOL tokens you will be able to claim, once the auction rounds you bid at, will end"
           positionTooltip="bottom"
           stylesContainer={{ padding: '35px 0', maxWidth: '250px' }}
         />
         <Card
-          title="One can Claim"
+          title="You can Claim"
           value={`${formatNumber(canClaim, 3)} GGOL`}
-          tooltipValue="The current round out of the total number of rounds in the Auction"
+          tooltipValue="The total amount of GOL tokens you can claim right now"
           positionTooltip="bottom"
           stylesContainer={{ padding: '35px 0', maxWidth: '250px' }}
         />
