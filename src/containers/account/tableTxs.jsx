@@ -8,11 +8,7 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroller';
-import {
-  trimString,
-  formatNumber,
-  formatCurrency,
-} from '../../utils/utils';
+import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
 import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
 import Noitem from './noItem';
 import { CYBER } from '../../utils/config';
@@ -70,14 +66,18 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable display="flex" flexDirection="column">
-        {item.messages.length > 4 ? (
+          {item.messages.length > 4 ? (
             <Pane display="flex" alignItems="center">
               <MsgType
                 key={item.messages[0].txhash}
-                type={item.messages[0].type}
+                type={
+                  item.messages[0].type === 'cosmos-sdk/MsgSend'
+                    ? 'cosmos-sdk/MsgMultiSend'
+                    : item.messages[0].type
+                }
               />
-              <div style={{ marginLeft: '5px' }}>
-                ({item.messages.length} messages)
+              <div style={{ marginLeft: '5px', color: '#36d6ae' }}>
+                +{item.messages.length}
               </div>
             </Pane>
           ) : (
