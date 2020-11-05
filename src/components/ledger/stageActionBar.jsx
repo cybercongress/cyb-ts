@@ -89,10 +89,10 @@ const param = {
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
 
-const toPascalCase = str =>
+const toPascalCase = (str) =>
   str
     .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[a-zA-Z0-9]+/g)
-    .map(cht => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
+    .map((cht) => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
     .join('');
 
 export const ActionBarContentText = ({ children, ...props }) => (
@@ -289,10 +289,10 @@ export const StartStageSearchActionBar = ({
                 paddingBottom: '10px',
               }}
               className="resize-none minHeightTextarea"
-              onChange={e => onChangeInputContentHash(e)}
+              onChange={(e) => onChangeInputContentHash(e)}
               placeholder={placeholder}
-              onFocus={e => (e.target.placeholder = '')}
-              onBlur={e => (e.target.placeholder = placeholder)}
+              onFocus={(e) => (e.target.placeholder = '')}
+              onBlur={(e) => (e.target.placeholder = placeholder)}
             />
             <Pane
               position="absolute"
@@ -372,7 +372,7 @@ export const GovernanceChangeParam = ({
   const item = [];
   let itemChangeParam = [];
 
-  Object.keys(param).map(key => {
+  Object.keys(param).map((key) => {
     if (param[key].constructor.name === 'Array') {
       item.push(
         <option
@@ -384,7 +384,7 @@ export const GovernanceChangeParam = ({
           {key}
         </option>
       );
-      const temp = param[key].map(items => (
+      const temp = param[key].map((items) => (
         <option
           key={items}
           value={JSON.stringify({
@@ -958,8 +958,8 @@ export const ReDelegate = ({
       >
         <option value="">pick hero</option>
         {validatorsAll
-          .filter(validator => validator.status > 0)
-          .map(item => (
+          .filter((validator) => validator.status > 0)
+          .map((item) => (
             <option
               key={item.operator_address}
               value={item.operator_address}
@@ -1228,19 +1228,24 @@ export const RewardsDelegators = ({
   onClickBtnCloce,
   disabledBtn,
 }) => {
-  const itemReward = data.rewards.map(item => (
-    <Pane
-      key={item.validator_address}
-      display="flex"
-      justifyContent="space-between"
-    >
-      <Account address={item.validator_address} />
-      <Pane>
-        {formatNumber(Math.floor(item.reward[0].amount))}{' '}
-        {CYBER.DENOM_CYBER.toUpperCase()}
-      </Pane>
-    </Pane>
-  ));
+  console.log('data :>> ', data);
+  const itemReward = data.rewards.map((item) => {
+    if (item.reward !== null) {
+      return (
+        <Pane
+          key={item.validator_address}
+          display="flex"
+          justifyContent="space-between"
+        >
+          <Account address={item.validator_address} />
+          <Pane>
+            {formatNumber(Math.floor(item.reward[0].amount))}{' '}
+            {CYBER.DENOM_CYBER.toUpperCase()}
+          </Pane>
+        </Pane>
+      );
+    }
+  });
   return (
     <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
       <Text
