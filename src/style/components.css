@@ -504,3 +504,25 @@
 .cosmos-address-container:hover .cosmos-address-balance {
   opacity: 0.8;
 }
+
+.container-buttonIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.container-buttonIcon img {
+  width: 30px;
+  height: 30px;
+}
+
+.container-buttonIcon:hover {
+  opacity: 0.8;
+}
+
+.container-buttonIcon:disabled {
+  opacity: 0.6;
+}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
@@ -14,6 +14,12 @@ import {
 import { fromBech32 } from '../../utils/utils';
 
 const imgLedger = require('../../image/ledger.svg');
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgMetaMask = require('../../image/mm-logo.svg');
+const imgRead = require('../../image/duplicate-outline.svg');
+const imgEth = require('../../image/Ethereum_logo_2014.svg');
+const imgCyber = require('../../image/cyber.png');
+const imgCosmos = require('../../image/cosmos-2.svg');
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -24,60 +30,52 @@ const STAGE_ADD_ADDRESS_USER = 2.1;
 const STAGE_ADD_ADDRESS_OK = 2.2;
 const LEDGER_TX_ACOUNT_INFO = 2.5;
 
-class ActionBarConnect extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      stage: STAGE_INIT,
-      connectLedger: null,
-      valueInputAddres: '',
-    };
-    this.timeOut = null;
-    this.ledger = null;
-    this.transport = null;
-  }
+const ButtonIcon = ({ img, active, disabled, ...props }) => (
+  <button
+    type="button"
+    style={{ boxShadow: active ? '0 0 5px 2px #36d6ae' : 'none' }}
+    className="container-buttonIcon"
+    disabled={disabled}
+    {...props}
+  >
+    <img src={img} alt="img" />
+  </button>
+);
 
-  // async componentDidMount() {
-  //   this.pollLedger();
-  // }
+let ledger = null;
 
-  componentDidUpdate() {
-    const { addAddress } = this.props;
-    const { stage } = this.state;
+function ActionBarConnect({ addAddress, updateAddress, keplr }) {
+  const [stage, setStage] = useState(STAGE_INIT);
+  const [connectLedger, setConnectLedger] = useState(null);
+  const [valueInputAddres, setValueInputAddres] = useState('');
+  const [selectMethod, setSelectMethod] = useState('');
 
+  useEffect(() => {
     if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
-      this.cleatState();
+      cleatState();
     }
-  }
+  }, [stage, addAddress]);
 
-  getLedgerAddress = async () => {
-    const { stage } = this.state;
-    this.transport = await TransportWebUSB.create(120 * 1000);
-    this.ledger = new CosmosDelegateTool(this.transport);
+  const getLedgerAddress = async () => {
+    const transport = await TransportWebUSB.create(120 * 1000);
+    ledger = new CosmosDelegateTool(transport);
 
-    const connect = await this.ledger.connect();
+    const connect = await ledger.connect();
     if (connect.return_code === LEDGER_OK) {
       if (stage === STAGE_ADD_ADDRESS_LEDGER) {
-        this.addAddressLedger();
+        addAddressLedger();
       }
-      this.setState({
-        connectLedger: true,
-      });
+      setConnectLedger(true);
     } else {
-      this.setState({
-        connectLedger: false,
-      });
+      setConnectLedger(false);
     }
   };
 
-  addAddressLedger = async () => {
+  const addAddressLedger = async () => {
     try {
-      const { updateAddress } = this.props;
-      this.setState({
-        stage: STAGE_ADD_ADDRESS_OK,
-      });
-      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
-      const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
+      setStage(STAGE_ADD_ADDRESS_OK);
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(HDPATH);
+      const addressLedgerCosmos = await ledger.retrieveAddress(HDPATH);
 
       const accounts = {
         [addressLedgerCyber.bech32]: {
@@ -103,10 +101,7 @@ class ActionBarConnect extends Component {
       } else {
         localStorage.setItem('pocketAccount', JSON.stringify(accounts));
       }
-
-      this.setState({
-        stage: STAGE_INIT,
-      });
+      setStage(STAGE_INIT);
 
       if (updateAddress) {
         updateAddress();
@@ -118,49 +113,30 @@ class ActionBarConnect extends Component {
         // eslint-disable-next-line
         console.error('Problem reading address data', message, statusCode);
       }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
   };
 
-  onClickInitLedger = async () => {
-    await this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-    this.getLedgerAddress();
+  const onClickInitLedger = () => {
+    setStage(STAGE_LEDGER_INIT);
+    getLedgerAddress();
   };
 
-  cleatState = () => {
-    this.setState({
-      stage: STAGE_INIT,
-      valueInputAddres: '',
-    });
-    this.timeOut = null;
-    this.ledger = null;
-    this.transport = null;
+  const cleatState = () => {
+    setStage(STAGE_INIT);
+    setValueInputAddres('');
+    ledger = null;
   };
 
-  onClickAddAddressLedger = async () => {
-    await this.setState({
-      stage: STAGE_ADD_ADDRESS_LEDGER,
-    });
-    this.getLedgerAddress();
+  const onClickAddAddressLedger = async () => {
+    setStage(STAGE_ADD_ADDRESS_LEDGER);
+    getLedgerAddress();
   };
 
-  onClickAddAddressUser = () => {
-    this.setState({
-      stage: STAGE_ADD_ADDRESS_USER,
-    });
+  const onClickAddAddressUser = () => {
+    setStage(STAGE_ADD_ADDRESS_USER);
   };
 
-  onChangeInputAddress = (e) => {
-    this.setState({
-      valueInputAddres: e.target.value,
-    });
-  };
-
-  onClickAddAddressUserToLocalStr = async () => {
-    const { valueInputAddres } = this.state;
-    const { updateAddress } = this.props;
+  const onClickAddAddressUserToLocalStr = async () => {
     let accounts = null;
     let addressLedgerCyber = '';
 
@@ -202,9 +178,7 @@ class ActionBarConnect extends Component {
     }
 
     if (accounts !== null) {
-      this.setState({
-        stage: STAGE_ADD_ADDRESS_OK,
-      });
+      setStage(STAGE_ADD_ADDRESS_OK);
       const localStorageStory = await localStorage.getItem('pocketAccount');
       if (localStorageStory !== null) {
         const dataPocketAccount = JSON.parse(localStorageStory);
@@ -221,19 +195,14 @@ class ActionBarConnect extends Component {
         localStorage.setItem('pocketAccount', JSON.stringify(accounts));
       }
     }
-
-    await this.setState({
-      stage: STAGE_INIT,
-    });
+    setStage(STAGE_INIT);
 
     if (updateAddress) {
       updateAddress();
     }
   };
 
-  connectKeplr = async () => {
-    const { keplr, updateAddress } = this.props;
-
+  const connectKeplr = async () => {
     await keplr.enable();
 
     const address = await keplr.getKeys();
@@ -253,9 +222,7 @@ class ActionBarConnect extends Component {
         pk,
       },
     };
-    this.setState({
-      stage: STAGE_ADD_ADDRESS_OK,
-    });
+    setStage(STAGE_ADD_ADDRESS_OK);
     const localStorageStory = await localStorage.getItem('pocketAccount');
     if (localStorageStory !== null) {
       const dataPocketAccount = JSON.parse(localStorageStory);
@@ -268,104 +235,179 @@ class ActionBarConnect extends Component {
     } else {
       localStorage.setItem('pocketAccount', JSON.stringify(accounts));
     }
-
-    await this.setState({
-      stage: STAGE_INIT,
-    });
+    setStage(STAGE_INIT);
 
     if (updateAddress) {
       updateAddress();
     }
   };
+  // const { keplr, brain, accountKeplr } = props;
+  // const { stage, connectLedger, valueInputAddres } = state;
 
-  render() {
-    const { keplr, brain, accountKeplr } = this.props;
-    const { stage, connectLedger, valueInputAddres } = this.state;
+  console.log('stage', stage);
 
-    console.log('stage', stage);
-
-    if (stage === STAGE_INIT) {
-      return (
-        <ActionBar>
-          <Pane>
-            {!brain && (
-              <Button marginX="10px" onClick={this.onClickAddAddressUser}>
-                Put a read-only address
-              </Button>
-            )}
-            <Button marginX="10px" onClick={this.onClickAddAddressLedger}>
-              Connect your Ledger
-            </Button>
-            {keplr && (
-              <Button marginX="10px" onClick={this.connectKeplr}>
-                Connect Keplr
-              </Button>
-            )}
-          </Pane>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_ADD_ADDRESS_USER) {
-      return (
-        <ActionBar>
+  if (stage === STAGE_INIT) {
+    return (
+      <ActionBar>
+        <Pane
+          width="100%"
+          display="grid"
+          gridTemplateColumns="1fr 1fr 1fr"
+          alignItems="center"
+          justifyItems="center"
+        >
           <Pane
-            flex={1}
-            justifyContent="center"
-            alignItems="center"
-            fontSize="18px"
             display="flex"
+            alignItems="center"
+            justifyContent="space-around"
+            width="100%"
           >
-            put cosmos or cyber address:
-            <input
-              value={valueInputAddres}
-              style={{
-                height: '42px',
-                maxWidth: '200px',
-                marginLeft: '10px',
-                textAlign: 'end',
-              }}
-              onChange={this.onChangeInputAddress}
-              placeholder="address"
-              autoFocus
+            <ButtonIcon
+              onClick={() => setSelectMethod('ledger')}
+              active={selectMethod === 'ledger'}
+              img={imgLedger}
+              text="ledger"
+            />
+            <ButtonIcon
+              onClick={() => setSelectMethod('keplr')}
+              active={selectMethod === 'keplr'}
+              img={imgKeplr}
+              text="keplr"
+            />
+            <ButtonIcon
+              onClick={() => setSelectMethod('MetaMask')}
+              active={selectMethod === 'MetaMask'}
+              img={imgMetaMask}
+              text="MetaMask"
+            />
+            <ButtonIcon
+              onClick={() => setSelectMethod('read-only')}
+              active={selectMethod === 'read-only'}
+              img={imgRead}
+              text="read-only"
+            />
+          </Pane>
+          <span style={{ fontSize: '18px' }}>in</span>
+          <Pane
+            display="flex"
+            alignItems="center"
+            justifyContent="space-around"
+            width="100%"
+          >
+            <ButtonIcon
+              disabled={selectMethod !== 'MetaMask'}
+              img={imgEth}
+              text="ETH"
+            />
+            <ButtonIcon
+              onClick={
+                // eslint-disable-next-line no-nested-ternary
+                selectMethod === 'ledger'
+                  ? onClickAddAddressLedger
+                  : selectMethod === 'keplr'
+                  ? connectKeplr
+                  : onClickAddAddressUser
+              }
+              img={imgCosmos}
+              text="Cosmos"
+            />
+            <ButtonIcon
+              onClick={
+                // eslint-disable-next-line no-nested-ternary
+                selectMethod === 'ledger'
+                  ? onClickAddAddressLedger
+                  : selectMethod === 'keplr'
+                  ? connectKeplr
+                  : onClickAddAddressUser
+              }
+              img={imgCyber}
+              text="Cyber"
             />
           </Pane>
 
-          <Button
-            disabled={
-              !valueInputAddres.match(PATTERN_COSMOS) &&
-              !valueInputAddres.match(PATTERN_CYBER)
-            }
-            onClick={this.onClickAddAddressUserToLocalStr}
-          >
-            Add address
-          </Button>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_ADD_ADDRESS_OK) {
-      return (
-        <ActionBar>
-          <Pane display="flex" alignItems="center">
-            <Pane fontSize={20}>adding address</Pane>
-            <Dots big />
-          </Pane>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_LEDGER_INIT || stage === STAGE_ADD_ADDRESS_LEDGER) {
-      return (
-        <ConnectLadger
-          onClickConnect={() => this.getLedgerAddress()}
-          connectLedger={connectLedger}
-        />
-      );
-    }
-
-    return null;
+          {/* imgLedger
+          imgKeplr
+          imgMetaMask
+          imgEth
+          imgCyber
+          imgCosmos */}
+          {/* {!brain && (
+              <Button marginX="10px" onClick={onClickAddAddressUser}>
+                Put a read-only address
+              </Button>
+            )}
+            <Button marginX="10px" onClick={onClickAddAddressLedger}>
+              Connect your Ledger
+            </Button>
+            {keplr && (
+              <Button marginX="10px" onClick={connectKeplr}>
+                Connect Keplr
+              </Button>
+            )} */}
+        </Pane>
+      </ActionBar>
+    );
   }
+
+  if (stage === STAGE_ADD_ADDRESS_USER) {
+    return (
+      <ActionBar>
+        <Pane
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          fontSize="18px"
+          display="flex"
+        >
+          put cosmos or cyber address:
+          <input
+            value={valueInputAddres}
+            style={{
+              height: '42px',
+              maxWidth: '200px',
+              marginLeft: '10px',
+              textAlign: 'end',
+            }}
+            onChange={(e) => setValueInputAddres(e.target.value)}
+            placeholder="address"
+            autoFocus
+          />
+        </Pane>
+
+        <Button
+          disabled={
+            !valueInputAddres.match(PATTERN_COSMOS) &&
+            !valueInputAddres.match(PATTERN_CYBER)
+          }
+          onClick={onClickAddAddressUserToLocalStr}
+        >
+          Add address
+        </Button>
+      </ActionBar>
+    );
+  }
+
+  if (stage === STAGE_ADD_ADDRESS_OK) {
+    return (
+      <ActionBar>
+        <Pane display="flex" alignItems="center">
+          <Pane fontSize={20}>adding address</Pane>
+          <Dots big />
+        </Pane>
+      </ActionBar>
+    );
+  }
+
+  if (stage === STAGE_LEDGER_INIT || stage === STAGE_ADD_ADDRESS_LEDGER) {
+    return (
+      <ConnectLadger
+        onClickConnect={() => getLedgerAddress()}
+        connectLedger={connectLedger}
+      />
+    );
+  }
+
+  return null;
 }
 
 export default ActionBarConnect;
