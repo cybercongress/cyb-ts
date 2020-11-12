@@ -9,80 +9,60 @@ import { getRelevance } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolRelevance } from '../../../redux/actions/gol';
+import { getGraphQLQuery } from '../../../utils/search/utils';
 
-const Relevance = ({
-  addressLedger,
-  reward = 0,
-  takeoffDonations = 0,
-  setGolRelevanceProps,
-  dataBlock,
-}) => {
-  try {
-    const GET_CHARACTERS = gql`
-    query newBlock {
-      relevance_aggregate(where: {height: {_eq: ${dataBlock}}}) {
-        aggregate {
-          sum {
-            rank
+const QueryAddress = (subject) =>
+  `  query getRelevanceLeaderboard {
+        relevance_leaderboard(
+          where: {
+            subject: { _eq: "${subject}" }
           }
+        ) {
+          subject
+          share
         }
       }
-      rewards_view(where: {_and: [{block: {_eq: ${dataBlock}}}, {subject: {_eq: "${addressLedger.bech32 ||
-      addressLedger}"}}]}) {
-        object
-        subject
-        rank
-        order_number
-      }
-    }
   `;
 
-    const { loading, data: dataQ } = useQuery(GET_CHARACTERS);
+const useRelevaceHook = (address) => {
+  const [loading, setLoading] = useState(true);
+  const [share, setShare] = useState(0);
 
-    if (loading) {
-      return <Dots />;
+  useEffect(() => {
+    if (address && address !== null) {
+      const feachData = async () => {
+        const recponceData = await getGraphQLQuery(
+          QueryAddress(address.bech32 || address)
+        );
+        if (
+          recponceData &&
+          recponceData !== null &&
+          recponceData.relevance_leaderboard &&
+          Object.keys(recponceData.relevance_leaderboard).length > 0
+        ) {
+          const shareData = recponceData.relevance_leaderboard[0].share;
+          setShare(shareData);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          setShare(0);
+        }
+      };
+      feachData();
+    } else {
+      setShare(0);
+      setLoading(false);
     }
+  }, [address]);
 
-    let arrLink = [];
-    dataQ.rewards_view.forEach(item => {
-      arrLink.push({
-        object: {
-          _eq: item.object,
-        },
-      });
-    });
-
-    const object = arrLink;
-    const json = JSON.stringify(object);
-    const unquoted = json.replace(/"([^"]+)":/g, '$1:');
-    arrLink = unquoted;
-
-    return (
-      <RelevanceC
-        dataBlock={dataBlock}
-        dataRelevance={dataQ}
-        takeoffDonations={takeoffDonations}
-        setGolRelevanceProps={setGolRelevanceProps}
-        arrLink={arrLink}
-      />
-    );
-  } catch (error) {
-    return (
-      <RelevanceC
-        dataBlock={dataBlock}
-        dataRelevance={null}
-        takeoffDonations={takeoffDonations}
-        arrLink={null}
-        addressLedger={addressLedger}
-        setGolRelevanceProps={setGolRelevanceProps}
-      />
-    );
-  }
+  return {
+    loading,
+    share,
+  };
 };
 
-const RelevanceC = ({
+const Relevance = ({
   takeoffDonations = 0,
-  dataRelevance,
   addressLedger,
   dataBlock,
   arrLink,
@@ -90,67 +70,29 @@ const RelevanceC = ({
   relevance,
 }) => {
   const [loadingCalc, setLoadingCalc] = useState(true);
+  const { loading, share } = useRelevaceHook(addressLedger);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
   const prize = Math.floor(
     (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * takeoffDonations
   );
 
-  if (addressLedger === null || dataRelevance === null) {
-    useEffect(() => {
-      setGolRelevanceProps(0, prize);
-      setLoadingCalc(false);
-    }, [prize]);
-
-    // setLoadingCalc(false);
-    return (
-      <RowTable
-        text={<Link to="/gol/relevance">relevance</Link>}
-        reward={DISTRIBUTION.relevance}
-        currentPrize={prize}
-        cybWonAbsolute={cybWonAbsolute}
-        cybWonPercent={`${formatNumber(cybWonPercent, 2)}%`}
-      />
-    );
-  }
-  const GET_LINKAGES = gql`
-  query newBlock {
-    linkages_view(
-      where: {
-        _and: [
-          { height: { _eq: ${dataBlock} } }
-          {
-            _or: ${arrLink}
-          }
-        ]
+  useEffect(() => {
+    if (loading) {
+      const cybAbsolute = share * prize;
+      setGolRelevanceProps(Math.floor(cybAbsolute), prize);
+      setCybWonAbsolute(Math.floor(cybAbsolute));
+      if (cybAbsolute !== 0) {
+        const cybPercent = (cybAbsolute / prize) * 100;
+        setCybWonPercent(cybPercent);
       }
-    ) {
-      object
-      linkages
+      setLoadingCalc(false);
     }
-  }
-`;
+  }, [loading, share, prize]);
 
-  const { loading, data: dataQ } = useQuery(GET_LINKAGES);
-
-  if (loading) {
+  if (loadingCalc) {
     return <Dots />;
   }
-
-  const fetchData = async () => {
-    console.log('dataRelevance, dataQ', dataRelevance, dataQ);
-    const data = await getRelevance(dataRelevance, dataQ);
-    console.log(data);
-    const cybAbsolute = data * prize;
-    setGolRelevanceProps(Math.floor(cybAbsolute), prize);
-    setCybWonAbsolute(Math.floor(cybAbsolute));
-    if (cybAbsolute !== 0) {
-      const cybPercent = (cybAbsolute / prize) * 100;
-      setCybWonPercent(cybPercent);
-    }
-    setLoadingCalc(false);
-  };
-  fetchData();
 
   return (
     <RowTable
@@ -167,7 +109,7 @@ const RelevanceC = ({
   );
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolRelevanceProps: (amount, prize) =>
       dispatch(setGolRelevance(amount, prize)),
