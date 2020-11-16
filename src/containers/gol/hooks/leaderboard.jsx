@@ -20,14 +20,6 @@ query MyQuery {
 }
 `;
 
-const BLOCK_SUBSCRIPTION = `
-  query newBlock {
-    block(limit: 1, order_by: { height: desc }) {
-      height
-    }
-  }
-`;
-
 const GET_LIFETIME = `
   query MyQuery {
     pre_commit_view(order_by: {precommits: desc}, limit: 50, offset: 0) {
@@ -44,75 +36,18 @@ const GET_LIFETIME = `
   }
   `;
 
-const getQuerySubject = (address, block) => `
-query newBlock {
-  relevance_aggregate(where: {height: {_eq: ${block}}}) {
-    aggregate {
-      sum {
-        rank
-      }
-    }
-  }
-  rewards_view(where: {_and: [{block: {_eq: ${block}}}, {subject: {_eq: "${address}"}}]}) {
-    object
+const GET_RELEVANCE = `
+query getRelevanceLeaderboard {
+  relevance_leaderboard {
     subject
-    rank
-    order_number
+    share
   }
 }
 `;
-
-const getQueryLinkages = (arrLink, block) => `
-query linkages {
-  linkages_view(
-    where: {
-      _and: [
-        { height: { _eq: ${block} } }
-        {
-          _or: ${arrLink}
-        }
-      ]
-    }
-  ) {
-    object
-    linkages
-  }
-}
-`;
-
-const getJson = data => {
-  const json = JSON.stringify(data);
-  const unquoted = json.replace(/"([^"]+)":/g, '$1:');
-  return unquoted;
-};
-
-const getRelevanceData = async (address, block) => {
-  const responseRelevance = await getGraphQLQuery(
-    getQuerySubject(address, block)
-  );
-  if (responseRelevance !== null) {
-    const arrLink = [];
-    responseRelevance.rewards_view.forEach(item => {
-      arrLink.push({
-        object: {
-          _eq: item.object,
-        },
-      });
-    });
-
-    const arrLinkQuery = getJson(arrLink);
-
-    const dataQ = await getGraphQLQuery(getQueryLinkages(arrLinkQuery, block));
-
-    return { dataQ, responseRelevance };
-  }
-  return [];
-};
 
 function setLeaderboard() {
   const [data, setData] = useState({});
   const [progress, setProgress] = useState(0);
-  const [block, setBlock] = useState(null);
   const [dataLoad, setDataLoad] = useState({});
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -165,6 +100,7 @@ function setLeaderboard() {
       load: true,
     }));
     setDataLoad(loadObj);
+    setProgress(50);
   };
 
   const getDelegation = async (validators, total, dataV) => {
@@ -237,10 +173,6 @@ function setLeaderboard() {
 
   useEffect(() => {
     const feachData = async () => {
-      const responseBlock = await getGraphQLQuery(BLOCK_SUBSCRIPTION);
-      if (responseBlock !== null) {
-        setBlock(responseBlock.block[0].height);
-      }
       const dataTx = await getTxCosmos();
       let amountTakeoff = 0;
       if (dataTx !== null && dataTx.count > 0) {
@@ -322,47 +254,33 @@ function setLeaderboard() {
       (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
     );
     const feachData = async () => {
-      if (block > 0 && Object.keys(dataLoad).length > 0) {
-        const lastItem = Object.keys(dataLoad)
-          .slice(-1)
-          .pop();
-        const allItem = Object.keys(dataLoad).length;
-        let index = 0;
-        // eslint-disable-next-line no-restricted-syntax
-        // eslint-disable-next-line guard-for-in
-        for (const key in dataLoad) {
-          // eslint-disable-next-line no-prototype-builtins
-          if (dataLoad.hasOwnProperty(key)) {
-            const status = Math.round((index / allItem) * 100);
-            setProgress(status);
-            // eslint-disable-next-line no-await-in-loop
-            const relevance = await getRelevanceData(key, block);
-            if (
-              Object.keys(relevance).length > 0 &&
-              Object.keys(relevance.dataQ.linkages_view).length > 0
-            ) {
-              // eslint-disable-next-line no-await-in-loop
-              const dataRelevance = await getRelevance(
-                relevance.responseRelevance,
-                relevance.dataQ
-              );
-              if (dataRelevance > 0 && prize > 0) {
-                const cybAbsolute = dataRelevance * prize;
-                data[key] = {
-                  ...data[key],
-                  relevance: cybAbsolute,
-                  cybWon: data[key].cybWon + cybAbsolute,
-                };
+      if (Object.keys(dataLoad).length > 0) {
+        const responseRelevanceQ = await getGraphQLQuery(GET_RELEVANCE);
+        if (
+          responseRelevanceQ &&
+          responseRelevanceQ !== null &&
+          Object.keys(responseRelevanceQ.relevance_leaderboard).length > 0
+        ) {
+          const lastItem = responseRelevanceQ.relevance_leaderboard
+            .slice(-1)
+            .pop();
+          setProgress(80);
+          responseRelevanceQ.relevance_leaderboard.forEach((item, index) => {
+            if (Object.prototype.hasOwnProperty.call(dataLoad, item.subject)) {
+              const cybAbsolute = item.share * prize;
+              data[item.subject] = {
+                ...data[item.subject],
+                relevance: cybAbsolute,
+                cybWon: data[item.subject].cybWon + cybAbsolute,
+              };
+              if (lastItem.subject === item.subject) {
+                setDiscipline(items => ({
+                  ...items,
+                  relevance: true,
+                }));
               }
             }
-            index += 1;
-            if (lastItem === key) {
-              setDiscipline(item => ({
-                ...item,
-                relevance: true,
-              }));
-            }
-          }
+          });
         }
       }
     };

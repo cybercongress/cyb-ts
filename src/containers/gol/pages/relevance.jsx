@@ -1,21 +1,32 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Route, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { SearchItem, Pane, Text, Tablist } from '@cybercongress/gravity';
+import { Rank, Pane, Text, Tablist } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Iframe from 'react-iframe';
 import {
   getRelevance,
   getRankGrade,
   getContentByCid,
   getAmountATOM,
   getTxCosmos,
+  getGraphQLQuery,
 } from '../../../utils/search/utils';
-import { Dots, LinkWindow, TabBtn } from '../../../components';
-import { cybWon } from '../../../utils/fundingMath';
+import { Dots, LinkWindow, TabBtn, Loading } from '../../../components';
 import LoadTab from '../tab/loadTab';
+import ContentItem from '../../ipfs/contentItem';
+import { formatNumber } from '../../../utils/utils';
+import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 
-const Relevace = ({ items, fetchMoreData, page, allPage }) => (
+const GET_RELEVANCE = `
+query getRelevanceLeaderboard {
+  relevance_leaderboard {
+    subject
+    share
+  }
+}
+`;
+
+const Relevace = ({ items, fetchMoreData, page, allPage, mobile, node }) => (
   <InfiniteScroll
     dataLength={Object.keys(items).length}
     next={fetchMoreData}
@@ -28,168 +39,134 @@ const Relevace = ({ items, fetchMoreData, page, allPage }) => (
     }
     scrollableTarget="scrollableDiv"
   >
-    {Object.keys(items).map(keys => {
-      let contentItem = false;
-      if (items[keys].status === 'downloaded') {
-        if (items[keys].content !== undefined) {
-          if (items[keys].content.indexOf(keys) === -1) {
-            contentItem = true;
-          }
-        }
-      }
+    {Object.keys(items).map(key => {
       return (
-        <SearchItem
-          hash={keys}
-          key={keys}
-          rank={items[keys].rank}
-          grade={getRankGrade(items[keys].rank)}
-          status={items[keys].status}
+        <Pane
+          position="relative"
+          className="hover-rank"
+          display="flex"
+          alignItems="center"
+          marginBottom="10px"
         >
-          {contentItem && (
-            <Iframe
-              width="100%"
-              height="fit-content"
-              className="iframe-SearchItem"
-              url={items[keys].content}
-            />
+          {!mobile && (
+            <Pane
+              className="time-discussion rank-contentItem"
+              position="absolute"
+            >
+              <Rank
+                hash={key}
+                rank={items[key].rank}
+                grade={items[key].grade}
+              />
+            </Pane>
           )}
-        </SearchItem>
+          <ContentItem
+            nodeIpfs={node}
+            cid={key}
+            item={items[key]}
+            className="SearchItem"
+          />
+        </Pane>
       );
     })}
   </InfiniteScroll>
 );
 
-class GolRelevance extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: [],
-      page: 0,
-      loading: true,
-      won: 0,
-      selected: 'relevace',
+function GolRelevance({ node, mobile }) {
+  let content;
+  const location = useLocation();
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [amount, setAmount] = useState(0);
+  const [selected, setSelected] = useState('relevace');
+  const [allPage, setAllPage] = useState(1);
+  const [dataLeaderboard, setDataLeaderboard] = useState({});
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
+
+  useEffect(() => {
+    getFirstItem();
+    getTxsCosmos();
+  }, []);
+
+  useEffect(() => {
+    chekPathname();
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const feachData = async () => {
+      const prize = Math.floor(
+        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
+      );
+      const responseRelevanceQ = await getGraphQLQuery(GET_RELEVANCE);
+      if (
+        responseRelevanceQ !== null &&
+        Object.keys(responseRelevanceQ.relevance_leaderboard).length > 0
+      ) {
+        const data = responseRelevanceQ.relevance_leaderboard.reduce(
+          (obj, item) => {
+            return {
+              ...obj,
+              [item.subject]: {
+                cybWon: item.share * prize,
+              },
+            };
+          },
+          {}
+        );
+        setDataLeaderboard(data);
+      }
+      setLoadingLeaderboard(false);
     };
-  }
+    feachData();
+  }, [amount]);
 
-  componentDidMount() {
-    this.chekPathname();
-    this.getFirstItem();
-    this.getTxsCosmos();
-  }
-
-  componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    if (prevProps.location.pathname !== location.pathname) {
-      this.chekPathname();
-    }
-  }
-
-  getTxsCosmos = async () => {
+  const getTxsCosmos = async () => {
+    let amountAtom = 0;
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
-    if (dataTx !== null) {
-      this.getAtom(dataTx.txs);
+    if (dataTx !== null && dataTx.txs) {
+      amountAtom = await getAmountATOM(dataTx.txs);
     }
+    setAmount(amountAtom);
   };
 
-  getAtom = async dataTxs => {
-    let amount = 0;
-    let won = 0;
-
-    if (dataTxs) {
-      amount = await getAmountATOM(dataTxs);
-    }
-
-    won = Math.floor(cybWon(amount));
-
-    this.setState({
-      won,
-    });
-  };
-
-  chekPathname = () => {
-    const { location } = this.props;
+  const chekPathname = () => {
     const { pathname } = location;
 
     if (
       pathname.match(/leaderboard/gm) &&
       pathname.match(/leaderboard/gm).length > 0
     ) {
-      this.select('leaderboard');
+      setSelected('leaderboard');
     } else {
-      this.select('relevace');
+      setSelected('relevace');
     }
   };
 
-  getFirstItem = async () => {
-    const { page } = this.state;
-
+  const getFirstItem = async () => {
     const data = await getRelevance(page);
     const links = data.cids.reduce(
       (obj, link) => ({
         ...obj,
         [link.cid]: {
-          rank: link.rank,
-          status: 'sparkApp',
+          rank: formatNumber(link.rank, 6),
+          cid: link.cid,
+          grade: getRankGrade(link.rank),
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          text: link.cid,
+          content: false,
         },
       }),
       {}
     );
 
-    this.setState({
-      items: links,
-      page: page + 1,
-      loading: false,
-      allPage: Math.ceil(parseFloat(data.total) / 50),
-    });
+    setItems(links);
+    setPage(page + 1);
+    setLoading(false);
+    setAllPage(Math.ceil(parseFloat(data.total) / 50));
   };
 
-  loadContent = (cids, prevState) => {
-    const { node } = this.props;
-    const contentPromises = Object.keys(cids).map(cid =>
-      getContentByCid(cid, node)
-        .then(content => {
-          const { items } = this.state;
-          if (
-            Object.keys(items[cid]) !== null &&
-            typeof Object.keys(items[cid]) !== 'undefined' &&
-            Object.keys(items[cid]).length > 0
-          ) {
-            items[cid] = {
-              ...items[cid],
-              status: content.status,
-              content: content.content,
-            };
-            this.setState({
-              items,
-            });
-          }
-        })
-        .catch(e => {
-          // console.log(e);
-          const { items } = this.state;
-          if (
-            Object.keys(items[cid]) !== null &&
-            typeof Object.keys(items[cid]) !== 'undefined' &&
-            Object.keys(items[cid]).length > 0
-          ) {
-            items[cid] = {
-              ...items[cid],
-              status: 'impossibleLoad',
-              content: `data:,${cid}`,
-            };
-            this.setState({
-              items,
-            });
-          }
-        })
-    );
-    Promise.all(contentPromises);
-  };
-
-  fetchMoreData = async () => {
-    const { page, items } = this.state;
-    const { node } = this.props;
+  const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     const data = await getRelevance(page);
@@ -197,102 +174,123 @@ class GolRelevance extends React.Component {
       (obj, link) => ({
         ...obj,
         [link.cid]: {
-          rank: link.rank,
-          status: 'sparkApp',
+          rank: formatNumber(link.rank, 6),
+          cid: link.cid,
+          grade: getRankGrade(link.rank),
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          text: link.cid,
+          content: false,
         },
       }),
       {}
     );
 
     setTimeout(() => {
-      this.setState({
-        items: { ...items, ...links },
-        page: page + 1,
-      });
+      setItems(itemState => ({ ...itemState, ...links }));
+      setPage(itemPage => itemPage + 1);
     }, 500);
   };
 
-  select = selected => {
-    this.setState({ selected });
-  };
-
-  render() {
-    const { page, allPage, items, loading, selected, won } = this.state;
-    let content;
-
-    if (loading) {
-      return <div>...</div>;
-    }
-
-    if (selected === 'leaderboard') {
-      content = <LoadTab won={won} />;
-    }
-
-    if (selected === 'relevace') {
-      content = (
-        <div
-          id="scrollableDiv"
-          style={{ height: '100%', padding: '0 10px', overflow: 'auto' }}
-        >
-          <Relevace
-            items={items}
-            fetchMoreData={this.fetchMoreData}
-            page={page}
-            allPage={allPage}
-          />
-        </div>
-      );
-    }
-
+  if (loading) {
     return (
-      <main
+      <div
         style={{
-          padding: '10px 1em 1em 1em',
-          height: '1px',
-          maxHeight: 'calc(100vh - 96px)',
+          width: '100%',
+          height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
         }}
-        className="block-body"
       >
-        <Pane
-          boxShadow="0px 0px 5px #36d6ae"
-          paddingX={20}
-          paddingY={20}
-          marginY={20}
-        >
-          <Text fontSize="16px" color="#fff">
-            Submit the most ranked content first! Details of reward calculation
-            you can find in{' '}
-            <LinkWindow to="https://cybercongress.ai/game-of-links/">
-              Game of Links rules
-            </LinkWindow>
-          </Text>
-        </Pane>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-          gridGap="10px"
-          marginY={20}
-        >
-          <TabBtn
-            text="Content"
-            isSelected={selected === 'relevace'}
-            to="/gol/relevance"
-          />
-          <TabBtn
-            text="Leaderboard"
-            isSelected={selected === 'leaderboard'}
-            to="/gol/relevance/leaderboard"
-          />
-        </Tablist>
-        {content}
-      </main>
+        <Loading />
+      </div>
     );
   }
+
+  if (selected === 'leaderboard') {
+    content = (
+      <Route
+        path="/gol/relevance/leaderboard"
+        render={() => (
+          <LoadTab
+            loading={loadingLeaderboard}
+            progress={false}
+            data={dataLeaderboard}
+            progressFalse
+          />
+        )}
+      />
+    );
+  }
+
+  if (selected === 'relevace') {
+    content = (
+      <div
+        id="scrollableDiv"
+        style={{ height: '100%', padding: '0 10px', overflow: 'auto' }}
+      >
+        <Relevace
+          items={items}
+          fetchMoreData={fetchMoreData}
+          page={page}
+          allPage={allPage}
+          node={node}
+          mobile={mobile}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <main
+      style={{
+        padding: '10px 1em 1em 1em',
+        height: '1px',
+        maxHeight: 'calc(100vh - 96px)',
+      }}
+      className="block-body"
+    >
+      <Pane
+        boxShadow="0px 0px 5px #36d6ae"
+        paddingX={20}
+        paddingY={20}
+        marginY={20}
+      >
+        <Text fontSize="16px" color="#fff">
+          Submit the most ranked content first! Details of reward calculation
+          you can find in{' '}
+          <LinkWindow to="https://cybercongress.ai/game-of-links/">
+            Game of Links rules
+          </LinkWindow>
+        </Text>
+      </Pane>
+      <Tablist
+        display="grid"
+        gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+        gridGap="10px"
+        marginY={20}
+      >
+        <TabBtn
+          text="Content"
+          isSelected={selected === 'relevace'}
+          to="/gol/relevance"
+        />
+        <TabBtn
+          text="Leaderboard"
+          isSelected={selected === 'leaderboard'}
+          to="/gol/relevance/leaderboard"
+        />
+      </Tablist>
+      {content}
+    </main>
+  );
 }
 
 const mapStateToProps = store => {
   return {
     node: store.ipfs.ipfs,
+    mobile: store.settings.mobile,
   };
 };
 

@@ -6,7 +6,7 @@ import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
 import { formatNumber, trimString } from '../../../utils/utils';
 import setLeaderboard from '../hooks/leaderboard';
 
-const Loader = ({ progress = 0 }) => (
+const Loader = ({ progress = 0, progressFalse }) => (
   <Pane
     display="flex"
     flexDirection="column"
@@ -15,18 +15,22 @@ const Loader = ({ progress = 0 }) => (
     marginTop={10}
   >
     <Loading />
-    <Pane marginY={10} fontSize="20px">
-      {progress}%
-    </Pane>
-    <Pane textAlign="center">
-      Currently I compute rewards based on cyberlinks.
-      <br />
-      Keep tight. It could take several minutes.
-    </Pane>
+    {!progressFalse && (
+      <>
+        <Pane marginY={10} fontSize="20px">
+          {progress}%
+        </Pane>
+        <Pane textAlign="center">
+          Currently I compute rewards based on cyberlinks.
+          <br />
+          Keep tight. It could take several minutes.
+        </Pane>
+      </>
+    )}
   </Pane>
 );
 
-function LoadTab({ loading, data, progress }) {
+function LoadTab({ loading, data, progress, progressFalse }) {
   const itemTable = Object.keys(data)
     .sort((a, b) => data[b].cybWon - data[a].cybWon)
     .map(key => (
@@ -76,7 +80,7 @@ function LoadTab({ loading, data, progress }) {
         }}
       >
         {loading ? (
-          <Loader progress={progress} />
+          <Loader progress={progress} progressFalse={progressFalse} />
         ) : (
           Object.keys(data).length > 0 && itemTable
         )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { connect } from 'react-redux';
-import { SearchItem, Pane, Text } from '@cybercongress/gravity';
+import { Rank, Pane, Text } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Iframe from 'react-iframe';
 import {
@@ -10,13 +10,8 @@ import {
   getContentByCid,
 } from '../../../utils/search/utils';
 import { Dots, LinkWindow } from '../../../components';
-
-const style = {
-  height: 30,
-  border: '1px solid green',
-  margin: 6,
-  padding: 8,
-};
+import ContentItem from '../../ipfs/contentItem';
+import { formatNumber } from '../../../utils/utils';
 
 class RelevanceTab extends React.Component {
   constructor(props) {
@@ -36,8 +31,12 @@ class RelevanceTab extends React.Component {
       (obj, link) => ({
         ...obj,
         [link.cid]: {
-          rank: link.rank,
-          status: 'sparkApp',
+          rank: formatNumber(link.rank, 6),
+          cid: link.cid,
+          grade: getRankGrade(link.rank),
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          text: link.cid,
+          content: false,
         },
       }),
       {}
@@ -51,48 +50,6 @@ class RelevanceTab extends React.Component {
     // this.loadContent(links, node);
   }
 
-  loadContent = async (cids, node, prevState) => {
-    const contentPromises = Object.keys(cids).map(cid =>
-      getContentByCid(cid, node)
-        .then(content => {
-          const { items } = this.state;
-          if (
-            Object.keys(items[cid]) !== null &&
-            typeof Object.keys(items[cid]) !== 'undefined' &&
-            Object.keys(items[cid]).length > 0
-          ) {
-            items[cid] = {
-              ...items[cid],
-              status: content.status,
-              content: content.content,
-            };
-            this.setState({
-              items,
-            });
-          }
-        })
-        .catch(e => {
-          // console.log(e);
-          const { items } = this.state;
-          if (
-            Object.keys(items[cid]) !== null &&
-            typeof Object.keys(items[cid]) !== 'undefined' &&
-            Object.keys(items[cid]).length > 0
-          ) {
-            items[cid] = {
-              ...items[cid],
-              status: 'impossibleLoad',
-              content: `data:,${cid}`,
-            };
-            this.setState({
-              items,
-            });
-          }
-        })
-    );
-    Promise.all(contentPromises);
-  };
-
   fetchMoreData = async () => {
     const { page, items } = this.state;
     const { node } = this.props;
@@ -103,8 +60,12 @@ class RelevanceTab extends React.Component {
       (obj, link) => ({
         ...obj,
         [link.cid]: {
-          rank: link.rank,
-          status: 'sparkApp',
+          rank: formatNumber(link.rank, 6),
+          cid: link.cid,
+          grade: getRankGrade(link.rank),
+          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          text: link.cid,
+          content: false,
         },
       }),
       {}
@@ -120,6 +81,7 @@ class RelevanceTab extends React.Component {
   };
 
   render() {
+    const { node, mobile } = this.props;
     const { page, allPage, items } = this.state;
 
     return (
@@ -144,32 +106,34 @@ class RelevanceTab extends React.Component {
           }
           scrollableTarget="scrollableDiv"
         >
-          {Object.keys(items).map(keys => {
-            let contentItem = false;
-            if (items[keys].status === 'downloaded') {
-              if (items[keys].content !== undefined) {
-                if (items[keys].content.indexOf(keys) === -1) {
-                  contentItem = true;
-                }
-              }
-            }
+          {Object.keys(items).map(key => {
             return (
-              <SearchItem
-                hash={keys}
-                key={keys}
-                rank={items[keys].rank}
-                grade={getRankGrade(items[keys].rank)}
-                status={items[keys].status}
+              <Pane
+                position="relative"
+                className="hover-rank"
+                display="flex"
+                alignItems="center"
+                marginBottom="10px"
               >
-                {contentItem && (
-                  <Iframe
-                    width="100%"
-                    height="fit-content"
-                    className="iframe-SearchItem"
-                    url={items[keys].content}
-                  />
+                {!mobile && (
+                  <Pane
+                    className="time-discussion rank-contentItem"
+                    position="absolute"
+                  >
+                    <Rank
+                      hash={key}
+                      rank={items[key].rank}
+                      grade={items[key].grade}
+                    />
+                  </Pane>
                 )}
-              </SearchItem>
+                <ContentItem
+                  nodeIpfs={node}
+                  cid={key}
+                  item={items[key]}
+                  className="SearchItem"
+                />
+              </Pane>
             );
           })}
         </InfiniteScroll>
@@ -181,6 +145,7 @@ class RelevanceTab extends React.Component {
 const mapStateToProps = store => {
   return {
     node: store.ipfs.ipfs,
+    mobile: store.settings.mobile,
   };
 };
 
