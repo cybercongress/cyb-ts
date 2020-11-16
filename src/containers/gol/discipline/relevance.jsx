@@ -78,7 +78,7 @@ const Relevance = ({
   );
 
   useEffect(() => {
-    if (loading) {
+    if (!loading) {
       const cybAbsolute = share * prize;
       setGolRelevanceProps(Math.floor(cybAbsolute), prize);
       setCybWonAbsolute(Math.floor(cybAbsolute));
@@ -89,10 +89,6 @@ const Relevance = ({
       setLoadingCalc(false);
     }
   }, [loading, share, prize]);
-
-  if (loadingCalc) {
-    return <Dots />;
-  }
 
   return (
     <RowTable

@@ -33,11 +33,6 @@ const TableDiscipline = ({
   mobile,
 }) => {
   try {
-    const { loading, data: dataBlock } = useQuery(BLOCK_SUBSCRIPTION);
-
-    if (loading) {
-      return <Dots />;
-    }
     return (
       <Pane marginTop={15} width="100%">
         <Table>
@@ -92,7 +87,6 @@ const TableDiscipline = ({
               estimation={estimation}
             />
             <Relevance
-              dataBlock={dataBlock.block[0].height}
               addressLedger={addressLedger}
               takeoffDonations={takeoffDonations}
             />

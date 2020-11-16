@@ -47,20 +47,20 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsStart();
-  // const [loader, setLoader] = useState(true);
+  const dataIpfsStart = useIpfsStart();
+  const [loader, setLoader] = useState(true);
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   setLoader(dataIpfsStart.loader);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    setLoader(dataIpfsStart.loader);
+  }, [dataIpfsStart]);
 
-  // if (loader) {
-  //   return <Dots />;
-  // }
+  if (loader) {
+    return <Dots />;
+  }
 
   return (
     <Router history={history}>
