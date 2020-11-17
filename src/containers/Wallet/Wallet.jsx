@@ -506,6 +506,8 @@ class Wallet extends React.Component {
             keplr={keplr}
             accountKeplr={accountKeplr}
             updateAddress={this.checkAddressLocalStorage}
+            web3={web3}
+            accountsETH={accountsETH}
           />
         </div>
       );

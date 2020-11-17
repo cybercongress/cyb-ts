@@ -44,7 +44,13 @@ const ButtonIcon = ({ img, active, disabled, ...props }) => (
 
 let ledger = null;
 
-function ActionBarConnect({ addAddress, updateAddress, keplr }) {
+function ActionBarConnect({
+  addAddress,
+  updateAddress,
+  keplr,
+  web3,
+  accountsETH,
+}) {
   const [stage, setStage] = useState(STAGE_INIT);
   const [connectLedger, setConnectLedger] = useState(null);
   const [valueInputAddres, setValueInputAddres] = useState('');
@@ -202,6 +208,25 @@ function ActionBarConnect({ addAddress, updateAddress, keplr }) {
     }
   };
 
+  const onClickConnectWeb3 = async () => {
+    if (web3.currentProvider.host) {
+      console.log(
+        'Non-Ethereum browser detected. You should consider trying MetaMask!'
+      );
+    }
+    if (window.ethereum) {
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        console.log('You declined transaction', error);
+      }
+    } else if (window.web3) {
+      await web3.eth.getAccounts();
+    } else {
+      console.log('Your metamask is locked!');
+    }
+  };
+
   const connectKeplr = async () => {
     await keplr.enable();
 
@@ -298,6 +323,7 @@ function ActionBarConnect({ addAddress, updateAddress, keplr }) {
               disabled={selectMethod !== 'MetaMask'}
               img={imgEth}
               text="ETH"
+              onClick={() => onClickConnectWeb3()}
             />
             <ButtonIcon
               onClick={

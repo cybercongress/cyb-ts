@@ -54,7 +54,14 @@ function ActionBar({
   }, [selectCard]);
 
   if (typeActionBar === '') {
-    return <ActionBarConnect keplr={keplr} updateAddress={updateAddress} />;
+    return (
+      <ActionBarConnect
+        web3={web3}
+        accountsETH={accountsETH}
+        keplr={keplr}
+        updateAddress={updateAddress}
+      />
+    );
   }
 
   if (typeActionBar === 'gol') {
