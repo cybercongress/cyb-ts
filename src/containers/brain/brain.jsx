@@ -175,8 +175,11 @@ class Brain extends React.PureComponent {
 
     if (addressPocket !== null) {
       responseFollows = await getFollows(addressPocket.bech32);
-
-      if (responseFollows !== null && responseFollows.txs) {
+      if (
+        responseFollows !== null &&
+        responseFollows.txs &&
+        Object.keys(responseFollows.txs).length > 0
+      ) {
         responseFollows.txs.forEach(async item => {
           let addressResolve;
           const cid = item.tx.value.msg[0].value.links[0].to;
@@ -222,6 +225,15 @@ class Brain extends React.PureComponent {
             }
           }
         });
+      } else {
+        const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
+        if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
+          this.setState(prevState => {
+            return {
+              tweetData: [...prevState.tweetData, ...responseTwit.txs],
+            };
+          });
+        }
       }
     } else {
       const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);

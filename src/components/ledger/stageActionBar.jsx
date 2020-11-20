@@ -1213,19 +1213,24 @@ export const RewardsDelegators = ({
   onClickBtnCloce,
   disabledBtn,
 }) => {
-  const itemReward = data.rewards.map((item) => (
-    <Pane
-      key={item.validator_address}
-      display="flex"
-      justifyContent="space-between"
-    >
-      <Account address={item.validator_address} />
-      <Pane>
-        {formatNumber(Math.floor(item.reward[0].amount))}{' '}
-        {CYBER.DENOM_CYBER.toUpperCase()}
-      </Pane>
-    </Pane>
-  ));
+  console.log('data :>> ', data);
+  const itemReward = data.rewards.map((item) => {
+    if (item.reward !== null) {
+      return (
+        <Pane
+          key={item.validator_address}
+          display="flex"
+          justifyContent="space-between"
+        >
+          <Account address={item.validator_address} />
+          <Pane>
+            {formatNumber(Math.floor(item.reward[0].amount))}{' '}
+            {CYBER.DENOM_CYBER.toUpperCase()}
+          </Pane>
+        </Pane>
+      );
+    }
+  });
   return (
     <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
       <Text
