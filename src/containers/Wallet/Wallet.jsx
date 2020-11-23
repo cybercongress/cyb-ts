@@ -465,22 +465,22 @@ class Wallet extends React.Component {
       countLink = [].concat.apply([], link).length;
     }
 
-    if (loading) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <Loading />
-        </div>
-      );
-    }
+    // if (loading) {
+    //   return (
+    //     <div
+    //       style={{
+    //         width: '100%',
+    //         height: '50vh',
+    //         display: 'flex',
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //         flexDirection: 'column',
+    //       }}
+    //     >
+    //       <Loading />
+    //     </div>
+    //   );
+    // }
 
     if (addAddress && stage === STAGE_INIT) {
       return (
@@ -548,16 +548,17 @@ class Wallet extends React.Component {
                 />
               )}
 
-              {Object.keys(accounts).map(key => (
-                <PubkeyCard
-                  onClick={() => this.onClickSelect(`pubkey_${key}`, key)}
-                  select={selectCard === `pubkey_${key}`}
-                  pocket={accounts[key]}
-                  marginBottom={20}
-                  update={updateCard}
-                  defaultAccounts={defaultAccounts === key}
-                />
-              ))}
+              {accounts !== null &&
+                Object.keys(accounts).map((key) => (
+                  <PubkeyCard
+                    onClick={() => this.onClickSelect(`pubkey_${key}`, key)}
+                    select={selectCard === `pubkey_${key}`}
+                    pocket={accounts[key]}
+                    marginBottom={20}
+                    update={updateCard}
+                    defaultAccounts={defaultAccounts === key}
+                  />
+                ))}
 
               {accountsETH !== null && accountsETH === undefined && (
                 <PocketCard
