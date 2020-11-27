@@ -1,4 +1,5 @@
 const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const INFINITY = '∞';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
 const AUCTION = {
@@ -144,4 +145,5 @@ export {
   WP,
   PATTERN_HTTP,
   POCKET,
+  INFINITY,
 };

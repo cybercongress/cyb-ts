@@ -3,7 +3,14 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Pane, Input, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
-import { ConnectLadger, Dots, ActionBarContentText } from '../../components';
+import {
+  ConnectLadger,
+  Dots,
+  ActionBarContentText,
+  ConnectAddress,
+  SetHdpath,
+  TransactionError,
+} from '../../components';
 import {
   LEDGER,
   CYBER,
@@ -23,7 +30,13 @@ const imgCosmos = require('../../image/cosmos-2.svg');
 
 const { DIVISOR_CYBER_G } = CYBER;
 
-const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK } = LEDGER;
+const {
+  STAGE_INIT,
+  STAGE_LEDGER_INIT,
+  HDPATH,
+  LEDGER_OK,
+  STAGE_ERROR,
+} = LEDGER;
 
 const STAGE_ADD_ADDRESS_LEDGER = 1.1;
 const STAGE_ADD_ADDRESS_USER = 2.1;
@@ -31,20 +44,12 @@ const STAGE_ADD_ADDRESS_OK = 2.2;
 const LEDGER_TX_ACOUNT_INFO = 2.5;
 const STAGE_HDPATH = 1.7;
 
-const ButtonIcon = ({ img, active, disabled, ...props }) => (
-  <button
-    type="button"
-    style={{
-      boxShadow: active ? '0 0 5px 2px #36d6ae' : 'none',
-      margin: '0 10px',
-    }}
-    className="container-buttonIcon"
-    disabled={disabled}
-    {...props}
-  >
-    <img src={img} alt="img" />
-  </button>
-);
+const checkAddress = (obj, network, address) =>
+  Object.keys(obj).some((k) => {
+    if (obj[k][network]) {
+      return obj[k][network].bech32 === address;
+    }
+  });
 
 let ledger = null;
 
@@ -54,6 +59,7 @@ function ActionBarConnect({
   keplr,
   web3,
   accountsETH,
+  selectAccount,
 }) {
   const [stage, setStage] = useState(STAGE_INIT);
   const [hdpath, setHDpath] = useState([44, 118, 0, 0, 0]);
@@ -63,6 +69,10 @@ function ActionBarConnect({
   const [selectNetwork, setSelectNetwork] = useState('');
   const [hdPathError, setHdPathError] = useState(false);
   const [addressLedger, setAddressLedger] = useState(null);
+  const [addCyberAddress, setAddCyberAddress] = useState(false);
+  const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
+
+console.log('selectAccount', selectAccount);
 
   useEffect(() => {
     if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
@@ -78,7 +88,8 @@ function ActionBarConnect({
         let retrieveAddress = null;
         if (selectNetwork === 'cyber') {
           retrieveAddress = await ledger.retrieveAddressCyber(hdpath);
-        } else {
+        }
+        if (selectNetwork === 'cosmos') {
           retrieveAddress = await ledger.retrieveAddress(hdpath);
         }
         setAddressLedger(retrieveAddress);
@@ -89,6 +100,24 @@ function ActionBarConnect({
     };
     feachData();
   }, [hdpath]);
+
+  useEffect(() => {
+    if (selectNetwork === 'cyber') {
+      if (valueInputAddres.match(PATTERN_CYBER)) {
+        setValidAddressAddedUser(false);
+      } else {
+        setValidAddressAddedUser(true);
+      }
+    }
+
+    if (selectNetwork === 'cosmos') {
+      if (valueInputAddres.match(PATTERN_COSMOS)) {
+        setValidAddressAddedUser(false);
+      } else {
+        setValidAddressAddedUser(true);
+      }
+    }
+  }, [valueInputAddres]);
 
   const connctAddress = () => {
     switch (selectMethod) {
@@ -133,40 +162,46 @@ function ActionBarConnect({
   const addAddressLedger = async () => {
     try {
       setStage(STAGE_ADD_ADDRESS_OK);
-      const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
-      const addressLedgerCosmos = await ledger.retrieveAddress(hdpath);
-      // if (addressLedger !== null) {
-      const accounts = {
-        [addressLedgerCyber.bech32]: {
-          cyber: addressLedgerCyber,
-          cosmos: addressLedgerCosmos,
-          keys: 'ledger',
-          pk: addressLedgerCyber.pk,
-          hdpath,
-        },
-      };
+      const accounts = {};
+      let key = 'Account 1';
+      let dataPocketAccount = null;
+      let pocketAccount = {};
+      let valueObj = {};
 
       const localStorageStory = await localStorage.getItem('pocketAccount');
       if (localStorageStory !== null) {
-        const dataPocketAccount = JSON.parse(localStorageStory);
-        if (
-          !Object.prototype.hasOwnProperty.call(
-            dataPocketAccount,
-            addressLedgerCyber.bech32
-          )
-        ) {
-          const pocketAccount = { ...accounts, ...dataPocketAccount };
-          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        dataPocketAccount = JSON.parse(localStorageStory);
+        valueObj = Object.values(dataPocketAccount);
+        const dataLength = Object.keys(dataPocketAccount).length;
+        key = `Account ${dataLength + 1}`;
+      }
+      if (selectNetwork === 'cyber' || addCyberAddress) {
+        const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
+        if (!checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)) {
+          accounts.cyber = { ...addressLedgerCyber, keys: 'ledger' };
+        }
+      }
+      if (selectNetwork === 'cosmos') {
+        const addressLedgerCosmos = await ledger.retrieveAddress(hdpath);
+        if (!checkAddress(valueObj, 'cosmos', addressLedgerCosmos.bech32)) {
+          accounts.cosmos = { ...addressLedgerCosmos, keys: 'ledger' };
+        }
+      }
+      if (localStorageStory !== null) {
+        if (Object.keys(accounts).length > 0) {
+          pocketAccount = { [key]: accounts, ...dataPocketAccount };
         }
       } else {
-        localStorage.setItem('pocketAccount', JSON.stringify(accounts));
+        pocketAccount = { [key]: accounts };
+      }
+      if (Object.keys(pocketAccount).length > 0) {
+        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
       }
       setStage(STAGE_INIT);
 
       if (updateAddress) {
         updateAddress();
       }
-      // }
     } catch (error) {
       const { message, statusCode } = error;
       if (message !== "Cannot read property 'length' of undefined") {
@@ -181,6 +216,14 @@ function ActionBarConnect({
     setStage(STAGE_INIT);
     setValueInputAddres('');
     ledger = null;
+    setHDpath(HDPATH);
+    setConnectLedger(null);
+    setSelectMethod('');
+    setSelectNetwork('');
+    setHdPathError(false);
+    setAddressLedger(null);
+    setAddCyberAddress(false);
+    setValidAddressAddedUser(true);
   };
 
   const onClickAddAddressLedger = async () => {
@@ -193,72 +236,73 @@ function ActionBarConnect({
   };
 
   const onClickAddAddressUserToLocalStr = async () => {
-    let accounts = null;
-    let addressLedgerCyber = '';
+    const accounts = {};
+    let key = 'Account 1';
+    let dataPocketAccount = null;
+    let pocketAccount = {};
+    let valueObj = {};
 
-    if (valueInputAddres.match(PATTERN_COSMOS)) {
-      const cyberAddress = fromBech32(
-        valueInputAddres,
-        CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-      );
-      addressLedgerCyber = cyberAddress;
-      accounts = {
-        [addressLedgerCyber]: {
-          cyber: {
-            bech32: addressLedgerCyber,
-          },
-          cosmos: {
-            bech32: valueInputAddres,
-          },
-          keys: 'user',
-        },
-      };
+    const localStorageStory = await localStorage.getItem('pocketAccount');
+    if (localStorageStory !== null) {
+      dataPocketAccount = JSON.parse(localStorageStory);
+      valueObj = Object.values(dataPocketAccount);
+      const dataLength = Object.keys(dataPocketAccount).length;
+      key = `Account ${dataLength + 1}`;
     }
-
-    if (valueInputAddres.match(PATTERN_CYBER)) {
-      const cosmosAddress = fromBech32(valueInputAddres, 'cosmos');
-      console.log('cosmosAddress :>> ', cosmosAddress);
-      addressLedgerCyber = valueInputAddres;
-      const cosmosBech32 = cosmosAddress;
-      accounts = {
-        [addressLedgerCyber]: {
-          cyber: {
-            bech32: addressLedgerCyber,
-          },
-          cosmos: {
-            bech32: cosmosBech32,
-          },
-          keys: 'user',
-        },
-      };
-    }
-
-    if (accounts !== null) {
-      setStage(STAGE_ADD_ADDRESS_OK);
-      const localStorageStory = await localStorage.getItem('pocketAccount');
-      if (localStorageStory !== null) {
-        const dataPocketAccount = JSON.parse(localStorageStory);
-        if (
-          !Object.prototype.hasOwnProperty.call(
-            dataPocketAccount,
-            addressLedgerCyber
-          )
-        ) {
-          const pocketAccount = { ...accounts, ...dataPocketAccount };
-          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-        }
-      } else {
-        localStorage.setItem('pocketAccount', JSON.stringify(accounts));
+    if (selectNetwork === 'cyber' || addCyberAddress) {
+      let cyberAddress = null;
+      if (valueInputAddres.match(PATTERN_CYBER)) {
+        cyberAddress = valueInputAddres;
+      }
+      if (valueInputAddres.match(PATTERN_COSMOS)) {
+        cyberAddress = fromBech32(
+          valueInputAddres,
+          CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+        );
+      }
+      if (!checkAddress(valueObj, 'cyber', cyberAddress)) {
+        accounts.cyber = { bech32: cyberAddress, keys: 'read-only' };
       }
     }
-    setStage(STAGE_INIT);
+    if (selectNetwork === 'cosmos') {
+      const cosmosAddress = valueInputAddres;
+      if (!checkAddress(valueObj, 'cosmos', cosmosAddress)) {
+        accounts.cosmos = { bech32: cosmosAddress, keys: 'read-only' };
+      }
+    }
 
-    if (updateAddress) {
-      updateAddress();
+    setStage(STAGE_ADD_ADDRESS_OK);
+    if (localStorageStory !== null) {
+      if (Object.keys(accounts).length > 0) {
+        pocketAccount = { [key]: accounts, ...dataPocketAccount };
+      }
+    } else {
+      pocketAccount = { [key]: accounts };
+    }
+
+    if (Object.keys(pocketAccount).length > 0) {
+      localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+      setStage(STAGE_INIT);
+      if (updateAddress) {
+        updateAddress();
+      }
+    } else {
+      setStage(STAGE_ERROR);
     }
   };
 
   const onClickConnectWeb3 = async () => {
+    const accounts = {};
+    let key = 'Account 1';
+    let dataPocketAccount = null;
+    let pocketAccount = {};
+
+    const localStorageStory = await localStorage.getItem('pocketAccount');
+    if (localStorageStory !== null) {
+      dataPocketAccount = JSON.parse(localStorageStory);
+      const dataLength = Object.keys(dataPocketAccount).length;
+      key = `Account ${dataLength + 1}`;
+    }
     if (web3.currentProvider.host) {
       console.log(
         'Non-Ethereum browser detected. You should consider trying MetaMask!'
@@ -266,50 +310,91 @@ function ActionBarConnect({
     }
     if (window.ethereum) {
       try {
-        await window.ethereum.enable();
+        const address = await window.ethereum.enable();
+        console.log('ethereum', address);
+        accounts.eth = { bech32: address[0], keys: 'MetaMask' };
       } catch (error) {
         console.log('You declined transaction', error);
       }
     } else if (window.web3) {
-      await web3.eth.getAccounts();
+      const getAccounts = await web3.eth.getAccounts();
+      accounts.eth = { bech32: getAccounts[0], keys: 'MetaMask' };
+      console.log('getAccounts', getAccounts);
     } else {
       console.log('Your metamask is locked!');
+    }
+    if (Object.keys(accounts).length > 0) {
+      if (localStorageStory !== null) {
+        const valueObj = Object.values(dataPocketAccount);
+        if (!checkAddress(valueObj, 'eth', accounts.eth.bech32)) {
+          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+        }
+      } else {
+        pocketAccount = { [key]: accounts };
+      }
+
+      if (Object.keys(pocketAccount).length > 0) {
+        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+      }
+      setStage(STAGE_INIT);
+
+      if (updateAddress) {
+        updateAddress();
+      }
     }
   };
 
   const connectKeplr = async () => {
+    const accounts = {};
+    let key = 'Account 1';
+    let dataPocketAccount = null;
+    let valueObj = {};
+    let pocketAccount = {};
     await keplr.enable();
 
     const address = await keplr.getKeys();
-    console.log('address', address);
-    const cosmosAddress = fromBech32(address[0].bech32Address, 'cosmos');
-    const cyberBech32 = address[0].bech32Address;
-    const cosmosBech32 = cosmosAddress;
     const pk = Buffer.from(address[0].pubKey).toString('hex');
-    const accounts = {
-      [cyberBech32]: {
-        cyber: {
-          bech32: cyberBech32,
-        },
-        cosmos: {
-          bech32: cosmosBech32,
-        },
-        keys: 'keplr',
-        pk,
-      },
-    };
-    setStage(STAGE_ADD_ADDRESS_OK);
+
     const localStorageStory = await localStorage.getItem('pocketAccount');
     if (localStorageStory !== null) {
-      const dataPocketAccount = JSON.parse(localStorageStory);
-      if (
-        !Object.prototype.hasOwnProperty.call(dataPocketAccount, cyberBech32)
-      ) {
-        const pocketAccount = { ...accounts, ...dataPocketAccount };
-        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+      dataPocketAccount = JSON.parse(localStorageStory);
+      valueObj = Object.values(dataPocketAccount);
+      const dataLength = Object.keys(dataPocketAccount).length;
+      key = `Account ${dataLength + 1}`;
+    }
+    if (selectNetwork === 'cyber' || addCyberAddress) {
+      const cyberBech32 = address[0].bech32Address;
+      if (!checkAddress(valueObj, 'cyber', cyberBech32)) {
+        accounts.cyber = {
+          bech32: cyberBech32,
+          keys: 'keplr',
+          pk,
+          path: HDPATH,
+        };
+      }
+    }
+    if (selectNetwork === 'cosmos') {
+      const cosmosAddress = fromBech32(address[0].bech32Address, 'cosmos');
+      const cosmosBech32 = cosmosAddress;
+      if (!checkAddress(valueObj, 'cosmos', cosmosBech32)) {
+        accounts.cosmos = {
+          bech32: cosmosBech32,
+          keys: 'keplr',
+          pk,
+          path: HDPATH,
+        };
+      }
+    }
+    setStage(STAGE_ADD_ADDRESS_OK);
+    if (localStorageStory !== null) {
+      if (Object.keys(accounts).length > 0) {
+        pocketAccount = { [key]: accounts, ...dataPocketAccount };
       }
     } else {
-      localStorage.setItem('pocketAccount', JSON.stringify(accounts));
+      pocketAccount = { [key]: accounts };
+    }
+    if (Object.keys(pocketAccount).length > 0) {
+      localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
     }
     setStage(STAGE_INIT);
 
@@ -379,127 +464,27 @@ function ActionBarConnect({
 
   if (stage === STAGE_INIT) {
     return (
-      <ActionBar>
-        <ActionBarContentText>
-          <Pane
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            flex={1}
-          >
-            <ButtonIcon
-              onClick={() => selectMethodFunc('ledger')}
-              active={selectMethod === 'ledger'}
-              img={imgLedger}
-              text="ledger"
-            />
-            <ButtonIcon
-              onClick={() => selectMethodFunc('keplr')}
-              active={selectMethod === 'keplr'}
-              img={imgKeplr}
-              text="keplr"
-            />
-            <ButtonIcon
-              onClick={() => selectMethodFunc('MetaMask')}
-              active={selectMethod === 'MetaMask'}
-              img={imgMetaMask}
-              text="MetaMask"
-            />
-            <ButtonIcon
-              onClick={() => selectMethodFunc('read-only')}
-              active={selectMethod === 'read-only'}
-              img={imgRead}
-              text="read-only"
-            />
-          </Pane>
-          <span style={{ fontSize: '18px' }}>in</span>
-          <Pane
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            flex={1}
-          >
-            {selectMethod === 'MetaMask' && (
-              <ButtonIcon
-                img={imgEth}
-                text="ETH"
-                onClick={() => selectNetworkFunc('eth')}
-                active={selectNetwork === 'eth'}
-              />
-            )}
-            {selectMethod !== 'MetaMask' && (
-              <>
-                <ButtonIcon
-                  img={imgCosmos}
-                  text="Cosmos"
-                  onClick={() => selectNetworkFunc('cosmos')}
-                  active={selectNetwork === 'cosmos'}
-                />
-                <ButtonIcon
-                  onClick={() => selectNetworkFunc('cyber')}
-                  active={selectNetwork === 'cyber'}
-                  img={imgCyber}
-                  text="Cyber"
-                />
-              </>
-            )}
-          </Pane>
-        </ActionBarContentText>
-        <Button disabled={selectNetwork === ''} onClick={() => connctAddress()}>
-          connect
-        </Button>
-      </ActionBar>
+      <ConnectAddress
+        selectMethodFunc={selectMethodFunc}
+        selectMethod={selectMethod}
+        selectNetworkFunc={selectNetworkFunc}
+        selectNetwork={selectNetwork}
+        connctAddress={connctAddress}
+        web3={web3}
+      />
     );
   }
 
   if (stage === STAGE_HDPATH) {
     return (
-      <ActionBar>
-        <ActionBarContentText>
-          <Pane>
-            <Pane
-              display="flex"
-              alignItems="center"
-              flex={1}
-              justifyContent="center"
-            >
-              <Text color="#fff" fontSize="20px">
-                HD derivation path: {hdpath[0]}/{hdpath[1]}/
-              </Text>
-              <Input
-                value={hdpath[2]}
-                onChange={(e) => onChangeAccount(e)}
-                width="50px"
-                height={42}
-                marginLeft={3}
-                marginRight={3}
-                fontSize="20px"
-                textAlign="end"
-              />
-              <Text color="#fff" fontSize="20px">
-                /{hdpath[3]}/
-              </Text>
-              <Input
-                value={hdpath[4]}
-                onChange={(e) => onChangeIndex(e)}
-                width="50px"
-                marginLeft={3}
-                height={42}
-                fontSize="20px"
-                textAlign="end"
-              />
-            </Pane>
-            {addressLedger !== null ? (
-              <Pane>{trimString(addressLedger.bech32, 10, 3)}</Pane>
-            ) : (
-              <Dots />
-            )}
-          </Pane>
-        </ActionBarContentText>
-        <Button disabled={hdPathError} onClick={() => addAddressLedger()}>
-          Apply
-        </Button>
-      </ActionBar>
+      <SetHdpath
+        hdpath={hdpath}
+        onChangeAccount={onChangeAccount}
+        onChangeIndex={onChangeIndex}
+        addressLedger={addressLedger}
+        hdPathError={hdPathError}
+        addAddressLedger={addAddressLedger}
+      />
     );
   }
 
@@ -513,7 +498,7 @@ function ActionBarConnect({
           fontSize="18px"
           display="flex"
         >
-          put cosmos or cyber address:
+          put {selectNetwork} address:
           <input
             value={valueInputAddres}
             style={{
@@ -529,10 +514,7 @@ function ActionBarConnect({
         </Pane>
 
         <Button
-          disabled={
-            !valueInputAddres.match(PATTERN_COSMOS) &&
-            !valueInputAddres.match(PATTERN_CYBER)
-          }
+          disabled={validAddressAddedUser}
           onClick={onClickAddAddressUserToLocalStr}
         >
           Add address
@@ -557,6 +539,15 @@ function ActionBarConnect({
       <ConnectLadger
         onClickConnect={() => getLedgerAddress()}
         connectLedger={connectLedger}
+      />
+    );
+  }
+
+  if (stage === STAGE_ERROR) {
+    return (
+      <TransactionError
+        onClickBtn={() => cleatState()}
+        errorMessage="you have this address in your pocket"
       />
     );
   }

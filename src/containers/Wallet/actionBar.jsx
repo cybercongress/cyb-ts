@@ -36,11 +36,7 @@ function ActionBar({
         break;
 
       case selectCard.indexOf('pubkey') !== -1:
-        if (selectAccount && selectAccount !== null && selectAccount.keys) {
-          setTypeActionBar(selectAccount.keys);
-        } else {
-          setTypeActionBar('');
-        }
+        setTypeActionBar('');
         break;
 
       case selectCard === 'gol':
@@ -60,6 +56,7 @@ function ActionBar({
         accountsETH={accountsETH}
         keplr={keplr}
         updateAddress={updateAddress}
+        selectAccount={selectAccount}
       />
     );
   }

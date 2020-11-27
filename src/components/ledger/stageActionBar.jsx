@@ -84,6 +84,14 @@ const param = {
   },
 };
 
+const imgLedger = require('../../image/ledger.svg');
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgMetaMask = require('../../image/mm-logo.svg');
+const imgRead = require('../../image/duplicate-outline.svg');
+const imgEth = require('../../image/Ethereum_logo_2014.svg');
+const imgCyber = require('../../image/cyber.png');
+const imgCosmos = require('../../image/cosmos-2.svg');
+
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
 
@@ -105,6 +113,22 @@ export const ActionBarContentText = ({ children, ...props }) => (
   >
     {children}
   </Pane>
+);
+
+const ButtonIcon = ({ img, active, disabled, ...props }) => (
+  <button
+    type="button"
+    style={{
+      // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
+      margin: '0 10px',
+      padding: '5px 0',
+    }}
+    className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
+    disabled={disabled}
+    {...props}
+  >
+    <img src={img} alt="img" />
+  </button>
 );
 
 export const JsonTransaction = () => (
@@ -1264,5 +1288,147 @@ export const RewardsDelegators = ({
         </button>
       </div>
     </ContainetLedger>
+  );
+};
+
+export const ConnectAddress = ({
+  selectMethodFunc,
+  selectMethod,
+  selectNetworkFunc,
+  selectNetwork,
+  connctAddress,
+  web3,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+        >
+          <ButtonIcon
+            onClick={() => selectMethodFunc('ledger')}
+            active={selectMethod === 'ledger'}
+            img={imgLedger}
+            text="ledger"
+          />
+          <ButtonIcon
+            onClick={() => selectMethodFunc('keplr')}
+            active={selectMethod === 'keplr'}
+            img={imgKeplr}
+            text="keplr"
+          />
+          {web3 && web3 !== null && (
+            <ButtonIcon
+              onClick={() => selectMethodFunc('MetaMask')}
+              active={selectMethod === 'MetaMask'}
+              img={imgMetaMask}
+              text="MetaMask"
+            />
+          )}
+          <ButtonIcon
+            onClick={() => selectMethodFunc('read-only')}
+            active={selectMethod === 'read-only'}
+            img={imgRead}
+            text="read-only"
+          />
+        </Pane>
+        <span style={{ fontSize: '18px' }}>in</span>
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+        >
+          {selectMethod === 'MetaMask' && (
+            <ButtonIcon
+              img={imgEth}
+              text="ETH"
+              onClick={() => selectNetworkFunc('eth')}
+              active={selectNetwork === 'eth'}
+            />
+          )}
+          {selectMethod !== 'MetaMask' && (
+            <>
+              <ButtonIcon
+                img={imgCosmos}
+                text="Cosmos"
+                onClick={() => selectNetworkFunc('cosmos')}
+                active={selectNetwork === 'cosmos'}
+              />
+              <ButtonIcon
+                onClick={() => selectNetworkFunc('cyber')}
+                active={selectNetwork === 'cyber'}
+                img={imgCyber}
+                text="Cyber"
+              />
+            </>
+          )}
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={selectNetwork === ''} onClick={() => connctAddress()}>
+        connect
+      </Button>
+    </ActionBar>
+  );
+};
+
+export const SetHdpath = ({
+  hdpath,
+  onChangeAccount,
+  onChangeIndex,
+  addressLedger,
+  hdPathError,
+  addAddressLedger,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <Text color="#fff" fontSize="20px">
+              HD derivation path: {hdpath[0]}/{hdpath[1]}/
+            </Text>
+            <Input
+              value={hdpath[2]}
+              onChange={(e) => onChangeAccount(e)}
+              width="50px"
+              height={42}
+              marginLeft={3}
+              marginRight={3}
+              fontSize="20px"
+              textAlign="end"
+            />
+            <Text color="#fff" fontSize="20px">
+              /{hdpath[3]}/
+            </Text>
+            <Input
+              value={hdpath[4]}
+              onChange={(e) => onChangeIndex(e)}
+              width="50px"
+              marginLeft={3}
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+            />
+          </Pane>
+          {addressLedger !== null ? (
+            <Pane>{trimString(addressLedger.bech32, 10, 3)}</Pane>
+          ) : (
+            <Dots />
+          )}
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={hdPathError} onClick={() => addAddressLedger()}>
+        Apply
+      </Button>
+    </ActionBar>
   );
 };
