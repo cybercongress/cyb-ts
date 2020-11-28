@@ -20,14 +20,6 @@ import {
 } from '../../utils/config';
 import { fromBech32, trimString } from '../../utils/utils';
 
-const imgLedger = require('../../image/ledger.svg');
-const imgKeplr = require('../../image/keplr-icon.svg');
-const imgMetaMask = require('../../image/mm-logo.svg');
-const imgRead = require('../../image/duplicate-outline.svg');
-const imgEth = require('../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../image/cyber.png');
-const imgCosmos = require('../../image/cosmos-2.svg');
-
 const { DIVISOR_CYBER_G } = CYBER;
 
 const {
