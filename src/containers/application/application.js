@@ -72,7 +72,7 @@ class App extends React.PureComponent {
     this.chekHomePage();
     this.chekEvangelism();
     this.checkAddressLocalStorage();
-    document.onkeypress = e => {
+    document.onkeypress = (e) => {
       if (e.key === '/') {
         document.getElementById('search-input-searchBar').focus();
       }
@@ -89,7 +89,7 @@ class App extends React.PureComponent {
         this.clearInrut();
       }
       this.checkAddressLocalStorage();
-      document.onkeypress = e => {
+      document.onkeypress = (e) => {
         if (e.key === '/') {
           document.getElementById('search-input-searchBar').focus();
         }
@@ -99,20 +99,19 @@ class App extends React.PureComponent {
 
   checkAddressLocalStorage = async () => {
     const { setBandwidthProps } = this.props;
-    let address = [];
-
-    const localStorageStory = localStorage.getItem('pocket');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      if (Object.keys(address)[0]) {
-        this.getBandwidth(Object.keys(address)[0]);
+    const localStoragePocket = localStorage.getItem('pocket');
+    if (localStoragePocket !== null) {
+      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
+      const accountPocket = Object.values(dataLocalStoragePocket)[0];
+      if (accountPocket.cyber) {
+        this.getBandwidth(accountPocket.cyber.bech32);
       }
     } else {
       setBandwidthProps(0, 0);
     }
   };
 
-  getBandwidth = async address => {
+  getBandwidth = async (address) => {
     const { setBandwidthProps } = this.props;
     if (address !== null) {
       const dataAccountBandwidth = await getAccountBandwidth(address);
@@ -162,13 +161,13 @@ class App extends React.PureComponent {
     }
   };
 
-  routeChange = newPath => {
+  routeChange = (newPath) => {
     const { history } = this.props;
     const path = newPath;
     history.push(path);
   };
 
-  onChangeInput = async e => {
+  onChangeInput = async (e) => {
     const { query, setQueryProps } = this.props;
     const { value } = e.target;
 
@@ -179,7 +178,7 @@ class App extends React.PureComponent {
     }
   };
 
-  handleKeyPress = async e => {
+  handleKeyPress = async (e) => {
     const { query, setQueryProps } = this.props;
 
     if (query.length > 0) {
@@ -307,7 +306,7 @@ class App extends React.PureComponent {
               height="100%"
             >
               <input
-                onChange={e => this.onChangeInput(e)}
+                onChange={(e) => this.onChangeInput(e)}
                 onKeyPress={this.handleKeyPress}
                 className="search-input"
                 ref={this.textInput}
@@ -382,7 +381,7 @@ class App extends React.PureComponent {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     ipfsStatus: store.ipfs.statusIpfs,
     bandwidth: store.bandwidth.bandwidth,
@@ -392,11 +391,11 @@ const mapStateToProps = store => {
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
-    setQueryProps: query => dispatch(setQuery(query)),
+    setQueryProps: (query) => dispatch(setQuery(query)),
   };
 };
 

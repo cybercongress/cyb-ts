@@ -58,6 +58,8 @@ function AppRouter({
   // if (loader) {
   //   return <Dots />;
   // }
+
+  // add Switch to Router
   return (
     <Router history={history}>
       <Route path="/" component={App} />
