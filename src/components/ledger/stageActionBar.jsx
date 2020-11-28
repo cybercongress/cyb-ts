@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
@@ -1298,7 +1298,36 @@ export const ConnectAddress = ({
   selectNetwork,
   connctAddress,
   web3,
+  selectAccount,
 }) => {
+  const [cyberNetwork, setCyberNetwork] = useState(true);
+  const [cosmosNetwork, setCosmosNetwork] = useState(true);
+  const [ethNetwork, setEthrNetwork] = useState(true);
+
+  useEffect(() => {
+    if (selectAccount && selectAccount !== null) {
+      if (selectAccount.cyber) {
+        setCyberNetwork(false);
+      } else {
+        setCyberNetwork(true);
+      }
+      if (selectAccount.cosmos) {
+        setCosmosNetwork(false);
+      } else {
+        setCosmosNetwork(true);
+      }
+      if (selectAccount.eth) {
+        setEthrNetwork(false);
+      } else {
+        setEthrNetwork(true);
+      }
+    } else {
+      setEthrNetwork(true);
+      setCosmosNetwork(true);
+      setCyberNetwork(true);
+    }
+  }, [selectAccount]);
+
   return (
     <ActionBar>
       <ActionBarContentText>
@@ -1320,7 +1349,7 @@ export const ConnectAddress = ({
             img={imgKeplr}
             text="keplr"
           />
-          {web3 && web3 !== null && (
+          {web3 && web3 !== null && ethNetwork && (
             <ButtonIcon
               onClick={() => selectMethodFunc('MetaMask')}
               active={selectMethod === 'MetaMask'}
@@ -1352,18 +1381,22 @@ export const ConnectAddress = ({
           )}
           {selectMethod !== 'MetaMask' && (
             <>
-              <ButtonIcon
-                img={imgCosmos}
-                text="Cosmos"
-                onClick={() => selectNetworkFunc('cosmos')}
-                active={selectNetwork === 'cosmos'}
-              />
-              <ButtonIcon
-                onClick={() => selectNetworkFunc('cyber')}
-                active={selectNetwork === 'cyber'}
-                img={imgCyber}
-                text="Cyber"
-              />
+              {cosmosNetwork && (
+                <ButtonIcon
+                  img={imgCosmos}
+                  text="Cosmos"
+                  onClick={() => selectNetworkFunc('cosmos')}
+                  active={selectNetwork === 'cosmos'}
+                />
+              )}
+              {cyberNetwork && (
+                <ButtonIcon
+                  onClick={() => selectNetworkFunc('cyber')}
+                  active={selectNetwork === 'cyber'}
+                  img={imgCyber}
+                  text="Cyber"
+                />
+              )}
             </>
           )}
         </Pane>

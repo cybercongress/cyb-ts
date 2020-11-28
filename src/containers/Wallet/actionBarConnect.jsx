@@ -72,8 +72,6 @@ function ActionBarConnect({
   const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
 
-console.log('selectAccount', selectAccount);
-
   useEffect(() => {
     if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
       cleatState();
@@ -82,7 +80,11 @@ console.log('selectAccount', selectAccount);
 
   useEffect(() => {
     const feachData = async () => {
-      if (parseInt(hdpath[2], 10) >= 0 && parseInt(hdpath[4], 10) >= 0) {
+      if (
+        ledger !== null &&
+        parseInt(hdpath[2], 10) >= 0 &&
+        parseInt(hdpath[4], 10) >= 0
+      ) {
         setHdPathError(false);
         setAddressLedger(null);
         let retrieveAddress = null;
@@ -174,31 +176,50 @@ console.log('selectAccount', selectAccount);
         valueObj = Object.values(dataPocketAccount);
         const dataLength = Object.keys(dataPocketAccount).length;
         key = `Account ${dataLength + 1}`;
+        if (selectAccount !== null) {
+          key = selectAccount.key;
+        }
       }
       if (selectNetwork === 'cyber' || addCyberAddress) {
         const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
-        if (!checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)) {
+        if (
+          selectAccount !== null ||
+          !checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)
+        ) {
           accounts.cyber = { ...addressLedgerCyber, keys: 'ledger' };
         }
       }
       if (selectNetwork === 'cosmos') {
         const addressLedgerCosmos = await ledger.retrieveAddress(hdpath);
-        if (!checkAddress(valueObj, 'cosmos', addressLedgerCosmos.bech32)) {
+        if (
+          selectAccount !== null ||
+          !checkAddress(valueObj, 'cosmos', addressLedgerCosmos.bech32)
+        ) {
           accounts.cosmos = { ...addressLedgerCosmos, keys: 'ledger' };
         }
       }
-      if (localStorageStory !== null) {
-        if (Object.keys(accounts).length > 0) {
-          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+      if (selectAccount === null) {
+        if (localStorageStory !== null) {
+          if (Object.keys(accounts).length > 0) {
+            pocketAccount = { [key]: accounts, ...dataPocketAccount };
+          }
+        } else {
+          pocketAccount = { [key]: accounts };
+        }
+        if (Object.keys(pocketAccount).length > 0) {
+          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
         }
       } else {
-        pocketAccount = { [key]: accounts };
+        dataPocketAccount[selectAccount.key][selectNetwork] =
+          accounts[selectNetwork];
+        if (Object.keys(dataPocketAccount).length > 0) {
+          localStorage.setItem(
+            'pocketAccount',
+            JSON.stringify(dataPocketAccount)
+          );
+        }
       }
-      if (Object.keys(pocketAccount).length > 0) {
-        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-      }
-      setStage(STAGE_INIT);
-
+      cleatState();
       if (updateAddress) {
         updateAddress();
       }
@@ -248,6 +269,9 @@ console.log('selectAccount', selectAccount);
       valueObj = Object.values(dataPocketAccount);
       const dataLength = Object.keys(dataPocketAccount).length;
       key = `Account ${dataLength + 1}`;
+      if (selectAccount !== null) {
+        key = selectAccount.key;
+      }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
       let cyberAddress = null;
@@ -260,34 +284,55 @@ console.log('selectAccount', selectAccount);
           CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
         );
       }
-      if (!checkAddress(valueObj, 'cyber', cyberAddress)) {
+      if (
+        selectAccount !== null ||
+        !checkAddress(valueObj, 'cyber', cyberAddress)
+      ) {
         accounts.cyber = { bech32: cyberAddress, keys: 'read-only' };
       }
     }
     if (selectNetwork === 'cosmos') {
       const cosmosAddress = valueInputAddres;
-      if (!checkAddress(valueObj, 'cosmos', cosmosAddress)) {
+      if (
+        selectAccount !== null ||
+        !checkAddress(valueObj, 'cosmos', cosmosAddress)
+      ) {
         accounts.cosmos = { bech32: cosmosAddress, keys: 'read-only' };
       }
     }
 
     setStage(STAGE_ADD_ADDRESS_OK);
-    if (localStorageStory !== null) {
-      if (Object.keys(accounts).length > 0) {
-        pocketAccount = { [key]: accounts, ...dataPocketAccount };
+    if (selectAccount === null) {
+      if (localStorageStory !== null) {
+        if (Object.keys(accounts).length > 0) {
+          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+        }
+      } else {
+        pocketAccount = { [key]: accounts };
+      }
+
+      if (Object.keys(pocketAccount).length > 0) {
+        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        cleatState();
+        if (updateAddress) {
+          updateAddress();
+        }
+      } else {
+        setStage(STAGE_ERROR);
       }
     } else {
-      pocketAccount = { [key]: accounts };
-    }
-
-    if (Object.keys(pocketAccount).length > 0) {
-      localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-      setStage(STAGE_INIT);
+      dataPocketAccount[selectAccount.key][selectNetwork] =
+        accounts[selectNetwork];
+      if (Object.keys(dataPocketAccount).length > 0) {
+        localStorage.setItem(
+          'pocketAccount',
+          JSON.stringify(dataPocketAccount)
+        );
+      }
+      cleatState();
       if (updateAddress) {
         updateAddress();
       }
-    } else {
-      setStage(STAGE_ERROR);
     }
   };
 
@@ -302,6 +347,9 @@ console.log('selectAccount', selectAccount);
       dataPocketAccount = JSON.parse(localStorageStory);
       const dataLength = Object.keys(dataPocketAccount).length;
       key = `Account ${dataLength + 1}`;
+      if (selectAccount !== null) {
+        key = selectAccount.key;
+      }
     }
     if (web3.currentProvider.host) {
       console.log(
@@ -324,20 +372,30 @@ console.log('selectAccount', selectAccount);
       console.log('Your metamask is locked!');
     }
     if (Object.keys(accounts).length > 0) {
-      if (localStorageStory !== null) {
-        const valueObj = Object.values(dataPocketAccount);
-        if (!checkAddress(valueObj, 'eth', accounts.eth.bech32)) {
-          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+      if (selectAccount === null) {
+        if (localStorageStory !== null) {
+          const valueObj = Object.values(dataPocketAccount);
+          if (!checkAddress(valueObj, 'eth', accounts.eth.bech32)) {
+            pocketAccount = { [key]: accounts, ...dataPocketAccount };
+          }
+        } else {
+          pocketAccount = { [key]: accounts };
+        }
+
+        if (Object.keys(pocketAccount).length > 0) {
+          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
         }
       } else {
-        pocketAccount = { [key]: accounts };
+        dataPocketAccount[selectAccount.key][selectNetwork] =
+          accounts[selectNetwork];
+        if (Object.keys(dataPocketAccount).length > 0) {
+          localStorage.setItem(
+            'pocketAccount',
+            JSON.stringify(dataPocketAccount)
+          );
+        }
       }
-
-      if (Object.keys(pocketAccount).length > 0) {
-        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-      }
-      setStage(STAGE_INIT);
-
+      cleatState();
       if (updateAddress) {
         updateAddress();
       }
@@ -361,10 +419,16 @@ console.log('selectAccount', selectAccount);
       valueObj = Object.values(dataPocketAccount);
       const dataLength = Object.keys(dataPocketAccount).length;
       key = `Account ${dataLength + 1}`;
+      if (selectAccount !== null) {
+        key = selectAccount.key;
+      }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
       const cyberBech32 = address[0].bech32Address;
-      if (!checkAddress(valueObj, 'cyber', cyberBech32)) {
+      if (
+        selectAccount !== null ||
+        !checkAddress(valueObj, 'cyber', cyberBech32)
+      ) {
         accounts.cyber = {
           bech32: cyberBech32,
           keys: 'keplr',
@@ -376,7 +440,10 @@ console.log('selectAccount', selectAccount);
     if (selectNetwork === 'cosmos') {
       const cosmosAddress = fromBech32(address[0].bech32Address, 'cosmos');
       const cosmosBech32 = cosmosAddress;
-      if (!checkAddress(valueObj, 'cosmos', cosmosBech32)) {
+      if (
+        selectAccount !== null ||
+        !checkAddress(valueObj, 'cosmos', cosmosBech32)
+      ) {
         accounts.cosmos = {
           bech32: cosmosBech32,
           keys: 'keplr',
@@ -386,18 +453,28 @@ console.log('selectAccount', selectAccount);
       }
     }
     setStage(STAGE_ADD_ADDRESS_OK);
-    if (localStorageStory !== null) {
-      if (Object.keys(accounts).length > 0) {
-        pocketAccount = { [key]: accounts, ...dataPocketAccount };
+    if (selectAccount === null) {
+      if (localStorageStory !== null) {
+        if (Object.keys(accounts).length > 0) {
+          pocketAccount = { [key]: accounts, ...dataPocketAccount };
+        }
+      } else {
+        pocketAccount = { [key]: accounts };
+      }
+      if (Object.keys(pocketAccount).length > 0) {
+        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
       }
     } else {
-      pocketAccount = { [key]: accounts };
+      dataPocketAccount[selectAccount.key][selectNetwork] =
+        accounts[selectNetwork];
+      if (Object.keys(dataPocketAccount).length > 0) {
+        localStorage.setItem(
+          'pocketAccount',
+          JSON.stringify(dataPocketAccount)
+        );
+      }
     }
-    if (Object.keys(pocketAccount).length > 0) {
-      localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-    }
-    setStage(STAGE_INIT);
-
+    cleatState();
     if (updateAddress) {
       updateAddress();
     }
@@ -471,6 +548,7 @@ console.log('selectAccount', selectAccount);
         selectNetwork={selectNetwork}
         connctAddress={connctAddress}
         web3={web3}
+        selectAccount={selectAccount}
       />
     );
   }
