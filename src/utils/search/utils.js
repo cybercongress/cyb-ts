@@ -1046,11 +1046,11 @@ export const getRewardsAll = async (address, node = CYBER_NODE_URL_LCD) => {
   }
 };
 
-export const getTxCosmos = async () => {
+export const getTxCosmos = async (page = 1) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000`,
+      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000&page=${page}`,
     });
     return response.data;
   } catch (e) {
