@@ -20,8 +20,6 @@ import {
 } from '../../utils/config';
 import { fromBech32, trimString } from '../../utils/utils';
 
-const { DIVISOR_CYBER_G } = CYBER;
-
 const {
   STAGE_INIT,
   STAGE_LEDGER_INIT,
@@ -73,7 +71,7 @@ function ActionBarConnect({
   useEffect(() => {
     const feachData = async () => {
       if (
-        ledger !== null &&
+        stage === STAGE_HDPATH &&
         parseInt(hdpath[2], 10) >= 0 &&
         parseInt(hdpath[4], 10) >= 0
       ) {
@@ -93,7 +91,7 @@ function ActionBarConnect({
       }
     };
     feachData();
-  }, [hdpath]);
+  }, [hdpath, stage]);
 
   useEffect(() => {
     if (selectNetwork === 'cyber') {
