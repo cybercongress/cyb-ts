@@ -121,16 +121,16 @@ class ActionBarContainer extends Component {
   }
 
   checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('pocket');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      const key = Object.keys(address)[0];
-      this.setState({
-        addressLocalStor: { address: key, keys: address[key].keys },
-      });
+    const localStoragePocket = await localStorage.getItem('pocket');
+    if (localStoragePocket !== null) {
+      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
+      const accountPocket = Object.values(dataLocalStoragePocket)[0];
+      if (accountPocket.cyber) {
+        const { keys, bech32 } = accountPocket.cyber;
+        this.setState({
+          addressLocalStor: { address: bech32, keys },
+        });
+      }
     } else {
       this.setState({
         addressLocalStor: null,

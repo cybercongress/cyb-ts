@@ -180,7 +180,7 @@ class Brain extends React.PureComponent {
         responseFollows.txs &&
         Object.keys(responseFollows.txs).length > 0
       ) {
-        responseFollows.txs.forEach(async item => {
+        responseFollows.txs.forEach(async (item) => {
           let addressResolve;
           const cid = item.tx.value.msg[0].value.links[0].to;
           const dataIndexdDb = await db.table('following').get({ cid });
@@ -195,14 +195,14 @@ class Brain extends React.PureComponent {
             };
             db.table('following')
               .add(ipfsContentAddtToInddexdDB)
-              .then(id => {
+              .then((id) => {
                 console.log('item :>> ', id);
               });
           }
           if (addressResolve && addressResolve !== null) {
             const addressFollow = addressResolve;
             if (addressFollow.match(PATTERN_CYBER)) {
-              this.setState(itemState => {
+              this.setState((itemState) => {
                 return {
                   addressFollowData: {
                     ...itemState.addressFollowData,
@@ -216,7 +216,7 @@ class Brain extends React.PureComponent {
                 responseTwit.txs &&
                 responseTwit.txs.length > 0
               ) {
-                this.setState(prevState => {
+                this.setState((prevState) => {
                   return {
                     tweetData: [...prevState.tweetData, ...responseTwit.txs],
                   };
@@ -228,7 +228,7 @@ class Brain extends React.PureComponent {
       } else {
         const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
         if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-          this.setState(prevState => {
+          this.setState((prevState) => {
             return {
               tweetData: [...prevState.tweetData, ...responseTwit.txs],
             };
@@ -238,7 +238,7 @@ class Brain extends React.PureComponent {
     } else {
       const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
       if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             tweetData: [...prevState.tweetData, ...responseTwit.txs],
           };
@@ -263,7 +263,7 @@ class Brain extends React.PureComponent {
       );
     };
 
-    this.ws.onmessage = async evt => {
+    this.ws.onmessage = async (evt) => {
       const message = JSON.parse(evt.data);
       if (message.result && Object.keys(message.result).length > 0) {
         this.updateWs(message.result.events);
@@ -275,7 +275,7 @@ class Brain extends React.PureComponent {
     };
   };
 
-  updateWs = async data => {
+  updateWs = async (data) => {
     const { addressFollowData } = this.state;
     const { node } = this.props;
     const subject = data['cybermeta.subject'][0];
@@ -286,7 +286,7 @@ class Brain extends React.PureComponent {
       Object.keys(addressFollowData).length > 0 &&
       Object.prototype.hasOwnProperty.call(addressFollowData, subject)
     ) {
-      this.setState(item => {
+      this.setState((item) => {
         return {
           twit: {
             [objectTo]: {
@@ -403,7 +403,7 @@ class Brain extends React.PureComponent {
     }
   };
 
-  getATOM = async dataTxs => {
+  getATOM = async (dataTxs) => {
     const { cybernomics } = this.state;
     let amount = 0;
     let currentPrice = 0;
@@ -446,40 +446,25 @@ class Brain extends React.PureComponent {
   };
 
   checkAddressLocalStorage = async () => {
-    const localStoragePocketAccount = await localStorage.getItem(
-      'pocketAccount'
-    );
+    let addressPocket = null;
     const localStoragePocket = await localStorage.getItem('pocket');
     if (localStoragePocket !== null) {
-      const localStoragePocketData = JSON.parse(localStoragePocket);
-      const keyPocket = Object.keys(localStoragePocketData)[0];
+      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
+      const accountPocket = Object.values(dataLocalStoragePocket)[0];
+      if (accountPocket.cyber) {
+        const { keys, bech32 } = accountPocket.cyber;
+        addressPocket = {
+          bech32,
+          keys,
+        };
+      }
+    }
+    if (addressPocket !== null) {
       this.setState({
-        addressPocket: {
-          bech32: keyPocket,
-          keys: localStoragePocketData[keyPocket].keys,
-        },
+        addressPocket,
         addAddress: false,
       });
       this.getAddressInfo();
-    } else if (localStoragePocketAccount !== null) {
-      const localStoragePocketAccountData = JSON.parse(
-        localStoragePocketAccount
-      );
-      if (localStoragePocket === null) {
-        const keys0 = Object.keys(localStoragePocketAccountData)[0];
-        localStorage.setItem(
-          'pocket',
-          JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
-        );
-        await this.setState({
-          addressPocket: {
-            bech32: keys0,
-            keys: localStoragePocketAccountData[keys0].keys,
-          },
-          addAddress: false,
-        });
-        this.getAddressInfo();
-      }
     } else {
       this.setState({
         addAddress: true,
@@ -560,7 +545,7 @@ class Brain extends React.PureComponent {
     });
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -790,7 +775,7 @@ class Brain extends React.PureComponent {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
