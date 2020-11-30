@@ -13,6 +13,7 @@ import {
 import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
 import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, INFINITY } from '../../../utils/config';
+import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 
 const imgLedger = require('../../../image/ledger.svg');
 const imgKeplr = require('../../../image/keplr-icon.svg');
@@ -21,6 +22,7 @@ const imgRead = require('../../../image/duplicate-outline.svg');
 const imgHelp = require('../../../image/ionicons_svg_ios-help-circle-outline.svg');
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
+const deleteIcon = require('../../../image/trash-outline.svg');
 
 const imgData = {
   ledger: imgLedger,
@@ -28,14 +30,6 @@ const imgData = {
   MetaMask: imgMetaMask,
   'read-only': imgRead,
 };
-
-function renameKeys(obj, newKeys) {
-  const keyValues = Object.keys(obj).map((key) => {
-    const newKey = newKeys[key] || key;
-    return { [newKey]: obj[key] };
-  });
-  return Object.assign({}, ...keyValues);
-}
 
 const Vitalik = () => (
   <Pane
@@ -65,6 +59,30 @@ const Vitalik = () => (
     />
   </Pane>
 );
+
+const ButtonIcon = ({
+  icon,
+  onClickButtonIcon,
+  width = 25,
+  height = 25,
+  customClass = '',
+  textTooltip = '',
+  ...props
+}) => {
+  return (
+    <Pane {...props}>
+    {/* //   <Tooltip placement="bottom" tooltip={<Pane>{textTooltip}</Pane>}> */}
+        <button
+          className={`container-buttonIcon ${customClass}`}
+          type="button"
+          onClick={onClickButtonIcon}
+        >
+          <img src={icon} alt="edit" style={{ width, height }} />
+        </button>
+    {/* //   </Tooltip> */}
+   </Pane>
+  );
+};
 
 const RowBalance = ({ children, ...props }) => (
   <Pane display="flex" justifyContent="space-between" width="100%" {...props}>
@@ -108,7 +126,7 @@ const InfoAddress = ({ pk, hdpath, ...props }) => {
   );
 };
 
-const Address = ({ address, addressLink }) => (
+const Address = ({ address, addressLink, onClickDeleteAddress }) => (
   <Pane
     className="cosmos-address"
     display="flex"
@@ -124,7 +142,14 @@ const Address = ({ address, addressLink }) => (
     {address.pk && (
       <InfoAddress marginLeft={5} hdpath={address.path} pk={address.pk} />
     )}
-    <Copy text={address.bech32} />
+    <Copy style={{ marginLeft: 2 }} text={address.bech32} />
+    <ButtonIcon
+      width={16}
+      height={16}
+      icon={deleteIcon}
+      textTooltip="delete address"
+      onClickButtonIcon={onClickDeleteAddress}
+    />
   </Pane>
 );
 
@@ -188,13 +213,19 @@ const useGetBalanceEth = (address, web3, contractToken) => {
   return balanceEth;
 };
 
-const CosmosAddressInfo = ({ address, loading, totalCosmos }) => {
+const CosmosAddressInfo = ({
+  address,
+  loading,
+  totalCosmos,
+  onClickDeleteAddress,
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
     <ContainerAddressInfo>
       <Address
         address={address}
+        onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
           <LinkWindow to={`https://www.mintscan.io/account/${address.bech32}`}>
             <div>{trimString(address.bech32, 10, 3)}</div>
@@ -277,6 +308,7 @@ const CyberAddressInfo = ({
   loadingGift,
   totalCyber,
   gift,
+  onClickDeleteAddress,
   ...props
 }) => {
   const [open, setOpen] = useState(false);
@@ -286,6 +318,7 @@ const CyberAddressInfo = ({
     <ContainerAddressInfo onClick={() => setOpen(!open)} {...props}>
       <Address
         address={address}
+        onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
           <Link to={`/network/euler/contract/${address.bech32}`}>
             <div>{trimString(address.bech32, 9, 3)}</div>
@@ -336,13 +369,19 @@ const CyberAddressInfo = ({
   );
 };
 
-const EthAddressInfo = ({ address, web3, contractToken }) => {
+const EthAddressInfo = ({
+  address,
+  web3,
+  contractToken,
+  onClickDeleteAddress,
+}) => {
   const { eth, gol } = useGetBalanceEth(address, web3, contractToken);
 
   return (
     <ContainerAddressInfo>
       <Address
         address={address}
+        onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
           <LinkWindow to={`http://etherscan.io/address/${address.bech32}`}>
             <div>{trimString(address.bech32, 6, 6)}</div>
@@ -362,6 +401,7 @@ const EthAddressInfo = ({ address, web3, contractToken }) => {
 function PubkeyCard({
   pocket,
   updateCard,
+  updateFunc,
   defaultAccounts,
   nameCard,
   web3,
@@ -375,7 +415,13 @@ function PubkeyCard({
     updateCard
   );
   const [editStage, setEditStage] = useState(false);
-  const [inputEditName, setInputEditName] = useState(nameCard);
+  const [inputEditName, setInputEditName] = useState('');
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    setName(nameCard);
+    setInputEditName(nameCard);
+  }, [nameCard, pocket]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -394,6 +440,7 @@ function PubkeyCard({
     if (inputEditName === nameCard) {
       setEditStage(false);
     } else {
+      setName(inputEditName);
       const localStoragePocketAccount = await localStorage.getItem(
         'pocketAccount'
       );
@@ -416,6 +463,7 @@ function PubkeyCard({
           localStorage.setItem('pocket', JSON.stringify(newObject));
         }
       }
+      setInputEditName('');
       setEditStage(false);
     }
   };
@@ -445,20 +493,24 @@ function PubkeyCard({
           >
             {!editStage && (
               <>
-                <span className="pocket-card-accountName-text">
-                  {inputEditName}
-                </span>
-                <button
-                  className="container-buttonIcon button-edit-accountName"
-                  type="button"
-                  onClick={() => setEditStage(true)}
-                >
-                  <img
-                    src={editOutline}
-                    alt="edit"
-                    style={{ width: 18, height: 18, marginLeft: 5 }}
-                  />
-                </button>
+                <span className="pocket-card-accountName-text">{name}</span>
+                <ButtonIcon
+                  width={18}
+                  height={18}
+                  icon={editOutline}
+                  customClass="button-edit-accountName"
+                  textTooltip="edit"
+                  marginLeft={5}
+                  onClickButtonIcon={() => setEditStage(true)}
+                />
+                <ButtonIcon
+                  width={18}
+                  height={18}
+                  icon={deleteIcon}
+                  customClass="button-edit-accountName"
+                  textTooltip="delete accoutn"
+                  onClickButtonIcon={() => deleteAccount(name, updateFunc)}
+                />
               </>
             )}
             {editStage && (
@@ -475,7 +527,7 @@ function PubkeyCard({
                 <button
                   className="container-buttonIcon"
                   type="button"
-                  onClick={() => onClickEditNameAccount(true)}
+                  onClick={() => onClickEditNameAccount()}
                 >
                   <img
                     src={editDone}
@@ -501,6 +553,7 @@ function PubkeyCard({
           totalCyber={totalCyber}
           gift={gift}
           marginBottom={10}
+          onClickDeleteAddress={() => deleteAddress(name, 'cyber', updateFunc)}
         />
       )}
 
@@ -509,6 +562,7 @@ function PubkeyCard({
           address={pocket.cosmos}
           loading={loadingInfo}
           totalCosmos={totalCosmos}
+          onClickDeleteAddress={() => deleteAddress(name, 'cosmos', updateFunc)}
         />
       )}
 
@@ -517,6 +571,7 @@ function PubkeyCard({
           address={pocket.eth}
           web3={web3}
           contractToken={contractToken}
+          onClickDeleteAddress={() => deleteAddress(name, 'cosmos', updateFunc)}
         />
       )}
     </PocketCard>

@@ -545,3 +545,7 @@
 .pocket-card-accountName-contaiter:hover .button-edit-accountName {
   display: flex;
 }
+
+.pocket-card-accountName-text {
+  white-space: nowrap;
+}

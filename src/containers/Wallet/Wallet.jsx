@@ -387,6 +387,27 @@ class Wallet extends React.Component {
     });
   };
 
+  updateFuncPubkeyCard = (accounts, accountName = '') => {
+    const { defaultAccountsKeys } = this.state;
+    console.log('defaultAccountsKeys', defaultAccountsKeys);
+    console.log('accountName', accountName);
+
+    if (Object.keys(accounts).length > 0) {
+      if (accountName === defaultAccountsKeys) {
+        this.setState({
+          accounts,
+          selectCard: '',
+          selectAccount: null,
+          defaultAccounts: accounts[accountName],
+        });
+      } else {
+        this.setState({ accounts, selectAccount: null, selectCard: '' });
+      }
+    } else {
+      this.checkAddressLocalStorage();
+    }
+  };
+
   render() {
     const {
       pocket,
@@ -412,7 +433,7 @@ class Wallet extends React.Component {
       storageManager,
     } = this.state;
     const { web3, keplr, contractToken, ipfsId } = this.props;
-console.log('selectAccount', selectAccount)
+    console.log('defaultAccounts', defaultAccounts, defaultAccountsKeys);
     let countLink = 0;
     if (link !== null) {
       countLink = [].concat.apply([], link).length;
@@ -465,7 +486,7 @@ console.log('selectAccount', selectAccount)
         </div>
       );
     }
-    console.log('selectAccount', selectAccount);
+    console.log('accounts', accounts);
     if (!addAddress) {
       return (
         <div>
@@ -502,17 +523,19 @@ console.log('selectAccount', selectAccount)
               )}
 
               {accounts !== null &&
-                Object.keys(accounts).map((key) => (
+                Object.keys(accounts).map((key, i) => (
                   <PubkeyCard
+                    key={`${key}_${i}`}
                     onClick={(e) => this.onClickSelect(e, `pubkey_${key}`, key)}
                     select={selectCard === `pubkey_${key}`}
                     pocket={accounts[key]}
                     nameCard={key}
                     marginBottom={20}
-                    update={updateCard}
+                    updateCard={updateCard}
                     defaultAccounts={defaultAccountsKeys === key}
                     contractToken={contractToken}
                     web3={web3}
+                    updateFunc={this.updateFuncPubkeyCard}
                   />
                 ))}
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Router } from 'react-router';
+import { Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -63,39 +63,41 @@ function AppRouter({
   return (
     <Router history={history}>
       <Route path="/" component={App} />
-      <Route path="/" exact component={Home} />
-      <Route exact path="/search/:query" component={SearchResults} />
-      <Route path="/gift/:address?" component={Gift} />
-      <Route path="/gol/takeoff" component={Funding} />
-      <Route path="/tot" component={Got} />
-      <Route path="/brain" component={Brain} />
-      <Route exact path="/governance" component={Governance} />
-      <Route path="/governance/:proposal_id" component={ProposalsDetail} />
-      <Route path="/pocket" component={Wallet} />
-      <Route path="/heroes" component={Validators} />
-      <Route path="/episode-1" component={Story} />
-      <Route exact path="/network/euler/tx" component={Txs} />
-      <Route path="/gol/delegation" component={GolDelegation} />
-      <Route path="/gol/lifetime" component={GolLifetime} />
-      <Route path="/gol/relevance" component={GolRelevance} />
-      <Route path="/gol/load" component={GolLoad} />
-      <Route path="/gol" component={GOL} />
-      <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
-      <Route
-        path="/network/euler/contract/:address"
-        component={AccountDetails}
-      />
-      <Route
-        path="/network/euler/hero/:address"
-        component={ValidatorsDetails}
-      />
-      {/* <Route path="/graph" component={ForceGraph} /> */}
-      <Route path="/gol/vesting" component={Vesting} />
-      <Route path="/ipfs/:cid" component={Ipfs} />
-      <Route exact path="/network/euler/block" component={Block} />
-      <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
-      <Route path="/network/euler/parameters" component={ParamNetwork} />
-      <Route path="/evangelism" component={Evangelism} />
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route exact path="/search/:query" component={SearchResults} />
+        <Route path="/gift/:address?" component={Gift} />
+        <Route path="/gol/takeoff" component={Funding} />
+        <Route path="/tot" component={Got} />
+        <Route path="/brain" component={Brain} />
+        <Route exact path="/governance" component={Governance} />
+        <Route path="/governance/:proposal_id" component={ProposalsDetail} />
+        <Route path="/pocket" component={Wallet} />
+        <Route path="/heroes" component={Validators} />
+        <Route path="/episode-1" component={Story} />
+        <Route exact path="/network/euler/tx" component={Txs} />
+        <Route path="/gol/delegation" component={GolDelegation} />
+        <Route path="/gol/lifetime" component={GolLifetime} />
+        <Route path="/gol/relevance" component={GolRelevance} />
+        <Route path="/gol/load" component={GolLoad} />
+        <Route path="/gol" component={GOL} />
+        <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
+        <Route
+          path="/network/euler/contract/:address"
+          component={AccountDetails}
+        />
+        <Route
+          path="/network/euler/hero/:address"
+          component={ValidatorsDetails}
+        />
+        {/* <Route path="/graph" component={ForceGraph} /> */}
+        <Route path="/gol/vesting" component={Vesting} />
+        <Route path="/ipfs/:cid" component={Ipfs} />
+        <Route exact path="/network/euler/block" component={Block} />
+        <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
+        <Route path="/network/euler/parameters" component={ParamNetwork} />
+        <Route path="/evangelism" component={Evangelism} />
+      </Switch>
     </Router>
   );
 }

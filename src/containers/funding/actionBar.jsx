@@ -69,6 +69,7 @@ class ActionBarTakeOff extends Component {
 
   componentDidMount() {
     // eslint-disable-next-line
+    this.ledger = new CosmosDelegateTool();
     console.warn('Looking for Ledger Nano');
     const localStorageStory = localStorage.getItem('thanks');
     if (localStorageStory !== null) {
