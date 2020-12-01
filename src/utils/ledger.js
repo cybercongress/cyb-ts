@@ -2,10 +2,10 @@ import CosmosApp from 'ledger-cosmos-js';
 import axios from 'axios';
 import Big from 'big.js';
 import secp256k1 from 'secp256k1';
-import txs from './txs';
 import * as Ripemd160 from 'ripemd160';
 import * as bech32 from 'bech32';
 import * as crypto from 'crypto';
+import txs from './txs';
 
 import { CYBER, LEDGER, COSMOS } from './config';
 
@@ -13,7 +13,7 @@ const { BECH32_PREFIX_ACC_ADDR_CYBER, CYBER_NODE_URL_LCD } = CYBER;
 const { LEDGER_VERSION_REQ } = LEDGER;
 const { BECH32_PREFIX_ACC_ADDR_COSMOS, GAIA_NODE_URL_LSD } = COSMOS;
 
-const compareVersion = async ledgerVersion => {
+const compareVersion = async (ledgerVersion) => {
   const test = ledgerVersion;
   const target = LEDGER_VERSION_REQ;
   const testInt = 10000 * test[0] + 100 * test[1] + test[2];
@@ -169,10 +169,7 @@ class CosmosDelegateTool {
     if (pk.length !== 33) {
       console.log('Expected compressed public key [31 bytes]');
     }
-    const hashSha256 = crypto
-      .createHash('sha256')
-      .update(pk)
-      .digest();
+    const hashSha256 = crypto.createHash('sha256').update(pk).digest();
     const hashRip = new Ripemd160().update(hashSha256).digest();
     return bech32.encode(hrp, bech32.toWords(hashRip));
   };
@@ -186,8 +183,10 @@ class CosmosDelegateTool {
       this.lastError = pk.error_message;
       throw new Error(pk.error_message);
     }
+    const buffer = new Uint8Array(pk.compressed_pk);
+
     return {
-      pk: pk.compressed_pk.toString('hex'),
+      pk: Buffer.from(buffer).toString('hex'),
       path,
       bech32: this.getBech32FromPK(
         BECH32_PREFIX_ACC_ADDR_CYBER,
@@ -214,7 +213,7 @@ class CosmosDelegateTool {
   async retrieveValidators() {
     const url = `${nodeURL(this)}/staking/validators`;
     return axios.get(url).then(
-      r => {
+      (r) => {
         const validators = {};
         for (let i = 0; i < r.data.length; i += 1) {
           const validatorData = {};
@@ -225,13 +224,13 @@ class CosmosDelegateTool {
         }
         return validators;
       },
-      e => wrapError(this, e)
+      (e) => wrapError(this, e)
     );
   }
 
   async getAccountInfo(addr) {
     console.log(addr);
-    const url = `${nodeURL(this)}/api/cosmos/account/${addr.bech32}`;
+    const url = `${GAIA_NODE_URL_LSD}/auth/accounts/${addr.bech32}`;
     const txContext = {
       sequence: '0',
       accountNumber: '0',
@@ -239,20 +238,16 @@ class CosmosDelegateTool {
       chainId: COSMOS.CHAIN_ID,
     };
     return axios.get(url).then(
-      r => {
+      (r) => {
         try {
           console.log('r.data', r.data);
-          if (
-            typeof r.data !== 'undefined' &&
-            typeof r.data.value !== 'undefined'
-          ) {
-            txContext.sequence = Number(r.data.value.sequence).toString();
-            txContext.accountNumber = Number(
-              r.data.value.account_number
-            ).toString();
-            if (r.data.value.coins !== null && r.data.value.coins.length > 0) {
+          if (r.data && r.data.result.value) {
+            const data = r.data.result.value;
+            txContext.sequence = data.sequence;
+            txContext.accountNumber = data.account_number;
+            if (data.coins && data.coins.length > 0) {
               const tmp = [];
-              tmp.push(r.data.value.coins[0]);
+              tmp.push(data.coins[0]);
               if (tmp.length > 0) {
                 txContext.balanceuAtom = Big(tmp[0].amount).toString();
               }
@@ -265,7 +260,7 @@ class CosmosDelegateTool {
         }
         return txContext;
       },
-      e => wrapError(this, e)
+      (e) => wrapError(this, e)
     );
   }
 
@@ -278,7 +273,7 @@ class CosmosDelegateTool {
       chainId: '0',
     };
     return axios.get(url).then(
-      r => {
+      (r) => {
         try {
           console.log('r.data', r.data);
           if (
@@ -304,7 +299,7 @@ class CosmosDelegateTool {
         }
         return txContext;
       },
-      e => wrapError(this, e)
+      (e) => wrapError(this, e)
     );
   }
 
@@ -352,7 +347,7 @@ class CosmosDelegateTool {
       addr.bech32
     }/delegations`;
     return axios.get(url).then(
-      r => {
+      (r) => {
         const txContext = {
           delegations: {},
           delegationsTotaluAtoms: '0',
@@ -385,7 +380,7 @@ class CosmosDelegateTool {
         txContext.delegationsTotaluAtoms = totalDelegation.toString();
         return txContext;
       },
-      e => wrapError(this, e)
+      (e) => wrapError(this, e)
     );
   }
 
@@ -797,8 +792,8 @@ class CosmosDelegateTool {
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
-      r => r,
-      e => wrapError(this, e)
+      (r) => r,
+      (e) => wrapError(this, e)
     );
   }
 
@@ -811,8 +806,8 @@ class CosmosDelegateTool {
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
     return axios.post(url, JSON.stringify(txBody)).then(
-      r => r,
-      e => wrapError(this, e)
+      (r) => r,
+      (e) => wrapError(this, e)
     );
   }
 
@@ -838,18 +833,18 @@ class CosmosDelegateTool {
 
   // Retrieve the status of a transaction hash
   async txStatus(txHash) {
-    const url = `https://deimos.cybernode.ai/gaia_lcd/txs/${txHash}`;
+    const url = `${GAIA_NODE_URL_LSD}/txs/${txHash}`;
     return axios.get(url).then(
-      r => r.data,
-      e => wrapError(this, e)
+      (r) => r.data,
+      (e) => wrapError(this, e)
     );
   }
 
   async txStatusCyber(txHash) {
     const url = `${CYBER_NODE_URL_LCD}/txs/${txHash}`;
     return axios.get(url).then(
-      r => r.data,
-      e => wrapError(this, e)
+      (r) => r.data,
+      (e) => wrapError(this, e)
     );
   }
 }
