@@ -1381,20 +1381,20 @@ export const ConnectAddress = ({
           )}
           {selectMethod !== 'MetaMask' && (
             <>
-              {cosmosNetwork && (
-                <ButtonIcon
-                  img={imgCosmos}
-                  text="Cosmos"
-                  onClick={() => selectNetworkFunc('cosmos')}
-                  active={selectNetwork === 'cosmos'}
-                />
-              )}
               {cyberNetwork && (
                 <ButtonIcon
                   onClick={() => selectNetworkFunc('cyber')}
                   active={selectNetwork === 'cyber'}
                   img={imgCyber}
                   text="Cyber"
+                />
+              )}
+              {cosmosNetwork && (
+                <ButtonIcon
+                  img={imgCosmos}
+                  text="Cosmos"
+                  onClick={() => selectNetworkFunc('cosmos')}
+                  active={selectNetwork === 'cosmos'}
                 />
               )}
             </>

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pane, ActionBar as ActionBarGravity } from '@cybercongress/gravity';
+import {
+  Pane,
+  ActionBar as ActionBarGravity,
+  Button,
+} from '@cybercongress/gravity';
 import ActionBarTweet from './actionBarTweet';
 import ActionBarKeplr from './actionBarKeplr';
 import ActionBarWeb3 from './actionBarWeb3';
@@ -48,6 +52,15 @@ function ActionBar({
         break;
     }
   }, [selectCard]);
+
+  // if (typeActionBar === '') {
+  //   return (
+  //     <ActionBarGravity>
+  //       <Button>Connect</Button>
+  //       <Button>Send</Button>
+  //     </ActionBarGravity>
+  //   );
+  // }
 
   if (typeActionBar === '') {
     return (

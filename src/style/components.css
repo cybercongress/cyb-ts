@@ -501,6 +501,14 @@
   opacity: 0.8;
 }
 
+.img-method-addedAddress {
+  opacity: 0;
+}
+
+.cosmos-address:hover .img-method-addedAddress{
+  opacity: 1;
+}
+
 .cosmos-address-balance:hover {
   opacity: 0.8;
 }
@@ -516,7 +524,7 @@
 }
 
 .container-buttonIcon img {
-  width: 30px;
+  width: 34px;
   height: 30px;
 }
 

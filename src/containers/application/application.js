@@ -15,6 +15,7 @@ import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { setDefaultAccount } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { WP } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
@@ -98,16 +99,28 @@ class App extends React.PureComponent {
   }
 
   checkAddressLocalStorage = async () => {
-    const { setBandwidthProps } = this.props;
-    const localStoragePocket = localStorage.getItem('pocket');
-    if (localStoragePocket !== null) {
-      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
-      const accountPocket = Object.values(dataLocalStoragePocket)[0];
-      if (accountPocket.cyber) {
-        this.getBandwidth(accountPocket.cyber.bech32);
-      }
+    const {
+      setBandwidthProps,
+      setDefaultAccountProps,
+      defaultAccount,
+    } = this.props;
+    const { account } = defaultAccount;
+    if (account !== null && account.cyber) {
+      this.getBandwidth(account.cyber.bech32);
     } else {
-      setBandwidthProps(0, 0);
+      console.warn('pocket');
+      const localStoragePocket = localStorage.getItem('pocket');
+      if (localStoragePocket !== null) {
+        const dataLocalStoragePocket = JSON.parse(localStoragePocket);
+        const accountPocket = Object.values(dataLocalStoragePocket)[0];
+        const accountName = Object.keys(dataLocalStoragePocket)[0];
+        setDefaultAccountProps(accountName, accountPocket);
+        if (accountPocket.cyber) {
+          this.getBandwidth(defaultAccount.cyber.bech32);
+        }
+      } else {
+        setBandwidthProps(0, 0);
+      }
     }
   };
 
@@ -197,8 +210,14 @@ class App extends React.PureComponent {
   };
 
   render() {
-    const { openMenu, story, home, valueSearchInput, battery } = this.state;
-    const { children, query, ipfsStatus, bandwidth, block = 0 } = this.props;
+    const { openMenu, story, home, battery } = this.state;
+    const {
+      defaultAccount,
+      query,
+      ipfsStatus,
+      bandwidth,
+      block = 0,
+    } = this.props;
 
     return (
       <div>
@@ -291,6 +310,36 @@ class App extends React.PureComponent {
                 />
               </Tooltip>
             </Pane>
+            {/* <Pane
+              className="battery-container"
+              width="65px"
+              position="absolute"
+              right="60px"
+            >
+              <BandwidthBar
+                height="15px"
+                styleText={{ whiteSpace: 'nowrap' }}
+                fontSize={12}
+                colorText="#000"
+                bwRemained={bandwidth.remained}
+                bwMaxValue={bandwidth.maxValue}
+              />
+            </Pane> */}
+          </Pane>
+          <Pane
+            className="battery-container"
+            width="65px"
+            position="absolute"
+            left="60px"
+          >
+            <BandwidthBar
+              height="15px"
+              styleText={{ whiteSpace: 'nowrap' }}
+              fontSize={12}
+              colorText="#000"
+              bwRemained={bandwidth.remained}
+              bwMaxValue={bandwidth.maxValue}
+            />
           </Pane>
           {!home && (
             <Pane
@@ -328,21 +377,17 @@ class App extends React.PureComponent {
             </Pane>
           )}
           <Electricity />
-          <Pane
-            className="battery-container"
-            width="65px"
-            position="absolute"
-            right="60px"
-          >
-            <BandwidthBar
-              height="15px"
-              styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={12}
-              colorText="#000"
-              bwRemained={bandwidth.remained}
-              bwMaxValue={bandwidth.maxValue}
-            />
-          </Pane>
+          {defaultAccount.name !== null && (
+            <Pane
+              className="battery-container"
+              width="65px"
+              position="absolute"
+              right="60px"
+              whiteSpace="nowrap"
+            >
+              {defaultAccount.name}
+            </Pane>
+          )}
           <Pane position="relative">
             <MenuButton
               to="/pocket"
@@ -388,6 +433,7 @@ const mapStateToProps = (store) => {
     query: store.query.query,
     mobile: store.settings.mobile,
     block: store.block.block,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
@@ -396,6 +442,8 @@ const mapDispatchprops = (dispatch) => {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
     setQueryProps: (query) => dispatch(setQuery(query)),
+    setDefaultAccountProps: (name, account) =>
+      dispatch(setDefaultAccount(name, account)),
   };
 };
 

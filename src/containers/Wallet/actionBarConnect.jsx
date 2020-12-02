@@ -404,6 +404,7 @@ function ActionBarConnect({
     const pk = Buffer.from(address[0].pubKey).toString('hex');
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
+    const localStoragePocket = await localStorage.getItem('pocket');
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
       valueObj = Object.values(dataPocketAccount);
@@ -457,11 +458,19 @@ function ActionBarConnect({
     } else {
       dataPocketAccount[selectAccount.key][selectNetwork] =
         accounts[selectNetwork];
+      console.log('dataPocketAccount', dataPocketAccount);
       if (Object.keys(dataPocketAccount).length > 0) {
         localStorage.setItem(
           'pocketAccount',
           JSON.stringify(dataPocketAccount)
         );
+      }
+      if (localStoragePocket !== null) {
+        const localStoragePocketData = JSON.parse(localStoragePocket);
+        const keyPocket = Object.keys(localStoragePocketData)[0];
+        localStoragePocketData[keyPocket][selectNetwork] =
+          accounts[selectNetwork];
+        localStorage.setItem('pocket', JSON.stringify(localStoragePocketData));
       }
     }
     cleatState();

@@ -117,11 +117,13 @@ class Validators extends Component {
   }
 
   async componentDidMount() {
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      const address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address.bech32 });
+    const localStoragePocket = localStorage.getItem('pocket');
+    if (localStoragePocket !== null) {
+      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
+      const accountPocket = Object.values(dataLocalStoragePocket)[0];
+      if (accountPocket.cyber) {
+        this.setState({ addressLedger: accountPocket.cyber.bech32 });
+      }
     }
     this.init();
     this.chekPathname();

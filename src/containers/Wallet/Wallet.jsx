@@ -11,6 +11,7 @@ import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { setDefaultAccount } from '../../redux/actions/pocket';
 import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from '../../components/web3/injectKeplr';
 
@@ -157,7 +158,7 @@ class Wallet extends React.Component {
 
   checkAddressLocalStorage = async () => {
     const { updateCard } = this.state;
-    const { setBandwidthProps } = this.props;
+    const { setBandwidthProps, setDefaultAccountProps } = this.props;
     let localStoragePocketAccountData = [];
     let defaultAccounts = null;
     let defaultAccountsKeys = null;
@@ -170,7 +171,8 @@ class Wallet extends React.Component {
     if (localStoragePocket !== null) {
       const localStoragePocketData = JSON.parse(localStoragePocket);
       const keyPocket = Object.keys(localStoragePocketData)[0];
-      defaultAccounts = localStoragePocketData[keyPocket];
+      const accountPocket = Object.values(localStoragePocketData)[0];
+      defaultAccounts = accountPocket;
       defaultAccountsKeys = keyPocket;
     }
     if (localStoragePocketAccount !== null) {
@@ -184,6 +186,7 @@ class Wallet extends React.Component {
         defaultAccounts = localStoragePocketAccountData[keys0];
         defaultAccountsKeys = keys0;
       }
+      setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
       this.setState({
         accounts: localStoragePocketAccountData,
         link: null,
@@ -595,6 +598,8 @@ const mapDispatchprops = (dispatch) => {
   return {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
+    setDefaultAccountProps: (name, account) =>
+      dispatch(setDefaultAccount(name, account)),
   };
 };
 

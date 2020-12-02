@@ -148,7 +148,6 @@ class ActionBarContainer extends Component {
       if (response) {
         const data = response.account;
         addressInfo = { chainId, ...data, delegate };
-        balance = addressInfo.coins[0].amount;
       }
 
       console.log(addressInfo);
