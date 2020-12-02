@@ -11,7 +11,7 @@ const STAGE_INIT = 1;
 const STAGE_SEND_TX = 2;
 
 function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
-  const [stage, setStage] = useState(STAGE_INIT);
+  const [stage, setStage] = useState(STAGE_SEND_TX);
   const [amount, setAmount] = useState('');
   const [sendAddres, setSendAddres] = useState('');
 
@@ -32,6 +32,9 @@ function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
 
     downloadObjectAsJson(tx, 'tx_send');
     resetStage();
+    if (updateAddress) {
+      updateAddress();
+    }
   };
 
   const resetStage = () => {
@@ -39,41 +42,6 @@ function ActionBarUser({ selectAccount, updateAddress, defaultAccounts }) {
     setAmount('');
     setSendAddres('');
   };
-
-  const changeDefaultAccounts = async () => {
-    if (selectAccount !== null && selectAccount.cyber) {
-      localStorage.setItem(
-        'pocket',
-        JSON.stringify({ [selectAccount.cyber.bech32]: selectAccount })
-      );
-    }
-    if (updateAddress) {
-      updateAddress();
-    }
-  };
-
-  if (stage === STAGE_INIT) {
-    return (
-      <ActionBar>
-        <Pane>
-          <Button
-            marginX={10}
-            onClick={() => deletPubkey(selectAccount, updateAddress)}
-          >
-            Drop key
-          </Button>
-          <Button marginX={10} onClick={() => setStage(STAGE_SEND_TX)}>
-            Send EUL
-          </Button>
-          {!defaultAccounts && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Default Accounts
-            </Button>
-          )}
-        </Pane>
-      </ActionBar>
-    );
-  }
 
   if (stage === STAGE_SEND_TX) {
     return (

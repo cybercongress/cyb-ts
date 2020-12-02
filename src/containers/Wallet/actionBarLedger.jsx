@@ -76,6 +76,12 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
   }, [toSendAddres]);
 
   useEffect(() => {
+    if (stage === STAGE_READY && addressInfo !== null) {
+      generateTx();
+    }
+  }, [stage]);
+
+  useEffect(() => {
     if (stage === STAGE_LEDGER_INIT) {
       if (addressLedger !== null && selectAccount && selectAccount !== null) {
         const selectAddress = selectAccount.cyber.bech32;
@@ -237,34 +243,16 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
 
   if (stage === STAGE_INIT) {
     return (
-      <ActionBar>
-        <Pane>
-          <Button
-            marginX={10}
-            onClick={() => deletPubkey(selectAccount, updateAddress)}
-          >
-            Drop key
-          </Button>
-          <Button marginX={10} onClick={() => onClickInitLedger()}>
-            Send EUL{' '}
-            <img
-              style={{
-                width: 20,
-                height: 20,
-                marginLeft: '5px',
-                paddingTop: '2px',
-              }}
-              src={imgLedger}
-              alt="ledger"
-            />
-          </Button>
-          {!defaultAccounts && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Default Accounts
-            </Button>
-          )}
-        </Pane>
-      </ActionBar>
+      <SendLedger
+        onClickBtn={() => onClickInitLedger()}
+        onChangeInputAmount={(e) => setToSend(e.target.value)}
+        valueInputAmount={toSend}
+        valueInputAddressTo={toSendAddres}
+        onChangeInputAddressTo={(e) => setToSendAddres(e.target.value)}
+        disabledBtn={disabledGenerate}
+        addressToValid={addressToValid}
+        amountSendInputValid={amountSendInputValid}
+      />
     );
   }
   if (stage === STAGE_LEDGER_INIT) {
@@ -278,20 +266,6 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
 
   if (stage === LEDGER_TX_ACOUNT_INFO) {
     return <CheckAddressInfo />;
-  }
-  if (stage === STAGE_READY) {
-    return (
-      <SendLedger
-        onClickBtn={() => generateTx()}
-        onChangeInputAmount={(e) => setToSend(e.target.value)}
-        valueInputAmount={toSend}
-        valueInputAddressTo={toSendAddres}
-        onChangeInputAddressTo={(e) => setToSendAddres(e.target.value)}
-        disabledBtn={disabledGenerate}
-        addressToValid={addressToValid}
-        amountSendInputValid={amountSendInputValid}
-      />
-    );
   }
 
   if (stage === STAGE_WAIT) {

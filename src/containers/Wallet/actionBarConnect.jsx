@@ -94,6 +94,25 @@ function ActionBarConnect({
   }, [hdpath, stage]);
 
   useEffect(() => {
+    if (selectAccount && selectAccount !== null) {
+      if (selectAccount.cosmos && selectMethod !== 'MetaMask') {
+        setSelectNetwork('cyber');
+      }
+
+      if (selectAccount.cyber && selectMethod !== 'MetaMask') {
+        setSelectNetwork('cosmos');
+      }
+
+      if (selectAccount.cyber && selectAccount.cyber) {
+        setSelectMethod('MetaMask');
+        setSelectNetwork('eth');
+      }
+    } else {
+      setSelectNetwork('cyber');
+    }
+  }, [selectAccount, selectMethod]);
+
+  useEffect(() => {
     if (selectNetwork === 'cyber') {
       if (valueInputAddres.match(PATTERN_CYBER)) {
         setValidAddressAddedUser(false);

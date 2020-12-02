@@ -47,7 +47,7 @@ function ActionBarKeplr({
   selectAccount,
   defaultAccounts,
 }) {
-  const [stage, setStage] = useState(STAGE_INIT);
+  const [stage, setStage] = useState(STAGE_SEND);
   const [amountSend, setAmountSend] = useState('');
   const [recipient, setRecipient] = useState('');
   const [recipientInputValid, setRecipientInputValid] = useState(null);
@@ -86,7 +86,7 @@ function ActionBarKeplr({
   };
 
   const cleatState = () => {
-    setStage(STAGE_INIT);
+    setStage(STAGE_SEND);
     setRecipientInputValid(null);
     setAmountSendInputValid(null);
     setRecipient('');
@@ -163,38 +163,38 @@ function ActionBarKeplr({
     }
   };
 
-  if (stage === STAGE_INIT) {
-    return (
-      <ActionBar>
-        <Pane>
-          <Button
-            marginX={10}
-            onClick={() => deletPubkey(selectAccount, updateAddress)}
-          >
-            Drop key
-          </Button>
-          <Button marginX={10} onClick={() => setStage(STAGE_SEND)}>
-            Send EUL{' '}
-            <img
-              style={{
-                width: 20,
-                height: 20,
-                marginLeft: '5px',
-                paddingTop: '2px',
-              }}
-              src={imgKeplr}
-              alt="keplr"
-            />
-          </Button>
-          {!defaultAccounts && (
-            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Default Accounts
-            </Button>
-          )}
-        </Pane>
-      </ActionBar>
-    );
-  }
+  // if (stage === STAGE_INIT) {
+  //   return (
+  //     <ActionBar>
+  //       <Pane>
+  //         <Button
+  //           marginX={10}
+  //           onClick={() => ()}
+  //         >
+  //           Connect
+  //         </Button>
+  //         <Button marginX={10} onClick={() => setStage(STAGE_SEND)}>
+  //           Send EUL{' '}
+  //           <img
+  //             style={{
+  //               width: 20,
+  //               height: 20,
+  //               marginLeft: '5px',
+  //               paddingTop: '2px',
+  //             }}
+  //             src={imgKeplr}
+  //             alt="keplr"
+  //           />
+  //         </Button>
+  //         {!defaultAccounts && (
+  //           <Button marginX={10} onClick={() => changeDefaultAccounts()}>
+  //             Make active
+  //           </Button>
+  //         )}
+  //       </Pane>
+  //     </ActionBar>
+  //   );
+  // }
 
   if (stage === STAGE_SEND) {
     return (

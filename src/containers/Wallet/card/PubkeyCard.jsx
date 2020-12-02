@@ -208,7 +208,7 @@ const CYBNetworkInfo = ({
   ...props
 }) => {
   return (
-    <ContainerAddressInfo {...props}>
+    <ContainerAddressInfo>
       <Address
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
@@ -225,7 +225,7 @@ const CYBNetworkInfo = ({
           </span>
         ) : (
           <>
-            <RowBalance className="cosmos-address-balance">
+            <RowBalance {...props} className="cosmos-address-balance">
               <div>total</div>
               <NumberCurrency
                 amount={Math.floor(gol) + Math.floor(gift)}
@@ -274,7 +274,7 @@ const EULnetworkInfo = ({
   ...props
 }) => {
   return (
-    <ContainerAddressInfo {...props}>
+    <ContainerAddressInfo>
       <Address
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
@@ -291,7 +291,7 @@ const EULnetworkInfo = ({
           </span>
         ) : (
           <>
-            <RowBalance className="cosmos-address-balance">
+            <RowBalance {...props} className="cosmos-address-balance">
               <div>total</div>
               <NumberCurrency amount={totalCyber.total} currencyNetwork="eul" />
               {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
@@ -557,7 +557,7 @@ function PubkeyCard({
           address={pocket.eth}
           web3={web3}
           contractToken={contractToken}
-          onClickDeleteAddress={() => deleteAddress(name, 'cosmos', updateFunc)}
+          onClickDeleteAddress={() => deleteAddress(name, 'eth', updateFunc)}
         />
       )}
     </PocketCard>

@@ -1337,18 +1337,22 @@ export const ConnectAddress = ({
           justifyContent="center"
           flex={1}
         >
-          <ButtonIcon
-            onClick={() => selectMethodFunc('ledger')}
-            active={selectMethod === 'ledger'}
-            img={imgLedger}
-            text="ledger"
-          />
-          <ButtonIcon
-            onClick={() => selectMethodFunc('keplr')}
-            active={selectMethod === 'keplr'}
-            img={imgKeplr}
-            text="keplr"
-          />
+          {(cyberNetwork || cosmosNetwork) && (
+            <>
+              <ButtonIcon
+                onClick={() => selectMethodFunc('ledger')}
+                active={selectMethod === 'ledger'}
+                img={imgLedger}
+                text="ledger"
+              />
+              <ButtonIcon
+                onClick={() => selectMethodFunc('keplr')}
+                active={selectMethod === 'keplr'}
+                img={imgKeplr}
+                text="keplr"
+              />
+            </>
+          )}
           {web3 && web3 !== null && ethNetwork && (
             <ButtonIcon
               onClick={() => selectMethodFunc('MetaMask')}
@@ -1357,12 +1361,14 @@ export const ConnectAddress = ({
               text="MetaMask"
             />
           )}
-          <ButtonIcon
-            onClick={() => selectMethodFunc('read-only')}
-            active={selectMethod === 'read-only'}
-            img={imgRead}
-            text="read-only"
-          />
+          {(cyberNetwork || cosmosNetwork) && (
+            <ButtonIcon
+              onClick={() => selectMethodFunc('read-only')}
+              active={selectMethod === 'read-only'}
+              img={imgRead}
+              text="read-only"
+            />
+          )}
         </Pane>
         <span style={{ fontSize: '18px' }}>in</span>
         <Pane
@@ -1401,7 +1407,10 @@ export const ConnectAddress = ({
           )}
         </Pane>
       </ActionBarContentText>
-      <Button disabled={selectNetwork === ''} onClick={() => connctAddress()}>
+      <Button
+        disabled={selectNetwork === '' || selectMethod === ''}
+        onClick={() => connctAddress()}
+      >
         connect
       </Button>
     </ActionBar>

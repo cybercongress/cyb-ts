@@ -436,7 +436,7 @@ class Wallet extends React.Component {
       storageManager,
     } = this.state;
     const { web3, keplr, contractToken, ipfsId } = this.props;
-    console.log('defaultAccounts', defaultAccounts, defaultAccountsKeys);
+
     let countLink = 0;
     if (link !== null) {
       countLink = [].concat.apply([], link).length;
@@ -489,7 +489,7 @@ class Wallet extends React.Component {
         </div>
       );
     }
-    console.log('accounts', accounts);
+
     if (!addAddress) {
       return (
         <div>
