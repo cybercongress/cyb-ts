@@ -205,6 +205,7 @@ class Wallet extends React.Component {
       this.accountBandwidth();
     } else {
       setBandwidthProps(0, 0);
+      setDefaultAccountProps(null, null);
 
       this.setState({
         addAddress: true,
@@ -538,7 +539,7 @@ class Wallet extends React.Component {
                     defaultAccounts={defaultAccountsKeys === key}
                     contractToken={contractToken}
                     web3={web3}
-                    updateFunc={this.updateFuncPubkeyCard}
+                    updateFunc={this.checkAddressLocalStorage}
                   />
                 ))}
 

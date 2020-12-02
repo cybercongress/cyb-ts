@@ -384,6 +384,7 @@ class App extends React.PureComponent {
               position="absolute"
               right="60px"
               whiteSpace="nowrap"
+              fontSize="14px"
             >
               {defaultAccount.name}
             </Pane>

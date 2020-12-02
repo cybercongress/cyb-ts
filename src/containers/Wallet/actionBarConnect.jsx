@@ -103,7 +103,7 @@ function ActionBarConnect({
         setSelectNetwork('cosmos');
       }
 
-      if (selectAccount.cyber && selectAccount.cyber) {
+      if (selectAccount.cyber && selectAccount.cosmos) {
         setSelectMethod('MetaMask');
         setSelectNetwork('eth');
       }
@@ -178,13 +178,23 @@ function ActionBarConnect({
       let dataPocketAccount = null;
       let pocketAccount = {};
       let valueObj = {};
+      let count = 1;
 
       const localStorageStory = await localStorage.getItem('pocketAccount');
+      const localStoragePocket = await localStorage.getItem('pocket');
+
+      if (selectAccount === null) {
+        const localStorageCount = await localStorage.getItem('count');
+        if (localStorageCount !== null) {
+          const dataCount = JSON.parse(localStorageCount);
+          count = parseFloat(dataCount);
+          key = `Account ${count}`;
+        }
+        localStorage.setItem('count', JSON.stringify(count + 1));
+      }
       if (localStorageStory !== null) {
         dataPocketAccount = JSON.parse(localStorageStory);
         valueObj = Object.values(dataPocketAccount);
-        const dataLength = Object.keys(dataPocketAccount).length;
-        key = `Account ${dataLength + 1}`;
         if (selectAccount !== null) {
           key = selectAccount.key;
         }
@@ -207,6 +217,7 @@ function ActionBarConnect({
           accounts.cosmos = { ...addressLedgerCosmos, keys: 'ledger' };
         }
       }
+      setStage(STAGE_ADD_ADDRESS_OK);
       if (selectAccount === null) {
         if (localStorageStory !== null) {
           if (Object.keys(accounts).length > 0) {
@@ -225,6 +236,16 @@ function ActionBarConnect({
           localStorage.setItem(
             'pocketAccount',
             JSON.stringify(dataPocketAccount)
+          );
+        }
+        if (localStoragePocket !== null) {
+          const localStoragePocketData = JSON.parse(localStoragePocket);
+          const keyPocket = Object.keys(localStoragePocketData)[0];
+          localStoragePocketData[keyPocket][selectNetwork] =
+            accounts[selectNetwork];
+          localStorage.setItem(
+            'pocket',
+            JSON.stringify(localStoragePocketData)
           );
         }
       }
@@ -271,13 +292,20 @@ function ActionBarConnect({
     let dataPocketAccount = null;
     let pocketAccount = {};
     let valueObj = {};
+    let count = 1;
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
+    const localStoragePocket = await localStorage.getItem('pocket');
+    const localStorageCount = await localStorage.getItem('count');
+    if (localStorageCount !== null) {
+      const dataCount = JSON.parse(localStorageCount);
+      count = parseFloat(dataCount);
+      key = `Account ${count}`;
+    }
+    localStorage.setItem('count', JSON.stringify(count + 1));
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
       valueObj = Object.values(dataPocketAccount);
-      const dataLength = Object.keys(dataPocketAccount).length;
-      key = `Account ${dataLength + 1}`;
       if (selectAccount !== null) {
         key = selectAccount.key;
       }
@@ -338,6 +366,13 @@ function ActionBarConnect({
           JSON.stringify(dataPocketAccount)
         );
       }
+      if (localStoragePocket !== null) {
+        const localStoragePocketData = JSON.parse(localStoragePocket);
+        const keyPocket = Object.keys(localStoragePocketData)[0];
+        localStoragePocketData[keyPocket][selectNetwork] =
+          accounts[selectNetwork];
+        localStorage.setItem('pocket', JSON.stringify(localStoragePocketData));
+      }
       cleatState();
       if (updateAddress) {
         updateAddress();
@@ -350,12 +385,19 @@ function ActionBarConnect({
     let key = 'Account 1';
     let dataPocketAccount = null;
     let pocketAccount = {};
+    let count = 1;
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
+    const localStoragePocket = await localStorage.getItem('pocket');
+    const localStorageCount = await localStorage.getItem('count');
+    if (localStorageCount !== null) {
+      const dataCount = JSON.parse(localStorageCount);
+      count = parseFloat(dataCount);
+      key = `Account ${count}`;
+    }
+    localStorage.setItem('count', JSON.stringify(count + 1));
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
-      const dataLength = Object.keys(dataPocketAccount).length;
-      key = `Account ${dataLength + 1}`;
       if (selectAccount !== null) {
         key = selectAccount.key;
       }
@@ -403,6 +445,16 @@ function ActionBarConnect({
             JSON.stringify(dataPocketAccount)
           );
         }
+        if (localStoragePocket !== null) {
+          const localStoragePocketData = JSON.parse(localStoragePocket);
+          const keyPocket = Object.keys(localStoragePocketData)[0];
+          localStoragePocketData[keyPocket][selectNetwork] =
+            accounts[selectNetwork];
+          localStorage.setItem(
+            'pocket',
+            JSON.stringify(localStoragePocketData)
+          );
+        }
       }
       cleatState();
       if (updateAddress) {
@@ -418,17 +470,23 @@ function ActionBarConnect({
     let valueObj = {};
     let pocketAccount = {};
     await keplr.enable();
+    let count = 1;
 
     const address = await keplr.getKeys();
     const pk = Buffer.from(address[0].pubKey).toString('hex');
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
     const localStoragePocket = await localStorage.getItem('pocket');
+    const localStorageCount = await localStorage.getItem('count');
+    if (localStorageCount !== null) {
+      const dataCount = JSON.parse(localStorageCount);
+      count = parseFloat(dataCount);
+      key = `Account ${count}`;
+    }
+    localStorage.setItem('count', JSON.stringify(count + 1));
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
       valueObj = Object.values(dataPocketAccount);
-      const dataLength = Object.keys(dataPocketAccount).length;
-      key = `Account ${dataLength + 1}`;
       if (selectAccount !== null) {
         key = selectAccount.key;
       }
