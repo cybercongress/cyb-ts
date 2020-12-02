@@ -94,7 +94,7 @@ const DetailsBalance = ({
         )}
       </RowBalance>
       <RowBalance>
-        <div>unclaimed rewards</div>
+        <div>rewards</div>
         {currency === CYBER.DENOM_CYBER ? (
           <NumberCurrency amount={total.rewards} currencyNetwork={currency} />
         ) : (
@@ -148,12 +148,14 @@ const CosmosAddressInfo = ({
   loading,
   totalCosmos,
   onClickDeleteAddress,
+  network,
 }) => {
   const [open, setOpen] = useState(false);
 
   return (
     <ContainerAddressInfo>
       <Address
+        network={network}
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
@@ -205,11 +207,13 @@ const CYBNetworkInfo = ({
   gift,
   openCyber,
   loadingGift,
+  network,
   ...props
 }) => {
   return (
     <ContainerAddressInfo>
       <Address
+        network={network}
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
@@ -271,11 +275,13 @@ const EULnetworkInfo = ({
   loading,
   openEul,
   onClickDeleteAddress,
+  network,
   ...props
 }) => {
   return (
     <ContainerAddressInfo>
       <Address
+        network={network}
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
@@ -311,6 +317,7 @@ const CyberAddressInfo = ({
   totalCyber,
   gift,
   onClickDeleteAddress,
+  network,
 }) => {
   const [openCyber, setOpenCyber] = useState(false);
   const [openEul, setOpenEul] = useState(false);
@@ -325,6 +332,7 @@ const CyberAddressInfo = ({
         onClickDeleteAddress={onClickDeleteAddress}
         openEul={openEul}
         onClick={() => setOpenEul(!openEul)}
+        network={network}
       />
       <CYBNetworkInfo
         address={address}
@@ -336,6 +344,7 @@ const CyberAddressInfo = ({
         openCyber={openCyber}
         onClickDeleteAddress={onClickDeleteAddress}
         onClick={() => setOpenCyber(!openCyber)}
+        network={network}
       />
     </>
   );
@@ -346,12 +355,14 @@ const EthAddressInfo = ({
   web3,
   contractToken,
   onClickDeleteAddress,
+  network,
 }) => {
   const { eth, gol } = useGetBalanceEth(address, web3, contractToken);
 
   return (
     <ContainerAddressInfo>
       <Address
+        network={network}
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
@@ -517,7 +528,7 @@ function PubkeyCard({
           {defaultAccounts && (
             <Pane
               position="relative"
-              color="#76ff03"
+              color="#ff9100"
               fontSize="18px"
               display="flex"
               alignItems="center"
@@ -540,6 +551,7 @@ function PubkeyCard({
           totalCyber={totalCyber}
           gift={gift}
           onClickDeleteAddress={() => deleteAddress(name, 'cyber', updateFunc)}
+          network="cyber"
         />
       )}
 
@@ -549,6 +561,7 @@ function PubkeyCard({
           loading={loadingInfo}
           totalCosmos={totalCosmos}
           onClickDeleteAddress={() => deleteAddress(name, 'cosmos', updateFunc)}
+          network="cosmos"
         />
       )}
 
@@ -558,6 +571,7 @@ function PubkeyCard({
           web3={web3}
           contractToken={contractToken}
           onClickDeleteAddress={() => deleteAddress(name, 'eth', updateFunc)}
+          network="eth"
         />
       )}
     </PocketCard>

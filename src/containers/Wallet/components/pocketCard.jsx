@@ -11,13 +11,18 @@ const imgHelp = require('../../../image/ionicons_svg_ios-help-circle-outline.svg
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
 const deleteIcon = require('../../../image/trash-outline.svg');
-const cyb = require('../../../image/cybTrue.svg');
+const imgEth = require('../../../image/Ethereum_logo_2014.svg');
+const imgCyber = require('../../../image/cyber.png');
+const imgCosmos = require('../../../image/cosmos-2.svg');
 
 const imgData = {
   ledger: imgLedger,
   keplr: imgKeplr,
   MetaMask: imgMetaMask,
   'read-only': imgRead,
+  cyber: imgCyber,
+  cosmos: imgCosmos,
+  eth: imgEth,
 };
 
 export const ButtonIcon = ({
@@ -48,8 +53,8 @@ export const ContainerAddressInfo = ({ children, ...props }) => (
   <Pane
     width="100%"
     display="grid"
-    gridTemplateColumns="215px 1fr"
-    gridGap="10px"
+    gridTemplateColumns="1fr 1fr"
+    gridGap="5px"
     alignItems="baseline"
     className="cosmos-address-container"
     {...props}
@@ -81,7 +86,12 @@ const InfoAddress = ({ pk, hdpath, ...props }) => {
   );
 };
 
-export const Address = ({ address, addressLink, onClickDeleteAddress }) => (
+export const Address = ({
+  address,
+  addressLink,
+  onClickDeleteAddress,
+  network,
+}) => (
   <Pane
     className="cosmos-address"
     display="flex"
@@ -89,23 +99,31 @@ export const Address = ({ address, addressLink, onClickDeleteAddress }) => (
     alignItems="center"
   >
     <img
+      style={{ width: 18, height: 15, marginRight: 8 }}
+      src={imgData[network]}
+      alt="imgAddress"
+      className="img-method-addedAddress"
+    />
+    <img
       style={{ width: 15, height: 15, marginRight: 8 }}
       src={imgData[address.keys]}
       alt="imgAddress"
       className="img-method-addedAddress"
     />
     <Pane width={135}>{addressLink}</Pane>
-    {address.pk && (
-      <InfoAddress marginLeft={5} hdpath={address.path} pk={address.pk} />
-    )}
-    <Copy style={{ marginLeft: 2 }} text={address.bech32} />
-    <ButtonIcon
-      width={16}
-      height={16}
-      icon={deleteIcon}
-      textTooltip="delete address"
-      onClickButtonIcon={onClickDeleteAddress}
-    />
+    <Pane display="flex" className="img-method-addedAddress">
+      {address.pk && (
+        <InfoAddress marginLeft={5} hdpath={address.path} pk={address.pk} />
+      )}
+      <Copy style={{ marginLeft: 2 }} text={address.bech32} />
+      <ButtonIcon
+        width={16}
+        height={16}
+        icon={deleteIcon}
+        textTooltip="delete address"
+        onClickButtonIcon={onClickDeleteAddress}
+      />
+    </Pane>
   </Pane>
 );
 
