@@ -69,6 +69,7 @@ const CYBER = {
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
   CHAIN_ID: 'euler-6',
+  MEMO_KEPLR: 'cyber.page, using keplr',
 };
 
 const LEDGER = {

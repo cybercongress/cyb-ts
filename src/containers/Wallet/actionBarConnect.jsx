@@ -243,10 +243,12 @@ function ActionBarConnect({
           const keyPocket = Object.keys(localStoragePocketData)[0];
           localStoragePocketData[keyPocket][selectNetwork] =
             accounts[selectNetwork];
-          localStorage.setItem(
-            'pocket',
-            JSON.stringify(localStoragePocketData)
-          );
+          if (keyPocket === selectAccount.key) {
+            localStorage.setItem(
+              'pocket',
+              JSON.stringify(localStoragePocketData)
+            );
+          }
         }
       }
       cleatState();
@@ -371,7 +373,12 @@ function ActionBarConnect({
         const keyPocket = Object.keys(localStoragePocketData)[0];
         localStoragePocketData[keyPocket][selectNetwork] =
           accounts[selectNetwork];
-        localStorage.setItem('pocket', JSON.stringify(localStoragePocketData));
+        if (keyPocket === selectAccount.key) {
+          localStorage.setItem(
+            'pocket',
+            JSON.stringify(localStoragePocketData)
+          );
+        }
       }
       cleatState();
       if (updateAddress) {
@@ -450,10 +457,12 @@ function ActionBarConnect({
           const keyPocket = Object.keys(localStoragePocketData)[0];
           localStoragePocketData[keyPocket][selectNetwork] =
             accounts[selectNetwork];
-          localStorage.setItem(
-            'pocket',
-            JSON.stringify(localStoragePocketData)
-          );
+          if (keyPocket === selectAccount.key) {
+            localStorage.setItem(
+              'pocket',
+              JSON.stringify(localStoragePocketData)
+            );
+          }
         }
       }
       cleatState();
@@ -547,7 +556,12 @@ function ActionBarConnect({
         const keyPocket = Object.keys(localStoragePocketData)[0];
         localStoragePocketData[keyPocket][selectNetwork] =
           accounts[selectNetwork];
-        localStorage.setItem('pocket', JSON.stringify(localStoragePocketData));
+        if (keyPocket === selectAccount.key) {
+          localStorage.setItem(
+            'pocket',
+            JSON.stringify(localStoragePocketData)
+          );
+        }
       }
     }
     cleatState();
@@ -625,6 +639,7 @@ function ActionBarConnect({
         connctAddress={connctAddress}
         web3={web3}
         selectAccount={selectAccount}
+        keplr={keplr}
       />
     );
   }

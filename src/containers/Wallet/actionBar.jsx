@@ -24,7 +24,7 @@ const STAGE_SEND_READ_ONLY = 5.1;
 
 const ButtonImg = ({ img, ...props }) => (
   <Button marginX={10} {...props}>
-    Send EUL{' '}
+    Send{' '}
     <img
       style={{
         width: 20,
@@ -58,7 +58,7 @@ function ActionBar({
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
   const [connect, setConnect] = useState(false);
-
+  console.log('selectCard', selectCard);
   useEffect(() => {
     setStage(STAGE_INIT);
     setMakeActive(false);
@@ -139,6 +139,16 @@ function ActionBar({
     }
   };
 
+  const updateFuncActionBar = () => {
+    setTypeActionBar('');
+    setStage(STAGE_INIT);
+    setMakeActive(false);
+    setConnect(false);
+    if (updateAddress) {
+      updateAddress();
+    }
+  };
+
   if (typeActionBar === '' && stage === STAGE_INIT) {
     return (
       <ActionBarGravity>
@@ -162,7 +172,7 @@ function ActionBar({
         web3={web3}
         accountsETH={accountsETH}
         keplr={keplr}
-        updateAddress={updateAddress}
+        updateAddress={updateFuncActionBar}
         selectAccount={selectAccount}
       />
     );
@@ -179,7 +189,7 @@ function ActionBar({
           )}
           {makeActive && (
             <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Make active
+              Activate
             </Button>
           )}
         </Pane>
@@ -196,13 +206,15 @@ function ActionBar({
               Connect
             </Button>
           )}
-          <ButtonImg
-            img={imgKeplr}
-            onClick={() => setStage(STAGE_SEND_KEPLR)}
-          />
+          {keplr && (
+            <ButtonImg
+              img={imgKeplr}
+              onClick={() => setStage(STAGE_SEND_KEPLR)}
+            />
+          )}
           {makeActive && (
             <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Make active
+              Activate
             </Button>
           )}
         </Pane>
@@ -225,7 +237,7 @@ function ActionBar({
           />
           {makeActive && (
             <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Make active
+              Activate
             </Button>
           )}
         </Pane>
@@ -248,7 +260,7 @@ function ActionBar({
           />
           {makeActive && (
             <Button marginX={10} onClick={() => changeDefaultAccounts()}>
-              Make active
+              Activate
             </Button>
           )}
         </Pane>
@@ -256,7 +268,7 @@ function ActionBar({
     );
   }
 
-  if (typeActionBar === 'gol') {
+  if (typeActionBar === 'gol' && stage === STAGE_INIT) {
     return (
       <ActionBarGravity>
         <Pane>
@@ -272,14 +284,21 @@ function ActionBar({
     );
   }
 
-  if (typeActionBar === 'tweet') {
+  if (typeActionBar === 'tweet' && stage === STAGE_INIT) {
+    if (defaultAccounts !== null && defaultAccounts.cyber) {
+      return (
+        <ActionBarTweet
+          keplr={keplr}
+          refresh={refreshTweet}
+          update={updateTweetFunc}
+          defaultAccountsKeys={defaultAccounts.cyber.keys}
+        />
+      );
+    }
     return (
-      <ActionBarTweet
-        keplr={keplr}
-        refresh={refreshTweet}
-        update={updateTweetFunc}
-        defaultAccountsKeys={defaultAccountsKeys}
-      />
+      <ActionBarGravity>
+        <Pane>Add cyber address to active account</Pane>
+      </ActionBarGravity>
     );
   }
 
@@ -288,7 +307,7 @@ function ActionBar({
       <ActionBarKeplr
         keplr={keplr}
         selectAccount={selectAccount}
-        updateAddress={updateAddress}
+        updateAddress={updateFuncActionBar}
       />
     );
   }
@@ -297,7 +316,7 @@ function ActionBar({
     return (
       <ActionBarLedger
         selectAccount={selectAccount}
-        updateAddress={updateAddress}
+        updateAddress={updateFuncActionBar}
       />
     );
     // return <div />;u
@@ -307,7 +326,7 @@ function ActionBar({
     return (
       <ActionBarUser
         selectAccount={selectAccount}
-        updateAddress={updateAddress}
+        updateAddress={updateFuncActionBar}
       />
     );
   }

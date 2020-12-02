@@ -1299,6 +1299,7 @@ export const ConnectAddress = ({
   connctAddress,
   web3,
   selectAccount,
+  keplr,
 }) => {
   const [cyberNetwork, setCyberNetwork] = useState(true);
   const [cosmosNetwork, setCosmosNetwork] = useState(true);
@@ -1345,12 +1346,14 @@ export const ConnectAddress = ({
                 img={imgLedger}
                 text="ledger"
               />
-              <ButtonIcon
-                onClick={() => selectMethodFunc('keplr')}
-                active={selectMethod === 'keplr'}
-                img={imgKeplr}
-                text="keplr"
-              />
+              {keplr && (
+                <ButtonIcon
+                  onClick={() => selectMethodFunc('keplr')}
+                  active={selectMethod === 'keplr'}
+                  img={imgKeplr}
+                  text="keplr"
+                />
+              )}
             </>
           )}
           {web3 && web3 !== null && ethNetwork && (

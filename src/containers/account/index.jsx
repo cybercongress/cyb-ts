@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
+import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import GetLink from './link';
@@ -36,6 +36,7 @@ import { setGolTakeOff } from '../../redux/actions/gol';
 import FeedsTab from './feeds';
 import FollowsTab from './follows';
 import AvatarIpfs from './avatarIpfs';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 import { COSMOS, PATTERN_CYBER } from '../../utils/config';
 
@@ -64,7 +65,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
-const QueryAddress = address =>
+const QueryAddress = (address) =>
   `query cyberlink {
     cyberlink_aggregate(where: {subject: {_eq: "${address}"}}) {
       aggregate {
@@ -170,13 +171,16 @@ class AccountDetails extends React.Component {
   };
 
   chekFollowAddress = async () => {
+    const { defaultAccount } = this.props;
     const { match } = this.props;
     const { address: addressProps } = match.params;
-    const { addressLedger } = this.state;
     const address = await getIpfsHash(addressProps);
 
-    if (addressLedger !== null) {
-      const response = await chekFollow(addressLedger, address);
+    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
+      const response = await chekFollow(
+        defaultAccount.account.cyber.bech32,
+        address
+      );
       if (response !== null && response.txs.length > 0) {
         this.setState({
           follow: false,
@@ -187,9 +191,8 @@ class AccountDetails extends React.Component {
   };
 
   chekAddress = async () => {
-    const { location } = this.props;
+    const { location, defaultAccount } = this.props;
     const { pathname } = location;
-    let address = null;
     let locationAddress;
     if (
       pathname.match(/cyber[a-zA-Z0-9]{39}/gm) &&
@@ -197,14 +200,12 @@ class AccountDetails extends React.Component {
     ) {
       locationAddress = pathname.match(/cyber[a-zA-Z0-9]{39}/gm);
     }
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address.bech32 });
-    }
 
-    if (address !== null && address.bech32 === locationAddress[0]) {
+    if (
+      defaultAccount.account !== null &&
+      defaultAccount.account.cyber &&
+      defaultAccount.account.cyber.bech32 === locationAddress[0]
+    ) {
       this.setState({
         follow: false,
         tweets: true,
@@ -229,7 +230,7 @@ class AccountDetails extends React.Component {
     }
 
     if (responseFollows !== null && responseFollows.txs) {
-      responseFollows.txs.forEach(async item => {
+      responseFollows.txs.forEach(async (item) => {
         const addressFollowers = item.tx.value.msg[0].value.address;
         followers.push(addressFollowers);
       });
@@ -250,7 +251,7 @@ class AccountDetails extends React.Component {
     }
 
     if (responseFollows !== null && responseFollows.txs) {
-      responseFollows.txs.forEach(async item => {
+      responseFollows.txs.forEach(async (item) => {
         const cid = item.tx.value.msg[0].value.links[0].to;
         const addressResolve = await getContent(cid);
         console.log('addressResolve :>> ', addressResolve);
@@ -297,7 +298,7 @@ class AccountDetails extends React.Component {
     }
   };
 
-  getAtom = async dataTxs => {
+  getAtom = async (dataTxs) => {
     const { match } = this.props;
     const { address } = match.params;
     const { setGolTakeOffProps } = this.props;
@@ -425,7 +426,7 @@ class AccountDetails extends React.Component {
 
       if (result.unbonding && result.unbonding.length > 0) {
         staking.delegations.map((item, index) => {
-          return result.unbonding.map(itemUnb => {
+          return result.unbonding.map((itemUnb) => {
             if (item.validator_address === itemUnb.validator_address) {
               staking.delegations[index].entries = itemUnb.entries;
             }
@@ -449,7 +450,7 @@ class AccountDetails extends React.Component {
     const delegations = data;
     await asyncForEach(
       Array.from(Array(delegations.length).keys()),
-      async item => {
+      async (item) => {
         let reward = 0;
         const resultRewards = await getRewards(
           address,
@@ -466,7 +467,7 @@ class AccountDetails extends React.Component {
     return delegations;
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -493,7 +494,7 @@ class AccountDetails extends React.Component {
       followers,
     } = this.state;
 
-    const { node, mobile } = this.props;
+    const { node, mobile, defaultAccount, keplr } = this.props;
 
     let content;
 
@@ -691,33 +692,55 @@ class AccountDetails extends React.Component {
             {content}
           </Pane>
         </main>
-        {!mobile && (
-          <ActionBarContainer
-            updateAddress={this.init}
-            addressSend={account}
-            type={selected}
-            addressLedger={addressLedger}
-            follow={follow}
-            tweets={tweets}
-          />
-        )}
+        {!mobile &&
+          (defaultAccount.account !== null && defaultAccount.account.cyber ? (
+            <ActionBarContainer
+              updateAddress={this.init}
+              addressSend={account}
+              type={selected}
+              follow={follow}
+              tweets={tweets}
+              defaultAccount={defaultAccount.account.cyber}
+              keplr={keplr}
+            />
+          ) : (
+            <ActionBar>
+              <Pane>
+                <Link
+                  style={{
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    display: 'block',
+                  }}
+                  className="btn"
+                  to="/gol"
+                >
+                  add address to your pocket
+                </Link>
+              </Pane>
+            </ActionBar>
+          ))}
       </div>
     );
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolTakeOffProps: (amount, prize) =>
       dispatch(setGolTakeOff(amount, prize)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchprops)(AccountDetails);
+export default connect(
+  mapStateToProps,
+  mapDispatchprops
+)(injectKeplr(AccountDetails));

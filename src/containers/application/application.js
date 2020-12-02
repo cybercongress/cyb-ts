@@ -116,7 +116,9 @@ class App extends React.PureComponent {
         const accountName = Object.keys(dataLocalStoragePocket)[0];
         setDefaultAccountProps(accountName, accountPocket);
         if (accountPocket.cyber) {
-          this.getBandwidth(defaultAccount.cyber.bech32);
+          this.getBandwidth(accountPocket.cyber.bech32);
+        } else {
+          setBandwidthProps(0, 0);
         }
       } else {
         setBandwidthProps(0, 0);

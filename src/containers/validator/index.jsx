@@ -17,6 +17,7 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -49,17 +50,16 @@ class ValidatorsDetails extends React.PureComponent {
       loader: true,
       error: false,
       fans: [],
-      addressLedger: null,
+      addressPocket: null,
       unStake: false,
     };
   }
 
   componentDidMount() {
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      const address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address.bech32 });
+    const { defaultAccount } = this.props;
+
+    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
+      this.setState({ addressPocket: defaultAccount.account.cyber });
     }
     this.init();
     this.chekPathname();
@@ -180,7 +180,7 @@ class ValidatorsDetails extends React.PureComponent {
   getDelegators = async () => {
     const { match } = this.props;
     const { address } = match.params;
-    const { validatorInfo, addressLedger, unStake } = this.state;
+    const { validatorInfo, addressPocket, unStake } = this.state;
 
     let fans = [];
 
@@ -188,12 +188,14 @@ class ValidatorsDetails extends React.PureComponent {
 
     if (data !== null) {
       fans = data.result;
-      Object.keys(fans).forEach(key => {
+      Object.keys(fans).forEach((key) => {
         if (unStake === false) {
-          if (fans[key].delegator_address === addressLedger) {
-            this.setState({
-              unStake: true,
-            });
+          if (addressPocket !== null) {
+            if (fans[key].delegator_address === addressPocket.bech32) {
+              this.setState({
+                unStake: true,
+              });
+            }
           }
         }
         fans[key].share =
@@ -208,7 +210,7 @@ class ValidatorsDetails extends React.PureComponent {
     });
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -221,10 +223,10 @@ class ValidatorsDetails extends React.PureComponent {
       error,
       selected,
       data,
-      addressLedger,
+      addressPocket,
       unStake,
     } = this.state;
-    const { match, mobile } = this.props;
+    const { match, mobile, keplr } = this.props;
     const { address } = match.params;
     // console.log('validatorInfo', validatorInfo.consensus_pubkey);
     let content;
@@ -335,17 +337,19 @@ class ValidatorsDetails extends React.PureComponent {
           updateTable={this.update}
           validators={validatorInfo}
           unStake={unStake}
-          addressLedger={addressLedger}
+          addressPocket={addressPocket}
+          keplr={keplr}
         />
       </div>
     );
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(ValidatorsDetails);
+export default connect(mapStateToProps)(injectKeplr(ValidatorsDetails));

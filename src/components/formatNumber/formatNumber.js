@@ -9,13 +9,11 @@ export const FormatNumber = ({
   currency,
   ...props
 }) => (
-  <Pane display="grid" gridTemplateColumns="1fr 45px" gridGap="5px" {...props}>
-    <Pane display="flex" alignItems="center">
-      <span>{formatNumber(Math.floor(number))}</span>.
-      <div style={{ width: 30, fontSize: `${fontSizeDecimal || 14}px` }}>
-        {getDecimal(number)}
-      </div>
-    </Pane>
-    <div>{currency}</div>
+  <Pane {...props}>
+    <span>{formatNumber(Math.floor(number))}</span>.
+    <span style={{ fontSize: `${fontSizeDecimal || 14}px` }}>
+      {getDecimal(number)}
+    </span>{' '}
+    {currency}
   </Pane>
 );

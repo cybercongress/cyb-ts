@@ -36,6 +36,7 @@ import { FormatNumber, Loading, LinkWindow } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
 import { CYBER } from '../../utils/config';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 const T = new LocalizedStrings(i18n);
 
@@ -110,20 +111,17 @@ class Validators extends Component {
       validatorSelect: [],
       selectedIndex: '',
       language: 'en',
-      addressLedger: null,
+      addressPocket: null,
       selected: 'active',
       unStake: false,
     };
   }
 
   async componentDidMount() {
-    const localStoragePocket = localStorage.getItem('pocket');
-    if (localStoragePocket !== null) {
-      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
-      const accountPocket = Object.values(dataLocalStoragePocket)[0];
-      if (accountPocket.cyber) {
-        this.setState({ addressLedger: accountPocket.cyber.bech32 });
-      }
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+    if (account !== null && account.cyber) {
+      this.setState({ addressPocket: account.cyber });
     }
     this.init();
     this.chekPathname();
@@ -164,7 +162,7 @@ class Validators extends Component {
   };
 
   getValidators = async () => {
-    const { bondedTokens, addressLedger } = this.state;
+    const { bondedTokens, addressPocket } = this.state;
     let delegationsData = [];
 
     let validators = await getValidators();
@@ -178,16 +176,16 @@ class Validators extends Component {
       .sort((a, b) => (+a.tokens > +b.tokens ? -1 : 1));
 
     const activeValidatorsCount = validators.filter(
-      validator => !validator.jailed
+      (validator) => !validator.jailed
     ).length;
 
-    if (addressLedger !== null) {
-      const responseDelegations = await getDelegations(addressLedger);
+    if (addressPocket !== null) {
+      const responseDelegations = await getDelegations(addressPocket.bech32);
       delegationsData = responseDelegations;
     }
 
     if (delegationsData.length > 0) {
-      delegationsData.forEach(item => {
+      delegationsData.forEach((item) => {
         validators.forEach((itemValidators, j) => {
           if (itemValidators.operator_address === item.validator_address) {
             validators[j].delegation = item.balance;
@@ -198,10 +196,8 @@ class Validators extends Component {
 
     await asyncForEach(
       Array.from(Array(validators.length).keys()),
-      async item => {
-        const delegatorAddress = fromBech32(
-          validators[item].operator_address
-        );
+      async (item) => {
+        const delegatorAddress = fromBech32(validators[item].operator_address);
         let shares = 0;
 
         const height = validators[item].unbonding_height;
@@ -285,11 +281,11 @@ class Validators extends Component {
       validatorSelect,
       selectedIndex,
       language,
-      addressLedger,
+      addressPocket,
       selected,
       unStake,
     } = this.state;
-    const { mobile } = this.props;
+    const { mobile, keplr } = this.props;
 
     T.setLanguage(language);
 
@@ -314,7 +310,7 @@ class Validators extends Component {
     }
 
     const validatorRows = validators
-      .filter(validator =>
+      .filter((validator) =>
         showJailed ? validator.status < 2 : validator.status === 2
       )
       .map((validator, index) => {
@@ -566,19 +562,21 @@ class Validators extends Component {
           updateTable={this.init}
           validators={validatorSelect}
           validatorsAll={validators}
-          addressLedger={addressLedger}
+          addressPocket={addressPocket}
           unStake={unStake}
           mobile={mobile}
+          keplr={keplr}
         />
       </div>
     );
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(Validators);
+export default connect(mapStateToProps)(injectKeplr(Validators));

@@ -31,6 +31,17 @@ import {
 
 import { i18n } from '../../i18n/en';
 
+const {
+  AccAddress,
+  ValAddress,
+} = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
+const { MsgSend } = require('@chainapsis/cosmosjs/x/bank');
+const {
+  MsgWithdrawDelegatorReward,
+} = require('@chainapsis/cosmosjs/x/distribution');
+
 const { DIVISOR_CYBER_G } = CYBER;
 
 const T = new LocalizedStrings(i18n);
@@ -86,6 +97,10 @@ class ActionBarContainer extends Component {
     this.inputOpenFileRef = React.createRef();
   }
 
+  componentDidMount() {
+    this.ledger = new CosmosDelegateTool();
+  }
+
   componentDidUpdate() {
     const { stage, address, addressInfo } = this.state;
     const { type } = this.props;
@@ -122,14 +137,6 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getNetworkId = async () => {
-    const responseStatusNode = await statusNode();
-    if (responseStatusNode !== null) {
-      return responseStatusNode.node_info.network;
-    }
-    return '';
-  };
-
   getAddressInfo = async () => {
     const { address } = this.state;
     const { addressSend } = this.props;
@@ -140,17 +147,18 @@ class ActionBarContainer extends Component {
       this.setState({
         stage: LEDGER_TX_ACOUNT_INFO,
       });
-      const response = await getBalanceWallet(address.bech32);
-      const chainId = await this.getNetworkId();
+      const responsStatusNode = await statusNode();
 
-      this.getBandwidth();
+      if (responsStatusNode !== null) {
+        addressInfo.chainId = responsStatusNode.node_info.network;
+      }
+      const response = await getBalanceWallet(address.bech32);
 
       if (response) {
         const data = response;
-        addressInfo = data.account;
+        addressInfo = { ...addressInfo, ...data.account };
         balance = addressInfo.coins[0].amount;
       }
-      addressInfo.chainId = chainId;
 
       if (addressSend) {
         toSendAddres = addressSend;
@@ -176,39 +184,7 @@ class ActionBarContainer extends Component {
     }
   };
 
-  getBandwidth = async () => {
-    try {
-      const { address } = this.state;
-
-      const bandwidth = {
-        remained: 0,
-        max_value: 0,
-      };
-
-      const responseAccountBandwidth = await getAccountBandwidth(
-        address.bech32
-      );
-
-      if (responseAccountBandwidth !== null) {
-        bandwidth.remained = responseAccountBandwidth.remained;
-        bandwidth.max_value = responseAccountBandwidth.max_value;
-      }
-
-      this.setState({
-        bandwidth,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  calculationIpfsTo = async contentHash => {
+  calculationIpfsTo = async (contentHash) => {
     const { file } = this.state;
     const { node } = this.props;
 
@@ -224,6 +200,81 @@ class ActionBarContainer extends Component {
     }
 
     return toCid;
+  };
+
+  generateTxSendKplr = async () => {
+    const { contentHash, toSendAddres, toSend } = this.state;
+    const { keplr, type, addressSend, node, follow, tweets } = this.props;
+    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
+
+    await keplr.enable();
+    const sender = (await keplr.getKeys())[0].bech32Address;
+
+    const msg = [];
+    if (type === 'heroes') {
+      if (sender === addressSend) {
+        const dataTotalRewards = await getTotalRewards(sender);
+        if (dataTotalRewards !== null && dataTotalRewards.rewards) {
+          const { rewards } = dataTotalRewards;
+          Object.keys(rewards).forEach((key) => {
+            if (rewards[key].reward !== null) {
+              const tempMsg = new MsgWithdrawDelegatorReward(
+                AccAddress.fromBech32(
+                  sender,
+                  CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+                ),
+                ValAddress.fromBech32(
+                  rewards[key].validator_address,
+                  CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+                )
+              );
+              msg.push(tempMsg);
+            }
+          });
+        }
+      }
+    } else if (type === 'tweets' && follow) {
+      const fromCid = await getPin(node, 'follow');
+      const toCid = await getPin(node, addressSend);
+      const tempMsg = new MsgLink(
+        AccAddress.fromBech32(sender, CYBER.BECH32_PREFIX_ACC_ADDR_CYBER),
+        [new Link(fromCid, toCid)]
+      );
+      msg.push(tempMsg);
+    } else if (type === 'tweets' && tweets) {
+      const fromCid = await getPin(node, 'tweet');
+      const toCid = await this.calculationIpfsTo(contentHash);
+      const tempMsg = new MsgLink(
+        AccAddress.fromBech32(sender, CYBER.BECH32_PREFIX_ACC_ADDR_CYBER),
+        [new Link(fromCid, toCid)]
+      );
+      msg.push(tempMsg);
+    } else {
+      const tempMsg = new MsgSend(
+        AccAddress.fromBech32(sender, CYBER.BECH32_PREFIX_ACC_ADDR_CYBER),
+        AccAddress.fromBech32(toSendAddres, 'cyber'),
+        [new Coin('eul', amount)]
+      );
+      console.log('tempMsg', tempMsg);
+      msg.push(tempMsg);
+    }
+
+    if (msg.length > 0) {
+      const result = await keplr.sendMsgs(
+        msg,
+        {
+          gas: 100000,
+          memo: CYBER.MEMO_KEPLR,
+          fee: new Coin('eul', 200),
+        },
+        'async'
+      );
+      console.log('result: ', result);
+      const hash = result.hash.toString('hex').toUpperCase();
+      console.log('hash :>> ', hash);
+      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    }
   };
 
   getTxType = async (type, txContext) => {
@@ -390,23 +441,29 @@ class ActionBarContainer extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInputAmount = e => {
+  onChangeInputAmount = (e) => {
     this.setState({
       toSend: e.target.value,
     });
   };
 
-  onChangeInputInputAddressT = e => {
+  onChangeInputInputAddressT = (e) => {
     this.setState({
       toSendAddres: e.target.value,
     });
   };
 
   onClickSend = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-    this.getLedgerAddress();
+    const { defaultAccount } = this.props;
+    if (defaultAccount.keys === 'ledger') {
+      this.setState({
+        stage: STAGE_LEDGER_INIT,
+      });
+      this.getLedgerAddress();
+    }
+    if (defaultAccount.keys === 'keplr') {
+      this.generateTxSendKplr();
+    }
   };
 
   cleatState = () => {
@@ -433,7 +490,7 @@ class ActionBarContainer extends Component {
     this.transport = null;
   };
 
-  onChangeInput = async e => {
+  onChangeInput = async (e) => {
     const { value } = e.target;
     this.setState({
       contentHash: value,
@@ -444,7 +501,7 @@ class ActionBarContainer extends Component {
     this.inputOpenFileRef.current.click();
   };
 
-  onFilePickerChange = files => {
+  onFilePickerChange = (files) => {
     const file = files.current.files[0];
 
     this.setState({
@@ -467,7 +524,7 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { type, addressSend, addressLedger, tweets, follow } = this.props;
+    const { type, addressSend, tweets, follow, defaultAccount } = this.props;
     const {
       stage,
       address,
@@ -487,23 +544,23 @@ class ActionBarContainer extends Component {
       file,
     } = this.state;
 
-    if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
-      return (
-        <ActionBar>
-          <Pane>
-            <Button onClick={e => this.onClickSend(e)}>
-              {T.actionBar.pocket.send}
-            </Button>
-          </Pane>
-        </ActionBar>
-      );
-    }
+    // if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
+    //   return (
+    //     <ActionBar>
+    //       <Pane>
+    //         <Button onClick={(e) => this.onClickSend(e)}>
+    //           {T.actionBar.pocket.send}
+    //         </Button>
+    //       </Pane>
+    //     </ActionBar>
+    //   );
+    // }
 
     if (stage === STAGE_INIT && type === 'tweets' && follow) {
       return (
         <ActionBar>
           <Pane>
-            <Button onClick={e => this.onClickSend(e)}>Follow</Button>
+            <Button onClick={(e) => this.onClickSend(e)}>Follow</Button>
           </Pane>
         </ActionBar>
       );
@@ -528,23 +585,13 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_INIT && type === 'mentions') {
-      return (
-        <StartStageSearchActionBar
-          onClickBtn={this.onClickSend}
-          contentHash={contentHash}
-          onChangeInputContentHash={this.onChangeInput}
-        />
-      );
-    }
-
     if (stage === STAGE_INIT && type === 'heroes') {
       return (
         <ActionBar>
           <Pane>
             <Button
-              disabled={addressSend !== addressLedger}
-              onClick={e => this.onClickSend(e)}
+              disabled={addressSend !== defaultAccount.bech32}
+              onClick={(e) => this.onClickSend(e)}
             >
               Claim rewards
             </Button>
@@ -566,7 +613,7 @@ class ActionBarContainer extends Component {
       return <CheckAddressInfo />;
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       if (type === 'heroes') {
         return (
@@ -600,25 +647,25 @@ class ActionBarContainer extends Component {
           </ActionBar>
         );
       }
-      return (
-        <SendLedger
-          onClickBtn={() => this.generateTx()}
-          address={address.bech32}
-          availableStake={
-            balance !== 0
-              ? Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000
-              : 0
-          }
-          onChangeInputAmount={e => this.onChangeInputAmount(e)}
-          valueInputAmount={toSend}
-          onClickBtnCloce={this.cleatState}
-          valueInputAddressTo={toSendAddres}
-          onChangeInputAddressTo={e => this.onChangeInputInputAddressT(e)}
-          disabledBtn={
-            toSend.length === 0 || toSendAddres.length === 0 || balance === 0
-          }
-        />
-      );
+      // return (
+      //   <SendLedger
+      //     onClickBtn={() => this.generateTx()}
+      //     address={address.bech32}
+      //     availableStake={
+      //       balance !== 0
+      //         ? Math.floor((balance / DIVISOR_CYBER_G) * 1000) / 1000
+      //         : 0
+      //     }
+      //     onChangeInputAmount={(e) => this.onChangeInputAmount(e)}
+      //     valueInputAmount={toSend}
+      //     onClickBtnCloce={this.cleatState}
+      //     valueInputAddressTo={toSendAddres}
+      //     onChangeInputAddressTo={(e) => this.onChangeInputInputAddressT(e)}
+      //     disabledBtn={
+      //       toSend.length === 0 || toSendAddres.length === 0 || balance === 0
+      //     }
+      //   />
+      // );
     }
 
     if (stage === STAGE_WAIT) {
@@ -656,7 +703,7 @@ class ActionBarContainer extends Component {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
   };

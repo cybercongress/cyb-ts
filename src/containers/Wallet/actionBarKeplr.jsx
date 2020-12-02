@@ -74,7 +74,7 @@ function ActionBarKeplr({
       [msg],
       {
         gas: 100000,
-        memo: '',
+        memo: CYBER.MEMO_KEPLR,
         fee: new Coin('eul', 200),
       },
       'async'

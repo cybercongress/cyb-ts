@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Copy, Dots, Tooltip, LinkWindow } from '../../../components';
-import { trimString } from '../../../utils/utils';
+import { trimString, formatNumber, getDecimal } from '../../../utils/utils';
 
 const imgLedger = require('../../../image/ledger.svg');
 const imgKeplr = require('../../../image/keplr-icon.svg');
@@ -24,6 +24,23 @@ const imgData = {
   cosmos: imgCosmos,
   eth: imgEth,
 };
+
+export const FormatNumber = ({
+  number,
+  fontSizeDecimal,
+  currency,
+  ...props
+}) => (
+  <Pane display="grid" gridTemplateColumns="1fr 45px" gridGap="5px" {...props}>
+    <Pane display="flex" alignItems="center">
+      <span>{formatNumber(Math.floor(number))}</span>.
+      <div style={{ width: 30, fontSize: `${fontSizeDecimal || 14}px` }}>
+        {getDecimal(number)}
+      </div>
+    </Pane>
+    <div>{currency}</div>
+  </Pane>
+);
 
 export const ButtonIcon = ({
   icon,
@@ -102,13 +119,11 @@ export const Address = ({
       style={{ width: 18, height: 15, marginRight: 8 }}
       src={imgData[network]}
       alt="imgAddress"
-      className="img-method-addedAddress"
     />
     <img
       style={{ width: 15, height: 15, marginRight: 8 }}
       src={imgData[address.keys]}
       alt="imgAddress"
-      className="img-method-addedAddress"
     />
     <Pane width={135}>{addressLink}</Pane>
     <Pane display="flex" className="img-method-addedAddress">

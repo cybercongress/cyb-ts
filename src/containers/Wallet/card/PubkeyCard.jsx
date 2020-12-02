@@ -2,19 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Pane, Input, Button } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Web3Utils from 'web3-utils';
+import { connect } from 'react-redux';
+import { setDefaultAccount } from '../../../redux/actions/pocket';
 import {
   PocketCard,
   ContainerAddressInfo,
   Address,
   ButtonIcon,
-} from '../components';
-import {
-  Copy,
-  Dots,
-  Tooltip,
   FormatNumber,
-  LinkWindow,
-} from '../../../components';
+} from '../components';
+import { Copy, Dots, Tooltip, LinkWindow } from '../../../components';
 import {
   trimString,
   formatCurrency,
@@ -44,6 +41,7 @@ const DetailsBalance = ({
   total,
   divisor = COSMOS.DIVISOR_ATOM,
   currency = CYBER.DENOM_CYBER,
+  address,
   ...props
 }) => {
   return (
@@ -63,48 +61,72 @@ const DetailsBalance = ({
         )}
       </RowBalance>
       <RowBalance>
-        <div>staked</div>
         {currency === CYBER.DENOM_CYBER ? (
-          <NumberCurrency
-            amount={total.delegation}
-            currencyNetwork={currency}
-          />
+          <>
+            <Link to="/heroes">
+              <div>staked</div>
+            </Link>
+            <NumberCurrency
+              amount={total.delegation}
+              currencyNetwork={currency}
+            />
+          </>
         ) : (
-          <FormatNumber
-            number={formatNumber(
-              Math.floor((total.delegation / divisor) * 1000) / 1000,
-              3
-            )}
-            currency={currency}
-          />
+          <>
+            <div>staked</div>
+            <FormatNumber
+              number={formatNumber(
+                Math.floor((total.delegation / divisor) * 1000) / 1000,
+                3
+              )}
+              currency={currency}
+            />
+          </>
         )}
       </RowBalance>
       <RowBalance>
-        <div>unstaking</div>
         {currency === CYBER.DENOM_CYBER ? (
-          <NumberCurrency amount={total.unbonding} currencyNetwork={currency} />
+          <>
+            <Link to={`network/euler/contract/${address}/heroes`}>
+              <div>unstaking</div>
+            </Link>
+            <NumberCurrency
+              amount={total.unbonding}
+              currencyNetwork={currency}
+            />
+          </>
         ) : (
-          <FormatNumber
-            number={formatNumber(
-              Math.floor((total.unbonding / divisor) * 1000) / 1000,
-              3
-            )}
-            currency={currency}
-          />
+          <>
+            <div>unstaking</div>
+            <FormatNumber
+              number={formatNumber(
+                Math.floor((total.unbonding / divisor) * 1000) / 1000,
+                3
+              )}
+              currency={currency}
+            />
+          </>
         )}
       </RowBalance>
       <RowBalance>
-        <div>rewards</div>
         {currency === CYBER.DENOM_CYBER ? (
-          <NumberCurrency amount={total.rewards} currencyNetwork={currency} />
+          <>
+            <Link to={`network/euler/contract/${address}/heroes`}>
+              <div>rewards</div>
+            </Link>
+            <NumberCurrency amount={total.rewards} currencyNetwork={currency} />
+          </>
         ) : (
-          <FormatNumber
-            number={formatNumber(
-              Math.floor((total.rewards / divisor) * 1000) / 1000,
-              3
-            )}
-            currency={currency}
-          />
+          <>
+            <div>rewards</div>
+            <FormatNumber
+              number={formatNumber(
+                Math.floor((total.rewards / divisor) * 1000) / 1000,
+                3
+              )}
+              currency={currency}
+            />
+          </>
         )}
       </RowBalance>
     </Pane>
@@ -114,17 +136,10 @@ const DetailsBalance = ({
 const NumberCurrency = ({
   amount,
   fontSizeDecimal,
-  currencyNetwork,
-  prefixCustom,
-  decimalDigits,
+  currencyNetwork = 'EUL',
   ...props
 }) => {
-  const { number, currency } = formatCurrencyNumber(
-    amount,
-    currencyNetwork,
-    decimalDigits,
-    prefixCustom
-  );
+  const number = formatNumber(amount / CYBER.DIVISOR_CYBER_G, 3);
   return (
     <Pane
       display="grid"
@@ -132,13 +147,13 @@ const NumberCurrency = ({
       gridGap="5px"
       {...props}
     >
-      <Pane display="flex" alignItems="center">
+      <Pane whiteSpace="nowrap" display="flex" alignItems="center">
         <span>{formatNumber(Math.floor(number))}</span>.
         <div style={{ width: 30, fontSize: `${fontSizeDecimal || 14}px` }}>
           {getDecimal(number)}
         </div>
       </Pane>
-      <div>{currency}</div>
+      <div>G{currencyNetwork.toUpperCase()}</div>
     </Pane>
   );
 };
@@ -175,7 +190,11 @@ const CosmosAddressInfo = ({
               onClick={() => setOpen(!open)}
               className="cosmos-address-balance"
             >
-              <div>total</div>
+              {open ? (
+                <div>total</div>
+              ) : (
+                <div className="details-balance">details</div>
+              )}
               <FormatNumber
                 number={formatNumber(
                   ((totalCosmos.total / COSMOS.DIVISOR_ATOM) * 1000) / 1000,
@@ -230,7 +249,11 @@ const CYBNetworkInfo = ({
         ) : (
           <>
             <RowBalance {...props} className="cosmos-address-balance">
-              <div>total</div>
+              {openCyber ? (
+                <div>total</div>
+              ) : (
+                <div className="details-balance">details</div>
+              )}
               <NumberCurrency
                 amount={Math.floor(gol) + Math.floor(gift)}
                 currencyNetwork="cyb"
@@ -246,7 +269,10 @@ const CYBNetworkInfo = ({
               >
                 <RowBalance>
                   <div>game of links</div>
-                  <Pane>{formatCurrency(Math.floor(gol), 'CYB')}</Pane>
+                  <NumberCurrency
+                    amount={Math.floor(gol)}
+                    currencyNetwork="CYB"
+                  />
                 </RowBalance>
                 <RowBalance>
                   <div>gift</div>
@@ -256,7 +282,10 @@ const CYBNetworkInfo = ({
                         <Dots /> CYB
                       </span>
                     ) : (
-                      formatCurrency(Math.floor(gift), 'CYB')
+                      <NumberCurrency
+                        amount={Math.floor(gift)}
+                        currencyNetwork="CYB"
+                      />
                     )}
                   </Pane>
                 </RowBalance>
@@ -298,11 +327,21 @@ const EULnetworkInfo = ({
         ) : (
           <>
             <RowBalance {...props} className="cosmos-address-balance">
-              <div>total</div>
+              {openEul ? (
+                <div>total</div>
+              ) : (
+                <div className="details-balance">details</div>
+              )}
               <NumberCurrency amount={totalCyber.total} currencyNetwork="eul" />
               {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
             </RowBalance>
-            {openEul && <DetailsBalance total={totalCyber} paddingLeft={15} />}
+            {openEul && (
+              <DetailsBalance
+                total={totalCyber}
+                address={address.bech32}
+                paddingLeft={15}
+              />
+            )}
           </>
         )}
       </Pane>
@@ -393,6 +432,8 @@ function PubkeyCard({
   nameCard,
   web3,
   contractToken,
+  defaultAccount,
+  setDefaultAccountProps,
   ...props
 }) {
   const [gift, setGift] = useState(0);
@@ -450,8 +491,14 @@ function PubkeyCard({
           localStorage.setItem('pocket', JSON.stringify(newObject));
         }
       }
+      if (nameCard === defaultAccount.name) {
+        setDefaultAccountProps(inputEditName, defaultAccount.account);
+      }
       setInputEditName('');
       setEditStage(false);
+      if (updateFunc) {
+        updateFunc();
+      }
     }
   };
 
@@ -462,6 +509,7 @@ function PubkeyCard({
       flexDirection="column"
       position="relative"
       {...props}
+      id="tess"
     >
       <Pane
         display="flex"
@@ -469,18 +517,28 @@ function PubkeyCard({
         justifyContent="space-between"
         width="100%"
         marginBottom="10px"
+        id="containerNameCard"
       >
-        <Pane width="100%" height="30px" display="flex" alignItems="center">
+        <Pane
+          width="100%"
+          id="containerNameCardv1"
+          height="30px"
+          display="flex"
+          alignItems="center"
+        >
           <Pane
             display="flex"
             flex={1}
             fontSize="18px"
             className="pocket-card-accountName-contaiter"
             alignItems="center"
+            id="containerNameCardv2"
           >
             {!editStage && (
               <>
-                <span className="pocket-card-accountName-text">{name}</span>
+                <span id="nameCard" className="pocket-card-accountName-text">
+                  {name}
+                </span>
                 <ButtonIcon
                   width={18}
                   height={18}
@@ -578,4 +636,17 @@ function PubkeyCard({
   );
 }
 
-export default PubkeyCard;
+const mapDispatchprops = (dispatch) => {
+  return {
+    setDefaultAccountProps: (name, account) =>
+      dispatch(setDefaultAccount(name, account)),
+  };
+};
+
+const mapStateToProps = (store) => {
+  return {
+    defaultAccount: store.pocket.defaultAccount,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(PubkeyCard);

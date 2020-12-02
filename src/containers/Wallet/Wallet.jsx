@@ -186,6 +186,7 @@ class Wallet extends React.Component {
         defaultAccounts = localStoragePocketAccountData[keys0];
         defaultAccountsKeys = keys0;
       }
+      console.log('defaultAccountsKeys', defaultAccounts);
       setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
       this.setState({
         accounts: localStoragePocketAccountData,
@@ -365,7 +366,16 @@ class Wallet extends React.Component {
   };
 
   onClickSelect = (e, select, key = '') => {
-    if (e.currentTarget === e.target) {
+    if (
+      e.target.id === 'containerNameCardv2' ||
+      e.target.id === 'containerNameCardv1' ||
+      e.target.id === 'containerNameCard' ||
+      e.target.id === 'tess' ||
+      e.target.id === 'nameCard' ||
+      e.target.id === 'gol' ||
+      e.target.id === 'storageManager' ||
+      e.target.id === 'tweet'
+    ) {
       const { selectCard, accounts } = this.state;
       let selectd = select;
       let selectAccount = { key, ...accounts[key] };
@@ -513,6 +523,7 @@ class Wallet extends React.Component {
                   onClick={(e) => this.onClickSelect(e, 'tweet')}
                   account={defaultAccounts.cyber.bech32}
                   marginBottom={20}
+                  id="tweet"
                 />
               )}
 
@@ -523,6 +534,7 @@ class Wallet extends React.Component {
                   marginBottom={20}
                   onClick={(e) => this.onClickSelect(e, 'storageManager')}
                   select={selectCard === 'storageManager'}
+                  id="storageManager"
                 />
               )}
 
@@ -544,6 +556,7 @@ class Wallet extends React.Component {
                 ))}
 
               <GolCard
+                id="gol"
                 onClick={(e) => this.onClickSelect(e, 'gol')}
                 select={selectCard === 'gol'}
                 marginBottom={20}

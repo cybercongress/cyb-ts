@@ -509,8 +509,16 @@
   opacity: 1;
 }
 
+.details-balance {
+  opacity: 0;
+}
+
 .cosmos-address-balance:hover {
   opacity: 0.8;
+}
+
+.cosmos-address-balance:hover .details-balance {
+  opacity: 1;
 }
 
 .container-buttonIcon {

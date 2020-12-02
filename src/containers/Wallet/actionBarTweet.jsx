@@ -308,7 +308,7 @@ class ActionBarTweet extends Component {
       [msg],
       {
         gas: 100000,
-        memo: '',
+        memo: CYBER.MEMO_KEPLR,
         fee: new Coin('eul', 200),
       },
       'async'
@@ -494,7 +494,7 @@ class ActionBarTweet extends Component {
 
     console.log('defaultAccountsKeys :>> ', defaultAccountsKeys);
 
-    if (stage === STAGE_INIT && defaultAccountsKeys === 'user') {
+    if (stage === STAGE_INIT && defaultAccountsKeys === 'read-only') {
       return (
         <ActionBar>
           <ActionBarContentText>Only CLI can be used</ActionBarContentText>
