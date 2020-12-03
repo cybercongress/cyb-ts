@@ -382,7 +382,7 @@ class App extends React.PureComponent {
           {defaultAccount.name !== null && (
             <Pane
               className="battery-container"
-              width="65px"
+              width="fit-content"
               position="absolute"
               right="60px"
               whiteSpace="nowrap"

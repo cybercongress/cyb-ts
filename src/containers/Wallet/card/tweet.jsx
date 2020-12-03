@@ -146,11 +146,11 @@ function TweetCard({
         setStage(STAGE_ADD_FIRST_TWEET);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.TWEET);
       }
-      if (avatar.stage && myTweet.count === 0 && follows.count === 0) {
+      if (avatar.stage && follows.count === 0) {
         setStage(STAGE_ADD_FIRST_FOLLOWER);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW);
       }
-      if (!avatar.stage && myTweet.count === 0 && follows.count === 0) {
+      if (!avatar.stage) {
         setStage(STAGE_ADD_AVATAR);
         setStageTweetActionBarProps(POCKET.STAGE_TWEET_ACTION_BAR.ADD_AVATAR);
       }

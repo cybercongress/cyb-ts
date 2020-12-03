@@ -174,8 +174,8 @@ export const Vitalik = () => (
 export function PocketCard({ children, select, ...props }) {
   return (
     <Pane
-      boxShadow={select ? '0 0 15px #3ab793' : '0px 0px 5px #36d6ae'}
-      className="container-card cursor-pointer"
+      boxShadow={select ? '0 0 8px 1px #00b0ff' : '0px 0px 5px #36d6ae'}
+      className="container-card-pocket cursor-pointer"
       width="100%"
       maxWidth="unset"
       height="auto"

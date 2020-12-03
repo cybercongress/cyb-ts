@@ -111,6 +111,7 @@ class Wallet extends React.Component {
       importLinkCli: false,
       linkSelected: null,
       selectCard: '',
+      hoverCard: '',
       updateCard: 0,
       storageManager: null,
       balanceEthAccount: {
@@ -366,6 +367,9 @@ class Wallet extends React.Component {
   };
 
   onClickSelect = (e, select, key = '') => {
+    const { selectCard, accounts } = this.state;
+    let selectd = select;
+    let selectAccount = { key, ...accounts[key] };
     if (
       e.target.id === 'containerNameCardv2' ||
       e.target.id === 'containerNameCardv1' ||
@@ -376,20 +380,37 @@ class Wallet extends React.Component {
       e.target.id === 'storageManager' ||
       e.target.id === 'tweet'
     ) {
-      const { selectCard, accounts } = this.state;
-      let selectd = select;
-      let selectAccount = { key, ...accounts[key] };
-
       if (selectCard === select) {
         selectd = '';
         selectAccount = null;
+        this.setState({ hoverCard: '' });
       }
+    }
+    this.setState({
+      linkSelected: null,
+      selectedIndex: '',
+      selectCard: selectd,
+      selectAccount,
+    });
+  };
 
+  mouselogEnter = (e, hoverCard, key = '') => {
+    const { selectCard, accounts } = this.state;
+    const selectAccount = { key, ...accounts[key] };
+    if (selectCard === '') {
       this.setState({
-        linkSelected: null,
-        selectedIndex: '',
-        selectCard: selectd,
         selectAccount,
+        hoverCard,
+      });
+    }
+  };
+
+  mouselogLeave = () => {
+    const { selectCard } = this.state;
+    if (selectCard === '') {
+      this.setState({
+        hoverCard: '',
+        selectAccount: null,
       });
     }
   };
@@ -445,6 +466,7 @@ class Wallet extends React.Component {
       defaultAccounts,
       defaultAccountsKeys,
       storageManager,
+      hoverCard,
     } = this.state;
     const { web3, keplr, contractToken, ipfsId } = this.props;
 
@@ -521,6 +543,8 @@ class Wallet extends React.Component {
                   refresh={refreshTweet}
                   select={selectCard === 'tweet'}
                   onClick={(e) => this.onClickSelect(e, 'tweet')}
+                  onMouseEnter={(e) => this.mouselogEnter(e, 'tweet')}
+                  onMouseLeave={(e) => this.mouselogLeave()}
                   account={defaultAccounts.cyber.bech32}
                   marginBottom={20}
                   id="tweet"
@@ -546,6 +570,10 @@ class Wallet extends React.Component {
                     select={selectCard === `pubkey_${key}`}
                     pocket={accounts[key]}
                     nameCard={key}
+                    onMouseEnter={(e) =>
+                      this.mouselogEnter(e, `pubkey_${key}`, key)
+                    }
+                    onMouseLeave={(e) => this.mouselogLeave(e, key)}
                     marginBottom={20}
                     updateCard={updateCard}
                     defaultAccounts={defaultAccountsKeys === key}
@@ -558,6 +586,8 @@ class Wallet extends React.Component {
               <GolCard
                 id="gol"
                 onClick={(e) => this.onClickSelect(e, 'gol')}
+                onMouseEnter={(e) => this.mouselogEnter(e, 'gol')}
+                onMouseLeave={(e) => this.mouselogLeave()}
                 select={selectCard === 'gol'}
                 marginBottom={20}
                 defaultAccounts={defaultAccounts}
@@ -588,6 +618,7 @@ class Wallet extends React.Component {
           <ActionBar
             selectCard={selectCard}
             selectAccount={selectAccount}
+            hoverCard={hoverCard}
             // actionBar keplr props
             keplr={keplr}
             // actionBar web3

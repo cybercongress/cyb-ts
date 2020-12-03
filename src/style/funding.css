@@ -245,6 +245,23 @@ span.right-input {
   box-shadow: 0 0 15px #3ab793;
 }
 
+.container-card-pocket {
+  display: flex;
+  flex-direction: column;
+  padding: 25px 0;
+  align-items: center;
+  background-color: '#000000';
+  width: 100%;
+  max-width: 250px;
+  box-shadow: 0 0 5px #3ab793;
+  border-radius: 10px;
+  margin: 0 5px;
+}
+
+.container-card-pocket:hover {
+  box-shadow: 0 0 10px #00b0ff;
+}
+
 /* .card-title {
     display: inline-block;
     margin-bottom: 15px;

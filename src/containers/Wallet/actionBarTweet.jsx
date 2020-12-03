@@ -491,7 +491,7 @@ class ActionBarTweet extends Component {
     } = this.state;
 
     const { stageTweetActionBar, defaultAccountsKeys } = this.props;
-
+console.log('stageTweetActionBar', stageTweetActionBar)
     console.log('defaultAccountsKeys :>> ', defaultAccountsKeys);
 
     if (stage === STAGE_INIT && defaultAccountsKeys === 'read-only') {

@@ -41,6 +41,7 @@ const ButtonImg = ({ img, ...props }) => (
 function ActionBar({
   selectCard,
   selectAccount,
+  hoverCard,
   // actionBar keplr props
   keplr,
   // actionBar web3
@@ -58,21 +59,22 @@ function ActionBar({
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
   const [connect, setConnect] = useState(false);
-  console.log('selectCard', selectCard);
+
   useEffect(() => {
     setStage(STAGE_INIT);
     setMakeActive(false);
     setTypeActionBar('');
     switch (true) {
-      case selectCard === 'tweet':
+      case selectCard === 'tweet' || hoverCard === 'tweet':
         setTypeActionBar('tweet');
         break;
 
-      case selectCard.indexOf('pubkey') !== -1:
+      case selectCard.indexOf('pubkey') !== -1 ||
+        hoverCard.indexOf('pubkey') !== -1:
         changeActionBar(selectAccount);
         break;
 
-      case selectCard === 'gol':
+      case selectCard === 'gol' || hoverCard === 'gol':
         setTypeActionBar('gol');
         break;
 
@@ -80,7 +82,7 @@ function ActionBar({
         setTypeActionBar('');
         break;
     }
-  }, [selectCard, selectAccount]);
+  }, [selectCard, hoverCard, selectAccount]);
 
   useEffect(() => {
     if (defaultAccountsKeys !== null && selectAccount !== null) {
@@ -103,11 +105,13 @@ function ActionBar({
   }, [selectAccount]);
 
   const changeActionBar = (account) => {
-    if (account.cyber) {
-      const { keys } = account.cyber;
-      setTypeActionBar(keys);
-    } else {
-      setTypeActionBar('noCyber');
+    if (account !== null) {
+      if (account.cyber) {
+        const { keys } = account.cyber;
+        setTypeActionBar(keys);
+      } else {
+        setTypeActionBar('noCyber');
+      }
     }
   };
 
