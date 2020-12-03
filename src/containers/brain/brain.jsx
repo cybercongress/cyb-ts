@@ -177,7 +177,7 @@ class Brain extends React.PureComponent {
         responseFollows.txs &&
         Object.keys(responseFollows.txs).length > 0
       ) {
-        responseFollows.txs.forEach(async item => {
+        responseFollows.txs.forEach(async (item) => {
           let addressResolve;
           const cid = item.tx.value.msg[0].value.links[0].to;
           const dataIndexdDb = await db.table('following').get({ cid });
@@ -192,14 +192,14 @@ class Brain extends React.PureComponent {
             };
             db.table('following')
               .add(ipfsContentAddtToInddexdDB)
-              .then(id => {
+              .then((id) => {
                 console.log('item :>> ', id);
               });
           }
           if (addressResolve && addressResolve !== null) {
             const addressFollow = addressResolve;
             if (addressFollow.match(PATTERN_CYBER)) {
-              this.setState(itemState => {
+              this.setState((itemState) => {
                 return {
                   addressFollowData: {
                     ...itemState.addressFollowData,
@@ -213,7 +213,7 @@ class Brain extends React.PureComponent {
                 responseTwit.txs &&
                 responseTwit.txs.length > 0
               ) {
-                this.setState(prevState => {
+                this.setState((prevState) => {
                   return {
                     tweetData: [...prevState.tweetData, ...responseTwit.txs],
                   };
@@ -225,7 +225,7 @@ class Brain extends React.PureComponent {
       } else {
         const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
         if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-          this.setState(prevState => {
+          this.setState((prevState) => {
             return {
               tweetData: [...prevState.tweetData, ...responseTwit.txs],
             };
@@ -235,7 +235,7 @@ class Brain extends React.PureComponent {
     } else {
       const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
       if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             tweetData: [...prevState.tweetData, ...responseTwit.txs],
           };
@@ -260,7 +260,7 @@ class Brain extends React.PureComponent {
       );
     };
 
-    this.ws.onmessage = async evt => {
+    this.ws.onmessage = async (evt) => {
       const message = JSON.parse(evt.data);
       if (message.result && Object.keys(message.result).length > 0) {
         this.updateWs(message.result.events);
@@ -272,7 +272,7 @@ class Brain extends React.PureComponent {
     };
   };
 
-  updateWs = async data => {
+  updateWs = async (data) => {
     const { addressFollowData } = this.state;
     const { node } = this.props;
     const subject = data['cybermeta.subject'][0];
@@ -283,7 +283,7 @@ class Brain extends React.PureComponent {
       Object.keys(addressFollowData).length > 0 &&
       Object.prototype.hasOwnProperty.call(addressFollowData, subject)
     ) {
-      this.setState(item => {
+      this.setState((item) => {
         return {
           twit: {
             [objectTo]: {
@@ -394,13 +394,23 @@ class Brain extends React.PureComponent {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      this.getATOM(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      this.getATOM(tx);
     }
   };
 
-  getATOM = async dataTxs => {
+  getATOM = async (dataTxs) => {
     const { cybernomics } = this.state;
     let amount = 0;
     let currentPrice = 0;
@@ -530,7 +540,7 @@ class Brain extends React.PureComponent {
     });
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -752,7 +762,7 @@ class Brain extends React.PureComponent {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,

@@ -229,7 +229,7 @@ class AccountDetails extends React.Component {
     }
 
     if (responseFollows !== null && responseFollows.txs) {
-      responseFollows.txs.forEach(async item => {
+      responseFollows.txs.forEach(async (item) => {
         const addressFollowers = item.tx.value.msg[0].value.address;
         followers.push(addressFollowers);
       });
@@ -250,7 +250,7 @@ class AccountDetails extends React.Component {
     }
 
     if (responseFollows !== null && responseFollows.txs) {
-      responseFollows.txs.forEach(async item => {
+      responseFollows.txs.forEach(async (item) => {
         const cid = item.tx.value.msg[0].value.links[0].to;
         const addressResolve = await getContent(cid);
         console.log('addressResolve :>> ', addressResolve);
@@ -287,9 +287,19 @@ class AccountDetails extends React.Component {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      this.getAtom(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      this.getAtom(tx);
     } else {
       this.setState({
         loading: false,
@@ -297,7 +307,7 @@ class AccountDetails extends React.Component {
     }
   };
 
-  getAtom = async dataTxs => {
+  getAtom = async (dataTxs) => {
     const { match } = this.props;
     const { address } = match.params;
     const { setGolTakeOffProps } = this.props;
@@ -425,7 +435,7 @@ class AccountDetails extends React.Component {
 
       if (result.unbonding && result.unbonding.length > 0) {
         staking.delegations.map((item, index) => {
-          return result.unbonding.map(itemUnb => {
+          return result.unbonding.map((itemUnb) => {
             if (item.validator_address === itemUnb.validator_address) {
               staking.delegations[index].entries = itemUnb.entries;
             }
@@ -449,7 +459,7 @@ class AccountDetails extends React.Component {
     const delegations = data;
     await asyncForEach(
       Array.from(Array(delegations.length).keys()),
-      async item => {
+      async (item) => {
         let reward = 0;
         const resultRewards = await getRewards(
           address,
@@ -466,7 +476,7 @@ class AccountDetails extends React.Component {
     return delegations;
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 

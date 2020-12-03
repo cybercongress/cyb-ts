@@ -124,10 +124,21 @@ function GolRelevance({ node, mobile }) {
   const getTxsCosmos = async () => {
     let amountAtom = 0;
     const dataTx = await getTxCosmos();
-    if (dataTx !== null && dataTx.txs) {
-      amountAtom = await getAmountATOM(dataTx.txs);
+    if (dataTx !== null) {
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPages = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPages; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      amountAtom = await getAmountATOM(tx);
+      setAmount(amountAtom);
     }
-    setAmount(amountAtom);
   };
 
   const chekPathname = () => {
