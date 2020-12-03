@@ -340,7 +340,7 @@ class ActionBarContainer extends Component {
     const { txBody } = this.state;
     const txSubmit = await this.ledger.txSubmitCyber(txBody);
     const data = txSubmit;
-    console.log('data', data);
+    console.log('<<<!!! data', data);
     if (data.error) {
       // if timeout...
       // this.setState({stage: STAGE_CONFIRMING})
