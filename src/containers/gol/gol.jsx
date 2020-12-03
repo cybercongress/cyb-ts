@@ -10,9 +10,13 @@ import {
   getCurrentNetworkLoad,
 } from '../../utils/search/utils';
 import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
-import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
+import {
+  cybWon,
+  getDisciplinesAllocation,
+  getEstimation,
+} from '../../utils/fundingMath';
 import TableDiscipline from './table';
-import { getEstimation } from '../../utils/fundingMath';
+
 import {
   getDelegator,
   exponentialToDecimal,
@@ -102,9 +106,19 @@ function GOL({ setGolTakeOffProps, mobile }) {
 
   const getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      getAtom(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      getAtom(tx);
     }
   };
 
@@ -162,7 +176,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     setHerosCount(count);
   };
 
-  const getAtom = async dataTxs => {
+  const getAtom = async (dataTxs) => {
     const { addressLedger } = address;
     let amount = 0;
 
@@ -198,7 +212,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     );
 
     console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
-    setTakeoff(prevState => ({ ...prevState, estimation, amount }));
+    setTakeoff((prevState) => ({ ...prevState, estimation, amount }));
     setLoading(false);
   };
 
@@ -377,13 +391,13 @@ function GOL({ setGolTakeOffProps, mobile }) {
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolTakeOffProps: (amount, prize) =>
       dispatch(setGolTakeOff(amount, prize)),

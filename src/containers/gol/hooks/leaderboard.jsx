@@ -59,7 +59,7 @@ function setLeaderboard() {
     relevance: false,
   });
 
-  const getLoad = async amountTakeoff => {
+  const getLoad = async (amountTakeoff) => {
     let load = [];
     const currentPrize = Math.floor(
       (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amountTakeoff
@@ -95,7 +95,7 @@ function setLeaderboard() {
         },
       };
     }, {});
-    setDiscipline(item => ({
+    setDiscipline((item) => ({
       ...item,
       load: true,
     }));
@@ -109,7 +109,7 @@ function setLeaderboard() {
     );
 
     if (validators.length > 0) {
-      validators.forEach(item => {
+      validators.forEach((item) => {
         const cyb = (item.tokens / total) * currentPrize;
         if (data[item.cyberAddress]) {
           data[item.cyberAddress] = {
@@ -125,7 +125,7 @@ function setLeaderboard() {
           };
         }
       });
-      setDiscipline(item => ({
+      setDiscipline((item) => ({
         ...item,
         delegation: true,
       }));
@@ -145,7 +145,7 @@ function setLeaderboard() {
       const dataPreCommit = dataGraphQL.pre_commit_view;
       dataPreCommit.forEach((itemQ, index) => {
         const cyb = (itemQ.precommits / sumPrecommits) * currentPrize;
-        validators.forEach(itemRPC => {
+        validators.forEach((itemRPC) => {
           if (itemRPC.consensusPubkey === itemQ.consensus_pubkey) {
             if (data[itemRPC.cyberAddress]) {
               data[itemRPC.cyberAddress] = {
@@ -163,7 +163,7 @@ function setLeaderboard() {
           }
         });
       });
-      setDiscipline(item => ({
+      setDiscipline((item) => ({
         ...item,
         lifetime: true,
       }));
@@ -176,6 +176,16 @@ function setLeaderboard() {
       const dataTx = await getTxCosmos();
       let amountTakeoff = 0;
       if (dataTx !== null && dataTx.count > 0) {
+        if (dataTx.total_count > dataTx.count) {
+          const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+          for (let index = 1; index < allPage; index++) {
+            // eslint-disable-next-line no-await-in-loop
+            const response = await getTxCosmos(index + 1);
+            if (response !== null && Object.keys(response.txs).length > 0) {
+              dataTx.txs = [...dataTx.txs, ...response.txs];
+            }
+          }
+        }
         const { txs } = dataTx;
         let temE = 0;
         for (let item = 0; item < txs.length; item += 1) {
@@ -206,7 +216,7 @@ function setLeaderboard() {
         }
       }
       setAmount(amountTakeoff);
-      setDiscipline(item => ({
+      setDiscipline((item) => ({
         ...item,
         takeoff: true,
       }));
@@ -230,7 +240,7 @@ function setLeaderboard() {
         let total = 0;
         const validators = [];
         if (dataValidators !== null) {
-          dataValidators.forEach(item => {
+          dataValidators.forEach((item) => {
             const cyberAddress = getDelegator(item.operator_address, 'cyber');
             total += parseFloat(item.tokens);
             validators.push({
@@ -274,7 +284,7 @@ function setLeaderboard() {
                 cybWon: data[item.subject].cybWon + cybAbsolute,
               };
               if (lastItem.subject === item.subject) {
-                setDiscipline(items => ({
+                setDiscipline((items) => ({
                   ...items,
                   relevance: true,
                 }));
