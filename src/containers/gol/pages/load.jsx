@@ -29,7 +29,7 @@ query MyQuery {
 }
 `;
 
-const Query = page =>
+const Query = (page) =>
   `query MyQuery {
     karma_view(order_by: {karma: desc}, limit: 50, offset: ${50 * page}) {
       karma
@@ -37,7 +37,7 @@ const Query = page =>
     }
   }`;
 
-const QueryAddress = address =>
+const QueryAddress = (address) =>
   ` query MyQuery {
   karma_view(where: {subject: {_eq: "${address}"}}) {
     karma
@@ -70,9 +70,19 @@ class GolLoad extends React.Component {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      this.getAtom(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      this.getAtom(tx);
     }
   };
 
@@ -91,7 +101,7 @@ class GolLoad extends React.Component {
       );
     };
 
-    this.ws.onmessage = async evt => {
+    this.ws.onmessage = async (evt) => {
       const message = JSON.parse(evt.data);
       console.warn('txs', message);
       if (message.result.events) {
@@ -104,12 +114,12 @@ class GolLoad extends React.Component {
     };
   };
 
-  getAtomWS = data => {
+  getAtomWS = (data) => {
     let amount = 0;
     console.warn('data', data['transfer.amount']);
     if (data['transfer.amount']) {
       console.warn('transfer.amount', data['transfer.amount']);
-      data['transfer.amount'].forEach(element => {
+      data['transfer.amount'].forEach((element) => {
         let amountWS = 0;
         if (element.indexOf('uatom') !== -1) {
           const positionDenom = element.indexOf('uatom');
@@ -129,7 +139,7 @@ class GolLoad extends React.Component {
     });
   };
 
-  getAtom = async dataTxs => {
+  getAtom = async (dataTxs) => {
     let amount = 0;
 
     if (dataTxs) {
@@ -314,9 +324,7 @@ class GolLoad extends React.Component {
                     >
                       <Table.TextCell flex={2}>
                         <TextTable>
-                          <Link
-                            to={`/network/euler/contract/${item.subject}`}
-                          >
+                          <Link to={`/network/euler/contract/${item.subject}`}>
                             {item.subject}
                           </Link>
                         </TextTable>

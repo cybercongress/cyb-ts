@@ -397,9 +397,19 @@ class Brain extends React.PureComponent {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      this.getATOM(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      this.getATOM(tx);
     }
   };
 

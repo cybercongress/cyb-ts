@@ -17,7 +17,7 @@ import {
   getTakeoff,
 } from '../../utils/game-monitors';
 
-const QueryAddress = subject =>
+const QueryAddress = (subject) =>
   `  query getRelevanceLeaderboard {
         relevance_leaderboard(
           where: {
@@ -30,7 +30,7 @@ const QueryAddress = subject =>
       }
   `;
 
-const getQueryLifeTime = consensusAddress => `
+const getQueryLifeTime = (consensusAddress) => `
 query lifetimeRate {
   pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
     precommits
@@ -55,6 +55,18 @@ function useGetAtom(addressCyber) {
 
       const dataTxs = await getTxCosmos();
       const addressCosmos = fromBech32(addressCyber, 'cosmos');
+      if (dataTxs !== null) {
+        if (dataTxs.total_count > dataTxs.count) {
+          const allPage = Math.ceil(dataTxs.total_count / dataTxs.count);
+          for (let index = 1; index < allPage; index++) {
+            // eslint-disable-next-line no-await-in-loop
+            const response = await getTxCosmos(index + 1);
+            if (response !== null && Object.keys(response.txs).length > 0) {
+              dataTxs.txs = [...dataTxs.txs, ...response.txs];
+            }
+          }
+        }
+      }
       if (dataTxs && Object.keys(dataTxs.txs).length > 0) {
         const dataTx = dataTxs.txs;
         for (let item = 0; item < dataTx.length; item += 1) {
@@ -117,8 +129,8 @@ function useGetGol(address) {
       ) {
         const shareData = responseDataQ.relevance_leaderboard[0].share;
         const cybAbsolute = shareData * prize;
-        setTotal(stateTotal => stateTotal + cybAbsolute);
-        setGol(stateGol => ({ ...stateGol, relevance: cybAbsolute }));
+        setTotal((stateTotal) => stateTotal + cybAbsolute);
+        setGol((stateGol) => ({ ...stateGol, relevance: cybAbsolute }));
       }
     };
     feachData();
@@ -130,8 +142,8 @@ function useGetGol(address) {
       const data = await getLoad(address);
       if (data > 0 && prize > 0) {
         const cybAbsolute = data * prize;
-        setTotal(stateTotal => stateTotal + cybAbsolute);
-        setGol(stateGol => ({ ...stateGol, load: cybAbsolute }));
+        setTotal((stateTotal) => stateTotal + cybAbsolute);
+        setGol((stateGol) => ({ ...stateGol, load: cybAbsolute }));
       }
     };
     feachData();
@@ -141,7 +153,7 @@ function useGetGol(address) {
     const feachData = async () => {
       const prize = Math.floor(estimation * 10 ** 12);
       if (prize > 0) {
-        setTotal(stateTotal => stateTotal + prize);
+        setTotal((stateTotal) => stateTotal + prize);
       }
     };
     feachData();
@@ -156,7 +168,7 @@ function useGetGol(address) {
         const data = await getDelegation(validatorAddress);
         if (data > 0 && prize > 0) {
           const cybAbsolute = data * prize;
-          setTotal(stateTotal => stateTotal + cybAbsolute);
+          setTotal((stateTotal) => stateTotal + cybAbsolute);
         }
       };
       feachData();
@@ -169,7 +181,7 @@ function useGetGol(address) {
         const data = await getRewards(validatorAddress);
         if (data > 0) {
           const cybAbsolute = data;
-          setTotal(stateTotal => stateTotal + cybAbsolute);
+          setTotal((stateTotal) => stateTotal + cybAbsolute);
         }
       };
       feachData();
@@ -192,7 +204,7 @@ function useGetGol(address) {
           });
           if (data > 0 && prize > 0) {
             const cybAbsolute = data * prize;
-            setTotal(stateTotal => stateTotal + cybAbsolute);
+            setTotal((stateTotal) => stateTotal + cybAbsolute);
           }
         }
       };
