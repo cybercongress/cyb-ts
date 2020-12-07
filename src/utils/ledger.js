@@ -800,7 +800,7 @@ class CosmosDelegateTool {
   txSubmitCyber = (signedTx) => {
     const txBody = {
       tx: signedTx.value,
-      mode: 'async',
+      mode: 'sync',
     };
     const url = `${CYBER_NODE_URL_LCD}/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';

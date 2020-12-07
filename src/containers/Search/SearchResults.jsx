@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Pane, SearchItem, Rank } from '@cybercongress/gravity';
+import { Pane, SearchItem, Text } from '@cybercongress/gravity';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
 import { formatNumber, trimString } from '../../utils/utils';
-import { Loading, Account } from '../../components';
+import { Loading, Account, Copy, Tooltip, LinkWindow } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   PATTERN,
@@ -18,6 +18,101 @@ import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../ipfs/contentItem';
 import injectKeplr from '../../components/web3/injectKeplr';
 
+const GradeTooltipContent = ({ grade, hash, color, rank }) => (
+  <Pane paddingX={15} paddingY={15}>
+    <Pane marginBottom={12}>
+      <Text color="#ffff">
+        Answer rank for{' '}
+        {hash && (
+          <Pane display="inline-flex" alignItems="center">
+            {trimString(hash, 5, 5)} <Copy text={hash} />
+          </Pane>
+        )}{' '}
+        is {rank}
+      </Text>
+    </Pane>
+    <Pane display="flex" marginBottom={12}>
+      <Text color="#ffff">
+        Answers between &nbsp;
+        {grade.from}
+        &nbsp; and &nbsp;
+        {grade.to}
+        &nbsp; recieve grade
+        <Pane
+          className="rank"
+          style={{ display: 'inline-flex' }}
+          marginLeft="5px"
+          backgroundColor={color}
+        >
+          {grade.value}
+        </Pane>
+      </Text>
+    </Pane>
+    <Pane>
+      <Text color="#ffff">
+        More about{' '}
+        <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+          cyber~Rank
+        </LinkWindow>
+      </Text>
+    </Pane>
+  </Pane>
+);
+
+const gradeColorRank = (rank) => {
+  let rankGradeColor = '#546e7a';
+
+  switch (rank) {
+    case 1:
+      rankGradeColor = '#ff3d00';
+      break;
+    case 2:
+      rankGradeColor = '#ff9100';
+      break;
+    case 3:
+      rankGradeColor = '#ffea00';
+      break;
+    case 4:
+      rankGradeColor = '#64dd17';
+      break;
+    case 5:
+      rankGradeColor = '#00b0ff';
+      break;
+    case 6:
+      rankGradeColor = '#304ffe';
+      break;
+    case 7:
+      rankGradeColor = '#d500f9';
+      break;
+    default:
+      rankGradeColor = '#546e7a';
+      break;
+  }
+
+  return rankGradeColor;
+};
+
+const Rank = ({ rank, grade, hash, tooltip, ...props }) => {
+  const color = gradeColorRank(grade.value);
+  return (
+    <Tooltip
+      placement="bottom"
+      tooltip={
+        <GradeTooltipContent
+          grade={grade}
+          hash={hash}
+          color={color}
+          rank={rank}
+        />
+      }
+    >
+      <Pane className="rank" backgroundColor={color} {...props}>
+        {grade.value}
+      </Pane>
+    </Tooltip>
+  );
+};
+
 function SearchResults({ node, mobile, keplr, setQueryProps }) {
   const { query } = useParams();
   const location = useLocation();
@@ -25,6 +120,7 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
+  const [rankLink, setRankLink] = useState(null);
 
   useEffect(() => {
     const feachData = async () => {
@@ -66,6 +162,18 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
     };
     feachData();
   }, [query, location, update]);
+
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
 
   const searchItems = [];
 
@@ -197,7 +305,7 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
   }
 
   searchItems.push(
-    Object.keys(searchResults).map(key => {
+    Object.keys(searchResults).map((key) => {
       return (
         <Pane
           position="relative"
@@ -208,13 +316,16 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
         >
           {!mobile && (
             <Pane
-              className="time-discussion rank-contentItem"
+              className={`time-discussion rank-contentItem ${
+                rankLink === key ? '' : 'hover-rank-contentItem'
+              }`}
               position="absolute"
             >
               <Rank
                 hash={key}
                 rank={searchResults[key].rank}
                 grade={searchResults[key].grade}
+                onClick={() => onClickRank(key)}
               />
             </Pane>
           )}
@@ -250,22 +361,23 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
           keywordHash={keywordHash}
           update={() => setUpdate(update + 1)}
           keplr={keplr}
+          rankLink={rankLink}
         />
       )}
     </div>
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    setQueryProps: query => dispatch(setQuery(query)),
+    setQueryProps: (query) => dispatch(setQuery(query)),
   };
 };
 

@@ -77,7 +77,7 @@ function ActionBarKeplr({
         memo: CYBER.MEMO_KEPLR,
         fee: new Coin('eul', 200),
       },
-      'async'
+      'sync'
     );
     console.log('result: ', result);
     const hash = result.hash.toString('hex').toUpperCase();

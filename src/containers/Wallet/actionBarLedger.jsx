@@ -80,7 +80,7 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
       generateTx();
     }
   }, [stage]);
-
+  // cyber1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwzs7wzf
   useEffect(() => {
     if (stage === STAGE_LEDGER_INIT) {
       if (addressLedger !== null && selectAccount && selectAccount !== null) {
@@ -93,6 +93,23 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
           );
           setStage(STAGE_ERROR);
         }
+      } else if (
+        addressLedger !== null &&
+        defaultAccounts &&
+        defaultAccounts !== null &&
+        defaultAccounts.cyber
+      ) {
+        if (defaultAccounts.cyber.bech32 === addressLedger.bech32) {
+          getAddressInfo();
+        } else {
+          setErrorMessage(
+            'different address. Add this ledger address to pocket'
+          );
+          setStage(STAGE_ERROR);
+        }
+      } else {
+        setErrorMessage('different address. Add this ledger address to pocket');
+        setStage(STAGE_ERROR);
       }
     }
   }, [addressLedger]);
@@ -226,7 +243,6 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
     setDisabledGenerate(true);
     setAddressToValid(null);
     setAmountSendInputValid(null);
-    ledgerApp = null;
   };
 
   const changeDefaultAccounts = async () => {

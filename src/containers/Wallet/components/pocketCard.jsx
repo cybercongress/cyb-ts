@@ -12,7 +12,7 @@ const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
 const deleteIcon = require('../../../image/trash-outline.svg');
 const imgEth = require('../../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../../image/cyber.png');
+const imgCyber = require('../../../image/logo-cyb-v2.svg');
 const imgCosmos = require('../../../image/cosmos-2.svg');
 
 const imgData = {
@@ -132,6 +132,7 @@ export const Address = ({
       )}
       <Copy style={{ marginLeft: 2 }} text={address.bech32} />
       <ButtonIcon
+        marginLeft={5}
         width={16}
         height={16}
         icon={deleteIcon}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Battery, Pane, Heading, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { Tooltip } from '..';
+import { Tooltip } from '../tooltip/tooltip';
 
 const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
   let text =

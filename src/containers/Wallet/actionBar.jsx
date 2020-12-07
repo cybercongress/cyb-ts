@@ -61,26 +61,27 @@ function ActionBar({
   const [connect, setConnect] = useState(false);
 
   useEffect(() => {
-    setStage(STAGE_INIT);
-    setMakeActive(false);
-    setTypeActionBar('');
-    switch (true) {
-      case selectCard === 'tweet' || hoverCard === 'tweet':
-        setTypeActionBar('tweet');
-        break;
+    if (stage === STAGE_INIT) {
+      setMakeActive(false);
+      setTypeActionBar('');
+      switch (true) {
+        case selectCard === 'tweet' || hoverCard === 'tweet':
+          setTypeActionBar('tweet');
+          break;
 
-      case selectCard.indexOf('pubkey') !== -1 ||
-        hoverCard.indexOf('pubkey') !== -1:
-        changeActionBar(selectAccount);
-        break;
+        case selectCard.indexOf('pubkey') !== -1 ||
+          hoverCard.indexOf('pubkey') !== -1:
+          changeActionBar(selectAccount);
+          break;
 
-      case selectCard === 'gol' || hoverCard === 'gol':
-        setTypeActionBar('gol');
-        break;
+        case selectCard === 'gol' || hoverCard === 'gol':
+          setTypeActionBar('gol');
+          break;
 
-      default:
-        setTypeActionBar('');
-        break;
+        default:
+          setTypeActionBar('');
+          break;
+      }
     }
   }, [selectCard, hoverCard, selectAccount]);
 
@@ -321,6 +322,7 @@ function ActionBar({
       <ActionBarLedger
         selectAccount={selectAccount}
         updateAddress={updateFuncActionBar}
+        defaultAccounts={defaultAccounts}
       />
     );
     // return <div />;u

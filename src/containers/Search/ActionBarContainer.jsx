@@ -175,10 +175,11 @@ class ActionBarContainer extends Component {
     if (file !== null) {
       toCid = file;
     }
-
+console.log('toCid', toCid)
     if (file !== null) {
       toCid = await getPin(node, toCid);
     } else if (!toCid.match(PATTERN_IPFS_HASH)) {
+      console.log('object');
       toCid = await getPin(node, toCid);
     }
 
@@ -267,7 +268,7 @@ class ActionBarContainer extends Component {
         memo: CYBER.MEMO_KEPLR,
         fee: new Coin('eul', 200),
       },
-      'async'
+      'sync'
     );
     console.log('result: ', result);
     const hash = result.hash.toString('hex').toUpperCase();
@@ -447,6 +448,22 @@ class ActionBarContainer extends Component {
     });
   };
 
+  onClickBtnRank = async () => {
+    const { addressLocalStor } = this.state;
+    const { rankLink } = this.props;
+    if (rankLink !== null) {
+      await this.setState({
+        contentHash: rankLink,
+      });
+    }
+    if (addressLocalStor.keys === 'ledger') {
+      this.onClickInitLedger();
+    }
+    if (addressLocalStor.keys === 'keplr') {
+      this.onClickInitKeplr();
+    }
+  };
+
   render() {
     const {
       address,
@@ -465,8 +482,8 @@ class ActionBarContainer extends Component {
       addressLocalStor,
     } = this.state;
 
-    const { textBtn, placeholder } = this.props;
-    console.log('addressLocalStor', addressLocalStor);
+    const { textBtn, placeholder, rankLink } = this.props;
+
     if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
         <ActionBar>
@@ -484,6 +501,16 @@ class ActionBarContainer extends Component {
             >
               ATOM
             </LinkRoute>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_INIT && rankLink && rankLink !== null) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Button onClick={() => this.onClickBtnRank()}>Rank</Button>
           </ActionBarContentText>
         </ActionBar>
       );
@@ -511,7 +538,7 @@ class ActionBarContainer extends Component {
     if (stage === STAGE_INIT && addressLocalStor.keys === 'keplr') {
       return (
         <StartStageSearchActionBar
-          textBtn={textBtn || 'Cyberlink using Keplr'}
+          textBtn={textBtn || 'Cyberlink'}
           onClickBtn={this.onClickInitKeplr}
           contentHash={
             file !== null && file !== undefined ? file.name : contentHash
