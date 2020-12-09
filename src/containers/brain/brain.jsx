@@ -702,7 +702,7 @@ class Brain extends React.PureComponent {
         />
       );
     }
-
+    console.log('addressPocket', addressPocket);
     return (
       <div>
         <main className="block-body">
@@ -789,28 +789,27 @@ class Brain extends React.PureComponent {
           </Pane>
         </main>
         {!mobile &&
-        addressPocket !== null &&
-        addressPocket.keys !== 'read-only' ? (
-          <ActionBarContainer
-            keplr={keplr}
-            updateFunc={this.update}
-            addressPocket={addressPocket}
-          />
-        ) : (
+          addressPocket !== null &&
+          (addressPocket.keys !== 'read-only' ? (
+            <ActionBarContainer
+              keplr={keplr}
+              updateFunc={this.update}
+              addressPocket={addressPocket}
+            />
+          ) : (
+            <ActionBar>
+              <Pane fontSize="18px">
+                this {trimString(addressPocket.bech32, 8, 6)} cyber address is
+                read-only
+              </Pane>
+            </ActionBar>
+          ))}
+        {!mobile && addressPocket === null && (
           <ActionBar>
             <Pane fontSize="18px">
-              this {trimString(addressPocket.bech32, 8, 6)} cyber address is
-              read-only
+              add cyber address in your <Link to="/pocket">pocket</Link>
             </Pane>
           </ActionBar>
-        )}
-        {!mobile && addressPocket === null && (
-          <ActionBarConnect
-            keplr={keplr}
-            addAddress={addAddress}
-            updateAddress={this.update}
-            brain
-          />
         )}
       </div>
     );

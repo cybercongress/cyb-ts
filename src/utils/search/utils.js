@@ -57,7 +57,7 @@ export const getContentByCid = async (
 ) => {
   let timerId;
   const timeoutPromise = () =>
-    new Promise(reject => {
+    new Promise((reject) => {
       timerId = setTimeout(reject, timeout);
     });
 
@@ -67,7 +67,7 @@ export const getContentByCid = async (
         .get(cid, {
           localResolve: false,
         })
-        .then(dagGet => {
+        .then((dagGet) => {
           clearTimeout(timerId);
           const { value: dagGetValue } = dagGet;
           console.log(dagGetValue);
@@ -77,12 +77,12 @@ export const getContentByCid = async (
             dagGetValue.size <= 1.5 * 10 ** 6
           ) {
             let mime;
-            ipfs.cat(cid).then(dataCat => {
+            ipfs.cat(cid).then((dataCat) => {
               const buf = dataCat;
               const bufs = [];
               bufs.push(buf);
               const data = Buffer.concat(bufs);
-              FileType.fromBuffer(data).then(dataFileType => {
+              FileType.fromBuffer(data).then((dataFileType) => {
                 let fileType;
                 if (dataFileType !== undefined) {
                   mime = dataFileType.mime;
@@ -168,7 +168,7 @@ export const getPin = async (node, content) => {
   }
 };
 
-export const getIpfsHash = string =>
+export const getIpfsHash = (string) =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
 
@@ -184,7 +184,7 @@ export const getIpfsHash = string =>
     });
   });
 
-export const getString = string =>
+export const getString = (string) =>
   new Promise((resolve, reject) => {
     const unixFsFile = new Unixfs('file', Buffer.from(string));
 
@@ -201,58 +201,51 @@ export const getString = string =>
     });
   });
 
-export const search = async keywordHash =>
+export const search = async (keywordHash) =>
   axios({
     method: 'get',
     url: `${CYBER_NODE_URL_API}/search?cid=%22${keywordHash}%22&page=0&perPage=1000`,
-  }).then(response => (response.data.result ? response.data.result.cids : []));
+  }).then((response) =>
+    response.data.result ? response.data.result.cids : []
+  );
 
-export const getRankGrade = rank => {
+export const getRankGrade = (rank) => {
   let from;
   let to;
   let value;
 
-  switch (true) {
-    case rank > 0.000008:
-      from = 0.000008;
-      to = 0.01;
-      value = 1;
-      break;
-    case rank > 0.000007:
-      from = 0.000007;
-      to = 0.000008;
-      value = 2;
-      break;
-    case rank > 0.0000062:
-      from = 0.0000062;
-      to = 0.000007;
-      value = 3;
-      break;
-    case rank > 0.0000053:
-      from = 0.0000053;
-      to = 0.0000062;
-      value = 4;
-      break;
-    case rank > 0.0000043:
-      from = 0.0000043;
-      to = 0.0000053;
-      value = 5;
-      break;
-    case rank > 0.0000027:
-      from = 0.00005573511433;
-      to = 0.0000043;
-      value = 6;
-      break;
-    case rank <= 0.0000027:
-      from = 0.0000014;
-      to = 0.0000027;
-      value = 7;
-      break;
-    default:
-      from = 'n/a';
-      to = 'n/a';
-      value = 'n/a';
-      break;
+  if (rank > 0.00000276) {
+    from = 0.00000276;
+    to = 0.01;
+    value = 1;
+  } else if (rank > 0.00000254879356777504 && rank <= 0.00000276) {
+    from = 0.00000254879356777504;
+    to = 0.00000276;
+    value = 2;
+  } else if (rank > 0.00000233758713555007 && rank <= 0.00000254879356777504) {
+    from = 0.00000233758713555007;
+    to = 0.00000254879356777504;
+    value = 3;
+  } else if (rank > 0.00000191517427110014 && rank <= 0.00000233758713555007) {
+    from = 0.00000191517427110014;
+    to = 0.00000233758713555007;
+    value = 4;
+  } else if (rank > 0.00000128155497442525 && rank <= 0.00000191517427110014) {
+    from = 0.00000128155497442525;
+    to = 0.00000191517427110014;
+    value = 5;
+  } else if (rank > 0.00000022552281330043 && rank <= 0.00000128155497442525) {
+    from = 0.00000022552281330043;
+    to = 0.00000128155497442525;
+    value = 6;
+  } else if (rank > 0 && rank <= 0.00000022552281330043) {
+    from = 0;
+    to = 0.00000022552281330043;
+    value = 7;
+  } else {
+    from = 'n/a';
+    to = 'n/a';
+    value = 'n/a';
   }
 
   return {
@@ -263,31 +256,31 @@ export const getRankGrade = rank => {
 };
 
 export const getStatistics = () =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     const indexStatsPromise = axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/index_stats`,
-    }).then(response => response.data.result);
+    }).then((response) => response.data.result);
 
     const stakingPromise = axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/staking/pool`,
-    }).then(response => response.data.result);
+    }).then((response) => response.data.result);
 
     const bandwidthPricePromise = axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/current_bandwidth_price`,
-    }).then(response => response.data.result);
+    }).then((response) => response.data.result);
 
     const latestBlockPromise = axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/block`,
-    }).then(response => response.data.result);
+    }).then((response) => response.data.result);
 
     const supplyTotalPropsise = axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/supply/total`,
-    }).then(response => response.data.result);
+    }).then((response) => response.data.result);
 
     Promise.all([
       indexStatsPromise,
@@ -398,7 +391,7 @@ export const stakingPool = async () => {
   }
 };
 
-export const getAccountBandwidth = async address => {
+export const getAccountBandwidth = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -425,15 +418,15 @@ export const statusNode = async () => {
 };
 
 export const getRelevance = (page = 0, perPage = 50) =>
-  new Promise(resolve =>
+  new Promise((resolve) =>
     axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/top?page=${page}&perPage=${perPage}`,
     })
-      .then(response => {
+      .then((response) => {
         resolve(response.data.result);
       })
-      .catch(e => {})
+      .catch((e) => {})
   );
 
 export const getBalance = async (address, node) => {
@@ -445,20 +438,23 @@ export const getBalance = async (address, node) => {
 
     const delegationsPromise = await axios({
       method: 'get',
-      url: `${node ||
-        CYBER_NODE_URL_LCD}/staking/delegators/${address}/delegations`,
+      url: `${
+        node || CYBER_NODE_URL_LCD
+      }/staking/delegators/${address}/delegations`,
     });
 
     const unbondingPromise = await axios({
       method: 'get',
-      url: `${node ||
-        CYBER_NODE_URL_LCD}/staking/delegators/${address}/unbonding_delegations`,
+      url: `${
+        node || CYBER_NODE_URL_LCD
+      }/staking/delegators/${address}/unbonding_delegations`,
     });
 
     const rewardsPropsise = await axios({
       method: 'get',
-      url: `${node ||
-        CYBER_NODE_URL_LCD}/distribution/delegators/${address}/rewards`,
+      url: `${
+        node || CYBER_NODE_URL_LCD
+      }/distribution/delegators/${address}/rewards`,
     });
 
     const response = {
@@ -483,7 +479,7 @@ export const getBalance = async (address, node) => {
   }
 };
 
-export const getTotalEUL = async data => {
+export const getTotalEUL = async (data) => {
   const balance = {
     available: 0,
     delegation: 0,
@@ -550,7 +546,7 @@ export const getTotalEUL = async data => {
   return balance;
 };
 
-export const getAmountATOM = data => {
+export const getAmountATOM = (data) => {
   let amount = 0;
   for (let item = 0; item < data.length; item++) {
     if (amount <= TAKEOFF.ATOMsALL) {
@@ -565,19 +561,19 @@ export const getAmountATOM = data => {
   return amount;
 };
 
-export const getBalanceWallet = address =>
-  new Promise(resolve =>
+export const getBalanceWallet = (address) =>
+  new Promise((resolve) =>
     axios({
       method: 'get',
       url: `${CYBER_NODE_URL_API}/account?address="${address}"`,
     })
-      .then(response => {
+      .then((response) => {
         resolve(response.data.result);
       })
-      .catch(e => {})
+      .catch((e) => {})
   );
 
-export const getDrop = async address => {
+export const getDrop = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -589,7 +585,7 @@ export const getDrop = async address => {
   }
 };
 
-export const getTxs = async txs => {
+export const getTxs = async (txs) => {
   try {
     const response = await axios({
       method: 'get',
@@ -602,7 +598,7 @@ export const getTxs = async txs => {
   }
 };
 
-export const getValidatorsInfo = async address => {
+export const getValidatorsInfo = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -615,7 +611,7 @@ export const getValidatorsInfo = async address => {
   }
 };
 
-export const getDistribution = async address => {
+export const getDistribution = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -628,7 +624,7 @@ export const getDistribution = async address => {
   }
 };
 
-export const keybaseCheck = async identity => {
+export const keybaseCheck = async (identity) => {
   try {
     const response = await axios({
       method: 'get',
@@ -641,7 +637,7 @@ export const keybaseCheck = async identity => {
   }
 };
 
-export const keybaseAvatar = async identity => {
+export const keybaseAvatar = async (identity) => {
   try {
     const response = await axios({
       method: 'get',
@@ -654,7 +650,7 @@ export const keybaseAvatar = async identity => {
   }
 };
 
-export const getDelegators = async validatorAddr => {
+export const getDelegators = async (validatorAddr) => {
   try {
     const response = await axios({
       method: 'get',
@@ -680,7 +676,7 @@ export const getRewards = async (delegatorAddr, validatorAddr) => {
   }
 };
 
-export const getTotalRewards = async delegatorAddr => {
+export const getTotalRewards = async (delegatorAddr) => {
   try {
     const response = await axios({
       method: 'get',
@@ -745,7 +741,7 @@ export const getIndexStats = async () => {
   }
 };
 
-export const getPreCommits = async consensusAddress => {
+export const getPreCommits = async (consensusAddress) => {
   try {
     const body = JSON.stringify({
       query: `query lifetimeRate {
@@ -780,7 +776,7 @@ export const getPreCommits = async consensusAddress => {
   }
 };
 
-export const getGraphQLQuery = async query => {
+export const getGraphQLQuery = async (query) => {
   try {
     const body = JSON.stringify({
       query,
@@ -1072,7 +1068,7 @@ export const getcommunityPool = async () => {
   }
 };
 
-export const getImportLink = async address => {
+export const getImportLink = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1085,7 +1081,7 @@ export const getImportLink = async address => {
   }
 };
 
-export const getFromLink = async cid => {
+export const getFromLink = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1098,7 +1094,7 @@ export const getFromLink = async cid => {
   }
 };
 
-export const getToLink = async cid => {
+export const getToLink = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1111,7 +1107,7 @@ export const getToLink = async cid => {
   }
 };
 
-export const getFollows = async address => {
+export const getFollows = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1124,7 +1120,7 @@ export const getFollows = async address => {
   }
 };
 
-export const getTweet = async address => {
+export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1140,7 +1136,7 @@ export const getTweet = async address => {
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
   let timerId;
   const timeoutPromise = () =>
-    new Promise(reject => {
+    new Promise((reject) => {
       timerId = setTimeout(reject, timeout);
     });
 
@@ -1149,7 +1145,7 @@ export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
       axios({
         method: 'get',
         url: `https://ipfs.io/ipfs/${cid}`,
-      }).then(response => {
+      }).then((response) => {
         clearTimeout(timerId);
         resolve(response.data);
       });
@@ -1170,7 +1166,7 @@ export const chekFollow = async (address, addressFollowHash) => {
   }
 };
 
-export const getAvatar = async address => {
+export const getAvatar = async (address) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1183,7 +1179,7 @@ export const getAvatar = async address => {
   }
 };
 
-export const getFollowers = async addressHash => {
+export const getFollowers = async (addressHash) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1196,7 +1192,7 @@ export const getFollowers = async addressHash => {
   }
 };
 
-export const getCreator = async cid => {
+export const getCreator = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
@@ -1216,7 +1212,7 @@ export const getAvatarIpfs = async (
 ) => {
   let timerId;
   const timeoutPromise = () =>
-    new Promise(reject => {
+    new Promise((reject) => {
       timerId = setTimeout(reject, timeout);
     });
 
@@ -1226,7 +1222,7 @@ export const getAvatarIpfs = async (
         .get(cid, {
           localResolve: false,
         })
-        .then(dagGet => {
+        .then((dagGet) => {
           clearTimeout(timerId);
           const { value: dagGetValue } = dagGet;
 
@@ -1236,12 +1232,12 @@ export const getAvatarIpfs = async (
             dagGetValue.size <= 1.5 * 10 ** 6
           ) {
             let mime;
-            ipfs.cat(cid).then(dataCat => {
+            ipfs.cat(cid).then((dataCat) => {
               const buf = dataCat;
               const bufs = [];
               bufs.push(buf);
               const data = Buffer.concat(bufs);
-              FileType.fromBuffer(data).then(dataFileType => {
+              FileType.fromBuffer(data).then((dataFileType) => {
                 let file;
                 if (dataFileType !== undefined) {
                   mime = dataFileType.mime;

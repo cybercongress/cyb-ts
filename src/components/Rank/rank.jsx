@@ -3,7 +3,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { Copy } from '../ui/copy';
 import { Tooltip } from '../tooltip/tooltip';
 import { LinkWindow } from '../link/link';
-import { trimString } from '../../utils/utils';
+import { trimString, exponentialToDecimal } from '../../utils/utils';
 
 const GradeTooltipContent = ({ grade, hash, color, rank }) => (
   <Pane paddingX={15} paddingY={15}>
@@ -21,9 +21,9 @@ const GradeTooltipContent = ({ grade, hash, color, rank }) => (
     <Pane display="flex" marginBottom={12}>
       <Text color="#ffff">
         Answers between &nbsp;
-        {grade.from}
+        {exponentialToDecimal(parseFloat(grade.from).toPrecision(3))}
         &nbsp; and &nbsp;
-        {grade.to}
+        {exponentialToDecimal(parseFloat(grade.to).toPrecision(3))}
         &nbsp; recieve grade
         <Pane
           className="rank"

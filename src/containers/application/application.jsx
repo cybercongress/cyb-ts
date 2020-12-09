@@ -174,6 +174,8 @@ class App extends React.PureComponent {
             ...localStoragePocketAccountData,
           };
         }
+      } else {
+        localStorage.clear();
       }
 
       setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);

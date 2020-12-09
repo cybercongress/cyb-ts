@@ -62,7 +62,7 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
           ...obj,
           [item.cid]: {
             cid: item.cid,
-            rank: exponentialToDecimal(parseFloat(item.rank).toPrecision(3)),
+            rank: item.rank,
             grade: getRankGrade(item.rank),
             status: node !== null ? 'understandingState' : 'impossibleLoad',
             query,
@@ -240,7 +240,9 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
             >
               <Rank
                 hash={key}
-                rank={searchResults[key].rank}
+                rank={exponentialToDecimal(
+                  parseFloat(searchResults[key].rank).toPrecision(3)
+                )}
                 grade={searchResults[key].grade}
                 onClick={() => onClickRank(key)}
               />
