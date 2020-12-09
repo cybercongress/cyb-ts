@@ -118,21 +118,34 @@ class Validators extends Component {
   }
 
   async componentDidMount() {
-    const { defaultAccount } = this.props;
-    const { account } = defaultAccount;
-    if (account !== null && account.cyber) {
-      this.setState({ addressPocket: account.cyber });
-    }
     this.init();
     this.chekPathname();
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props;
+    const { location, defaultAccount } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekPathname();
     }
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.init();
+    }
   }
+
+  checkAddressLocalStorage = async () => {
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+    let addressPocket = null;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      addressPocket = account.cyber;
+    }
+    this.setState({
+      addressPocket,
+    });
+  };
 
   chekPathname = () => {
     const { location } = this.props;
@@ -146,6 +159,10 @@ class Validators extends Component {
   };
 
   init = async () => {
+    this.setState({
+      loading: true,
+    });
+    await this.checkAddressLocalStorage();
     await this.getSupply();
     this.getValidators();
     this.setState({
@@ -179,7 +196,7 @@ class Validators extends Component {
       (validator) => !validator.jailed
     ).length;
 
-    if (addressPocket !== null) {
+    if (addressPocket && addressPocket.bech32) {
       const responseDelegations = await getDelegations(addressPocket.bech32);
       delegationsData = responseDelegations;
     }

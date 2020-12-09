@@ -15,6 +15,7 @@ import {
   ActionBarContentText,
   CheckAddressInfo,
   Dots,
+  ButtonImgText,
 } from '../../components';
 
 import {
@@ -31,6 +32,9 @@ import { trimString } from '../../utils/utils';
 const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
 const { Coin } = require('@chainapsis/cosmosjs/common/coin');
 const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgLedger = require('../../image/ledger.svg');
+const imgCyber = require('../../image/blue-circle.png');
 
 const {
   MEMO,
@@ -96,8 +100,9 @@ class ActionBarContainer extends Component {
     this.ledger = new CosmosDelegateTool();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { stage, address, addressInfo, fromCid, toCid } = this.state;
+    const { defaultAccount } = this.props;
     if (
       stage === STAGE_LEDGER_INIT ||
       stage === STAGE_READY ||
@@ -118,17 +123,26 @@ class ActionBarContainer extends Component {
         this.generateTx();
       }
     }
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.checkAddressLocalStorage();
+    }
   }
 
   checkAddressLocalStorage = async () => {
-    const localStoragePocket = await localStorage.getItem('pocket');
-    if (localStoragePocket !== null) {
-      const dataLocalStoragePocket = JSON.parse(localStoragePocket);
-      const accountPocket = Object.values(dataLocalStoragePocket)[0];
-      if (accountPocket.cyber) {
-        const { keys, bech32 } = accountPocket.cyber;
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      const { keys, bech32 } = account.cyber;
+      if (keys !== 'read-only') {
         this.setState({
           addressLocalStor: { address: bech32, keys },
+        });
+      } else {
+        this.setState({
+          addressLocalStor: null,
         });
       }
     } else {
@@ -175,7 +189,7 @@ class ActionBarContainer extends Component {
     if (file !== null) {
       toCid = file;
     }
-console.log('toCid', toCid)
+    console.log('toCid', toCid);
     if (file !== null) {
       toCid = await getPin(node, toCid);
     } else if (!toCid.match(PATTERN_IPFS_HASH)) {
@@ -464,6 +478,16 @@ console.log('toCid', toCid)
     }
   };
 
+  onClickInit = () => {
+    const { addressLocalStor } = this.state;
+    if (addressLocalStor.keys === 'ledger') {
+      this.onClickInitLedger();
+    }
+    if (addressLocalStor.keys === 'keplr') {
+      this.onClickInitKeplr();
+    }
+  };
+
   render() {
     const {
       address,
@@ -507,39 +531,44 @@ console.log('toCid', toCid)
     }
 
     if (stage === STAGE_INIT && rankLink && rankLink !== null) {
+      let keys = 'ledger';
+      if (addressLocalStor !== null) {
+        keys = addressLocalStor.keys;
+      }
       return (
         <ActionBar>
           <ActionBarContentText>
-            <Button onClick={() => this.onClickBtnRank()}>Rank</Button>
+            <ButtonImgText
+              text={
+                <Pane alignItems="center" display="flex">
+                  Rank{' '}
+                  <img
+                    src={imgCyber}
+                    alt="cyber"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginLeft: '5px',
+                      paddingTop: '2px',
+                    }}
+                  />
+                </Pane>
+              }
+              disabled={!contentHash.length}
+              onClick={() => this.onClickBtnRank()}
+              img={keys === 'ledger' ? imgLedger : imgKeplr}
+            />
           </ActionBarContentText>
         </ActionBar>
       );
     }
 
-    if (stage === STAGE_INIT && addressLocalStor.keys === 'ledger') {
-      return (
-        <StartStageSearchActionBar
-          textBtn={textBtn}
-          onClickBtn={this.onClickInitLedger}
-          contentHash={
-            file !== null && file !== undefined ? file.name : contentHash
-          }
-          onChangeInputContentHash={this.onChangeInput}
-          inputOpenFileRef={this.inputOpenFileRef}
-          showOpenFileDlg={this.showOpenFileDlg}
-          onChangeInput={this.onFilePickerChange}
-          onClickClear={this.onClickClear}
-          file={file}
-          placeholder={placeholder}
-        />
-      );
-    }
-
-    if (stage === STAGE_INIT && addressLocalStor.keys === 'keplr') {
+    if (stage === STAGE_INIT) {
       return (
         <StartStageSearchActionBar
           textBtn={textBtn || 'Cyberlink'}
-          onClickBtn={this.onClickInitKeplr}
+          keys={addressLocalStor !== null ? addressLocalStor.keys : false}
+          onClickBtn={this.onClickInit}
           contentHash={
             file !== null && file !== undefined ? file.name : contentHash
           }
@@ -638,6 +667,7 @@ console.log('toCid', toCid)
 const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

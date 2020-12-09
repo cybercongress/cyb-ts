@@ -8,6 +8,7 @@ export const initialState = {
     name: null,
     account: null,
   },
+  accounts: null,
 };
 
 const pocketReducer = (state = initialState, action) => {
@@ -28,6 +29,13 @@ const pocketReducer = (state = initialState, action) => {
           name: action.name,
           account: action.account,
         },
+      };
+    }
+
+    case 'SET_ACCOUNTS': {
+      return {
+        ...state,
+        accounts: action.payload,
       };
     }
 

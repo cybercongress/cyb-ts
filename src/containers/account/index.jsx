@@ -37,6 +37,7 @@ import FeedsTab from './feeds';
 import FollowsTab from './follows';
 import AvatarIpfs from './avatarIpfs';
 import injectKeplr from '../../components/web3/injectKeplr';
+import CyberLinkCount from './cyberLinkCount';
 
 import { COSMOS, PATTERN_CYBER } from '../../utils/config';
 
@@ -80,6 +81,7 @@ class AccountDetails extends React.Component {
     this.state = {
       account: '',
       keywordHash: '',
+      addressLocalStor: null,
       loader: true,
       loading: true,
       validatorAddress: null,
@@ -114,7 +116,7 @@ class AccountDetails extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { location, match } = this.props;
+    const { location, match, defaultAccount } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.getBalanseAccount();
       this.chekPathname();
@@ -122,6 +124,11 @@ class AccountDetails extends React.Component {
     if (prevProps.match.params.address !== match.params.address) {
       this.clearState();
       this.init();
+    }
+
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.chekAddress();
+      this.chekFollowAddress();
     }
   }
 
@@ -193,6 +200,7 @@ class AccountDetails extends React.Component {
   chekAddress = async () => {
     const { location, defaultAccount } = this.props;
     const { pathname } = location;
+    const { account } = defaultAccount;
     let locationAddress;
     if (
       pathname.match(/cyber[a-zA-Z0-9]{39}/gm) &&
@@ -202,18 +210,32 @@ class AccountDetails extends React.Component {
     }
 
     if (
-      defaultAccount.account !== null &&
-      defaultAccount.account.cyber &&
-      defaultAccount.account.cyber.bech32 === locationAddress[0]
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      this.setState({
-        follow: false,
-        tweets: true,
-      });
+      const { keys } = account.cyber;
+      if (keys !== 'read-only') {
+        if (account.cyber.bech32 === locationAddress[0]) {
+          this.setState({
+            follow: false,
+            tweets: true,
+            addressLocalStor: { ...account.cyber },
+          });
+        } else {
+          this.setState({
+            follow: true,
+            tweets: false,
+            addressLocalStor: { ...account.cyber },
+          });
+        }
+      } else {
+        this.setState({
+          addressLocalStor: null,
+        });
+      }
     } else {
       this.setState({
-        follow: true,
-        tweets: false,
+        addressLocalStor: null,
       });
     }
   };
@@ -415,11 +437,11 @@ class AccountDetails extends React.Component {
 
     const resultGetDistribution = await getDistribution(dataValidatorAddress);
 
-    const indexStats = await getGraphQLQuery(QueryAddress(address));
+    // const indexStats = await getGraphQLQuery(QueryAddress(address));
 
-    if (indexStats !== null && indexStats.cyberlink_aggregate) {
-      linksCount = indexStats.cyberlink_aggregate.aggregate.count;
-    }
+    // if (indexStats !== null && indexStats.cyberlink_aggregate) {
+    //   linksCount = indexStats.cyberlink_aggregate.aggregate.count;
+    // }
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -502,9 +524,10 @@ class AccountDetails extends React.Component {
       linksCount,
       following,
       followers,
+      addressLocalStor,
     } = this.state;
 
-    const { node, mobile, defaultAccount, keplr } = this.props;
+    const { node, mobile, keplr } = this.props;
 
     let content;
 
@@ -628,7 +651,7 @@ class AccountDetails extends React.Component {
           <ContainerCard col={3}>
             <Card
               title="cyberlinks"
-              value={formatNumber(linksCount)}
+              value={<CyberLinkCount accountUser={account} />}
               stylesContainer={{
                 width: '100%',
                 maxWidth: 'unset',
@@ -703,14 +726,14 @@ class AccountDetails extends React.Component {
           </Pane>
         </main>
         {!mobile &&
-          (defaultAccount.account !== null && defaultAccount.account.cyber ? (
+          (addressLocalStor !== null ? (
             <ActionBarContainer
               updateAddress={this.init}
               addressSend={account}
               type={selected}
               follow={follow}
               tweets={tweets}
-              defaultAccount={defaultAccount.account.cyber}
+              defaultAccount={addressLocalStor}
               keplr={keplr}
             />
           ) : (

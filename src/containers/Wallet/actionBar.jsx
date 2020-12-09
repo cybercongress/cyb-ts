@@ -22,9 +22,9 @@ const STAGE_SEND_LEDGER = 3.1;
 const STAGE_SEND_KEPLR = 4.1;
 const STAGE_SEND_READ_ONLY = 5.1;
 
-const ButtonImg = ({ img, ...props }) => (
+const ButtonImgText = ({ img, text = 'Send', ...props }) => (
   <Button marginX={10} {...props}>
-    Send{' '}
+    {text}{' '}
     <img
       style={{
         width: 20,
@@ -212,7 +212,7 @@ function ActionBar({
             </Button>
           )}
           {keplr && (
-            <ButtonImg
+            <ButtonImgText
               img={imgKeplr}
               onClick={() => setStage(STAGE_SEND_KEPLR)}
             />
@@ -236,7 +236,7 @@ function ActionBar({
               Connect
             </Button>
           )}
-          <ButtonImg
+          <ButtonImgText
             img={imgLedger}
             onClick={() => setStage(STAGE_SEND_LEDGER)}
           />
@@ -259,7 +259,7 @@ function ActionBar({
               Connect
             </Button>
           )}
-          <ButtonImg
+          <ButtonImgText
             img={imgRead}
             onClick={() => setStage(STAGE_SEND_READ_ONLY)}
           />

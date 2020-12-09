@@ -459,6 +459,9 @@ function PubkeyCard({
           setGift(dataDrop.gift);
         }
         setLoading(false);
+      } else {
+        setLoading(false);
+        setGift(0);
       }
     };
     feachData();

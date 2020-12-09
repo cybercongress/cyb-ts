@@ -418,8 +418,8 @@ class ActionBarContainer extends Component {
       });
       this.calculationIpfsFrom();
       this.calculationIpfsTo();
+    }
   };
-}
 
   onClickClear = () => {
     this.setState({
@@ -463,7 +463,7 @@ class ActionBarContainer extends Component {
       linkPrice,
       addressLocalStor,
     } = this.state;
-    console.log('stage :>> ', stage);
+    const { addressPocket } = this.props;
 
     if (stage === STAGE_INIT) {
       return (
@@ -480,6 +480,9 @@ class ActionBarContainer extends Component {
           file={file}
           placeholder="What's happening?"
           textBtn="Tweet"
+          keys={
+            addressPocket && addressPocket !== null ? addressPocket.keys : false
+          }
         />
       );
     }

@@ -38,6 +38,8 @@ import BandwidthBar from './BandwidthBar';
 import Timer from './timer';
 import Battery from './battery';
 import TabBtn from './tabBtn';
+import ButtonImgText from './Button/buttonImgText';
+import Rank from './Rank/rank';
 
 export {
   GovernanceChangeParam,
@@ -78,6 +80,8 @@ export {
   GovernanceSoftwareUpgrade,
   ConnectAddress,
   SetHdpath,
+  ButtonImgText,
+  Rank,
 };
 
 export { Nums } from './ui/Numbers';

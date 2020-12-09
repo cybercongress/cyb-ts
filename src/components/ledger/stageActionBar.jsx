@@ -13,15 +13,16 @@ import {
   Battery,
   Icon,
   IconButton,
-  Tooltip,
 } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
+import { Tooltip } from '../tooltip/tooltip';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString } from '../../utils/utils';
+import ButtonImgText from '../Button/buttonImgText';
 
 import { i18n } from '../../i18n/en';
 
@@ -89,7 +90,7 @@ const imgKeplr = require('../../image/keplr-icon.svg');
 const imgMetaMask = require('../../image/mm-logo.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../image/logo-cyb-v2.svg');
+const imgCyber = require('../../image/blue-circle.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
 
 const T = new LocalizedStrings(i18n);
@@ -115,20 +116,24 @@ export const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-const ButtonIcon = ({ img, active, disabled, ...props }) => (
-  <button
-    type="button"
-    style={{
-      // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
-      margin: '0 10px',
-      padding: '5px 0',
-    }}
-    className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
-    disabled={disabled}
-    {...props}
-  >
-    <img src={img} alt="img" />
-  </button>
+const ButtonIcon = ({ img, active, disabled, text, ...props }) => (
+  <Pane>
+    <Tooltip placement="top" tooltip={<Pane>{text}</Pane>}>
+      <button
+        type="button"
+        style={{
+          // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
+          margin: '0 10px',
+          padding: '5px 0',
+        }}
+        className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
+        disabled={disabled}
+        {...props}
+      >
+        <img src={img} alt="img" />
+      </button>
+    </Tooltip>
+  </Pane>
 );
 
 export const JsonTransaction = () => (
@@ -286,6 +291,7 @@ export const StartStageSearchActionBar = ({
   file,
   textBtn = 'Cyberlink',
   placeholder = 'add keywords, hash or file',
+  keys = 'ledger',
 }) => {
   return (
     <ActionBar>
@@ -343,9 +349,26 @@ export const StartStageSearchActionBar = ({
             </Pane>
           </Pane>
         </ActionBarContentText>
-        <Button disabled={!contentHash.length} onClick={onClickBtn}>
-          {textBtn}
-        </Button>
+        <ButtonImgText
+          text={
+            <Pane alignItems="center" display="flex">
+              {textBtn}{' '}
+              <img
+                src={imgCyber}
+                alt="cyber"
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginLeft: '5px',
+                  paddingTop: '2px',
+                }}
+              />
+            </Pane>
+          }
+          disabled={!contentHash.length}
+          onClick={onClickBtn}
+          img={keys === 'ledger' ? imgLedger : imgKeplr}
+        />
       </Pane>
     </ActionBar>
   );
@@ -1361,7 +1384,7 @@ export const ConnectAddress = ({
               onClick={() => selectMethodFunc('MetaMask')}
               active={selectMethod === 'MetaMask'}
               img={imgMetaMask}
-              text="MetaMask"
+              text="metaMask"
             />
           )}
           {(cyberNetwork || cosmosNetwork) && (
@@ -1383,7 +1406,7 @@ export const ConnectAddress = ({
           {selectMethod === 'MetaMask' && (
             <ButtonIcon
               img={imgEth}
-              text="ETH"
+              text="eth"
               onClick={() => selectNetworkFunc('eth')}
               active={selectNetwork === 'eth'}
             />
@@ -1395,13 +1418,13 @@ export const ConnectAddress = ({
                   onClick={() => selectNetworkFunc('cyber')}
                   active={selectNetwork === 'cyber'}
                   img={imgCyber}
-                  text="Cyber"
+                  text="cyber"
                 />
               )}
               {cosmosNetwork && (
                 <ButtonIcon
                   img={imgCosmos}
-                  text="Cosmos"
+                  text="cosmos"
                   onClick={() => selectNetworkFunc('cosmos')}
                   active={selectNetwork === 'cosmos'}
                 />

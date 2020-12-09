@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import BigNumber from 'bignumber.js';
 import { ActionBar, Input, Button, Pane } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
@@ -19,6 +20,14 @@ import { statusNode } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_CYBER } from '../../utils/config';
 
+const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const {
+  MsgVote,
+  VoteOption,
+  MsgDeposit,
+} = require('@chainapsis/cosmosjs/x/gov');
+
 const {
   MEMO,
   HDPATH,
@@ -36,6 +45,7 @@ const {
 const LEDGER_TX_ACOUNT_INFO = 10;
 
 const STAGE_CLI_ADD_ADDRESS = 1.3;
+const STAGE_GENERATION_TX = 12.2;
 
 class ActionBarDetail extends Component {
   constructor(props) {
@@ -60,13 +70,9 @@ class ActionBarDetail extends Component {
     this.ledger = null;
     this.transport = null;
   }
-  
-  componentDidMount() {
-    this.ledger = new CosmosDelegateTool(this.transport);
-  }
 
   componentDidMount() {
-    this.ledger = new CosmosDelegateTool(this.transport);
+    this.ledger = new CosmosDelegateTool();
   }
 
   getLedgerAddress = async () => {
@@ -124,6 +130,68 @@ class ActionBarDetail extends Component {
     }
   };
 
+  generateTxKeplr = async () => {
+    const { valueSelect, valueDeposit } = this.state;
+    const { period, id, keplr } = this.props;
+    await keplr.enable();
+    this.setState({
+      stage: STAGE_GENERATION_TX,
+    });
+    const proposalId = parseInt(id, 10);
+    let amount = 0;
+    if (parseFloat(valueDeposit) > 0) {
+      amount = valueDeposit * CYBER.DIVISOR_CYBER_G;
+    }
+    let msg;
+    const sender = AccAddress.fromBech32(
+      (await keplr.getKeys())[0].bech32Address,
+      CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+    );
+    if (period === 'deposit') {
+      msg = new MsgDeposit(proposalId, sender, [new Coin('eul', amount)]);
+    }
+
+    if (period === 'vote') {
+      let option;
+      switch (valueSelect) {
+        case 'Yes':
+          option = VoteOption.yes;
+          break;
+        case 'No':
+          option = VoteOption.no;
+          break;
+        case 'Abstain':
+          option = VoteOption.abstain;
+          break;
+        case 'NoWithVeto':
+          option = VoteOption.noWithVeto;
+
+          break;
+        default:
+          option = VoteOption.empty;
+          break;
+      }
+      msg = new MsgVote(proposalId, sender, new VoteOption(option));
+    }
+
+    if (Object.keys(msg).length > 0) {
+      const result = await keplr.sendMsgs(
+        [msg],
+        {
+          gas: 100000,
+          memo: CYBER.MEMO_KEPLR,
+          fee: new Coin('eul', 200),
+        },
+        'sync'
+      );
+      console.log('result: ', result);
+      const hash = result.hash.toString('hex').toUpperCase();
+      console.log('hash :>> ', hash);
+      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    }
+  };
+
   generateTx = async () => {
     const {
       address,
@@ -163,7 +231,7 @@ class ActionBarDetail extends Component {
         },
       ];
     }
-console.log('period :>> ', period);
+    console.log('period :>> ', period);
     switch (period) {
       case 'deposit': {
         tx = await this.ledger.txSendDeposit(
@@ -286,14 +354,14 @@ console.log('period :>> ', period);
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeSelect = async e => {
+  onChangeSelect = async (e) => {
     const { value } = e.target;
     this.setState({
       valueSelect: value,
     });
   };
 
-  onChangeInputDeposit = async e => {
+  onChangeInputDeposit = async (e) => {
     const { value } = e.target;
     this.setState({
       valueDeposit: value,
@@ -349,13 +417,20 @@ console.log('period :>> ', period);
   };
 
   onClickUsingLedger = () => {
-    this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-    this.getLedgerAddress();
+    const { defaultAccount } = this.props;
+
+    if (defaultAccount.keys === 'ledger') {
+      this.setState({
+        stage: STAGE_LEDGER_INIT,
+      });
+      this.getLedgerAddress();
+    }
+    // if (defaultAccount.keys === 'keplr') {
+    //   this.generateTxKeplr();
+    // }
   };
 
-  onChangeValueAddress = e => {
+  onChangeValueAddress = (e) => {
     const { value } = e.target;
     this.setState({
       valueAddress: value,
@@ -374,7 +449,7 @@ console.log('period :>> ', period);
       valueAddress,
       connectLedger,
     } = this.state;
-    const { period } = this.props;
+    const { period, defaultAccount } = this.props;
 
     if (stage === STAGE_INIT && period.length === 0) {
       return (
@@ -440,7 +515,7 @@ console.log('period :>> ', period);
               use Cli
             </Button>
             <Button marginX={10} onClick={this.onClickUsingLedger}>
-              use Ledger
+              {defaultAccount.keys === 'keplr' ? 'use Keplr' : 'use Ledger'}
             </Button>
           </ActionBarContentText>
         </ActionBar>
@@ -503,6 +578,16 @@ console.log('period :>> ', period);
           </ActionBar>
         );
       }
+    }
+
+    if (stage === STAGE_GENERATION_TX) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            transaction generation <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
+      );
     }
 
     if (stage === STAGE_WAIT) {

@@ -55,23 +55,29 @@ class ValidatorsDetails extends React.PureComponent {
     };
   }
 
-  componentDidMount() {
-    const { defaultAccount } = this.props;
-
-    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
-      this.setState({ addressPocket: defaultAccount.account.cyber });
-    }
+  async componentDidMount() {
+    await this.checkAddressLocalStorage();
     this.init();
     this.chekPathname();
   }
 
   componentDidUpdate(prevProps) {
-    const { location } = this.props;
+    const { location, defaultAccount } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.init();
       this.chekPathname();
     }
+
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.updateAddressLocalStorage();
+    }
   }
+
+  updateAddressLocalStorage = async () => {
+    this.setState({ loader: true, unStake: false });
+    await this.checkAddressLocalStorage();
+    await this.init();
+  };
 
   chekPathname = () => {
     const { location } = this.props;
@@ -101,6 +107,21 @@ class ValidatorsDetails extends React.PureComponent {
     // this.setState({ loader: true });
     await this.getValidatorInfo();
     this.getDelegators();
+  };
+
+  checkAddressLocalStorage = async () => {
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      this.setState({ addressPocket: account.cyber });
+    } else {
+      this.setState({
+        addressPocket: null,
+      });
+    }
   };
 
   update = async () => {
@@ -230,7 +251,7 @@ class ValidatorsDetails extends React.PureComponent {
     const { address } = match.params;
     // console.log('validatorInfo', validatorInfo.consensus_pubkey);
     let content;
-
+console.log('unStake', unStake)
     if (loader) {
       return (
         <div
@@ -278,7 +299,7 @@ class ValidatorsDetails extends React.PureComponent {
         />
       );
     }
-
+    console.log('addressPocket', addressPocket);
     return (
       <div>
         <main className="block-body">

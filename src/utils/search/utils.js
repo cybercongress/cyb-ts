@@ -243,7 +243,7 @@ export const getRankGrade = rank => {
       to = 0.0000043;
       value = 6;
       break;
-    case rank > 0.0000014:
+    case rank <= 0.0000027:
       from = 0.0000014;
       to = 0.0000027;
       value = 7;

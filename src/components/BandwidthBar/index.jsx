@@ -17,9 +17,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
-          <Link to="/gol/faucet">
-            Get EUL
-          </Link>
+          <Link to="/search/get%20EUL">Get EUL</Link>
         </Text>
       </Pane>
     </Pane>

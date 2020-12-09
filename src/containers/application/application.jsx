@@ -15,37 +15,63 @@ import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getAccountBandwidth } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import { setDefaultAccount } from '../../redux/actions/pocket';
+import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { WP } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
 
-const cyber = require('../../image/cyber.png');
+const cyber = require('../../image/blue-circle.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const bug = require('../../image/alert-circle-outline.svg');
 
-const Item = ({ to, selected, nameApp, onClick }) => (
-  <a
-    className={`${selected ? 'active' : ''}`}
-    onClick={onClick}
-    href={`/${to}`}
-  >
-    <div className="battery-segment-text">{nameApp}</div>
-  </a>
-);
-
-const htef = [
-  { id: 1, to: '', nameApp: 'search' },
-  { id: 2, to: 'gift', nameApp: 'gift' },
-  { id: 3, to: 'takeoff', nameApp: 'takeoff' },
-  { id: 4, to: 'tot', nameApp: 'tot' },
-  { id: 5, to: 'auction', nameApp: 'auction' },
-  { id: 6, to: 'brain', nameApp: 'brain' },
-  { id: 7, to: 'governance', nameApp: 'governance' },
-  { id: 8, to: 'wallet', nameApp: 'wallet' },
-  // { id: 7, to: 'euler' }
-];
+const ListAccounts = ({
+  accounts,
+  defaultAccount,
+  children,
+  onClickChangeActiveAcc,
+}) => {
+  let items = {};
+  if (accounts && accounts !== null) {
+    items = Object.keys(accounts).map((key, i) => {
+      let active = false;
+      if (
+        defaultAccount &&
+        defaultAccount.name &&
+        defaultAccount.name === key
+      ) {
+        active = true;
+      }
+      return (
+        <Pane
+          key={`${key}_${i}`}
+          paddingX={10}
+          paddingY={5}
+          color={active ? '#ff9100' : '#fff'}
+          onClick={() =>
+            active ? '' : onClickChangeActiveAcc(key, accounts[key])
+          }
+          className={active ? '' : 'account-popaps'}
+        >
+          {key}
+        </Pane>
+      );
+    });
+  }
+  return (
+    <Tooltip
+      placement="bottom"
+      trigger={['click', 'hover']}
+      tooltip={
+        Object.keys(items).length > 0
+          ? items
+          : "you don't have accounts in your pocket"
+      }
+    >
+      <Pane>{children}</Pane>
+    </Tooltip>
+  );
+};
 
 class App extends React.PureComponent {
   constructor(props) {
@@ -81,7 +107,7 @@ class App extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { location, query } = this.props;
+    const { location, query, defaultAccount } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekHomePage();
       this.updateInput();
@@ -96,6 +122,9 @@ class App extends React.PureComponent {
         }
       };
     }
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.checkAddressLocalStorage();
+    }
   }
 
   checkAddressLocalStorage = async () => {
@@ -103,23 +132,57 @@ class App extends React.PureComponent {
       setBandwidthProps,
       setDefaultAccountProps,
       defaultAccount,
+      setAccountsProps,
     } = this.props;
     const { account } = defaultAccount;
     if (account !== null && account.cyber) {
       this.getBandwidth(account.cyber.bech32);
     } else {
-      console.warn('pocket');
+      let defaultAccounts = null;
+      let defaultAccountsKeys = null;
+      let accounts = null;
+
+      const localStoragePocketAccount = await localStorage.getItem(
+        'pocketAccount'
+      );
       const localStoragePocket = localStorage.getItem('pocket');
+
       if (localStoragePocket !== null) {
-        const dataLocalStoragePocket = JSON.parse(localStoragePocket);
-        const accountPocket = Object.values(dataLocalStoragePocket)[0];
-        const accountName = Object.keys(dataLocalStoragePocket)[0];
-        setDefaultAccountProps(accountName, accountPocket);
-        if (accountPocket.cyber) {
-          this.getBandwidth(accountPocket.cyber.bech32);
+        const localStoragePocketData = JSON.parse(localStoragePocket);
+        const keyPocket = Object.keys(localStoragePocketData)[0];
+        const accountPocket = Object.values(localStoragePocketData)[0];
+        defaultAccounts = accountPocket;
+        defaultAccountsKeys = keyPocket;
+      }
+
+      if (localStoragePocketAccount !== null) {
+        const localStoragePocketAccountData = JSON.parse(
+          localStoragePocketAccount
+        );
+        if (localStoragePocket === null) {
+          const keys0 = Object.keys(localStoragePocketAccountData)[0];
+          localStorage.setItem(
+            'pocket',
+            JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
+          );
+          defaultAccounts = localStoragePocketAccountData[keys0];
+          defaultAccountsKeys = keys0;
         } else {
-          setBandwidthProps(0, 0);
+          accounts = {
+            [defaultAccountsKeys]:
+              localStoragePocketAccountData[defaultAccountsKeys],
+            ...localStoragePocketAccountData,
+          };
         }
+      }
+
+      setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
+      setAccountsProps(accounts);
+      if (
+        defaultAccounts !== null &&
+        Object.prototype.hasOwnProperty.call(defaultAccounts, 'cyber')
+      ) {
+        this.getBandwidth(defaultAccounts.cyber.bech32);
       } else {
         setBandwidthProps(0, 0);
       }
@@ -211,6 +274,23 @@ class App extends React.PureComponent {
     });
   };
 
+  onClickChangeActiveAcc = async (key) => {
+    const { setDefaultAccountProps, setAccountsProps, accounts } = this.props;
+    if (
+      accounts !== null &&
+      Object.prototype.hasOwnProperty.call(accounts, key)
+    ) {
+      const defaultAccount = { [key]: accounts[key] };
+      const accountsPocket = {
+        [key]: accounts[key],
+        ...accounts,
+      };
+      setDefaultAccountProps(key, accounts[key]);
+      setAccountsProps(accountsPocket);
+      localStorage.setItem('pocket', JSON.stringify(defaultAccount));
+    }
+  };
+
   render() {
     const { openMenu, story, home, battery } = this.state;
     const {
@@ -219,6 +299,7 @@ class App extends React.PureComponent {
       ipfsStatus,
       bandwidth,
       block = 0,
+      accounts,
     } = this.props;
 
     return (
@@ -387,8 +468,16 @@ class App extends React.PureComponent {
               right="60px"
               whiteSpace="nowrap"
               fontSize="14px"
+              backgroundColor="#000"
+              boxShadow="0 0 5px 5px #000"
             >
-              {defaultAccount.name}
+              <ListAccounts
+                accounts={accounts}
+                onClickChangeActiveAcc={this.onClickChangeActiveAcc}
+                defaultAccount={defaultAccount}
+              >
+                {defaultAccount.name}
+              </ListAccounts>
             </Pane>
           )}
           <Pane position="relative">
@@ -437,6 +526,7 @@ const mapStateToProps = (store) => {
     mobile: store.settings.mobile,
     block: store.block.block,
     defaultAccount: store.pocket.defaultAccount,
+    accounts: store.pocket.accounts,
   };
 };
 
@@ -447,6 +537,7 @@ const mapDispatchprops = (dispatch) => {
     setQueryProps: (query) => dispatch(setQuery(query)),
     setDefaultAccountProps: (name, account) =>
       dispatch(setDefaultAccount(name, account)),
+    setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
   };
 };
 

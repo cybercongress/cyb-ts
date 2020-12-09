@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pane, Rank } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
+import { Rank } from '../../../components';
 
 const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
   if (data && data.length > 0) {

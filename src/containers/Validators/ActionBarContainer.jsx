@@ -453,7 +453,6 @@ class ActionBarContainer extends Component {
       error: null,
     });
     this.timeOut = null;
-    this.ledger = null;
     this.transport = null;
   };
 
@@ -480,7 +479,7 @@ class ActionBarContainer extends Component {
   onClickUnDelegate = async () => {
     await this.setState({
       stage: STAGE_READY,
-      txType: TXTYPE_DELEGATE,
+      txType: TXTYPE_UNDELEGATE,
     });
   };
 
@@ -566,7 +565,45 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (Object.keys(validators).length !== 0 && stage === STAGE_INIT) {
+    if (
+      Object.keys(validators).length !== 0 &&
+      stage === STAGE_INIT &&
+      addressPocket === null
+    ) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Pane fontSize="18px">
+              you don't have cyber address in your pocket
+            </Pane>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (
+      Object.keys(validators).length !== 0 &&
+      stage === STAGE_INIT &&
+      addressPocket !== null &&
+      addressPocket.keys === 'read-only'
+    ) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Pane fontSize="18px">
+              this {trimString(addressPocket.bech32, 8, 6)} address is read-only
+            </Pane>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (
+      Object.keys(validators).length !== 0 &&
+      stage === STAGE_INIT &&
+      addressPocket !== null &&
+      addressPocket.keys !== 'read-only'
+    ) {
       return (
         <ActionBar>
           <ActionBarContentText>

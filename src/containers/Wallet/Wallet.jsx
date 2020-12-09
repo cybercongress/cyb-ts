@@ -11,7 +11,7 @@ import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
 import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import { setDefaultAccount } from '../../redux/actions/pocket';
+import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from '../../components/web3/injectKeplr';
 
@@ -138,6 +138,17 @@ class Wallet extends React.Component {
     await this.checkAddressLocalStorage();
   }
 
+  componentDidUpdate(prevProps) {
+    const { defaultAccount } = this.props;
+    if (
+      defaultAccount &&
+      defaultAccount.name !== null &&
+      prevProps.defaultAccount.name !== defaultAccount.name
+    ) {
+      this.checkAddressLocalStorage();
+    }
+  }
+
   checkIndexdDbSize = async () => {
     if (navigator.storage && navigator.storage.estimate) {
       const estimation = await navigator.storage.estimate();
@@ -159,7 +170,11 @@ class Wallet extends React.Component {
 
   checkAddressLocalStorage = async () => {
     const { updateCard } = this.state;
-    const { setBandwidthProps, setDefaultAccountProps } = this.props;
+    const {
+      setBandwidthProps,
+      setDefaultAccountProps,
+      setAccountsProps,
+    } = this.props;
     let localStoragePocketAccountData = [];
     let defaultAccounts = null;
     let defaultAccountsKeys = null;
@@ -187,10 +202,15 @@ class Wallet extends React.Component {
         defaultAccounts = localStoragePocketAccountData[keys0];
         defaultAccountsKeys = keys0;
       }
-      console.log('defaultAccountsKeys', defaultAccounts);
+      const accounts = {
+        [defaultAccountsKeys]:
+          localStoragePocketAccountData[defaultAccountsKeys],
+        ...localStoragePocketAccountData,
+      };
       setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
+      setAccountsProps(accounts);
       this.setState({
-        accounts: localStoragePocketAccountData,
+        accounts,
         link: null,
         selectedIndex: '',
         importLinkCli: false,
@@ -645,12 +665,14 @@ const mapDispatchprops = (dispatch) => {
       dispatch(setBandwidth(remained, maxValue)),
     setDefaultAccountProps: (name, account) =>
       dispatch(setDefaultAccount(name, account)),
+    setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
   };
 };
 
 const mapStateToProps = (store) => {
   return {
     ipfsId: store.ipfs.id,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

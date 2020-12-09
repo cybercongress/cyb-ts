@@ -459,9 +459,10 @@
 
 .rank-contentItem {
   cursor: pointer;
+  opacity: 0;
 }
 
-.rank-contentItem:hover {
+.hover-rank:hover .rank-contentItem {
   opacity: 0.8;
 }
 
@@ -556,6 +557,7 @@
 .container-buttonIcon img {
   width: 34px;
   height: 30px;
+  object-fit: contain;
 }
 
 .container-buttonIcon.active-icon::after {
@@ -586,4 +588,12 @@
 
 .pocket-card-accountName-text {
   white-space: nowrap;
+}
+
+.account-popaps {
+  cursor: pointer;
+}
+
+.account-popaps:hover {
+  opacity: 0.8;
 }

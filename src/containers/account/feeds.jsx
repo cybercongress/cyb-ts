@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Pane, Rank } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import Noitem from './noItem';
 import ContentItem from '../ipfs/contentItem';
+import { Rank } from '../../components';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
@@ -62,18 +63,18 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
                 marginBottom="10px"
                 key={`${cid}_${i}`}
               >
-                {/* {!mobile && (
-                <Pane
-                  className="time-discussion rank-contentItem"
-                  position="absolute"
-                >
-                  <Rank
-                    hash={item.object_to}
-                    rank="n/a"
-                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
-                  />
-                </Pane>
-              )} */}
+                {!mobile && (
+                  <Pane
+                    className="time-discussion rank-contentItem"
+                    position="absolute"
+                  >
+                    <Rank
+                      hash={item.object_to}
+                      rank="n/a"
+                      grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+                    />
+                  </Pane>
+                )}
                 <ContentItem
                   nodeIpfs={nodeIpfs}
                   cid={cid}

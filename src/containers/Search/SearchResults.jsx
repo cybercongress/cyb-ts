@@ -3,8 +3,19 @@ import { Pane, SearchItem, Text } from '@cybercongress/gravity';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
-import { formatNumber, trimString } from '../../utils/utils';
-import { Loading, Account, Copy, Tooltip, LinkWindow } from '../../components';
+import {
+  formatNumber,
+  exponentialToDecimal,
+  trimString,
+} from '../../utils/utils';
+import {
+  Loading,
+  Account,
+  Copy,
+  Tooltip,
+  LinkWindow,
+  Rank,
+} from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   PATTERN,
@@ -17,101 +28,6 @@ import {
 import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../ipfs/contentItem';
 import injectKeplr from '../../components/web3/injectKeplr';
-
-const GradeTooltipContent = ({ grade, hash, color, rank }) => (
-  <Pane paddingX={15} paddingY={15}>
-    <Pane marginBottom={12}>
-      <Text color="#ffff">
-        Answer rank for{' '}
-        {hash && (
-          <Pane display="inline-flex" alignItems="center">
-            {trimString(hash, 5, 5)} <Copy text={hash} />
-          </Pane>
-        )}{' '}
-        is {rank}
-      </Text>
-    </Pane>
-    <Pane display="flex" marginBottom={12}>
-      <Text color="#ffff">
-        Answers between &nbsp;
-        {grade.from}
-        &nbsp; and &nbsp;
-        {grade.to}
-        &nbsp; recieve grade
-        <Pane
-          className="rank"
-          style={{ display: 'inline-flex' }}
-          marginLeft="5px"
-          backgroundColor={color}
-        >
-          {grade.value}
-        </Pane>
-      </Text>
-    </Pane>
-    <Pane>
-      <Text color="#ffff">
-        More about{' '}
-        <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-          cyber~Rank
-        </LinkWindow>
-      </Text>
-    </Pane>
-  </Pane>
-);
-
-const gradeColorRank = (rank) => {
-  let rankGradeColor = '#546e7a';
-
-  switch (rank) {
-    case 1:
-      rankGradeColor = '#ff3d00';
-      break;
-    case 2:
-      rankGradeColor = '#ff9100';
-      break;
-    case 3:
-      rankGradeColor = '#ffea00';
-      break;
-    case 4:
-      rankGradeColor = '#64dd17';
-      break;
-    case 5:
-      rankGradeColor = '#00b0ff';
-      break;
-    case 6:
-      rankGradeColor = '#304ffe';
-      break;
-    case 7:
-      rankGradeColor = '#d500f9';
-      break;
-    default:
-      rankGradeColor = '#546e7a';
-      break;
-  }
-
-  return rankGradeColor;
-};
-
-const Rank = ({ rank, grade, hash, tooltip, ...props }) => {
-  const color = gradeColorRank(grade.value);
-  return (
-    <Tooltip
-      placement="bottom"
-      tooltip={
-        <GradeTooltipContent
-          grade={grade}
-          hash={hash}
-          color={color}
-          rank={rank}
-        />
-      }
-    >
-      <Pane className="rank" backgroundColor={color} {...props}>
-        {grade.value}
-      </Pane>
-    </Tooltip>
-  );
-};
 
 function SearchResults({ node, mobile, keplr, setQueryProps }) {
   const { query } = useParams();
@@ -146,7 +62,7 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
           ...obj,
           [item.cid]: {
             cid: item.cid,
-            rank: formatNumber(item.rank, 6),
+            rank: exponentialToDecimal(parseFloat(item.rank).toPrecision(3)),
             grade: getRankGrade(item.rank),
             status: node !== null ? 'understandingState' : 'impossibleLoad',
             query,
@@ -303,7 +219,7 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
       </Pane>
     );
   }
-
+  // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
   searchItems.push(
     Object.keys(searchResults).map((key) => {
       return (
@@ -316,10 +232,11 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
         >
           {!mobile && (
             <Pane
-              className={`time-discussion rank-contentItem ${
+              className={`time-discussion ${
                 rankLink === key ? '' : 'hover-rank-contentItem'
               }`}
               position="absolute"
+              cursor="pointer"
             >
               <Rank
                 hash={key}
