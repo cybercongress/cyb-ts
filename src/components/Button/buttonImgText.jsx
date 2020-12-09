@@ -11,6 +11,7 @@ const ButtonImgText = ({ img, text = 'Send', ...props }) => (
           height: 20,
           marginLeft: '5px',
           paddingTop: '2px',
+          objectFit: 'contain',
         }}
         src={img}
         alt="img"

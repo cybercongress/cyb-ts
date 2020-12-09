@@ -43,7 +43,7 @@ const test = {
   'tm.event': ['Tx'],
 };
 
-function GOL({ setGolTakeOffProps, mobile }) {
+function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   const {
     data: dataLeaderboard,
     loading: loadingLeaderboard,
@@ -86,6 +86,10 @@ function GOL({ setGolTakeOffProps, mobile }) {
     chekPathname();
   }, [location.pathname]);
 
+  useEffect(() => {
+    checkAddressLocalStorage();
+  }, [defaultAccount.name]);
+
   const chekPathname = () => {
     const { pathname } = location;
 
@@ -123,30 +127,28 @@ function GOL({ setGolTakeOffProps, mobile }) {
   };
 
   const checkAddressLocalStorage = async () => {
-    let addressLocalStorage = [];
     let consensusAddress = null;
     let validatorAddress = null;
 
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      addressLocalStorage = JSON.parse(localStorageStory);
-      console.log('address', addressLocalStorage);
+    const { account } = defaultAccount;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
       const dataValidatorAddress = fromBech32(
-        addressLocalStorage.bech32,
+        account.cyber.bech32,
         'cybervaloper'
       );
       const dataGetValidatorsInfo = await getValidatorsInfo(
         dataValidatorAddress
       );
-
       if (dataGetValidatorsInfo !== null) {
         consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
         validatorAddress = dataValidatorAddress;
       }
-
       setAddAddress(false);
       setAddress({
-        addressLedger: addressLocalStorage,
+        addressLedger: account.cyber,
         validatorAddress,
         consensusAddress,
       });
@@ -394,6 +396,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

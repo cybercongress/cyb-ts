@@ -554,7 +554,6 @@ class ActionBarContainer extends Component {
                   />
                 </Pane>
               }
-              disabled={!contentHash.length}
               onClick={() => this.onClickBtnRank()}
               img={keys === 'ledger' ? imgLedger : imgKeplr}
             />

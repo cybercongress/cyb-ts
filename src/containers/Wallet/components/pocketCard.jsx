@@ -103,12 +103,7 @@ const InfoAddress = ({ pk, hdpath, ...props }) => {
   );
 };
 
-export const Address = ({
-  address,
-  addressLink,
-  onClickDeleteAddress,
-  network,
-}) => (
+export const Address = ({ address, addressLink, onClickDeleteAddress, network }) => (
   <Pane
     className="cosmos-address"
     display="flex"
@@ -116,12 +111,12 @@ export const Address = ({
     alignItems="center"
   >
     <img
-      style={{ width: 18, height: 15, marginRight: 8 }}
+      style={{ width: 18, height: 15, marginRight: 8, objectFit: 'contain' }}
       src={imgData[network]}
       alt="imgAddress"
     />
     <img
-      style={{ width: 15, height: 15, marginRight: 8 }}
+      style={{ width: 15, height: 15, marginRight: 8, objectFit: 'contain' }}
       src={imgData[address.keys]}
       alt="imgAddress"
     />

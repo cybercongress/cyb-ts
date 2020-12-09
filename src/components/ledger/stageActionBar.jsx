@@ -361,6 +361,7 @@ export const StartStageSearchActionBar = ({
                   height: 20,
                   marginLeft: '5px',
                   paddingTop: '2px',
+                  objectFit: 'contain',
                 }}
               />
             </Pane>
