@@ -9,6 +9,14 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {
+  SigningCosmosClient,
+  GasPrice,
+  coins,
+  makeSignDoc,
+  makeStdTx,
+} from '@cosmjs/launchpad';
+import { Decimal } from '@cosmjs/math';
+import {
   Votes,
   Legend,
   IconStatus,
@@ -29,11 +37,15 @@ import {
   getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
-import injectKeplr from '../../components/web3/injectKeplr';
+import injectKeplr from './injectKeplr';
+// import injectKeplr from '../../components/web3/injectKeplr';
+
+import { authAccounts } from '../../utils/search/utils';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
+import { CYBER } from '../../utils/config';
 
 const dateFormat = require('dateformat');
 
@@ -132,11 +144,14 @@ class ProposalsDetail extends React.Component {
 
     const proposals = await getProposalsDetail(proposalId);
     const proposer = await getProposer(proposalId);
+    console.log('proposer', proposer);
 
     proposalsInfo.title = proposals.content.value.title;
     proposalsInfo.type = proposals.content.type;
     proposalsInfo.description = proposals.content.value.description;
-    proposalsInfo.proposer = proposer.proposer;
+    if (proposer !== null) {
+      proposalsInfo.proposer = proposer.proposer;
+    }
 
     if (proposals.content.value.recipient) {
       proposalsInfo.recipient = proposals.content.value.recipient;
@@ -290,6 +305,36 @@ class ProposalsDetail extends React.Component {
     return string;
   };
 
+  initK = async () => {
+    const { keplr } = this.props;
+    console.log('keplr', keplr);
+    if (keplr) {
+      const chainId = CYBER.CHAIN_ID;
+      await window.keplr.enable(chainId);
+      const accounts = await keplr.getAccount();
+      console.log('accounts', accounts);
+      const amount = coins(10, 'eul');
+      const msgs = [];
+      msgs.push({
+        type: 'cosmos-sdk/MsgSend',
+        value: {
+          from_address: accounts.address,
+          to_address: accounts.address,
+          amount,
+        },
+      });
+
+      const fee = {
+        amount: coins(0, 'uatom'),
+        gas: '100000',
+      };
+
+      const result = await keplr.signAndBroadcast(msgs, fee, '12');
+      console.log('result', result);
+      // console.log('cosmJS', cosmJS);
+    }
+  };
+
   render() {
     const {
       proposalsInfo,
@@ -309,6 +354,7 @@ class ProposalsDetail extends React.Component {
     return (
       <div>
         <main className="block-body">
+          <button onClick={() => this.initK()}>udj</button>
           <Pane paddingBottom={50}>
             <Pane height={70} display="flex" alignItems="center">
               <Text paddingLeft={20} fontSize="18px" color="#fff">

@@ -245,10 +245,10 @@ class AccountDetails extends React.Component {
     const { address } = match.params;
     let responseFollows = null;
     const followers = [];
-
     if (address) {
       const addressHash = await getIpfsHash(address);
       responseFollows = await getFollowers(addressHash);
+      console.log('!!!responseFollows', responseFollows);
     }
 
     if (responseFollows !== null && responseFollows.txs) {
@@ -270,6 +270,7 @@ class AccountDetails extends React.Component {
 
     if (address) {
       responseFollows = await getFollows(address);
+      console.log('responseFollows', responseFollows)
     }
 
     if (responseFollows !== null && responseFollows.txs) {
@@ -526,6 +527,7 @@ class AccountDetails extends React.Component {
       followers,
       addressLocalStor,
     } = this.state;
+    console.log('following', following)
 
     const { node, mobile, keplr } = this.props;
 

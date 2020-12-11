@@ -1205,6 +1205,19 @@ export const getCreator = async (cid) => {
   }
 };
 
+export const authAccounts = async (address) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/auth/accounts/${address}`,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
 export const getAvatarIpfs = async (
   cid,
   ipfs,

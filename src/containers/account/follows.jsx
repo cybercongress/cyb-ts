@@ -29,6 +29,13 @@ function FollowsTab({ following, followers, node }) {
       setFollowingData(followingArr);
       setFollowersData(followersArr);
       setFriendsData(friendsArr);
+    } else {
+      if (following.length > 0 && followers.length === 0) {
+        setFollowingData(following);
+      }
+      if (following.length === 0 && followers.length > 0) {
+        setFollowersData(followers);
+      }
     }
   }, [following, followers]);
 
