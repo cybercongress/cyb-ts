@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { Pane, Rank, SearchItem } from '@cybercongress/gravity';
-import { CardStatisics, LinkWindow, Dots } from '../../../components';
+import { Pane, SearchItem } from '@cybercongress/gravity';
+import { CardStatisics, LinkWindow, Dots, Rank} from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import CodeBlock from '../../ipfs/codeBlock';
 import Iframe from 'react-iframe';
 import Noitem from '../../account/noItem';
 import ContentItem from '../../ipfs/contentItem';
+
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 

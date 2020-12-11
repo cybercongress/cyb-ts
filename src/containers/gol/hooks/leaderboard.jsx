@@ -7,7 +7,7 @@ import {
   getTxCosmos,
 } from '../../../utils/search/utils';
 import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../../utils/config';
-import { getDelegator } from '../../../utils/utils';
+import { fromBech32 } from '../../../utils/utils';
 import { getEstimation } from '../../../utils/fundingMath';
 import { getRelevance } from '../../../utils/game-monitors';
 
@@ -191,7 +191,7 @@ function setLeaderboard() {
         for (let item = 0; item < txs.length; item += 1) {
           let estimation = 0;
           const address = txs[item].tx.value.msg[0].value.from_address;
-          const cyberAddress = getDelegator(address, 'cyber');
+          const cyberAddress = fromBech32(address, 'cyber');
           const val =
             Number.parseInt(
               txs[item].tx.value.msg[0].value.amount[0].amount,
@@ -240,8 +240,8 @@ function setLeaderboard() {
         let total = 0;
         const validators = [];
         if (dataValidators !== null) {
-          dataValidators.forEach((item) => {
-            const cyberAddress = getDelegator(item.operator_address, 'cyber');
+          dataValidators.forEach(item => {
+            const cyberAddress = fromBech32(item.operator_address, 'cyber');
             total += parseFloat(item.tokens);
             validators.push({
               tokens: item.tokens,

@@ -33,7 +33,6 @@ const injectWeb3 = InnerComponent =>
     getWeb3 = async () => {
       try {
         const web3 = await waitForWeb3();
-        console.log(web3);
         const networkId = await web3.eth.net.getId();
         const networkContract = NETWORKSIDS.main;
 

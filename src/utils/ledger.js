@@ -797,19 +797,35 @@ class CosmosDelegateTool {
     );
   }
 
-  async txSubmitCyber(signedTx) {
+  txSubmitCyber = (signedTx) => {
     const txBody = {
       tx: signedTx.value,
-      mode: 'async',
+      mode: 'sync',
     };
     const url = `${CYBER_NODE_URL_LCD}/txs`;
     // const url = 'https://phobos.cybernode.ai/lcd/txs';
     console.log(JSON.stringify(txBody));
-    return axios.post(url, JSON.stringify(txBody)).then(
-      (r) => r,
-      (e) => wrapError(this, e)
-    );
-  }
+    return axios
+      .post(url, JSON.stringify(txBody))
+      .then((response) => {
+        console.log('response', response);
+        return response;
+      })
+      .catch((error) => {
+        console.log('error', error);
+        return error;
+      });
+    // return axios
+    //   .post(url, JSON.stringify(txBody))
+    //   .then(
+    //     (r) => r,
+    //     (e) => wrapError(this, e)
+    //   )
+    //   .catch((error) => {
+    //     // handle error
+    //     console.log('error', error);
+    //   });
+  };
 
   //   async txSubmit(signedTx) {
   //     const txBody = {
@@ -840,13 +856,13 @@ class CosmosDelegateTool {
     );
   }
 
-  async txStatusCyber(txHash) {
+  txStatusCyber = async (txHash) => {
     const url = `${CYBER_NODE_URL_LCD}/txs/${txHash}`;
     return axios.get(url).then(
       (r) => r.data,
       (e) => wrapError(this, e)
     );
-  }
+  };
 }
 
 export { CosmosDelegateTool, compareVersion };

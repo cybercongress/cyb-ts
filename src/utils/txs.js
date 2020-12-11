@@ -308,8 +308,23 @@ function createSend(txContext, toAddress, uatomAmount, memo, cli, addressFrom) {
   return txSkeleton;
 }
 
-function createSendCyber(txContext, validatorBech32, uatomAmount, memo, denom) {
-  const txSkeleton = createSkeletonCyber(txContext);
+function createSendCyber(
+  txContext,
+  validatorBech32,
+  uatomAmount,
+  memo,
+  denom,
+  cli,
+  addressFrom
+) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+  let fromAddress = '';
+
+  if (txContext !== null && !cli) {
+    fromAddress = txContext.bech32;
+  } else {
+    fromAddress = addressFrom;
+  }
 
   const txMsg = {
     type: 'cosmos-sdk/MsgSend',
@@ -320,7 +335,7 @@ function createSendCyber(txContext, validatorBech32, uatomAmount, memo, denom) {
           denom,
         },
       ],
-      from_address: txContext.bech32,
+      from_address: fromAddress,
       to_address: validatorBech32,
     },
   };

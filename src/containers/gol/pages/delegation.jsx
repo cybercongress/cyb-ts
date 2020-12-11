@@ -16,7 +16,7 @@ import {
 } from '../../../components';
 import { cybWon, getDisciplinesAllocation } from '../../../utils/fundingMath';
 import TableDiscipline from '../table';
-import { getDelegator, formatNumber, sort } from '../../../utils/utils';
+import { fromBech32, formatNumber, sort } from '../../../utils/utils';
 
 import { COSMOS, TAKEOFF, DISTRIBUTION } from '../../../utils/config';
 
@@ -126,7 +126,7 @@ class GolDelegation extends React.Component {
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      const validatorAddress = getDelegator(address.bech32, 'cybervaloper');
+      const validatorAddress = fromBech32(address.bech32, 'cybervaloper');
 
       this.setState({
         addressLedger: address,

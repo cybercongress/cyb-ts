@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getDelegator } from '../../utils/utils';
+import { fromBech32 } from '../../utils/utils';
 import {
   getTxCosmos,
   getAmountATOM,
@@ -54,6 +54,7 @@ function useGetAtom(addressCyber) {
       let addEstimation = 0;
 
       const dataTxs = await getTxCosmos();
+      const addressCosmos = fromBech32(addressCyber, 'cosmos');
       if (dataTxs !== null) {
         if (dataTxs.total_count > dataTxs.count) {
           const allPage = Math.ceil(dataTxs.total_count / dataTxs.count);
@@ -66,7 +67,6 @@ function useGetAtom(addressCyber) {
           }
         }
       }
-      const addressCosmos = getDelegator(addressCyber, 'cosmos');
       if (dataTxs && Object.keys(dataTxs.txs).length > 0) {
         const dataTx = dataTxs.txs;
         for (let item = 0; item < dataTx.length; item += 1) {
@@ -105,7 +105,7 @@ function useGetGol(address) {
 
   useEffect(() => {
     const feachData = async () => {
-      const dataValidatorAddress = getDelegator(address, 'cybervaloper');
+      const dataValidatorAddress = fromBech32(address, 'cybervaloper');
       const dataGetValidatorsInfo = await getValidatorsInfo(
         dataValidatorAddress
       );

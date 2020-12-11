@@ -57,8 +57,14 @@ const Unbonding = ({ amount, stages, entries }) => (
       overflow="hidden"
     >
       {stages > 1
-        ? `${formatCurrency(amount)} in ${stages} stages`
-        : `${formatCurrency(entries[0].balance)} in 
+        ? `${formatCurrency(
+            amount,
+            CYBER.DENOM_CYBER.toUpperCase()
+          )} in ${stages} stages`
+        : `${formatCurrency(
+            entries[0].balance,
+            CYBER.DENOM_CYBER.toUpperCase()
+          )} in 
       ${getDaysIn(entries[0].completion_time)} days`}
     </Pane>
     <Tooltip

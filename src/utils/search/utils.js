@@ -243,7 +243,7 @@ export const getRankGrade = rank => {
       to = 0.0000043;
       value = 6;
       break;
-    case rank > 0.0000014:
+    case rank <= 0.0000027:
       from = 0.0000014;
       to = 0.0000027;
       value = 7;
@@ -491,7 +491,7 @@ export const getTotalEUL = async data => {
     rewards: 0,
     total: 0,
   };
-  console.log(data);
+
   if (data) {
     if (data.available && data.available !== 0) {
       balance.total += Math.floor(parseFloat(data.available.amount));
@@ -536,7 +536,7 @@ export const getTotalEUL = async data => {
       );
       balance.total += Math.floor(parseFloat(data.val_commission[0].amount));
     }
-    // const validatorAddress = getDelegator(account, 'cybervaloper');
+    // const validatorAddress = fromBech32(account, 'cybervaloper');
     // const resultGetDistribution = await getDistribution(validatorAddress);
     // if (resultGetDistribution) {
     //   balance.commission += Math.floor(

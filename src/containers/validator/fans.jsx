@@ -18,58 +18,60 @@ const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
 
 const Fans = ({ data }) => {
-  const containerReference = useRef();
-  const [itemsToShow, setItemsToShow] = useState(10);
+  // const containerReference = useRef();
+  // const [itemsToShow, setItemsToShow] = useState(10);
 
-  const setNextDisplayedPalettes = useCallback(() => {
-    setItemsToShow(itemsToShow + 10);
-  }, [itemsToShow, setItemsToShow]);
+  // const setNextDisplayedPalettes = useCallback(() => {
+  //   setItemsToShow(itemsToShow + 10);
+  // }, [itemsToShow, setItemsToShow]);
 
-  const displayedPalettes = useMemo(
-    () => data.sort((a, b) => b.balance - a.balance).slice(0, itemsToShow),
-    [itemsToShow]
-  );
+  // const displayedPalettes = useMemo(
+  //   () => data.sort((a, b) => b.balance - a.balance).slice(0, itemsToShow),
+  //   [itemsToShow]
+  // );
 
-  const delegations = displayedPalettes.map(item => (
-    <Table.Row
-      paddingX={0}
-      paddingY={5}
-      display="flex"
-      borderBottom="none"
-      minHeight="48px"
-      height="fit-content"
-      key={item.delegator_address}
-    >
-      <Table.TextCell>
-        <TextTable>
-          <Account address={item.delegator_address} />
-        </TextTable>
-      </Table.TextCell>
-      <Table.TextCell flex={2} textAlign="end">
-        <Tooltip
-          position="bottom"
-          content={`${formatNumber(
-            parseFloat(item.balance.amount)
-          )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-        >
+  const delegations = data
+    .sort((a, b) => b.balance - a.balance)
+    .map((item) => (
+      <Table.Row
+        paddingX={0}
+        paddingY={5}
+        display="flex"
+        borderBottom="none"
+        minHeight="48px"
+        height="fit-content"
+        key={item.delegator_address}
+      >
+        <Table.TextCell>
           <TextTable>
-            {formatCurrency(
-              item.balance.amount,
-              CYBER.DENOM_CYBER.toUpperCase()
-            )}
+            <Account address={item.delegator_address} />
           </TextTable>
-        </Tooltip>
-      </Table.TextCell>
-      <Table.TextCell textAlign="end">
-        <TextTable>
-          {item.share * 100 < 0.01
-            ? '< 0.01'
-            : formatNumber(item.share * 100, 2)}{' '}
-          %
-        </TextTable>
-      </Table.TextCell>
-    </Table.Row>
-  ));
+        </Table.TextCell>
+        <Table.TextCell flex={2} textAlign="end">
+          <Tooltip
+            position="bottom"
+            content={`${formatNumber(
+              parseFloat(item.balance.amount)
+            )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+          >
+            <TextTable>
+              {formatCurrency(
+                item.balance.amount,
+                CYBER.DENOM_CYBER.toUpperCase()
+              )}
+            </TextTable>
+          </Tooltip>
+        </Table.TextCell>
+        <Table.TextCell textAlign="end">
+          <TextTable>
+            {item.share * 100 < 0.01
+              ? '< 0.01'
+              : formatNumber(item.share * 100, 2)}{' '}
+            %
+          </TextTable>
+        </Table.TextCell>
+      </Table.Row>
+    ));
   return (
     <Table>
       <Table.Head
@@ -98,7 +100,7 @@ const Fans = ({ data }) => {
           padding: 7,
         }}
       >
-        <div
+        {/* <div
           style={{
             height: '30vh',
             overflow: 'auto',
@@ -106,16 +108,16 @@ const Fans = ({ data }) => {
           ref={containerReference}
         >
           <InfiniteScroll
-            hasMore={itemsToShow < delegations.length}
+            hasMore={itemsToShow < data.length}
             loader={<Loading />}
             pageStart={0}
             useWindow={false}
             loadMore={setNextDisplayedPalettes}
             getScrollParent={() => containerReference.current}
-          >
+          > */}
             {delegations.length > 0 ? delegations : <Noitem text="No fans" />}
-          </InfiniteScroll>
-        </div>
+          {/* </InfiniteScroll>
+        </div> */}
       </Table.Body>
     </Table>
   );

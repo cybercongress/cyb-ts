@@ -1,8 +1,10 @@
 import React from 'react';
-import { Pane, Rank } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import ContentItem from '../contentItem';
 import Noitem from '../../account/noItem';
+import { Rank } from '../../../components';
 import { getRankGrade } from '../../../utils/search/utils';
+import { exponentialToDecimal } from '../../../utils/utils';
 
 function AnswersTab({ data, mobile, nodeIpfs }) {
   if (data.length > 0) {
@@ -24,7 +26,13 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
                   className="time-discussion rank-contentItem"
                   position="absolute"
                 >
-                  <Rank hash={item.cid} rank={item.rank} grade={grade} />
+                  <Rank
+                    hash={item.cid}
+                    rank={exponentialToDecimal(
+                      parseFloat(item.rank).toPrecision(3)
+                    )}
+                    grade={grade}
+                  />
                 </Pane>
               )}
               <ContentItem

@@ -1,6 +1,4 @@
-import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import React, { useState, useEffect } from 'react';
 import LocalizedStrings from 'react-localization';
 import { Link } from 'react-router-dom';
 import {
@@ -15,15 +13,16 @@ import {
   Battery,
   Icon,
   IconButton,
-  Tooltip,
 } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
+import { Tooltip } from '../tooltip/tooltip';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString } from '../../utils/utils';
+import ButtonImgText from '../Button/buttonImgText';
 
 import { i18n } from '../../i18n/en';
 
@@ -86,6 +85,14 @@ const param = {
   },
 };
 
+const imgLedger = require('../../image/ledger.svg');
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgMetaMask = require('../../image/mm-logo.svg');
+const imgRead = require('../../image/duplicate-outline.svg');
+const imgEth = require('../../image/Ethereum_logo_2014.svg');
+const imgCyber = require('../../image/blue-circle.png');
+const imgCosmos = require('../../image/cosmos-2.svg');
+
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
 
@@ -106,6 +113,26 @@ export const ActionBarContentText = ({ children, ...props }) => (
     {...props}
   >
     {children}
+  </Pane>
+);
+
+const ButtonIcon = ({ img, active, disabled, text, ...props }) => (
+  <Pane>
+    <Tooltip placement="top" tooltip={<Pane>{text}</Pane>}>
+      <button
+        type="button"
+        style={{
+          // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
+          margin: '0 10px',
+          padding: '5px 0',
+        }}
+        className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
+        disabled={disabled}
+        {...props}
+      >
+        <img src={img} alt="img" />
+      </button>
+    </Tooltip>
   </Pane>
 );
 
@@ -262,8 +289,9 @@ export const StartStageSearchActionBar = ({
   onChangeInput,
   onClickClear,
   file,
-  textBtn = T.actionBar.startSearch.cyberlink,
+  textBtn = 'Cyberlink',
   placeholder = 'add keywords, hash or file',
+  keys = 'ledger',
 }) => {
   return (
     <ActionBar>
@@ -321,9 +349,27 @@ export const StartStageSearchActionBar = ({
             </Pane>
           </Pane>
         </ActionBarContentText>
-        <Button disabled={!contentHash.length} onClick={onClickBtn}>
-          {textBtn}
-        </Button>
+        <ButtonImgText
+          text={
+            <Pane alignItems="center" display="flex">
+              {textBtn}{' '}
+              <img
+                src={imgCyber}
+                alt="cyber"
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginLeft: '5px',
+                  paddingTop: '2px',
+                  objectFit: 'contain',
+                }}
+              />
+            </Pane>
+          }
+          disabled={!contentHash.length}
+          onClick={onClickBtn}
+          img={keys === 'ledger' ? imgLedger : imgKeplr}
+        />
       </Pane>
     </ActionBar>
   );
@@ -989,61 +1035,48 @@ export const ReDelegate = ({
 
 export const SendLedger = ({
   onClickBtn,
-  address,
-  availableStake,
   valueInputAmount,
   valueInputAddressTo,
   onChangeInputAmount,
   onChangeInputAddressTo,
-  onClickBtnCloce,
   disabledBtn,
+  addressToValid,
+  amountSendInputValid,
 }) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div className="display-flex align-items-center">
-      <span className="actionBar-text">{address}</span>
-      <button
-        className="copy-address"
-        onClick={() => {
-          navigator.clipboard.writeText(address);
-        }}
-      />
-    </div>
-
-    <div>
-      <h3 className="text-align-center">{T.actionBar.send.send}</h3>
-      <p className="text-align-center">{T.actionBar.send.wallet}</p>
-      <span className="actionBar-text">{availableStake}</span>
-
-      <div
-        style={{ marginBottom: 30, marginTop: 30 }}
-        className="text-align-center"
-      >
-        <input
+  <ActionBar>
+    <Pane display="flex" className="contentItem">
+      <ActionBarContentText>
+        <Input
           value={valueInputAddressTo}
-          style={{ marginRight: 10, width: '70%' }}
+          height={42}
+          marginRight={10}
+          width="300px"
           onChange={onChangeInputAddressTo}
-          placeholder="address"
+          placeholder="cyber address To"
+          isInvalid={addressToValid !== null}
+          message={addressToValid}
         />
 
-        <input
+        <Input
           value={valueInputAmount}
-          style={{ width: '24%' }}
+          height={42}
+          width="24%"
           onChange={onChangeInputAmount}
-          placeholder="amount GEUL"
+          placeholder="EUL"
+          isInvalid={amountSendInputValid !== null}
+          message={amountSendInputValid}
         />
-      </div>
-      <div className="text-align-center">
-        <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
-          {T.actionBar.send.generate}
-        </button>
-      </div>
-    </div>
-  </ContainetLedger>
+      </ActionBarContentText>
+      <button
+        type="button"
+        className="btn-disabled"
+        disabled={disabledBtn}
+        onClick={onClickBtn}
+      >
+        Generate Tx
+      </button>
+    </Pane>
+  </ActionBar>
 );
 
 export const SendLedgerAtomTot = ({
@@ -1279,5 +1312,192 @@ export const RewardsDelegators = ({
         </button>
       </div>
     </ContainetLedger>
+  );
+};
+
+export const ConnectAddress = ({
+  selectMethodFunc,
+  selectMethod,
+  selectNetworkFunc,
+  selectNetwork,
+  connctAddress,
+  web3,
+  selectAccount,
+  keplr,
+}) => {
+  const [cyberNetwork, setCyberNetwork] = useState(true);
+  const [cosmosNetwork, setCosmosNetwork] = useState(true);
+  const [ethNetwork, setEthrNetwork] = useState(true);
+
+  useEffect(() => {
+    if (selectAccount && selectAccount !== null) {
+      if (selectAccount.cyber) {
+        setCyberNetwork(false);
+      } else {
+        setCyberNetwork(true);
+      }
+      if (selectAccount.cosmos) {
+        setCosmosNetwork(false);
+      } else {
+        setCosmosNetwork(true);
+      }
+      if (selectAccount.eth) {
+        setEthrNetwork(false);
+      } else {
+        setEthrNetwork(true);
+      }
+    } else {
+      setEthrNetwork(true);
+      setCosmosNetwork(true);
+      setCyberNetwork(true);
+    }
+  }, [selectAccount]);
+
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+        >
+          {(cyberNetwork || cosmosNetwork) && (
+            <>
+              <ButtonIcon
+                onClick={() => selectMethodFunc('ledger')}
+                active={selectMethod === 'ledger'}
+                img={imgLedger}
+                text="ledger"
+              />
+              {keplr && (
+                <ButtonIcon
+                  onClick={() => selectMethodFunc('keplr')}
+                  active={selectMethod === 'keplr'}
+                  img={imgKeplr}
+                  text="keplr"
+                />
+              )}
+            </>
+          )}
+          {web3 && web3 !== null && ethNetwork && (
+            <ButtonIcon
+              onClick={() => selectMethodFunc('MetaMask')}
+              active={selectMethod === 'MetaMask'}
+              img={imgMetaMask}
+              text="metaMask"
+            />
+          )}
+          {(cyberNetwork || cosmosNetwork) && (
+            <ButtonIcon
+              onClick={() => selectMethodFunc('read-only')}
+              active={selectMethod === 'read-only'}
+              img={imgRead}
+              text="read-only"
+            />
+          )}
+        </Pane>
+        <span style={{ fontSize: '18px' }}>in</span>
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+        >
+          {selectMethod === 'MetaMask' && (
+            <ButtonIcon
+              img={imgEth}
+              text="eth"
+              onClick={() => selectNetworkFunc('eth')}
+              active={selectNetwork === 'eth'}
+            />
+          )}
+          {selectMethod !== 'MetaMask' && (
+            <>
+              {cyberNetwork && (
+                <ButtonIcon
+                  onClick={() => selectNetworkFunc('cyber')}
+                  active={selectNetwork === 'cyber'}
+                  img={imgCyber}
+                  text="cyber"
+                />
+              )}
+              {cosmosNetwork && (
+                <ButtonIcon
+                  img={imgCosmos}
+                  text="cosmos"
+                  onClick={() => selectNetworkFunc('cosmos')}
+                  active={selectNetwork === 'cosmos'}
+                />
+              )}
+            </>
+          )}
+        </Pane>
+      </ActionBarContentText>
+      <Button
+        disabled={selectNetwork === '' || selectMethod === ''}
+        onClick={() => connctAddress()}
+      >
+        connect
+      </Button>
+    </ActionBar>
+  );
+};
+
+export const SetHdpath = ({
+  hdpath,
+  onChangeAccount,
+  onChangeIndex,
+  addressLedger,
+  hdPathError,
+  addAddressLedger,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane>
+          <Pane
+            display="flex"
+            alignItems="center"
+            flex={1}
+            justifyContent="center"
+          >
+            <Text color="#fff" fontSize="20px">
+              HD derivation path: {hdpath[0]}/{hdpath[1]}/
+            </Text>
+            <Input
+              value={hdpath[2]}
+              onChange={(e) => onChangeAccount(e)}
+              width="50px"
+              height={42}
+              marginLeft={3}
+              marginRight={3}
+              fontSize="20px"
+              textAlign="end"
+            />
+            <Text color="#fff" fontSize="20px">
+              /{hdpath[3]}/
+            </Text>
+            <Input
+              value={hdpath[4]}
+              onChange={(e) => onChangeIndex(e)}
+              width="50px"
+              marginLeft={3}
+              height={42}
+              fontSize="20px"
+              textAlign="end"
+            />
+          </Pane>
+          {addressLedger !== null ? (
+            <Pane>{trimString(addressLedger.bech32, 10, 3)}</Pane>
+          ) : (
+            <Dots />
+          )}
+        </Pane>
+      </ActionBarContentText>
+      <Button disabled={hdPathError} onClick={() => addAddressLedger()}>
+        Apply
+      </Button>
+    </ActionBar>
   );
 };

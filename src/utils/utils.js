@@ -2,7 +2,7 @@ import bech32 from 'bech32';
 import { CYBER } from './config';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
-const DEFAULT_CURRENCY = 'GOL';
+const DEFAULT_CURRENCY = 'GoL';
 
 const ORDER = {
   NONE: 'NONE',
@@ -75,14 +75,29 @@ export function formatCurrency(
   )} ${prefix}${currency.toLocaleUpperCase()}`;
 }
 
+export const formatCurrencyNumber = (
+  value,
+  currency = DEFAULT_CURRENCY,
+  decimalDigits = DEFAULT_DECIMAL_DIGITS,
+  prefixCustom = PREFIXES
+) => {
+  const { prefix = '', power = 1 } =
+    prefixCustom.find(({ power }) => value >= power) || {};
+
+  return {
+    number: roundNumber(value / power, decimalDigits),
+    currency: `${prefix}${currency.toLocaleUpperCase()}`,
+  };
+};
+
 const getDecimal = (number, toFixed) => {
   const nstring = number.toString();
   const narray = nstring.split('.');
-  const result = narray.length > 1 ? narray[1] : '0';
+  const result = narray.length > 1 ? narray[1] : '000';
   return result;
 };
 
-const run = async func => {
+const run = async (func) => {
   try {
     await func();
   } catch (error) {
@@ -96,11 +111,11 @@ const asyncForEach = async (array, callback) => {
   }
 };
 
-const timer = func => {
+const timer = (func) => {
   setInterval(func, 1000);
 };
 
-const getDelegator = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
+const fromBech32 = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
   const address = bech32.decode(operatorAddr);
   return bech32.encode(prefix, address.words);
 };
@@ -120,7 +135,7 @@ const trimString = (address, firstArg, secondArg) => {
   return '';
 };
 
-const msgType = type => {
+const msgType = (type) => {
   switch (type) {
     // cyberd
     case 'cyberd/Link':
@@ -175,7 +190,7 @@ const msgType = type => {
   }
 };
 
-const exponentialToDecimal = exponential => {
+const exponentialToDecimal = (exponential) => {
   let decimal = exponential.toString().toLowerCase();
   if (decimal.includes('e+')) {
     const exponentialSplitted = decimal.split('e+');
@@ -191,7 +206,7 @@ const exponentialToDecimal = exponential => {
     ) {
       postfix += '0';
     }
-    const addCommas = text => {
+    const addCommas = (text) => {
       let j = 3;
       let textLength = text.length;
       while (j < textLength) {
@@ -223,7 +238,7 @@ function dhm(t) {
   let d = Math.floor(t / cd);
   let h = Math.floor((t - d * cd) / ch);
   let m = Math.round((t - d * cd - h * ch) / 60000);
-  const pad = function(n, unit) {
+  const pad = function (n, unit) {
     return n < 10 ? `0${n}${unit}` : n;
   };
   if (m === 60) {
@@ -274,7 +289,7 @@ const downloadObjectAsJson = (exportObj, exportName) => {
   downloadAnchorNode.remove();
 };
 
-const getTimeRemaining = endtime => {
+const getTimeRemaining = (endtime) => {
   const t = Date.parse(endtime) - Date.parse(new Date());
   const seconds = Math.floor((t / 1000) % 60);
   const minutes = Math.floor((t / 1000 / 60) % 60);
@@ -320,7 +335,7 @@ export {
   asyncForEach,
   timer,
   getDecimal,
-  getDelegator,
+  fromBech32,
   trimString,
   msgType,
   exponentialToDecimal,

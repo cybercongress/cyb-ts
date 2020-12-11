@@ -1,6 +1,12 @@
 import React from 'react';
-import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
+import {
+  Pane,
+  Text,
+  TableEv as Table,
+  ActionBar,
+} from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {
   Votes,
@@ -23,6 +29,7 @@ import {
   getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
@@ -30,7 +37,7 @@ import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 
 const dateFormat = require('dateformat');
 
-const finalTallyResult = item => {
+const finalTallyResult = (item) => {
   const finalVotes = {
     yes: 0,
     no: 0,
@@ -240,10 +247,11 @@ class ProposalsDetail extends React.Component {
 
     const getVotes = await getProposalsDetailVotes(id);
     if (getVotes) {
-      yes = getVotes.filter(item => item.option === 'Yes').length;
-      no = getVotes.filter(item => item.option === 'No').length;
-      abstain = getVotes.filter(item => item.option === 'Abstain').length;
-      noWithVeto = getVotes.filter(item => item.option === 'NoWithVeto').length;
+      yes = getVotes.filter((item) => item.option === 'Yes').length;
+      no = getVotes.filter((item) => item.option === 'No').length;
+      abstain = getVotes.filter((item) => item.option === 'Abstain').length;
+      noWithVeto = getVotes.filter((item) => item.option === 'NoWithVeto')
+        .length;
     }
 
     votes.voter = getVotes;
@@ -273,7 +281,7 @@ class ProposalsDetail extends React.Component {
     });
   };
 
-  getSubStr = str => {
+  getSubStr = (str) => {
     let string = str;
     if (string.indexOf('cosmos-sdk/') !== -1) {
       string = string.slice(string.indexOf('/') + 1);
@@ -296,6 +304,7 @@ class ProposalsDetail extends React.Component {
       tableVoters,
       period,
     } = this.state;
+    const { defaultAccount, keplr } = this.props;
 
     return (
       <div>
@@ -373,16 +382,42 @@ class ProposalsDetail extends React.Component {
             <ProposalsIdDetailTableVoters data={tableVoters} votes={votes} />
           </Pane>
         </main>
-        <ActionBarDetail
-          id={id}
-          period={period}
-          minDeposit={minDeposit}
-          totalDeposit={totalDeposit}
-          update={this.init}
-        />
+        {defaultAccount.account !== null && defaultAccount.account.cyber ? (
+          <ActionBarDetail
+            id={id}
+            period={period}
+            minDeposit={minDeposit}
+            totalDeposit={totalDeposit}
+            update={this.init}
+            defaultAccount={defaultAccount.account.cyber}
+            keplr={keplr}
+          />
+        ) : (
+          <ActionBar>
+            <Pane>
+              <Link
+                style={{
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  display: 'block',
+                }}
+                className="btn"
+                to="/pocket"
+              >
+                add address to your pocket
+              </Link>
+            </Pane>
+          </ActionBar>
+        )}
       </div>
     );
   }
 }
 
-export default ProposalsDetail;
+const mapStateToProps = (store) => {
+  return {
+    defaultAccount: store.pocket.defaultAccount,
+  };
+};
+
+export default connect(mapStateToProps)(injectKeplr(ProposalsDetail));

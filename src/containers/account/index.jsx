@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
+import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import GetLink from './link';
@@ -24,7 +24,7 @@ import {
 // import Balance fro./mainnce';
 import Heroes from './heroes';
 import Unbondings from './unbondings';
-import { getDelegator, formatNumber, asyncForEach } from '../../utils/utils';
+import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading, Copy, ContainerCard, Card } from '../../components';
 import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
@@ -36,6 +36,8 @@ import { setGolTakeOff } from '../../redux/actions/gol';
 import FeedsTab from './feeds';
 import FollowsTab from './follows';
 import AvatarIpfs from './avatarIpfs';
+import injectKeplr from '../../components/web3/injectKeplr';
+import CyberLinkCount from './cyberLinkCount';
 
 import { COSMOS, PATTERN_CYBER } from '../../utils/config';
 
@@ -64,7 +66,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
-const QueryAddress = address =>
+const QueryAddress = (address) =>
   `query cyberlink {
     cyberlink_aggregate(where: {subject: {_eq: "${address}"}}) {
       aggregate {
@@ -79,6 +81,7 @@ class AccountDetails extends React.Component {
     this.state = {
       account: '',
       keywordHash: '',
+      addressLocalStor: null,
       loader: true,
       loading: true,
       validatorAddress: null,
@@ -113,7 +116,7 @@ class AccountDetails extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { location, match } = this.props;
+    const { location, match, defaultAccount } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.getBalanseAccount();
       this.chekPathname();
@@ -121,6 +124,11 @@ class AccountDetails extends React.Component {
     if (prevProps.match.params.address !== match.params.address) {
       this.clearState();
       this.init();
+    }
+
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.chekAddress();
+      this.chekFollowAddress();
     }
   }
 
@@ -170,13 +178,16 @@ class AccountDetails extends React.Component {
   };
 
   chekFollowAddress = async () => {
+    const { defaultAccount } = this.props;
     const { match } = this.props;
     const { address: addressProps } = match.params;
-    const { addressLedger } = this.state;
     const address = await getIpfsHash(addressProps);
 
-    if (addressLedger !== null) {
-      const response = await chekFollow(addressLedger, address);
+    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
+      const response = await chekFollow(
+        defaultAccount.account.cyber.bech32,
+        address
+      );
       if (response !== null && response.txs.length > 0) {
         this.setState({
           follow: false,
@@ -187,9 +198,9 @@ class AccountDetails extends React.Component {
   };
 
   chekAddress = async () => {
-    const { location } = this.props;
+    const { location, defaultAccount } = this.props;
     const { pathname } = location;
-    let address = null;
+    const { account } = defaultAccount;
     let locationAddress;
     if (
       pathname.match(/cyber[a-zA-Z0-9]{39}/gm) &&
@@ -197,22 +208,34 @@ class AccountDetails extends React.Component {
     ) {
       locationAddress = pathname.match(/cyber[a-zA-Z0-9]{39}/gm);
     }
-    const localStorageStory = localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address.bech32 });
-    }
 
-    if (address !== null && address.bech32 === locationAddress[0]) {
-      this.setState({
-        follow: false,
-        tweets: true,
-      });
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      const { keys } = account.cyber;
+      if (keys !== 'read-only') {
+        if (account.cyber.bech32 === locationAddress[0]) {
+          this.setState({
+            follow: false,
+            tweets: true,
+            addressLocalStor: { ...account.cyber },
+          });
+        } else {
+          this.setState({
+            follow: true,
+            tweets: false,
+            addressLocalStor: { ...account.cyber },
+          });
+        }
+      } else {
+        this.setState({
+          addressLocalStor: null,
+        });
+      }
     } else {
       this.setState({
-        follow: true,
-        tweets: false,
+        addressLocalStor: null,
       });
     }
   };
@@ -315,7 +338,7 @@ class AccountDetails extends React.Component {
 
     let estimation = 0;
     let addEstimation = 0;
-    const addressCosmos = getDelegator(address, 'cosmos');
+    const addressCosmos = fromBech32(address, 'cosmos');
 
     if (dataTxs) {
       for (let item = 0; item < dataTxs.length; item += 1) {
@@ -404,7 +427,7 @@ class AccountDetails extends React.Component {
     const result = await getBalance(address);
     console.log('result', result);
 
-    const dataValidatorAddress = getDelegator(address, 'cybervaloper');
+    const dataValidatorAddress = fromBech32(address, 'cybervaloper');
     const dataGetValidatorsInfo = await getValidatorsInfo(dataValidatorAddress);
 
     if (dataGetValidatorsInfo !== null) {
@@ -414,11 +437,11 @@ class AccountDetails extends React.Component {
 
     const resultGetDistribution = await getDistribution(dataValidatorAddress);
 
-    const indexStats = await getGraphQLQuery(QueryAddress(address));
+    // const indexStats = await getGraphQLQuery(QueryAddress(address));
 
-    if (indexStats !== null && indexStats.cyberlink_aggregate) {
-      linksCount = indexStats.cyberlink_aggregate.aggregate.count;
-    }
+    // if (indexStats !== null && indexStats.cyberlink_aggregate) {
+    //   linksCount = indexStats.cyberlink_aggregate.aggregate.count;
+    // }
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -501,9 +524,10 @@ class AccountDetails extends React.Component {
       linksCount,
       following,
       followers,
+      addressLocalStor,
     } = this.state;
 
-    const { node, mobile } = this.props;
+    const { node, mobile, keplr } = this.props;
 
     let content;
 
@@ -627,7 +651,7 @@ class AccountDetails extends React.Component {
           <ContainerCard col={3}>
             <Card
               title="cyberlinks"
-              value={formatNumber(linksCount)}
+              value={<CyberLinkCount accountUser={account} />}
               stylesContainer={{
                 width: '100%',
                 maxWidth: 'unset',
@@ -701,33 +725,55 @@ class AccountDetails extends React.Component {
             {content}
           </Pane>
         </main>
-        {!mobile && (
-          <ActionBarContainer
-            updateAddress={this.init}
-            addressSend={account}
-            type={selected}
-            addressLedger={addressLedger}
-            follow={follow}
-            tweets={tweets}
-          />
-        )}
+        {!mobile &&
+          (addressLocalStor !== null ? (
+            <ActionBarContainer
+              updateAddress={this.init}
+              addressSend={account}
+              type={selected}
+              follow={follow}
+              tweets={tweets}
+              defaultAccount={addressLocalStor}
+              keplr={keplr}
+            />
+          ) : (
+            <ActionBar>
+              <Pane>
+                <Link
+                  style={{
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    display: 'block',
+                  }}
+                  className="btn"
+                  to="/gol"
+                >
+                  add address to your pocket
+                </Link>
+              </Pane>
+            </ActionBar>
+          ))}
       </div>
     );
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolTakeOffProps: (amount, prize) =>
       dispatch(setGolTakeOff(amount, prize)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchprops)(AccountDetails);
+export default connect(
+  mapStateToProps,
+  mapDispatchprops
+)(injectKeplr(AccountDetails));

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -28,6 +27,10 @@ import {
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 
+const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
+
 const {
   MEMO,
   HDPATH,
@@ -48,20 +51,19 @@ const CREATE_LINK = 10;
 const ADD_ADDRESS = 2.1;
 const LEDGER_TX_ACOUNT_INFO = 12;
 const STAGE_ADD_ADDRESS_OK = 2.2;
+const STAGE_IPFS_HASH = 3.1;
+const STAGE_KEPLR_APPROVE = 3.2;
 
 class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      init: false,
-      ledger: null,
       address: null,
       addressLocalStor: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
-      time: 0,
       bandwidth: {
         remained: 0,
         max_value: 0,
@@ -73,7 +75,6 @@ class ActionBarContainer extends Component {
       txBody: null,
       txHeight: null,
       txHash: null,
-      error: null,
       errorMessage: null,
       file: null,
       connectLedger: null,
@@ -86,12 +87,11 @@ class ActionBarContainer extends Component {
 
   async componentDidMount() {
     console.warn('Looking for Ledger Nano');
-    await this.checkAddressLocalStorage();
+    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate() {
     const { stage, address, addressInfo, fromCid, toCid } = this.state;
-    const { addAddress } = this.props;
     if (
       stage === STAGE_LEDGER_INIT ||
       stage === STAGE_READY ||
@@ -106,8 +106,14 @@ class ActionBarContainer extends Component {
         this.stageReady();
       }
     }
-    if (!addAddress && stage === STAGE_ADD_ADDRESS_OK) {
-      this.cleatState();
+    if (
+      stage === STAGE_IPFS_HASH &&
+      fromCid &&
+      toCid &&
+      toCid !== null &&
+      fromCid !== null
+    ) {
+      this.generateTxKeplr();
     }
   }
 
@@ -134,61 +140,9 @@ class ActionBarContainer extends Component {
         this.calculationIpfsFrom();
         this.calculationIpfsTo();
       }
-      if (stage === ADD_ADDRESS) {
-        console.log('1 :>> ', stage);
-        this.addAddressLedger();
-      }
     } else {
       this.setState({
         connectLedger: false,
-      });
-    }
-  };
-
-  addAddressLedger = async () => {
-    try {
-      const { updateFunc } = this.props;
-      const accounts = {};
-
-      const addressLedgerCyber = await this.ledger.retrieveAddressCyber(HDPATH);
-      console.log('addressLedgerCyber', addressLedgerCyber);
-      const addressLedgerCosmos = await this.ledger.retrieveAddress(HDPATH);
-
-      accounts.cyber = addressLedgerCyber;
-      accounts.cosmos = addressLedgerCosmos;
-      accounts.keys = 'ledger';
-
-      localStorage.setItem('ledger', JSON.stringify(addressLedgerCyber));
-      localStorage.setItem('pocket', JSON.stringify(accounts));
-
-      if (updateFunc) {
-        updateFunc();
-      }
-      this.setState({
-        stage: STAGE_ADD_ADDRESS_OK,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLocalStor: address });
-    } else {
-      this.setState({
-        addressLocalStor: null,
       });
     }
   };
@@ -231,19 +185,18 @@ class ActionBarContainer extends Component {
     this.link();
   };
 
-  getNetworkId = async () => {
-    const data = await statusNode();
-    return data.node_info.network;
-  };
-
   getAddressInfo = async () => {
     try {
       const { address } = this.state;
       this.setState({
         stage: LEDGER_TX_ACOUNT_INFO,
       });
+      let chainId = '';
       const addressInfo = await this.ledger.getAccountInfoCyber(address);
-      const chainId = await this.getNetworkId();
+      const responseStatusNode = await statusNode();
+      if (responseStatusNode !== null) {
+        chainId = responseStatusNode.node_info.network;
+      }
 
       addressInfo.chainId = chainId;
 
@@ -291,6 +244,40 @@ class ActionBarContainer extends Component {
     });
     // debugger;
     this.signTx();
+  };
+
+  generateTxKeplr = async () => {
+    const { keplr } = this.props;
+    const { fromCid, toCid } = this.state;
+
+    console.log('fromCid, toCid :>> ', fromCid, toCid);
+
+    this.setState({
+      stage: STAGE_KEPLR_APPROVE,
+    });
+
+    await keplr.enable();
+
+    const sender = AccAddress.fromBech32(
+      (await keplr.getKeys())[0].bech32Address,
+      'cyber'
+    );
+    const msg = new MsgLink(sender, [new Link(fromCid, toCid)]);
+
+    const result = await keplr.sendMsgs(
+      [msg],
+      {
+        gas: 100000,
+        memo: CYBER.MEMO_KEPLR,
+        fee: new Coin('eul', 200),
+      },
+      'sync'
+    );
+    console.log('result: ', result);
+    const hash = result.hash.toString('hex').toUpperCase();
+    console.log('hash :>> ', hash);
+    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+    this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
   signTx = async () => {
@@ -367,7 +354,7 @@ class ActionBarContainer extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInput = async e => {
+  onChangeInput = async (e) => {
     const { value } = e.target;
     this.setState({
       contentHash: value,
@@ -408,12 +395,30 @@ class ActionBarContainer extends Component {
   };
 
   onClickInitLedger = async () => {
-    const { stage } = this.state;
-    // this.init();
-    await this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-    this.getLedgerAddress();
+    const { addressPocket } = this.props;
+
+    if (
+      addressPocket !== null &&
+      addressPocket.keys &&
+      addressPocket.keys === 'ledger'
+    ) {
+      await this.setState({
+        stage: STAGE_LEDGER_INIT,
+      });
+      this.getLedgerAddress();
+    }
+
+    if (
+      addressPocket !== null &&
+      addressPocket.keys &&
+      addressPocket.keys === 'keplr'
+    ) {
+      await this.setState({
+        stage: STAGE_IPFS_HASH,
+      });
+      this.calculationIpfsFrom();
+      this.calculationIpfsTo();
+    }
   };
 
   onClickClear = () => {
@@ -422,19 +427,11 @@ class ActionBarContainer extends Component {
     });
   };
 
-  hasKey() {
-    return this.state.address !== null;
-  }
-
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
-
   showOpenFileDlg = () => {
     this.inputOpenFileRef.current.click();
   };
 
-  onFilePickerChange = files => {
+  onFilePickerChange = (files) => {
     const file = files.current.files[0];
 
     this.setState({
@@ -466,23 +463,9 @@ class ActionBarContainer extends Component {
       linkPrice,
       addressLocalStor,
     } = this.state;
-    console.log('stage :>> ', stage);
+    const { addressPocket } = this.props;
 
-    const { addAddress } = this.props;
-
-    console.log('addAddress :>> ', addAddress);
-
-    if (stage === STAGE_INIT && addAddress) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Button onClick={() => this.onClickConnect()}>Connect</Button>
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_INIT && !addAddress) {
+    if (stage === STAGE_INIT) {
       return (
         <StartStageSearchActionBar
           onClickBtn={this.onClickInitLedger}
@@ -497,6 +480,9 @@ class ActionBarContainer extends Component {
           file={file}
           placeholder="What's happening?"
           textBtn="Tweet"
+          keys={
+            addressPocket && addressPocket !== null ? addressPocket.keys : false
+          }
         />
       );
     }
@@ -510,13 +496,22 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (addAddress && stage === STAGE_ADD_ADDRESS_OK) {
+    if (stage === STAGE_IPFS_HASH) {
       return (
         <ActionBar>
-          <Pane display="flex" alignItems="center">
-            <Pane fontSize={20}>adding address</Pane>
-            <Dots big />
-          </Pane>
+          <ActionBarContentText>
+            adding content to IPFS <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_KEPLR_APPROVE) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            approve TX <Dots big />
+          </ActionBarContentText>
         </ActionBar>
       );
     }
@@ -525,7 +520,7 @@ class ActionBarContainer extends Component {
       return <CheckAddressInfo />;
     }
 
-    if (stage === STAGE_READY && this.hasKey() && this.hasWallet()) {
+    if (stage === STAGE_READY) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -573,7 +568,7 @@ class ActionBarContainer extends Component {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
   };

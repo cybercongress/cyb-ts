@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link } from 'react-router-dom';
+import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { CosmosDelegateTool } from '../../utils/ledger';
@@ -26,7 +26,10 @@ import {
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH, POCKET } from '../../utils/config';
-import { trimString } from '../../utils/utils';
+
+const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
 
 const {
   MEMO,
@@ -47,6 +50,8 @@ const {
 const CREATE_LINK = 10;
 const ADD_ADDRESS = 11;
 const LEDGER_TX_ACOUNT_INFO = 12;
+const STAGE_IPFS_HASH = 3.1;
+const STAGE_KEPLR_APPROVE = 3.2;
 
 class ActionBarTweet extends Component {
   constructor(props) {
@@ -56,7 +61,6 @@ class ActionBarTweet extends Component {
       init: false,
       ledger: null,
       address: null,
-      addressLocalStor: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
@@ -88,7 +92,7 @@ class ActionBarTweet extends Component {
   async componentDidMount() {
     this.getNameBtn();
     console.warn('Looking for Ledger Nano');
-    await this.checkAddressLocalStorage();
+    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate(prevProps) {
@@ -107,9 +111,19 @@ class ActionBarTweet extends Component {
       ) {
         this.stageReady();
       }
-      if (prevProps.refresh !== refresh) {
-        this.getNameBtn();
-      }
+    }
+
+    if (prevProps.refresh !== refresh) {
+      this.getNameBtn();
+    }
+    if (
+      stage === STAGE_IPFS_HASH &&
+      fromCid &&
+      toCid &&
+      toCid !== null &&
+      fromCid !== null
+    ) {
+      this.generateTxKeplr();
     }
   }
 
@@ -154,21 +168,6 @@ class ActionBarTweet extends Component {
     } else {
       this.setState({
         connectLedger: false,
-      });
-    }
-  };
-
-  checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLocalStor: address });
-    } else {
-      this.setState({
-        addressLocalStor: null,
       });
     }
   };
@@ -287,6 +286,40 @@ class ActionBarTweet extends Component {
     this.signTx();
   };
 
+  generateTxKeplr = async () => {
+    const { keplr } = this.props;
+    const { fromCid, toCid } = this.state;
+
+    console.log('fromCid, toCid :>> ', fromCid, toCid);
+
+    this.setState({
+      stage: STAGE_KEPLR_APPROVE,
+    });
+
+    await keplr.enable();
+
+    const sender = AccAddress.fromBech32(
+      (await keplr.getKeys())[0].bech32Address,
+      'cyber'
+    );
+    const msg = new MsgLink(sender, [new Link(fromCid, toCid)]);
+
+    const result = await keplr.sendMsgs(
+      [msg],
+      {
+        gas: 100000,
+        memo: CYBER.MEMO_KEPLR,
+        fee: new Coin('eul', 200),
+      },
+      'sync'
+    );
+    console.log('result: ', result);
+    const hash = result.hash.toString('hex').toUpperCase();
+    console.log('hash :>> ', hash);
+    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+    this.timeOut = setTimeout(this.confirmTx, 1500);
+  };
+
   signTx = async () => {
     const { txMsg, txContext } = this.state;
     // console.log('txContext', txContext);
@@ -361,7 +394,7 @@ class ActionBarTweet extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInput = async e => {
+  onChangeInput = async (e) => {
     const { value } = e.target;
     this.setState({
       contentHash: value,
@@ -402,11 +435,22 @@ class ActionBarTweet extends Component {
   };
 
   onClickInitLedger = async () => {
-    // this.init();
-    await this.setState({
-      stage: STAGE_LEDGER_INIT,
-    });
-    this.getLedgerAddress();
+    const { defaultAccountsKeys } = this.props;
+
+    if (defaultAccountsKeys === 'ledger') {
+      await this.setState({
+        stage: STAGE_LEDGER_INIT,
+      });
+      this.getLedgerAddress();
+    }
+
+    if (defaultAccountsKeys === 'keplr') {
+      await this.setState({
+        stage: STAGE_IPFS_HASH,
+      });
+      this.calculationIpfsFrom();
+      this.calculationIpfsTo();
+    }
   };
 
   onClickClear = () => {
@@ -419,7 +463,7 @@ class ActionBarTweet extends Component {
     this.inputOpenFileRef.current.click();
   };
 
-  onFilePickerChange = files => {
+  onFilePickerChange = (files) => {
     const file = files.current.files[0];
 
     this.setState({
@@ -442,31 +486,18 @@ class ActionBarTweet extends Component {
       errorMessage,
       file,
       linkPrice,
-      addressLocalStor,
       textBtn,
       placeholder,
     } = this.state;
 
-    const { stageTweetActionBar, test } = this.props;
+    const { stageTweetActionBar, defaultAccountsKeys } = this.props;
+console.log('stageTweetActionBar', stageTweetActionBar)
+    console.log('defaultAccountsKeys :>> ', defaultAccountsKeys);
 
-    if (stage === STAGE_INIT && addressLocalStor === null) {
+    if (stage === STAGE_INIT && defaultAccountsKeys === 'read-only') {
       return (
         <ActionBar>
-          <ActionBarContentText>
-            Play Game of Links. Get EUL with
-            <Link
-              style={{
-                paddingTop: 10,
-                margin: '0 15px',
-                paddingBottom: 10,
-                display: 'block',
-              }}
-              className="btn"
-              to="/gol/takeoff"
-            >
-              ATOM
-            </Link>
-          </ActionBarContentText>
+          <ActionBarContentText>Only CLI can be used</ActionBarContentText>
         </ActionBar>
       );
     }
@@ -505,6 +536,26 @@ class ActionBarTweet extends Component {
           onClickClear={this.onClickClear}
           file={file}
         />
+      );
+    }
+
+    if (stage === STAGE_IPFS_HASH) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            adding content to IPFS <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (stage === STAGE_KEPLR_APPROVE) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            approve TX <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
       );
     }
 
@@ -569,7 +620,7 @@ class ActionBarTweet extends Component {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     stageTweetActionBar: store.pocket.actionBar.tweet,

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
+import { keys } from 'regenerator-runtime';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -14,6 +15,7 @@ import {
   ReDelegate,
   TransactionError,
   CheckAddressInfo,
+  Dots,
 } from '../../components';
 
 import { trimString, formatNumber } from '../../utils/utils';
@@ -44,12 +46,24 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
+const {
+  AccAddress,
+  ValAddress,
+} = require('@chainapsis/cosmosjs/common/address');
+const { Coin } = require('@chainapsis/cosmosjs/common/coin');
+const {
+  MsgUndelegate,
+  MsgDelegate,
+  MsgBeginRedelegate,
+} = require('@chainapsis/cosmosjs/x/staking');
+
 const T = new LocalizedStrings(i18n);
 
 export const TXTYPE_DELEGATE = 0;
 export const TXTYPE_UNDELEGATE = 1;
 export const TXTYPE_REDELEGATE = 2;
 const LEDGER_TX_ACOUNT_INFO = 10;
+const LEDGER_GENERATION = 23;
 
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
@@ -95,6 +109,31 @@ class ActionBarContainer extends Component {
     this.ledger = null;
   }
 
+  componentDidMount() {
+    this.ledger = new CosmosDelegateTool();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { validators } = this.props;
+    const { stage, addressInfo, address } = this.state;
+    if (prevProps.validators !== validators && stage === STAGE_READY) {
+      this.stageInit();
+    }
+    if (
+      addressInfo !== null &&
+      address !== null &&
+      stage === LEDGER_GENERATION
+    ) {
+      this.generateTx();
+    }
+  }
+
+  stageInit = () => {
+    this.setState({
+      stage: STAGE_INIT,
+    });
+  };
+
   getLedgerAddress = async () => {
     this.transport = await TransportWebUSB.create(120 * 1000);
     this.ledger = new CosmosDelegateTool(this.transport);
@@ -133,7 +172,7 @@ class ActionBarContainer extends Component {
     const validatorAddres = validators.operator_address;
 
     let addressInfo = {};
-    let balance = 0;
+    const balance = 0;
     try {
       const chainId = await this.getNetworkId();
       console.log(chainId);
@@ -148,7 +187,6 @@ class ActionBarContainer extends Component {
       if (response) {
         const data = response.account;
         addressInfo = { chainId, ...data, delegate };
-        balance = addressInfo.coins[0].amount;
       }
 
       console.log(addressInfo);
@@ -156,7 +194,7 @@ class ActionBarContainer extends Component {
       this.setState({
         addressInfo,
         balance,
-        stage: STAGE_READY,
+        stage: LEDGER_GENERATION,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -167,6 +205,73 @@ class ActionBarContainer extends Component {
       }
       this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
     }
+  };
+
+  generateTxKeplr = async () => {
+    const { keplr, validators } = this.props;
+    const { toSend, txType, valueSelect } = this.state;
+    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
+    const validatorAddres = validators.operator_address;
+
+    await keplr.enable();
+    const sender = AccAddress.fromBech32(
+      (await keplr.getKeys())[0].bech32Address,
+      'cyber'
+    );
+    const msg = [];
+    if (txType === TXTYPE_DELEGATE) {
+      const temp = new MsgDelegate(
+        sender,
+        ValAddress.fromBech32(
+          validatorAddres,
+          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+        ),
+        new Coin('eul', amount)
+      );
+      msg.push(temp);
+    }
+    if (txType === TXTYPE_UNDELEGATE) {
+      const temp = new MsgUndelegate(
+        sender,
+        ValAddress.fromBech32(
+          validatorAddres,
+          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+        ),
+        new Coin('eul', amount)
+      );
+      msg.push(temp);
+    }
+    if (txType === TXTYPE_REDELEGATE) {
+      const temp = new MsgBeginRedelegate(
+        sender,
+        ValAddress.fromBech32(
+          validatorAddres,
+          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+        ),
+        ValAddress.fromBech32(
+          valueSelect,
+          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+        ),
+        new Coin('eul', amount)
+      );
+      msg.push(temp);
+    }
+
+    console.log('msg', msg);
+    const result = await keplr.sendMsgs(
+      msg,
+      {
+        gas: 100000,
+        memo: CYBER.MEMO_KEPLR,
+        fee: new Coin('eul', 200),
+      },
+      'sync'
+    );
+    console.log('result: ', result);
+    const hash = result.hash.toString('hex').toUpperCase();
+    console.log('hash :>> ', hash);
+    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+    this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
   generateTx = async () => {
@@ -307,13 +412,22 @@ class ActionBarContainer extends Component {
     this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
-  onChangeInputAmount = e => {
+  initDevice = () => {
+    const { addressPocket } = this.props;
+    if (addressPocket !== null && addressPocket.keys === 'keplr') {
+      this.generateTxKeplr();
+    } else {
+      this.getLedgerAddress();
+    }
+  };
+
+  onChangeInputAmount = (e) => {
     this.setState({
       toSend: e.target.value,
     });
   };
 
-  onChangeReDelegate = e => {
+  onChangeReDelegate = (e) => {
     this.setState({
       valueSelect: e.target.value,
     });
@@ -339,26 +453,17 @@ class ActionBarContainer extends Component {
       error: null,
     });
     this.timeOut = null;
-    this.ledger = null;
     this.transport = null;
   };
-
-  hasKey() {
-    return this.state.address !== null;
-  }
-
-  hasWallet() {
-    return this.state.addressInfo !== null;
-  }
 
   onClickMax = () => {
     const { txType } = this.state;
     if (txType === TXTYPE_DELEGATE) {
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         toSend: prevState.balance / DIVISOR_CYBER_G,
       }));
     } else {
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         toSend: prevState.addressInfo.delegate / DIVISOR_CYBER_G,
       }));
     }
@@ -366,35 +471,33 @@ class ActionBarContainer extends Component {
 
   onClickDelegate = async () => {
     await this.setState({
-      stage: STAGE_LEDGER_INIT,
+      stage: STAGE_READY,
       txType: TXTYPE_DELEGATE,
     });
-    this.getLedgerAddress();
   };
 
   onClickUnDelegate = async () => {
     await this.setState({
-      stage: STAGE_LEDGER_INIT,
+      stage: STAGE_READY,
       txType: TXTYPE_UNDELEGATE,
     });
-    this.getLedgerAddress();
   };
 
   onClickRestake = async () => {
     await this.setState({
-      stage: STAGE_LEDGER_INIT,
+      stage: STAGE_READY,
       txType: TXTYPE_REDELEGATE,
     });
-    this.getLedgerAddress();
   };
 
   render() {
     const {
       validators,
-      addressLedger,
+      addressPocket,
       unStake,
       mobile,
       validatorsAll,
+      keplr,
     } = this.props;
 
     const {
@@ -414,12 +517,7 @@ class ActionBarContainer extends Component {
       connectLedger,
     } = this.state;
 
-    console.log(validatorsAll);
-
-    const validRestakeBtn =
-      parseFloat(toSend) > 0 &&
-      valueSelect.length > 0 &&
-      address.bech32 === addressLedger;
+    const validRestakeBtn = parseFloat(toSend) > 0 && valueSelect.length > 0;
 
     const T_AB = T.actionBar.delegate;
 
@@ -441,7 +539,10 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
+    if (
+      Object.keys(validators).length === 0 &&
+      (stage === STAGE_INIT || stage === STAGE_READY)
+    ) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -464,7 +565,45 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (Object.keys(validators).length !== 0 && stage === STAGE_INIT) {
+    if (
+      Object.keys(validators).length !== 0 &&
+      stage === STAGE_INIT &&
+      addressPocket === null
+    ) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Pane fontSize="18px">
+              you don't have cyber address in your pocket
+            </Pane>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (
+      Object.keys(validators).length !== 0 &&
+      stage === STAGE_INIT &&
+      addressPocket !== null &&
+      addressPocket.keys === 'read-only'
+    ) {
+      return (
+        <ActionBar>
+          <ActionBarContentText>
+            <Pane fontSize="18px">
+              this {trimString(addressPocket.bech32, 8, 6)} address is read-only
+            </Pane>
+          </ActionBarContentText>
+        </ActionBar>
+      );
+    }
+
+    if (
+      Object.keys(validators).length !== 0 &&
+      stage === STAGE_INIT &&
+      addressPocket !== null &&
+      addressPocket.keys !== 'read-only'
+    ) {
       return (
         <ActionBar>
           <ActionBarContentText>
@@ -488,6 +627,47 @@ class ActionBarContainer extends Component {
       );
     }
 
+    if (
+      stage === STAGE_READY &&
+      Object.keys(validators).length !== 0 &&
+      (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE)
+    ) {
+      // if (stage === STAGE_READY) {
+      // if (this.state.stage === STAGE_READY) {
+      return (
+        <Delegate
+          moniker={validators.description.moniker}
+          onChangeInputAmount={(e) => this.onChangeInputAmount(e)}
+          toSend={toSend}
+          disabledBtn={toSend.length === 0}
+          generateTx={() => this.initDevice()}
+          delegate={txType === TXTYPE_DELEGATE}
+        />
+      );
+    }
+
+    if (
+      stage === STAGE_READY &&
+      Object.keys(validators).length !== 0 &&
+      txType === TXTYPE_REDELEGATE
+    ) {
+      // if (stage === STAGE_READY) {
+      // if (this.state.stage === STAGE_READY) {
+      return (
+        <ReDelegate
+          onClickBtnCloce={this.cleatState}
+          generateTx={() => this.initDevice()}
+          onChangeInputAmount={(e) => this.onChangeInputAmount(e)}
+          toSend={toSend}
+          disabledBtn={!validRestakeBtn}
+          validatorsAll={validatorsAll}
+          validators={validators}
+          onChangeReDelegate={(e) => this.onChangeReDelegate(e)}
+          valueSelect={valueSelect}
+        />
+      );
+    }
+
     if (stage === STAGE_LEDGER_INIT) {
       return (
         <ConnectLadger
@@ -501,46 +681,13 @@ class ActionBarContainer extends Component {
       return <CheckAddressInfo />;
     }
 
-    if (
-      stage === STAGE_READY &&
-      (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE) &&
-      this.hasKey() &&
-      this.hasWallet()
-    ) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
+    if (stage === LEDGER_GENERATION) {
       return (
-        <Delegate
-          moniker={validators.description.moniker}
-          onChangeInputAmount={e => this.onChangeInputAmount(e)}
-          toSend={toSend}
-          disabledBtn={toSend.length === 0}
-          generateTx={() => this.generateTx()}
-          delegate={txType === TXTYPE_DELEGATE}
-        />
-      );
-    }
-
-    if (
-      stage === STAGE_READY &&
-      txType === TXTYPE_REDELEGATE &&
-      this.hasKey() &&
-      this.hasWallet()
-    ) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
-      return (
-        <ReDelegate
-          onClickBtnCloce={this.cleatState}
-          generateTx={() => this.generateTx()}
-          onChangeInputAmount={e => this.onChangeInputAmount(e)}
-          toSend={toSend}
-          disabledBtn={!validRestakeBtn}
-          validatorsAll={validatorsAll}
-          validators={validators}
-          onChangeReDelegate={e => this.onChangeReDelegate(e)}
-          valueSelect={valueSelect}
-        />
+        <ActionBar>
+          <ActionBarContentText>
+            transaction generation <Dots big />
+          </ActionBarContentText>
+        </ActionBar>
       );
     }
 

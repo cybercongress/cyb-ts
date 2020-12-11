@@ -157,7 +157,7 @@ class Home extends PureComponent {
     return (
       <div style={{ position: `${!result ? 'relative' : ''}` }}>
         <main
-          onMouseMove={e => this.showCoords(e)}
+          onMouseMove={(e) => this.showCoords(e)}
           className={!result ? 'block-body-home' : 'block-body'}
         >
           <Pane
@@ -178,7 +178,7 @@ class Home extends PureComponent {
                 textAlign: 'center',
               }}
               value={valueSearchInput}
-              onChange={e => this.onChangeInput(e)}
+              onChange={(e) => this.onChangeInput(e)}
               onKeyPress={this.handleKeyPress}
               className="search-input"
               id="search-input-home"
@@ -186,11 +186,11 @@ class Home extends PureComponent {
               autoFocus
             />
             <Pane marginTop={50}>
-              <Link to="/gol/faucet">Get EUL</Link>
+              <Link to="/search/get%20EUL">Get EUL</Link>
               <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
-              <Link to="/gol">Join Game of Links</Link>
+              <Link to="/search/what%20is%20cyber">What is Cyber?</Link>
               <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
-              <Link to="/gol/takeoff">Takeoff</Link>
+              <Link to="/gol">Game of Links</Link>
             </Pane>
           </Pane>
         </main>

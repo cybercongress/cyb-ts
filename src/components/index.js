@@ -24,6 +24,8 @@ import {
   CheckAddressInfo,
   GovernanceChangeParam,
   GovernanceSoftwareUpgrade,
+  ConnectAddress,
+  SetHdpath,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -36,6 +38,8 @@ import BandwidthBar from './BandwidthBar';
 import Timer from './timer';
 import Battery from './battery';
 import TabBtn from './tabBtn';
+import ButtonImgText from './Button/buttonImgText';
+import Rank from './Rank/rank';
 
 export {
   GovernanceChangeParam,
@@ -74,6 +78,10 @@ export {
   Battery,
   TabBtn,
   GovernanceSoftwareUpgrade,
+  ConnectAddress,
+  SetHdpath,
+  ButtonImgText,
+  Rank,
 };
 
 export { Nums } from './ui/Numbers';

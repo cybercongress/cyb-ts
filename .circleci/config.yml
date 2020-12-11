@@ -41,7 +41,7 @@ jobs:
   build_and_deploy_rebyc:
     working_directory: ~/workdir
     docker:
-      - image: circleci/node:12.14.0-browsers
+      - image: circleci/node:14.15.0-browsers
     steps:
       - checkout
       - run:

@@ -21,7 +21,7 @@ import {
 import { cybWon, getDisciplinesAllocation } from '../../../utils/fundingMath';
 import TableDiscipline from '../table';
 import {
-  getDelegator,
+  fromBech32,
   exponentialToDecimal,
   asyncForEach,
   formatNumber,
@@ -163,7 +163,7 @@ class GolLifetime extends React.Component {
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      const validatorAddress = getDelegator(address.bech32, 'cybervaloper');
+      const validatorAddress = fromBech32(address.bech32, 'cybervaloper');
       let consensusAddress = null;
       const dataValidatorsInfo = await getValidatorsInfo(validatorAddress);
       if (dataValidatorsInfo !== null) {

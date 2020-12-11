@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Pane, SearchItem, Rank } from '@cybercongress/gravity';
+import { Pane, SearchItem, Text } from '@cybercongress/gravity';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getIpfsHash, search, getRankGrade } from '../../utils/search/utils';
-import { formatNumber, trimString } from '../../utils/utils';
-import { Loading, Account } from '../../components';
+import {
+  formatNumber,
+  exponentialToDecimal,
+  trimString,
+} from '../../utils/utils';
+import {
+  Loading,
+  Account,
+  Copy,
+  Tooltip,
+  LinkWindow,
+  Rank,
+} from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
   PATTERN,
@@ -16,14 +27,16 @@ import {
 } from '../../utils/config';
 import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../ipfs/contentItem';
+import injectKeplr from '../../components/web3/injectKeplr';
 
-function SearchResults({ node, mobile, setQueryProps }) {
+function SearchResults({ node, mobile, keplr, setQueryProps }) {
   const { query } = useParams();
   const location = useLocation();
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
+  const [rankLink, setRankLink] = useState(null);
 
   useEffect(() => {
     const feachData = async () => {
@@ -49,7 +62,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
           ...obj,
           [item.cid]: {
             cid: item.cid,
-            rank: formatNumber(item.rank, 6),
+            rank: exponentialToDecimal(parseFloat(item.rank).toPrecision(3)),
             grade: getRankGrade(item.rank),
             status: node !== null ? 'understandingState' : 'impossibleLoad',
             query,
@@ -65,6 +78,18 @@ function SearchResults({ node, mobile, setQueryProps }) {
     };
     feachData();
   }, [query, location, update]);
+
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
 
   const searchItems = [];
 
@@ -194,9 +219,9 @@ function SearchResults({ node, mobile, setQueryProps }) {
       </Pane>
     );
   }
-
+  // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
   searchItems.push(
-    Object.keys(searchResults).map(key => {
+    Object.keys(searchResults).map((key) => {
       return (
         <Pane
           position="relative"
@@ -207,13 +232,17 @@ function SearchResults({ node, mobile, setQueryProps }) {
         >
           {!mobile && (
             <Pane
-              className="time-discussion rank-contentItem"
+              className={`time-discussion ${
+                rankLink === key ? '' : 'hover-rank-contentItem'
+              }`}
               position="absolute"
+              cursor="pointer"
             >
               <Rank
                 hash={key}
                 rank={searchResults[key].rank}
                 grade={searchResults[key].grade}
+                onClick={() => onClickRank(key)}
               />
             </Pane>
           )}
@@ -248,23 +277,28 @@ function SearchResults({ node, mobile, setQueryProps }) {
         <ActionBarContainer
           keywordHash={keywordHash}
           update={() => setUpdate(update + 1)}
+          keplr={keplr}
+          rankLink={rankLink}
         />
       )}
     </div>
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    setQueryProps: query => dispatch(setQuery(query)),
+    setQueryProps: (query) => dispatch(setQuery(query)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchprops)(SearchResults);
+export default connect(
+  mapStateToProps,
+  mapDispatchprops
+)(injectKeplr(SearchResults));
