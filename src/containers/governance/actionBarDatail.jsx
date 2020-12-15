@@ -19,6 +19,7 @@ import {
   ActionBarContentText,
   Dots,
   CheckAddressInfo,
+  ButtonImgText,
 } from '../../components';
 import { AppContext } from '../../context';
 
@@ -27,6 +28,10 @@ import { downloadObjectAsJson } from '../../utils/utils';
 import { statusNode } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_CYBER } from '../../utils/config';
+
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgLedger = require('../../image/ledger.svg');
+const imgCyber = require('../../image/blue-circle.png');
 
 const {
   MEMO,
@@ -73,6 +78,14 @@ class ActionBarDetail extends Component {
 
   componentDidMount() {
     this.ledger = new CosmosDelegateTool();
+  }
+
+  componentDidUpdate() {
+    const { stage, addressInfo, address } = this.state;
+
+    if (stage === STAGE_READY && addressInfo !== null && address !== null) {
+      this.generateTx();
+    }
   }
 
   getLedgerAddress = async () => {
@@ -384,8 +397,6 @@ class ActionBarDetail extends Component {
       cli: false,
     });
     this.timeOut = null;
-    this.ledger = null;
-    this.transport = null;
   };
 
   onClickInitStage = () => {
@@ -475,12 +486,27 @@ class ActionBarDetail extends Component {
             />
             <Pane>{CYBER.DENOM_CYBER_G}</Pane>
           </ActionBarContentText>
-          <Button
+          <ButtonImgText
+            text={
+              <Pane alignItems="center" display="flex">
+                Deposit
+                <img
+                  src={imgCyber}
+                  alt="cyber"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '5px',
+                    paddingTop: '2px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </Pane>
+            }
             disabled={!parseFloat(valueDeposit) > 0}
-            onClick={this.onClickSelect}
-          >
-            Deposit
-          </Button>
+            onClick={this.onClickUsingLedger}
+            img={defaultAccount.keys === 'ledger' ? imgLedger : imgKeplr}
+          />
         </ActionBar>
       );
     }
@@ -501,22 +527,26 @@ class ActionBarDetail extends Component {
               <option value="NoWithVeto">NoWithVeto</option>
             </select>
           </ActionBarContentText>
-          <Button onClick={this.onClickSelect}>Vote</Button>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_SELECTION) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Button marginX={10} onClick={this.onClickUsingCli}>
-              use Cli
-            </Button>
-            <Button marginX={10} onClick={this.onClickUsingLedger}>
-              {defaultAccount.keys === 'keplr' ? 'use Keplr' : 'use Ledger'}
-            </Button>
-          </ActionBarContentText>
+          <ButtonImgText
+            text={
+              <Pane alignItems="center" display="flex">
+                Vote
+                <img
+                  src={imgCyber}
+                  alt="cyber"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '5px',
+                    paddingTop: '2px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </Pane>
+            }
+            onClick={this.onClickUsingLedger}
+            img={defaultAccount.keys === 'ledger' ? imgLedger : imgKeplr}
+          />
         </ActionBar>
       );
     }
@@ -556,27 +586,6 @@ class ActionBarDetail extends Component {
 
     if (stage === LEDGER_TX_ACOUNT_INFO) {
       return <CheckAddressInfo />;
-    }
-
-    if (stage === STAGE_READY) {
-      if (period === 'deposit') {
-        return (
-          <ActionBar>
-            <ActionBarContentText>
-              I want to send deposit {`${valueDeposit} ${CYBER.DENOM_CYBER_G}`}
-            </ActionBarContentText>
-            <Button onClick={this.generateTx}>generateTx</Button>
-          </ActionBar>
-        );
-      }
-      if (period === 'vote') {
-        return (
-          <ActionBar>
-            <ActionBarContentText>I vote {valueSelect}</ActionBarContentText>
-            <Button onClick={this.generateTx}>generateTx</Button>
-          </ActionBar>
-        );
-      }
     }
 
     if (stage === STAGE_GENERATION_TX) {

@@ -37,7 +37,11 @@ function Governance({ defaultAccount }) {
   }, []);
 
   useEffect(() => {
-    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
+    if (
+      defaultAccount.account !== null &&
+      defaultAccount.account.cyber &&
+      defaultAccount.account.cyber.keys !== 'read-only'
+    ) {
       steAccount(defaultAccount.account.cyber);
     } else {
       steAccount(null);

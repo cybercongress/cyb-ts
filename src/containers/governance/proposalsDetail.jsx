@@ -431,7 +431,9 @@ class ProposalsDetail extends React.Component {
             <ProposalsIdDetailTableVoters data={tableVoters} votes={votes} />
           </Pane>
         </main>
-        {defaultAccount.account !== null && defaultAccount.account.cyber ? (
+        {defaultAccount.account !== null &&
+        defaultAccount.account.cyber &&
+        defaultAccount.account.cyber.keys !== 'read-only' ? (
           <ActionBarDetail
             id={id}
             period={period}
