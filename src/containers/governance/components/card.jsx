@@ -168,7 +168,12 @@ const ActiveCard = ({
           <Text marginX={5} color="#fff">
             0
           </Text>
-          <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
+          {Object.keys(totalDeposit).length > 0 && (
+            <Deposit
+              totalDeposit={parseFloat(totalDeposit[0].amount)}
+              minDeposit={minDeposit}
+            />
+          )}
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
             {formatNumber(minDeposit * 10 ** -9)} {CYBER.DENOM_CYBER_G}
           </Text>

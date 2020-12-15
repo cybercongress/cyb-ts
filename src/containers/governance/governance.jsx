@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
+import { connect } from 'react-redux';
 import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
@@ -23,16 +24,25 @@ const Statistics = ({ communityPoolCyber }) => (
   </ContainerCard>
 );
 
-function Governance() {
+function Governance({ defaultAccount }) {
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
   const [communityPoolCyber, steCommunityPoolCyber] = useState(0);
+  const [account, steAccount] = useState(null);
 
   useEffect(() => {
     feachCommunityPool();
     feachMinDeposit();
     feachProposals();
   }, []);
+
+  useEffect(() => {
+    if (defaultAccount.account !== null && defaultAccount.account.cyber) {
+      steAccount(defaultAccount.account.cyber);
+    } else {
+      steAccount(null);
+    }
+  }, [defaultAccount.name]);
 
   const feachMinDeposit = async () => {
     const responseMinDeposit = await getMinDeposit();
@@ -60,17 +70,18 @@ function Governance() {
   const active = tableData
     .reverse()
     .filter(
-      item =>
+      (item) =>
         item.proposal_status !== 'Passed' && item.proposal_status !== 'Rejected'
     )
-    .map(item => (
+    .map((item) => (
       <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
         <ActiveCard
           key={item.id}
           id={item.id}
           name={item.content.value.title}
           minDeposit={minDeposit}
-          totalDeposit={parseFloat(item.total_deposit[0].amount)}
+          totalDeposit={item.total_deposit}
+          type={item.content.type}
           state={item.proposal_status}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
@@ -86,8 +97,8 @@ function Governance() {
     ));
 
   const accepted = tableData
-    .filter(item => item.proposal_status === 'Passed')
-    .map(item => (
+    .filter((item) => item.proposal_status === 'Passed')
+    .map((item) => (
       <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
         <AcceptedCard
           key={item.id}
@@ -106,8 +117,8 @@ function Governance() {
 
   const rejected = tableData
     .reverse()
-    .filter(item => item.proposal_status === 'Rejected')
-    .map(item => (
+    .filter((item) => item.proposal_status === 'Rejected')
+    .map((item) => (
       <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
         <RejectedCard
           key={item.id}
@@ -139,9 +150,16 @@ function Governance() {
           <Columns title="Rejected">{rejected}</Columns>
         </Pane>
       </main>
-      <ActionBar update={feachProposals} />
+      <ActionBar account={account} update={feachProposals} />
     </div>
   );
 }
 
-export default Governance;
+const mapStateToProps = (store) => {
+  return {
+    mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
+  };
+};
+
+export default connect(mapStateToProps)(Governance);

@@ -153,6 +153,14 @@ class ProposalsDetail extends React.Component {
       proposalsInfo.proposer = proposer.proposer;
     }
 
+    if (proposals.content.value.changes) {
+      proposalsInfo.changes = proposals.content.value.changes;
+    }
+
+    if (proposals.content.value.plan) {
+      proposalsInfo.plan = proposals.content.value.plan;
+    }
+
     if (proposals.content.value.recipient) {
       proposalsInfo.recipient = proposals.content.value.recipient;
     }
@@ -305,36 +313,6 @@ class ProposalsDetail extends React.Component {
     return string;
   };
 
-  initK = async () => {
-    const { keplr } = this.props;
-    console.log('keplr', keplr);
-    if (keplr) {
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const accounts = await keplr.getAccount();
-      console.log('accounts', accounts);
-      const amount = coins(10, 'eul');
-      const msgs = [];
-      msgs.push({
-        type: 'cosmos-sdk/MsgSend',
-        value: {
-          from_address: accounts.address,
-          to_address: accounts.address,
-          amount,
-        },
-      });
-
-      const fee = {
-        amount: coins(0, 'uatom'),
-        gas: '100000',
-      };
-
-      const result = await keplr.signAndBroadcast(msgs, fee, '12');
-      console.log('result', result);
-      // console.log('cosmJS', cosmJS);
-    }
-  };
-
   render() {
     const {
       proposalsInfo,
@@ -349,12 +327,11 @@ class ProposalsDetail extends React.Component {
       tableVoters,
       period,
     } = this.state;
-    const { defaultAccount, keplr } = this.props;
+    const { defaultAccount } = this.props;
 
     return (
       <div>
         <main className="block-body">
-          <button onClick={() => this.initK()}>udj</button>
           <Pane paddingBottom={50}>
             <Pane height={70} display="flex" alignItems="center">
               <Text paddingLeft={20} fontSize="18px" color="#fff">
@@ -406,6 +383,32 @@ class ProposalsDetail extends React.Component {
                   </Pane>
                 }
               />
+              {proposalsInfo.changes &&
+                Object.keys(proposalsInfo.changes).length > 0 && (
+                  <Item
+                    title="Changes"
+                    value={
+                      <Pane className="container-description">
+                        {proposalsInfo.changes.map((item) => (
+                          <Pane>
+                            {item.subspace}: {item.key} {item.value}
+                          </Pane>
+                        ))}
+                      </Pane>
+                    }
+                  />
+                )}
+              {proposalsInfo.plan && (
+                <Item
+                  title="Plan"
+                  value={
+                    <Pane className="container-description">
+                      <Pane>name: {proposalsInfo.plan.name}</Pane>
+                      <Pane>height: {proposalsInfo.plan.height}</Pane>
+                    </Pane>
+                  }
+                />
+              )}
             </ContainerPane>
 
             <ProposalsIdDetail
@@ -436,7 +439,6 @@ class ProposalsDetail extends React.Component {
             totalDeposit={totalDeposit}
             update={this.init}
             defaultAccount={defaultAccount.account.cyber}
-            keplr={keplr}
           />
         ) : (
           <ActionBar>
@@ -466,4 +468,4 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(injectKeplr(ProposalsDetail));
+export default connect(mapStateToProps)(ProposalsDetail);

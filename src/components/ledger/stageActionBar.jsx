@@ -650,7 +650,7 @@ export const GovernanceSoftwareUpgrade = ({
 
 export const TextProposal = ({
   onClickBtn,
-  addrProposer,
+  // addrProposer,
   onClickBtnCloce,
   onChangeInputTitle,
   onChangeInputDescription,
@@ -665,10 +665,10 @@ export const TextProposal = ({
         <Text fontSize="25px" lineHeight="40px" color="#fff">
           Text Proposal
         </Text>
-        <Text fontSize="18px" lineHeight="40px" color="#fff">
+        {/* <Text fontSize="18px" lineHeight="40px" color="#fff">
           proposer
         </Text>
-        <Text color="#fff">{addrProposer}</Text>
+        <Text color="#fff">{addrProposer}</Text> */}
         <Pane marginY={10} width="100%">
           <Text color="#fff">title</Text>
           <input
@@ -729,7 +729,7 @@ export const ParamChange = ({ valueSelect, onChangeSelect, onClickBtn }) => (
 
 export const CommunityPool = ({
   onClickBtn,
-  addrProposer,
+  // addrProposer,
   onClickBtnCloce,
   onChangeInputTitle,
   onChangeInputDescription,
@@ -748,10 +748,10 @@ export const CommunityPool = ({
         <Text fontSize="25px" lineHeight="40px" color="#fff">
           Community Pool Spend
         </Text>
-        <Text fontSize="18px" lineHeight="40px" color="#fff">
+        {/* <Text fontSize="18px" lineHeight="40px" color="#fff">
           proposer
         </Text>
-        <Text color="#fff">{addrProposer}</Text>
+        <Text color="#fff">{addrProposer}</Text> */}
         <Pane marginY={10} width="100%">
           <Text color="#fff">title</Text>
           <input
