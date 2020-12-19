@@ -23,7 +23,7 @@ function isObject(v) {
   return Object.prototype.toString.call(v) === '[object Object]';
 }
 
-const sortJson = o => {
+const sortJson = (o) => {
   if (Array.isArray(o)) {
     return o.sort().map(sortJson);
   }
@@ -50,7 +50,7 @@ function canonicalizeJson(jsonTx) {
   const tmp = {};
   Object.keys(jsonTx)
     .sort()
-    .forEach(key => {
+    .forEach((key) => {
       // eslint-disable-next-line no-unused-expressions
       jsonTx[key] != null && (tmp[key] = jsonTx[key]);
     });
@@ -308,8 +308,23 @@ function createSend(txContext, toAddress, uatomAmount, memo, cli, addressFrom) {
   return txSkeleton;
 }
 
-function createSendCyber(txContext, validatorBech32, uatomAmount, memo, denom) {
-  const txSkeleton = createSkeletonCyber(txContext);
+function createSendCyber(
+  txContext,
+  validatorBech32,
+  uatomAmount,
+  memo,
+  denom,
+  cli,
+  addressFrom
+) {
+  const txSkeleton = createSkeletonCyber(txContext, cli);
+  let fromAddress = '';
+
+  if (txContext !== null && !cli) {
+    fromAddress = txContext.bech32;
+  } else {
+    fromAddress = addressFrom;
+  }
 
   const txMsg = {
     type: 'cosmos-sdk/MsgSend',
@@ -320,7 +335,7 @@ function createSendCyber(txContext, validatorBech32, uatomAmount, memo, denom) {
           denom,
         },
       ],
-      from_address: txContext.bech32,
+      from_address: fromAddress,
       to_address: validatorBech32,
     },
   };
@@ -600,14 +615,16 @@ function createWithdrawDelegationReward(txContext, address, memo, rewards) {
   const txSkeleton = createSkeletonCyber(txContext);
   txSkeleton.value.msg = [];
 
-  Object.keys(rewards).forEach(key => {
-    txSkeleton.value.msg.push({
-      type: 'cosmos-sdk/MsgWithdrawDelegationReward',
-      value: {
-        delegator_address: address,
-        validator_address: rewards[key].validator_address,
-      },
-    });
+  Object.keys(rewards).forEach((key) => {
+    if (rewards[key].reward !== null) {
+      txSkeleton.value.msg.push({
+        type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+        value: {
+          delegator_address: address,
+          validator_address: rewards[key].validator_address,
+        },
+      });
+    }
   });
 
   txSkeleton.value.memo = memo || '';
@@ -647,7 +664,7 @@ function createImportLink(txContext, address, links, memo, cli) {
   const txSkeleton = createSkeletonCyber(txContext, cli);
   txSkeleton.value.msg = [];
 
-  Object.keys(links).forEach(key => {
+  Object.keys(links).forEach((key) => {
     txSkeleton.value.msg.push({
       type: 'cyber/Link',
       value: {

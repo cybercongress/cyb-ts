@@ -6,7 +6,7 @@ import { Copy, Dots, LinkWindow } from '../../../components';
 import {
   trimString,
   formatCurrency,
-  getDelegator,
+  fromBech32,
   exponentialToDecimal,
   formatNumber,
 } from '../../../utils/utils';

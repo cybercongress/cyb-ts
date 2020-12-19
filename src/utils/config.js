@@ -1,4 +1,5 @@
 const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const INFINITY = '∞';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
 const AUCTION = {
@@ -63,10 +64,12 @@ const CYBER = {
   CYBER_WEBSOCKET_URL: 'wss://api.cyber.cybernode.ai/websocket',
   CYBER_NODE_URL_API: 'https://api.cyber.cybernode.ai',
   CYBER_NODE_URL_LCD: 'https://lcd.cyber.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://mars.cybernode.ai/graphql/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://mars.cybernode.ai/graphql/v1/graphql',
+  CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
+  CHAIN_ID: 'euler-6',
+  MEMO_KEPLR: 'cyber.page, using keplr',
 };
 
 const LEDGER = {
@@ -143,4 +146,5 @@ export {
   WP,
   PATTERN_HTTP,
   POCKET,
+  INFINITY,
 };

@@ -22,7 +22,7 @@ import {
 } from '../../utils/search/utils';
 import { COSMOS, CYBER, DISTRIBUTION } from '../../utils/config';
 import { getEstimation, cybWon, funcDiscount } from '../../utils/fundingMath';
-import NotFound from '../../containers/application/notFound';
+import NotFound from '../application/notFound';
 
 class Evangelism extends React.PureComponent {
   constructor(props) {
@@ -77,8 +77,17 @@ class Evangelism extends React.PureComponent {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            dataTx.txs = [...dataTx.txs, ...response.txs];
+          }
+        }
+      }
       this.setState({
         dataTxs: dataTx,
       });
@@ -88,7 +97,7 @@ class Evangelism extends React.PureComponent {
     }
   };
 
-  getStatistics = async data => {
+  getStatistics = async (data) => {
     const dataTxs = data.txs;
     console.log('dataTxs', dataTxs);
     // const statisticsLocalStorage = JSON.parse(
@@ -158,7 +167,7 @@ class Evangelism extends React.PureComponent {
     const { dataTxs, dataTable } = this.state;
     const { txs } = dataTxs;
 
-    Object.keys(dataTable).forEach(key => {
+    Object.keys(dataTable).forEach((key) => {
       for (let item = 0; item < txs.length; item += 1) {
         const val =
           parseFloat(txs[item].tx.value.msg[0].value.amount[0].amount) /

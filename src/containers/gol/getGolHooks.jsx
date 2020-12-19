@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getDelegator } from '../../utils/utils';
+import { fromBech32 } from '../../utils/utils';
 import {
   getTxCosmos,
   getAmountATOM,
@@ -17,51 +17,20 @@ import {
   getTakeoff,
 } from '../../utils/game-monitors';
 
-const BLOCK_SUBSCRIPTION = `
-  query newBlock {
-    block(limit: 1, order_by: { height: desc }) {
-      height
-    }
-  }
-`;
-
-const getQuerySubject = (address, block) => `
-query newBlock {
-  relevance_aggregate(where: {height: {_eq: ${block}}}) {
-    aggregate {
-      sum {
-        rank
-      }
-    }
-  }
-  rewards_view(where: {_and: [{block: {_eq: ${block}}}, {subject: {_eq: "${address}"}}]}) {
-    object
-    subject
-    rank
-    order_number
-  }
-}
-`;
-
-const getQueryLinkages = (arrLink, block) => `
-query linkages {
-  linkages_view(
-    where: {
-      _and: [
-        { height: { _eq: ${block} } }
-        {
-          _or: ${arrLink}
+const QueryAddress = (subject) =>
+  `  query getRelevanceLeaderboard {
+        relevance_leaderboard(
+          where: {
+            subject: { _eq: "${subject}" }
+          }
+        ) {
+          subject
+          share
         }
-      ]
-    }
-  ) {
-    object
-    linkages
-  }
-}
-`;
+      }
+  `;
 
-const getQueryLifeTime = consensusAddress => `
+const getQueryLifeTime = (consensusAddress) => `
 query lifetimeRate {
   pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
     precommits
@@ -85,7 +54,19 @@ function useGetAtom(addressCyber) {
       let addEstimation = 0;
 
       const dataTxs = await getTxCosmos();
-      const addressCosmos = getDelegator(addressCyber, 'cosmos');
+      const addressCosmos = fromBech32(addressCyber, 'cosmos');
+      if (dataTxs !== null) {
+        if (dataTxs.total_count > dataTxs.count) {
+          const allPage = Math.ceil(dataTxs.total_count / dataTxs.count);
+          for (let index = 1; index < allPage; index++) {
+            // eslint-disable-next-line no-await-in-loop
+            const response = await getTxCosmos(index + 1);
+            if (response !== null && Object.keys(response.txs).length > 0) {
+              dataTxs.txs = [...dataTxs.txs, ...response.txs];
+            }
+          }
+        }
+      }
       if (dataTxs && Object.keys(dataTxs.txs).length > 0) {
         const dataTx = dataTxs.txs;
         for (let item = 0; item < dataTx.length; item += 1) {
@@ -112,35 +93,6 @@ function useGetAtom(addressCyber) {
   return { atom, estimation };
 }
 
-const getJson = data => {
-  const json = JSON.stringify(data);
-  const unquoted = json.replace(/"([^"]+)":/g, '$1:');
-  return unquoted;
-};
-
-const getRelevanceData = async (address, block) => {
-  const responseRelevance = await getGraphQLQuery(
-    getQuerySubject(address, block)
-  );
-  if (responseRelevance !== null) {
-    const arrLink = [];
-    responseRelevance.rewards_view.forEach(item => {
-      arrLink.push({
-        object: {
-          _eq: item.object,
-        },
-      });
-    });
-
-    const arrLinkQuery = getJson(arrLink);
-
-    const dataQ = await getGraphQLQuery(getQueryLinkages(arrLinkQuery, block));
-
-    return { dataQ, responseRelevance };
-  }
-  return [];
-};
-
 function useGetGol(address) {
   const { estimation, atom } = useGetAtom(address);
   const [validatorAddress, setValidatorAddress] = useState(null);
@@ -150,15 +102,10 @@ function useGetGol(address) {
     relevance: 0,
   });
   const [total, setTotal] = useState(0);
-  const [block, setBlock] = useState(null);
 
   useEffect(() => {
     const feachData = async () => {
-      const responseBlock = await getGraphQLQuery(BLOCK_SUBSCRIPTION);
-      if (responseBlock !== null) {
-        setBlock(responseBlock.block[0].height);
-      }
-      const dataValidatorAddress = getDelegator(address, 'cybervaloper');
+      const dataValidatorAddress = fromBech32(address, 'cybervaloper');
       const dataGetValidatorsInfo = await getValidatorsInfo(
         dataValidatorAddress
       );
@@ -171,38 +118,32 @@ function useGetGol(address) {
   }, [address]);
 
   useEffect(() => {
-    if (block > 0) {
-      const feachData = async () => {
-        const relevance = await getRelevanceData(address, block);
-        const prize = Math.floor(
-          (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * atom
-        );
-        if (Object.keys(relevance).length > 0) {
-          const data = await getRelevance(
-            relevance.responseRelevance,
-            relevance.dataQ
-          );
-          console.log('getRelevance', data * prize);
-          if (data > 0 && prize > 0) {
-            const cybAbsolute = data * prize;
-            setTotal(stateTotal => stateTotal + cybAbsolute);
-            setGol(stateGol => ({ ...stateGol, relevance: cybAbsolute }));
-          }
-        }
-      };
-      feachData();
-    }
-  }, [block, address, atom]);
+    const feachData = async () => {
+      const responseDataQ = await getGraphQLQuery(QueryAddress(address));
+      const prize = Math.floor(
+        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * atom
+      );
+      if (
+        responseDataQ.relevance_leaderboard &&
+        Object.keys(responseDataQ.relevance_leaderboard).length > 0
+      ) {
+        const shareData = responseDataQ.relevance_leaderboard[0].share;
+        const cybAbsolute = shareData * prize;
+        setTotal((stateTotal) => stateTotal + cybAbsolute);
+        setGol((stateGol) => ({ ...stateGol, relevance: cybAbsolute }));
+      }
+    };
+    feachData();
+  }, [address, atom]);
 
   useEffect(() => {
     const feachData = async () => {
       const prize = Math.floor((DISTRIBUTION.load / TAKEOFF.ATOMsALL) * atom);
       const data = await getLoad(address);
-      console.log('getLoad', data * prize);
       if (data > 0 && prize > 0) {
         const cybAbsolute = data * prize;
-        setTotal(stateTotal => stateTotal + cybAbsolute);
-        setGol(stateGol => ({ ...stateGol, load: cybAbsolute }));
+        setTotal((stateTotal) => stateTotal + cybAbsolute);
+        setGol((stateGol) => ({ ...stateGol, load: cybAbsolute }));
       }
     };
     feachData();
@@ -211,9 +152,8 @@ function useGetGol(address) {
   useEffect(() => {
     const feachData = async () => {
       const prize = Math.floor(estimation * 10 ** 12);
-      console.log('Takeoff', prize);
       if (prize > 0) {
-        setTotal(stateTotal => stateTotal + prize);
+        setTotal((stateTotal) => stateTotal + prize);
       }
     };
     feachData();
@@ -226,10 +166,9 @@ function useGetGol(address) {
           (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * atom
         );
         const data = await getDelegation(validatorAddress);
-        console.log('getDelegation', data * prize);
         if (data > 0 && prize > 0) {
           const cybAbsolute = data * prize;
-          setTotal(stateTotal => stateTotal + cybAbsolute);
+          setTotal((stateTotal) => stateTotal + cybAbsolute);
         }
       };
       feachData();
@@ -240,10 +179,9 @@ function useGetGol(address) {
     if (validatorAddress !== null) {
       const feachData = async () => {
         const data = await getRewards(validatorAddress);
-        console.log('getRewards', data);
         if (data > 0) {
           const cybAbsolute = data;
-          setTotal(stateTotal => stateTotal + cybAbsolute);
+          setTotal((stateTotal) => stateTotal + cybAbsolute);
         }
       };
       feachData();
@@ -264,11 +202,9 @@ function useGetGol(address) {
             block: dataLifeTime.pre_commit_aggregate.aggregate.count,
             preCommit: dataLifeTime.pre_commit_view[0].precommits,
           });
-
-          console.log('getLifetime', data * prize);
           if (data > 0 && prize > 0) {
             const cybAbsolute = data * prize;
-            setTotal(stateTotal => stateTotal + cybAbsolute);
+            setTotal((stateTotal) => stateTotal + cybAbsolute);
           }
         }
       };

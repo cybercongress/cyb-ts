@@ -16,7 +16,7 @@ import {
 } from '../../../components';
 import { cybWon, getDisciplinesAllocation } from '../../../utils/fundingMath';
 import TableDiscipline from '../table';
-import { getDelegator, formatNumber, sort } from '../../../utils/utils';
+import { fromBech32, formatNumber, sort } from '../../../utils/utils';
 
 import { COSMOS, TAKEOFF, DISTRIBUTION } from '../../../utils/config';
 
@@ -49,9 +49,19 @@ class GolDelegation extends React.Component {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      this.getAtom(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      this.getAtom(tx);
     }
   };
 
@@ -116,7 +126,7 @@ class GolDelegation extends React.Component {
     if (localStorageStory !== null) {
       address = JSON.parse(localStorageStory);
       console.log('address', address);
-      const validatorAddress = getDelegator(address.bech32, 'cybervaloper');
+      const validatorAddress = fromBech32(address.bech32, 'cybervaloper');
 
       this.setState({
         addressLedger: address,

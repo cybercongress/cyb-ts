@@ -23,6 +23,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
 
   useEffect(() => {
     const feachData = async () => {
+      setLink(`/ipfs/${cid}`);
       const dataIndexdDb = await db.table('cid').get({ cid });
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
@@ -87,7 +88,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
             text: textContent,
             type,
             content: contentCid,
-            linkContent,
+            link: linkContent,
           } = dataTypeContent;
           setText(textContent);
           setTypeContent(type);

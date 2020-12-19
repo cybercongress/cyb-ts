@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import React from 'react';
-import { Text, Pane, Tablist, Tab } from '@cybercongress/gravity';
+import { Text, Pane, Tablist, Tab, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, Route } from 'react-router-dom';
 import {
@@ -20,10 +20,12 @@ import {
   getContentByCid,
   getContent,
 } from '../../utils/search/utils';
-import { roundNumber } from '../../utils/utils';
+import { roundNumber, trimString } from '../../utils/utils';
 import { CardStatisics, Loading } from '../../components';
 import { getEstimation } from '../../utils/fundingMath';
 import injectWeb3 from './web3';
+import injectKeplr from '../../components/web3/injectKeplr';
+
 import {
   CYBER,
   AUCTION,
@@ -36,6 +38,7 @@ import {
 import { getProposals } from '../../utils/governance';
 
 import ActionBarContainer from './actionBarContainer';
+import ActionBarConnect from '../Wallet/actionBarConnect';
 import {
   GovernmentTab,
   MainTab,
@@ -93,7 +96,7 @@ class Brain extends React.PureComponent {
     super(props);
     this.state = {
       inlfation: 0,
-      addressLedger: null,
+      addressPocket: null,
       linksCount: 0,
       cidsCount: 0,
       accountsCount: 0,
@@ -145,13 +148,17 @@ class Brain extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { location } = this.props;
+    const { location, defaultAccount } = this.props;
     const { tweetData } = this.state;
     if (prevProps.location.pathname !== location.pathname) {
       this.chekPathname();
     }
     if (prevState.tweetData !== tweetData) {
       this.convertTweetData();
+    }
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.clearTweet();
+      this.update();
     }
   }
 
@@ -161,18 +168,30 @@ class Brain extends React.PureComponent {
     this.getFollow();
   };
 
+  clearTweet = () => {
+    this.setState({
+      addressFollowData: {},
+      tweetData: [],
+      twit: {},
+    });
+  };
+
   getFollow = async () => {
-    const { addressLedger } = this.state;
+    const { addressPocket } = this.state;
     let responseFollows = null;
 
     this.setState({
       loadingTwit: true,
     });
 
-    if (addressLedger !== null) {
-      responseFollows = await getFollows(addressLedger.cyber.bech32);
-      if (responseFollows !== null && responseFollows.txs) {
-        responseFollows.txs.forEach(async item => {
+    if (addressPocket !== null) {
+      responseFollows = await getFollows(addressPocket.bech32);
+      if (
+        responseFollows !== null &&
+        responseFollows.txs &&
+        Object.keys(responseFollows.txs).length > 0
+      ) {
+        responseFollows.txs.forEach(async (item) => {
           let addressResolve;
           const cid = item.tx.value.msg[0].value.links[0].to;
           const dataIndexdDb = await db.table('following').get({ cid });
@@ -187,14 +206,14 @@ class Brain extends React.PureComponent {
             };
             db.table('following')
               .add(ipfsContentAddtToInddexdDB)
-              .then(id => {
+              .then((id) => {
                 console.log('item :>> ', id);
               });
           }
           if (addressResolve && addressResolve !== null) {
             const addressFollow = addressResolve;
             if (addressFollow.match(PATTERN_CYBER)) {
-              this.setState(itemState => {
+              this.setState((itemState) => {
                 return {
                   addressFollowData: {
                     ...itemState.addressFollowData,
@@ -208,20 +227,48 @@ class Brain extends React.PureComponent {
                 responseTwit.txs &&
                 responseTwit.txs.length > 0
               ) {
-                this.setState(prevState => {
+                this.setState((prevState) => {
                   return {
                     tweetData: [...prevState.tweetData, ...responseTwit.txs],
                   };
                 });
               }
+              if (
+                responseFollows.total_count === '1' &&
+                responseTwit.total_count === '0'
+              ) {
+                const responseTwit0 = await getTweet(
+                  CYBER.CYBER_CONGRESS_ADDRESS
+                );
+                if (
+                  responseTwit0 &&
+                  responseTwit0.txs &&
+                  responseTwit0.txs.length > 0
+                ) {
+                  this.setState((prevState) => {
+                    return {
+                      tweetData: [...prevState.tweetData, ...responseTwit0.txs],
+                    };
+                  });
+                }
+              }
             }
           }
         });
+      } else {
+        const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
+        if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
+          this.setState((prevState) => {
+            return {
+              tweetData: [...prevState.tweetData, ...responseTwit.txs],
+            };
+          });
+        }
       }
     } else {
       const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
       if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             tweetData: [...prevState.tweetData, ...responseTwit.txs],
           };
@@ -246,7 +293,7 @@ class Brain extends React.PureComponent {
       );
     };
 
-    this.ws.onmessage = async evt => {
+    this.ws.onmessage = async (evt) => {
       const message = JSON.parse(evt.data);
       if (message.result && Object.keys(message.result).length > 0) {
         this.updateWs(message.result.events);
@@ -258,7 +305,7 @@ class Brain extends React.PureComponent {
     };
   };
 
-  updateWs = async data => {
+  updateWs = async (data) => {
     const { addressFollowData } = this.state;
     const { node } = this.props;
     const subject = data['cybermeta.subject'][0];
@@ -269,7 +316,7 @@ class Brain extends React.PureComponent {
       Object.keys(addressFollowData).length > 0 &&
       Object.prototype.hasOwnProperty.call(addressFollowData, subject)
     ) {
-      this.setState(item => {
+      this.setState((item) => {
         return {
           twit: {
             [objectTo]: {
@@ -380,13 +427,23 @@ class Brain extends React.PureComponent {
 
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      this.getATOM(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      this.getATOM(tx);
     }
   };
 
-  getATOM = async dataTxs => {
+  getATOM = async (dataTxs) => {
     const { cybernomics } = this.state;
     let amount = 0;
     let currentPrice = 0;
@@ -429,43 +486,48 @@ class Brain extends React.PureComponent {
   };
 
   checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('pocket');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      this.setState({ addressLedger: address });
-      this.getAddressInfo();
-      this.setState({
-        addAddress: false,
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+    let addressPocket = null;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      const { keys, bech32 } = account.cyber;
+      addressPocket = {
+        bech32,
+        keys,
+      };
+    }
+    if (addressPocket !== null) {
+      await this.setState({
+        addressPocket,
       });
+      this.getAddressInfo();
     } else {
       this.setState({
-        addAddress: true,
+        addressPocket,
         loading: false,
       });
     }
   };
 
   getAddressInfo = async () => {
-    const { addressLedger } = this.state;
-
+    const { addressPocket } = this.state;
     let total = 0;
-    if (addressLedger !== null) {
-      const result = await getBalance(addressLedger.cyber.bech32);
-      console.log('result', result);
 
-      if (result) {
-        total = await getTotalEUL(result);
-      }
-      this.setState({
-        addAddress: false,
-        loading: false,
-        // addressInfo,
-        amount: total.total,
-      });
+    const result = await getBalance(addressPocket.bech32);
+    console.log('result', result);
+
+    if (result) {
+      total = await getTotalEUL(result);
     }
+    this.setState({
+      addAddress: false,
+      loading: false,
+      // addressInfo,
+      amount: total.total,
+    });
   };
 
   getStatisticsBrain = async () => {
@@ -516,7 +578,7 @@ class Brain extends React.PureComponent {
     });
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -543,11 +605,10 @@ class Brain extends React.PureComponent {
       donation,
       twit,
       loadingTwit,
-      addressLedger,
-      tweetData,
-      addressFollowData,
+      addressPocket,
     } = this.state;
-    const { mobile, node } = this.props;
+    const { keplr, mobile, node } = this.props;
+
     let content;
 
     if (loading) {
@@ -641,7 +702,7 @@ class Brain extends React.PureComponent {
         />
       );
     }
-
+    console.log('addressPocket', addressPocket);
     return (
       <div>
         <main className="block-body">
@@ -727,22 +788,40 @@ class Brain extends React.PureComponent {
             {content}
           </Pane>
         </main>
-        {!mobile && (
-          <ActionBarContainer
-            addAddress={addAddress}
-            updateFunc={this.update}
-          />
+        {!mobile &&
+          addressPocket !== null &&
+          (addressPocket.keys !== 'read-only' ? (
+            <ActionBarContainer
+              keplr={keplr}
+              updateFunc={this.update}
+              addressPocket={addressPocket}
+            />
+          ) : (
+            <ActionBar>
+              <Pane fontSize="18px">
+                this {trimString(addressPocket.bech32, 8, 6)} cyber address is
+                read-only
+              </Pane>
+            </ActionBar>
+          ))}
+        {!mobile && addressPocket === null && (
+          <ActionBar>
+            <Pane fontSize="18px">
+              add cyber address in your <Link to="/pocket">pocket</Link>
+            </Pane>
+          </ActionBar>
         )}
       </div>
     );
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(injectWeb3(Brain));
+export default connect(mapStateToProps)(injectWeb3(injectKeplr(Brain)));

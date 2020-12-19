@@ -4,3 +4,18 @@ export const setStageTweetActionBar = (stage) => {
     payload: stage,
   };
 };
+
+export const setDefaultAccount = (name, account) => {
+  return {
+    type: 'SET_DEFAULT_ACCOUNT',
+    name,
+    account,
+  };
+};
+
+export const setAccounts = (accounts) => {
+  return {
+    type: 'SET_ACCOUNTS',
+    payload: accounts,
+  };
+};

@@ -7,7 +7,7 @@ import {
   getAmountATOM,
   getSendTxToTakeoff,
 } from '../search/utils';
-import { getDelegator } from '../utils';
+import { fromBech32 } from '../utils';
 import { COSMOS } from '../config';
 
 export const getLoad = async address => {
@@ -23,7 +23,6 @@ export const getLoad = async address => {
     // sumKarma = responseIndexStats.totalKarma;
     sumKarma = responseIndexStats.totalKarma;
     load = parseFloat(karma) / parseFloat(sumKarma);
-    console.log('load', load);
   }
   return load;
 };
@@ -108,7 +107,7 @@ export const getTakeoff = async (sender, takeoffDonations) => {
   let amount = 0;
   let takeoff = 0;
 
-  const cosmosAddress = getDelegator(sender, 'cosmos');
+  const cosmosAddress = fromBech32(sender, 'cosmos');
   const data = await getSendTxToTakeoff(cosmosAddress, COSMOS.ADDR_FUNDING);
 
   if (Object.keys(data).length > 0) {

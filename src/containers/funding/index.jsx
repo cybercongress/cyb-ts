@@ -46,7 +46,7 @@ const diff = (key, ...arrays) =>
       const others = arrays.slice(0);
       others.splice(i, 1);
       const unique = [...new Set([].concat(...others))];
-      return arr.filter(x => !unique.some(y => x[key] === y[key]));
+      return arr.filter((x) => !unique.some((y) => x[key] === y[key]));
     })
   );
 
@@ -141,7 +141,7 @@ class Funding extends PureComponent {
     }
   };
 
-  initializeClock = endtime => {
+  initializeClock = (endtime) => {
     let timeinterval;
     const updateClock = () => {
       const t = getTimeRemaining(endtime);
@@ -166,10 +166,21 @@ class Funding extends PureComponent {
   getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
     if (dataTx !== null) {
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
       this.setState({
-        dataTxs: dataTx.txs,
+        dataTxs: tx,
       });
-      this.init(dataTx);
+      this.init();
     }
   };
 
@@ -188,7 +199,7 @@ class Funding extends PureComponent {
       );
     };
 
-    this.ws.onmessage = async evt => {
+    this.ws.onmessage = async (evt) => {
       const message = JSON.parse(evt.data);
       if (message.id.indexOf('0#event') !== -1) {
         this.updateWs(message.result.events);
@@ -201,7 +212,7 @@ class Funding extends PureComponent {
     };
   };
 
-  updateWs = async data => {
+  updateWs = async (data) => {
     let amount = 0;
     const amountWebSocket = data['transfer.amount'][0];
 
@@ -230,17 +241,17 @@ class Funding extends PureComponent {
     this.getData();
   };
 
-  init = async txs => {
+  init = async (txs) => {
     console.log(txs);
     const pocketAddLocal = localStorage.getItem('pocket');
     const pocketAdd = JSON.parse(pocketAddLocal);
     this.setState({ pocketAdd });
-    await this.getStatistics(txs);
+    await this.getStatistics();
     this.getTableData();
     this.getData();
   };
 
-  getStatisticsWs = async amountWebSocket => {
+  getStatisticsWs = async (amountWebSocket) => {
     const { amount } = this.state;
     let amountWs = 0;
 
@@ -255,7 +266,7 @@ class Funding extends PureComponent {
     });
   };
 
-  getTableDataWs = async dataTxs => {
+  getTableDataWs = async (dataTxs) => {
     const { currentPriceEstimation, estimation, amount, groups } = this.state;
     try {
       console.log(estimation);
@@ -305,12 +316,8 @@ class Funding extends PureComponent {
     }
   };
 
-  getStatistics = async data => {
-    const dataTxs = data.txs;
-    console.log('dataTxs', dataTxs);
-    // const statisticsLocalStorage = JSON.parse(
-    //   localStorage.getItem('statistics')
-    // );
+  getStatistics = async () => {
+    const { dataTxs } = this.state;
 
     let amount = 0;
     for (let item = 0; item < dataTxs.length; item++) {
@@ -428,7 +435,7 @@ class Funding extends PureComponent {
     });
   };
 
-  select = selected => {
+  select = (selected) => {
     this.setState({ selected });
   };
 
@@ -563,7 +570,7 @@ class Funding extends PureComponent {
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
   };

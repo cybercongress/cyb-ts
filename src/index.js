@@ -19,7 +19,7 @@ import './image/favicon.ico';
 
 const root = document.getElementById('root');
 
-const getHeaders = token => {
+const getHeaders = (token) => {
   const headers = {
     'content-type': 'application/json',
     'x-hasura-admin-secret': 'token',

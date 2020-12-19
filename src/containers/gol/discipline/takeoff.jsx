@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { DISTRIBUTION, COSMOS } from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getTakeoff } from '../../../utils/game-monitors';
-import { formatNumber, getDelegator } from '../../../utils/utils';
+import { formatNumber, fromBech32 } from '../../../utils/utils';
 import RowTable from '../components/row';
 import { setGolTakeOff } from '../../../redux/actions/gol';
 

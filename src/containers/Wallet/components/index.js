@@ -1,3 +1,9 @@
-import PocketCard from './pocketCard';
+import {
+  PocketCard,
+  ContainerAddressInfo,
+  Address,
+  ButtonIcon,
+  FormatNumber,
+} from './pocketCard';
 
-export { PocketCard };
+export { PocketCard, ContainerAddressInfo, Address, ButtonIcon, FormatNumber };

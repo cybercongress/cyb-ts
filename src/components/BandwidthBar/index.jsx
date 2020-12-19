@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Battery, Pane, Heading, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { Tooltip } from '..';
+import { Tooltip } from '../tooltip/tooltip';
 
 const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
   let text =
@@ -17,9 +17,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
-          <Link to="/gol/faucet">
-            Get EUL
-          </Link>
+          <Link to="/search/get%20EUL">Get EUL</Link>
         </Text>
       </Pane>
     </Pane>

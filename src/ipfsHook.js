@@ -24,6 +24,8 @@ const initIpfsNode = async () => {
           Swarm: [
             // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
             // '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+            '/ip4/159.89.24.179/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
+            '/ip6/2a03:b0c0:3:d0::4ed:8001/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
           ],
         },
         Bootstrap: [
@@ -66,6 +68,8 @@ const initIpfsNode = async () => {
           Swarm: [
             // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
             // '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+            '/ip4/159.89.24.179/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
+            '/ip6/2a03:b0c0:3:d0::4ed:8001/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
           ],
         },
         Bootstrap: [

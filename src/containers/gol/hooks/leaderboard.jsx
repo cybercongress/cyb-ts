@@ -7,7 +7,7 @@ import {
   getTxCosmos,
 } from '../../../utils/search/utils';
 import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../../utils/config';
-import { getDelegator } from '../../../utils/utils';
+import { fromBech32 } from '../../../utils/utils';
 import { getEstimation } from '../../../utils/fundingMath';
 import { getRelevance } from '../../../utils/game-monitors';
 
@@ -18,14 +18,6 @@ query MyQuery {
     subject
   }
 }
-`;
-
-const BLOCK_SUBSCRIPTION = `
-  query newBlock {
-    block(limit: 1, order_by: { height: desc }) {
-      height
-    }
-  }
 `;
 
 const GET_LIFETIME = `
@@ -44,75 +36,18 @@ const GET_LIFETIME = `
   }
   `;
 
-const getQuerySubject = (address, block) => `
-query newBlock {
-  relevance_aggregate(where: {height: {_eq: ${block}}}) {
-    aggregate {
-      sum {
-        rank
-      }
-    }
-  }
-  rewards_view(where: {_and: [{block: {_eq: ${block}}}, {subject: {_eq: "${address}"}}]}) {
-    object
+const GET_RELEVANCE = `
+query getRelevanceLeaderboard {
+  relevance_leaderboard {
     subject
-    rank
-    order_number
+    share
   }
 }
 `;
-
-const getQueryLinkages = (arrLink, block) => `
-query linkages {
-  linkages_view(
-    where: {
-      _and: [
-        { height: { _eq: ${block} } }
-        {
-          _or: ${arrLink}
-        }
-      ]
-    }
-  ) {
-    object
-    linkages
-  }
-}
-`;
-
-const getJson = data => {
-  const json = JSON.stringify(data);
-  const unquoted = json.replace(/"([^"]+)":/g, '$1:');
-  return unquoted;
-};
-
-const getRelevanceData = async (address, block) => {
-  const responseRelevance = await getGraphQLQuery(
-    getQuerySubject(address, block)
-  );
-  if (responseRelevance !== null) {
-    const arrLink = [];
-    responseRelevance.rewards_view.forEach(item => {
-      arrLink.push({
-        object: {
-          _eq: item.object,
-        },
-      });
-    });
-
-    const arrLinkQuery = getJson(arrLink);
-
-    const dataQ = await getGraphQLQuery(getQueryLinkages(arrLinkQuery, block));
-
-    return { dataQ, responseRelevance };
-  }
-  return [];
-};
 
 function setLeaderboard() {
   const [data, setData] = useState({});
   const [progress, setProgress] = useState(0);
-  const [block, setBlock] = useState(null);
   const [dataLoad, setDataLoad] = useState({});
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -124,7 +59,7 @@ function setLeaderboard() {
     relevance: false,
   });
 
-  const getLoad = async amountTakeoff => {
+  const getLoad = async (amountTakeoff) => {
     let load = [];
     const currentPrize = Math.floor(
       (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amountTakeoff
@@ -160,11 +95,12 @@ function setLeaderboard() {
         },
       };
     }, {});
-    setDiscipline(item => ({
+    setDiscipline((item) => ({
       ...item,
       load: true,
     }));
     setDataLoad(loadObj);
+    setProgress(50);
   };
 
   const getDelegation = async (validators, total, dataV) => {
@@ -173,7 +109,7 @@ function setLeaderboard() {
     );
 
     if (validators.length > 0) {
-      validators.forEach(item => {
+      validators.forEach((item) => {
         const cyb = (item.tokens / total) * currentPrize;
         if (data[item.cyberAddress]) {
           data[item.cyberAddress] = {
@@ -189,7 +125,7 @@ function setLeaderboard() {
           };
         }
       });
-      setDiscipline(item => ({
+      setDiscipline((item) => ({
         ...item,
         delegation: true,
       }));
@@ -209,7 +145,7 @@ function setLeaderboard() {
       const dataPreCommit = dataGraphQL.pre_commit_view;
       dataPreCommit.forEach((itemQ, index) => {
         const cyb = (itemQ.precommits / sumPrecommits) * currentPrize;
-        validators.forEach(itemRPC => {
+        validators.forEach((itemRPC) => {
           if (itemRPC.consensusPubkey === itemQ.consensus_pubkey) {
             if (data[itemRPC.cyberAddress]) {
               data[itemRPC.cyberAddress] = {
@@ -227,7 +163,7 @@ function setLeaderboard() {
           }
         });
       });
-      setDiscipline(item => ({
+      setDiscipline((item) => ({
         ...item,
         lifetime: true,
       }));
@@ -237,19 +173,25 @@ function setLeaderboard() {
 
   useEffect(() => {
     const feachData = async () => {
-      const responseBlock = await getGraphQLQuery(BLOCK_SUBSCRIPTION);
-      if (responseBlock !== null) {
-        setBlock(responseBlock.block[0].height);
-      }
       const dataTx = await getTxCosmos();
       let amountTakeoff = 0;
       if (dataTx !== null && dataTx.count > 0) {
+        if (dataTx.total_count > dataTx.count) {
+          const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+          for (let index = 1; index < allPage; index++) {
+            // eslint-disable-next-line no-await-in-loop
+            const response = await getTxCosmos(index + 1);
+            if (response !== null && Object.keys(response.txs).length > 0) {
+              dataTx.txs = [...dataTx.txs, ...response.txs];
+            }
+          }
+        }
         const { txs } = dataTx;
         let temE = 0;
         for (let item = 0; item < txs.length; item += 1) {
           let estimation = 0;
           const address = txs[item].tx.value.msg[0].value.from_address;
-          const cyberAddress = getDelegator(address, 'cyber');
+          const cyberAddress = fromBech32(address, 'cyber');
           const val =
             Number.parseInt(
               txs[item].tx.value.msg[0].value.amount[0].amount,
@@ -274,7 +216,7 @@ function setLeaderboard() {
         }
       }
       setAmount(amountTakeoff);
-      setDiscipline(item => ({
+      setDiscipline((item) => ({
         ...item,
         takeoff: true,
       }));
@@ -299,7 +241,7 @@ function setLeaderboard() {
         const validators = [];
         if (dataValidators !== null) {
           dataValidators.forEach(item => {
-            const cyberAddress = getDelegator(item.operator_address, 'cyber');
+            const cyberAddress = fromBech32(item.operator_address, 'cyber');
             total += parseFloat(item.tokens);
             validators.push({
               tokens: item.tokens,
@@ -322,47 +264,33 @@ function setLeaderboard() {
       (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
     );
     const feachData = async () => {
-      if (block > 0 && Object.keys(dataLoad).length > 0) {
-        const lastItem = Object.keys(dataLoad)
-          .slice(-1)
-          .pop();
-        const allItem = Object.keys(dataLoad).length;
-        let index = 0;
-        // eslint-disable-next-line no-restricted-syntax
-        // eslint-disable-next-line guard-for-in
-        for (const key in dataLoad) {
-          // eslint-disable-next-line no-prototype-builtins
-          if (dataLoad.hasOwnProperty(key)) {
-            const status = Math.round((index / allItem) * 100);
-            setProgress(status);
-            // eslint-disable-next-line no-await-in-loop
-            const relevance = await getRelevanceData(key, block);
-            if (
-              Object.keys(relevance).length > 0 &&
-              Object.keys(relevance.dataQ.linkages_view).length > 0
-            ) {
-              // eslint-disable-next-line no-await-in-loop
-              const dataRelevance = await getRelevance(
-                relevance.responseRelevance,
-                relevance.dataQ
-              );
-              if (dataRelevance > 0 && prize > 0) {
-                const cybAbsolute = dataRelevance * prize;
-                data[key] = {
-                  ...data[key],
-                  relevance: cybAbsolute,
-                  cybWon: data[key].cybWon + cybAbsolute,
-                };
+      if (Object.keys(dataLoad).length > 0) {
+        const responseRelevanceQ = await getGraphQLQuery(GET_RELEVANCE);
+        if (
+          responseRelevanceQ &&
+          responseRelevanceQ !== null &&
+          Object.keys(responseRelevanceQ.relevance_leaderboard).length > 0
+        ) {
+          const lastItem = responseRelevanceQ.relevance_leaderboard
+            .slice(-1)
+            .pop();
+          setProgress(80);
+          responseRelevanceQ.relevance_leaderboard.forEach((item, index) => {
+            if (Object.prototype.hasOwnProperty.call(dataLoad, item.subject)) {
+              const cybAbsolute = item.share * prize;
+              data[item.subject] = {
+                ...data[item.subject],
+                relevance: cybAbsolute,
+                cybWon: data[item.subject].cybWon + cybAbsolute,
+              };
+              if (lastItem.subject === item.subject) {
+                setDiscipline((items) => ({
+                  ...items,
+                  relevance: true,
+                }));
               }
             }
-            index += 1;
-            if (lastItem === key) {
-              setDiscipline(item => ({
-                ...item,
-                relevance: true,
-              }));
-            }
-          }
+          });
         }
       }
     };

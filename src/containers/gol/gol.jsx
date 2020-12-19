@@ -10,11 +10,15 @@ import {
   getCurrentNetworkLoad,
 } from '../../utils/search/utils';
 import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
-import { cybWon, getDisciplinesAllocation } from '../../utils/fundingMath';
-import TableDiscipline from './table';
-import { getEstimation } from '../../utils/fundingMath';
 import {
-  getDelegator,
+  cybWon,
+  getDisciplinesAllocation,
+  getEstimation,
+} from '../../utils/fundingMath';
+import TableDiscipline from './table';
+
+import {
+  fromBech32,
   exponentialToDecimal,
   formatNumber,
 } from '../../utils/utils';
@@ -39,7 +43,7 @@ const test = {
   'tm.event': ['Tx'],
 };
 
-function GOL({ setGolTakeOffProps, mobile }) {
+function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   const {
     data: dataLeaderboard,
     loading: loadingLeaderboard,
@@ -82,6 +86,10 @@ function GOL({ setGolTakeOffProps, mobile }) {
     chekPathname();
   }, [location.pathname]);
 
+  useEffect(() => {
+    checkAddressLocalStorage();
+  }, [defaultAccount.name]);
+
   const chekPathname = () => {
     const { pathname } = location;
 
@@ -102,37 +110,45 @@ function GOL({ setGolTakeOffProps, mobile }) {
 
   const getTxsCosmos = async () => {
     const dataTx = await getTxCosmos();
-    console.log(dataTx);
     if (dataTx !== null) {
-      getAtom(dataTx.txs);
+      let tx = dataTx.txs;
+      if (dataTx.total_count > dataTx.count) {
+        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
+        for (let index = 1; index < allPage; index++) {
+          // eslint-disable-next-line no-await-in-loop
+          const response = await getTxCosmos(index + 1);
+          if (response !== null && Object.keys(response.txs).length > 0) {
+            tx = [...tx, ...response.txs];
+          }
+        }
+      }
+      getAtom(tx);
     }
   };
 
   const checkAddressLocalStorage = async () => {
-    let addressLocalStorage = [];
     let consensusAddress = null;
     let validatorAddress = null;
 
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      addressLocalStorage = JSON.parse(localStorageStory);
-      console.log('address', addressLocalStorage);
-      const dataValidatorAddress = getDelegator(
-        addressLocalStorage.bech32,
+    const { account } = defaultAccount;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      const dataValidatorAddress = fromBech32(
+        account.cyber.bech32,
         'cybervaloper'
       );
       const dataGetValidatorsInfo = await getValidatorsInfo(
         dataValidatorAddress
       );
-
       if (dataGetValidatorsInfo !== null) {
         consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
         validatorAddress = dataValidatorAddress;
       }
-
       setAddAddress(false);
       setAddress({
-        addressLedger: addressLocalStorage,
+        addressLedger: account.cyber,
         validatorAddress,
         consensusAddress,
       });
@@ -162,7 +178,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     setHerosCount(count);
   };
 
-  const getAtom = async dataTxs => {
+  const getAtom = async (dataTxs) => {
     const { addressLedger } = address;
     let amount = 0;
 
@@ -171,7 +187,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     let addressCosmos = null;
 
     if (addressLedger !== null) {
-      addressCosmos = getDelegator(addressLedger.bech32, 'cosmos');
+      addressCosmos = fromBech32(addressLedger.bech32, 'cosmos');
     }
 
     if (dataTxs) {
@@ -198,7 +214,7 @@ function GOL({ setGolTakeOffProps, mobile }) {
     );
 
     console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
-    setTakeoff(prevState => ({ ...prevState, estimation, amount }));
+    setTakeoff((prevState) => ({ ...prevState, estimation, amount }));
     setLoading(false);
   };
 
@@ -377,13 +393,14 @@ function GOL({ setGolTakeOffProps, mobile }) {
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolTakeOffProps: (amount, prize) =>
       dispatch(setGolTakeOff(amount, prize)),
