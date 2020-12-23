@@ -81,7 +81,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
     alias: {
       'multicodec/src/base-table': path.dirname(
         require.resolve('multicodec/src/base-table.json')

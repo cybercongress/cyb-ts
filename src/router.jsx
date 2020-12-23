@@ -32,6 +32,7 @@ import GolLifetime from './containers/gol/pages/lifetime';
 import GolRelevance from './containers/gol/pages/relevance';
 import GolLoad from './containers/gol/pages/load';
 import Got from './containers/got/got';
+import TrollBoxx from './containers/trollBox';
 import useIpfsStart from './ipfsHook';
 
 export const history = createBrowserHistory({});
@@ -42,22 +43,22 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsStart();
-  // const [loader, setLoader] = useState(true);
+  const dataIpfsStart = useIpfsStart();
+  const [loader, setLoader] = useState(true);
 
-  // // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
+  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   setLoader(dataIpfsStart.loader);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setLoader(dataIpfsStart.loader);
+    setIpfsIDProps(dataIpfsStart.id);
+  }, [dataIpfsStart]);
 
-  // if (loader) {
-  //   return <Dots />;
-  // }
+  if (loader) {
+    return <Dots />;
+  }
 
   // add Switch to Router
   return (
@@ -97,6 +98,7 @@ function AppRouter({
         <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
         <Route path="/network/euler/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
+        <Route path="/trollBoxx" component={TrollBoxx} />
       </Switch>
     </Router>
   );
