@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pane, Text, Tooltip } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
+import { Tooltip } from '../tooltip/tooltip';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
 const voting = require('../../image/ionicons_svg_ios-people.svg');
@@ -31,58 +32,122 @@ export const Legend = ({ color, text, ...props }) => (
   </Pane>
 );
 
-export const Votes = ({ finalVotes }) => (
-  <Pane
-    backgroundColor="#ffffff14"
-    borderRadius={5}
-    overflow="hidden"
-    height={10}
-    width="100%"
-    display="flex"
-  >
-    <Tooltip
-      content={`Yes: ${toFixedNumber(finalVotes.yes, 2)}%`}
-      position="top"
-    >
+export const Votes = ({ finalVotes }) => {
+  try {
+    return (
       <Pane
-        backgroundColor="#3ab793"
+        backgroundColor="#ffffff14"
+        borderRadius={5}
+        overflow="hidden"
+        height={10}
+        width="100%"
         display="flex"
-        height="100%"
-        width={`${finalVotes.yes}%`}
-      />
-    </Tooltip>
-    <Tooltip
-      content={`Abstain: ${toFixedNumber(finalVotes.abstain, 2)}%`}
-      position="top"
-    >
+      >
+        <Pane display="flex" height="100%" width={`${finalVotes.yes}%`}>
+          <Tooltip placement="top" tooltip={<Pane>Yes: %</Pane>}>
+            <Pane
+              backgroundColor="#3ab793"
+              display="flex"
+              height="100%"
+              width={`${finalVotes.yes}%`}
+            />
+          </Tooltip>
+        </Pane>
+        <Pane display="flex" height="100%" width={`${finalVotes.abstain}%`}>
+          <Tooltip
+            tooltip={`Abstain: ${toFixedNumber(finalVotes.abstain, 2)}%`}
+            placement="top"
+          >
+            <Pane
+              backgroundColor="#ccdcff"
+              display="flex"
+              height="100%"
+              width={`${finalVotes.abstain}%`}
+            />
+          </Tooltip>
+        </Pane>
+        <Pane display="flex" height="100%" width={`${finalVotes.no}%`}>
+          <Tooltip
+            tooltip={`No: ${toFixedNumber(finalVotes.no, 2)}%`}
+            placement="top"
+          >
+            <Pane
+              backgroundColor="#ffcf65"
+              display="flex"
+              height="100%"
+              width={`${finalVotes.no}%`}
+            />
+          </Tooltip>
+        </Pane>
+        <Pane display="flex" height="100%" width={`${finalVotes.noWithVeto}%`}>
+          <Tooltip
+            tooltip={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
+            placement="top"
+          >
+            <Pane
+              backgroundColor="#fe8a8a"
+              display="flex"
+              height="100%"
+              width={`${finalVotes.noWithVeto}%`}
+            />
+          </Tooltip>
+        </Pane>
+      </Pane>
+    );
+  } catch (error) {
+    return (
       <Pane
-        backgroundColor="#ccdcff"
+        backgroundColor="#ffffff14"
+        borderRadius={5}
+        overflow="hidden"
+        height={10}
+        width="100%"
         display="flex"
-        height="100%"
-        width={`${finalVotes.abstain}%`}
-      />
-    </Tooltip>
-    <Tooltip content={`No: ${toFixedNumber(finalVotes.no, 2)}%`} position="top">
-      <Pane
-        backgroundColor="#ffcf65"
-        display="flex"
-        height="100%"
-        width={`${finalVotes.no}%`}
-      />
-    </Tooltip>
-    <Tooltip
-      content={`NoWithVeto: ${toFixedNumber(finalVotes.noWithVeto, 2)}%`}
-      position="top"
-    >
-      <Pane
-        backgroundColor="#fe8a8a"
-        display="flex"
-        height="100%"
-        width={`${finalVotes.noWithVeto}%`}
-      />
-    </Tooltip>
-  </Pane>
-);
+      >
+        <Pane display="flex" height="100%" width={0}>
+          <Tooltip placement="top" tooltip="Yes: 0%">
+            <Pane
+              backgroundColor="#3ab793"
+              display="flex"
+              height="100%"
+              width={0}
+            />
+          </Tooltip>
+        </Pane>
+        <Pane display="flex" height="100%" width={0}>
+          <Tooltip tooltip="Abstain: 0%" placement="top">
+            <Pane
+              backgroundColor="#ccdcff"
+              display="flex"
+              height="100%"
+              width={0}
+            />
+          </Tooltip>
+        </Pane>
+        <Pane display="flex" height="100%" width={0}>
+          <Tooltip tooltip="No: 0%" placement="top">
+            <Pane
+              backgroundColor="#ffcf65"
+              display="flex"
+              height="100%"
+              width={0}
+            />
+          </Tooltip>
+        </Pane>
+        <Pane display="flex" height="100%" width={0}>
+          <Tooltip tooltip="NoWithVeto: 0%" placement="top">
+            <Pane
+              backgroundColor="#fe8a8a"
+              display="flex"
+              height="100%"
+              width={0}
+            />
+          </Tooltip>
+        </Pane>
+      </Pane>
+    );
+  }
+};
 
 export const IconStatus = ({ status, size, ...props }) => {
   let imgIcon;
