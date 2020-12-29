@@ -7,7 +7,6 @@ import {
   Pane,
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import onClickOutside from 'react-onclickoutside';
 import queryString from 'query-string';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';

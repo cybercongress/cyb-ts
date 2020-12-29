@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
-import { keys } from 'regenerator-runtime';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,

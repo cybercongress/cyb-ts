@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { Speedometer } from './speedometer';
 import { Difference } from './statistics';
 
-const vitalik = require('../../image/vitalik.png');
-const jae = require('../../image/jae.png');
-
 const popus = [
   {
     atom: {
@@ -194,7 +191,7 @@ class VitalikJae extends Component {
                 difference={difference}
               />
             )}
-            <img src={vitalik} />
+            {/* <img src={vitalik} /> */}
             <div className="vitalik-popups">
               <span>{contentPopupVitalik}</span>
             </div>
@@ -210,7 +207,7 @@ class VitalikJae extends Component {
                 difference={difference}
               />
             )}
-            <img src={jae} />
+            {/* <img src={jae} /> */}
             <div className="jae-popups">
               <span>{contentPopupJae}</span>
             </div>
