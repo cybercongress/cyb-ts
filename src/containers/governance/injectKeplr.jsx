@@ -1,8 +1,3 @@
-import React, { PureComponent } from 'react';
-import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
-import { Decimal } from '@cosmjs/math';
-import { CYBER } from '../../utils/config';
-import { Loading } from '../../components';
 
 const injectKeplr = (InnerComponent) =>
   class extends PureComponent {

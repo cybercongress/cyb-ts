@@ -17,6 +17,7 @@ build
 yarn.lock
 
 .idea
+.vscode
 
 yarn-debug.log*
 yarn-error.log*
