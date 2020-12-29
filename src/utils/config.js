@@ -62,13 +62,13 @@ const CYBER = {
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: `GEUL`,
   CYBER_WEBSOCKET_URL: 'wss://api.cyber.cybernode.ai/websocket',
-  CYBER_NODE_URL_API: 'https://api.uranus.cybernode.ai',
-  CYBER_NODE_URL_LCD: 'https://lcd.uranus.cybernode.ai',
+  CYBER_NODE_URL_API: 'https://api.cyber.cybernode.ai',
+  CYBER_NODE_URL_LCD: 'https://lcd.cyber.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
-  CHAIN_ID: 'euler-x',
+  CHAIN_ID: 'euler-6',
   MEMO_KEPLR: 'cyber.page, using keplr',
 };
 

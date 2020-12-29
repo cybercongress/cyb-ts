@@ -30,9 +30,9 @@ const injectKeplr = (InnerComponent) =>
           try {
             await window.keplr.experimentalSuggestChain({
               // Chain-id of the Cosmos SDK chain.
-              chainId: 'euler-x',
+              chainId: 'euler-6',
               // The name of the chain to be displayed to the user.
-              chainName: 'euler-x',
+              chainName: 'euler-6',
               // RPC endpoint of the chain.
               rpc: CYBER.CYBER_NODE_URL_API,
               rest: CYBER.CYBER_NODE_URL_LCD,
@@ -89,8 +89,8 @@ const injectKeplr = (InnerComponent) =>
           console.log('Please use the recent version of keplr extension');
         }
         if (window.getOfflineSigner) {
-          await window.keplr.enable('euler-x');
-          const offlineSigner = window.getOfflineSigner('euler-x');
+          await window.keplr.enable('euler-6');
+          const offlineSigner = window.getOfflineSigner('euler-6');
           const accounts = await offlineSigner.getAccounts();
           console.log('accounts', accounts);
           const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'uatom');
