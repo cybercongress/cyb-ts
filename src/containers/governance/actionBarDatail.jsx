@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import BigNumber from 'bignumber.js';
 import { ActionBar, Input, Button, Pane } from '@cybercongress/gravity';
+import {
+  SigningCosmosClient,
+  GasPrice,
+  coins,
+  makeSignDoc,
+  makeStdTx,
+} from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -12,7 +19,9 @@ import {
   ActionBarContentText,
   Dots,
   CheckAddressInfo,
+  ButtonImgText,
 } from '../../components';
+import { AppContext } from '../../context';
 
 import { downloadObjectAsJson } from '../../utils/utils';
 
@@ -20,13 +29,9 @@ import { statusNode } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_CYBER } from '../../utils/config';
 
-const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const {
-  MsgVote,
-  VoteOption,
-  MsgDeposit,
-} = require('@chainapsis/cosmosjs/x/gov');
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgLedger = require('../../image/ledger.svg');
+const imgCyber = require('../../image/blue-circle.png');
 
 const {
   MEMO,
@@ -73,6 +78,14 @@ class ActionBarDetail extends Component {
 
   componentDidMount() {
     this.ledger = new CosmosDelegateTool();
+  }
+
+  componentDidUpdate() {
+    const { stage, addressInfo, address } = this.state;
+
+    if (stage === STAGE_READY && addressInfo !== null && address !== null) {
+      this.generateTx();
+    }
   }
 
   getLedgerAddress = async () => {
@@ -132,63 +145,62 @@ class ActionBarDetail extends Component {
 
   generateTxKeplr = async () => {
     const { valueSelect, valueDeposit } = this.state;
-    const { period, id, keplr } = this.props;
-    await keplr.enable();
-    this.setState({
-      stage: STAGE_GENERATION_TX,
-    });
-    const proposalId = parseInt(id, 10);
-    let amount = 0;
-    if (parseFloat(valueDeposit) > 0) {
-      amount = valueDeposit * CYBER.DIVISOR_CYBER_G;
-    }
-    let msg;
-    const sender = AccAddress.fromBech32(
-      (await keplr.getKeys())[0].bech32Address,
-      CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-    );
-    if (period === 'deposit') {
-      msg = new MsgDeposit(proposalId, sender, [new Coin('eul', amount)]);
-    }
+    const { period, id } = this.props;
+    const { keplr } = this.context;
+    if (keplr !== null) {
+      const chainId = CYBER.CHAIN_ID;
+      await window.keplr.enable(chainId);
+      const accounts = await keplr.getAccount();
+      this.setState({
+        stage: STAGE_GENERATION_TX,
+      });
 
-    if (period === 'vote') {
-      let option;
-      switch (valueSelect) {
-        case 'Yes':
-          option = VoteOption.yes;
-          break;
-        case 'No':
-          option = VoteOption.no;
-          break;
-        case 'Abstain':
-          option = VoteOption.abstain;
-          break;
-        case 'NoWithVeto':
-          option = VoteOption.noWithVeto;
-
-          break;
-        default:
-          option = VoteOption.empty;
-          break;
+      let amount = [];
+      if (parseFloat(valueDeposit) > 0) {
+        amount = coins(valueDeposit * CYBER.DIVISOR_CYBER_G, 'eul');
       }
-      msg = new MsgVote(proposalId, sender, new VoteOption(option));
-    }
+      const msgs = [];
 
-    if (Object.keys(msg).length > 0) {
-      const result = await keplr.sendMsgs(
-        [msg],
-        {
-          gas: 100000,
-          memo: CYBER.MEMO_KEPLR,
-          fee: new Coin('eul', 200),
-        },
-        'sync'
-      );
-      console.log('result: ', result);
-      const hash = result.hash.toString('hex').toUpperCase();
-      console.log('hash :>> ', hash);
-      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-      this.timeOut = setTimeout(this.confirmTx, 1500);
+      if (period === 'deposit') {
+        msgs.push({
+          type: 'cosmos-sdk/MsgDeposit',
+          value: {
+            amount,
+            depositor: accounts.address,
+            proposal_id: id,
+          },
+        });
+      }
+
+      if (period === 'vote') {
+        msgs.push({
+          type: 'cosmos-sdk/MsgVote',
+          value: {
+            option: valueSelect,
+            voter: accounts.address,
+            proposal_id: id,
+          },
+        });
+      }
+
+      const fee = {
+        amount: coins(0, 'uatom'),
+        gas: '100000',
+      };
+
+      if (Object.keys(msgs).length > 0) {
+        console.log('msgs', msgs);
+        const result = await keplr.signAndBroadcast(
+          msgs,
+          fee,
+          CYBER.MEMO_KEPLR
+        );
+        console.log('result: ', result);
+        const hash = result.transactionHash;
+        console.log('hash :>> ', hash);
+        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        this.timeOut = setTimeout(this.confirmTx, 1500);
+      }
     }
   };
 
@@ -385,8 +397,6 @@ class ActionBarDetail extends Component {
       cli: false,
     });
     this.timeOut = null;
-    this.ledger = null;
-    this.transport = null;
   };
 
   onClickInitStage = () => {
@@ -425,9 +435,9 @@ class ActionBarDetail extends Component {
       });
       this.getLedgerAddress();
     }
-    // if (defaultAccount.keys === 'keplr') {
-    //   this.generateTxKeplr();
-    // }
+    if (defaultAccount.keys === 'keplr') {
+      this.generateTxKeplr();
+    }
   };
 
   onChangeValueAddress = (e) => {
@@ -476,12 +486,27 @@ class ActionBarDetail extends Component {
             />
             <Pane>{CYBER.DENOM_CYBER_G}</Pane>
           </ActionBarContentText>
-          <Button
+          <ButtonImgText
+            text={
+              <Pane alignItems="center" display="flex">
+                Deposit
+                <img
+                  src={imgCyber}
+                  alt="cyber"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '5px',
+                    paddingTop: '2px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </Pane>
+            }
             disabled={!parseFloat(valueDeposit) > 0}
-            onClick={this.onClickSelect}
-          >
-            Deposit
-          </Button>
+            onClick={this.onClickUsingLedger}
+            img={defaultAccount.keys === 'ledger' ? imgLedger : imgKeplr}
+          />
         </ActionBar>
       );
     }
@@ -502,22 +527,26 @@ class ActionBarDetail extends Component {
               <option value="NoWithVeto">NoWithVeto</option>
             </select>
           </ActionBarContentText>
-          <Button onClick={this.onClickSelect}>Vote</Button>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_SELECTION) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Button marginX={10} onClick={this.onClickUsingCli}>
-              use Cli
-            </Button>
-            <Button marginX={10} onClick={this.onClickUsingLedger}>
-              {defaultAccount.keys === 'keplr' ? 'use Keplr' : 'use Ledger'}
-            </Button>
-          </ActionBarContentText>
+          <ButtonImgText
+            text={
+              <Pane alignItems="center" display="flex">
+                Vote
+                <img
+                  src={imgCyber}
+                  alt="cyber"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginLeft: '5px',
+                    paddingTop: '2px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </Pane>
+            }
+            onClick={this.onClickUsingLedger}
+            img={defaultAccount.keys === 'ledger' ? imgLedger : imgKeplr}
+          />
         </ActionBar>
       );
     }
@@ -557,27 +586,6 @@ class ActionBarDetail extends Component {
 
     if (stage === LEDGER_TX_ACOUNT_INFO) {
       return <CheckAddressInfo />;
-    }
-
-    if (stage === STAGE_READY) {
-      if (period === 'deposit') {
-        return (
-          <ActionBar>
-            <ActionBarContentText>
-              I want to send deposit {`${valueDeposit} ${CYBER.DENOM_CYBER_G}`}
-            </ActionBarContentText>
-            <Button onClick={this.generateTx}>generateTx</Button>
-          </ActionBar>
-        );
-      }
-      if (period === 'vote') {
-        return (
-          <ActionBar>
-            <ActionBarContentText>I vote {valueSelect}</ActionBarContentText>
-            <Button onClick={this.generateTx}>generateTx</Button>
-          </ActionBar>
-        );
-      }
     }
 
     if (stage === STAGE_GENERATION_TX) {
@@ -627,5 +635,7 @@ class ActionBarDetail extends Component {
     return null;
   }
 }
+
+ActionBarDetail.contextType = AppContext;
 
 export default ActionBarDetail;

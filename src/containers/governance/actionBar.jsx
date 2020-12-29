@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import { Button } from '@cybercongress/gravity';
+import {
+  SigningCosmosClient,
+  GasPrice,
+  coins,
+  makeSignDoc,
+  makeStdTx,
+} from '@cosmjs/launchpad';
+import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
   JsonTransaction,
@@ -18,6 +25,7 @@ import {
   GovernanceSoftwareUpgrade,
 } from '../../components';
 import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
+import { AppContext } from '../../context';
 
 import { LEDGER, CYBER } from '../../utils/config';
 
@@ -76,6 +84,14 @@ class ActionBar extends Component {
     this.ledger = new CosmosDelegateTool();
   }
 
+  componentDidUpdate() {
+    const { stage, addressInfo, address } = this.state;
+
+    if (stage === STAGE_READY && addressInfo !== null && address !== null) {
+      this.generateTx();
+    }
+  }
+
   getLedgerAddress = async () => {
     this.transport = await TransportWebUSB.create(120 * 1000);
     this.ledger = new CosmosDelegateTool(this.transport);
@@ -99,14 +115,6 @@ class ActionBar extends Component {
     }
   };
 
-  getNetworkId = async () => {
-    const responseStatusNode = await statusNode();
-    if (responseStatusNode !== null) {
-      return responseStatusNode.node_info.network;
-    }
-    return '';
-  };
-
   getAddressInfo = async () => {
     try {
       const { address } = this.state;
@@ -115,13 +123,12 @@ class ActionBar extends Component {
       });
 
       const addressInfo = await this.ledger.getAccountInfoCyber(address);
-      const chainId = await this.getNetworkId();
 
-      addressInfo.chainId = chainId;
+      addressInfo.chainId = CYBER.CHAIN_ID;
 
       this.setState({
         addressInfo,
-        stage: STAGE_TYPE_GOV,
+        stage: STAGE_READY,
       });
     } catch (error) {
       const { message, statusCode } = error;
@@ -134,10 +141,137 @@ class ActionBar extends Component {
     }
   };
 
-  // link = async () => {
-  //   const { valueInput } = this.state;
-  //   console.log('valueInput', valueInput);
-  // };
+  generateTxKeplr = async () => {
+    const {
+      valueSelect,
+      valueDescription,
+      valueTitle,
+      valueDeposit,
+      valueAmountRecipient,
+      valueAddressRecipient,
+      changeParam,
+      nameUpgrade,
+      heightUpgrade,
+    } = this.state;
+    const { keplr } = this.context;
+    console.log('keplr', keplr);
+    if (keplr !== null) {
+      let deposit = [];
+      const title = valueTitle;
+      const description = valueDescription;
+      const recipient = valueAddressRecipient;
+      let amount = [];
+      let msgs = [];
+      const chainId = CYBER.CHAIN_ID;
+      await window.keplr.enable(chainId);
+      const accounts = await keplr.getAccount();
+
+      if (valueDeposit > 0) {
+        deposit = coins(valueDeposit * CYBER.DIVISOR_CYBER_G, 'eul');
+      }
+
+      if (valueAmountRecipient > 0) {
+        amount = coins(valueAmountRecipient * CYBER.DIVISOR_CYBER_G, 'eul');
+      }
+
+      switch (valueSelect) {
+        case 'textProposal': {
+          msgs.push({
+            type: 'cosmos-sdk/MsgSubmitProposal',
+            value: {
+              content: {
+                type: 'cosmos-sdk/TextProposal',
+                value: {
+                  description,
+                  title,
+                },
+              },
+              proposer: accounts.address,
+              initial_deposit: deposit,
+            },
+          });
+          break;
+        }
+        case 'communityPool': {
+          msgs.push({
+            type: 'cosmos-sdk/MsgSubmitProposal',
+            value: {
+              content: {
+                type: 'cosmos-sdk/CommunityPoolSpendProposal',
+                value: {
+                  amount,
+                  description,
+                  recipient,
+                  title,
+                },
+              },
+              initial_deposit: deposit,
+              proposer: accounts.address,
+            },
+          });
+          break;
+        }
+        case 'paramChange': {
+          msgs.push({
+            type: 'cosmos-sdk/MsgSubmitProposal',
+            value: {
+              content: {
+                type: 'cosmos-sdk/ParameterChangeProposal',
+                value: {
+                  changes: changeParam,
+                  description,
+                  title,
+                },
+              },
+              proposer: accounts.address,
+              initial_deposit: deposit,
+            },
+          });
+          break;
+        }
+
+        case 'softwareUpgrade': {
+          msgs.push({
+            type: 'cosmos-sdk/MsgSubmitProposal',
+            value: {
+              content: {
+                type: 'cosmos-sdk/SoftwareUpgradeProposal',
+                value: {
+                  description,
+                  title,
+                  plan: { name: nameUpgrade, height: heightUpgrade },
+                },
+              },
+              proposer: accounts.address,
+              initial_deposit: deposit,
+            },
+          });
+          break;
+        }
+        default: {
+          msgs = [];
+        }
+      }
+
+      const fee = {
+        amount: coins(0, 'uatom'),
+        gas: '100000',
+      };
+      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
+      console.log('result', result);
+      if (!result.code || result.code === 0) {
+        const hash = result.transactionHash;
+        console.log('hash :>> ', hash);
+        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        this.timeOut = setTimeout(this.confirmTx, 1500);
+      } else {
+        this.setState({
+          stage: STAGE_ERROR,
+          errorMessage: result.rawLog,
+        });
+      }
+    }
+  };
 
   generateTx = async () => {
     const {
@@ -335,47 +469,62 @@ class ActionBar extends Component {
 
   onClickSelect = async () => {
     await this.setState({
-      stage: STAGE_LEDGER_INIT,
+      stage: STAGE_TYPE_GOV,
     });
-    this.getLedgerAddress();
   };
 
-  onChangeSelect = async e => {
+  generateTxInit = async () => {
+    const { account } = this.props;
+    console.log('account', account);
+    if (account !== null) {
+      if (account.keys === 'ledger') {
+        await this.setState({
+          stage: STAGE_LEDGER_INIT,
+        });
+        this.getLedgerAddress();
+      }
+      if (account.keys === 'keplr') {
+        this.generateTxKeplr();
+      }
+    }
+  };
+
+  onChangeSelect = async (e) => {
     const { value } = e.target;
     this.setState({
       valueSelect: value,
     });
   };
 
-  onChangeInputTitle = async e => {
+  onChangeInputTitle = async (e) => {
     const { value } = e.target;
     this.setState({
       valueTitle: value,
     });
   };
 
-  onChangeInputDescription = async e => {
+  onChangeInputDescription = async (e) => {
     const { value } = e.target;
     this.setState({
       valueDescription: value,
     });
   };
 
-  onChangeInputDeposit = async e => {
+  onChangeInputDeposit = async (e) => {
     const { value } = e.target;
     this.setState({
       valueDeposit: value,
     });
   };
 
-  onChangeInputAddressRecipient = async e => {
+  onChangeInputAddressRecipient = async (e) => {
     const { value } = e.target;
     this.setState({
       valueAddressRecipient: value,
     });
   };
 
-  onChangeInputAmountRecipient = async e => {
+  onChangeInputAmountRecipient = async (e) => {
     const { value } = e.target;
     this.setState({
       valueAmountRecipient: value,
@@ -406,8 +555,6 @@ class ActionBar extends Component {
       heightUpgrade: '',
     });
     this.timeOut = null;
-    this.ledger = null;
-    this.transport = null;
   };
 
   onClickInitStage = () => {
@@ -424,23 +571,23 @@ class ActionBar extends Component {
     });
   };
 
-  onFilePickerChange = files => {
+  onFilePickerChange = (files) => {
     const reader = new FileReader();
 
     reader.readAsText(files[0], 'UTF-8');
-    reader.onload = evt => {
+    reader.onload = (evt) => {
       console.log(evt.target.result);
 
       const loadedJson = JSON.parse(evt.target.result);
       console.log('loadedJson', loadedJson);
     };
 
-    reader.onerror = evt => {
+    reader.onerror = (evt) => {
       console.log('error', evt);
     };
   };
 
-  onChangeSelectParam = e => {
+  onChangeSelectParam = (e) => {
     const { value } = e.target;
     this.setState({
       valueSelectChangeParam: value,
@@ -449,13 +596,13 @@ class ActionBar extends Component {
     });
   };
 
-  onChangeInputParam = e => {
+  onChangeInputParam = (e) => {
     const { selectedParam } = this.state;
     const { value } = e.target;
 
     this.setState({
       valueParam: value,
-      selectedParam: { ...selectedParam, value: `"${value}"` },
+      selectedParam: { ...selectedParam, value: `${value}` },
     });
   };
 
@@ -469,7 +616,7 @@ class ActionBar extends Component {
     });
   };
 
-  onClickDeleteParam = index => {
+  onClickDeleteParam = (index) => {
     const { changeParam } = this.state;
     const tempArr = changeParam;
 
@@ -480,7 +627,7 @@ class ActionBar extends Component {
     });
   };
 
-  onChangeInputValueNameUpgrade = e => {
+  onChangeInputValueNameUpgrade = (e) => {
     const { value } = e.target;
 
     this.setState({
@@ -488,7 +635,7 @@ class ActionBar extends Component {
     });
   };
 
-  onChangeInputValueHeightUpgrade = e => {
+  onChangeInputValueHeightUpgrade = (e) => {
     const { value } = e.target;
 
     this.setState({
@@ -544,8 +691,8 @@ class ActionBar extends Component {
     if (valueSelect === 'textProposal' && stage === STAGE_TYPE_GOV) {
       return (
         <TextProposal
-          addrProposer={address.bech32}
-          onClickBtn={this.generateTx}
+          // addrProposer={address.bech32}
+          onClickBtn={this.generateTxInit}
           onChangeInputTitle={this.onChangeInputTitle}
           onChangeInputDescription={this.onChangeInputDescription}
           onChangeInputDeposit={this.onChangeInputDeposit}
@@ -560,8 +707,8 @@ class ActionBar extends Component {
     if (valueSelect === 'communityPool' && stage === STAGE_TYPE_GOV) {
       return (
         <CommunityPool
-          addrProposer={address.bech32}
-          onClickBtn={this.generateTx}
+          // addrProposer={address.bech32}
+          onClickBtn={this.generateTxInit}
           onChangeInputTitle={this.onChangeInputTitle}
           onChangeInputDescription={this.onChangeInputDescription}
           onChangeInputDeposit={this.onChangeInputDeposit}
@@ -583,7 +730,7 @@ class ActionBar extends Component {
           valueSelect={valueSelectChangeParam}
           onChangeSelect={this.onChangeSelectParam}
           onClickBtnAddParam={this.onClickBtnAddParam}
-          onChangeInputParam={e => this.onChangeInputParam(e)}
+          onChangeInputParam={(e) => this.onChangeInputParam(e)}
           valueParam={valueParam}
           changeParam={changeParam}
           onClickDeleteParam={this.onClickDeleteParam}
@@ -594,7 +741,7 @@ class ActionBar extends Component {
           valueTitle={valueTitle}
           valueDeposit={valueDeposit}
           onClickBtnCloce={this.onClickInitStage}
-          onClickBtn={this.generateTx}
+          onClickBtn={this.generateTxInit}
         />
       );
     }
@@ -609,13 +756,13 @@ class ActionBar extends Component {
           valueTitle={valueTitle}
           valueDeposit={valueDeposit}
           onClickBtnCloce={this.onClickInitStage}
-          onClickBtn={this.generateTx}
+          onClickBtn={this.generateTxInit}
           valueNameUpgrade={nameUpgrade}
           valueHeightUpgrade={heightUpgrade}
-          onChangeInputValueNameUpgrade={e =>
+          onChangeInputValueNameUpgrade={(e) =>
             this.onChangeInputValueNameUpgrade(e)
           }
-          onChangeInputValueHeightUpgrade={e =>
+          onChangeInputValueHeightUpgrade={(e) =>
             this.onChangeInputValueHeightUpgrade(e)
           }
         />
@@ -659,5 +806,7 @@ class ActionBar extends Component {
     return null;
   }
 }
+
+ActionBar.contextType = AppContext;
 
 export default ActionBar;
