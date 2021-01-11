@@ -6,6 +6,8 @@ import { StartState } from './stateActionBar';
 import { Loading } from '../../components';
 import { setQuery } from '../../redux/actions/query';
 
+const bender = require('../../image/bender.png');
+
 class Home extends PureComponent {
   constructor(props) {
     super(props);
@@ -24,13 +26,13 @@ class Home extends PureComponent {
     this.routeChange = this.routeChange.bind(this);
   }
 
-  routeChange = newPath => {
+  routeChange = (newPath) => {
     const { history } = this.props;
     const path = newPath;
     history.push(path);
   };
 
-  onChangeInput = async e => {
+  onChangeInput = async (e) => {
     const { value } = e.target;
     if (value.length === 0) {
       await this.setState({
@@ -42,7 +44,7 @@ class Home extends PureComponent {
     });
   };
 
-  handleKeyPress = async e => {
+  handleKeyPress = async (e) => {
     const { valueSearchInput } = this.state;
     const { setQueryProps } = this.props;
 
@@ -82,7 +84,7 @@ class Home extends PureComponent {
     }, 200);
   };
 
-  showCoords = event => {
+  showCoords = (event) => {
     let boxShadow = 0;
 
     const mX = event.pageX;
@@ -192,6 +194,9 @@ class Home extends PureComponent {
               <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
               <Link to="/gol">Game of Links</Link>
             </Pane>
+            <Link style={{ position: 'absolute', top: '52%' }} to="/trollBoxx">
+              <img src={bender} alt="bender" style={{ height: 170 }} />
+            </Link>
           </Pane>
         </main>
         <StartState
@@ -204,9 +209,9 @@ class Home extends PureComponent {
   }
 }
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    setQueryProps: query => dispatch(setQuery(query)),
+    setQueryProps: (query) => dispatch(setQuery(query)),
   };
 };
 

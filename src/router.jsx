@@ -32,7 +32,7 @@ import GolLifetime from './containers/gol/pages/lifetime';
 import GolRelevance from './containers/gol/pages/relevance';
 import GolLoad from './containers/gol/pages/load';
 import Got from './containers/got/got';
-// import TrollBoxx from './containers/trollBox';
+import TrollBoxx from './containers/trollBox';
 import useIpfsStart from './ipfsHook';
 
 export const history = createBrowserHistory({});
@@ -98,7 +98,7 @@ function AppRouter({
         <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
         <Route path="/network/euler/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
-        {/* <Route path="/trollBoxx" component={TrollBoxx} /> */}
+        <Route path="/trollBoxx" component={TrollBoxx} />
       </Switch>
     </Router>
   );

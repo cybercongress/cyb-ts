@@ -203,7 +203,7 @@ class TrollBoxx extends React.PureComponent {
 
     if (
       event.keyCode === 13 &&
-      event.shiftKey &&
+      !event.shiftKey &&
       !/^\s*$/.test(valueInputMassage)
     ) {
       try {
