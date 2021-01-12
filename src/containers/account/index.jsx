@@ -25,7 +25,7 @@ import {
 import Heroes from './heroes';
 import Unbondings from './unbondings';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
-import { Loading, Copy, ContainerCard, Card } from '../../components';
+import { Loading, Copy, ContainerCard, Card, Dots } from '../../components';
 import ActionBarContainer from './actionBar';
 import GetTxs from './txs';
 import Main from './main';
@@ -82,8 +82,9 @@ class AccountDetails extends React.Component {
       account: '',
       keywordHash: '',
       addressLocalStor: null,
-      loader: true,
-      loading: true,
+      loadingAddressInfo: true,
+      loadingGoL: true,
+      loadingTweews: true,
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
@@ -134,7 +135,7 @@ class AccountDetails extends React.Component {
 
   init = async () => {
     this.setState({
-      loading: true,
+      loadingGoL: true,
     });
     await this.chekAddress();
     this.chekFollowAddress();
@@ -150,8 +151,8 @@ class AccountDetails extends React.Component {
     this.setState({
       account: '',
       keywordHash: '',
-      loader: true,
-      loading: true,
+      loadingAddressInfo: true,
+      loadingGoL: true,
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
@@ -270,7 +271,7 @@ class AccountDetails extends React.Component {
 
     if (address) {
       responseFollows = await getFollows(address);
-      console.log('responseFollows', responseFollows)
+      console.log('responseFollows', responseFollows);
     }
 
     if (responseFollows !== null && responseFollows.txs) {
@@ -326,7 +327,7 @@ class AccountDetails extends React.Component {
       this.getAtom(tx);
     } else {
       this.setState({
-        loading: false,
+        loadingGoL: false,
       });
     }
   };
@@ -365,7 +366,7 @@ class AccountDetails extends React.Component {
     );
 
     this.setState({
-      loading: false,
+      loadingGoL: false,
       takeoffDonations: amount,
     });
   };
@@ -386,11 +387,6 @@ class AccountDetails extends React.Component {
       pathname.match(/heroes/gm).length > 0
     ) {
       this.select('heroes');
-      // } else if (
-      //   pathname.match(/mentions/gm) &&
-      //   pathname.match(/mentions/gm).length > 0
-      // ) {
-      //   this.select('mentions');
     } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
       this.select('gol');
     } else if (
@@ -412,7 +408,6 @@ class AccountDetails extends React.Component {
     const { match } = this.props;
     const { address } = match.params;
 
-    let linksCount = 0;
     let total;
     const staking = {
       delegations: [],
@@ -437,12 +432,6 @@ class AccountDetails extends React.Component {
     }
 
     const resultGetDistribution = await getDistribution(dataValidatorAddress);
-
-    // const indexStats = await getGraphQLQuery(QueryAddress(address));
-
-    // if (indexStats !== null && indexStats.cyberlink_aggregate) {
-    //   linksCount = indexStats.cyberlink_aggregate.aggregate.count;
-    // }
 
     if (resultGetDistribution) {
       result.val_commission = resultGetDistribution.val_commission;
@@ -474,8 +463,7 @@ class AccountDetails extends React.Component {
       validatorAddress,
       consensusAddress,
       staking,
-      linksCount,
-      loader: false,
+      loadingAddressInfo: false,
     });
   };
 
@@ -510,13 +498,13 @@ class AccountDetails extends React.Component {
       balance,
       staking,
       selected,
-      loader,
+      loadingAddressInfo,
       keywordHash,
       addressLedger,
       validatorAddress,
       consensusAddress,
       won,
-      loading,
+      loadingGoL,
       takeoffDonations,
       dataTweet,
       follow,
@@ -527,49 +515,31 @@ class AccountDetails extends React.Component {
       followers,
       addressLocalStor,
     } = this.state;
-    console.log('following', following)
+    console.log('following', following);
 
     const { node, mobile, keplr } = this.props;
 
     let content;
 
-    if (loader) {
-      return (
-        <div
-          style={{
-            height: '50vh',
-          }}
-          className="container-loading"
-        >
-          <Loading />
-        </div>
-      );
-    }
-
-    if (loading) {
-      return (
-        <div
-          style={{
-            height: '50vh',
-          }}
-          className="container-loading"
-        >
-          <Loading />
-        </div>
-      );
-    }
-
     if (selected === 'heroes') {
-      content = (
-        <Route
-          path="/network/euler/contract/:address/heroes"
-          render={() => <Heroes data={staking} />}
-        />
-      );
+      if (loadingAddressInfo) {
+        content = <Dots />;
+      } else {
+        content = (
+          <Route
+            path="/network/euler/contract/:address/heroes"
+            render={() => <Heroes data={staking} />}
+          />
+        );
+      }
     }
 
     if (selected === 'wallet') {
-      content = <Main balance={balance} />;
+      if (loadingAddressInfo) {
+        content = <Dots />;
+      } else {
+        content = <Main balance={balance} />;
+      }
     }
 
     if (selected === 'cyberlink') {
@@ -585,30 +555,25 @@ class AccountDetails extends React.Component {
       );
     }
 
-    // if (selected === 'mentions') {
-    //   content = (
-    //     <Route
-    //       path="/network/euler/contract/:address/mentions"
-    //       render={() => <GetMentions accountUser={keywordHash} />}
-    //     />
-    //   );
-    // }
-
     if (selected === 'gol') {
-      content = (
-        <Route
-          path="/network/euler/contract/:address/gol"
-          render={() => (
-            <TableDiscipline
-              addressLedger={account}
-              validatorAddress={validatorAddress}
-              consensusAddress={consensusAddress}
-              takeoffDonations={takeoffDonations}
-              won={won}
-            />
-          )}
-        />
-      );
+      if (loadingGoL) {
+        content = <Dots />;
+      } else {
+        content = (
+          <Route
+            path="/network/euler/contract/:address/gol"
+            render={() => (
+              <TableDiscipline
+                addressLedger={account}
+                validatorAddress={validatorAddress}
+                consensusAddress={consensusAddress}
+                takeoffDonations={takeoffDonations}
+                won={won}
+              />
+            )}
+          />
+        );
+      }
     }
 
     if (selected === 'tweets') {

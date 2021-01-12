@@ -32,7 +32,7 @@ import {
   roundNumber,
   formatCurrency,
 } from '../../utils/utils';
-import { FormatNumber, Loading, LinkWindow } from '../../components';
+import { FormatNumber, Loading, LinkWindow, Dots } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
 import { CYBER } from '../../utils/config';
@@ -106,7 +106,8 @@ class Validators extends Component {
     this.state = {
       validators: [],
       showJailed: false,
-      loading: true,
+      loadingSelfAndBond: true,
+      loadingValidators: true,
       bondedTokens: 0,
       validatorSelect: [],
       selectedIndex: '',
@@ -160,7 +161,8 @@ class Validators extends Component {
 
   init = async () => {
     this.setState({
-      loading: true,
+      loadingSelfAndBond: true,
+      loadingValidators: true,
     });
     await this.checkAddressLocalStorage();
     await this.getSupply();
@@ -179,7 +181,7 @@ class Validators extends Component {
   };
 
   getValidators = async () => {
-    const { bondedTokens, addressPocket } = this.state;
+    const { addressPocket } = this.state;
     let delegationsData = [];
 
     let validators = await getValidators();
@@ -192,9 +194,10 @@ class Validators extends Component {
       .slice(0)
       .sort((a, b) => (+a.tokens > +b.tokens ? -1 : 1));
 
-    const activeValidatorsCount = validators.filter(
-      (validator) => !validator.jailed
-    ).length;
+    this.setState({
+      validators,
+      loadingValidators: false,
+    });
 
     if (addressPocket && addressPocket.bech32) {
       const responseDelegations = await getDelegations(addressPocket.bech32);
@@ -217,13 +220,6 @@ class Validators extends Component {
         const delegatorAddress = fromBech32(validators[item].operator_address);
         let shares = 0;
 
-        const height = validators[item].unbonding_height;
-
-        const commission = formatNumber(
-          validators[item].commission.commission_rates.rate * 100,
-          2
-        );
-
         const getSelfDelegation = await selfDelegationShares(
           delegatorAddress,
           validators[item].operator_address
@@ -234,26 +230,16 @@ class Validators extends Component {
             (getSelfDelegation / validators[item].delegator_shares) * 100;
         }
 
-        const staking = (validators[item].tokens / bondedTokens) * 100;
-
-        validators[item].height = height;
-        validators[item].commission = commission;
-        validators[item].power = validators[item].tokens;
         validators[item].shares = formatNumber(
           Math.floor(shares * 100) / 100,
-          2
-        );
-        validators[item].stakingPool = formatNumber(
-          Math.floor(staking * 100) / 100,
           2
         );
       }
     );
     console.log(validators);
     this.setState({
-      loading: false,
+      loadingSelfAndBond: false,
       validators,
-      activeValidatorsCount,
     });
   };
 
@@ -294,19 +280,21 @@ class Validators extends Component {
     const {
       validators,
       showJailed,
-      loading,
+      loadingSelfAndBond,
+      loadingValidators,
       validatorSelect,
       selectedIndex,
       language,
       addressPocket,
       selected,
       unStake,
+      bondedTokens,
     } = this.state;
     const { mobile, keplr } = this.props;
 
     T.setLanguage(language);
 
-    if (loading) {
+    if (loadingValidators) {
       return (
         <div
           style={{
@@ -331,6 +319,14 @@ class Validators extends Component {
         showJailed ? validator.status < 2 : validator.status === 2
       )
       .map((validator, index) => {
+        const commission = formatNumber(
+          validator.commission.commission_rates.rate * 100,
+          2
+        );
+        const staking = formatNumber(
+          Math.floor((validator.tokens / bondedTokens) * 100 * 100) / 100,
+          2
+        );
         return (
           <Table.Row
             borderBottom="none"
@@ -360,22 +356,19 @@ class Validators extends Component {
             </Table.TextCell>
             <Table.TextCell paddingX={5} flex={0.7} textAlign="end">
               <TextTable>
-                <FormatNumber
-                  number={validator.commission}
-                  fontSizeDecimal={11.5}
-                />
+                <FormatNumber number={commission} fontSizeDecimal={11.5} />
                 &ensp;%
               </TextTable>
             </Table.TextCell>
             <Table.TextCell paddingX={5} textAlign="end" isNumber>
               <TextTable>
                 <Tooltip
-                  content={`${formatNumber(parseFloat(validator.power))} 
+                  content={`${formatNumber(parseFloat(validator.tokens))} 
                 ${CYBER.DENOM_CYBER.toUpperCase()}`}
                 >
                   <TextTable>
                     {formatCurrency(
-                      validator.power,
+                      validator.tokens,
                       CYBER.DENOM_CYBER.toUpperCase()
                     )}
                   </TextTable>
@@ -386,52 +379,59 @@ class Validators extends Component {
               <>
                 <Table.TextCell paddingX={5} textAlign="end" isNumber>
                   <TextTable>
-                    <FormatNumber
-                      number={validator.stakingPool}
-                      fontSizeDecimal={11.5}
-                    />
+                    <FormatNumber number={staking} fontSizeDecimal={11.5} />
                     &ensp;%
                   </TextTable>
                 </Table.TextCell>
                 <Table.TextCell paddingX={5} textAlign="end">
                   <TextTable>
-                    <FormatNumber
-                      number={validator.shares}
-                      fontSizeDecimal={11.5}
-                    />
+                    {loadingSelfAndBond ? (
+                      <Dots />
+                    ) : (
+                      <FormatNumber
+                        number={validator.shares}
+                        fontSizeDecimal={11.5}
+                      />
+                    )}
                     &ensp;%
                   </TextTable>
                 </Table.TextCell>
                 <Table.TextCell paddingX={5} textAlign="end" isNumber>
-                  <Tooltip
-                    content={`${formatNumber(
-                      Math.floor(
-                        parseFloat(
-                          validator.delegation !== undefined
-                            ? validator.delegation.amount
-                            : 0
+                  {loadingSelfAndBond ? (
+                    <Dots />
+                  ) : (
+                    <Tooltip
+                      content={`${formatNumber(
+                        Math.floor(
+                          parseFloat(
+                            validator.delegation !== undefined
+                              ? validator.delegation.amount
+                              : 0
+                          )
                         )
-                      )
+                      )} 
                     )} 
+                      )} 
                 ${CYBER.DENOM_CYBER.toUpperCase()}`}
-                  >
-                    <TextTable>
-                      {formatCurrency(
-                        parseFloat(
-                          validator.delegation !== undefined
-                            ? validator.delegation.amount
-                            : 0
-                        ),
-                        CYBER.DENOM_CYBER.toLocaleUpperCase()
-                      )}
-                    </TextTable>
-                  </Tooltip>
+                    >
+                      <TextTable>
+                        {formatCurrency(
+                          parseFloat(
+                            validator.delegation !== undefined
+                              ? validator.delegation.amount
+                              : 0
+                          ),
+                          CYBER.DENOM_CYBER.toLocaleUpperCase()
+                        )}
+                      </TextTable>
+                    </Tooltip>
+                  )}
                 </Table.TextCell>
               </>
             )}
             {showJailed && (
               <Table.TextCell paddingX={5} flex={1} textAlign="end" isNumber>
-                <TextTable>{validator.height}</TextTable>
+                <TextTable>{validator.unbonding_height}</TextTable>
               </Table.TextCell>
             )}
           </Table.Row>

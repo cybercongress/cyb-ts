@@ -171,97 +171,88 @@ function ActionBarConnect({
   };
 
   const addAddressLedger = async () => {
-    try {
-      setStage(STAGE_ADD_ADDRESS_OK);
-      const accounts = {};
-      let key = 'Account 1';
-      let dataPocketAccount = null;
-      let pocketAccount = {};
-      let valueObj = {};
-      let count = 1;
+    setStage(STAGE_ADD_ADDRESS_OK);
+    const accounts = {};
+    let key = 'Account 1';
+    let dataPocketAccount = null;
+    let pocketAccount = {};
+    let valueObj = {};
+    let count = 1;
 
-      const localStorageStory = await localStorage.getItem('pocketAccount');
-      const localStoragePocket = await localStorage.getItem('pocket');
+    const localStorageStory = await localStorage.getItem('pocketAccount');
+    const localStoragePocket = await localStorage.getItem('pocket');
 
-      if (selectAccount === null) {
-        const localStorageCount = await localStorage.getItem('count');
-        if (localStorageCount !== null) {
-          const dataCount = JSON.parse(localStorageCount);
-          count = parseFloat(dataCount);
-          key = `Account ${count}`;
-        }
-        localStorage.setItem('count', JSON.stringify(count + 1));
+    if (selectAccount === null) {
+      const localStorageCount = await localStorage.getItem('count');
+      if (localStorageCount !== null) {
+        const dataCount = JSON.parse(localStorageCount);
+        count = parseFloat(dataCount);
+        key = `Account ${count}`;
       }
+      localStorage.setItem('count', JSON.stringify(count + 1));
+    }
+    if (localStorageStory !== null) {
+      dataPocketAccount = JSON.parse(localStorageStory);
+      valueObj = Object.values(dataPocketAccount);
+      if (selectAccount !== null) {
+        key = selectAccount.key;
+      }
+    }
+    if (selectNetwork === 'cyber' || addCyberAddress) {
+      const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
+      if (
+        selectAccount !== null ||
+        !checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)
+      ) {
+        accounts.cyber = { ...addressLedgerCyber, keys: 'ledger' };
+      }
+    }
+    if (selectNetwork === 'cosmos') {
+      const addressLedgerCosmos = await ledger.retrieveAddress(hdpath);
+      if (
+        selectAccount !== null ||
+        !checkAddress(valueObj, 'cosmos', addressLedgerCosmos.bech32)
+      ) {
+        accounts.cosmos = { ...addressLedgerCosmos, keys: 'ledger' };
+      }
+    }
+    setStage(STAGE_ADD_ADDRESS_OK);
+    if (selectAccount === null) {
       if (localStorageStory !== null) {
-        dataPocketAccount = JSON.parse(localStorageStory);
-        valueObj = Object.values(dataPocketAccount);
-        if (selectAccount !== null) {
-          key = selectAccount.key;
-        }
-      }
-      if (selectNetwork === 'cyber' || addCyberAddress) {
-        const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
-        if (
-          selectAccount !== null ||
-          !checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)
-        ) {
-          accounts.cyber = { ...addressLedgerCyber, keys: 'ledger' };
-        }
-      }
-      if (selectNetwork === 'cosmos') {
-        const addressLedgerCosmos = await ledger.retrieveAddress(hdpath);
-        if (
-          selectAccount !== null ||
-          !checkAddress(valueObj, 'cosmos', addressLedgerCosmos.bech32)
-        ) {
-          accounts.cosmos = { ...addressLedgerCosmos, keys: 'ledger' };
-        }
-      }
-      setStage(STAGE_ADD_ADDRESS_OK);
-      if (selectAccount === null) {
-        if (localStorageStory !== null) {
-          if (Object.keys(accounts).length > 0) {
-            pocketAccount = { [key]: accounts, ...dataPocketAccount };
-          }
-        } else {
-          pocketAccount = { [key]: accounts };
-        }
-        if (Object.keys(pocketAccount).length > 0) {
-          localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        if (Object.keys(accounts).length > 0) {
+          pocketAccount = { [key]: accounts, ...dataPocketAccount };
         }
       } else {
-        dataPocketAccount[selectAccount.key][selectNetwork] =
+        pocketAccount = { [key]: accounts };
+      }
+      if (Object.keys(pocketAccount).length > 0) {
+        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+      }
+    } else {
+      dataPocketAccount[selectAccount.key][selectNetwork] =
+        accounts[selectNetwork];
+      if (Object.keys(dataPocketAccount).length > 0) {
+        localStorage.setItem(
+          'pocketAccount',
+          JSON.stringify(dataPocketAccount)
+        );
+      }
+      if (localStoragePocket !== null) {
+        const localStoragePocketData = JSON.parse(localStoragePocket);
+        const keyPocket = Object.keys(localStoragePocketData)[0];
+        localStoragePocketData[keyPocket][selectNetwork] =
           accounts[selectNetwork];
-        if (Object.keys(dataPocketAccount).length > 0) {
+        if (keyPocket === selectAccount.key) {
           localStorage.setItem(
-            'pocketAccount',
-            JSON.stringify(dataPocketAccount)
+            'pocket',
+            JSON.stringify(localStoragePocketData)
           );
         }
-        if (localStoragePocket !== null) {
-          const localStoragePocketData = JSON.parse(localStoragePocket);
-          const keyPocket = Object.keys(localStoragePocketData)[0];
-          localStoragePocketData[keyPocket][selectNetwork] =
-            accounts[selectNetwork];
-          if (keyPocket === selectAccount.key) {
-            localStorage.setItem(
-              'pocket',
-              JSON.stringify(localStoragePocketData)
-            );
-          }
-        }
       }
-      cleatState();
-      if (updateAddress) {
-        updateAddress();
-      }
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
+    }
+    cleatState();
+    if (updateAddress) {
+      updateAddress();
     }
   };
 
