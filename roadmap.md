@@ -6,6 +6,37 @@
 
 We have to design complete app which will be lovable and simple.
 
+- [ ] Cybernomics: Fix GOL Supply, Add price from Uniswap. Remove EUL
+- [ ] Knowledge: 
+  - [ ] indicators in 1 row
+  - [ ] top content under
+  - [ ] fix scroll
+  - [ ] Fix snippets width
+- [ ] Apps: apps search results
+- [ ] Return /graph
+- [ ] Move heros to Hall of Fame
+  - [ ] Add pills (amount of heroes) to tabs 
+- [ ] Game of Links: Fix price of Takeoff
+- [ ] Port: Fork Takeoff. Migrate from ATOM to ETH
+  - [ ] Port is default in brain for no connection and no balance
+- [ ] Return auction and fix data
+- Government: Move proposal to upper level
+  - [ ] Indicators: Paramters, Pool and Euler foundation (ETH)
+  - [ ] Other indicators move to Cybernomics
+- Proposals: 
+  - Amount only for community pool spend
+  - Remove time accepted
+  - Display amount of votes
+  - Sort votes by amount
+  - Add comments to proposal: cyber gov number
+  - Number of proposal - pill, Type of proposal, Header
+  - Format as avarage post
+  - Displey countdown then voring ends
+  - Tabs: Votes, Discussion, Meta
+  - Display votes for finished proposals
+  - Header, Status (counter), Text proposal, Author, Results, Tabs
+  - Acction buttons align
+ 
 - [ ] Clicking on search result lead to the same results
 - [ ] Choose a path while connecting the Ledger
 - [ ] Broken `add content` button on cyberlinks page
