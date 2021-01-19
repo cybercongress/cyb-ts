@@ -20,22 +20,22 @@ We have to design complete app which will be lovable and simple.
 - [ ] Port: Fork Takeoff. Migrate from ATOM to ETH
   - [ ] Port is default in brain for no connection and no balance
 - [ ] Return auction and fix data
-- Government: Move proposal to upper level
+- [ ] Government: Move proposal to upper level
   - [ ] Indicators: Paramters, Pool and Euler foundation (ETH)
   - [ ] Other indicators move to Cybernomics
-- Proposals: 
-  - Amount only for community pool spend
-  - Remove time accepted
-  - Display amount of votes
-  - Sort votes by amount
-  - Add comments to proposal: cyber gov number
-  - Number of proposal - pill, Type of proposal, Header
-  - Format as avarage post
-  - Displey countdown then voring ends
-  - Tabs: Votes, Discussion, Meta
-  - Display votes for finished proposals
-  - Header, Status (counter), Text proposal, Author, Results, Tabs
-  - Acction buttons align
+- [ ] Proposals: 
+  - [ ] Amount only for community pool spend
+  - [ ] Remove time accepted
+  - [ ] Display amount of votes
+  - [ ] Sort votes by amount
+  - [ ] Add comments to proposal: cyber gov number
+  - [ ] Number of proposal - pill, Type of proposal, Header
+  - [ ] Format as avarage post
+  - [ ] Displey countdown then voring ends
+  - [ ] Tabs: Votes, Discussion, Meta
+  - [ ] Display votes for finished proposals
+  - [ ] Header, Status (counter), Text proposal, Author, Results, Tabs
+  - [ ] Acction buttons align
 - [ ] Clicking on search result lead to the same results
 - [ ] Choose a path while connecting the Ledger
 - [ ] Broken `add content` button on cyberlinks page
