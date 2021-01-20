@@ -1256,7 +1256,6 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
 
 export const RewardsDelegators = ({
   data,
-  address,
   onClickBtn,
   onClickBtnCloce,
   disabledBtn,
@@ -1281,14 +1280,6 @@ export const RewardsDelegators = ({
   });
   return (
     <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-      <Text
-        marginBottom={20}
-        fontSize="16px"
-        lineHeight="25.888px"
-        color="#fff"
-      >
-        {address}
-      </Text>
       <Pane fontSize="20px" marginBottom={20}>
         Total rewards: {formatNumber(Math.floor(data.total[0].amount))}{' '}
         {CYBER.DENOM_CYBER.toUpperCase()}

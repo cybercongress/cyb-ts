@@ -249,7 +249,7 @@ class AccountDetails extends React.Component {
     if (address) {
       const addressHash = await getIpfsHash(address);
       responseFollows = await getFollowers(addressHash);
-      console.log('!!!responseFollows', responseFollows);
+      // console.log('!!!responseFollows', responseFollows);
     }
 
     if (responseFollows !== null && responseFollows.txs) {
@@ -271,17 +271,17 @@ class AccountDetails extends React.Component {
 
     if (address) {
       responseFollows = await getFollows(address);
-      console.log('responseFollows', responseFollows);
+      // console.log('responseFollows', responseFollows);
     }
 
     if (responseFollows !== null && responseFollows.txs) {
       responseFollows.txs.forEach(async (item) => {
         const cid = item.tx.value.msg[0].value.links[0].to;
         const addressResolve = await getContent(cid);
-        console.log('addressResolve :>> ', addressResolve);
+        // console.log('addressResolve :>> ', addressResolve);
         if (addressResolve) {
           const addressFollow = addressResolve;
-          console.log('addressResolve :>> ', addressResolve);
+          // console.log('addressResolve :>> ', addressResolve);
           if (addressFollow.match(PATTERN_CYBER)) {
             following.push(addressFollow);
             this.setState({
@@ -439,12 +439,21 @@ class AccountDetails extends React.Component {
     if (result) {
       total = await getTotalEUL(result);
       if (result.delegations && result.delegations.length > 0) {
-        staking.delegations = result.delegations;
-        staking.delegations = await this.countReward(
-          staking.delegations,
-          address
+        staking.delegations = result.delegations.reduce(
+          (obj, item) => ({
+            ...obj,
+            [item.validator_address]: {
+              ...item,
+            },
+          }),
+          {}
         );
+        // staking.delegations = await this.countReward(
+        //   staking.delegations,
+        //   address
+        // );
       }
+      console.log('staking', staking)
 
       if (result.unbonding && result.unbonding.length > 0) {
         staking.delegations.map((item, index) => {
@@ -462,31 +471,31 @@ class AccountDetails extends React.Component {
       balance: total,
       validatorAddress,
       consensusAddress,
-      staking,
+      // staking,
       loadingAddressInfo: false,
     });
   };
 
-  countReward = async (data, address) => {
-    const delegations = data;
-    await asyncForEach(
-      Array.from(Array(delegations.length).keys()),
-      async (item) => {
-        let reward = 0;
-        const resultRewards = await getRewards(
-          address,
-          delegations[item].validator_address
-        );
-        if (resultRewards[0] && resultRewards[0].amount) {
-          reward = parseFloat(resultRewards[0].amount);
-          delegations[item].reward = Math.floor(reward);
-        } else {
-          delegations[item].reward = reward;
-        }
-      }
-    );
-    return delegations;
-  };
+  // countReward = async (data, address) => {
+  //   const delegations = data;
+  //   await asyncForEach(
+  //     Array.from(Array(delegations.length).keys()),
+  //     async (item) => {
+  //       let reward = 0;
+  //       const resultRewards = await getRewards(
+  //         address,
+  //         delegations[item].validator_address
+  //       );
+  //       if (resultRewards[0] && resultRewards[0].amount) {
+  //         reward = parseFloat(resultRewards[0].amount);
+  //         delegations[item].reward = Math.floor(reward);
+  //       } else {
+  //         delegations[item].reward = reward;
+  //       }
+  //     }
+  //   );
+  //   return delegations;
+  // };
 
   select = (selected) => {
     this.setState({ selected });
@@ -515,7 +524,7 @@ class AccountDetails extends React.Component {
       followers,
       addressLocalStor,
     } = this.state;
-    console.log('following', following);
+    // console.log('following', following);
 
     const { node, mobile, keplr } = this.props;
 

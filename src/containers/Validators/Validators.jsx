@@ -410,8 +410,6 @@ class Validators extends Component {
                           )
                         )
                       )} 
-                    )} 
-                      )} 
                 ${CYBER.DENOM_CYBER.toUpperCase()}`}
                     >
                       <TextTable>

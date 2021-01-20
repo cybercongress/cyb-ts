@@ -33,6 +33,7 @@ import GolRelevance from './containers/gol/pages/relevance';
 import GolLoad from './containers/gol/pages/load';
 import Got from './containers/got/got';
 import useIpfsStart from './ipfsHook';
+import ForceGraph from './containers/forceGraph/forceGraph';
 
 export const history = createBrowserHistory({});
 
@@ -42,22 +43,22 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsStart();
-  // const [loader, setLoader] = useState(true);
+  const dataIpfsStart = useIpfsStart();
+  const [loader, setLoader] = useState(true);
 
-  // // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
+  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   setLoader(dataIpfsStart.loader);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    setLoader(dataIpfsStart.loader);
+  }, [dataIpfsStart]);
 
-  // if (loader) {
-  //   return <Dots />;
-  // }
+  if (loader) {
+    return <Dots />;
+  }
 
   // add Switch to Router
   return (
@@ -90,7 +91,7 @@ function AppRouter({
           path="/network/euler/hero/:address"
           component={ValidatorsDetails}
         />
-        {/* <Route path="/graph" component={ForceGraph} /> */}
+        <Route path="/graph" component={ForceGraph} />
         <Route path="/gol/vesting" component={Vesting} />
         <Route path="/ipfs/:cid" component={Ipfs} />
         <Route exact path="/network/euler/block" component={Block} />
