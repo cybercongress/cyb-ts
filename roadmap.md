@@ -20,6 +20,7 @@ We have to design complete app which will be lovable and simple.
 - [ ] Port: Fork Takeoff. Migrate from ATOM to ETH
   - [ ] Port is default in brain for no connection and no balance
 - [ ] Return auction and fix data
+- [ ] Display content in mobile
 - [ ] Government: Move proposal to upper level
   - [ ] Indicators: Paramters, Pool and Euler foundation (ETH)
   - [ ] Other indicators move to Cybernomics
