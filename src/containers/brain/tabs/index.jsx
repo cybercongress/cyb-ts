@@ -5,6 +5,7 @@ import GovernmentTab from './government';
 import AppsTab from './apps';
 import HelpTab from './help';
 import PathTab from './path';
+import HallofFameTab from './heros';
 
 export {
   GovernmentTab,
@@ -14,4 +15,5 @@ export {
   AppsTab,
   HelpTab,
   PathTab,
+  HallofFameTab,
 };

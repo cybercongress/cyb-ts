@@ -13,7 +13,8 @@ const AUCTION = {
     '0x3ed1528b0fdc7c5207c1bf935e34a667e13656b9ed165260c522be0bc544f303',
   TOPICS_VESTING:
     '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
-  HTTP_PROVIDER_URL: 'https://mars.cybernode.ai/geth/',
+  HTTP_PROVIDER_URL:
+    'https://mainnet.infura.io/v3/b80bdc43536c4f0c97b8c0afd2a7d75d',
   ROUND_DURATION: 1000 * 60 * 60 * 23 + 1,
   TOKEN_ALOCATION: 15 * 10 ** 3,
 };
@@ -40,6 +41,8 @@ const TAKEOFF = {
   DISCOUNT: 0.3,
   SQRT_5: 2.23606797749979,
   BLOCK_START: 2000000,
+  FINISH_PRICE: 1.485,
+  FINISH_AMOUNT: 15088.40963,
 };
 
 const COSMOS = {

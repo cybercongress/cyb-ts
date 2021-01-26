@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import { Pane } from '@cybercongress/gravity';
 import CodeBlock from '../codeBlock';
-import { Dots } from '../../../components';
+import { Dots, LinkWindow } from '../../../components';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -62,19 +62,13 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
       return (
         <div
           style={{
-            textAlign: 'center',
-            backgroundColor: '#000',
-            minHeight: '100%',
+            textAlign: 'start',
+            paddingTop: '30px',
+            paddingBottom: '20px',
+            minHeight: '100px',
           }}
         >
-          <Iframe
-            width="100%"
-            height="100%"
-            id="iframeCid"
-            loading={<Dots />}
-            className="iframe-SearchItem"
-            src={content}
-          />
+          <LinkWindow to={content}>{content}</LinkWindow>
         </div>
       );
     }

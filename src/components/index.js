@@ -40,6 +40,7 @@ import Battery from './battery';
 import TabBtn from './tabBtn';
 import ButtonImgText from './Button/buttonImgText';
 import Rank from './Rank/rank';
+import PillNumber from './pill';
 
 export {
   GovernanceChangeParam,
@@ -82,6 +83,7 @@ export {
   SetHdpath,
   ButtonImgText,
   Rank,
+  PillNumber,
 };
 
 export { Nums } from './ui/Numbers';

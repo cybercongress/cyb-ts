@@ -32,7 +32,13 @@ import {
   roundNumber,
   formatCurrency,
 } from '../../utils/utils';
-import { FormatNumber, Loading, LinkWindow, Dots } from '../../components';
+import {
+  FormatNumber,
+  Loading,
+  PillNumber,
+  Dots,
+  TabBtn,
+} from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
 import { CYBER } from '../../utils/config';
@@ -115,6 +121,10 @@ class Validators extends Component {
       addressPocket: null,
       selected: 'active',
       unStake: false,
+      countHeroes: {
+        active: 0,
+        jailed: 0,
+      },
     };
   }
 
@@ -183,12 +193,30 @@ class Validators extends Component {
   getValidators = async () => {
     const { addressPocket } = this.state;
     let delegationsData = [];
+    let validators = [];
+    const countHeroes = {
+      active: 0,
+      jailed: 0,
+    };
 
-    let validators = await getValidators();
+    const validatorsActive = await getValidators();
+    if (validatorsActive !== null && Object.keys(validatorsActive).length > 0) {
+      validators.push(...validatorsActive);
+      countHeroes.active = Object.keys(validatorsActive).length;
+    }
     const validatorsJailed = await getValidatorsUnbonding();
+    if (validatorsJailed !== null && Object.keys(validatorsJailed).length > 0) {
+      validators.push(...validatorsJailed);
+      countHeroes.jailed += Object.keys(validatorsJailed).length;
+    }
     const validatorsUnbonded = await getValidatorsUnbonded();
-
-    validators.push(...validatorsJailed, ...validatorsUnbonded);
+    if (
+      validatorsUnbonded !== null &&
+      Object.keys(validatorsUnbonded).length > 0
+    ) {
+      validators.push(...validatorsUnbonded);
+      countHeroes.jailed += Object.keys(validatorsUnbonded).length;
+    }
 
     validators = validators
       .slice(0)
@@ -196,6 +224,7 @@ class Validators extends Component {
 
     this.setState({
       validators,
+      countHeroes,
       loadingValidators: false,
     });
 
@@ -289,6 +318,7 @@ class Validators extends Component {
       selected,
       unStake,
       bondedTokens,
+      countHeroes,
     } = this.state;
     const { mobile, keplr } = this.props;
 
@@ -454,47 +484,54 @@ class Validators extends Component {
               per capita.
             </Text>
           </Pane>
-          <Pane
+          {/* <Pane
             display="flex"
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
+          > */}
+          <Tablist
+            display="grid"
+            gridTemplateColumns="repeat(auto-fit, minmax(120px, 1fr))"
+            gridGap="10px"
+            marginBottom={24}
           >
-            <Tablist marginBottom={24}>
-              <Link to="/heroes">
-                <Tab
-                  key="Active"
-                  id="Active"
-                  isSelected={selected === 'active'}
-                  paddingX={50}
-                  paddingY={20}
-                  marginX={3}
-                  borderRadius={4}
-                  color="#36d6ae"
-                  boxShadow="0px 0px 10px #36d6ae"
-                  fontSize="16px"
-                >
-                  Active
-                </Tab>
-              </Link>
-              <Link to="/heroes/jailed">
-                <Tab
-                  key="Jailed"
-                  id="Jailed"
-                  isSelected={selected === 'jailed'}
-                  paddingX={50}
-                  paddingY={20}
-                  marginX={3}
-                  borderRadius={4}
-                  color="#36d6ae"
-                  boxShadow="0px 0px 10px #36d6ae"
-                  fontSize="16px"
-                >
-                  Jailed
-                </Tab>
-              </Link>
-            </Tablist>
-          </Pane>
+            <TabBtn
+              key="Active"
+              isSelected={selected === 'active'}
+              to="/heroes"
+              text={
+                <Pane display="flex" alignItems="center">
+                  <Pane>Active</Pane>
+                  <PillNumber
+                    marginLeft={5}
+                    height="20px"
+                    active={selected === 'active'}
+                  >
+                    {countHeroes.active}
+                  </PillNumber>
+                </Pane>
+              }
+            />
+            <TabBtn
+              key="Jailed"
+              isSelected={selected === 'jailed'}
+              to="/heroes/jailed"
+              text={
+                <Pane display="flex" alignItems="center">
+                  <Pane>Jailed</Pane>
+                  <PillNumber
+                    marginLeft={5}
+                    height="20px"
+                    active={selected === 'jailed'}
+                  >
+                    {countHeroes.jailed}
+                  </PillNumber>
+                </Pane>
+              }
+            />
+          </Tablist>
+          {/* </Pane> */}
 
           <Table>
             <Table.Head

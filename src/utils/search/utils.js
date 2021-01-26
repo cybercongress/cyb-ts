@@ -479,7 +479,7 @@ export const getBalance = async (address, node) => {
   }
 };
 
-export const getTotalEUL = async (data) => {
+export const getTotalEUL = (data) => {
   const balance = {
     available: 0,
     delegation: 0,

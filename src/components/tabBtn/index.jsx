@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Tab } from '@cybercongress/gravity';
 
-const TabBtn = ({ text, isSelected, onSelect, to }) => (
+const TabBtn = ({ key, text, isSelected, onSelect, to, ...props }) => (
   <Link to={to}>
     <Tab
-      key={text}
+      key={key}
       isSelected={isSelected}
       onSelect={onSelect}
       paddingX={10}
@@ -17,6 +17,7 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
       fontSize="16px"
       whiteSpace="nowrap"
       width="100%"
+      {...props}
     >
       {text}
     </Tab>

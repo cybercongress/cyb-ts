@@ -5,7 +5,7 @@ import { CardStatisics } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import Txs from '../tx';
 
-function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
+function KnowledgeTab({ linksCount, cidsCount, accountsCount, inlfation }) {
   try {
     return (
       <>
@@ -31,6 +31,10 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount }) {
         <Link to="/network/euler/tx">
           <CardStatisics title="Transactions" value={<Txs />} link />
         </Link>
+        <CardStatisics
+          title="Inflation"
+          value={`${formatNumber(inlfation * 100, 2)} %`}
+        />
       </>
     );
   } catch (error) {

@@ -364,13 +364,15 @@ class ActionBarContainer extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      init: false,
-      ledger: null,
       address: null,
+      addressLocalStor: null,
       returnCode: null,
       addressInfo: null,
       ledgerVersion: [0, 0, 0],
-      time: 0,
+      bandwidth: {
+        remained: 0,
+        max_value: 0,
+      },
       linkPrice: 0,
       contentHash: '',
       txMsg: null,
@@ -378,9 +380,9 @@ class ActionBarContainer extends Component {
       txBody: null,
       txHeight: null,
       txHash: null,
-      error: null,
       errorMessage: null,
       file: null,
+      connectLedger: null,
       fromCid: null,
       toCid: null,
     });
