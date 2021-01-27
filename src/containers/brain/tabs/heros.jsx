@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { CardStatisics } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 
-function HallofFameTab({ stakedCyb = 0, activeValidatorsCount = 0 }) {
+function HallofFameTab({ stakedCyb, activeValidatorsCount }) {
   try {
     return (
       <>
