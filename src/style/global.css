@@ -10,12 +10,12 @@ body {
   overflow-x: hidden;
   background-color: #000000;
   color: #fff;
-  overflow-y: scroll;
   margin: 0 auto;
 }
 
 html {
   overflow-x: hidden;
+  overflow-y: scroll;
   font-family: 'Play';
 }
 
@@ -41,7 +41,7 @@ a:hover {
 
 .block-body {
   width: calc(100% - 1em);
-  min-height: calc(100vh - 190px);
+  /* min-height: calc(100vh - 190px); */
   max-width: 1000px;
   margin: 0 auto;
   display: flex;
@@ -411,4 +411,9 @@ input:focus:-ms-input-placeholder {
 
 .minHeightTextarea {
   min-height: 42px !important;
+}
+
+.infinite-scroll-component {
+  padding-top: 3px !important;
+  overflow: hidden !important;
 }

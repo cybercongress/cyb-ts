@@ -67,7 +67,7 @@
     "@apollo/react-hooks": "^3.1.3",
     "@cosmjs/launchpad": "^0.23.1",
     "@cosmjs/math": "^0.23.1",
-    "@cybercongress/gravity": "0.0.14",
+    "@cybercongress/gravity": "0.0.15",
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
     "@ledgerhq/hw-transport-webusb": "^5.15.0",
     "@tableflip/react-inspector": "^2.3.0",

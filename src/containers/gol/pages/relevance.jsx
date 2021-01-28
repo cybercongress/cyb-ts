@@ -30,16 +30,23 @@ const Relevace = ({ items, fetchMoreData, page, allPage, mobile, node }) => (
   <InfiniteScroll
     dataLength={Object.keys(items).length}
     next={fetchMoreData}
-    hasMore={page < allPage}
+    hasMore
     loader={
       <h4>
         Loading
         <Dots />
       </h4>
     }
-    scrollableTarget="scrollableDiv"
+    pullDownToRefresh
+    pullDownToRefreshContent={
+      <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
+    }
+    releaseToRefreshContent={
+      <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+    }
+    refreshFunction={fetchMoreData}
   >
-    {Object.keys(items).map(key => {
+    {Object.keys(items).map((key) => {
       return (
         <Pane
           position="relative"
@@ -197,8 +204,8 @@ function GolRelevance({ node, mobile }) {
     );
 
     setTimeout(() => {
-      setItems(itemState => ({ ...itemState, ...links }));
-      setPage(itemPage => itemPage + 1);
+      setItems((itemState) => ({ ...itemState, ...links }));
+      setPage((itemPage) => itemPage + 1);
     }, 500);
   };
 
@@ -237,29 +244,29 @@ function GolRelevance({ node, mobile }) {
 
   if (selected === 'relevace') {
     content = (
-      <div
-        id="scrollableDiv"
-        style={{ height: '100%', padding: '0 10px', overflow: 'auto' }}
-      >
-        <Relevace
-          items={items}
-          fetchMoreData={fetchMoreData}
-          page={page}
-          allPage={allPage}
-          node={node}
-          mobile={mobile}
-        />
-      </div>
+      // <div
+      //   id="scrollableDiv"
+      //   style={{ height: '100%', padding: '0 10px', overflow: 'auto' }}
+      // >
+      <Relevace
+        items={items}
+        fetchMoreData={fetchMoreData}
+        page={page}
+        allPage={allPage}
+        node={node}
+        mobile={mobile}
+      />
+      // </div>
     );
   }
 
   return (
     <main
-      style={{
-        padding: '10px 1em 1em 1em',
-        height: '1px',
-        maxHeight: 'calc(100vh - 96px)',
-      }}
+      // style={{
+      //   padding: '10px 1em 1em 1em',
+      //   height: '1px',
+      //   maxHeight: 'calc(100vh - 96px)',
+      // }}
       className="block-body"
     >
       <Pane
@@ -298,7 +305,7 @@ function GolRelevance({ node, mobile }) {
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
