@@ -64,7 +64,7 @@ const Relevace = ({ items, fetchMoreData, page, allPage, mobile, node }) => (
             nodeIpfs={node}
             cid={key}
             item={items[key]}
-            className="SearchItem"
+            className="contentItem"
           />
         </Pane>
       );
