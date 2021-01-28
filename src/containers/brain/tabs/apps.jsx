@@ -10,7 +10,7 @@ function AppsTab({ data, node, mobile }) {
     const apps = [];
     if (Object.keys(data).length > 0) {
       apps.push(
-        Object.keys(data).map((key) => {
+        Object.keys(data).map((key, i) => {
           return (
             <Pane
               position="relative"
@@ -18,12 +18,12 @@ function AppsTab({ data, node, mobile }) {
               display="flex"
               alignItems="center"
               marginBottom="10px"
+              key={`${key}_${i}`}
             >
               {!mobile && (
                 <Pane
-                  className="time-discussion"
+                  className="time-discussion rank-contentItem"
                   position="absolute"
-                  cursor="pointer"
                 >
                   <Rank
                     hash={key}
@@ -39,7 +39,7 @@ function AppsTab({ data, node, mobile }) {
                 nodeIpfs={node}
                 cid={key}
                 item={data[key]}
-                className="SearchItem"
+                className="contentItem"
               />
             </Pane>
           );
