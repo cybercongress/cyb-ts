@@ -57,87 +57,87 @@ function PortPages({ mobile }) {
   //   }
   // }
 
-  const tableData = async () => {
-    const groupsAddress = getGroupAddress(testTx);
-    this.setState({
-      groups: groupsAddress,
-    });
-  };
+  // const tableData = async () => {
+  //   const groupsAddress = getGroupAddress(testTx);
+  //   this.setState({
+  //     groups: groupsAddress,
+  //   });
+  // };
 
-  chekPathname = () => {
-    const { location } = this.props;
-    const { pathname } = location;
+  // const chekPathname = () => {
+  //   const { location } = this.props;
+  //   const { pathname } = location;
 
-    if (
-      pathname.match(/progress/gm) &&
-      pathname.match(/progress/gm).length > 0
-    ) {
-      this.select('progress');
-    } else if (
-      pathname.match(/leaderboard/gm) &&
-      pathname.match(/leaderboard/gm).length > 0
-    ) {
-      this.select('leaderboard');
-    } else {
-      this.select('manifest');
-    }
-  };
+  //   if (
+  //     pathname.match(/progress/gm) &&
+  //     pathname.match(/progress/gm).length > 0
+  //   ) {
+  //     this.select('progress');
+  //   } else if (
+  //     pathname.match(/leaderboard/gm) &&
+  //     pathname.match(/leaderboard/gm).length > 0
+  //   ) {
+  //     this.select('leaderboard');
+  //   } else {
+  //     this.select('manifest');
+  //   }
+  // };
 
-  const initClock = () => {
-    try {
-      const deadline = `${COSMOS.TIME_END}`;
-      const startTime = Date.parse(deadline) - Date.parse(new Date());
-      if (startTime <= 0) {
-        this.setState({
-          time: 'end',
-        });
-      } else {
-        initializeClock(deadline);
-      }
-    } catch (error) {
-      this.setState({
-        time: '∞',
-      });
-    }
-  };
+  // const initClock = () => {
+  //   try {
+  //     const deadline = `${COSMOS.TIME_END}`;
+  //     const startTime = Date.parse(deadline) - Date.parse(new Date());
+  //     if (startTime <= 0) {
+  //       this.setState({
+  //         time: 'end',
+  //       });
+  //     } else {
+  //       initializeClock(deadline);
+  //     }
+  //   } catch (error) {
+  //     this.setState({
+  //       time: '∞',
+  //     });
+  //   }
+  // };
 
-  const initializeClock = (endtime) => {
-    let timeinterval;
-    const updateClock = () => {
-      const t = getTimeRemaining(endtime);
-      if (t.total <= 0) {
-        clearInterval(timeinterval);
-        this.setState({
-          time: 'end',
-        });
-        return true;
-      }
-      const hours = `0${t.hours}`.slice(-2);
-      const minutes = `0${t.minutes}`.slice(-2);
-      this.setState({
-        time: `${t.days}d:${hours}h:${minutes}m`,
-      });
-    };
+  // const initializeClock = (endtime) => {
+  //   let timeinterval;
+  //   const updateClock = () => {
+  //     const t = getTimeRemaining(endtime);
+  //     if (t.total <= 0) {
+  //       clearInterval(timeinterval);
+  //       this.setState({
+  //         time: 'end',
+  //       });
+  //       return true;
+  //     }
+  //     const hours = `0${t.hours}`.slice(-2);
+  //     const minutes = `0${t.minutes}`.slice(-2);
+  //     this.setState({
+  //       time: `${t.days}d:${hours}h:${minutes}m`,
+  //     });
+  //   };
 
-    updateClock();
-    timeinterval = setInterval(updateClock, 10000);
-  };
+  //   updateClock();
+  //   timeinterval = setInterval(updateClock, 10000);
+  // };
 
-  onClickPopapAdress = () => {
-    this.setState({
-      popapAdress: false,
-    });
-  };
+  // onClickPopapAdress = () => {
+  //   this.setState({
+  //     popapAdress: false,
+  //   });
+  // };
 
-  onClickPopapAdressTrue = () => {
-    this.setState({
-      popapAdress: true,
-    });
-  };
+  // onClickPopapAdressTrue = () => {
+  //   this.setState({
+  //     popapAdress: true,
+  //   });
+  // };
 
-  select = (selected) => {
-    this.setState({ selected });
-  };
+  // select = (selected) => {
+  //   this.setState({ selected });
+  // };
 
   // render() {
   //   const {
@@ -178,23 +178,23 @@ function PortPages({ mobile }) {
   //   );
   // }
 
-  if (selected === 'progress') {
-    content = (
-      <Dinamics
-        mobile={mobile}
-        cap={40 * estimation + 1000000}
-        data3d={dataPlot}
-      />
-    );
-  }
+  // if (selected === 'progress') {
+  //   content = (
+  //     <Dinamics
+  //       mobile={mobile}
+  //       cap={40 * estimation + 1000000}
+  //       data3d={dataPlot}
+  //     />
+  //   );
+  // }
 
-  if (selected === 'leaderboard') {
-    content = <Table mobile={mobile} data={groups} pin={pin} />;
-  }
+  // if (selected === 'leaderboard') {
+  //   content = <Table mobile={mobile} data={groups} pin={pin} />;
+  // }
 
-  if (selected === 'manifest') {
-    content = <Details />;
-  }
+  // if (selected === 'manifest') {
+  //   content = <Details />;
+  // }
 
   return (
     <span>
@@ -205,9 +205,9 @@ function PortPages({ mobile }) {
           />
         )} */}
 
-      <main className="block-body takeoff">
+      {/* <main className="block-body takeoff"> */}
         <Quotes />
-        {!pin && (
+        {/* {!pin && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
@@ -263,7 +263,7 @@ function PortPages({ mobile }) {
         onClickPopapAdressTrue={this.onClickPopapAdressTrue}
         mobile={mobile}
         time={time}
-      />
+      /> */}
     </span>
   );
   // }
