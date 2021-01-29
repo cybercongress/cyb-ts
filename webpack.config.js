@@ -1,6 +1,5 @@
 const path = require('path');
 
-const SRC = path.resolve(__dirname, 'src/main/js');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -28,6 +27,10 @@ module.exports = {
       'Access-Control-Allow-Origin': '*',
     },
     historyApiFallback: true,
+  },
+  watchOptions: {
+    poll: true,
+    ignored: /node_modules/,
   },
   entry: [
     '@babel/polyfill',
