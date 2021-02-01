@@ -6,11 +6,56 @@
 
 We have to design complete app which will be lovable and simple.
 
+- [ ] Cybernomics: Fix GOL Supply, Add price from Uniswap. Remove EUL
+- [ ] Tests
+  - [ ] connectability (поключение, разрешение)
+  - [ ] balance
+  - [ ] cyberlink
+  - [ ] rank
+  - [ ] send
+  - [ ] tweet => display in feed
+  - [ ] following
+  - [ ] propose
+  - [ ] funding
+  - [ ] vote
+- [ ] web2=>web3 parser
+- [ ] build as extension
+- [ ] build for electron
+- [ ] basic sounds for Cyber and Cyb
+- [ ] Knowledge: 
+  - [ ] indicators in 1 row
+  - [ ] top content under
+  - [ ] fix scroll
+  - [ ] Fix snippets width
+- [ ] Apps: apps search results
+- [ ] Return /graph
+- [ ] Move heros to Hall of Fame
+  - [ ] Add pills (amount of heroes) to tabs 
+- [ ] Game of Links: Fix price of Takeoff
+- [ ] Port: Fork Takeoff. Migrate from ATOM to ETH
+  - [ ] Port is default in brain for no connection and no balance
+- [ ] Return auction and fix data
+- [ ] Display content in mobile
+- [ ] Government: Move proposal to upper level
+  - [ ] Indicators: Paramters, Pool and Euler foundation (ETH)
+  - [ ] Other indicators move to Cybernomics
+- [ ] Proposals: 
+  - [ ] Amount only for community pool spend
+  - [ ] Remove time accepted
+  - [ ] Display amount of votes
+  - [ ] Sort votes by amount
+  - [ ] Add comments to proposal: cyber gov number
+  - [ ] Number of proposal - pill, Type of proposal, Header
+  - [ ] Format as avarage post
+  - [ ] Displey countdown then voring ends
+  - [ ] Tabs: Votes, Discussion, Meta
+  - [ ] Display votes for finished proposals
+  - [ ] Header, Status (counter), Text proposal, Author, Results, Tabs
+  - [ ] Acction buttons align
 - [ ] Clicking on search result lead to the same results
 - [ ] Choose a path while connecting the Ledger
 - [ ] Broken `add content` button on cyberlinks page
 - [ ] Correct display of balances after rounding at wallet
-
 - [ ] microapi: https://cyberlink/x/y. Display results for x and last cyberlink step where x=>y
 - [ ] search ipfs content and load it
 - [ ] More clear [state of content loading](https://cyber.page/ipfs/QmZmKsmPPN9eyo5PuAytAZSDfjmo61Jgq7NsXi9T8Kw6tD)
@@ -60,7 +105,6 @@ We have to design complete app which will be lovable and simple.
 - [ ] Content subscriptions. [Case](https://cyber.page/ipfs/QmdmugXiUKNEQhHRvtJXakyVYAcMagmHzG1nZdhGXGbJnY)
 - [ ] Change fuck google to fuck twitter when tweeting
 - [ ] Unusable [ledger behaviour](https://cyber.page/ipfs/QmTFDPjJyNgCt8MqvbxLCmD4GriiWgaMVL7qSTWDCH5qek)
-
 - [ ] Dynamic search examples in main page
 - [ ] Tooltips for brain and robot
 - [ ] Change links from main page
