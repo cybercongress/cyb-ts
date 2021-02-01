@@ -2,8 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Icon } from '@cybercongress/gravity';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
+import { CYBER } from '../../utils/config';
 
 const ItemSubGroup = ({ item, index }) => {
+  let price = 0;
+  if (item.eul !== null) {
+    price = (item.amountEth / item.eul) * CYBER.DIVISOR_CYBER_G;
+  }
   return (
     <div className="table-rows-child" key={index}>
       <div className="numberType hash">
@@ -14,13 +19,13 @@ const ItemSubGroup = ({ item, index }) => {
       <div className="numberType display-none-mob">{item.block}</div>
       <Tooltip
         placement="bottom"
-        tooltip={`${formatNumber(0, 10)} ATOM`} // item.price
+        tooltip={`${formatNumber(price, 6)} ETH`} // item.price
       >
-        <div className="numberType">{formatNumber(0, 5)}</div>
+        <div className="numberType">{formatNumber(price, 6)}</div>
       </Tooltip>
       <Tooltip
         placement="bottom"
-        tooltip={`${formatNumber(item.amountEth)} ATOM`}
+        tooltip={`${formatNumber(item.amountEth)} ETH`}
       >
         <div className="numberType">
           {item.amountEth > 1
@@ -85,7 +90,7 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
         </div>
         <Tooltip
           placement="bottom"
-          tooltip={`${formatNumber(dataTable[key].amountСolumn)} ATOM`}
+          tooltip={`${formatNumber(dataTable[key].amountСolumn)} ETH`}
         >
           <div className="numberType">
             {dataTable[key].amountСolumn > 1
@@ -95,14 +100,14 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
         </Tooltip>
         <Tooltip
           placement="bottom"
-          tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} CYBs`}
+          tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} CYBs`}
         >
           <div className="numberType">
-            {dataTable[key].cyb / 10 ** 9 < 1
+            {dataTable[key].eul / 10 ** 9 < 1
               ? formatNumber(
-                  Math.floor((dataTable[key].cyb / 10 ** 9) * 1000) / 1000
+                  Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
                 )
-              : formatNumber(Math.floor(dataTable[key].cyb / 10 ** 9))}
+              : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
           </div>
         </Tooltip>
         <Tooltip
@@ -126,7 +131,7 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
       <div className="table-header-rows">
         <div className="numberType address">Address (TX id)</div>
         <div className="numberType display-none-mob">Height</div>
-        <div className="numberType">Price, ATOM</div>
+        <div className="numberType">Price, ETH</div>
         <div className="numberType">ETH</div>
         <div className="numberType">GCYB</div>
         <div className="numberType display-none-mob">GEUL</div>

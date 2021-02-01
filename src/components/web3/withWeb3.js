@@ -45,51 +45,51 @@ const injectWeb3 = InnerComponent =>
         const web3 = await waitForWeb3();
         console.log(web3);
         const networkId = await web3.eth.net.getId();
-        const networkContract = NETWORKSIDS.main;
+        const networkContract = NETWORKSIDS.rinkeby;
 
         if (networkContract !== networkId) {
           return this.setState({
             isCorrectNetwork: false,
           });
         }
-        const contract = await new web3.eth.Contract(abiAuction, this.smart);
+        // const contract = await new web3.eth.Contract(abiAuction, this.smart);
 
-        const addrAuctionUtils = await contract.methods.utils().call();
+        // const addrAuctionUtils = await contract.methods.utils().call();
 
-        const contractAuctionUtils = await new web3.eth.Contract(
-          abiAuctionUtils,
-          addrAuctionUtils
-        );
+        // const contractAuctionUtils = await new web3.eth.Contract(
+        //   abiAuctionUtils,
+        //   addrAuctionUtils
+        // );
 
-        const contractVesting = await new web3.eth.Contract(
-          abiVesting,
-          this.smartVesting
-        );
+        // const contractVesting = await new web3.eth.Contract(
+        //   abiVesting,
+        //   this.smartVesting
+        // );
 
-        const tokenManagerAddress = await contractVesting.methods
-          .tokenManager()
-          .call();
+        // const tokenManagerAddress = await contractVesting.methods
+        //   .tokenManager()
+        //   .call();
 
-        const contractTokenManager = await new web3.eth.Contract(
-          TokenManager.abi,
-          tokenManagerAddress
-        );
+        // const contractTokenManager = await new web3.eth.Contract(
+        //   TokenManager.abi,
+        //   tokenManagerAddress
+        // );
 
-        const tokenAddress = await contractTokenManager.methods.token().call();
+        // const tokenAddress = await contractTokenManager.methods.token().call();
 
-        const contractToken = await new web3.eth.Contract(
-          abiToken,
-          tokenAddress
-        );
+        // const contractToken = await new web3.eth.Contract(
+        //   abiToken,
+        //   tokenAddress
+        // );
 
         if (web3.givenProvider === null) {
           return this.setState({
             web3,
-            contract,
-            contractAuctionUtils,
-            contractTokenManager,
-            contractVesting,
-            contractToken,
+            // contract,
+            // contractAuctionUtils,
+            // contractTokenManager,
+            // contractVesting,
+            // contractToken,
             accounts: null,
             networkId: null,
             isCorrectNetwork: true,
@@ -99,11 +99,11 @@ const injectWeb3 = InnerComponent =>
         const accounts = await web3.eth.getAccounts();
         return this.setState({
           web3,
-          contract,
-          contractAuctionUtils,
-          contractTokenManager,
-          contractVesting,
-          contractToken,
+          // contract,
+          // contractAuctionUtils,
+          // contractTokenManager,
+          // contractVesting,
+          // contractToken,
           accounts: accounts[0],
           networkId,
           isCorrectNetwork: true,

@@ -1,10 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Text, Pane, Dialog, Tablist } from '@cybercongress/gravity';
-import { Link, Switch, Route, Router } from 'react-router-dom';
-import Dinamics from '../funding/dinamics';
-import Statistics from '../funding/statistics';
+import { Link, Switch, Route, Router, useLocation } from 'react-router-dom';
+import withWeb3 from '../../components/web3/withWeb3';
+import Dinamics from './dinamics';
+import Statistics from './statistics';
 import Table from './table';
+import ActionBarContainer from './ActionBarContainer';
 import ActionBarTakeOff from '../funding/actionBar';
 import {
   asyncForEach,
@@ -24,20 +26,163 @@ import {
   cybWon,
   funcDiscount,
   getEstimation,
-  getDataPlot,
+  // getDataPlot,
   getRewards,
   //   getGroupAddress,
   funcDiscountRevers,
 } from '../../utils/fundingMath';
-import { getTxCosmos } from '../../utils/search/utils';
+import { getGraphQLQuery } from '../../utils/search/utils';
 // import PopapAddress from './popap';
 import Details from '../funding/details';
 import Quotes from '../funding/quotes';
 
-import { getGroupAddress } from './utils';
+import { getGroupAddress, getDataPlot } from './utils';
 import testTx from './test';
 
-function PortPages({ mobile }) {
+const URL_GRAPHQL = 'https://uranus.cybernode.ai/graphql/v1/graphql';
+
+const QueryGetTx = `
+query MyQuery {
+  transaction {
+    cyber_hash
+    eul
+    eth
+    cyber
+    block
+    eth_txhash
+    index
+    sender
+  }
+}`;
+
+const MarketData = `
+query MarketData {
+  market_data {
+    current_price
+    eth_donated
+    euls_won
+    last_price
+    market_cap_eth
+  }
+}`;
+
+const useGetTx = () => {
+  const [txsData, setTxsData] = useState({ data: [], loading: true });
+
+  useEffect(() => {
+    const feachData = async () => {
+      const resultData = await getGraphQLQuery(QueryGetTx, URL_GRAPHQL);
+      if (resultData !== null && resultData.transaction) {
+        setTxsData({ data: resultData.transaction, loading: false });
+      } else {
+        setTxsData({ data: [], loading: false });
+      }
+    };
+    feachData();
+
+    return () => {
+      setTxsData({ data: [], loading: true });
+    };
+  }, []);
+
+  return txsData;
+};
+
+const useGetMarketData = () => {
+  const [marketData, setMarketData] = useState({
+    currentPrice: 0,
+    ethDonated: 0,
+    eulsWon: 0,
+    lastPrice: 0,
+    marketCapEth: 0,
+    loading: true,
+  });
+
+  useEffect(() => {
+    const feachData = async () => {
+      const resultData = await getGraphQLQuery(MarketData, URL_GRAPHQL);
+      if (resultData !== null && resultData.market_data) {
+        const market = resultData.market_data[0];
+        setMarketData({
+          currentPrice: market.current_price,
+          ethDonated: market.eth_donated,
+          eulsWon: market.euls_won,
+          lastPrice: market.last_price,
+          marketCapEth: market.market_cap_eth,
+          loading: false,
+        });
+      } else {
+        setMarketData((items) => ({
+          ...items,
+          loading: false,
+        }));
+      }
+    };
+    feachData();
+
+    return () => {
+      setMarketData({
+        currentPrice: 0,
+        ethDonated: 0,
+        eulsWon: 0,
+        lastPrice: 0,
+        marketCapEth: 0,
+        loading: true,
+      });
+    };
+  }, []);
+
+  return marketData;
+};
+
+const chekPathname = (pathname) => {
+  if (pathname.match(/progress/gm) && pathname.match(/progress/gm).length > 0) {
+    return 'progress';
+  }
+  if (
+    pathname.match(/leaderboard/gm) &&
+    pathname.match(/leaderboard/gm).length > 0
+  ) {
+    return 'leaderboard';
+  }
+  return 'manifest';
+};
+
+function PortPages({ mobile, accounts, web3 }) {
+  const location = useLocation();
+  const dataTxs = useGetTx();
+  const marketData = useGetMarketData();
+  const [selected, setSelected] = useState('manifest');
+  const [dataTable, setDataTable] = useState({});
+  const [dataProgress, setDataProgress] = useState([]);
+
+  useEffect(() => {
+    const { pathname } = location;
+    const requere = chekPathname(pathname);
+    setSelected(requere);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!dataTxs.loading) {
+      const groupsAddress = getGroupAddress(dataTxs.data);
+      setDataTable(groupsAddress);
+    }
+    return () => {
+      setDataTable({});
+    };
+  }, [dataTxs]);
+
+  useEffect(() => {
+    if (!marketData.loading) {
+      let dataPlot = [];
+      dataPlot = getDataPlot(marketData.eulsWon / CYBER.DIVISOR_CYBER_G);
+      setDataProgress(dataPlot);
+    }
+    return () => {
+      setDataTable([]);
+    };
+  }, [marketData]);
+
   // async componentDidMount() {
   //   // const encoded = Buffer.from(
   //   //   'cyber1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq4878e0'
@@ -46,42 +191,8 @@ function PortPages({ mobile }) {
   //   // console.log('encoded', `0x${encoded}`);
   //   // console.log('decoded', decoded);
 
-  //   this.chekPathname();
   //   this.tableData();
   // }
-
-  // componentDidUpdate(prevProps) {
-  //   const { location } = this.props;
-  //   if (prevProps.location.pathname !== location.pathname) {
-  //     this.chekPathname();
-  //   }
-  // }
-
-  // const tableData = async () => {
-  //   const groupsAddress = getGroupAddress(testTx);
-  //   this.setState({
-  //     groups: groupsAddress,
-  //   });
-  // };
-
-  // const chekPathname = () => {
-  //   const { location } = this.props;
-  //   const { pathname } = location;
-
-  //   if (
-  //     pathname.match(/progress/gm) &&
-  //     pathname.match(/progress/gm).length > 0
-  //   ) {
-  //     this.select('progress');
-  //   } else if (
-  //     pathname.match(/leaderboard/gm) &&
-  //     pathname.match(/leaderboard/gm).length > 0
-  //   ) {
-  //     this.select('leaderboard');
-  //   } else {
-  //     this.select('manifest');
-  //   }
-  // };
 
   // const initClock = () => {
   //   try {
@@ -135,27 +246,6 @@ function PortPages({ mobile }) {
   //   });
   // };
 
-  // select = (selected) => {
-  //   this.setState({ selected });
-  // };
-
-  // render() {
-  //   const {
-  //     groups,
-  //     atomLeff,
-  //     currentPrice,
-  //     dataPlot,
-  //     dataAllPin,
-  //     dataRewards,
-  //     pin,
-  //     loader,
-  //     popapAdress,
-  //     time,
-  //     selected,
-  //     estimation,
-  //     amount,
-  //   } = this.state;
-  //   const { mobile } = this.props;
   let content;
 
   // if (loader) {
@@ -178,23 +268,23 @@ function PortPages({ mobile }) {
   //   );
   // }
 
-  // if (selected === 'progress') {
-  //   content = (
-  //     <Dinamics
-  //       mobile={mobile}
-  //       cap={40 * estimation + 1000000}
-  //       data3d={dataPlot}
-  //     />
-  //   );
-  // }
+  if (selected === 'progress') {
+    content = (
+      <Dinamics
+        mobile={mobile}
+        cap={marketData.marketCapEth}
+        data3d={dataProgress}
+      />
+    );
+  }
 
-  // if (selected === 'leaderboard') {
-  //   content = <Table mobile={mobile} data={groups} pin={pin} />;
-  // }
+  if (selected === 'leaderboard') {
+    content = <Table mobile={mobile} data={dataTable} />;
+  }
 
-  // if (selected === 'manifest') {
-  //   content = <Details />;
-  // }
+  if (selected === 'manifest') {
+    content = <Details />;
+  }
 
   return (
     <span>
@@ -205,7 +295,7 @@ function PortPages({ mobile }) {
           />
         )} */}
 
-      {/* <main className="block-body takeoff"> */}
+      <main className="block-body takeoff">
         <Quotes />
         {/* {!pin && (
           <Pane
@@ -230,14 +320,8 @@ function PortPages({ mobile }) {
             onlyPin
             pin={pin}
           />
-        )}
-        <Statistics
-          atomLeff={100000 - estimation}
-          time={time}
-          price={currentPrice}
-          discount={TAKEOFF.DISCOUNT_TILT_ANGLE}
-          amount={amount}
-        />
+        )} */}
+        <Statistics marketData={marketData} />
         <Tablist className="tab-list" marginY={20}>
           <TabBtn
             text="Leaderboard"
@@ -257,16 +341,9 @@ function PortPages({ mobile }) {
         </Tablist>
         {content}
       </main>
-      <ActionBarTakeOff
-        initClock={this.initClock}
-        end={100000 - estimation}
-        onClickPopapAdressTrue={this.onClickPopapAdressTrue}
-        mobile={mobile}
-        time={time}
-      /> */}
+      <ActionBarContainer accounts={accounts} web3={web3} />
     </span>
   );
-  // }
 }
 
 const mapStateToProps = (store) => {
@@ -275,4 +352,4 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(PortPages);
+export default connect(mapStateToProps)(withWeb3(PortPages));
