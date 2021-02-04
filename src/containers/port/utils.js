@@ -10,8 +10,8 @@ const getGroupAddress = (data) => {
       cyberHash: item.cyber_hash,
       eul: item.eul,
       avPrice: item.av_price,
-      eulSum: item.eul_sum,
-      ethSum: item.eth_sum,
+      eulSum: item.eul_sum_by_address,
+      ethSum: item.eth_sum_by_address,
     });
     return obj;
   }, {});

@@ -62,6 +62,8 @@ const QueryGetTx = gql`
       eul
       eul_sum
       sender
+      eth_sum_by_address
+      eul_sum_by_address
     }
   }
 `;

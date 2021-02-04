@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Icon } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
@@ -15,14 +15,21 @@ const tableNumber = (number) => {
 
 const ItemSubGroup = ({ item, index }) => {
   return (
-    <div className="table-rows-child" key={index}>
-      <div className="numberType hash">
+    <div
+      className="table-rows-child"
+      style={{ gridTemplateColumns: '1.4fr 0.5fr 0.5fr 0.5fr' }}
+      key={index}
+    >
+      <div
+        className="numberType hash"
+        style={{ paddingLeft: 20, textAlign: 'start' }}
+      >
         <a href={`https://etherscan.io/tx/${item.ethTxhash}`} target="_blank">
           {trimString(item.ethTxhash, 8, 8)}
         </a>
       </div>
       {/* <div className="numberType display-none-mob">{item.block}</div> */}
-      <div className="numberType">
+      {/* <div className="numberType">
         {item.cyberHash === null ? (
           DEFAULT_PROOF.toUpperCase()
         ) : (
@@ -30,7 +37,7 @@ const ItemSubGroup = ({ item, index }) => {
             {trimString(item.cyberHash.toUpperCase(), 5, 5)}
           </Link>
         )}
-      </div>
+      </div> */}
       <Tooltip
         placement="bottom"
         tooltip={`${formatNumber(item.avPrice, 6)} ETH`} // item.price
@@ -61,17 +68,44 @@ const ItemSubGroup = ({ item, index }) => {
             : DEFAULT_PROOF.toUpperCase()}
         </div>
       </Tooltip>
+    </div>
+  );
+};
+
+const RowTable = ({ pin, address, item, mobile }) => {
+  return (
+    <RowTableTakeoff
+      style={{ gridTemplateColumns: '1.9fr 0.5fr 0.5fr' }}
+      pinAddress={pin !== null ? address === pin.bech32 : false}
+      key={address}
+      item={item.address.map((items, index) => (
+        <ItemSubGroup item={items} index={index} />
+      ))}
+    >
+      <div className="numberType address">
+        {mobile ? trimString(address, 10, 8) : address}
+      </div>
       <Tooltip
         placement="bottom"
-        tooltip={`${formatNumber(Math.floor(item.eul))} EULs`}
+        tooltip={`${formatNumber(item.amountСolumn)} ETH`}
       >
-        <div style={{ fontSize: 14 }} className="numberType display-none-mob">
-          {item.eul !== null
-            ? tableNumber(item.eul)
-            : DEFAULT_PROOF.toUpperCase()}
+        <div className="numberType">
+          {item.amountСolumn > 1
+            ? formatNumber(Math.floor(item.amountСolumn))
+            : formatNumber(item.amountСolumn)}
         </div>
       </Tooltip>
-    </div>
+      <Tooltip
+        placement="bottom"
+        tooltip={`${formatNumber(Math.floor(item.eul))} CYBs`}
+      >
+        <div className="numberType">
+          {item.eul / 10 ** 9 < 1
+            ? formatNumber(Math.floor((item.eul / 10 ** 9) * 1000) / 1000)
+            : formatNumber(Math.floor(item.eul / 10 ** 9))}
+        </div>
+      </Tooltip>
+    </RowTableTakeoff>
   );
 };
 
@@ -97,51 +131,13 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
 
   if (!onlyPin) {
     tableRow = Object.keys(dataTable).map((key, index) => (
-      <RowTableTakeoff
-        pinAddress={pin !== null ? key === pin.bech32 : false}
+      <RowTable
+        pin={pin}
+        address={key}
+        mobile={mobile}
         key={key}
-        item={dataTable[key].address.map((item, index) => (
-          <ItemSubGroup item={item} index={index} />
-        ))}
-      >
-        <div className="numberType address">
-          {mobile ? trimString(key, 10, 8) : key}
-        </div>
-        <Tooltip
-          placement="bottom"
-          tooltip={`${formatNumber(dataTable[key].amountСolumn)} ETH`}
-        >
-          <div className="numberType">
-            {dataTable[key].amountСolumn > 1
-              ? formatNumber(Math.floor(dataTable[key].amountСolumn))
-              : formatNumber(dataTable[key].amountСolumn)}
-          </div>
-        </Tooltip>
-        <Tooltip
-          placement="bottom"
-          tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} CYBs`}
-        >
-          <div className="numberType">
-            {dataTable[key].eul / 10 ** 9 < 1
-              ? formatNumber(
-                  Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
-                )
-              : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
-          </div>
-        </Tooltip>
-        <Tooltip
-          placement="bottom"
-          tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} EULs`}
-        >
-          <div style={{ fontSize: 14 }} className="numberType display-none-mob">
-            {dataTable[key].eul / 10 ** 9 < 1
-              ? formatNumber(
-                  Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
-                )
-              : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
-          </div>
-        </Tooltip>
-      </RowTableTakeoff>
+        item={dataTable[key]}
+      />
     ));
   }
 
@@ -149,67 +145,28 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
     tableRowPin = Object.keys(dataTable)
       .filter((dataFilter) => dataFilter === pin.bech32)
       .map((key, index) => (
-        <RowTableTakeoff
-          pinAddress={pin !== null ? key === pin.bech32 : false}
+        <RowTable
+          pin={pin}
+          address={key}
+          mobile={mobile}
           key={key}
-          item={dataTable[key].address.map((item, index) => (
-            <ItemSubGroup item={item} index={index} />
-          ))}
-        >
-          <div className="numberType address">
-            {mobile ? trimString(key, 10, 8) : key}
-          </div>
-          <Tooltip
-            placement="bottom"
-            tooltip={`${formatNumber(dataTable[key].amountСolumn)} ETH`}
-          >
-            <div className="numberType">
-              {dataTable[key].amountСolumn > 1
-                ? formatNumber(Math.floor(dataTable[key].amountСolumn))
-                : formatNumber(dataTable[key].amountСolumn)}
-            </div>
-          </Tooltip>
-          <Tooltip
-            placement="bottom"
-            tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} CYBs`}
-          >
-            <div className="numberType">
-              {dataTable[key].eul / 10 ** 9 < 1
-                ? formatNumber(
-                    Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
-                  )
-                : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
-            </div>
-          </Tooltip>
-          <Tooltip
-            placement="bottom"
-            tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} EULs`}
-          >
-            <div
-              style={{ fontSize: 14 }}
-              className="numberType display-none-mob"
-            >
-              {dataTable[key].eul / 10 ** 9 < 1
-                ? formatNumber(
-                    Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
-                  )
-                : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
-            </div>
-          </Tooltip>
-        </RowTableTakeoff>
+          item={dataTable[key]}
+        />
       ));
   }
 
   return (
     <div style={styles} className="table">
-      <div className="table-header-rows">
+      <div
+        style={{ gridTemplateColumns: '1.4fr 1.4fr 1fr 1fr' }}
+        className="table-header-rows"
+      >
         <div className="numberType address">Address (TX id)</div>
         {/* <div className="numberType display-none-mob">Height</div> */}
-        <div className="numberType">Proof TX</div>
+        {/* <div className="numberType">Proof TX</div> */}
         <div className="numberType">Price, ETH</div>
         <div className="numberType">ETH</div>
         <div className="numberType">GCYB</div>
-        <div className="numberType display-none-mob">GEUL</div>
       </div>
       {pin !== null && onlyPin && (
         <div
