@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 import { PATTERN_CYBER } from '../../utils/config';
 
-const ADDR_ETH = '0x00ca47db1be92c1072e973fd8dc4a082f7d70214';
+const ADDR_ETH = '0xd56bd28501f90ba21557b3d2549f1b6e14952303';
 
 const hopefully = ($) => (error, result) => {
   if (error) {
@@ -12,11 +12,11 @@ const hopefully = ($) => (error, result) => {
   }
 };
 
-const ping = (tx) =>
+const ping = (tx, web3) =>
   new Promise((resolve, reject) => {
     loop();
     function loop() {
-      window.web3.eth.getTransactionReceipt(tx, async (error, receipt) => {
+      web3.eth.getTransaction(tx, async (error, receipt) => {
         if (receipt == null) {
           resolve(receipt);
         } else {
@@ -142,7 +142,7 @@ class ActionBarAuction extends Component {
       step: 'start',
       amount: '',
       tx: null,
-      messageCyberAddress: "",
+      messageCyberAddress: '',
       messageAmount: '',
       validInputCyberAddress: false,
       validInputAmount: false,
@@ -227,15 +227,21 @@ class ActionBarAuction extends Component {
     //     })
     //   )
     // );
-    web3.eth.sendTransaction(
-      {
+    web3.eth
+      .sendTransaction({
         from: account,
         to: ADDR_ETH,
         value: priceInWei,
         data: getData,
-      },
-      (result) => console.log('result', result)
-    );
+      })
+      .on('transactionHash', (result) => {
+        ping(result, web3).then(() => {
+          this.setState({
+            step: 'succesfuuly',
+            tx: result,
+          });
+        });
+      });
   };
 
   onClickContribute = async () => {
@@ -270,6 +276,17 @@ class ActionBarAuction extends Component {
     this.setState({
       step: 'succesfuuly',
     });
+
+  validAmountFunc = (number) => {
+    const amount = parseFloat(number);
+    if (isNaN(amount)) {
+      return false;
+    }
+    if (amount > 0) {
+      return true;
+    }
+    return false;
+  };
 
   render() {
     const {
@@ -316,7 +333,7 @@ class ActionBarAuction extends Component {
           messageAmount={messageAmount}
           onChangeAmount={(e) => this.onChangeAmount(e)}
           onClickBtn={() => this.setState({ step: 'CyberAddress' })}
-          disabledBtnConfirm={amount.length === 0}
+          disabledBtnConfirm={!this.validAmountFunc(amount)}
         />
       );
     }

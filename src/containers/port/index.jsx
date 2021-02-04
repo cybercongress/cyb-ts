@@ -7,13 +7,7 @@ import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
 import ActionBarContainer from './ActionBarContainer';
-import ActionBarTakeOff from '../funding/actionBar';
-import {
-  asyncForEach,
-  formatNumber,
-  trimString,
-  getTimeRemaining,
-} from '../../utils/utils';
+
 import { Loading, LinkWindow, Copy, TabBtn } from '../../components';
 import {
   COSMOS,
@@ -22,139 +16,33 @@ import {
   GENESIS_SUPPLY,
   CYBER,
 } from '../../utils/config';
-import {
-  cybWon,
-  funcDiscount,
-  getEstimation,
-  // getDataPlot,
-  getRewards,
-  //   getGroupAddress,
-  funcDiscountRevers,
-} from '../../utils/fundingMath';
-import { getGraphQLQuery } from '../../utils/search/utils';
 // import PopapAddress from './popap';
 import Details from '../funding/details';
 import Quotes from '../funding/quotes';
 
-import { getGroupAddress, getDataPlot } from './utils';
-import testTx from './test';
+import { getGroupAddress, getDataPlot, chekPathname } from './utils';
+import { useGetMarketData, useGetTx } from './hooks';
 
-const URL_GRAPHQL = 'https://uranus.cybernode.ai/graphql/v1/graphql';
-
-const QueryGetTx = `
-query MyQuery {
-  transaction {
-    cyber_hash
-    eul
-    eth
-    cyber
-    block
-    eth_txhash
-    index
-    sender
-  }
-}`;
-
-const MarketData = `
-query MarketData {
-  market_data {
-    current_price
-    eth_donated
-    euls_won
-    last_price
-    market_cap_eth
-  }
-}`;
-
-const useGetTx = () => {
-  const [txsData, setTxsData] = useState({ data: [], loading: true });
-
-  useEffect(() => {
-    const feachData = async () => {
-      const resultData = await getGraphQLQuery(QueryGetTx, URL_GRAPHQL);
-      if (resultData !== null && resultData.transaction) {
-        setTxsData({ data: resultData.transaction, loading: false });
-      } else {
-        setTxsData({ data: [], loading: false });
-      }
-    };
-    feachData();
-
-    return () => {
-      setTxsData({ data: [], loading: true });
-    };
-  }, []);
-
-  return txsData;
-};
-
-const useGetMarketData = () => {
-  const [marketData, setMarketData] = useState({
-    currentPrice: 0,
-    ethDonated: 0,
-    eulsWon: 0,
-    lastPrice: 0,
-    marketCapEth: 0,
-    loading: true,
-  });
-
-  useEffect(() => {
-    const feachData = async () => {
-      const resultData = await getGraphQLQuery(MarketData, URL_GRAPHQL);
-      if (resultData !== null && resultData.market_data) {
-        const market = resultData.market_data[0];
-        setMarketData({
-          currentPrice: market.current_price,
-          ethDonated: market.eth_donated,
-          eulsWon: market.euls_won,
-          lastPrice: market.last_price,
-          marketCapEth: market.market_cap_eth,
-          loading: false,
-        });
-      } else {
-        setMarketData((items) => ({
-          ...items,
-          loading: false,
-        }));
-      }
-    };
-    feachData();
-
-    return () => {
-      setMarketData({
-        currentPrice: 0,
-        ethDonated: 0,
-        eulsWon: 0,
-        lastPrice: 0,
-        marketCapEth: 0,
-        loading: true,
-      });
-    };
-  }, []);
-
-  return marketData;
-};
-
-const chekPathname = (pathname) => {
-  if (pathname.match(/progress/gm) && pathname.match(/progress/gm).length > 0) {
-    return 'progress';
-  }
-  if (
-    pathname.match(/leaderboard/gm) &&
-    pathname.match(/leaderboard/gm).length > 0
-  ) {
-    return 'leaderboard';
-  }
-  return 'manifest';
-};
-
-function PortPages({ mobile, accounts, web3 }) {
+function PortPages({ mobile, accounts, web3, defaultAccount }) {
   const location = useLocation();
   const dataTxs = useGetTx();
   const marketData = useGetMarketData();
   const [selected, setSelected] = useState('manifest');
   const [dataTable, setDataTable] = useState({});
   const [dataProgress, setDataProgress] = useState([]);
+  const [pin, setPin] = useState(null);
+
+  useEffect(() => {
+    const { account } = defaultAccount;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'eth')
+    ) {
+      setPin({ ...account.eth });
+    } else {
+      setPin(null);
+    }
+  }, [defaultAccount.name]);
 
   useEffect(() => {
     const { pathname } = location;
@@ -167,9 +55,6 @@ function PortPages({ mobile, accounts, web3 }) {
       const groupsAddress = getGroupAddress(dataTxs.data);
       setDataTable(groupsAddress);
     }
-    return () => {
-      setDataTable({});
-    };
   }, [dataTxs]);
 
   useEffect(() => {
@@ -178,21 +63,7 @@ function PortPages({ mobile, accounts, web3 }) {
       dataPlot = getDataPlot(marketData.eulsWon / CYBER.DIVISOR_CYBER_G);
       setDataProgress(dataPlot);
     }
-    return () => {
-      setDataTable([]);
-    };
   }, [marketData]);
-
-  // async componentDidMount() {
-  //   // const encoded = Buffer.from(
-  //   //   'cyber1hmkqhy8ygl6tnl5g8tc503rwrmmrkjcq4878e0'
-  //   // ).toString('hex');
-  //   // const decoded = Buffer.from(encoded, 'hex').toString();
-  //   // console.log('encoded', `0x${encoded}`);
-  //   // console.log('decoded', decoded);
-
-  //   this.tableData();
-  // }
 
   // const initClock = () => {
   //   try {
@@ -248,26 +119,6 @@ function PortPages({ mobile, accounts, web3 }) {
 
   let content;
 
-  // if (loader) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '50vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'column',
-  //       }}
-  //     >
-  //       <Loading />
-  //       <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-  //         Recieving transactions
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   if (selected === 'progress') {
     content = (
       <Dinamics
@@ -279,7 +130,7 @@ function PortPages({ mobile, accounts, web3 }) {
   }
 
   if (selected === 'leaderboard') {
-    content = <Table mobile={mobile} data={dataTable} />;
+    content = <Table mobile={mobile} pin={pin} data={dataTable} />;
   }
 
   if (selected === 'manifest') {
@@ -297,7 +148,7 @@ function PortPages({ mobile, accounts, web3 }) {
 
       <main className="block-body takeoff">
         <Quotes />
-        {/* {!pin && (
+        {pin === null && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
@@ -313,14 +164,14 @@ function PortPages({ mobile, accounts, web3 }) {
             </Text>
           </Pane>
         )}
-        {pin && (
+        {pin !== null && (
           <Table
             styles={{ marginBottom: 20, marginTop: 0 }}
-            data={groups}
+            data={dataTable}
             onlyPin
             pin={pin}
           />
-        )} */}
+        )}
         <Statistics marketData={marketData} />
         <Tablist className="tab-list" marginY={20}>
           <TabBtn
@@ -349,6 +200,7 @@ function PortPages({ mobile, accounts, web3 }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

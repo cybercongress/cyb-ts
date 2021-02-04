@@ -5,15 +5,13 @@ const getGroupAddress = (data) => {
     obj[item.sender] = obj[item.sender] || [];
     obj[item.sender].push({
       amountEth: item.eth,
-      //   price: item.price,
       ethTxhash: item.eth_txhash,
       block: item.block,
       cyberHash: item.cyber_hash,
       eul: item.eul,
-      index: item.index,
-      //   timestamp: item.timestamp,
-      //   cybEstimation: item.estimation,
-      //   estimationEUL: item.estimationEUL,
+      avPrice: item.av_price,
+      eulSum: item.eul_sum,
+      ethSum: item.eth_sum,
     });
     return obj;
   }, {});
@@ -31,17 +29,16 @@ const getGroupAddress = (data) => {
     }),
     {}
   );
-
   Object.keys(groups).forEach((key) => {
-    let sum = 0;
-    let eul = 0;
-    groups[key].address.forEach((addressKey) => {
-      sum += addressKey.amountEth;
-      eul += addressKey.eul;
-    });
+    // let sum = 0;
+    // let eul = 0;
+    // groups[key].address.forEach((addressKey) => {
+    //   sum += addressKey.amountEth;
+    //   eul += addressKey.eul;
+    // });
     groups[key].block = groups[key].address[0].block;
-    groups[key].amountСolumn = sum;
-    groups[key].eul = eul;
+    groups[key].amountСolumn = groups[key].address[0].ethSum;
+    groups[key].eul = groups[key].address[0].eulSum;
   });
   return groups;
 };
@@ -118,4 +115,17 @@ const getDataPlot = (tokens) => {
   return data;
 };
 
-export { diff, getGroupAddress, getDataPlot };
+const chekPathname = (pathname) => {
+  if (pathname.match(/progress/gm) && pathname.match(/progress/gm).length > 0) {
+    return 'progress';
+  }
+  if (
+    pathname.match(/leaderboard/gm) &&
+    pathname.match(/leaderboard/gm).length > 0
+  ) {
+    return 'leaderboard';
+  }
+  return 'manifest';
+};
+
+export { diff, getGroupAddress, getDataPlot, chekPathname };

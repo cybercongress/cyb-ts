@@ -230,11 +230,6 @@ class Funding extends PureComponent {
       timestamp,
       sender: data['message.sender'][0],
     };
-    const pocketAddLocal = localStorage.getItem('pocket');
-    if (pocketAddLocal !== null) {
-      const pocketAdd = JSON.parse(pocketAddLocal);
-      this.setState({ pocketAdd });
-    }
     this.getStatisticsWs(dataTxs.amount);
     await this.getTableData();
     await this.getTableDataWs(dataTxs);
@@ -242,10 +237,16 @@ class Funding extends PureComponent {
   };
 
   init = async (txs) => {
-    console.log(txs);
-    const pocketAddLocal = localStorage.getItem('pocket');
-    const pocketAdd = JSON.parse(pocketAddLocal);
-    this.setState({ pocketAdd });
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cosmos')
+    ) {
+      this.setState({ pocketAdd: { ...account.cosmos } });
+    }
+
     await this.getStatistics();
     this.getTableData();
     this.getData();
@@ -400,8 +401,8 @@ class Funding extends PureComponent {
     const { pocketAdd, groups } = this.state;
     let pin = false;
     if (pocketAdd !== null) {
-      if (groups[pocketAdd.cosmos.bech32]) {
-        groups[pocketAdd.cosmos.bech32].pin = true;
+      if (groups[pocketAdd.bech32]) {
+        groups[pocketAdd.bech32].pin = true;
         pin = true;
       }
       this.setState({
@@ -573,6 +574,7 @@ class Funding extends PureComponent {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 
