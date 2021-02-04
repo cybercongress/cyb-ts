@@ -25,13 +25,6 @@ const Statistics = ({ marketData, time = '∞' }) => {
       gridGap="20px"
     >
       <Card
-        tooltipValue="The time left untill the end of the donations, in the case the price will not raise 5x"
-        positionTooltip="bottom"
-        title="Donations ends"
-        // value={atomLeff >= 0 ? time : '∞'}
-        value="∞"
-      />
-      <Card
         title="ETH/GCYB"
         value={exponentialToDecimal(currentPrice.toPrecision(6))}
         positionTooltip="bottom"

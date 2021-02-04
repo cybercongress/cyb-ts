@@ -65,46 +65,6 @@ function PortPages({ mobile, accounts, web3, defaultAccount }) {
     }
   }, [marketData]);
 
-  // const initClock = () => {
-  //   try {
-  //     const deadline = `${COSMOS.TIME_END}`;
-  //     const startTime = Date.parse(deadline) - Date.parse(new Date());
-  //     if (startTime <= 0) {
-  //       this.setState({
-  //         time: 'end',
-  //       });
-  //     } else {
-  //       initializeClock(deadline);
-  //     }
-  //   } catch (error) {
-  //     this.setState({
-  //       time: '∞',
-  //     });
-  //   }
-  // };
-
-  // const initializeClock = (endtime) => {
-  //   let timeinterval;
-  //   const updateClock = () => {
-  //     const t = getTimeRemaining(endtime);
-  //     if (t.total <= 0) {
-  //       clearInterval(timeinterval);
-  //       this.setState({
-  //         time: 'end',
-  //       });
-  //       return true;
-  //     }
-  //     const hours = `0${t.hours}`.slice(-2);
-  //     const minutes = `0${t.minutes}`.slice(-2);
-  //     this.setState({
-  //       time: `${t.days}d:${hours}h:${minutes}m`,
-  //     });
-  //   };
-
-  //   updateClock();
-  //   timeinterval = setInterval(updateClock, 10000);
-  // };
-
   // onClickPopapAdress = () => {
   //   this.setState({
   //     popapAdress: false,
