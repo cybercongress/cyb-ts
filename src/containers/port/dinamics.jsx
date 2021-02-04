@@ -1,11 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import Plotly from 'react-plotly.js';
+import { Pane } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import { x, cap, p } from './list';
 import { CYBER } from '../../utils/config';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
+import { layout, config, dataDiscount } from './configPlotly';
+import { LinkWindow, Tooltip } from '../../components';
+
+import reader from '../../image/reader-outline.svg';
 
 const { DENOM_CYBER_G, DENOM_CYBER } = CYBER;
-
 class Dinamics extends Component {
   constructor(props) {
     super(props);
@@ -65,7 +70,6 @@ class Dinamics extends Component {
   };
 
   plotUnhover = () => {
-    // const { round, price, volume, distribution } = this.props;
     this.setState({
       caps: '',
     });
@@ -73,118 +77,64 @@ class Dinamics extends Component {
 
   render() {
     const { caps, width, height, size, margin } = this.state;
-    const { data3d, dataRewards } = this.props;
-    // console.log('data3d', data3d);
-    // console.log('dataRewards', dataRewards);
+    const { data3d, dataTxs } = this.props;
 
-    const dataDiscount = [
-      {
-        mode: 'line',
-        x,
-        y: p,
-        opacity: 0.45,
-        line: {
-          width: 2,
-          opacity: 1,
-          color: '#fff',
-        },
-        // hoverinfo: 'none',
-        hovertemplate:
-          'Price: %{y:.2f%} ETH/GCYB<br>' +
-          'Tokens claimed: %{x} GCYB<br>' +
-          `Cap: ${caps} ETH` +
-          '<extra></extra>',
-        // hovertemplate:
-        //   'ATOM contributed: %{x}<br>' +
-        //   'Personal discount: %{y:.2f%}%<br>' +
-        //   '<extra></extra>'
-      },
-      {
-        type: 'scatter',
-        mode: 'lines',
-        line: {
-          color: '#36d6ae',
-          width: 3,
-        },
-        x: data3d.x,
-        y: data3d.y,
-        // hoverinfo: 'none'
-        hovertemplate:
-          'Price: %{y:.2f%} ETH/GCYB<br>' +
-          'Tokens claimed: %{x} GCYB<br>' +
-          `Cap: ${caps} ETH` +
-          '<extra></extra>',
-      },
-    ];
+    let ItemProgress;
 
-    const layout = {
-      bargap: 0,
-      paper_bgcolor: '#000',
-      plot_bgcolor: '#000',
-      showlegend: false,
-      hovermode: 'closest',
-      hoverlabel: {
-        bgcolor: '#000',
-        font: {
-          color: '#fff',
-        },
-      },
-      yaxis: {
-        autotick: true,
-        // range: [0, 11],
-        // autorange: false,
-        // tick0: 0.1,
-        // dtick: 0,
-        fixedrange: true,
-        title: {
-          text: `Price, ETH/GCYB`,
-        },
-        tickfont: {
-          color: '#36d6ae',
-        },
-        titlefont: {
-          size,
-        },
-        gridcolor: '#ffffff66',
-        color: '#fff',
-        zerolinecolor: '#dedede',
-      },
-      xaxis: {
-        autotick: true,
-        fixedrange: true,
-        title: {
-          text: `Tokens claimed, GCYB`,
-        },
-        titlefont: {
-          size,
-        },
-        tickfont: {
-          color: '#36d6ae',
-        },
-        gridcolor: '#ffffff66',
-        color: '#fff',
-        zerolinecolor: '#dedede',
-      },
-      width,
-      height,
-      margin,
-    };
-    const config = {
-      displayModeBar: false,
-      scrollZoom: false,
-      showSendToCloud: true,
-    };
+    console.log('dataTxs', dataTxs);
+
+    if (!dataTxs.loading && dataTxs.data.length > 0) {
+      ItemProgress = dataTxs.data.map((item) => (
+        <Pane
+          display="flex"
+          paddingX={20}
+          paddingY={20}
+          alignItems="center"
+          // boxShadow="0 0 2px #3ab793"
+          borderBottom="1px solid #3ab79375"
+          // borderRadius="5px"
+          marginBottom={10}
+        >
+          <Pane fontSize="18px" display="flex" flex={1}>
+            <LinkWindow to={`http://etherscan.io/address/${item.sender}`}>
+              <Pane marginRight={10}>{trimString(item.sender, 8, 5)}</Pane>
+            </LinkWindow>
+            <Pane>bought</Pane>
+          </Pane>
+          <Pane color="#00e676" fontSize="18px" marginX={5}>
+            +{formatCurrency(parseInt(item.eul, 10), 'CYB')}
+          </Pane>
+          <Pane>
+            <Tooltip placement="top" tooltip="Proof Tx">
+              <Link
+                style={{ display: 'flex' }}
+                to={`/network/euler/tx/${item.cyber_hash.toUpperCase()}`}
+              >
+                <img
+                  src={reader}
+                  alt="img"
+                  style={{ width: '20px', height: '20px' }}
+                />
+              </Link>
+            </Tooltip>
+          </Pane>
+        </Pane>
+      ));
+    }
 
     return (
-      <div className="container-dinamics">
-        <Plotly
-          data={dataDiscount}
-          layout={layout}
-          onHover={(figure) => this.plotlyHover(figure)}
-          onUnhover={(figure) => this.plotUnhover(figure)}
-          config={config}
-        />
-      </div>
+      <>
+        <div className="container-dinamics">
+          <Plotly
+            data={dataDiscount(caps, data3d)}
+            layout={layout(size, width, height, margin)}
+            onHover={(figure) => this.plotlyHover(figure)}
+            onUnhover={(figure) => this.plotUnhover(figure)}
+            config={config}
+          />
+        </div>
+        <Pane marginTop={15}>{ItemProgress}</Pane>
+      </>
     );
   }
 }

@@ -85,6 +85,7 @@ function PortPages({ mobile, accounts, web3, defaultAccount }) {
         mobile={mobile}
         cap={marketData.marketCapEth}
         data3d={dataProgress}
+        dataTxs={dataTxs}
       />
     );
   }

@@ -57,10 +57,8 @@ const QueryGetTx = gql`
       cyber
       cyber_hash
       eth
-      eth_sum
       eth_txhash
       eul
-      eul_sum
       sender
       eth_sum_by_address
       eul_sum_by_address
