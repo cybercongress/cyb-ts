@@ -96,8 +96,8 @@ const getDataPlot = (tokens) => {
   };
   const indexArr = binarySearch(x, tokens);
 
-  console.log('findId', findId(x, tokens));
-  console.log('binarySearch', binarySearch(x, tokens));
+  // console.log('findId', findId(x, tokens));
+  // console.log('binarySearch', binarySearch(x, tokens));
 
   const newArrY = p.slice(0, indexArr + 1);
   const newArrX = x.slice(0, indexArr + 1);

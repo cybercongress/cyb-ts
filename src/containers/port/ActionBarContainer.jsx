@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
 import { PATTERN_CYBER } from '../../utils/config';
+import { formatNumber } from '../../utils/utils';
 
 const ADDR_ETH = '0xd56bd28501f90ba21557b3d2549f1b6e14952303';
 
@@ -32,6 +33,25 @@ const ping = (tx, web3) =>
     }
   });
 
+const CardPackage = ({
+  eth = 0,
+  title = '',
+  gcyb = 0,
+  selected = false,
+  ...props
+}) => (
+  <Pane
+    className="cardVisaActionBar"
+    boxShadow={selected ? '0 0 7px 1px #3ab793' : '0 0 3px #3ab793'}
+    {...props}
+  >
+    <Pane marginBottom={5}>{title}</Pane>
+    <Pane fontSize="17px">
+      {eth} ETH ~ {gcyb} GCYB{' '}
+    </Pane>
+  </Pane>
+);
+
 const ActionBarContentText = ({ children, ...props }) => (
   <Pane
     display="flex"
@@ -44,40 +64,6 @@ const ActionBarContentText = ({ children, ...props }) => (
   >
     {children}
   </Pane>
-);
-
-const ContributeETH = ({
-  onClickBtn,
-  valueAmount,
-  onChangeAmount,
-  disabledBtnConfirm,
-  validAmount,
-  messageAmount,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      I want to contribute
-      <Input
-        value={valueAmount}
-        onChange={onChangeAmount}
-        // placeholder={`сhoose round ${minValueRound} to ${maxValueRound}`}
-        isInvalid={validAmount}
-        message={messageAmount}
-        marginLeft={15}
-        marginRight={5}
-        width="150px"
-        textAlign="end"
-        // style={{
-        //   width: '15%',
-        //   margin: '0 5px 0 15px'
-        // }}
-      />
-      <span>ETH</span>
-    </ActionBarContentText>
-    <Button disabled={disabledBtnConfirm} onClick={onClickBtn}>
-      Confirm
-    </Button>
-  </ActionBar>
 );
 
 const CyberAddress = ({
@@ -140,13 +126,14 @@ class ActionBarAuction extends Component {
     super(props);
     this.state = {
       step: 'start',
-      amount: '',
+      amount: 0,
       tx: null,
       messageCyberAddress: '',
       messageAmount: '',
       validInputCyberAddress: false,
       validInputAmount: false,
       cyberAddress: '',
+      selected: '',
     };
   }
 
@@ -199,7 +186,8 @@ class ActionBarAuction extends Component {
     this.setState({
       step: 'start',
       cyberAddress: '',
-      amount: '',
+      amount: 0,
+      selected: '',
     });
   };
 
@@ -210,7 +198,7 @@ class ActionBarAuction extends Component {
     const encoded = Buffer.from(cyberAddress).toString('hex');
     const getData = `0x${encoded}`;
 
-    const priceInWei = await web3.utils.toWei(amount, 'ether');
+    const priceInWei = await web3.utils.toWei(amount.toString(), 'ether');
     // web3.eth.sendTransaction(
     //   {
     //     from: account,
@@ -288,6 +276,21 @@ class ActionBarAuction extends Component {
     return false;
   };
 
+  selectFnc = (cardSelect, eth) => {
+    const { selected } = this.state;
+    if (selected !== cardSelect) {
+      this.setState({
+        selected: cardSelect,
+        amount: eth,
+      });
+    } else {
+      this.setState({
+        selected: '',
+        amount: 0,
+      });
+    }
+  };
+
   render() {
     const {
       step,
@@ -298,8 +301,11 @@ class ActionBarAuction extends Component {
       messageAmount,
       validInputCyberAddress,
       validInputAmount,
+      selected,
     } = this.state;
-    const { web3, accounts } = this.props;
+    const { web3, accounts, visa } = this.props;
+
+    console.log('visa', visa);
 
     if (web3.givenProvider === null) {
       return (
@@ -327,14 +333,47 @@ class ActionBarAuction extends Component {
 
     if (step === 'start') {
       return (
-        <ContributeETH
-          valueAmount={amount}
-          validAmount={validInputAmount}
-          messageAmount={messageAmount}
-          onChangeAmount={(e) => this.onChangeAmount(e)}
-          onClickBtn={() => this.setState({ step: 'CyberAddress' })}
-          disabledBtnConfirm={!this.validAmountFunc(amount)}
-        />
+        // <ContributeETH
+        //   valueAmount={amount}
+        //   validAmount={validInputAmount}
+        //   messageAmount={messageAmount}
+        //   onChangeAmount={(e) => this.onChangeAmount(e)}
+        //   onClickBtn={() => this.setState({ step: 'CyberAddress' })}
+        //   disabledBtnConfirm={!this.validAmountFunc(amount)}
+        // />
+        <ActionBar>
+          <ActionBarContentText justifyContent="space-evenly">
+            <CardPackage
+              onClick={() => this.selectFnc('tourist', visa.tourist.eth)}
+              selected={selected === 'tourist'}
+              title="Tourist"
+              eth={visa.tourist.eth}
+              gcyb={formatNumber(visa.tourist.gcyb, 3)}
+            />
+            <CardPackage
+              onClick={() => this.selectFnc('citizen', visa.citizen.eth)}
+              selected={selected === 'citizen'}
+              title="Citizen"
+              eth={visa.citizen.eth}
+              gcyb={formatNumber(visa.citizen.gcyb, 3)}
+            />
+            <CardPackage
+              onClick={() =>
+                this.selectFnc('entrepreneur', visa.entrepreneur.eth)
+              }
+              selected={selected === 'entrepreneur'}
+              title="Entrepreneur"
+              eth={visa.entrepreneur.eth}
+              gcyb={formatNumber(visa.entrepreneur.gcyb, 3)}
+            />
+          </ActionBarContentText>
+          <Button
+            onClick={() => this.setState({ step: 'CyberAddress' })}
+            disabled={amount === 0}
+          >
+            Confirm
+          </Button>
+        </ActionBar>
       );
     }
 

@@ -6,7 +6,7 @@ import { x, cap, p } from './list';
 import { CYBER } from '../../utils/config';
 import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
 import { layout, config, dataDiscount } from './configPlotly';
-import { LinkWindow, Tooltip } from '../../components';
+import { LinkWindow, Tooltip, FormatNumber } from '../../components';
 
 import reader from '../../image/reader-outline.svg';
 
@@ -81,8 +81,6 @@ class Dinamics extends Component {
 
     let ItemProgress;
 
-    console.log('dataTxs', dataTxs);
-
     if (!dataTxs.loading && dataTxs.data.length > 0) {
       ItemProgress = dataTxs.data.map((item) => (
         <Pane
@@ -101,23 +99,42 @@ class Dinamics extends Component {
             </LinkWindow>
             <Pane>bought</Pane>
           </Pane>
-          <Pane color="#00e676" fontSize="18px" marginX={5}>
-            +{formatCurrency(parseInt(item.eul, 10), 'CYB')}
-          </Pane>
-          <Pane>
-            <Tooltip placement="top" tooltip="Proof Tx">
-              <Link
-                style={{ display: 'flex' }}
-                to={`/network/euler/tx/${item.cyber_hash.toUpperCase()}`}
-              >
-                <img
-                  src={reader}
-                  alt="img"
-                  style={{ width: '20px', height: '20px' }}
-                />
-              </Link>
-            </Tooltip>
-          </Pane>
+          {item.eul === null ? (
+            <Pane color="#FFF" fontSize="18px" marginX={5}>
+              PROCESSING
+            </Pane>
+          ) : (
+            <Pane color="#00e676" display="flex" fontSize="18px" marginX={5}>
+              +
+              <FormatNumber
+                marginLeft={3}
+                number={formatNumber(
+                  Math.floor((item.eul / CYBER.DIVISOR_CYBER_G) * 1000) / 1000,
+                  3
+                )}
+                currency="GCYB"
+                fontSizeDecimal={16}
+                // number={item.eul}
+              />
+              {/* (parseInt(item.eul, 10), 'CYB')} */}
+            </Pane>
+          )}
+          {item.cyber_hash !== null && (
+            <Pane>
+              <Tooltip placement="top" tooltip="Proof Tx">
+                <Link
+                  style={{ display: 'flex' }}
+                  to={`/network/euler/tx/${item.cyber_hash.toUpperCase()}`}
+                >
+                  <img
+                    src={reader}
+                    alt="img"
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                </Link>
+              </Tooltip>
+            </Pane>
+          )}
         </Pane>
       ));
     }

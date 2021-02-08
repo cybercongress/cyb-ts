@@ -544,6 +544,20 @@
   opacity: 1;
 }
 
+.cardVisaActionBar {
+  padding: 10px 20px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cardVisaActionBar:hover {
+  box-shadow: 0 0 8px #3ab793;
+}
+
 .container-buttonIcon {
   display: flex;
   justify-content: center;
