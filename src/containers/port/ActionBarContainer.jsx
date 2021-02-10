@@ -305,8 +305,6 @@ class ActionBarAuction extends Component {
     } = this.state;
     const { web3, accounts, visa } = this.props;
 
-    console.log('visa', visa);
-
     if (web3.givenProvider === null) {
       return (
         <ActionBar>

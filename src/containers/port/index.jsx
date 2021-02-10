@@ -1,21 +1,16 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { connect } from 'react-redux';
-import { Text, Pane, Dialog, Tablist } from '@cybercongress/gravity';
-import { Link, Switch, Route, Router, useLocation } from 'react-router-dom';
+import { Text, Pane, Tablist } from '@cybercongress/gravity';
+import { Link, useLocation } from 'react-router-dom';
+
 import withWeb3 from '../../components/web3/withWeb3';
 // import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
 import ActionBarContainer from './ActionBarContainer';
 
-import { Loading, LinkWindow, Copy, TabBtn } from '../../components';
-import {
-  COSMOS,
-  TAKEOFF,
-  TAKEOFF_SUPPLY,
-  GENESIS_SUPPLY,
-  CYBER,
-} from '../../utils/config';
+import { TabBtn } from '../../components';
+import { CYBER } from '../../utils/config';
 // import PopapAddress from './popap';
 import Details from '../funding/details';
 import Quotes from '../funding/quotes';

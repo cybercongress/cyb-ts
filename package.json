@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack-dev-server --https -d --disable-host-check",
-    "build": "cross-env NODE_ENV=production webpack -p && ncp build/index.html build/404.html",
+    "start": "webpack-dev-server --config=webpack.config.dev.js --https -d --disable-host-check",
+    "build": "webpack --config=webpack.config.prod.js -p && ncp build/index.html build/404.html",
     "devserver": "parcel serve src/index.html -p 8001 --no-cache",
     "lint": "eslint src/"
   },
@@ -27,6 +27,7 @@
     "copy-webpack-plugin": "^7.0.0",
     "cross-env": "^6.0.3",
     "css-loader": "^5.0.1",
+    "esbuild-loader": "^2.9.1",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.5.0",

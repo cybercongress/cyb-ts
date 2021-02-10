@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component } from 'react';
 import Plotly from 'react-plotly.js';
 import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';

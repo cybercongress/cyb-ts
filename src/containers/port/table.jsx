@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Pane } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
 import { formatNumber, trimString } from '../../utils/utils';
 import { Tooltip, FormatNumber, RowTableTakeoff } from '../../components';
 import { CYBER } from '../../utils/config';

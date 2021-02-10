@@ -1092,7 +1092,7 @@ export const SendLedgerAtomTot = ({
     <div className="display-flex align-items-center">
       <span className="actionBar-text">{address}</span>
       <button
-        className="copy-address"
+        className="copy-address-btn"
         onClick={() => {
           navigator.clipboard.writeText(address);
         }}
@@ -1143,7 +1143,7 @@ export const ContributeATOMs = ({
     <div className="display-flex align-items-center">
       <span className="actionBar-text">{address}</span>
       <button
-        className="copy-address"
+        className="copy-address-btn"
         onClick={() => {
           navigator.clipboard.writeText(address);
         }}
@@ -1222,7 +1222,7 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
             >
               <span className="font-size-16">{address}</span>
               <button
-                className="copy-address"
+                className="copy-address-btn"
                 onClick={() => {
                   navigator.clipboard.writeText(address);
                 }}

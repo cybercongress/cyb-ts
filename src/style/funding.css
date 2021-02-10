@@ -613,7 +613,7 @@ select {
   margin-right: 5px;
 }
 
-.copy-address {
+.copy-address-btn {
   background: url(../image/ionicons_svg_ios-copy.svg) center center no-repeat;
   background-color: transparent;
   outline: none;
@@ -624,7 +624,7 @@ select {
   margin-left: 5px;
 }
 
-.copy-address:hover {
+.copy-address-btn:hover {
   opacity: 0.8;
 }
 

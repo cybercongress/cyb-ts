@@ -96,7 +96,7 @@ const injectWeb3 = InnerComponent =>
           });
         }
 
-        const accounts = await web3.eth.getAccounts();
+        const accounts = await web3.eth.accounts;
         return this.setState({
           web3,
           // contract,
