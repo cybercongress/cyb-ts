@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -26,6 +27,7 @@ import {
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER } from '../../utils/config';
+import { AppContext } from '../../context';
 
 import { i18n } from '../../i18n/en';
 
@@ -44,17 +46,6 @@ const {
   STAGE_CONFIRMED,
   STAGE_ERROR,
 } = LEDGER;
-
-const {
-  AccAddress,
-  ValAddress,
-} = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const {
-  MsgUndelegate,
-  MsgDelegate,
-  MsgBeginRedelegate,
-} = require('@chainapsis/cosmosjs/x/staking');
 
 const T = new LocalizedStrings(i18n);
 
@@ -134,6 +125,7 @@ class ActionBarContainer extends Component {
   };
 
   getLedgerAddress = async () => {
+    const { addressPocket } = this.props;
     this.transport = await TransportWebUSB.create(120 * 1000);
     this.ledger = new CosmosDelegateTool(this.transport);
 
@@ -144,21 +136,26 @@ class ActionBarContainer extends Component {
       });
 
       const address = await this.ledger.retrieveAddressCyber(HDPATH);
-      console.log('address', address);
-      this.setState({
-        address,
-      });
-      this.getAddressInfo();
+      if (addressPocket !== null && addressPocket.bech32 === address.bech32) {
+        this.setState({
+          address,
+        });
+        this.getAddressInfo();
+      } else {
+        this.setState({
+          stage: STAGE_ERROR,
+          errorMessage: `Add address ${trimString(
+            address.bech32,
+            9,
+            5
+          )} to your pocket or make active `,
+        });
+      }
     } else {
       this.setState({
         connectLedger: false,
       });
     }
-  };
-
-  getNetworkId = async () => {
-    const data = await statusNode();
-    return data.node_info.network;
   };
 
   getAddressInfo = async () => {
@@ -173,10 +170,10 @@ class ActionBarContainer extends Component {
     let addressInfo = {};
     const balance = 0;
     try {
-      const chainId = await this.getNetworkId();
-      console.log(chainId);
+      const responseNode = await statusNode();
+      console.log('responseNode', responseNode);
       const response = await getBalanceWallet(address.bech32);
-      console.log(response);
+      console.log('getBalanceWallet', response);
       const delegate = await selfDelegationShares(
         address.bech32,
         validatorAddres
@@ -185,10 +182,14 @@ class ActionBarContainer extends Component {
 
       if (response) {
         const data = response.account;
-        addressInfo = { chainId, ...data, delegate };
+        addressInfo = {
+          chainId: responseNode.node_info.network,
+          ...data,
+          delegate,
+        };
       }
 
-      console.log(addressInfo);
+      console.log('addressInfo', addressInfo);
 
       this.setState({
         addressInfo,
@@ -207,70 +208,84 @@ class ActionBarContainer extends Component {
   };
 
   generateTxKeplr = async () => {
-    const { keplr, validators } = this.props;
+    const { validators, addressPocket } = this.props;
+    const { keplr } = this.context;
     const { toSend, txType, valueSelect } = this.state;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const validatorAddres = validators.operator_address;
 
-    await keplr.enable();
-    const sender = AccAddress.fromBech32(
-      (await keplr.getKeys())[0].bech32Address,
-      'cyber'
-    );
-    const msg = [];
-    if (txType === TXTYPE_DELEGATE) {
-      const temp = new MsgDelegate(
-        sender,
-        ValAddress.fromBech32(
-          validatorAddres,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
-        ),
-        new Coin('eul', amount)
-      );
-      msg.push(temp);
+    if (keplr !== null) {
+      const chainId = CYBER.CHAIN_ID;
+      await window.keplr.enable(chainId);
+      const { address } = await keplr.getAccount();
+      if (addressPocket !== null && addressPocket.bech32 === address) {
+        const msgs = [];
+        if (txType === TXTYPE_DELEGATE) {
+          msgs.push({
+            type: 'cosmos-sdk/MsgDelegate',
+            value: {
+              amount: {
+                amount: amount.toString(),
+                denom: CYBER.DENOM_CYBER,
+              },
+              delegator_address: address,
+              validator_address: validatorAddres,
+            },
+          });
+        }
+        if (txType === TXTYPE_UNDELEGATE) {
+          msgs.push({
+            type: 'cosmos-sdk/MsgUndelegate',
+            value: {
+              amount: {
+                amount: amount.toString(),
+                denom: CYBER.DENOM_CYBER,
+              },
+              delegator_address: address,
+              validator_address: validatorAddres,
+            },
+          });
+        }
+        if (txType === TXTYPE_REDELEGATE) {
+          msgs.push({
+            type: 'cosmos-sdk/MsgBeginRedelegate',
+            value: {
+              amount: {
+                amount: amount.toString(),
+                denom: CYBER.DENOM_CYBER,
+              },
+              delegator_address: address,
+              validator_dst_address: validatorAddres,
+              validator_src_address: valueSelect,
+            },
+          });
+        }
+        const fee = {
+          amount: coins(0, 'uatom'),
+          gas: '100000',
+        };
+        console.log('msg', msgs);
+        const result = await keplr.signAndBroadcast(
+          msgs,
+          fee,
+          CYBER.MEMO_KEPLR
+        );
+        console.log('result: ', result);
+        const hash = result.transactionHash;
+        console.log('hash :>> ', hash);
+        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        this.timeOut = setTimeout(this.confirmTx, 1500);
+      } else {
+        this.setState({
+          stage: STAGE_ERROR,
+          errorMessage: `Add address ${trimString(
+            address,
+            9,
+            5
+          )} to your pocket or make active `,
+        });
+      }
     }
-    if (txType === TXTYPE_UNDELEGATE) {
-      const temp = new MsgUndelegate(
-        sender,
-        ValAddress.fromBech32(
-          validatorAddres,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
-        ),
-        new Coin('eul', amount)
-      );
-      msg.push(temp);
-    }
-    if (txType === TXTYPE_REDELEGATE) {
-      const temp = new MsgBeginRedelegate(
-        sender,
-        ValAddress.fromBech32(
-          validatorAddres,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
-        ),
-        ValAddress.fromBech32(
-          valueSelect,
-          CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
-        ),
-        new Coin('eul', amount)
-      );
-      msg.push(temp);
-    }
-
-    console.log('msg', msg);
-    const result = await keplr.sendMsgs(
-      msg,
-      {
-        gas: 100000,
-        memo: CYBER.MEMO_KEPLR,
-        fee: new Coin('eul', 200),
-      },
-      'sync'
-    );
-    console.log('result: ', result);
-    const hash = result.hash.toString('hex').toUpperCase();
-    console.log('hash :>> ', hash);
-    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-    this.timeOut = setTimeout(this.confirmTx, 1500);
   };
 
   generateTx = async () => {
@@ -724,5 +739,7 @@ class ActionBarContainer extends Component {
     return null;
   }
 }
+
+ActionBarContainer.contextType = AppContext;
 
 export default ActionBarContainer;
