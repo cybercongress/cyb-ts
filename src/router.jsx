@@ -35,6 +35,7 @@ import Got from './containers/got/got';
 import useIpfsStart from './ipfsHook';
 import ForceGraph from './containers/forceGraph/forceGraph';
 import PortPages from './containers/port';
+import TestKeplr from './containers/testKeplre';
 
 export const history = createBrowserHistory({});
 
@@ -100,6 +101,7 @@ function AppRouter({
         <Route path="/network/euler/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
         <Route path="/port" component={PortPages} />
+        <Route path="/test" component={TestKeplr} />
       </Switch>
     </Router>
   );
