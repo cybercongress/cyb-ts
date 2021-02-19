@@ -20,7 +20,7 @@ import { useGetMarketData, useGetTx } from './hooks';
 
 const Dinamics = lazy(() => import('./dinamics'));
 
-function PortPages({ mobile, accounts, web3, defaultAccount }) {
+function PortPages({ mobile, web3, accounts, defaultAccount }) {
   const location = useLocation();
   const dataTxs = useGetTx();
   const marketData = useGetMarketData();
@@ -28,6 +28,7 @@ function PortPages({ mobile, accounts, web3, defaultAccount }) {
   const [dataTable, setDataTable] = useState({});
   const [dataProgress, setDataProgress] = useState([]);
   const [pin, setPin] = useState(null);
+  const [accountsETH, setAccountsETH] = useState(null);
   const [visa, setVisa] = useState({
     tourist: {
       eth: 0.1,
@@ -42,6 +43,21 @@ function PortPages({ mobile, accounts, web3, defaultAccount }) {
       gcyb: 0,
     },
   });
+
+  useEffect(() => {
+    if (accounts != null) {
+      setAccountsETH(accounts);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (web3 != null) {
+      window.ethereum.on('accountsChanged', (accountsChanged) => {
+        const defaultAccounts = accountsChanged[0];
+        setAccountsETH(defaultAccounts);
+      });
+    }
+  }, [web3]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -189,7 +205,7 @@ function PortPages({ mobile, accounts, web3, defaultAccount }) {
         </Tablist>
         {content}
       </main>
-      <ActionBarContainer visa={visa} accounts={accounts} web3={web3} />
+      <ActionBarContainer visa={visa} accounts={accountsETH} web3={web3} />
     </span>
   );
 }

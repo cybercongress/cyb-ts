@@ -304,6 +304,8 @@ class ActionBarAuction extends Component {
       selected,
     } = this.state;
     const { web3, accounts, visa } = this.props;
+    
+console.log('web3', web3, accounts);
 
     if (web3.givenProvider === null) {
       return (
@@ -321,7 +323,7 @@ class ActionBarAuction extends Component {
       );
     }
 
-    if (accounts === undefined && web3.givenProvider !== null) {
+    if (accounts == null && web3.givenProvider !== null) {
       return (
         <ActionBar>
           <Button onClick={this.onClickFuckGoogle}>Connect account</Button>
