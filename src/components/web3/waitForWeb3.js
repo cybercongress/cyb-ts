@@ -6,6 +6,9 @@ let web3js;
 
 const resolveWeb3 = async resolve => {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (window.web3) {
+    web3js = new Web3(window.web3.currentProvider);
+  }
   if (window.ethereum) {
     web3js = new Web3(window.ethereum);
   } else {
