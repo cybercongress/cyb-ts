@@ -1,16 +1,111 @@
-import React, { Component } from 'react';
+import React, { Component, useCallback, useMemo, useState } from 'react';
 import Plotly from 'react-plotly.js';
 import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { x, cap, p } from './list';
 import { CYBER } from '../../utils/config';
-import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
+import { formatNumber, trimString } from '../../utils/utils';
 import { layout, config, dataDiscount } from './configPlotly';
-import { LinkWindow, Tooltip, FormatNumber } from '../../components';
+import { LinkWindow, Tooltip, FormatNumber, Dots } from '../../components';
 
 import reader from '../../image/reader-outline.svg';
 
-const { DENOM_CYBER_G, DENOM_CYBER } = CYBER;
+const Progress = ({ data }) => {
+  const [itemsToShow, setItemsToShow] = useState(30);
+
+  const setNextDisplayedPalettes = useCallback(() => {
+    setTimeout(() => {
+      setItemsToShow(itemsToShow + 10);
+    }, 50);
+  }, [itemsToShow, setItemsToShow]);
+
+  const displayedPalettes = useMemo(() => data.slice(0, itemsToShow), [
+    itemsToShow,
+  ]);
+
+  const items = displayedPalettes.map((item) => (
+    <Pane
+      key={item.eth_txhash}
+      display="flex"
+      paddingX={20}
+      paddingY={20}
+      alignItems="center"
+      // boxShadow="0 0 2px #3ab793"
+      borderBottom="1px solid #3ab79375"
+      // borderRadius="5px"
+      marginBottom={10}
+    >
+      <Pane fontSize="18px" display="flex" flex={1}>
+        <LinkWindow to={`http://etherscan.io/address/${item.sender}`}>
+          <Pane marginRight={10}>{trimString(item.sender, 8, 5)}</Pane>
+        </LinkWindow>
+        <Pane>bought</Pane>
+      </Pane>
+      {item.eul === null ? (
+        <Pane color="#FFF" fontSize="18px" marginX={5}>
+          PROCESSING
+        </Pane>
+      ) : (
+        <Pane color="#00e676" display="flex" fontSize="18px" marginX={5}>
+          +
+          <FormatNumber
+            marginLeft={3}
+            number={formatNumber(
+              Math.floor((item.eul / CYBER.DIVISOR_CYBER_G) * 1000) / 1000,
+              3
+            )}
+            currency="GCYB"
+            fontSizeDecimal={16}
+            // number={item.eul}
+          />
+          {/* (parseInt(item.eul, 10), 'CYB')} */}
+        </Pane>
+      )}
+      {item.cyber_hash !== null && (
+        <Pane>
+          <Tooltip placement="top" tooltip="Proof Tx">
+            <Link
+              style={{ display: 'flex' }}
+              to={`/network/euler/tx/${item.cyber_hash.toUpperCase()}`}
+            >
+              <img
+                src={reader}
+                alt="img"
+                style={{ width: '20px', height: '20px' }}
+              />
+            </Link>
+          </Tooltip>
+        </Pane>
+      )}
+    </Pane>
+  ));
+
+  return (
+    <InfiniteScroll
+      dataLength={Object.keys(displayedPalettes).length}
+      next={setNextDisplayedPalettes}
+      hasMore={itemsToShow < data.length}
+      loader={
+        <h4>
+          Loading
+          <Dots />
+        </h4>
+      }
+      pullDownToRefresh
+      pullDownToRefreshContent={
+        <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
+      }
+      releaseToRefreshContent={
+        <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+      }
+      refreshFunction={setNextDisplayedPalettes}
+    >
+      {data.length > 0 ? items : <div>No txs</div>}
+    </InfiniteScroll>
+  );
+};
+
 class Dinamics extends Component {
   constructor(props) {
     super(props);
@@ -79,66 +174,6 @@ class Dinamics extends Component {
     const { caps, width, height, size, margin } = this.state;
     const { data3d, dataTxs } = this.props;
 
-    let ItemProgress;
-
-    if (!dataTxs.loading && dataTxs.data.length > 0) {
-      ItemProgress = dataTxs.data.map((item) => (
-        <Pane
-          display="flex"
-          paddingX={20}
-          paddingY={20}
-          alignItems="center"
-          // boxShadow="0 0 2px #3ab793"
-          borderBottom="1px solid #3ab79375"
-          // borderRadius="5px"
-          marginBottom={10}
-        >
-          <Pane fontSize="18px" display="flex" flex={1}>
-            <LinkWindow to={`http://etherscan.io/address/${item.sender}`}>
-              <Pane marginRight={10}>{trimString(item.sender, 8, 5)}</Pane>
-            </LinkWindow>
-            <Pane>bought</Pane>
-          </Pane>
-          {item.eul === null ? (
-            <Pane color="#FFF" fontSize="18px" marginX={5}>
-              PROCESSING
-            </Pane>
-          ) : (
-            <Pane color="#00e676" display="flex" fontSize="18px" marginX={5}>
-              +
-              <FormatNumber
-                marginLeft={3}
-                number={formatNumber(
-                  Math.floor((item.eul / CYBER.DIVISOR_CYBER_G) * 1000) / 1000,
-                  3
-                )}
-                currency="GCYB"
-                fontSizeDecimal={16}
-                // number={item.eul}
-              />
-              {/* (parseInt(item.eul, 10), 'CYB')} */}
-            </Pane>
-          )}
-          {item.cyber_hash !== null && (
-            <Pane>
-              <Tooltip placement="top" tooltip="Proof Tx">
-                <Link
-                  style={{ display: 'flex' }}
-                  to={`/network/euler/tx/${item.cyber_hash.toUpperCase()}`}
-                >
-                  <img
-                    src={reader}
-                    alt="img"
-                    style={{ width: '20px', height: '20px' }}
-                  />
-                </Link>
-              </Tooltip>
-            </Pane>
-          )}
-        </Pane>
-      ));
-    }
-
     return (
       <>
         <div className="container-dinamics">
@@ -150,7 +185,11 @@ class Dinamics extends Component {
             config={config}
           />
         </div>
-        <Pane marginTop={15}>{ItemProgress}</Pane>
+        {!dataTxs.loading && dataTxs.data.length > 0 && (
+          <Pane marginTop={15}>
+            <Progress data={dataTxs.data} />
+          </Pane>
+        )}
       </>
     );
   }
