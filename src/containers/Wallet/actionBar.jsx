@@ -174,7 +174,7 @@ function ActionBar({
         web3={web3}
         accountsETH={accountsETH}
         keplr={keplr}
-        updateAddress={updateFuncActionBar}
+        updateAddress={updateAddress}
         selectAccount={selectAccount}
       />
     );
