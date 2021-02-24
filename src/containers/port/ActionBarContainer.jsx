@@ -1,37 +1,19 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
-import { PATTERN_CYBER } from '../../utils/config';
-import { formatNumber } from '../../utils/utils';
+import { CYBER, PATTERN_CYBER } from '../../utils/config';
+import { formatNumber, trimString } from '../../utils/utils';
+import { pingTx } from './utils';
+import { LinkWindow } from '../../components';
 
 const ADDR_ETH = '0xd56bd28501f90ba21557b3d2549f1b6e14952303';
 
-const hopefully = ($) => (error, result) => {
-  if (error) {
-    console.log('error', error);
-  } else {
-    $(result);
-  }
-};
-
-const ping = (tx, web3) =>
-  new Promise((resolve, reject) => {
-    loop();
-    function loop() {
-      web3.eth.getTransaction(tx, async (error, receipt) => {
-        if (receipt == null) {
-          resolve(receipt);
-        } else {
-          setTimeout(loop, 1000);
-        }
-
-        if (receipt) {
-          resolve(receipt);
-        } else {
-          setTimeout(loop, 1000);
-        }
-      });
-    }
-  });
+const ActionBarSteps = ({ text, btnText, onClickFnc }) => (
+  <ActionBar>
+    <ActionBarContentText>{text}</ActionBarContentText>
+    <Button onClick={onClickFnc}>{btnText}</Button>
+  </ActionBar>
+);
 
 const CardPackage = ({
   eth = 0,
@@ -42,7 +24,9 @@ const CardPackage = ({
 }) => (
   <Pane
     className="cardVisaActionBar"
-    boxShadow={selected ? '0 0 7px 1px #3ab793' : '0 0 3px #3ab793'}
+    borderRadius="5px"
+    boxShadow="0 0 5px #3ab793"
+    backgroundColor={selected ? '#3ab793' : '#000'}
     {...props}
   >
     <Pane marginBottom={5}>{title}</Pane>
@@ -103,53 +87,36 @@ const Succesfuuly = ({ onClickBtn, hash }) => (
   <ActionBar>
     <ActionBarContentText flexDirection="column">
       <div className="text-default">
-        Your TX has been broadcast to the network. It is waiting to be mined &
-        confirmed.
-      </div>
-      <div className="text-default">
-        Check TX status:{' '}
-        <a
-          className="hash"
-          href={`https://etherscan.io/tx/${hash}`}
-          target="_blank"
-        >
-          {hash}
-        </a>
+        Congrats! After tx{' '}
+        <LinkWindow to={`https://etherscan.io/tx/${hash}`}>
+          {trimString(hash, 7, 7)}
+        </LinkWindow>{' '}
+        confirmation you will immediately receive 98 EUL for playing{' '}
+        <Link to="/gol">Game of Links</Link>
       </div>
     </ActionBarContentText>
-    <Button onClick={onClickBtn}>OK</Button>
+    <Button onClick={onClickBtn}>Play</Button>
   </ActionBar>
 );
 
-class ActionBarAuction extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      step: 'start',
-      amount: 0,
-      tx: null,
-      messageCyberAddress: '',
-      messageAmount: '',
-      validInputCyberAddress: false,
-      validInputAmount: false,
-      cyberAddress: '',
-      selected: '',
-    };
-  }
+function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
+  const [step, setStep] = useState('start');
+  const [messageCyberAddress, setMessageCyberAddress] = useState('');
+  const [validInputCyberAddress, setValidInputCyberAddress] = useState(false);
+  const [cyberAddress, setCyberAddress] = useState('');
+  const [selected, setSelected] = useState('');
+  const [tx, setTx] = useState(null);
 
-  onChangeCyberAddress = (e) => {
-    this.setState({
-      cyberAddress: e.target.value,
-    });
-  };
+  useEffect(() => {
+    if (
+      pocketAddress.cyber.bech32 !== null &&
+      pocketAddress.cyber.bech32.match(PATTERN_CYBER)
+    ) {
+      setCyberAddress(pocketAddress.cyber.bech32);
+    }
+  }, [pocketAddress.cyber]);
 
-  onChangeAmount = (e) =>
-    this.setState({
-      amount: e.target.value,
-    });
-
-  onClickFuckGoogle = async () => {
-    const { web3 } = this.props;
+  const onClickFuckGoogle = async () => {
     if (web3.currentProvider.host) {
       return console.log(
         'Non-Ethereum browser detected. You should consider trying MetaMask!'
@@ -159,11 +126,8 @@ class ActionBarAuction extends Component {
       try {
         const accounts = await window.ethereum.enable();
         if (accounts.length) {
-          // console.log(accounts[0]);
-          this.setState({
-            step: 'start',
-            cyberAddress: '',
-          });
+          setStep('start');
+          setCyberAddress('');
         }
       } catch (error) {
         console.log('You declined transaction', error);
@@ -171,50 +135,29 @@ class ActionBarAuction extends Component {
     } else if (window.web3) {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length) {
-        // console.log(accounts[0]);
-        this.setState({
-          step: 'start',
-          cyberAddress: '',
-        });
+        setStep('start');
+        setCyberAddress('');
       }
     } else {
       return console.log('Your metamask is locked!');
     }
   };
 
-  onClickSaveAddress = () => {
-    this.setState({
-      step: 'start',
-      cyberAddress: '',
-      amount: 0,
-      selected: '',
-    });
+  const onClickSaveAddress = () => {
+    setStep('start');
+    setCyberAddress('');
+    setSelected('');
   };
 
-  buyTOKEN = async (account) => {
-    const { web3 } = this.props;
-    const { cyberAddress, amount } = this.state;
-
+  const buyTOKEN = async (account) => {
     const encoded = Buffer.from(cyberAddress).toString('hex');
     const getData = `0x${encoded}`;
 
-    const priceInWei = await web3.utils.toWei(amount.toString(), 'ether');
-    // web3.eth.sendTransaction(
-    //   {
-    //     from: account,
-    //     to: ADDR_ETH,
-    //     value: priceInWei,
-    //     data: getData,
-    //   },
-    //   hopefully((result) =>
-    //     ping(result).then(() => {
-    //       this.setState({
-    //         step: 'succesfuuly',
-    //         tx: result,
-    //       });
-    //     })
-    //   )
-    // );
+    const priceInWei = await web3.utils.toWei(
+      visa[selected].eth.toString(),
+      'ether'
+    );
+
     web3.eth
       .sendTransaction({
         from: account,
@@ -223,17 +166,14 @@ class ActionBarAuction extends Component {
         data: getData,
       })
       .on('transactionHash', (result) => {
-        ping(result, web3).then(() => {
-          this.setState({
-            step: 'succesfuuly',
-            tx: result,
-          });
+        pingTx(result, web3).then(() => {
+          setStep('succesfuuly');
+          setTx(result);
         });
       });
   };
 
-  onClickContribute = async () => {
-    const { web3 } = this.props;
+  const onClickContribute = async () => {
     if (web3.currentProvider.host) {
       return console.log(
         'Non-Ethereum browser detected. You should consider trying MetaMask!'
@@ -244,7 +184,7 @@ class ActionBarAuction extends Component {
         const accounts = await window.ethereum.enable();
         if (accounts.length) {
           // console.log(accounts[0]);
-          this.buyTOKEN(accounts[0]);
+          buyTOKEN(accounts[0]);
         }
       } catch (error) {
         console.log('You declined transaction', error);
@@ -253,149 +193,255 @@ class ActionBarAuction extends Component {
       const accounts = await web3.eth.getAccounts();
       if (accounts.length) {
         // console.log(accounts[0]);
-        this.buyTOKEN(accounts[0]);
+        buyTOKEN(accounts[0]);
       }
     } else {
       return console.log('Your metamask is locked!');
     }
   };
 
-  onClickTransactionCost = () =>
-    this.setState({
-      step: 'succesfuuly',
-    });
-
-  validAmountFunc = (number) => {
-    const amount = parseFloat(number);
-    if (isNaN(amount)) {
-      return false;
-    }
-    if (amount > 0) {
-      return true;
-    }
-    return false;
+  const selectFnc = (cardSelect) => {
+    setSelected(cardSelect);
+    setStep('CyberAddress');
   };
 
-  selectFnc = (cardSelect, eth) => {
-    const { selected } = this.state;
-    if (selected !== cardSelect) {
-      this.setState({
-        selected: cardSelect,
-        amount: eth,
-      });
-    } else {
-      this.setState({
-        selected: '',
-        amount: 0,
-      });
-    }
-  };
+  // const connectKeplr = async () => {
+  //   const accounts = {};
+  //   let key = 'Account 1';
+  //   let dataPocketAccount = null;
+  //   let valueObj = {};
+  //   let pocketAccount = {};
+  //   const selectAccount = null;
+  //   await keplr.enable();
+  //   let count = 1;
 
-  render() {
-    const {
-      step,
-      cyberAddress,
-      amount,
-      tx,
-      messageCyberAddress,
-      messageAmount,
-      validInputCyberAddress,
-      validInputAmount,
-      selected,
-    } = this.state;
-    const { web3, accounts, visa } = this.props;
-    
-console.log('web3', web3, accounts);
+  //   const address = await keplr.getKeys();
+  //   const pk = Buffer.from(address[0].pubKey).toString('hex');
 
-    if (web3.givenProvider === null) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <span>Please install the</span>
-            &nbsp;
-            <a href="https://metamask.io/" target="_blank">
-              Metamask extension
-            </a>
-            &nbsp;
-            <span>and refresh the page</span>
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
+  //   const localStorageStory = await localStorage.getItem('pocketAccount');
+  //   const localStoragePocket = await localStorage.getItem('pocket');
+  //   const localStorageCount = await localStorage.getItem('count');
+  //   if (localStorageCount !== null) {
+  //     const dataCount = JSON.parse(localStorageCount);
+  //     count = parseFloat(dataCount);
+  //     key = `Account ${count}`;
+  //   }
+  //   localStorage.setItem('count', JSON.stringify(count + 1));
+  //   if (localStorageStory !== null) {
+  //     dataPocketAccount = JSON.parse(localStorageStory);
+  //     valueObj = Object.values(dataPocketAccount);
+  //     if (selectAccount !== null) {
+  //       key = selectAccount.key;
+  //     }
+  //   }
+  //   if (selectNetwork === 'cyber') {
+  //     const cyberBech32 = address[0].bech32Address;
+  //     if (
+  //       selectAccount !== null ||
+  //       !checkAddress(valueObj, 'cyber', cyberBech32)
+  //     ) {
+  //       accounts.cyber = {
+  //         bech32: cyberBech32,
+  //         keys: 'keplr',
+  //         pk,
+  //         path: HDPATH,
+  //       };
+  //     }
+  //   }
 
-    if (accounts == null && web3.givenProvider !== null) {
-      return (
-        <ActionBar>
-          <Button onClick={this.onClickFuckGoogle}>Connect account</Button>
-        </ActionBar>
-      );
-    }
+  //   setStage(STAGE_ADD_ADDRESS_OK);
+  //   if (selectAccount === null) {
+  //     if (localStorageStory !== null) {
+  //       if (Object.keys(accounts).length > 0) {
+  //         pocketAccount = { [key]: accounts, ...dataPocketAccount };
+  //       }
+  //     } else {
+  //       pocketAccount = { [key]: accounts };
+  //     }
+  //     if (Object.keys(pocketAccount).length > 0) {
+  //       localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+  //     }
+  //   } else {
+  //     dataPocketAccount[selectAccount.key].cyber = accounts.cyber;
+  //     console.log('dataPocketAccount', dataPocketAccount);
+  //     if (Object.keys(dataPocketAccount).length > 0) {
+  //       localStorage.setItem(
+  //         'pocketAccount',
+  //         JSON.stringify(dataPocketAccount)
+  //       );
+  //     }
+  //     if (localStoragePocket !== null) {
+  //       const localStoragePocketData = JSON.parse(localStoragePocket);
+  //       const keyPocket = Object.keys(localStoragePocketData)[0];
+  //       localStoragePocketData[keyPocket].cyber = accounts.cyber;
+  //       if (keyPocket === selectAccount.key) {
+  //         localStorage.setItem(
+  //           'pocket',
+  //           JSON.stringify(localStoragePocketData)
+  //         );
+  //       }
+  //     }
+  //   }
+  //   if (updateAddress) {
+  //     updateAddress();
+  //   }
+  // };
 
-    if (step === 'start') {
-      return (
-        // <ContributeETH
-        //   valueAmount={amount}
-        //   validAmount={validInputAmount}
-        //   messageAmount={messageAmount}
-        //   onChangeAmount={(e) => this.onChangeAmount(e)}
-        //   onClickBtn={() => this.setState({ step: 'CyberAddress' })}
-        //   disabledBtnConfirm={!this.validAmountFunc(amount)}
-        // />
-        <ActionBar>
-          <ActionBarContentText justifyContent="space-evenly">
-            <CardPackage
-              onClick={() => this.selectFnc('tourist', visa.tourist.eth)}
-              selected={selected === 'tourist'}
-              title="Tourist"
-              eth={visa.tourist.eth}
-              gcyb={formatNumber(visa.tourist.gcyb, 3)}
-            />
-            <CardPackage
-              onClick={() => this.selectFnc('citizen', visa.citizen.eth)}
-              selected={selected === 'citizen'}
-              title="Citizen"
-              eth={visa.citizen.eth}
-              gcyb={formatNumber(visa.citizen.gcyb, 3)}
-            />
-            <CardPackage
-              onClick={() =>
-                this.selectFnc('entrepreneur', visa.entrepreneur.eth)
-              }
-              selected={selected === 'entrepreneur'}
-              title="Entrepreneur"
-              eth={visa.entrepreneur.eth}
-              gcyb={formatNumber(visa.entrepreneur.gcyb, 3)}
-            />
-          </ActionBarContentText>
-          <Button
-            onClick={() => this.setState({ step: 'CyberAddress' })}
-            disabled={amount === 0}
-          >
-            Confirm
-          </Button>
-        </ActionBar>
-      );
-    }
-
-    if (step === 'CyberAddress') {
-      return (
-        <CyberAddress
-          cyberAddress={cyberAddress}
-          validInputCyberAddress={validInputCyberAddress}
-          messageCyberAddress={messageCyberAddress}
-          onChange={(e) => this.onChangeCyberAddress(e)}
-          onClickBtn={this.onClickContribute}
-          disabledBtnConfirm={!cyberAddress.match(PATTERN_CYBER)}
-        />
-      );
-    }
-
-    if (step === 'succesfuuly') {
-      return <Succesfuuly hash={tx} onClickBtn={this.onClickSaveAddress} />;
-    }
-
-    return null;
+  if (web3.givenProvider === null) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <span>Please install the</span>
+          &nbsp;
+          <a href="https://metamask.io/" target="_blank">
+            Metamask extension
+          </a>
+          &nbsp;
+          <span>and refresh the page</span>
+        </ActionBarContentText>
+      </ActionBar>
+    );
   }
+
+  if (accountsETH == null && web3.givenProvider !== null) {
+    return (
+      <ActionBar>
+        <Button onClick={onClickFuckGoogle}>Connect account</Button>
+      </ActionBar>
+    );
+  }
+
+  if (step === 'start') {
+    return (
+      <ActionBar>
+        <ActionBarContentText justifyContent="space-evenly">
+          {Object.keys(visa).map((key) => (
+            <CardPackage
+              key={key}
+              onClick={() => selectFnc(key)}
+              selected={selected === key}
+              title={key}
+              eth={visa[key].eth}
+              gcyb={formatNumber(visa[key].gcyb, 3)}
+            />
+          ))}
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  // if (step === 'CyberAddress' && pocketAddress.cyber.bech32 === null) {
+  //   return (
+  //     <ActionBar>
+  //       <ActionBarContentText justifyContent="space-evenly">
+  //         Connect Cyber
+  //       </ActionBarContentText>
+  //       <Button onClick={onClickFuckGoogle}>Connect</Button>
+  //     </ActionBar>
+  //   );
+  // }
+
+  if (step === 'CyberAddress') {
+    return (
+      <CyberAddress
+        cyberAddress={cyberAddress}
+        validInputCyberAddress={validInputCyberAddress}
+        messageCyberAddress={messageCyberAddress}
+        onChange={(e) => setCyberAddress(e.target.value)}
+        onClickBtn={() => setStep('Donate')}
+        disabledBtnConfirm={!cyberAddress.match(PATTERN_CYBER)}
+      />
+    );
+  }
+
+  if (step === 'Donate') {
+    return (
+      <ActionBarSteps
+        text={`You are going to make ${visa[selected].eth} ETH of 
+      irreversible donation to cyberCongress`}
+        btnText="Donate"
+        onClickFnc={() => setStep('allocationCyb')}
+      />
+    );
+  }
+
+  if (step === 'allocationCyb') {
+    return (
+      <ActionBarSteps
+        text={`For this donation you will have an 
+      allocation of ${formatNumber(
+        Math.floor(visa[selected].gcyb * CYBER.DIVISOR_CYBER_G)
+      )} CYB tokens in Genesis`}
+        btnText="Confirm"
+        onClickFnc={() => setStep('thatCyberCongress')}
+      />
+    );
+  }
+  if (step === 'thatCyberCongress') {
+    return (
+      <ActionBarSteps
+        text="I agree that cyberCongress will use donations at its own discretion"
+        btnText="Agree"
+        onClickFnc={() => setStep('dontTrust')}
+      />
+    );
+  }
+
+  if (step === 'dontTrust') {
+    return (
+      <ActionBarSteps
+        text={`I accept that the software is distributed under "Don't trust, don't fear, don't beg" license`}
+        btnText="Accept"
+        onClickFnc={() => setStep('understandThat')}
+      />
+    );
+  }
+
+  if (step === 'understandThat') {
+    return (
+      <ActionBarSteps
+        text="I understand that the Genesis date is unknown and may never happen without a community effort"
+        btnText="Understand"
+        onClickFnc={() => setStep('iSwearIwill')}
+      />
+    );
+  }
+
+  if (step === 'iSwearIwill') {
+    return (
+      <ActionBarSteps
+        text="I swear I will always use CYB tokens with the nonviolence principle in mind"
+        btnText="Swear"
+        onClickFnc={() => setStep('promise')}
+      />
+    );
+  }
+
+  if (step === 'promise') {
+    return (
+      <ActionBarSteps
+        text="I promise I will train Superintelligence for the benefit of all living things including our planet"
+        btnText="Promise"
+        onClickFnc={() => setStep('Sign')}
+      />
+    );
+  }
+
+  if (step === 'Sign') {
+    return (
+      <ActionBarSteps
+        text="I am ready for change, give me Cyber citizenship"
+        btnText="Sign"
+        onClickFnc={onClickContribute}
+      />
+    );
+  }
+
+  if (step === 'succesfuuly') {
+    return <Succesfuuly hash={tx} onClickBtn={onClickSaveAddress} />;
+  }
+
+  return null;
 }
 
 export default ActionBarAuction;
