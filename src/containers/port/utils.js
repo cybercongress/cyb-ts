@@ -128,4 +128,24 @@ const chekPathname = (pathname) => {
   return 'manifest';
 };
 
-export { diff, getGroupAddress, getDataPlot, chekPathname };
+const pingTx = (tx, web3) =>
+  new Promise((resolve, reject) => {
+    loop();
+    function loop() {
+      web3.eth.getTransaction(tx, async (error, receipt) => {
+        if (receipt == null) {
+          resolve(receipt);
+        } else {
+          setTimeout(loop, 1000);
+        }
+
+        if (receipt) {
+          resolve(receipt);
+        } else {
+          setTimeout(loop, 1000);
+        }
+      });
+    }
+  });
+
+export { diff, getGroupAddress, getDataPlot, chekPathname, pingTx };
