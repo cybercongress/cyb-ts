@@ -555,7 +555,11 @@
 }
 
 .cardVisaActionBar:hover {
-  box-shadow: 0 0 8px #3ab793;
+  box-shadow: 0 0 9px 1px #3ab793;
+}
+
+.cardVisaActionBar:active {
+  background-color: #3ab793;
 }
 
 .container-buttonIcon {
@@ -610,4 +614,16 @@
 
 .account-popaps:hover {
   opacity: 0.8;
+}
+
+.panel {
+  background: #000;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #3ab793;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-bottom: 20px;
+  font-size: 16px;
 }
