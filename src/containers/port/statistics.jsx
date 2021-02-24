@@ -18,6 +18,7 @@ const Statistics = ({ marketData, time = '∞' }) => {
   return (
     // <ContainerCard styles={{ alignItems: 'center', gridGap: '20px' }} col="3">
     <Pane
+      marginTop={10}
       marginBottom={10}
       display="grid"
       justifyItems="center"

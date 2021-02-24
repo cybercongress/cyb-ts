@@ -13,7 +13,6 @@ import { TabBtn } from '../../components';
 import { CYBER } from '../../utils/config';
 // import PopapAddress from './popap';
 import Details from '../funding/details';
-import Quotes from '../funding/quotes';
 
 import { getGroupAddress, getDataPlot, chekPathname } from './utils';
 import { useGetMarketData, useGetTx } from './hooks';
@@ -30,17 +29,25 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   const [pin, setPin] = useState(null);
   const [accountsETH, setAccountsETH] = useState(null);
   const [visa, setVisa] = useState({
-    tourist: {
+    citizen: {
       eth: 0.1,
       gcyb: 0,
     },
-    citizen: {
+    pro: {
       eth: 1,
       gcyb: 0,
     },
-    entrepreneur: {
+    hero: {
       eth: 10,
       gcyb: 0,
+    },
+  });
+  const [pocketAddress, setPocketAddress] = useState({
+    eth: {
+      bech32: null,
+    },
+    cyber: {
+      bech32: null,
     },
   });
 
@@ -65,9 +72,39 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'eth')
     ) {
+      setPocketAddress((item) => ({
+        ...item,
+        eth: {
+          ...account.eth,
+        },
+      }));
       setPin({ ...account.eth });
     } else {
       setPin(null);
+      setPocketAddress((item) => ({
+        ...item,
+        eth: {
+          bech32: null,
+        },
+      }));
+    }
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      setPocketAddress((item) => ({
+        ...item,
+        cyber: {
+          ...account.cyber,
+        },
+      }));
+    } else {
+      setPocketAddress((item) => ({
+        ...item,
+        cyber: {
+          bech32: null,
+        },
+      }));
     }
   }, [defaultAccount.name]);
 
@@ -131,14 +168,17 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
 
   if (selected === 'progress') {
     content = (
-      <Suspense fallback={<div>Loading... </div>}>
-        <Dinamics
-          mobile={mobile}
-          cap={marketData.marketCapEth}
-          data3d={dataProgress}
-          dataTxs={dataTxs}
-        />
-      </Suspense>
+      <>
+        <Statistics marketData={marketData} />
+        <Suspense fallback={<div>Loading... </div>}>
+          <Dinamics
+            mobile={mobile}
+            cap={marketData.marketCapEth}
+            data3d={dataProgress}
+            dataTxs={dataTxs}
+          />
+        </Suspense>
+      </>
     );
   }
 
@@ -160,7 +200,6 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
         )} */}
 
       <main className="block-body takeoff">
-        <Quotes />
         {pin === null && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
@@ -168,6 +207,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             paddingY={20}
             marginTop={5}
             marginBottom={20}
+            borderRadius="5px"
           >
             <Text fontSize="16px" color="#fff">
               Takeoff is the key element during the{' '}
@@ -185,7 +225,6 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             pin={pin}
           />
         )}
-        <Statistics marketData={marketData} />
         <Tablist className="tab-list" marginY={20}>
           <TabBtn
             text="Leaderboard"
@@ -205,7 +244,12 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
         </Tablist>
         {content}
       </main>
-      <ActionBarContainer visa={visa} accounts={accountsETH} web3={web3} />
+      <ActionBarContainer
+        visa={visa}
+        accountsETH={accountsETH}
+        pocketAddress={pocketAddress}
+        web3={web3}
+      />
     </span>
   );
 }

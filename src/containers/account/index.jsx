@@ -271,25 +271,27 @@ class AccountDetails extends React.Component {
 
     if (address) {
       responseFollows = await getFollows(address);
-      // console.log('responseFollows', responseFollows);
+      console.log('responseFollows', responseFollows);
     }
 
     if (responseFollows !== null && responseFollows.txs) {
       responseFollows.txs.forEach(async (item) => {
         const cid = item.tx.value.msg[0].value.links[0].to;
         const addressResolve = await getContent(cid);
-        // console.log('addressResolve :>> ', addressResolve);
+        console.log('addressResolve :>> ', addressResolve);
         if (addressResolve) {
           const addressFollow = addressResolve;
           // console.log('addressResolve :>> ', addressResolve);
           if (addressFollow.match(PATTERN_CYBER)) {
             following.push(addressFollow);
-            this.setState({
-              following,
-            });
+            // this.setState({
+            //   following,
+            // });
+                console.log('following', following);
           }
         }
       });
+  
     }
   };
 
