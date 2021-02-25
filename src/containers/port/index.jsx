@@ -58,7 +58,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   }, []);
 
   useEffect(() => {
-    if (web3 != null) {
+    if (web3 != null && web3.givenProvider !== null) {
       window.ethereum.on('accountsChanged', (accountsChanged) => {
         const defaultAccounts = accountsChanged[0];
         setAccountsETH(defaultAccounts);
