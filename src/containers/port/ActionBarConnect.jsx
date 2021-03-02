@@ -51,6 +51,7 @@ const checkAddress = (obj, network, address) =>
     }
   });
 
+  
 export const ConnectAddress = ({
   selectMethodFunc,
   selectMethod,
