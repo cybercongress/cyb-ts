@@ -104,8 +104,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
       <div className="markdown">
         <ReactMarkdown
           source={content}
-          escapeHtml={false}
-          skipHtml={false}
+          escapeHtml
           astPlugins={[parseHtml]}
           renderers={{ code: CodeBlock }}
           // plugins={[toc]}

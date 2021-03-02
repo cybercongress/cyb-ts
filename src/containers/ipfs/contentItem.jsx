@@ -10,8 +10,15 @@ import db from '../../db';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
+// const parseHtml = htmlParser({
+//   isValidNode: node => node.type !== 'script',
+// });
+
 const parseHtml = htmlParser({
-  isValidNode: node => node.type !== 'script',
+  isValidNode: (node) => node.type !== 'script',
+  processingInstructions: [
+    /* ... */
+  ],
 });
 
 const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
@@ -113,11 +120,12 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
         key={cid}
         text={
           <div className="container-text-SearchItem">
+            {/* {`${text}`} */}
             <ReactMarkdown
               source={text}
-              escapeHtml={false}
+              escapeHtml
               skipHtml={false}
-              astPlugins={[parseHtml]}
+              // astPlugins={[parseHtml]}
               renderers={{ code: CodeBlock }}
               // plugins={[toc]}
               // escapeHtml={false}
