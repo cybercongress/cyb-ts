@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Pane, Input, Text, ActionBar, Button } from '@cybercongress/gravity';
@@ -8,9 +8,9 @@ import {
   ConnectLadger,
   Dots,
   ActionBarContentText,
-  ConnectAddress,
   SetHdpath,
   TransactionError,
+  ButtonIcon,
 } from '../../components';
 import {
   LEDGER,
@@ -20,6 +20,8 @@ import {
   POCKET,
 } from '../../utils/config';
 import { fromBech32, trimString } from '../../utils/utils';
+import { AppContext } from '../../context';
+import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 
 const {
   STAGE_INIT,
@@ -35,6 +37,13 @@ const STAGE_ADD_ADDRESS_OK = 2.2;
 const LEDGER_TX_ACOUNT_INFO = 2.5;
 const STAGE_HDPATH = 1.7;
 
+const imgLedger = require('../../image/ledger.svg');
+const imgKeplr = require('../../image/keplr-icon.svg');
+const imgMetaMask = require('../../image/mm-logo.svg');
+const imgRead = require('../../image/duplicate-outline.svg');
+const imgEth = require('../../image/Ethereum_logo_2014.svg');
+const imgCyber = require('../../image/blue-circle.png');
+
 const checkAddress = (obj, network, address) =>
   Object.keys(obj).some((k) => {
     if (obj[k][network]) {
@@ -42,32 +51,110 @@ const checkAddress = (obj, network, address) =>
     }
   });
 
+export const ConnectAddress = ({
+  selectMethodFunc,
+  selectMethod,
+  selectNetwork,
+  connctAddress,
+  web3,
+  keplr,
+}) => {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+        >
+          {selectNetwork === 'cyber' && (
+            <>
+              <ButtonIcon
+                onClick={() => selectMethodFunc('ledger')}
+                active={selectMethod === 'ledger'}
+                img={imgLedger}
+                text="ledger"
+              />
+              {keplr && (
+                <ButtonIcon
+                  onClick={() => selectMethodFunc('keplr')}
+                  active={selectMethod === 'keplr'}
+                  img={imgKeplr}
+                  text="keplr"
+                />
+              )}
+            </>
+          )}
+          {web3 && web3 !== null && selectNetwork === 'eth' && (
+            <ButtonIcon
+              onClick={() => selectMethodFunc('MetaMask')}
+              active={selectMethod === 'MetaMask'}
+              img={imgMetaMask}
+              text="metaMask"
+            />
+          )}
+          {selectNetwork === 'cyber' && (
+            <ButtonIcon
+              onClick={() => selectMethodFunc('read-only')}
+              active={selectMethod === 'read-only'}
+              img={imgRead}
+              text="read-only"
+            />
+          )}
+        </Pane>
+        <span style={{ fontSize: '18px' }}>in</span>
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flex={1}
+        >
+          {selectNetwork === 'eth' && (
+            <ButtonIcon img={imgEth} text="eth" active />
+          )}
+          {selectNetwork === 'cyber' && (
+            <ButtonIcon active img={imgCyber} text="cyber" />
+          )}
+        </Pane>
+      </ActionBarContentText>
+      <Button
+        disabled={selectNetwork === '' || selectMethod === ''}
+        onClick={() => connctAddress()}
+      >
+        connect
+      </Button>
+    </ActionBar>
+  );
+};
+
 let ledger = null;
 
 function ActionBarConnect({
-  addAddress,
-  updateAddress,
-  keplr,
+  selectNetwork = '',
   web3,
-  accountsETH,
-  selectAccount,
+  defaultAccount,
+  setAccountsProps,
+  setDefaultAccountProps,
 }) {
+  const { keplr } = useContext(AppContext);
   const [stage, setStage] = useState(STAGE_INIT);
   const [hdpath, setHDpath] = useState([44, 118, 0, 0, 0]);
   const [connectLedger, setConnectLedger] = useState(null);
   const [valueInputAddres, setValueInputAddres] = useState('');
   const [selectMethod, setSelectMethod] = useState('');
-  const [selectNetwork, setSelectNetwork] = useState('');
   const [hdPathError, setHdPathError] = useState(false);
   const [addressLedger, setAddressLedger] = useState(null);
   const [addCyberAddress, setAddCyberAddress] = useState(false);
   const [validAddressAddedUser, setValidAddressAddedUser] = useState(true);
 
   useEffect(() => {
-    if (addAddress === false && stage === STAGE_ADD_ADDRESS_OK) {
-      cleatState();
+    if (selectNetwork === 'cyber') {
+      setSelectMethod('ledger');
+    } else {
+      setSelectMethod('MetaMask');
     }
-  }, [stage, addAddress]);
+  }, [selectNetwork]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -153,7 +240,7 @@ function ActionBarConnect({
     const localStorageStory = await localStorage.getItem('pocketAccount');
     const localStoragePocket = await localStorage.getItem('pocket');
 
-    if (selectAccount === null) {
+    if (defaultAccount.name === null) {
       const localStorageCount = await localStorage.getItem('count');
       if (localStorageCount !== null) {
         const dataCount = JSON.parse(localStorageCount);
@@ -163,23 +250,23 @@ function ActionBarConnect({
       localStorage.setItem('count', JSON.stringify(count + 1));
     }
     if (localStorageStory !== null) {
-      dataPocketAccount = JSON.parse(localStorageStory); 
+      dataPocketAccount = JSON.parse(localStorageStory);
       valueObj = Object.values(dataPocketAccount);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
+      if (defaultAccount.name !== null) {
+        key = defaultAccount.name;
       }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
       const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
       if (
-        selectAccount !== null ||
+        defaultAccount.name !== null ||
         !checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)
       ) {
         accounts.cyber = { ...addressLedgerCyber, keys: 'ledger' };
       }
     }
     setStage(STAGE_ADD_ADDRESS_OK);
-    if (selectAccount === null) {
+    if (defaultAccount.name === null) {
       if (localStorageStory !== null) {
         if (Object.keys(accounts).length > 0) {
           pocketAccount = { [key]: accounts, ...dataPocketAccount };
@@ -189,33 +276,33 @@ function ActionBarConnect({
       }
       if (Object.keys(pocketAccount).length > 0) {
         localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        setAccountsProps(pocketAccount);
       }
     } else {
-      dataPocketAccount[selectAccount.key][selectNetwork] =
+      dataPocketAccount[defaultAccount.name][selectNetwork] =
         accounts[selectNetwork];
       if (Object.keys(dataPocketAccount).length > 0) {
         localStorage.setItem(
           'pocketAccount',
           JSON.stringify(dataPocketAccount)
         );
+        setAccountsProps(dataPocketAccount);
       }
       if (localStoragePocket !== null) {
         const localStoragePocketData = JSON.parse(localStoragePocket);
         const keyPocket = Object.keys(localStoragePocketData)[0];
         localStoragePocketData[keyPocket][selectNetwork] =
           accounts[selectNetwork];
-        if (keyPocket === selectAccount.key) {
+        if (keyPocket === defaultAccount.name) {
           localStorage.setItem(
             'pocket',
             JSON.stringify(localStoragePocketData)
           );
+          setDefaultAccountProps(keyPocket, localStoragePocketData[keyPocket]);
         }
       }
     }
     cleatState();
-    if (updateAddress) {
-      updateAddress();
-    }
   };
 
   const cleatState = () => {
@@ -225,7 +312,7 @@ function ActionBarConnect({
     setHDpath(HDPATH);
     setConnectLedger(null);
     setSelectMethod('');
-    setSelectNetwork('');
+    // setSelectNetwork('');
     setHdPathError(false);
     setAddressLedger(null);
     setAddCyberAddress(false);
@@ -261,8 +348,8 @@ function ActionBarConnect({
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
       valueObj = Object.values(dataPocketAccount);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
+      if (defaultAccount.name !== null) {
+        key = defaultAccount.name;
       }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
@@ -277,7 +364,7 @@ function ActionBarConnect({
         );
       }
       if (
-        selectAccount !== null ||
+        defaultAccount.name !== null ||
         !checkAddress(valueObj, 'cyber', cyberAddress)
       ) {
         accounts.cyber = { bech32: cyberAddress, keys: 'read-only' };
@@ -285,7 +372,7 @@ function ActionBarConnect({
     }
 
     setStage(STAGE_ADD_ADDRESS_OK);
-    if (selectAccount === null) {
+    if (defaultAccount.name === null) {
       if (localStorageStory !== null) {
         if (Object.keys(accounts).length > 0) {
           pocketAccount = { [key]: accounts, ...dataPocketAccount };
@@ -296,38 +383,35 @@ function ActionBarConnect({
 
       if (Object.keys(pocketAccount).length > 0) {
         localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        setAccountsProps(pocketAccount);
         cleatState();
-        if (updateAddress) {
-          updateAddress();
-        }
       } else {
         setStage(STAGE_ERROR);
       }
     } else {
-      dataPocketAccount[selectAccount.key][selectNetwork] =
+      dataPocketAccount[defaultAccount.name][selectNetwork] =
         accounts[selectNetwork];
       if (Object.keys(dataPocketAccount).length > 0) {
         localStorage.setItem(
           'pocketAccount',
           JSON.stringify(dataPocketAccount)
         );
+        setAccountsProps(dataPocketAccount);
       }
       if (localStoragePocket !== null) {
         const localStoragePocketData = JSON.parse(localStoragePocket);
         const keyPocket = Object.keys(localStoragePocketData)[0];
         localStoragePocketData[keyPocket][selectNetwork] =
           accounts[selectNetwork];
-        if (keyPocket === selectAccount.key) {
+        if (keyPocket === defaultAccount.name) {
           localStorage.setItem(
             'pocket',
             JSON.stringify(localStoragePocketData)
           );
+          setDefaultAccountProps(keyPocket, localStoragePocketData[keyPocket]);
         }
       }
       cleatState();
-      if (updateAddress) {
-        updateAddress();
-      }
     }
   };
 
@@ -349,8 +433,8 @@ function ActionBarConnect({
     localStorage.setItem('count', JSON.stringify(count + 1));
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
+      if (defaultAccount.name !== null) {
+        key = defaultAccount.name;
       }
     }
     if (web3.currentProvider.host) {
@@ -374,7 +458,7 @@ function ActionBarConnect({
       console.log('Your metamask is locked!');
     }
     if (Object.keys(accounts).length > 0) {
-      if (selectAccount === null) {
+      if (defaultAccount.name === null) {
         if (localStorageStory !== null) {
           const valueObj = Object.values(dataPocketAccount);
           if (!checkAddress(valueObj, 'eth', accounts.eth.bech32)) {
@@ -386,33 +470,36 @@ function ActionBarConnect({
 
         if (Object.keys(pocketAccount).length > 0) {
           localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+          setAccountsProps(pocketAccount);
         }
       } else {
-        dataPocketAccount[selectAccount.key][selectNetwork] =
+        dataPocketAccount[defaultAccount.name][selectNetwork] =
           accounts[selectNetwork];
         if (Object.keys(dataPocketAccount).length > 0) {
           localStorage.setItem(
             'pocketAccount',
             JSON.stringify(dataPocketAccount)
           );
+          setAccountsProps(dataPocketAccount);
         }
         if (localStoragePocket !== null) {
           const localStoragePocketData = JSON.parse(localStoragePocket);
           const keyPocket = Object.keys(localStoragePocketData)[0];
           localStoragePocketData[keyPocket][selectNetwork] =
             accounts[selectNetwork];
-          if (keyPocket === selectAccount.key) {
+          if (keyPocket === defaultAccount.name) {
             localStorage.setItem(
               'pocket',
               JSON.stringify(localStoragePocketData)
+            );
+            setDefaultAccountProps(
+              keyPocket,
+              localStoragePocketData[keyPocket]
             );
           }
         }
       }
       cleatState();
-      if (updateAddress) {
-        updateAddress();
-      }
     }
   };
 
@@ -422,11 +509,12 @@ function ActionBarConnect({
     let dataPocketAccount = null;
     let valueObj = {};
     let pocketAccount = {};
-    await keplr.enable();
+    const chainId = CYBER.CHAIN_ID;
+    await window.keplr.enable(chainId);
     let count = 1;
 
-    const address = await keplr.getKeys();
-    const pk = Buffer.from(address[0].pubKey).toString('hex');
+    const { address, pubkey } = await keplr.getAccount();
+    const pk = Buffer.from(pubkey.value).toString('hex');
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
     const localStoragePocket = await localStorage.getItem('pocket');
@@ -440,14 +528,14 @@ function ActionBarConnect({
     if (localStorageStory !== null) {
       dataPocketAccount = JSON.parse(localStorageStory);
       valueObj = Object.values(dataPocketAccount);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
+      if (defaultAccount.name !== null) {
+        key = defaultAccount.name;
       }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
-      const cyberBech32 = address[0].bech32Address;
+      const cyberBech32 = address;
       if (
-        selectAccount !== null ||
+        defaultAccount.name !== null ||
         !checkAddress(valueObj, 'cyber', cyberBech32)
       ) {
         accounts.cyber = {
@@ -460,7 +548,7 @@ function ActionBarConnect({
     }
 
     setStage(STAGE_ADD_ADDRESS_OK);
-    if (selectAccount === null) {
+    if (defaultAccount.name === null) {
       if (localStorageStory !== null) {
         if (Object.keys(accounts).length > 0) {
           pocketAccount = { [key]: accounts, ...dataPocketAccount };
@@ -470,9 +558,10 @@ function ActionBarConnect({
       }
       if (Object.keys(pocketAccount).length > 0) {
         localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
+        setAccountsProps(pocketAccount);
       }
     } else {
-      dataPocketAccount[selectAccount.key][selectNetwork] =
+      dataPocketAccount[defaultAccount.name][selectNetwork] =
         accounts[selectNetwork];
       console.log('dataPocketAccount', dataPocketAccount);
       if (Object.keys(dataPocketAccount).length > 0) {
@@ -480,24 +569,23 @@ function ActionBarConnect({
           'pocketAccount',
           JSON.stringify(dataPocketAccount)
         );
+        setAccountsProps(dataPocketAccount);
       }
       if (localStoragePocket !== null) {
         const localStoragePocketData = JSON.parse(localStoragePocket);
         const keyPocket = Object.keys(localStoragePocketData)[0];
         localStoragePocketData[keyPocket][selectNetwork] =
           accounts[selectNetwork];
-        if (keyPocket === selectAccount.key) {
+        if (keyPocket === defaultAccount.name) {
           localStorage.setItem(
             'pocket',
             JSON.stringify(localStoragePocketData)
           );
+          setDefaultAccountProps(keyPocket, localStoragePocketData[keyPocket]);
         }
       }
     }
     cleatState();
-    if (updateAddress) {
-      updateAddress();
-    }
   };
 
   const onChangeAccount = (e) => {
@@ -543,19 +631,11 @@ function ActionBarConnect({
   };
 
   const selectMethodFunc = (method) => {
-    setSelectNetwork('');
+    // setSelectNetwork('');
     if (method !== selectMethod) {
       setSelectMethod(method);
     } else {
       setSelectMethod('');
-    }
-  };
-
-  const selectNetworkFunc = (network) => {
-    if (network !== selectNetwork) {
-      setSelectNetwork(network);
-    } else {
-      setSelectNetwork('');
     }
   };
 
@@ -564,11 +644,10 @@ function ActionBarConnect({
       <ConnectAddress
         selectMethodFunc={selectMethodFunc}
         selectMethod={selectMethod}
-        selectNetworkFunc={selectNetworkFunc}
         selectNetwork={selectNetwork}
         connctAddress={connctAddress}
         web3={web3}
-        selectAccount={selectAccount}
+        // selectAccount={selectAccount}
         keplr={keplr}
       />
     );
@@ -660,4 +739,12 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(ActionBarConnect);
+const mapDispatchprops = (dispatch) => {
+  return {
+    setDefaultAccountProps: (name, account) =>
+      dispatch(setDefaultAccount(name, account)),
+    setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchprops)(ActionBarConnect);

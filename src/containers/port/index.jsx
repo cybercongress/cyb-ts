@@ -68,6 +68,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
 
   useEffect(() => {
     const { account } = defaultAccount;
+    console.log('account', account)
     if (
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'eth')
@@ -106,7 +107,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
         },
       }));
     }
-  }, [defaultAccount.name]);
+  }, [defaultAccount]);
 
   useEffect(() => {
     const { pathname } = location;

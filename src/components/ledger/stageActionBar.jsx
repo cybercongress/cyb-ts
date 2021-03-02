@@ -116,7 +116,7 @@ export const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-const ButtonIcon = ({ img, active, disabled, text, ...props }) => (
+export const ButtonIcon = ({ img, active, disabled, text, ...props }) => (
   <Pane>
     <Tooltip placement="top" tooltip={<Pane>{text}</Pane>}>
       <button

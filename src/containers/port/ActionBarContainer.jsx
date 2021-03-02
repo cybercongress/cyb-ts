@@ -5,6 +5,7 @@ import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import { formatNumber, trimString } from '../../utils/utils';
 import { pingTx } from './utils';
 import { LinkWindow } from '../../components';
+import ActionBarConnect from './ActionBarConnect';
 
 const ADDR_ETH = '0xd56bd28501f90ba21557b3d2549f1b6e14952303';
 
@@ -145,7 +146,6 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
 
   const onClickSaveAddress = () => {
     setStep('start');
-    setCyberAddress('');
     setSelected('');
   };
 
@@ -205,88 +205,6 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
     setStep('CyberAddress');
   };
 
-  // const connectKeplr = async () => {
-  //   const accounts = {};
-  //   let key = 'Account 1';
-  //   let dataPocketAccount = null;
-  //   let valueObj = {};
-  //   let pocketAccount = {};
-  //   const selectAccount = null;
-  //   await keplr.enable();
-  //   let count = 1;
-
-  //   const address = await keplr.getKeys();
-  //   const pk = Buffer.from(address[0].pubKey).toString('hex');
-
-  //   const localStorageStory = await localStorage.getItem('pocketAccount');
-  //   const localStoragePocket = await localStorage.getItem('pocket');
-  //   const localStorageCount = await localStorage.getItem('count');
-  //   if (localStorageCount !== null) {
-  //     const dataCount = JSON.parse(localStorageCount);
-  //     count = parseFloat(dataCount);
-  //     key = `Account ${count}`;
-  //   }
-  //   localStorage.setItem('count', JSON.stringify(count + 1));
-  //   if (localStorageStory !== null) {
-  //     dataPocketAccount = JSON.parse(localStorageStory);
-  //     valueObj = Object.values(dataPocketAccount);
-  //     if (selectAccount !== null) {
-  //       key = selectAccount.key;
-  //     }
-  //   }
-  //   if (selectNetwork === 'cyber') {
-  //     const cyberBech32 = address[0].bech32Address;
-  //     if (
-  //       selectAccount !== null ||
-  //       !checkAddress(valueObj, 'cyber', cyberBech32)
-  //     ) {
-  //       accounts.cyber = {
-  //         bech32: cyberBech32,
-  //         keys: 'keplr',
-  //         pk,
-  //         path: HDPATH,
-  //       };
-  //     }
-  //   }
-
-  //   setStage(STAGE_ADD_ADDRESS_OK);
-  //   if (selectAccount === null) {
-  //     if (localStorageStory !== null) {
-  //       if (Object.keys(accounts).length > 0) {
-  //         pocketAccount = { [key]: accounts, ...dataPocketAccount };
-  //       }
-  //     } else {
-  //       pocketAccount = { [key]: accounts };
-  //     }
-  //     if (Object.keys(pocketAccount).length > 0) {
-  //       localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-  //     }
-  //   } else {
-  //     dataPocketAccount[selectAccount.key].cyber = accounts.cyber;
-  //     console.log('dataPocketAccount', dataPocketAccount);
-  //     if (Object.keys(dataPocketAccount).length > 0) {
-  //       localStorage.setItem(
-  //         'pocketAccount',
-  //         JSON.stringify(dataPocketAccount)
-  //       );
-  //     }
-  //     if (localStoragePocket !== null) {
-  //       const localStoragePocketData = JSON.parse(localStoragePocket);
-  //       const keyPocket = Object.keys(localStoragePocketData)[0];
-  //       localStoragePocketData[keyPocket].cyber = accounts.cyber;
-  //       if (keyPocket === selectAccount.key) {
-  //         localStorage.setItem(
-  //           'pocket',
-  //           JSON.stringify(localStoragePocketData)
-  //         );
-  //       }
-  //     }
-  //   }
-  //   if (updateAddress) {
-  //     updateAddress();
-  //   }
-  // };
-
   if (web3.givenProvider === null) {
     return (
       <ActionBar>
@@ -306,7 +224,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
   if (accountsETH == null && web3.givenProvider !== null) {
     return (
       <ActionBar>
-        <Button onClick={onClickFuckGoogle}>Connect account</Button>
+        <Button onClick={onClickFuckGoogle}>Connect web3</Button>
       </ActionBar>
     );
   }
@@ -328,6 +246,14 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         </ActionBarContentText>
       </ActionBar>
     );
+  }
+
+  if (pocketAddress.eth.bech32 === null) {
+    return <ActionBarConnect web3={web3} selectNetwork="eth" />;
+  }
+
+  if (pocketAddress.cyber.bech32 === null) {
+    return <ActionBarConnect selectNetwork="cyber" />;
   }
 
   // if (step === 'CyberAddress' && pocketAddress.cyber.bech32 === null) {
