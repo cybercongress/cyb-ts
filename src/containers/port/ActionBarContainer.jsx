@@ -205,6 +205,25 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
     setStep('CyberAddress');
   };
 
+  if (step === 'start') {
+    return (
+      <ActionBar>
+        <ActionBarContentText justifyContent="space-evenly">
+          {Object.keys(visa).map((key) => (
+            <CardPackage
+              key={key}
+              onClick={() => selectFnc(key)}
+              selected={selected === key}
+              title={key}
+              eth={visa[key].eth}
+              gcyb={formatNumber(visa[key].gcyb, 3)}
+            />
+          ))}
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
   if (web3.givenProvider === null) {
     return (
       <ActionBar>
@@ -225,25 +244,6 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
     return (
       <ActionBar>
         <Button onClick={onClickFuckGoogle}>Connect web3</Button>
-      </ActionBar>
-    );
-  }
-
-  if (step === 'start') {
-    return (
-      <ActionBar>
-        <ActionBarContentText justifyContent="space-evenly">
-          {Object.keys(visa).map((key) => (
-            <CardPackage
-              key={key}
-              onClick={() => selectFnc(key)}
-              selected={selected === key}
-              title={key}
-              eth={visa[key].eth}
-              gcyb={formatNumber(visa[key].gcyb, 3)}
-            />
-          ))}
-        </ActionBarContentText>
       </ActionBar>
     );
   }

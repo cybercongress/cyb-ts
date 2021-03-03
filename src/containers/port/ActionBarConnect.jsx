@@ -472,6 +472,7 @@ function ActionBarConnect({
         if (Object.keys(pocketAccount).length > 0) {
           localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
           setAccountsProps(pocketAccount);
+          setDefaultAccountProps(key, accounts);
         }
       } else {
         dataPocketAccount[defaultAccount.name][selectNetwork] =
