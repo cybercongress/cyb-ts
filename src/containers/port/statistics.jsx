@@ -52,7 +52,7 @@ const Statistics = ({ marketData, time = '∞' }) => {
           Math.floor(CYBER_ALL_PORT - eulsWon / CYBER.DIVISOR_CYBER_G)
         )}
         positionTooltip="bottom"
-        tooltipValue="The GCYB left before the end of the donations, in the case where less than 146 days pass from the start"
+        tooltipValue="GCYB left for distribution on arrival"
       />
       <Card
         title="Donations, ETH"
