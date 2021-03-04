@@ -1,7 +1,7 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { connect } from 'react-redux';
 import { Text, Pane, Tablist } from '@cybercongress/gravity';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
 import withWeb3 from '../../components/web3/withWeb3';
 // import Dinamics from './dinamics';
@@ -12,7 +12,9 @@ import ActionBarContainer from './ActionBarContainer';
 import { TabBtn } from '../../components';
 import { CYBER } from '../../utils/config';
 // import PopapAddress from './popap';
-import Details from '../funding/details';
+import Manifest from './manifest';
+import Cyber from './cyber';
+import Corp from './corp';
 
 import { getGroupAddress, getDataPlot, chekPathname } from './utils';
 import { useGetMarketData, useGetTx } from './hooks';
@@ -21,6 +23,7 @@ const Dinamics = lazy(() => import('./dinamics'));
 
 function PortPages({ mobile, web3, accounts, defaultAccount }) {
   const location = useLocation();
+  const match = useRouteMatch();
   const dataTxs = useGetTx();
   const marketData = useGetMarketData();
   const [selected, setSelected] = useState('manifest');
@@ -187,12 +190,20 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
     content = <Table mobile={mobile} pin={pin} data={dataTable} />;
   }
 
+  if (selected === 'cyber') {
+    content = <Cyber />;
+  }
+
   if (selected === 'manifest') {
-    content = <Details />;
+    content = <Manifest />;
+  }
+
+  if (selected === 'corp') {
+    content = <Corp />;
   }
 
   return (
-    <span>
+    <>
       {/* {popapAdress && (
           <PopapAddress
             address={COSMOS.ADDR_FUNDING}
@@ -230,17 +241,32 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
           <TabBtn
             text="Leaderboard"
             isSelected={selected === 'leaderboard'}
-            to="/port/leaderboard"
+            // to="/port/leaderboard"
+            to={`${match.url}/leaderboard`}
+          />
+          <TabBtn
+            text="Cyber"
+            isSelected={selected === 'cyber'}
+            // to="/port/cyber"
+            to={`${match.url}/cyber`}
           />
           <TabBtn
             text="Manifest"
             isSelected={selected === 'manifest'}
-            to="/port"
+            // to="/port"
+            to={match.url}
+          />
+          <TabBtn
+            text="Corp"
+            isSelected={selected === 'corp'}
+            // to="/port/corp"
+            to={`${match.url}/corp`}
           />
           <TabBtn
             text="Progress"
             isSelected={selected === 'progress'}
-            to="/port/progress"
+            // to="/port/progress"
+            to={`${match.url}/progress`}
           />
         </Tablist>
         {content}
@@ -251,7 +277,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
         pocketAddress={pocketAddress}
         web3={web3}
       />
-    </span>
+    </>
   );
 }
 

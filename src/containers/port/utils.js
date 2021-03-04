@@ -125,6 +125,12 @@ const chekPathname = (pathname) => {
   ) {
     return 'leaderboard';
   }
+  if (pathname.match(/cyber/gm) && pathname.match(/cyber/gm).length > 0) {
+    return 'cyber';
+  }
+  if (pathname.match(/corp/gm) && pathname.match(/corp/gm).length > 0) {
+    return 'corp';
+  }
   return 'manifest';
 };
 
