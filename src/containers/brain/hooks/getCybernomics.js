@@ -6,10 +6,16 @@ import {
   Fetcher,
   Route as RouteUniswap,
 } from '@uniswap/sdk';
-import { AUCTION, CYBER, TAKEOFF, GENESIS_SUPPLY } from '../../../utils/config';
+import {
+  TOTAL_GOL_GENESIS_SUPPLY,
+  CYBER,
+  TAKEOFF,
+  GENESIS_SUPPLY,
+} from '../../../utils/config';
+import { useGetMarketData } from '../../port/hooks';
 
 function useGetCybernomics() {
-  const [donation, setDonation] = useState(0);
+  const marketData = useGetMarketData();
   const [cybernomics, setCybernomics] = useState({
     gol: {
       supply: 0,
@@ -27,7 +33,6 @@ function useGetCybernomics() {
 
   useEffect(() => {
     getGOL();
-    getCYB();
   }, []);
 
   const getGOL = async () => {
@@ -41,11 +46,9 @@ function useGetCybernomics() {
     const route = new RouteUniswap([pair], WETH[GOL.chainId]);
     const currentPriceGol = route.midPrice.invert().toSignificant(6);
     const gol = {
-      supply: parseFloat(AUCTION.TOKEN_ALOCATION * CYBER.DIVISOR_CYBER_G),
+      supply: parseFloat(TOTAL_GOL_GENESIS_SUPPLY),
       price: currentPriceGol * CYBER.DIVISOR_CYBER_G,
-      cap: parseFloat(
-        currentPriceGol * AUCTION.TOKEN_ALOCATION * CYBER.DIVISOR_CYBER_G
-      ),
+      cap: parseFloat(currentPriceGol * TOTAL_GOL_GENESIS_SUPPLY),
       loading: false,
     };
     setCybernomics((item) => ({
@@ -54,31 +57,30 @@ function useGetCybernomics() {
     }));
   };
 
-  const getCYB = async () => {
-    const amount = TAKEOFF.FINISH_AMOUNT;
-    const currentPrice = TAKEOFF.FINISH_PRICE;
+  useEffect(() => {
+    if (!marketData.loading) {
+      console.log('marketData', marketData);
+      const { currentPrice } = marketData;
 
-    const supplyEUL = parseFloat(GENESIS_SUPPLY);
-    const capATOM = (supplyEUL / CYBER.DIVISOR_CYBER_G) * currentPrice;
+      const supplyEUL = parseFloat(GENESIS_SUPPLY);
+      const capETH = (supplyEUL / CYBER.DIVISOR_CYBER_G) * currentPrice;
 
-    const cyb = {
-      cap: capATOM,
-      price: currentPrice,
-      supply: GENESIS_SUPPLY,
-      loading: false,
-    };
+      const cyb = {
+        cap: capETH,
+        price: currentPrice,
+        supply: GENESIS_SUPPLY,
+        loading: false,
+      };
 
-    const donationAtom = amount / TAKEOFF.ATOMsALL;
-    setDonation(donationAtom);
-    setCybernomics((item) => ({
-      ...item,
-      cyb,
-    }));
-  };
+      setCybernomics((item) => ({
+        ...item,
+        cyb,
+      }));
+    }
+  }, [marketData]);
 
   return {
     cybernomics,
-    donation,
   };
 }
 

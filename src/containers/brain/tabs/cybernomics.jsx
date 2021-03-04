@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CardStatisics, Dots } from '../../../components';
+import { CardStatisics, Dots, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 
 function CybernomicsTab({ data }) {
@@ -8,10 +8,13 @@ function CybernomicsTab({ data }) {
     const { gol, cyb } = data;
     return (
       <>
-        <CardStatisics
-          title="GOL supply"
-          value={gol.loading ? <Dots /> : formatNumber(gol.supply)}
-        />
+        <LinkWindow to="https://etherscan.io/token/0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64">
+          <CardStatisics
+            title="GOL supply"
+            value={gol.loading ? <Dots /> : formatNumber(gol.supply)}
+            link
+          />
+        </LinkWindow>
         <Link
           to="/gol/faucet"
           style={{
@@ -32,10 +35,10 @@ function CybernomicsTab({ data }) {
 
         <CardStatisics title="CYB supply" value={formatNumber(cyb.supply)} />
         <CardStatisics
-          title="Takeoff price of GCYB in ATOM"
+          title="Port price of GCYB in ETH"
           value={formatNumber(Math.floor(cyb.price * 1000) / 1000)}
         />
-        <CardStatisics title="CYB cap in ATOM" value={formatNumber(cyb.cap)} />
+        <CardStatisics title="CYB cap in ETH" value={formatNumber(cyb.cap)} />
       </>
     );
   } catch (error) {

@@ -14,7 +14,7 @@ import { trimString } from '../../utils/utils';
 import { TabBtn } from '../../components';
 import injectKeplr from '../../components/web3/injectKeplr';
 
-import { CYBER } from '../../utils/config';
+import { CYBER, TAKEOFF } from '../../utils/config';
 
 import ActionBarContainer from './actionBarContainer';
 import {
@@ -39,7 +39,7 @@ import { chekPathname } from './utils/utils';
 
 function Brain({ node, mobile, defaultAccount, keplr }) {
   const location = useLocation();
-  const { cybernomics, donation } = useGetCybernomics();
+  const { cybernomics } = useGetCybernomics();
   const { government, knowledge } = useGetStatisticsCyber();
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   const [selected, setSelected] = useState('port');
@@ -185,18 +185,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
   }
 
   if (selected === 'gol') {
-    content = (
-      <Route
-        path="/brain/gol"
-        render={() => (
-          <PathTab
-            cybernomics={cybernomics}
-            activeValidatorsCount={0}
-            donation={donation}
-          />
-        )}
-      />
-    );
+    content = <Route path="/brain/gol" render={() => <PathTab />} />;
   }
 
   if (selected === 'halloffame') {
@@ -253,8 +242,8 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
 
         <Tablist
           display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(140px, 1fr))"
-          gridGap="12px"
+          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
+          gridGap="8px"
           marginTop={25}
         >
           <TabBtn
@@ -263,7 +252,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
             to="/brain/knowledge"
           />
           <TabBtn
-            text="Game of Links"
+            text="Arena"
             isSelected={selected === 'gol'}
             to="/brain/gol"
           />
@@ -279,7 +268,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
           />
           <TabBtn text="Port" isSelected={selected === 'port'} to="/brain" />
           <TabBtn
-            text="Government"
+            text="Gov"
             isSelected={selected === 'government'}
             to="/brain/government"
           />
