@@ -191,7 +191,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   }
 
   if (selected === 'cyber') {
-    content = <Cyber />;
+    content = <Cyber mobile={mobile} />;
   }
 
   if (selected === 'manifest') {
@@ -199,7 +199,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   }
 
   if (selected === 'corp') {
-    content = <Corp />;
+    content = <Corp mobile={mobile} />;
   }
 
   return (
@@ -229,7 +229,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             </Text>
           </Pane>
         )}
-        {pin !== null && (
+        {pin !== null && Object.keys(dataTable).length > 0 && (
           <Table
             styles={{ marginBottom: 20, marginTop: 0 }}
             data={dataTable}
@@ -245,7 +245,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             to={`${match.url}/leaderboard`}
           />
           <TabBtn
-            text="Cyber"
+            text="Cyber vs Corp"
             isSelected={selected === 'cyber'}
             // to="/port/cyber"
             to={`${match.url}/cyber`}
@@ -257,7 +257,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             to={match.url}
           />
           <TabBtn
-            text="Corp"
+            text="Cyber vs Gov"
             isSelected={selected === 'corp'}
             // to="/port/corp"
             to={`${match.url}/corp`}
