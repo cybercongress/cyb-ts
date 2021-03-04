@@ -35,6 +35,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);
+        console.log('dataTypeContent', dataTypeContent)
         const {
           text: textContent,
           type,

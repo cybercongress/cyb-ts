@@ -14,9 +14,12 @@ const AUCTION = {
   TOPICS_VESTING:
     '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
   HTTP_PROVIDER_URL: 'https://rpc.ethereum.cybernode.ai/',
+  // 'https://mainnet.infura.io/v3/b80bdc43536c4f0c97b8c0afd2a7d75d',
   ROUND_DURATION: 1000 * 60 * 60 * 23 + 1,
   TOKEN_ALOCATION: 15 * 10 ** 3,
 };
+
+const ADD_ARAGON_FINANCE = '0xa0a55e68dc52b47f8a9d5d05329fab5bdabffb14';
 
 const NETWORKSIDS = {
   main: 1,
@@ -40,6 +43,8 @@ const TAKEOFF = {
   DISCOUNT: 0.3,
   SQRT_5: 2.23606797749979,
   BLOCK_START: 2000000,
+  FINISH_PRICE: 1.485,
+  FINISH_AMOUNT: 15088.40963,
 };
 
 const COSMOS = {
@@ -92,7 +97,7 @@ const LEDGER = {
 
 const TAKEOFF_SUPPLY = 100000000000000;
 const GENESIS_SUPPLY = 1000000000000000;
-const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
+const TOTAL_GOL_GENESIS_SUPPLY = 14406844988437;
 
 const DISTRIBUTION = {
   takeoff: 100000000000000,
@@ -147,4 +152,5 @@ export {
   PATTERN_HTTP,
   POCKET,
   INFINITY,
+  ADD_ARAGON_FINANCE,
 };

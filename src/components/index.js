@@ -26,6 +26,7 @@ import {
   GovernanceSoftwareUpgrade,
   ConnectAddress,
   SetHdpath,
+  ButtonIcon,
 } from './ledger/stageActionBar';
 import Account from './account/account';
 import CardTemplate from './cardTemplate/cardTemplate';
@@ -40,6 +41,7 @@ import Battery from './battery';
 import TabBtn from './tabBtn';
 import ButtonImgText from './Button/buttonImgText';
 import Rank from './Rank/rank';
+import PillNumber from './pill';
 
 export {
   GovernanceChangeParam,
@@ -82,6 +84,8 @@ export {
   SetHdpath,
   ButtonImgText,
   Rank,
+  PillNumber,
+  ButtonIcon,
 };
 
 export { Nums } from './ui/Numbers';

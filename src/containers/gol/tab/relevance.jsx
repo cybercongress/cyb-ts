@@ -85,28 +85,35 @@ class RelevanceTab extends React.Component {
     const { page, allPage, items } = this.state;
 
     return (
-      <div
-        id="scrollableDiv"
-        style={{
-          height: '500px',
-          width: '100%',
-          padding: '0 10px',
-          overflow: 'auto',
-        }}
+      <Pane
+        width="90%"
+        marginX="auto"
+        marginY={0}
+        display="flex"
+        flexDirection="column"
       >
         <InfiniteScroll
           dataLength={Object.keys(items).length}
           next={this.fetchMoreData}
-          hasMore={page < allPage}
+          hasMore
           loader={
             <h4>
               Loading
               <Dots />
             </h4>
           }
-          scrollableTarget="scrollableDiv"
+          pullDownToRefresh
+          pullDownToRefreshContent={
+            <h3 style={{ textAlign: 'center' }}>
+              &#8595; Pull down to refresh
+            </h3>
+          }
+          releaseToRefreshContent={
+            <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+          }
+          refreshFunction={this.fetchMoreData}
         >
-          {Object.keys(items).map(key => {
+          {Object.keys(items).map((key) => {
             return (
               <Pane
                 position="relative"
@@ -131,18 +138,18 @@ class RelevanceTab extends React.Component {
                   nodeIpfs={node}
                   cid={key}
                   item={items[key]}
-                  className="SearchItem"
+                  className="contentItem"
                 />
               </Pane>
             );
           })}
         </InfiniteScroll>
-      </div>
+      </Pane>
     );
   }
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     mobile: store.settings.mobile,

@@ -7,9 +7,9 @@ import {
   Tooltip,
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroller';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
-import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
+import { CardTemplate, MsgType, Dots, TextTable } from '../../components';
 import Noitem from './noItem';
 import { CYBER } from '../../utils/config';
 
@@ -20,11 +20,12 @@ const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
 const TableTxs = ({ data, type, accountUser, amount }) => {
-  const containerReference = useRef();
-  const [itemsToShow, setItemsToShow] = useState(10);
+  const [itemsToShow, setItemsToShow] = useState(30);
 
   const setNextDisplayedPalettes = useCallback(() => {
-    setItemsToShow(itemsToShow + 10);
+    setTimeout(() => {
+      setItemsToShow(itemsToShow + 10);
+    }, 250);
   }, [itemsToShow, setItemsToShow]);
 
   const displayedPalettes = useMemo(() => data.slice(0, itemsToShow), [
@@ -171,28 +172,33 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
           padding: 7,
         }}
       >
-        <div
-          style={{
-            height: data.length > 5 ? '30vh' : 'auto',
-            overflow: 'auto',
-          }}
-          ref={containerReference}
+        <InfiniteScroll
+          dataLength={Object.keys(displayedPalettes).length}
+          next={setNextDisplayedPalettes}
+          hasMore={itemsToShow < data.length}
+          loader={
+            <h4>
+              Loading
+              <Dots />
+            </h4>
+          }
+          pullDownToRefresh
+          pullDownToRefreshContent={
+            <h3 style={{ textAlign: 'center' }}>
+              &#8595; Pull down to refresh
+            </h3>
+          }
+          releaseToRefreshContent={
+            <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+          }
+          refreshFunction={setNextDisplayedPalettes}
         >
-          <InfiniteScroll
-            hasMore={itemsToShow < data.length}
-            loader={<Loading />}
-            pageStart={0}
-            useWindow={false}
-            loadMore={setNextDisplayedPalettes}
-            getScrollParent={() => containerReference.current}
-          >
-            {data.length > 0 ? (
-              validatorRows
-            ) : (
-              <Noitem text={`No txs ${type || ' '}`} />
-            )}
-          </InfiniteScroll>
-        </div>
+          {data.length > 0 ? (
+            validatorRows
+          ) : (
+            <Noitem text={`No txs ${type || ' '}`} />
+          )}
+        </InfiniteScroll>
       </Table.Body>
     </Table>
   );

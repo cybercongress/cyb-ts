@@ -1,44 +1,68 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Pane, Icon } from '@cybercongress/gravity';
-import { CardStatisics, LinkWindow } from '../../../components';
-import { formatNumber } from '../../../utils/utils';
+import { Pane } from '@cybercongress/gravity';
+import { Rank } from '../../../components';
+import { exponentialToDecimal } from '../../../utils/utils';
+import ContentItem from '../../ipfs/contentItem';
 
-function AppsTab() {
-  return (
-    <>
-      <LinkWindow to="https://github.com/cybercongress/go-cyber">
-        <CardStatisics
-          // title="Homestead"
-          styleContainer={{
-            justifyContent: 'center',
-            padding: '65px 0',
-            fontSize: '26px',
-            maxWidth: '300px',
-            margin: '0 auto',
-          }}
-          styleTitle={{ fontSize: '26px' }}
-          title="go-cyber"
-          link
-        />
-      </LinkWindow>
-      <LinkWindow to="https://github.com/cybercongress/dot-cyber">
-        <CardStatisics
-          // title="Homestead"
-          styleContainer={{
-            justifyContent: 'center',
-            padding: '65px 0',
-            fontSize: '26px',
-            maxWidth: '300px',
-            margin: '0 auto',
-          }}
-          styleTitle={{ fontSize: '26px' }}
-          title="dot-cyber"
-          link
-        />
-      </LinkWindow>
-    </>
-  );
+function AppsTab({ data, node, mobile }) {
+  try {
+    const apps = [];
+    if (Object.keys(data).length > 0) {
+      apps.push(
+        Object.keys(data).map((key, i) => {
+          return (
+            <Pane
+              position="relative"
+              className="hover-rank"
+              display="flex"
+              alignItems="center"
+              marginBottom="10px"
+              key={`${key}_${i}`}
+            >
+              {!mobile && (
+                <Pane
+                  className="time-discussion rank-contentItem"
+                  position="absolute"
+                >
+                  <Rank
+                    hash={key}
+                    rank={exponentialToDecimal(
+                      parseFloat(data[key].rank).toPrecision(3)
+                    )}
+                    grade={data[key].grade}
+                    // onClick={() => onClickRank(key)}
+                  />
+                </Pane>
+              )}
+              <ContentItem
+                nodeIpfs={node}
+                cid={key}
+                item={data[key]}
+                className="contentItem"
+              />
+            </Pane>
+          );
+        })
+      );
+    }
+    return (
+      <Pane
+        width="90%"
+        marginX="auto"
+        marginY={0}
+        display="flex"
+        flexDirection="column"
+      >
+        <div className="container-contentItem" style={{ width: '100%' }}>
+          {apps}
+        </div>
+      </Pane>
+    );
+  } catch (error) {
+    console.log(error);
+    return <div>oops...</div>;
+  }
 }
 
 export default AppsTab;
