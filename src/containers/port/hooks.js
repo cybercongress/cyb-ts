@@ -8,8 +8,8 @@ import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-const URL_GRAPHQL = 'https://uranus.cybernode.ai/graphql/v1/graphql';
-const URL_GRAPHQL_WSS = 'wss://uranus.cybernode.ai/graphql/v1/graphql';
+const URL_GRAPHQL = 'https://port.cybernode.ai/graphql/v1/graphql';
+const URL_GRAPHQL_WSS = 'wss://port.cybernode.ai/graphql/v1/graphql';
 
 const httpLink = new HttpLink({
   uri: URL_GRAPHQL,
