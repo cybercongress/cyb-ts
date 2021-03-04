@@ -19,6 +19,9 @@ const initIpfsNode = async () => {
           enabled: true,
         },
       },
+      EXPERIMENTAL: {
+        pubsub: true,
+      },
       config: {
         Addresses: {
           Swarm: [
@@ -62,6 +65,9 @@ const initIpfsNode = async () => {
         hop: {
           enabled: true,
         },
+      },
+      EXPERIMENTAL: {
+        pubsub: true,
       },
       config: {
         Addresses: {
