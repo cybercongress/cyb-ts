@@ -1,8 +1,4 @@
 const monifest = `
-# Cyberpunk Manifesto
-
-@master
-
 The world is on the verge of extraordinary change. 
 
 Privacy and freedoms are being killed by private corporations disguised as a pandemic. Humans are locked physically either in households, cities or in the best case - countries. Global supply chains are slowly collapsing under local lockouts pressure. Once a free planet rapidly falls into a bordered meatspace empowered by ubiquitous prescriptive surveillance software. We created a world in which birds have more freedom than humans. 
