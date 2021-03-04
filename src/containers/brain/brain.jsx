@@ -33,6 +33,8 @@ import {
   useGetStatisticsCyber,
 } from './hooks';
 
+import Port from '../port';
+
 import { chekPathname } from './utils/utils';
 
 function Brain({ node, mobile, defaultAccount, keplr }) {
@@ -40,7 +42,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
   const { cybernomics, donation } = useGetCybernomics();
   const { government, knowledge } = useGetStatisticsCyber();
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
-  const [selected, setSelected] = useState('main');
+  const [selected, setSelected] = useState('port');
   const [addressActive, setAddressActive] = useState(null);
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -116,7 +118,11 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
 
   let content;
 
-  if (selected === 'main') {
+  if (selected === 'port') {
+    content = <Route path="/brain" render={() => <Port />} />;
+  }
+
+  if (selected === 'feed') {
     content = (
       <MainTab
         tweets={tweets}
@@ -247,8 +253,8 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
 
         <Tablist
           display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-          gridGap="10px"
+          gridTemplateColumns="repeat(auto-fit, minmax(140px, 1fr))"
+          gridGap="12px"
           marginTop={25}
         >
           <TabBtn
@@ -266,7 +272,12 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
             isSelected={selected === 'cybernomics'}
             to="/brain/cybernomics"
           />
-          <TabBtn text="Feed" isSelected={selected === 'main'} to="/brain" />
+          <TabBtn
+            text="Feed"
+            isSelected={selected === 'feed'}
+            to="/brain/feed"
+          />
+          <TabBtn text="Port" isSelected={selected === 'port'} to="/brain" />
           <TabBtn
             text="Government"
             isSelected={selected === 'government'}
@@ -300,6 +311,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
       </main>
       {!mobile &&
         addressActive !== null &&
+        selected !== 'port' &&
         (addressActive.keys !== 'read-only' ? (
           <ActionBarContainer keplr={keplr} addressPocket={addressActive} />
         ) : (
@@ -310,7 +322,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
             </Pane>
           </ActionBar>
         ))}
-      {!mobile && addressActive === null && (
+      {!mobile && selected !== 'port' && addressActive === null && (
         <ActionBar>
           <Pane fontSize="18px">
             add cyber address in your <Link to="/pocket">pocket</Link>

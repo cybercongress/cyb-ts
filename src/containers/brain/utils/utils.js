@@ -32,7 +32,10 @@ const chekPathname = (pathname) => {
   ) {
     return 'halloffame';
   }
-  return 'main';
+  if (pathname.match(/feed/gm) && pathname.match(/feed/gm).length > 0) {
+    return 'feed';
+  }
+  return 'port';
 };
 
 export { chekPathname };
