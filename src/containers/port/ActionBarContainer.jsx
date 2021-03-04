@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ActionBar, Button, Input, Pane } from '@cybercongress/gravity';
-import { CYBER, PATTERN_CYBER } from '../../utils/config';
+import { CYBER, PATTERN_CYBER, ADD_ARAGON_FINANCE } from '../../utils/config';
 import { formatNumber, trimString } from '../../utils/utils';
 import { pingTx } from './utils';
-import { LinkWindow } from '../../components';
+import { LinkWindow, ButtonIcon } from '../../components';
 import ActionBarConnect from './ActionBarConnect';
 
-const ADDR_ETH = '0xd56bd28501f90ba21557b3d2549f1b6e14952303';
+const back = require('../../image/arrow-back-outline.svg');
 
-const ActionBarSteps = ({ text, btnText, onClickFnc }) => (
+const ActionBarSteps = ({ text, btnText, onClickFnc, onClickBack }) => (
   <ActionBar>
-    <ActionBarContentText>{text}</ActionBarContentText>
+    {onClickBack && (
+      <ButtonIcon
+        style={{ padding: 0 }}
+        img={back}
+        onClick={onClickBack}
+        text="previous step"
+      />
+    )}
+    <ActionBarContentText marginLeft={onClickBack ? 30 : 0}>
+      {text}
+    </ActionBarContentText>
     <Button onClick={onClickFnc}>{btnText}</Button>
   </ActionBar>
 );
@@ -58,8 +68,17 @@ const CyberAddress = ({
   messageCyberAddress,
   cyberAddress,
   onChange,
+  onClickBack,
 }) => (
   <ActionBar>
+    {onClickBack && (
+      <ButtonIcon
+        style={{ padding: 0 }}
+        img={back}
+        onClick={onClickBack}
+        text="previous step"
+      />
+    )}
     <ActionBarContentText>
       <span>cyber address</span>
       <Input
@@ -161,7 +180,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
     web3.eth
       .sendTransaction({
         from: account,
-        to: ADDR_ETH,
+        to: ADD_ARAGON_FINANCE,
         value: priceInWei,
         data: getData,
       })
@@ -224,7 +243,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
     );
   }
 
-  if (web3.givenProvider === null) {
+  if (web3 && web3.givenProvider === null) {
     return (
       <ActionBar>
         <ActionBarContentText>
@@ -240,7 +259,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
     );
   }
 
-  if (accountsETH == null && web3.givenProvider !== null) {
+  if (accountsETH == null && web3 && web3.givenProvider !== null) {
     return (
       <ActionBar>
         <Button onClick={onClickFuckGoogle}>Connect web3</Button>
@@ -276,6 +295,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         onChange={(e) => setCyberAddress(e.target.value)}
         onClickBtn={() => setStep('Donate')}
         disabledBtnConfirm={!cyberAddress.match(PATTERN_CYBER)}
+        onClickBack={() => setStep('start')}
       />
     );
   }
@@ -287,6 +307,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
       irreversible donation to cyberCongress`}
         btnText="Donate"
         onClickFnc={() => setStep('allocationCyb')}
+        onClickBack={() => setStep('CyberAddress')}
       />
     );
   }
@@ -300,6 +321,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
       )} CYB tokens in Genesis`}
         btnText="Confirm"
         onClickFnc={() => setStep('thatCyberCongress')}
+        onClickBack={() => setStep('Donate')}
       />
     );
   }
@@ -309,6 +331,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         text="I agree that cyberCongress will use donations at its own discretion"
         btnText="Agree"
         onClickFnc={() => setStep('dontTrust')}
+        onClickBack={() => setStep('allocationCyb')}
       />
     );
   }
@@ -319,6 +342,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         text={`I accept that the software is distributed under "Don't trust, don't fear, don't beg" license`}
         btnText="Accept"
         onClickFnc={() => setStep('understandThat')}
+        onClickBack={() => setStep('thatCyberCongress')}
       />
     );
   }
@@ -329,6 +353,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         text="I understand that the Genesis date is unknown and may never happen without a community effort"
         btnText="Understand"
         onClickFnc={() => setStep('iSwearIwill')}
+        onClickBack={() => setStep('dontTrust')}
       />
     );
   }
@@ -339,6 +364,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         text="I swear I will always use CYB tokens with the nonviolence principle in mind"
         btnText="Swear"
         onClickFnc={() => setStep('promise')}
+        onClickBack={() => setStep('understandThat')}
       />
     );
   }
@@ -349,6 +375,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         text="I promise I will train Superintelligence for the benefit of all living things including our planet"
         btnText="Promise"
         onClickFnc={() => setStep('Sign')}
+        onClickBack={() => setStep('iSwearIwill')}
       />
     );
   }
@@ -359,6 +386,7 @@ function ActionBarAuction({ web3, accountsETH, visa, pocketAddress }) {
         text="I am ready for change, give me Cyber citizenship"
         btnText="Sign"
         onClickFnc={onClickContribute}
+        onClickBack={() => setStep('promise')}
       />
     );
   }
