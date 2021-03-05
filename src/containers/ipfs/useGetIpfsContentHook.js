@@ -76,6 +76,7 @@ export const getTypeContent = async (dataCid, cid) => {
         response.type = 'link';
         response.gateway = false;
         response.content = dataBase64;
+        response.link = `/ipfs/${cid}`;
       } else {
         response.type = 'text';
       }

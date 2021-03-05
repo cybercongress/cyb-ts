@@ -188,11 +188,11 @@ class Home extends PureComponent {
               autoFocus
             />
             <Pane marginTop={50}>
-              <Link to="/search/get%20EUL">Get EUL</Link>
-              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
+              {/* <Link to="/search/get%20EUL">Get EUL</Link>
+              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span> */}
               <Link to="/search/what%20is%20cyber">What is Cyber?</Link>
-              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
-              <Link to="/gol">Game of Links</Link>
+              {/* <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
+              <Link to="/gol">Game of Links</Link> */}
             </Pane>
             <Link style={{ position: 'absolute', top: '52%' }} to="/trollBoxx">
               <img src={bender} alt="bender" style={{ height: 170 }} />

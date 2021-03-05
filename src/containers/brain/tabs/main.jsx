@@ -47,7 +47,7 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function MainTab({ loadingTwit, mobile, twit, nodeIpfs }) {
+function MainTab({ loadingTwit, mobile, tweets, nodeIpfs }) {
   try {
     const searchItems = [];
     const d = new Date();
@@ -57,15 +57,15 @@ function MainTab({ loadingTwit, mobile, twit, nodeIpfs }) {
     }
 
     searchItems.push(
-      Object.keys(twit)
+      Object.keys(tweets)
         .sort((a, b) => {
-          const x = Date.parse(twit[a].time);
-          const y = Date.parse(twit[b].time);
+          const x = Date.parse(tweets[a].time);
+          const y = Date.parse(tweets[b].time);
           return y - x;
         })
         .map((key, i) => {
           let timeAgoInMS = 0;
-          const time = Date.parse(d) - Date.parse(twit[key].time);
+          const time = Date.parse(d) - Date.parse(tweets[key].time);
           if (time > 0) {
             timeAgoInMS = time;
           }
@@ -93,7 +93,7 @@ function MainTab({ loadingTwit, mobile, twit, nodeIpfs }) {
               <ContentItem
                 nodeIpfs={nodeIpfs}
                 cid={key}
-                item={twit[key]}
+                item={tweets[key]}
                 className="contentItem"
               />
               <Pane
@@ -120,7 +120,7 @@ function MainTab({ loadingTwit, mobile, twit, nodeIpfs }) {
         flexDirection="column"
       >
         <div className="container-contentItem" style={{ width: '100%' }}>
-          {Object.keys(twit).length > 0 ? (
+          {Object.keys(tweets).length > 0 ? (
             searchItems
           ) : (
             <Noitem text="No feeds" />

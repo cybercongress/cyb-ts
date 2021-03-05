@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
@@ -9,7 +11,6 @@ import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { Provider } from 'react-redux';
-import { ReactQueryDevtools } from 'react-query-devtools';
 import AppRouter from './router';
 import { CYBER } from './utils/config';
 import store from './redux/store';

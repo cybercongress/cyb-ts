@@ -3,19 +3,20 @@ import { Link } from 'react-router-dom';
 import { Pane, Icon } from '@cybercongress/gravity';
 import { CardStatisics, LinkWindow } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
+import { TAKEOFF } from '../../../utils/config';
 
-function PathTab({ cybernomics, activeValidatorsCount, donation }) {
+function PathTab({ activeValidatorsCount = 0 }) {
   try {
-    const gol = (donation + activeValidatorsCount / 146) / 2;
+    const gol =
+      (TAKEOFF.FINISH_AMOUNT / TAKEOFF.ATOMsALL + activeValidatorsCount / 146) /
+      2;
 
     return (
       <>
         <Link to="/gol/takeoff">
           <CardStatisics
             title="Takeoff price, ATOM/GCYB"
-            value={formatNumber(
-              Math.floor(cybernomics.cyb.price * 1000) / 1000
-            )}
+            value={formatNumber(Math.floor(TAKEOFF.FINISH_PRICE * 1000) / 1000)}
             link
           />
         </Link>

@@ -64,6 +64,15 @@ const {
 
 const LEDGER_TX_ACOUNT_INFO = 10;
 
+const groupLink = (linkArr) => {
+  const link = [];
+  const size = 6;
+  for (let i = 0; i < Math.ceil(linkArr.length / size); i += 1) {
+    link[i] = linkArr.slice(i * size, i * size + size);
+  }
+  return link;
+};
+
 class ActionBarContainer extends Component {
   constructor(props) {
     super(props);
@@ -584,21 +593,30 @@ class ActionBarContainer extends Component {
         />
       );
     }
+    console.log('rewards', rewards);
 
-    if (stage === STAGE_INIT && type === 'heroes') {
-      return (
-        <ActionBar>
-          <Pane>
-            <Button
-              disabled={addressSend !== defaultAccount.bech32}
-              onClick={(e) => this.onClickSend(e)}
-            >
-              Claim rewards
-            </Button>
-          </Pane>
-        </ActionBar>
-      );
-    }
+    // console.log('rewards', groupLink(rewards.rewards));
+    // if (stage === STAGE_INIT && type === 'heroes') {
+    //   // return (
+    //   //   <ActionBar>
+    //   //     <Pane>
+    //   //       <Button
+    //   //         disabled={addressSend !== defaultAccount.bech32}
+    //   //         onClick={(e) => this.onClickSend(e)}
+    //   //       >
+    //   //         Claim rewards
+    //   //       </Button>
+    //   //     </Pane>
+    //   //   </ActionBar>
+    //   // );
+    //   return (
+    //     <RewardsDelegators
+    //       data={rewards}
+    //       onClickBtnCloce={this.cleatState}
+    //       onClickBtn={this.generateTx}
+    //     />
+    //   );
+    // }
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
@@ -612,7 +630,9 @@ class ActionBarContainer extends Component {
     if (stage === LEDGER_TX_ACOUNT_INFO) {
       return <CheckAddressInfo />;
     }
+    console.log('rewards', rewards);
 
+    // console.log('rewards', groupLink(rewards.rewards));
     if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
       if (type === 'heroes') {
@@ -620,7 +640,6 @@ class ActionBarContainer extends Component {
           <RewardsDelegators
             data={rewards}
             onClickBtnCloce={this.cleatState}
-            address={address.bech32}
             onClickBtn={this.generateTx}
           />
         );

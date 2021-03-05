@@ -13,10 +13,13 @@ const AUCTION = {
     '0x3ed1528b0fdc7c5207c1bf935e34a667e13656b9ed165260c522be0bc544f303',
   TOPICS_VESTING:
     '0x552f182d4b9ab267a8580e2aa80cf374b7aabc8f528b7e9eea58919eea48e87d',
-  HTTP_PROVIDER_URL: 'https://mars.cybernode.ai/geth/',
+  HTTP_PROVIDER_URL: 'https://rpc.ethereum.cybernode.ai/',
+  // 'https://mainnet.infura.io/v3/b80bdc43536c4f0c97b8c0afd2a7d75d',
   ROUND_DURATION: 1000 * 60 * 60 * 23 + 1,
   TOKEN_ALOCATION: 15 * 10 ** 3,
 };
+
+const ADD_ARAGON_FINANCE = '0xa0a55e68dc52b47f8a9d5d05329fab5bdabffb14';
 
 const NETWORKSIDS = {
   main: 1,
@@ -40,6 +43,8 @@ const TAKEOFF = {
   DISCOUNT: 0.3,
   SQRT_5: 2.23606797749979,
   BLOCK_START: 2000000,
+  FINISH_PRICE: 1.485,
+  FINISH_AMOUNT: 15088.40963,
 };
 
 const COSMOS = {
@@ -61,9 +66,9 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'eul',
   DENOM_CYBER_G: `GEUL`,
-  CYBER_WEBSOCKET_URL: 'wss://api.cyber.cybernode.ai/websocket',
-  CYBER_NODE_URL_API: 'https://api.cyber.cybernode.ai',
-  CYBER_NODE_URL_LCD: 'https://lcd.cyber.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://rpc.euler-6.cybernode.ai/websocket',
+  CYBER_NODE_URL_API: 'https://rpc.euler-6.cybernode.ai',
+  CYBER_NODE_URL_LCD: 'https://lcd.euler-6.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
@@ -92,7 +97,7 @@ const LEDGER = {
 
 const TAKEOFF_SUPPLY = 100000000000000;
 const GENESIS_SUPPLY = 1000000000000000;
-const TOTAL_GOL_GENESIS_SUPPLY = 15000000000000;
+const TOTAL_GOL_GENESIS_SUPPLY = 14406844988437;
 
 const DISTRIBUTION = {
   takeoff: 100000000000000,
@@ -147,4 +152,5 @@ export {
   PATTERN_HTTP,
   POCKET,
   INFINITY,
+  ADD_ARAGON_FINANCE,
 };

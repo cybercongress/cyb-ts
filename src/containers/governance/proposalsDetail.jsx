@@ -9,14 +9,6 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {
-  SigningCosmosClient,
-  GasPrice,
-  coins,
-  makeSignDoc,
-  makeStdTx,
-} from '@cosmjs/launchpad';
-import { Decimal } from '@cosmjs/math';
-import {
   Votes,
   Legend,
   IconStatus,
@@ -37,8 +29,7 @@ import {
   getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
-import injectKeplr from './injectKeplr';
-// import injectKeplr from '../../components/web3/injectKeplr';
+import injectKeplr from '../../components/web3/injectKeplr';
 
 import { authAccounts } from '../../utils/search/utils';
 
