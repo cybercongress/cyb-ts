@@ -289,7 +289,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
           />
         </Tablist>
         <Pane
-          marginTop={50}
+          marginTop={30}
           marginBottom={50}
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
