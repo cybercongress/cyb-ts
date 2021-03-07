@@ -32,6 +32,7 @@ import GolLifetime from './containers/gol/pages/lifetime';
 import GolRelevance from './containers/gol/pages/relevance';
 import GolLoad from './containers/gol/pages/load';
 import Got from './containers/got/got';
+import TrollBoxx from './containers/trollBox';
 import useIpfsStart from './ipfsHook';
 import ForceGraph from './containers/forceGraph/forceGraph';
 import PortPages from './containers/port';
@@ -58,9 +59,9 @@ function AppRouter({
     setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
 
-  // if (loader) {
-  //   return <Dots />;
-  // }
+  if (loader) {
+    return <Dots />;
+  }
 
   // add Switch to Router
   return (
@@ -100,6 +101,7 @@ function AppRouter({
         <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
         <Route path="/network/euler/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
+        <Route path="/trollBoxx" component={TrollBoxx} />
         <Route path="/port" component={PortPages} />
         <Route path="/test" component={TestKeplr} />
       </Switch>
