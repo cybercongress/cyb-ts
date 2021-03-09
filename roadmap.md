@@ -7,6 +7,21 @@
 We have to design complete app which will be lovable and simple.
 
 - [ ] Cybernomics: Fix GOL Supply, Add price from Uniswap. Remove EUL
+- [ ] Tests
+  - [ ] connectability (поключение, разрешение)
+  - [ ] balance
+  - [ ] cyberlink
+  - [ ] rank
+  - [ ] send
+  - [ ] tweet => display in feed
+  - [ ] following
+  - [ ] propose
+  - [ ] funding
+  - [ ] vote
+- [ ] web2=>web3 parser
+- [ ] build as extension
+- [ ] build for electron
+- [ ] basic sounds for Cyber and Cyb
 - [ ] Knowledge: 
   - [ ] indicators in 1 row
   - [ ] top content under

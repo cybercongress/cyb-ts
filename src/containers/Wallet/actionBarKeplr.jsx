@@ -44,6 +44,7 @@ const STAGE_SEND = 1.1;
 function ActionBarKeplr({
   keplr,
   updateAddress,
+  updateBalance,
   selectAccount,
   defaultAccounts,
 }) {
@@ -94,6 +95,9 @@ function ActionBarKeplr({
     setErrorMessage(null);
     setTxHeight(null);
     setTxHash(null);
+    if (updateAddress) {
+      updateAddress();
+    }
   };
 
   useEffect(() => {
@@ -107,8 +111,8 @@ function ActionBarKeplr({
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
-            if (updateAddress) {
-              updateAddress();
+            if (updateBalance) {
+              updateBalance();
             }
             return;
           }

@@ -3,7 +3,7 @@ import React from 'react';
 export const Copy = ({ text, ...props }) => {
   return (
     <button
-      className="copy-address"
+      className="copy-address-btn"
       type="button"
       aria-label="Save"
       {...props}

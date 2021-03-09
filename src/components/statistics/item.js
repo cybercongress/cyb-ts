@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Pane, Icon, Tooltip } from '@cybercongress/gravity';
-// import { Tooltip } from '../index';
+import { Pane, Icon } from '@cybercongress/gravity';
+import { Tooltip } from '../tooltip/tooltip';
 
 // const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 
@@ -43,9 +43,11 @@ export const Card = ({
     <span className="card-value">
       {title}{' '}
       {tooltipValue && (
-        <Tooltip position={positionTooltip} content={tooltipValue}>
-          <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-        </Tooltip>
+        <Pane marginLeft={5}>
+          <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
+            <Icon icon="info-sign" color="#3ab793d4" />
+          </Tooltip>
+        </Pane>
       )}
     </span>
   </div>

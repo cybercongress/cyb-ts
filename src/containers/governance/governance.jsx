@@ -70,7 +70,7 @@ function Governance({ defaultAccount }) {
       setTableData(responseProposals);
     }
   };
-
+console.log('tableData', tableData)
   const active = tableData
     .reverse()
     .filter(
@@ -78,7 +78,11 @@ function Governance({ defaultAccount }) {
         item.proposal_status !== 'Passed' && item.proposal_status !== 'Rejected'
     )
     .map((item) => (
-      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
+      <Link
+        key={item.id}
+        style={{ color: 'unset' }}
+        to={`/governance/${item.id}`}
+      >
         <ActiveCard
           key={item.id}
           id={item.id}
@@ -103,7 +107,11 @@ function Governance({ defaultAccount }) {
   const accepted = tableData
     .filter((item) => item.proposal_status === 'Passed')
     .map((item) => (
-      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
+      <Link
+        key={item.id}
+        style={{ color: 'unset' }}
+        to={`/governance/${item.id}`}
+      >
         <AcceptedCard
           key={item.id}
           id={item.id}
@@ -123,7 +131,11 @@ function Governance({ defaultAccount }) {
     .reverse()
     .filter((item) => item.proposal_status === 'Rejected')
     .map((item) => (
-      <Link style={{ color: 'unset' }} to={`/governance/${item.id}`}>
+      <Link
+        key={item.id}
+        style={{ color: 'unset' }}
+        to={`/governance/${item.id}`}
+      >
         <RejectedCard
           key={item.id}
           id={item.id}

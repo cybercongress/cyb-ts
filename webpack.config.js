@@ -4,6 +4,7 @@ const SRC = path.resolve(__dirname, 'src/main/js');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -29,11 +30,7 @@ module.exports = {
     },
     historyApiFallback: true,
   },
-  entry: [
-    '@babel/polyfill',
-    'react-hot-loader/patch',
-    path.join(__dirname, 'src', 'index.js'),
-  ],
+  entry: ['react-hot-loader/patch', path.join(__dirname, 'src', 'index.js')],
   node: { fs: 'empty' },
   module: {
     rules: [
@@ -41,7 +38,7 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         include: /src/,
-        loaders: ['babel-loader'],
+        use: ['babel-loader'],
       },
       {
         test: /\.css$/,
@@ -81,7 +78,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
     alias: {
       'multicodec/src/base-table': path.dirname(
         require.resolve('multicodec/src/base-table.json')
@@ -110,5 +107,6 @@ module.exports = {
           filename: '[name].css',
           chunkFilename: '[id].css',
         }),
+        new CleanWebpackPlugin(),
       ],
 };
