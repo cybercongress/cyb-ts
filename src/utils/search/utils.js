@@ -68,6 +68,7 @@ export const getContentByCid = async (
           localResolve: false,
         })
         .then((dagGet) => {
+          console.log('dagGet', dagGet)
           clearTimeout(timerId);
           const { value: dagGetValue } = dagGet;
           console.log(dagGetValue);
@@ -78,6 +79,7 @@ export const getContentByCid = async (
           ) {
             let mime;
             ipfs.cat(cid).then((dataCat) => {
+              console.log('dataCat', dataCat)
               const buf = dataCat;
               const bufs = [];
               bufs.push(buf);
@@ -164,7 +166,7 @@ export const getPin = async (node, content) => {
       cid = await node.add(content, { pin: true });
     }
     console.warn('content', content, 'cid', cid);
-    return cid[0].hash;
+    return cid.path;
   }
 };
 
