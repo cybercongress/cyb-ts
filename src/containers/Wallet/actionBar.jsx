@@ -149,9 +149,6 @@ function ActionBar({
     setStage(STAGE_INIT);
     setMakeActive(false);
     setConnect(false);
-    if (updateAddress) {
-      updateAddress();
-    }
   };
 
   if (typeActionBar === '' && stage === STAGE_INIT) {
@@ -177,7 +174,7 @@ function ActionBar({
         web3={web3}
         accountsETH={accountsETH}
         keplr={keplr}
-        updateAddress={updateFuncActionBar}
+        updateAddress={updateAddress}
         selectAccount={selectAccount}
       />
     );
@@ -313,6 +310,7 @@ function ActionBar({
         keplr={keplr}
         selectAccount={selectAccount}
         updateAddress={updateFuncActionBar}
+        updateBalance={updateAddress}
       />
     );
   }
@@ -323,6 +321,7 @@ function ActionBar({
         selectAccount={selectAccount}
         updateAddress={updateFuncActionBar}
         defaultAccounts={defaultAccounts}
+        updateBalance={updateAddress}
       />
     );
     // return <div />;u

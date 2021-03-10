@@ -32,7 +32,11 @@ import GolLifetime from './containers/gol/pages/lifetime';
 import GolRelevance from './containers/gol/pages/relevance';
 import GolLoad from './containers/gol/pages/load';
 import Got from './containers/got/got';
+import TrollBoxx from './containers/trollBox';
 import useIpfsStart from './ipfsHook';
+import ForceGraph from './containers/forceGraph/forceGraph';
+import PortPages from './containers/port';
+import TestKeplr from './containers/testKeplre';
 
 export const history = createBrowserHistory({});
 
@@ -90,13 +94,16 @@ function AppRouter({
           path="/network/euler/hero/:address"
           component={ValidatorsDetails}
         />
-        {/* <Route path="/graph" component={ForceGraph} /> */}
+        <Route path="/graph" component={ForceGraph} />
         <Route path="/gol/vesting" component={Vesting} />
         <Route path="/ipfs/:cid" component={Ipfs} />
         <Route exact path="/network/euler/block" component={Block} />
         <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
         <Route path="/network/euler/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
+        <Route path="/trollBoxx" component={TrollBoxx} />
+        <Route path="/port" component={PortPages} />
+        <Route path="/test" component={TestKeplr} />
       </Switch>
     </Router>
   );

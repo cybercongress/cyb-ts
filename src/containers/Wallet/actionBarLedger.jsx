@@ -35,7 +35,12 @@ const LEDGER_TX_ACOUNT_INFO = 2.1;
 
 let ledgerApp = null;
 
-function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
+function ActionBarLedger({
+  selectAccount,
+  updateAddress,
+  defaultAccounts,
+  updateBalance,
+}) {
   const [stage, setStage] = useState(STAGE_INIT);
   const [toSend, setToSend] = useState('');
   const [toSendAddres, setToSendAddres] = useState('');
@@ -124,8 +129,8 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
-            if (updateAddress) {
-              updateAddress();
+            if (updateBalance) {
+              updateBalance();
             }
             return;
           }
@@ -243,6 +248,9 @@ function ActionBarLedger({ selectAccount, updateAddress, defaultAccounts }) {
     setDisabledGenerate(true);
     setAddressToValid(null);
     setAmountSendInputValid(null);
+    if (updateAddress) {
+      updateAddress();
+    }
   };
 
   const changeDefaultAccounts = async () => {

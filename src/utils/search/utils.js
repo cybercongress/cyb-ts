@@ -479,7 +479,7 @@ export const getBalance = async (address, node) => {
   }
 };
 
-export const getTotalEUL = async (data) => {
+export const getTotalEUL = (data) => {
   const balance = {
     available: 0,
     delegation: 0,
@@ -776,7 +776,10 @@ export const getPreCommits = async (consensusAddress) => {
   }
 };
 
-export const getGraphQLQuery = async (query) => {
+export const getGraphQLQuery = async (
+  query,
+  urlGraphql = CYBER.CYBER_INDEX_HTTPS
+) => {
   try {
     const body = JSON.stringify({
       query,
@@ -787,7 +790,7 @@ export const getGraphQLQuery = async (query) => {
 
     const response = await axios({
       method: 'post',
-      url: CYBER.CYBER_INDEX_HTTPS,
+      url: urlGraphql,
       headers,
       data: body,
     });

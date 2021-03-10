@@ -32,7 +32,7 @@ export const MenuButton = ({
       >
         <Link style={{ width: 'inherit' }} to={to}>
           <img
-            style={{ width: 'inherit' }}
+            style={{ width: '50px', height: '50px' }}
             alt="cyb"
             src={imgLogo || stausImgCyb}
           />
