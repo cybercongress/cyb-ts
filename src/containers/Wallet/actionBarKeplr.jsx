@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button, Input } from '@cybercongress/gravity';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -20,14 +21,6 @@ import {
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 import { deletPubkey } from './utils';
-
-const { GaiaApi } = require('@chainapsis/cosmosjs/gaia/api');
-const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const { MsgSend } = require('@chainapsis/cosmosjs/x/bank');
-const {
-  defaultBech32Config,
-} = require('@chainapsis/cosmosjs/core/bech32Config');
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 
@@ -60,30 +53,31 @@ function ActionBarKeplr({
 
   const generateTxSend = async () => {
     const amount = parseFloat(amountSend);
-    setStage(STAGE_SUBMITTED);
-    await keplr.enable();
-
-    const sender = AccAddress.fromBech32(
-      (await keplr.getKeys())[0].bech32Address,
-      'cyber'
-    );
-    const msg = new MsgSend(sender, AccAddress.fromBech32(recipient, 'cyber'), [
-      new Coin('eul', amount),
-    ]);
-
-    const result = await keplr.sendMsgs(
-      [msg],
-      {
-        gas: 100000,
-        memo: CYBER.MEMO_KEPLR,
-        fee: new Coin('eul', 200),
-      },
-      'sync'
-    );
-    console.log('result: ', result);
-    const hash = result.hash.toString('hex').toUpperCase();
-    console.log('hash :>> ', hash);
-    setTxHash(hash);
+    if (keplr !== null) {
+      setStage(STAGE_SUBMITTED);
+      const chainId = CYBER.CHAIN_ID;
+      await window.keplr.enable(chainId);
+      const { address } = await keplr.getAccount();
+      const msgs = [];
+      msgs.push({
+        type: 'cosmos-sdk/MsgSend',
+        value: {
+          amount: coins(amount, CYBER.DENOM_CYBER),
+          from_address: address,
+          to_address: recipient,
+        },
+      });
+      const fee = {
+        amount: coins(0, 'uatom'),
+        gas: '100000',
+      };
+      console.log('msg', msgs);
+      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
+      console.log('result: ', result);
+      const hash = result.transactionHash;
+      console.log('hash :>> ', hash);
+      setTxHash(hash);
+    }
   };
 
   const cleatState = () => {

@@ -35,6 +35,7 @@ import {
 } from './card';
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
+import { AppContext } from '../../context';
 
 import db from '../../db';
 
@@ -488,7 +489,8 @@ class Wallet extends React.Component {
       storageManager,
       hoverCard,
     } = this.state;
-    const { web3, keplr, contractToken, ipfsId } = this.props;
+    const { web3, contractToken, ipfsId } = this.props;
+    const { keplr } = this.context;
 
     let countLink = 0;
     if (link !== null) {
@@ -676,7 +678,6 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchprops
-)(withWeb3(injectKeplr(Wallet)));
+Wallet.contextType = AppContext;
+
+export default connect(mapStateToProps, mapDispatchprops)(withWeb3(Wallet));
