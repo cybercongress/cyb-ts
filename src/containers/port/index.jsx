@@ -197,7 +197,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
     );
   }
 
-  if (selected === 'cyber') {
+  if (selected === 'corp') {
     content = <Cyber mobile={mobile} />;
   }
 
@@ -205,7 +205,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
     content = <Manifest />;
   }
 
-  if (selected === 'corp') {
+  if (selected === 'gov') {
     content = <Corp mobile={mobile} />;
   }
 
@@ -223,7 +223,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
           >
             <Text fontSize="16px" color="#fff">
               Welcome to the Port! You can get Citizenship right now. Read some
-              philosofy in the{' '}
+              philosophy in the{' '}
               <Link to="/ipfs/QmNYzWnBRVkT7QCGLvQqqCDJNaGXsR3Nzddj2MMS982kRf">
                 post
               </Link>
@@ -241,8 +241,8 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
           />
           <TabBtn
             text="Cyber vs Corp"
-            isSelected={selected === 'cyber'}
-            to={`${match.url}/cyber-vs-gov`}
+            isSelected={selected === 'corp'}
+            to={`${match.url}/cyber-vs-corp`}
           />
           <TabBtn
             text="Manifest"
@@ -251,8 +251,8 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
           />
           <TabBtn
             text="Cyber vs Gov"
-            isSelected={selected === 'corp'}
-            to={`${match.url}/cyber-vs-corp`}
+            isSelected={selected === 'gov'}
+            to={`${match.url}/cyber-vs-gov`}
           />
           <TabBtn
             text="Progress"
