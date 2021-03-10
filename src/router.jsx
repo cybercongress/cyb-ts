@@ -101,7 +101,7 @@ function AppRouter({
         <Route path="/network/euler/block/:idBlock" component={BlockDetails} />
         <Route path="/network/euler/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
-        <Route path="/trollBoxx" component={TrollBoxx} />
+        <Route path="/degenbox" component={TrollBoxx} />
         <Route path="/port" component={PortPages} />
         <Route path="/test" component={TestKeplr} />
       </Switch>
