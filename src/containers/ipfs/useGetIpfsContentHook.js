@@ -5,6 +5,7 @@ import db from '../../db';
 const isSvg = require('is-svg');
 
 const FileType = require('file-type');
+const all = require('it-all');
 
 export const getTypeContent = async (dataCid, cid) => {
   const response = {
@@ -14,10 +15,11 @@ export const getTypeContent = async (dataCid, cid) => {
     link: `/ipfs/${cid}`,
     gateway: null,
   };
+  console.log('dataCid', dataCid);
   const bufs = [];
   bufs.push(dataCid);
   const data = Buffer.concat(bufs);
-
+  console.log('data', data);
   const dataFileType = await FileType.fromBuffer(data);
   if (dataFileType !== undefined) {
     const { mime } = dataFileType;
@@ -116,7 +118,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         if (dataIndexdDb.meta) {
           setMetaData(dataIndexdDb.meta);
         } else {
-          setMetaData(item => ({
+          setMetaData((item) => ({
             ...item,
             data: dataIndexdDb.content,
           }));
@@ -136,6 +138,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         const responseDag = await nodeIpfs.dag.get(cid, {
           localResolve: false,
         });
+        console.log('responseDag', responseDag);
         const meta = {
           type: 'file',
           size: 0,
@@ -156,20 +159,26 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         meta.blockSizes = linksCid;
         clearTimeout(timerId);
         if (responseDag.value.size < size * 10 ** 6) {
-          const responseCat = await nodeIpfs.cat(cid);
-          meta.data = responseCat;
+          const responsePin = nodeIpfs.pin.add(cid);
+          console.log('responsePin', responsePin);
+
+          const responseCat = await all(nodeIpfs.cat(cid));
+          const { 0: someVar } = responseCat;
+          // const responseCat = await nodeIpfs.cat(cid);
+          console.log('responseCat', someVar);
+          meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
             cid,
-            content: responseCat,
+            content: someVar,
             meta,
           };
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
           db.table('cid')
             .add(ipfsContentAddtToInddexdDB)
-            .then(id => {
+            .then((id) => {
               console.log('item :>> ', id);
             });
-          const dataTypeContent = await getTypeContent(responseCat, cid);
+          const dataTypeContent = await getTypeContent(someVar, cid);
           const {
             text: textContent,
             type,

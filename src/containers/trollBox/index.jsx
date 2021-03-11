@@ -124,6 +124,7 @@ class TrollBoxx extends React.PureComponent {
     this.setState({
       room: roomIpfs,
     });
+    console.log('roomIpfs', roomIpfs)
     // setRoom(roomIpfs);
     roomIpfs.on('peer joined', (peer) => console.log(`peer ${peer} joined`));
     roomIpfs.on('peer left', (peer) => console.log(`peer ${peer} left`));
