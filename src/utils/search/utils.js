@@ -2,6 +2,8 @@ import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import { CYBER, TAKEOFF, COSMOS } from '../config';
 
+const all = require('it-all');
+
 const {
   CYBER_NODE_URL_API,
   CYBER_NODE_URL_LCD,
@@ -68,7 +70,7 @@ export const getContentByCid = async (
           localResolve: false,
         })
         .then((dagGet) => {
-          console.log('dagGet', dagGet)
+          console.log('dagGet', dagGet);
           clearTimeout(timerId);
           const { value: dagGetValue } = dagGet;
           console.log(dagGetValue);
@@ -79,7 +81,7 @@ export const getContentByCid = async (
           ) {
             let mime;
             ipfs.cat(cid).then((dataCat) => {
-              console.log('dataCat', dataCat)
+              console.log('dataCat', dataCat);
               const buf = dataCat;
               const bufs = [];
               bufs.push(buf);
@@ -1223,62 +1225,43 @@ export const authAccounts = async (address) => {
   }
 };
 
-export const getAvatarIpfs = async (
-  cid,
-  ipfs,
-  timeout = SEARCH_RESULT_TIMEOUT_MS
-) => {
-  let timerId;
-  const timeoutPromise = () =>
-    new Promise((reject) => {
-      timerId = setTimeout(reject, timeout);
-    });
+export const getAvatarIpfs = async (cid, ipfs) => {
+  const timerId = setTimeout(() => {
+    console.log('timerId');
+    return null;
+  }, 15000);
 
-  const ipfsGetPromise = () =>
-    new Promise((resolve, reject) => {
-      ipfs.dag
-        .get(cid, {
-          localResolve: false,
-        })
-        .then((dagGet) => {
-          clearTimeout(timerId);
-          const { value: dagGetValue } = dagGet;
+  const responseDag = await ipfs.dag.get(cid, {
+    localResolve: false,
+  });
 
-          if (
-            dagGetValue &&
-            dagGetValue.size &&
-            dagGetValue.size <= 1.5 * 10 ** 6
-          ) {
-            let mime;
-            ipfs.cat(cid).then((dataCat) => {
-              const buf = dataCat;
-              const bufs = [];
-              bufs.push(buf);
-              const data = Buffer.concat(bufs);
-              FileType.fromBuffer(data).then((dataFileType) => {
-                let file;
-                if (dataFileType !== undefined) {
-                  mime = dataFileType.mime;
-                  if (mime.indexOf('image') !== -1) {
-                    const dataBase64 = data.toString('base64');
-                    file = `data:${mime};base64,${dataBase64}`;
-                    resolve(file);
-                  }
-                } else {
-                  const dataBase64 = data.toString();
-                  if (isSvg(dataBase64)) {
-                    const svg = `data:image/svg+xml;base64,${data.toString(
-                      'base64'
-                    )}`;
-                    resolve(svg);
-                  }
-                }
-              });
-            });
-          } else {
-            resolve(null);
-          }
-        });
-    });
-  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
+  clearTimeout(timerId);
+
+  if (responseDag.value.size <= 1.5 * 10 ** 6) {
+    const responsePin = ipfs.pin.add(cid);
+    console.log('responsePin', responsePin);
+    let mime;
+
+    const responseCat = await all(ipfs.cat(cid));
+    const { 0: someVar } = responseCat;
+    const buf = someVar;
+    const bufs = [];
+    bufs.push(buf);
+    const data = Buffer.concat(bufs);
+    const dataFileType = await FileType.fromBuffer(data);
+    if (dataFileType !== undefined) {
+      mime = dataFileType.mime;
+      if (mime.indexOf('image') !== -1) {
+        const dataBase64 = data.toString('base64');
+        const file = `data:${mime};base64,${dataBase64}`;
+        return file;
+      }
+    }
+    const dataBase64 = data.toString();
+    if (isSvg(dataBase64)) {
+      const svg = `data:image/svg+xml;base64,${data.toString('base64')}`;
+      return svg;
+    }
+  }
+  return null;
 };
