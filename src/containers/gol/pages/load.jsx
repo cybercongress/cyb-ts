@@ -46,8 +46,6 @@ const QueryAddress = (address) =>
 }`;
 
 class GolLoad extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
-
   constructor(props) {
     super(props);
     this.state = {
@@ -63,98 +61,15 @@ class GolLoad extends React.Component {
   }
 
   async componentDidMount() {
+    const currentPrize = Math.floor(
+      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
+    );
+
+    this.setState({
+      currentPrize,
+    });
     await this.getFirstItem();
-    this.getTxsCosmos();
-    this.getDataWS();
   }
-
-  getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      this.getAtom(tx);
-    }
-  };
-
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
-          id: '0',
-          params: {
-            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
-          },
-        })
-      );
-    };
-
-    this.ws.onmessage = async (evt) => {
-      const message = JSON.parse(evt.data);
-      console.warn('txs', message);
-      if (message.result.events) {
-        this.getAtomWS(message.result.events);
-      }
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
-
-  getAtomWS = (data) => {
-    let amount = 0;
-    console.warn('data', data['transfer.amount']);
-    if (data['transfer.amount']) {
-      console.warn('transfer.amount', data['transfer.amount']);
-      data['transfer.amount'].forEach((element) => {
-        let amountWS = 0;
-        if (element.indexOf('uatom') !== -1) {
-          const positionDenom = element.indexOf('uatom');
-          const str = element.slice(0, positionDenom);
-          amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
-        }
-        amount += amountWS;
-      });
-    }
-
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amount
-    );
-
-    this.setState({
-      currentPrize,
-    });
-  };
-
-  getAtom = async (dataTxs) => {
-    let amount = 0;
-
-    if (dataTxs) {
-      amount = getAmountATOM(dataTxs);
-    }
-
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amount
-    );
-
-    this.setState({
-      loadingAtom: false,
-      currentPrize,
-    });
-  };
 
   getFirstItem = async () => {
     const { page, items } = this.state;
@@ -191,6 +106,7 @@ class GolLoad extends React.Component {
       sumKarma,
       page: page + 1,
       allPage: Math.ceil(parseFloat(allPage) / 50),
+      loadingAtom: false,
     });
   };
 

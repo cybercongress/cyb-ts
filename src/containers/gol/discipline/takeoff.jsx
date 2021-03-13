@@ -16,10 +16,14 @@ const Takeoff = ({ takeoff }) => {
         reward={DISTRIBUTION.takeoff}
         currentPrize={takeoff.currentPrize}
         cybWonAbsolute={formatNumber(Math.floor(takeoff.cybAbsolute))}
-        cybWonPercent={`${formatNumber(
-          (takeoff.cybAbsolute / takeoff.currentPrize) * 100,
-          2
-        )}%`}
+        cybWonPercent={`${
+          takeoff.cybAbsolute > 0 && takeoff.currentPrize > 0
+            ? formatNumber(
+                (takeoff.cybAbsolute / takeoff.currentPrize) * 100,
+                2
+              )
+            : 0
+        }%`}
       />
     );
   } catch (error) {
@@ -36,14 +40,14 @@ const Takeoff = ({ takeoff }) => {
   }
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolTakeOffProps: (amount, prize) =>
       dispatch(setGolTakeOff(amount, prize)),
   };
 };
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     takeoff: store.gol.takeoff,
   };
