@@ -1,6 +1,22 @@
 ## Cyb: Love and Robots
 
-Browser as state transition function defined by signed transition from one state to another, or cyberlink.
+Cyb mission is to link and persist knowledge that allows everyone prosper.
+
+Technically Cyb is a browser based on the idea of state transition function defined by cyberlink (signed transition from one state to another).
+
+## Principles
+
+- Ownership: No keys - no pussy
+- Allegality: Because cyb can not care
+- Nonviolence: Golden principle
+- Consent: respect to agent
+- Privacy:
+- Energy efficiency: If something can be done faster by the cost of energy efficiency it has not to be done
+- Speed: Faster is always better than slow
+- Offline: Travel in space can not be imagine without offline first experience
+- Modularity: 
+- Minimalizm:
+- Wisdom: Educative approach
 
 ## Components
 
@@ -29,16 +45,11 @@ Browser as state transition function defined by signed transition from one state
 - Vive
 - Daydream
 
-## Basic operations
-
-- Link
-- Store
-- Prosper
-
 ## Interfaces
 
 - keyboard
 - touch
+- voice
 - thought
 
 ## Dependencies   
@@ -64,7 +75,7 @@ Docker images by CIDs
 Cyb helps to get familiar with the new universe using the concept of buildings. There are some basic buildings which are maintened by the cyb core with the simple idea: "One app to rule them all"
 
 - Port - как стать гражданином?
-- Robot: Next step (+ Claim Rewards), Labeling with links, Activity, Values
+- Robot: Next step (+ Claim Rewards), Labeling with links, Activity, Values, Permissions
 - Taverna: all activity or grouped by follower and or grouped by content type
 - Hall of Fame - Heroes first, than citizens and other pros
 - Arena - Currently game of Links
@@ -75,20 +86,6 @@ Cyb helps to get familiar with the new universe using the concept of buildings. 
 - Tower - Для мастеров
 - Temple - Для лидеров
 - Laboratory - Для хакеров
-
-## Principles
-
-- Ownership: No keys - no pussy
-- Allegality: Because cyb can not care
-- Nonviolence: Golden principle
-- Consent: respect to agent
-- Privacy:
-- Energy efficiency: If something can be done faster by the cost of energy efficiency it has not to be done
-- Speed: Faster is always better than slow
-- Offline: Travel in space can not be imagine without offline first experience
-- Modularity: 
-- Minimalizm:
-- Wisdom: Educative approach
 
 ## Lifetime of transaction
 
