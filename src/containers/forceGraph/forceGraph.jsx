@@ -1,20 +1,27 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { ForceGraph3D } from 'react-force-graph';
+import { ForceGraph3D, ForceGraph2D } from 'react-force-graph';
 // import { useSubscription } from '@apollo/react-hooks';
 // import gql from 'graphql-tag';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
 
-const GET_CYBERLINKS = `
-query Cyberlinks {
-  cyberlink(limit: 2100, order_by: {height: desc}) {
-    object_from
-    object_to
-    subject
-    txhash
-  }
-}
-`;
+// const GET_CYBERLINKS = `
+// query Cyberlinks {
+//   cyberlink(limit: 420, order_by: {height: desc}, where: {subject: {_eq: "cyber12u6qgyrdsy4xmw04vfkkkh9a9tqzw66gsay86k"}}) {
+//     object_from
+//     object_to
+//     subject
+//     txhash
+//   }
+// }
+// `;
+
+// query Cyberlinks {
+//   cyberlink(limit: 1000, where: {object_from: {_eq: "QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx"}}) {
+//     object_to
+//     subject
+//   }
+// }
 
 // const CYBERLINK_SUBSCRIPTION = gql`
 //   subscription newCyberlinkLink {
@@ -33,15 +40,33 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceGraph = () => {
+const ForceGraph = ({ match }) => {
   let graph;
+  const { agent } = match.params;
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
+  var limit = 420
+  var where
   useEffect(() => {
     const feachData = async () => {
-      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS);
+      if (typeof(agent) != "undefined") {
+        where = `{subject: {_eq: "${agent}"}}`
+      } else { 
+        where = "{}"
+      }
+      var GET_CYBERLINKS_NEW = `
+      query Cyberlinks {
+        cyberlink(limit: ${String(limit)}, order_by: {height: desc}, where: ${where}) {
+          object_from
+          object_to
+          subject
+          txhash
+        }
+      }
+      `;
+      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS_NEW);
       const from = cyberlink.map((a) => a.object_from);
       const to = cyberlink.map((a) => a.object_to);
       const set = new Set(from.concat(to));
@@ -56,7 +81,7 @@ const ForceGraph = () => {
           target: cyberlink[i].object_to,
           name: cyberlink[i].txhash,
           subject: cyberlink[i].subject,
-          curvative: getRandomInt(20, 500) / 1000,
+          // curvative: getRandomInt(20, 500) / 1000,
         };
       }
       graph = {
@@ -165,7 +190,12 @@ const ForceGraph = () => {
     );
   }
 
-  // console.log("pocket", localStorage.getItem('pocket'));
+  var pocket
+  if (localStorage.getItem('pocket') != null) {
+    var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
+    var keyPocket = Object.keys(localStoragePocketData)[0];
+    pocket = localStoragePocketData[keyPocket]["cyber"].bech32
+  }
 
   return (
     <div>
@@ -186,19 +216,20 @@ const ForceGraph = () => {
         nodeRelSize={5}
         // linkSource="object_from"
         // linkTarget="object_to"
-        linkLabel="txhash"
+        // linkLabel="txhash"
         // linkColor={() => 'rgba(9,255,13,1)'}
         linkColor={(link) =>
-          link.subject == localStorage.getItem('pocket').bech32
-            ? 'white'
+          localStorage.getItem('pocket') != null ?
+          link.subject == pocket
+            ? 'rgba(0, 161, 255, 1)'
             : 'rgba(9,255,13,1)'
-        }
+        : 'white' }
         linkWidth={2}
         linkCurvature={0.2}
         linkOpacity={0.4}
-        // linkDirectionalParticleWidth={1.5}
-        // linkDirectionalParticleSpeed={0.015}
-        // linkDirectionalParticles={1}
+        linkDirectionalParticles={1}
+        linkDirectionalParticleWidth={2}
+        linkDirectionalParticleSpeed={0.02}
 
         onNodeClick={handleNodeClick}
         onNodeRightClick={handleNodeRightClick}

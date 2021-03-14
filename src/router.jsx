@@ -94,6 +94,7 @@ function AppRouter({
           component={ValidatorsDetails}
         />
         <Route path="/graph" component={ForceGraph} />
+        <Route path="/pgraph/:agent" component={ForceGraph} />
         <Route path="/gol/vesting" component={Vesting} />
         <Route path="/ipfs/:cid" component={Ipfs} />
         <Route exact path="/network/euler/block" component={Block} />
