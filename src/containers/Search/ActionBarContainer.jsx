@@ -3,6 +3,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -28,10 +29,8 @@ import {
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 import { trimString } from '../../utils/utils';
+import { AppContext } from '../../context';
 
-const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
 const imgCyber = require('../../image/blue-circle.png');
@@ -153,7 +152,7 @@ class ActionBarContainer extends Component {
   };
 
   getLedgerAddress = async () => {
-    const { stage } = this.state;
+    const { stage, addressLocalStor } = this.state;
 
     this.transport = await TransportWebUSB.create(120 * 1000);
     this.ledger = new CosmosDelegateTool(this.transport);
@@ -167,12 +166,26 @@ class ActionBarContainer extends Component {
       if (stage === STAGE_LEDGER_INIT) {
         const address = await this.ledger.retrieveAddressCyber(HDPATH);
         console.log('address', address);
-        this.setState({
-          address,
-        });
-        this.getAddressInfo();
-        this.calculationIpfsFrom();
-        this.calculationIpfsTo();
+        if (
+          addressLocalStor !== null &&
+          addressLocalStor.address === address.bech32
+        ) {
+          this.setState({
+            address,
+          });
+          this.getAddressInfo();
+          this.calculationIpfsFrom();
+          this.calculationIpfsTo();
+        } else {
+          this.setState({
+            stage: STAGE_ERROR,
+            errorMessage: `Add address ${trimString(
+              address.bech32,
+              9,
+              5
+            )} to your pocket or make active `,
+          });
+        }
       }
     } else {
       this.setState({
@@ -260,35 +273,57 @@ class ActionBarContainer extends Component {
   };
 
   generateTx = async () => {
-    const { keplr } = this.props;
-    const { fromCid, toCid } = this.state;
+    const { keplr } = this.context;
+    const { fromCid, toCid, addressLocalStor } = this.state;
 
     this.setState({
       stage: STAGE_KEPLR_APPROVE,
     });
-
-    await keplr.enable();
-
-    const sender = AccAddress.fromBech32(
-      (await keplr.getKeys())[0].bech32Address,
-      'cyber'
-    );
-    const msg = new MsgLink(sender, [new Link(fromCid, toCid)]);
-
-    const result = await keplr.sendMsgs(
-      [msg],
-      {
-        gas: 100000,
-        memo: CYBER.MEMO_KEPLR,
-        fee: new Coin('eul', 200),
-      },
-      'sync'
-    );
-    console.log('result: ', result);
-    const hash = result.hash.toString('hex').toUpperCase();
-    console.log('hash :>> ', hash);
-    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-    this.timeOut = setTimeout(this.confirmTx, 1500);
+    if (keplr !== null) {
+      const chainId = CYBER.CHAIN_ID;
+      await window.keplr.enable(chainId);
+      const { address } = await keplr.getAccount();
+      console.log('address', address)
+      if (addressLocalStor !== null && addressLocalStor.address === address) {
+        const msgs = [];
+        msgs.push({
+          type: 'cyber/Link',
+          value: {
+            address,
+            links: [
+              {
+                from: fromCid,
+                to: toCid,
+              },
+            ],
+          },
+        });
+        const fee = {
+          amount: coins(0, 'uatom'),
+          gas: '100000',
+        };
+        console.log('msg', msgs);
+        const result = await keplr.signAndBroadcast(
+          msgs,
+          fee,
+          CYBER.MEMO_KEPLR
+        );
+        console.log('result: ', result);
+        const hash = result.transactionHash;
+        console.log('hash :>> ', hash);
+        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        this.timeOut = setTimeout(this.confirmTx, 1500);
+      } else {
+        this.setState({
+          stage: STAGE_ERROR,
+          errorMessage: `Add address ${trimString(
+            address,
+            9,
+            5
+          )} to your pocket or make active `,
+        });
+      }
+    }
   };
 
   link = async () => {
@@ -669,5 +704,7 @@ const mapStateToProps = (store) => {
     defaultAccount: store.pocket.defaultAccount,
   };
 };
+
+ActionBarContainer.contextType = AppContext;
 
 export default connect(mapStateToProps)(ActionBarContainer);

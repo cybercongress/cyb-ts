@@ -414,6 +414,7 @@
 
 .markdown ul {
   margin-bottom: 10px;
+  margin-left: 20px;
   padding-left: 20px;
 }
 
@@ -437,6 +438,8 @@
 
 .markdown ol {
   padding-left: 20px;
+  margin-bottom: 20px;
+  margin-left: 20px;
 }
 
 .objectInspector li {
@@ -544,6 +547,24 @@
   opacity: 1;
 }
 
+.cardVisaActionBar {
+  padding: 10px 20px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cardVisaActionBar:hover {
+  box-shadow: 0 0 9px 1px #3ab793;
+}
+
+.cardVisaActionBar:active {
+  background-color: #3ab793;
+}
+
 .container-buttonIcon {
   display: flex;
   justify-content: center;
@@ -596,4 +617,16 @@
 
 .account-popaps:hover {
   opacity: 0.8;
+}
+
+.panel {
+  background: #000;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #3ab793;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-bottom: 20px;
+  font-size: 16px;
 }
