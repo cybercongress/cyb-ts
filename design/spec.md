@@ -9,8 +9,8 @@ Technically Cyb is a browser based on the idea of state transition function defi
 - Ownership: No keys - no pussy
 - Allegality: Because cyb can not care
 - Nonviolence: Golden principle
-- Consent: respect to agent
-- Privacy:
+- Consent: Respect to agent
+- Privacy: Because 
 - Energy efficiency: If something can be done faster by the cost of energy efficiency it has not to be done
 - Speed: Faster is always better than slow
 - Offline: Travel in space can not be imagine without offline first experience
@@ -18,18 +18,33 @@ Technically Cyb is a browser based on the idea of state transition function defi
 - Minimalizm:
 - Wisdom: Educative approach
 
+## Resources
+
+In the core is the robust resource permissions signed by agent for every particle. Personal robots can be generated from the avatar's key for signing permissions for particles (local contracts).
+
+- CPU time
+- GPU time
+- volatile memory
+- persistent memory
+  - avatars
+  - providers
+  - particles
+- other websys resources
+
 ## Components
 
+Components can be overlaid over the space and can be toggles with hotkeys. Any app developer can reuse this components for apps.
+
+- space. A place for exploration. Anything can be put here
 - avatar. Image of a character identified by pubkeys.
-- commander. 
-- robot. Subordinate character of avatar which have its own pubkey derived from the avatar's pubkey. Avatar can cyberlink a program with robots so they can 
-- assistant
-- navigator
-- space
-- timeline
-- particle: auto show best answer + unraveled by xxx some days ago + answers / chat / backlinks
-- signer
-- transformer
+- commander. A bar for search and command. Have past and future buttons.
+- robot. Subordinate character of avatar which have its own pubkey derived from the avatar's pubkey. Avatar can cyberlink a program with robots. 
+- assistant. Tool to optimizse call to actions. Actions either preprogrammed or suggest automagically.
+- navigator. Tool to navigate across apps and within the apps. Collapsible tree with favicons can either auto suggest the structure or build it using some convention.
+- timeline. A panel which display users actions both in past and looking into the future.
+- particle: Auto show best answer + unraveled by xxx some days ago + answers / chat / backlinks
+- signer. Conformation screen for signing messages. Background is secretly and deterministically generated based on the avatar for security.
+- transformer. The tool for migration of content from web2.
 
 ## Distribution
 
@@ -48,8 +63,8 @@ Technically Cyb is a browser based on the idea of state transition function defi
 ## Interfaces
 
 - keyboard
-- touch
 - voice
+- touch
 - thought
 
 ## Dependencies   
@@ -79,7 +94,7 @@ Cyb helps to get familiar with the new universe using the concept of buildings. 
 - Taverna: all activity or grouped by follower and or grouped by content type
 - Hall of Fame - Heroes first, than citizens and other pros
 - Arena - Currently game of Links
-- Government - Пропоузалы
+- Gov - Пропоузалы
 - Oracle - Топ контента
 - University - Квесты
 - Bazaar - Для инвесторов. Cybernomics + как торговать токенами
@@ -92,12 +107,8 @@ Cyb helps to get familiar with the new universe using the concept of buildings. 
 - proposed
 - signed by me
 - send
-- received by peer => by my peers
-- signed by quorum
-- rejected by quorum
-- timestamped by consensus / failed to timestamped
-- executed by consensus / failed to execute
-- verified by consensus / failed to verify
+- received by my peers
+- timestamped / executed / verified by consensus / failed to timestamped
 
 ## Audience
 
@@ -124,20 +135,6 @@ Cyb helps to get familiar with the new universe using the concept of buildings. 
 ## Art
 
 ## Gamification
-
-## Permissions
-
-Personal robots can be generated from the avatar's key for signing permissions for particles (local contracts)
-
-- CPU time
-- GPU time
-- volatile memory
-- persistent memory
-- other websys resources
-- file system:
-  - avatars
-  - providers
-  - particles
 
 ## Feedback
 
