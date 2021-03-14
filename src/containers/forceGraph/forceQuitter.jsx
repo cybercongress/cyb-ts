@@ -2,8 +2,9 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D, ForceGraph2D } from 'react-force-graph';
 // import { useSubscription } from '@apollo/react-hooks';
 // import gql from 'graphql-tag';
-import { getGraphQLQuery } from '../../utils/search/utils';
+import { getGraphQLQuery, getIpfsHash } from '../../utils/search/utils';
 import { Loading } from '../../components';
+
 
 // const GET_CYBERLINKS = `
 // query Cyberlinks {
@@ -16,12 +17,14 @@ import { Loading } from '../../components';
 // }
 // `;
 
-// query Cyberlinks {
-//   cyberlink(limit: 1000, where: {object_from: {_eq: "QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx"}}) {
-//     object_to
-//     subject
-//   }
-// }
+const GET_FOLLOWERS = `
+  query Cyberlinks {
+    cyberlink(limit: 1000, where: {object_from: {_eq: "QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx"}}) {
+      object_to
+      subject
+      txhash
+    }
+}`;
 
 // const CYBERLINK_SUBSCRIPTION = gql`
 //   subscription newCyberlinkLink {
@@ -40,50 +43,51 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceGraph = ({ match }) => {
+const ForceQuitter = () => {
   let graph;
-  const { agent } = match.params;
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
-  var limit = 420
-  var where
   useEffect(() => {
     const feachData = async () => {
-      if (typeof(agent) != "undefined") {
-        where = `{subject: {_eq: "${agent}"}}`
-      } else { 
-        where = "{}"
-      }
-      var GET_CYBERLINKS_NEW = `
-      query Cyberlinks {
-        cyberlink(limit: ${String(limit)}, order_by: {height: desc}, where: ${where}) {
-          object_from
-          object_to
-          subject
-          txhash
-        }
-      }
-      `;
-      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS_NEW);
-      const from = cyberlink.map((a) => a.object_from);
-      const to = cyberlink.map((a) => a.object_to);
-      const set = new Set(from.concat(to));
+
+      const { cyberlink } = await getGraphQLQuery(GET_FOLLOWERS);
+      console.log("followers", cyberlink)
+
+      //TODO
+
+      const from = cyberlink.map((a) => a.subject);
+      // const to = cyberlink.map((a) => a.object_to);
+      // const set = new Set(from.concat(to));
+      const set = new Set(from);
       const object = [];
       set.forEach(function (value) {
         object.push({ id: value });
       });
+      // console.log("particles",object)
+
+      var addrHashes = {}
+      for (let i = 0; i < object.length; i++) {
+        var addr = await getIpfsHash(cyberlink[i].object_to)
+        console.log(addr)
+        addrHashes[addr] = cyberlink[i].subject
+      }
+      console.log("addrHashes",addrHashes)
 
       for (let i = 0; i < cyberlink.length; i++) {
+        var to = cyberlink[i].object_to 
+        console.log("to", to)
         cyberlink[i] = {
-          source: cyberlink[i].object_from,
-          target: cyberlink[i].object_to,
+          source: cyberlink[i].subject,
+          target: addrHashes[to],
           name: cyberlink[i].txhash,
           subject: cyberlink[i].subject,
           // curvative: getRandomInt(20, 500) / 1000,
         };
       }
+      console.log("cyberlinks", cyberlink)
+      console.log("object", object)
       graph = {
         nodes: object,
         links: cyberlink,
@@ -221,9 +225,9 @@ const ForceGraph = ({ match }) => {
         linkColor={(link) =>
           localStorage.getItem('pocket') != null ?
           link.subject == pocket
-            ? 'white'
+            ? 'rgba(0, 161, 255, 1)'
             : 'rgba(9,255,13,1)'
-        : 'rgba(9,255,13,1)' }
+        : 'white' }
         linkWidth={2}
         linkCurvature={0.2}
         linkOpacity={0.4}
@@ -242,4 +246,4 @@ const ForceGraph = ({ match }) => {
   );
 };
 
-export default ForceGraph;
+export default ForceQuitter;
