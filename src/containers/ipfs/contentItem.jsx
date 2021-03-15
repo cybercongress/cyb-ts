@@ -8,18 +8,7 @@ import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
 import db from '../../db';
 
-const htmlParser = require('react-markdown/plugins/html-parser');
-
-// const parseHtml = htmlParser({
-//   isValidNode: node => node.type !== 'script',
-// });
-
-const parseHtml = htmlParser({
-  isValidNode: (node) => node.type !== 'script',
-  processingInstructions: [
-    /* ... */
-  ],
-});
+const all = require('it-all');
 
 const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
   const [content, setContent] = useState('');
@@ -35,7 +24,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);
-        console.log('dataTypeContent', dataTypeContent)
+        console.log('dataTypeContent', dataTypeContent);
         const {
           text: textContent,
           type,
@@ -78,11 +67,16 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
         meta.blockSizes = linksCid;
         clearTimeout(timerId);
         if (responseDag.value.size < 1.5 * 10 ** 6) {
-          const responseCat = await nodeIpfs.cat(cid);
-          meta.data = responseCat;
+          const responsePin = nodeIpfs.pin.add(cid);
+          console.log('responsePin', responsePin);
+
+          // const cids = new CID(cid);
+          const responseCat = await all(nodeIpfs.cat(cid));
+          const { 0: someVar } = responseCat;
+          meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
             cid,
-            content: responseCat,
+            content: someVar,
             meta,
           };
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
@@ -91,7 +85,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
             .then(id => {
               console.log('item :>> ', id);
             });
-          const dataTypeContent = await getTypeContent(responseCat, cid);
+          const dataTypeContent = await getTypeContent(someVar, cid);
           const {
             text: textContent,
             type,

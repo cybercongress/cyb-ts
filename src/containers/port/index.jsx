@@ -4,14 +4,12 @@ import { Text, Pane, Tablist } from '@cybercongress/gravity';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
 import withWeb3 from '../../components/web3/withWeb3';
-// import Dinamics from './dinamics';
 import Statistics from './statistics';
 import Table from './table';
 import ActionBarContainer from './ActionBarContainer';
 
 import { TabBtn } from '../../components';
 import { CYBER } from '../../utils/config';
-// import PopapAddress from './popap';
 import Manifest from './manifest';
 import Cyber from './cyber';
 import Corp from './corp';
@@ -29,7 +27,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   const [selected, setSelected] = useState('manifest');
   const [dataTable, setDataTable] = useState({});
   const [dataProgress, setDataProgress] = useState([]);
-  const [pin, setPin] = useState(null);
+  const [dataPin, setDataPin] = useState({});
   const [accountsETH, setAccountsETH] = useState(null);
   const [visa, setVisa] = useState({
     citizen: {
@@ -71,7 +69,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
 
   useEffect(() => {
     const { account } = defaultAccount;
-    console.log('account', account)
+    console.log('account', account);
     if (
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'eth')
@@ -82,9 +80,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
           ...account.eth,
         },
       }));
-      setPin({ ...account.eth });
     } else {
-      setPin(null);
       setPocketAddress((item) => ({
         ...item,
         eth: {
@@ -119,6 +115,28 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   }, [location.pathname]);
 
   useEffect(() => {
+    setDataPin({});
+    if (pocketAddress.eth.bech32 !== null) {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          dataTable,
+          pocketAddress.eth.bech32
+        )
+      ) {
+        setDataPin({
+          [pocketAddress.eth.bech32]: {
+            ...dataTable[pocketAddress.eth.bech32],
+          },
+        });
+      } else {
+        setDataPin({});
+      }
+    } else {
+      setDataPin({});
+    }
+  }, [dataTable, pocketAddress]);
+
+  useEffect(() => {
     if (!dataTxs.loading) {
       const groupsAddress = getGroupAddress(dataTxs.data);
       setDataTable(groupsAddress);
@@ -136,7 +154,6 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   useEffect(() => {
     if (!marketData.loading) {
       const sumGeul = marketData.eulsWon / CYBER.DIVISOR_CYBER_G;
-      console.log('sumGeul', sumGeul);
       Object.keys(visa).forEach((key) => {
         const tempConst =
           0.000099 * sumGeul ** 2 + 0.1 * sumGeul + visa[key].eth;
@@ -155,18 +172,6 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
       });
     }
   }, [marketData]);
-
-  // onClickPopapAdress = () => {
-  //   this.setState({
-  //     popapAdress: false,
-  //   });
-  // };
-
-  // onClickPopapAdressTrue = () => {
-  //   this.setState({
-  //     popapAdress: true,
-  //   });
-  // };
 
   let content;
 
@@ -187,10 +192,12 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   }
 
   if (selected === 'leaderboard') {
-    content = <Table mobile={mobile} pin={pin} data={dataTable} />;
+    content = (
+      <Table mobile={mobile} pin={pocketAddress.eth.bech32} data={dataTable} />
+    );
   }
 
-  if (selected === 'cyber') {
+  if (selected === 'corp') {
     content = <Cyber mobile={mobile} />;
   }
 
@@ -198,21 +205,14 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
     content = <Manifest />;
   }
 
-  if (selected === 'corp') {
+  if (selected === 'gov') {
     content = <Corp mobile={mobile} />;
   }
 
   return (
     <>
-      {/* {popapAdress && (
-          <PopapAddress
-            address={COSMOS.ADDR_FUNDING}
-            onClickPopapAdress={this.onClickPopapAdress}
-          />
-        )} */}
-
       <main className="block-body takeoff">
-        {pin === null && (
+        {Object.keys(dataPin).length === 0 && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
@@ -222,50 +222,41 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             borderRadius="5px"
           >
             <Text fontSize="16px" color="#fff">
-              Takeoff is the key element during the{' '}
-              <Link to="/gol">Game of Links</Link> on the path for deploying
-              Superintelligence. Please, thoroughly study details before
-              donating. But remember - the more you wait, the higher the price.
+              Welcome to the Port! You can get Citizenship right now. Read some
+              philosophy in the{' '}
+              <Link to="/ipfs/QmNYzWnBRVkT7QCGLvQqqCDJNaGXsR3Nzddj2MMS982kRf">
+                post
+              </Link>
             </Text>
           </Pane>
         )}
-        {pin !== null && Object.keys(dataTable).length > 0 && (
-          <Table
-            styles={{ marginBottom: 20, marginTop: 0 }}
-            data={dataTable}
-            onlyPin
-            pin={pin}
-          />
+        {Object.keys(dataPin).length > 0 && (
+          <Table styles={{ marginBottom: 20, marginTop: 0 }} data={dataPin} />
         )}
         <Tablist className="tab-list" marginY={20}>
           <TabBtn
             text="Leaderboard"
             isSelected={selected === 'leaderboard'}
-            // to="/port/leaderboard"
             to={`${match.url}/leaderboard`}
           />
           <TabBtn
             text="Cyber vs Corp"
-            isSelected={selected === 'cyber'}
-            // to="/port/cyber"
-            to={`${match.url}/cyber`}
+            isSelected={selected === 'corp'}
+            to={`${match.url}/cyber-vs-corp`}
           />
           <TabBtn
             text="Manifest"
             isSelected={selected === 'manifest'}
-            // to="/port"
             to={match.url}
           />
           <TabBtn
             text="Cyber vs Gov"
-            isSelected={selected === 'corp'}
-            // to="/port/corp"
-            to={`${match.url}/corp`}
+            isSelected={selected === 'gov'}
+            to={`${match.url}/cyber-vs-gov`}
           />
           <TabBtn
             text="Progress"
             isSelected={selected === 'progress'}
-            // to="/port/progress"
             to={`${match.url}/progress`}
           />
         </Tablist>

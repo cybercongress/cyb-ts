@@ -15,19 +15,13 @@ function CybernomicsTab({ data }) {
             link
           />
         </LinkWindow>
-        <Link
-          to="/gol/faucet"
-          style={{
-            display: 'contents',
-            textDecoration: 'none',
-          }}
-        >
+        <LinkWindow to="https://app.uniswap.org/#/swap?inputCurrency=ETH&outputCurrency=0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64">
           <CardStatisics
-            title="Faucet price of GGOL in ETH"
+            title="Uniswap price of GGOL in ETH"
             value={gol.loading ? <Dots /> : formatNumber(gol.price)}
             link
           />
-        </Link>
+        </LinkWindow>
         <CardStatisics
           title="GOL cap in ETH"
           value={gol.loading ? <Dots /> : formatNumber(gol.cap)}

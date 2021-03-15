@@ -13,7 +13,7 @@ import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import withWeb3 from '../../components/web3/withWeb3';
-import injectKeplr from '../../components/web3/injectKeplr';
+import injectKeplr from './injectKeplr';
 
 import { LEDGER, COSMOS, PATTERN_CYBER } from '../../utils/config';
 import {
@@ -35,6 +35,7 @@ import {
 } from './card';
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
+import { AppContext } from '../../context';
 
 import db from '../../db';
 
@@ -489,7 +490,7 @@ class Wallet extends React.Component {
       hoverCard,
     } = this.state;
     const { web3, keplr, contractToken, ipfsId } = this.props;
-
+    // const { keplr } = this.context;
     let countLink = 0;
     if (link !== null) {
       countLink = [].concat.apply([], link).length;
@@ -675,6 +676,8 @@ const mapStateToProps = (store) => {
     defaultAccount: store.pocket.defaultAccount,
   };
 };
+
+// Wallet.contextType = AppContext;
 
 export default connect(
   mapStateToProps,

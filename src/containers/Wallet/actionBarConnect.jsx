@@ -46,6 +46,7 @@ let ledger = null;
 function ActionBarConnect({
   addAddress,
   updateAddress,
+  updateFuncActionBar,
   keplr,
   web3,
   accountsETH,
@@ -254,6 +255,9 @@ function ActionBarConnect({
     if (updateAddress) {
       updateAddress();
     }
+    if (updateFuncActionBar) {
+      updateFuncActionBar();
+    }
   };
 
   const cleatState = () => {
@@ -347,6 +351,9 @@ function ActionBarConnect({
         if (updateAddress) {
           updateAddress();
         }
+        if (updateFuncActionBar) {
+          updateFuncActionBar();
+        }
       } else {
         setStage(STAGE_ERROR);
       }
@@ -374,6 +381,9 @@ function ActionBarConnect({
       cleatState();
       if (updateAddress) {
         updateAddress();
+      }
+      if (updateFuncActionBar) {
+        updateFuncActionBar();
       }
     }
   };
@@ -460,6 +470,9 @@ function ActionBarConnect({
       if (updateAddress) {
         updateAddress();
       }
+      if (updateFuncActionBar) {
+        updateFuncActionBar();
+      }
     }
   };
 
@@ -469,11 +482,12 @@ function ActionBarConnect({
     let dataPocketAccount = null;
     let valueObj = {};
     let pocketAccount = {};
-    await keplr.enable();
+    const chainId = CYBER.CHAIN_ID;
+    await window.keplr.enable(chainId);
     let count = 1;
 
-    const address = await keplr.getKeys();
-    const pk = Buffer.from(address[0].pubKey).toString('hex');
+    const { address, pubkey } = await keplr.getAccount();
+    const pk = Buffer.from(pubkey.value).toString('hex');
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
     const localStoragePocket = await localStorage.getItem('pocket');
@@ -492,7 +506,7 @@ function ActionBarConnect({
       }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
-      const cyberBech32 = address[0].bech32Address;
+      const cyberBech32 = address;
       if (
         selectAccount !== null ||
         !checkAddress(valueObj, 'cyber', cyberBech32)
@@ -506,7 +520,7 @@ function ActionBarConnect({
       }
     }
     if (selectNetwork === 'cosmos') {
-      const cosmosAddress = fromBech32(address[0].bech32Address, 'cosmos');
+      const cosmosAddress = fromBech32(address, 'cosmos');
       const cosmosBech32 = cosmosAddress;
       if (
         selectAccount !== null ||
@@ -558,6 +572,9 @@ function ActionBarConnect({
     cleatState();
     if (updateAddress) {
       updateAddress();
+    }
+    if (updateFuncActionBar) {
+      updateFuncActionBar();
     }
   };
 

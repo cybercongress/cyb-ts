@@ -15,7 +15,7 @@ function Cyber({ mobile }) {
             paddingBottom: '10px',
           }}
         >
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.5} textAlign="center">
             <TextTable>What</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">

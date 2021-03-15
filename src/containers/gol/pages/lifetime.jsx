@@ -50,7 +50,7 @@ const GET_CHARACTERS = `
   }
   `;
 
-const QueryAddress = address =>
+const QueryAddress = (address) =>
   ` query MyQuery {
     pre_commit_view(where: {consensus_pubkey: {_eq: "${address}"}}) {
       consensus_pubkey
@@ -59,129 +59,32 @@ const QueryAddress = address =>
   }`;
 
 class GolLifetime extends React.Component {
-  ws = new WebSocket(COSMOS.GAIA_WEBSOCKET_URL);
-
   constructor(props) {
     super(props);
     this.state = {
       addressLedger: null,
       validatorAddress: null,
       consensusAddress: null,
-      loadingAtom: false,
+      loadingAtom: true,
       loadingValidator: true,
       sumPrecommits: 0,
       currentPrize: 0,
       herosCount: 0,
       dataTable: [],
       total: 0,
-      addAddress: false,
     };
   }
 
   async componentDidMount() {
-    await this.checkAddressLocalStorage();
-    this.getTxsCosmos();
-    this.getDataWS();
-    this.getValidatorsCount();
-  }
-
-  getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      this.getAtom(tx);
-    }
-  };
-
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected');
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
-          id: '0',
-          params: {
-            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
-          },
-        })
-      );
-    };
-
-    this.ws.onmessage = async evt => {
-      const message = JSON.parse(evt.data);
-      console.warn('txs', message);
-      if (message.result.events) {
-        this.getAtomWS(message.result.events);
-      }
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
-
-  getAtomWS = data => {
-    let amount = 0;
-    console.warn('data', data['transfer.amount']);
-    if (data['transfer.amount']) {
-      console.warn('transfer.amount', data['transfer.amount']);
-      data['transfer.amount'].forEach(element => {
-        let amountWS = 0;
-        if (element.indexOf('uatom') !== -1) {
-          const positionDenom = element.indexOf('uatom');
-          const str = element.slice(0, positionDenom);
-          amountWS = parseFloat(str) / COSMOS.DIVISOR_ATOM;
-        }
-        amount += amountWS;
-      });
-    }
-
     const currentPrize = Math.floor(
-      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
+      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
     );
 
     this.setState({
       currentPrize,
     });
-  };
-
-  checkAddressLocalStorage = async () => {
-    let address = [];
-
-    const localStorageStory = await localStorage.getItem('ledger');
-    if (localStorageStory !== null) {
-      address = JSON.parse(localStorageStory);
-      console.log('address', address);
-      const validatorAddress = fromBech32(address.bech32, 'cybervaloper');
-      let consensusAddress = null;
-      const dataValidatorsInfo = await getValidatorsInfo(validatorAddress);
-      if (dataValidatorsInfo !== null) {
-        consensusAddress = dataValidatorsInfo.consensus_pubkey;
-      }
-      this.setState({
-        addressLedger: address,
-        consensusAddress,
-        validatorAddress,
-        addAddress: false,
-      });
-    } else {
-      this.setState({
-        addAddress: true,
-        loading: true,
-      });
-    }
-  };
+    this.getValidatorsCount();
+  }
 
   getValidatorsCount = async () => {
     const { consensusAddress, dataTable } = this.state;
@@ -207,7 +110,7 @@ class GolLifetime extends React.Component {
       if (Object.keys(dataGraphQL.pre_commit_view).length > 0) {
         dataPreCommit.push(...dataGraphQL.pre_commit_view);
         dataPreCommit.forEach((itemQ, index) => {
-          dataValidators.forEach(itemRPC => {
+          dataValidators.forEach((itemRPC) => {
             if (itemQ.consensus_pubkey === itemRPC.consensus_pubkey) {
               dataPreCommit[index].moniker = itemRPC.description.moniker;
               dataPreCommit[index].operatorAddress = itemRPC.operator_address;
@@ -220,27 +123,11 @@ class GolLifetime extends React.Component {
           dataGraphQL.pre_commit_view_aggregate.aggregate.sum.precommits;
       }
     }
-    console.log(dataPreCommit);
+
     this.setState({
       sumPrecommits,
       dataTable: dataTable.concat(dataPreCommit),
-    });
-  };
-
-  getAtom = async dataTxs => {
-    let amount = 0;
-
-    if (dataTxs) {
-      amount = getAmountATOM(dataTxs);
-    }
-
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
-    );
-
-    this.setState({
-      loadingAtom: true,
-      currentPrize,
+      loadingAtom: false,
     });
   };
 
@@ -263,7 +150,7 @@ class GolLifetime extends React.Component {
     console.log('dataTable', dataTable);
     console.log('validatorAddress', validatorAddress);
 
-    if (!loadingAtom) {
+    if (loadingAtom) {
       return (
         <div
           style={{
@@ -289,36 +176,38 @@ class GolLifetime extends React.Component {
         cybWonAbsolute = lifeTime * currentPrize;
         share = (item.precommits / sumPrecommits) * 100;
       }
-      return (
-        <Table.Row
-          paddingX={0}
-          paddingY={5}
-          borderBottom={item.local ? '1px solid #3ab793bf' : 'none'}
-          display="flex"
-          minHeight="48px"
-          height="fit-content"
-          key={(item.operatorAddress, index)}
-        >
-          <Table.TextCell>
-            <TextTable>
-              <Link to={`/network/euler/hero/${item.operatorAddress}`}>
-                {item.moniker}
-              </Link>
-            </TextTable>
-          </Table.TextCell>
-          <Table.TextCell flex={0.5} textAlign="end">
-            <TextTable>{formatNumber(item.precommits)}</TextTable>
-          </Table.TextCell>
-          <Table.TextCell flex={0.5} textAlign="end">
-            <TextTable>
-              {exponentialToDecimal(share.toPrecision(2))} %
-            </TextTable>
-          </Table.TextCell>
-          <Table.TextCell flex={0.5} textAlign="end">
-            <TextTable>{formatNumber(Math.floor(cybWonAbsolute))}</TextTable>
-          </Table.TextCell>
-        </Table.Row>
-      );
+      if (item.moniker) {
+        return (
+          <Table.Row
+            paddingX={0}
+            paddingY={5}
+            borderBottom={item.local ? '1px solid #3ab793bf' : 'none'}
+            display="flex"
+            minHeight="48px"
+            height="fit-content"
+            key={(item.operatorAddress, index)}
+          >
+            <Table.TextCell>
+              <TextTable>
+                <Link to={`/network/euler/hero/${item.operatorAddress}`}>
+                  {item.moniker}
+                </Link>
+              </TextTable>
+            </Table.TextCell>
+            <Table.TextCell flex={0.5} textAlign="end">
+              <TextTable>{formatNumber(item.precommits)}</TextTable>
+            </Table.TextCell>
+            <Table.TextCell flex={0.5} textAlign="end">
+              <TextTable>
+                {exponentialToDecimal(share.toPrecision(2))} %
+              </TextTable>
+            </Table.TextCell>
+            <Table.TextCell flex={0.5} textAlign="end">
+              <TextTable>{formatNumber(Math.floor(cybWonAbsolute))}</TextTable>
+            </Table.TextCell>
+          </Table.Row>
+        );
+      }
     });
 
     return (

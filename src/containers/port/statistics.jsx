@@ -30,19 +30,9 @@ const Statistics = ({ marketData, time = '∞' }) => {
         value={exponentialToDecimal(currentPrice.toPrecision(6))}
         positionTooltip="bottom"
         tooltipValue={
-          <>
-            <span style={{ fontSize: '14px' }}>
-              The current ETH/GCYB price. 1 Giga CYB = 1,000,000,000 CYB.
-              Durinng inital distribution price is calculated using formula
-              defined in
-            </span>{' '}
-            <LinkWindow
-              style={{ fontSize: '14px' }}
-              to="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
-            >
-              whitepaper
-            </LinkWindow>
-          </>
+          <span style={{ fontSize: '14px' }}>
+            The current ETH/GCYB price. 1 Giga CYB = 1,000,000,000 CYB.
+          </span>
         }
       />
       <Card

@@ -287,11 +287,10 @@ class AccountDetails extends React.Component {
             // this.setState({
             //   following,
             // });
-                console.log('following', following);
+            console.log('following', following);
           }
         }
       });
-  
     }
   };
 
@@ -455,7 +454,7 @@ class AccountDetails extends React.Component {
         //   address
         // );
       }
-      console.log('staking', staking)
+      console.log('staking', staking);
 
       if (result.unbonding && result.unbonding.length > 0) {
         staking.delegations.map((item, index) => {
@@ -473,7 +472,7 @@ class AccountDetails extends React.Component {
       balance: total,
       validatorAddress,
       consensusAddress,
-      // staking,
+      staking,
       loadingAddressInfo: false,
     });
   };
@@ -531,7 +530,7 @@ class AccountDetails extends React.Component {
     const { node, mobile, keplr } = this.props;
 
     let content;
-
+    console.log('staking', staking);
     if (selected === 'heroes') {
       if (loadingAddressInfo) {
         content = <Dots />;
@@ -544,7 +543,7 @@ class AccountDetails extends React.Component {
         );
       }
     }
-
+    console.log('balance', balance);
     if (selected === 'wallet') {
       if (loadingAddressInfo) {
         content = <Dots />;

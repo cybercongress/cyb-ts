@@ -44,13 +44,11 @@ query lifetimeRate {
 `;
 
 function useGetAtom(addressCyber) {
-  const [atom, setAtom] = useState(0);
   const [estimation, setEstimation] = useState(0);
 
   useEffect(() => {
     const feachData = async () => {
       let estimationAll = 0;
-      let amount = 0;
       let addEstimation = 0;
 
       const dataTxs = await getTxCosmos();
@@ -81,20 +79,18 @@ function useGetAtom(addressCyber) {
           if (address === addressCosmos) {
             addEstimation += temE;
           }
-          amount += val;
           estimationAll += temE;
         }
       }
-      setAtom(amount);
       setEstimation(addEstimation);
     };
     feachData();
   }, []);
-  return { atom, estimation };
+  return { estimation };
 }
 
 function useGetGol(address) {
-  const { estimation, atom } = useGetAtom(address);
+  const { estimation } = useGetAtom(address);
   const [validatorAddress, setValidatorAddress] = useState(null);
   const [consensusAddress, setConsensusAddress] = useState(null);
   const [gol, setGol] = useState({
@@ -121,7 +117,7 @@ function useGetGol(address) {
     const feachData = async () => {
       const responseDataQ = await getGraphQLQuery(QueryAddress(address));
       const prize = Math.floor(
-        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * atom
+        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
       );
       if (
         responseDataQ.relevance_leaderboard &&
@@ -134,11 +130,13 @@ function useGetGol(address) {
       }
     };
     feachData();
-  }, [address, atom]);
+  }, [address]);
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor((DISTRIBUTION.load / TAKEOFF.ATOMsALL) * atom);
+      const prize = Math.floor(
+        (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
+      );
       const data = await getLoad(address);
       if (data > 0 && prize > 0) {
         const cybAbsolute = data * prize;
@@ -147,7 +145,7 @@ function useGetGol(address) {
       }
     };
     feachData();
-  }, [address, atom]);
+  }, [address]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -163,7 +161,7 @@ function useGetGol(address) {
     if (validatorAddress !== null) {
       const feachData = async () => {
         const prize = Math.floor(
-          (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * atom
+          (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
         );
         const data = await getDelegation(validatorAddress);
         if (data > 0 && prize > 0) {
@@ -173,7 +171,7 @@ function useGetGol(address) {
       };
       feachData();
     }
-  }, [atom, validatorAddress]);
+  }, [validatorAddress]);
 
   useEffect(() => {
     if (validatorAddress !== null) {
@@ -192,7 +190,7 @@ function useGetGol(address) {
     if (consensusAddress !== null) {
       const feachData = async () => {
         const prize = Math.floor(
-          (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * atom
+          (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
         );
         const dataLifeTime = await getGraphQLQuery(
           getQueryLifeTime(consensusAddress)
@@ -210,7 +208,7 @@ function useGetGol(address) {
       };
       feachData();
     }
-  }, [atom, consensusAddress]);
+  }, [consensusAddress]);
 
   return total;
 }
