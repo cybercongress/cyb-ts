@@ -194,7 +194,7 @@ class Home extends PureComponent {
               {/* <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
               <Link to="/gol">Game of Links</Link> */}
             </Pane>
-            <Link style={{ position: 'absolute', top: '52%' }} to="/trollBoxx">
+            <Link style={{ position: 'absolute', top: '52%' }} to="/degenbox">
               <img src={bender} alt="bender" style={{ height: 170 }} />
             </Link>
           </Pane>

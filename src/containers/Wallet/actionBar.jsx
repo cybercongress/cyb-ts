@@ -175,6 +175,7 @@ function ActionBar({
         accountsETH={accountsETH}
         keplr={keplr}
         updateAddress={updateAddress}
+        updateFuncActionBar={updateFuncActionBar}
         selectAccount={selectAccount}
       />
     );

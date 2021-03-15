@@ -107,12 +107,7 @@ const AppContextProvider = ({ children }) => {
   useEffect(() => {
     console.log('window.getOfflineSigner', window.getOfflineSigner);
     console.log('window.keplr', window.keplr);
-    console.log('window.cosmosJSWalletProvider', window.cosmosJSWalletProvider);
-    if (
-      window.keplr ||
-      window.getOfflineSigner ||
-      window.cosmosJSWalletProvider
-    ) {
+    if (window.keplr || window.getOfflineSigner) {
       if (window.keplr.experimentalSuggestChain) {
         const init = async () => {
           await window.keplr.experimentalSuggestChain(configKeplr());
@@ -123,7 +118,7 @@ const AppContextProvider = ({ children }) => {
         init();
       }
     }
-  }, []);
+  }, [window.keplr, window.getOfflineSigner]);
 
   useEffect(() => {
     if (client !== null) {

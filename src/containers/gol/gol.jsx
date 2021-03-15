@@ -220,22 +220,22 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
 
   let content;
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <Loading />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div
+  //       style={{
+  //         width: '100%',
+  //         height: '50vh',
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         flexDirection: 'column',
+  //       }}
+  //     >
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   if (selected === 'leaderboard') {
     content = (
@@ -258,7 +258,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
         addressLedger={address.addressLedger}
         validatorAddress={address.validatorAddress}
         consensusAddress={address.consensusAddress}
-        takeoffDonations={takeoff.amount}
+        takeoffDonations={TAKEOFF.FINISH_AMOUNT}
         estimation={takeoff.estimation}
         mobile={mobile}
       />
@@ -342,7 +342,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
               title="Donation goal"
               value={`${formatNumber(
-                (takeoff.amount / TAKEOFF.ATOMsALL) * 100,
+                (TAKEOFF.FINISH_AMOUNT / TAKEOFF.ATOMsALL) * 100,
                 2
               )} %`}
             />

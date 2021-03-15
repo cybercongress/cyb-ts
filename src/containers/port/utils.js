@@ -129,7 +129,7 @@ const chekPathname = (pathname) => {
     pathname.match(/cyber-vs-gov/gm) &&
     pathname.match(/cyber-vs-gov/gm).length > 0
   ) {
-    return 'cyber';
+    return 'gov';
   }
   if (
     pathname.match(/cyber-vs-corp/gm) &&
