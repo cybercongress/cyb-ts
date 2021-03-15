@@ -1,10 +1,15 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D, ForceGraph2D } from 'react-force-graph';
-// import { useSubscription } from '@apollo/react-hooks';
+import { connect } from 'react-redux';
 // import gql from 'graphql-tag';
-import { getGraphQLQuery, getIpfsHash } from '../../utils/search/utils';
+import {
+  getGraphQLQuery,
+  getIpfsHash,
+  getContent,
+} from '../../utils/search/utils';
 import { Loading } from '../../components';
 
+import useGetDataGql from './hooks';
 
 // const GET_CYBERLINKS = `
 // query Cyberlinks {
@@ -43,60 +48,96 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceQuitter = () => {
+const ForceQuitter = ({ nodeIpfs }) => {
   let graph;
+  const { data: dataGql } = useGetDataGql(nodeIpfs);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
   useEffect(() => {
     const feachData = async () => {
+      if (dataGql.length > 0) {
+        const from = dataGql.map((a) => a.subject);
+        const to = dataGql.map((a) => a.to);
+        const set = new Set(from.concat(to));
+        const object = [];
+        set.forEach((value) => {
+          object.push({ id: value });
+        });
 
-      const { cyberlink } = await getGraphQLQuery(GET_FOLLOWERS);
-      console.log("followers", cyberlink)
-
-      //TODO
-
-      const from = cyberlink.map((a) => a.subject);
-      // const to = cyberlink.map((a) => a.object_to);
-      // const set = new Set(from.concat(to));
-      const set = new Set(from);
-      const object = [];
-      set.forEach(function (value) {
-        object.push({ id: value });
-      });
-      // console.log("particles",object)
-
-      var addrHashes = {}
-      for (let i = 0; i < object.length; i++) {
-        var addr = await getIpfsHash(cyberlink[i].object_to)
-        console.log(addr)
-        addrHashes[addr] = cyberlink[i].subject
-      }
-      console.log("addrHashes",addrHashes)
-
-      for (let i = 0; i < cyberlink.length; i++) {
-        var to = cyberlink[i].object_to 
-        console.log("to", to)
-        cyberlink[i] = {
-          source: cyberlink[i].subject,
-          target: addrHashes[to],
-          name: cyberlink[i].txhash,
-          subject: cyberlink[i].subject,
-          // curvative: getRandomInt(20, 500) / 1000,
+        const dataGqlObj = dataGql.reduce(
+          (obj, item) => [
+            ...obj,
+            {
+              source: item.subject,
+              target: item.to,
+              name: item.txhash,
+              subject: item.subject,
+            },
+          ],
+          []
+        );
+        console.log('dataGqlObj', dataGqlObj);
+        console.log('object', object);
+        graph = {
+          nodes: object,
+          links: dataGqlObj,
         };
+        setItems(graph);
+        setLoading(false);
       }
-      console.log("cyberlinks", cyberlink)
-      console.log("object", object)
-      graph = {
-        nodes: object,
-        links: cyberlink,
-      };
-      setItems(graph);
-      setLoading(false);
     };
     feachData();
-  }, []);
+  }, [dataGql]);
+
+  // useEffect(() => {
+  //   const feachData = async () => {
+  //     const { cyberlink } = await getGraphQLQuery(GET_FOLLOWERS);
+  //     console.log('followers', cyberlink);
+
+  //     // TODO
+
+  //     const from = cyberlink.map((a) => a.subject);
+  //     // const to = cyberlink.map((a) => a.object_to);
+  //     // const set = new Set(from.concat(to));
+  //     const set = new Set(from);
+  //     const object = [];
+  //     set.forEach(function (value) {
+  //       object.push({ id: value });
+  //     });
+  //     // console.log("particles",object)
+
+  //     const addrHashes = {};
+  //     for (let i = 0; i < object.length; i++) {
+  //       const addr = await getIpfsHash(cyberlink[i].object_to);
+  //       console.log(addr);
+  //       addrHashes[addr] = cyberlink[i].subject;
+  //     }
+  //     console.log('addrHashes', addrHashes);
+
+  //     for (let i = 0; i < cyberlink.length; i++) {
+  //       const to = cyberlink[i].object_to;
+  //       console.log('to', to);
+  //       cyberlink[i] = {
+  //         source: cyberlink[i].subject,
+  //         target: addrHashes[to],
+  //         name: cyberlink[i].txhash,
+  //         subject: cyberlink[i].subject,
+  //         // curvative: getRandomInt(20, 500) / 1000,
+  //       };
+  //     }
+  //     console.log('cyberlinks', cyberlink);
+  //     console.log('object', object);
+  //     graph = {
+  //       nodes: object,
+  //       links: cyberlink,
+  //     };
+  //     setItems(graph);
+  //     setLoading(false);
+  //   };
+  //   feachData();
+  // }, []);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -194,11 +235,11 @@ const ForceQuitter = () => {
     );
   }
 
-  var pocket
+  let pocket;
   if (localStorage.getItem('pocket') != null) {
-    var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
-    var keyPocket = Object.keys(localStoragePocketData)[0];
-    pocket = localStoragePocketData[keyPocket]["cyber"].bech32
+    const localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
+    const keyPocket = Object.keys(localStoragePocketData)[0];
+    pocket = localStoragePocketData[keyPocket].cyber.bech32;
   }
 
   return (
@@ -223,18 +264,18 @@ const ForceQuitter = () => {
         // linkLabel="txhash"
         // linkColor={() => 'rgba(9,255,13,1)'}
         linkColor={(link) =>
-          localStorage.getItem('pocket') != null ?
-          link.subject == pocket
-            ? 'rgba(0, 161, 255, 1)'
-            : 'rgba(9,255,13,1)'
-        : 'white' }
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'rgba(0, 161, 255, 1)'
+              : 'rgba(9,255,13,1)'
+            : 'white'
+        }
         linkWidth={2}
         linkCurvature={0.2}
         linkOpacity={0.4}
         linkDirectionalParticles={1}
         linkDirectionalParticleWidth={2}
         linkDirectionalParticleSpeed={0.02}
-
         onNodeClick={handleNodeClick}
         onNodeRightClick={handleNodeRightClick}
         onLinkClick={handleLinkClick}
@@ -246,4 +287,10 @@ const ForceQuitter = () => {
   );
 };
 
-export default ForceQuitter;
+const mapStateToProps = (store) => {
+  return {
+    nodeIpfs: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(ForceQuitter);
