@@ -47,7 +47,7 @@ const ForceGraph = ({ match }) => {
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
-  var limit = 420
+  var limit = 1024
   var where
   useEffect(() => {
     const feachData = async () => {
@@ -125,7 +125,7 @@ const ForceGraph = ({ match }) => {
 
   const handleNodeRightClick = useCallback(
     (node) => {
-      window.open(`https://ipfs.io/ipfs/${node.id}`, '_blank');
+      window.open(`https://cyber.page/ipfs/${node.id}`, '_blank');
     },
     [fgRef]
   );
@@ -204,8 +204,8 @@ const ForceGraph = ({ match }) => {
         ref={fgRef}
         showNavInfo
         backgroundColor="#000000"
-        warmupTicks={800}
-        cooldownTicks={800}
+        warmupTicks={420}
+        cooldownTicks={0}
         // cooldownTime={2000}
         enableNodeDrag={false}
         enablePointerInteraction
@@ -213,7 +213,7 @@ const ForceGraph = ({ match }) => {
         nodeLabel="id"
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
-        nodeRelSize={5}
+        nodeRelSize={6}
         // linkSource="object_from"
         // linkTarget="object_to"
         // linkLabel="txhash"
@@ -221,20 +221,20 @@ const ForceGraph = ({ match }) => {
         linkColor={(link) =>
           localStorage.getItem('pocket') != null ?
           link.subject == pocket
-            ? 'white'
+            ? 'red'
             : 'rgba(9,255,13,1)'
         : 'rgba(9,255,13,1)' }
-        linkWidth={2}
+        linkWidth={3}
         linkCurvature={0.2}
-        linkOpacity={0.4}
+        linkOpacity={0.25}
         linkDirectionalParticles={1}
-        linkDirectionalParticleWidth={2}
+        linkDirectionalParticleWidth={3}
         linkDirectionalParticleSpeed={0.02}
 
-        onNodeClick={handleNodeClick}
-        onNodeRightClick={handleNodeRightClick}
-        onLinkClick={handleLinkClick}
-        onLinkRightClick={handleLinkRightClick}
+        onNodeClick={handleNodeRightClick}
+        onNodeRightClick={handleNodeClick}
+        onLinkClick={handleLinkRightClick}
+        onLinkRightClick={handleLinkClick}
         // onBackgroundClick={handleBackgroundClick}
         onEngineStop={handleEngineStop}
       />
