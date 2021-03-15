@@ -102,11 +102,18 @@ class TrollBoxx extends React.PureComponent {
   }
 
   async componentDidMount() {
-    await this.init();
+    const { node } = this.props;
+    if (node !== null) {
+      await this.init();
+    }
     this.scrollToBottom();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    const { node } = this.props;
+    if (node !== prevProps.node) {
+      this.init();
+    }
     this.scrollToBottom();
   }
 
@@ -124,7 +131,7 @@ class TrollBoxx extends React.PureComponent {
     this.setState({
       room: roomIpfs,
     });
-    console.log('roomIpfs', roomIpfs)
+    console.log('roomIpfs', roomIpfs);
     // setRoom(roomIpfs);
     roomIpfs.on('peer joined', (peer) => console.log(`peer ${peer} joined`));
     roomIpfs.on('peer left', (peer) => console.log(`peer ${peer} left`));

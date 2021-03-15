@@ -59,9 +59,9 @@ function AppRouter({
     setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
 
-  if (loader) {
-    return <Dots />;
-  }
+  // if (loader) {
+  //   return <Dots />;
+  // }
 
   // add Switch to Router
   return (
