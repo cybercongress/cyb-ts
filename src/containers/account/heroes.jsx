@@ -12,7 +12,7 @@ import { CYBER } from '../../utils/config';
 
 const noitem = require('../../image/noitem.svg');
 
-const getDaysIn = time => {
+const getDaysIn = (time) => {
   const completionTime = new Date(time);
   const timeNow = Date.now();
 
@@ -84,11 +84,11 @@ const Unbonding = ({ amount, stages, entries }) => (
 );
 
 const Heroes = ({ data, ...props }) => {
-  console.log('data.delegations', data.delegations);
-  const delegations = data.delegations.map(item => {
+  const { delegations } = data;
+  const delegationsItem = Object.keys(delegations).map((item) => {
     let amount = 0;
-    if (item.entries !== undefined) {
-      item.entries.forEach(entry => {
+    if (delegations[item].entries !== undefined) {
+      delegations[item].entries.forEach((entry) => {
         amount += parseFloat(entry.balance);
       });
     }
@@ -96,7 +96,7 @@ const Heroes = ({ data, ...props }) => {
     return (
       <Table.Row
         borderBottom="none"
-        key={item.validator_address}
+        key={delegations[item].validator_address}
         display="flex"
         marginBottom={10}
         minHeight="48px"
@@ -106,28 +106,31 @@ const Heroes = ({ data, ...props }) => {
       >
         <Table.TextCell flex={2} textAlign="start">
           <TextTable>
-            <Account address={item.validator_address} />
+            <Account address={delegations[item].validator_address} />
           </TextTable>
         </Table.TextCell>
         <Table.TextCell flex={1.5} textAlign="end">
-          {item.entries !== undefined && (
+          {delegations[item].entries !== undefined && (
             <Unbonding
               amount={amount}
-              stages={item.entries.length}
-              entries={item.entries}
+              stages={delegations[item].entries.length}
+              entries={delegations[item].entries}
             />
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          {item.reward !== undefined && (
+          {delegations[item].reward !== undefined && (
             <Tooltip
               content={`${formatNumber(
-                item.reward
+                delegations[item].reward
               )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
               position="bottom"
             >
               <TextTable>
-                {formatCurrency(item.reward, CYBER.DENOM_CYBER.toUpperCase())}
+                {formatCurrency(
+                  delegations[item].reward,
+                  CYBER.DENOM_CYBER.toUpperCase()
+                )}
               </TextTable>
             </Tooltip>
           )}
@@ -135,13 +138,13 @@ const Heroes = ({ data, ...props }) => {
         <Table.TextCell textAlign="end">
           <Tooltip
             content={`${formatNumber(
-              parseFloat(item.balance.amount)
+              parseFloat(delegations[item].balance.amount)
             )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
             position="bottom"
           >
             <TextTable>
               {formatCurrency(
-                parseFloat(item.balance.amount),
+                parseFloat(delegations[item].balance.amount),
                 CYBER.DENOM_CYBER.toUpperCase()
               )}
             </TextTable>
@@ -183,8 +186,8 @@ const Heroes = ({ data, ...props }) => {
             padding: 7,
           }}
         >
-          {delegations.length > 0 ? (
-            delegations
+          {delegationsItem.length > 0 ? (
+            delegationsItem
           ) : (
             <Noitem text="No Delegations" />
           )}

@@ -342,7 +342,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
               styleTitle={{ fontSize: '16px', color: '#3ab793' }}
               title="Donation goal"
               value={`${formatNumber(
-                (takeoff.amount / TAKEOFF.ATOMsALL) * 100,
+                (TAKEOFF.FINISH_AMOUNT / TAKEOFF.ATOMsALL) * 100,
                 2
               )} %`}
             />
