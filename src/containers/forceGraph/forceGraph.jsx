@@ -1,27 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { ForceGraph3D, ForceGraph2D } from 'react-force-graph';
-// import { useSubscription } from '@apollo/react-hooks';
-// import gql from 'graphql-tag';
+import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
-
-// const GET_CYBERLINKS = `
-// query Cyberlinks {
-//   cyberlink(limit: 420, order_by: {height: desc}, where: {subject: {_eq: "cyber12u6qgyrdsy4xmw04vfkkkh9a9tqzw66gsay86k"}}) {
-//     object_from
-//     object_to
-//     subject
-//     txhash
-//   }
-// }
-// `;
-
-// query Cyberlinks {
-//   cyberlink(limit: 1000, where: {object_from: {_eq: "QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx"}}) {
-//     object_to
-//     subject
-//   }
-// }
 
 // const CYBERLINK_SUBSCRIPTION = gql`
 //   subscription newCyberlinkLink {
@@ -56,7 +36,7 @@ const ForceGraph = ({ match }) => {
       } else { 
         where = "{}"
       }
-      var GET_CYBERLINKS_NEW = `
+      var GET_CYBERLINKS = `
       query Cyberlinks {
         cyberlink(limit: ${String(limit)}, order_by: {height: desc}, where: ${where}) {
           object_from
@@ -66,7 +46,7 @@ const ForceGraph = ({ match }) => {
         }
       }
       `;
-      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS_NEW);
+      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS);
       const from = cyberlink.map((a) => a.object_from);
       const to = cyberlink.map((a) => a.object_to);
       const set = new Set(from.concat(to));
@@ -206,36 +186,29 @@ const ForceGraph = ({ match }) => {
         backgroundColor="#000000"
         warmupTicks={420}
         cooldownTicks={0}
-        // cooldownTime={2000}
         enableNodeDrag={false}
         enablePointerInteraction
-        // nodeId="object"
         nodeLabel="id"
         nodeColor={() => 'rgba(0,100,235,1)'}
         nodeOpacity={1.0}
-        nodeRelSize={6}
-        // linkSource="object_from"
-        // linkTarget="object_to"
-        // linkLabel="txhash"
-        // linkColor={() => 'rgba(9,255,13,1)'}
+        nodeRelSize={8}
         linkColor={(link) =>
           localStorage.getItem('pocket') != null ?
           link.subject == pocket
             ? 'red'
             : 'rgba(9,255,13,1)'
         : 'rgba(9,255,13,1)' }
-        linkWidth={3}
+        linkWidth={4}
         linkCurvature={0.2}
-        linkOpacity={0.25}
+        linkOpacity={0.7}
         linkDirectionalParticles={1}
-        linkDirectionalParticleWidth={3}
+        linkDirectionalParticleColor={() => 'white'}
+        linkDirectionalParticleWidth={4}
         linkDirectionalParticleSpeed={0.02}
-
         onNodeClick={handleNodeRightClick}
         onNodeRightClick={handleNodeClick}
         onLinkClick={handleLinkRightClick}
         onLinkRightClick={handleLinkClick}
-        // onBackgroundClick={handleBackgroundClick}
         onEngineStop={handleEngineStop}
       />
     </div>
