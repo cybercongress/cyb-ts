@@ -23,6 +23,7 @@ function getRandomInt(min, max) {
 const ForceGraph = ({ match }) => {
   let graph;
   const { agent } = match.params;
+  const [hasLoaded, setHasLoaded] = useState(true);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
@@ -119,6 +120,7 @@ const ForceGraph = ({ match }) => {
 
   const handleEngineStop = useCallback(() => {
     console.log('engine stopped!');
+    setHasLoaded(false);
   });
 
   // const handleNewLink = useCallback(subscription => {
@@ -166,6 +168,9 @@ const ForceGraph = ({ match }) => {
         }}
       >
         <Loading />
+        <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+          receiving data
+        </div>
       </div>
     );
   }
@@ -179,6 +184,25 @@ const ForceGraph = ({ match }) => {
 
   return (
     <div>
+      {hasLoaded && (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            position: 'absolute',
+            zIndex: 2,
+          }}
+        >
+          <Loading />
+          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+            graphing
+          </div>
+        </div>
+      )}
       <ForceGraph3D
         graphData={data}
         ref={fgRef}
@@ -193,11 +217,12 @@ const ForceGraph = ({ match }) => {
         nodeOpacity={1.0}
         nodeRelSize={8}
         linkColor={(link) =>
-          localStorage.getItem('pocket') != null ?
-          link.subject == pocket
-            ? 'red'
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'red'
+              : 'rgba(9,255,13,1)'
             : 'rgba(9,255,13,1)'
-        : 'rgba(9,255,13,1)' }
+        }
         linkWidth={4}
         linkCurvature={0.2}
         linkOpacity={0.7}

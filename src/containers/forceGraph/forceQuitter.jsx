@@ -13,6 +13,7 @@ function getRandomInt(min, max) {
 
 const ForceQuitter = ({ nodeIpfs }) => {
   let graph;
+  const [hasLoaded, setHasLoaded] = useState(true);
   const { data: dataGql } = useGetDataGql(nodeIpfs);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
@@ -99,6 +100,8 @@ const ForceQuitter = ({ nodeIpfs }) => {
 
   const handleEngineStop = useCallback(() => {
     console.log('rendering engine is stopped!');
+    setHasLoaded(false);
+
   });
 
   if (loading) {
@@ -114,6 +117,9 @@ const ForceQuitter = ({ nodeIpfs }) => {
         }}
       >
         <Loading />
+        <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+          receiving data
+        </div>
       </div>
     );
   }
@@ -127,6 +133,25 @@ const ForceQuitter = ({ nodeIpfs }) => {
 
   return (
     <div>
+      {hasLoaded && (
+        <div
+          style={{
+            width: '100%',
+            height: '50vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            position: 'absolute',
+            zIndex: 2,
+          }}
+        >
+          <Loading />
+          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+            graphing
+          </div>
+        </div>
+      )}
       <ForceGraph3D
         graphData={data}
         ref={fgRef}
@@ -141,11 +166,12 @@ const ForceQuitter = ({ nodeIpfs }) => {
         nodeOpacity={1.0}
         nodeRelSize={7}
         linkColor={(link) =>
-          localStorage.getItem('pocket') != null ?
-          link.subject == pocket
-            ? 'red'
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'red'
+              : 'blue'
             : 'blue'
-        : 'blue' }
+        }
         linkWidth={4}
         linkCurvature={0.2}
         linkOpacity={0.7}
