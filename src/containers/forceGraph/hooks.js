@@ -15,7 +15,7 @@ const useGetDataGql = (nodeIpfs) => {
 
         cyberlink.forEach(async (item) => {
           const response = await getIndexdDb(item.object_to, nodeIpfs);
-          if (response !== null) {
+          if (response && response !== null) {
             setData((itemData) => [
               ...itemData,
               {
