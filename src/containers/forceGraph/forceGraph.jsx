@@ -199,7 +199,7 @@ const ForceGraph = ({ match }) => {
         >
           <Loading />
           <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-            graphing
+            rendering brain
           </div>
         </div>
       )}
@@ -227,9 +227,14 @@ const ForceGraph = ({ match }) => {
         linkCurvature={0.2}
         linkOpacity={0.7}
         linkDirectionalParticles={1}
-        linkDirectionalParticleColor={() => 'white'}
+        linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
         linkDirectionalParticleWidth={4}
-        linkDirectionalParticleSpeed={0.02}
+        linkDirectionalParticleSpeed={0.015}
+        
+        // linkDirectionalArrowRelPos={1}
+        // linkDirectionalArrowLength={10}
+        // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
+
         onNodeClick={handleNodeRightClick}
         onNodeRightClick={handleNodeClick}
         onLinkClick={handleLinkRightClick}

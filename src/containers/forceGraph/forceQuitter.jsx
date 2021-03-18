@@ -148,7 +148,7 @@ const ForceQuitter = ({ nodeIpfs }) => {
         >
           <Loading />
           <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-            graphing
+            rendering brain
           </div>
         </div>
       )}
@@ -162,9 +162,15 @@ const ForceQuitter = ({ nodeIpfs }) => {
         enableNodeDrag={false}
         enablePointerInteraction
         nodeLabel="id"
-        nodeColor={() => 'white'}
+        nodeColor={(link) =>
+          localStorage.getItem('pocket') != null
+            ? link.id == pocket
+              ? 'red'
+              : 'white'
+            : 'white'}
         nodeOpacity={1.0}
-        nodeRelSize={7}
+        nodeRelSize={8}
+        nodeResolution={16}
         linkColor={(link) =>
           localStorage.getItem('pocket') != null
             ? link.subject == pocket
@@ -172,13 +178,31 @@ const ForceQuitter = ({ nodeIpfs }) => {
               : 'blue'
             : 'blue'
         }
-        linkWidth={4}
+        linkWidth={2}
         linkCurvature={0.2}
         linkOpacity={0.7}
         linkDirectionalParticles={1}
-        linkDirectionalParticleColor={() => 'white'}
-        linkDirectionalParticleWidth={4}
-        linkDirectionalParticleSpeed={0.02}
+        linkDirectionalParticleColor={(link) =>
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'red'
+              : 'blue'
+            : 'blue'
+        }
+        linkDirectionalParticleWidth={2}
+        linkDirectionalParticleSpeed={0.01}
+        
+        linkDirectionalArrowRelPos={1.15}
+        linkDirectionalArrowLength={10}
+        linkDirectionalArrowResolution={16}
+        linkDirectionalArrowColor={(link) =>
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'red'
+              : 'blue'
+            : 'blue'
+        }
+
         onNodeClick={handleNodeRightClick}
         onNodeRightClick={handleNodeClick}
         onLinkClick={handleLinkRightClick}
