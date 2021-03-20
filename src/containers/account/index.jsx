@@ -36,10 +36,9 @@ import { setGolTakeOff } from '../../redux/actions/gol';
 import FeedsTab from './feeds';
 import FollowsTab from './follows';
 import AvatarIpfs from './avatarIpfs';
-import injectKeplr from '../../components/web3/injectKeplr';
 import CyberLinkCount from './cyberLinkCount';
 
-import { COSMOS, PATTERN_CYBER } from '../../utils/config';
+import { COSMOS, PATTERN_CYBER, TAKEOFF } from '../../utils/config';
 
 const FileType = require('file-type');
 const isSvg = require('is-svg');
@@ -96,6 +95,11 @@ class AccountDetails extends React.Component {
       follow: true,
       tweets: false,
       takeoffDonations: 0,
+      community: {
+        following: [],
+        followers: [],
+        friends: [],
+      },
       balance: {
         available: 0,
         delegation: 0,
@@ -116,7 +120,8 @@ class AccountDetails extends React.Component {
     this.init();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
+    const { followers, following } = this.state;
     const { location, match, defaultAccount } = this.props;
     if (prevProps.location.pathname !== location.pathname) {
       this.getBalanseAccount();
@@ -131,11 +136,25 @@ class AccountDetails extends React.Component {
       this.chekAddress();
       this.chekFollowAddress();
     }
+
+    if (
+      prevState.followers !== followers ||
+      prevState.following !== following
+    ) {
+      this.getFriends();
+    }
   }
 
   init = async () => {
-    this.setState({
+    await this.setState({
       loadingGoL: true,
+      community: {
+        following: [],
+        followers: [],
+        friends: [],
+      },
+      following: [],
+      followers: [],
     });
     await this.chekAddress();
     this.chekFollowAddress();
@@ -163,6 +182,11 @@ class AccountDetails extends React.Component {
       follow: true,
       tweets: false,
       takeoffDonations: 0,
+      community: {
+        following: [],
+        followers: [],
+        friends: [],
+      },
       balance: {
         available: 0,
         delegation: 0,
@@ -255,11 +279,14 @@ class AccountDetails extends React.Component {
     if (responseFollows !== null && responseFollows.txs) {
       responseFollows.txs.forEach(async (item) => {
         const addressFollowers = item.tx.value.msg[0].value.address;
-        followers.push(addressFollowers);
+        this.setState((itemState) => ({
+          followers: [...itemState.followers, addressFollowers],
+        }));
+        // followers.push(addressFollowers);
       });
-      this.setState({
-        followers,
-      });
+      // this.setState({
+      //   followers,
+      // });
     }
   };
 
@@ -271,26 +298,72 @@ class AccountDetails extends React.Component {
 
     if (address) {
       responseFollows = await getFollows(address);
-      console.log('responseFollows', responseFollows);
+      // console.log('responseFollows', responseFollows);
     }
 
     if (responseFollows !== null && responseFollows.txs) {
       responseFollows.txs.forEach(async (item) => {
         const cid = item.tx.value.msg[0].value.links[0].to;
         const addressResolve = await getContent(cid);
-        console.log('addressResolve :>> ', addressResolve);
+        // console.log('addressResolve :>> ', addressResolve);
         if (addressResolve) {
           const addressFollow = addressResolve;
           // console.log('addressResolve :>> ', addressResolve);
           if (addressFollow.match(PATTERN_CYBER)) {
-            following.push(addressFollow);
+            // following.push(addressFollow);
+            this.setState((itemState) => ({
+              following: [...itemState.following, addressFollow],
+            }));
             // this.setState({
             //   following,
             // });
-            console.log('following', following);
+            // console.log('following', following);
           }
         }
       });
+    }
+  };
+
+  getFriends = () => {
+    const { following, followers } = this.state;
+
+    if (following.length > 0 && followers.length > 0) {
+      const followingArr = [];
+      const followersArr = followers.slice();
+      const friendsArr = [];
+      following.forEach((item) => {
+        if (followersArr.indexOf(item) !== -1) {
+          const index = followersArr.indexOf(item);
+          followersArr.splice(index, 1);
+          friendsArr.push(item);
+        } else {
+          followingArr.push(item);
+        }
+      });
+      this.setState({
+        community: {
+          following: followingArr,
+          followers: followersArr,
+          friends: friendsArr,
+        },
+      });
+    } else {
+      if (following.length > 0 && followers.length === 0) {
+        this.setState((itemState) => ({
+          community: {
+            ...itemState.community,
+            following,
+          },
+        }));
+      }
+      if (following.length === 0 && followers.length > 0) {
+        this.setState((itemState) => ({
+          community: {
+            ...itemState.community,
+            followers,
+          },
+        }));
+      }
     }
   };
 
@@ -449,21 +522,18 @@ class AccountDetails extends React.Component {
           }),
           {}
         );
-        // staking.delegations = await this.countReward(
-        //   staking.delegations,
-        //   address
-        // );
+        staking.delegations = await this.countReward(
+          staking.delegations,
+          address
+        );
       }
-      console.log('staking', staking);
-
+      // console.log('staking', staking);
       if (result.unbonding && result.unbonding.length > 0) {
-        staking.delegations.map((item, index) => {
-          return result.unbonding.map((itemUnb) => {
-            if (item.validator_address === itemUnb.validator_address) {
-              staking.delegations[index].entries = itemUnb.entries;
-            }
-            return staking.delegations[index];
-          });
+        const { delegations } = staking;
+        result.unbonding.forEach((itemUnb) => {
+          if (delegations[itemUnb.validator_address]) {
+            delegations[itemUnb.validator_address].entries = itemUnb.entries;
+          }
         });
         staking.unbonding = result.unbonding;
       }
@@ -477,26 +547,27 @@ class AccountDetails extends React.Component {
     });
   };
 
-  // countReward = async (data, address) => {
-  //   const delegations = data;
-  //   await asyncForEach(
-  //     Array.from(Array(delegations.length).keys()),
-  //     async (item) => {
-  //       let reward = 0;
-  //       const resultRewards = await getRewards(
-  //         address,
-  //         delegations[item].validator_address
-  //       );
-  //       if (resultRewards[0] && resultRewards[0].amount) {
-  //         reward = parseFloat(resultRewards[0].amount);
-  //         delegations[item].reward = Math.floor(reward);
-  //       } else {
-  //         delegations[item].reward = reward;
-  //       }
-  //     }
-  //   );
-  //   return delegations;
-  // };
+  countReward = async (data, address) => {
+    const delegations = data;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in delegations) {
+      if (Object.hasOwnProperty.call(delegations, key)) {
+        let reward = 0;
+        // eslint-disable-next-line no-await-in-loop
+        const resultRewards = await getRewards(
+          address,
+          delegations[key].validator_address
+        );
+        if (resultRewards[0] && resultRewards[0].amount) {
+          reward = parseFloat(resultRewards[0].amount);
+          delegations[key].reward = Math.floor(reward);
+        } else {
+          delegations[key].reward = reward;
+        }
+      }
+    }
+    return delegations;
+  };
 
   select = (selected) => {
     this.setState({ selected });
@@ -524,13 +595,13 @@ class AccountDetails extends React.Component {
       following,
       followers,
       addressLocalStor,
+      community,
     } = this.state;
     // console.log('following', following);
 
-    const { node, mobile, keplr } = this.props;
+    const { node, mobile, match } = this.props;
 
     let content;
-    console.log('staking', staking);
     if (selected === 'heroes') {
       if (loadingAddressInfo) {
         content = <Dots />;
@@ -543,7 +614,7 @@ class AccountDetails extends React.Component {
         );
       }
     }
-    console.log('balance', balance);
+    // console.log('balance', balance);
     if (selected === 'wallet') {
       if (loadingAddressInfo) {
         content = <Dots />;
@@ -577,8 +648,7 @@ class AccountDetails extends React.Component {
                 addressLedger={account}
                 validatorAddress={validatorAddress}
                 consensusAddress={consensusAddress}
-                takeoffDonations={takeoffDonations}
-                won={won}
+                takeoffDonations={TAKEOFF.FINISH_AMOUNT}
               />
             )}
           />
@@ -600,13 +670,7 @@ class AccountDetails extends React.Component {
       content = (
         <Route
           path="/network/euler/contract/:address/community"
-          render={() => (
-            <FollowsTab
-              node={node}
-              following={following}
-              followers={followers}
-            />
-          )}
+          render={() => <FollowsTab node={node} community={community} />}
         />
       );
       // connect = <FollowsTab data={addressFollows} />;
@@ -705,13 +769,12 @@ class AccountDetails extends React.Component {
         {!mobile &&
           (addressLocalStor !== null ? (
             <ActionBarContainer
-              updateAddress={this.init}
+              updateAddress={() => this.init()}
               addressSend={account}
               type={selected}
               follow={follow}
               tweets={tweets}
               defaultAccount={addressLocalStor}
-              keplr={keplr}
             />
           ) : (
             <ActionBar>
@@ -750,7 +813,4 @@ const mapDispatchprops = (dispatch) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchprops
-)(injectKeplr(AccountDetails));
+export default connect(mapStateToProps, mapDispatchprops)(AccountDetails);
