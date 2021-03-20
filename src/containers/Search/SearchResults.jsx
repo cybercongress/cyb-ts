@@ -27,9 +27,8 @@ import {
 } from '../../utils/config';
 import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../ipfs/contentItem';
-import injectKeplr from '../../components/web3/injectKeplr';
 
-function SearchResults({ node, mobile, keplr, setQueryProps }) {
+function SearchResults({ node, mobile, setQueryProps }) {
   const { query } = useParams();
   const location = useLocation();
   const [searchResults, setSearchResults] = useState({});
@@ -279,7 +278,6 @@ function SearchResults({ node, mobile, keplr, setQueryProps }) {
         <ActionBarContainer
           keywordHash={keywordHash}
           update={() => setUpdate(update + 1)}
-          keplr={keplr}
           rankLink={rankLink}
         />
       )}
@@ -300,7 +298,4 @@ const mapDispatchprops = (dispatch) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchprops
-)(injectKeplr(SearchResults));
+export default connect(mapStateToProps, mapDispatchprops)(SearchResults);

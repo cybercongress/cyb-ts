@@ -5,7 +5,6 @@ import { trimString } from '../../utils/utils';
 import { getAvatar, getAvatarIpfs } from '../../utils/search/utils';
 import { PATTERN_CYBER } from '../../utils/config';
 
-
 const img = require('../../image/logo-cyb-v3.svg');
 
 function AvatarIpfs({
@@ -23,9 +22,10 @@ function AvatarIpfs({
 
   useEffect(() => {
     if (addressCyber.match(PATTERN_CYBER)) {
+      setAvatar(null);
       feachAvatar(addressCyber);
     }
-  }, [addressCyber]);
+  }, [addressCyber, node]);
 
   const feachAvatar = async address => {
     const response = await getAvatar(address);

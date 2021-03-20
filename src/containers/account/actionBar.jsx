@@ -3,6 +3,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import LocalizedStrings from 'react-localization';
 import { connect } from 'react-redux';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -29,22 +30,9 @@ import {
   getPin,
 } from '../../utils/search/utils';
 
-import { i18n } from '../../i18n/en';
-
-const {
-  AccAddress,
-  ValAddress,
-} = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
-const { MsgSend } = require('@chainapsis/cosmosjs/x/bank');
-const {
-  MsgWithdrawDelegatorReward,
-} = require('@chainapsis/cosmosjs/x/distribution');
+import { AppContext } from '../../context';
 
 const { DIVISOR_CYBER_G } = CYBER;
-
-const T = new LocalizedStrings(i18n);
 
 const {
   STAGE_INIT,
@@ -213,76 +201,87 @@ class ActionBarContainer extends Component {
 
   generateTxSendKplr = async () => {
     const { contentHash, toSendAddres, toSend } = this.state;
-    const { keplr, type, addressSend, node, follow, tweets } = this.props;
+    const { keplr } = this.context;
+    const { type, addressSend, node, follow, tweets } = this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
 
-    await keplr.enable();
-    const sender = (await keplr.getKeys())[0].bech32Address;
+    if (keplr !== null) {
+      await window.keplr.enable(CYBER.CHAIN_ID);
+      const { address } = await keplr.getAccount();
 
-    const msg = [];
-    if (type === 'heroes') {
-      if (sender === addressSend) {
-        const dataTotalRewards = await getTotalRewards(sender);
-        if (dataTotalRewards !== null && dataTotalRewards.rewards) {
-          const { rewards } = dataTotalRewards;
-          Object.keys(rewards).forEach((key) => {
-            if (rewards[key].reward !== null) {
-              const tempMsg = new MsgWithdrawDelegatorReward(
-                AccAddress.fromBech32(
-                  sender,
-                  CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-                ),
-                ValAddress.fromBech32(
-                  rewards[key].validator_address,
-                  CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
-                )
-              );
-              msg.push(tempMsg);
-            }
-          });
+      const msg = [];
+      if (type === 'heroes') {
+        if (address === addressSend) {
+          const dataTotalRewards = await getTotalRewards(address);
+          if (dataTotalRewards !== null && dataTotalRewards.rewards) {
+            const { rewards } = dataTotalRewards;
+            Object.keys(rewards).forEach((key) => {
+              if (rewards[key].reward !== null) {
+                const tempMsg = {
+                  type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+                  value: {
+                    delegator_address: address,
+                    validator_address: rewards[key].validator_address,
+                  },
+                };
+                msg.push(tempMsg);
+              }
+            });
+          }
         }
+      } else if (type === 'tweets' && follow) {
+        const fromCid = await getPin(node, 'follow');
+        const toCid = await getPin(node, addressSend);
+        msg.push({
+          type: 'cyber/Link',
+          value: {
+            address,
+            links: [
+              {
+                from: fromCid,
+                to: toCid,
+              },
+            ],
+          },
+        });
+      } else if (type === 'tweets' && tweets) {
+        const fromCid = await getPin(node, 'tweet');
+        const toCid = await this.calculationIpfsTo(contentHash);
+        msg.push({
+          type: 'cyber/Link',
+          value: {
+            address,
+            links: [
+              {
+                from: fromCid,
+                to: toCid,
+              },
+            ],
+          },
+        });
+      } else {
+        msg.push({
+          type: 'cosmos-sdk/MsgSend',
+          value: {
+            amount: coins(amount, CYBER.DENOM_CYBER),
+            from_address: address,
+            to_address: toSendAddres,
+          },
+        });
       }
-    } else if (type === 'tweets' && follow) {
-      const fromCid = await getPin(node, 'follow');
-      const toCid = await getPin(node, addressSend);
-      const tempMsg = new MsgLink(
-        AccAddress.fromBech32(sender, CYBER.BECH32_PREFIX_ACC_ADDR_CYBER),
-        [new Link(fromCid, toCid)]
-      );
-      msg.push(tempMsg);
-    } else if (type === 'tweets' && tweets) {
-      const fromCid = await getPin(node, 'tweet');
-      const toCid = await this.calculationIpfsTo(contentHash);
-      const tempMsg = new MsgLink(
-        AccAddress.fromBech32(sender, CYBER.BECH32_PREFIX_ACC_ADDR_CYBER),
-        [new Link(fromCid, toCid)]
-      );
-      msg.push(tempMsg);
-    } else {
-      const tempMsg = new MsgSend(
-        AccAddress.fromBech32(sender, CYBER.BECH32_PREFIX_ACC_ADDR_CYBER),
-        AccAddress.fromBech32(toSendAddres, 'cyber'),
-        [new Coin('eul', amount)]
-      );
-      console.log('tempMsg', tempMsg);
-      msg.push(tempMsg);
-    }
-
-    if (msg.length > 0) {
-      const result = await keplr.sendMsgs(
-        msg,
-        {
-          gas: 100000,
-          memo: CYBER.MEMO_KEPLR,
-          fee: new Coin('eul', 200),
-        },
-        'sync'
-      );
-      console.log('result: ', result);
-      const hash = result.hash.toString('hex').toUpperCase();
-      console.log('hash :>> ', hash);
-      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-      this.timeOut = setTimeout(this.confirmTx, 1500);
+      console.log(`msg`, msg)
+      if (msg.length > 0) {
+        const fee = {
+          amount: coins(0, 'uatom'),
+          gas: '100000',
+        };
+        const result = await keplr.signAndBroadcast(msg, fee, CYBER.MEMO_KEPLR);
+        console.log('result: ', result);
+        const hash = result.transactionHash;
+        console.log('hash :>> ', hash);
+        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+        this.timeOut = setTimeout(this.confirmTx, 1500);
+      }
     }
   };
 
@@ -553,13 +552,11 @@ class ActionBarContainer extends Component {
       file,
     } = this.state;
 
-    // if (stage === STAGE_INIT && (type === 'main' || type === 'txs')) {
+    // if (stage === STAGE_INIT && (type === 'wallet' || type === 'txs')) {
     //   return (
     //     <ActionBar>
     //       <Pane>
-    //         <Button onClick={(e) => this.onClickSend(e)}>
-    //           {T.actionBar.pocket.send}
-    //         </Button>
+    //         <Button onClick={(e) => this.onClickSend(e)}>Send</Button>
     //       </Pane>
     //     </ActionBar>
     //   );
@@ -590,33 +587,32 @@ class ActionBarContainer extends Component {
           onChangeInput={this.onFilePickerChange}
           onClickClear={this.onClickClear}
           file={file}
+          keys={defaultAccount !== null ? defaultAccount.keys : false}
         />
       );
     }
-    console.log('rewards', rewards);
+    // console.log('rewards', rewards);
 
     // console.log('rewards', groupLink(rewards.rewards));
-    // if (stage === STAGE_INIT && type === 'heroes') {
-    //   // return (
-    //   //   <ActionBar>
-    //   //     <Pane>
-    //   //       <Button
-    //   //         disabled={addressSend !== defaultAccount.bech32}
-    //   //         onClick={(e) => this.onClickSend(e)}
-    //   //       >
-    //   //         Claim rewards
-    //   //       </Button>
-    //   //     </Pane>
-    //   //   </ActionBar>
-    //   // );
-    //   return (
-    //     <RewardsDelegators
-    //       data={rewards}
-    //       onClickBtnCloce={this.cleatState}
-    //       onClickBtn={this.generateTx}
-    //     />
-    //   );
-    // }
+    if (
+      stage === STAGE_INIT &&
+      type === 'heroes' &&
+      defaultAccount !== null &&
+      defaultAccount.keys === 'keplr'
+    ) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button
+              disabled={addressSend !== defaultAccount.bech32}
+              onClick={(e) => this.onClickSend(e)}
+            >
+              Claim rewards
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
 
     if (stage === STAGE_LEDGER_INIT) {
       return (
@@ -630,7 +626,7 @@ class ActionBarContainer extends Component {
     if (stage === LEDGER_TX_ACOUNT_INFO) {
       return <CheckAddressInfo />;
     }
-    console.log('rewards', rewards);
+    // console.log('rewards', rewards);
 
     // console.log('rewards', groupLink(rewards.rewards));
     if (stage === STAGE_READY) {
@@ -727,5 +723,7 @@ const mapStateToProps = (store) => {
     node: store.ipfs.ipfs,
   };
 };
+
+ActionBarContainer.contextType = AppContext;
 
 export default connect(mapStateToProps)(ActionBarContainer);

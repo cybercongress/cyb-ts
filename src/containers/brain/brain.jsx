@@ -12,7 +12,6 @@ import {
 } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import { TabBtn } from '../../components';
-import injectKeplr from '../../components/web3/injectKeplr';
 
 import { CYBER, TAKEOFF } from '../../utils/config';
 
@@ -37,7 +36,7 @@ import Port from '../port';
 
 import { chekPathname } from './utils/utils';
 
-function Brain({ node, mobile, defaultAccount, keplr }) {
+function Brain({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const { cybernomics } = useGetCybernomics();
   const { government, knowledge } = useGetStatisticsCyber();
@@ -302,7 +301,7 @@ function Brain({ node, mobile, defaultAccount, keplr }) {
         addressActive !== null &&
         selected !== 'port' &&
         (addressActive.keys !== 'read-only' ? (
-          <ActionBarContainer keplr={keplr} addressPocket={addressActive} />
+          <ActionBarContainer addressPocket={addressActive} />
         ) : (
           <ActionBar>
             <Pane fontSize="18px">
@@ -330,4 +329,4 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(injectKeplr(Brain));
+export default connect(mapStateToProps)(Brain);

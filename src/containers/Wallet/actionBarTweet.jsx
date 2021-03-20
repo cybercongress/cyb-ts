@@ -3,6 +3,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -26,10 +27,6 @@ import {
 } from '../../utils/search/utils';
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH, POCKET } from '../../utils/config';
-
-const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
 
 const {
   MEMO,
@@ -295,29 +292,34 @@ class ActionBarTweet extends Component {
     this.setState({
       stage: STAGE_KEPLR_APPROVE,
     });
-
-    await keplr.enable();
-
-    const sender = AccAddress.fromBech32(
-      (await keplr.getKeys())[0].bech32Address,
-      'cyber'
-    );
-    const msg = new MsgLink(sender, [new Link(fromCid, toCid)]);
-
-    const result = await keplr.sendMsgs(
-      [msg],
-      {
-        gas: 100000,
-        memo: CYBER.MEMO_KEPLR,
-        fee: new Coin('eul', 200),
-      },
-      'sync'
-    );
-    console.log('result: ', result);
-    const hash = result.hash.toString('hex').toUpperCase();
-    console.log('hash :>> ', hash);
-    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-    this.timeOut = setTimeout(this.confirmTx, 1500);
+    if (keplr !== null) {
+      await window.keplr.enable(CYBER.CHAIN_ID);
+      const { address } = await keplr.getAccount();
+      const msgs = [];
+      msgs.push({
+        type: 'cyber/Link',
+        value: {
+          address,
+          links: [
+            {
+              from: fromCid,
+              to: toCid,
+            },
+          ],
+        },
+      });
+      const fee = {
+        amount: coins(0, 'uatom'),
+        gas: '100000',
+      };
+      console.log('msg', msgs);
+      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
+      console.log('result: ', result);
+      const hash = result.transactionHash;
+      console.log('hash :>> ', hash);
+      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    }
   };
 
   signTx = async () => {
@@ -491,7 +493,7 @@ class ActionBarTweet extends Component {
     } = this.state;
 
     const { stageTweetActionBar, defaultAccountsKeys } = this.props;
-console.log('stageTweetActionBar', stageTweetActionBar)
+    console.log('stageTweetActionBar', stageTweetActionBar);
     console.log('defaultAccountsKeys :>> ', defaultAccountsKeys);
 
     if (stage === STAGE_INIT && defaultAccountsKeys === 'read-only') {

@@ -42,7 +42,6 @@ import {
 import ActionBarContainer from './ActionBarContainer';
 import { i18n } from '../../i18n/en';
 import { CYBER } from '../../utils/config';
-import injectKeplr from '../../components/web3/injectKeplr';
 
 const T = new LocalizedStrings(i18n);
 
@@ -320,7 +319,7 @@ class Validators extends Component {
       bondedTokens,
       countHeroes,
     } = this.state;
-    const { mobile, keplr } = this.props;
+    const { mobile } = this.props;
 
     T.setLanguage(language);
 
@@ -631,4 +630,4 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(injectKeplr(Validators));
+export default connect(mapStateToProps)(Validators);
