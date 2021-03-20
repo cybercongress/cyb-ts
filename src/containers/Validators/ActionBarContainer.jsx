@@ -255,8 +255,8 @@ class ActionBarContainer extends Component {
                 denom: CYBER.DENOM_CYBER,
               },
               delegator_address: address,
-              validator_dst_address: validatorAddres,
-              validator_src_address: valueSelect,
+              validator_dst_address: valueSelect,
+              validator_src_address: validatorAddres,
             },
           });
         }
