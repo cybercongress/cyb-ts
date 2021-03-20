@@ -15,11 +15,11 @@ export const getTypeContent = async (dataCid, cid) => {
     link: `/ipfs/${cid}`,
     gateway: null,
   };
-  console.log('dataCid', dataCid);
+  // console.log('dataCid', dataCid);
   const bufs = [];
   bufs.push(dataCid);
   const data = Buffer.concat(bufs);
-  console.log('data', data);
+  // console.log('data', data);
   const dataFileType = await FileType.fromBuffer(data);
   if (dataFileType !== undefined) {
     const { mime } = dataFileType;
@@ -159,13 +159,13 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         meta.blockSizes = linksCid;
         clearTimeout(timerId);
         if (responseDag.value.size < size * 10 ** 6) {
-          const responsePin = nodeIpfs.pin.add(cid);
-          console.log('responsePin', responsePin);
+          nodeIpfs.pin.add(cid);
+          // console.log('responsePin', responsePin);
 
           const responseCat = await all(nodeIpfs.cat(cid));
           const { 0: someVar } = responseCat;
           // const responseCat = await nodeIpfs.cat(cid);
-          console.log('responseCat', someVar);
+          // console.log('responseCat', someVar);
           meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
             cid,
