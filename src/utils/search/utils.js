@@ -1226,16 +1226,9 @@ export const authAccounts = async (address) => {
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const timerId = setTimeout(() => {
-    console.log('timerId');
-    return null;
-  }, 15000);
-
   const responseDag = await ipfs.dag.get(cid, {
     localResolve: false,
   });
-
-  clearTimeout(timerId);
 
   if (responseDag.value.size <= 1.5 * 10 ** 6) {
     const responsePin = ipfs.pin.add(cid);
