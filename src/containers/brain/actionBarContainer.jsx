@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -26,10 +27,7 @@ import {
 
 import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
 import { trimString } from '../../utils/utils';
-
-const { AccAddress } = require('@chainapsis/cosmosjs/common/address');
-const { Coin } = require('@chainapsis/cosmosjs/common/coin');
-const { MsgLink, Link } = require('@chainapsis/cosmosjs/x/link');
+import { AppContext } from '../../context';
 
 const {
   MEMO,
@@ -247,7 +245,7 @@ class ActionBarContainer extends Component {
   };
 
   generateTxKeplr = async () => {
-    const { keplr } = this.props;
+    const { keplr } = this.context;
     const { fromCid, toCid } = this.state;
 
     console.log('fromCid, toCid :>> ', fromCid, toCid);
@@ -255,29 +253,36 @@ class ActionBarContainer extends Component {
     this.setState({
       stage: STAGE_KEPLR_APPROVE,
     });
+    console.log(`keplr`, keplr);
+    if (keplr !== null) {
+      await window.keplr.enable(CYBER.CHAIN_ID);
+      const { address } = await keplr.getAccount();
 
-    await keplr.enable();
-
-    const sender = AccAddress.fromBech32(
-      (await keplr.getKeys())[0].bech32Address,
-      'cyber'
-    );
-    const msg = new MsgLink(sender, [new Link(fromCid, toCid)]);
-
-    const result = await keplr.sendMsgs(
-      [msg],
-      {
-        gas: 100000,
-        memo: CYBER.MEMO_KEPLR,
-        fee: new Coin('eul', 200),
-      },
-      'sync'
-    );
-    console.log('result: ', result);
-    const hash = result.hash.toString('hex').toUpperCase();
-    console.log('hash :>> ', hash);
-    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-    this.timeOut = setTimeout(this.confirmTx, 1500);
+      const msgs = [];
+      msgs.push({
+        type: 'cyber/Link',
+        value: {
+          address,
+          links: [
+            {
+              from: fromCid,
+              to: toCid,
+            },
+          ],
+        },
+      });
+      const fee = {
+        amount: coins(0, 'uatom'),
+        gas: '100000',
+      };
+      console.log('msg', msgs);
+      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
+      console.log('result: ', result);
+      const hash = result.transactionHash;
+      console.log('hash :>> ', hash);
+      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    }
   };
 
   signTx = async () => {
@@ -575,5 +580,7 @@ const mapStateToProps = (store) => {
     node: store.ipfs.ipfs,
   };
 };
+
+ActionBarContainer.contextType = AppContext;
 
 export default connect(mapStateToProps)(ActionBarContainer);

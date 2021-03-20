@@ -17,7 +17,6 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
-import injectKeplr from '../../components/web3/injectKeplr';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -247,7 +246,7 @@ class ValidatorsDetails extends React.PureComponent {
       addressPocket,
       unStake,
     } = this.state;
-    const { match, mobile, keplr } = this.props;
+    const { match, mobile } = this.props;
     const { address } = match.params;
     // console.log('validatorInfo', validatorInfo.consensus_pubkey);
     let content;
@@ -359,7 +358,6 @@ console.log('unStake', unStake)
           validators={validatorInfo}
           unStake={unStake}
           addressPocket={addressPocket}
-          keplr={keplr}
         />
       </div>
     );
@@ -373,4 +371,4 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(injectKeplr(ValidatorsDetails));
+export default connect(mapStateToProps)(ValidatorsDetails);

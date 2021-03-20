@@ -25,7 +25,6 @@ import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
 import Noitem from '../account/noItem';
 import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
-import injectKeplr from '../../components/web3/injectKeplr';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
   DiscussionTab,
@@ -63,7 +62,7 @@ const Pill = ({ children, active, ...props }) => (
   </Pane>
 );
 
-function Ipfs({ nodeIpfs, mobile, keplr }) {
+function Ipfs({ nodeIpfs, mobile }) {
   const { cid } = useParams();
   const location = useLocation();
   const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs, 10);
@@ -364,7 +363,6 @@ function Ipfs({ nodeIpfs, mobile, keplr }) {
           textBtn={textBtn}
           keywordHash={cid}
           update={() => getLinks()}
-          keplr={keplr}
         />
       )}
     </>
@@ -378,4 +376,4 @@ const mapStateToProps = store => {
   };
 };
 
-export default connect(mapStateToProps)(injectKeplr(Ipfs));
+export default connect(mapStateToProps)(Ipfs);

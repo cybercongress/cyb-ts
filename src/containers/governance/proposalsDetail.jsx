@@ -29,7 +29,6 @@ import {
   getTallyingProposals,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
-import injectKeplr from '../../components/web3/injectKeplr';
 
 import { authAccounts } from '../../utils/search/utils';
 
