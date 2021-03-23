@@ -1,18 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
-import { getGraphQLQuery } from '../../utils/search/utils';
+import { connect } from 'react-redux';
 import { Loading } from '../../components';
 
-// const CYBERLINK_SUBSCRIPTION = gql`
-//   subscription newCyberlinkLink {
-//     cyberlink(limit: 1, order_by: { height: desc }) {
-//       object_from
-//       object_to
-//       subject
-//       txhash
-//     }
-//   }
-// `;
+import useGetDataGql from './hooks';
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -20,60 +11,49 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceGraph = ({ match }) => {
+const ForceQuitter = ({ nodeIpfs }) => {
   let graph;
-  const { agent } = match.params;
   const [hasLoaded, setHasLoaded] = useState(true);
+  const { data: dataGql } = useGetDataGql(nodeIpfs);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
-  var limit = 1024
-  var where
   useEffect(() => {
     const feachData = async () => {
-      if (typeof(agent) != "undefined") {
-        where = `{subject: {_eq: "${agent}"}}`
-      } else { 
-        where = "{}"
-      }
-      var GET_CYBERLINKS = `
-      query Cyberlinks {
-        cyberlink(limit: ${String(limit)}, order_by: {height: desc}, where: ${where}) {
-          object_from
-          object_to
-          subject
-          txhash
-        }
-      }
-      `;
-      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS);
-      const from = cyberlink.map((a) => a.object_from);
-      const to = cyberlink.map((a) => a.object_to);
-      const set = new Set(from.concat(to));
-      const object = [];
-      set.forEach(function (value) {
-        object.push({ id: value });
-      });
+      if (dataGql.length > 0) {
+        const from = dataGql.map((a) => a.subject);
+        const to = dataGql.map((a) => a.to);
+        const set = new Set(from.concat(to));
+        const object = [];
+        set.forEach((value) => {
+          object.push({ id: value });
+        });
 
-      for (let i = 0; i < cyberlink.length; i++) {
-        cyberlink[i] = {
-          source: cyberlink[i].object_from,
-          target: cyberlink[i].object_to,
-          name: cyberlink[i].txhash,
-          subject: cyberlink[i].subject,
-          // curvative: getRandomInt(20, 500) / 1000,
+        const dataGqlObj = dataGql.reduce(
+          (obj, item) => [
+            ...obj,
+            {
+              source: item.subject,
+              target: item.to,
+              name: item.txhash,
+              subject: item.subject,
+            },
+          ],
+          []
+        );
+        // console.log('dataGqlObj', dataGqlObj);
+        // console.log('object', object);
+        graph = {
+          nodes: object,
+          links: dataGqlObj,
         };
+        setItems(graph);
+        setLoading(false);
       }
-      graph = {
-        nodes: object,
-        links: cyberlink,
-      };
-      setItems(graph);
-      setLoading(false);
     };
     feachData();
-  }, []);
+  }, [dataGql]);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -106,7 +86,7 @@ const ForceGraph = ({ match }) => {
 
   const handleNodeRightClick = useCallback(
     (node) => {
-      window.open(`https://cyber.page/ipfs/${node.id}`, '_blank');
+      window.open(`https://cyber.page/network/euler/contract/${node.id}`, '_blank');
     },
     [fgRef]
   );
@@ -119,41 +99,10 @@ const ForceGraph = ({ match }) => {
   );
 
   const handleEngineStop = useCallback(() => {
-    console.log('engine stopped!');
+    console.log('rendering engine is stopped!');
     setHasLoaded(false);
+
   });
-
-  // const handleNewLink = useCallback(subscription => {
-  //   let link = subscription["subscriptionData"].data["cyberlink"][0]
-  //     let { nodes, links } = data;
-  //     let l = {
-  //       source: link["object_from"],
-  //       target: link["object_to"],
-  //       name: link["txhash"]
-  //     }
-
-  //     if (!nodes.some(node => node["id"] == l["source"])) {
-  //       nodes.push({id: l["source"]})
-  //     }
-
-  //     if (!nodes.some(node => node["id"] == l["target"])) {
-  //       nodes.push({id: l["target"]})
-  //     }
-
-  //     setItems({
-  //         nodes: [...nodes],
-  //         links: [...links, {
-  //           source: l["source"],
-  //           target: l["target"],
-  //           name: l["name"],
-  //           curvative: getRandomInt(20,500)/1000
-  //         }]
-  //     })
-  // }, [data])
-
-  // const { loading: loadingLinks, data: dataNew } = useSubscription(CYBERLINK_SUBSCRIPTION, {
-  //   onSubscriptionData: handleNewLink
-  // });
 
   if (loading) {
     return (
@@ -175,11 +124,11 @@ const ForceGraph = ({ match }) => {
     );
   }
 
-  var pocket
+  let pocket;
   if (localStorage.getItem('pocket') != null) {
-    var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
-    var keyPocket = Object.keys(localStoragePocketData)[0];
-    pocket = localStoragePocketData[keyPocket]["cyber"].bech32
+    const localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
+    const keyPocket = Object.keys(localStoragePocketData)[0];
+    pocket = localStoragePocketData[keyPocket].cyber.bech32;
   }
 
   return (
@@ -208,32 +157,51 @@ const ForceGraph = ({ match }) => {
         ref={fgRef}
         showNavInfo
         backgroundColor="#000000"
-        warmupTicks={420}
+        warmupTicks={64}
         cooldownTicks={0}
         enableNodeDrag={false}
         enablePointerInteraction
         nodeLabel="id"
-        nodeColor={() => 'rgba(0,100,235,1)'}
+        nodeColor={(link) =>
+          localStorage.getItem('pocket') != null
+            ? link.id == pocket
+              ? 'red'
+              : 'white'
+            : 'white'}
         nodeOpacity={1.0}
         nodeRelSize={8}
+        nodeResolution={16}
         linkColor={(link) =>
           localStorage.getItem('pocket') != null
             ? link.subject == pocket
               ? 'red'
-              : 'rgba(9,255,13,1)'
-            : 'rgba(9,255,13,1)'
+              : 'blue'
+            : 'blue'
         }
-        linkWidth={4}
+        linkWidth={2}
         linkCurvature={0.2}
         linkOpacity={0.7}
         linkDirectionalParticles={1}
-        linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
-        linkDirectionalParticleWidth={4}
-        linkDirectionalParticleSpeed={0.015}
+        linkDirectionalParticleColor={(link) =>
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'red'
+              : 'blue'
+            : 'blue'
+        }
+        linkDirectionalParticleWidth={2}
+        linkDirectionalParticleSpeed={0.01}
         
-        // linkDirectionalArrowRelPos={1}
-        // linkDirectionalArrowLength={10}
-        // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
+        linkDirectionalArrowRelPos={1.15}
+        linkDirectionalArrowLength={10}
+        linkDirectionalArrowResolution={16}
+        linkDirectionalArrowColor={(link) =>
+          localStorage.getItem('pocket') != null
+            ? link.subject == pocket
+              ? 'red'
+              : 'blue'
+            : 'blue'
+        }
 
         onNodeClick={handleNodeRightClick}
         onNodeRightClick={handleNodeClick}
@@ -245,4 +213,10 @@ const ForceGraph = ({ match }) => {
   );
 };
 
-export default ForceGraph;
+const mapStateToProps = (store) => {
+  return {
+    nodeIpfs: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(ForceQuitter);

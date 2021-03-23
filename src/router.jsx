@@ -35,6 +35,7 @@ import Got from './containers/got/got';
 import TrollBoxx from './containers/trollBox';
 import useIpfsStart from './ipfsHook';
 import ForceGraph from './containers/forceGraph/forceGraph';
+import ForceQuitter from './containers/forceGraph/forceQuitter';
 import PortPages from './containers/port';
 import TestKeplr from './containers/testKeplre';
 
@@ -94,7 +95,9 @@ function AppRouter({
           path="/network/euler/hero/:address"
           component={ValidatorsDetails}
         />
+        <Route path="/quitter" component={ForceQuitter} />
         <Route path="/graph" component={ForceGraph} />
+        <Route path="/pgraph/:agent" component={ForceGraph} />
         <Route path="/gol/vesting" component={Vesting} />
         <Route path="/ipfs/:cid" component={Ipfs} />
         <Route exact path="/network/euler/block" component={Block} />

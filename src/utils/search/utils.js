@@ -1142,10 +1142,10 @@ export const getTweet = async (address) => {
 
 export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
   let timerId;
-  const timeoutPromise = () =>
-    new Promise((reject) => {
-      timerId = setTimeout(reject, timeout);
-    });
+  // const timeoutPromise = () =>
+  //   new Promise((reject) => {
+  //     timerId = setTimeout(reject, timeout);
+  //   });
 
   const ipfsGetPromise = () =>
     new Promise((resolve, reject) => {
@@ -1153,11 +1153,11 @@ export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
         method: 'get',
         url: `https://ipfs.io/ipfs/${cid}`,
       }).then((response) => {
-        clearTimeout(timerId);
+        // clearTimeout(timerId);
         resolve(response.data);
       });
     });
-  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
+  return Promise.race([ipfsGetPromise()]);
 };
 
 export const chekFollow = async (address, addressFollowHash) => {
