@@ -30,7 +30,7 @@ import {
   getGroupAddress,
   funcDiscountRevers,
 } from '../../utils/fundingMath';
-import { getTxCosmos } from '../../utils/search/utils';
+import { getGraphQLQuery } from '../../utils/search/utils';
 import PopapAddress from './popap';
 import Details from './details';
 import Quotes from './quotes';
@@ -50,51 +50,48 @@ const diff = (key, ...arrays) =>
     })
   );
 
-const test = {
-  'tx.hash': [
-    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
-  ],
-  'tx.height': ['1489670'],
-  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
-  'transfer.amount': ['310000000000uatom'],
-  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
-  'message.module': ['bank'],
-  'message.action': ['send'],
-  'tm.event': ['Tx'],
-};
+const GET_TX = `
+query txs {
+  takeoff {
+    a_cybs
+    cumsum
+    cybs
+    donates
+    donors
+    price
+    timestamps
+  }
+}`;
+
+const FINISH_ESTIMATION = 12141.224;
 
 class Funding extends PureComponent {
-  ws = new WebSocket(GAIA_WEBSOCKET_URL);
-
   constructor(props) {
     super(props);
     this.state = {
       groups: [],
-      amount: 0,
+      amount: TAKEOFF.FINISH_AMOUNT,
       pocketAdd: null,
       dataTxs: null,
       atomLeff: 0,
       pin: false,
-      currentPrice: 0,
+      currentPrice: TAKEOFF.FINISH_PRICE,
       currentPriceEstimation: 0,
       dataPlot: [],
       dataRewards: [],
       loader: true,
       loading: 0,
-      estimation: 0,
+      estimation: FINISH_ESTIMATION,
       popapAdress: false,
       selected: 'manifest',
       block: 0,
-      time: '∞',
+      time: 'end',
     };
   }
 
   async componentDidMount() {
     this.chekPathname();
-    // this.getBlockWS();
-    await this.getDataWS();
     await this.getTxsCosmos();
-    this.initClock();
   }
 
   componentDidUpdate(prevProps) {
@@ -123,120 +120,18 @@ class Funding extends PureComponent {
     }
   };
 
-  initClock = () => {
-    try {
-      const deadline = `${COSMOS.TIME_END}`;
-      const startTime = Date.parse(deadline) - Date.parse(new Date());
-      if (startTime <= 0) {
-        this.setState({
-          time: 'end',
-        });
-      } else {
-        this.initializeClock(deadline);
-      }
-    } catch (error) {
-      this.setState({
-        time: '∞',
-      });
-    }
-  };
-
-  initializeClock = (endtime) => {
-    let timeinterval;
-    const updateClock = () => {
-      const t = getTimeRemaining(endtime);
-      if (t.total <= 0) {
-        clearInterval(timeinterval);
-        this.setState({
-          time: 'end',
-        });
-        return true;
-      }
-      const hours = `0${t.hours}`.slice(-2);
-      const minutes = `0${t.minutes}`.slice(-2);
-      this.setState({
-        time: `${t.days}d:${hours}h:${minutes}m`,
-      });
-    };
-
-    updateClock();
-    timeinterval = setInterval(updateClock, 10000);
-  };
-
   getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
+    const { takeoff } = await getGraphQLQuery(GET_TX);
+    console.log(`txs`, takeoff);
+    if (takeoff && takeoff.length > 0) {
       this.setState({
-        dataTxs: tx,
+        dataTxs: takeoff,
       });
       this.init();
     }
   };
 
-  getDataWS = async () => {
-    this.ws.onopen = () => {
-      console.log('connected Funding');
-      this.ws.send(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'subscribe',
-          id: '0',
-          params: {
-            query: `tm.event='Tx' AND transfer.recipient='${COSMOS.ADDR_FUNDING}' AND message.action='send'`,
-          },
-        })
-      );
-    };
-
-    this.ws.onmessage = async (evt) => {
-      const message = JSON.parse(evt.data);
-      if (message.id.indexOf('0#event') !== -1) {
-        this.updateWs(message.result.events);
-        console.warn('txs', message);
-      }
-    };
-
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
-
-  updateWs = async (data) => {
-    let amount = 0;
-    const amountWebSocket = data['transfer.amount'][0];
-
-    if (amountWebSocket.indexOf('uatom') !== -1) {
-      const positionDenom = amountWebSocket.indexOf('uatom');
-      const str = amountWebSocket.slice(0, positionDenom);
-      amount = parseFloat(str) / COSMOS.DIVISOR_ATOM;
-    }
-    const d = new Date();
-    const timestamp = dateFormat(d, 'dd/mm/yyyy, HH:MM:ss');
-    const dataTxs = {
-      amount,
-      txhash: data['tx.hash'][0],
-      height: data['tx.height'][0],
-      timestamp,
-      sender: data['message.sender'][0],
-    };
-    this.getStatisticsWs(dataTxs.amount);
-    await this.getTableData();
-    await this.getTableDataWs(dataTxs);
-    this.getData();
-  };
-
-  init = async (txs) => {
+  init = async () => {
     const { defaultAccount } = this.props;
     const { account } = defaultAccount;
 
@@ -247,134 +142,32 @@ class Funding extends PureComponent {
       this.setState({ pocketAdd: { ...account.cosmos } });
     }
 
-    await this.getStatistics();
+    // await this.getStatistics();
     this.getTableData();
     this.getData();
-  };
-
-  getStatisticsWs = async (amountWebSocket) => {
-    const { amount } = this.state;
-    let amountWs = 0;
-
-    amountWs = amount + amountWebSocket;
-
-    if (amountWs >= ATOMsALL) {
-      amountWs = ATOMsALL;
-    }
-
-    this.setState({
-      amount: amountWs,
-    });
-  };
-
-  getTableDataWs = async (dataTxs) => {
-    const { currentPriceEstimation, estimation, amount, groups } = this.state;
-    try {
-      console.log(estimation);
-      console.log(dataTxs);
-
-      const dataWs = dataTxs;
-      const tempData = [];
-      let estimationEUL = 0;
-      let estimationCyb = 0;
-      let price = 0;
-      if (amount <= ATOMsALL) {
-        let tempVal = dataTxs.amount;
-        if (tempVal >= ATOMsALL) {
-          tempVal = ATOMsALL;
-        }
-        console.log(tempVal);
-        estimationCyb = getEstimation(estimation / 1000, tempVal);
-        estimationEUL = (tempVal / amount) * TAKEOFF_SUPPLY;
-        price = tempVal / estimationCyb / 1000;
-        dataWs.cybEstimation = Math.floor(estimationCyb * 10 ** 12);
-        dataWs.estimationEUL = estimationEUL;
-        dataWs.price = price;
-        groups[dataWs.sender].address = [
-          dataWs,
-          ...groups[dataWs.sender].address,
-        ];
-        groups[dataWs.sender].height = dataWs.height;
-        groups[dataWs.sender].amountСolumn += dataWs.amount;
-        groups[dataWs.sender].cyb += Math.floor(estimationCyb * 10 ** 12);
-        groups[dataWs.sender].eul += estimationEUL;
-      }
-      // const groupsAddress = getGroupAddress(table);
-      // localStorage.setItem(`groups`, JSON.stringify(groups));
-      const temE = estimationCyb * 1000 + estimation;
-      console.log('estimationCyb', estimationCyb);
-      const currentPrice = (40 * (temE / 1000) + 1000) / 1000;
-      console.log(temE);
-      console.log(currentPrice);
-      this.setState({
-        groups,
-        estimation: temE,
-        currentPrice,
-      });
-    } catch (error) {
-      console.log(error);
-      throw new Error();
-    }
-  };
-
-  getStatistics = async () => {
-    const { dataTxs } = this.state;
-
-    let amount = 0;
-    for (let item = 0; item < dataTxs.length; item++) {
-      if (amount <= ATOMsALL) {
-        amount +=
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-            10
-          ) / COSMOS.DIVISOR_ATOM;
-      } else {
-        amount = ATOMsALL;
-        break;
-      }
-    }
-    console.log('amount', amount);
-    this.setState({
-      amount,
-    });
   };
 
   getTableData = async () => {
     const { dataTxs, amount } = this.state;
     try {
       const table = [];
-      const temp = 0;
-      let temE = 0;
       for (let item = 0; item < dataTxs.length; item++) {
         let estimation = 0;
         let price = 0;
         let estimationEUL = 0;
-        if (temp <= ATOMsALL) {
-          const val =
-            Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-              10
-            ) / COSMOS.DIVISOR_ATOM;
-          estimation = getEstimation(temE, val);
-          price = val / estimation / 1000;
-          estimationEUL = (val / amount) * TAKEOFF_SUPPLY;
-          temE += estimation;
-        } else {
-          break;
-        }
-        const d = new Date(dataTxs[item].timestamp);
+
+        const val = Number.parseFloat(dataTxs[item].donates);
+        estimation = dataTxs[item].cybs;
+        price = dataTxs[item].price;
+        estimationEUL =
+          ((val / amount) * TAKEOFF_SUPPLY) / CYBER.DIVISOR_CYBER_G;
+        const d = dataTxs[item].timestamps;
         table.push({
-          txhash: dataTxs[item].txhash,
-          height: dataTxs[item].height,
-          from: dataTxs[item].tx.value.msg[0].value.from_address,
+          from: dataTxs[item].donors,
           price,
           timestamp: dateFormat(d, 'dd/mm/yyyy, HH:MM:ss'),
-          amount:
-            Number.parseInt(
-              dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-              10
-            ) / COSMOS.DIVISOR_ATOM,
-          estimation: estimation * 10 ** 12,
+          amount: val,
+          estimation,
           estimationEUL,
         });
       }
@@ -383,16 +176,13 @@ class Funding extends PureComponent {
       // localStorage.setItem(`groups`, JSON.stringify(groups));
       console.log('groups', groupsAddress);
 
-      const currentPrice = (40 * temE + 1000) / 1000;
-      console.log(temE);
       this.setState({
         groups: groupsAddress,
-        estimation: temE * 1000,
-        currentPrice,
         loader: false,
       });
       this.checkPin();
     } catch (error) {
+      console.log(`error`, error);
       throw new Error();
     }
   };
@@ -459,25 +249,25 @@ class Funding extends PureComponent {
     const { mobile } = this.props;
     let content;
 
-    if (loader) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <Loading />
-          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-            Recieving transactions
-          </div>
-        </div>
-      );
-    }
+    // if (loader) {
+    //   return (
+    //     <div
+    //       style={{
+    //         width: '100%',
+    //         height: '50vh',
+    //         display: 'flex',
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //         flexDirection: 'column',
+    //       }}
+    //     >
+    //       <Loading />
+    //       <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+    //         Recieving transactions
+    //       </div>
+    //     </div>
+    //   );
+    // }
 
     if (selected === 'progress') {
       content = (
