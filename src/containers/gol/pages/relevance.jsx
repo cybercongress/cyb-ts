@@ -6,9 +6,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import {
   getRelevance,
   getRankGrade,
-  getContentByCid,
-  getAmountATOM,
-  getTxCosmos,
   getGraphQLQuery,
 } from '../../../utils/search/utils';
 import { Dots, LinkWindow, TabBtn, Loading } from '../../../components';
@@ -85,7 +82,7 @@ function GolRelevance({ node, mobile }) {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(TAKEOFF.FINISH_AMOUNT);
   const [selected, setSelected] = useState('relevace');
   const [allPage, setAllPage] = useState(1);
   const [dataLeaderboard, setDataLeaderboard] = useState({});
@@ -93,7 +90,6 @@ function GolRelevance({ node, mobile }) {
 
   useEffect(() => {
     getFirstItem();
-    getTxsCosmos();
   }, []);
 
   useEffect(() => {
@@ -127,26 +123,6 @@ function GolRelevance({ node, mobile }) {
     };
     feachData();
   }, [amount]);
-
-  const getTxsCosmos = async () => {
-    let amountAtom = 0;
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPages = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPages; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      amountAtom = await getAmountATOM(tx);
-      setAmount(amountAtom);
-    }
-  };
 
   const chekPathname = () => {
     const { pathname } = location;

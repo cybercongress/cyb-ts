@@ -6,7 +6,6 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getAllValidators,
-  getTxCosmos,
 } from '../../../utils/search/utils';
 import {
   CardStatisics,

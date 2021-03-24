@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fromBech32 } from '../../utils/utils';
 import {
-  getTxCosmos,
   getAmountATOM,
   getGraphQLQuery,
   getValidatorsInfo,
@@ -43,44 +42,34 @@ query lifetimeRate {
 }
 `;
 
+const Query = (address) =>
+  `query txs {
+    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
+    aggregate {
+      sum {
+        cybs
+      }
+    }
+  }
+}`;
+
 function useGetAtom(addressCyber) {
   const [estimation, setEstimation] = useState(0);
 
   useEffect(() => {
     const feachData = async () => {
-      let estimationAll = 0;
       let addEstimation = 0;
 
-      const dataTxs = await getTxCosmos();
       const addressCosmos = fromBech32(addressCyber, 'cosmos');
-      if (dataTxs !== null) {
-        if (dataTxs.total_count > dataTxs.count) {
-          const allPage = Math.ceil(dataTxs.total_count / dataTxs.count);
-          for (let index = 1; index < allPage; index++) {
-            // eslint-disable-next-line no-await-in-loop
-            const response = await getTxCosmos(index + 1);
-            if (response !== null && Object.keys(response.txs).length > 0) {
-              dataTxs.txs = [...dataTxs.txs, ...response.txs];
-            }
-          }
-        }
-      }
-      if (dataTxs && Object.keys(dataTxs.txs).length > 0) {
-        const dataTx = dataTxs.txs;
-        for (let item = 0; item < dataTx.length; item += 1) {
-          let temE = 0;
-          const address = dataTx[item].tx.value.msg[0].value.from_address;
-          const val =
-            Number.parseInt(
-              dataTx[item].tx.value.msg[0].value.amount[0].amount,
-              10
-            ) / COSMOS.DIVISOR_ATOM;
-          temE = getEstimation(estimationAll, val);
-          if (address === addressCosmos) {
-            addEstimation += temE;
-          }
-          estimationAll += temE;
-        }
+      const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
+        Query(addressCosmos)
+      );
+      if (
+        takeoffAggregate &&
+        takeoffAggregate.aggregate &&
+        takeoffAggregate.aggregate.sum
+      ) {
+        addEstimation = takeoffAggregate.aggregate.sum.cybs;
       }
       setEstimation(addEstimation);
     };
@@ -149,7 +138,7 @@ function useGetGol(address) {
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(estimation * 10 ** 12);
+      const prize = Math.floor(estimation * 10 ** 9);
       if (prize > 0) {
         setTotal((stateTotal) => stateTotal + prize);
       }
