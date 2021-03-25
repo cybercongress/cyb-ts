@@ -20,7 +20,7 @@ import {
   getAccountBandwidth,
   getIndexStats,
 } from '../../utils/search/utils';
-import { COSMOS, CYBER, DISTRIBUTION } from '../../utils/config';
+import { COSMOS, CYBER, TAKEOFF, DISTRIBUTION } from '../../utils/config';
 import { getEstimation, cybWon, funcDiscount } from '../../utils/fundingMath';
 import NotFound from '../application/notFound';
 
@@ -30,10 +30,7 @@ class Evangelism extends React.PureComponent {
     this.state = {
       dataTable: {},
       blessed: true,
-      amount: 0,
-      currentPrice: 0,
-      currentDiscount: 0,
-      won: 0,
+      won: TAKEOFF.FINISH_ESTIMATION,
       loading: true,
       addressLedger: null,
       evangelist: {

@@ -11,7 +11,6 @@ import {
   getIpfsHash,
   getAmountATOM,
   getValidatorsInfo,
-  getTxCosmos,
   getFollows,
   getContent,
   getTweet,
@@ -66,14 +65,16 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
-const QueryAddress = (address) =>
-  `query cyberlink {
-    cyberlink_aggregate(where: {subject: {_eq: "${address}"}}) {
-      aggregate {
-        count
+const Query = (address) =>
+  `query txs {
+    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
+    aggregate {
+      sum {
+        cybs
       }
     }
-  }`;
+  }
+}`;
 
 class AccountDetails extends React.Component {
   constructor(props) {
@@ -183,7 +184,7 @@ class AccountDetails extends React.Component {
       linksCount: 0,
       follow: true,
       tweets: false,
-      takeoffDonations: 0,
+      takeoffDonations: TAKEOFF.FINISH_AMOUNT,
       community: {
         following: [],
         followers: [],
@@ -387,63 +388,28 @@ class AccountDetails extends React.Component {
   };
 
   getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      this.getAtom(tx);
-    } else {
-      this.setState({
-        loadingGoL: false,
-      });
-    }
-  };
-
-  getAtom = async (dataTxs) => {
     const { match } = this.props;
     const { address } = match.params;
     const { setGolTakeOffProps } = this.props;
-    let amount = 0;
-
-    let estimation = 0;
-    let addEstimation = 0;
     const addressCosmos = fromBech32(address, 'cosmos');
+    let addEstimation = 0;
 
-    if (dataTxs) {
-      for (let item = 0; item < dataTxs.length; item += 1) {
-        let temE = 0;
-        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
-        const val =
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-            10
-          ) / COSMOS.DIVISOR_ATOM;
-        temE = getEstimation(estimation, val);
-        if (addressTx === addressCosmos) {
-          addEstimation += temE;
-        }
-        amount += val;
-        estimation += temE;
-      }
-    }
-
-    setGolTakeOffProps(
-      Math.floor(addEstimation * 10 ** 12),
-      Math.floor(estimation * 10 ** 12)
+    const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
+      Query(addressCosmos)
     );
-
+    if (
+      takeoffAggregate &&
+      takeoffAggregate.aggregate &&
+      takeoffAggregate.aggregate.sum
+    ) {
+      addEstimation = takeoffAggregate.aggregate.sum.cybs;
+    }
+    setGolTakeOffProps(
+      Math.floor(addEstimation * 10 ** 9),
+      Math.floor(TAKEOFF.FINISH_ESTIMATION * 10 ** 9)
+    );
     this.setState({
       loadingGoL: false,
-      takeoffDonations: amount,
     });
   };
 

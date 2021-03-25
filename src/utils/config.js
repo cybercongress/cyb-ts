@@ -45,6 +45,7 @@ const TAKEOFF = {
   BLOCK_START: 2000000,
   FINISH_PRICE: 1.485,
   FINISH_AMOUNT: 15088.40963,
+  FINISH_ESTIMATION: 12141.224,
 };
 
 const COSMOS = {
@@ -54,7 +55,7 @@ const COSMOS = {
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://io.cybernode.ai/gaia_lcd',
+  GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',
   GAIA_WEBSOCKET_URL: 'wss://io.cybernode.ai/gaia_websocket',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,

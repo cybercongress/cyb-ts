@@ -9,7 +9,6 @@ import {
   getAmountATOM,
   getGraphQLQuery,
   getIndexStats,
-  getTxCosmos,
 } from '../../../utils/search/utils';
 import { exponentialToDecimal, formatNumber } from '../../../utils/utils';
 import { cybWon } from '../../../utils/fundingMath';
