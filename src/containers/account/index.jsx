@@ -20,6 +20,7 @@ import {
   getGraphQLQuery,
   getAvatar,
   getFollowers,
+  getTotalRewards,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -87,6 +88,7 @@ class AccountDetails extends React.Component {
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
+      totalRewards: { rewards: [] },
       following: [],
       followers: [],
       avatar: null,
@@ -549,22 +551,25 @@ class AccountDetails extends React.Component {
 
   countReward = async (data, address) => {
     const delegations = data;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in delegations) {
-      if (Object.hasOwnProperty.call(delegations, key)) {
-        let reward = 0;
-        // eslint-disable-next-line no-await-in-loop
-        const resultRewards = await getRewards(
-          address,
-          delegations[key].validator_address
-        );
-        if (resultRewards[0] && resultRewards[0].amount) {
-          reward = parseFloat(resultRewards[0].amount);
-          delegations[key].reward = Math.floor(reward);
-        } else {
-          delegations[key].reward = reward;
+    const resultTotalRewards = await getTotalRewards(address);
+    if (resultTotalRewards !== null) {
+      this.setState({
+        totalRewards: resultTotalRewards,
+      });
+      const { rewards } = resultTotalRewards;
+      rewards.forEach((item) => {
+        const addressValidator = item.validator_address;
+        if (Object.hasOwnProperty.call(delegations, addressValidator)) {
+          let amountReward = 0;
+          const { reward } = item;
+          if (reward !== null && reward[0] && reward[0].amount) {
+            amountReward = parseFloat(reward[0].amount);
+            delegations[addressValidator].reward = Math.floor(amountReward);
+          } else {
+            delegations[addressValidator].reward = amountReward;
+          }
         }
-      }
+      });
     }
     return delegations;
   };
@@ -596,6 +601,7 @@ class AccountDetails extends React.Component {
       followers,
       addressLocalStor,
       community,
+      totalRewards,
     } = this.state;
     // console.log('following', following);
 
@@ -775,6 +781,7 @@ class AccountDetails extends React.Component {
               follow={follow}
               tweets={tweets}
               defaultAccount={addressLocalStor}
+              totalRewards={totalRewards}
             />
           ) : (
             <ActionBar>

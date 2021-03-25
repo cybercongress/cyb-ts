@@ -532,7 +532,14 @@ class ActionBarContainer extends Component {
   }
 
   render() {
-    const { type, addressSend, tweets, follow, defaultAccount } = this.props;
+    const {
+      type,
+      addressSend,
+      tweets,
+      follow,
+      defaultAccount,
+      totalRewards,
+    } = this.props;
     const {
       stage,
       address,
@@ -561,6 +568,8 @@ class ActionBarContainer extends Component {
     //     </ActionBar>
     //   );
     // }
+
+    console.log('rewards', groupLink(totalRewards.rewards));
 
     if (stage === STAGE_INIT && type === 'tweets' && follow) {
       return (
@@ -593,7 +602,6 @@ class ActionBarContainer extends Component {
     }
     // console.log('rewards', rewards);
 
-    // console.log('rewards', groupLink(rewards.rewards));
     if (
       stage === STAGE_INIT &&
       type === 'heroes' &&
