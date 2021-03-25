@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
+import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
 import { Decimal } from '@cosmjs/math';
 import { CYBER } from './utils/config';
 
@@ -22,8 +23,8 @@ const configKeplr = () => {
     rpc: CYBER.CYBER_NODE_URL_API,
     rest: CYBER.CYBER_NODE_URL_LCD,
     stakeCurrency: {
-      coinDenom: 'EUL',
-      coinMinimalDenom: 'eul',
+      coinDenom: 'NICK',
+      coinMinimalDenom: 'nick',
       coinDecimals: 0,
     },
     bip44: {
@@ -42,9 +43,9 @@ const configKeplr = () => {
     currencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'EUL',
+        coinDenom: 'NICK',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'eul',
+        coinMinimalDenom: 'nick',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -53,9 +54,9 @@ const configKeplr = () => {
     feeCurrencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'EUL',
+        coinDenom: 'NICK',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'eul',
+        coinMinimalDenom: 'nick',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -72,10 +73,10 @@ const configKeplr = () => {
 export async function createClient(signer) {
   if (signer) {
     const firstAddress = (await signer.getAccounts())[0].address;
-    const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'uatom');
+    const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'nick');
     const gasLimits = { send: 100000 };
 
-    const cosmJS = new SigningCosmosClient(
+    const cosmJS = new SigningCyberClient(
       CYBER.CYBER_NODE_URL_LCD,
       firstAddress,
       signer,
@@ -118,11 +119,13 @@ const AppContextProvider = ({ children }) => {
         init();
       }
     }
+    console.log('window.getOfflineSigner', window.getOfflineSigner);
+    console.log('window.keplr', window.keplr);
   }, [window.keplr, window.getOfflineSigner]);
 
   useEffect(() => {
     if (client !== null) {
-      setValue((item) => ({ ...item, keplr: client }));
+      setValue((item) => ({ ...item, keplr: client, ws: CYBER.CYBER_WEBSOCKET_URL }));
     }
   }, [client]);
 

@@ -280,9 +280,11 @@ class ActionBarContainer extends Component {
       stage: STAGE_KEPLR_APPROVE,
     });
     if (keplr !== null) {
+      
       const chainId = CYBER.CHAIN_ID;
       await window.keplr.enable(chainId);
-      const { address } = await keplr.getAccount();
+      console.log(keplr)
+      const { address } = await keplr.getAccount(addressLocalStor.address);
       console.log('address', address)
       if (addressLocalStor !== null && addressLocalStor.address === address) {
         const msgs = [];

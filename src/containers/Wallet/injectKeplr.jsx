@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
+const { DirectSecp256k1HdWallet, Registry } = require("@cosmjs/proto-signing");
+import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
 import { Decimal } from '@cosmjs/math';
 import { CYBER } from '../../utils/config';
 import { Loading } from '../../components';
+const {stringToPath} = require("@cosmjs/crypto");
 
 const configKeplr = () => {
   return {
@@ -14,8 +17,8 @@ const configKeplr = () => {
     rpc: CYBER.CYBER_NODE_URL_API,
     rest: CYBER.CYBER_NODE_URL_LCD,
     stakeCurrency: {
-      coinDenom: 'EUL',
-      coinMinimalDenom: 'eul',
+      coinDenom: 'NICK',
+      coinMinimalDenom: 'nick',
       coinDecimals: 0,
     },
     bip44: {
@@ -34,9 +37,9 @@ const configKeplr = () => {
     currencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'EUL',
+        coinDenom: 'NICK',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'eul',
+        coinMinimalDenom: 'nick',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -45,9 +48,9 @@ const configKeplr = () => {
     feeCurrencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'EUL',
+        coinDenom: 'NICK',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'eul',
+        coinMinimalDenom: 'nick',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -86,16 +89,35 @@ const injectKeplr = (InnerComponent) =>
             const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
 
             const firstAddress = (await offlineSigner.getAccounts())[0].address;
-            const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'uatom');
-            const gasLimits = { send: 100000 };
-            const cosmJS = new SigningCosmosClient(
-              CYBER.CYBER_NODE_URL_LCD,
-              firstAddress,
-              offlineSigner,
-              gasPrice,
-              gasLimits,
-              'sync'
+            const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'nick');
+            const gasLimits = { send: 100000, cyberlink: 150000 };
+            // const cosmJS = new SigningCyberClient(
+            //   CYBER.CYBER_NODE_URL_LCD,
+            //   firstAddress,
+            //   offlineSigner,
+            //   gasPrice,
+            //   gasLimits,
+            //   'sync'
+            // );
+
+            const mnemonic =
+              "diet tragic tell acquire one wash fiber reopen surprise duty discover inner kind ketchup guilt exit three elegant sausage utility slab banner yellow asset";
+            const rpcUrl = "http://localhost:26657"
+            const prefix = "cyber"
+            const tokenDenom = "nick"
+            const hdPath = stringToPath("m/44'/118'/0'/0/0")
+            const signer = await DirectSecp256k1HdWallet.fromMnemonic(
+              mnemonic,
+              hdPath,
+              prefix,
             );
+            console.log("signer", signer)
+
+            const cosmJS = await SigningCyberClient.connectWithSigner(
+              "http://localhost:26657",
+              signer
+            )
+
             if (firstAddress === null) {
               this.setState({
                 keplr: cosmJS,

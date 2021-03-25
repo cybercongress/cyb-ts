@@ -208,9 +208,11 @@ export const getString = (string) =>
 export const search = async (keywordHash) =>
   axios({
     method: 'get',
-    url: `${CYBER_NODE_URL_API}/search?cid=%22${keywordHash}%22&page=0&perPage=1000`,
-  }).then((response) =>
-    response.data.result ? response.data.result.cids : []
+    url: `${CYBER_NODE_URL_LCD}/rank/search?cid=${keywordHash}&page=0&perPage=1000`,
+  }).then((response) => {
+      console.log("RESPONSE", response.data.result.result)
+      return response.data.result.result ? response.data.result.result : []
+    }
   );
 
 export const getRankGrade = (rank) => {
@@ -399,7 +401,7 @@ export const getAccountBandwidth = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_API}/account_bandwidth?address="${address}"`,
+      url: `${CYBER_NODE_URL_LCD}/bandwidth/account/${address}`,
     });
     return response.data.result;
   } catch (e) {

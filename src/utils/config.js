@@ -64,17 +64,17 @@ const COSMOS = {
 const CYBER = {
   CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
   DIVISOR_CYBER_G: 10 ** 9,
-  DENOM_CYBER: 'eul',
-  DENOM_CYBER_G: `GEUL`,
-  CYBER_WEBSOCKET_URL: 'wss://rpc.euler-6.cybernode.ai/websocket',
-  CYBER_NODE_URL_API: 'https://rpc.euler-6.cybernode.ai',
-  CYBER_NODE_URL_LCD: 'https://lcd.euler-6.cybernode.ai',
+  DENOM_CYBER: 'nick',
+  DENOM_CYBER_G: `GNICK`,
+  CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
+  CYBER_NODE_URL_API: 'http://localhost:26657',
+  CYBER_NODE_URL_LCD: 'http://localhost:1317',
   CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
-  CHAIN_ID: 'euler-6',
-  MEMO_KEPLR: 'cyber.page, using keplr',
+  CHAIN_ID: 'dev',
+  MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
 };
 
 const LEDGER = {
