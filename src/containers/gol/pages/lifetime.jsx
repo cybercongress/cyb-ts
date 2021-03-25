@@ -10,7 +10,6 @@ import {
   getAllValidators,
   getPreCommits,
   getGraphQLQuery,
-  getTxCosmos,
 } from '../../../utils/search/utils';
 import {
   CardStatisics,

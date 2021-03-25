@@ -100,8 +100,6 @@ const getGroupAddress = data => {
     obj[item.from].push({
       amount: item.amount,
       price: item.price,
-      txhash: item.txhash,
-      height: item.height,
       timestamp: item.timestamp,
       cybEstimation: item.estimation,
       estimationEUL: item.estimationEUL,
@@ -113,7 +111,6 @@ const getGroupAddress = data => {
       ...obj,
       [key]: {
         address: groupsAddress[key],
-        height: null,
         amountСolumn: null,
         pin: false,
         cyb: null,
@@ -132,7 +129,6 @@ const getGroupAddress = data => {
       sumEstimation += addressKey.cybEstimation;
       eul += addressKey.estimationEUL;
     });
-    groups[key].height = groups[key].address[0].height;
     groups[key].amountСolumn = sum;
     groups[key].cyb = sumEstimation;
     groups[key].eul = eul;

@@ -6,8 +6,8 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getValidators,
-  getTxCosmos,
   getCurrentNetworkLoad,
+  getGraphQLQuery,
 } from '../../utils/search/utils';
 import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
 import {
@@ -43,6 +43,17 @@ const test = {
   'tm.event': ['Tx'],
 };
 
+const Query = (address) =>
+  `query txs {
+    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
+    aggregate {
+      sum {
+        cybs
+      }
+    }
+  }
+}`;
+
 function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   const {
     data: dataLeaderboard,
@@ -76,10 +87,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   }, []);
 
   useEffect(() => {
-    const feachData = async () => {
-      await getTxsCosmos();
-    };
-    feachData();
+    getAtom();
   }, [address]);
 
   useEffect(() => {
@@ -105,24 +113,6 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
       setSelected('content');
     } else {
       setSelected('disciplines');
-    }
-  };
-
-  const getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      getAtom(tx);
     }
   };
 
@@ -178,11 +168,11 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
     setHerosCount(count);
   };
 
-  const getAtom = async (dataTxs) => {
+  const getAtom = async () => {
     const { addressLedger } = address;
-    let amount = 0;
+    const amount = 0;
 
-    let estimation = 0;
+    const estimation = TAKEOFF.FINISH_ESTIMATION;
     let addEstimation = 0;
     let addressCosmos = null;
 
@@ -190,30 +180,24 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
       addressCosmos = fromBech32(addressLedger.bech32, 'cosmos');
     }
 
-    if (dataTxs) {
-      for (let item = 0; item < dataTxs.length; item += 1) {
-        let temE = 0;
-        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
-        const val =
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-            10
-          ) / COSMOS.DIVISOR_ATOM;
-        temE = getEstimation(estimation, val);
-        if (addressTx === addressCosmos) {
-          addEstimation += temE;
-        }
-        amount += val;
-        estimation += temE;
+    if (addressCosmos !== null) {
+      const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
+        Query(addressCosmos)
+      );
+      if (
+        takeoffAggregate &&
+        takeoffAggregate.aggregate &&
+        takeoffAggregate.aggregate.sum
+      ) {
+        addEstimation = takeoffAggregate.aggregate.sum.cybs;
       }
     }
 
     setGolTakeOffProps(
-      Math.floor(addEstimation * 10 ** 12),
-      Math.floor(estimation * 10 ** 12)
+      Math.floor(addEstimation * 10 ** 9),
+      Math.floor(estimation * 10 ** 9)
     );
 
-    console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
     setTakeoff((prevState) => ({ ...prevState, estimation, amount }));
     setLoading(false);
   };
