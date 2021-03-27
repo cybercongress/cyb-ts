@@ -1,102 +1,119 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { coins } from '@cosmjs/launchpad';
+import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 
-function TestKeplr() {
-  const { keplr } = useContext(AppContext);
-  const [hashTx, setHashTx] = useState('');
-
-  console.log('keplr', keplr);
-    //   cybervaloper15zs0cjct43xs4z4sesxcrynar5mxm82ftahux2;
-
-  const sendTx = async () => {
-    if (keplr !== null) {
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const { address } = await keplr.getAccount();
-      const msgs = [];
-      msgs.push({
-        type: 'cosmos-sdk/MsgSend',
-        value: {
-          amount: coins(10, 'eul'),
-          from_address: address,
-          to_address: address,
-        },
-      });
-
-      const fee = {
-        amount: coins(0, 'uatom'),
-        gas: '100000',
-      };
-      if (Object.keys(msgs).length > 0) {
-        console.log('msgs', msgs);
-        const result = await keplr.signAndBroadcast(
-          msgs,
-          fee,
-          CYBER.MEMO_KEPLR
-        );
-        console.log('result: ', result);
-        const hash = result.transactionHash;
-        console.log('hash :>> ', hash);
-      }
-    }
+const configKeplr = () => {
+  return {
+    // Chain-id of the Cosmos SDK chain.
+    chainId: CYBER.CHAIN_ID,
+    // The name of the chain to be displayed to the user.
+    chainName: CYBER.CHAIN_ID,
+    // RPC endpoint of the chain.
+    rpc: 'https://rpc.bostromdev.cybernode.ai',
+    rest: 'https://lcd.bostromdev.cybernode.ai',
+    stakeCurrency: {
+      coinDenom: 'NICK',
+      coinMinimalDenom: 'nick',
+      coinDecimals: 0,
+    },
+    bip44: {
+      // You can only set the coin type of BIP44.
+      // 'Purpose' is fixed to 44.
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: 'cyber',
+      bech32PrefixAccPub: 'cyberpub',
+      bech32PrefixValAddr: 'cybervaloper',
+      bech32PrefixValPub: 'cybervaloperpub',
+      bech32PrefixConsAddr: 'cybervalcons',
+      bech32PrefixConsPub: 'cybervalconspub',
+    },
+    currencies: [
+      {
+        // Coin denomination to be displayed to the user.
+        coinDenom: 'NICK',
+        // Actual denom (i.e. uatom, uscrt) used by the blockchain.
+        coinMinimalDenom: 'nick',
+        // # of decimal points to convert minimal denomination to user-facing denomination.
+        coinDecimals: 0,
+      },
+    ],
+    // List of coin/tokens used as a fee token in this chain.
+    feeCurrencies: [
+      {
+        // Coin denomination to be displayed to the user.
+        coinDenom: 'NICK',
+        // Actual denom (i.e. uatom, uscrt) used by the blockchain.
+        coinMinimalDenom: 'nick',
+        // # of decimal points to convert minimal denomination to user-facing denomination.
+        coinDecimals: 0,
+      },
+    ],
+    coinType: 118,
+    gasPriceStep: {
+      low: 0,
+      average: 0,
+      high: 0,
+    },
   };
+};
 
-  const delegateTx = async () => {
-    if (keplr !== null) {
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const { address } = await keplr.getAccount();
-      const msgs = [];
-      msgs.push({
-        type: 'cosmos-sdk/MsgDelegate',
-        value: {
-          amount: {
-            amount: '10',
-            denom: 'eul',
-          },
-          delegator_address: address,
-          validator_address:
-            'cybervaloper15zs0cjct43xs4z4sesxcrynar5mxm82ftahux2',
-        },
-      });
+function TestKeplr() {
+  const [hashTx, setHashTx] = useState('');
+  const [from, setFrom] = useState(
+    'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe3'
+  );
+  const [to, setTo] = useState(
+    'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe1'
+  );
 
-      const fee = {
-        amount: coins(0, 'uatom'),
-        gas: '100000',
-      };
-      if (Object.keys(msgs).length > 0) {
-        console.log('msgs', msgs);
-        const result = await keplr.signAndBroadcast(
-          msgs,
-          fee,
-          CYBER.MEMO_KEPLR
+  const link = async () => {
+    if (window.keplr || window.getOfflineSigner) {
+      if (window.keplr.experimentalSuggestChain) {
+        await window.keplr.experimentalSuggestChain(configKeplr());
+        await window.keplr.enable(CYBER.CHAIN_ID);
+
+        const signer = window.getOfflineSigner(CYBER.CHAIN_ID);
+        console.log(`signer`, signer);
+        const accounts = await signer.getAccounts();
+        console.log(`accounts`, accounts);
+
+        const client = await SigningCyberClient.connectWithSigner(
+          'https://rpc.bostromdev.cybernode.ai',
+          signer
         );
-        console.log('result: ', result);
-        const hash = result.transactionHash;
-        console.log('hash :>> ', hash);
+        console.log(`client`, client);
+        const response = await client.cyberlink(accounts[0].address, from, to);
+        console.log(`response`, response);
+        setHashTx(response);
       }
     }
   };
 
   return (
     <main className="block-body">
+      <div>from</div>
+      <input
+        value={from}
+        style={{ width: 550, marginBottom: 20 }}
+        onChange={(e) => setFrom(e.target.value)}
+      />
+      <div>to</div>
+      <input
+        value={to}
+        style={{ width: 550 }}
+        onChange={(e) => setTo(e.target.value)}
+      />
       <button
         className="btn"
         style={{ maxWidth: 200, marginTop: 50 }}
-        onClick={sendTx}
+        onClick={link}
         type="button"
       >
-        send
-      </button>
-      <button
-        className="btn"
-        style={{ maxWidth: 200, marginTop: 50 }}
-        onClick={delegateTx}
-        type="button"
-      >
-        delegate
+        link
       </button>
       <span>{hashTx}</span>
     </main>
