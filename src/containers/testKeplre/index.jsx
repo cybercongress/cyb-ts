@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { coins } from '@cosmjs/launchpad';
+import { coin } from '@cosmjs/launchpad';
 import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
+import { Btn } from './ui';
+import Convert from './convert';
 
 const configKeplr = () => {
   return {
@@ -11,8 +13,8 @@ const configKeplr = () => {
     // The name of the chain to be displayed to the user.
     chainName: CYBER.CHAIN_ID,
     // RPC endpoint of the chain.
-    rpc: 'https://rpc.bostromdev.cybernode.ai',
-    rest: 'https://lcd.bostromdev.cybernode.ai',
+    rpc: 'http://localhost:26657',
+    rest: 'http://localhost:1317',
     stakeCurrency: {
       coinDenom: 'NICK',
       coinMinimalDenom: 'nick',
@@ -63,11 +65,14 @@ const configKeplr = () => {
 
 function TestKeplr() {
   const [hashTx, setHashTx] = useState('');
+  const [amount, setAmount] = useState(0);
+  const [time, setTime] = useState(10000);
+  const [select, setSelect] = useState('volt');
   const [from, setFrom] = useState(
     'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe3'
   );
   const [to, setTo] = useState(
-    'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe1'
+    'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe2'
   );
 
   const link = async () => {
@@ -82,13 +87,41 @@ function TestKeplr() {
         console.log(`accounts`, accounts);
 
         const client = await SigningCyberClient.connectWithSigner(
-          'https://rpc.bostromdev.cybernode.ai',
+          'http://localhost:26657',
           signer
         );
         console.log(`client`, client);
         const response = await client.cyberlink(accounts[0].address, from, to);
         console.log(`response`, response);
-        setHashTx(response);
+        setHashTx(response.transactionHash);
+      }
+    }
+  };
+
+  const convert = async () => {
+    if (window.keplr || window.getOfflineSigner) {
+      if (window.keplr.experimentalSuggestChain) {
+        await window.keplr.experimentalSuggestChain(configKeplr());
+        await window.keplr.enable(CYBER.CHAIN_ID);
+
+        const signer = window.getOfflineSigner(CYBER.CHAIN_ID);
+        console.log(`signer`, signer);
+        const accounts = await signer.getAccounts();
+        console.log(`accounts`, accounts);
+
+        const client = await SigningCyberClient.connectWithSigner(
+          'http://localhost:26657',
+          signer
+        );
+        console.log(`client`, client);
+        const response = await client.convertResources(
+          accounts[0].address,
+          coin(parseFloat(amount), 'nick'),
+          select,
+          parseFloat(time)
+        );
+        console.log(`response`, response);
+        setHashTx(response.transactionHash);
       }
     }
   };
@@ -115,7 +148,17 @@ function TestKeplr() {
       >
         link
       </button>
+      <div style={{ margin: '50px 0', border: '1px solid #fff' }} />
       <span>{hashTx}</span>
+      <Convert
+        amount={amount}
+        select={select}
+        setSelect={setSelect}
+        setAmount={setAmount}
+        convert={convert}
+        time={time}
+        setTime={setTime}
+      />
     </main>
   );
 }
