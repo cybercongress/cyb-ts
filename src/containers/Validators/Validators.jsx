@@ -616,7 +616,6 @@ class Validators extends Component {
           addressPocket={addressPocket}
           unStake={unStake}
           mobile={mobile}
-          keplr={keplr}
         />
       </div>
     );
