@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
-import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
+import { SigningCyberClient, CyberClient } from 'js-cyber';
 import { Decimal } from '@cosmjs/math';
+import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
+
 import { CYBER } from './utils/config';
 
 const valueContext = {
   keplr: null,
   ws: null,
+  jsCyber: null,
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -76,16 +79,22 @@ export async function createClient(signer) {
     const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'nick');
     const gasLimits = { send: 100000 };
 
-    const cosmJS = new SigningCyberClient(
-      CYBER.CYBER_NODE_URL_LCD,
-      firstAddress,
-      signer,
-      gasPrice,
-      gasLimits,
-      'sync'
+    const client = await SigningCyberClient.connectWithSigner(
+      CYBER.CYBER_NODE_URL_API,
+      signer
     );
 
-    return cosmJS;
+    // client.firstAddress = firstAddress;
+    // const cosmJS = new SigningCyberClient(
+    //   CYBER.CYBER_NODE_URL_LCD,
+    //   firstAddress,
+    //   signer,
+    //   gasPrice,
+    //   gasLimits,
+    //   'sync'
+    // );
+
+    return client;
   }
   return null;
 }
@@ -94,6 +103,21 @@ const AppContextProvider = ({ children }) => {
   const [value, setValue] = useState(valueContext);
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
+
+  useEffect(() => {
+    const createQueryCliet = async () => {
+      const tendermintClient = await Tendermint34Client.connect(
+        CYBER.CYBER_NODE_URL_API
+      );
+      const queryClient = new CyberClient(tendermintClient);
+
+      setValue((item) => ({
+        ...item,
+        jsCyber: queryClient,
+      }));
+    };
+    createQueryCliet();
+  }, []);
 
   useEffect(() => {
     if (signer !== null) {
@@ -125,11 +149,19 @@ const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (client !== null) {
-      setValue((item) => ({ ...item, keplr: client, ws: CYBER.CYBER_WEBSOCKET_URL }));
+      setValue((item) => ({
+        ...item,
+        keplr: client,
+        ws: CYBER.CYBER_WEBSOCKET_URL,
+      }));
     }
   }, [client]);
 
   console.log('value', value);
+
+  if (value.jsCyber && value.jsCyber === null) {
+    return <div>...</div>;
+  }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

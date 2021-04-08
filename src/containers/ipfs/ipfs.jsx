@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import {
   Pane,
@@ -15,7 +15,6 @@ import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
 import {
-  search,
   getRankGrade,
   getToLink,
   getCreator,
@@ -38,6 +37,7 @@ import ActionBarContainer from '../Search/ActionBarContainer';
 import AvatarIpfs from '../account/avatarIpfs';
 import ContentItem from './contentItem';
 import useGetIpfsContent from './useGetIpfsContentHook';
+import { AppContext } from '../../context';
 
 const dateFormat = require('dateformat');
 
@@ -62,7 +62,18 @@ const Pill = ({ children, active, ...props }) => (
   </Pane>
 );
 
+const search = async (client, hash) => {
+  try {
+    const responseSearchResults = await client.search(hash);
+    console.log(`responseSearchResults`, responseSearchResults);
+    return responseSearchResults.result ? responseSearchResults.result : [];
+  } catch (error) {
+    return [];
+  }
+};
+
 function Ipfs({ nodeIpfs, mobile }) {
+  const { jsCyber } = useContext(AppContext);
   const { cid } = useParams();
   const location = useLocation();
   const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs, 10);
@@ -101,8 +112,10 @@ function Ipfs({ nodeIpfs, mobile }) {
   }, [dataGetIpfsContent]);
 
   useEffect(() => {
-    getLinks();
-  }, [cid]);
+    if (jsCyber !== null) {
+      getLinks();
+    }
+  }, [cid, jsCyber]);
 
   const getLinks = () => {
     feacDataSearch();
@@ -111,12 +124,13 @@ function Ipfs({ nodeIpfs, mobile }) {
   };
 
   const feacDataSearch = async () => {
-    const responseSearch = await search(cid);
+    const responseSearch = await search(jsCyber, cid);
     setDataAnswers(responseSearch);
   };
 
   const feachCidTo = async () => {
     const response = await getToLink(cid);
+    console.log(`response`, response)
     if (response !== null && response.txs && response.txs.length > 0) {
       console.log('response To :>> ', response);
       setDataToLink(response.txs.reverse());
@@ -369,7 +383,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     nodeIpfs: store.ipfs.ipfs,
     mobile: store.settings.mobile,

@@ -280,36 +280,14 @@ class ActionBarContainer extends Component {
       stage: STAGE_KEPLR_APPROVE,
     });
     if (keplr !== null) {
-      
       const chainId = CYBER.CHAIN_ID;
       await window.keplr.enable(chainId);
-      console.log(keplr)
-      const { address } = await keplr.getAccount(addressLocalStor.address);
-      console.log('address', address)
+      console.log(keplr);
+      const { address } = (await keplr.signer.getAccounts())[0];
+
+      console.log('address', address);
       if (addressLocalStor !== null && addressLocalStor.address === address) {
-        const msgs = [];
-        msgs.push({
-          type: 'cyber/Link',
-          value: {
-            address,
-            links: [
-              {
-                from: fromCid,
-                to: toCid,
-              },
-            ],
-          },
-        });
-        const fee = {
-          amount: coins(0, 'uatom'),
-          gas: '100000',
-        };
-        console.log('msg', msgs);
-        const result = await keplr.signAndBroadcast(
-          msgs,
-          fee,
-          CYBER.MEMO_KEPLR
-        );
+        const result = await keplr.cyberlink(address, fromCid, toCid);
         console.log('result: ', result);
         const hash = result.transactionHash;
         console.log('hash :>> ', hash);
