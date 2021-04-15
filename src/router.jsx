@@ -38,6 +38,7 @@ import ForceGraph from './containers/forceGraph/forceGraph';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
 import PortPages from './containers/port';
 import TestKeplr from './containers/testKeplre';
+import Mint from './containers/mint';
 
 export const history = createBrowserHistory({});
 
@@ -107,6 +108,7 @@ function AppRouter({
         <Route path="/degenbox" component={TrollBoxx} />
         <Route path="/port" component={PortPages} />
         <Route path="/test" component={TestKeplr} />
+        <Route path="/mint" component={Mint} />
       </Switch>
     </Router>
   );
