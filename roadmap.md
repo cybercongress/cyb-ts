@@ -7,7 +7,7 @@
 We have to design complete app which will be lovable and simple.
 
 - [ ] Cybernomics: Fix GOL Supply, Add price from Uniswap. Remove EUL
-- [ ] Tests
+- [ ] Tests 
   - [ ] connectability (поключение, разрешение)
   - [ ] balance
   - [ ] cyberlink
