@@ -17,7 +17,7 @@ import { cybWon, getDisciplinesAllocation } from '../../../utils/fundingMath';
 import TableDiscipline from '../table';
 import { fromBech32, formatNumber, sort } from '../../../utils/utils';
 
-import { COSMOS, TAKEOFF, DISTRIBUTION } from '../../../utils/config';
+import { COSMOS, TAKEOFF, DISTRIBUTION, DISTRIBUTION_PRIZE } from '../../../utils/config';
 
 class GolDelegation extends React.Component {
   constructor(props) {
@@ -27,7 +27,7 @@ class GolDelegation extends React.Component {
       validatorAddress: null,
       loading: true,
       won: 0,
-      currentPrize: 0,
+      currentPrize: DISTRIBUTION_PRIZE.delegation,
       takeoffDonations: 0,
       herosCount: 0,
       dataTable: [],
@@ -37,13 +37,6 @@ class GolDelegation extends React.Component {
   }
 
   async componentDidMount() {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-    );
-
-    this.setState({
-      currentPrize,
-    });
     await this.checkAddressLocalStorage();
     // this.getMyGOLs();
     this.getValidatorsCount();

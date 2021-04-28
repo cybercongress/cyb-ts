@@ -12,7 +12,7 @@ import {
 } from '../../../utils/search/utils';
 import { exponentialToDecimal, formatNumber } from '../../../utils/utils';
 import { cybWon } from '../../../utils/fundingMath';
-import { COSMOS, TAKEOFF, DISTRIBUTION, CYBER } from '../../../utils/config';
+import { COSMOS, TAKEOFF, DISTRIBUTION, DISTRIBUTION_PRIZE, CYBER } from '../../../utils/config';
 
 const GET_CHARACTERS = `
 query MyQuery {
@@ -60,9 +60,7 @@ class GolLoad extends React.Component {
   }
 
   async componentDidMount() {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.load;
 
     this.setState({
       currentPrize,

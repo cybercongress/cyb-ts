@@ -12,7 +12,11 @@ import { Dots, LinkWindow, TabBtn, Loading } from '../../../components';
 import LoadTab from '../tab/loadTab';
 import ContentItem from '../../ipfs/contentItem';
 import { formatNumber } from '../../../utils/utils';
-import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+} from '../../../utils/config';
 
 const GET_RELEVANCE = `
 query getRelevanceLeaderboard {
@@ -98,9 +102,8 @@ function GolRelevance({ node, mobile }) {
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(
-        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
-      );
+      const prize = DISTRIBUTION_PRIZE.relevance;
+
       const responseRelevanceQ = await getGraphQLQuery(GET_RELEVANCE);
       if (
         responseRelevanceQ !== null &&
