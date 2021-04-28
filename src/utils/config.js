@@ -111,6 +111,17 @@ const DISTRIBUTION = {
   'community pool': 2000000000000,
 };
 
+const DISTRIBUTION_PRIZE = {
+  takeoff: 100000000000000,
+  relevance: 1100000000000,
+  load: 500000000000,
+  delegation: 250000000000,
+  'full validator set': 250000000000,
+  'euler 4 rewards': 5000000000000,
+  lifetime: 150000000000,
+  'community pool': 2000000000000,
+};
+
 const POCKET = {
   STAGE_TWEET_ACTION_BAR: {
     ADD_AVATAR: 'addAvatar',
@@ -154,4 +165,5 @@ export {
   POCKET,
   INFINITY,
   ADD_ARAGON_FINANCE,
+  DISTRIBUTION_PRIZE,
 };

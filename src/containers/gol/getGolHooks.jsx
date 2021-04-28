@@ -6,7 +6,12 @@ import {
   getValidatorsInfo,
 } from '../../utils/search/utils';
 import { getEstimation } from '../../utils/fundingMath';
-import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+  COSMOS,
+} from '../../utils/config';
 import {
   getRelevance,
   getLoad,
@@ -34,11 +39,13 @@ query lifetimeRate {
   pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
     precommits
   }
-  pre_commit_aggregate {
-    aggregate {
-      count
+  pre_commit_view_aggregate {
+      aggregate {
+        sum {
+          precommits
+        }
+      }
     }
-  }
 }
 `;
 
@@ -105,9 +112,7 @@ function useGetGol(address) {
   useEffect(() => {
     const feachData = async () => {
       const responseDataQ = await getGraphQLQuery(QueryAddress(address));
-      const prize = Math.floor(
-        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-      );
+      const prize = DISTRIBUTION_PRIZE.relevance;
       if (
         responseDataQ.relevance_leaderboard &&
         Object.keys(responseDataQ.relevance_leaderboard).length > 0
@@ -123,9 +128,7 @@ function useGetGol(address) {
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(
-        (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-      );
+      const prize = DISTRIBUTION_PRIZE.load;
       const data = await getLoad(address);
       if (data > 0 && prize > 0) {
         const cybAbsolute = data * prize;
@@ -149,9 +152,7 @@ function useGetGol(address) {
   useEffect(() => {
     if (validatorAddress !== null) {
       const feachData = async () => {
-        const prize = Math.floor(
-          (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-        );
+        const prize = DISTRIBUTION_PRIZE.delegation;
         const data = await getDelegation(validatorAddress);
         if (data > 0 && prize > 0) {
           const cybAbsolute = data * prize;
@@ -167,7 +168,7 @@ function useGetGol(address) {
       const feachData = async () => {
         const data = await getRewards(validatorAddress);
         if (data > 0) {
-          const cybAbsolute = data;
+          const cybAbsolute = data / 3;
           setTotal((stateTotal) => stateTotal + cybAbsolute);
         }
       };
@@ -178,15 +179,14 @@ function useGetGol(address) {
   useEffect(() => {
     if (consensusAddress !== null) {
       const feachData = async () => {
-        const prize = Math.floor(
-          (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-        );
+        const prize = DISTRIBUTION_PRIZE.lifetime;
         const dataLifeTime = await getGraphQLQuery(
           getQueryLifeTime(consensusAddress)
         );
         if (dataLifeTime !== null) {
           const data = await getLifetime({
-            block: dataLifeTime.pre_commit_aggregate.aggregate.count,
+            block:
+              dataLifeTime.pre_commit_view_aggregate.aggregate.sum.precommits,
             preCommit: dataLifeTime.pre_commit_view[0].precommits,
           });
           if (data > 0 && prize > 0) {

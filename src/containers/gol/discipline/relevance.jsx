@@ -3,7 +3,11 @@ import { useQuery, useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+} from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getRelevance } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
@@ -73,9 +77,7 @@ const Relevance = ({
   const { loading, share } = useRelevaceHook(addressLedger);
   const [cybWonAbsolute, setCybWonAbsolute] = useState(0);
   const [cybWonPercent, setCybWonPercent] = useState(0);
-  const prize = Math.floor(
-    (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * takeoffDonations
-  );
+  const prize = DISTRIBUTION_PRIZE.relevance;
 
   useEffect(() => {
     if (!loading) {

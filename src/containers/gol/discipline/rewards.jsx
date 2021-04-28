@@ -20,14 +20,14 @@ const Rewards = ({
   const [linkTo, setLinkTo] = useState(
     'https://cybercongress.ai/game-of-links/'
   );
-  const currentPrize = '-';
 
   useEffect(() => {
     if (validatorAddress !== null) {
+      setLoading(true);
       const fetchData = async () => {
         const data = await getRewards(validatorAddress);
-        const cybAbsolute = data;
-        if (cybAbsolute !== 0) {
+        if (data > 0) {
+          const cybAbsolute = data / 3;
           setGolEuler4RewardsProps(
             Math.floor(cybAbsolute),
             DISTRIBUTION['euler 4 rewards']

@@ -107,7 +107,7 @@ const TableDiscipline = ({
               takeoffDonations={takeoffDonations}
             />
             <FVS />
-            <CommunityPool />
+            <CommunityPool address={addressLedger} />
             <Total />
           </Table.Body>
         </Table>

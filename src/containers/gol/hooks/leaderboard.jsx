@@ -5,7 +5,12 @@ import {
   getIndexStats,
   getAllValidators,
 } from '../../../utils/search/utils';
-import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  TAKEOFF,
+  DISTRIBUTION_PRIZE,
+  COSMOS,
+} from '../../../utils/config';
 import { fromBech32 } from '../../../utils/utils';
 
 const GET_LOAD = `
@@ -67,9 +72,7 @@ function setLeaderboard() {
 
   const getLoad = async (amountTakeoff) => {
     let load = [];
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amountTakeoff
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.load;
     const dataGraphQLQuery = await getGraphQLQuery(GET_LOAD);
     const responseIndexStats = await getIndexStats();
     const sumKarma = responseIndexStats.totalKarma;
@@ -110,10 +113,7 @@ function setLeaderboard() {
   };
 
   const getDelegation = async (validators, total, dataV) => {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * amount
-    );
-
+    const currentPrize = DISTRIBUTION_PRIZE.delegation;
     if (validators.length > 0) {
       validators.forEach((item) => {
         const cyb = (item.tokens / total) * currentPrize;
@@ -141,9 +141,7 @@ function setLeaderboard() {
   };
 
   const getLifetime = async (validators, dataV) => {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.lifetime;
     const dataGraphQL = await getGraphQLQuery(GET_LIFETIME);
     if (Object.keys(dataGraphQL.pre_commit_view).length > 0) {
       const sumPrecommits =
@@ -248,9 +246,7 @@ function setLeaderboard() {
   }, [dataLoad]);
 
   useEffect(() => {
-    const prize = Math.floor(
-      (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.relevance;
     const feachData = async () => {
       if (Object.keys(dataLoad).length > 0) {
         const responseRelevanceQ = await getGraphQLQuery(GET_RELEVANCE);
@@ -265,7 +261,7 @@ function setLeaderboard() {
           setProgress(80);
           responseRelevanceQ.relevance_leaderboard.forEach((item, index) => {
             if (Object.prototype.hasOwnProperty.call(dataLoad, item.subject)) {
-              const cybAbsolute = item.share * prize;
+              const cybAbsolute = item.share * currentPrize;
               data[item.subject] = {
                 ...data[item.subject],
                 relevance: cybAbsolute,

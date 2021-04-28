@@ -23,6 +23,10 @@ export const initialState = {
     cybAbsolute: 0,
     currentPrize: 0,
   },
+  communityPool: {
+    cybAbsolute: 0,
+    currentPrize: 0,
+  },
 };
 
 const golReducer = (state = initialState, action) => {
@@ -87,6 +91,15 @@ const golReducer = (state = initialState, action) => {
       };
     }
 
+    case 'CHANGE_COMMUNITY_POOL': {
+      return {
+        ...state,
+        communityPool: {
+          cybAbsolute: action.cybAbsolute,
+          currentPrize: action.currentPrize,
+        },
+      };
+    }
     default:
       return state;
   }
