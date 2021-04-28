@@ -30,7 +30,7 @@ import {
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
 
-import { authAccounts } from '../../utils/search/utils';
+import { formatNumber } from '../../utils/utils';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
@@ -153,6 +153,10 @@ class ProposalsDetail extends React.Component {
 
     if (proposals.content.value.recipient) {
       proposalsInfo.recipient = proposals.content.value.recipient;
+    }
+
+    if (proposals.content.value.amount) {
+      proposalsInfo.amount = proposals.content.value.amount;
     }
 
     this.setState({
@@ -360,6 +364,15 @@ class ProposalsDetail extends React.Component {
                       {proposalsInfo.recipient}
                     </Link>
                   }
+                />
+              )}
+              {proposalsInfo.amount && (
+                <Item
+                  title="Amount"
+                  marginBottom={15}
+                  value={`${formatNumber(
+                    parseFloat(proposalsInfo.amount[0].amount)
+                  )} ${proposalsInfo.amount[0].denom.toUpperCase()}`}
                 />
               )}
               <Item
