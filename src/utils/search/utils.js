@@ -3,6 +3,8 @@ import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import { CYBER, TAKEOFF, COSMOS } from '../config';
 
 const all = require('it-all');
+const uint8ArrayConcat = require('uint8arrays/concat');
+const uint8ArrayToAsciiString = require('uint8arrays/to-string');
 
 const {
   CYBER_NODE_URL_API,
@@ -741,7 +743,7 @@ export const getIndexStats = async () => {
     return response.data.result;
   } catch (e) {
     console.log(e);
-    return 0;
+    return null;
   }
 };
 
@@ -1230,29 +1232,35 @@ export const getAvatarIpfs = async (cid, ipfs) => {
     localResolve: false,
   });
 
-  if (responseDag.value.size <= 1.5 * 10 ** 6) {
+  if (responseDag.value.size <= 1.5 * 10 ** 7) {
     const responsePin = ipfs.pin.add(cid);
     console.log('responsePin', responsePin);
     let mime;
 
-    const responseCat = await all(ipfs.cat(cid));
-    const { 0: someVar } = responseCat;
-    const buf = someVar;
-    const bufs = [];
-    bufs.push(buf);
-    const data = Buffer.concat(bufs);
+    const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
+
+    const data = responseCat;
+    // const buf = someVar;
+    // const bufs = [];
+    // bufs.push(buf);
+    // const data = Buffer.concat(bufs);
     const dataFileType = await FileType.fromBuffer(data);
     if (dataFileType !== undefined) {
       mime = dataFileType.mime;
       if (mime.indexOf('image') !== -1) {
-        const dataBase64 = data.toString('base64');
+        // const dataBase64 = data.toString('base64');
+        const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
         const file = `data:${mime};base64,${dataBase64}`;
         return file;
       }
     }
-    const dataBase64 = data.toString();
+    const dataBase64 = uint8ArrayToAsciiString(data);
+    // console.log(`dataBase64`, dataBase64);
     if (isSvg(dataBase64)) {
-      const svg = `data:image/svg+xml;base64,${data.toString('base64')}`;
+      const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+        data,
+        'base64'
+      )}`;
       return svg;
     }
   }
