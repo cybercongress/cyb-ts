@@ -78,7 +78,6 @@ const AcceptedCard = ({ id, name, votes, type, amount, timeEnd }) => (
       <Pane marginBottom={2}>Votes:</Pane>
       <Votes finalVotes={finalTallyResult(votes)} />
     </Pane>
-    <Pane>Amount: {formatCurrency(amount.amount, amount.denom)}</Pane>
     <Pane>
       <Pane marginBottom={2}>Time accepted:</Pane>
       <Pane>{timeEnd}</Pane>
@@ -106,7 +105,6 @@ const RejectedCard = ({ id, name, votes, type, amount, timeEnd }) => (
       <Pane marginBottom={2}>Votes:</Pane>
       <Votes finalVotes={finalTallyResult(votes)} />
     </Pane>
-    <Pane>Amount: {formatCurrency(amount.amount, amount.denom)}</Pane>
     <Pane>
       <Pane marginBottom={2}>Time rejected:</Pane>
       <Pane>{timeEnd}</Pane>
