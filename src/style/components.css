@@ -278,6 +278,11 @@
   padding-left: 20px;
 }
 
+.container-description ol {
+  margin-bottom: 15px;
+  padding-left: 20px;
+}
+
 .pulse {
   background: transparent;
   border-radius: 50%;

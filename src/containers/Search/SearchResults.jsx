@@ -52,7 +52,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
 
       let responseSearchResults = await search(keywordHashTemp);
       if (responseSearchResults.length === 0) {
-        const queryNull = '0';
+        const queryNull = 'zero';
         keywordHashNull = await getIpfsHash(queryNull);
         responseSearchResults = await search(keywordHashNull);
       }

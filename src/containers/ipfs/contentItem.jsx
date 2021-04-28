@@ -8,6 +8,7 @@ import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
 import db from '../../db';
 
+const uint8ArrayConcat = require('uint8arrays/concat');
 const all = require('it-all');
 
 const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
@@ -71,8 +72,8 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
           console.log('responsePin', responsePin);
 
           // const cids = new CID(cid);
-          const responseCat = await all(nodeIpfs.cat(cid));
-          const { 0: someVar } = responseCat;
+          const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
+          const someVar = responseCat;
           meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
             cid,

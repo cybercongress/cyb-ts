@@ -245,7 +245,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             to={`${match.url}/cyber-vs-corp`}
           />
           <TabBtn
-            text="Manifest"
+            text="Manifesto"
             isSelected={selected === 'manifest'}
             to={match.url}
           />

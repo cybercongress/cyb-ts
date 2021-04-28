@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config=webpack.config.dev.js --https -d --disable-host-check",
-    "build": "webpack --config=webpack.config.prod.js -p && ncp build/index.html build/404.html",
+    "build": "webpack --config=webpack.config.prod.js -p && ncp build/index.html build/404.html && echo 'cyber.page' > build/CNAME",
     "devserver": "parcel serve src/index.html -p 8001 --no-cache",
     "lint": "eslint src/"
   },
@@ -62,6 +62,7 @@
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
     "terser-webpack-plugin": "4.2.3",
+    "uint8arrays": "^2.1.5",
     "webpack": "4.41.2",
     "webpack-cli": "3.1.2",
     "webpack-dev-server": "3.10.3",

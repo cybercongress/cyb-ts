@@ -70,7 +70,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState('discussion');
   const [gateway, setGateway] = useState(null);
   const [placeholder, setPlaceholder] = useState('');
@@ -92,15 +92,16 @@ function Ipfs({ nodeIpfs, mobile }) {
   let contentTab;
 
   useEffect(() => {
-    setLoading(true);
+    console.log(`dataGetIpfsContent`, dataGetIpfsContent)
     setContent(dataGetIpfsContent.content);
     setTypeContent(dataGetIpfsContent.typeContent);
     setGateway(dataGetIpfsContent.gateway);
-    setLoading(dataGetIpfsContent.loading);
+    // setLoading(dataGetIpfsContent.loading);
     setMetaData(dataGetIpfsContent.metaData);
   }, [dataGetIpfsContent]);
 
   useEffect(() => {
+    // setLoading(true);
     getLinks();
   }, [cid]);
 
@@ -197,22 +198,22 @@ function Ipfs({ nodeIpfs, mobile }) {
     }
   };
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <Loading />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div
+  //       style={{
+  //         width: '100%',
+  //         height: '50vh',
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         flexDirection: 'column',
+  //       }}
+  //     >
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
 
   if (selected === 'answers') {
     contentTab = (
@@ -299,12 +300,27 @@ function Ipfs({ nodeIpfs, mobile }) {
           width: '100%',
         }}
       >
-        <ContentTab
-          typeContent={typeContent}
-          gateway={gateway}
-          content={content}
-          cid={cid}
-        />
+        {content.length === 0 ? (
+          <div
+            style={{
+              width: '100%',
+              // height: '50vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+            }}
+          >
+            <Loading />
+          </div>
+        ) : (
+          <ContentTab
+            typeContent={typeContent}
+            gateway={gateway}
+            content={content}
+            cid={cid}
+          />
+        )}
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -369,7 +385,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     nodeIpfs: store.ipfs.ipfs,
     mobile: store.settings.mobile,

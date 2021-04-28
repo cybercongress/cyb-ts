@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+} from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLifetime } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
@@ -16,16 +20,14 @@ const Lifetime = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonPercent, setCybWonPercent] = useState(0);
-  const currentPrize = Math.floor(
-    (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * takeoffDonations
-  );
+  const currentPrize = DISTRIBUTION_PRIZE.lifetime;
 
   useEffect(() => {
     if (dataQ !== null) {
       const fetchData = async () => {
         console.log(dataQ);
         const data = await getLifetime({
-          block: dataQ.pre_commit_aggregate.aggregate.count,
+          block: dataQ.pre_commit_view_aggregate.aggregate.sum.precommits,
           preCommit: dataQ.pre_commit_view[0].precommits,
         });
         const cybAbsolute = data * currentPrize;
@@ -54,14 +56,14 @@ const Lifetime = ({
   );
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setGolLifeTimeProps: (amount, prize) =>
       dispatch(setGolLifeTime(amount, prize)),
   };
 };
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     lifetime: store.gol.lifetime,
   };

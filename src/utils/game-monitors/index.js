@@ -6,20 +6,37 @@ import {
   getDrop,
   getAmountATOM,
   getSendTxToTakeoff,
+  getGraphQLQuery,
+  getAllValidators,
 } from '../search/utils';
 import { fromBech32 } from '../utils';
 import { COSMOS } from '../config';
 
-export const getLoad = async address => {
+const QueryAddress = (subject) =>
+  ` query MyQuery {
+        karma_view(where: {subject: {_eq: "${subject}"}}) {
+          karma
+          subject
+        }
+      }
+  `;
+
+export const getLoad = async (address) => {
   let karma = 0;
   let sumKarma = 0;
   let load = 0;
 
-  const responseAccountBandwidth = await getAccountBandwidth(address);
+  const recponceData = await getGraphQLQuery(QueryAddress(address));
   const responseIndexStats = await getIndexStats();
 
-  if (responseAccountBandwidth !== null && responseIndexStats !== null) {
-    karma = responseAccountBandwidth.karma;
+  if (
+    recponceData &&
+    recponceData !== null &&
+    recponceData.karma_view &&
+    Object.keys(recponceData.karma_view).length > 0 &&
+    responseIndexStats !== null
+  ) {
+    karma = recponceData.karma_view[0].karma;
     // sumKarma = responseIndexStats.totalKarma;
     sumKarma = responseIndexStats.totalKarma;
     load = parseFloat(karma) / parseFloat(sumKarma);
@@ -27,7 +44,7 @@ export const getLoad = async address => {
   return load;
 };
 
-export const getDelegation = async address => {
+export const getDelegation = async (address) => {
   let delegation = 0;
   let currentValidatorStakedTokens = 0;
   let allBondedTokens = 0;
@@ -36,10 +53,14 @@ export const getDelegation = async address => {
   if (responseGetValidatorsInfo === null) {
     return delegation;
   }
-  const responseStakingPool = await stakingPool();
 
-  if (responseStakingPool !== 0) {
-    allBondedTokens = responseStakingPool.bonded_tokens;
+  const responseValidators = await getAllValidators();
+
+  if (responseValidators !== null) {
+    for (let index = 0; index < responseValidators.length; index++) {
+      const element = responseValidators[index];
+      allBondedTokens += parseFloat(element.tokens);
+    }
     currentValidatorStakedTokens = responseGetValidatorsInfo.tokens;
     delegation =
       parseFloat(currentValidatorStakedTokens) / parseFloat(allBondedTokens);
@@ -47,7 +68,7 @@ export const getDelegation = async address => {
   return delegation;
 };
 
-export const getLifetime = async data => {
+export const getLifetime = async (data) => {
   let lifetime = 0;
 
   if (data !== null) {
@@ -59,7 +80,7 @@ export const getLifetime = async data => {
   return lifetime;
 };
 
-export const getRewards = async address => {
+export const getRewards = async (address) => {
   let rewards = 0;
 
   const dataGetDrop = await getDrop(address);

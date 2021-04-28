@@ -49,7 +49,7 @@ export const Votes = ({ finalVotes }) => {
               backgroundColor="#3ab793"
               display="flex"
               height="100%"
-              width={`${finalVotes.yes}%`}
+              width="100%"
             />
           </Tooltip>
         </Pane>
@@ -62,7 +62,8 @@ export const Votes = ({ finalVotes }) => {
               backgroundColor="#ccdcff"
               display="flex"
               height="100%"
-              width={`${finalVotes.abstain}%`}
+              width="100%"
+              // width={`${finalVotes.abstain}%`}
             />
           </Tooltip>
         </Pane>
@@ -75,7 +76,8 @@ export const Votes = ({ finalVotes }) => {
               backgroundColor="#ffcf65"
               display="flex"
               height="100%"
-              width={`${finalVotes.no}%`}
+              width="100%"
+              // width={`${finalVotes.no}%`}
             />
           </Tooltip>
         </Pane>
@@ -88,7 +90,8 @@ export const Votes = ({ finalVotes }) => {
               backgroundColor="#fe8a8a"
               display="flex"
               height="100%"
-              width={`${finalVotes.noWithVeto}%`}
+              width="100%"
+              // width={`${finalVotes.noWithVeto}%`}
             />
           </Tooltip>
         </Pane>

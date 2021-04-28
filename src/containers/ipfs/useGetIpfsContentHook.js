@@ -6,6 +6,8 @@ const isSvg = require('is-svg');
 
 const FileType = require('file-type');
 const all = require('it-all');
+const uint8ArrayConcat = require('uint8arrays/concat');
+const uint8ArrayToAsciiString = require('uint8arrays/to-string');
 
 export const getTypeContent = async (dataCid, cid) => {
   const response = {
@@ -16,17 +18,23 @@ export const getTypeContent = async (dataCid, cid) => {
     gateway: null,
   };
   // console.log('dataCid', dataCid);
-  const bufs = [];
-  bufs.push(dataCid);
-  const data = Buffer.concat(bufs);
+  // const bufs = [];
+  // bufs.push(dataCid);
+  // console.log(`bufs`, bufs)
+  // const data = Buffer.concat(bufs);
+  // console.log(`data`, data);
   // console.log('data', data);
+  const data = dataCid;
   const dataFileType = await FileType.fromBuffer(data);
   if (dataFileType !== undefined) {
     const { mime } = dataFileType;
     const dataBase64 = data.toString('base64');
+    // const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
+
     if (mime.indexOf('image') !== -1) {
       response.text = false;
-      const file = `data:${mime};base64,${dataBase64}`;
+      const imgBase64 = uint8ArrayToAsciiString(data, 'base64');
+      const file = `data:${mime};base64,${imgBase64}`;
       response.type = 'image';
       response.content = file;
       response.gateway = false;
@@ -37,22 +45,19 @@ export const getTypeContent = async (dataCid, cid) => {
       response.type = 'application/pdf';
       response.content = file;
       response.gateway = true;
-    } else if (isSvg(data)) {
-      response.text = false;
-      const file = `data:image/svg+xml;base64,${dataBase64}`;
-      response.type = 'image';
-      response.content = file;
-      response.gateway = false;
     } else {
       response.text = cid;
       response.gateway = true;
     }
   } else {
-    const dataBase64 = data.toString();
+    const dataBase64 = uint8ArrayToAsciiString(data);
     response.content = dataBase64;
     if (isSvg(data)) {
       response.text = false;
-      const file = `data:image/svg+xml;base64,${data.toString('base64')}`;
+      const file = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+        data,
+        'base64'
+      )}`;
       response.type = 'image';
       response.content = file;
       response.gateway = false;
@@ -131,14 +136,9 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         setStatus('downloaded');
         setLoading(false);
       } else if (nodeIpfs !== null) {
-        const timerId = setTimeout(() => {
-          setStatus('impossibleLoad');
-          setContent(cid);
-        }, 15000);
         const responseDag = await nodeIpfs.dag.get(cid, {
           localResolve: false,
         });
-        console.log('responseDag', responseDag);
         const meta = {
           type: 'file',
           size: 0,
@@ -157,13 +157,10 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         }
         meta.size = responseDag.value.size;
         meta.blockSizes = linksCid;
-        clearTimeout(timerId);
         if (responseDag.value.size < size * 10 ** 6) {
           nodeIpfs.pin.add(cid);
-          // console.log('responsePin', responsePin);
-
-          const responseCat = await all(nodeIpfs.cat(cid));
-          const { 0: someVar } = responseCat;
+          const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
+          const someVar = responseCat;
           // const responseCat = await nodeIpfs.cat(cid);
           // console.log('responseCat', someVar);
           meta.data = someVar;
@@ -192,6 +189,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
           setStatus('downloaded');
           setGateway(dataTypeContent.gateway);
         } else {
+          setContent(cid);
           setGateway(true);
           setStatus('availableDownload');
           setText(cid);
@@ -199,6 +197,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         setLoading(false);
       } else {
         setLoading(false);
+        setContent(cid);
         setText(cid);
         setGateway(true);
         setStatus('impossibleLoad');

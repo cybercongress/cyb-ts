@@ -18,9 +18,11 @@ function LifetimeHooks({ consensusAddress, takeoffDonations = 0 }) {
       pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
         precommits
       }
-      pre_commit_aggregate {
+      pre_commit_view_aggregate {
         aggregate {
-          count
+          sum {
+            precommits
+          }
         }
       }
     }

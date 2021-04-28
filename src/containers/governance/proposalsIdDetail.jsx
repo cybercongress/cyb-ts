@@ -68,15 +68,21 @@ const ProposalsIdDetail = ({
         <Item
           marginBottom={15}
           title="Yes"
-          value={`${yes}% (Threshold ${toFixedNumber(threshold * 100, 2)}%)`}
+          value={`${toFixedNumber(yes, 2)}% (Threshold ${toFixedNumber(
+            threshold * 100,
+            2
+          )}%)`}
         />
-        <Item marginBottom={15} title="No" value={`${no}%`} />
+        <Item marginBottom={15} title="No" value={`${toFixedNumber(no, 2)}%`} />
         <Item
           marginBottom={15}
           title="NoWithVeto"
-          value={`${noWithVeto}% (Threshold ${toFixedNumber(veto * 100, 2)}%)`}
+          value={`${toFixedNumber(noWithVeto, 2)}% (Threshold ${toFixedNumber(
+            veto * 100,
+            2
+          )}%)`}
         />
-        <Item title="Abstain" value={`${abstain}%`} />
+        <Item title="Abstain" value={`${toFixedNumber(abstain, 2)}%`} />
       </ContainerPane>
     </Pane>
   );
