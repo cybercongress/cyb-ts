@@ -10,6 +10,7 @@ const valueContext = {
   keplr: null,
   ws: null,
   jsCyber: null,
+  updatejsCyber: () => {},
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -104,6 +105,19 @@ const AppContextProvider = ({ children }) => {
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
 
+  const updatejsCyber = (rpc) => {
+    const createQueryCliet = async () => {
+      const tendermintClient = await Tendermint34Client.connect(rpc);
+      const queryClient = new CyberClient(tendermintClient);
+
+      setValue((item) => ({
+        ...item,
+        jsCyber: queryClient,
+      }));
+    };
+    createQueryCliet();
+  };
+
   useEffect(() => {
     const createQueryCliet = async () => {
       const tendermintClient = await Tendermint34Client.connect(
@@ -163,7 +177,11 @@ const AppContextProvider = ({ children }) => {
     return <div>...</div>;
   }
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={{ value, updatejsCyber }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export default AppContextProvider;
