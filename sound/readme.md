@@ -1,6 +1,7 @@
 > i dont know about local code ethics, so pardon me if i do something wrong. Feel free to explain how to make things in the right way.
 
-## Musical Typing help
+
+# Musical Typing help
 
 All the sounds for Musical Typing are located in the *Musical Typing* folder
 
