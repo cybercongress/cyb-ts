@@ -92,6 +92,14 @@ const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
 const imgCyber = require('../../image/blue-circle.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
+const imgCyberSigner = require('../../image/wallet-outline.svg');
+
+const imgData = {
+  ledger: imgLedger,
+  keplr: imgKeplr,
+  cyber: imgCyber,
+  cyberSigner: imgCyberSigner,
+};
 
 const T = new LocalizedStrings(i18n);
 const ledger = require('../../image/select-pin-nano2.svg');
@@ -368,7 +376,7 @@ export const StartStageSearchActionBar = ({
           }
           disabled={!contentHash.length}
           onClick={onClickBtn}
-          img={keys === 'ledger' ? imgLedger : imgKeplr}
+          img={imgData[keys]}
         />
       </Pane>
     </ActionBar>
