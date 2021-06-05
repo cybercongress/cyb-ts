@@ -15,6 +15,7 @@ import ActionBarConnect from './actionBarConnect';
 const imgLedger = require('../../image/ledger.svg');
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
+const imgCyberSigner = require('../../image/wallet-outline.svg');
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
@@ -260,6 +261,29 @@ function ActionBar({
           <ButtonImgText
             img={imgRead}
             onClick={() => setStage(STAGE_SEND_READ_ONLY)}
+          />
+          {makeActive && (
+            <Button marginX={10} onClick={() => changeDefaultAccounts()}>
+              Activate
+            </Button>
+          )}
+        </Pane>
+      </ActionBarGravity>
+    );
+  }
+
+  if (typeActionBar === 'cyberSigner' && stage === STAGE_INIT) {
+    return (
+      <ActionBarGravity>
+        <Pane>
+          {connect && (
+            <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
+              Connect
+            </Button>
+          )}
+          <ButtonImgText
+            img={imgCyberSigner}
+            // onClick={() => setStage(STAGE_SEND_READ_ONLY)}
           />
           {makeActive && (
             <Button marginX={10} onClick={() => changeDefaultAccounts()}>
