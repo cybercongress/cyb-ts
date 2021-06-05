@@ -8,7 +8,14 @@ const valueContext = {
   ws: null,
 };
 
+const valueSignerContxt = {
+  tx: null,
+  isVisible: false,
+  cyberSigner: null,
+};
+
 export const AppContext = React.createContext(valueContext);
+export const AppContextSigner = React.createContext(valueSignerContxt);
 
 export const useContextProvider = () => useContext(AppContext);
 
@@ -91,6 +98,8 @@ export async function createClient(signer) {
 
 const AppContextProvider = ({ children }) => {
   const [value, setValue] = useState(valueContext);
+  const [valueSigner, setValueSigner] = useState(valueSignerContxt);
+
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
 
@@ -128,7 +137,32 @@ const AppContextProvider = ({ children }) => {
 
   console.log('value', value);
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  const updateValueIsVisible = (isVisible) => {
+    setValueSigner((item) => ({ ...item, isVisible }));
+  };
+
+  const updateValueTxs = (tx) => {
+    setValueSigner((item) => ({ ...item, tx }));
+  };
+
+  const updateCyberSigner = (cyberSigner) => {
+    setValueSigner((item) => ({ ...item, cyberSigner }));
+  };
+
+  return (
+    <AppContext.Provider value={value}>
+      <AppContextSigner.Provider
+        value={{
+          ...valueSigner,
+          updateValueIsVisible,
+          updateValueTxs,
+          updateCyberSigner,
+        }}
+      >
+        {children}
+      </AppContextSigner.Provider>
+    </AppContext.Provider>
+  );
 };
 
 export default AppContextProvider;
