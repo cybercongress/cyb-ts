@@ -9,7 +9,13 @@ import {
   getCurrentNetworkLoad,
   getGraphQLQuery,
 } from '../../utils/search/utils';
-import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
+import {
+  CardStatisics,
+  Card,
+  Loading,
+  LinkWindow,
+  TabBtn,
+} from '../../components';
 import {
   cybWon,
   getDisciplinesAllocation,
@@ -54,7 +60,7 @@ const Query = (address) =>
   }
 }`;
 
-function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
+function GOL({ setGolTakeOffProps, mobile, defaultAccount, block }) {
   const {
     data: dataLeaderboard,
     loading: loadingLeaderboard,
@@ -75,6 +81,18 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   const [loading, setLoading] = useState(true);
   const [herosCount, setHerosCount] = useState(0);
   const [currentNetworkLoad, setCurrentNetworkLoad] = useState(0);
+  const [timeClose, setTimeClose] = useState('∞');
+
+  useEffect(() => {
+    if (parseFloat(block) > 0) {
+      const timeEnds = 6200000 - parseFloat(block);
+      if (timeEnds > 0) {
+        setTimeClose(timeEnds);
+      } else {
+        setTimeClose('end');
+      }
+    }
+  }, [block]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -302,6 +320,27 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
             .
           </Text>
         </Pane>
+        {timeClose !== 'end' && (
+          <Pane boxShadow="0px 0px 5px #36d6ae" paddingX={20} paddingY={20}>
+            <Text fontSize="16px" color="#fff">
+              Game of Links closes at 6,200,000 blockheight
+            </Text>
+            <br />
+            <Text marginTop={5} fontSize="16px" color="#fff">
+              blocks left{' '}
+              <Text fontSize="18px" color="#36d6ae">
+                {formatNumber(timeClose)}
+              </Text>
+            </Text>
+          </Pane>
+        )}
+        {timeClose === 'end' && (
+          <Pane boxShadow="0px 0px 5px #36d6ae" paddingX={20} paddingY={20}>
+            <Text fontSize="16px" color="#fff">
+              The Game of Links has already played
+            </Text>
+          </Pane>
+        )}
         <Pane
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
@@ -311,19 +350,13 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
           alignItems="center"
         >
           <Link to="/gol/load">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+            <Card
               title="Network load"
               value={`${formatNumber(currentNetworkLoad, 2)} %`}
             />
           </Link>
           <Link to="/gol/takeoff">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+            <Card
               title="Donation goal"
               value={`${formatNumber(
                 (TAKEOFF.FINISH_AMOUNT / TAKEOFF.ATOMsALL) * 100,
@@ -332,10 +365,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
             />
           </Link>
           <Link to="/heroes">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+            <Card
               title="Validator set"
               value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
             />
@@ -381,6 +411,7 @@ const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
+    block: store.block.block,
   };
 };
 
