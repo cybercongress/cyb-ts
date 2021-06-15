@@ -1,15 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { coins } from '@cosmjs/launchpad';
 import { AppContext, AppContextSigner } from '../../context';
-import { CYBER } from '../../utils/config';
+import { CYBER, CYBER_SIGNER } from '../../utils/config';
 
 import Signer from '../signer';
 
+// dune pottery shield bracket shuffle orchard frown mail exercise destroy enroll nothing scheme allow pudding match mass world glow razor that attend blame follow
+
 function TestKeplr() {
   const { keplr } = useContext(AppContext);
-  const { cyberSigner, updateValueTxs, updateValueIsVisible } = useContext(
-    AppContextSigner
-  );
+  const {
+    cyberSigner,
+    updateValueTxs,
+    updateValueIsVisible,
+    updateCallbackSigner,
+    updateStageSigner,
+  } = useContext(AppContextSigner);
 
   const [hashTx, setHashTx] = useState('');
 
@@ -43,6 +49,21 @@ function TestKeplr() {
     }
   };
 
+  const callbackSigner = async (signerCyber) => {
+    console.log(`callbackSigner`, signerCyber);
+    const [{ address }] = await signerCyber.getAccounts();
+    const pk = Buffer.from(signerCyber.pubkey).toString('hex');
+    console.log(`callbackSigner address`, address);
+    console.log(`callbackSigner pk`, pk);
+    updateCallbackSigner(null);
+  };
+
+  const restore = () => {
+    updateCallbackSigner(callbackSigner);
+    updateValueIsVisible(true);
+    updateStageSigner(CYBER_SIGNER.STAGE_INIT_ACC);
+  };
+
   return (
     <main className="block-body">
       <button
@@ -69,6 +90,15 @@ function TestKeplr() {
         type="button"
       >
         signerTest
+      </button>
+
+      <button
+        className="btn"
+        style={{ maxWidth: 200, marginTop: 50 }}
+        onClick={restore}
+        type="button"
+      >
+        StateRestore
       </button>
       <span>{hashTx}</span>
     </main>

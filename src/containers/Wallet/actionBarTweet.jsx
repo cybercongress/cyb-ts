@@ -89,7 +89,8 @@ class ActionBarTweet extends Component {
   async componentDidMount() {
     this.getNameBtn();
     console.warn('Looking for Ledger Nano');
-    this.ledger = new CosmosDelegateTool();
+    this.transport = await TransportWebUSB.create(120 * 1000);
+    this.ledger = new CosmosDelegateTool(this.transport);
   }
 
   componentDidUpdate(prevProps) {
