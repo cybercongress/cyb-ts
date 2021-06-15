@@ -131,6 +131,14 @@ const POCKET = {
   },
 };
 
+const CYBER_SIGNER = {
+  STAGE_INIT: 0,
+  STAGE_SIGN: 1,
+  STAGE_INIT_ACC: 2.1,
+  STAGE_CREATE_NEW_ACCOUNT: 2.2,
+  STAGE_RESTORE_PHARSE: 2.3,
+};
+
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
@@ -167,4 +175,5 @@ export {
   INFINITY,
   ADD_ARAGON_FINANCE,
   DISTRIBUTION_PRIZE,
+  CYBER_SIGNER,
 };

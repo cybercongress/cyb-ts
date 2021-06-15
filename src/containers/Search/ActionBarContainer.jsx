@@ -523,10 +523,25 @@ class InnerActionBarContainer extends Component {
     });
   };
 
+  updateCallbackFnc = (result) => {
+    const { valueAppContextSigner } = this.props;
+    const { updateCallbackSigner } = valueAppContextSigner;
+
+    const hash = result.transactionHash;
+    updateCallbackSigner(null);
+    console.log('hash :>> ', hash);
+    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+    this.timeOut = setTimeout(this.confirmTx, 1500);
+  };
+
   sendTxSigner = async () => {
     const { valueAppContextSigner } = this.props;
     const { fromCid, toCid, addressLocalStor } = this.state;
-    const { cyberSigner, updateValueTxs } = valueAppContextSigner;
+    const {
+      cyberSigner,
+      updateValueTxs,
+      updateCallbackSigner,
+    } = valueAppContextSigner;
     if (cyberSigner !== null) {
       const [{ address }] = await cyberSigner.getAccounts();
       const msgs = [];
@@ -542,12 +557,11 @@ class InnerActionBarContainer extends Component {
           ],
         },
       });
-
+      updateCallbackSigner(this.updateCallbackFnc);
       updateValueTxs(msgs);
       this.setState({
-        stage: STAGE_INIT,
+        stage: STAGE_KEPLR_APPROVE,
       });
-      this.cleatState();
     }
   };
 

@@ -4,6 +4,7 @@ import { Pane, Button, Tablist } from '@cybercongress/gravity';
 import MsgType from '../../txs/msgType';
 import { PillNumber, TabBtn, Dots } from '../../../components';
 import { trimString } from '../../../utils/utils';
+import MsgsSigner from './MsgsSigner';
 
 const HeaderSigner = ({ children }) => (
   <Pane
@@ -16,12 +17,24 @@ const HeaderSigner = ({ children }) => (
   </Pane>
 );
 
-function StateSign({ msgData, onClick, onClickReject }) {
-  const [selected, setSelected] = useState('details');
+const ContainerSigner = ({ children }) => (
+  <Pane
+    position="fixed"
+    backgroundColor="#6b696954"
+    zIndex="999999"
+    top={0}
+    bottom={0}
+    right={0}
+    left={0}
+  >
+    <Pane className="signer-container">{children}</Pane>
+  </Pane>
+);
 
+function StateSign({ msgData, onClick, onClickReject }) {
   let content;
 
-  if (selected === 'details' && msgData !== null) {
+  if (msgData !== null) {
     content = (
       <Pane overflow="auto" width="100%" paddingY={5} paddingX={10}>
         <Pane display="flex">
@@ -33,9 +46,9 @@ function StateSign({ msgData, onClick, onClickReject }) {
         <Pane width="100%" paddingLeft={20}>
           {Object.keys(msgData).map((key) => (
             <Pane paddingY={5} width="100%">
-              <MsgType type={msgData[key].type} />
+              <MsgsSigner msgData={msgData[key]} />
               {/* {msgData[key].type} */}
-              <Pane borderBottom="1px solid #ffffff52" />
+              <Pane paddingTop={5} borderBottom="1px solid #ffffff52" />
             </Pane>
           ))}
         </Pane>
@@ -43,69 +56,29 @@ function StateSign({ msgData, onClick, onClickReject }) {
     );
   }
 
-  if (selected === 'data' && msgData !== null) {
-    content = (
-      <Pane width="100%" overflow="auto">
-        <pre>{JSON.stringify(msgData, null, 2)}</pre>
-      </Pane>
-    );
-  }
-
   return (
-    <Pane
-      position="fixed"
-      backgroundColor="#6b696954"
-      zIndex="999999"
-      top={0}
-      bottom={0}
-      right={0}
-      left={0}
-    >
-      <Pane className="signer-container">
-        <HeaderSigner>sign tx</HeaderSigner>
-        <Pane
-          display="flex"
-          height="100%"
-          width="100%"
-          alignItems="flex-start"
-          paddingY={10}
-          flexDirection="column"
-          overflow="hidden"
-        >
-          <Tablist
-            display="grid"
-            gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-            gridGap="10px"
-            marginBottom={10}
-            width="100%"
-            paddingX={20}
-            paddingTop={5}
-          >
-            <TabBtn
-              key="details"
-              isSelected={selected === 'details'}
-              text="details"
-              onClick={() => setSelected('details')}
-            />
-            <TabBtn
-              key="data"
-              isSelected={selected === 'data'}
-              text="data"
-              onClick={() => setSelected('data')}
-            />
-          </Tablist>
-          {content}
-        </Pane>
-        <Pane display="flex" justifyContent="center" paddingY={10}>
-          <Button marginX={10} onClick={() => onClickReject()}>
-            reject
-          </Button>
-          <Button marginX={10} onClick={() => onClick()}>
-            sign
-          </Button>
-        </Pane>
+    <ContainerSigner>
+      <HeaderSigner>sign tx</HeaderSigner>
+      <Pane
+        display="flex"
+        height="100%"
+        width="100%"
+        alignItems="flex-start"
+        paddingY={10}
+        flexDirection="column"
+        overflow="hidden"
+      >
+        {content}
       </Pane>
-    </Pane>
+      <Pane display="flex" justifyContent="center" paddingY={10}>
+        <Button marginX={10} onClick={() => onClickReject()}>
+          reject
+        </Button>
+        <Button marginX={10} onClick={() => onClick()}>
+          sign
+        </Button>
+      </Pane>
+    </ContainerSigner>
   );
 }
 
@@ -155,7 +128,7 @@ function StateConfirmed({ txHash, onClick }) {
 
 function StateInitAccount({ onClickCreateNew, onClickRestore }) {
   return (
-    <Pane className="signer-container">
+    <ContainerSigner>
       <HeaderSigner>Init Account</HeaderSigner>
       <Pane position="relative" height="100%">
         <Pane
@@ -173,13 +146,13 @@ function StateInitAccount({ onClickCreateNew, onClickRestore }) {
           <Button onClick={() => onClickRestore()}>restore phrase</Button>
         </Pane>
       </Pane>
-    </Pane>
+    </ContainerSigner>
   );
 }
 
 function StateRestore({ valuePhrase, onChangeInputPhrase, onClick }) {
   return (
-    <Pane className="signer-container">
+    <ContainerSigner>
       <HeaderSigner>Restore phrase</HeaderSigner>
       <Pane position="relative" height="100%">
         <Pane
@@ -207,7 +180,7 @@ function StateRestore({ valuePhrase, onChangeInputPhrase, onClick }) {
       >
         <Button onClick={() => onClick()}>Fuck Google</Button>
       </Pane>
-    </Pane>
+    </ContainerSigner>
   );
 }
 
@@ -215,7 +188,7 @@ function StateCreateNew({ valuePhrase = '', onClick }) {
   const [copyPhrase, setCopyPhrase] = useState(false);
 
   return (
-    <Pane className="signer-container">
+    <ContainerSigner>
       <HeaderSigner>Create new account</HeaderSigner>
       <Pane position="relative" height="100%">
         <Pane paddingX={20} fontSize="18px">
@@ -249,7 +222,7 @@ function StateCreateNew({ valuePhrase = '', onClick }) {
           Fuck Google
         </Button>
       </Pane>
-    </Pane>
+    </ContainerSigner>
   );
 }
 

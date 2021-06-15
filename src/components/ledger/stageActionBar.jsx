@@ -1377,6 +1377,12 @@ export const ConnectAddress = ({
                   text="keplr"
                 />
               )}
+              <ButtonIcon
+                onClick={() => selectMethodFunc('cyberSigner')}
+                active={selectMethod === 'cyberSigner'}
+                img={imgCyberSigner}
+                text="cyberSigner"
+              />
             </>
           )}
           {web3 && web3 !== null && ethNetwork && (
