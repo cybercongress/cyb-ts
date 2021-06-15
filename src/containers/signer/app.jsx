@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
+import { connect } from 'react-redux';
 import Signer from './index';
 import { AppContextSigner } from '../../context';
 import {
@@ -10,28 +11,32 @@ import {
   StateCreateNew,
   StateRestore,
 } from './component/ui';
+import { CYBER_SIGNER } from '../../utils/config';
 
-const STAGE_INIT = 0;
-const STAGE_SIGN = 1;
-const STAGE_CONFIRMING = 2;
-const STAGE_CONFIRMED = 3;
-const STAGE_INIT_ACC = 1.1;
-const STAGE_CREATE_NEW_ACCOUNT = 1.2;
-const STAGE_RESTORE_PHARSE = 1.3;
+const {
+  STAGE_INIT,
+  STAGE_SIGN,
+  STAGE_INIT_ACC,
+  STAGE_CREATE_NEW_ACCOUNT,
+  STAGE_RESTORE_PHARSE,
+} = CYBER_SIGNER;
 
-function AppSign() {
+function AppSign({ defaultAccount }) {
   const {
     tx,
+    stage,
     isVisible,
     cyberSigner,
+    callbackFnc,
     updateValueIsVisible,
     updateValueTxs,
     updateCyberSigner,
+    updateStageSigner,
   } = useContext(AppContextSigner);
   const location = useLocation();
-  const [stage, setStage] = useState(STAGE_INIT);
   const [msgData, setMsgData] = useState(null);
-  const [txHash, setTxHash] = useState(null);
+  const [cyberSignerTemp, SetCyberSignerTemp] = useState(null);
+  const [valuePhrase, setValuePhrase] = useState('');
 
   useEffect(() => {
     rejectStage();
@@ -40,53 +45,62 @@ function AppSign() {
   useEffect(() => {
     const getSigner = async () => {
       const signerObj = new Signer();
-      const signerCyber = await signerObj.initSigner();
-      const pk = Buffer.from(signerCyber.pubkey).toString('hex');
-      console.log(`pk`, pk);
+      const signerCyber = await signerObj.initSigner(defaultAccount);
+      if (signerCyber !== null) {
+        const pk = Buffer.from(signerCyber.pubkey).toString('hex');
+        console.log(`pk`, pk);
+      }
       console.log(`signerCyber`, signerCyber);
       updateCyberSigner(signerCyber);
     };
     getSigner();
-  }, []);
+  }, [defaultAccount.name]);
 
   useEffect(() => {
     if (tx !== null) {
       setMsgData(tx);
-      setStage(STAGE_SIGN);
+      updateStageSigner(STAGE_SIGN);
       updateValueIsVisible(true);
     }
   }, [tx]);
 
-  useEffect(() => {
-    if (txHash !== null) {
-      setStage(STAGE_CONFIRMED);
-    }
-  }, [txHash]);
+  const restorePhrase = async () => {
+    const signerObj = new Signer();
+    const signerCyber = await signerObj.restorePhrase(valuePhrase, callbackFnc);
+    updateCyberSigner(signerCyber);
+    setValuePhrase('');
+    updateStageSigner(STAGE_INIT);
+  };
+
+  const createNewAcc = async () => {
+    updateStageSigner(CYBER_SIGNER.STAGE_CREATE_NEW_ACCOUNT);
+    const signerObj = new Signer();
+    const signerCyber = await signerObj.getVanityAccount();
+    // updateCyberSigner(signerCyber);
+    SetCyberSignerTemp(signerCyber);
+    setValuePhrase(signerCyber.secret.data);
+  };
 
   const signTx = async () => {
     console.log(`signer`, cyberSigner);
     console.log(`msgData`, msgData);
     if (cyberSigner !== null && msgData !== null) {
       const signerObj = new Signer();
-      setStage(STAGE_CONFIRMING);
-      const response = await signerObj.sendTxs(cyberSigner, msgData);
+      const response = await signerObj.sendTxs(
+        cyberSigner,
+        msgData,
+        callbackFnc
+      );
       console.log(`response Txs`, response);
-      setTxHash(response.transactionHash);
       updateValueTxs(null);
       setMsgData(null);
+      rejectStage();
     }
   };
 
-  const cleaneStage = () => {
-    setStage(STAGE_INIT);
-    setTxHash(null);
-    updateValueIsVisible(false);
-  };
-
   const rejectStage = () => {
-    setStage(STAGE_INIT);
+    updateStageSigner(STAGE_INIT);
     setMsgData(null);
-    setTxHash(null);
     updateValueTxs(null);
     updateValueIsVisible(false);
   };
@@ -101,27 +115,51 @@ function AppSign() {
     );
   }
 
-  if (isVisible && stage === STAGE_CONFIRMING) {
-    return <StateBroadcast />;
-  }
-
-  if (isVisible && stage === STAGE_CONFIRMED) {
-    return <StateConfirmed txHash={txHash} onClick={rejectStage} />;
-  }
+  const fuckGoogleCreateAcc = async () => {
+    updateStageSigner(STAGE_INIT);
+    setValuePhrase('');
+    if (callbackFnc !== null) {
+      callbackFnc(cyberSignerTemp);
+    }
+  };
 
   if (isVisible && stage === STAGE_INIT_ACC) {
-    return <StateInitAccount />;
+    return (
+      <StateInitAccount
+        onClickCreateNew={() => createNewAcc()}
+        onClickRestore={() =>
+          updateStageSigner(CYBER_SIGNER.STAGE_RESTORE_PHARSE)
+        }
+      />
+    );
   }
 
   if (isVisible && stage === STAGE_CREATE_NEW_ACCOUNT) {
-    return <StateCreateNew />;
+    return (
+      <StateCreateNew
+        valuePhrase={valuePhrase}
+        onClick={() => fuckGoogleCreateAcc()}
+      />
+    );
   }
 
   if (isVisible && stage === STAGE_RESTORE_PHARSE) {
-    return <StateRestore />;
+    return (
+      <StateRestore
+        valuePhrase={valuePhrase}
+        onChangeInputPhrase={(e) => setValuePhrase(e.target.value)}
+        onClick={() => restorePhrase()}
+      />
+    );
   }
 
   return null;
 }
 
-export default AppSign;
+const mapStateToProps = (store) => {
+  return {
+    defaultAccount: store.pocket.defaultAccount,
+  };
+};
+
+export default connect(mapStateToProps)(AppSign);
