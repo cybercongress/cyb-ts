@@ -300,6 +300,7 @@ export const StartStageSearchActionBar = ({
   textBtn = 'Cyberlink',
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
+  node,
 }) => {
   return (
     <ActionBar>
@@ -374,7 +375,7 @@ export const StartStageSearchActionBar = ({
               />
             </Pane>
           }
-          disabled={!contentHash.length}
+          disabled={node === null && !contentHash.length}
           onClick={onClickBtn}
           img={imgData[keys]}
         />

@@ -612,7 +612,7 @@ class InnerActionBarContainer extends Component {
       addressLocalStor,
     } = this.state;
 
-    const { textBtn, placeholder, rankLink } = this.props;
+    const { textBtn, placeholder, rankLink, node } = this.props;
 
     if (stage === STAGE_INIT && addressLocalStor === null) {
       return (
@@ -684,6 +684,7 @@ class InnerActionBarContainer extends Component {
           onClickClear={this.onClickClear}
           file={file}
           placeholder={placeholder}
+          node={node}
         />
       );
     }
