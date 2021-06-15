@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
 import { Decimal } from '@cosmjs/math';
-import { CYBER } from './utils/config';
+import { CYBER, CYBER_SIGNER } from './utils/config';
 
 const valueContext = {
   keplr: null,
@@ -12,6 +12,8 @@ const valueSignerContxt = {
   tx: null,
   isVisible: false,
   cyberSigner: null,
+  callbackFnc: null,
+  stage: CYBER_SIGNER.STAGE_INIT,
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -149,6 +151,14 @@ const AppContextProvider = ({ children }) => {
     setValueSigner((item) => ({ ...item, cyberSigner }));
   };
 
+  const updateCallbackSigner = (callbackFnc) => {
+    setValueSigner((item) => ({ ...item, callbackFnc }));
+  };
+
+  const updateStageSigner = (stage) => {
+    setValueSigner((item) => ({ ...item, stage }));
+  };
+
   return (
     <AppContext.Provider value={value}>
       <AppContextSigner.Provider
@@ -157,6 +167,8 @@ const AppContextProvider = ({ children }) => {
           updateValueIsVisible,
           updateValueTxs,
           updateCyberSigner,
+          updateCallbackSigner,
+          updateStageSigner,
         }}
       >
         {children}
