@@ -26,8 +26,9 @@ class Signer {
     ) {
       if (account.cyber.keys === 'cyberSigner' && account.cyber.secret) {
         const mnemonic = account.cyber.secret;
+        const mnemonicString = atob(mnemonic);
         const signer = await Secp256k1HdWallet.fromMnemonic(
-          mnemonic,
+          mnemonicString,
           this.hdPath,
           this.prefix
         );
@@ -39,7 +40,6 @@ class Signer {
   };
 
   restorePhrase = async (mnemonic, callback) => {
-    console.log(`mnemonic`, mnemonic);
     const signer = await Secp256k1HdWallet.fromMnemonic(
       mnemonic,
       this.hdPath,

@@ -525,12 +525,13 @@ function ActionBarConnect({
         selectAccount !== null ||
         !checkAddress(valueObj, 'cyber', cyberBech32)
       ) {
+        const seedBase64 = btoa(signerCyber.secret.data);
         accounts.cyber = {
           bech32: cyberBech32,
           keys: 'cyberSigner',
           pk,
           path: HDPATH,
-          secret: signerCyber.secret.data,
+          secret: seedBase64,
         };
       }
     }

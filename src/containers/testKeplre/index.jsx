@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { coins } from '@cosmjs/launchpad';
 import { AppContext, AppContextSigner } from '../../context';
 import { CYBER, CYBER_SIGNER } from '../../utils/config';
+const uint8ArrayConcat = require('uint8arrays/concat');
+
 
 import Signer from '../signer';
 
@@ -18,6 +20,16 @@ function TestKeplr() {
   } = useContext(AppContextSigner);
 
   const [hashTx, setHashTx] = useState('');
+
+  useEffect(() => {
+    const seed =
+      'dune pottery shield bracket shuffle orchard frown mail exercise destroy enroll nothing scheme allow pudding match mass world glow razor that attend blame follow';
+    const seedBase64 = btoa(seed);
+    console.log(`seedBase64`, seedBase64);
+
+    const string = atob(seedBase64);
+    console.log(`string`, string)
+  }, []);
 
   console.log('keplr', keplr);
   //   cybervaloper15zs0cjct43xs4z4sesxcrynar5mxm82ftahux2;
