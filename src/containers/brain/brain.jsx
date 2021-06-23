@@ -111,22 +111,24 @@ function Brain({ node, mobile, defaultAccount }) {
   useEffect(() => {
     const feachData = async () => {
       setLoading(true);
-      if (addressActive !== null) {
+      if (jsCyber !== null && addressActive !== null) {
         const { bech32 } = addressActive;
-        let amountEul = 0;
-        const result = await getBalance(bech32);
-        if (result) {
-          const { total } = getTotalEUL(result);
-          amountEul = total;
-        }
-        setAmount(amountEul);
+        let totalAmount = 0;
+        const responseGetBalanceBoot = await jsCyber.getBalance(bech32, 'boot');
+        totalAmount += parseFloat(responseGetBalanceBoot.amount);
+        const responseGetBalanceSboot = await jsCyber.getBalance(
+          bech32,
+          'sboot'
+        );
+        totalAmount += parseFloat(responseGetBalanceSboot.amount);
+        setAmount(totalAmount);
         setLoading(false);
       } else {
         setLoading(false);
       }
     };
     feachData();
-  }, [addressActive]);
+  }, [addressActive, jsCyber]);
 
   let content;
 
