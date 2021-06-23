@@ -64,8 +64,8 @@ const COSMOS = {
 const CYBER = {
   CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
   DIVISOR_CYBER_G: 10 ** 9,
-  DENOM_CYBER: 'nick',
-  DENOM_CYBER_G: `GNICK`,
+  DENOM_CYBER: 'boot',
+  DENOM_CYBER_G: `GBOOT`,
   CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   CYBER_NODE_URL_API: 'http://localhost:26657',
   CYBER_NODE_URL_LCD: 'http://localhost:1317',

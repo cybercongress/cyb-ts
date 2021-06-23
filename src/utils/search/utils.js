@@ -326,7 +326,7 @@ export const getValidatorsUnbonding = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonding`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=BOND_STATUS_UNBONDING`,
     });
     return response.data.result;
   } catch (e) {
@@ -339,7 +339,7 @@ export const getValidatorsUnbonded = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonded`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=BOND_STATUS_UNBONDED`,
     });
     return response.data.result;
   } catch (e) {
