@@ -24,6 +24,7 @@ function CyberLinkCount({ accountUser }) {
     useEffect(() => {
       if (!loadingQ) {
         if (
+          data &&
           data.cyberlink_aggregate.aggregate.count &&
           data.cyberlink_aggregate.aggregate.count > 0
         ) {

@@ -10,7 +10,6 @@ import {
   getAllValidators,
   getPreCommits,
   getGraphQLQuery,
-  getTxCosmos,
 } from '../../../utils/search/utils';
 import {
   CardStatisics,
@@ -28,7 +27,13 @@ import {
   sort,
 } from '../../../utils/utils';
 
-import { COSMOS, TAKEOFF, DISTRIBUTION, CYBER } from '../../../utils/config';
+import {
+  COSMOS,
+  TAKEOFF,
+  DISTRIBUTION,
+  CYBER,
+  DISTRIBUTION_PRIZE,
+} from '../../../utils/config';
 import { getLifetime } from '../../../utils/game-monitors';
 
 // const consensusAddress =
@@ -68,7 +73,7 @@ class GolLifetime extends React.Component {
       loadingAtom: true,
       loadingValidator: true,
       sumPrecommits: 0,
-      currentPrize: 0,
+      currentPrize: DISTRIBUTION_PRIZE.lifetime,
       herosCount: 0,
       dataTable: [],
       total: 0,
@@ -76,13 +81,6 @@ class GolLifetime extends React.Component {
   }
 
   async componentDidMount() {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-    );
-
-    this.setState({
-      currentPrize,
-    });
     this.getValidatorsCount();
   }
 
@@ -174,6 +172,7 @@ class GolLifetime extends React.Component {
       if (sumPrecommits > 0) {
         lifeTime = parseFloat(item.precommits) / parseFloat(sumPrecommits);
         cybWonAbsolute = lifeTime * currentPrize;
+        console.log(`cybWonAbsolute`, item.moniker, cybWonAbsolute)
         share = (item.precommits / sumPrecommits) * 100;
       }
       if (item.moniker) {

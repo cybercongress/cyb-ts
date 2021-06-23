@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+} from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getLoad } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
@@ -11,9 +15,7 @@ import { setGolLoad } from '../../../redux/actions/gol';
 const Load = ({ addressLedger, takeoffDonations = 0, golLoadProps, load }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonPercent, setCybWonPercent] = useState(0);
-  const currentPrize = Math.floor(
-    (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * takeoffDonations
-  );
+  const currentPrize = DISTRIBUTION_PRIZE.load;
 
   useEffect(() => {
     if (addressLedger !== null) {
@@ -47,13 +49,13 @@ const Load = ({ addressLedger, takeoffDonations = 0, golLoadProps, load }) => {
   );
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     golLoadProps: (amount, prize) => dispatch(setGolLoad(amount, prize)),
   };
 };
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     load: store.gol.load,
   };

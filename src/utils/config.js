@@ -45,6 +45,7 @@ const TAKEOFF = {
   BLOCK_START: 2000000,
   FINISH_PRICE: 1.485,
   FINISH_AMOUNT: 15088.40963,
+  FINISH_ESTIMATION: 12141.224,
 };
 
 const COSMOS = {
@@ -54,7 +55,7 @@ const COSMOS = {
   CHAIN_ID: 'cosmoshub-3',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
-  GAIA_NODE_URL_LSD: 'https://io.cybernode.ai/gaia_lcd',
+  GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',
   GAIA_WEBSOCKET_URL: 'wss://io.cybernode.ai/gaia_websocket',
   DENOM_COSMOS: 'uatom',
   DIVISOR_ATOM: 10 ** 6,
@@ -111,6 +112,17 @@ const DISTRIBUTION = {
   'community pool': 2000000000000,
 };
 
+const DISTRIBUTION_PRIZE = {
+  takeoff: 100000000000000,
+  relevance: 500000000000,
+  load: 500000000000,
+  delegation: 500000000000,
+  'full validator set': 250000000000,
+  'euler 4 rewards': 5000000000000,
+  lifetime: 500000000000,
+  'community pool': 2000000000000,
+};
+
 const POCKET = {
   STAGE_TWEET_ACTION_BAR: {
     ADD_AVATAR: 'addAvatar',
@@ -154,4 +166,5 @@ export {
   POCKET,
   INFINITY,
   ADD_ARAGON_FINANCE,
+  DISTRIBUTION_PRIZE,
 };

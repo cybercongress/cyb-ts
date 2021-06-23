@@ -51,6 +51,7 @@ function AvatarIpfs({
             width,
             height,
             borderRadius: avatar !== null ? '50%' : 'none',
+            objectFit: 'cover',
           }}
           alt="img-avatar"
           src={

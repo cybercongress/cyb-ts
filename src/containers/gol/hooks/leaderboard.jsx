@@ -4,12 +4,14 @@ import {
   getGraphQLQuery,
   getIndexStats,
   getAllValidators,
-  getTxCosmos,
 } from '../../../utils/search/utils';
-import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  TAKEOFF,
+  DISTRIBUTION_PRIZE,
+  COSMOS,
+} from '../../../utils/config';
 import { fromBech32 } from '../../../utils/utils';
-import { getEstimation } from '../../../utils/fundingMath';
-import { getRelevance } from '../../../utils/game-monitors';
 
 const GET_LOAD = `
 query MyQuery {
@@ -45,6 +47,15 @@ query getRelevanceLeaderboard {
 }
 `;
 
+const GET_TAKEOFF = `
+  query takeoff {
+    takeoff_leaderboard {
+      cybs
+      donors
+    }
+  }
+`;
+
 function setLeaderboard() {
   const [data, setData] = useState({});
   const [progress, setProgress] = useState(0);
@@ -61,9 +72,7 @@ function setLeaderboard() {
 
   const getLoad = async (amountTakeoff) => {
     let load = [];
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * amountTakeoff
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.load;
     const dataGraphQLQuery = await getGraphQLQuery(GET_LOAD);
     const responseIndexStats = await getIndexStats();
     const sumKarma = responseIndexStats.totalKarma;
@@ -104,10 +113,7 @@ function setLeaderboard() {
   };
 
   const getDelegation = async (validators, total, dataV) => {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * amount
-    );
-
+    const currentPrize = DISTRIBUTION_PRIZE.delegation;
     if (validators.length > 0) {
       validators.forEach((item) => {
         const cyb = (item.tokens / total) * currentPrize;
@@ -135,9 +141,7 @@ function setLeaderboard() {
   };
 
   const getLifetime = async (validators, dataV) => {
-    const currentPrize = Math.floor(
-      (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * amount
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.lifetime;
     const dataGraphQL = await getGraphQLQuery(GET_LIFETIME);
     if (Object.keys(dataGraphQL.pre_commit_view).length > 0) {
       const sumPrecommits =
@@ -173,49 +177,31 @@ function setLeaderboard() {
 
   useEffect(() => {
     const feachData = async () => {
-      const dataTx = await getTxCosmos();
-      let amountTakeoff = 0;
-      if (dataTx !== null && dataTx.count > 0) {
-        if (dataTx.total_count > dataTx.count) {
-          const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-          for (let index = 1; index < allPage; index++) {
-            // eslint-disable-next-line no-await-in-loop
-            const response = await getTxCosmos(index + 1);
-            if (response !== null && Object.keys(response.txs).length > 0) {
-              dataTx.txs = [...dataTx.txs, ...response.txs];
-            }
-          }
-        }
-        const { txs } = dataTx;
-        let temE = 0;
-        for (let item = 0; item < txs.length; item += 1) {
+      const { takeoff_leaderboard: takeoffLeaderboard } = await getGraphQLQuery(
+        GET_TAKEOFF
+      );
+      if (takeoffLeaderboard && takeoffLeaderboard.length > 0) {
+        for (let item = 0; item < takeoffLeaderboard.length; item += 1) {
           let estimation = 0;
-          const address = txs[item].tx.value.msg[0].value.from_address;
+          const address = takeoffLeaderboard[item].donors;
           const cyberAddress = fromBech32(address, 'cyber');
-          const val =
-            Number.parseInt(
-              txs[item].tx.value.msg[0].value.amount[0].amount,
-              10
-            ) / COSMOS.DIVISOR_ATOM;
-          estimation = getEstimation(temE, val);
-          amountTakeoff += val;
-          temE += estimation;
+          estimation = takeoffLeaderboard[item].cybs;
           if (data[cyberAddress]) {
             data[cyberAddress] = {
               ...data[cyberAddress],
-              takeoff: data[cyberAddress].takeoff + estimation * 10 ** 12,
-              cybWon: data[cyberAddress].cybWon + estimation * 10 ** 12,
+              takeoff: data[cyberAddress].takeoff + estimation,
+              cybWon: data[cyberAddress].cybWon + estimation,
             };
           } else {
             data[cyberAddress] = {
-              takeoff: estimation * 10 ** 12,
+              takeoff: estimation,
               address: cyberAddress,
-              cybWon: estimation * 10 ** 12,
+              cybWon: estimation,
             };
           }
         }
       }
-      setAmount(amountTakeoff);
+      setAmount(TAKEOFF.FINISH_AMOUNT);
       setDiscipline((item) => ({
         ...item,
         takeoff: true,
@@ -240,7 +226,7 @@ function setLeaderboard() {
         let total = 0;
         const validators = [];
         if (dataValidators !== null) {
-          dataValidators.forEach(item => {
+          dataValidators.forEach((item) => {
             const cyberAddress = fromBech32(item.operator_address, 'cyber');
             total += parseFloat(item.tokens);
             validators.push({
@@ -260,9 +246,7 @@ function setLeaderboard() {
   }, [dataLoad]);
 
   useEffect(() => {
-    const prize = Math.floor(
-      (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * amount
-    );
+    const currentPrize = DISTRIBUTION_PRIZE.relevance;
     const feachData = async () => {
       if (Object.keys(dataLoad).length > 0) {
         const responseRelevanceQ = await getGraphQLQuery(GET_RELEVANCE);
@@ -277,7 +261,7 @@ function setLeaderboard() {
           setProgress(80);
           responseRelevanceQ.relevance_leaderboard.forEach((item, index) => {
             if (Object.prototype.hasOwnProperty.call(dataLoad, item.subject)) {
-              const cybAbsolute = item.share * prize;
+              const cybAbsolute = item.share * currentPrize;
               data[item.subject] = {
                 ...data[item.subject],
                 relevance: cybAbsolute,

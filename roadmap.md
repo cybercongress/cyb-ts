@@ -6,6 +6,7 @@
 
 We have to design complete app which will be lovable and simple.
 
+- [ ] Implement webhooks for convinient web integrations [like this](https://docs.elrond.com/wallet/webhooks/)
 - [ ] Cybernomics: Fix GOL Supply, Add price from Uniswap. Remove EUL
 - [ ] Tests
   - [ ] connectability (поключение, разрешение)

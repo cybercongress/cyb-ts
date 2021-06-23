@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { fromBech32 } from '../../utils/utils';
 import {
-  getTxCosmos,
   getAmountATOM,
   getGraphQLQuery,
   getValidatorsInfo,
 } from '../../utils/search/utils';
 import { getEstimation } from '../../utils/fundingMath';
-import { DISTRIBUTION, TAKEOFF, COSMOS } from '../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+  COSMOS,
+} from '../../utils/config';
 import {
   getRelevance,
   getLoad,
@@ -35,52 +39,44 @@ query lifetimeRate {
   pre_commit_view(where: {consensus_pubkey: {_eq: "${consensusAddress}"}}) {
     precommits
   }
-  pre_commit_aggregate {
-    aggregate {
-      count
+  pre_commit_view_aggregate {
+      aggregate {
+        sum {
+          precommits
+        }
+      }
     }
-  }
 }
 `;
+
+const Query = (address) =>
+  `query txs {
+    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
+    aggregate {
+      sum {
+        cybs
+      }
+    }
+  }
+}`;
 
 function useGetAtom(addressCyber) {
   const [estimation, setEstimation] = useState(0);
 
   useEffect(() => {
     const feachData = async () => {
-      let estimationAll = 0;
       let addEstimation = 0;
 
-      const dataTxs = await getTxCosmos();
       const addressCosmos = fromBech32(addressCyber, 'cosmos');
-      if (dataTxs !== null) {
-        if (dataTxs.total_count > dataTxs.count) {
-          const allPage = Math.ceil(dataTxs.total_count / dataTxs.count);
-          for (let index = 1; index < allPage; index++) {
-            // eslint-disable-next-line no-await-in-loop
-            const response = await getTxCosmos(index + 1);
-            if (response !== null && Object.keys(response.txs).length > 0) {
-              dataTxs.txs = [...dataTxs.txs, ...response.txs];
-            }
-          }
-        }
-      }
-      if (dataTxs && Object.keys(dataTxs.txs).length > 0) {
-        const dataTx = dataTxs.txs;
-        for (let item = 0; item < dataTx.length; item += 1) {
-          let temE = 0;
-          const address = dataTx[item].tx.value.msg[0].value.from_address;
-          const val =
-            Number.parseInt(
-              dataTx[item].tx.value.msg[0].value.amount[0].amount,
-              10
-            ) / COSMOS.DIVISOR_ATOM;
-          temE = getEstimation(estimationAll, val);
-          if (address === addressCosmos) {
-            addEstimation += temE;
-          }
-          estimationAll += temE;
-        }
+      const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
+        Query(addressCosmos)
+      );
+      if (
+        takeoffAggregate &&
+        takeoffAggregate.aggregate &&
+        takeoffAggregate.aggregate.sum
+      ) {
+        addEstimation = takeoffAggregate.aggregate.sum.cybs;
       }
       setEstimation(addEstimation);
     };
@@ -116,9 +112,7 @@ function useGetGol(address) {
   useEffect(() => {
     const feachData = async () => {
       const responseDataQ = await getGraphQLQuery(QueryAddress(address));
-      const prize = Math.floor(
-        (DISTRIBUTION.relevance / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-      );
+      const prize = DISTRIBUTION_PRIZE.relevance;
       if (
         responseDataQ.relevance_leaderboard &&
         Object.keys(responseDataQ.relevance_leaderboard).length > 0
@@ -134,9 +128,7 @@ function useGetGol(address) {
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(
-        (DISTRIBUTION.load / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-      );
+      const prize = DISTRIBUTION_PRIZE.load;
       const data = await getLoad(address);
       if (data > 0 && prize > 0) {
         const cybAbsolute = data * prize;
@@ -149,7 +141,7 @@ function useGetGol(address) {
 
   useEffect(() => {
     const feachData = async () => {
-      const prize = Math.floor(estimation * 10 ** 12);
+      const prize = Math.floor(estimation * 10 ** 9);
       if (prize > 0) {
         setTotal((stateTotal) => stateTotal + prize);
       }
@@ -160,9 +152,7 @@ function useGetGol(address) {
   useEffect(() => {
     if (validatorAddress !== null) {
       const feachData = async () => {
-        const prize = Math.floor(
-          (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-        );
+        const prize = DISTRIBUTION_PRIZE.delegation;
         const data = await getDelegation(validatorAddress);
         if (data > 0 && prize > 0) {
           const cybAbsolute = data * prize;
@@ -178,7 +168,7 @@ function useGetGol(address) {
       const feachData = async () => {
         const data = await getRewards(validatorAddress);
         if (data > 0) {
-          const cybAbsolute = data;
+          const cybAbsolute = data / 3;
           setTotal((stateTotal) => stateTotal + cybAbsolute);
         }
       };
@@ -189,15 +179,14 @@ function useGetGol(address) {
   useEffect(() => {
     if (consensusAddress !== null) {
       const feachData = async () => {
-        const prize = Math.floor(
-          (DISTRIBUTION.lifetime / TAKEOFF.ATOMsALL) * TAKEOFF.FINISH_AMOUNT
-        );
+        const prize = DISTRIBUTION_PRIZE.lifetime;
         const dataLifeTime = await getGraphQLQuery(
           getQueryLifeTime(consensusAddress)
         );
         if (dataLifeTime !== null) {
           const data = await getLifetime({
-            block: dataLifeTime.pre_commit_aggregate.aggregate.count,
+            block:
+              dataLifeTime.pre_commit_view_aggregate.aggregate.sum.precommits,
             preCommit: dataLifeTime.pre_commit_view[0].precommits,
           });
           if (data > 0 && prize > 0) {

@@ -11,7 +11,6 @@ import {
   getIpfsHash,
   getAmountATOM,
   getValidatorsInfo,
-  getTxCosmos,
   getFollows,
   getContent,
   getTweet,
@@ -20,6 +19,7 @@ import {
   getGraphQLQuery,
   getAvatar,
   getFollowers,
+  getTotalRewards,
 } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './heroes';
@@ -65,14 +65,16 @@ const TabBtn = ({ text, isSelected, onSelect, to }) => (
   </Link>
 );
 
-const QueryAddress = (address) =>
-  `query cyberlink {
-    cyberlink_aggregate(where: {subject: {_eq: "${address}"}}) {
-      aggregate {
-        count
+const Query = (address) =>
+  `query txs {
+    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
+    aggregate {
+      sum {
+        cybs
       }
     }
-  }`;
+  }
+}`;
 
 class AccountDetails extends React.Component {
   constructor(props) {
@@ -87,6 +89,7 @@ class AccountDetails extends React.Component {
       validatorAddress: null,
       consensusAddress: null,
       addressLedger: null,
+      totalRewards: { rewards: [] },
       following: [],
       followers: [],
       avatar: null,
@@ -181,7 +184,7 @@ class AccountDetails extends React.Component {
       linksCount: 0,
       follow: true,
       tweets: false,
-      takeoffDonations: 0,
+      takeoffDonations: TAKEOFF.FINISH_AMOUNT,
       community: {
         following: [],
         followers: [],
@@ -385,63 +388,28 @@ class AccountDetails extends React.Component {
   };
 
   getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      this.getAtom(tx);
-    } else {
-      this.setState({
-        loadingGoL: false,
-      });
-    }
-  };
-
-  getAtom = async (dataTxs) => {
     const { match } = this.props;
     const { address } = match.params;
     const { setGolTakeOffProps } = this.props;
-    let amount = 0;
-
-    let estimation = 0;
-    let addEstimation = 0;
     const addressCosmos = fromBech32(address, 'cosmos');
+    let addEstimation = 0;
 
-    if (dataTxs) {
-      for (let item = 0; item < dataTxs.length; item += 1) {
-        let temE = 0;
-        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
-        const val =
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-            10
-          ) / COSMOS.DIVISOR_ATOM;
-        temE = getEstimation(estimation, val);
-        if (addressTx === addressCosmos) {
-          addEstimation += temE;
-        }
-        amount += val;
-        estimation += temE;
-      }
-    }
-
-    setGolTakeOffProps(
-      Math.floor(addEstimation * 10 ** 12),
-      Math.floor(estimation * 10 ** 12)
+    const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
+      Query(addressCosmos)
     );
-
+    if (
+      takeoffAggregate &&
+      takeoffAggregate.aggregate &&
+      takeoffAggregate.aggregate.sum
+    ) {
+      addEstimation = takeoffAggregate.aggregate.sum.cybs;
+    }
+    setGolTakeOffProps(
+      Math.floor(addEstimation * 10 ** 9),
+      Math.floor(TAKEOFF.FINISH_ESTIMATION * 10 ** 9)
+    );
     this.setState({
       loadingGoL: false,
-      takeoffDonations: amount,
     });
   };
 
@@ -549,22 +517,25 @@ class AccountDetails extends React.Component {
 
   countReward = async (data, address) => {
     const delegations = data;
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in delegations) {
-      if (Object.hasOwnProperty.call(delegations, key)) {
-        let reward = 0;
-        // eslint-disable-next-line no-await-in-loop
-        const resultRewards = await getRewards(
-          address,
-          delegations[key].validator_address
-        );
-        if (resultRewards[0] && resultRewards[0].amount) {
-          reward = parseFloat(resultRewards[0].amount);
-          delegations[key].reward = Math.floor(reward);
-        } else {
-          delegations[key].reward = reward;
+    const resultTotalRewards = await getTotalRewards(address);
+    if (resultTotalRewards !== null) {
+      this.setState({
+        totalRewards: resultTotalRewards,
+      });
+      const { rewards } = resultTotalRewards;
+      rewards.forEach((item) => {
+        const addressValidator = item.validator_address;
+        if (Object.hasOwnProperty.call(delegations, addressValidator)) {
+          let amountReward = 0;
+          const { reward } = item;
+          if (reward !== null && reward[0] && reward[0].amount) {
+            amountReward = parseFloat(reward[0].amount);
+            delegations[addressValidator].reward = Math.floor(amountReward);
+          } else {
+            delegations[addressValidator].reward = amountReward;
+          }
         }
-      }
+      });
     }
     return delegations;
   };
@@ -596,6 +567,7 @@ class AccountDetails extends React.Component {
       followers,
       addressLocalStor,
       community,
+      totalRewards,
     } = this.state;
     // console.log('following', following);
 
@@ -775,6 +747,7 @@ class AccountDetails extends React.Component {
               follow={follow}
               tweets={tweets}
               defaultAccount={addressLocalStor}
+              totalRewards={totalRewards}
             />
           ) : (
             <ActionBar>

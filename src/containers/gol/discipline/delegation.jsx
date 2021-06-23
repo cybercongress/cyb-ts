@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { DISTRIBUTION, TAKEOFF } from '../../../utils/config';
+import {
+  DISTRIBUTION,
+  DISTRIBUTION_PRIZE,
+  TAKEOFF,
+} from '../../../utils/config';
 import { Dots } from '../../../components';
 import { getDelegation } from '../../../utils/game-monitors';
 import { formatNumber } from '../../../utils/utils';
@@ -17,9 +21,7 @@ const Delegation = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [cybWonPercent, setCybWonPercent] = useState(0);
-  const currentPrize = Math.floor(
-    (DISTRIBUTION.delegation / TAKEOFF.ATOMsALL) * takeoffDonations
-  );
+  const currentPrize = DISTRIBUTION_PRIZE.delegation;
 
   useEffect(() => {
     if (validatorAddress !== null) {
@@ -51,14 +53,14 @@ const Delegation = ({
   );
 };
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
     setDelegationProps: (amount, prize) =>
       dispatch(setGolDelegation(amount, prize)),
   };
 };
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     delegation: store.gol.delegation,
   };

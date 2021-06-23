@@ -6,10 +6,16 @@ import {
   getAmountATOM,
   getValidatorsInfo,
   getValidators,
-  getTxCosmos,
   getCurrentNetworkLoad,
+  getGraphQLQuery,
 } from '../../utils/search/utils';
-import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
+import {
+  CardStatisics,
+  Card,
+  Loading,
+  LinkWindow,
+  TabBtn,
+} from '../../components';
 import {
   cybWon,
   getDisciplinesAllocation,
@@ -43,7 +49,18 @@ const test = {
   'tm.event': ['Tx'],
 };
 
-function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
+const Query = (address) =>
+  `query txs {
+    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
+    aggregate {
+      sum {
+        cybs
+      }
+    }
+  }
+}`;
+
+function GOL({ setGolTakeOffProps, mobile, defaultAccount, block }) {
   const {
     data: dataLeaderboard,
     loading: loadingLeaderboard,
@@ -64,6 +81,18 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   const [loading, setLoading] = useState(true);
   const [herosCount, setHerosCount] = useState(0);
   const [currentNetworkLoad, setCurrentNetworkLoad] = useState(0);
+  const [timeClose, setTimeClose] = useState('∞');
+
+  useEffect(() => {
+    if (parseFloat(block) > 0) {
+      const timeEnds = 6200000 - parseFloat(block);
+      if (timeEnds > 0) {
+        setTimeClose(timeEnds);
+      } else {
+        setTimeClose('end');
+      }
+    }
+  }, [block]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -76,10 +105,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   }, []);
 
   useEffect(() => {
-    const feachData = async () => {
-      await getTxsCosmos();
-    };
-    feachData();
+    getAtom();
   }, [address]);
 
   useEffect(() => {
@@ -105,24 +131,6 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
       setSelected('content');
     } else {
       setSelected('disciplines');
-    }
-  };
-
-  const getTxsCosmos = async () => {
-    const dataTx = await getTxCosmos();
-    if (dataTx !== null) {
-      let tx = dataTx.txs;
-      if (dataTx.total_count > dataTx.count) {
-        const allPage = Math.ceil(dataTx.total_count / dataTx.count);
-        for (let index = 1; index < allPage; index++) {
-          // eslint-disable-next-line no-await-in-loop
-          const response = await getTxCosmos(index + 1);
-          if (response !== null && Object.keys(response.txs).length > 0) {
-            tx = [...tx, ...response.txs];
-          }
-        }
-      }
-      getAtom(tx);
     }
   };
 
@@ -178,11 +186,11 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
     setHerosCount(count);
   };
 
-  const getAtom = async (dataTxs) => {
+  const getAtom = async () => {
     const { addressLedger } = address;
-    let amount = 0;
+    const amount = 0;
 
-    let estimation = 0;
+    const estimation = TAKEOFF.FINISH_ESTIMATION;
     let addEstimation = 0;
     let addressCosmos = null;
 
@@ -190,30 +198,24 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
       addressCosmos = fromBech32(addressLedger.bech32, 'cosmos');
     }
 
-    if (dataTxs) {
-      for (let item = 0; item < dataTxs.length; item += 1) {
-        let temE = 0;
-        const addressTx = dataTxs[item].tx.value.msg[0].value.from_address;
-        const val =
-          Number.parseInt(
-            dataTxs[item].tx.value.msg[0].value.amount[0].amount,
-            10
-          ) / COSMOS.DIVISOR_ATOM;
-        temE = getEstimation(estimation, val);
-        if (addressTx === addressCosmos) {
-          addEstimation += temE;
-        }
-        amount += val;
-        estimation += temE;
+    if (addressCosmos !== null) {
+      const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
+        Query(addressCosmos)
+      );
+      if (
+        takeoffAggregate &&
+        takeoffAggregate.aggregate &&
+        takeoffAggregate.aggregate.sum
+      ) {
+        addEstimation = takeoffAggregate.aggregate.sum.cybs;
       }
     }
 
     setGolTakeOffProps(
-      Math.floor(addEstimation * 10 ** 12),
-      Math.floor(estimation * 10 ** 12)
+      Math.floor(addEstimation * 10 ** 9),
+      Math.floor(estimation * 10 ** 9)
     );
 
-    console.log('addEstimation', Math.floor(addEstimation * 10 ** 12));
     setTakeoff((prevState) => ({ ...prevState, estimation, amount }));
     setLoading(false);
   };
@@ -318,6 +320,27 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
             .
           </Text>
         </Pane>
+        {timeClose !== 'end' && (
+          <Pane boxShadow="0px 0px 5px #36d6ae" paddingX={20} paddingY={20}>
+            <Text fontSize="16px" color="#fff">
+              Game of Links closes at 6,200,000 blockheight
+            </Text>
+            <br />
+            <Text marginTop={5} fontSize="16px" color="#fff">
+              blocks left{' '}
+              <Text fontSize="18px" color="#36d6ae">
+                {formatNumber(timeClose)}
+              </Text>
+            </Text>
+          </Pane>
+        )}
+        {timeClose === 'end' && (
+          <Pane boxShadow="0px 0px 5px #36d6ae" paddingX={20} paddingY={20}>
+            <Text fontSize="16px" color="#fff">
+              The Game of Links has already played
+            </Text>
+          </Pane>
+        )}
         <Pane
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
@@ -327,19 +350,13 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
           alignItems="center"
         >
           <Link to="/gol/load">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+            <Card
               title="Network load"
               value={`${formatNumber(currentNetworkLoad, 2)} %`}
             />
           </Link>
           <Link to="/gol/takeoff">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+            <Card
               title="Donation goal"
               value={`${formatNumber(
                 (TAKEOFF.FINISH_AMOUNT / TAKEOFF.ATOMsALL) * 100,
@@ -348,10 +365,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
             />
           </Link>
           <Link to="/heroes">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
+            <Card
               title="Validator set"
               value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
             />
@@ -397,6 +411,7 @@ const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
+    block: store.block.block,
   };
 };
 

@@ -45,3 +45,11 @@ export const setGolEuler4Rewards = (amount, prize) => {
     cybAbsolute: amount,
   };
 };
+
+export const setCommunityPool = (amount, prize) => {
+  return {
+    type: 'CHANGE_COMMUNITY_POOL',
+    currentPrize: prize,
+    cybAbsolute: amount,
+  };
+};

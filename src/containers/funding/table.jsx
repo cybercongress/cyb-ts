@@ -29,18 +29,11 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
         key={key}
         item={dataTable[key].address.map((item, index) => (
           <div className="table-rows-child" key={index}>
-            <div className="numberType hash">
-              <a
-                href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
-                target="_blank"
-              >
-                {trimString(item.txhash, 8, 8)}
-              </a>
-            </div>
+            <div className="numberType hash" />
             <div className="numberType display-none-mob">{item.timestamp}</div>
             <Tooltip
               placement="bottom"
-              tooltip={`${formatNumber(item.price, 10)} ATOM`}
+              tooltip={`${formatNumber(item.price, 5)} ATOM`}
             >
               <div className="numberType">{formatNumber(item.price, 5)}</div>
             </Tooltip>
@@ -56,14 +49,14 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
             </Tooltip>
             <Tooltip
               placement="bottom"
-              tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
+              tooltip={`${formatNumber(
+                Math.floor(item.cybEstimation * 10 ** 9)
+              )} CYBs`}
             >
               <div className="numberType">
-                {item.cybEstimation / 10 ** 9 < 1
-                  ? formatNumber(
-                      Math.floor((item.cybEstimation / 10 ** 9) * 1000) / 1000
-                    )
-                  : formatNumber(Math.floor(item.cybEstimation / 10 ** 9))}
+                {item.cybEstimation < 1
+                  ? formatNumber(Math.floor(item.cybEstimation * 1000) / 1000)
+                  : formatNumber(Math.floor(item.cybEstimation))}
               </div>
             </Tooltip>
             <Tooltip
@@ -74,11 +67,9 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
                 style={{ fontSize: 14 }}
                 className="numberType display-none-mob"
               >
-                {item.estimationEUL / 10 ** 9 < 1
-                  ? formatNumber(
-                      Math.floor((item.estimationEUL / 10 ** 9) * 1000) / 1000
-                    )
-                  : formatNumber(Math.floor(item.estimationEUL / 10 ** 9))}
+                {item.estimationEUL < 1
+                  ? formatNumber(Math.floor(item.estimationEUL * 1000) / 1000)
+                  : formatNumber(Math.floor(item.estimationEUL))}
               </div>
             </Tooltip>
           </div>
@@ -99,26 +90,26 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
         </Tooltip>
         <Tooltip
           placement="bottom"
-          tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} CYBs`}
+          tooltip={`${formatNumber(
+            Math.floor(dataTable[key].cyb * 10 ** 9)
+          )} CYBs`}
         >
           <div className="numberType">
-            {dataTable[key].cyb / 10 ** 9 < 1
-              ? formatNumber(
-                  Math.floor((dataTable[key].cyb / 10 ** 9) * 1000) / 1000
-                )
-              : formatNumber(Math.floor(dataTable[key].cyb / 10 ** 9))}
+            {dataTable[key].cyb < 1
+              ? formatNumber(Math.floor(dataTable[key].cyb * 1000) / 1000)
+              : formatNumber(Math.floor(dataTable[key].cyb))}
           </div>
         </Tooltip>
         <Tooltip
           placement="bottom"
-          tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} EULs`}
+          tooltip={`${formatNumber(
+            Math.floor(dataTable[key].eul * 10 ** 9)
+          )} EULs`}
         >
           <div style={{ fontSize: 14 }} className="numberType display-none-mob">
-            {dataTable[key].eul / 10 ** 9 < 1
-              ? formatNumber(
-                  Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
-                )
-              : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
+            {dataTable[key].eul < 1
+              ? formatNumber(Math.floor(dataTable[key].eul * 1000) / 1000)
+              : formatNumber(Math.floor(dataTable[key].eul))}
           </div>
         </Tooltip>
       </RowTableTakeoff>
@@ -127,7 +118,7 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
 
   const tableRowPin = () =>
     Object.keys(dataTable)
-      .filter(dataFilter => dataTable[dataFilter].pin)
+      .filter((dataFilter) => dataTable[dataFilter].pin)
       .map((key, index) => (
         <RowTableTakeoff
           pin={key}
@@ -135,20 +126,13 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
           statePin={dataTable[key].pin}
           item={dataTable[key].address.map((item, index) => (
             <div className="table-rows-child" key={index}>
-              <div className="numberType hash">
-                <a
-                  href={`https://cosmos.bigdipper.live/transactions/${item.txhash}`}
-                  target="_blank"
-                >
-                  {trimString(item.txhash, 10, 10)}
-                </a>
-              </div>
+              <div className="numberType hash" />
               <div className="numberType display-none-mob">
                 {item.timestamp}
               </div>
               <Tooltip
                 placement="bottom"
-                tooltip={`${formatNumber(item.price, 10)} ATOM`}
+                tooltip={`${formatNumber(item.price, 5)} ATOM`}
               >
                 <div className="numberType">{formatNumber(item.price, 5)}</div>
               </Tooltip>
@@ -164,32 +148,35 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
               </Tooltip>
               <Tooltip
                 placement="bottom"
-                tooltip={`${formatNumber(Math.floor(item.cybEstimation))} CYBs`}
+                tooltip={`${formatNumber(
+                  Math.floor(item.cybEstimation * 10 ** 9)
+                )} CYBs`}
               >
                 <div className="numberType">
-                  {item.cybEstimation / 10 ** 9 < 1
-                    ? formatNumber(
-                        Math.floor((item.cybEstimation / 10 ** 9) * 1000) / 1000
-                      )
-                    : formatNumber(Math.floor(item.cybEstimation / 10 ** 9))}
+                  {item.cybEstimation < 1
+                    ? formatNumber(Math.floor(item.cybEstimation * 1000) / 1000)
+                    : formatNumber(Math.floor(item.cybEstimation))}
                 </div>
               </Tooltip>
               <Tooltip
                 placement="bottom"
                 tooltip={`${formatNumber(Math.floor(item.estimationEUL))} EULs`}
               >
-                <div style={{ fontSize: 14 }} className="numberType">
-                  {item.estimationEUL / 10 ** 9 < 1
-                    ? formatNumber(
-                        Math.floor((item.estimationEUL / 10 ** 9) * 1000) / 1000
-                      )
-                    : formatNumber(Math.floor(item.estimationEUL / 10 ** 9))}
+                <div
+                  style={{ fontSize: 14 }}
+                  className="numberType display-none-mob"
+                >
+                  {item.estimationEUL < 1
+                    ? formatNumber(Math.floor(item.estimationEUL * 1000) / 1000)
+                    : formatNumber(Math.floor(item.estimationEUL))}
                 </div>
               </Tooltip>
             </div>
           ))}
         >
-          <div className="numberType address">{key}</div>
+          <div className="numberType address">
+            {mobile ? trimString(key, 10, 8) : key}
+          </div>
           <Tooltip
             placement="bottom"
             tooltip={`${formatNumber(dataTable[key].amountСolumn)} ATOM`}
@@ -202,29 +189,29 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
           </Tooltip>
           <Tooltip
             placement="bottom"
-            tooltip={`${formatNumber(Math.floor(dataTable[key].cyb))} CYBs`}
+            tooltip={`${formatNumber(
+              Math.floor(dataTable[key].cyb * 10 ** 9)
+            )} CYBs`}
           >
             <div className="numberType">
-              {dataTable[key].cyb / 10 ** 9 < 1
-                ? formatNumber(
-                    Math.floor((dataTable[key].cyb / 10 ** 9) * 1000) / 1000
-                  )
-                : formatNumber(Math.floor(dataTable[key].cyb / 10 ** 9))}
+              {dataTable[key].cyb < 1
+                ? formatNumber(Math.floor(dataTable[key].cyb * 1000) / 1000)
+                : formatNumber(Math.floor(dataTable[key].cyb))}
             </div>
           </Tooltip>
           <Tooltip
             placement="bottom"
-            tooltip={`${formatNumber(Math.floor(dataTable[key].eul))} EULs`}
+            tooltip={`${formatNumber(
+              Math.floor(dataTable[key].eul * 10 ** 9)
+            )} EULs`}
           >
             <div
               style={{ fontSize: 14 }}
               className="numberType display-none-mob"
             >
-              {dataTable[key].eul / 10 ** 9 < 1
-                ? formatNumber(
-                    Math.floor((dataTable[key].eul / 10 ** 9) * 1000) / 1000
-                  )
-                : formatNumber(Math.floor(dataTable[key].eul / 10 ** 9))}
+              {dataTable[key].eul < 1
+                ? formatNumber(Math.floor(dataTable[key].eul * 1000) / 1000)
+                : formatNumber(Math.floor(dataTable[key].eul))}
             </div>
           </Tooltip>
         </RowTableTakeoff>
@@ -233,7 +220,7 @@ function Table({ data, onlyPin, pin, mobile, styles }) {
   return (
     <div style={styles} className="table">
       <div className="table-header-rows">
-        <div className="numberType address">Address (TX id)</div>
+        <div className="numberType address">Address</div>
         <div className="numberType display-none-mob">Height</div>
         <div className="numberType">Price, ATOM</div>
         <div className="numberType">ATOM</div>

@@ -13,6 +13,7 @@ const Total = ({
   delegation,
   lifetime,
   euler4Rewards,
+  communityPool,
 }) => {
   const [loading, setLoading] = useState(true);
   const [totalReward, setTotalReward] = useState(0);
@@ -26,19 +27,20 @@ const Total = ({
     delegation,
     lifetime,
     euler4Rewards,
+    communityPool,
   };
 
   useEffect(() => {
     let total = 0;
     let rewardTotal = 0;
     let prize = 0;
-    Object.keys(cybWon).forEach(keys => {
+    Object.keys(cybWon).forEach((keys) => {
       total += cybWon[keys].cybAbsolute;
     });
-    Object.keys(DISTRIBUTION).forEach(keys => {
+    Object.keys(DISTRIBUTION).forEach((keys) => {
       rewardTotal += DISTRIBUTION[keys];
     });
-    Object.keys(cybWon).forEach(keys => {
+    Object.keys(cybWon).forEach((keys) => {
       prize += cybWon[keys].currentPrize;
     });
     if (total > 0 && prize > 0) {
@@ -75,6 +77,7 @@ const mapStateToProps = store => {
     delegation: store.gol.delegation,
     lifetime: store.gol.lifetime,
     euler4Rewards: store.gol.euler4Rewards,
+    communityPool: store.gol.communityPool,
   };
 };
 
