@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
-const { DirectSecp256k1HdWallet, Registry } = require("@cosmjs/proto-signing");
 import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
 import { Decimal } from '@cosmjs/math';
 import { CYBER } from '../../utils/config';
 import { Loading } from '../../components';
-const {stringToPath} = require("@cosmjs/crypto");
+
+const { DirectSecp256k1HdWallet, Registry } = require('@cosmjs/proto-signing');
+const { stringToPath } = require('@cosmjs/crypto');
 
 const configKeplr = () => {
   return {
@@ -17,8 +18,8 @@ const configKeplr = () => {
     rpc: CYBER.CYBER_NODE_URL_API,
     rest: CYBER.CYBER_NODE_URL_LCD,
     stakeCurrency: {
-      coinDenom: 'NICK',
-      coinMinimalDenom: 'nick',
+      coinDenom: 'BOOT',
+      coinMinimalDenom: 'boot',
       coinDecimals: 0,
     },
     bip44: {
@@ -37,9 +38,9 @@ const configKeplr = () => {
     currencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'NICK',
+        coinDenom: 'BOOT',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'nick',
+        coinMinimalDenom: 'boot',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -48,9 +49,9 @@ const configKeplr = () => {
     feeCurrencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'NICK',
+        coinDenom: 'BOOT',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'nick',
+        coinMinimalDenom: 'boot',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -101,22 +102,22 @@ const injectKeplr = (InnerComponent) =>
             // );
 
             const mnemonic =
-              "diet tragic tell acquire one wash fiber reopen surprise duty discover inner kind ketchup guilt exit three elegant sausage utility slab banner yellow asset";
-            const rpcUrl = "http://localhost:26657"
-            const prefix = "cyber"
-            const tokenDenom = "nick"
-            const hdPath = stringToPath("m/44'/118'/0'/0/0")
+              'diet tragic tell acquire one wash fiber reopen surprise duty discover inner kind ketchup guilt exit three elegant sausage utility slab banner yellow asset';
+            const rpcUrl = 'http://localhost:26657';
+            const prefix = 'cyber';
+            const tokenDenom = 'nick';
+            const hdPath = stringToPath("m/44'/118'/0'/0/0");
             const signer = await DirectSecp256k1HdWallet.fromMnemonic(
               mnemonic,
               hdPath,
-              prefix,
+              prefix
             );
-            console.log("signer", signer)
+            console.log('signer', signer);
 
             const cosmJS = await SigningCyberClient.connectWithSigner(
-              "http://localhost:26657",
+              'http://localhost:26657',
               signer
-            )
+            );
 
             if (firstAddress === null) {
               this.setState({

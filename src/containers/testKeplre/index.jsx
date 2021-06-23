@@ -71,10 +71,14 @@ function TestKeplr() {
   const [addressEnergyRoute, setAddressEnergyRoute] = useState(
     'cyber1njj4p35u8pggm7nypg3y66rypgvk2atjcy7ngp'
   );
+  const [validatorAddress, setValidatorAddress] = useState(
+    'cybervaloper1frk9k38pvp70vheezhdfd4nvqnlsm9dw4txuxm'
+  );
   const [alias, setAlias] = useState('');
   const [aliasRouteAlias, setAliasRouteAlias] = useState('');
   const [amount, setAmount] = useState(0);
-  const [time, setTime] = useState(10000);
+  const [amountStake, setAmountStake] = useState(0);
+  const [time, setTime] = useState(100);
   const [select, setSelect] = useState('volt');
   const [selected, setSelected] = useState('txs');
   const [amountSend, setAmountSend] = useState('');
@@ -83,7 +87,7 @@ function TestKeplr() {
     'cyber1njj4p35u8pggm7nypg3y66rypgvk2atjcy7ngp'
   );
   const [from, setFrom] = useState(
-    'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe3'
+    'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV'
   );
   const [to, setTo] = useState(
     'QmUX9mt8ftaHcn9Nc6SR4j9MsKkYfkcZqkfPTmMmBgeTe2'
@@ -100,8 +104,9 @@ function TestKeplr() {
 
   useEffect(() => {
     const sourceRouted = async () => {
-      if (jsCyber !== null) {
+      if (jsCyber && jsCyber !== null) {
         try {
+          console.log(`jsCyber`, jsCyber);
           const queryResultsourceRoutes = await jsCyber.sourceRoutes(
             'cyber1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwzs7wzf'
           );
@@ -113,6 +118,7 @@ function TestKeplr() {
           const queryResultdestinationRoutes = await jsCyber.destinationRoutes(
             'cyber1njj4p35u8pggm7nypg3y66rypgvk2atjcy7ngp'
           );
+          console.log(`queryResultdestinationRoutes`, queryResultdestinationRoutes)
           setDestinationRoutes(queryResultdestinationRoutes.routes);
         } catch (error) {
           console.log(error);
@@ -142,7 +148,7 @@ function TestKeplr() {
     const feachBandwidth = async () => {
       if (jsCyber !== null) {
         const queryResultLoad = await jsCyber.load();
-        console.log(queryResultLoad);
+        console.log('queryResultLoad', queryResultLoad);
         try {
           const queryResultPrice = await jsCyber.price();
           setBandwidthPrice(parseFloat(queryResultPrice.price.dec));
@@ -173,7 +179,7 @@ function TestKeplr() {
   useEffect(() => {
     const getBalance = async () => {
       if (jsCyber !== null) {
-        const queryResultgetAllBalancesUnverified = await jsCyber.getAllBalancesUnverified(
+        const queryResultgetAllBalancesUnverified = await jsCyber.getAllBalances(
           'cyber1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwzs7wzf'
         );
         const balances = {};
@@ -200,30 +206,16 @@ function TestKeplr() {
   };
 
   const convert = async () => {
-    if (window.keplr || window.getOfflineSigner) {
-      if (window.keplr.experimentalSuggestChain) {
-        await window.keplr.experimentalSuggestChain(configKeplr());
-        await window.keplr.enable(CYBER.CHAIN_ID);
-
-        const signer = window.getOfflineSigner(CYBER.CHAIN_ID);
-        console.log(`signer`, signer);
-        const accounts = await signer.getAccounts();
-        console.log(`accounts`, accounts);
-
-        const client = await SigningCyberClient.connectWithSigner(
-          'http://localhost:26657',
-          signer
-        );
-        console.log(`client`, client);
-        const response = await client.convertResources(
-          accounts[0].address,
-          coin(parseFloat(amount), 'nick'),
-          select,
-          parseFloat(time)
-        );
-        console.log(`response`, response);
-        setHashTx(response.transactionHash);
-      }
+    if (keplr !== null) {
+      const [{ address }] = await keplr.signer.getAccounts();
+      const response = await keplr.investmint(
+        address,
+        coin(parseFloat(amount), 'sboot'),
+        select,
+        parseFloat(time)
+      );
+      console.log(`response`, response);
+      setHashTx(response.transactionHash);
     }
   };
 
@@ -288,6 +280,24 @@ function TestKeplr() {
     }
   };
 
+  const delegateTokens = async () => {
+    if (keplr !== null) {
+      try {
+        const [{ address }] = await keplr.signer.getAccounts();
+        console.log(`address`, address);
+        const response = await keplr.delegateTokens(
+          address,
+          validatorAddress,
+          coin(parseFloat(amountStake), 'boot')
+        );
+        console.log(`response`, response);
+        setHashTx(response.transactionHash);
+      } catch (error) {
+        console.log(`error`, error);
+      }
+    }
+  };
+
   // const Txs = () => (
 
   // );
@@ -298,7 +308,12 @@ function TestKeplr() {
       <div style={{ marginTop: 10, fontSize: '18px' }}>
         {
           <div>
-            {allBalances.nick ? formatNumber(allBalances.nick) : 0} nick
+            {allBalances.boot ? formatNumber(allBalances.boot) : 0} boot
+          </div>
+        }
+        {
+          <div>
+            {allBalances.sboot ? formatNumber(allBalances.sboot) : 0} sboot
           </div>
         }
         {
@@ -407,6 +422,27 @@ function TestKeplr() {
         {/* <Txs /> */}
         {selected === 'txs' && (
           <>
+            <div>amount</div>
+            <input
+              value={amountStake}
+              style={{ width: 550, marginBottom: 20 }}
+              onChange={(e) => setAmountStake(e.target.value)}
+            />
+            <div>validatorAddress</div>
+            <input
+              value={validatorAddress}
+              style={{ width: 550 }}
+              onChange={(e) => setValidatorAddress(e.target.value)}
+            />
+            <button
+              className="btn"
+              style={{ maxWidth: 250, marginTop: 50 }}
+              onClick={delegateTokens}
+              type="button"
+            >
+              delegateTokens
+            </button>
+            <div style={{ margin: '50px 0', border: '1px solid #fff' }} />
             <div>from</div>
             <input
               value={from}
