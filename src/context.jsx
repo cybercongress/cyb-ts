@@ -27,8 +27,8 @@ const configKeplr = () => {
     rpc: CYBER.CYBER_NODE_URL_API,
     rest: CYBER.CYBER_NODE_URL_LCD,
     stakeCurrency: {
-      coinDenom: 'NICK',
-      coinMinimalDenom: 'nick',
+      coinDenom: 'BOOT',
+      coinMinimalDenom: 'boot',
       coinDecimals: 0,
     },
     bip44: {
@@ -47,9 +47,9 @@ const configKeplr = () => {
     currencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'NICK',
+        coinDenom: 'BOOT',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'nick',
+        coinMinimalDenom: 'boot',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -58,9 +58,9 @@ const configKeplr = () => {
     feeCurrencies: [
       {
         // Coin denomination to be displayed to the user.
-        coinDenom: 'NICK',
+        coinDenom: 'BOOT',
         // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'nick',
+        coinMinimalDenom: 'boot',
         // # of decimal points to convert minimal denomination to user-facing denomination.
         coinDecimals: 0,
       },
@@ -77,8 +77,8 @@ const configKeplr = () => {
 export async function createClient(signer) {
   if (signer) {
     const firstAddress = (await signer.getAccounts())[0].address;
-    const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'nick');
-    const gasLimits = { send: 100000 };
+    const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
+    const gasLimits = { send: 200000 };
 
     const client = await SigningCyberClient.connectWithSigner(
       CYBER.CYBER_NODE_URL_API,
@@ -124,7 +124,6 @@ const AppContextProvider = ({ children }) => {
         CYBER.CYBER_NODE_URL_API
       );
       const queryClient = new CyberClient(tendermintClient);
-
       setValue((item) => ({
         ...item,
         jsCyber: queryClient,
@@ -178,7 +177,7 @@ const AppContextProvider = ({ children }) => {
   }
 
   return (
-    <AppContext.Provider value={{ value, updatejsCyber }}>
+    <AppContext.Provider value={{ ...value, updatejsCyber }}>
       {children}
     </AppContext.Provider>
   );
