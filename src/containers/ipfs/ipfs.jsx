@@ -22,7 +22,6 @@ import {
 } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
-import Noitem from '../account/noItem';
 import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
@@ -34,7 +33,7 @@ import {
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import AvatarIpfs from '../account/avatarIpfs';
+import AvatarIpfs from '../account/component/avatarIpfs';
 import ContentItem from './contentItem';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import { AppContext } from '../../context';

@@ -212,10 +212,9 @@ export const search = async (keywordHash) =>
     method: 'get',
     url: `${CYBER_NODE_URL_LCD}/rank/search?cid=${keywordHash}&page=0&perPage=1000`,
   }).then((response) => {
-      console.log("RESPONSE", response.data.result.result)
-      return response.data.result.result ? response.data.result.result : []
-    }
-  );
+    console.log('RESPONSE', response.data.result.result);
+    return response.data.result.result ? response.data.result.result : [];
+  });
 
 export const getRankGrade = (rank) => {
   let from;
@@ -1230,41 +1229,55 @@ export const authAccounts = async (address) => {
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const responseDag = await ipfs.dag.get(cid, {
-    localResolve: false,
-  });
+  if (ipfs !== null) {
+    const responseDag = await ipfs.dag.get(cid, {
+      localResolve: false,
+    });
 
-  if (responseDag.value.size <= 1.5 * 10 ** 7) {
-    const responsePin = ipfs.pin.add(cid);
-    console.log('responsePin', responsePin);
-    let mime;
+    if (responseDag.value.size <= 1.5 * 10 ** 7) {
+      const responsePin = ipfs.pin.add(cid);
+      console.log('responsePin', responsePin);
+      let mime;
 
-    const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
+      const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
 
-    const data = responseCat;
-    // const buf = someVar;
-    // const bufs = [];
-    // bufs.push(buf);
-    // const data = Buffer.concat(bufs);
-    const dataFileType = await FileType.fromBuffer(data);
-    if (dataFileType !== undefined) {
-      mime = dataFileType.mime;
-      if (mime.indexOf('image') !== -1) {
-        // const dataBase64 = data.toString('base64');
-        const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-        const file = `data:${mime};base64,${dataBase64}`;
-        return file;
+      const data = responseCat;
+      // const buf = someVar;
+      // const bufs = [];
+      // bufs.push(buf);
+      // const data = Buffer.concat(bufs);
+      const dataFileType = await FileType.fromBuffer(data);
+      if (dataFileType !== undefined) {
+        mime = dataFileType.mime;
+        if (mime.indexOf('image') !== -1) {
+          // const dataBase64 = data.toString('base64');
+          const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
+          const file = `data:${mime};base64,${dataBase64}`;
+          return file;
+        }
+      }
+      const dataBase64 = uint8ArrayToAsciiString(data);
+      // console.log(`dataBase64`, dataBase64);
+      if (isSvg(dataBase64)) {
+        const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+          data,
+          'base64'
+        )}`;
+        return svg;
       }
     }
-    const dataBase64 = uint8ArrayToAsciiString(data);
-    // console.log(`dataBase64`, dataBase64);
-    if (isSvg(dataBase64)) {
-      const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-        data,
-        'base64'
-      )}`;
-      return svg;
-    }
+  } else {
+    const ipfsGetPromise = () =>
+      new Promise((resolve, reject) => {
+        axios({
+          method: 'get',
+          url: `https://ipfs.io/ipfs/${cid}`,
+        }).then((response) => {
+          // clearTimeout(timerId);
+          resolve(response.data);
+        });
+      });
+    return Promise.race([ipfsGetPromise()]);
   }
   return null;
 };

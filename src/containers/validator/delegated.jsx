@@ -45,7 +45,7 @@ export const Row = ({ value, title, marginBottom }) => (
 );
 
 const Delegated = ({ data, marginBottom }) => {
-  console.log(data);
+  console.log('Delegated', data);
   const {
     self,
     selfPercent,
@@ -79,7 +79,7 @@ const Delegated = ({ data, marginBottom }) => {
             </Link>
           }
         />
-        {data.description.identity.length > 0 && (
+        {data.description.identity && (
           <Row
             title="Identity"
             value={<KeybaseCheck identity={data.description.identity} />}
@@ -120,7 +120,7 @@ const Delegated = ({ data, marginBottom }) => {
             </Pane>
           }
         />
-        {data.description.details.length > 0 && (
+        {data.description.details && (
           <Row title="Details" value={data.description.details} />
         )}
         {jailed && (

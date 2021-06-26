@@ -1,7 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
-import TableTxs from '../account/tableTxs';
+import TableTxs from '../account/component/tableTxs';
 import { Loading } from '../../components';
 
 function Rumors({ accountUser }) {

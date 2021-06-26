@@ -9,10 +9,10 @@ import {
   Account,
   TextTable,
   Loading,
+  NoItems,
 } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import Noitem from '../account/noItem';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -115,8 +115,8 @@ const Fans = ({ data }) => {
             loadMore={setNextDisplayedPalettes}
             getScrollParent={() => containerReference.current}
           > */}
-            {delegations.length > 0 ? delegations : <Noitem text="No fans" />}
-          {/* </InfiniteScroll>
+        {delegations.length > 0 ? delegations : <NoItems text="No fans" />}
+        {/* </InfiniteScroll>
         </div> */}
       </Table.Body>
     </Table>
