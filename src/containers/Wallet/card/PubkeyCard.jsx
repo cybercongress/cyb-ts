@@ -360,7 +360,7 @@ const CyberAddressInfo = ({
 }) => {
   const [openCyber, setOpenCyber] = useState(false);
   const [openEul, setOpenEul] = useState(false);
-  const gol = useGetGol(address.bech32);
+  const { totalGol } = useGetGol(address.bech32);
 
   return (
     <>
@@ -378,7 +378,7 @@ const CyberAddressInfo = ({
         loading={loading}
         loadingGift={loadingGift}
         totalCyber={totalCyber}
-        gol={gol}
+        gol={totalGol}
         gift={gift}
         openCyber={openCyber}
         onClickDeleteAddress={onClickDeleteAddress}
