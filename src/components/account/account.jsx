@@ -34,7 +34,6 @@ class Account extends React.Component {
     const { address } = this.props;
 
     const result = await getValidatorsInfo(address);
-
     if (result) {
       this.setState({
         account: `/network/euler/hero/${address}`,

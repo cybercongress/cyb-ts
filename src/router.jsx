@@ -27,10 +27,6 @@ import Txs from './containers/txs';
 import Block from './containers/blok';
 import ParamNetwork from './containers/parameters';
 import Evangelism from './containers/evangelism';
-import GolDelegation from './containers/gol/pages/delegation';
-import GolLifetime from './containers/gol/pages/lifetime';
-import GolRelevance from './containers/gol/pages/relevance';
-import GolLoad from './containers/gol/pages/load';
 import Got from './containers/got/got';
 import TrollBoxx from './containers/trollBox';
 import useIpfsStart from './ipfsHook';
@@ -82,10 +78,6 @@ function AppRouter({
         <Route path="/heroes" component={Validators} />
         <Route path="/episode-1" component={Story} />
         <Route exact path="/network/euler/tx" component={Txs} />
-        <Route path="/gol/delegation" component={GolDelegation} />
-        <Route path="/gol/lifetime" component={GolLifetime} />
-        <Route path="/gol/relevance" component={GolRelevance} />
-        <Route path="/gol/load" component={GolLoad} />
         <Route path="/gol" component={GOL} />
         <Route path="/network/euler/tx/:txHash" component={TxsDetails} />
         <Route

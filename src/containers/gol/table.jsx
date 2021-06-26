@@ -40,47 +40,36 @@ const TableDiscipline = ({ address }) => {
             }}
           >
             <RowTable
-              text={<Link to="/gol/takeoff">takeoff</Link>}
+              text="takeoff"
               cybWon={formatNumber(Math.floor(resultGol.takeoff))}
             />
             <RowTable
-              text={<Link to="/gol/relevance">relevance</Link>}
+              text="relevance"
               cybWon={formatNumber(Math.floor(resultGol.relevance))}
             />
             <RowTable
-              text={<Link to="/gol/load">load</Link>}
+              text="load"
               cybWon={formatNumber(Math.floor(resultGol.load))}
             />
             <RowTable
-              text={<Link to="/gol/delegation">delegation</Link>}
+              text="delegation"
               cybWon={formatNumber(Math.floor(resultGol.delegation))}
             />
             <RowTable
-              text={<Link to="/gol/lifetime">lifetime</Link>}
+              text="lifetime"
               cybWon={formatNumber(Math.floor(resultGol.lifetime))}
             />
             <RowTable
-              text={
-                <LinkWindow to="https://cybercongress.ai/game-of-links/">
-                  euler 4 rewards
-                </LinkWindow>
-              }
+              text="euler 4 rewards"
               cybWon={formatNumber(Math.floor(resultGol['euler-4']))}
             />
+            <RowTable text="full validator set" cybWon={0} />
             <RowTable
-              text={<Link to="/heroes">full validator set</Link>}
-              cybWon={0}
-            />
-            <RowTable
-              text={<Link to="/governance">community pool</Link>}
+              text="community pool"
               cybWon={formatNumber(Math.floor(resultGol.comm_pool))}
             />
             <RowTable
-              text={
-                <LinkWindow to="https://cybercongress.ai/game-of-links/">
-                  total
-                </LinkWindow>
-              }
+              text="total"
               cybWon={formatNumber(Math.floor(resultGol.sum))}
             />
           </Table.Body>

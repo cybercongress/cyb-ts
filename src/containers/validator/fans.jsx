@@ -40,11 +40,11 @@ const Fans = ({ data }) => {
         borderBottom="none"
         minHeight="48px"
         height="fit-content"
-        key={item.delegator_address}
+        key={item.delegation.delegator_address}
       >
         <Table.TextCell>
           <TextTable>
-            <Account address={item.delegator_address} />
+            <Account address={item.delegation.delegator_address} />
           </TextTable>
         </Table.TextCell>
         <Table.TextCell flex={2} textAlign="end">

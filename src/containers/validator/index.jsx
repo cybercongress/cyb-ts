@@ -250,7 +250,7 @@ class ValidatorsDetails extends React.PureComponent {
     const { address } = match.params;
     // console.log('validatorInfo', validatorInfo.consensus_pubkey);
     let content;
-console.log('unStake', unStake)
+
     if (loader) {
       return (
         <div
