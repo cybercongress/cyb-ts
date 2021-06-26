@@ -39,7 +39,7 @@ function TableItem({
       <Table.TextCell paddingX={5}>
         <TextTable>
           <StatusTooltip status={item.status} />
-          <Link to={`/network/euler/hero/${item.operator_address}`}>
+          <Link to={`/network/euler/hero/${item.operatorAddress}`}>
             {item.description.moniker}
           </Link>
         </TextTable>

@@ -16,6 +16,7 @@ function getHeroes() {
       let validatorsArr = [];
       if (jsCyber !== null) {
         const responseActive = await jsCyber.validators('BOND_STATUS_BONDED');
+        console.log(`responseActive`, responseActive)
         if (
           responseActive.validators &&
           Object.keys(responseActive.validators).length > 0

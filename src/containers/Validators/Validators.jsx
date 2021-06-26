@@ -63,7 +63,7 @@ function Validators({ mobile, defaultAccount }) {
   useEffect(() => {
     const feachPool = async () => {
       if (jsCyber !== null) {
-        const response = await jsCyber.pool();
+        const response = await jsCyber.stakingPool();
         if (response.pool.bondedTokens) {
           setBondedTokens(response.pool.bondedTokens);
         }
@@ -90,7 +90,9 @@ function Validators({ mobile, defaultAccount }) {
     if (validators.length > 0 && delegationsData.length > 0) {
       delegationsData.forEach((item) => {
         validators.forEach((itemValidators, j) => {
-          if (itemValidators.operator_address === item.validator_address) {
+          if (
+            itemValidators.operatorAddress === item.delegation.validatorAddress
+          ) {
             validators[j].delegation = item.balance;
           }
         });
