@@ -1,8 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
-import TableTxs from './tableTxs';
-import { Loading } from '../../components';
+import TableTxs from '../component/tableTxs';
+import { Loading } from '../../../components';
 
 /*
   subscription MyQuery {

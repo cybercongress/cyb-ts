@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { trimString } from '../../utils/utils';
-import { getAvatar, getAvatarIpfs } from '../../utils/search/utils';
-import { PATTERN_CYBER } from '../../utils/config';
+import { trimString } from '../../../utils/utils';
+import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
+import { PATTERN_CYBER } from '../../../utils/config';
 
-const img = require('../../image/logo-cyb-v3.svg');
+const img = require('../../../image/logo-cyb-v3.svg');
 
 function AvatarIpfs({
   addressCyber = 'cyber',
@@ -30,7 +30,7 @@ function AvatarIpfs({
   const feachAvatar = async address => {
     const response = await getAvatar(address);
 
-    if (response !== null && response.txs.length > 0) {
+    if (response !== null && response.total_count === 0) {
       if (node !== null) {
         const cidTo =
           response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0]

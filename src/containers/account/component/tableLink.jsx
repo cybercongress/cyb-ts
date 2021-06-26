@@ -8,9 +8,8 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { trimString, formatNumber } from '../../utils/utils';
-import { CardTemplate, Cid, Dots, TextTable } from '../../components';
-import Noitem from './noItem';
+import { trimString, formatNumber } from '../../../utils/utils';
+import { NoItems, Cid, Dots, TextTable } from '../../../components';
 
 const dateFormat = require('dateformat');
 
@@ -113,7 +112,7 @@ const TableLink = ({ data }) => {
             }
             refreshFunction={setNextDisplayedPalettes}
           >
-            {data.length > 0 ? validatorRows : <Noitem text="No cyberLinks" />}
+            {data.length > 0 ? validatorRows : <NoItems text="No cyberLinks" />}
           </InfiniteScroll>
         </Table.Body>
       </Table>

@@ -2,7 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
 import TableLink from './tableLink';
-import { Loading } from '../../components';
+import { Loading } from '../../../components';
 
 const GET_CHARACTERS = gql`
   subscription MyQuery2($accountUser: String) {

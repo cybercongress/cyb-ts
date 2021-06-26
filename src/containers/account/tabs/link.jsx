@@ -1,7 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import TableLink from './tableLink';
+import TableLink from '../component/tableLink';
 
 // const GET_CHARACTERS = gql`
 //   query MyQuery($agent: String) {

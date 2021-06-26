@@ -6,11 +6,9 @@ import {
   TableEv as Table,
   Icon,
 } from '@cybercongress/gravity';
-import { CardTemplate, Account } from '../../components';
-import { formatNumber, formatCurrency } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
-
-const noitem = require('../../image/noitem.svg');
+import { NoItems, Account } from '../../../components';
+import { formatNumber, formatCurrency } from '../../../utils/utils';
+import { CYBER } from '../../../utils/config';
 
 const getDaysIn = (time) => {
   const completionTime = new Date(time);
@@ -20,19 +18,6 @@ const getDaysIn = (time) => {
 
   return Math.round(daysIn);
 };
-
-const Img = ({ img }) => (
-  <img style={{ width: '45px', height: '45px' }} src={img} alt="img" />
-);
-
-const Noitem = ({ text }) => (
-  <Pane display="flex" paddingY={40} alignItems="center" flexDirection="column">
-    <Img img={noitem} />
-    <Text fontSize="18px" color="#fff">
-      {text}
-    </Text>
-  </Pane>
-);
 
 const TextTable = ({ children, fontSize, color, display, ...props }) => (
   <Text
@@ -65,7 +50,7 @@ const Unbonding = ({ amount, stages, entries }) => (
             entries[0].balance,
             CYBER.DENOM_CYBER.toUpperCase()
           )} in 
-      ${getDaysIn(entries[0].completion_time)} days`}
+      ${getDaysIn(entries[0].completionTime)} days`}
     </Pane>
     <Tooltip
       content={entries.map((items, index) => (
@@ -73,7 +58,7 @@ const Unbonding = ({ amount, stages, entries }) => (
           {`${formatNumber(
             parseFloat(items.balance)
           )} ${CYBER.DENOM_CYBER.toUpperCase()}`}{' '}
-          in {getDaysIn(items.completion_time)} days
+          in {getDaysIn(items.completionTime)} days
         </div>
       ))}
       position="bottom"
@@ -84,11 +69,10 @@ const Unbonding = ({ amount, stages, entries }) => (
 );
 
 const Heroes = ({ data, ...props }) => {
-  const { delegations } = data;
-  const delegationsItem = Object.keys(delegations).map((item) => {
+  const delegationsItem = Object.keys(data).map((key) => {
     let amount = 0;
-    if (delegations[item].entries !== undefined) {
-      delegations[item].entries.forEach((entry) => {
+    if (data[key].entries !== undefined) {
+      data[key].entries.forEach((entry) => {
         amount += parseFloat(entry.balance);
       });
     }
@@ -96,7 +80,7 @@ const Heroes = ({ data, ...props }) => {
     return (
       <Table.Row
         borderBottom="none"
-        key={delegations[item].validator_address}
+        key={key}
         display="flex"
         marginBottom={10}
         minHeight="48px"
@@ -106,29 +90,29 @@ const Heroes = ({ data, ...props }) => {
       >
         <Table.TextCell flex={2} textAlign="start">
           <TextTable>
-            <Account address={delegations[item].validator_address} />
+            <Account address={key} />
           </TextTable>
         </Table.TextCell>
         <Table.TextCell flex={1.5} textAlign="end">
-          {delegations[item].entries !== undefined && (
+          {data[key].entries !== undefined && (
             <Unbonding
               amount={amount}
-              stages={delegations[item].entries.length}
-              entries={delegations[item].entries}
+              stages={data[key].entries.length}
+              entries={data[key].entries}
             />
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          {delegations[item].reward !== undefined && (
+          {data[key].reward !== undefined && (
             <Tooltip
               content={`${formatNumber(
-                delegations[item].reward
+                data[key].reward
               )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
               position="bottom"
             >
               <TextTable>
                 {formatCurrency(
-                  delegations[item].reward,
+                  data[key].reward,
                   CYBER.DENOM_CYBER.toUpperCase()
                 )}
               </TextTable>
@@ -138,13 +122,13 @@ const Heroes = ({ data, ...props }) => {
         <Table.TextCell textAlign="end">
           <Tooltip
             content={`${formatNumber(
-              parseFloat(delegations[item].balance.amount)
+              parseFloat(data[key].balance.amount)
             )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
             position="bottom"
           >
             <TextTable>
               {formatCurrency(
-                parseFloat(delegations[item].balance.amount),
+                parseFloat(data[key].balance.amount),
                 CYBER.DENOM_CYBER.toUpperCase()
               )}
             </TextTable>
@@ -189,7 +173,7 @@ const Heroes = ({ data, ...props }) => {
           {delegationsItem.length > 0 ? (
             delegationsItem
           ) : (
-            <Noitem text="No Delegations" />
+            <NoItems text="No Delegations" />
           )}
         </Table.Body>
       </Table>

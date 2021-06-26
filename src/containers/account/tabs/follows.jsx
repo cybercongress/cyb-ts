@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TableEv as Table, Pane } from '@cybercongress/gravity';
-import { TextTable, Cid } from '../../components';
-import { trimString } from '../../utils/utils';
-import Noitem from './noItem';
-import AvatarIpfs from './avatarIpfs';
+import { TextTable, Cid, NoItems } from '../../../components';
+import { trimString } from '../../../utils/utils';
+import AvatarIpfs from '../component/avatarIpfs';
 
 function FollowsTab({ community, node }) {
   const { following, followers, friends } = community;
@@ -43,7 +42,7 @@ function FollowsTab({ community, node }) {
             {friendsItems}
           </Pane>
         ) : (
-          <Noitem text="No Friends" />
+          <NoItems text="No Friends" />
         )}
       </Pane>
       <Pane marginBottom="20px">
@@ -60,7 +59,7 @@ function FollowsTab({ community, node }) {
             {followingItems}
           </Pane>
         ) : (
-          <Noitem text="No Following" />
+          <NoItems text="No Following" />
         )}
       </Pane>
       <Pane>
@@ -77,7 +76,7 @@ function FollowsTab({ community, node }) {
             {followersItems}
           </Pane>
         ) : (
-          <Noitem text="No Followers" />
+          <NoItems text="No Followers" />
         )}
       </Pane>
     </Pane>

@@ -8,16 +8,15 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
-import { CardTemplate, MsgType, Dots, TextTable } from '../../components';
-import Noitem from './noItem';
-import { CYBER } from '../../utils/config';
+import { trimString, formatNumber, formatCurrency } from '../../../utils/utils';
+import { NoItems, MsgType, Dots, TextTable } from '../../../components';
+import { CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
-const imgDropdown = require('../../image/arrow-dropdown.svg');
-const imgDropup = require('../../image/arrow-dropup.svg');
-const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
-const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
+const imgDropdown = require('../../../image/arrow-dropdown.svg');
+const imgDropup = require('../../../image/arrow-dropup.svg');
+const statusTrueImg = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
+const statusFalseImg = require('../../../image/ionicons_svg_ios-close-circle.svg');
 
 const TableTxs = ({ data, type, accountUser, amount }) => {
   const [itemsToShow, setItemsToShow] = useState(30);
@@ -196,7 +195,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
           {data.length > 0 ? (
             validatorRows
           ) : (
-            <Noitem text={`No txs ${type || ' '}`} />
+            <NoItems text={`No txs ${type || ' '}`} />
           )}
         </InfiniteScroll>
       </Table.Body>

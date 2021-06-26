@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import Noitem from './noItem';
-import ContentItem from '../ipfs/contentItem';
-import { Rank } from '../../components';
+import ContentItem from '../../ipfs/contentItem';
+import { Rank, NoItems } from '../../../components';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
@@ -99,7 +98,7 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
   }
   return (
     <div className="container-contentItem">
-      <Noitem text="No feeds" />
+      <NoItems text="No feeds" />
     </div>
   );
 }
