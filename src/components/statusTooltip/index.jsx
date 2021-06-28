@@ -37,9 +37,9 @@ const StatusTooltip = ({ status, size }) => {
           <Pane display="flex" alignItems="center" paddingX={18} paddingY={18}>
             <Text>
               Validator status:&nbsp;
-              {status === 0 && 'unbonded'}
-              {status === 1 && 'unbonding'}
-              {status === 2 && 'bonded'}
+              {status === 1 && 'unbonded'}
+              {status === 2 && 'unbonding'}
+              {status === 3 && 'bonded'}
             </Text>
           </Pane>
         }

@@ -50,9 +50,9 @@ export const StatusTooltip = ({ status }) => {
           <Pane display="flex" alignItems="center" paddingX={18} paddingY={18}>
             <Text>
               Validator status:&nbsp;
-              {status === 1 && 'unbonded'}
-              {status === 2 && 'unbonding'}
-              {status === 3 && 'bonded'}
+              {statusHeroes[status] === 1 && 'unbonded'}
+              {statusHeroes[status] === 2 && 'unbonding'}
+              {statusHeroes[status] === 3 && 'bonded'}
             </Text>
           </Pane>
         }
