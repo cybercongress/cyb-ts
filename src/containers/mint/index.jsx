@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { Tablist, Pane, Button } from '@cybercongress/gravity';
+import { Tablist, Pane, Button, Text } from '@cybercongress/gravity';
+import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import { coin } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
@@ -11,8 +12,18 @@ import {
   getDecimal,
   formatCurrencyNumber,
 } from '../../utils/utils';
+import { authAccounts } from '../../utils/search/utils';
+import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import ERatio from './eRatio';
+import { useGetBalance } from '../account/hooks';
+import { Dots } from '../../components';
+
+const INIT_STAGE = 0;
+const TSX_SEND = 1;
+
+const BASE_VESTING_AMOUNT = 10000000;
+const BASE_VESTING_TIME = 3600;
 
 const grid = {
   display: 'grid',
@@ -35,17 +46,21 @@ const returnColorDot = (marks) => {
 
 function Mint({ defaultAccount }) {
   const { keplr, jsCyber } = useContext(AppContext);
+  const [addressActive, setAddressActive] = useState(null);
+  const [updateAddress, setUpdateAddress] = useState(0);
+  const { balance, loadingBalanceInfo } = useGetBalance(
+    addressActive,
+    updateAddress
+  );
   const [selected, setSelected] = useState('amper');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
-  const [max, setMax] = useState(1000);
-  const [addressActive, setAddressActive] = useState(null);
-  const [valueNick, setValueNick] = useState(0);
-  const [eRatio, setERatio] = useState(50);
+  const [max, setMax] = useState(1);
+  const [eRatio, setERatio] = useState(0);
+  const [vested, setVested] = useState(0);
   const [hashTx, setHashTx] = useState('');
-
-  // console.log(`keplr`, keplr);
-  // console.log(`jsCyber`, jsCyber);
+  const [dataVestingPeriods, setDataVestingPeriods] = useState([]);
+  const [stage, setStage] = useState(INIT_STAGE);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -56,69 +71,80 @@ function Mint({ defaultAccount }) {
     ) {
       const { keys, bech32 } = account.cyber;
       if (keys === 'keplr') {
-        addressPocket = {
-          bech32,
-          keys,
-        };
+        addressPocket = bech32;
       }
     }
     setAddressActive(addressPocket);
   }, [defaultAccount.name]);
 
-  const convert = async () => {
-    if (keplr !== null) {
-      const firstAddress = (await keplr.signer.getAccounts())[0].address;
-      const response = await keplr.convertResources(
-        firstAddress,
-        coin(parseFloat(valueNick), 'nick'),
-        selected,
-        parseFloat(valueDays)
-      );
-      setHashTx(response.transactionHash);
+  useEffect(() => {
+    if (balance.delegation > 0) {
+      const maxValue = Math.floor(balance.delegation / BASE_VESTING_AMOUNT);
+      if (maxValue > 0) {
+        setMax(maxValue);
+      }
     }
-  };
+  }, [balance]);
 
   useEffect(() => {
-    const getBalance = async () => {
-      if (jsCyber !== null && addressActive !== null) {
-        const queryResultgetAllBalancesUnverified = await jsCyber.getAllBalancesUnverified(
-          addressActive.bech32
-        );
-        const responceauth = await jsCyber.queryClient.auth.account(
-          addressActive.bech32
-        );
-        console.log(`responceauth`, responceauth)
-        const responceDistributionDelegatorValidators = await jsCyber.queryClient.distribution.delegatorValidators(
-          addressActive.bech32
-        );
-        console.log(
-          `responceDistributionDelegatorValidators`,
-          responceDistributionDelegatorValidators
-        );
-        const responceDelegationTotalRewards = await jsCyber.queryClient.distribution.delegationTotalRewards(
-          addressActive.bech32
-        );
-        console.log(
-          `responceDistributionDelegatorValidators`,
-          responceDelegationTotalRewards
-        );
-        console.log(
-          `queryResultgetAllBalancesUnverified`,
-          queryResultgetAllBalancesUnverified
-        );
-        const balances = {};
-        if (Object.keys(queryResultgetAllBalancesUnverified).length > 0) {
-          queryResultgetAllBalancesUnverified.forEach((item) => {
-            balances[item.denom] = parseFloat(item.amount);
-          });
+    const getAuth = async () => {
+      if (keplr !== null && addressActive !== null) {
+        const getAccount = await authAccounts(addressActive);
+        if (getAccount !== null && getAccount.result.value.vesting_periods) {
+          const balances = {};
+          if (
+            Object.keys(
+              getAccount.result.value.base_vesting_account.original_vesting
+            ).length > 0
+          ) {
+            getAccount.result.value.base_vesting_account.original_vesting.forEach(
+              (item) => {
+                balances[item.denom] = parseFloat(item.amount);
+              }
+            );
+          }
+          if (balances.sboot) {
+            setVested(balances.sboot);
+          }
+          // setDataVestingPeriods(getAccount.result.value.vesting_periods);
         }
       }
     };
-    getBalance();
-  }, [jsCyber, addressActive]);
+    getAuth();
+  }, [keplr, updateAddress, addressActive]);
+
+  const convert = async () => {
+    if (keplr !== null) {
+      setStage(TSX_SEND);
+      const [{ address }] = await keplr.signer.getAccounts();
+      const response = await keplr.investmint(
+        address,
+        coin(parseFloat(BASE_VESTING_AMOUNT * value), 'sboot'),
+        selected,
+        parseFloat(BASE_VESTING_TIME * valueDays)
+      );
+      setHashTx(response.transactionHash);
+      setUpdateAddress((item) => item + 1);
+      setStage(INIT_STAGE);
+      setValue(0);
+      setValueDays(1);
+    }
+  };
 
   return (
     <main className="block-body" style={{ paddingTop: 30 }}>
+      {addressActive === null && (
+        <Pane
+          boxShadow="0px 0px 5px #36d6ae"
+          paddingX={20}
+          paddingY={20}
+          marginY={20}
+        >
+          <Text fontSize="16px" color="#fff">
+            Start by adding a address to <Link to="/pocket">your pocket</Link>.
+          </Text>
+        </Pane>
+      )}
       <div
         style={{
           display: 'flex',
@@ -150,7 +176,6 @@ function Mint({ defaultAccount }) {
           onSelect={() => setSelected('volt')}
         />
       </Tablist>
-
       <div style={grid}>
         <div
           style={{
@@ -159,9 +184,9 @@ function Mint({ defaultAccount }) {
             height: '100%',
           }}
         >
-          <ItemBalance text="Liquid balance" amount={500000000} />
-          <ItemBalance text="Vested Balance" amount={50500000} />
-          <ItemBalance text="Staked balance" amount={0} />
+          <ItemBalance text="Liquid balance" amount={balance.available} />
+          <ItemBalance text="Vested Balance" amount={vested} />
+          <ItemBalance text="Staked balance" amount={balance.delegation} />
         </div>
         <div
           style={{
@@ -203,10 +228,10 @@ function Mint({ defaultAccount }) {
           <Slider
             value={valueDays}
             min={1}
-            max={90}
+            max={168}
             marks={{
-              1: returnColorDot('1 day'),
-              90: returnColorDot('90 days'),
+              1: returnColorDot('1 hour'),
+              168: returnColorDot('168 hour'),
             }}
             onChange={(eValue) => setValueDays(eValue)}
             trackStyle={{ backgroundColor: '#3ab793' }}
@@ -236,18 +261,34 @@ function Mint({ defaultAccount }) {
               fontSize: '17px',
             }}
           >
-            You’re minting investing 100 NICK for {valueDays} days. This
-            operation will mint {value} {selected} to your account. In the end
-            of period you will be able to make your {selected} liquid, but you
-            can use it for boost ranking duriung vesintg period
+            You’re minting investing {formatNumber(value * BASE_VESTING_AMOUNT)}{' '}
+            SBOOT for {valueDays} hour. This operation will mint {value}{' '}
+            {selected} to your account. In the end of period you will be able to
+            make your {selected} liquid, but you can use it for boost ranking
+            duriung vesintg period
           </div>
         )}
       </div>
       <div style={{ paddingTop: 50, textAlign: 'center' }}>
         <Button disabled={value === 0} onClick={convert}>
-          Submit
+          {stage === INIT_STAGE && 'Submit'}
+          {stage === TSX_SEND && <Dots />}
         </Button>
       </div>
+      {/* <Pane marginTop={50}>
+        {dataVestingPeriods.map((item) => {
+          return (
+            <Pane display="grid" gridTemplateColumns="1fr 1fr">
+              {item.amount.map((itemA) => (
+                <Pane>
+                  {itemA.amount}
+                  {itemA.denom}
+                </Pane>
+              ))}
+            </Pane>
+          );
+        })}
+      </Pane> */}
     </main>
   );
 }

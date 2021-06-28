@@ -28,7 +28,7 @@ const Btn = ({ onSelect, checkedSwitch, text, disabledBtn, ...props }) => (
 const FormatNumber = ({
   number,
   fontSizeDecimal,
-  currency = 'NICK',
+  currency = 'BOOT',
   ...props
 }) => {
   const formatNumberCurrency = formatCurrencyNumber(number, currency);
