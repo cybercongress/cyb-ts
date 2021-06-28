@@ -213,6 +213,9 @@ class ActionBarContainer extends Component {
     const { toSend, txType, valueSelect } = this.state;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const validatorAddres = validators.operatorAddress;
+    this.setState({
+      stage: LEDGER_GENERATION,
+    });
 
     if (keplr !== null) {
       const [{ address }] = await keplr.signer.getAccounts();

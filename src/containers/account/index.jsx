@@ -18,6 +18,7 @@ import AvatarIpfs from './component/avatarIpfs';
 import CyberLinkCount from './component/cyberLinkCount';
 import { AppContext } from '../../context';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
+import { CYBER } from '../../utils/config';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -237,7 +238,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           />
           <AvatarIpfs addressCyber={address} node={node} />
           <Card
-            title="total, EUL"
+            title={`total, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={formatNumber(balance.total)}
             stylesContainer={{
               width: '100%',

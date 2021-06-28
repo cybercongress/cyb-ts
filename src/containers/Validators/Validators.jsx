@@ -31,6 +31,12 @@ function Validators({ mobile, defaultAccount }) {
   const [selected, setSelected] = useState('active');
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
+  const [validatorsData, setValidatorsData] = useState([]);
+  const [updatePage, setUpdatePage] = useState(0);
+
+  useEffect(() => {
+    setValidatorsData(validators);
+  }, [validators]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -84,19 +90,23 @@ function Validators({ mobile, defaultAccount }) {
       setDelegationsData(delegationsDataTemp);
     };
     feachDelegatorDelegations();
-  }, [addressPocket, jsCyber]);
+  }, [addressPocket, jsCyber, updatePage]);
 
   useEffect(() => {
     if (validators.length > 0 && delegationsData.length > 0) {
-      delegationsData.forEach((item) => {
-        validators.forEach((itemValidators, j) => {
+      const tempValidators = [...validators];
+      const tempDelegationsData = [...delegationsData];
+
+      tempDelegationsData.forEach((item) => {
+        tempValidators.forEach((itemValidators, j) => {
           if (
             itemValidators.operatorAddress === item.delegation.validatorAddress
           ) {
-            validators[j].delegation = item.balance;
+            tempValidators[j].delegation = item.balance;
           }
         });
       });
+      setValidatorsData(tempValidators);
       setLoadingBond(false);
     } else {
       setLoadingBond(true);
@@ -105,29 +115,29 @@ function Validators({ mobile, defaultAccount }) {
 
   useEffect(() => {
     const selfDelegation = async () => {
-      if (jsCyber !== null && validators.length > 0) {
+      if (jsCyber !== null && validatorsData.length > 0) {
         await asyncForEach(
-          Array.from(Array(validators.length).keys()),
+          Array.from(Array(validatorsData.length).keys()),
           async (item) => {
             const delegatorAddress = fromBech32(
-              validators[item].operatorAddress
+              validatorsData[item].operatorAddress
             );
             let shares = 0;
             const getSelfDelegation = await jsCyber.delegation(
               delegatorAddress,
-              validators[item].operatorAddress
+              validatorsData[item].operatorAddress
             );
             const { delegationResponse } = getSelfDelegation;
             if (
               delegationResponse.balance.amount &&
-              validators[item].delegatorShares > 0
+              validatorsData[item].delegatorShares > 0
             ) {
               const selfShares = delegationResponse.balance.amount;
               const delegatorShares =
-                validators[item].delegatorShares * 10 ** -18;
+                validatorsData[item].delegatorShares * 10 ** -18;
               shares = (selfShares / delegatorShares) * 100;
             }
-            validators[item].shares = formatNumber(
+            validatorsData[item].shares = formatNumber(
               Math.floor(shares * 100) / 100,
               2
             );
@@ -137,7 +147,7 @@ function Validators({ mobile, defaultAccount }) {
       }
     };
     selfDelegation();
-  }, [validators, jsCyber]);
+  }, [validatorsData, jsCyber]);
 
   const selectValidators = (validator, index) => {
     let selectValidator = {};
@@ -188,7 +198,7 @@ function Validators({ mobile, defaultAccount }) {
         <TabBtnList selected={selected} countHeroes={countHeroes} />
 
         <TableHeroes mobile={mobile} showJailed={selected === 'jailed'}>
-          {validators
+          {validatorsData
             .filter((validator) =>
               selected === 'jailed'
                 ? status[validator.status] < 3
@@ -222,9 +232,9 @@ function Validators({ mobile, defaultAccount }) {
         </TableHeroes>
       </main>
       <ActionBarContainer
-        // updateTable={init}
+        updateTable={() => setUpdatePage(updatePage + 1)}
         validators={validatorSelect}
-        validatorsAll={validators}
+        validatorsAll={validatorsData}
         addressPocket={addressPocket}
         unStake={unStake}
         mobile={mobile}

@@ -136,7 +136,7 @@ const DetailsBalance = ({
 const NumberCurrency = ({
   amount,
   fontSizeDecimal,
-  currencyNetwork = 'EUL',
+  currencyNetwork = CYBER.DENOM_CYBER,
   ...props
 }) => {
   const number = formatNumber(amount / CYBER.DIVISOR_CYBER_G, 3);
@@ -332,7 +332,10 @@ const EULnetworkInfo = ({
               ) : (
                 <div className="details-balance">details</div>
               )}
-              <NumberCurrency amount={totalCyber.total} currencyNetwork="eul" />
+              <NumberCurrency
+                amount={totalCyber.total}
+                currencyNetwork={CYBER.DENOM_CYBER}
+              />
               {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
             </RowBalance>
             {openEul && (

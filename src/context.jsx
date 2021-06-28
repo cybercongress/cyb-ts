@@ -37,12 +37,12 @@ const configKeplr = () => {
       coinType: 118,
     },
     bech32Config: {
-      bech32PrefixAccAddr: 'cyber',
-      bech32PrefixAccPub: 'cyberpub',
-      bech32PrefixValAddr: 'cybervaloper',
-      bech32PrefixValPub: 'cybervaloperpub',
-      bech32PrefixConsAddr: 'cybervalcons',
-      bech32PrefixConsPub: 'cybervalconspub',
+      bech32PrefixAccAddr: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER,
+      bech32PrefixAccPub: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}pub`,
+      bech32PrefixValAddr: CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
+      bech32PrefixValPub: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER}pub`,
+      bech32PrefixConsAddr: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valcons`,
+      bech32PrefixConsPub: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valconspub`,
     },
     currencies: [
       {

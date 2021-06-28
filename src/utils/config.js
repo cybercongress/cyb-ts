@@ -67,15 +67,15 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'boot',
   DENOM_CYBER_G: `GBOOT`,
-  CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
-  CYBER_NODE_URL_API: 'http://localhost:26657',
-  CYBER_NODE_URL_LCD: 'http://localhost:1317',
-  CYBER_INDEX_HTTPS: 'https://titan.cybernode.ai/graphql/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://titan.cybernode.ai/graphql/v1/graphql',
-  BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
-  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
+  CYBER_WEBSOCKET_URL: 'wss://rpc.bostromdev.cybernode.ai/websocket',
+  CYBER_NODE_URL_API: 'https://rpc.bostromdev.cybernode.ai',
+  CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
+  CYBER_INDEX_HTTPS: 'https://index.bostromdev.cybernode.ai/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://index.bostromdev.cybernode.ai/v1/graphql',
+  BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   // CHAIN_ID: 'bostromdev-1',
-  CHAIN_ID: 'dev',
+  CHAIN_ID: 'bostrom-testnet-1',
   MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
 };
 
@@ -131,11 +131,11 @@ const POCKET = {
   },
 };
 
-const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
-const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
+const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
-const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;

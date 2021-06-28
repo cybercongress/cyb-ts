@@ -248,7 +248,7 @@ class ValidatorsDetails extends React.PureComponent {
     } = this.state;
     const { match, mobile } = this.props;
     const { address } = match.params;
-    // console.log('validatorInfo', validatorInfo.consensus_pubkey);
+    console.log('validatorInfo', validatorInfo);
     let content;
 
     if (loader) {
