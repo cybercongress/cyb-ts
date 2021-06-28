@@ -11,7 +11,7 @@ function CyberLinkCount({ accountUser }) {
 
     const GET_CHARACTERS = gql`
    query cyberlink {
-    cyberlink_aggregate(where: {subject: {_eq: "${accountUser}"}}) {
+    cyberlinks_aggregate(where: {subject: {_eq: "${accountUser}"}}) {
       aggregate {
         count
       }
@@ -24,10 +24,10 @@ function CyberLinkCount({ accountUser }) {
       if (!loadingQ) {
         if (
           data &&
-          data.cyberlink_aggregate.aggregate.count &&
-          data.cyberlink_aggregate.aggregate.count > 0
+          data.cyberlinks_aggregate.aggregate.count &&
+          data.cyberlinks_aggregate.aggregate.count > 0
         ) {
-          setCount(data.cyberlink_aggregate.aggregate.count);
+          setCount(data.cyberlinks_aggregate.aggregate.count);
           setLoading(false);
         } else {
           setCount(0);

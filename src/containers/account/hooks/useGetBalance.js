@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
 import { coinDecimals, fromBech32 } from '../../../utils/utils';
+import { CYBER } from '../../../utils/config';
 
 const initValue = {
   available: 0,
@@ -68,7 +69,10 @@ function useGetBalance(address, updateAddress) {
               ),
             }));
           }
-          const dataValidatorAddress = fromBech32(address, 'cybervaloper');
+          const dataValidatorAddress = fromBech32(
+            address,
+            CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
+          );
           const resultGetDistribution = await jsCyber.validatorCommission(
             dataValidatorAddress
           );
@@ -91,6 +95,7 @@ function useGetBalance(address, updateAddress) {
         setLoadingBalanceInfo(false);
       } catch (e) {
         console.log(e);
+        setLoadingBalanceInfo(false);
         return {
           available: 0,
           delegations: 0,

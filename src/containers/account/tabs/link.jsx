@@ -21,21 +21,16 @@ import TableLink from '../component/tableLink';
 export default function GetLink({ accountUser }) {
   const GET_CHARACTERS = gql`
     query MyQuery {
-      cyberlink_aggregate(
-        where: {
-          subject: { _eq: "${accountUser}" }
-        }
-        order_by: { height: desc }
-        ) {
-        nodes {
-          timestamp
-          height
-          object_from
-          object_to
-          txhash
-        }
-      }
+      cyberlinks_aggregate(where: {subject: {_eq: "${accountUser}"}}, order_by: {height: desc}) {
+    nodes {
+      height
+      object_from
+      object_to
+      timestamp
+      transaction_hash
     }
+  }
+}
   `;
   const { loading, error, data: dataLink } = useQuery(GET_CHARACTERS);
   if (loading) {
@@ -45,5 +40,5 @@ export default function GetLink({ accountUser }) {
     return `Error! ${error.message}`;
   }
 
-  return <TableLink data={dataLink.cyberlink_aggregate.nodes} />;
+  return <TableLink data={dataLink.cyberlinks_aggregate.nodes} />;
 }

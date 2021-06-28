@@ -5,10 +5,10 @@ import { Loading, Dots } from '../../components';
 import { formatNumber } from '../../utils/utils';
 
 const GET_CHARACTERS = gql`
-  query tx {
+  query MyQuery {
     transaction_aggregate {
       aggregate {
-        count(columns: code)
+        count(columns: hash)
       }
     }
   }

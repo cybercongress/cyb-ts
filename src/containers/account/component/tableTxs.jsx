@@ -41,39 +41,36 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       display="flex"
       minHeight="48px"
       height="fit-content"
-      key={item.txhash}
+      key={item.hash}
     >
       <Table.TextCell flex={0.5} textAlign="center">
         <TextTable>
           <img
             style={{ width: '20px', height: '20px', marginRight: '5px' }}
-            src={item.code === 0 ? statusTrueImg : statusFalseImg}
+            src={item.success ? statusTrueImg : statusFalseImg}
             alt="statusImg"
           />
         </TextTable>
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler/tx/${item.txhash}`}>
-            {trimString(item.txhash, 6, 6)}
+          <Link to={`/network/euler/tx/${item.hash}`}>
+            {trimString(item.hash, 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>
       <Table.TextCell flex={1.3} textAlign="center">
-        <TextTable>
-          {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
-        </TextTable>
+        {item.height && <TextTable>{formatNumber(item.height)}</TextTable>}
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable display="flex" flexDirection="column">
           {item.messages.length > 4 ? (
             <Pane display="flex" alignItems="center">
               <MsgType
-                key={item.messages[0].txhash}
                 type={
-                  item.messages[0].type === 'cosmos-sdk/MsgSend'
+                  item.messages[0]['@type'].includes('MsgSend')
                     ? 'cosmos-sdk/MsgMultiSend'
-                    : item.messages[0].type
+                    : item.messages[0]['@type']
                 }
               />
               <div style={{ marginLeft: '5px', color: '#36d6ae' }}>
@@ -82,9 +79,9 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
             </Pane>
           ) : (
             item.messages.map((items, i) => {
-              let typeTx = items.type;
+              let typeTx = items['@type'];
               if (
-                typeTx === 'cosmos-sdk/MsgSend' &&
+                typeTx.includes('MsgSend') &&
                 items.value.to_address === accountUser
               ) {
                 typeTx = 'Receive';
@@ -97,33 +94,31 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       {amount && (
         <Table.TextCell textAlign="end">
           {item.messages.map((items, i) => (
-            <Tooltip
-              position="bottom"
-              key={i}
-              content={`${formatNumber(
-                Math.floor(items.value.amount.amount)
-              )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            // <Tooltip
+            //   position="bottom"
+            //   key={i}
+            //   content={`${formatNumber(
+            //     Math.floor(items.value.amount.amount)
+            //   )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            // >
+            <TextTable
+              color={
+                items['@type'].includes('MsgDelegate') ? '#4ed6ae' : '#f4516b'
+              }
             >
-              <TextTable
-                color={
-                  items.type === 'cosmos-sdk/MsgDelegate'
-                    ? '#4ed6ae'
-                    : '#f4516b'
-                }
-              >
-                {items.type === 'cosmos-sdk/MsgDelegate'
-                  ? `+ ${formatCurrency(
-                      items.value.amount.amount,
-                      CYBER.DENOM_CYBER.toUpperCase(),
-                      0
-                    )}`
-                  : `- ${formatCurrency(
-                      items.value.amount.amount,
-                      CYBER.DENOM_CYBER.toUpperCase(),
-                      0
-                    )}`}
-              </TextTable>
-            </Tooltip>
+              {items['@type'].includes('MsgDelegate')
+                ? `+ ${formatCurrency(
+                    items.amount.amount,
+                    CYBER.DENOM_CYBER.toUpperCase(),
+                    0
+                  )}`
+                : `- ${formatCurrency(
+                    items.amount.amount,
+                    CYBER.DENOM_CYBER.toUpperCase(),
+                    0
+                  )}`}
+            </TextTable>
+            // </Tooltip>
           ))}
         </Table.TextCell>
       )}

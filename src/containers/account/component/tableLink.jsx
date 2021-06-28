@@ -27,11 +27,15 @@ const TableLink = ({ data }) => {
   ]);
 
   const validatorRows = displayedPalettes.map((item, i) => (
-    <Table.Row borderBottom="none" display="flex" key={`${item.txhash}_${i}`}>
+    <Table.Row
+      borderBottom="none"
+      display="flex"
+      key={`${item.transaction_hash}_${i}`}
+    >
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler/tx/${item.txhash}`}>
-            {trimString(item.txhash, 6, 6)}
+          <Link to={`/network/euler/tx/${item.transaction_hash}`}>
+            {trimString(item.transaction_hash, 6, 6)}
           </Link>
         </TextTable>
       </Table.TextCell>
