@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { authAccounts } from '../../utils/search/utils';
 
+const MILLISECONDS_IN_SECOND = 1000;
+
 function useGetSlots(addressActive, updateAddress) {
   const [slotsData, setSlotsData] = useState([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
@@ -20,6 +22,7 @@ function useGetSlots(addressActive, updateAddress) {
           const {
             original_vesting: originalVesting,
           } = getAccount.result.value.base_vesting_account;
+          const { start_time: startTime } = getAccount.result.value;
 
           const balances = getCalculationBalance(originalVesting);
           if (balances.sboot) {
@@ -27,7 +30,7 @@ function useGetSlots(addressActive, updateAddress) {
           }
           setVested(sboot);
 
-          const dataVesting = getVestingPeriodsData(vestingPeriods);
+          const dataVesting = getVestingPeriodsData(vestingPeriods, startTime);
           setSlotsData(dataVesting);
           setLoadingAuthAccounts(false);
         }
@@ -51,13 +54,15 @@ function useGetSlots(addressActive, updateAddress) {
     return balances;
   };
 
-  const getVestingPeriodsData = (data) => {
+  const getVestingPeriodsData = (data, startTime) => {
     const tempData = [];
+    let length = parseFloat(startTime);
 
     if (data.length > 0) {
       data.forEach((item) => {
         const obj = {};
-        obj.length = item.length;
+        length += parseFloat(item.length);
+        obj.length = length * MILLISECONDS_IN_SECOND;
         item.amount.forEach((itemAmount) => {
           const amount = {};
           amount[itemAmount.denom] = parseFloat(itemAmount.amount);

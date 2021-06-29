@@ -37,15 +37,16 @@ const NumberCurrency = ({
 };
 
 const TableSlots = ({ data }) => {
-  let validatorRows = [];
+  let slotRows = [];
 
   if (data.length > 0) {
-    validatorRows = data.map((item, i) => (
+    slotRows = data.map((item, i) => (
       <Table.Row borderBottom="none" display="flex" key={i}>
-        <Table.TextCell textAlign="end">
+        <Table.TextCell textAlign="center">
           <TextTable>
             {/* {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')} */}
-            {item.length}
+            {/* {item.length} */}
+            {dateFormat(new Date(item.length), 'dd/mm/yyyy, HH:MM:ss')}
           </TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
@@ -97,7 +98,7 @@ const TableSlots = ({ data }) => {
             </TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
-            <TextTable>amount</TextTable>
+            <TextTable>vested</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>resource</TextTable>
@@ -110,11 +111,7 @@ const TableSlots = ({ data }) => {
             padding: 7,
           }}
         >
-          {validatorRows.length > 0 ? (
-            validatorRows
-          ) : (
-            <NoItems text="No Slots" />
-          )}
+          {slotRows.length > 0 ? slotRows : <NoItems text="No Slots" />}
         </Table.Body>
       </Table>
     </div>
