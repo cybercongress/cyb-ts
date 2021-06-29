@@ -192,9 +192,7 @@ function Validators({ mobile, defaultAccount }) {
 
   return (
     <div>
-      <main className="block-body">
-        <TextBoard />
-
+      <main className="block-body" style={{ paddingTop: 50 }}>
         <TabBtnList selected={selected} countHeroes={countHeroes} />
 
         <TableHeroes mobile={mobile} showJailed={selected === 'jailed'}>
