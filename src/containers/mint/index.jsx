@@ -11,6 +11,7 @@ import {
   formatNumber,
   getDecimal,
   formatCurrencyNumber,
+  formatCurrency,
 } from '../../utils/utils';
 import { authAccounts } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
@@ -18,12 +19,15 @@ import { AppContext } from '../../context';
 import ERatio from './eRatio';
 import { useGetBalance } from '../account/hooks';
 import { Dots } from '../../components';
+import useGetSlots from './useGetSlots';
+import TableSlots from './table';
 
 const INIT_STAGE = 0;
 const TSX_SEND = 1;
 
 const BASE_VESTING_AMOUNT = 10000000;
-const BASE_VESTING_TIME = 3600;
+const BASE_VESTING_TIME = 86400;
+const VESTING_TIME_HOURS = 3600;
 
 const grid = {
   display: 'grid',
@@ -48,19 +52,19 @@ function Mint({ defaultAccount }) {
   const { keplr, jsCyber } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
-  const { balance, loadingBalanceInfo } = useGetBalance(
+  const { balance } = useGetBalance(addressActive, updateAddress);
+  const { slotsData, vested, loadingAuthAccounts } = useGetSlots(
     addressActive,
     updateAddress
   );
-  const [selected, setSelected] = useState('amper');
+  const [selected, setSelected] = useState('volt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(1);
   const [eRatio, setERatio] = useState(0);
-  const [vested, setVested] = useState(0);
   const [hashTx, setHashTx] = useState('');
-  const [dataVestingPeriods, setDataVestingPeriods] = useState([]);
   const [stage, setStage] = useState(INIT_STAGE);
+  const [resourceToken, setResourceToken] = useState(0);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -79,7 +83,7 @@ function Mint({ defaultAccount }) {
 
   useEffect(() => {
     if (balance.delegation > 0) {
-      const maxValue = Math.floor(balance.delegation / BASE_VESTING_AMOUNT);
+      const maxValue = Math.floor(balance.delegation);
       if (maxValue > 0) {
         setMax(maxValue);
       }
@@ -87,31 +91,20 @@ function Mint({ defaultAccount }) {
   }, [balance]);
 
   useEffect(() => {
-    const getAuth = async () => {
-      if (keplr !== null && addressActive !== null) {
-        const getAccount = await authAccounts(addressActive);
-        if (getAccount !== null && getAccount.result.value.vesting_periods) {
-          const balances = {};
-          if (
-            Object.keys(
-              getAccount.result.value.base_vesting_account.original_vesting
-            ).length > 0
-          ) {
-            getAccount.result.value.base_vesting_account.original_vesting.forEach(
-              (item) => {
-                balances[item.denom] = parseFloat(item.amount);
-              }
-            );
-          }
-          if (balances.sboot) {
-            setVested(balances.sboot);
-          }
-          // setDataVestingPeriods(getAccount.result.value.vesting_periods);
-        }
-      }
-    };
-    getAuth();
-  }, [keplr, updateAddress, addressActive]);
+    if (balance.total > 0) {
+      const eRatioTemp = Math.floor((balance.available / balance.total) * 100);
+      setERatio(eRatioTemp);
+    }
+  }, [balance]);
+
+  useEffect(() => {
+    const sboot = value;
+    const vestingTime = valueDays * VESTING_TIME_HOURS;
+    const token = Math.floor(
+      (sboot / BASE_VESTING_AMOUNT) * (vestingTime / BASE_VESTING_TIME)
+    );
+    setResourceToken(token);
+  }, [value, valueDays]);
 
   const convert = async () => {
     if (keplr !== null) {
@@ -121,7 +114,7 @@ function Mint({ defaultAccount }) {
         address,
         coin(parseFloat(BASE_VESTING_AMOUNT * value), 'sboot'),
         selected,
-        parseFloat(BASE_VESTING_TIME * valueDays)
+        parseFloat(VESTING_TIME_HOURS * valueDays)
       );
       setHashTx(response.transactionHash);
       setUpdateAddress((item) => item + 1);
@@ -160,20 +153,19 @@ function Mint({ defaultAccount }) {
       </div>
       <Tablist
         display="grid"
-        gridTemplateColumns="150px 150px 150px"
+        gridTemplateColumns="150px 150px"
         gridGap="8px"
         justifyContent="center"
       >
-        <Btn text="Cron" className="disabled-Btn-Mint" />
-        <Btn
-          text="Amper"
-          checkedSwitch={selected === 'amper'}
-          onSelect={() => setSelected('amper')}
-        />
         <Btn
           text="Volt"
           checkedSwitch={selected === 'volt'}
           onSelect={() => setSelected('volt')}
+        />
+        <Btn
+          text="Amper"
+          checkedSwitch={selected === 'amper'}
+          onSelect={() => setSelected('amper')}
         />
       </Tablist>
       <div style={grid}>
@@ -185,7 +177,10 @@ function Mint({ defaultAccount }) {
           }}
         >
           <ItemBalance text="Liquid balance" amount={balance.available} />
-          <ItemBalance text="Vested Balance" amount={vested} />
+          <ItemBalance
+            text="Vested Balance"
+            amount={loadingAuthAccounts ? null : vested}
+          />
           <ItemBalance text="Staked balance" amount={balance.delegation} />
         </div>
         <div
@@ -198,16 +193,13 @@ function Mint({ defaultAccount }) {
             padding: '0 10px',
           }}
         >
-          <Pane fontSize="30px">{value}</Pane>
+          <Pane fontSize="30px">{resourceToken}</Pane>
           <Slider
             value={value}
             min={0}
             max={max}
             marks={{
-              [max / 4]: returnColorDot('25%'),
-              [max / 2]: returnColorDot('50%'),
-              [max / 1.3333333]: returnColorDot('75%'),
-              [max]: returnColorDot('100%'),
+              [max]: returnColorDot(`${formatCurrency(max, 'boot')}`),
             }}
             onChange={(eValue) => setValue(eValue)}
             trackStyle={{ backgroundColor: '#3ab793' }}
@@ -225,6 +217,7 @@ function Mint({ defaultAccount }) {
               backgroundColor: '#3ab793',
             }}
           />
+
           <Slider
             value={valueDays}
             min={1}
@@ -261,34 +254,21 @@ function Mint({ defaultAccount }) {
               fontSize: '17px',
             }}
           >
-            You’re minting investing {formatNumber(value * BASE_VESTING_AMOUNT)}{' '}
-            SBOOT for {valueDays} hour. This operation will mint {value}{' '}
-            {selected} to your account. In the end of period you will be able to
-            make your {selected} liquid, but you can use it for boost ranking
-            duriung vesintg period
+            You’re minting investing {formatNumber(value)} SBOOT for {valueDays}{' '}
+            hour. This operation will mint {resourceToken} {selected} to your
+            account. In the end of period you will be able to make your{' '}
+            {selected} liquid, but you can use it for boost ranking duriung
+            vesintg period
           </div>
         )}
       </div>
-      <div style={{ paddingTop: 50, textAlign: 'center' }}>
-        <Button disabled={value === 0} onClick={convert}>
+      <div style={{ paddingTop: 50, textAlign: 'center', marginBottom: 100 }}>
+        <Button disabled={resourceToken === 0} onClick={convert}>
           {stage === INIT_STAGE && 'Submit'}
           {stage === TSX_SEND && <Dots />}
         </Button>
       </div>
-      {/* <Pane marginTop={50}>
-        {dataVestingPeriods.map((item) => {
-          return (
-            <Pane display="grid" gridTemplateColumns="1fr 1fr">
-              {item.amount.map((itemA) => (
-                <Pane>
-                  {itemA.amount}
-                  {itemA.denom}
-                </Pane>
-              ))}
-            </Pane>
-          );
-        })}
-      </Pane> */}
+      {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
     </main>
   );
 }

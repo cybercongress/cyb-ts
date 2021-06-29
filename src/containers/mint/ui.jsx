@@ -6,6 +6,7 @@ import {
   getDecimal,
   formatCurrencyNumber,
 } from '../../utils/utils';
+import { Dots } from '../../components';
 
 const Btn = ({ onSelect, checkedSwitch, text, disabledBtn, ...props }) => (
   <Tab
@@ -28,6 +29,7 @@ const Btn = ({ onSelect, checkedSwitch, text, disabledBtn, ...props }) => (
 const FormatNumber = ({
   number,
   fontSizeDecimal,
+  fontSizeNumber,
   currency = 'BOOT',
   ...props
 }) => {
@@ -37,7 +39,7 @@ const FormatNumber = ({
   return (
     <Pane display="flex" alignItems="baseline" {...props}>
       <Pane display="flex" alignItems="baseline" marginRight={5}>
-        <span style={{ fontSize: '20px' }}>
+        <span style={{ fontSize: `${fontSizeNumber || 20}px` }}>
           {formatNumber(Math.floor(formatNumberCurrency.number))}
         </span>
         {decimal > 0 && (
@@ -60,7 +62,7 @@ const ItemBalance = ({ text, amount }) => {
       <Pane color="#979797" fontSize="16px">
         {text}
       </Pane>
-      <FormatNumber number={amount} />
+      {amount === null ? <Dots /> : <FormatNumber number={amount} />}
     </Pane>
   );
 };
