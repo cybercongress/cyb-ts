@@ -81,7 +81,7 @@ const MsgType = ({ type }) => {
     );
   }
 
-  if (type.includes('MsgWithdrawDelegationReward')) {
+  if (type.includes('MsgWithdrawDelegatorReward')) {
     return <ContainerTitle img={distribution}>Withdraw Reward</ContainerTitle>;
   }
   if (type.includes('MsgModifyWithdrawAddress')) {
