@@ -258,7 +258,10 @@ class Wallet extends React.Component {
     if (defaultAccounts !== null && defaultAccounts.cyber) {
       const response = await getAccountBandwidth(defaultAccounts.cyber.bech32);
       if (response !== null) {
-        const { remained, max_value: maxValue } = response;
+        const {
+          remained_value: remained,
+          max_value: maxValue,
+        } = response.account_bandwidth;
         setBandwidthProps(remained, maxValue);
       }
     }
