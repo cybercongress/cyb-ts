@@ -21,16 +21,16 @@ function TabBtnList({ slotsData = 0, selected }) {
         }
       />
       <TabBtn
-        key="Solds"
-        isSelected={selected === 'solds'}
-        to="/mint/solds"
+        key="Slots"
+        isSelected={selected === 'slots'}
+        to="/mint/slots"
         text={
           <Pane display="flex" alignItems="center">
             <Pane>Solds</Pane>
             <PillNumber
               marginLeft={5}
               height="20px"
-              active={selected === 'solds'}
+              active={selected === 'slots'}
             >
               {slotsData}
             </PillNumber>
