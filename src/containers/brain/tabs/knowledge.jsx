@@ -21,7 +21,7 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount, inlfation }) {
 
         <CardStatisics title="Subjects" value={<AccountCount />} />
 
-        <Link to="/network/euler/tx">
+        <Link to="/network/bostrom/tx">
           <CardStatisics title="Transactions" value={<Txs />} link />
         </Link>
         <CardStatisics

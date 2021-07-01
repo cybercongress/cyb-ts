@@ -264,7 +264,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           display="flex"
           flexDirection="column"
         >
-          <Link to={`/network/euler/contract/${creator.address}`}>
+          <Link to={`/network/bostrom/contract/${creator.address}`}>
             <Pane
               alignItems="center"
               marginX="auto"

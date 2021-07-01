@@ -236,7 +236,7 @@ const CYBNetworkInfo = ({
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
-          <Link to={`/network/euler/contract/${address.bech32}`}>
+          <Link to={`/network/bostrom/contract/${address.bech32}`}>
             <div>{trimString(address.bech32, 9, 3)}</div>
           </Link>
         }
@@ -314,7 +314,7 @@ const EULnetworkInfo = ({
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
-          <Link to={`/network/euler/contract/${address.bech32}`}>
+          <Link to={`/network/bostrom/contract/${address.bech32}`}>
             <div>{trimString(address.bech32, 9, 3)}</div>
           </Link>
         }

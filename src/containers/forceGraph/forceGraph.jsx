@@ -115,7 +115,7 @@ const ForceGraph = ({ match }) => {
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(`https://cyber.page/network/euler/tx/${link.name}`, '_blank');
+      window.open(`https://cyber.page/network/bostrom/tx/${link.name}`, '_blank');
     },
     [fgRef]
   );

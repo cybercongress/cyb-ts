@@ -216,7 +216,7 @@ function TweetCard({
       <PocketCard display="flex" alignItems="flex-start" {...props}>
         <Text fontSize="16px" color="#fff">
           You can start{' '}
-          <Link to={`/network/euler/contract/${account}`}>tweet</Link> right
+          <Link to={`/network/bostrom/contract/${account}`}>tweet</Link> right
           now. But adding avatar will let others recognize your content
         </Text>
       </PocketCard>
@@ -280,7 +280,7 @@ function TweetCard({
         </Link>
         <Link
           style={{ margin: '0 10px' }}
-          to={`/network/euler/contract/${account}`}
+          to={`/network/bostrom/contract/${account}`}
         >
           <Pane alignItems="center" display="flex" flexDirection="column">
             <Pane fontSize="20px">{formatNumber(myTweet.count)}</Pane>
@@ -289,7 +289,7 @@ function TweetCard({
         </Link>
         <Link
           style={{ margin: '0 10px' }}
-          to={`/network/euler/contract/${account}/follows`}
+          to={`/network/bostrom/contract/${account}/follows`}
         >
           <Pane
             marginX={10}

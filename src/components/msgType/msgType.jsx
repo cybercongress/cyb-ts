@@ -9,6 +9,7 @@ const stake = require('../../image/stake.svg');
 const gov = require('../../image/gov.svg');
 const distribution = require('../../image/distribution.svg');
 const slashing = require('../../image/slashing.svg');
+const investmint = require('../../image/swap-horizontal.svg');
 
 const ContainerTitle = ({ img, children }) => (
   <Pane display="flex" alignItems="center">
@@ -31,6 +32,17 @@ const MsgType = ({ type }) => {
   if (type.includes('Link')) {
     return <ContainerTitle img={link}>Link</ContainerTitle>;
   }
+
+  if (type.includes('MsgCyberlink')) {
+    return <ContainerTitle img={link}>Link</ContainerTitle>;
+  }
+
+  // investmint
+
+  if (type.includes('MsgInvestmint')) {
+    return <ContainerTitle img={investmint}>Investmint</ContainerTitle>;
+  }
+
   // bank
 
   if (type.includes('MsgSend')) {

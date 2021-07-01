@@ -942,6 +942,19 @@ export const getParamInlfation = async () => {
   }
 };
 
+export const getParamEnergy = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/energy/v1beta1/resources/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getParamNetwork = async (address, node) => {
   try {
     let staking = null;
@@ -951,36 +964,49 @@ export const getParamNetwork = async (address, node) => {
     let gov = null;
     let rank = null;
     let inlfation = null;
+    let energy = null;
 
     const dataStaking = await getParamStaking();
+    console.log(`dataStaking`, dataStaking)
     if (dataStaking !== null) {
       staking = dataStaking;
     }
     const dataSlashing = await getParamSlashing();
+    console.log(`dataSlashing`, dataSlashing)
     if (dataSlashing !== null) {
       slashing = dataSlashing;
     }
     const dataDistribution = await getParamDistribution();
+    console.log(`dataDistribution`, dataDistribution)
     if (dataDistribution !== null) {
       distribution = dataDistribution;
     }
     const dataGov = await getParamGov();
+    console.log(`dataGov`, dataGov)
     if (dataGov !== null) {
       gov = dataGov;
     }
     const dataBandwidth = await getParamBandwidth();
+    console.log(`dataBandwidth`, dataBandwidth)
     if (dataBandwidth !== null) {
       bandwidth = dataBandwidth;
     }
 
     const dataRank = await getParamRank();
+    console.log(`dataRank`, dataRank)
     if (dataRank !== null) {
       rank = dataRank;
     }
 
     const dataInlfation = await getParamInlfation();
+    console.log(`dataInlfation`, dataInlfation)
     if (dataInlfation !== null) {
       inlfation = dataInlfation;
+    }
+
+    const dataEnergy = await getParamEnergy();
+    if (dataEnergy !== null) {
+      energy = dataEnergy;
     }
 
     const response = {
@@ -991,6 +1017,7 @@ export const getParamNetwork = async (address, node) => {
       gov,
       rank,
       inlfation,
+      energy,
     };
 
     return response;

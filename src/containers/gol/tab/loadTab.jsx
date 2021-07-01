@@ -33,7 +33,7 @@ function LoadTab({ data }) {
     >
       <Table.TextCell flex={2}>
         <TextTable>
-          <Link to={`/network/euler/contract/${item[0]}`}>{item[0]}</Link>
+          <Link to={`/network/bostrom/contract/${item[0]}`}>{item[0]}</Link>
         </TextTable>
       </Table.TextCell>
       <Table.TextCell flex={0.5} textAlign="end">

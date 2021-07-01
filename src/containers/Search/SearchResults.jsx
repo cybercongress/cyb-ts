@@ -159,7 +159,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         alignItems="center"
         marginBottom="10px"
       >
-        <Link className="SearchItem" to={`/network/euler/contract/${query}`}>
+        <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN_CYBER`}
             text="Explore details of contract"
@@ -180,7 +180,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         alignItems="center"
         marginBottom="10px"
       >
-        <Link className="SearchItem" to={`/network/euler/hero/${query}`}>
+        <Link className="SearchItem" to={`/network/bostrom/hero/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN_CYBER_VALOPER`}
             text="Explore details of hero"
@@ -201,7 +201,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         alignItems="center"
         marginBottom="10px"
       >
-        <Link className="SearchItem" to={`/network/euler/tx/${query}`}>
+        <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN_TX`}
             text="Explore details of tx "
@@ -222,7 +222,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         alignItems="center"
         marginBottom="10px"
       >
-        <Link className="SearchItem" to={`/network/euler/block/${query}`}>
+        <Link className="SearchItem" to={`/network/bostrom/block/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN_BLOCK`}
             text="Explore details of block "

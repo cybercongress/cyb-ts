@@ -44,7 +44,7 @@ function AvatarIpfs({
   };
 
   return (
-    <Link to={`/network/euler/contract/${addressCyber}`}>
+    <Link to={`/network/bostrom/contract/${addressCyber}`}>
       <Pane display="flex" flexDirection="column" alignItems="center">
         <img
           style={{

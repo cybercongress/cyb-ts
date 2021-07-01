@@ -79,17 +79,23 @@ function Validators({ mobile, defaultAccount }) {
   }, [jsCyber]);
 
   useEffect(() => {
-    const feachDelegatorDelegations = async () => {
-      let delegationsDataTemp = [];
-      if (addressPocket !== null && jsCyber !== null) {
-        const responseDelegatorDelegations = await jsCyber.delegatorDelegations(
-          addressPocket.bech32
-        );
-        delegationsDataTemp = responseDelegatorDelegations.delegationResponses;
-      }
-      setDelegationsData(delegationsDataTemp);
-    };
-    feachDelegatorDelegations();
+    try {
+      const feachDelegatorDelegations = async () => {
+        let delegationsDataTemp = [];
+        if (addressPocket !== null && jsCyber !== null) {
+          const responseDelegatorDelegations = await jsCyber.delegatorDelegations(
+            addressPocket.bech32
+          );
+          delegationsDataTemp =
+            responseDelegatorDelegations.delegationResponses;
+        }
+        setDelegationsData(delegationsDataTemp);
+      };
+      feachDelegatorDelegations();
+    } catch (e) {
+      console.log(`e`, e);
+      setDelegationsData([]);
+    }
   }, [addressPocket, jsCyber, updatePage]);
 
   useEffect(() => {

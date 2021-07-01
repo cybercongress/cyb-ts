@@ -34,7 +34,7 @@ const TableLink = ({ data }) => {
     >
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler/tx/${item.transaction_hash}`}>
+          <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
             {trimString(item.transaction_hash, 6, 6)}
           </Link>
         </TextTable>

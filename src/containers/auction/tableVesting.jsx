@@ -52,7 +52,7 @@ const TableVesting = ({ data }) => {
           {item.proof.indexOf(DEFAULT_PROOF) !== -1 ? (
             DEFAULT_PROOF.toUpperCase()
           ) : (
-            <Link to={`/network/euler/tx/${item.proof.toUpperCase()}`}>
+            <Link to={`/network/bostrom/tx/${item.proof.toUpperCase()}`}>
               {trimString(item.proof.toUpperCase(), 6, 6)}
             </Link>
           )}

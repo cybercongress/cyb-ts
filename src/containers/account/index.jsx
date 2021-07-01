@@ -156,7 +156,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     } else {
       content = (
         <Route
-          path="/network/euler/contract/:address/heroes"
+          path="/network/bostrom/contract/:address/heroes"
           render={() => <Heroes data={staking} />}
         />
       );
@@ -178,7 +178,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   if (selected === 'txs') {
     content = (
       <Route
-        path="/network/euler/contract/:address/txs"
+        path="/network/bostrom/contract/:address/txs"
         render={() => <GetTxs accountUser={address} />}
       />
     );
@@ -187,7 +187,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   if (selected === 'gol') {
     content = (
       <Route
-        path="/network/euler/contract/:address/gol"
+        path="/network/bostrom/contract/:address/gol"
         render={() => <TableDiscipline address={address} />}
       />
     );
@@ -196,7 +196,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   if (selected === 'tweets') {
     content = (
       <Route
-        path="/network/euler/contract/:address"
+        path="/network/bostrom/contract/:address"
         render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
       />
     );
@@ -206,7 +206,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   if (selected === 'community') {
     content = (
       <Route
-        path="/network/euler/contract/:address/community"
+        path="/network/bostrom/contract/:address/community"
         render={() => <FollowsTab node={node} community={community} />}
       />
     );
@@ -255,37 +255,37 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           <TabBtn
             text="Heroes"
             isSelected={selected === 'heroes'}
-            to={`/network/euler/contract/${address}/heroes`}
+            to={`/network/bostrom/contract/${address}/heroes`}
           />
           <TabBtn
             text="Wallet"
             isSelected={selected === 'wallet'}
-            to={`/network/euler/contract/${address}/wallet`}
+            to={`/network/bostrom/contract/${address}/wallet`}
           />
           <TabBtn
             text="Cyberlinks"
             isSelected={selected === 'cyberlink'}
-            to={`/network/euler/contract/${address}/cyberlink`}
+            to={`/network/bostrom/contract/${address}/cyberlink`}
           />
           <TabBtn
             text="Tweets"
             isSelected={selected === 'tweets'}
-            to={`/network/euler/contract/${address}`}
+            to={`/network/bostrom/contract/${address}`}
           />
           <TabBtn
             text="Community"
             isSelected={selected === 'community'}
-            to={`/network/euler/contract/${address}/community`}
+            to={`/network/bostrom/contract/${address}/community`}
           />
           <TabBtn
             text="Txs"
             isSelected={selected === 'txs'}
-            to={`/network/euler/contract/${address}/txs`}
+            to={`/network/bostrom/contract/${address}/txs`}
           />
           <TabBtn
             text="GoL"
             isSelected={selected === 'gol'}
-            to={`/network/euler/contract/${address}/gol`}
+            to={`/network/bostrom/contract/${address}/gol`}
           />
         </Tablist>
         <Pane

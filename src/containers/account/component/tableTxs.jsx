@@ -54,7 +54,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       </Table.TextCell>
       <Table.TextCell textAlign="center">
         <TextTable>
-          <Link to={`/network/euler/tx/${item.hash}`}>
+          <Link to={`/network/bostrom/tx/${item.hash}`}>
             {trimString(item.hash, 6, 6)}
           </Link>
         </TextTable>
@@ -63,33 +63,35 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
         {item.height && <TextTable>{formatNumber(item.height)}</TextTable>}
       </Table.TextCell>
       <Table.TextCell textAlign="center">
-        <TextTable display="flex" flexDirection="column">
-          {item.messages.length > 4 ? (
-            <Pane display="flex" alignItems="center">
-              <MsgType
-                type={
-                  item.messages[0]['@type'].includes('MsgSend')
-                    ? 'cosmos-sdk/MsgMultiSend'
-                    : item.messages[0]['@type']
+        {item.messages && (
+          <TextTable display="flex" flexDirection="column">
+            {item.messages.length > 4 ? (
+              <Pane display="flex" alignItems="center">
+                <MsgType
+                  type={
+                    item.messages[0]['@type'].includes('MsgSend')
+                      ? 'cosmos-sdk/MsgMultiSend'
+                      : item.messages[0]['@type']
+                  }
+                />
+                <div style={{ marginLeft: '5px', color: '#36d6ae' }}>
+                  +{item.messages.length}
+                </div>
+              </Pane>
+            ) : (
+              item.messages.map((items, i) => {
+                let typeTx = items['@type'];
+                if (
+                  typeTx.includes('MsgSend') &&
+                  items.to_address === accountUser
+                ) {
+                  typeTx = 'Receive';
                 }
-              />
-              <div style={{ marginLeft: '5px', color: '#36d6ae' }}>
-                +{item.messages.length}
-              </div>
-            </Pane>
-          ) : (
-            item.messages.map((items, i) => {
-              let typeTx = items['@type'];
-              if (
-                typeTx.includes('MsgSend') &&
-                items.value.to_address === accountUser
-              ) {
-                typeTx = 'Receive';
-              }
-              return <MsgType key={i} type={typeTx} />;
-            })
-          )}
-        </TextTable>
+                return <MsgType key={i} type={typeTx} />;
+              })
+            )}
+          </TextTable>
+        )}
       </Table.TextCell>
       {amount && (
         <Table.TextCell textAlign="end">
@@ -144,10 +146,10 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
         </Table.TextHeaderCell>
         <Table.TextHeaderCell flex={1.3} textAlign="center">
           <TextTable>
-            timestamp{' '}
-            <Tooltip content="UTC" position="bottom">
+            height{' '}
+            {/* <Tooltip content="UTC" position="bottom">
               <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-            </Tooltip>
+            </Tooltip> */}
           </TextTable>
         </Table.TextHeaderCell>
         <Table.TextHeaderCell textAlign="center">
