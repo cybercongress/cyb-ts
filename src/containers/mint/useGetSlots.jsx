@@ -33,6 +33,10 @@ function useGetSlots(addressActive, updateAddress) {
           const dataVesting = getVestingPeriodsData(vestingPeriods, startTime);
           setSlotsData(dataVesting);
           setLoadingAuthAccounts(false);
+        } else {
+          setVested(0);
+          setLoadingAuthAccounts(false);
+          setSlotsData([]);
         }
       } else {
         setVested(0);
@@ -62,7 +66,14 @@ function useGetSlots(addressActive, updateAddress) {
       data.forEach((item) => {
         const obj = {};
         length += parseFloat(item.length);
+        const lengthMs = length * MILLISECONDS_IN_SECOND;
         obj.length = length * MILLISECONDS_IN_SECOND;
+        if (lengthMs < Date.parse(new Date())) {
+          obj.status = 'closed';
+        } else {
+          obj.status = 'active';
+        }
+        // obj.status = 'empty';
         item.amount.forEach((itemAmount) => {
           const amount = {};
           amount[itemAmount.denom] = parseFloat(itemAmount.amount);

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Tab, Pane } from '@cybercongress/gravity';
+import { Tab, Pane, Pill, Text } from '@cybercongress/gravity';
 import {
   trimString,
   formatNumber,
   getDecimal,
   formatCurrencyNumber,
 } from '../../utils/utils';
-import { Dots } from '../../components';
+import { Dots, Tooltip } from '../../components';
 
 const Btn = ({ onSelect, checkedSwitch, text, disabledBtn, ...props }) => (
   <Tab
@@ -67,4 +67,47 @@ const ItemBalance = ({ text, amount }) => {
   );
 };
 
-export { Btn, FormatNumber, ItemBalance };
+const StatusTooltip = ({ status }) => {
+  let statusColor;
+
+  switch (status) {
+    case 'empty':
+      statusColor = 'red';
+      break;
+    case 'closed':
+      statusColor = 'yellow';
+      break;
+    case 'active':
+      statusColor = 'green';
+      break;
+    default:
+      statusColor = 'neutral';
+      break;
+  }
+
+  return (
+    <Pane marginRight={10} display="flex" alignItems="center">
+      <Tooltip
+        placement="right"
+        tooltip={
+          <Pane display="flex" alignItems="center" paddingX={10} paddingY={10}>
+            Slot status:&nbsp; {status}
+          </Pane>
+        }
+      >
+        <Pill
+          height={7}
+          width={7}
+          borderRadius="50%"
+          paddingX={4}
+          paddingY={0}
+          // marginX={20}
+          isSolid
+          color={statusColor}
+        />
+      </Tooltip>
+    </Pane>
+  );
+};
+
+export { Btn, FormatNumber, ItemBalance, StatusTooltip };

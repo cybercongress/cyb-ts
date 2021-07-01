@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { trimString, formatNumber } from '../../utils/utils';
 import { NoItems, Dots, TextTable } from '../../components';
-import { FormatNumber } from './ui';
+import { FormatNumber, StatusTooltip } from './ui';
 
 const dateFormat = require('dateformat');
 
@@ -20,7 +20,6 @@ const NumberCurrency = ({
   currencyNetwork,
   ...props
 }) => {
-  const number = formatNumber(amount);
   return (
     <Pane
       display="grid"
@@ -29,19 +28,31 @@ const NumberCurrency = ({
       {...props}
     >
       <Pane whiteSpace="nowrap" display="flex" alignItems="center">
-        <span>{formatNumber(Math.floor(number))}</span>
+        <span>{formatNumber(Math.floor(amount))}</span>
       </Pane>
       <div style={{ textAlign: 'start' }}>{currencyNetwork.toUpperCase()}</div>
     </Pane>
   );
 };
 
-const TableSlots = ({ data }) => {
+const TableSlots = ({ data, mobile }) => {
   let slotRows = [];
 
   if (data.length > 0) {
     slotRows = data.map((item, i) => (
       <Table.Row borderBottom="none" display="flex" key={i}>
+        <Table.TextCell
+          paddingX={5}
+          textAlign="start"
+          flexBasis={mobile ? 30 : 60}
+          flex="none"
+          isNumber
+        >
+          <TextTable>
+            {item.status && <StatusTooltip status={item.status} />}
+            <TextTable>{i + 1}</TextTable>
+          </TextTable>
+        </Table.TextCell>
         <Table.TextCell textAlign="center">
           <TextTable>
             {/* {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')} */}
@@ -89,6 +100,14 @@ const TableSlots = ({ data }) => {
             paddingBottom: '10px',
           }}
         >
+          <Table.TextHeaderCell
+            paddingX={5}
+            textAlign="center"
+            flexBasis={mobile ? 30 : 60}
+            flex="none"
+          >
+            <TextTable fontSize={14}>#</TextTable>
+          </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>
               timestamp{' '}
