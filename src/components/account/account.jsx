@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getValidatorsInfo } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import { Dots } from '../ui/Dots';
+import { CYBER } from '../../utils/config';
 
 class Account extends React.Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class Account extends React.Component {
   componentDidMount() {
     const { address } = this.props;
     if (address) {
-      if (address.includes('cybervaloper')) {
+      if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
         this.updateAccount();
       } else {
         this.setState({
