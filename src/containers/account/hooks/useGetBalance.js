@@ -11,10 +11,18 @@ const initValue = {
   total: 0,
 };
 
+const initValueToken = {
+  sboot: 0,
+  amper: 0,
+  volt: 0,
+};
+
 function useGetBalance(address, updateAddress) {
   const { jsCyber } = useContext(AppContext);
   const [loadingBalanceInfo, setLoadingBalanceInfo] = useState(true);
+  const [loadingBalanceToken, setLoadingBalanceToken] = useState(true);
   const [balance, setBalance] = useState(initValue);
+  const [balanceToken, setBalanceToken] = useState(initValueToken);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -107,7 +115,43 @@ function useGetBalance(address, updateAddress) {
     getBalance();
   }, [jsCyber, address, updateAddress]);
 
-  return { balance, loadingBalanceInfo };
+  useEffect(() => {
+    const getBalance = async () => {
+      try {
+        if (jsCyber !== null && address !== null) {
+          setBalanceToken(initValueToken);
+          setLoadingBalanceToken(true);
+          const getAllBalancesPromise = await jsCyber.getAllBalances(address);
+          const balancesToken = getCalculationBalance(getAllBalancesPromise);
+          setBalanceToken((item) => ({ ...item, ...balancesToken }));
+          setLoadingBalanceToken(false);
+        } else {
+          setBalance(initValueToken);
+          setLoadingBalanceToken(false);
+        }
+      } catch (e) {
+        console.log(e);
+        setLoadingBalanceToken(false);
+        return {
+          ...initValueToken,
+        };
+      }
+    };
+    getBalance();
+  }, [jsCyber, address, updateAddress]);
+
+  const getCalculationBalance = (data) => {
+    const balances = {};
+    if (Object.keys(data).length > 0) {
+      data.forEach((item) => {
+        balances[item.denom] = parseFloat(item.amount);
+      });
+    }
+
+    return balances;
+  };
+
+  return { balance, loadingBalanceInfo, balanceToken, loadingBalanceToken };
 }
 
 export default useGetBalance;

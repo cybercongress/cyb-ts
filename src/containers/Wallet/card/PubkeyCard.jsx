@@ -25,6 +25,7 @@ import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
+import { ValueImg } from '../../energy/ui';
 
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -87,7 +88,7 @@ const DetailsBalance = ({
       <RowBalance>
         {currency === CYBER.DENOM_CYBER ? (
           <>
-            <Link to={`network/euler/contract/${address}/heroes`}>
+            <Link to={`network/bostrom/contract/${address}/heroes`}>
               <div>unstaking</div>
             </Link>
             <NumberCurrency
@@ -111,7 +112,7 @@ const DetailsBalance = ({
       <RowBalance>
         {currency === CYBER.DENOM_CYBER ? (
           <>
-            <Link to={`network/euler/contract/${address}/heroes`}>
+            <Link to={`network/bostrom/contract/${address}/heroes`}>
               <div>rewards</div>
             </Link>
             <NumberCurrency amount={total.rewards} currencyNetwork={currency} />
@@ -137,6 +138,7 @@ const NumberCurrency = ({
   amount,
   fontSizeDecimal,
   currencyNetwork = CYBER.DENOM_CYBER,
+  currencyNetworkG = 'G',
   ...props
 }) => {
   const number = formatNumber(amount / CYBER.DIVISOR_CYBER_G, 3);
@@ -153,7 +155,10 @@ const NumberCurrency = ({
           {getDecimal(number)}
         </div>
       </Pane>
-      <div>G{currencyNetwork.toUpperCase()}</div>
+      <div>
+        {currencyNetworkG}
+        {currencyNetwork.toUpperCase()}
+      </div>
     </Pane>
   );
 };
@@ -305,6 +310,7 @@ const EULnetworkInfo = ({
   openEul,
   onClickDeleteAddress,
   network,
+  balanceToken,
   ...props
 }) => {
   return (
@@ -345,6 +351,61 @@ const EULnetworkInfo = ({
                 paddingLeft={15}
               />
             )}
+
+            <RowBalance
+              {...props}
+              justifyContent="flex-end"
+              className="cosmos-address-balance"
+            >
+              <NumberCurrency
+                amount={balanceToken.sboot}
+                currencyNetwork={`s${CYBER.DENOM_CYBER}`}
+              />
+            </RowBalance>
+            <RowBalance
+              {...props}
+              justifyContent="flex-end"
+              className="cosmos-address-balance"
+            >
+              <Pane
+                display="grid"
+                gridTemplateColumns="1fr 45px"
+                gridGap="5px"
+                {...props}
+              >
+                <Pane
+                  paddingRight={5}
+                  whiteSpace="nowrap"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <span>{formatNumber(Math.floor(balanceToken.volt))}</span>
+                </Pane>
+                <ValueImg text="V" />
+              </Pane>
+            </RowBalance>
+            <RowBalance
+              {...props}
+              justifyContent="flex-end"
+              className="cosmos-address-balance"
+            >
+              <Pane
+                display="grid"
+                gridTemplateColumns="1fr 45px"
+                gridGap="5px"
+                {...props}
+              >
+                <Pane
+                  paddingRight={5}
+                  whiteSpace="nowrap"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <span>{formatNumber(Math.floor(balanceToken.amper))}</span>
+                </Pane>
+                <ValueImg text="A" />
+              </Pane>
+            </RowBalance>
           </>
         )}
       </Pane>
@@ -360,6 +421,7 @@ const CyberAddressInfo = ({
   gift,
   onClickDeleteAddress,
   network,
+  balanceToken,
 }) => {
   const [openCyber, setOpenCyber] = useState(false);
   const [openEul, setOpenEul] = useState(false);
@@ -375,6 +437,7 @@ const CyberAddressInfo = ({
         openEul={openEul}
         onClick={() => setOpenEul(!openEul)}
         network={network}
+        balanceToken={balanceToken}
       />
       <CYBNetworkInfo
         address={address}
@@ -441,7 +504,7 @@ function PubkeyCard({
 }) {
   const [gift, setGift] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { totalCyber, totalCosmos, loadingInfo } = useAddressInfo(
+  const { totalCyber, totalCosmos, loadingInfo, balanceToken } = useAddressInfo(
     pocket,
     updateCard
   );
@@ -616,6 +679,7 @@ function PubkeyCard({
           gift={gift}
           onClickDeleteAddress={() => deleteAddress(name, 'cyber', updateFunc)}
           network="cyber"
+          balanceToken={balanceToken}
         />
       )}
 
