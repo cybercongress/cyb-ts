@@ -9,7 +9,7 @@ import {
   getIpfsHash,
   getRankGrade,
 } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
+import { trimString, fromBech32 } from '../../utils/utils';
 import { TabBtn } from '../../components';
 
 import { CYBER, TAKEOFF } from '../../utils/config';

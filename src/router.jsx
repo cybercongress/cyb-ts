@@ -35,7 +35,8 @@ import ForceQuitter from './containers/forceGraph/forceQuitter';
 import PortPages from './containers/port';
 import TestKeplr from './containers/testKeplre';
 import Mint from './containers/mint';
-import RoutedEnergy from './containers/routes';
+import RoutedEnergy from './containers/energy';
+import Bootcycle from './containers/bootcycle';
 
 export const history = createBrowserHistory({});
 
@@ -57,10 +58,6 @@ function AppRouter({
     setIpfsIDProps(dataIpfsStart.id);
     setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
-
-  // if (loader) {
-  //   return <Dots />;
-  // }
 
   // add Switch to Router
   return (
@@ -106,6 +103,7 @@ function AppRouter({
         <Route path="/test" component={TestKeplr} />
         <Route path="/mint" component={Mint} />
         <Route path="/energy" component={RoutedEnergy} />
+        {/* <Route path="/bootcycle" component={Bootcycle} /> */}
       </Switch>
     </Router>
   );

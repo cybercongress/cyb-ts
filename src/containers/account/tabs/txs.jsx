@@ -30,12 +30,12 @@ export default function GetTxs({ accountUser }) {
           _or: [
             {
               subject1: {
-                _eq: "bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445"
+                _eq: "${accountUser}"
               }
             }
             {
               subject2: {
-                _eq: "bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445"
+                _eq: "${accountUser}"
               }
             }
           ]

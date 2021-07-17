@@ -189,7 +189,9 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
 
 export const TransactionError = ({ onClickBtn, errorMessage }) => (
   <ActionBar>
-    <ActionBarContentText>Message Error: {errorMessage}</ActionBarContentText>
+    <ActionBarContentText display="block">
+      Message Error: {errorMessage}
+    </ActionBarContentText>
     <Button marginX={10} onClick={onClickBtn}>
       {T.actionBar.confirmedTX.continue}
     </Button>
