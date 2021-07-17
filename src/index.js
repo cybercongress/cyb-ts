@@ -17,6 +17,7 @@ import store from './redux/store';
 import AppContextProvider from './context';
 
 import './style/main.css';
+// import './style/index.scss';
 import './image/favicon.ico';
 
 const root = document.getElementById('root');

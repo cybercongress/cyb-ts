@@ -1,0 +1,26 @@
+.bootcycleContainer {
+  display: flex;
+  font-size: 16px;
+  padding: 1rem;
+  width: 100%;
+  .itemsSycleWrapper {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.cycleItemContainer {
+  padding: 10px 30px;
+  box-shadow: 0 0 4px 1px #9e9e9e;
+  width: 100%;
+  border-radius: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 10px 0;
+  .cycleItemValue {
+      justify-self: flex-end;
+  }
+  .cycleItemCurrency {
+      justify-self: flex-end;
+  }
+}
