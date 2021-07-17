@@ -7,6 +7,7 @@ import {
   formatCurrencyNumber,
 } from '../../utils/utils';
 import { Dots, Tooltip } from '../../components';
+import { CYBER } from '../../utils/config';
 
 const Btn = ({ onSelect, checkedSwitch, text, disabledBtn, ...props }) => (
   <Tab
@@ -30,7 +31,7 @@ const FormatNumber = ({
   number,
   fontSizeDecimal,
   fontSizeNumber,
-  currency = 'BOOT',
+  currency = `${CYBER.DENOM_CYBER.toUpperCase()}`,
   ...props
 }) => {
   const formatNumberCurrency = formatCurrencyNumber(number, currency);
@@ -56,13 +57,17 @@ const FormatNumber = ({
   );
 };
 
-const ItemBalance = ({ text, amount }) => {
+const ItemBalance = ({ text, amount, currency }) => {
   return (
     <Pane marginBottom={15}>
       <Pane color="#979797" fontSize="16px">
         {text}
       </Pane>
-      {amount === null ? <Dots /> : <FormatNumber number={amount} />}
+      {amount === null ? (
+        <Dots />
+      ) : (
+        <FormatNumber number={amount} currency={currency} />
+      )}
     </Pane>
   );
 };
@@ -70,19 +75,10 @@ const ItemBalance = ({ text, amount }) => {
 const StatusTooltip = ({ status }) => {
   let statusColor;
 
-  switch (status) {
-    case 'empty':
-      statusColor = 'red';
-      break;
-    case 'closed':
-      statusColor = 'yellow';
-      break;
-    case 'active':
-      statusColor = 'green';
-      break;
-    default:
-      statusColor = 'neutral';
-      break;
+  if (status === 'available') {
+    statusColor = 'green';
+  } else {
+    statusColor = 'yellow';
   }
 
   return (

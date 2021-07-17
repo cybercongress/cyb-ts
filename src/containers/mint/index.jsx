@@ -22,6 +22,7 @@ import { Dots, CardStatisics } from '../../components';
 import useGetSlots from './useGetSlots';
 import TableSlots from './table';
 import TabBtnList from './tabLinsBtn';
+import ActionBar from './actionBar';
 
 const INIT_STAGE = 0;
 const TSX_SEND = 1;
@@ -37,6 +38,8 @@ const grid = {
   alignItems: 'center',
   margin: '64px 8px 0 8px',
   gridGap: '16px 16px',
+  position: 'relative',
+  paddingBottom: '150px',
 };
 
 const returnColorDot = (marks) => {
@@ -50,8 +53,6 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
-  const { keplr, jsCyber } = useContext(AppContext);
-  const location = useLocation();
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   const { balance } = useGetBalance(addressActive, updateAddress);
@@ -64,20 +65,7 @@ function Mint({ defaultAccount }) {
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(1);
   const [eRatio, setERatio] = useState(0);
-  const [hashTx, setHashTx] = useState('');
-  const [stage, setStage] = useState(INIT_STAGE);
   const [resourceToken, setResourceToken] = useState(0);
-  const [selectedTab, setSelectedTab] = useState('investmint');
-
-  useEffect(() => {
-    const { pathname } = location;
-
-    if (pathname.match(/slots/gm) && pathname.match(/slots/gm).length > 0) {
-      setSelectedTab('slots');
-    } else {
-      setSelectedTab('investmint');
-    }
-  }, [location.pathname]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -104,11 +92,12 @@ function Mint({ defaultAccount }) {
   }, [balance]);
 
   useEffect(() => {
-    if (balance.total > 0 && balance.delegation > 0) {
-      const eRatioTemp = Math.floor((balance.available / balance.total) * 100);
+    if (vested.sboot > 0 && balance.available > 0) {
+      const procent = (vested.sboot / balance.available) * 100;
+      const eRatioTemp = Math.floor(procent * 100) / 100;
       setERatio(eRatioTemp);
     }
-  }, [balance]);
+  }, [balance, vested]);
 
   useEffect(() => {
     const sboot = value;
@@ -119,29 +108,27 @@ function Mint({ defaultAccount }) {
     setResourceToken(token);
   }, [value, valueDays]);
 
-  const convert = async () => {
-    if (keplr !== null) {
-      setStage(TSX_SEND);
-      const [{ address }] = await keplr.signer.getAccounts();
-      const response = await keplr.investmint(
-        address,
-        coin(parseFloat(value), 'sboot'),
-        selected,
-        parseFloat(VESTING_TIME_HOURS * valueDays)
-      );
-      setHashTx(response.transactionHash);
-      setUpdateAddress((item) => item + 1);
-      setStage(INIT_STAGE);
-      setValue(0);
-      setValueDays(1);
-    }
+  const updateFunc = () => {
+    setUpdateAddress((item) => item + 1);
+    setValue(0);
+    setValueDays(1);
   };
 
-  let content;
-
-  if (selectedTab === 'investmint') {
-    content = (
-      <>
+  return (
+    <>
+      <main className="block-body" style={{ paddingTop: 30 }}>
+        <Pane
+          marginTop={30}
+          marginBottom={50}
+          display="grid"
+          gridTemplateColumns="300px 300px 300px"
+          gridGap="20px"
+          justifyContent="center"
+        >
+          <CardStatisics title="Amper" value={vested.amper} />
+          <CardStatisics title="Volt" value={vested.volt} />
+          <CardStatisics title="max slots" value={8} />
+        </Pane>
         <div
           style={{
             display: 'flex',
@@ -182,10 +169,15 @@ function Mint({ defaultAccount }) {
           >
             <ItemBalance text="Liquid balance" amount={balance.available} />
             <ItemBalance
-              text="Vested Balance"
-              amount={loadingAuthAccounts ? null : vested}
+              text="Liquid Stake Investminted"
+              amount={loadingAuthAccounts ? null : vested.sboot}
+              currency={`S${CYBER.DENOM_CYBER.toUpperCase()}`}
             />
-            <ItemBalance text="Staked balance" amount={balance.delegation} />
+            <ItemBalance
+              text="Liquid Stake"
+              amount={balance.delegation}
+              currency={`S${CYBER.DENOM_CYBER.toUpperCase()}`}
+            />
           </div>
           <div
             style={{
@@ -256,6 +248,8 @@ function Mint({ defaultAccount }) {
                 textAlign: 'center',
                 gridArea: '2/2/2/2',
                 fontSize: '17px',
+                position: 'absolute',
+                bottom: '30px',
               }}
             >
               You’re minting investing {formatNumber(value)} SBOOT for{' '}
@@ -266,59 +260,18 @@ function Mint({ defaultAccount }) {
             </div>
           )}
         </div>
-        <div style={{ paddingTop: 50, textAlign: 'center', marginBottom: 100 }}>
-          <Button disabled={resourceToken === 0} onClick={convert}>
-            {stage === INIT_STAGE && 'Submit'}
-            {stage === TSX_SEND && <Dots />}
-          </Button>
-        </div>
-      </>
-    );
-  }
 
-  if (selectedTab === 'slots') {
-    if (loadingAuthAccounts) {
-      content = <Dots big />;
-    } else {
-      content = (
-        <>
-          <Pane
-            marginTop={30}
-            marginBottom={50}
-            display="grid"
-            gridTemplateColumns="300px"
-            gridGap="20px"
-            justifyContent="center"
-          >
-            <CardStatisics title="max slots" value={8} />
-          </Pane>
-          <TableSlots data={slotsData} />
-        </>
-      );
-    }
-  }
-
-  return (
-    <main className="block-body" style={{ paddingTop: 30 }}>
-      {addressActive === null && (
-        <Pane
-          boxShadow="0px 0px 5px #36d6ae"
-          paddingX={20}
-          paddingY={20}
-          marginY={20}
-        >
-          <Text fontSize="16px" color="#fff">
-            Start by adding a address to <Link to="/pocket">your pocket</Link>.
-          </Text>
-        </Pane>
-      )}
-      <TabBtnList
-        selected={selectedTab}
-        slotsData={Object.keys(slotsData).length}
+        {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
+      </main>
+      <ActionBar
+        value={value}
+        selected={selected}
+        valueDays={valueDays}
+        resourceToken={resourceToken}
+        updateFnc={updateFunc}
+        addressActive={addressActive}
       />
-
-      {content}
-    </main>
+    </>
   );
 }
 
