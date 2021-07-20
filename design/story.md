@@ -1,9 +1,7 @@
-As an adult human with strong intelligence I want to answer questions so that:
+As an adult human with strong intelligence I want to switch from google search and social medias so that:
 
-- I can answer complicated questions
-- Answers are significantly better than google
-- I can understand how answers are being computed
-- I can contribute to answers and have some benefits from efforts
-- My personal knowledge and data appear in the results
-- Search works offline on my terminal, mobile, and desktop
-- Privacy does not leak and my data remains mine
+- Answers and feeds are provable, comprehensive and convinient
+- Communications with friends are guaranted and provably private
+- I can contribute and have fair share in success
+- My personal knowledge appear honestly in results without data locks and major privacy leaks
+- Everything works offline on mobile, desktop, terminal and in virtual reality
