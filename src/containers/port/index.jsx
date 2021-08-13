@@ -262,12 +262,12 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
         </Tablist>
         {content}
       </main>
-      <ActionBarContainer
+      {/* <ActionBarContainer
         visa={visa}
         accountsETH={accountsETH}
         pocketAddress={pocketAddress}
         web3={web3}
-      />
+      /> */}
     </>
   );
 }
