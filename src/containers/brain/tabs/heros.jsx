@@ -9,7 +9,7 @@ function HallofFameTab({ stakedCyb, activeValidatorsCount }) {
     return (
       <>
         <Link
-          to="/heroes"
+          to="/halloffame"
           style={{
             display: 'contents',
             textDecoration: 'none',

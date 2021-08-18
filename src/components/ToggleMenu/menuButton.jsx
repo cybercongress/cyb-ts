@@ -15,21 +15,22 @@ export const MenuButton = ({
   bottomBug = '-20%',
   ...props
 }) => (
+  <Pane
+    {...props}
+    display="flex"
+    alignItems="center"
+    cursor="pointer"
+    width={size}
+  >
     <Pane
-      {...props}
+      width="inherit"
+      height="auto"
+      maxHeight={`${size}px`}
+      position="relative"
       display="flex"
-      alignItems="center"
-      cursor="pointer"
-      width={size}
+      align-items="flex-end"
     >
-      <Pane
-        width="inherit"
-        height="auto"
-        maxHeight={`${size}px`}
-        position="relative"
-        display="flex"
-        align-items="flex-end"
-      >
+      {to ? (
         <Link style={{ width: 'inherit' }} to={to}>
           <img
             style={{ width: '50px', height: '50px' }}
@@ -37,6 +38,13 @@ export const MenuButton = ({
             src={imgLogo || stausImgCyb}
           />
         </Link>
-      </Pane>
+      ) : (
+        <img
+          style={{ width: '50px', height: '50px' }}
+          alt="cyb"
+          src={imgLogo || stausImgCyb}
+        />
+      )}
     </Pane>
+  </Pane>
 );

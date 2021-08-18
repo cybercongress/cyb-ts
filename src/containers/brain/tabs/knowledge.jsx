@@ -24,10 +24,10 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount, inlfation }) {
         <Link to="/network/bostrom/tx">
           <CardStatisics title="Transactions" value={<Txs />} link />
         </Link>
-        <CardStatisics
+        {/* <CardStatisics
           title="Inflation"
           value={`${formatNumber(inlfation * 100, 2)} %`}
-        />
+        /> */}
       </>
     );
   } catch (error) {

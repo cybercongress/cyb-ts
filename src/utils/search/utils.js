@@ -424,11 +424,11 @@ export const statusNode = async () => {
   }
 };
 
-export const getRelevance = (page = 0, perPage = 50) =>
+export const getRelevance = (page = 0, limit = 50) =>
   new Promise((resolve) =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_API}/top?page=${page}&perPage=${perPage}`,
+      url: `${CYBER_NODE_URL_LCD}/rank/top?page=${page}&limit=${limit}`,
     })
       .then((response) => {
         resolve(response.data.result);
@@ -963,7 +963,7 @@ export const getParamNetwork = async (address, node) => {
     let bandwidth = null;
     let gov = null;
     let rank = null;
-    let inlfation = null;
+    let mint = null;
     let energy = null;
 
     const dataStaking = await getParamStaking();
@@ -1001,7 +1001,7 @@ export const getParamNetwork = async (address, node) => {
     const dataInlfation = await getParamInlfation();
     console.log(`dataInlfation`, dataInlfation)
     if (dataInlfation !== null) {
-      inlfation = dataInlfation;
+      mint = dataInlfation;
     }
 
     const dataEnergy = await getParamEnergy();
@@ -1016,7 +1016,7 @@ export const getParamNetwork = async (address, node) => {
       bandwidth,
       gov,
       rank,
-      inlfation,
+      mint,
       energy,
     };
 

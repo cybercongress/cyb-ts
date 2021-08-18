@@ -36,10 +36,10 @@ function TableHeroes({ mobile, showJailed, children }) {
         {!mobile && (
           <>
             {' '}
-            <Table.TextHeaderCell paddingX={5} textAlign="center">
+            <Table.TextHeaderCell flex={0.5} paddingX={5} textAlign="center">
               <TextTable fontSize={13}>Power, %</TextTable>
             </Table.TextHeaderCell>
-            <Table.TextHeaderCell paddingX={5} textAlign="center">
+            <Table.TextHeaderCell flex={0.5} paddingX={5} textAlign="center">
               <TextTable fontSize={14}>Self</TextTable>
             </Table.TextHeaderCell>
             <Table.TextHeaderCell paddingX={5} textAlign="center">
@@ -56,7 +56,7 @@ function TableHeroes({ mobile, showJailed, children }) {
           </>
         )}
         {showJailed && (
-          <Table.TextHeaderCell paddingX={5} flex={1} textAlign="end">
+          <Table.TextHeaderCell paddingX={5} flex={0.8} textAlign="end">
             <TextTable fontSize={14}>Unbonding height</TextTable>
           </Table.TextHeaderCell>
         )}

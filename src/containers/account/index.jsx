@@ -72,8 +72,11 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       pathname.match(/heroes/gm).length > 0
     ) {
       setSelected('heroes');
-    } else if (pathname.match(/gol/gm) && pathname.match(/gol/gm).length > 0) {
-      setSelected('gol');
+    } else if (
+      pathname.match(/genesis/gm) &&
+      pathname.match(/genesis/gm).length > 0
+    ) {
+      setSelected('genesis');
     } else if (
       pathname.match(/cyberlink/gm) &&
       pathname.match(/cyberlink/gm).length > 0
@@ -112,7 +115,12 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           defaultAccount.account.cyber.bech32,
           addressFromIpfs
         );
-        if (response !== null && response.total_count > 0) {
+        console.log(`response`, response)
+        if (
+          response !== null &&
+          response.total_count > 0 &&
+          defaultAccount.account.cyber.bech32 !== address
+        ) {
           setFollow(false);
           setTweets(false);
         }
@@ -184,10 +192,10 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     );
   }
 
-  if (selected === 'gol') {
+  if (selected === 'genesis') {
     content = (
       <Route
-        path="/network/bostrom/contract/:address/gol"
+        path="/network/bostrom/contract/:address/genesis"
         render={() => <TableDiscipline address={address} />}
       />
     );
@@ -283,9 +291,9 @@ function AccountDetails({ node, mobile, defaultAccount }) {
             to={`/network/bostrom/contract/${address}/txs`}
           />
           <TabBtn
-            text="GoL"
-            isSelected={selected === 'gol'}
-            to={`/network/bostrom/contract/${address}/gol`}
+            text="Genesis"
+            isSelected={selected === 'genesis'}
+            to={`/network/bostrom/contract/${address}/genesis`}
           />
         </Tablist>
         <Pane

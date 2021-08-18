@@ -62,7 +62,7 @@ export const CardStatisics = ({
   styleTitle,
 }) => (
   <div style={styleContainer} className="container-statistics-card">
-    {value && (
+    {(value || value === 0) && (
       <span style={styleValue} className="card-statistics-value">
         {value}
       </span>

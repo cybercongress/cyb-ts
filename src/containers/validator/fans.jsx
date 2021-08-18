@@ -10,6 +10,7 @@ import {
   TextTable,
   Loading,
   NoItems,
+  NumberCurrency,
 } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
@@ -48,19 +49,9 @@ const Fans = ({ data }) => {
           </TextTable>
         </Table.TextCell>
         <Table.TextCell flex={2} textAlign="end">
-          <Tooltip
-            position="bottom"
-            content={`${formatNumber(
-              parseFloat(item.balance.amount)
-            )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-          >
-            <TextTable>
-              {formatCurrency(
-                item.balance.amount,
-                CYBER.DENOM_CYBER.toUpperCase()
-              )}
-            </TextTable>
-          </Tooltip>
+          <TextTable>
+            <NumberCurrency amount={item.balance.amount} />
+          </TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           <TextTable>

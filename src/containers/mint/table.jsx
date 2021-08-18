@@ -110,14 +110,14 @@ const TableSlots = ({ data, mobile }) => {
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>
-              timestamp{' '}
+              End time{' '}
               <Tooltip content="UTC" position="bottom">
                 <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
               </Tooltip>
             </TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
-            <TextTable>vested</TextTable>
+            <TextTable>Investminted</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>resource</TextTable>

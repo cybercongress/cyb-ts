@@ -18,6 +18,7 @@ import {
   PATTERN_COSMOS,
   PATTERN_CYBER,
   POCKET,
+  DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 import { deletPubkey } from './utils';
@@ -56,10 +57,15 @@ function ActionBarKeplr({
     if (keplr !== null) {
       setStage(STAGE_SUBMITTED);
       const [{ address }] = await keplr.signer.getAccounts();
+      const fee = {
+        amount: [],
+        gas: DEFAULT_GAS_LIMITS.toString(),
+      };
       const result = await keplr.sendTokens(
         address,
         recipient,
-        coins(amount, CYBER.DENOM_CYBER)
+        coins(amount, CYBER.DENOM_CYBER),
+        fee
       );
       console.log('result: ', result);
       const hash = result.transactionHash;
@@ -203,7 +209,7 @@ function ActionBarKeplr({
               height={42}
               width="24%"
               onChange={(e) => setAmountSend(e.target.value)}
-              placeholder="EUL"
+              placeholder="BOOT"
               isInvalid={amountSendInputValid !== null}
               message={amountSendInputValid}
             />

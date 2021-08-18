@@ -67,9 +67,9 @@ const configKeplr = () => {
     ],
     coinType: 118,
     gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0,
+      low: 0.001,
+      average: 0.01,
+      high: 0.025,
     },
   };
 };
@@ -77,9 +77,19 @@ const configKeplr = () => {
 export async function createClient(signer) {
   if (signer) {
     const firstAddress = (await signer.getAccounts())[0].address;
-    const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
-    const gasLimits = { send: 200000 };
+    // const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
+    const gasPrice = GasPrice.fromString('0.001boot');
 
+    const gasLimits = {
+      send: 200000,
+      cyberlink: 256000,
+      investmint: 160000,
+      createRoute: 128000,
+      editRoute: 128000,
+      editRouteAlias: 128000,
+      deleteRoute: 128000,
+    };
+    const options = { gasPrice, gasLimits };
     const client = await SigningCyberClient.connectWithSigner(
       CYBER.CYBER_NODE_URL_API,
       signer

@@ -9,7 +9,7 @@ export const useAddressInfo = (accounts, updateCard) => {
   const [totalCyber, setTotalCyber] = useState(0);
   const [totalCosmos, setTotalCosmos] = useState(0);
   const [address, setAddress] = useState(null);
-  const { balance } = useGetBalance(address, updateCard);
+  const { balance, balanceToken } = useGetBalance(address, updateCard);
 
   useEffect(() => {
     setTotalCyber(balance);
@@ -38,6 +38,7 @@ export const useAddressInfo = (accounts, updateCard) => {
     totalCyber,
     totalCosmos,
     loadingInfo,
+    balanceToken,
   };
 };
 

@@ -354,15 +354,15 @@ input:active {
   font-family: 'Play', sans-serif;
   outline: 0;
   outline-offset: 0;
-  -moz-box-shadow: 0 0 8px 2px #00ffa387;
-  -webkit-box-shadow: 0 0 8px 2px #00ffa387;
-  box-shadow: 0 0 8px 2px #00ffa387;
+  -moz-box-shadow: 0 0 6px 1px #3ab793;
+  -webkit-box-shadow: 0 0 6px 1px #3ab793;
+  box-shadow: 0 0 6px 1px #3ab793;
   caret-color: #36d6ae;
 }
 
 .search-input:focus {
   -webkit-app-region: no-drag;
-  box-shadow: 0 0 20px 0 rgba(0, 255, 163, 0.53) !important;
+  box-shadow: 0 0 8px 2px #3ab793 !important;
 }
 
 input::-webkit-input-placeholder {

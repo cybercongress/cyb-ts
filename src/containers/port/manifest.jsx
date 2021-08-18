@@ -5,7 +5,7 @@ import monifest from './CyberpunkManifesto';
 
 const Manifest = () => {
   return (
-    <Pane className="contaiter-manifest markdown" textAlign="justify">
+    <Pane className="markdown" textAlign="justify">
       <ReactMarkdown source={monifest} escapeHtml />
     </Pane>
   );

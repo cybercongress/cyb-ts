@@ -19,7 +19,12 @@ import {
   Dots,
   ActionBarContentText,
 } from '../../components';
-import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import {
+  LEDGER,
+  CYBER,
+  PATTERN_IPFS_HASH,
+  DEFAULT_GAS_LIMITS,
+} from '../../utils/config';
 
 import {
   getBalanceWallet,
@@ -204,6 +209,10 @@ class ActionBarContainer extends Component {
     const { keplr } = this.context;
     const { type, addressSend, node, follow, tweets } = this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
+    const fee = {
+      amount: [],
+      gas: DEFAULT_GAS_LIMITS.toString(),
+    };
 
     if (keplr !== null) {
       const [{ address }] = await keplr.signer.getAccounts();
@@ -212,30 +221,36 @@ class ActionBarContainer extends Component {
       if (type === 'heroes') {
         if (address === addressSend) {
           const dataTotalRewards = await getTotalRewards(address);
+          console.log(`dataTotalRewards`, dataTotalRewards);
           if (dataTotalRewards !== null && dataTotalRewards.rewards) {
             const { rewards } = dataTotalRewards;
+            const validatorAddress = [];
             Object.keys(rewards).forEach((key) => {
               if (rewards[key].reward !== null) {
-                const tempMsg = {
-                  type: 'cosmos-sdk/MsgWithdrawDelegationReward',
-                  value: {
-                    delegator_address: address,
-                    validator_address: rewards[key].validator_address,
-                  },
-                };
-                msg.push(tempMsg);
+                validatorAddress.push(rewards[key].validator_address);
               }
             });
+            const gasLimitsRewards =
+              100000 * Object.keys(validatorAddress).length;
+            const feeRewards = {
+              amount: [],
+              gas: gasLimitsRewards.toString(),
+            };
+            response = await keplr.withdrawAllRewards(
+              address,
+              validatorAddress,
+              feeRewards
+            );
           }
         }
       } else if (type === 'tweets' && follow) {
         const fromCid = await getPin(node, 'follow');
         const toCid = await getPin(node, addressSend);
-        response = await keplr.cyberlink(address, fromCid, toCid);
+        response = await keplr.cyberlink(address, fromCid, toCid, fee);
       } else if (type === 'tweets' && tweets) {
         const fromCid = await getPin(node, 'tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
-        response = await keplr.cyberlink(address, fromCid, toCid);
+        response = await keplr.cyberlink(address, fromCid, toCid, fee);
       } else {
         msg.push({
           type: 'cosmos-sdk/MsgSend',
@@ -247,12 +262,18 @@ class ActionBarContainer extends Component {
         });
       }
 
-      if (response !== null) {
-        console.log('response: ', response);
+      console.log(`response`, response)
+      if (response.code === 0) {
         const hash = response.transactionHash;
         console.log('hash :>> ', hash);
         this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
         this.timeOut = setTimeout(this.confirmTx, 1500);
+      } else {
+        this.setState({
+          txHash: null,
+          stage: STAGE_ERROR,
+          errorMessage: response.rawLog.toString(),
+        });
       }
     }
   };
@@ -449,7 +470,6 @@ class ActionBarContainer extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
       addressInfo: null,
@@ -466,8 +486,6 @@ class ActionBarContainer extends Component {
       contentHash: '',
     });
     this.timeOut = null;
-    this.ledger = null;
-    this.transport = null;
   };
 
   onChangeInput = async (e) => {
@@ -574,25 +592,25 @@ class ActionBarContainer extends Component {
     }
     // console.log('rewards', rewards);
 
-    // if (
-    //   stage === STAGE_INIT &&
-    //   type === 'heroes' &&
-    //   defaultAccount !== null &&
-    //   defaultAccount.keys === 'keplr'
-    // ) {
-    //   return (
-    //     <ActionBar>
-    //       <Pane>
-    //         <Button
-    //           disabled={addressSend !== defaultAccount.bech32}
-    //           onClick={(e) => this.onClickSend(e)}
-    //         >
-    //           Claim rewards
-    //         </Button>
-    //       </Pane>
-    //     </ActionBar>
-    //   );
-    // }
+    if (
+      stage === STAGE_INIT &&
+      type === 'heroes' &&
+      defaultAccount !== null &&
+      defaultAccount.keys === 'keplr'
+    ) {
+      return (
+        <ActionBar>
+          <Pane>
+            <Button
+              disabled={addressSend !== defaultAccount.bech32}
+              onClick={(e) => this.onClickSend(e)}
+            >
+              Claim rewards
+            </Button>
+          </Pane>
+        </ActionBar>
+      );
+    }
 
     if (stage === STAGE_LEDGER_INIT) {
       return (

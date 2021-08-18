@@ -75,8 +75,20 @@ const CYBER = {
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   // CHAIN_ID: 'bostromdev-1',
-  CHAIN_ID: 'bostrom-testnet-1',
+  CHAIN_ID: 'bostrom-testnet-4',
   MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
+};
+
+const DEFAULT_GAS_LIMITS = 200000;
+
+const GAS_LIMITS = {
+  send: 200000,
+  cyberlink: 256000,
+  investmint: 160000,
+  createRoute: 128000,
+  editRoute: 128000,
+  editRouteAlias: 128000,
+  deleteRoute: 128000,
 };
 
 const LEDGER = {
@@ -167,4 +179,6 @@ export {
   INFINITY,
   ADD_ARAGON_FINANCE,
   DISTRIBUTION_PRIZE,
+  GAS_LIMITS,
+  DEFAULT_GAS_LIMITS,
 };
