@@ -8,6 +8,8 @@ import {
 import { PATTERN_CYBER } from '../../../utils/config';
 
 function useGetCommunity(address, updateAddress) {
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
   const [community, setCommunity] = useState({
     following: [],
     followers: [],
@@ -15,49 +17,44 @@ function useGetCommunity(address, updateAddress) {
   });
 
   useEffect(() => {
-    const getFollowing = async () => {
+    const getFollowersFunc = async () => {
       let responseFollows = null;
+      setFollowers([]);
       if (address) {
         const addressHash = await getIpfsHash(address);
         responseFollows = await getFollowers(addressHash);
-        // console.log('!!!responseFollows', responseFollows);
+        console.log('!!!responseFollows', responseFollows);
       }
 
       if (responseFollows !== null && responseFollows.txs) {
         responseFollows.txs.forEach(async (item) => {
           const addressFollowers = item.tx.value.msg[0].value.address;
-          setCommunity((items) => ({
-            ...items,
-            followers: { ...items.followers, addressFollowers },
-          }));
+          // console.log(`addressFollowers`, addressFollowers)
+          setFollowers((items) => [...items, addressFollowers]);
         });
       }
     };
-    getFollowing();
+    getFollowersFunc();
   }, [address]);
 
   useEffect(() => {
     const getFollowersAddress = async () => {
       let responseFollows = null;
-
+      setFollowing([]);
       if (address) {
         responseFollows = await getFollows(address);
-        // console.log('responseFollows', responseFollows);
+        console.log('responseFollows', responseFollows);
       }
 
       if (responseFollows !== null && responseFollows.txs) {
         responseFollows.txs.forEach(async (item) => {
           const cid = item.tx.value.msg[0].value.links[0].to;
           const addressResolve = await getContent(cid);
-          // console.log('addressResolve :>> ', addressResolve);
           if (addressResolve) {
             const addressFollow = addressResolve;
             // console.log('addressResolve :>> ', addressResolve);
             if (addressFollow.match(PATTERN_CYBER)) {
-              setCommunity((items) => ({
-                ...items,
-                following: { ...items.following, addressFollow },
-              }));
+              setFollowing((items) => [...items, addressFollow]);
             }
           }
         });
@@ -67,7 +64,11 @@ function useGetCommunity(address, updateAddress) {
   }, [address]);
 
   useEffect(() => {
-    const { following, followers } = community;
+    setCommunity({
+      following: [],
+      followers: [],
+      friends: [],
+    });
     if (following.length > 0 && followers.length > 0) {
       const followingArr = [];
       const followersArr = followers.slice();
@@ -81,12 +82,10 @@ function useGetCommunity(address, updateAddress) {
           followingArr.push(item);
         }
       });
-      this.setState({
-        community: {
-          following: followingArr,
-          followers: followersArr,
-          friends: friendsArr,
-        },
+      setCommunity({
+        following: followingArr,
+        followers: followersArr,
+        friends: friendsArr,
       });
     } else {
       if (following.length > 0 && followers.length === 0) {
@@ -102,7 +101,7 @@ function useGetCommunity(address, updateAddress) {
         }));
       }
     }
-  }, [community.following, community.followers]);
+  }, [following, followers]);
 
   return { community, updateAddress };
 }

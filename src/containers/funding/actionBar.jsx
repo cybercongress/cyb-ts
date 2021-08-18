@@ -836,7 +836,7 @@ class ActionBarTakeOff extends Component {
               margin: '0px 10px',
               padding: '0 30px',
             }}
-            to="/heroes"
+            to="/halloffame"
           >
             Hero
           </Link>

@@ -6,7 +6,7 @@ import {
   TableEv as Table,
   Icon,
 } from '@cybercongress/gravity';
-import { NoItems, Account } from '../../../components';
+import { NoItems, Account, NumberCurrency } from '../../../components';
 import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
@@ -104,35 +104,15 @@ const Heroes = ({ data, ...props }) => {
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           {data[key].reward !== undefined && (
-            <Tooltip
-              content={`${formatNumber(
-                data[key].reward
-              )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-              position="bottom"
-            >
-              <TextTable>
-                {formatCurrency(
-                  data[key].reward,
-                  CYBER.DENOM_CYBER.toUpperCase()
-                )}
-              </TextTable>
-            </Tooltip>
+            <TextTable>
+              <NumberCurrency amount={data[key].reward} />
+            </TextTable>
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          <Tooltip
-            content={`${formatNumber(
-              parseFloat(data[key].balance.amount)
-            )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-            position="bottom"
-          >
-            <TextTable>
-              {formatCurrency(
-                parseFloat(data[key].balance.amount),
-                CYBER.DENOM_CYBER.toUpperCase()
-              )}
-            </TextTable>
-          </Tooltip>
+          <TextTable>
+            <NumberCurrency amount={data[key].balance.amount} />
+          </TextTable>
         </Table.TextCell>
       </Table.Row>
     );

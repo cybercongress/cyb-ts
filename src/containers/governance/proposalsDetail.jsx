@@ -455,7 +455,7 @@ class ProposalsDetail extends React.Component {
                   display: 'block',
                 }}
                 className="btn"
-                to="/pocket"
+                to="/"
               >
                 add address to your pocket
               </Link>

@@ -1,15 +1,9 @@
 const chekPathname = (pathname) => {
-  if (
-    pathname.match(/cybernomics/gm) &&
-    pathname.match(/cybernomics/gm).length > 0
-  ) {
-    return 'cybernomics';
+  if (pathname.match(/market/gm) && pathname.match(/market/gm).length > 0) {
+    return 'market';
   }
-  if (
-    pathname.match(/knowledge/gm) &&
-    pathname.match(/knowledge/gm).length > 0
-  ) {
-    return 'knowledge';
+  if (pathname.match(/oracle/gm) && pathname.match(/oracle/gm).length > 0) {
+    return 'oracle';
   }
   if (
     pathname.match(/government/gm) &&
@@ -32,8 +26,11 @@ const chekPathname = (pathname) => {
   ) {
     return 'halloffame';
   }
-  if (pathname.match(/feed/gm) && pathname.match(/feed/gm).length > 0) {
-    return 'feed';
+  if (pathname.match(/power/gm) && pathname.match(/power/gm).length > 0) {
+    return 'power';
+  }
+  if (pathname.match(/taverna/gm) && pathname.match(/taverna/gm).length > 0) {
+    return 'taverna';
   }
   return 'port';
 };

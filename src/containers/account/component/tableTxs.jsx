@@ -9,7 +9,13 @@ import {
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { trimString, formatNumber, formatCurrency } from '../../../utils/utils';
-import { NoItems, MsgType, Dots, TextTable } from '../../../components';
+import {
+  NoItems,
+  MsgType,
+  Dots,
+  TextTable,
+  NumberCurrency,
+} from '../../../components';
 import { CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
@@ -108,17 +114,15 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
                 items['@type'].includes('MsgDelegate') ? '#4ed6ae' : '#f4516b'
               }
             >
-              {items['@type'].includes('MsgDelegate')
-                ? `+ ${formatCurrency(
-                    items.amount.amount,
-                    CYBER.DENOM_CYBER.toUpperCase(),
-                    0
-                  )}`
-                : `- ${formatCurrency(
-                    items.amount.amount,
-                    CYBER.DENOM_CYBER.toUpperCase(),
-                    0
-                  )}`}
+              {items['@type'].includes('MsgDelegate') ? (
+                <>
+                  + <NumberCurrency amount={items.amount.amount} />
+                </>
+              ) : (
+                <>
+                  - <NumberCurrency amount={items.amount.amount} />
+                </>
+              )}
             </TextTable>
             // </Tooltip>
           ))}

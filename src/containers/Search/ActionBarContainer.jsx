@@ -27,7 +27,12 @@ import {
   getCurrentBandwidthPrice,
 } from '../../utils/search/utils';
 
-import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import {
+  LEDGER,
+  CYBER,
+  PATTERN_IPFS_HASH,
+  DEFAULT_GAS_LIMITS,
+} from '../../utils/config';
 import { trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
 
@@ -287,12 +292,24 @@ class ActionBarContainer extends Component {
 
         console.log('address', address);
         if (addressLocalStor !== null && addressLocalStor.address === address) {
-          const result = await keplr.cyberlink(address, fromCid, toCid);
+          const fee = {
+            amount: [],
+            gas: DEFAULT_GAS_LIMITS.toString(),
+          };
+          const result = await keplr.cyberlink(address, fromCid, toCid, fee);
+          if (result.code === 0) {
+            const hash = result.transactionHash;
+            console.log('hash :>> ', hash);
+            this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+            this.timeOut = setTimeout(this.confirmTx, 1500);
+          } else {
+            this.setState({
+              txHash: null,
+              stage: STAGE_ERROR,
+              errorMessage: result.rawLog.toString(),
+            });
+          }
           console.log('result: ', result);
-          const hash = result.transactionHash;
-          console.log('hash :>> ', hash);
-          this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-          this.timeOut = setTimeout(this.confirmTx, 1500);
         } else {
           this.setState({
             stage: STAGE_ERROR,
@@ -400,7 +417,7 @@ class ActionBarContainer extends Component {
       if (data.logs) {
         this.setState({
           stage: STAGE_CONFIRMED,
-          txHeight: data.txhash,
+          txHeight: data.height,
         });
         if (update) {
           update();
@@ -410,7 +427,7 @@ class ActionBarContainer extends Component {
       if (data.code) {
         this.setState({
           stage: STAGE_ERROR,
-          txHeight: data.txhash,
+          txHeight: data.height,
           errorMessage: data.raw_log,
         });
         return;
@@ -535,7 +552,6 @@ class ActionBarContainer extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            Play Game of Links. Get EUL with
             <LinkRoute
               style={{
                 paddingTop: 10,
@@ -544,9 +560,9 @@ class ActionBarContainer extends Component {
                 display: 'block',
               }}
               className="btn"
-              to="/gol/takeoff"
+              to="/"
             >
-              ATOM
+              Connect
             </LinkRoute>
           </ActionBarContentText>
         </ActionBar>

@@ -49,6 +49,7 @@
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.0.5",
     "prop-types": "^15.6.2",
+    "react-click-outside": "^3.0.1",
     "react-hot-loader": "^4.8.8",
     "react-iframe": "^1.8.0",
     "react-infinite-scroll-component": "^5.0.4",

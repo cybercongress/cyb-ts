@@ -24,6 +24,7 @@ import {
   HelpTab,
   PathTab,
   HallofFameTab,
+  PowerTab,
 } from './tabs';
 import {
   useGetTweets,
@@ -33,6 +34,8 @@ import {
 import { AppContext } from '../../context';
 
 import Port from '../port';
+import Governance from '../governance/governance';
+import Validators from '../Validators/Validators';
 
 import { chekPathname } from './utils/utils';
 
@@ -50,7 +53,7 @@ function Brain({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const { jsCyber } = useContext(AppContext);
   const { cybernomics } = useGetCybernomics();
-  const { government, knowledge } = useGetStatisticsCyber();
+  const { knowledge } = useGetStatisticsCyber();
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   const [selected, setSelected] = useState('port');
   const [addressActive, setAddressActive] = useState(null);
@@ -136,7 +139,7 @@ function Brain({ node, mobile, defaultAccount }) {
     content = <Route path="/brain" render={() => <Port />} />;
   }
 
-  if (selected === 'feed') {
+  if (selected === 'taverna') {
     content = (
       <MainTab
         tweets={tweets}
@@ -147,11 +150,11 @@ function Brain({ node, mobile, defaultAccount }) {
     );
   }
 
-  if (selected === 'knowledge') {
+  if (selected === 'oracle') {
     const { linksCount, cidsCount, accountsCount, inlfation } = knowledge;
     content = (
       <Route
-        path="/brain/knowledge"
+        path="/brain/oracle"
         render={() => (
           <KnowledgeTab
             linksCount={parseInt(linksCount, 10)}
@@ -164,25 +167,17 @@ function Brain({ node, mobile, defaultAccount }) {
     );
   }
 
-  if (selected === 'cybernomics') {
+  if (selected === 'market') {
     content = (
       <Route
-        path="/brain/cybernomics"
+        path="/brain/market"
         render={() => <CybernomicsTab data={cybernomics} />}
       />
     );
   }
 
   if (selected === 'government') {
-    const { proposals, communityPool } = government;
-    content = (
-      <Route
-        path="/brain/government"
-        render={() => (
-          <GovernmentTab proposals={proposals} communityPool={communityPool} />
-        )}
-      />
-    );
+    content = <Route path="/brain/government" render={() => <Governance />} />;
   }
 
   if (selected === 'apps') {
@@ -203,18 +198,11 @@ function Brain({ node, mobile, defaultAccount }) {
   }
 
   if (selected === 'halloffame') {
-    const { activeValidatorsCount, stakedCyb } = knowledge;
-    content = (
-      <Route
-        path="/brain/halloffame"
-        render={() => (
-          <HallofFameTab
-            stakedCyb={stakedCyb}
-            activeValidatorsCount={activeValidatorsCount}
-          />
-        )}
-      />
-    );
+    content = <Route path="/brain/halloffame" render={() => <Validators />} />;
+  }
+
+  if (selected === 'power') {
+    content = <Route path="/brain/power" render={() => <PowerTab />} />;
   }
 
   return (
@@ -249,7 +237,7 @@ function Brain({ node, mobile, defaultAccount }) {
             <Text fontSize="16px" color="#fff">
               Subscribe to someone to make your feed work. Until then, we'll
               show you the project feed. Start by adding a ledger to{' '}
-              <Link to="/pocket">your pocket</Link>.
+              <Link to="/">your pocket</Link>.
             </Text>
           </Pane>
         )}
@@ -261,9 +249,9 @@ function Brain({ node, mobile, defaultAccount }) {
           marginTop={25}
         >
           <TabBtn
-            text="Knowledge"
-            isSelected={selected === 'knowledge'}
-            to="/brain/knowledge"
+            text="Oracle"
+            isSelected={selected === 'oracle'}
+            to="/brain/oracle"
           />
           <TabBtn
             text="Arena"
@@ -271,14 +259,14 @@ function Brain({ node, mobile, defaultAccount }) {
             to="/brain/gol"
           />
           <TabBtn
-            text="Cybernomics"
-            isSelected={selected === 'cybernomics'}
-            to="/brain/cybernomics"
+            text="Market"
+            isSelected={selected === 'market'}
+            to="/brain/market"
           />
           <TabBtn
-            text="Feed"
-            isSelected={selected === 'feed'}
-            to="/brain/feed"
+            text="Taverna"
+            isSelected={selected === 'taverna'}
+            to="/brain/taverna"
           />
           <TabBtn text="Port" isSelected={selected === 'port'} to="/brain" />
           <TabBtn
@@ -292,6 +280,11 @@ function Brain({ node, mobile, defaultAccount }) {
             to="/brain/halloffame"
           />
           <TabBtn
+            text="Power plant"
+            isSelected={selected === 'power'}
+            to="/brain/power"
+          />
+          {/* <TabBtn
             text="Apps"
             isSelected={selected === 'apps'}
             to="/brain/apps"
@@ -300,7 +293,7 @@ function Brain({ node, mobile, defaultAccount }) {
             text="Help"
             isSelected={selected === 'help'}
             to="/brain/help"
-          />
+          /> */}
         </Tablist>
         <Pane
           marginTop={30}
@@ -315,6 +308,8 @@ function Brain({ node, mobile, defaultAccount }) {
       {!mobile &&
         addressActive !== null &&
         selected !== 'port' &&
+        selected !== 'government' &&
+        selected !== 'halloffame' &&
         (addressActive.keys !== 'read-only' ? (
           <ActionBarContainer addressPocket={addressActive} />
         ) : (
@@ -328,7 +323,7 @@ function Brain({ node, mobile, defaultAccount }) {
       {!mobile && selected !== 'port' && addressActive === null && (
         <ActionBar>
           <Pane fontSize="18px">
-            add cyber address in your <Link to="/pocket">pocket</Link>
+            add cyber address in your <Link to="/">pocket</Link>
           </Pane>
         </ActionBar>
       )}

@@ -331,6 +331,10 @@ const coinDecimals = (number) => {
   return number * 10 ** -18;
 };
 
+const convertResources = (number) => {
+  return Math.floor(number * 10 ** -3);
+};
+
 export {
   run,
   sort,
@@ -348,4 +352,5 @@ export {
   getTimeRemaining,
   isMobileTablet,
   coinDecimals,
+  convertResources,
 };

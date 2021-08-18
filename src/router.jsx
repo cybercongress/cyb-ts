@@ -37,6 +37,10 @@ import TestKeplr from './containers/testKeplre';
 import Mint from './containers/mint';
 import RoutedEnergy from './containers/energy';
 import Bootcycle from './containers/bootcycle';
+import Market from './containers/market';
+import Oracle from './containers/oracle';
+import Objects from './containers/Objects';
+import Taverna from './containers/taverna';
 
 export const history = createBrowserHistory({});
 
@@ -64,16 +68,16 @@ function AppRouter({
     <Router history={history}>
       <Route path="/" component={App} />
       <Switch>
-        <Route path="/" exact component={Home} />
+        <Route path="/" exact component={Wallet} />
+        <Route path="/superintelligence" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
         <Route path="/gift/:address?" component={Gift} />
         <Route path="/gol/takeoff" component={Funding} />
         <Route path="/tot" component={Got} />
         <Route path="/brain" component={Brain} />
-        <Route exact path="/governance" component={Governance} />
-        <Route path="/governance/:proposal_id" component={ProposalsDetail} />
-        <Route path="/pocket" component={Wallet} />
-        <Route path="/heroes" component={Validators} />
+        <Route exact path="/senate" component={Governance} />
+        <Route path="/senate/:proposal_id" component={ProposalsDetail} />
+        <Route path="/halloffame" component={Validators} />
         <Route path="/episode-1" component={Story} />
         <Route exact path="/network/bostrom/tx" component={Txs} />
         <Route path="/gol" component={GOL} />
@@ -99,11 +103,15 @@ function AppRouter({
         <Route path="/network/bostrom/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
         <Route path="/degenbox" component={TrollBoxx} />
-        <Route path="/port" component={PortPages} />
+        <Route path="/portal" component={PortPages} />
         <Route path="/test" component={TestKeplr} />
         <Route path="/mint" component={Mint} />
         <Route path="/energy" component={RoutedEnergy} />
         {/* <Route path="/bootcycle" component={Bootcycle} /> */}
+        <Route path="/market" component={Market} />
+        <Route path="/oracle" component={Oracle} />
+        <Route path="/particles" component={Objects} />
+        <Route path="/sixthSense" component={Taverna} />
       </Switch>
     </Router>
   );
