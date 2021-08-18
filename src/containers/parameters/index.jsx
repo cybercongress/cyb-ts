@@ -12,6 +12,7 @@ import {
   RankParam,
   InlfationParam,
   ParamEnergy,
+  WasmParam,
 } from './tabs';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -42,7 +43,7 @@ const initParam = {
   bandwidth: null,
   gov: null,
   rank: null,
-  inlfation: null,
+  mint: null,
   energy: null,
 };
 
@@ -74,15 +75,25 @@ function ParamNetwork({ location }) {
     ) {
       setSelected('rank');
     } else if (
-      pathname.match(/inlfation/gm) &&
-      pathname.match(/inlfation/gm).length > 0
+      pathname.match(/mint/gm) &&
+      pathname.match(/mint/gm).length > 0
     ) {
-      setSelected('inlfation');
+      setSelected('mint');
     } else if (
-      pathname.match(/energy/gm) &&
-      pathname.match(/energy/gm).length > 0
+      pathname.match(/resources/gm) &&
+      pathname.match(/resources/gm).length > 0
     ) {
-      setSelected('energy');
+      setSelected('resources');
+    } else if (
+      pathname.match(/wasm/gm) &&
+      pathname.match(/wasm/gm).length > 0
+    ) {
+      setSelected('wasm');
+    } else if (
+      pathname.match(/liquidity/gm) &&
+      pathname.match(/liquidity/gm).length > 0
+    ) {
+      setSelected('liquidity');
     } else {
       setSelected('bandwidth');
     }
@@ -173,20 +184,29 @@ function ParamNetwork({ location }) {
     );
   }
 
-  if (selected === 'inlfation') {
+  if (selected === 'mint') {
     content = (
       <Route
-        path="/network/bostrom/parameters/inlfation"
-        render={() => <InlfationParam data={dataParam.inlfation} />}
+        path="/network/bostrom/parameters/mint"
+        render={() => <InlfationParam data={dataParam.mint} />}
       />
     );
   }
 
-  if (selected === 'energy') {
+  if (selected === 'resources') {
     content = (
       <Route
-        path="/network/bostrom/parameters/energy"
+        path="/network/bostrom/parameters/resources"
         render={() => <ParamEnergy data={dataParam.energy} />}
+      />
+    );
+  }
+
+  if (selected === 'wasm') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/wasm"
+        render={() => <WasmParam />}
       />
     );
   }
@@ -240,14 +260,24 @@ function ParamNetwork({ location }) {
           to="/network/bostrom/parameters/rank"
         />
         <TabBtn
-          text="Inlfation"
-          isSelected={selected === 'inlfation'}
-          to="/network/bostrom/parameters/inlfation"
+          text="Mint"
+          isSelected={selected === 'mint'}
+          to="/network/bostrom/parameters/mint"
         />
         <TabBtn
-          text="Energy"
-          isSelected={selected === 'energy'}
-          to="/network/bostrom/parameters/energy"
+          text="Resources"
+          isSelected={selected === 'resources'}
+          to="/network/bostrom/parameters/resources"
+        />
+        <TabBtn
+          text="Wasm"
+          isSelected={selected === 'wasm'}
+          to="/network/bostrom/parameters/wasm"
+        />
+        <TabBtn
+          text="Liquidity"
+          isSelected={selected === 'liquidity'}
+          to="/network/bostrom/parameters/liquidity"
         />
       </Tablist>
       <Pane
