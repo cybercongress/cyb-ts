@@ -2,6 +2,7 @@ import React from 'react';
 import { Tablist, Pane, Tab } from '@cybercongress/gravity';
 import { Card, TableSlots } from '../ui';
 import { Dots, LinkWindow } from '../../../components';
+import { convertResources, formatNumber } from '../../../utils/utils';
 
 const voltImg = require('../../../image/lightning2.png');
 const amperImg = require('../../../image/light.png');
@@ -12,7 +13,7 @@ const ValueImg = ({ text, img }) => (
   </div>
 );
 
-function MyEnergy({ slotsData, vested, loadingAuthAccounts }) {
+function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
   return (
     <div>
       <Pane marginY={30} textAlign="center">
@@ -31,7 +32,9 @@ function MyEnergy({ slotsData, vested, loadingAuthAccounts }) {
       >
         <Card
           title={<ValueImg text="A" img={amperImg} />}
-          value={vested.amper}
+          value={
+            balacesResource.mamper ? formatNumber(balacesResource.mamper) : 0
+          }
           stylesContainer={{ maxWidth: '200px' }}
         />
         <Pane marginX={10} fontSize="18px">
@@ -39,7 +42,9 @@ function MyEnergy({ slotsData, vested, loadingAuthAccounts }) {
         </Pane>
         <Card
           title={<ValueImg text="V" img={voltImg} />}
-          value={vested.volt}
+          value={
+            balacesResource.mvolt ? formatNumber(balacesResource.mvolt) : 0
+          }
           stylesContainer={{ maxWidth: '200px' }}
         />
         <Pane marginX={10} fontSize="18px">
@@ -47,7 +52,11 @@ function MyEnergy({ slotsData, vested, loadingAuthAccounts }) {
         </Pane>
         <Card
           title="W"
-          value={vested.volt * vested.amper}
+          value={
+            balacesResource.mvolt && balacesResource.mamper
+              ? formatNumber(balacesResource.mvolt * balacesResource.mamper)
+              : 0
+          }
           stylesContainer={{ maxWidth: '200px' }}
         />
       </Pane>

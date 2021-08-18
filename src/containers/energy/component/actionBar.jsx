@@ -17,7 +17,12 @@ import {
   ButtonIcon,
 } from '../../../components';
 import { AppContext } from '../../../context';
-import { CYBER, LEDGER, PATTERN_CYBER } from '../../../utils/config';
+import {
+  CYBER,
+  LEDGER,
+  PATTERN_CYBER,
+  DEFAULT_GAS_LIMITS,
+} from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 
@@ -89,11 +94,11 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   const [addressAddRouteInput, setAddressAddRouteInput] = useState('');
   const [aliasInput, setAliasInput] = useState('');
   const [amountInput, setAmountInput] = useState('');
-  const [selectResource, setSelectResource] = useState('volt');
+  const [selectResource, setSelectResource] = useState('mvolt');
 
-  useEffect(() => {
-    cleatState();
-  }, [selectedRoute]);
+  // useEffect(() => {
+  //   cleatState();
+  // }, [selectedRoute]);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -150,12 +155,17 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
         const [{ address }] = await keplr.signer.getAccounts();
         if (addressActive === address) {
           let response = {};
+          const fee = {
+            amount: [],
+            gas: DEFAULT_GAS_LIMITS.toString(),
+          };
           if (stage === STAGE_ADD_ROUTER) {
             setStage(STAGE_SUBMITTED);
             response = await keplr.createEnergyRoute(
               address,
               addressAddRouteInput,
-              aliasInput
+              aliasInput,
+              fee
             );
           }
           if (stage === STAGE_SET_ROUTER) {
@@ -163,14 +173,16 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
             response = await keplr.editEnergyRoute(
               address,
               selectedRoute.destination,
-              coin(parseFloat(amountInput), selectResource)
+              coin(parseFloat(amountInput) * 10 ** 3, selectResource),
+              fee
             );
           }
           if (stage === STAGE_DELETE_ROUTER) {
             setStage(STAGE_SUBMITTED);
             response = await keplr.deleteEnergyRoute(
               address,
-              selectedRoute.destination
+              selectedRoute.destination,
+              fee
             );
           }
 
@@ -205,7 +217,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
       <ActionBarContainer>
         <ActionBarContentText>
           Start by adding a address to
-          <Link style={{ marginLeft: 5 }} to="/pocket">
+          <Link style={{ marginLeft: 5 }} to="/">
             your pocket
           </Link>
           .
@@ -308,14 +320,14 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
           marginRight={10}
         />
         <Btn
-          text={<ValueImg text="V" />}
-          checkedSwitch={selectResource === 'volt'}
-          onSelect={() => setSelectResource('volt')}
+          text={<ValueImg text="mvolt" />}
+          checkedSwitch={selectResource === 'mvolt'}
+          onSelect={() => setSelectResource('mvolt')}
         />
         <Btn
-          text={<ValueImg text="A" />}
-          checkedSwitch={selectResource === 'amper'}
-          onSelect={() => setSelectResource('amper')}
+          text={<ValueImg text="mamper" />}
+          checkedSwitch={selectResource === 'mamper'}
+          onSelect={() => setSelectResource('mamper')}
         />
       </ActionBarSteps>
     );

@@ -8,9 +8,8 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { trimString, formatNumber } from '../../../utils/utils';
-import { NoItems, Dots, TextTable } from '../../../components';
-import ValueImg from './valueImg';
+import { convertResources, formatNumber } from '../../../utils/utils';
+import { NoItems, Dots, TextTable, ValueImg } from '../../../components';
 
 const dateFormat = require('dateformat');
 
@@ -42,34 +41,39 @@ const TableSlots = ({ data, mobile }) => {
     slotRows = data.map((item, i) => (
       <Table.Row borderBottom="none" display="flex" key={i}>
         <Table.TextCell textAlign="center">
-          <TextTable>
-            {dateFormat(new Date(item.length), 'dd/mm/yyyy, HH:MM:ss')}
-          </TextTable>
-        </Table.TextCell>
-        <Table.TextCell textAlign="center">
-          {item.status === 'available' && (
-            <TextTable color="#3ab793">Available</TextTable>
+          {item.status === 'Unfreezing' && (
+            <TextTable color="#3ab793">Unfreezing</TextTable>
           )}
-          {item.status !== 'available' && (
+          {item.status !== 'Unfreezing' && (
             <TextTable>
               <TextTable marginRight={5} color="#ff9100">
-                Locked
+                Liquid
               </TextTable>{' '}
-              {item.status}
+            </TextTable>
+          )}
+        </Table.TextCell>
+        <Table.TextCell textAlign="center">
+          {item.time && <TextTable>{item.time}</TextTable>}
+        </Table.TextCell>
+        <Table.TextCell textAlign="end">
+          {item.amount.hydrogen && (
+            <TextTable>
+              {formatNumber(item.amount.hydrogen)}
+              <ValueImg text="hydrogen" onlyImg />
             </TextTable>
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          {item.amount.volt && (
+          {item.amount.mvolt && (
             <TextTable>
-              {formatNumber(item.amount.volt)}
-              <ValueImg text="V" onlyImg />
+              {item.amount.mvolt}
+              <ValueImg text="mvolt" onlyImg />
             </TextTable>
           )}
-          {item.amount.amper && (
+          {item.amount.mamper && (
             <TextTable>
-              {formatNumber(item.amount.amper)}
-              <ValueImg text="A" onlyImg />
+              {item.amount.mamper}
+              <ValueImg text="mamper" onlyImg />
             </TextTable>
           )}
         </Table.TextCell>
@@ -89,18 +93,16 @@ const TableSlots = ({ data, mobile }) => {
           }}
         >
           <Table.TextHeaderCell textAlign="center">
-            <TextTable>
-              Time
-              <Tooltip content="UTC" position="bottom">
-                <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-              </Tooltip>
-            </TextTable>
-          </Table.TextHeaderCell>
-          <Table.TextHeaderCell textAlign="center">
             <TextTable>State</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
-            <TextTable>Resource</TextTable>
+            <TextTable>Unfreezing</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Supplied</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>Recieved</TextTable>
           </Table.TextHeaderCell>
         </Table.Head>
         <Table.Body

@@ -1,8 +1,13 @@
 import React from 'react';
 import { Pane, TableEv as Table } from '@cybercongress/gravity';
-import { ValueImg } from '../ui';
-import { LinkWindow, TextTable, NoItems, Account } from '../../../components';
-import { formatNumber } from '../../../utils/utils';
+import {
+  LinkWindow,
+  TextTable,
+  NoItems,
+  Account,
+  ValueImg,
+} from '../../../components';
+import { formatNumber, convertResources } from '../../../utils/utils';
 
 const TableItem = ({ item, index }) => (
   <Table.Row borderBottom="none" display="flex" key={index}>
@@ -15,15 +20,19 @@ const TableItem = ({ item, index }) => (
       <TextTable>{item.alias}</TextTable>
     </Table.TextCell>
     <Table.TextCell textAlign="end">
-      {item.resource.amper ? (
-        <TextTable>{formatNumber(item.resource.volt)}</TextTable>
+      {item.resource.mamper ? (
+        <TextTable>
+          {formatNumber(convertResources(item.resource.mamper))}
+        </TextTable>
       ) : (
         <TextTable>0</TextTable>
       )}
     </Table.TextCell>
     <Table.TextCell textAlign="end">
-      {item.resource.volt ? (
-        <TextTable>{formatNumber(item.resource.volt)}</TextTable>
+      {item.resource.mvolt ? (
+        <TextTable>
+          {formatNumber(convertResources(item.resource.mvolt))}
+        </TextTable>
       ) : (
         <TextTable>0</TextTable>
       )}
@@ -64,12 +73,12 @@ function Income({ destinationRoutes, mobile }) {
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>
-              <ValueImg text="A" />
+              <ValueImg text="mamper" />
             </TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>
-              <ValueImg text="V" />
+              <ValueImg text="mvolt" />
             </TextTable>
           </Table.TextHeaderCell>
         </Table.Head>

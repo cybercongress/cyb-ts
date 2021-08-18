@@ -2,8 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../../context';
 
 const initValue = {
-  volt: 0,
-  amper: 0,
+  mvolt: 0,
+  mamper: 0,
 };
 
 const getCalculationBalance = (data) => {
@@ -36,8 +36,8 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
           if (queryResultsourceRoutes.routes) {
             queryResultsourceRoutes.routes.forEach((item, index) => {
               queryResultsourceRoutes.routes[index].resource = {
-                amper: 0,
-                volt: 0,
+                mamper: 0,
+                mvolt: 0,
               };
               const value = getCalculationBalance(item.value);
               queryResultsourceRoutes.routes[index].resource = {
@@ -68,16 +68,16 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
           if (queryResultsourceRoutedEnergy.value) {
             const { value } = queryResultsourceRoutedEnergy;
             const sourceRoutedEnergy = getCalculationBalance(value);
-            if (sourceRoutedEnergy.amper) {
+            if (sourceRoutedEnergy.mamper) {
               setSourceEnergy((item) => ({
                 ...item,
-                amper: sourceRoutedEnergy.amper,
+                mamper: sourceRoutedEnergy.mamper,
               }));
             }
-            if (sourceRoutedEnergy.volt) {
+            if (sourceRoutedEnergy.mvolt) {
               setSourceEnergy((item) => ({
                 ...item,
-                volt: sourceRoutedEnergy.volt,
+                mvolt: sourceRoutedEnergy.mvolt,
               }));
             }
           }
@@ -101,8 +101,8 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
           if (queryResultdestinationRoutes.routes) {
             queryResultdestinationRoutes.routes.forEach((item, index) => {
               queryResultdestinationRoutes.routes[index].resource = {
-                amper: 0,
-                volt: 0,
+                mamper: 0,
+                mvolt: 0,
               };
               const value = getCalculationBalance(item.value);
               queryResultdestinationRoutes.routes[index].resource = {
@@ -132,16 +132,16 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
           if (queryResultdestinationRoutedEnergy.value) {
             const { value } = queryResultdestinationRoutedEnergy;
             const destinationRoutedEnergy = getCalculationBalance(value);
-            if (destinationRoutedEnergy.amper) {
+            if (destinationRoutedEnergy.mamper) {
               setDestinationEnergy((item) => ({
                 ...item,
-                amper: destinationRoutedEnergy.amper,
+                mamper: destinationRoutedEnergy.mamper,
               }));
             }
-            if (destinationRoutedEnergy.volt) {
+            if (destinationRoutedEnergy.mvolt) {
               setDestinationEnergy((item) => ({
                 ...item,
-                volt: destinationRoutedEnergy.volt,
+                mvolt: destinationRoutedEnergy.mvolt,
               }));
             }
           }

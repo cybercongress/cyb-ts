@@ -5,6 +5,7 @@ import { MyEnergy, Income, Outcome } from './tab';
 import { Statistics, ActionBar } from './component';
 import useGetSlots from '../mint/useGetSlots';
 import useGetSourceRoutes from './hooks/useSourceRouted';
+import { convertResources } from '../../utils/utils';
 
 function RoutedEnergy({ defaultAccount }) {
   const location = useLocation();
@@ -13,7 +14,7 @@ function RoutedEnergy({ defaultAccount }) {
   const [selected, setSelected] = useState('myEnegy');
   const [selectedRoute, setSelectedRoute] = useState({});
   const [selectedIndex, setSelectedIndex] = useState('');
-  const { slotsData, vested, loadingAuthAccounts } = useGetSlots(
+  const { slotsData, loadingAuthAccounts, balacesResource } = useGetSlots(
     addressActive,
     updateAddressFunc
   );
@@ -23,6 +24,11 @@ function RoutedEnergy({ defaultAccount }) {
     destinationRoutes,
     destinationEnergy,
   } = useGetSourceRoutes(addressActive, updateAddressFunc);
+
+  useEffect(() => {
+    setSelectedRoute({});
+    setSelectedIndex('');
+  }, [updateAddressFunc]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -73,7 +79,7 @@ function RoutedEnergy({ defaultAccount }) {
     content = (
       <MyEnergy
         slotsData={slotsData}
-        vested={vested}
+        balacesResource={balacesResource}
         loadingAuthAccounts={loadingAuthAccounts}
       />
     );
@@ -98,9 +104,15 @@ function RoutedEnergy({ defaultAccount }) {
       <main className="block-body">
         <Statistics
           active={selected}
-          myEnegy={vested.amper * vested.volt}
-          outcome={sourceEnergy.amper * sourceEnergy.volt}
-          income={destinationEnergy.amper * destinationEnergy.volt}
+          myEnegy={balacesResource.mamper * balacesResource.mvolt}
+          outcome={
+            convertResources(sourceEnergy.mamper) *
+            convertResources(sourceEnergy.mvolt)
+          }
+          income={
+            convertResources(destinationEnergy.mamper) *
+            convertResources(destinationEnergy.mvolt)
+          }
         />
         {content}
       </main>

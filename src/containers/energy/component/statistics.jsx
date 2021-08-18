@@ -30,6 +30,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
 
   return (
     <Pane
+      marginTop={10}
       marginBottom={10}
       display="flex"
       alignItems="center"
