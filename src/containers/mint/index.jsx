@@ -12,15 +12,16 @@ import {
   getDecimal,
   formatCurrencyNumber,
   formatCurrency,
+  convertResources,
 } from '../../utils/utils';
 import { authAccounts } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import ERatio from './eRatio';
 import { useGetBalance } from '../account/hooks';
-import { Dots, CardStatisics } from '../../components';
+import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
-import TableSlots from './table';
+import { TableSlots } from '../energy/ui';
 import TabBtnList from './tabLinsBtn';
 import ActionBar from './actionBar';
 
@@ -30,6 +31,25 @@ const TSX_SEND = 1;
 const BASE_VESTING_AMOUNT = 10000000;
 const BASE_VESTING_TIME = 86400;
 const VESTING_TIME_HOURS = 3600;
+
+const PREFIXES = [
+  {
+    prefix: 't',
+    power: 10 ** 12,
+  },
+  {
+    prefix: 'g',
+    power: 10 ** 9,
+  },
+  {
+    prefix: 'm',
+    power: 10 ** 6,
+  },
+  {
+    prefix: 'k',
+    power: 10 ** 3,
+  },
+];
 
 const grid = {
   display: 'grid',
@@ -56,11 +76,13 @@ function Mint({ defaultAccount }) {
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   const { balance } = useGetBalance(addressActive, updateAddress);
-  const { slotsData, vested, loadingAuthAccounts } = useGetSlots(
-    addressActive,
-    updateAddress
-  );
-  const [selected, setSelected] = useState('volt');
+  const {
+    slotsData,
+    vested,
+    loadingAuthAccounts,
+    originalVesting,
+  } = useGetSlots(addressActive, updateAddress);
+  const [selected, setSelected] = useState('mvolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(1);
@@ -83,27 +105,40 @@ function Mint({ defaultAccount }) {
   }, [defaultAccount.name]);
 
   useEffect(() => {
-    if (balance.delegation > 0) {
-      const maxValue = Math.floor(balance.delegation);
-      if (maxValue > 0) {
-        setMax(maxValue);
-      }
+    let vestedTokens = 0;
+    let maxValue = 0;
+    if (originalVesting.hydrogen > 0) {
+      vestedTokens =
+        parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
     }
-  }, [balance]);
+    if (balance.delegation > 0) {
+      maxValue = Math.floor(balance.delegation) - vestedTokens;
+    }
+    if (maxValue > 0) {
+      setMax(maxValue);
+    }
+  }, [balance, vested, originalVesting]);
 
   useEffect(() => {
-    if (vested.sboot > 0 && balance.available > 0) {
-      const procent = (vested.sboot / balance.available) * 100;
+    let vestedTokens = 0;
+    if (originalVesting.hydrogen > 0) {
+      vestedTokens =
+        parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
+    }
+    if (vestedTokens > 0 && balance.delegation > 0) {
+      const procent = (vestedTokens / balance.delegation) * 100;
       const eRatioTemp = Math.floor(procent * 100) / 100;
       setERatio(eRatioTemp);
+    } else {
+      setERatio(0);
     }
-  }, [balance, vested]);
+  }, [balance, vested, originalVesting]);
 
   useEffect(() => {
-    const sboot = value;
+    const hydrogen = value;
     const vestingTime = valueDays * VESTING_TIME_HOURS;
     const token = Math.floor(
-      (sboot / BASE_VESTING_AMOUNT) * (vestingTime / BASE_VESTING_TIME)
+      (hydrogen / BASE_VESTING_AMOUNT) * (vestingTime / BASE_VESTING_TIME)
     );
     setResourceToken(token);
   }, [value, valueDays]);
@@ -116,18 +151,32 @@ function Mint({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body" style={{ paddingTop: 30 }}>
+      <main className="block-body">
         <Pane
-          marginTop={30}
+          marginTop={10}
           marginBottom={50}
           display="grid"
           gridTemplateColumns="300px 300px 300px"
           gridGap="20px"
           justifyContent="center"
         >
-          <CardStatisics title="Amper" value={vested.amper} />
-          <CardStatisics title="Volt" value={vested.volt} />
-          <CardStatisics title="max slots" value={8} />
+          <CardStatisics
+            title={<ValueImg text="mvolt" />}
+            value={formatNumber(originalVesting.mvolt)}
+          />
+          <CardStatisics
+            title={<ValueImg text="mamper" />}
+            value={formatNumber(originalVesting.mamper)}
+          />
+          <CardStatisics
+            title="My Energy"
+            value={formatCurrency(
+              originalVesting.mamper * originalVesting.mvolt,
+              'W',
+              2,
+              PREFIXES
+            )}
+          />
         </Pane>
         <div
           style={{
@@ -149,14 +198,14 @@ function Mint({ defaultAccount }) {
           justifyContent="center"
         >
           <Btn
-            text="Volt"
-            checkedSwitch={selected === 'volt'}
-            onSelect={() => setSelected('volt')}
+            text={<ValueImg text="mvolt" />}
+            checkedSwitch={selected === 'mvolt'}
+            onSelect={() => setSelected('mvolt')}
           />
           <Btn
-            text="Amper"
-            checkedSwitch={selected === 'amper'}
-            onSelect={() => setSelected('amper')}
+            text={<ValueImg text="mamper" />}
+            checkedSwitch={selected === 'mamper'}
+            onSelect={() => setSelected('mamper')}
           />
         </Tablist>
         <div style={grid}>
@@ -167,16 +216,16 @@ function Mint({ defaultAccount }) {
               height: '100%',
             }}
           >
-            <ItemBalance text="Liquid balance" amount={balance.available} />
+            {/* <ItemBalance text="Liquid balance" amount={balance.available} /> */}
             <ItemBalance
-              text="Liquid Stake Investminted"
-              amount={loadingAuthAccounts ? null : vested.sboot}
-              currency={`S${CYBER.DENOM_CYBER.toUpperCase()}`}
+              text="Liquid"
+              amount={balance.delegation}
+              currency={<ValueImg text="hydrogen" />}
             />
             <ItemBalance
-              text="Liquid Stake"
-              amount={balance.delegation}
-              currency={`S${CYBER.DENOM_CYBER.toUpperCase()}`}
+              text="Frozen"
+              amount={loadingAuthAccounts ? null : originalVesting.hydrogen}
+              currency={<ValueImg text="hydrogen" />}
             />
           </div>
           <div
@@ -195,7 +244,7 @@ function Mint({ defaultAccount }) {
               min={0}
               max={max}
               marks={{
-                [max]: returnColorDot(`${formatCurrency(max, 'boot')}`),
+                [max]: returnColorDot(`${formatNumber(max)} H`),
               }}
               onChange={(eValue) => setValue(eValue)}
               trackStyle={{ backgroundColor: '#3ab793' }}
@@ -252,11 +301,11 @@ function Mint({ defaultAccount }) {
                 bottom: '30px',
               }}
             >
-              You’re minting investing {formatNumber(value)} SBOOT for{' '}
-              {valueDays} hour. This operation will mint {resourceToken}{' '}
-              {selected} to your account. In the end of period you will be able
-              to make your {selected} liquid, but you can use it for boost
-              ranking duriung vesintg period
+              You’re freezing {formatNumber(value)} H for {valueDays} hours. It
+              will release {resourceToken} {<ValueImg text={selected} />} for
+              you. At the end of the period, {selected} becomes liquid
+              automatically, but you can use it to boost ranking during the
+              freeze. You can have only 8 slots for investmint at a time.
             </div>
           )}
         </div>

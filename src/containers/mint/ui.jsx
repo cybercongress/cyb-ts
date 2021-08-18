@@ -66,7 +66,9 @@ const ItemBalance = ({ text, amount, currency }) => {
       {amount === null ? (
         <Dots />
       ) : (
-        <FormatNumber number={amount} currency={currency} />
+        <Pane>
+          {formatNumber(amount)} {currency}
+        </Pane>
       )}
     </Pane>
   );

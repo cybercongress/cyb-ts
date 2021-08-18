@@ -14,7 +14,7 @@ import {
   Account,
 } from '../../components';
 import { AppContext } from '../../context';
-import { CYBER, LEDGER } from '../../utils/config';
+import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 
@@ -74,12 +74,17 @@ function ActionBar({
     if (keplr !== null) {
       setStage(STAGE_SUBMITTED);
       const [{ address }] = await keplr.signer.getAccounts();
+      const fee = {
+        amount: [],
+        gas: DEFAULT_GAS_LIMITS.toString(),
+      };
       if (addressActive === address) {
         const response = await keplr.investmint(
           address,
-          coin(parseFloat(value), `s${CYBER.DENOM_CYBER}`),
+          coin(parseFloat(value), 'hydrogen'),
           selected,
-          parseFloat(VESTING_TIME_HOURS * valueDays)
+          parseFloat(VESTING_TIME_HOURS * valueDays),
+          fee
         );
         if (response.code === 0) {
           setTxHash(response.transactionHash);
@@ -112,7 +117,7 @@ function ActionBar({
       <ActionBarContainer>
         <ActionBarContentText>
           Start by adding a address to
-          <Link style={{ marginLeft: 5 }} to="/pocket">
+          <Link style={{ marginLeft: 5 }} to="/">
             your pocket
           </Link>
           .
