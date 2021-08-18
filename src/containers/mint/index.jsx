@@ -85,7 +85,7 @@ function Mint({ defaultAccount }) {
   const [selected, setSelected] = useState('mvolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
-  const [max, setMax] = useState(1);
+  const [max, setMax] = useState(0);
   const [eRatio, setERatio] = useState(0);
   const [resourceToken, setResourceToken] = useState(0);
 
@@ -219,7 +219,7 @@ function Mint({ defaultAccount }) {
             {/* <ItemBalance text="Liquid balance" amount={balance.available} /> */}
             <ItemBalance
               text="Liquid"
-              amount={balance.delegation}
+              amount={max}
               currency={<ValueImg text="hydrogen" />}
             />
             <ItemBalance
