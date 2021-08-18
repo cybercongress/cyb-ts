@@ -13,7 +13,7 @@ function TabBtnList({ countHeroes, selected }) {
       <TabBtn
         key="Active"
         isSelected={selected === 'active'}
-        to="/heroes"
+        to="/halloffame"
         text={
           <Pane display="flex" alignItems="center">
             <Pane>Active</Pane>
@@ -30,7 +30,7 @@ function TabBtnList({ countHeroes, selected }) {
       <TabBtn
         key="Jailed"
         isSelected={selected === 'jailed'}
-        to="/heroes/jailed"
+        to="/halloffame/jailed"
         text={
           <Pane display="flex" alignItems="center">
             <Pane>Jailed</Pane>
