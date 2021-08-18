@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { trimString } from '../../../utils/utils';
 import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
-import { PATTERN_CYBER } from '../../../utils/config';
+import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 
 const img = require('../../../image/logo-cyb-v3.svg');
 
 function AvatarIpfs({
-  addressCyber = 'cyber',
+  addressCyber = CYBER.BECH32_PREFIX_ACC_ADDR_CYBER,
   width = '80px',
   height = '80px',
   showAddress,

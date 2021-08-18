@@ -930,7 +930,7 @@ export const Delegate = ({
   <ActionBar>
     <ActionBarContentText>
       <Text fontSize="16px" color="#fff">
-        {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+        {T.actionBar.delegate.enterAmount} {DENOM_CYBER.toUpperCase()}{' '}
         {delegate
           ? T.actionBar.delegate.delegate
           : T.actionBar.delegate.unDelegateFrom}{' '}
@@ -989,7 +989,7 @@ export const ReDelegate = ({
           onChange={onChangeInputAmount}
           placeholder="amount"
         />{' '}
-        {DENOM_CYBER_G.toUpperCase()} restake from{' '}
+        {DENOM_CYBER.toUpperCase()} restake from{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
           {validators.description.moniker}
         </Text>

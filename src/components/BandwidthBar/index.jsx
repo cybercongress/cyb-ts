@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Battery, Pane, Heading, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { Tooltip } from '../tooltip/tooltip';
+import { CYBER } from '../../utils/config';
 
-const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
+const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice, countLink }) => {
   let text =
     'Empty battery. You have no power & energy so you cannot submit cyberlinks. ';
 
   if (bwMaxValue > 0) {
     text = `You have ${bwRemained} kW left and can immediately submit ${Math.floor(
-      bwRemained / linkPrice
+      countLink * linkPrice
     )} cyberlinks. `;
   }
   return (
@@ -17,14 +18,14 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => {
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
-          <Link to="/search/get%20EUL">Get EUL</Link>
+          <Link to="/portal">Get {CYBER.DENOM_CYBER.toUpperCase()}</Link>
         </Text>
       </Pane>
     </Pane>
   );
 };
 
-const BandwidthBar = ({ bwRemained = 0, bwMaxValue = 0, ...props }) => {
+const BandwidthBar = ({ bwRemained = 0, bwMaxValue = 0, countLink = 0, ...props }) => {
   const [linkPrice, setlinkPrice] = useState(4);
   const bwPercent =
     bwMaxValue > 0 ? Math.floor((bwRemained / bwMaxValue) * 100) : 0;
@@ -41,6 +42,7 @@ const BandwidthBar = ({ bwRemained = 0, bwMaxValue = 0, ...props }) => {
           bwRemained={bwRemained}
           bwMaxValue={bwMaxValue}
           linkPrice={linkPrice}
+          countLink={countLink}
         />
       }
     >
