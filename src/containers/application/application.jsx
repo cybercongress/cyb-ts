@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import {
   Navigation,
@@ -6,7 +6,7 @@ import {
   NavigationLeft,
   Pane,
 } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
@@ -17,12 +17,15 @@ import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { CYBER, WP } from '../../utils/config';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, convertResources } from '../../utils/utils';
+import { AppContext } from '../../context';
 
-const cyber = require('../../image/blue-circle.png');
+const cyber = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const bug = require('../../image/alert-circle-outline.svg');
+const circleYellow = require('../../image/large-yellow-circle.png');
+const circleRed = require('../../image/large-red-circle.png');
 
 const ListAccounts = ({
   accounts,
@@ -72,184 +75,154 @@ const ListAccounts = ({
   );
 };
 
-class App extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    let story = false;
-    const localStorageStory = localStorage.getItem('story');
-    if (localStorageStory !== null) {
-      story = localStorageStory;
+function App({
+  defaultAccount,
+  query,
+  ipfsStatus,
+  bandwidth,
+  block,
+  accounts,
+  setQueryProps,
+  setAccountsProps,
+  setDefaultAccountProps,
+  setBandwidthProps,
+  children,
+}) {
+  const { jsCyber } = useContext(AppContext);
+  const textInput = useRef();
+  const history = useHistory();
+  const location = useLocation();
+  const [home, setHome] = useState(false);
+  const [openMenu, setOpenMenu] = useState(true);
+  const [countLink, setCountLink] = useState(0);
+
+  useEffect(() => {
+    const { pathname } = location;
+    console.log(`!!! ===> 96 useEffect pathname`, pathname);
+    // if (pathname === '/') {
+    //   setHome(true);
+    // } else {
+    //   setHome(false);
+    // }
+
+    if (pathname.indexOf(query) === -1) {
+      setQueryProps('');
     }
+  }, [location.pathname]);
 
-    this.state = {
-      openMenu: false,
-      story,
-      valueSearchInput: '',
-      home: false,
-      battery: false,
-      address: null,
-    };
-    this.textInput = React.createRef();
-    this.routeChange = this.routeChange.bind(this);
-    // this.handleKeyFocus = this.handleKeyFocus.bind(this);
-  }
+  useEffect(() => {
+    const checkAddressLocalStorage = async () => {
+      const { account } = defaultAccount;
+      // console.log(`!!! ===> 96 useEffect checkAddressLocalStorage`, account);
+      if (account === null) {
+        let defaultAccounts = null;
+        let defaultAccountsKeys = null;
+        let accountsTemp = null;
 
-  componentDidMount() {
-    this.chekHomePage();
-    this.chekEvangelism();
-    this.checkAddressLocalStorage();
-    document.onkeypress = (e) => {
-      if (e.key === '/') {
-        document.getElementById('search-input-searchBar').focus();
-      }
-    };
-  }
-
-  componentDidUpdate(prevProps) {
-    const { location, query, defaultAccount } = this.props;
-    if (prevProps.location.pathname !== location.pathname) {
-      this.chekHomePage();
-      this.updateInput();
-      this.chekEvangelism();
-      if (location.pathname.indexOf(query) === -1) {
-        this.clearInrut();
-      }
-      this.checkAddressLocalStorage();
-      document.onkeypress = (e) => {
-        if (e.key === '/') {
-          document.getElementById('search-input-searchBar').focus();
-        }
-      };
-    }
-    if (prevProps.defaultAccount.name !== defaultAccount.name) {
-      this.checkAddressLocalStorage();
-    }
-  }
-
-  checkAddressLocalStorage = async () => {
-    const {
-      setBandwidthProps,
-      setDefaultAccountProps,
-      defaultAccount,
-      setAccountsProps,
-    } = this.props;
-    const { account } = defaultAccount;
-    if (account !== null && account.cyber) {
-      this.getBandwidth(account.cyber.bech32);
-    } else {
-      let defaultAccounts = null;
-      let defaultAccountsKeys = null;
-      let accounts = null;
-
-      const localStoragePocketAccount = await localStorage.getItem(
-        'pocketAccount'
-      );
-      const localStoragePocket = localStorage.getItem('pocket');
-
-      if (localStoragePocket !== null) {
-        const localStoragePocketData = JSON.parse(localStoragePocket);
-        const keyPocket = Object.keys(localStoragePocketData)[0];
-        const accountPocket = Object.values(localStoragePocketData)[0];
-        defaultAccounts = accountPocket;
-        defaultAccountsKeys = keyPocket;
-      }
-
-      if (localStoragePocketAccount !== null) {
-        const localStoragePocketAccountData = JSON.parse(
-          localStoragePocketAccount
+        const localStoragePocketAccount = await localStorage.getItem(
+          'pocketAccount'
         );
-        if (localStoragePocket === null) {
-          const keys0 = Object.keys(localStoragePocketAccountData)[0];
-          localStorage.setItem(
-            'pocket',
-            JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
-          );
-          defaultAccounts = localStoragePocketAccountData[keys0];
-          defaultAccountsKeys = keys0;
-        } else {
-          accounts = {
-            [defaultAccountsKeys]:
-              localStoragePocketAccountData[defaultAccountsKeys],
-            ...localStoragePocketAccountData,
-          };
+        const localStoragePocket = localStorage.getItem('pocket');
+        if (localStoragePocket !== null) {
+          const localStoragePocketData = JSON.parse(localStoragePocket);
+          const keyPocket = Object.keys(localStoragePocketData)[0];
+          const accountPocket = Object.values(localStoragePocketData)[0];
+          defaultAccounts = accountPocket;
+          defaultAccountsKeys = keyPocket;
         }
-      } else {
-        localStorage.clear();
+        if (localStoragePocketAccount !== null) {
+          const localStoragePocketAccountData = JSON.parse(
+            localStoragePocketAccount
+          );
+          if (localStoragePocket === null) {
+            const keys0 = Object.keys(localStoragePocketAccountData)[0];
+            localStorage.setItem(
+              'pocket',
+              JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
+            );
+            defaultAccounts = localStoragePocketAccountData[keys0];
+            defaultAccountsKeys = keys0;
+          } else {
+            accountsTemp = {
+              [defaultAccountsKeys]:
+                localStoragePocketAccountData[defaultAccountsKeys],
+              ...localStoragePocketAccountData,
+            };
+          }
+        } else {
+          localStorage.clear();
+        }
+        setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
+        setAccountsProps(accountsTemp);
       }
+    };
+    checkAddressLocalStorage();
+  }, []);
 
-      setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
-      setAccountsProps(accounts);
+  useEffect(() => {
+    const getBandwidth = async () => {
+      const { account } = defaultAccount;
+      console.log(`account getBandwidth`, account);
       if (
-        defaultAccounts !== null &&
-        Object.prototype.hasOwnProperty.call(defaultAccounts, 'cyber')
+        account !== null &&
+        Object.prototype.hasOwnProperty.call(account, 'cyber')
       ) {
-        this.getBandwidth(defaultAccounts.cyber.bech32);
+        const dataAccountBandwidth = await getAccountBandwidth(
+          account.cyber.bech32
+        );
+        if (dataAccountBandwidth !== null) {
+          const {
+            remained_value: remained,
+            max_value: maxValue,
+          } = dataAccountBandwidth.account_bandwidth;
+          setBandwidthProps(remained / 100, maxValue / 100);
+        }
       } else {
         setBandwidthProps(0, 0);
       }
-    }
-  };
+    };
+    getBandwidth();
+  }, [defaultAccount]);
 
-  getBandwidth = async (address) => {
-    const { setBandwidthProps } = this.props;
-    if (address !== null) {
-      const dataAccountBandwidth = await getAccountBandwidth(address);
-      if (dataAccountBandwidth !== null) {
-        const {
-          remained_value: remained,
-          max_value: maxValue,
-        } = dataAccountBandwidth.account_bandwidth;
-        setBandwidthProps(remained, maxValue);
+  useEffect(() => {
+    const getCountLink = async () => {
+      try {
+        const { account } = defaultAccount;
+        setCountLink(0);
+        if (
+          account !== null &&
+          Object.prototype.hasOwnProperty.call(account, 'cyber') &&
+          jsCyber !== null
+        ) {
+          const { bech32 } = account.cyber;
+          const getBalanceMVOLT = await jsCyber.getBalance(bech32, 'mvolt');
+          if (getBalanceMVOLT.amount) {
+            setCountLink(convertResources(parseFloat(getBalanceMVOLT.amount)));
+          } else {
+            setCountLink(0);
+          }
+        } else {
+          setCountLink(0);
+        }
+      } catch (error) {
+        setCountLink(0);
       }
-    }
-  };
+    };
+    getCountLink();
+  }, [jsCyber, defaultAccount]);
 
-  updateInput = () => {
-    const { query, setQueryProps } = this.props;
+  // chekEvangelism = () => {
+  //   const { location } = this.props;
+  //   const { search } = location;
 
-    setQueryProps(query);
-  };
+  //   if (search.match(/thanks=/gm) && search.match(/thanks=/gm).length > 0) {
+  //     const parsed = queryString.parse(search);
+  //     console.log('parsed', parsed);
+  //     localStorage.setItem('thanks', JSON.stringify(parsed.thanks));
+  //   }
+  // };
 
-  clearInrut = () => {
-    const { setQueryProps } = this.props;
-    setQueryProps('');
-  };
-
-  chekEvangelism = () => {
-    const { location } = this.props;
-    const { search } = location;
-
-    if (search.match(/thanks=/gm) && search.match(/thanks=/gm).length > 0) {
-      const parsed = queryString.parse(search);
-      console.log('parsed', parsed);
-      localStorage.setItem('thanks', JSON.stringify(parsed.thanks));
-    }
-  };
-
-  chekHomePage = () => {
-    const { location } = this.props;
-    if (location.pathname === '/') {
-      // document.onkeypress = e => {
-      //   document.getElementById('search-input-home').focus();
-      // };
-      this.setState({
-        home: true,
-      });
-    } else {
-      this.setState({
-        home: false,
-      });
-    }
-  };
-
-  routeChange = (newPath) => {
-    const { history } = this.props;
-    const path = newPath;
-    history.push(path);
-  };
-
-  onChangeInput = async (e) => {
-    const { query, setQueryProps } = this.props;
+  const onChangeInput = async (e) => {
     const { value } = e.target;
 
     if (query.length === 0 && value === '/') {
@@ -259,225 +232,195 @@ class App extends React.PureComponent {
     }
   };
 
-  handleKeyPress = async (e) => {
-    const { query, setQueryProps } = this.props;
-
+  const handleKeyPress = async (e) => {
     if (query.length > 0) {
       if (e.key === 'Enter') {
-        this.routeChange(`/search/${query}`);
+        history.push(`/search/${query}`);
         setQueryProps(query);
       }
     }
   };
 
-  closeStory = () => {
-    // console.log('dfd');
-    this.setState({
-      story: true,
-    });
-  };
-
-  onClickChangeActiveAcc = async (key) => {
-    const { setDefaultAccountProps, setAccountsProps, accounts } = this.props;
+  const onClickChangeActiveAcc = async (key) => {
     if (
       accounts !== null &&
       Object.prototype.hasOwnProperty.call(accounts, key)
     ) {
-      const defaultAccount = { [key]: accounts[key] };
+      const defaultAccountTemp = { [key]: accounts[key] };
       const accountsPocket = {
         [key]: accounts[key],
         ...accounts,
       };
       setDefaultAccountProps(key, accounts[key]);
       setAccountsProps(accountsPocket);
-      localStorage.setItem('pocket', JSON.stringify(defaultAccount));
+      localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
     }
   };
 
-  render() {
-    const { openMenu, story, home, battery } = this.state;
-    const {
-      defaultAccount,
-      query,
-      ipfsStatus,
-      bandwidth,
-      block = 0,
-      accounts,
-    } = this.props;
-
-    return (
-      <div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            position: 'relative',
-            padding: 0,
-          }}
-          className="container-distribution"
-        >
-          <Pane position="relative">
-            <MenuButton to="/brain" imgLogo={cyber} />
-            <Pane bottom="-10px" right="-20%" position="absolute">
-              <Tooltip
-                placement="bottom"
-                tooltip={
-                  <span>
-                    You are on the{' '}
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://github.com/cybercongress/cyberd/releases"
-                    >
-                      {CYBER.CHAIN_ID}
-                    </a>{' '}
-                    network at block{' '}
-                    <span style={{ color: '#4ed6ae' }}>
-                      {formatNumber(parseFloat(block))}
-                    </span>
-                    . {CYBER.CHAIN_ID} is incentivized test network. Be careful.
-                    Details in{' '}
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
-                    >
-                      whitepaper
-                    </a>
-                    .
+  return (
+    <div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          position: 'relative',
+          padding: 0,
+        }}
+        className="container-distribution"
+      >
+        <Pane position="relative">
+          <AppSideBar
+            onCloseSidebar={() => setOpenMenu(false)}
+            openMenu={openMenu}
+          >
+            <AppMenu />
+          </AppSideBar>
+          <MenuButton onClick={() => setOpenMenu(!openMenu)} imgLogo={cyber} />
+          <Pane bottom="-10px" right="-20%" position="absolute">
+            <Tooltip
+              placement="bottom"
+              tooltip={
+                <span>
+                  You are on the{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/cybercongress/cyberd/releases"
+                  >
+                    {CYBER.CHAIN_ID}
+                  </a>{' '}
+                  network at block{' '}
+                  <span style={{ color: '#4ed6ae' }}>
+                    {formatNumber(parseFloat(block))}
                   </span>
-                }
-              >
-                <img
-                  alt="bugs"
-                  style={{ width: '20px', height: '20px' }}
-                  src={bug}
-                />
-              </Tooltip>
-            </Pane>
-            {/* <Pane
-              className="battery-container"
-              width="65px"
-              position="absolute"
-              right="60px"
+                  . {CYBER.CHAIN_ID} is incentivized test network. Be careful.
+                  Details in{' '}
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
+                  >
+                    whitepaper
+                  </a>
+                  .
+                </span>
+              }
             >
-              <BandwidthBar
-                height="15px"
-                styleText={{ whiteSpace: 'nowrap' }}
-                fontSize={12}
-                colorText="#000"
-                bwRemained={bandwidth.remained}
-                bwMaxValue={bandwidth.maxValue}
+              <img
+                alt="bugs"
+                style={{ width: '17px', objectFit: 'contain' }}
+                src={circleYellow}
               />
-            </Pane> */}
+            </Tooltip>
           </Pane>
+        </Pane>
+        <Pane
+          className="battery-container"
+          width="65px"
+          position="absolute"
+          left="60px"
+        >
+          <BandwidthBar
+            height="15px"
+            styleText={{ whiteSpace: 'nowrap' }}
+            fontSize={12}
+            colorText="#000"
+            bwRemained={bandwidth.remained}
+            bwMaxValue={bandwidth.maxValue}
+            countLink={countLink}
+          />
+        </Pane>
+        {!home && (
+          <Pane
+            position="absolute"
+            left="50%"
+            transform="translate(-50%, 0)"
+            marginRight="-50%"
+            zIndex={1}
+            backgroundColor="#000"
+            borderRadius={20}
+            width="60%"
+            // className="box-shadow-input"
+            height="100%"
+          >
+            <input
+              onChange={(e) => onChangeInput(e)}
+              onKeyPress={handleKeyPress}
+              className="search-input"
+              ref={textInput}
+              value={query}
+              autoComplete="off"
+              id="search-input-searchBar"
+              style={{
+                width: '100%',
+                height: 41,
+                fontSize: 20,
+                textAlign: 'center',
+                position: 'absolute',
+                top: '50%',
+                transform: 'translate(0, -50%)',
+                zIndex: 1,
+                backgroundColor: '#000',
+              }}
+            />
+          </Pane>
+        )}
+        <Electricity />
+        {defaultAccount.name !== null && (
           <Pane
             className="battery-container"
-            width="65px"
+            width="fit-content"
             position="absolute"
-            left="60px"
+            right="60px"
+            whiteSpace="nowrap"
+            fontSize="14px"
+            backgroundColor="#000"
+            boxShadow="0 0 5px 5px #000"
           >
-            <BandwidthBar
-              height="15px"
-              styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={12}
-              colorText="#000"
-              bwRemained={bandwidth.remained}
-              bwMaxValue={bandwidth.maxValue}
-            />
-          </Pane>
-          {!home && (
-            <Pane
-              position="absolute"
-              left="50%"
-              transform="translate(-50%, 0)"
-              marginRight="-50%"
-              zIndex={1}
-              backgroundColor="#000"
-              borderRadius={20}
-              width="60%"
-              // className="box-shadow-input"
-              height="100%"
+            <ListAccounts
+              accounts={accounts}
+              onClickChangeActiveAcc={onClickChangeActiveAcc}
+              defaultAccount={defaultAccount}
             >
-              <input
-                onChange={(e) => this.onChangeInput(e)}
-                onKeyPress={this.handleKeyPress}
-                className="search-input"
-                ref={this.textInput}
-                value={query}
-                autoComplete="off"
-                id="search-input-searchBar"
-                style={{
-                  width: '100%',
-                  height: 41,
-                  fontSize: 20,
-                  textAlign: 'center',
-                  position: 'absolute',
-                  top: '50%',
-                  transform: 'translate(0, -50%)',
-                  zIndex: 1,
-                  backgroundColor: '#000',
-                }}
+              {defaultAccount.name}
+            </ListAccounts>
+          </Pane>
+        )}
+        <Pane position="relative">
+          <MenuButton
+            to="/"
+            imgLogo={ipfsStatus ? cybTrue : cybFalse}
+            positionBugLeft
+          />
+          <Pane bottom="-10px" left="-20%" position="absolute">
+            <Tooltip
+              placement="bottom"
+              tooltip={
+                <span>
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/cybercongress/dot-cyber"
+                  >
+                    The dot-cyber
+                  </a>{' '}
+                  app has not been audited yet. Please, use it with caution.
+                </span>
+              }
+            >
+              <img
+                alt="bugs"
+                style={{ width: '20px', height: '20px' }}
+                src={circleRed}
               />
-            </Pane>
-          )}
-          <Electricity />
-          {defaultAccount.name !== null && (
-            <Pane
-              className="battery-container"
-              width="fit-content"
-              position="absolute"
-              right="60px"
-              whiteSpace="nowrap"
-              fontSize="14px"
-              backgroundColor="#000"
-              boxShadow="0 0 5px 5px #000"
-            >
-              <ListAccounts
-                accounts={accounts}
-                onClickChangeActiveAcc={this.onClickChangeActiveAcc}
-                defaultAccount={defaultAccount}
-              >
-                {defaultAccount.name}
-              </ListAccounts>
-            </Pane>
-          )}
-          <Pane position="relative">
-            <MenuButton
-              to="/pocket"
-              imgLogo={ipfsStatus ? cybTrue : cybFalse}
-              positionBugLeft
-            />
-            <Pane bottom="-10px" left="-20%" position="absolute">
-              <Tooltip
-                placement="bottom"
-                tooltip={
-                  <span>
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href="https://github.com/cybercongress/dot-cyber"
-                    >
-                      The dot-cyber
-                    </a>{' '}
-                    app has not been audited yet. Please, use it with caution.
-                  </span>
-                }
-              >
-                <img
-                  alt="bugs"
-                  style={{ width: '20px', height: '20px' }}
-                  src={bug}
-                />
-              </Tooltip>
-            </Pane>
+            </Tooltip>
           </Pane>
-        </div>
-        {/* </Navigation> */}
-        {this.props.children}
+        </Pane>
       </div>
-    );
-  }
+      {/* </Navigation> */}
+      {children}
+    </div>
+  );
 }
 
 const mapStateToProps = (store) => {
