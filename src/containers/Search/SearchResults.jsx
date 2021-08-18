@@ -15,6 +15,7 @@ import {
   Tooltip,
   LinkWindow,
   Rank,
+  NoItems,
 } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
@@ -236,44 +237,46 @@ function SearchResults({ node, mobile, setQueryProps }) {
     );
   }
   // QmRSnUmsSu7cZgFt2xzSTtTqnutQAQByMydUxMpm13zr53;
-  searchItems.push(
-    Object.keys(searchResults).map((key) => {
-      return (
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          {!mobile && (
-            <Pane
-              className={`time-discussion ${
-                rankLink === key ? '' : 'hover-rank-contentItem'
-              }`}
-              position="absolute"
-              cursor="pointer"
-            >
-              <Rank
-                hash={key}
-                rank={exponentialToDecimal(
-                  parseFloat(searchResults[key].rank).toPrecision(3)
-                )}
-                grade={searchResults[key].grade}
-                onClick={() => onClickRank(key)}
-              />
-            </Pane>
-          )}
-          <ContentItem
-            nodeIpfs={node}
-            cid={key}
-            item={searchResults[key]}
-            className="SearchItem"
-          />
-        </Pane>
-      );
-    })
-  );
+  if (Object.keys(searchResults).length > 0) {
+    searchItems.push(
+      Object.keys(searchResults).map((key) => {
+        return (
+          <Pane
+            position="relative"
+            className="hover-rank"
+            display="flex"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            {!mobile && (
+              <Pane
+                className={`time-discussion ${
+                  rankLink === key ? '' : 'hover-rank-contentItem'
+                }`}
+                position="absolute"
+                cursor="pointer"
+              >
+                <Rank
+                  hash={key}
+                  rank={exponentialToDecimal(
+                    parseFloat(searchResults[key].rank).toPrecision(3)
+                  )}
+                  grade={searchResults[key].grade}
+                  onClick={() => onClickRank(key)}
+                />
+              </Pane>
+            )}
+            <ContentItem
+              nodeIpfs={node}
+              cid={key}
+              item={searchResults[key]}
+              className="SearchItem"
+            />
+          </Pane>
+        );
+      })
+    );
+  }
 
   return (
     <div>
@@ -286,7 +289,11 @@ function SearchResults({ node, mobile, setQueryProps }) {
           flexDirection="column"
         >
           <div className="container-contentItem" style={{ width: '100%' }}>
-            {searchItems}
+            {Object.keys(searchItems).length > 0 ? (
+              searchItems
+            ) : (
+              <NoItems text={`No information about ${query}`} />
+            )}
           </div>
         </Pane>
       </main>

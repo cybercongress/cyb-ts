@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
@@ -20,24 +21,26 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceGraph = ({ match }) => {
+const ForceGraph = () => {
+  const params = useParams();
   let graph;
-  const { agent } = match.params;
+
   const [hasLoaded, setHasLoaded] = useState(true);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
-  var limit = 1024
-  var where
+  const limit = 1024;
+  let where;
+
   useEffect(() => {
     const feachData = async () => {
-      if (typeof(agent) != "undefined") {
-        where = `{subject: {_eq: "${agent}"}}`
-      } else { 
-        where = "{}"
+      if (params.agent) {
+        where = `{subject: {_eq: "${params.agent}"}}`;
+      } else {
+        where = '{}';
       }
-      var GET_CYBERLINKS = `
+      const GET_CYBERLINKS = `
       query Cyberlinks {
         cyberlinks(limit: ${String(
           limit
@@ -75,7 +78,7 @@ const ForceGraph = ({ match }) => {
       setLoading(false);
     };
     feachData();
-  }, []);
+  }, [params]);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -115,7 +118,10 @@ const ForceGraph = ({ match }) => {
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(`https://cyber.page/network/bostrom/tx/${link.name}`, '_blank');
+      window.open(
+        `https://cyber.page/network/bostrom/tx/${link.name}`,
+        '_blank'
+      );
     },
     [fgRef]
   );
@@ -177,11 +183,11 @@ const ForceGraph = ({ match }) => {
     );
   }
 
-  var pocket
+  var pocket;
   if (localStorage.getItem('pocket') != null) {
     var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
     var keyPocket = Object.keys(localStoragePocketData)[0];
-    pocket = localStoragePocketData[keyPocket]["cyber"].bech32
+    pocket = localStoragePocketData[keyPocket]['cyber'].bech32;
   }
 
   return (
@@ -232,7 +238,6 @@ const ForceGraph = ({ match }) => {
         linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
         linkDirectionalParticleWidth={4}
         linkDirectionalParticleSpeed={0.015}
-        
         // linkDirectionalArrowRelPos={1}
         // linkDirectionalArrowLength={10}
         // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}

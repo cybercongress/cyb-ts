@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
-import { coinDecimals, fromBech32 } from '../../../utils/utils';
+import {
+  coinDecimals,
+  fromBech32,
+  convertResources,
+} from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
+import useGetSlots from '../../mint/useGetSlots';
 
 const initValue = {
   available: 0,
@@ -11,10 +16,25 @@ const initValue = {
   total: 0,
 };
 
+const initValueTokens = {
+  available: 0,
+  vested: 0,
+  total: 0,
+};
+
+const initValueToken = {
+  hydrogen: { ...initValueTokens },
+  mamper: { ...initValueTokens },
+  mvolt: { ...initValueTokens },
+};
+
 function useGetBalance(address, updateAddress) {
   const { jsCyber } = useContext(AppContext);
   const [loadingBalanceInfo, setLoadingBalanceInfo] = useState(true);
+  const [loadingBalanceToken, setLoadingBalanceToken] = useState(true);
   const [balance, setBalance] = useState(initValue);
+  const [balanceToken, setBalanceToken] = useState(initValueToken);
+  const { vested, originalVesting } = useGetSlots(address, updateAddress);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -29,7 +49,10 @@ function useGetBalance(address, updateAddress) {
             total: item.total + parseFloat(availablePromise.amount),
           }));
 
-          const delegationsPromise = await jsCyber.getBalance(address, 'sboot');
+          const delegationsPromise = await jsCyber.getBalance(
+            address,
+            'hydrogen'
+          );
           setBalance((item) => ({
             ...item,
             delegation: parseFloat(delegationsPromise.amount),
@@ -97,17 +120,106 @@ function useGetBalance(address, updateAddress) {
         console.log(e);
         setLoadingBalanceInfo(false);
         return {
-          available: 0,
-          delegations: 0,
-          unbonding: 0,
-          rewards: 0,
+          ...initValue,
         };
       }
     };
     getBalance();
   }, [jsCyber, address, updateAddress]);
 
-  return { balance, loadingBalanceInfo };
+  useEffect(() => {
+    const getBalance = async () => {
+      const initValueTokenAmount = {
+        hydrogen: {
+          available: 0,
+          vested: 0,
+          total: 0,
+        },
+        mamper: {
+          available: 0,
+          vested: 0,
+          total: 0,
+        },
+        mvolt: {
+          available: 0,
+          vested: 0,
+          total: 0,
+        },
+      };
+
+      if (jsCyber !== null && address !== null) {
+        setBalanceToken(initValueToken);
+        setLoadingBalanceToken(true);
+        const getAllBalancesPromise = await jsCyber.getAllBalances(address);
+        const balancesToken = getCalculationBalance(getAllBalancesPromise);
+        if (balancesToken.mamper) {
+          initValueTokenAmount.mamper.available = convertResources(
+            balancesToken.mamper
+          );
+          initValueTokenAmount.mamper.total = convertResources(
+            balancesToken.mamper
+          );
+        }
+        if (balancesToken.mvolt) {
+          initValueTokenAmount.mvolt.available = convertResources(
+            balancesToken.mvolt
+          );
+          initValueTokenAmount.mvolt.total = convertResources(
+            balancesToken.mvolt
+          );
+        }
+        if (balancesToken.hydrogen) {
+          initValueTokenAmount.hydrogen.available = balancesToken.hydrogen;
+          initValueTokenAmount.hydrogen.total = balancesToken.hydrogen;
+        }
+
+        if (vested.mamper >= 0 && originalVesting.mamper > 0) {
+          const vestedTokens =
+            parseFloat(originalVesting.mamper) - parseFloat(vested.mamper);
+          if (initValueTokenAmount.mamper.available > 0) {
+            initValueTokenAmount.mamper.available -= convertResources(
+              vestedTokens
+            );
+            initValueTokenAmount.mamper.vested = convertResources(vestedTokens);
+          }
+        }
+        if (vested.mvolt >= 0 && originalVesting.mvolt > 0) {
+          const vestedTokens =
+            parseFloat(originalVesting.mvolt) - parseFloat(vested.mvolt);
+          if (initValueTokenAmount.mvolt.available > 0) {
+            initValueTokenAmount.mvolt.available -= convertResources(
+              vestedTokens
+            );
+            initValueTokenAmount.mvolt.vested = convertResources(vestedTokens);
+          }
+        }
+        if (vested.hydrogen >= 0 && originalVesting.hydrogen > 0) {
+          const vestedTokens =
+            parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
+          if (initValueTokenAmount.hydrogen.available > 0) {
+            initValueTokenAmount.hydrogen.available -= vestedTokens;
+          }
+          initValueTokenAmount.hydrogen.vested = vestedTokens;
+        }
+      }
+      setBalanceToken(initValueTokenAmount);
+      setLoadingBalanceToken(false);
+    };
+    getBalance();
+  }, [jsCyber, address, vested, originalVesting]);
+
+  const getCalculationBalance = (data) => {
+    const balances = {};
+    if (Object.keys(data).length > 0) {
+      data.forEach((item) => {
+        balances[item.denom] = parseFloat(item.amount);
+      });
+    }
+
+    return balances;
+  };
+
+  return { balance, loadingBalanceInfo, balanceToken, loadingBalanceToken };
 }
 
 export default useGetBalance;

@@ -189,7 +189,9 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
 
 export const TransactionError = ({ onClickBtn, errorMessage }) => (
   <ActionBar>
-    <ActionBarContentText>Message Error: {errorMessage}</ActionBarContentText>
+    <ActionBarContentText display="block">
+      Message Error: {errorMessage}
+    </ActionBarContentText>
     <Button marginX={10} onClick={onClickBtn}>
       {T.actionBar.confirmedTX.continue}
     </Button>
@@ -928,7 +930,7 @@ export const Delegate = ({
   <ActionBar>
     <ActionBarContentText>
       <Text fontSize="16px" color="#fff">
-        {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+        {T.actionBar.delegate.enterAmount} {DENOM_CYBER.toUpperCase()}{' '}
         {delegate
           ? T.actionBar.delegate.delegate
           : T.actionBar.delegate.unDelegateFrom}{' '}
@@ -987,7 +989,7 @@ export const ReDelegate = ({
           onChange={onChangeInputAmount}
           placeholder="amount"
         />{' '}
-        {DENOM_CYBER_G.toUpperCase()} restake from{' '}
+        {DENOM_CYBER.toUpperCase()} restake from{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
           {validators.description.moniker}
         </Text>

@@ -43,6 +43,8 @@ import ButtonImgText from './Button/buttonImgText';
 import Rank from './Rank/rank';
 import PillNumber from './pill';
 import NoItems from './ui/noItems';
+import ValueImg from './valueImg';
+import NumberCurrency from './numberCurrency';
 
 export {
   GovernanceChangeParam,
@@ -88,6 +90,8 @@ export {
   PillNumber,
   ButtonIcon,
   NoItems,
+  ValueImg,
+  NumberCurrency,
 };
 
 export { Nums } from './ui/Numbers';

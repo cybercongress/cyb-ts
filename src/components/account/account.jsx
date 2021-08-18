@@ -24,7 +24,7 @@ class Account extends React.Component {
       } else {
         this.setState({
           account: `/network/bostrom/contract/${address}`,
-          moniker: `${trimString(address, 9, 6)}`,
+          moniker: `${trimString(address, 11, 6)}`,
           loading: false,
         });
       }
@@ -46,7 +46,7 @@ class Account extends React.Component {
 
   render() {
     const { moniker, account, loading } = this.state;
-    const { children, colorText } = this.props;
+    const { children, colorText, margin } = this.props;
 
     if (loading) {
       return <Dots />;
@@ -54,7 +54,10 @@ class Account extends React.Component {
 
     return (
       <span>
-        <Link style={{ color: colorText || '#36d6ae' }} to={account}>
+        <Link
+          style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
+          to={account}
+        >
           {moniker}
         </Link>
         {children}

@@ -331,7 +331,7 @@ function Activites({ msg }) {
           <Row
             title="Proposal Id"
             value={
-              <Link to={`#/governance/${msg.value.proposal_id}`}>
+              <Link to={`/senate/${msg.value.proposal_id}`}>
                 {msg.value.proposal_id}
               </Link>
             }
@@ -359,7 +359,7 @@ function Activites({ msg }) {
           <Row
             title="Proposal Id"
             value={
-              <Link to={`#/governance/${msg.value.proposal_id}`}>
+              <Link to={`/senate/${msg.value.proposal_id}`}>
                 {msg.value.proposal_id}
               </Link>
             }

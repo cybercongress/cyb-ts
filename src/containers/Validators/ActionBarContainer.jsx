@@ -26,7 +26,7 @@ import {
   statusNode,
 } from '../../utils/search/utils';
 
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { AppContext } from '../../context';
 
 import { i18n } from '../../i18n/en';
@@ -209,71 +209,88 @@ class ActionBarContainer extends Component {
 
   generateTxKeplr = async () => {
     const { validators, addressPocket } = this.props;
+    console.log(`validators`, validators);
     const { keplr } = this.context;
     const { toSend, txType, valueSelect } = this.state;
-    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
-    const validatorAddres = validators.operatorAddress;
+    const amount = parseFloat(toSend);
+    let validatorAddres = null;
+    if (validators.operatorAddress) {
+      validatorAddres = validators.operatorAddress;
+    }
+    if (validators.operator_address) {
+      validatorAddres = validators.operator_address;
+    }
     this.setState({
       stage: LEDGER_GENERATION,
     });
 
-    if (keplr !== null) {
-      const [{ address }] = await keplr.signer.getAccounts();
-      if (addressPocket !== null && addressPocket.bech32 === address) {
-        let response = null;
-        if (txType === TXTYPE_DELEGATE) {
-          response = await keplr.delegateTokens(
-            address,
-            validatorAddres,
-            coin(parseFloat(amount), 'boot'),
-            CYBER.MEMO_KEPLR
-          );
-        }
-        if (txType === TXTYPE_UNDELEGATE) {
-          response = await keplr.undelegateTokens(
-            address,
-            validatorAddres,
-            coin(parseFloat(amount), 'boot'),
-            CYBER.MEMO_KEPLR
-          );
-        }
-        if (txType === TXTYPE_REDELEGATE) {
-          response = await keplr.redelegateTokens(
-            address,
-            validatorAddres,
-            valueSelect,
-            coin(parseFloat(amount), 'boot'),
-            CYBER.MEMO_KEPLR
-          );
-          // msgs.push({
-          //   type: 'cosmos-sdk/MsgBeginRedelegate',
-          //   value: {
-          //     amount: {
-          //       amount: amount.toString(),
-          //       denom: CYBER.DENOM_CYBER,
-          //     },
-          //     delegator_address: address,
-          //     validator_dst_address: valueSelect,
-          //     validator_src_address: validatorAddres,
-          //   },
-          // });
-        }
+    const fee = {
+      amount: [],
+      gas: DEFAULT_GAS_LIMITS.toString(),
+    };
 
-        console.log('result: ', response);
-        if (response !== null) {
-          const hash = response.transactionHash;
-          console.log('hash :>> ', hash);
-          this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-          this.timeOut = setTimeout(this.confirmTx, 1500);
+    if (keplr !== null) {
+      try {
+        const [{ address }] = await keplr.signer.getAccounts();
+        if (addressPocket !== null && addressPocket.bech32 === address) {
+          let response = null;
+          if (txType === TXTYPE_DELEGATE) {
+            response = await keplr.delegateTokens(
+              address,
+              validatorAddres,
+              coin(parseFloat(amount), 'boot'),
+              fee,
+              CYBER.MEMO_KEPLR
+            );
+          }
+          if (txType === TXTYPE_UNDELEGATE) {
+            response = await keplr.undelegateTokens(
+              address,
+              validatorAddres,
+              coin(parseFloat(amount), 'boot'),
+              fee,
+              CYBER.MEMO_KEPLR
+            );
+          }
+          if (txType === TXTYPE_REDELEGATE) {
+            response = await keplr.redelegateTokens(
+              address,
+              validatorAddres,
+              valueSelect,
+              coin(parseFloat(amount), 'boot'),
+              fee,
+              CYBER.MEMO_KEPLR
+            );
+          }
+
+          console.log('result: ', response);
+          if (response.code === 0) {
+            const hash = response.transactionHash;
+            console.log('hash :>> ', hash);
+            this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+            this.timeOut = setTimeout(this.confirmTx, 1500);
+          } else {
+            this.setState({
+              txHash: null,
+              stage: STAGE_ERROR,
+              errorMessage: response.rawLog.toString(),
+            });
+          }
+        } else {
+          this.setState({
+            stage: STAGE_ERROR,
+            errorMessage: `Add address ${trimString(
+              address,
+              9,
+              5
+            )} to your pocket or make active `,
+          });
         }
-      } else {
+      } catch (e) {
         this.setState({
+          txHash: null,
           stage: STAGE_ERROR,
-          errorMessage: `Add address ${trimString(
-            address,
-            9,
-            5
-          )} to your pocket or make active `,
+          errorMessage: e.toString(),
         });
       }
     }
@@ -289,7 +306,7 @@ class ActionBarContainer extends Component {
 
     console.log(validatorAddres);
 
-    const amount = Math.floor(parseFloat(toSend) * DIVISOR_CYBER_G);
+    const amount = Math.floor(parseFloat(toSend));
 
     const { denom } = addressInfo.coins[0];
 
@@ -461,19 +478,6 @@ class ActionBarContainer extends Component {
     this.transport = null;
   };
 
-  onClickMax = () => {
-    const { txType } = this.state;
-    if (txType === TXTYPE_DELEGATE) {
-      this.setState((prevState) => ({
-        toSend: prevState.balance / DIVISOR_CYBER_G,
-      }));
-    } else {
-      this.setState((prevState) => ({
-        toSend: prevState.addressInfo.delegate / DIVISOR_CYBER_G,
-      }));
-    }
-  };
-
   onClickDelegate = async () => {
     await this.setState({
       stage: STAGE_READY,
@@ -538,7 +542,7 @@ class ActionBarContainer extends Component {
               alignItems: 'center',
             }}
           >
-            {T_AB.btnBecome}
+            Become a validator
           </a>
         </ActionBar>
       );
@@ -552,7 +556,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff">
-              {T_AB.joinValidator}
+              Join Cyberd Network As Validator
             </Text>
           </ActionBarContentText>
           <a
@@ -564,7 +568,7 @@ class ActionBarContainer extends Component {
               alignItems: 'center',
             }}
           >
-            {T_AB.btnBecome}
+            Become a validator
           </a>
         </ActionBar>
       );
@@ -613,7 +617,7 @@ class ActionBarContainer extends Component {
         <ActionBar>
           <ActionBarContentText>
             <Text fontSize="18px" color="#fff" marginRight={5}>
-              {T_AB.heroes}
+              Hero
             </Text>
             <Text fontSize="18px" color="#fff" fontWeight={600}>
               {validators.description.moniker}

@@ -127,7 +127,7 @@ class ActionBarContainer extends React.Component {
       localStorage.setItem('pocket', JSON.stringify(accounts));
       this.setState({
         stage: STAGE_READY,
-        toRedirect: '/pocket',
+        toRedirect: '/',
         redirect: true,
       });
     } catch (error) {

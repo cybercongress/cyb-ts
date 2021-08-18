@@ -528,9 +528,10 @@ class Wallet extends React.Component {
               width="60%"
             >
               <Text fontSize="16px" color="#fff">
-                This is your pocket. If you give me your pubkey I can help
-                cyberlink, track your balances, participate in the{' '}
-                <Link to="/gol">Game of Links</Link> and more.
+                Hi! I am Cyb! Your immortal robot for the Great web. I am
+                connected to Cyber. That is why I can answer different
+                questions. For example,{' '}
+                <Link to="/search/what is cyber">what is Cyber</Link>
               </Text>
             </Pane>
             <NotFound text=" " />
@@ -607,15 +608,6 @@ class Wallet extends React.Component {
                   />
                 ))}
 
-              <GolCard
-                id="gol"
-                onClick={(e) => this.onClickSelect(e, 'gol')}
-                onMouseEnter={(e) => this.mouselogEnter(e, 'gol')}
-                onMouseLeave={(e) => this.mouselogLeave()}
-                select={selectCard === 'gol'}
-                marginBottom={20}
-                defaultAccounts={defaultAccounts}
-              />
               {link !== null && (
                 <PocketCard
                   marginBottom={20}

@@ -316,7 +316,7 @@ const Details = () => {
           Cyber
         </LinkWindow>{' '}
         has launched its{' '}
-        <LinkWindow to="https://cyber.page/governance/2">
+        <LinkWindow to="https://cyber.page/senate/2">
           first takeoff round
         </LinkWindow>
         , on the 27th of April, 2020. However, launching meant it had to fly. It

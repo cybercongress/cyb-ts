@@ -74,10 +74,6 @@ function ActionBar({
           changeActionBar(selectAccount);
           break;
 
-        case selectCard === 'gol' || hoverCard === 'gol':
-          setTypeActionBar('gol');
-          break;
-
         default:
           setTypeActionBar('');
           break;
@@ -154,7 +150,7 @@ function ActionBar({
   if (typeActionBar === '' && stage === STAGE_INIT) {
     return (
       <ActionBarGravity>
-        <Pane>
+        <Pane display="flex">
           <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
             Connect
           </Button>
@@ -266,22 +262,6 @@ function ActionBar({
               Activate
             </Button>
           )}
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
-
-  if (typeActionBar === 'gol' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          <Link
-            style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
-            className="btn"
-            to="/gol"
-          >
-            Play Game of Links
-          </Link>
         </Pane>
       </ActionBarGravity>
     );

@@ -19,7 +19,7 @@ function GovernmentTab({
           title={`Community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
           value={formatNumber(communityPool)}
         />
-        <Link to="/governance">
+        <Link to="/senate">
           <CardStatisics
             title="Proposals"
             value={formatNumber(proposals)}

@@ -8,17 +8,16 @@ import { CardTemplate } from '../../components';
 import ActionBarContainer from '../Search/ActionBarContainer';
 
 const GET_CHARACTERS = gql`
-  query MyQuery($blockId: Int) {
+  query MyQuery($blockId: bigint) {
     block(where: { height: { _eq: $blockId } }) {
-      height
       hash
-      timestamp
-      pre_commits
+      height
       proposer_address
+      timestamp
       transactions {
         messages
-        txhash
-        code
+        hash
+        success
       }
     }
   }

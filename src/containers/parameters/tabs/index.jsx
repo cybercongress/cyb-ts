@@ -6,6 +6,8 @@ import GovParam from './gov';
 import RankParam from './rank';
 import InlfationParam from './inlfation';
 import ParamEnergy from './energy';
+import WasmParam from './wasm';
+import LiquidityParam from './liquidity'
 
 export {
   BandwidthParam,
@@ -16,4 +18,6 @@ export {
   RankParam,
   InlfationParam,
   ParamEnergy,
+  WasmParam,
+  LiquidityParam,
 };

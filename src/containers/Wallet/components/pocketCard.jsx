@@ -34,7 +34,7 @@ export const FormatNumber = ({
   <Pane display="grid" gridTemplateColumns="1fr 45px" gridGap="5px" {...props}>
     <Pane display="flex" alignItems="center">
       <span>{formatNumber(Math.floor(number))}</span>.
-      <div style={{ width: 30, fontSize: `${fontSizeDecimal || 14}px` }}>
+      <div style={{ width: 25, fontSize: `${fontSizeDecimal || 14}px` }}>
         {getDecimal(number)}
       </div>
     </Pane>
