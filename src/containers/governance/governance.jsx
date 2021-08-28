@@ -7,7 +7,7 @@ import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { Card, ContainerCard, CardStatisics } from '../../components';
-import { CYBER } from '../../utils/config';
+import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
 import { getcommunityPool } from '../../utils/search/utils';
 import { AppContext } from '../../context';
@@ -49,7 +49,6 @@ function Governance({ defaultAccount }) {
 
   useEffect(() => {
     feachMinDeposit();
-    feachProposals();
   }, []);
 
   useEffect(() => {
@@ -94,6 +93,24 @@ function Governance({ defaultAccount }) {
     getStatistics();
   }, [jsCyber]);
 
+  useEffect(() => {
+    feachProposals();
+  }, []);
+
+  const feachProposals = async () => {
+    // if (jsCyber !== null) {
+    const responseProposals = await getProposals();
+    // const responseProposals = await jsCyber.proposals(
+    //   PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED,
+    //   '',
+    //   ''
+    // );
+    if (responseProposals !== null) {
+      setTableData(responseProposals);
+    }
+    // }
+  };
+
   const feachMinDeposit = async () => {
     const responseMinDeposit = await getMinDeposit();
 
@@ -102,19 +119,10 @@ function Governance({ defaultAccount }) {
     }
   };
 
-  const feachProposals = async () => {
-    const responseProposals = await getProposals();
-    if (responseProposals !== null) {
-      setTableData(responseProposals);
-    }
-  };
   console.log('tableData', tableData);
   const active = tableData
     .reverse()
-    .filter(
-      (item) =>
-        item.proposal_status !== 'Passed' && item.proposal_status !== 'Rejected'
-    )
+    .filter((item) => item.status < PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
     .map((item) => (
       <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
         <ActiveCard
@@ -124,7 +132,7 @@ function Governance({ defaultAccount }) {
           minDeposit={minDeposit}
           totalDeposit={item.total_deposit}
           type={item.content.type}
-          state={item.proposal_status}
+          state={item.status}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
             'dd/mm/yyyy, HH:MM:ss'
@@ -139,7 +147,7 @@ function Governance({ defaultAccount }) {
     ));
 
   const accepted = tableData
-    .filter((item) => item.proposal_status === 'Passed')
+    .filter((item) => item.status === PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
     .map((item) => (
       <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
         <AcceptedCard
@@ -159,7 +167,7 @@ function Governance({ defaultAccount }) {
 
   const rejected = tableData
     .reverse()
-    .filter((item) => item.proposal_status === 'Rejected')
+    .filter((item) => item.status > PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
     .map((item) => (
       <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
         <RejectedCard

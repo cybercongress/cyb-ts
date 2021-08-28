@@ -391,9 +391,9 @@ export const GovernanceStartStageActionBar = ({
         onChange={onChangeSelect}
       >
         <option value="textProposal">Text Proposal</option>
-        <option value="communityPool">Community Pool Spend</option>
+        {/* <option value="communityPool">Community Pool Spend</option>
         <option value="paramChange">Param Change</option>
-        <option value="softwareUpgrade">Software Upgrade</option>
+        <option value="softwareUpgrade">Software Upgrade</option> */}
       </select>
     </ActionBarContentText>
     <Button onClick={onClickBtn}>Propose</Button>
@@ -692,7 +692,7 @@ export const TextProposal = ({
           />
         </Pane>
         <Pane width="100%">
-          <Text color="#fff">deposit, GEUL</Text>
+          <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
           <input
             value={valueDeposit}
             style={{
@@ -700,7 +700,7 @@ export const TextProposal = ({
               width: '100%',
             }}
             onChange={onChangeInputDeposit}
-            placeholder="amount, GEUL"
+            placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
           />
         </Pane>
         <Button marginTop={25} onClick={onClickBtn}>

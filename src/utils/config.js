@@ -68,14 +68,16 @@ const CYBER = {
   DENOM_CYBER: 'boot',
   DENOM_CYBER_G: `GBOOT`,
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostromdev.cybernode.ai/websocket',
-  CYBER_NODE_URL_API: 'https://rpc.bostromdev.cybernode.ai',
-  CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
+  // CYBER_NODE_URL_API: 'https://rpc.bostromdev.cybernode.ai',
+  // CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
+  CYBER_NODE_URL_API: 'http://localhost:26657',
+  CYBER_NODE_URL_LCD: 'http://localhost:1317',
   CYBER_INDEX_HTTPS: 'https://index.bostromdev.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostromdev.cybernode.ai/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
-  // CHAIN_ID: 'bostromdev-1',
-  CHAIN_ID: 'bostrom-testnet-4',
+  CHAIN_ID: 'dev',
+  // CHAIN_ID: 'bostrom-testnet-4',
   MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
 };
 
@@ -143,6 +145,51 @@ const POCKET = {
   },
 };
 
+const PROPOSAL_STATUS = {
+  /** PROPOSAL_STATUS_UNSPECIFIED - PROPOSAL_STATUS_UNSPECIFIED defines the default propopsal status. */
+  PROPOSAL_STATUS_UNSPECIFIED: 0,
+  /**
+   * PROPOSAL_STATUS_DEPOSIT_PERIOD - PROPOSAL_STATUS_DEPOSIT_PERIOD defines a proposal status during the deposit
+   * period.
+   */
+  PROPOSAL_STATUS_DEPOSIT_PERIOD: 1,
+  /**
+   * PROPOSAL_STATUS_VOTING_PERIOD - PROPOSAL_STATUS_VOTING_PERIOD defines a proposal status during the voting
+   * period.
+   */
+  PROPOSAL_STATUS_VOTING_PERIOD: 2,
+  /**
+   * PROPOSAL_STATUS_PASSED - PROPOSAL_STATUS_PASSED defines a proposal status of a proposal that has
+   * passed.
+   */
+  PROPOSAL_STATUS_PASSED: 3,
+  /**
+   * PROPOSAL_STATUS_REJECTED - PROPOSAL_STATUS_REJECTED defines a proposal status of a proposal that has
+   * been rejected.
+   */
+  PROPOSAL_STATUS_REJECTED: 4,
+  /**
+   * PROPOSAL_STATUS_FAILED - PROPOSAL_STATUS_FAILED defines a proposal status of a proposal that has
+   * failed.
+   */
+  PROPOSAL_STATUS_FAILED: 5,
+  UNRECOGNIZED: -1,
+};
+
+const VOTE_OPTION = {
+  /** VOTE_OPTION_UNSPECIFIED - VOTE_OPTION_UNSPECIFIED defines a no-op vote option. */
+  VOTE_OPTION_UNSPECIFIED: 0,
+  /** VOTE_OPTION_YES - VOTE_OPTION_YES defines a yes vote option. */
+  VOTE_OPTION_YES: 1,
+  /** VOTE_OPTION_ABSTAIN - VOTE_OPTION_ABSTAIN defines an abstain vote option. */
+  VOTE_OPTION_ABSTAIN: 2,
+  /** VOTE_OPTION_NO - VOTE_OPTION_NO defines a no vote option. */
+  VOTE_OPTION_NO: 3,
+  /** VOTE_OPTION_NO_WITH_VETO - VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option. */
+  VOTE_OPTION_NO_WITH_VETO: 4,
+  UNRECOGNIZED: -1,
+};
+
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
@@ -181,4 +228,6 @@ export {
   DISTRIBUTION_PRIZE,
   GAS_LIMITS,
   DEFAULT_GAS_LIMITS,
+  PROPOSAL_STATUS,
+  VOTE_OPTION,
 };

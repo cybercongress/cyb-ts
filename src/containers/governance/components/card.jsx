@@ -2,7 +2,7 @@ import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Votes, IconStatus, Tooltip, Deposit } from '../../../components';
 import { formatCurrency, formatNumber } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
+import { CYBER, PROPOSAL_STATUS } from '../../../utils/config';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');
@@ -142,8 +142,13 @@ const ActiveCard = ({
     <Pane marginBottom={2}>
       <Pane alignItems="center" display="flex" marginBottom={2}>
         State:
-        <IconStatus marginLeft={10} marginRight={5} size={25} status={state} />
-        {state}
+        <IconStatus
+          text
+          marginLeft={10}
+          marginRight={5}
+          size={25}
+          status={state}
+        />
       </Pane>
     </Pane>
 
@@ -154,7 +159,7 @@ const ActiveCard = ({
       </Pane>
     )} */}
 
-    {state === 'DepositPeriod' && (
+    {/* {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
       <Pane marginBottom={30}>
         <Pane marginBottom={2}>Status:</Pane>
         <Pane
@@ -177,15 +182,15 @@ const ActiveCard = ({
           </Text>
         </Pane>
       </Pane>
-    )}
+    )} */}
 
-    {state === 'DepositPeriod' && (
+    {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
       <Pane>
         <Pane marginBottom={2}>Deposit End Time:</Pane>
         <Pane>{timeEndDeposit}</Pane>
       </Pane>
     )}
-    {state === 'VotingPeriod' && (
+    {state === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD && (
       <Pane>
         <Pane marginBottom={2}>Voting End Time:</Pane>
         <Pane>{timeEndVoting}</Pane>
