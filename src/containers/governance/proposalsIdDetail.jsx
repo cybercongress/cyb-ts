@@ -2,22 +2,26 @@ import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { IconStatus, ContainerPane, Item } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
+import { CYBER } from '../../utils/config';
+
+const dateFormat = require('dateformat');
 
 const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
 
+const formatTime = (time) =>
+  dateFormat(new Date(time), 'dd/mm/yyyy, hh:MM:ss TT');
+
 const ProposalsIdDetail = ({
   totalDeposit,
-  time,
-  proposalStatus,
+  proposals,
   tallying,
   tally,
   ...props
 }) => {
-  const { submitTime, depositEndTime, votingStartTime, votingEndTime } = time;
   const { yes, abstain, no, noWithVeto, participation } = tally;
-  const { quorum, threshold, veto } = tallying;
+  const { quorum, threshold, veto_threshold: veto } = tallying;
 
   return (
     <Pane
@@ -27,36 +31,52 @@ const ProposalsIdDetail = ({
       {...props}
     >
       <ContainerPane>
-        <Item marginBottom={15} title="Submit Time" value={submitTime} />
-        <Item
-          marginBottom={15}
-          title="Deposit Endtime"
-          value={depositEndTime}
-        />
-        <Item
-          marginBottom={15}
-          title="Total Deposit"
-          value={`${formatNumber(totalDeposit * 10 ** -9)} GCYB`}
-        />
-        <Item
-          marginBottom={15}
-          title="Voting Starttime"
-          value={votingStartTime}
-        />
-        <Item title="Voting Endtime" value={votingEndTime} />
+        {proposals.submit_time && (
+          <Item
+            marginBottom={15}
+            title="Submit Time"
+            value={formatTime(proposals.submit_time)}
+          />
+        )}
+        {proposals.deposit_end_time && (
+          <Item
+            marginBottom={15}
+            title="Deposit Endtime"
+            value={formatTime(proposals.deposit_end_time)}
+          />
+        )}
+        {totalDeposit && (
+          <Item
+            marginBottom={15}
+            title="Total Deposit"
+            value={`${formatNumber(totalDeposit)} ${CYBER.DENOM_CYBER}`}
+          />
+        )}
+        {proposals.voting_start_time && (
+          <Item
+            marginBottom={15}
+            title="Voting Starttime"
+            value={formatTime(proposals.voting_start_time)}
+          />
+        )}
+        {proposals.voting_end_time && (
+          <Item
+            title="Voting Endtime"
+            value={formatTime(proposals.voting_end_time)}
+          />
+        )}
       </ContainerPane>
 
       <ContainerPane>
-        <Item
-          marginBottom={15}
-          title="Status"
-          value={
-            <Pane display="flex">
-              <IconStatus status={proposalStatus} marginRight={8} />
-              <Text color="#fff">{proposalStatus}</Text>
-            </Pane>
-          }
-        />
+        {proposals.status && (
+          <Item
+            marginBottom={15}
+            title="Status"
+            value={
+              <IconStatus status={proposals.status} text marginRight={8} />
+            }
+          />
+        )}
         <Item
           marginBottom={15}
           title="Participation"

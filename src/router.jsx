@@ -41,6 +41,7 @@ import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
 import Taverna from './containers/taverna';
+import Teleport from './containers/teleport';
 
 export const history = createBrowserHistory({});
 
@@ -50,18 +51,18 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  const dataIpfsStart = useIpfsStart();
-  const [loader, setLoader] = useState(true);
+  // const dataIpfsStart = useIpfsStart();
+  // const [loader, setLoader] = useState(true);
 
-  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
+  // // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    setLoader(dataIpfsStart.loader);
-  }, [dataIpfsStart]);
+  // useEffect(() => {
+  //   initIpfsProps(dataIpfsStart.node);
+  //   setIpfsStatusProps(dataIpfsStart.status);
+  //   setTypeDeviceProps(dataIpfsStart.mobile);
+  //   setIpfsIDProps(dataIpfsStart.id);
+  //   setLoader(dataIpfsStart.loader);
+  // }, [dataIpfsStart]);
 
   // add Switch to Router
   return (
@@ -76,7 +77,7 @@ function AppRouter({
         <Route path="/tot" component={Got} />
         <Route path="/brain" component={Brain} />
         <Route exact path="/senate" component={Governance} />
-        <Route path="/senate/:proposal_id" component={ProposalsDetail} />
+        <Route path="/senate/:proposalId" component={ProposalsDetail} />
         <Route path="/halloffame" component={Validators} />
         <Route path="/episode-1" component={Story} />
         <Route exact path="/network/bostrom/tx" component={Txs} />
@@ -112,6 +113,7 @@ function AppRouter({
         <Route path="/oracle" component={Oracle} />
         <Route path="/particles" component={Objects} />
         <Route path="/sixthSense" component={Taverna} />
+        <Route path="/teleport" component={Teleport} />
       </Switch>
     </Router>
   );

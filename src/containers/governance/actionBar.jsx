@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Button } from '@cybercongress/gravity';
+import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
 import {
   SigningCosmosClient,
   GasPrice,
@@ -27,7 +28,7 @@ import {
 import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 
 const STAGE_TYPE_GOV = 9;
 
@@ -156,119 +157,77 @@ class ActionBar extends Component {
     const { keplr } = this.context;
     console.log('keplr', keplr);
     if (keplr !== null) {
-      let deposit = [];
+      // let deposit = [];
       const title = valueTitle;
       const description = valueDescription;
       const recipient = valueAddressRecipient;
-      let amount = [];
       let msgs = [];
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const accounts = await keplr.getAccount();
-
-      if (valueDeposit > 0) {
-        deposit = coins(valueDeposit * CYBER.DIVISOR_CYBER_G, 'eul');
-      }
-
-      if (valueAmountRecipient > 0) {
-        amount = coins(valueAmountRecipient * CYBER.DIVISOR_CYBER_G, 'eul');
-      }
-
-      switch (valueSelect) {
-        case 'textProposal': {
-          msgs.push({
-            type: 'cosmos-sdk/MsgSubmitProposal',
-            value: {
-              content: {
-                type: 'cosmos-sdk/TextProposal',
-                value: {
-                  description,
-                  title,
-                },
-              },
-              proposer: accounts.address,
-              initial_deposit: deposit,
-            },
-          });
-          break;
-        }
-        case 'communityPool': {
-          msgs.push({
-            type: 'cosmos-sdk/MsgSubmitProposal',
-            value: {
-              content: {
-                type: 'cosmos-sdk/CommunityPoolSpendProposal',
-                value: {
-                  amount,
-                  description,
-                  recipient,
-                  title,
-                },
-              },
-              initial_deposit: deposit,
-              proposer: accounts.address,
-            },
-          });
-          break;
-        }
-        case 'paramChange': {
-          msgs.push({
-            type: 'cosmos-sdk/MsgSubmitProposal',
-            value: {
-              content: {
-                type: 'cosmos-sdk/ParameterChangeProposal',
-                value: {
-                  changes: changeParam,
-                  description,
-                  title,
-                },
-              },
-              proposer: accounts.address,
-              initial_deposit: deposit,
-            },
-          });
-          break;
-        }
-
-        case 'softwareUpgrade': {
-          msgs.push({
-            type: 'cosmos-sdk/MsgSubmitProposal',
-            value: {
-              content: {
-                type: 'cosmos-sdk/SoftwareUpgradeProposal',
-                value: {
-                  description,
-                  title,
-                  plan: { name: nameUpgrade, height: heightUpgrade },
-                },
-              },
-              proposer: accounts.address,
-              initial_deposit: deposit,
-            },
-          });
-          break;
-        }
-        default: {
-          msgs = [];
-        }
-      }
-
+      let response = {};
       const fee = {
-        amount: coins(0, 'uatom'),
-        gas: '100000',
+        amount: [],
+        gas: DEFAULT_GAS_LIMITS.toString(),
       };
-      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
-      console.log('result', result);
-      if (!result.code || result.code === 0) {
-        const hash = result.transactionHash;
-        console.log('hash :>> ', hash);
-        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-        this.timeOut = setTimeout(this.confirmTx, 1500);
-      } else {
-        this.setState({
-          stage: STAGE_ERROR,
-          errorMessage: result.rawLog,
-        });
+      const [{ address }] = await keplr.signer.getAccounts();
+
+      // if (valueDeposit > 0) {
+      //   deposit = coins(valueDeposit, CYBER.DENOM_CYBER);
+      // }
+
+      // if (valueAmountRecipient > 0) {
+      //   amount = coins(valueAmountRecipient, CYBER.DENOM_CYBER);
+      // }
+
+      try {
+        const deposit = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
+        if (valueSelect === 'textProposal') {
+          response = await keplr.submitProposal(
+            address,
+            {
+              typeUrl: '/cosmos.gov.v1beta1.TextProposal',
+              value: {
+                title,
+                description,
+              },
+            },
+            deposit,
+            fee
+          );
+        }
+
+        if (valueSelect === 'communityPool') {
+          const amount = coins(10, CYBER.DENOM_CYBER);
+          response = await keplr.submitProposal(
+            address,
+            {
+              typeUrl:
+                '/cosmos.distribution.v1beta1.CommunityPoolSpendProposal',
+              value: {
+                amount,
+                description,
+                recipient,
+                title,
+              },
+            },
+            deposit,
+            fee
+          );
+        }
+        console.log(`response`, response);
+
+        if (response.code === 0) {
+          const hash = response.transactionHash;
+          console.log('hash :>> ', hash);
+          this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+          this.timeOut = setTimeout(this.confirmTx, 1500);
+        } else {
+          this.setState({
+            txHash: null,
+            stage: STAGE_ERROR,
+            errorMessage: response.rawLog.toString(),
+          });
+        }
+      } catch (error) {
+        console.log(`error`, error);
       }
     }
   };

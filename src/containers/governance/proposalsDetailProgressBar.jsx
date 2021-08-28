@@ -12,7 +12,7 @@ const toFixedNumber = (number, toFixed) => {
 };
 
 const ProposalsDetailProgressBar = ({
-  proposalStatus,
+  proposals,
   totalDeposit,
   minDeposit,
   tallying,
@@ -35,10 +35,14 @@ const ProposalsDetailProgressBar = ({
         minHeight={140}
         // height={2}
       >
-        <Pane display="flex" marginBottom={20}>
-          <IconStatus status={proposalStatus} marginRight={8} />
-          <Text color="#fff">{proposalStatus}</Text>
-        </Pane>
+        {proposals.status && (
+          <IconStatus
+            status={proposals.status}
+            text
+            marginRight={8}
+            marginBottom={20}
+          />
+        )}
         <Pane
           width="100%"
           display="flex"
@@ -50,8 +54,7 @@ const ProposalsDetailProgressBar = ({
           </Text>
           <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit * 10 ** -9)} {CYBER.DENOM_CYBER_G}{' '}
-            MinDeposit
+            {formatNumber(minDeposit)} {CYBER.DENOM_CYBER.toUpperCase()} MinDeposit
           </Text>
         </Pane>
       </ContainerPane>
