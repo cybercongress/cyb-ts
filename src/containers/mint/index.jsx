@@ -113,10 +113,11 @@ function Mint({ defaultAccount }) {
     }
     if (balance.delegation > 0) {
       maxValue = Math.floor(balance.delegation) - vestedTokens;
+    } else {
+      maxValue = 0;
     }
-    if (maxValue > 0) {
-      setMax(maxValue);
-    }
+
+    setMax(maxValue);
   }, [balance, vested, originalVesting]);
 
   useEffect(() => {
@@ -144,9 +145,9 @@ function Mint({ defaultAccount }) {
   }, [value, valueDays]);
 
   const updateFunc = () => {
-    setUpdateAddress((item) => item + 1);
     setValue(0);
     setValueDays(1);
+    setUpdateAddress(updateAddress + 1);
   };
 
   return (

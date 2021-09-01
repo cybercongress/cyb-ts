@@ -42,6 +42,7 @@ import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
 import Taverna from './containers/taverna';
 import Teleport from './containers/teleport';
+import Nebula from './containers/nebula';
 
 export const history = createBrowserHistory({});
 
@@ -51,18 +52,18 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsStart();
-  // const [loader, setLoader] = useState(true);
+  const dataIpfsStart = useIpfsStart();
+  const [loader, setLoader] = useState(true);
 
-  // // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
+  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   setLoader(dataIpfsStart.loader);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    setLoader(dataIpfsStart.loader);
+  }, [dataIpfsStart]);
 
   // add Switch to Router
   return (
@@ -114,6 +115,7 @@ function AppRouter({
         <Route path="/particles" component={Objects} />
         <Route path="/sixthSense" component={Taverna} />
         <Route path="/teleport" component={Teleport} />
+        <Route path="/nebula" component={Nebula} />
       </Switch>
     </Router>
   );
