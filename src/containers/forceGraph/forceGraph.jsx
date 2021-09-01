@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
@@ -22,7 +22,9 @@ function getRandomInt(min, max) {
 }
 
 const ForceGraph = () => {
+  const location = useLocation();
   const params = useParams();
+  const history = useHistory();
   let graph;
 
   const [hasLoaded, setHasLoaded] = useState(true);
@@ -32,6 +34,11 @@ const ForceGraph = () => {
 
   const limit = 1024;
   let where;
+
+  console.log(`location`, location)
+  console.log(`params`, params)
+  console.log(`history`, history)
+  console.log(`window.location.href`, window.location.href)
 
   useEffect(() => {
     const feachData = async () => {
