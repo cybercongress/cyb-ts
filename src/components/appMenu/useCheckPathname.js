@@ -62,6 +62,10 @@ const useCheckPathname = () => {
       setMain('Portal');
     } else if (pathname === '/portal/progress') {
       setMain('Portal');
+    } else if (pathname === '/nebula') {
+      setMain('Nebula');
+    } else if (pathname === '/nebula/Create app') {
+      setMain('Nebula');
     } else if (
       pathname.match(/senate/gm) &&
       pathname.match(/senate/gm).length > 0

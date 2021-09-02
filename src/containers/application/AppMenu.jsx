@@ -77,11 +77,15 @@ const items = [
       { name: 'CYB', to: '/market/CYB' },
     ],
   },
-  // {
-  //   name: 'Nebula',
-  //   to: '/brain',
-  //   subItems: [],
-  // },
+  {
+    name: 'Nebula',
+    to: '/nebula',
+    active: false,
+    subItems: [
+      { name: 'Rating', to: '/nebula' },
+      { name: 'Create app', to: '/nebula/Create app' },
+    ],
+  },
   {
     name: 'Sixth Sense',
     to: '/sixthSense',
