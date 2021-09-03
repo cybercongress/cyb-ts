@@ -190,11 +190,18 @@ function Teleport({ defaultAccount }) {
   }, [jsCyber, addressActive]);
 
   useEffect(() => {
-    const price = tokenBPoolAmount / tokenAPoolAmount;
-    if (price && price !== Infinity) {
-      setSwapPrice(price);
+    let orderPrice = 0;
+
+    if ([tokenA, tokenB].sort()[0] !== tokenA) {
+      orderPrice = (Number(tokenBPoolAmount) / Number(tokenAPoolAmount)) * 0.9;
+    } else {
+      orderPrice = (Number(tokenAPoolAmount) / Number(tokenBPoolAmount)) * 1;
     }
-  }, [tokenAPoolAmount, tokenBPoolAmount]);
+
+    if (orderPrice && orderPrice !== Infinity) {
+      setSwapPrice(orderPrice);
+    }
+  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount]);
 
   const createPool = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
@@ -270,12 +277,12 @@ function Teleport({ defaultAccount }) {
 
     const response = await keplr.swapWithinBatch(
       address,
-      parseFloat(selectedPool.id),
       POOL_TYPE_INDEX,
+      parseFloat(selectedPool.id),
       offerCoin,
       demandCoinDenom,
       offerCoinFee,
-      (swapPrice * 10 ** 18).toString(),
+      Math.floor(swapPrice).toString(),
       fee
     );
 
@@ -317,7 +324,8 @@ function Teleport({ defaultAccount }) {
     }
   }, [poolsData, tokenA, tokenB]);
 
-  console.log(`swapPrice`, tokenAAmount * swapPrice);
+  console.log(`swapPrice`, swapPrice);
+  console.log(`tokenBAmount`, tokenAAmount * swapPrice);
 
   return (
     <>
