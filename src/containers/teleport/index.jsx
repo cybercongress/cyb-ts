@@ -1,132 +1,40 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Button, Pane, ActionBar, Input } from '@cybercongress/gravity';
-import { coins, coin } from '@cosmjs/launchpad';
+import { useLocation, Route } from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { reduceBalances, formatNumber, coinDecimals } from '../../utils/utils';
-import { Dots, ValueImg } from '../../components';
-
-const POOL_TYPE_INDEX = 1;
-
-const Select = ({ data, selected, valueSelect, onChangeSelect }) => {
-  let items = {};
-
-  if (data === null) {
-    items = (
-      <option value="">
-        <Dots />
-      </option>
-    );
-  } else {
-    items = (
-      <>
-        <option value="">pick token</option>
-        {Object.keys(data)
-          .filter((item) => item.indexOf('pool') === -1 && item !== selected)
-          .map((key) => (
-            <option
-              key={key}
-              value={key}
-              // style={{
-              //   backgroundImage: `url(${tokenImg(key)})`,
-              // }}
-            >
-              {key}
-            </option>
-          ))}
-      </>
-    );
-  }
-
-  return (
-    <select
-      style={{
-        width: '120px',
-      }}
-      value={valueSelect}
-      onChange={onChangeSelect}
-    >
-      {items}
-    </select>
-  );
-};
-
-const BalanceToken = ({ token, data }) => {
-  let balance = 0;
-
-  if (data === null) {
-    balance = <Dots />;
-  } else if (data[token]) {
-    balance = formatNumber(data[token]);
-  } else {
-    balance = 0;
-  }
-
-  return (
-    <Pane
-      display="flex"
-      alignItems="center"
-      color="#777777"
-      fontSize="18px"
-      width="100%"
-      justifyContent="space-between"
-    >
-      <Pane>Available</Pane>
-      <Pane>{balance}</Pane>
-    </Pane>
-  );
-};
-
-const PoolTokenAmount = ({ addressPool, token }) => {
-  const { jsCyber } = useContext(AppContext);
-  const [amounToken, setAmounToken] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const getBalances = async () => {
-      setLoading(true);
-      if (jsCyber !== null) {
-        const getBalancePromise = await jsCyber.getBalance(addressPool, token);
-        setAmounToken(parseFloat(getBalancePromise.amount));
-        setLoading(false);
-      }
-    };
-    getBalances();
-  }, [jsCyber, addressPool, token]);
-
-  return <Pane>{loading ? <Dots /> : formatNumber(amounToken)}</Pane>;
-};
-
-const PoolItemsList = ({ addressPool, token }) => (
-  <Pane
-    display="flex"
-    alignItems="center"
-    justifyContent="space-between"
-    marginBottom={10}
-  >
-    <ValueImg
-      style={{
-        flexDirection: 'row-reverse',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      text={token}
-      marginImg="0 5px"
-    />
-    <PoolTokenAmount addressPool={addressPool} token={token} />
-  </Pane>
-);
-
-function sortReserveCoinDenoms(x, y) {
-  return [x, y].sort();
-}
+import {
+  reduceBalances,
+  formatNumber,
+  coinDecimals,
+  roundNumber,
+  exponentialToDecimal,
+} from '../../utils/utils';
+import { Dots, ValueImg, ButtonIcon } from '../../components';
+import {
+  calculateCounterPairAmount,
+  calculateSlippage,
+  sortReserveCoinDenoms,
+  getMyTokenBalance,
+  reduceAmounToken,
+  getPoolToken,
+} from './utils';
+import { TabList } from './components';
+import ActionBar from './actionBar';
+import PoolsList from './poolsList';
+import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
+import Swap from './swap';
+import Withdraw from './withdraw';
 
 function Teleport({ defaultAccount }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { jsCyber } = useContext(AppContext);
+  const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [update, setUpdate] = useState(0);
+  const { params } = useGetParams();
+  const { poolsData } = usePoolListInterval();
   const [accountBalances, setAccountBalances] = useState(null);
   const [tokenA, setTokenA] = useState('');
   const [tokenB, setTokenB] = useState('');
@@ -134,45 +42,42 @@ function Teleport({ defaultAccount }) {
   const [tokenBAmount, setTokenBAmount] = useState('');
   const [tokenAPoolAmount, setTokenAPoolAmount] = useState(0);
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState(0);
-  const [poolsData, setPoolsData] = useState([]);
   const [selectedPool, setSelectedPool] = useState([]);
-  const [params, setParams] = useState(null);
   const [swapPrice, setSwapPrice] = useState(0);
-
-  const fee = {
-    amount: [],
-    gas: DEFAULT_GAS_LIMITS.toString(),
-  };
-
-  useEffect(() => {
-    const getPools = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.pools();
-
-        console.log(`pools`, response);
-
-        if (response.pools) {
-          setPoolsData(response.pools);
-        }
-
-        // const responsePool = await jsCyber.pool(1);
-        // console.log(`responsePool`, responsePool);
-      }
-    };
-    getPools();
-  }, [jsCyber]);
+  const [tokenPrice, setTokenPrice] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('swap');
+  const [totalSupply, setTotalSupply] = useState(null);
+  const [myPools, setMyPools] = useState({});
+  const [selectMyPool, setSelectMyPool] = useState('');
+  const [amountPoolCoin, setAmountPoolCoin] = useState('');
+  const [isExceeded, setIsExceeded] = useState(false);
 
   useEffect(() => {
-    const getLiquidityParams = async () => {
-      if (jsCyber !== null) {
-        const responseLiquidityParams = await jsCyber.liquidityParams();
+    const { pathname } = location;
+    if (
+      pathname.match(/add-liquidity/gm) &&
+      pathname.match(/add-liquidity/gm).length > 0
+    ) {
+      setSelectedTab('add-liquidity');
+    } else if (
+      pathname.match(/sub-liquidity/gm) &&
+      pathname.match(/sub-liquidity/gm).length > 0
+    ) {
+      setSelectedTab('sub-liquidity');
+    } else {
+      setSelectedTab('swap');
+    }
+  }, [location.pathname]);
 
-        console.log(`responseLiquidityParams`, responseLiquidityParams);
-        setParams(responseLiquidityParams.params);
-      }
-    };
-    getLiquidityParams();
-  }, [jsCyber]);
+  useEffect(() => {
+    setTokenA('');
+    setTokenB('');
+    setTokenAAmount('');
+    setTokenBAmount('');
+    setSelectMyPool('');
+    setAmountPoolCoin('');
+    setIsExceeded(false);
+  }, [update, selectedTab]);
 
   useEffect(() => {
     const getBalances = async () => {
@@ -187,15 +92,26 @@ function Teleport({ defaultAccount }) {
       }
     };
     getBalances();
-  }, [jsCyber, addressActive]);
+  }, [jsCyber, addressActive, update]);
+
+  useEffect(() => {
+    const getTotalSupply = async () => {
+      if (jsCyber !== null) {
+        const responseTotalSupply = await jsCyber.totalSupply();
+        const data = reduceBalances(responseTotalSupply);
+        setTotalSupply(data);
+      }
+    };
+    getTotalSupply();
+  }, [jsCyber]);
 
   useEffect(() => {
     let orderPrice = 0;
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = (Number(tokenBPoolAmount) / Number(tokenAPoolAmount)) * 0.9;
+      orderPrice = Number(tokenBPoolAmount) / Number(tokenAPoolAmount);
     } else {
-      orderPrice = (Number(tokenAPoolAmount) / Number(tokenBPoolAmount)) * 1;
+      orderPrice = Number(tokenAPoolAmount) / Number(tokenBPoolAmount);
     }
 
     if (orderPrice && orderPrice !== Infinity) {
@@ -203,109 +119,27 @@ function Teleport({ defaultAccount }) {
     }
   }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount]);
 
-  const createPool = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
-
-    const depositCoins = [
-      coin(1000000, CYBER.DENOM_CYBER),
-      coin(1000000, 'mamper'),
-    ];
-    console.log(`depositCoins`, depositCoins);
-
-    const response = await keplr.createPool(
-      address,
-      POOL_TYPE_INDEX,
-      depositCoins,
-      fee
-    );
-
-    console.log(`response`, response);
-  };
-
-  const withdwawWithinBatch = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
-
-    const depositCoins = coins(10000, CYBER.DENOM_CYBER);
-    console.log(`depositCoins`, depositCoins);
-
-    const response = await keplr.withdwawWithinBatch(
-      address,
-      1,
-      depositCoins,
-      fee
-    );
-
-    console.log(`response`, response);
-  };
-
-  const depositWithinBatch = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
-
-    const depositCoins = [
-      coin(1000, CYBER.DENOM_CYBER),
-      coin(1000, 'hydrogen'),
-    ];
-
-    const response = await keplr.depositWithinBatch(
-      address,
-      1,
-      depositCoins,
-      fee
-    );
-
-    console.log(`response`, response);
-  };
-
-  const swapWithinBatch = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
-    // params;
-    // poolsData;
-
-    const offerCoinFee = coin(
-      Math.floor(
-        parseFloat(tokenAAmount) *
-          coinDecimals(parseFloat(params.swapFeeRate)) *
-          0.5
-      ),
-      tokenA
-    );
-    // const offerCoinFee = coin(0, tokenA);
-
-    const offerCoin = coin(parseFloat(tokenAAmount), tokenA);
-
-    const demandCoinDenom = tokenB;
-
-    const response = await keplr.swapWithinBatch(
-      address,
-      POOL_TYPE_INDEX,
-      parseFloat(selectedPool.id),
-      offerCoin,
-      demandCoinDenom,
-      offerCoinFee,
-      Math.floor(swapPrice).toString(),
-      fee
-    );
-
-    console.log(`response`, response);
-  };
-
   useEffect(() => {
     const getAmountPool = async () => {
       setTokenAPoolAmount(0);
       setTokenBPoolAmount(0);
       if (jsCyber !== null && Object.keys(selectedPool).length > 0) {
         const getAllBalancesPromise = await jsCyber.getAllBalances(
-          selectedPool.reserveAccountAddress
+          selectedPool.reserve_account_address
         );
         const dataReduceBalances = reduceBalances(getAllBalancesPromise);
         if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
-          setTokenAPoolAmount(dataReduceBalances[tokenA]);
-          setTokenBPoolAmount(dataReduceBalances[tokenB]);
+          setTokenAPoolAmount(
+            reduceAmounToken(dataReduceBalances[tokenA], tokenA)
+          );
+          setTokenBPoolAmount(
+            reduceAmounToken(dataReduceBalances[tokenB], tokenB)
+          );
         }
       }
     };
     getAmountPool();
-  }, [jsCyber, tokenA, tokenB, selectedPool]);
+  }, [jsCyber, tokenA, tokenB, selectedPool, update]);
 
   useEffect(() => {
     setSelectedPool([]);
@@ -314,7 +148,7 @@ function Teleport({ defaultAccount }) {
         const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
         poolsData.forEach((item) => {
           if (
-            JSON.stringify(item.reserveCoinDenoms) ===
+            JSON.stringify(item.reserve_coin_denoms) ===
             JSON.stringify(arrangedReserveCoinDenoms)
           ) {
             setSelectedPool(item);
@@ -324,98 +158,196 @@ function Teleport({ defaultAccount }) {
     }
   }, [poolsData, tokenA, tokenB]);
 
-  console.log(`swapPrice`, swapPrice);
-  console.log(`tokenBAmount`, tokenAAmount * swapPrice);
+  useEffect(() => {
+    if (accountBalances !== null && poolsData !== null) {
+      const poolTokenData = getPoolToken(poolsData, accountBalances);
+      let poolTokenDataIndexer = {};
+
+      poolTokenDataIndexer = poolTokenData.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.poolCoinDenom]: item,
+        }),
+        {}
+      );
+      setMyPools(poolTokenDataIndexer);
+    }
+  }, [accountBalances, poolsData]);
+
+  function getMyTokenBalanceNumber(denom, indexer) {
+    return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
+  }
+
+  function amountChangeHandler(e) {
+    const inputAmount = e.target.value;
+    const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
+    const isReverse = e.target.id !== 'tokenAAmount';
+    const state = { tokenAPoolAmount, tokenBPoolAmount };
+    let type = 'swap';
+
+    if (selectedTab !== 'swap') {
+      type = 'deposit';
+    }
+
+    let exceeded = false;
+    const { counterPairAmount, price } = calculateCounterPairAmount(
+      e,
+      state,
+      type
+    );
+
+    console.log(`myATokenBalance`, myATokenBalance);
+
+    // is exceeded?(좌변에 fee 더해야함)
+    if (isReverse) {
+      // input from "to"(reverse)
+      setTokenBAmount(inputAmount);
+      setTokenAAmount(counterPairAmount);
+
+      if (counterPairAmount > myATokenBalance) {
+        exceeded = true;
+      }
+    } else {
+      // input from "from"(normal)
+      setTokenAAmount(inputAmount);
+      setTokenBAmount(counterPairAmount);
+
+      if (inputAmount > myATokenBalance) {
+        exceeded = true;
+      }
+    }
+    console.log(`price`, price);
+
+    // setSlippage(slippage);
+    setIsExceeded(exceeded);
+    setTokenPrice(price);
+    // helper
+  }
+
+  const onChangeInputWithdraw = (e) => {
+    const inputAmount = e.target.value;
+    const myATokenBalance = getMyTokenBalanceNumber(
+      selectMyPool,
+      accountBalances
+    );
+    let exceeded = false;
+    if (parseFloat(inputAmount) > myATokenBalance) {
+      exceeded = true;
+    }
+    setIsExceeded(exceeded);
+    setAmountPoolCoin(inputAmount);
+  };
+
+  function tokenChange() {
+    const A = tokenB;
+    const B = tokenA;
+    const AP = tokenBPoolAmount;
+    const BP = tokenAPoolAmount;
+
+    setTokenA(A);
+    setTokenB(B);
+    setTokenAAmount('');
+    setTokenBAmount('');
+    setTokenAPoolAmount(AP);
+    setTokenBPoolAmount(BP);
+  }
+
+  const updateFunc = () => {
+    setUpdate((item) => item + 1);
+  };
+
+  const stateActionBar = {
+    addressActive,
+    tokenAAmount,
+    tokenBAmount,
+    tokenA,
+    tokenB,
+    params,
+    swapPrice,
+    selectedPool,
+    selectedTab,
+    updateFunc,
+    selectMyPool,
+    myPools,
+    amountPoolCoin,
+    isExceeded,
+  };
+
+  const stateSwap = {
+    accountBalances,
+    tokenB,
+    setTokenB,
+    tokenBAmount,
+    tokenA,
+    setTokenA,
+    tokenAAmount,
+    amountChangeHandler,
+    tokenAPoolAmount,
+    tokenBPoolAmount,
+    tokenPrice,
+    tokenChange,
+  };
+
+  const stateWithdraw = {
+    accountBalances,
+    myPools,
+    selectMyPool,
+    setSelectMyPool,
+    amountPoolCoin,
+    onChangeInputWithdraw,
+  };
+
+  let content;
+
+  if (selectedTab === 'swap') {
+    content = (
+      <Route
+        path="/teleport"
+        render={() => <Swap text stateSwap={stateSwap} />}
+      />
+    );
+  }
+
+  if (selectedTab === 'add-liquidity') {
+    content = (
+      <Route
+        path="/teleport/add-liquidity"
+        render={() => <Swap stateSwap={stateSwap} />}
+      />
+    );
+  }
+
+  if (selectedTab === 'sub-liquidity') {
+    content = (
+      <Route
+        path="/teleport/sub-liquidity"
+        render={() => <Withdraw stateSwap={stateWithdraw} />}
+      />
+    );
+  }
 
   return (
     <>
       <main className="block-body">
-        <Pane display="flex" alignItems="center" flexDirection="column">
-          <Pane>
-            <BalanceToken data={accountBalances} token={tokenA} />
-            <Pane display="flex" alignItems="center" marginBottom={50}>
-              <Pane fontSize="18px">Sell</Pane>
-              <Select
-                data={accountBalances}
-                valueSelect={tokenA}
-                selected={tokenB}
-                onChangeSelect={(e) => setTokenA(e.target.value)}
-              />
-              <Input
-                value={tokenAAmount}
-                onChange={(e) => setTokenAAmount(e.target.value)}
-                placeholder="amount"
-                width="200px"
-                height={42}
-                fontSize="20px"
-                textAlign="end"
-              />
-            </Pane>
-          </Pane>
+        <TabList selected={selectedTab} />
 
-          <Pane>
-            <BalanceToken data={accountBalances} token={tokenB} />
-            <Pane display="flex" alignItems="center">
-              <Pane fontSize="18px">Buy</Pane>
-              <Select
-                data={accountBalances}
-                valueSelect={tokenB}
-                selected={tokenA}
-                onChangeSelect={(e) => setTokenB(e.target.value)}
-              />
-              <Input
-                value={tokenBAmount}
-                onChange={(e) => setTokenBAmount(e.target.value)}
-                placeholder="amount"
-                width="200px"
-                height={42}
-                fontSize="20px"
-                textAlign="end"
-              />
-            </Pane>
-          </Pane>
+        <Pane
+          width="100%"
+          display="flex"
+          alignItems="center"
+          flexDirection="column"
+        >
+          {content}
         </Pane>
-        <Pane marginBottom={20} marginTop={50} fontSize="18px">
-          Pools:
-        </Pane>
-        {poolsData.length > 0 &&
-          poolsData.map((item) => (
-            <Pane
-              width="100%"
-              display="flex"
-              flexDirection="column"
-              borderBottom="1px solid #979797"
-            >
-              <Pane display="flex" alignItems="center" marginBottom={10}>
-                <ValueImg text={item.reserveCoinDenoms[0]} onlyImg />
-                <ValueImg text={item.reserveCoinDenoms[1]} onlyImg />
 
-                <Pane marginLeft={10} fontSize="18px">
-                  <ValueImg text={item.reserveCoinDenoms[0]} onlyText /> -{' '}
-                  <ValueImg text={item.reserveCoinDenoms[1]} onlyText />
-                </Pane>
-              </Pane>
-              <PoolItemsList
-                addressPool={item.reserveAccountAddress}
-                token={item.reserveCoinDenoms[0]}
-              />
-              <PoolItemsList
-                addressPool={item.reserveAccountAddress}
-                token={item.reserveCoinDenoms[1]}
-              />
-            </Pane>
-          ))}
+        <PoolsList
+          poolsData={poolsData}
+          accountBalances={accountBalances}
+          totalSupply={totalSupply}
+          selectedTab={selectedTab}
+        />
       </main>
-      {keplr !== null && (
-        <ActionBar>
-          <Pane display="flex" width="100%" justifyContent="space-evenly">
-            <Button onClick={() => createPool()}>createPool</Button>
-            <Button onClick={() => withdwawWithinBatch()}>withdwawBatch</Button>
-            <Button onClick={() => depositWithinBatch()}>depositInBatch</Button>
-            <Button onClick={() => swapWithinBatch()}>swap</Button>
-          </Pane>
-        </ActionBar>
-      )}
+      <ActionBar stateActionBar={stateActionBar} />
     </>
   );
 }
