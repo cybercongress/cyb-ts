@@ -78,6 +78,16 @@ const items = [
     ],
   },
   {
+    name: 'Teleport',
+    to: '/teleport',
+    active: false,
+    subItems: [
+      { name: 'Add liquidity', to: '/teleport/add-liquidity' },
+      { name: 'Swap', to: '/teleport' },
+      { name: 'Sub liquidity', to: '/teleport/sub-liquidity' },
+    ],
+  },
+  {
     name: 'Nebula',
     to: '/nebula',
     active: false,
