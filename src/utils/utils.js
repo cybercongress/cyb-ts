@@ -219,7 +219,7 @@ const exponentialToDecimal = (exponential) => {
       }
       return text;
     };
-    decimal = addCommas(exponentialSplitted[0].replace('.', '') + postfix);
+    decimal = exponentialSplitted[0].replace('.', '') + postfix;
   }
   if (decimal.toLowerCase().includes('e-')) {
     const exponentialSplitted = decimal.split('e-');

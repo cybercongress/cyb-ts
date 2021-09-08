@@ -152,6 +152,7 @@ function useGetBalance(address, updateAddress) {
         setLoadingBalanceToken(true);
         const getAllBalancesPromise = await jsCyber.getAllBalances(address);
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
+        // console.log(`balancesToken`, address, balancesToken);
         if (balancesToken.mamper) {
           initValueTokenAmount.mamper.available = convertResources(
             balancesToken.mamper
@@ -172,25 +173,23 @@ function useGetBalance(address, updateAddress) {
           initValueTokenAmount.hydrogen.available = balancesToken.hydrogen;
           initValueTokenAmount.hydrogen.total = balancesToken.hydrogen;
         }
+        // console.log(`vested`, address, vested);
+        // console.log(`originalVesting`, address, originalVesting);
 
         if (vested.mamper >= 0 && originalVesting.mamper > 0) {
           const vestedTokens =
             parseFloat(originalVesting.mamper) - parseFloat(vested.mamper);
           if (initValueTokenAmount.mamper.available > 0) {
-            initValueTokenAmount.mamper.available -= convertResources(
-              vestedTokens
-            );
-            initValueTokenAmount.mamper.vested = convertResources(vestedTokens);
+            initValueTokenAmount.mamper.available -= vestedTokens;
+            initValueTokenAmount.mamper.vested = vestedTokens;
           }
         }
         if (vested.mvolt >= 0 && originalVesting.mvolt > 0) {
           const vestedTokens =
             parseFloat(originalVesting.mvolt) - parseFloat(vested.mvolt);
           if (initValueTokenAmount.mvolt.available > 0) {
-            initValueTokenAmount.mvolt.available -= convertResources(
-              vestedTokens
-            );
-            initValueTokenAmount.mvolt.vested = convertResources(vestedTokens);
+            initValueTokenAmount.mvolt.available -= vestedTokens;
+            initValueTokenAmount.mvolt.vested = vestedTokens;
           }
         }
         if (vested.hydrogen >= 0 && originalVesting.hydrogen > 0) {
@@ -201,6 +200,7 @@ function useGetBalance(address, updateAddress) {
           }
           initValueTokenAmount.hydrogen.vested = vestedTokens;
         }
+        // console.log(address, initValueTokenAmount);
       }
       setBalanceToken(initValueTokenAmount);
       setLoadingBalanceToken(false);
