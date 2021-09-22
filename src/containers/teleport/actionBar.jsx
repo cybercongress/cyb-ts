@@ -87,7 +87,7 @@ function ActionBar({ stateActionBar }) {
 
     const depositCoins = [
       coin(1000000, CYBER.DENOM_CYBER),
-      coin(1500000, 'mamper'),
+      coin(1500000, 'milliampere'),
     ];
     console.log(`depositCoins`, depositCoins);
 
@@ -158,15 +158,15 @@ function ActionBar({ stateActionBar }) {
     };
 
     if (
-      arrangedReserveCoinDenoms[0] === 'mvolt' ||
-      arrangedReserveCoinDenoms[0] === 'mamper'
+      arrangedReserveCoinDenoms[0] === 'millivolt' ||
+      arrangedReserveCoinDenoms[0] === 'milliampere'
     ) {
       deposit[arrangedReserveCoinDenoms[0]] *= 1000;
     }
 
     if (
-      arrangedReserveCoinDenoms[1] === 'mvolt' ||
-      arrangedReserveCoinDenoms[1] === 'mamper'
+      arrangedReserveCoinDenoms[1] === 'millivolt' ||
+      arrangedReserveCoinDenoms[1] === 'milliampere'
     ) {
       deposit[arrangedReserveCoinDenoms[1]] *= 1000;
     }
@@ -209,7 +209,7 @@ function ActionBar({ stateActionBar }) {
 
     let amountTokenA = tokenAAmount;
 
-    if (tokenA === 'mvolt' || tokenA === 'mamper') {
+    if (tokenA === 'millivolt' || tokenA === 'milliampere') {
       amountTokenA *= 1000;
     }
 

@@ -3,10 +3,10 @@ import { Dots, ValueImg } from '../../../../components';
 
 const reduceTextCoin = (text) => {
   switch (text) {
-    case 'mvolt':
+    case 'millivolt':
       return 'V';
 
-    case 'mamper':
+    case 'milliampere':
       return 'A';
 
     case 'hydrogen':

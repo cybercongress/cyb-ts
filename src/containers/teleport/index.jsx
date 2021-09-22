@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
+import useSWR from 'swr';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -46,11 +47,13 @@ function Teleport({ defaultAccount }) {
   const [swapPrice, setSwapPrice] = useState(0);
   const [tokenPrice, setTokenPrice] = useState(null);
   const [selectedTab, setSelectedTab] = useState('swap');
-  const [totalSupply, setTotalSupply] = useState(null);
+  // const [totalSupply, setTotalSupply] = useState(null);
   const [myPools, setMyPools] = useState({});
   const [selectMyPool, setSelectMyPool] = useState('');
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
   const [isExceeded, setIsExceeded] = useState(false);
+
+  console.log(`poolsData`, poolsData)
 
   useEffect(() => {
     const { pathname } = location;
@@ -86,32 +89,32 @@ function Teleport({ defaultAccount }) {
           addressActive.bech32
         );
 
-        const data = reduceBalances(getAllBalancesPromise);
-        console.log(`reduceBalances`, data);
-        setAccountBalances(data);
+        const datareduceBalances = reduceBalances(getAllBalancesPromise);
+        console.log(`reduceBalances`, datareduceBalances);
+        setAccountBalances(datareduceBalances);
       }
     };
     getBalances();
   }, [jsCyber, addressActive, update]);
 
-  useEffect(() => {
-    const getTotalSupply = async () => {
-      if (jsCyber !== null) {
-        const responseTotalSupply = await jsCyber.totalSupply();
-        const data = reduceBalances(responseTotalSupply);
-        setTotalSupply(data);
-      }
-    };
-    getTotalSupply();
-  }, [jsCyber]);
+  // useEffect(() => {
+  //   const getTotalSupply = async () => {
+  //     if (jsCyber !== null) {
+  //       const responseTotalSupply = await jsCyber.totalSupply();
+  //       const data = reduceBalances(responseTotalSupply);
+  //       setTotalSupply(data);
+  //     }
+  //   };
+  //   getTotalSupply();
+  // }, [jsCyber]);
 
   useEffect(() => {
     let orderPrice = 0;
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = Number(tokenBPoolAmount) / Number(tokenAPoolAmount);
+      orderPrice = (Number(tokenBPoolAmount) / Number(tokenAPoolAmount)) * 0.9;
     } else {
-      orderPrice = Number(tokenAPoolAmount) / Number(tokenBPoolAmount);
+      orderPrice = (Number(tokenAPoolAmount) / Number(tokenBPoolAmount)) * 1.1;
     }
 
     if (orderPrice && orderPrice !== Infinity) {
@@ -145,6 +148,7 @@ function Teleport({ defaultAccount }) {
     setSelectedPool([]);
     if (poolsData.length > 0) {
       if (tokenA.length > 0 && tokenB.length > 0) {
+        console.log(`setSelectedPool`);
         const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
         poolsData.forEach((item) => {
           if (
@@ -183,6 +187,7 @@ function Teleport({ defaultAccount }) {
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
     const isReverse = e.target.id !== 'tokenAAmount';
     const state = { tokenAPoolAmount, tokenBPoolAmount };
+
     let type = 'swap';
 
     if (selectedTab !== 'swap') {
@@ -195,8 +200,6 @@ function Teleport({ defaultAccount }) {
       state,
       type
     );
-
-    console.log(`myATokenBalance`, myATokenBalance);
 
     // is exceeded?(좌변에 fee 더해야함)
     if (isReverse) {
@@ -284,7 +287,6 @@ function Teleport({ defaultAccount }) {
     amountChangeHandler,
     tokenAPoolAmount,
     tokenBPoolAmount,
-    tokenPrice,
     tokenChange,
   };
 
@@ -340,12 +342,12 @@ function Teleport({ defaultAccount }) {
           {content}
         </Pane>
 
-        <PoolsList
+        {/* <PoolsList
           poolsData={poolsData}
           accountBalances={accountBalances}
           totalSupply={totalSupply}
           selectedTab={selectedTab}
-        />
+        /> */}
       </main>
       <ActionBar stateActionBar={stateActionBar} />
     </>

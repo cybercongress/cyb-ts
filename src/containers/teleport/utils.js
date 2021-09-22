@@ -88,7 +88,7 @@ export function calculateSlippage(swapAmount, poolReserve) {
 export const reduceAmounToken = (amount, token) => {
   let amountReduce = amount;
 
-  if (token === 'mvolt' || token === 'mamper') {
+  if (token === 'millivolt' || token === 'milliampere') {
     amountReduce = convertResources(amount);
   }
 
@@ -97,10 +97,10 @@ export const reduceAmounToken = (amount, token) => {
 
 export const reduceTextCoin = (text) => {
   switch (text) {
-    case 'mvolt':
+    case 'millivolt':
       return 'V';
 
-    case 'mamper':
+    case 'milliampere':
       return 'A';
 
     case 'hydrogen':

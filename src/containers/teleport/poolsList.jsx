@@ -109,4 +109,4 @@ function PoolsList({ poolsData, accountBalances, totalSupply, selectedTab }) {
   );
 }
 
-export default PoolsList;
+export default React.memo(PoolsList);

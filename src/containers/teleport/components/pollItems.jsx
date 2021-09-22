@@ -5,7 +5,7 @@ import { AppContext } from '../../../context';
 import { reduceAmounToken } from '../utils';
 import { formatNumber } from '../../../utils/utils';
 
-const PoolTokenAmount = ({ addressPool, token }) => {
+export const PoolTokenAmount = ({ addressPool, token }) => {
   const { jsCyber } = useContext(AppContext);
   const [amounToken, setAmounToken] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -29,12 +29,13 @@ const PoolTokenAmount = ({ addressPool, token }) => {
   );
 };
 
-const PoolItemsList = ({ addressPool, token }) => (
+const PoolItemsList = ({ addressPool, token, ...props }) => (
   <Pane
     display="flex"
     alignItems="center"
     justifyContent="space-between"
     marginBottom={10}
+    {...props}
   >
     <ValueImg
       style={{

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { TokenSetter } from './components';
 import { ButtonIcon, ValueImg } from '../../components';
+import { exponentialToDecimal } from '../../utils/utils';
 
 const imgSwap = require('../../image/swap-horizontal.svg');
 
@@ -17,42 +18,34 @@ function Swap({ stateSwap, text }) {
     amountChangeHandler,
     tokenAPoolAmount,
     tokenBPoolAmount,
-    tokenPrice,
     tokenChange,
   } = stateSwap;
 
-  const getTokenPrice = (a, b, priceToken) => {
-    if (priceToken === null) {
-      const price = b / a;
-      if (price && price !== Infinity) {
-        return (
-          <span>
-            {parseFloat(price.toFixed(6))} <ValueImg text={tokenA} /> /{' '}
-            <ValueImg text={tokenB} />
-          </span>
-        );
-      }
-    } else {
-      return (
-        <span>
-          {parseFloat(priceToken.toFixed(6))} <ValueImg text={tokenA} /> /{' '}
-          <ValueImg text={tokenB} />
-        </span>
-      );
-    }
-  };
-
-  function getSwapFees(a, b) {
-    const price = b / a;
+  const getTokenPrice = useMemo(() => {
+    const price = tokenAPoolAmount / tokenBPoolAmount;
     if (price && price !== Infinity) {
       return (
         <span>
-          {Math.floor(a * 0.0015)} <ValueImg text={tokenA} /> <br />{' '}
-          {Math.floor(b * 0.0015)} <ValueImg text={tokenB} />
+          {exponentialToDecimal(price.toPrecision(3))}{' '}
+          <ValueImg text={tokenA} /> / <ValueImg text={tokenB} />
         </span>
       );
     }
-  }
+    return <span> </span>;
+  }, [tokenAPoolAmount, tokenBPoolAmount]);
+
+  const getSwapFees = useMemo(() => {
+    const price = tokenAAmount / tokenBAmount;
+    if (price && price !== Infinity) {
+      return (
+        <span>
+          {Math.floor(tokenAAmount * 0.0015)} <ValueImg text={tokenA} /> <br />{' '}
+          {Math.floor(tokenBAmount * 0.0015)} <ValueImg text={tokenB} />
+        </span>
+      );
+    }
+    return <span> </span>;
+  }, [tokenAAmount, tokenBAmount]);
 
   return (
     <Pane
@@ -89,7 +82,7 @@ function Swap({ stateSwap, text }) {
         valueInput={tokenBAmount}
         textLeft={text ? 'Buy' : ''}
       />
-      {/* <Pane
+      <Pane
         display="flex"
         justifyContent="flex-end"
         width="100%"
@@ -97,9 +90,7 @@ function Swap({ stateSwap, text }) {
         alignItems=" flex-end"
       >
         <div>Price:</div>
-        <div>
-          {getTokenPrice(tokenAPoolAmount, tokenBPoolAmount, tokenPrice)}
-        </div>
+        <div>{getTokenPrice}</div>
       </Pane>
       <Pane
         display="flex"
@@ -110,10 +101,10 @@ function Swap({ stateSwap, text }) {
         marginTop={10}
       >
         <div>Swap Fees:</div>
-        <div>{getSwapFees(tokenAAmount, tokenBAmount)}</div>
-      </Pane> */}
+        <div>{getSwapFees}</div>
+      </Pane>
     </Pane>
   );
 }
 
-export default Swap;
+export default React.memo(Swap);

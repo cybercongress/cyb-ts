@@ -32,6 +32,7 @@ function TokenSetter({
           width="200px"
           height={42}
           fontSize="20px"
+          autoComplete="off"
           textAlign="end"
         />
       </Pane>
