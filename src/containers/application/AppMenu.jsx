@@ -75,6 +75,7 @@ const items = [
       { name: 'V', to: '/market/V' },
       { name: 'GOL', to: '/market/GOL' },
       { name: 'CYB', to: '/market/CYB' },
+      { name: 'Pools', to: '/market/pools' },
     ],
   },
   {

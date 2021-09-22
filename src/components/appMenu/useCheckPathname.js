@@ -38,6 +38,8 @@ const useCheckPathname = () => {
       setMain('Market');
     } else if (pathname === '/market/cyb') {
       setMain('Market');
+    } else if (pathname === '/market/pools') {
+      setMain('Market');
     } else if (pathname === '/search/Dyson Sphere') {
       setMain('Dyson Sphere');
     } else if (pathname === '/mint') {
