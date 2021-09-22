@@ -5,17 +5,26 @@ const amperImg = require('../../image/light.png');
 const hydrogen = require('../../image/hydrogen.svg');
 const boot = require('../../image/boot.png');
 
-const ValueImg = ({ text, onlyImg, onlyText, marginImg, ...props }) => {
+const ValueImg = ({
+  text,
+  onlyImg,
+  onlyText,
+  marginImg,
+  marginContainer,
+  zIndexImg,
+  size,
+  ...props
+}) => {
   let img;
   let textCurency = text;
 
   switch (text) {
-    case 'mvolt':
+    case 'millivolt':
       img = voltImg;
       textCurency = 'V';
       break;
 
-    case 'mamper':
+    case 'milliampere':
       img = amperImg;
       textCurency = 'A';
       break;
@@ -42,6 +51,7 @@ const ValueImg = ({ text, onlyImg, onlyText, marginImg, ...props }) => {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
+        margin: marginContainer || 0,
       }}
       {...props}
     >
@@ -50,9 +60,10 @@ const ValueImg = ({ text, onlyImg, onlyText, marginImg, ...props }) => {
         <img
           style={{
             margin: marginImg || 0,
-            width: 20,
-            height: 20,
+            width: size || 20,
+            height: size || 20,
             objectFit: 'contain',
+            zIndex: zIndexImg || 0,
           }}
           src={img}
           alt="text"

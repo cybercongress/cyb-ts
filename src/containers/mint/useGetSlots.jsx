@@ -7,13 +7,13 @@ const MILLISECONDS_IN_SECOND = 1000;
 
 const initStateVested = {
   hydrogen: 0,
-  mvolt: 0,
-  mamper: 0,
+  millivolt: 0,
+  milliampere: 0,
 };
 
 const initBalacesResource = {
-  mvolt: 0,
-  mamper: 0,
+  millivolt: 0,
+  milliampere: 0,
 };
 
 function timeSince(timeMS) {
@@ -64,8 +64,8 @@ function useGetSlots(addressActive, updateAddress) {
       if (addressActive !== null) {
         const originalVestingInitAmount = {
           hydrogen: 0,
-          mvolt: 0,
-          mamper: 0,
+          millivolt: 0,
+          milliampere: 0,
         };
 
         const getAccount = await authAccounts(addressActive);
@@ -81,12 +81,12 @@ function useGetSlots(addressActive, updateAddress) {
           if (balances.hydrogen) {
             originalVestingInitAmount.hydrogen = balances.hydrogen;
           }
-          if (balances.mvolt) {
-            originalVestingInitAmount.mvolt = convertResources(balances.mvolt);
+          if (balances.millivolt) {
+            originalVestingInitAmount.millivolt = convertResources(balances.millivolt);
           }
-          if (balances.mamper) {
-            originalVestingInitAmount.mamper = convertResources(
-              balances.mamper
+          if (balances.milliampere) {
+            originalVestingInitAmount.milliampere = convertResources(
+              balances.milliampere
             );
           }
           setOriginalVesting(originalVestingInitAmount);
@@ -120,8 +120,8 @@ function useGetSlots(addressActive, updateAddress) {
       setBalacesResource(initBalacesResource);
       if (addressActive !== null && jsCyber !== null) {
         const balacesAmount = {
-          mvolt: 0,
-          mamper: 0,
+          millivolt: 0,
+          milliampere: 0,
         };
 
         const getAllBalancesPromise = await jsCyber.getAllBalances(
@@ -129,11 +129,11 @@ function useGetSlots(addressActive, updateAddress) {
         );
 
         const balances = getCalculationBalance(getAllBalancesPromise);
-        if (balances.mvolt) {
-          balacesAmount.mvolt = convertResources(balances.mvolt);
+        if (balances.millivolt) {
+          balacesAmount.millivolt = convertResources(balances.millivolt);
         }
-        if (balances.mamper) {
-          balacesAmount.mamper = convertResources(balances.mamper);
+        if (balances.milliampere) {
+          balacesAmount.milliampere = convertResources(balances.milliampere);
         }
         setBalacesResource(balacesAmount);
       } else {
@@ -159,8 +159,8 @@ function useGetSlots(addressActive, updateAddress) {
     let length = parseFloat(startTime);
     const vestedAmount = {
       hydrogen: 0,
-      mvolt: 0,
-      mamper: 0,
+      millivolt: 0,
+      milliampere: 0,
     };
 
     if (data.length > 0) {
@@ -182,7 +182,7 @@ function useGetSlots(addressActive, updateAddress) {
         // obj.status = 'empty';
         item.amount.forEach((itemAmount) => {
           const amount = {};
-          if (itemAmount.denom === 'mvolt' || itemAmount.denom === 'mamper') {
+          if (itemAmount.denom === 'millivolt' || itemAmount.denom === 'milliampere') {
             amount[itemAmount.denom] = convertResources(
               parseFloat(itemAmount.amount)
             );
@@ -199,11 +199,11 @@ function useGetSlots(addressActive, updateAddress) {
           if (obj.amount.hydrogen) {
             vestedAmount.hydrogen += obj.amount.hydrogen;
           }
-          if (obj.amount.mamper) {
-            vestedAmount.mamper += obj.amount.mamper;
+          if (obj.amount.milliampere) {
+            vestedAmount.milliampere += obj.amount.milliampere;
           }
-          if (obj.amount.mvolt) {
-            vestedAmount.mvolt += obj.amount.mvolt;
+          if (obj.amount.millivolt) {
+            vestedAmount.millivolt += obj.amount.millivolt;
           }
         }
         tempData.push(obj);

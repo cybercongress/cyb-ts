@@ -1,36 +1,47 @@
-import React, { PureCompoment } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { CYBER } from '../../utils/config';
 import { setBlock } from '../../redux/actions/block';
+import { AppContext } from '../../context';
 
 const { CYBER_WEBSOCKET_URL } = CYBER;
 
 const M = Math;
 const DOC = document;
-let F = 0;
+const F = 0;
 
-class Electricity extends React.PureComponent {
-  ws = new WebSocket(CYBER_WEBSOCKET_URL);
+function Electricity({ setBlockProps }) {
+  const [data, setData] = useState('M0,0 L240,0');
+  const [stage, setStage] = useState(false);
+  const [wsClient, setWsClient] = useState(null);
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      d: 'M0,0 L240,0',
-      stage: false,
+  useEffect(() => {
+    let ws = null;
+    const closeHandler = () => {
+      console.log(`close WS`);
+      setTimeout(createConnect, 3000);
     };
-    // this.run();
-  }
 
-  componentDidMount() {
-    this.getDataWS();
-  }
+    const createConnect = () => {
+      if (ws !== null) {
+        ws.removeEventListener('close', closeHandler);
+      }
+      ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
+      ws.addEventListener('close', closeHandler);
+      console.log(`open`);
+      setWsClient(ws);
+    };
+    createConnect();
 
-  getDataWS = () => {
-    const { setBlockProps } = this.props;
+    return () => {
+      ws.removeEventListener('close', closeHandler);
+      ws.close();
+    };
+  }, []);
 
-    this.ws.onopen = () => {
-      console.log('connected');
-      this.ws.send(
+  useEffect(() => {
+    const handlerOpen = () => {
+      wsClient.send(
         JSON.stringify({
           method: 'subscribe',
           params: ["tm.event='NewBlockHeader'"],
@@ -39,181 +50,173 @@ class Electricity extends React.PureComponent {
         })
       );
     };
-    this.ws.onmessage = async evt => {
+
+    if (wsClient !== null) {
+      wsClient.addEventListener('open', handlerOpen);
+    }
+
+    return () => {
+      if (wsClient !== null) {
+        wsClient.removeEventListener('close', handlerOpen);
+      }
+    };
+  }, [wsClient]);
+
+  useEffect(() => {
+    const handlerMessage = (evt) => {
       const message = JSON.parse(evt.data);
       if (Object.keys(message.result).length > 0) {
         const block = message.result.data.value.header.height;
         setBlockProps(block);
+        run();
       }
-      this.run();
     };
 
-    this.ws.onclose = () => {
-      console.log('disconnected');
-    };
-  };
+    if (wsClient !== null) {
+      wsClient.addEventListener('message', handlerMessage);
+    }
 
-  At = (el, a, v) => {
+    return () => {
+      if (wsClient !== null) {
+        wsClient.removeEventListener('message', handlerMessage);
+      }
+    };
+  }, [wsClient]);
+
+  const At = (el, a, v) => {
     try {
       el.setAttribute(a, v);
     } catch (error) {}
   };
 
-  R = (min, max) => {
+  const R = (min, max) => {
     return M.round(min + M.random() * (max - min));
   };
 
-  f = (p, P, d) => {
+  const f = (p, P, d) => {
     return [(p[0] - P[0]) * d + P[0], (p[1] - P[1]) * d + P[1]];
   };
 
-  T = () => {
+  const T = () => {
     const l0 = DOC.getElementById('lightning0');
     const l1 = DOC.getElementById('lightning1');
     const l2 = DOC.getElementById('lightning2');
 
     const L = 2050;
-    const C = this.R(9, 10);
+    const C = R(9, 10);
     const PC = L / C;
     const A = [];
     const D = 10;
     let NP = 'M';
-    const S = this.R(1, 3) * 0.01;
-    const B = this.R(-2, 5);
+    const S = R(1, 3) * 0.01;
+    const B = R(-2, 5);
     const RF = 0.4;
     const yPos = 15;
 
-    if (this.state.stage) {
-      for (let i = 0; i < C; i += 1) {
-        if (i === 0) {
-          A.push([i, yPos]);
-        } else if (i < C / 2) {
-          A.push([i * PC, this.R(-D, D) * i]);
-        } else {
-          A.push([i * PC, this.R(-D, D) * (C - i)]);
-        }
+    for (let i = 0; i < C; i += 1) {
+      if (i === 0) {
+        A.push([i, yPos]);
+      } else if (i < C / 2) {
+        A.push([i * PC, R(-D, D) * i]);
+      } else {
+        A.push([i * PC, R(-D, D) * (C - i)]);
       }
-      for (let i = 0; i < C; i += 1) {
-        if (i !== 0 && i !== C - 1) {
-          const P = this.f(A[i - 1], A[i], RF);
-          const p = this.f(A[i], A[i + 1], 1 - RF);
-          NP += ` L${P[0]},${P[1]}`;
-          NP += ` Q${A[i][0]},${A[i][1]}`;
-          NP += ` ${p[0]},${p[1]}`;
-        } else if (i === C - 1) {
-          NP += ` T${L},${yPos}`;
-        } else {
-          NP += ` ${A[i][0]},${A[i][1]}`;
-        }
-      }
-      // console.log(NP);
-      this.At(l0, 'stroke-width', B + 12);
-      this.At(l1, 'stroke-width', B + 6);
-      this.At(l2, 'stroke-width', B);
-      this.setState({ d: NP });
     }
+    for (let i = 0; i < C; i += 1) {
+      if (i !== 0 && i !== C - 1) {
+        const P = f(A[i - 1], A[i], RF);
+        const p = f(A[i], A[i + 1], 1 - RF);
+        NP += ` L${P[0]},${P[1]}`;
+        NP += ` Q${A[i][0]},${A[i][1]}`;
+        NP += ` ${p[0]},${p[1]}`;
+      } else if (i === C - 1) {
+        NP += ` T${L},${yPos}`;
+      } else {
+        NP += ` ${A[i][0]},${A[i][1]}`;
+      }
+    }
+    // console.log(NP);
+    At(l0, 'stroke-width', B + 12);
+    At(l1, 'stroke-width', B + 6);
+    At(l2, 'stroke-width', B);
+    setData(NP);
     // TwL.to([l0, l1], S, { morphSVG: { d: NP } });
     // TwL.to([l2], S, { morphSVG: { d: NP }, delay: S, onComplete: T });
   };
 
-  calculate = (x, y, width, height) => {
-    const points = [[x, height / 2]];
-    const maxPoints = 10;
-    const chunkRange = width / maxPoints;
-    for (let i = 0; i < maxPoints; i++) {
-      const cx = chunkRange * i + Math.cos(i) * chunkRange;
-      const cy = Math.random() * height;
-      points.push([cx, cy]);
-    }
-
-    points.push([width, height / 2]);
-
-    const d = points.map(point => point.join(','));
-    return `M${d.join(',')}`;
-  };
-
-  run() {
+  const run = () => {
     // setInterval(() => {
     const timerId = setInterval(() => {
-      this.setState({
-        stage: true,
-      });
-      this.T();
+      setStage(true);
+      T();
     }, 1000 / 30);
     setTimeout(() => {
       clearInterval(timerId);
-      this.setState({
-        stage: false,
-      });
+      setStage(false);
     }, 600);
-  }
+  };
 
-  render() {
-    const { d, stage } = this.state;
-    const { left, right } = this.props;
-
-    return (
-      <div
-        style={{
-          zIndex: '-1',
-          width: '100%',
-          padding: ' 0 20px',
-          position: 'absolute',
-        }}
-        className="electricity"
-      >
-        <div className="line">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 80">
-            <g id="lightningContainer">
-              <rect width="2050" height="80" fill="#000000" />
-              {stage && (
-                <g
-                  id="lightningG"
-                  width="2050"
-                  height="80"
-                  transform="translate(0, 40)"
-                  opacity="1"
-                >
-                  <path
-                    id="lightning0"
-                    stroke="rgba(0,238,255,0.1)"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="12"
-                    fill="none"
-                    d={d}
-                  />
-                  <path
-                    id="lightning1"
-                    stroke="rgba(0,238,255,0.3)"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="5"
-                    fill="none"
-                    d={d}
-                  />
-                  <path
-                    id="lightning2"
-                    stroke="#fff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1"
-                    fill="none"
-                    d={d}
-                  />
-                </g>
-              )}
-            </g>
-          </svg>
-        </div>
+  return (
+    <div
+      style={{
+        zIndex: '-1',
+        width: '100%',
+        padding: ' 0 20px',
+        position: 'absolute',
+      }}
+      className="electricity"
+    >
+      <div className="line">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 80">
+          <g id="lightningContainer">
+            <rect width="2050" height="80" fill="#000000" />
+            {stage && (
+              <g
+                id="lightningG"
+                width="2050"
+                height="80"
+                transform="translate(0, 40)"
+                opacity="1"
+              >
+                <path
+                  id="lightning0"
+                  stroke="rgba(0,238,255,0.1)"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="12"
+                  fill="none"
+                  d={data}
+                />
+                <path
+                  id="lightning1"
+                  stroke="rgba(0,238,255,0.3)"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="5"
+                  fill="none"
+                  d={data}
+                />
+                <path
+                  id="lightning2"
+                  stroke="#fff"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1"
+                  fill="none"
+                  d={data}
+                />
+              </g>
+            )}
+          </g>
+        </svg>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
-const mapDispatchprops = dispatch => {
+const mapDispatchprops = (dispatch) => {
   return {
-    setBlockProps: block => dispatch(setBlock(block)),
+    setBlockProps: (block) => dispatch(setBlock(block)),
   };
 };
 

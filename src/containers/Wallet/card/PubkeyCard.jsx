@@ -412,7 +412,7 @@ const EULnetworkInfo = ({
               </>
             )}
 
-            {balanceToken.mvolt && (
+            {balanceToken.millivolt && (
               <>
                 <RowBalance
                   onClick={onClickOpenVolt}
@@ -425,23 +425,23 @@ const EULnetworkInfo = ({
                     <div className="details-balance">details</div>
                   )}
                   <FormatNumberTokens
-                    value={balanceToken.mvolt.total}
-                    text="mvolt"
+                    value={balanceToken.millivolt.total}
+                    text="millivolt"
                   />
                   {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
                 </RowBalance>
                 {openVolt && (
                   <DetailsBalanceTokens
-                    total={balanceToken.mvolt}
+                    total={balanceToken.millivolt}
                     address={address.bech32}
                     paddingLeft={15}
-                    currency="mvolt"
+                    currency="millivolt"
                   />
                 )}
               </>
             )}
 
-            {balanceToken.mamper && (
+            {balanceToken.milliampere && (
               <>
                 <RowBalance
                   onClick={onClickOpenAmper}
@@ -454,17 +454,17 @@ const EULnetworkInfo = ({
                     <div className="details-balance">details</div>
                   )}
                   <FormatNumberTokens
-                    value={balanceToken.mamper.total}
-                    text="mamper"
+                    value={balanceToken.milliampere.total}
+                    text="milliampere"
                   />
                   {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
                 </RowBalance>
                 {openAmper && (
                   <DetailsBalanceTokens
-                    total={balanceToken.mamper}
+                    total={balanceToken.milliampere}
                     address={address.bech32}
                     paddingLeft={15}
-                    currency="mamper"
+                    currency="milliampere"
                   />
                 )}
               </>

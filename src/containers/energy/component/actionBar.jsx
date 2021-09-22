@@ -94,7 +94,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   const [addressAddRouteInput, setAddressAddRouteInput] = useState('');
   const [aliasInput, setAliasInput] = useState('');
   const [amountInput, setAmountInput] = useState('');
-  const [selectResource, setSelectResource] = useState('mamper');
+  const [selectResource, setSelectResource] = useState('milliampere');
 
   // useEffect(() => {
   //   cleatState();
@@ -320,14 +320,14 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
           marginRight={10}
         />
         <Btn
-          text={<ValueImg text="mamper" />}
-          checkedSwitch={selectResource === 'mamper'}
-          onSelect={() => setSelectResource('mamper')}
+          text={<ValueImg text="milliampere" />}
+          checkedSwitch={selectResource === 'milliampere'}
+          onSelect={() => setSelectResource('milliampere')}
         />
         <Btn
-          text={<ValueImg text="mvolt" />}
-          checkedSwitch={selectResource === 'mvolt'}
-          onSelect={() => setSelectResource('mvolt')}
+          text={<ValueImg text="millivolt" />}
+          checkedSwitch={selectResource === 'millivolt'}
+          onSelect={() => setSelectResource('millivolt')}
         />
       </ActionBarSteps>
     );
