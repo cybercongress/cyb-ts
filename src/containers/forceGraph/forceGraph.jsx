@@ -35,10 +35,10 @@ const ForceGraph = () => {
   const limit = 1024;
   let where;
 
-  console.log(`location`, location);
-  console.log(`params`, params);
-  console.log(`history`, history);
-  console.log(`window.location.href`, window.location.href);
+  // console.log(`location`, location);
+  // console.log(`params`, params);
+  // console.log(`history`, history);
+  // console.log(`window.location.href`, window.location.href);
 
   useEffect(() => {
     const feachData = async () => {
