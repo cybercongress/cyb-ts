@@ -77,8 +77,8 @@ const CYBER = {
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   // CHAIN_ID: 'dev',
-  CHAIN_ID: 'bostrom-testnet-4',
-  MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
+  CHAIN_ID: 'bostrom-testnet-5',
+  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;
@@ -108,7 +108,7 @@ const LEDGER = {
   HDPATH: [44, 118, 0, 0, 0],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
-  MEMO: 'cyber.page, using Ledger',
+  MEMO: 'cyb.ai, using Ledger',
 };
 
 const TAKEOFF_SUPPLY = 100000000000000;
