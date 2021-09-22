@@ -9,12 +9,12 @@ const ValueImg = ({ text, onlyImg }) => {
   let textCurency = text;
 
   switch (text) {
-    case 'mvolt':
+    case 'millivolt':
       img = voltImg;
       textCurency = 'V';
       break;
 
-    case 'mamper':
+    case 'milliampere':
       img = amperImg;
       textCurency = 'A';
       break;

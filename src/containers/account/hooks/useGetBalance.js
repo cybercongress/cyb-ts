@@ -24,8 +24,8 @@ const initValueTokens = {
 
 const initValueToken = {
   hydrogen: { ...initValueTokens },
-  mamper: { ...initValueTokens },
-  mvolt: { ...initValueTokens },
+  milliampere: { ...initValueTokens },
+  millivolt: { ...initValueTokens },
 };
 
 function useGetBalance(address, updateAddress) {
@@ -135,12 +135,12 @@ function useGetBalance(address, updateAddress) {
           vested: 0,
           total: 0,
         },
-        mamper: {
+        milliampere: {
           available: 0,
           vested: 0,
           total: 0,
         },
-        mvolt: {
+        millivolt: {
           available: 0,
           vested: 0,
           total: 0,
@@ -152,20 +152,20 @@ function useGetBalance(address, updateAddress) {
         setLoadingBalanceToken(true);
         const getAllBalancesPromise = await jsCyber.getAllBalances(address);
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
-        if (balancesToken.mamper) {
-          initValueTokenAmount.mamper.available = convertResources(
-            balancesToken.mamper
+        if (balancesToken.milliampere) {
+          initValueTokenAmount.milliampere.available = convertResources(
+            balancesToken.milliampere
           );
-          initValueTokenAmount.mamper.total = convertResources(
-            balancesToken.mamper
+          initValueTokenAmount.milliampere.total = convertResources(
+            balancesToken.milliampere
           );
         }
-        if (balancesToken.mvolt) {
-          initValueTokenAmount.mvolt.available = convertResources(
-            balancesToken.mvolt
+        if (balancesToken.millivolt) {
+          initValueTokenAmount.millivolt.available = convertResources(
+            balancesToken.millivolt
           );
-          initValueTokenAmount.mvolt.total = convertResources(
-            balancesToken.mvolt
+          initValueTokenAmount.millivolt.total = convertResources(
+            balancesToken.millivolt
           );
         }
         if (balancesToken.hydrogen) {
@@ -173,24 +173,24 @@ function useGetBalance(address, updateAddress) {
           initValueTokenAmount.hydrogen.total = balancesToken.hydrogen;
         }
 
-        if (vested.mamper >= 0 && originalVesting.mamper > 0) {
+        if (vested.milliampere >= 0 && originalVesting.milliampere > 0) {
           const vestedTokens =
-            parseFloat(originalVesting.mamper) - parseFloat(vested.mamper);
-          if (initValueTokenAmount.mamper.available > 0) {
-            initValueTokenAmount.mamper.available -= convertResources(
+            parseFloat(originalVesting.milliampere) - parseFloat(vested.milliampere);
+          if (initValueTokenAmount.milliampere.available > 0) {
+            initValueTokenAmount.milliampere.available -= convertResources(
               vestedTokens
             );
-            initValueTokenAmount.mamper.vested = convertResources(vestedTokens);
+            initValueTokenAmount.milliampere.vested = convertResources(vestedTokens);
           }
         }
-        if (vested.mvolt >= 0 && originalVesting.mvolt > 0) {
+        if (vested.millivolt >= 0 && originalVesting.millivolt > 0) {
           const vestedTokens =
-            parseFloat(originalVesting.mvolt) - parseFloat(vested.mvolt);
-          if (initValueTokenAmount.mvolt.available > 0) {
-            initValueTokenAmount.mvolt.available -= convertResources(
+            parseFloat(originalVesting.millivolt) - parseFloat(vested.millivolt);
+          if (initValueTokenAmount.millivolt.available > 0) {
+            initValueTokenAmount.millivolt.available -= convertResources(
               vestedTokens
             );
-            initValueTokenAmount.mvolt.vested = convertResources(vestedTokens);
+            initValueTokenAmount.millivolt.vested = convertResources(vestedTokens);
           }
         }
         if (vested.hydrogen >= 0 && originalVesting.hydrogen > 0) {

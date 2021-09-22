@@ -27,18 +27,18 @@ const TableItem = ({ item, index, selectRouteFunc, selected }) => (
       <TextTable>{item.alias}</TextTable>
     </Table.TextCell>
     <Table.TextCell textAlign="end">
-      {item.resource.mamper ? (
+      {item.resource.milliampere ? (
         <TextTable>
-          {formatNumber(convertResources(item.resource.mamper))}
+          {formatNumber(convertResources(item.resource.milliampere))}
         </TextTable>
       ) : (
         <TextTable>0</TextTable>
       )}
     </Table.TextCell>
     <Table.TextCell textAlign="end">
-      {item.resource.mvolt ? (
+      {item.resource.millivolt ? (
         <TextTable>
-          {formatNumber(convertResources(item.resource.mvolt))}
+          {formatNumber(convertResources(item.resource.millivolt))}
         </TextTable>
       ) : (
         <TextTable>0</TextTable>
@@ -85,12 +85,12 @@ function Outcome({ sourceRouted, selectRouteFunc, selected }) {
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>
-              <ValueImg text="mamper" />
+              <ValueImg text="milliampere" />
             </TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>
-              <ValueImg text="mvolt" />
+              <ValueImg text="millivolt" />
             </TextTable>
           </Table.TextHeaderCell>
         </Table.Head>

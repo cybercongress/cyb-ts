@@ -33,7 +33,7 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
         <Card
           title={<ValueImg text="A" img={amperImg} />}
           value={
-            balacesResource.mamper ? formatNumber(balacesResource.mamper) : 0
+            balacesResource.milliampere ? formatNumber(balacesResource.milliampere) : 0
           }
           stylesContainer={{ maxWidth: '200px' }}
         />
@@ -43,7 +43,7 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
         <Card
           title={<ValueImg text="V" img={voltImg} />}
           value={
-            balacesResource.mvolt ? formatNumber(balacesResource.mvolt) : 0
+            balacesResource.millivolt ? formatNumber(balacesResource.millivolt) : 0
           }
           stylesContainer={{ maxWidth: '200px' }}
         />
@@ -53,8 +53,8 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
         <Card
           title="W"
           value={
-            balacesResource.mvolt && balacesResource.mamper
-              ? formatNumber(balacesResource.mvolt * balacesResource.mamper)
+            balacesResource.millivolt && balacesResource.milliampere
+              ? formatNumber(balacesResource.millivolt * balacesResource.milliampere)
               : 0
           }
           stylesContainer={{ maxWidth: '200px' }}

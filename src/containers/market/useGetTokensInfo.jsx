@@ -36,10 +36,10 @@ const initState = {
   hydrogen: {
     ...initValue,
   },
-  mamper: {
+  milliampere: {
     ...initValue,
   },
-  mvolt: {
+  millivolt: {
     ...initValue,
   },
 };
@@ -134,20 +134,20 @@ function useGetCybernomics() {
             },
           }));
         }
-        if (totalCyb.mamper) {
-          value.supply = convertResources(totalCyb.mamper);
+        if (totalCyb.milliampere) {
+          value.supply = convertResources(totalCyb.milliampere);
           setCybernomics((item) => ({
             ...item,
-            mamper: {
+            milliampere: {
               ...value,
             },
           }));
         }
-        if (totalCyb.mvolt) {
-          value.supply = convertResources(totalCyb.mvolt);
+        if (totalCyb.millivolt) {
+          value.supply = convertResources(totalCyb.millivolt);
           setCybernomics((item) => ({
             ...item,
-            mvolt: {
+            millivolt: {
               ...value,
             },
           }));

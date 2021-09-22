@@ -195,9 +195,9 @@ function App({
           jsCyber !== null
         ) {
           const { bech32 } = account.cyber;
-          const getBalanceMVOLT = await jsCyber.getBalance(bech32, 'mvolt');
-          if (getBalanceMVOLT.amount) {
-            setCountLink(convertResources(parseFloat(getBalanceMVOLT.amount)));
+          const getBalancemillivolt = await jsCyber.getBalance(bech32, 'millivolt');
+          if (getBalancemillivolt.amount) {
+            setCountLink(convertResources(parseFloat(getBalancemillivolt.amount)));
           } else {
             setCountLink(0);
           }

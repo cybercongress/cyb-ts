@@ -66,7 +66,7 @@ function Market({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { jsCyber } = useContext(AppContext);
-  const { gol, cyb, boot, hydrogen, mamper, mvolt } = useGetCybernomics();
+  const { gol, cyb, boot, hydrogen, milliampere, millivolt } = useGetCybernomics();
   const [selectedTokens, setSelectedTokens] = useState('BOOT');
   const [resultSearch, setResultSearch] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(true);
@@ -146,7 +146,7 @@ function Market({ node, mobile, defaultAccount }) {
       <Route
         path="/market/A"
         render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={mamper} />
+          <InfoTokens selectedTokens={selectedTokens} data={milliampere} />
         )}
       />
     );
@@ -157,7 +157,7 @@ function Market({ node, mobile, defaultAccount }) {
       <Route
         path="/market/V"
         render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={mvolt} />
+          <InfoTokens selectedTokens={selectedTokens} data={millivolt} />
         )}
       />
     );

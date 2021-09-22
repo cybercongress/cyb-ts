@@ -64,16 +64,16 @@ const TableSlots = ({ data, mobile }) => {
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          {item.amount.mvolt && (
+          {item.amount.millivolt && (
             <TextTable>
-              {item.amount.mvolt}
-              <ValueImg text="mvolt" onlyImg />
+              {item.amount.millivolt}
+              <ValueImg text="millivolt" onlyImg />
             </TextTable>
           )}
-          {item.amount.mamper && (
+          {item.amount.milliampere && (
             <TextTable>
-              {item.amount.mamper}
-              <ValueImg text="mamper" onlyImg />
+              {item.amount.milliampere}
+              <ValueImg text="milliampere" onlyImg />
             </TextTable>
           )}
         </Table.TextCell>

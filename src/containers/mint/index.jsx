@@ -82,7 +82,7 @@ function Mint({ defaultAccount }) {
     loadingAuthAccounts,
     originalVesting,
   } = useGetSlots(addressActive, updateAddress);
-  const [selected, setSelected] = useState('mvolt');
+  const [selected, setSelected] = useState('millivolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(0);
@@ -162,17 +162,17 @@ function Mint({ defaultAccount }) {
           justifyContent="center"
         >
           <CardStatisics
-            title={<ValueImg text="mvolt" />}
-            value={formatNumber(originalVesting.mvolt)}
+            title={<ValueImg text="millivolt" />}
+            value={formatNumber(originalVesting.millivolt)}
           />
           <CardStatisics
-            title={<ValueImg text="mamper" />}
-            value={formatNumber(originalVesting.mamper)}
+            title={<ValueImg text="milliampere" />}
+            value={formatNumber(originalVesting.milliampere)}
           />
           <CardStatisics
             title="My Energy"
             value={formatCurrency(
-              originalVesting.mamper * originalVesting.mvolt,
+              originalVesting.milliampere * originalVesting.millivolt,
               'W',
               2,
               PREFIXES
@@ -199,14 +199,14 @@ function Mint({ defaultAccount }) {
           justifyContent="center"
         >
           <Btn
-            text={<ValueImg text="mvolt" />}
-            checkedSwitch={selected === 'mvolt'}
-            onSelect={() => setSelected('mvolt')}
+            text={<ValueImg text="millivolt" />}
+            checkedSwitch={selected === 'millivolt'}
+            onSelect={() => setSelected('millivolt')}
           />
           <Btn
-            text={<ValueImg text="mamper" />}
-            checkedSwitch={selected === 'mamper'}
-            onSelect={() => setSelected('mamper')}
+            text={<ValueImg text="milliampere" />}
+            checkedSwitch={selected === 'milliampere'}
+            onSelect={() => setSelected('milliampere')}
           />
         </Tablist>
         <div style={grid}>
