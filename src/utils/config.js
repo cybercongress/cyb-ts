@@ -77,7 +77,7 @@ const CYBER = {
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   // CHAIN_ID: 'dev',
-  CHAIN_ID: 'bostrom-testnet-4',
+  CHAIN_ID: 'bostrom-testnet-5',
   MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
 };
 
