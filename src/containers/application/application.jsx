@@ -26,6 +26,7 @@ const cybTrue = require('../../image/cybTrue.svg');
 const bug = require('../../image/alert-circle-outline.svg');
 const circleYellow = require('../../image/large-yellow-circle.png');
 const circleRed = require('../../image/large-red-circle.png');
+const lensIcon = require('../../image/lens-icon.svg');
 
 const ListAccounts = ({
   accounts,
@@ -361,6 +362,18 @@ function App({
                 transform: 'translate(0, -50%)',
                 zIndex: 1,
                 backgroundColor: '#000',
+              }}
+            />
+            <img
+              src={lensIcon}
+              alt="lensIcon"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '14px',
+                transform: 'translate(0, -50%)',
+                width: '15px',
+                zIndex: 1,
               }}
             />
           </Pane>
