@@ -10,6 +10,7 @@ function ActionBarCont({
   keywordHash,
   updateFunc,
   rankLink,
+  textBtn,
 }) {
   if (!mobile && addressActive && addressActive !== null) {
     if (addressActive.keys !== 'read-only') {
@@ -19,6 +20,7 @@ function ActionBarCont({
           keywordHash={keywordHash}
           update={updateFunc}
           rankLink={rankLink}
+          textBtn={textBtn}
         />
       );
     }

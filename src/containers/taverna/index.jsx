@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import { NoItems, Dots, Rank } from '../../components';
 import ContentItem from '../ipfs/contentItem';
 import useGetTweets from './useGetTweets';
+import ActionBarCont from '../market/actionBarContainer';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
@@ -36,9 +38,26 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
+const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
+
 function Taverna({ node, mobile, defaultAccount }) {
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   console.log(`tweets`, tweets)
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [rankLink, setRankLink] = useState(null);
+  const [update, setUpdate] = useState(1);
+
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
 
   try {
     const searchItems = [];
@@ -79,6 +98,7 @@ function Taverna({ node, mobile, defaultAccount }) {
                     hash={key}
                     rank="n/a"
                     grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+                    onClick={() => onClickRank(key)}
                   />
                 </Pane>
               )}
@@ -104,23 +124,33 @@ function Taverna({ node, mobile, defaultAccount }) {
     );
 
     return (
-      <main className="block-body">
-        <Pane
-          width="90%"
-          marginX="auto"
-          marginY={0}
-          display="flex"
-          flexDirection="column"
-        >
-          <div className="container-contentItem" style={{ width: '100%' }}>
-            {Object.keys(tweets).length > 0 ? (
-              searchItems
-            ) : (
-              <NoItems text="No feeds" />
-            )}
-          </div>
-        </Pane>
-      </main>
+      <>
+        <main className="block-body">
+          <Pane
+            width="90%"
+            marginX="auto"
+            marginY={0}
+            display="flex"
+            flexDirection="column"
+          >
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {Object.keys(tweets).length > 0 ? (
+                searchItems
+              ) : (
+                <NoItems text="No feeds" />
+              )}
+            </div>
+          </Pane>
+        </main>
+        <ActionBarCont
+          addressActive={addressActive}
+          mobile={mobile}
+          keywordHash={keywordHash}
+          updateFunc={() => setUpdate(update + 1)}
+          rankLink={rankLink}
+          textBtn="Tweet"
+        />
+      </>
     );
   } catch (error) {
     console.log(error);
