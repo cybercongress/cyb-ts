@@ -69,7 +69,6 @@ function useGetSlots(addressActive, updateAddress) {
         };
 
         const getAccount = await authAccounts(addressActive);
-        console.log(`getAccount`, getAccount);
         if (getAccount !== null && getAccount.result.value.vesting_periods) {
           const { vesting_periods: vestingPeriods } = getAccount.result.value;
           const {
