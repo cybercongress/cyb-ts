@@ -335,6 +335,25 @@ const convertResources = (number) => {
   return Math.floor(number * 10 ** -3);
 };
 
+const reduceBalances = (data) => {
+  try {
+    let balances = {};
+    if (Object.keys(data).length > 0) {
+      balances = data.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.denom]: parseFloat(item.amount),
+        }),
+        {}
+      );
+    }
+    return balances;
+  } catch (error) {
+    console.log(`error reduceBalances`, error);
+    return {};
+  }
+};
+
 export {
   run,
   sort,
@@ -353,4 +372,5 @@ export {
   isMobileTablet,
   coinDecimals,
   convertResources,
+  reduceBalances,
 };
