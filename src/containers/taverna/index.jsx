@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
-import { NoItems, Dots, Rank } from '../../components';
+import { NoItems, Dots, Rank, SearchSnippet } from '../../components';
 import ContentItem from '../ipfs/contentItem';
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
@@ -81,44 +81,51 @@ function Taverna({ node, mobile, defaultAccount }) {
             timeAgoInMS = time;
           }
           return (
-            <Pane
-              position="relative"
-              className="hover-rank"
-              display="flex"
-              alignItems="center"
-              marginBottom="10px"
-              key={`${key}_${i}`}
-            >
-              {!mobile && (
-                <Pane
-                  className="time-discussion rank-contentItem"
-                  position="absolute"
-                >
-                  <Rank
-                    hash={key}
-                    rank="n/a"
-                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
-                    onClick={() => onClickRank(key)}
-                  />
-                </Pane>
-              )}
-              <ContentItem
-                nodeIpfs={node}
-                cid={key}
-                item={tweets[key]}
-                className="contentItem"
-              />
-              <Pane
-                className="time-discussion rank-contentItem"
-                position="absolute"
-                right="0"
-                fontSize={12}
-                whiteSpace="nowrap"
-                top="5px"
-              >
-                {timeSince(timeAgoInMS)} ago
-              </Pane>
-            </Pane>
+            <SearchSnippet
+              cid={key}
+              data={tweets[key]}
+              mobile={mobile}
+              node={node}
+              onClickRank={onClickRank}
+            />
+            // <Pane
+            //   position="relative"
+            //   className="hover-rank"
+            //   display="flex"
+            //   alignItems="center"
+            //   marginBottom="10px"
+            //   key={`${key}_${i}`}
+            // >
+            //   {!mobile && (
+            //     <Pane
+            //       className="time-discussion rank-contentItem"
+            //       position="absolute"
+            //     >
+            //       <Rank
+            //         hash={key}
+            //         rank="n/a"
+            //         grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+            //         onClick={() => onClickRank(key)}
+            //       />
+            //     </Pane>
+            //   )}
+            //   <ContentItem
+            //     nodeIpfs={node}
+            //     cid={key}
+            //     item={tweets[key]}
+            //     className="contentItem"
+            //   />
+            //   <Pane
+            //     className="time-discussion rank-contentItem"
+            //     position="absolute"
+            //     right="0"
+            //     fontSize={12}
+            //     whiteSpace="nowrap"
+            //     top="5px"
+            //   >
+            //     {timeSince(timeAgoInMS)} ago
+            //   </Pane>
+            // </Pane>
           );
         })
     );
