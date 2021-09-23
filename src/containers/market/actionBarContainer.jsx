@@ -4,7 +4,13 @@ import { Pane, ActionBar } from '@cybercongress/gravity';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import { trimString } from '../../utils/utils';
 
-function ActionBarCont({ mobile, addressActive, keywordHash, updateFunc }) {
+function ActionBarCont({
+  mobile,
+  addressActive,
+  keywordHash,
+  updateFunc,
+  rankLink,
+}) {
   if (!mobile && addressActive && addressActive !== null) {
     if (addressActive.keys !== 'read-only') {
       return (
@@ -12,6 +18,7 @@ function ActionBarCont({ mobile, addressActive, keywordHash, updateFunc }) {
           // placeholder={placeholder}
           keywordHash={keywordHash}
           update={updateFunc}
+          rankLink={rankLink}
         />
       );
     }
