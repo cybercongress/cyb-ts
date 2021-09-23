@@ -72,7 +72,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
                 nodeIpfs={nodeIpfs}
                 cid={cid}
                 item={item}
-                className="contentItem-discussion"
+                className="contentItem"
               />
               <Pane
                 className="time-discussion rank-contentItem"
