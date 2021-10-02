@@ -153,21 +153,20 @@ const AppContextProvider = ({ children }) => {
   }, [signer]);
 
   useEffect(() => {
-    console.log('window.getOfflineSigner', window.getOfflineSigner);
-    console.log('window.keplr', window.keplr);
-    if (window.keplr || window.getOfflineSigner) {
-      if (window.keplr.experimentalSuggestChain) {
-        const init = async () => {
-          await window.keplr.experimentalSuggestChain(configKeplr());
-          await window.keplr.enable(CYBER.CHAIN_ID);
-          const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
-          setSigner(offlineSigner);
-        };
-        init();
+    window.onload = async () => {
+      console.log('window.getOfflineSigner', window.getOfflineSignerAuto);
+      console.log('window.keplr', window.keplr);
+      if (!window.keplr || !window.getOfflineSigner) {
+        console.log('Please install keplr extension');
+      } else if (window.keplr.experimentalSuggestChain) {
+        await window.keplr.experimentalSuggestChain(configKeplr());
+        await window.keplr.enable(CYBER.CHAIN_ID);
+        const offlineSigner = await window.getOfflineSignerAuto(CYBER.CHAIN_ID);
+        setSigner(offlineSigner);
+      } else {
+        console.log('Please use the recent version of keplr extension');
       }
-    }
-    console.log('window.getOfflineSigner', window.getOfflineSigner);
-    console.log('window.keplr', window.keplr);
+    };
   }, [window.keplr, window.getOfflineSigner]);
 
   useEffect(() => {
