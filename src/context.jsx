@@ -153,22 +153,34 @@ const AppContextProvider = ({ children }) => {
   }, [signer]);
 
   useEffect(() => {
-    console.log('window.getOfflineSigner', window.getOfflineSigner);
-    console.log('window.keplr', window.keplr);
-    if (window.keplr || window.getOfflineSigner) {
+    window.onload = async () => {
+      init();
+    };
+  }, []);
+
+  useEffect(() => {
+    // window.addEventListener('keplr_keystorechange', init());
+    window.addEventListener('keplr_keystorechange', () => {
+      console.log(
+        'Key store in Keplr is changed. You may need to refetch the account info.'
+      );
+      init();
+    });
+  }, []);
+
+  const init = async () => {
+    console.log(`window.keplr `, window.keplr);
+    console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
+    if (window.keplr || window.getOfflineSignerAuto) {
       if (window.keplr.experimentalSuggestChain) {
-        const init = async () => {
-          await window.keplr.experimentalSuggestChain(configKeplr());
-          await window.keplr.enable(CYBER.CHAIN_ID);
-          const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
-          setSigner(offlineSigner);
-        };
-        init();
+        await window.keplr.experimentalSuggestChain(configKeplr());
+        await window.keplr.enable(CYBER.CHAIN_ID);
+        const offlineSigner = await window.getOfflineSignerAuto(CYBER.CHAIN_ID);
+        console.log(`offlineSigner`, offlineSigner);
+        setSigner(offlineSigner);
       }
     }
-    console.log('window.getOfflineSigner', window.getOfflineSigner);
-    console.log('window.keplr', window.keplr);
-  }, [window.keplr, window.getOfflineSigner]);
+  };
 
   useEffect(() => {
     if (client !== null) {

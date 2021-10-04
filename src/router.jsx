@@ -44,6 +44,7 @@ import Objects from './containers/Objects';
 import Taverna from './containers/taverna';
 import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
+import Genesis from './containers/genesis';
 
 import { TIME_START, CYBER } from './utils/config';
 
@@ -55,20 +56,20 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsStart();
+  const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
   const [genesis, setGenesis] = useState(false);
   const [wsClient, setWsClient] = useState(null);
   // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   setLoader(dataIpfsStart.loader);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    setLoader(dataIpfsStart.loader);
+  }, [dataIpfsStart]);
 
   // eslint-disable-next-line no-lone-blocks
   {
@@ -257,6 +258,7 @@ function AppRouter({
         <Route path="/sixthSense" component={Taverna} />
         <Route path="/teleport" component={Teleport} />
         <Route path="/nebula" component={Nebula} />
+        <Route path="/genesis" component={Genesis} />
       </Switch>
     </Router>
   );

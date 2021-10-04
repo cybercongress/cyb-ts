@@ -147,8 +147,10 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
 
 const stylePoolDataContainer = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,320px), 1fr))',
+  // gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,320px), 1fr))',
   gridGap: '25px',
+  margin: '0 auto',
+  width: '60%',
 };
 
 function PoolData({ data, totalSupplyData, accountBalances }) {

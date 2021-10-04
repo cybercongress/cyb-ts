@@ -169,7 +169,12 @@ function Electricity({ setBlockProps }) {
       <div className="line">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 80">
           <g id="lightningContainer">
-            <rect width="2050" height="80" fill="#000000" />
+            <rect
+              width="2050"
+              height="80"
+              fill="#000000"
+              id="electricityLineRect"
+            />
             {stage && (
               <g
                 id="lightningG"

@@ -19,6 +19,11 @@ const items = [
     subItems: {},
   },
   {
+    name: 'Genesis',
+    to: '/genesis',
+    subItems: [],
+  },
+  {
     name: 'Superintelligence',
     to: '/superintelligence',
     subItems: {},
