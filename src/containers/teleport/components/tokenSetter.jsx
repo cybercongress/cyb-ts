@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pane, Input } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import BalanceToken from './balanceToken';
 import Select from './select';
+import Input from './input';
 
 function TokenSetter({
   accountBalances,

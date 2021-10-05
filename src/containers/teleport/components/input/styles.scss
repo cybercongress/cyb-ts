@@ -1,0 +1,113 @@
+$text-color: #fff;
+$linear-gradient-yellow: linear-gradient(
+  180deg,
+  rgba(252, 240, 0, 0) -3.3%,
+  rgba(252, 240, 0, 0.25) 100%
+);
+$linear-gradient-blue: linear-gradient(
+  180deg,
+  rgba(0, 237, 235, 0) -3.3%,
+  rgba(0, 237, 235, 0.35) 100%
+);
+$color-border-botton-yellow: #fcf000;
+$color-border-botton-blue: #00edeb;
+
+.textbox {
+  width: 100%;
+  height: 42px;
+  position: relative;
+  transform-style: preserve-3d;
+
+  &Box {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // box-shadow: inset 0 0 0 3px #272343
+    position: relative;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: all 0.2s ease;
+  }
+
+  &Field {
+    display: flex;
+    flex-direction: column;
+    padding: 0px 2px;
+    align-self: stretch;
+  }
+
+  &Text {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: 1.25rem;
+    display: block;
+    color: $text-color;
+    text-align: end;
+    -webkit-filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
+    max-width: 170px;
+
+    &::placeholder {
+      color: #272343;
+      opacity: 0.5;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &Face {
+    position: absolute;
+    background: $linear-gradient-blue;
+    left: 0;
+  }
+
+  &Triangles {
+    height: 100%;
+    width: 100%;
+    bottom: 0;
+    background: transparent;
+
+    &:before {
+      content: '';
+      border-width: 12px 7px 12px 7px;
+      border-color: black transparent transparent black;
+      position: absolute;
+      left: 0px;
+      bottom: 0;
+      border-style: solid;
+    }
+
+    &:after {
+      content: '';
+      border-width: 12px 7px 12px 7px;
+      border-color: black black transparent transparent;
+      position: absolute;
+      right: 0px;
+      bottom: 0;
+      border-style: solid;
+    }
+  }
+
+  &BottomGradient {
+    transform: rotateX(81deg) rotateZ(0deg) translateX(0px);
+    height: 120px;
+    width: 100%;
+    bottom: 0;
+    transform-origin: 50% 100%;
+  }
+
+  &BottomLine {
+    height: 2px;
+    width: 100%;
+    bottom: 0;
+    transform-origin: 50% 0;
+    border: 1px solid $color-border-botton-blue;
+    border-radius: 2px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 6px 2px rgba(31, 203, 255, 0.53);
+  }
+}
