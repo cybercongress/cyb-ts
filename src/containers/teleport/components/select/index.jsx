@@ -1,62 +1,119 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  Children,
+} from 'react';
 import { Dots, ValueImg } from '../../../../components';
 import { LinearGradientContainer } from '../input';
 import styles from './styles.scss';
 import { reduceTextCoin } from '../../utils';
+import { SelectContext, useSelectContext } from './selectContext';
 
 const classNames = require('classnames');
 
-// const Select = ({ data, selected, valueSelect, onChangeSelect, children }) => {
-//   return (
-//     <select
-//       style={{
-//         width: '120px',
-//       }}
-//       value={valueSelect}
-//       onChange={onChangeSelect}
-//     >
-//       {children}
-//     </select>
-//   );
-// };
+const useOnClickOutside = (ref, handler) => {
+  useEffect(() => {
+    const listener = (event) => {
+      const el = ref?.current;
+      if (!el || el.contains(event?.target || null)) {
+        return;
+      }
 
-const Select = ({ data, selected }) => {
+      handler(event); // Call the handler only if the click is outside of the element passed.
+    };
+
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
+};
+
+export const OptionSelect = ({ text, img, value, ...props }) => {
+  const { changeSelectedOption } = useSelectContext();
+  return (
+    <div
+      className={styles.listItem}
+      onClick={() => changeSelectedOption(value)}
+    >
+      <div className={styles.bgrImg}>{img || ''}</div>
+      {text}
+    </div>
+  );
+};
+
+const Select = ({
+  valueSelect,
+  textSelectValue,
+  imgSelectValue,
+  onChangeSelect,
+  children,
+}) => {
+  const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
   const toggling = () => setIsOpen((value) => !value);
 
+  const clickOutsideHandler = () => setIsOpen(false);
+
+  const updateSelectedOption = (option) => {
+    onChangeSelect(option);
+    setIsOpen(false);
+  };
+
+  useOnClickOutside(selectContainerRef, clickOutsideHandler);
+
   return (
-    <div className={styles.dropDown} onClick={toggling}>
-      <div className={styles.dropDownContainer}>
-        <div className={styles.dropDownContainerHeader}>
-          <div className={styles.dropDownHeader}>choose</div>
-          <LinearGradientContainer />
-        </div>
-        {isOpen && (
-          <div className={styles.dropDownListContainer}>
-            <div className={styles.dropDownList}>
-              {Object.keys(data)
-                .filter(
-                  (item) => item.indexOf('pool') === -1 && item !== selected
-                )
-                .map((key) => (
-                  <div key={key} className={styles.listItem}>
-                    <ValueImg text={key} onlyImg /> {reduceTextCoin(key)}
-                  </div>
-                ))}
-            </div>
-            <div
-              className={classNames(
-                styles.ListContainer,
-                styles.dropDownBottomLine
+    <SelectContext.Provider
+      value={{
+        selectedOption: valueSelect,
+        changeSelectedOption: updateSelectedOption,
+      }}
+    >
+      <div className={styles.dropDown} ref={selectContainerRef}>
+        <div className={styles.dropDownContainer}>
+          <div onClick={toggling} className={styles.dropDownContainerHeader}>
+            <div className={styles.dropDownHeader}>
+              {valueSelect === '' ? (
+                <OptionSelect
+                  text="choose"
+                  img={<ValueImg text="choose" onlyImg />}
+                  value=""
+                />
+              ) : (
+                <OptionSelect
+                  text={reduceTextCoin(textSelectValue)}
+                  img={
+                    imgSelectValue || (
+                      <ValueImg text={textSelectValue} onlyImg />
+                    )
+                  }
+                  value={valueSelect}
+                />
               )}
-            />
+            </div>
+            <LinearGradientContainer />
           </div>
-        )}
+          {isOpen && (
+            <div className={styles.dropDownListContainer}>
+              <div className={styles.dropDownList}>{children}</div>
+              <div
+                className={classNames(
+                  styles.ListContainer,
+                  styles.dropDownBottomLine
+                )}
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </SelectContext.Provider>
   );
 };
 

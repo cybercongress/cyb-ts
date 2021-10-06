@@ -1,31 +1,31 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import BalanceToken from './balanceToken';
-import Select from './select';
+import Select, { OptionSelect } from './select';
 import Input from './input';
 import { reduceTextCoin } from '../utils';
+import { ValueImg } from '../../../components';
 
-const renderOptions = (data, selected) => {
+const renderOptions = (data, selected, valueSelect) => {
   let items = {};
 
-  if (data === null) {
-    items = <option value="">pick token</option>;
-  } else {
+  if (data !== null) {
     items = (
       <>
-        <option value="">pick token</option>
         {Object.keys(data)
-          .filter((item) => item.indexOf('pool') === -1 && item !== selected)
+          .filter(
+            (item) =>
+              item.indexOf('pool') === -1 &&
+              item !== selected &&
+              item !== valueSelect
+          )
           .map((key) => (
-            <option
+            <OptionSelect
               key={key}
               value={key}
-              // style={{
-              //   backgroundImage: `url(${tokenImg(key)})`,
-              // }}
-            >
-              {reduceTextCoin(key)}
-            </option>
+              text={reduceTextCoin(key)}
+              img={<ValueImg text={key} onlyImg />}
+            />
           ))}
       </>
     );
@@ -55,14 +55,15 @@ function TokenSetter({
         marginBottom={20}
       >
         <Pane display="flex" alignItems="center">
-          <Pane fontSize="18px">{textLeft}</Pane>
+          <Pane width="33px" fontSize="20px" paddingBottom={10}>
+            {textLeft}
+          </Pane>
           <Select
-            data={accountBalances}
-            selected={selected}
             valueSelect={token}
-            onChangeSelect={(e) => onChangeSelect(e.target.value)}
+            textSelectValue={token !== '' ? token : ''}
+            onChangeSelect={(item) => onChangeSelect(item)}
           >
-            {/* {renderOptions(accountBalances, selected)} */}
+            {renderOptions(accountBalances, selected, token)}
           </Select>
         </Pane>
         <Input

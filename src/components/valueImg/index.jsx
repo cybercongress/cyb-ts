@@ -4,6 +4,7 @@ const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
 const hydrogen = require('../../image/hydrogen.svg');
 const boot = require('../../image/boot.png');
+const downOutline = require('../../image/chevronDownOutline.svg');
 
 const ValueImg = ({
   text,
@@ -39,6 +40,11 @@ const ValueImg = ({
       textCurency = 'BOOT';
       break;
 
+    case 'choose':
+      img = downOutline;
+      textCurency = 'choose';
+      break;
+
     default:
       textCurency = text;
       img = voltImg;
@@ -62,7 +68,7 @@ const ValueImg = ({
             margin: marginImg || 0,
             width: size || 20,
             height: size || 20,
-            objectFit: 'contain',
+            // objectFit: 'cover',
             zIndex: zIndexImg || 0,
           }}
           src={img}
