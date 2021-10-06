@@ -1,61 +1,62 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useContext, useEffect, useState } from 'react';
 import { Dots, ValueImg } from '../../../../components';
+import { LinearGradientContainer } from '../input';
+import styles from './styles.scss';
+import { reduceTextCoin } from '../../utils';
 
-const reduceTextCoin = (text) => {
-  switch (text) {
-    case 'millivolt':
-      return 'V';
+const classNames = require('classnames');
 
-    case 'milliampere':
-      return 'A';
+// const Select = ({ data, selected, valueSelect, onChangeSelect, children }) => {
+//   return (
+//     <select
+//       style={{
+//         width: '120px',
+//       }}
+//       value={valueSelect}
+//       onChange={onChangeSelect}
+//     >
+//       {children}
+//     </select>
+//   );
+// };
 
-    case 'hydrogen':
-      return 'H';
-
-    case 'boot':
-      return 'BOOT';
-
-    default:
-      return text;
-  }
-};
-
-const Select = ({ data, selected, valueSelect, onChangeSelect }) => {
-  let items = {};
-
-  if (data === null) {
-    items = <option value="">pick token</option>;
-  } else {
-    items = (
-      <>
-        <option value="">pick token</option>
-        {Object.keys(data)
-          .filter((item) => item.indexOf('pool') === -1 && item !== selected)
-          .map((key) => (
-            <option
-              key={key}
-              value={key}
-              // style={{
-              //   backgroundImage: `url(${tokenImg(key)})`,
-              // }}
-            >
-              {reduceTextCoin(key)}
-            </option>
-          ))}
-      </>
-    );
-  }
+const Select = ({ data, selected }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const toggling = () => setIsOpen((value) => !value);
 
   return (
-    <select
-      style={{
-        width: '120px',
-      }}
-      value={valueSelect}
-      onChange={onChangeSelect}
-    >
-      {items}
-    </select>
+    <div className={styles.dropDown} onClick={toggling}>
+      <div className={styles.dropDownContainer}>
+        <div className={styles.dropDownContainerHeader}>
+          <div className={styles.dropDownHeader}>choose</div>
+          <LinearGradientContainer />
+        </div>
+        {isOpen && (
+          <div className={styles.dropDownListContainer}>
+            <div className={styles.dropDownList}>
+              {Object.keys(data)
+                .filter(
+                  (item) => item.indexOf('pool') === -1 && item !== selected
+                )
+                .map((key) => (
+                  <div key={key} className={styles.listItem}>
+                    <ValueImg text={key} onlyImg /> {reduceTextCoin(key)}
+                  </div>
+                ))}
+            </div>
+            <div
+              className={classNames(
+                styles.ListContainer,
+                styles.dropDownBottomLine
+              )}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

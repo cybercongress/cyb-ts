@@ -3,6 +3,36 @@ import { Pane } from '@cybercongress/gravity';
 import BalanceToken from './balanceToken';
 import Select from './select';
 import Input from './input';
+import { reduceTextCoin } from '../utils';
+
+const renderOptions = (data, selected) => {
+  let items = {};
+
+  if (data === null) {
+    items = <option value="">pick token</option>;
+  } else {
+    items = (
+      <>
+        <option value="">pick token</option>
+        {Object.keys(data)
+          .filter((item) => item.indexOf('pool') === -1 && item !== selected)
+          .map((key) => (
+            <option
+              key={key}
+              value={key}
+              // style={{
+              //   backgroundImage: `url(${tokenImg(key)})`,
+              // }}
+            >
+              {reduceTextCoin(key)}
+            </option>
+          ))}
+      </>
+    );
+  }
+
+  return items;
+};
 
 function TokenSetter({
   accountBalances,
@@ -17,14 +47,24 @@ function TokenSetter({
   return (
     <Pane>
       <BalanceToken data={accountBalances} token={token} />
-      <Pane display="flex" alignItems="center" marginBottom={20}>
-        <Pane fontSize="18px">{textLeft}</Pane>
-        <Select
-          data={accountBalances}
-          valueSelect={token}
-          selected={selected}
-          onChangeSelect={(e) => onChangeSelect(e.target.value)}
-        />
+      <Pane
+        display="grid"
+        gridTemplateColumns="153px 170px"
+        gridGap="27px"
+        alignItems="center"
+        marginBottom={20}
+      >
+        <Pane display="flex" alignItems="center">
+          <Pane fontSize="18px">{textLeft}</Pane>
+          <Select
+            data={accountBalances}
+            selected={selected}
+            valueSelect={token}
+            onChangeSelect={(e) => onChangeSelect(e.target.value)}
+          >
+            {/* {renderOptions(accountBalances, selected)} */}
+          </Select>
+        </Pane>
         <Input
           id={id}
           value={valueInput}
