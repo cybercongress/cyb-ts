@@ -1,0 +1,168 @@
+$color-green: #36d6ae;
+$color-white: #fff;
+$color-shadow-lamp-green: rgba(54, 214, 174, 0.5);
+$color-border-lamp-green: #00edeb;
+
+@mixin reset-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@mixin linear-gradient-green($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 237, 235, 0.076) 0%,
+    rgba(0, 237, 235, 0.4) 100%
+  );
+}
+
+@mixin linear-gradient-gray($route) {
+  background: linear-gradient(
+    $route,
+    rgba(217, 217, 217, 0.03) 0%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+}
+
+@mixin pils {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #d8d8d8;
+  box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.39);
+}
+
+@mixin light-lamp-green($color-bgr, $color-border, $color-shadow) {
+  background: $color-bgr;
+  border: 1px solid $color-border;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 5px 1px $color-shadow;
+}
+
+@mixin init-pseudo-el {
+  content: '';
+  height: 100%;
+  position: absolute;
+}
+
+.teleportBtn {
+  height: 42px;
+  width: 100%;
+  position: relative;
+  font-size: 1rem;
+  outline: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover{
+    opacity: .8;
+  }
+
+  &Active {
+    color: $color-white;
+    &::before {
+      @include init-pseudo-el;
+      width: 10%;
+      left: 0;
+      bottom: 0;
+      @include linear-gradient-gray(270deg);
+    }
+    &::after {
+      @include init-pseudo-el;
+      @include linear-gradient-gray(90deg);
+      width: 10%;
+      right: 0;
+      bottom: 0;
+    }
+  }
+  &Right {
+    color: $color-green;
+    &::before {
+      @include init-pseudo-el;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+      border-radius: 2px;
+      @include linear-gradient-green(270deg);
+    }
+  }
+  &Left {
+    color: $color-green;
+    &::before {
+      @include init-pseudo-el;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+      border-radius: 2px;
+      @include linear-gradient-green(90deg);
+    }
+  }
+}
+
+.lampMenu {
+  position: absolute;
+  height: 100%;
+  box-sizing: border-box;
+
+  &Active {
+    top: 0;
+    bottom: 0;
+    background: $color-white;
+    border: 1px solid #e2e2e2;
+    box-shadow: 0px 0px 5px 1px rgba(255, 255, 255, 0.44);
+    &Left {
+      left: 0;
+      border-radius: 0px 1px 1px 0px;
+    }
+
+    &Right {
+      right: 0;
+      border-radius: 1px 0px 0px 1px;
+    }
+  }
+  &Right {
+    bottom: 0;
+
+    &Left {
+      left: 0;
+      top: 0;
+      border-radius: 0px 1px 1px 0px;
+      @include light-lamp-green(
+        $color-green,
+        $color-border-lamp-green,
+        $color-shadow-lamp-green
+      );
+    }
+
+    &Right {
+      top: 50%;
+      right: 6px;
+      transform: translate(-6px, -50%);
+      @include pils;
+    }
+  }
+
+  &Left {
+    bottom: 0;
+
+    &Left {
+      top: 50%;
+      left: 6px;
+      transform: translate(6px, -50%);
+      @include pils;
+    }
+
+    &Right {
+      right: 0;
+      top: 0;
+      border-radius: 1px 0px 0px 1px;
+      @include light-lamp-green(
+        $color-green,
+        $color-border-lamp-green,
+        $color-shadow-lamp-green
+      );
+    }
+  }
+}
