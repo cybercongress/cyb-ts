@@ -3,10 +3,9 @@
   position: relative;
   height: 90vh;
   width: 100%;
-  // margin: 0 auto;
-  // max-width: 1000px;
   align-items: center;
   justify-content: center;
+  background-color: black;
 
   svg {
     width: 100%;
@@ -20,8 +19,4 @@
   font-size: 76px;
   color: #ffffff;
   text-align: center;
-
-  span {
-    margin-left: -5px;
-  }
 }
