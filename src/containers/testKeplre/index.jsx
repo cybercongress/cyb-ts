@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { coin, coins } from '@cosmjs/launchpad';
-import { SigningCyberClient, SigningCyberClientOptions } from 'js-cyber';
+import { SigningCyberClient, SigningCyberClientOptions } from '@cybercongress/cyber-js';
 import { Tablist, Pane } from '@cybercongress/gravity';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';

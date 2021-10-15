@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
-import { SigningCyberClient, CyberClient } from 'js-cyber';
+import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
