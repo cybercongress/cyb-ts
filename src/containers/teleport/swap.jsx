@@ -3,6 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import { TokenSetter } from './components';
 import { ButtonIcon, ValueImg } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
+import Slider from './components/slider';
 
 const imgSwap = require('../../image/swap-horizontal.svg');
 
@@ -64,14 +65,21 @@ function Swap({ stateSwap, text }) {
         valueInput={tokenAAmount}
         textLeft={text ? 'Sell' : ''}
       />
-      <ButtonIcon
+      <Slider
+        id="tokenAAmount"
+        tokenA={tokenA}
+        tokenB={tokenB}
+        tokenAAmount={tokenAAmount}
+        accountBalances={accountBalances}
+      />
+      {/* <ButtonIcon
         onClick={() => tokenChange()}
         // active={selectMethod === 'ledger'}
         placement="left"
         img={imgSwap}
         text="reverse"
         style={{ transform: 'rotate(90deg)' }}
-      />
+      /> */}
       <TokenSetter
         id="tokenBAmount"
         accountBalances={accountBalances}

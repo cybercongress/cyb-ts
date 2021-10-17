@@ -73,6 +73,7 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
+  const { jsCyber } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   const { balance } = useGetBalance(addressActive, updateAddress);
@@ -88,6 +89,18 @@ function Mint({ defaultAccount }) {
   const [max, setMax] = useState(0);
   const [eRatio, setERatio] = useState(0);
   const [resourceToken, setResourceToken] = useState(0);
+
+  useEffect(() => {
+    const getParam = async () => {
+      if (jsCyber !== null) {
+        const responseEnergyParams = await jsCyber.energyParams();
+        console.log(`responseEnergyParams`, responseEnergyParams);
+        const responseResourcesParams = await jsCyber.resourcesParams();
+        console.log(`responseResourcesParams`, responseResourcesParams);
+      }
+    };
+    getParam();
+  }, [jsCyber]);
 
   useEffect(() => {
     const { account } = defaultAccount;
