@@ -22,6 +22,7 @@ import Vesting from './containers/vesting/vesting';
 import Ipfs from './containers/ipfs/ipfs';
 import { Dots, Timer } from './components';
 import { initIpfs, setIpfsStatus, setIpfsID } from './redux/actions/ipfs';
+import { setBlock } from './redux/actions/block';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
 import Block from './containers/blok';
@@ -44,6 +45,8 @@ import Taverna from './containers/taverna';
 import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 
+import { TIME_START, CYBER } from './utils/config';
+
 export const history = createBrowserHistory({});
 
 function AppRouter({
@@ -52,20 +55,158 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  const dataIpfsStart = useIpfsStart();
+  // const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
-
+  const [time, setTime] = useState(false);
+  const [genesis, setGenesis] = useState(false);
+  const [wsClient, setWsClient] = useState(null);
   // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    setLoader(dataIpfsStart.loader);
-  }, [dataIpfsStart]);
+  // useEffect(() => {
+  //   initIpfsProps(dataIpfsStart.node);
+  //   setIpfsStatusProps(dataIpfsStart.status);
+  //   setTypeDeviceProps(dataIpfsStart.mobile);
+  //   setIpfsIDProps(dataIpfsStart.id);
+  //   setLoader(dataIpfsStart.loader);
+  // }, [dataIpfsStart]);
 
-  // add Switch to Router
+  // eslint-disable-next-line no-lone-blocks
+  {
+    /*  // useEffect(() => {
+  //   initClock();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (blockProps >= 6 && genesis) {
+  //     history.push('/episode-1');
+  //     setGenesis(false);
+  //   }
+  // }, [blockProps, genesis]);
+
+  // useEffect(() => {
+  //   let ws = null;
+  //   const closeHandler = () => {
+  //     console.log(`close WS`);
+  //     setTimeout(createConnect, 3000);
+  //   };
+
+  //   const createConnect = () => {
+  //     if (ws !== null) {
+  //       ws.removeEventListener('close', closeHandler);
+  //     }
+  //     ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
+  //     ws.addEventListener('close', closeHandler);
+  //     console.log(`open`);
+  //     setWsClient(ws);
+  //   };
+  //   createConnect();
+
+  //   return () => {
+  //     ws.removeEventListener('close', closeHandler);
+  //     ws.close();
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   const handlerOpen = () => {
+  //     wsClient.send(
+  //       JSON.stringify({
+  //         method: 'subscribe',
+  //         params: ["tm.event='NewBlockHeader'"],
+  //         id: '1',
+  //         jsonrpc: '2.0',
+  //       })
+  //     );
+  //   };
+
+  //   if (wsClient !== null) {
+  //     wsClient.addEventListener('open', handlerOpen);
+  //   }
+
+  //   return () => {
+  //     if (wsClient !== null) {
+  //       wsClient.removeEventListener('close', handlerOpen);
+  //     }
+  //   };
+  // }, [wsClient]);
+
+  // useEffect(() => {
+  //   const handlerMessage = (evt) => {
+  //     const message = JSON.parse(evt.data);
+  //     if (Object.keys(message.result).length > 0) {
+  //       const block = message.result.data.value.header.height;
+  //       setBlockProps(block);
+  //     }
+  //   };
+
+  //   if (wsClient !== null) {
+  //     wsClient.addEventListener('message', handlerMessage);
+  //   }
+
+  //   return () => {
+  //     if (wsClient !== null) {
+  //       wsClient.removeEventListener('message', handlerMessage);
+  //     }
+  //   };
+  // }, [wsClient]);
+
+  // const initClock = () => {
+  //   const deadline = TIME_START;
+  //   const startTime = Date.parse(deadline) - Date.parse(new Date());
+  //   if (startTime <= 0) {
+  //     setTime(false);
+  //   } else {
+  //     setTime(true);
+  //     setGenesis(true);
+  //   }
+  // };
+
+  // // add Switch to Router
+
+  // if (time && genesis) {
+  //   return (
+  //     <div
+  //       style={{
+  //         width: '100%',
+  //         height: '100vh',
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         flexDirection: 'column',
+  //       }}
+  //     >
+  //       <div className="countdown-time text-glich" data-text="Start">
+  //         Start
+  //       </div>
+  //       <Timer startTime={TIME_START} updateFunc={initClock} />
+  //     </div>
+  //   );
+  // }
+
+  // if (blockProps < 6 && genesis) {
+  //   return (
+  //     <div
+  //       style={{
+  //         width: '100%',
+  //         height: '100vh',
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         flexDirection: 'row',
+  //       }}
+  //     >
+  //       <div className="countdown-time text-glich" data-text="Block:">
+  //         Block:
+  //       </div>
+  //       <div className="countdown-time text-glich" data-text={blockProps}>
+  //         {blockProps}
+  //       </div>
+  //     </div>
+  //   );
+  // }
+*/
+  }
+
   return (
     <Router history={history}>
       <Route path="/" component={App} />

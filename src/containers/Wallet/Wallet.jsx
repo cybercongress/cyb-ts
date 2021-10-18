@@ -674,4 +674,4 @@ const mapStateToProps = (store) => {
 
 Wallet.contextType = AppContext;
 
-export default connect(mapStateToProps, mapDispatchprops)(withWeb3(Wallet));
+export default connect(mapStateToProps, mapDispatchprops)((Wallet));

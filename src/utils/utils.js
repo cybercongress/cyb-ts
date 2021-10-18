@@ -219,7 +219,7 @@ const exponentialToDecimal = (exponential) => {
       }
       return text;
     };
-    decimal = addCommas(exponentialSplitted[0].replace('.', '') + postfix);
+    decimal = exponentialSplitted[0].replace('.', '') + postfix;
   }
   if (decimal.toLowerCase().includes('e-')) {
     const exponentialSplitted = decimal.split('e-');
@@ -366,6 +366,25 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
+const reduceBalances = (data) => {
+  try {
+    let balances = {};
+    if (Object.keys(data).length > 0) {
+      balances = data.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.denom]: parseFloat(item.amount),
+        }),
+        {}
+      );
+    }
+    return balances;
+  } catch (error) {
+    console.log(`error reduceBalances`, error);
+    return {};
+  }
+};
+
 export {
   run,
   sort,
@@ -385,4 +404,5 @@ export {
   coinDecimals,
   convertResources,
   timeSince,
+  reduceBalances,
 };

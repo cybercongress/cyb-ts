@@ -60,7 +60,7 @@ const Details = () => {
         and will help us answer questions better. We invite the Cosmic community
         of validators, developers and users to become Heroes and Masters of the
         Great Web, and join the process of{' '}
-        <LinkWindow to="https://cyber.page/episode-1">
+        <LinkWindow to="https://cyb.ai/episode-1">
           ascending this new lifeform
         </LinkWindow>
         .
@@ -109,7 +109,7 @@ const Details = () => {
           : Our implementation using cosmos-sdk
         </li>
         <li>
-          <LinkWindow to="https://cyber.page/">cyber.page</LinkWindow>: PoC
+          <LinkWindow to="https://cyb.ai/">cyb.ai</LinkWindow>: PoC
           reference web interface
         </li>
         <li>
@@ -316,7 +316,7 @@ const Details = () => {
           Cyber
         </LinkWindow>{' '}
         has launched its{' '}
-        <LinkWindow to="https://cyber.page/senate/2">
+        <LinkWindow to="https://cyb.ai/senate/2">
           first takeoff round
         </LinkWindow>
         , on the 27th of April, 2020. However, launching meant it had to fly. It
@@ -374,7 +374,7 @@ const Details = () => {
       <Text>
         It is hard to attract users when the knowledge graph is empty. The truth
         is that we don't need much: about 1M cyberlinks to demonstrate the PoC (
-        <LinkWindow to="https:/cyber.page/brain">currently</LinkWindow>, ~100k
+        <LinkWindow to="https:/cyb.ai/brain">currently</LinkWindow>, ~100k
         links have been submitted), 10M cyberlinks to become really useful, and
         100M links to create the buzz. The current implementation allows us to
         scale to about 1B links, which will be enough to build something
@@ -387,7 +387,7 @@ const Details = () => {
       <Text>
         Search in the new paradigm cannot be free. No way. You are either a
         client or a product. We have allocated{' '}
-        <LinkWindow to="https://cyber.page">10% in the Genesis</LinkWindow> (8%
+        <LinkWindow to="https://cyb.ai">10% in the Genesis</LinkWindow> (8%
         to Ethereum, 1% to Cosmos and 1% to Urbit) for evaluation purposes, but
         others have to make a choice for themselves. In the beginning, it’s
         better not to think of Cyber as the miracle which solves the problems of
