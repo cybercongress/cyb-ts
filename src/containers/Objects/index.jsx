@@ -75,12 +75,12 @@ function Objects({ node, mobile }) {
     const links = data.result.reduce(
       (obj, link) => ({
         ...obj,
-        [link.cid]: {
+        [link.particle]: {
           rank: formatNumber(link.rank, 6),
-          cid: link.cid,
+          particle: link.particle,
           grade: getRankGrade(link.rank),
           status: node !== null ? 'understandingState' : 'impossibleLoad',
-          text: link.cid,
+          text: link.particle,
           content: false,
         },
       }),
@@ -100,12 +100,12 @@ function Objects({ node, mobile }) {
     const links = data.result.reduce(
       (obj, link) => ({
         ...obj,
-        [link.cid]: {
+        [link.particle]: {
           rank: formatNumber(link.rank, 6),
-          cid: link.cid,
+          particle: link.particle,
           grade: getRankGrade(link.rank),
           status: node !== null ? 'understandingState' : 'impossibleLoad',
-          text: link.cid,
+          text: link.particle,
           content: false,
         },
       }),

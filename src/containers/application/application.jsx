@@ -170,24 +170,30 @@ function App({
       console.log(`account getBandwidth`, account);
       if (
         account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber')
+        Object.prototype.hasOwnProperty.call(account, 'cyber') &&
+        jsCyber !== null
       ) {
-        const dataAccountBandwidth = await getAccountBandwidth(
-          account.cyber.bech32
+        const { bech32: cyberBech32 } = account.cyber;
+        const responseAccountBandwidth = await jsCyber.accountBandwidth(
+          cyberBech32
         );
-        if (dataAccountBandwidth !== null) {
+
+        if (
+          responseAccountBandwidth !== null &&
+          responseAccountBandwidth.neuronBandwidth
+        ) {
           const {
-            remained_value: remained,
-            max_value: maxValue,
-          } = dataAccountBandwidth.account_bandwidth;
-          setBandwidthProps(remained / 100, maxValue / 100);
+            maxValue,
+            remainedValue,
+          } = responseAccountBandwidth.neuronBandwidth;
+          setBandwidthProps(remainedValue / 100, maxValue / 100);
         }
       } else {
         setBandwidthProps(0, 0);
       }
     };
     getBandwidth();
-  }, [defaultAccount]);
+  }, [defaultAccount, jsCyber]);
 
   useEffect(() => {
     const getCountLink = async () => {
@@ -200,7 +206,10 @@ function App({
           jsCyber !== null
         ) {
           const { bech32 } = account.cyber;
-          const getBalancemillivolt = await jsCyber.getBalance(bech32, 'millivolt');
+          const getBalancemillivolt = await jsCyber.getBalance(
+            bech32,
+            'millivolt'
+          );
           if (getBalancemillivolt.amount) {
             setCountLink(
               convertResources(parseFloat(getBalancemillivolt.amount * 4))

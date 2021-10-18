@@ -122,13 +122,13 @@ function Market({ node, mobile, defaultAccount }) {
           const dataApps = responseApps.reduce(
             (obj, item) => ({
               ...obj,
-              [item.cid]: {
-                cid: item.cid,
+              [item.particle]: {
+                particle: item.particle,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
                 status: node !== null ? 'understandingState' : 'impossibleLoad',
                 query: selectedTokens,
-                text: item.cid,
+                text: item.particle,
                 content: false,
               },
             }),

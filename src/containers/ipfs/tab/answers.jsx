@@ -18,7 +18,7 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
               display="flex"
               alignItems="center"
               marginBottom="10px"
-              key={`${item.cid}_${i}`}
+              key={`${item.particle}_${i}`}
             >
               {!mobile && (
                 <Pane
@@ -26,7 +26,7 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
                   position="absolute"
                 >
                   <Rank
-                    hash={item.cid}
+                    hash={item.particle}
                     rank={exponentialToDecimal(
                       parseFloat(item.rank).toPrecision(3)
                     )}
@@ -36,7 +36,7 @@ function AnswersTab({ data, mobile, nodeIpfs }) {
               )}
               <ContentItem
                 nodeIpfs={nodeIpfs}
-                cid={item.cid}
+                cid={item.particle}
                 item={item}
                 className="contentItem"
               />
