@@ -1,107 +1,364 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Pane } from '@cybercongress/gravity';
-import { coins, coin } from '@cosmjs/launchpad';
+import { connect } from 'react-redux';
+import { useLocation, Route } from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
+import useSWR from 'swr';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import {
+  reduceBalances,
+  formatNumber,
+  coinDecimals,
+  roundNumber,
+  exponentialToDecimal,
+} from '../../utils/utils';
+import { Dots, ValueImg, ButtonIcon } from '../../components';
+import {
+  calculateCounterPairAmount,
+  calculateSlippage,
+  sortReserveCoinDenoms,
+  getMyTokenBalance,
+  reduceAmounToken,
+  getPoolToken,
+} from './utils';
+import { TabList } from './components';
+import ActionBar from './actionBar';
+import PoolsList from './poolsList';
+import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
+import Swap from './swap';
+import Withdraw from './withdraw';
 
-function Teleport() {
-  const { keplr, jsCyber } = useContext(AppContext);
-  const fee = {
-    amount: [],
-    gas: DEFAULT_GAS_LIMITS.toString(),
-  };
+function Teleport({ defaultAccount }) {
+  const { jsCyber } = useContext(AppContext);
+  const location = useLocation();
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [update, setUpdate] = useState(0);
+  const { params } = useGetParams();
+  const { poolsData } = usePoolListInterval();
+  const [accountBalances, setAccountBalances] = useState(null);
+  const [tokenA, setTokenA] = useState('');
+  const [tokenB, setTokenB] = useState('');
+  const [tokenAAmount, setTokenAAmount] = useState('');
+  const [tokenBAmount, setTokenBAmount] = useState('');
+  const [tokenAPoolAmount, setTokenAPoolAmount] = useState(0);
+  const [tokenBPoolAmount, setTokenBPoolAmount] = useState(0);
+  const [selectedPool, setSelectedPool] = useState([]);
+  const [swapPrice, setSwapPrice] = useState(0);
+  const [tokenPrice, setTokenPrice] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('swap');
+  // const [totalSupply, setTotalSupply] = useState(null);
+  const [myPools, setMyPools] = useState({});
+  const [selectMyPool, setSelectMyPool] = useState('');
+  const [amountPoolCoin, setAmountPoolCoin] = useState('');
+  const [isExceeded, setIsExceeded] = useState(false);
+
+  console.log(`poolsData`, poolsData)
 
   useEffect(() => {
-    const getPools = async () => {
-      if (jsCyber !== null) {
-        const response = await jsCyber.pools();
+    const { pathname } = location;
+    if (
+      pathname.match(/add-liquidity/gm) &&
+      pathname.match(/add-liquidity/gm).length > 0
+    ) {
+      setSelectedTab('add-liquidity');
+    } else if (
+      pathname.match(/sub-liquidity/gm) &&
+      pathname.match(/sub-liquidity/gm).length > 0
+    ) {
+      setSelectedTab('sub-liquidity');
+    } else {
+      setSelectedTab('swap');
+    }
+  }, [location.pathname]);
 
-        console.log(`pools`, response);
+  useEffect(() => {
+    setTokenA('');
+    setTokenB('');
+    setTokenAAmount('');
+    setTokenBAmount('');
+    setSelectMyPool('');
+    setAmountPoolCoin('');
+    setIsExceeded(false);
+  }, [update, selectedTab]);
 
-        const responsePool = await jsCyber.pool(1);
-        console.log(`responsePool`, responsePool);
+  useEffect(() => {
+    const getBalances = async () => {
+      if (jsCyber !== null && addressActive !== null && addressActive.bech32) {
+        const getAllBalancesPromise = await jsCyber.getAllBalances(
+          addressActive.bech32
+        );
+
+        const datareduceBalances = reduceBalances(getAllBalancesPromise);
+        console.log(`reduceBalances`, datareduceBalances);
+        setAccountBalances(datareduceBalances);
       }
     };
-    getPools();
-  }, [jsCyber]);
+    getBalances();
+  }, [jsCyber, addressActive, update]);
 
-  const createPool = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
+  // useEffect(() => {
+  //   const getTotalSupply = async () => {
+  //     if (jsCyber !== null) {
+  //       const responseTotalSupply = await jsCyber.totalSupply();
+  //       const data = reduceBalances(responseTotalSupply);
+  //       setTotalSupply(data);
+  //     }
+  //   };
+  //   getTotalSupply();
+  // }, [jsCyber]);
 
-    const depositCoins = [
-      coin(1000000, CYBER.DENOM_CYBER),
-      coin(1000000, 'hydrogen'),
-    ];
-    console.log(`depositCoins`, depositCoins);
+  useEffect(() => {
+    let orderPrice = 0;
 
-    const response = await keplr.createPool(address, 1, depositCoins, fee);
+    if ([tokenA, tokenB].sort()[0] !== tokenA) {
+      orderPrice = (Number(tokenBPoolAmount) / Number(tokenAPoolAmount)) * 0.9;
+    } else {
+      orderPrice = (Number(tokenAPoolAmount) / Number(tokenBPoolAmount)) * 1.1;
+    }
 
-    console.log(`response`, response);
-  };
+    if (orderPrice && orderPrice !== Infinity) {
+      setSwapPrice(orderPrice);
+    }
+  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount]);
 
-  const withdwawWithinBatch = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
+  useEffect(() => {
+    const getAmountPool = async () => {
+      setTokenAPoolAmount(0);
+      setTokenBPoolAmount(0);
+      if (jsCyber !== null && Object.keys(selectedPool).length > 0) {
+        const getAllBalancesPromise = await jsCyber.getAllBalances(
+          selectedPool.reserve_account_address
+        );
+        const dataReduceBalances = reduceBalances(getAllBalancesPromise);
+        if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
+          setTokenAPoolAmount(
+            reduceAmounToken(dataReduceBalances[tokenA], tokenA)
+          );
+          setTokenBPoolAmount(
+            reduceAmounToken(dataReduceBalances[tokenB], tokenB)
+          );
+        }
+      }
+    };
+    getAmountPool();
+  }, [jsCyber, tokenA, tokenB, selectedPool, update]);
 
-    const depositCoins = coins(10000, CYBER.DENOM_CYBER);
-    console.log(`depositCoins`, depositCoins);
+  useEffect(() => {
+    setSelectedPool([]);
+    if (poolsData.length > 0) {
+      if (tokenA.length > 0 && tokenB.length > 0) {
+        console.log(`setSelectedPool`);
+        const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
+        poolsData.forEach((item) => {
+          if (
+            JSON.stringify(item.reserve_coin_denoms) ===
+            JSON.stringify(arrangedReserveCoinDenoms)
+          ) {
+            setSelectedPool(item);
+          }
+        });
+      }
+    }
+  }, [poolsData, tokenA, tokenB]);
 
-    const response = await keplr.withdwawWithinBatch(
-      address,
-      1,
-      depositCoins,
-      fee
+  useEffect(() => {
+    if (accountBalances !== null && poolsData !== null) {
+      const poolTokenData = getPoolToken(poolsData, accountBalances);
+      let poolTokenDataIndexer = {};
+
+      poolTokenDataIndexer = poolTokenData.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.poolCoinDenom]: item,
+        }),
+        {}
+      );
+      setMyPools(poolTokenDataIndexer);
+    }
+  }, [accountBalances, poolsData]);
+
+  function getMyTokenBalanceNumber(denom, indexer) {
+    return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
+  }
+
+  function amountChangeHandler(e) {
+    const inputAmount = e.target.value;
+    const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
+    const isReverse = e.target.id !== 'tokenAAmount';
+    const state = { tokenAPoolAmount, tokenBPoolAmount };
+
+    let type = 'swap';
+
+    if (selectedTab !== 'swap') {
+      type = 'deposit';
+    }
+
+    let exceeded = false;
+    const { counterPairAmount, price } = calculateCounterPairAmount(
+      e,
+      state,
+      type
     );
 
-    console.log(`response`, response);
-  };
+    // is exceeded?(좌변에 fee 더해야함)
+    if (isReverse) {
+      // input from "to"(reverse)
+      setTokenBAmount(inputAmount);
+      setTokenAAmount(counterPairAmount);
 
-  const depositWithinBatch = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
+      if (counterPairAmount > myATokenBalance) {
+        exceeded = true;
+      }
+    } else {
+      // input from "from"(normal)
+      setTokenAAmount(inputAmount);
+      setTokenBAmount(counterPairAmount);
 
-    const depositCoins = coins(10000, CYBER.DENOM_CYBER);
-    console.log(`depositCoins`, depositCoins);
+      if (inputAmount > myATokenBalance) {
+        exceeded = true;
+      }
+    }
+    console.log(`price`, price);
 
-    const response = await keplr.depositWithinBatch(
-      address,
-      1,
-      depositCoins,
-      fee
+    // setSlippage(slippage);
+    setIsExceeded(exceeded);
+    setTokenPrice(price);
+    // helper
+  }
+
+  const onChangeInputWithdraw = (e) => {
+    const inputAmount = e.target.value;
+    const myATokenBalance = getMyTokenBalanceNumber(
+      selectMyPool,
+      accountBalances
     );
-
-    console.log(`response`, response);
+    let exceeded = false;
+    if (parseFloat(inputAmount) > myATokenBalance) {
+      exceeded = true;
+    }
+    setIsExceeded(exceeded);
+    setAmountPoolCoin(inputAmount);
   };
 
-  const swapWithinBatch = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
+  function tokenChange() {
+    const A = tokenB;
+    const B = tokenA;
+    const AP = tokenBPoolAmount;
+    const BP = tokenAPoolAmount;
 
-    const depositCoins = coins(10000, CYBER.DENOM_CYBER);
-    console.log(`depositCoins`, depositCoins);
+    setTokenA(A);
+    setTokenB(B);
+    setTokenAAmount('');
+    setTokenBAmount('');
+    setTokenAPoolAmount(AP);
+    setTokenBPoolAmount(BP);
+  }
 
-    const response = await keplr.swapWithinBatch(address, 1, depositCoins, fee);
-
-    console.log(`response`, response);
+  const updateFunc = () => {
+    setUpdate((item) => item + 1);
   };
+
+  const stateActionBar = {
+    addressActive,
+    tokenAAmount,
+    tokenBAmount,
+    tokenA,
+    tokenB,
+    params,
+    swapPrice,
+    selectedPool,
+    selectedTab,
+    updateFunc,
+    selectMyPool,
+    myPools,
+    amountPoolCoin,
+    isExceeded,
+  };
+
+  const stateSwap = {
+    accountBalances,
+    tokenB,
+    setTokenB,
+    tokenBAmount,
+    tokenA,
+    setTokenA,
+    tokenAAmount,
+    amountChangeHandler,
+    tokenAPoolAmount,
+    tokenBPoolAmount,
+    tokenChange,
+  };
+
+  const stateWithdraw = {
+    accountBalances,
+    myPools,
+    selectMyPool,
+    setSelectMyPool,
+    amountPoolCoin,
+    onChangeInputWithdraw,
+  };
+
+  let content;
+
+  if (selectedTab === 'swap') {
+    content = (
+      <Route
+        path="/teleport"
+        render={() => <Swap text stateSwap={stateSwap} />}
+      />
+    );
+  }
+
+  if (selectedTab === 'add-liquidity') {
+    content = (
+      <Route
+        path="/teleport/add-liquidity"
+        render={() => <Swap stateSwap={stateSwap} />}
+      />
+    );
+  }
+
+  if (selectedTab === 'sub-liquidity') {
+    content = (
+      <Route
+        path="/teleport/sub-liquidity"
+        render={() => <Withdraw stateSwap={stateWithdraw} />}
+      />
+    );
+  }
 
   return (
-    <div>
-      {keplr !== null && (
-        <Pane display="flex" flexDirection="column" alignItems="center">
-          <Button marginY={20} onClick={() => createPool()}>
-            createPool
-          </Button>
-          <Button marginY={20} onClick={() => withdwawWithinBatch()}>
-            withdwawWithinBatch
-          </Button>
-          <Button marginY={20} onClick={() => depositWithinBatch()}>
-            depositWithinBatch
-          </Button>
-          <Button marginY={20} onClick={() => swapWithinBatch()}>
-            swapWithinBatch
-          </Button>
+    <>
+      <main className="block-body">
+        <TabList selected={selectedTab} />
+
+        <Pane
+          width="100%"
+          display="flex"
+          alignItems="center"
+          flexDirection="column"
+        >
+          {content}
         </Pane>
-      )}
-    </div>
+
+        {/* <PoolsList
+          poolsData={poolsData}
+          accountBalances={accountBalances}
+          totalSupply={totalSupply}
+          selectedTab={selectedTab}
+        /> */}
+      </main>
+      <ActionBar stateActionBar={stateActionBar} />
+    </>
   );
 }
 
-export default Teleport;
+const mapStateToProps = (store) => {
+  return {
+    mobile: store.settings.mobile,
+    defaultAccount: store.pocket.defaultAccount,
+  };
+};
+
+export default connect(mapStateToProps)(Teleport);

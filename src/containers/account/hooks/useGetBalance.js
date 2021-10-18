@@ -172,25 +172,23 @@ function useGetBalance(address, updateAddress) {
           initValueTokenAmount.hydrogen.available = balancesToken.hydrogen;
           initValueTokenAmount.hydrogen.total = balancesToken.hydrogen;
         }
+        // console.log(`vested`, address, vested);
+        // console.log(`originalVesting`, address, originalVesting);
 
         if (vested.milliampere >= 0 && originalVesting.milliampere > 0) {
           const vestedTokens =
             parseFloat(originalVesting.milliampere) - parseFloat(vested.milliampere);
           if (initValueTokenAmount.milliampere.available > 0) {
-            initValueTokenAmount.milliampere.available -= convertResources(
-              vestedTokens
-            );
-            initValueTokenAmount.milliampere.vested = convertResources(vestedTokens);
+            initValueTokenAmount.milliampere.available -= vestedTokens;
+            initValueTokenAmount.milliampere.vested = vestedTokens;
           }
         }
         if (vested.millivolt >= 0 && originalVesting.millivolt > 0) {
           const vestedTokens =
             parseFloat(originalVesting.millivolt) - parseFloat(vested.millivolt);
           if (initValueTokenAmount.millivolt.available > 0) {
-            initValueTokenAmount.millivolt.available -= convertResources(
-              vestedTokens
-            );
-            initValueTokenAmount.millivolt.vested = convertResources(vestedTokens);
+            initValueTokenAmount.millivolt.available -= vestedTokens;
+            initValueTokenAmount.millivolt.vested = vestedTokens;
           }
         }
         if (vested.hydrogen >= 0 && originalVesting.hydrogen > 0) {
@@ -201,6 +199,7 @@ function useGetBalance(address, updateAddress) {
           }
           initValueTokenAmount.hydrogen.vested = vestedTokens;
         }
+        // console.log(address, initValueTokenAmount);
       }
       setBalanceToken(initValueTokenAmount);
       setLoadingBalanceToken(false);

@@ -1,4 +1,4 @@
-const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const TIME_START = 'Sep 18 2021 19:00:00 GMT +3';
 const INFINITY = '∞';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
@@ -52,7 +52,7 @@ const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
   TIME_END: 'November 31 2020 24:00:00 GMT +3',
-  CHAIN_ID: 'cosmoshub-3',
+  CHAIN_ID: 'cosmoshub-4',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',
@@ -67,17 +67,18 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'boot',
   DENOM_CYBER_G: `GBOOT`,
-  CYBER_WEBSOCKET_URL: 'wss://rpc.bostromdev.cybernode.ai/websocket',
-  CYBER_NODE_URL_API: 'https://rpc.bostromdev.cybernode.ai',
-  CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
+  // CHAIN_ID: 'dev',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
+  // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
+  CHAIN_ID: 'bostrom-testnet-5',
+  CYBER_NODE_URL_API: 'https://rpc.bostromdev.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://rpc.bostromdev.cybernode.ai/websocket',
+  CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://index.bostromdev.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostromdev.cybernode.ai/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
-  // CHAIN_ID: 'dev',
-  CHAIN_ID: 'bostrom-testnet-5',
   MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
 };
 

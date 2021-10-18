@@ -11,6 +11,8 @@ import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
+import PoolData from './poolData';
+import { reduceBalances } from '../../utils/utils';
 
 const ContainerGrid = ({ children }) => (
   <Pane
@@ -59,6 +61,10 @@ const chekPathname = (pathname) => {
     return 'H';
   }
 
+  if (pathname === '/market/pools') {
+    return 'pools';
+  }
+
   return 'BOOT';
 };
 
@@ -66,18 +72,43 @@ function Market({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { jsCyber } = useContext(AppContext);
-  const { gol, cyb, boot, hydrogen, milliampere, millivolt } = useGetCybernomics();
+  const {
+    gol,
+    cyb,
+    boot,
+    hydrogen,
+    milliampere,
+    millivolt,
+    poolsData,
+    totalSupplyData,
+  } = useGetCybernomics();
   const [selectedTokens, setSelectedTokens] = useState('BOOT');
   const [resultSearch, setResultSearch] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(0);
+  const [accountBalances, setAccountBalances] = useState(null);
 
   useEffect(() => {
     const { pathname } = location;
     const requere = chekPathname(pathname);
     setSelectedTokens(requere);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const getBalances = async () => {
+      if (jsCyber !== null && addressActive !== null && addressActive.bech32) {
+        const getAllBalancesPromise = await jsCyber.getAllBalances(
+          addressActive.bech32
+        );
+
+        const data = reduceBalances(getAllBalancesPromise);
+        console.log(`reduceBalances`, data);
+        setAccountBalances(data);
+      }
+    };
+    getBalances();
+  }, [jsCyber, addressActive, update]);
 
   useEffect(() => {
     const feachData = async () => {
@@ -195,6 +226,21 @@ function Market({ node, mobile, defaultAccount }) {
     );
   }
 
+  if (selectedTokens === 'pools') {
+    content = (
+      <Route
+        path="/market/pools"
+        render={() => (
+          <PoolData
+            data={poolsData}
+            totalSupplyData={totalSupplyData}
+            accountBalances={accountBalances}
+          />
+        )}
+      />
+    );
+  }
+
   return (
     <>
       <main className="block-body">
@@ -239,12 +285,14 @@ function Market({ node, mobile, defaultAccount }) {
           )}
         </ContainerGrid>
       </main>
-      <ActionBarCont
-        addressActive={addressActive}
-        mobile={mobile}
-        keywordHash={keywordHash}
-        updateFunc={() => setUpdate(update + 1)}
-      />
+      {/* {!mobile && (
+        <ActionBarCont
+          addressActive={addressActive}
+          mobile={mobile}
+          keywordHash={keywordHash}
+          updateFunc={() => setUpdate(update + 1)}
+        />
+      )} */}
     </>
   );
 }
