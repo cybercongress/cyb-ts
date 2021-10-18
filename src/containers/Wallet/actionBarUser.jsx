@@ -6,7 +6,7 @@ import { CYBER } from '../../utils/config';
 import { downloadObjectAsJson } from '../../utils/utils';
 import { deletPubkey } from './utils';
 
-const MEMO = 'cyber.page, using CLI';
+const MEMO = 'cyb.ai, using CLI';
 const STAGE_INIT = 1;
 const STAGE_SEND_TX = 2;
 

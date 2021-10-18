@@ -48,6 +48,8 @@ function useGetCybernomics() {
   const { jsCyber } = useContext(AppContext);
   const marketData = useGetMarketData();
   const [cybernomics, setCybernomics] = useState(initState);
+  const [poolsData, setPoolsData] = useState([]);
+  const [totalSupplyData, setTotalSupplyData] = useState({});
 
   useEffect(() => {
     getGOL();
@@ -109,6 +111,8 @@ function useGetCybernomics() {
           });
         }
 
+        setTotalSupplyData(totalCyb);
+
         const value = {
           supply: totalCyb.boot,
           price: 0,
@@ -157,8 +161,24 @@ function useGetCybernomics() {
     feachTotal();
   }, [jsCyber]);
 
+  useEffect(() => {
+    try {
+      const getPools = async () => {
+        if (jsCyber !== null) {
+          const responsePools = await jsCyber.pools();
+          setPoolsData(responsePools.pools);
+        }
+      };
+      getPools();
+    } catch (error) {
+      setPoolsData([]);
+    }
+  }, [jsCyber]);
+
   return {
     ...cybernomics,
+    poolsData,
+    totalSupplyData,
   };
 }
 

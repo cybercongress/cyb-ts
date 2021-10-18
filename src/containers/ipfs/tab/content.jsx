@@ -69,6 +69,18 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
           }}
         >
           <LinkWindow to={content}>{content}</LinkWindow>
+
+          <Iframe
+            width="100%"
+            height="100%"
+            // loading={<Dots />}
+            id="iframeCid"
+            className="iframe-SearchItem"
+            src={content}
+            style={{
+              backgroundColor: '#fff',
+            }}
+          />
         </div>
       );
     }

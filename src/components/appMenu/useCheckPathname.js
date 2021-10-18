@@ -38,6 +38,8 @@ const useCheckPathname = () => {
       setMain('Market');
     } else if (pathname === '/market/cyb') {
       setMain('Market');
+    } else if (pathname === '/market/pools') {
+      setMain('Market');
     } else if (pathname === '/search/Dyson Sphere') {
       setMain('Dyson Sphere');
     } else if (pathname === '/mint') {
@@ -80,6 +82,11 @@ const useCheckPathname = () => {
       setMain('Hall of Fame');
     } else if (pathname === '/search/Become a Hero') {
       setMain('Hall of Fame');
+    } else if (
+      pathname.match(/teleport/gm) &&
+      pathname.match(/teleport/gm).length > 0
+    ) {
+      setMain('Teleport');
     } else {
       setMain('');
     }

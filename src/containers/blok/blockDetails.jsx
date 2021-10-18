@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import bech32 from 'bech32';
@@ -23,35 +23,50 @@ const GET_CHARACTERS = gql`
   }
 `;
 
+const initialState = {
+  height: null,
+  timestamp: null,
+  hash: null,
+  transactions: [],
+};
+
 function BlockDetails({ match }) {
   const { idBlock } = match.params;
+  const [blockInfo, setBlockInfo] = useState(initialState);
   const { loading, error, data } = useQuery(GET_CHARACTERS, {
     variables: {
       blockId: idBlock,
     },
   });
+
+  useEffect(() => {
+    console.log(`data`, data);
+    if (data && data.block && Object.keys(data.block).length > 0) {
+      setBlockInfo(data.block[0]);
+    } else {
+      setBlockInfo(initialState);
+    }
+    return () => setBlockInfo(initialState);
+  }, [data, idBlock]);
+
   if (loading) {
     return 'Loading...';
   }
+
   if (error) {
-    return `Error! ${error.message}`;
+    console.log(`Error!`, `Error! ${error.message}`);
   }
-  console.log(data);
-
-  // useEffect(() => {
-
-  // }, [idBlock]);
 
   return (
     <div>
       <main className="block-body">
         <InformationBlock
-          numbTx={data.block[0].transactions}
+          numbTx={blockInfo.transactions}
           marginBottom={20}
-          data={data.block[0]}
+          data={blockInfo}
         />
         <CardTemplate title="Transactions">
-          <TableTxs data={data.block[0].transactions} />
+          <TableTxs data={blockInfo.transactions} />
         </CardTemplate>
       </main>
       <ActionBarContainer valueSearchInput={idBlock} keywordHash={idBlock} />

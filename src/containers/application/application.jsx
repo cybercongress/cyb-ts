@@ -101,6 +101,11 @@ function App({
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
+  let story = false;
+  const localStorageStory = localStorage.getItem('story');
+  if (localStorageStory !== null) {
+    story = localStorageStory;
+  }
 
   useEffect(() => {
     const { pathname } = location;
@@ -265,6 +270,10 @@ function App({
       localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
     }
   };
+
+  // if (!story) {
+  //   return <div>{children}</div>;
+  // }
 
   return (
     <div>
