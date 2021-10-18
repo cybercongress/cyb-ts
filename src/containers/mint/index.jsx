@@ -73,6 +73,7 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
+  const { jsCyber } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   const { balance } = useGetBalance(addressActive, updateAddress);
@@ -88,6 +89,26 @@ function Mint({ defaultAccount }) {
   const [max, setMax] = useState(0);
   const [eRatio, setERatio] = useState(0);
   const [resourceToken, setResourceToken] = useState(0);
+  const [resourcesParams, setResourcesParams] = useState(null);
+
+  useEffect(() => {
+    const getParam = async () => {
+      const responseResourcesParams = await jsCyber.resourcesParams();
+      if (
+        responseResourcesParams.params &&
+        Object.keys(responseResourcesParams.params).length > 0
+      ) {
+        const { params } = responseResourcesParams;
+        setResourcesParams((item) => ({ ...item, ...params }));
+      }
+
+      const responseGetHeight = await jsCyber.getHeight();
+      if (responseGetHeight > 0) {
+        setResourcesParams((item) => ({ ...item, height: responseGetHeight }));
+      }
+    };
+    getParam();
+  }, [jsCyber]);
 
   useEffect(() => {
     const { account } = defaultAccount;
@@ -136,13 +157,39 @@ function Mint({ defaultAccount }) {
   }, [balance, vested, originalVesting]);
 
   useEffect(() => {
-    const hydrogen = value;
-    const vestingTime = valueDays * VESTING_TIME_HOURS;
-    const token = Math.floor(
-      (hydrogen / BASE_VESTING_AMOUNT) * (vestingTime / BASE_VESTING_TIME)
-    );
+    let token = 0;
+    if (resourcesParams !== null) {
+      const hydrogen = value;
+      const {
+        baseInvestmintAmountVolt,
+        baseInvestmintAmountAmpere,
+        baseInvestmintPeriodVolt,
+        baseInvestmintPeriodAmpere,
+        halvingPeriodAmpereBlocks: halvingPeriodBlocksAmpere,
+        halvingPeriodVoltBlocks: halvingPeriodBlocksVolt,
+        height,
+      } = resourcesParams;
+      let baseLength = 0;
+      let baseAmount = 0;
+      let halvingPeriod = 0;
+      if (selected === 'millivolt') {
+        baseLength = baseInvestmintPeriodVolt;
+        baseAmount = parseFloat(baseInvestmintAmountVolt.amount);
+        halvingPeriod = halvingPeriodBlocksVolt;
+      } else {
+        baseLength = baseInvestmintPeriodAmpere;
+        baseAmount = parseFloat(baseInvestmintAmountAmpere.amount);
+        halvingPeriod = halvingPeriodBlocksAmpere;
+      }
+      const vestingTime = valueDays * VESTING_TIME_HOURS;
+      const cycles = vestingTime / baseLength;
+      const base = hydrogen / baseAmount;
+      const halving = 0.5 * 10 ** (height / halvingPeriod);
+
+      token = Math.floor(cycles * base * halving);
+    }
     setResourceToken(token);
-  }, [value, valueDays]);
+  }, [value, valueDays, selected, resourcesParams]);
 
   const updateFunc = () => {
     setValue(0);
