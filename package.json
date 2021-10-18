@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config=webpack.config.dev.js --https -d --disable-host-check",
-    "build": "webpack --config=webpack.config.prod.js -p && ncp build/index.html build/404.html && echo 'cyber.page' > build/CNAME",
+    "build": "webpack --config=webpack.config.prod.js -p && ncp build/index.html build/404.html && echo 'cyb.ai' > build/CNAME",
     "devserver": "parcel serve src/index.html -p 8001 --no-cache",
     "lint": "eslint src/"
   },

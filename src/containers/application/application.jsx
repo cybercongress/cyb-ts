@@ -17,14 +17,19 @@ import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { CYBER, WP } from '../../utils/config';
-import { formatNumber, convertResources } from '../../utils/utils';
+import {
+  formatNumber,
+  convertResources,
+  coinDecimals,
+  reduceBalances,
+} from '../../utils/utils';
 import { AppContext } from '../../context';
+import LeftTooltip from './leftTooltip';
 
 const cyber = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const bug = require('../../image/alert-circle-outline.svg');
-const circleYellow = require('../../image/large-yellow-circle.png');
 const circleRed = require('../../image/large-red-circle.png');
 
 const ListAccounts = ({
@@ -80,7 +85,6 @@ function App({
   query,
   ipfsStatus,
   bandwidth,
-  block,
   accounts,
   setQueryProps,
   setAccountsProps,
@@ -95,6 +99,8 @@ function App({
   const [home, setHome] = useState(false);
   const [openMenu, setOpenMenu] = useState(true);
   const [countLink, setCountLink] = useState(0);
+  const [priceLink, setPriceLink] = useState(0.25);
+  const [amounPower, setAmounPower] = useState(0);
   let story = false;
   const localStorageStory = localStorage.getItem('story');
   if (localStorageStory !== null) {
@@ -103,17 +109,20 @@ function App({
 
   useEffect(() => {
     const { pathname } = location;
-    console.log(`!!! ===> 96 useEffect pathname`, pathname);
-    // if (pathname === '/') {
-    //   setHome(true);
-    // } else {
-    //   setHome(false);
-    // }
-
     if (pathname.indexOf(query) === -1) {
       setQueryProps('');
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    const getPrice = async () => {
+      if (jsCyber !== null) {
+        const response = await jsCyber.price();
+        setPriceLink(coinDecimals(response.price.dec));
+      }
+    };
+    getPrice();
+  }, [jsCyber]);
 
   useEffect(() => {
     const checkAddressLocalStorage = async () => {
@@ -166,65 +175,71 @@ function App({
 
   useEffect(() => {
     const getBandwidth = async () => {
-      const { account } = defaultAccount;
-      console.log(`account getBandwidth`, account);
-      if (
-        account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber') &&
-        jsCyber !== null
-      ) {
-        const { bech32: cyberBech32 } = account.cyber;
-        const responseAccountBandwidth = await jsCyber.accountBandwidth(
-          cyberBech32
-        );
-
+      try {
+        const { account } = defaultAccount;
+        console.log(`account getBandwidth`, account);
         if (
-          responseAccountBandwidth !== null &&
-          responseAccountBandwidth.neuronBandwidth
+          account !== null &&
+          Object.prototype.hasOwnProperty.call(account, 'cyber') &&
+          jsCyber !== null
         ) {
-          const {
-            maxValue,
-            remainedValue,
-          } = responseAccountBandwidth.neuronBandwidth;
-          setBandwidthProps(remainedValue / 100, maxValue / 100);
+          const { bech32: cyberBech32 } = account.cyber;
+          const responseAccountBandwidth = await jsCyber.accountBandwidth(
+            cyberBech32
+          );
+
+          if (
+            responseAccountBandwidth !== null &&
+            responseAccountBandwidth.neuronBandwidth
+          ) {
+            const {
+              maxValue,
+              remainedValue,
+            } = responseAccountBandwidth.neuronBandwidth;
+            setBandwidthProps(remainedValue, maxValue);
+            setCountLink(remainedValue / (priceLink * 1000));
+          } else {
+            setBandwidthProps(0, 0);
+            setCountLink(0);
+          }
+        } else {
+          setBandwidthProps(0, 0);
+          setCountLink(0);
         }
-      } else {
+      } catch (error) {
         setBandwidthProps(0, 0);
+        setCountLink(0);
       }
     };
     getBandwidth();
-  }, [defaultAccount, jsCyber]);
+  }, [defaultAccount, location.pathname, priceLink, jsCyber]);
 
   useEffect(() => {
-    const getCountLink = async () => {
+    const getAmounPower = async () => {
       try {
         const { account } = defaultAccount;
-        setCountLink(0);
         if (
           account !== null &&
           Object.prototype.hasOwnProperty.call(account, 'cyber') &&
           jsCyber !== null
         ) {
           const { bech32 } = account.cyber;
-          const getBalancemillivolt = await jsCyber.getBalance(
-            bech32,
-            'millivolt'
-          );
-          if (getBalancemillivolt.amount) {
-            setCountLink(
-              convertResources(parseFloat(getBalancemillivolt.amount * 4))
+          const allBalances = await jsCyber.getAllBalances(bech32);
+          const reduceallBalances = reduceBalances(allBalances);
+          if (reduceallBalances.milliampere && reduceallBalances.millivolt) {
+            const { milliampere, millivolt } = reduceallBalances;
+            setAmounPower(
+              convertResources(milliampere) * convertResources(millivolt)
             );
-          } else {
-            setCountLink(0);
           }
         } else {
-          setCountLink(0);
+          setAmounPower(0);
         }
       } catch (error) {
-        setCountLink(0);
+        setAmounPower(0);
       }
     };
-    getCountLink();
+    getAmounPower();
   }, [jsCyber, defaultAccount]);
 
   // chekEvangelism = () => {
@@ -297,41 +312,7 @@ function App({
           </AppSideBar>
           <MenuButton onClick={() => setOpenMenu(!openMenu)} imgLogo={cyber} />
           <Pane bottom="-10px" right="-20%" position="absolute">
-            <Tooltip
-              placement="bottom"
-              tooltip={
-                <span>
-                  You are on the{' '}
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://github.com/cybercongress/cyberd/releases"
-                  >
-                    {CYBER.CHAIN_ID}
-                  </a>{' '}
-                  network at block{' '}
-                  <span style={{ color: '#4ed6ae' }}>
-                    {formatNumber(parseFloat(block))}
-                  </span>
-                  . {CYBER.CHAIN_ID} is incentivized test network. Be careful.
-                  Details in{' '}
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
-                  >
-                    whitepaper
-                  </a>
-                  .
-                </span>
-              }
-            >
-              <img
-                alt="bugs"
-                style={{ width: '17px', objectFit: 'contain' }}
-                src={circleYellow}
-              />
-            </Tooltip>
+            <LeftTooltip />
           </Pane>
         </Pane>
         <Pane
@@ -348,6 +329,7 @@ function App({
             bwRemained={bandwidth.remained}
             bwMaxValue={bandwidth.maxValue}
             countLink={countLink}
+            amounPower={amounPower}
           />
         </Pane>
         {!home && (
@@ -449,7 +431,6 @@ const mapStateToProps = (store) => {
     bandwidth: store.bandwidth.bandwidth,
     query: store.query.query,
     mobile: store.settings.mobile,
-    block: store.block.block,
     defaultAccount: store.pocket.defaultAccount,
     accounts: store.pocket.accounts,
   };

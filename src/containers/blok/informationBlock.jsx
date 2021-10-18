@@ -48,12 +48,22 @@ const InformationBlock = ({ data, numbTx, marginBottom }) => {
       paddingBottom={20}
       title="Information"
     >
-      <Row value={formatNumber(data.height)} title="Height" />
       <Row
-        value={dateFormat(data.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
+        value={data.height !== null ? formatNumber(data.height) : ''}
+        title="Height"
+      />
+      <Row
+        value={
+          data.timestamp !== null
+            ? dateFormat(data.timestamp, 'dd/mm/yyyy, HH:MM:ss')
+            : ''
+        }
         title="Block Time"
       />
-      <Row value={trimString(data.hash, 6, 6)} title="Block Hash" />
+      <Row
+        value={data.hash !== null ? trimString(data.hash, 6, 6) : ''}
+        title="Block Hash"
+      />
       <Row value={Object.keys(numbTx).length} title="Number of Transactions" />
     </CardTemplate>
   );

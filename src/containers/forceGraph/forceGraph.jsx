@@ -35,10 +35,10 @@ const ForceGraph = () => {
   const limit = 1024;
   let where;
 
-  console.log(`location`, location)
-  console.log(`params`, params)
-  console.log(`history`, history)
-  console.log(`window.location.href`, window.location.href)
+  // console.log(`location`, location);
+  // console.log(`params`, params);
+  // console.log(`history`, history);
+  // console.log(`window.location.href`, window.location.href);
 
   useEffect(() => {
     const feachData = async () => {
@@ -118,17 +118,14 @@ const ForceGraph = () => {
 
   const handleNodeRightClick = useCallback(
     (node) => {
-      window.open(`https://cyber.page/ipfs/${node.id}`, '_blank');
+      window.open(`https://cyb.ai/ipfs/${node.id}`, '_blank');
     },
     [fgRef]
   );
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(
-        `https://cyber.page/network/bostrom/tx/${link.name}`,
-        '_blank'
-      );
+      window.open(`https://cyb.ai/network/bostrom/tx/${link.name}`, '_blank');
     },
     [fgRef]
   );
