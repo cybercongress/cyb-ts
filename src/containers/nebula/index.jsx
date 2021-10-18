@@ -53,6 +53,7 @@ function Nebula({ node, mobile, defaultAccount }) {
   const [loadingSearch, setLoadingSearch] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(0);
+  const [rankLink, setRankLink] = useState(null);
 
   useEffect(() => {
     const { pathname } = location;
@@ -98,6 +99,18 @@ function Nebula({ node, mobile, defaultAccount }) {
     feachData();
   }, [jsCyber, querySearch, update]);
 
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
+
   return (
     <>
       <main className="block-body">
@@ -123,6 +136,7 @@ function Nebula({ node, mobile, defaultAccount }) {
               node={node}
               mobile={mobile}
               selectedTokens={querySearch}
+              onClickRank={onClickRank}
             />
           )}
         </ContainerGrid>
@@ -132,6 +146,7 @@ function Nebula({ node, mobile, defaultAccount }) {
         mobile={mobile}
         keywordHash={keywordHash}
         updateFunc={() => setUpdate(update + 1)}
+        rankLink={rankLink}
       />
     </>
   );

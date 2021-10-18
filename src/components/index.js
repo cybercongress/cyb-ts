@@ -45,6 +45,7 @@ import PillNumber from './pill';
 import NoItems from './ui/noItems';
 import ValueImg from './valueImg';
 import NumberCurrency from './numberCurrency';
+import SearchSnippet from './searchSnippet';
 
 export {
   GovernanceChangeParam,
@@ -92,6 +93,7 @@ export {
   NoItems,
   ValueImg,
   NumberCurrency,
+  SearchSnippet,
 };
 
 export { Nums } from './ui/Numbers';

@@ -80,7 +80,6 @@ const CYBER = {
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
-
 };
 
 const DEFAULT_GAS_LIMITS = 200000;

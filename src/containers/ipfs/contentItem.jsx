@@ -11,7 +11,7 @@ import db from '../../db';
 const uint8ArrayConcat = require('uint8arrays/concat');
 const all = require('it-all');
 
-const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
+const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
@@ -133,7 +133,7 @@ const ContentItem = ({ item, cid, nodeIpfs, ...props }) => {
         grade={
           item.rank
             ? getRankGrade(item.rank)
-            : { from: 'n/a', to: 'n/a', value: 'n/a' }
+            : grade ? grade : { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
         {typeContent === 'image' && (

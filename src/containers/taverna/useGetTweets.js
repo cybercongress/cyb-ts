@@ -125,6 +125,7 @@ const useGetTweets = (defaultAccount, node = null) => {
             address: item.tx.value.msg[0].value.address,
             content: false,
             time: item.timestamp,
+            rank: null,
           },
         }),
         {}
@@ -175,6 +176,7 @@ const useGetTweets = (defaultAccount, node = null) => {
           address: subject,
           content: false,
           time: timestamp,
+          rank: null,
         },
         ...item,
       }));
