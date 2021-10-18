@@ -77,6 +77,7 @@ const CYBER = {
   // CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://index.bostromdev.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostromdev.cybernode.ai/v1/graphql',
+  CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
