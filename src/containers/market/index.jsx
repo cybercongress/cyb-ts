@@ -285,14 +285,14 @@ function Market({ node, mobile, defaultAccount }) {
           )}
         </ContainerGrid>
       </main>
-      {!mobile && (
+      {/* {!mobile && (
         <ActionBarCont
           addressActive={addressActive}
           mobile={mobile}
           keywordHash={keywordHash}
           updateFunc={() => setUpdate(update + 1)}
         />
-      )}
+      )} */}
     </>
   );
 }
