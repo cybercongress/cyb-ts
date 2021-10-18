@@ -152,7 +152,6 @@ function useGetBalance(address, updateAddress) {
         setLoadingBalanceToken(true);
         const getAllBalancesPromise = await jsCyber.getAllBalances(address);
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
-        // console.log(`balancesToken`, address, balancesToken);
         if (balancesToken.milliampere) {
           initValueTokenAmount.milliampere.available = convertResources(
             balancesToken.milliampere

@@ -95,8 +95,8 @@ const Home = ({ node, mobile, defaultAccount }) => {
         setMemoryLoader(true);
         if (jsCyber !== null) {
           const responseGraphStats = await jsCyber.graphStats();
-          const { cids, links } = responseGraphStats;
-          const bits = 40 * parseFloat(links) + 40 * parseFloat(cids);
+          const { particles, cyberlinks } = responseGraphStats;
+          const bits = 40 * parseFloat(cyberlinks) + 40 * parseFloat(particles);
           setMemory(bits);
         }
         setMemoryLoader(false);
@@ -121,13 +121,13 @@ const Home = ({ node, mobile, defaultAccount }) => {
           const dataApps = responseApps.reduce(
             (obj, item) => ({
               ...obj,
-              [item.cid]: {
-                cid: item.cid,
+              [item.particles]: {
+                particles: item.particles,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
                 status: node !== null ? 'understandingState' : 'impossibleLoad',
                 query: 'superintelligence',
-                text: item.cid,
+                text: item.particles,
                 content: false,
               },
             }),

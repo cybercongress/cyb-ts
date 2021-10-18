@@ -19,11 +19,11 @@ function useGetStatisticsCyber() {
         let stakedCyb = 0;
 
         const responseGraphStats = await jsCyber.graphStats();
-        const { cids, links } = responseGraphStats;
+        const { particles, cyberlinks } = responseGraphStats;
         setKnowledge((item) => ({
           ...item,
-          linksCount: links,
-          cidsCount: cids,
+          linksCount: cyberlinks,
+          cidsCount: particles,
         }));
 
         const responseHeroesActive = await jsCyber.validators(

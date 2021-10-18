@@ -261,8 +261,12 @@ class Wallet extends React.Component {
         const {
           remained_value: remained,
           max_value: maxValue,
-        } = response.account_bandwidth;
-        setBandwidthProps(remained, maxValue);
+        } = response.neuron_bandwidth;
+        if (remained && maxValue) {
+          setBandwidthProps(remained, maxValue);
+        } else {
+          setBandwidthProps(0, 0);
+        }
       }
     }
   };

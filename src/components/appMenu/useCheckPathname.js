@@ -7,9 +7,14 @@ const useCheckPathname = () => {
 
   useEffect(() => {
     const { pathname } = location;
-    console.log(`pathname`, pathname);
+
     if (pathname.match(/pocket/gm) && pathname.match(/pocket/gm).length > 0) {
       setMain('My robot');
+    } else if (
+      pathname.match(/genesis/gm) &&
+      pathname.match(/genesis/gm).length > 0
+    ) {
+      setMain('Genesis');
     } else if (
       pathname.match(/oracle/gm) &&
       pathname.match(/oracle/gm).length > 0
