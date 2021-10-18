@@ -49,14 +49,24 @@ function useGetBalance(address, updateAddress) {
             total: item.total + parseFloat(availablePromise.amount),
           }));
 
-          const delegationsPromise = await jsCyber.getBalance(
-            address,
-            'hydrogen'
+          const delegationsPromise = await jsCyber.delegatorDelegations(
+            address
           );
+          let delegationsAmount = 0;
+
+          const { delegationResponses } = delegationsPromise;
+          if (
+            delegationResponses &&
+            Object.keys(delegationResponses).length > 0
+          ) {
+            delegationResponses.forEach((itemDelegation) => {
+              delegationsAmount += itemDelegation.balance.amount;
+            });
+          }
           setBalance((item) => ({
             ...item,
-            delegation: parseFloat(delegationsPromise.amount),
-            total: item.total + parseFloat(delegationsPromise.amount),
+            delegation: parseFloat(delegationsAmount),
+            total: item.total + parseFloat(delegationsAmount),
           }));
 
           const unbondingPromise = await jsCyber.delegatorUnbondingDelegations(
@@ -177,7 +187,8 @@ function useGetBalance(address, updateAddress) {
 
         if (vested.milliampere >= 0 && originalVesting.milliampere > 0) {
           const vestedTokens =
-            parseFloat(originalVesting.milliampere) - parseFloat(vested.milliampere);
+            parseFloat(originalVesting.milliampere) -
+            parseFloat(vested.milliampere);
           if (initValueTokenAmount.milliampere.available > 0) {
             initValueTokenAmount.milliampere.available -= vestedTokens;
             initValueTokenAmount.milliampere.vested = vestedTokens;
@@ -185,7 +196,8 @@ function useGetBalance(address, updateAddress) {
         }
         if (vested.millivolt >= 0 && originalVesting.millivolt > 0) {
           const vestedTokens =
-            parseFloat(originalVesting.millivolt) - parseFloat(vested.millivolt);
+            parseFloat(originalVesting.millivolt) -
+            parseFloat(vested.millivolt);
           if (initValueTokenAmount.millivolt.available > 0) {
             initValueTokenAmount.millivolt.available -= vestedTokens;
             initValueTokenAmount.millivolt.vested = vestedTokens;
