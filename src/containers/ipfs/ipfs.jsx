@@ -102,7 +102,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   let contentTab;
 
   useEffect(() => {
-    console.log(`dataGetIpfsContent`, dataGetIpfsContent)
+    console.log(`dataGetIpfsContent`, dataGetIpfsContent);
     setContent(dataGetIpfsContent.content);
     setTypeContent(dataGetIpfsContent.typeContent);
     setGateway(dataGetIpfsContent.gateway);
@@ -129,7 +129,7 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   const feachCidTo = async () => {
     const response = await getToLink(cid);
-    console.log(`response`, response)
+    console.log(`response`, response);
     if (response !== null && response.txs && response.txs.length > 0) {
       console.log('response To :>> ', response);
       setDataToLink(response.txs.reverse());
@@ -383,7 +383,15 @@ function Ipfs({ nodeIpfs, mobile }) {
             to={`/ipfs/${cid}/meta`}
           />
         </Tablist>
-        {contentTab}
+        <Pane
+          width="90%"
+          marginX="auto"
+          marginY={0}
+          display="flex"
+          flexDirection="column"
+        >
+          {contentTab}
+        </Pane>
       </main>
       {!mobile && (selected === 'discussion' || selected === 'answers') && (
         <ActionBarContainer

@@ -144,14 +144,24 @@ function Objects({ node, mobile }) {
       // }}
       className="block-body"
     >
-      <Relevace
-        items={items}
-        fetchMoreData={fetchMoreData}
-        page={page}
-        allPage={allPage}
-        node={node}
-        mobile={mobile}
-      />
+      <Pane
+        width="90%"
+        marginX="auto"
+        marginY={0}
+        display="flex"
+        flexDirection="column"
+      >
+        <div className="container-contentItem" style={{ width: '100%' }}>
+          <Relevace
+            items={items}
+            fetchMoreData={fetchMoreData}
+            page={page}
+            allPage={allPage}
+            node={node}
+            mobile={mobile}
+          />
+        </div>
+      </Pane>
     </main>
   );
 }

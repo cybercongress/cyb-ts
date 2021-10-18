@@ -65,6 +65,7 @@ const Home = ({ node, mobile, defaultAccount }) => {
   const [resultSearch, setResultSearch] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
+  const [rankLink, setRankLink] = useState(null);
   const [update, setUpdate] = useState(0);
 
   useEffect(() => {
@@ -147,6 +148,18 @@ const Home = ({ node, mobile, defaultAccount }) => {
     feachData();
   }, [jsCyber, update]);
 
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
+
   return (
     <>
       <main className="block-body">
@@ -185,6 +198,7 @@ const Home = ({ node, mobile, defaultAccount }) => {
               node={node}
               mobile={mobile}
               selectedTokens="superintelligence"
+              onClickRank={onClickRank}
             />
           )}
         </ContainerGrid>
@@ -194,6 +208,7 @@ const Home = ({ node, mobile, defaultAccount }) => {
         mobile={mobile}
         keywordHash={keywordHash}
         updateFunc={() => setUpdate(update + 1)}
+        rankLink={rankLink}
       />
     </>
   );
