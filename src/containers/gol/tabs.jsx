@@ -173,7 +173,7 @@ export const Takeoff = () => (
       Without takeoff round it is impossible for cyber•Congress to continue
       development of the project. Overall Game of Links rewards depends on the
       Takeoff donations results. Takeoff round will be launched after the
-      network accept the proposal with the hash of the cyber.page app with
+      network accept the proposal with the hash of the cyb.ai app with
       donation functionality. Details of Takeoff donations in{' '}
       <a target="_blank" href="https://cybercongress.ai/game-of-links/">
         Game of Links

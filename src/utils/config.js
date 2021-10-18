@@ -79,7 +79,7 @@ const CYBER = {
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostromdev.cybernode.ai/v1/graphql',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
-  MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
+  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;
@@ -109,7 +109,7 @@ const LEDGER = {
   HDPATH: [44, 118, 0, 0, 0],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
-  MEMO: 'cyber.page, using Ledger',
+  MEMO: 'cyb.ai, using Ledger',
 };
 
 const TAKEOFF_SUPPLY = 100000000000000;

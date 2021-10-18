@@ -22,20 +22,20 @@ const initIpfsNode = async () => {
       EXPERIMENTAL: {
         pubsub: true,
       },
-      config: {
-        Addresses: {
-          Swarm: [
-            // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-            '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            '/ip4/159.89.24.179/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
-            '/ip6/2a03:b0c0:3:d0::4ed:8001/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
-          ],
-        },
-        Bootstrap: [
-          '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-          '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-        ],
-      },
+      // config: {
+      //   Addresses: {
+      //     Swarm: [
+      //       // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+      //       '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+      //       // '/ip4/159.89.24.179/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
+      //       // '/ip6/2a03:b0c0:3:d0::4ed:8001/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
+      //     ],
+      //   },
+      //   Bootstrap: [
+      //     '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+      //     '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
+      //   ],
+      // },
     });
     console.log('node init false', node);
     nodeIpfs = node;
@@ -65,20 +65,20 @@ const initIpfsNode = async () => {
       EXPERIMENTAL: {
         pubsub: true,
       },
-      config: {
-        Addresses: {
-          Swarm: [
-            // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
-            '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            '/ip4/159.89.24.179/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
-            '/ip6/2a03:b0c0:3:d0::4ed:8001/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
-          ],
-        },
-        Bootstrap: [
-          '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-          '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-        ],
-      },
+      // config: {
+      //   Addresses: {
+      //     Swarm: [
+      //       // '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star',
+      //       '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
+      //       // '/ip4/159.89.24.179/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
+      //       // '/ip6/2a03:b0c0:3:d0::4ed:8001/tcp/4001/p2p/QmZBfqaL2L92rrTWR2Cdmor3R3EBLaoYzeVLEEwE3AJmWe',
+      //     ],
+      //   },
+      //   Bootstrap: [
+      //     '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+      //     '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
+      //   ],
+      // },
     });
     console.log('node init true', node);
     nodeIpfs = node;
