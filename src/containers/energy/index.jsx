@@ -104,14 +104,14 @@ function RoutedEnergy({ defaultAccount }) {
       <main className="block-body">
         <Statistics
           active={selected}
-          myEnegy={balacesResource.mamper * balacesResource.mvolt}
+          myEnegy={balacesResource.milliampere * balacesResource.millivolt}
           outcome={
-            convertResources(sourceEnergy.mamper) *
-            convertResources(sourceEnergy.mvolt)
+            convertResources(sourceEnergy.milliampere) *
+            convertResources(sourceEnergy.millivolt)
           }
           income={
-            convertResources(destinationEnergy.mamper) *
-            convertResources(destinationEnergy.mvolt)
+            convertResources(destinationEnergy.milliampere) *
+            convertResources(destinationEnergy.millivolt)
           }
         />
         {content}

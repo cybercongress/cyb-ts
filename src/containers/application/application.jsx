@@ -95,6 +95,11 @@ function App({
   const [home, setHome] = useState(false);
   const [openMenu, setOpenMenu] = useState(true);
   const [countLink, setCountLink] = useState(0);
+  let story = false;
+  const localStorageStory = localStorage.getItem('story');
+  if (localStorageStory !== null) {
+    story = localStorageStory;
+  }
 
   useEffect(() => {
     const { pathname } = location;
@@ -195,9 +200,11 @@ function App({
           jsCyber !== null
         ) {
           const { bech32 } = account.cyber;
-          const getBalanceMVOLT = await jsCyber.getBalance(bech32, 'mvolt');
-          if (getBalanceMVOLT.amount) {
-            setCountLink(convertResources(parseFloat(getBalanceMVOLT.amount)));
+          const getBalancemillivolt = await jsCyber.getBalance(bech32, 'millivolt');
+          if (getBalancemillivolt.amount) {
+            setCountLink(
+              convertResources(parseFloat(getBalancemillivolt.amount * 4))
+            );
           } else {
             setCountLink(0);
           }
@@ -256,6 +263,10 @@ function App({
       localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
     }
   };
+
+  // if (!story) {
+  //   return <div>{children}</div>;
+  // }
 
   return (
     <div>
