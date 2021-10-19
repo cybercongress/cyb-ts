@@ -11,7 +11,7 @@ function CyberLinkCount({ accountUser }) {
 
     const GET_CHARACTERS = gql`
    query cyberlink {
-    cyberlinks_aggregate(where: {subject: {_eq: "${accountUser}"}}) {
+    cyberlinks_aggregate(where: {neuron: {_eq: "${accountUser}"}}) {
       aggregate {
         count
       }

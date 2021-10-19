@@ -43,7 +43,7 @@ const ForceGraph = () => {
   useEffect(() => {
     const feachData = async () => {
       if (params.agent) {
-        where = `{subject: {_eq: "${params.agent}"}}`;
+        where = `{neuron: {_eq: "${params.agent}"}}`;
       } else {
         where = '{}';
       }
@@ -52,16 +52,16 @@ const ForceGraph = () => {
         cyberlinks(limit: ${String(
           limit
         )}, order_by: {height: desc}, where: ${where}) {
-          object_from
-          object_to
-          subject
+          particle_from
+          particle_to
+          neuron
           transaction_hash
         }
       }
       `;
       const { cyberlinks } = await getGraphQLQuery(GET_CYBERLINKS);
-      const from = cyberlinks.map((a) => a.object_from);
-      const to = cyberlinks.map((a) => a.object_to);
+      const from = cyberlinks.map((a) => a.particle_from);
+      const to = cyberlinks.map((a) => a.particle_to);
       const set = new Set(from.concat(to));
       const object = [];
       set.forEach(function (value) {
@@ -70,8 +70,8 @@ const ForceGraph = () => {
 
       for (let i = 0; i < cyberlinks.length; i++) {
         cyberlinks[i] = {
-          source: cyberlinks[i].object_from,
-          target: cyberlinks[i].object_to,
+          source: cyberlinks[i].particle_from,
+          target: cyberlinks[i].particle_to,
           name: cyberlinks[i].transaction_hash,
           subject: cyberlinks[i].subject,
           // curvative: getRandomInt(20, 500) / 1000,

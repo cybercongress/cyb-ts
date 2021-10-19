@@ -14,13 +14,13 @@ const useGetDataGql = (nodeIpfs) => {
         const { cyberlinks } = dataGql;
 
         cyberlinks.forEach(async (item) => {
-          const response = await getIndexdDb(item.object_to, nodeIpfs);
+          const response = await getIndexdDb(item.particle_to, nodeIpfs);
           if (response && response !== null) {
             setData((itemData) => [
               ...itemData,
               {
                 to: response,
-                subject: item.subject,
+                subject: item.neuron,
                 txhash: item.transaction_hash,
               },
             ]);

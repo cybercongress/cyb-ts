@@ -21,11 +21,11 @@ import TableLink from '../component/tableLink';
 export default function GetLink({ accountUser }) {
   const GET_CHARACTERS = gql`
     query MyQuery {
-      cyberlinks_aggregate(where: {subject: {_eq: "${accountUser}"}}, order_by: {height: desc}) {
+      cyberlinks_aggregate(where: {neuron: {_eq: "${accountUser}"}}, order_by: {height: desc}) {
     nodes {
       height
-      object_from
-      object_to
+      particle_from
+      particle_to
       timestamp
       transaction_hash
     }
