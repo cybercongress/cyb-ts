@@ -53,8 +53,6 @@ function Teleport({ defaultAccount }) {
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
   const [isExceeded, setIsExceeded] = useState(false);
 
-  console.log(`poolsData`, poolsData)
-
   useEffect(() => {
     const { pathname } = location;
     if (

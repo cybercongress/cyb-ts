@@ -9,6 +9,8 @@ function TabList({ selected }) {
       gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
       gridGap="10px"
       marginBottom={30}
+      maxWidth="390px"
+      marginX="auto"
     >
       <TabBtn
         text="add liquidity"
