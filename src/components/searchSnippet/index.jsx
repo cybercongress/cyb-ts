@@ -36,7 +36,8 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
 
   useEffect(() => {
     const getRank = async () => {
-      if (data.rank === null && jsCyber !== null) {
+      console.log(`data`, data.rank);
+      if ((data.rank === undefined || data.rank === null) && jsCyber !== null) {
         const response = await jsCyber.rank(cid);
 
         const rank = coinDecimals(parseFloat(response.rank));
@@ -59,8 +60,15 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
       timeAgoInMS = time;
     }
   }
+  if (data.timestamp) {
+    const d = new Date();
+    const time = Date.parse(d) - Date.parse(data.timestamp);
+    if (time > 0) {
+      timeAgoInMS = time;
+    }
+  }
 
-  console.log(`rankInfo`, rankInfo)
+  console.log(`rankInfo`, rankInfo);
 
   return (
     <Pane

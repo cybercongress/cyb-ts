@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import ContentItem from '../../ipfs/contentItem';
-import { Rank, NoItems } from '../../../components';
+import { Rank, NoItems, SearchSnippet } from '../../../components';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
@@ -36,6 +36,7 @@ function timeSince(timeMS) {
 }
 
 function FeedsTab({ data, mobile, nodeIpfs }) {
+  const onClickRank = () => {};
   if (data && data.length > 0) {
     const d = new Date();
     return (
@@ -54,43 +55,13 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
               timeAgoInMS = time;
             }
             return (
-              <Pane
-                position="relative"
-                className="hover-rank"
-                display="flex"
-                alignItems="center"
-                marginBottom="10px"
-                key={`${cid}_${i}`}
-              >
-                {!mobile && (
-                  <Pane
-                    className="time-discussion rank-contentItem"
-                    position="absolute"
-                  >
-                    <Rank
-                      hash={item.object_to}
-                      rank="n/a"
-                      grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
-                    />
-                  </Pane>
-                )}
-                <ContentItem
-                  nodeIpfs={nodeIpfs}
-                  cid={cid}
-                  item={item}
-                  className="contentItem-discussion"
-                />
-                <Pane
-                  className="time-discussion rank-contentItem"
-                  position="absolute"
-                  right="0"
-                  fontSize={12}
-                  whiteSpace="nowrap"
-                  top="5px"
-                >
-                  {timeSince(timeAgoInMS)} ago
-                </Pane>
-              </Pane>
+              <SearchSnippet
+                cid={cid}
+                data={item}
+                mobile={mobile}
+                node={nodeIpfs}
+                onClickRank={onClickRank}
+              />
             );
           })}
       </div>
