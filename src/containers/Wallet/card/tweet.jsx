@@ -30,7 +30,7 @@ const STAGE_READY = 3;
 
 const QueryCyberlink = (address, yesterday, time) =>
   `query MyQuery {
-    cyberlink_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {object_from: {_eq: "QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx"}}, {subject: {_in: [${address}]}}]}) {
+    cyberlink_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx"}}, {neuron: {_in: [${address}]}}]}) {
       aggregate {
         count
       }

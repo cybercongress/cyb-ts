@@ -42,6 +42,9 @@ const initState = {
   millivolt: {
     ...initValue,
   },
+  tocyb: {
+    ...initValue,
+  },
 };
 
 function useGetCybernomics() {
@@ -152,6 +155,15 @@ function useGetCybernomics() {
           setCybernomics((item) => ({
             ...item,
             millivolt: {
+              ...value,
+            },
+          }));
+        }
+        if (totalCyb.tocyb) {
+          value.supply = totalCyb.tocyb;
+          setCybernomics((item) => ({
+            ...item,
+            tocyb: {
               ...value,
             },
           }));

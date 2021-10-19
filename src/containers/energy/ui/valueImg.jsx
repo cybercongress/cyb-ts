@@ -5,7 +5,7 @@ const amperImg = require('../../../image/light.png');
 const hydrogen = require('../../../image/hydrogen.svg');
 
 const ValueImg = ({ text, onlyImg }) => {
-  let img;
+  let img = null;
   let textCurency = text;
 
   switch (text) {
@@ -25,19 +25,27 @@ const ValueImg = ({ text, onlyImg }) => {
       break;
 
     default:
-      textCurency = text;
-      img = voltImg;
-      break;
+      if (text.length > 6) {
+        textCurency = text.slice(6);
+        img = null;
+        break;
+      } else {
+        textCurency = text;
+        img = null;
+        break;
+      }
   }
 
   return (
     <div style={{ display: 'flex' }}>
-      {!onlyImg && <span>{textCurency}</span>}
-      <img
-        style={{ marginLeft: 5, width: 20, height: 20, objectFit: 'cover' }}
-        src={img}
-        alt="text"
-      />
+      {!onlyImg && <span>{textCurency.toUpperCase()}</span>}
+      {img !== null && (
+        <img
+          style={{ marginLeft: 5, width: 20, height: 20, objectFit: 'cover' }}
+          src={img}
+          alt="text"
+        />
+      )}
     </div>
   );
 };

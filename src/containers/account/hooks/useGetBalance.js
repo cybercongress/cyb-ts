@@ -155,6 +155,11 @@ function useGetBalance(address, updateAddress) {
           vested: 0,
           total: 0,
         },
+        tocyb: {
+          available: 0,
+          vested: 0,
+          total: 0,
+        },
       };
 
       if (jsCyber !== null && address !== null) {
@@ -181,6 +186,10 @@ function useGetBalance(address, updateAddress) {
         if (balancesToken.hydrogen) {
           initValueTokenAmount.hydrogen.available = balancesToken.hydrogen;
           initValueTokenAmount.hydrogen.total = balancesToken.hydrogen;
+        }
+        if (balancesToken.tocyb) {
+          initValueTokenAmount.tocyb.available = balancesToken.tocyb;
+          initValueTokenAmount.tocyb.total = balancesToken.tocyb;
         }
         // console.log(`vested`, address, vested);
         // console.log(`originalVesting`, address, originalVesting);

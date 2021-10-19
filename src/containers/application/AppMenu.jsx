@@ -78,6 +78,7 @@ const items = [
       { name: 'H', to: '/market/H' },
       { name: 'A', to: '/market/A' },
       { name: 'V', to: '/market/V' },
+      { name: 'TOCYB', to: '/market/TOCYB' },
       { name: 'GOL', to: '/market/GOL' },
       { name: 'CYB', to: '/market/CYB' },
       { name: 'Pools', to: '/market/pools' },

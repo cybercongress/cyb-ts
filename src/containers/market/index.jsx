@@ -61,6 +61,10 @@ const chekPathname = (pathname) => {
     return 'H';
   }
 
+  if (pathname === '/market/TOCYB') {
+    return 'TOCYB';
+  }
+
   if (pathname === '/market/pools') {
     return 'pools';
   }
@@ -79,6 +83,7 @@ function Market({ node, mobile, defaultAccount }) {
     hydrogen,
     milliampere,
     millivolt,
+    tocyb,
     poolsData,
     totalSupplyData,
   } = useGetCybernomics();
@@ -202,6 +207,17 @@ function Market({ node, mobile, defaultAccount }) {
         path="/market/V"
         render={() => (
           <InfoTokens selectedTokens={selectedTokens} data={millivolt} />
+        )}
+      />
+    );
+  }
+
+  if (selectedTokens === 'TOCYB') {
+    content = (
+      <Route
+        path="/market/TOCYB"
+        render={() => (
+          <InfoTokens selectedTokens={selectedTokens} data={tocyb} />
         )}
       />
     );

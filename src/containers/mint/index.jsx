@@ -89,6 +89,7 @@ function Mint({ defaultAccount }) {
   const [max, setMax] = useState(0);
   const [eRatio, setERatio] = useState(0);
   const [resourceToken, setResourceToken] = useState(0);
+  const [height, setHeight] = useState(0);
   const [resourcesParams, setResourcesParams] = useState(null);
 
   useEffect(() => {
@@ -98,13 +99,14 @@ function Mint({ defaultAccount }) {
         responseResourcesParams.params &&
         Object.keys(responseResourcesParams.params).length > 0
       ) {
+        console.log(`responseResourcesParams`, responseResourcesParams);
         const { params } = responseResourcesParams;
         setResourcesParams((item) => ({ ...item, ...params }));
       }
 
       const responseGetHeight = await jsCyber.getHeight();
       if (responseGetHeight > 0) {
-        setResourcesParams((item) => ({ ...item, height: responseGetHeight }));
+        setHeight(responseGetHeight);
       }
     };
     getParam();
@@ -167,7 +169,6 @@ function Mint({ defaultAccount }) {
         baseInvestmintPeriodAmpere,
         halvingPeriodAmpereBlocks: halvingPeriodBlocksAmpere,
         halvingPeriodVoltBlocks: halvingPeriodBlocksVolt,
-        height,
       } = resourcesParams;
       let baseLength = 0;
       let baseAmount = 0;
@@ -184,12 +185,12 @@ function Mint({ defaultAccount }) {
       const vestingTime = valueDays * VESTING_TIME_HOURS;
       const cycles = vestingTime / baseLength;
       const base = hydrogen / baseAmount;
-      const halving = 0.5 * 10 ** (height / halvingPeriod);
+      const halving = 0.5 ** (height / halvingPeriod);
 
       token = Math.floor(cycles * base * halving);
     }
     setResourceToken(token);
-  }, [value, valueDays, selected, resourcesParams]);
+  }, [value, valueDays, selected, resourcesParams, height]);
 
   const updateFunc = () => {
     setValue(0);

@@ -318,20 +318,53 @@ const CYBNetworkInfo = ({
   );
 };
 
+const BalanceToken = ({
+  onClickOpen,
+  open,
+  balanceToken,
+  currency,
+  address,
+}) => {
+  return (
+    <>
+      {' '}
+      <RowBalance
+        onClick={onClickOpen}
+        className="cosmos-address-balance"
+        marginBottom={3}
+      >
+        {open ? (
+          <div>total</div>
+        ) : (
+          <div className="details-balance">details</div>
+        )}
+        {/* <NumberCurrency
+                    amount={balanceToken.hydrogen.total}
+                    currencyNetwork="H"
+                  /> */}
+        <FormatNumberTokens value={balanceToken.total} text={currency} />
+        {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
+      </RowBalance>
+      {open && (
+        <DetailsBalanceTokens
+          total={balanceToken}
+          address={address.bech32}
+          paddingLeft={15}
+          currency={currency}
+        />
+      )}
+    </>
+  );
+};
+
 const EULnetworkInfo = ({
   totalCyber,
   address,
   loading,
   openEul,
-  openAmper,
-  openVolt,
-  openSboot,
   onClickDeleteAddress,
   network,
   balanceToken,
-  onClickOpenSboot,
-  onClickOpenAmper,
-  onClickOpenVolt,
   ...props
 }) => {
   // console.log(`balanceToken`, balanceToken)
@@ -378,41 +411,19 @@ const EULnetworkInfo = ({
               />
             )}
 
-            {balanceToken.hydrogen && (
-              <>
-                {' '}
-                <RowBalance
-                  onClick={onClickOpenSboot}
-                  className="cosmos-address-balance"
-                  marginBottom={3}
-                >
-                  {openSboot ? (
-                    <div>total</div>
-                  ) : (
-                    <div className="details-balance">details</div>
-                  )}
-                  {/* <NumberCurrency
-                    amount={balanceToken.hydrogen.total}
-                    currencyNetwork="H"
-                  /> */}
-                  <FormatNumberTokens
-                    value={balanceToken.hydrogen.total}
-                    text="hydrogen"
-                  />
-                  {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
-                </RowBalance>
-                {openSboot && (
-                  <DetailsBalanceTokens
-                    total={balanceToken.hydrogen}
-                    address={address.bech32}
-                    paddingLeft={15}
-                    currency="hydrogen"
-                  />
-                )}
-              </>
-            )}
+            {Object.keys(balanceToken).map((key) => {
+              return (
+                <BalanceToken
+                  onClickOpen={props[`onClickOpen${key}`]}
+                  open={props[`open${key}`]}
+                  balanceToken={balanceToken[key]}
+                  currency={key}
+                  address={address}
+                />
+              );
+            })}
 
-            {balanceToken.millivolt && (
+            {/* {balanceToken.millivolt && (
               <>
                 <RowBalance
                   onClick={onClickOpenVolt}
@@ -428,7 +439,6 @@ const EULnetworkInfo = ({
                     value={balanceToken.millivolt.total}
                     text="millivolt"
                   />
-                  {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
                 </RowBalance>
                 {openVolt && (
                   <DetailsBalanceTokens
@@ -439,9 +449,9 @@ const EULnetworkInfo = ({
                   />
                 )}
               </>
-            )}
+            )} */}
 
-            {balanceToken.milliampere && (
+            {/* {balanceToken.milliampere && (
               <>
                 <RowBalance
                   onClick={onClickOpenAmper}
@@ -457,7 +467,6 @@ const EULnetworkInfo = ({
                     value={balanceToken.milliampere.total}
                     text="milliampere"
                   />
-                  {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
                 </RowBalance>
                 {openAmper && (
                   <DetailsBalanceTokens
@@ -468,7 +477,7 @@ const EULnetworkInfo = ({
                   />
                 )}
               </>
-            )}
+            )} */}
           </>
         )}
       </Pane>
@@ -488,9 +497,10 @@ const CyberAddressInfo = ({
 }) => {
   // const [openCyber, setOpenCyber] = useState(false);
   const [openEul, setOpenEul] = useState(false);
-  const [openAmper, setOpenAmper] = useState(false);
-  const [openVolt, setOpenVolt] = useState(false);
-  const [openSboot, setOpenSboot] = useState(false);
+  const [openmilliampere, setOpenmilliampere] = useState(false);
+  const [openmillivolt, setOpenmillivolt] = useState(false);
+  const [openhydrogen, setOpenhydrogen] = useState(false);
+  const [opentocyb, setOpentocyb] = useState(false);
   // const { totalGol } = useGetGol(address.bech32);
   // console.log(`balanceToken`, balanceToken)
   return (
@@ -501,15 +511,17 @@ const CyberAddressInfo = ({
         totalCyber={totalCyber}
         onClickDeleteAddress={onClickDeleteAddress}
         openEul={openEul}
-        openAmper={openAmper}
-        openVolt={openVolt}
-        openSboot={openSboot}
+        openmilliampere={openmilliampere}
+        openmillivolt={openmillivolt}
+        openhydrogen={openhydrogen}
+        opentocyb={opentocyb}
         onClick={() => setOpenEul(!openEul)}
         network={network}
         balanceToken={balanceToken}
-        onClickOpenSboot={() => setOpenSboot(!openSboot)}
-        onClickOpenAmper={() => setOpenAmper(!openAmper)}
-        onClickOpenVolt={() => setOpenVolt(!openVolt)}
+        onClickOpenhydrogen={() => setOpenhydrogen(!openhydrogen)}
+        onClickOpentocyb={() => setOpentocyb(!opentocyb)}
+        onClickOpenmilliampere={() => setOpenmilliampere(!openmilliampere)}
+        onClickOpenmillivolt={() => setOpenmillivolt(!openmillivolt)}
       />
       {/* <CYBNetworkInfo
         address={address}
