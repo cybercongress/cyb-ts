@@ -2,27 +2,33 @@ import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { Loading, Dots } from '../../components';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, fromBech32 } from '../../utils/utils';
 
 function useUptime({ accountUser }) {
   try {
     const GET_CHARACTERS = gql`
     query uptime {
-      pre_commit(where: {validator: {consensus_pubkey: {_eq: "${accountUser}"}}}, limit: 1) {
+      pre_commit(where: {validator_address: {_eq: "${fromBech32(
+        accountUser,
+        'bostromvalcons'
+      )}"}}, limit: 1) {
         validator {
           blocks(order_by: {height: asc}, limit: 1) {
             height
           }
         }
       }
-      pre_commit_aggregate(where: {validator: {consensus_pubkey: {_eq: "${accountUser}"}}}) {
-        aggregate {
-          count
-        }
-      }
       block_aggregate(limit: 1, order_by: {height: desc}) {
         nodes {
           height
+        }
+      }
+      pre_commit_aggregate(where: {validator_address: {_eq: "${fromBech32(
+        accountUser,
+        'bostromvalcons'
+      )}"}}) {
+        aggregate {
+          count
         }
       }
     }

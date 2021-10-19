@@ -68,8 +68,6 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
     }
   }
 
-  console.log(`rankInfo`, rankInfo);
-
   return (
     <Pane
       position="relative"

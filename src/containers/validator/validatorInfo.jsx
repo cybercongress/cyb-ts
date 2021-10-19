@@ -88,7 +88,7 @@ const ValidatorInfo = ({ data }) => {
       </Pane>
       <Card
         title="Uptime"
-        value={<UptimeHook accountUser={data.consensus_pubkey} />}
+        value={<UptimeHook accountUser={data.delegateAddress} />}
         stylesContainer={{
           width: '100%',
           maxWidth: 'unset',
