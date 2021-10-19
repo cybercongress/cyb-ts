@@ -87,7 +87,7 @@ function ActionBar({ stateActionBar }) {
 
     const depositCoins = [
       coin(1000000, CYBER.DENOM_CYBER),
-      coin(1500000, 'milliampere'),
+      coin(1500000, 'hydrogen'),
     ];
     console.log(`depositCoins`, depositCoins);
 
@@ -215,7 +215,7 @@ function ActionBar({ stateActionBar }) {
 
     setStage(STAGE_SUBMITTED);
     const offerCoinFee = coin(
-      Math.floor(
+      Math.ceil(
         parseFloat(amountTokenA) *
           coinDecimals(parseFloat(params.swapFeeRate)) *
           0.5
@@ -279,13 +279,13 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'createPool' && stage === STAGE_INIT) {
-    return (
-      <ActionBarContainer>
-        <Button onClick={() => createPool()}>create Pool</Button>
-      </ActionBarContainer>
-    );
-  }
+  // if (stage === STAGE_INIT) {
+  //   return (
+  //     <ActionBarContainer>
+  //       <Button onClick={() => createPool()}>create Pool</Button>
+  //     </ActionBarContainer>
+  //   );
+  // }
 
   if (selectedTab === 'sub-liquidity' && stage === STAGE_INIT) {
     return (
