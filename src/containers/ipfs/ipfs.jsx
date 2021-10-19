@@ -71,6 +71,24 @@ const search = async (client, hash) => {
   }
 };
 
+const reduceParticleArr = (data, query = '') => {
+  return data.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item.particle]: {
+        particle: item.particle,
+        rank: item.rank,
+        grade: getRankGrade(item.rank),
+        status: 'impossibleLoad',
+        query,
+        text: item.particle,
+        content: false,
+      },
+    }),
+    {}
+  );
+};
+
 function Ipfs({ nodeIpfs, mobile }) {
   const { jsCyber } = useContext(AppContext);
   const { cid } = useParams();
@@ -87,6 +105,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [dataToLink, setDataToLink] = useState([]);
   const [dataFromLink, setDataFromLink] = useState([]);
   const [dataAnswers, setDataAnswers] = useState([]);
+  const [dataBacklinks, setDataBacklinks] = useState([]);
   const [creator, setCreator] = useState({
     address: '',
     timestamp: '',
@@ -116,6 +135,24 @@ function Ipfs({ nodeIpfs, mobile }) {
     }
   }, [cid, jsCyber]);
 
+  useEffect(() => {
+    const feachBacklinks = async () => {
+      setDataBacklinks([]);
+      if (jsCyber !== null) {
+        const responseBacklinks = await jsCyber.backlinks(cid);
+        if (
+          responseBacklinks.result &&
+          Object.keys(responseBacklinks.result).length > 0
+        ) {
+          const { result } = responseBacklinks;
+          const reduceArr = reduceParticleArr(result, cid);
+          setDataBacklinks(reduceArr);
+        }
+      }
+    };
+    feachBacklinks();
+  }, [cid, jsCyber]);
+
   const getLinks = () => {
     feacDataSearch();
     feachCidTo();
@@ -139,8 +176,8 @@ function Ipfs({ nodeIpfs, mobile }) {
   const feachCidFrom = async () => {
     const response = await getFromLink(cid);
     if (response !== null && response.txs && response.txs.length > 0) {
-      console.log('response From :>> ', response);
-      const addressCreator = response.txs[0].tx.value.msg[0].value.address;
+      // console.log('response From :>> ', response);
+      const addressCreator = response.txs[0].tx.value.msg[0].value.neuron;
       const timeCreate = response.txs[0].timestamp;
       setCreator({
         address: addressCreator,
@@ -148,7 +185,7 @@ function Ipfs({ nodeIpfs, mobile }) {
       });
       const responseDataFromLink = response.txs.slice();
       responseDataFromLink.reverse();
-      console.log('responseDataFromLink :>> ', responseDataFromLink);
+      // console.log('responseDataFromLink :>> ', responseDataFromLink);
       setDataFromLink(responseDataFromLink);
     }
   };
@@ -158,7 +195,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     const tempArr = [...dataToLink, ...dataFromLink];
     if (tempArr.length > 0) {
       tempArr.forEach((item) => {
-        const subject = item.tx.value.msg[0].value.address;
+        const subject = item.tx.value.msg[0].value.neuron;
         if (dataTemp[subject]) {
           dataTemp[subject].amount += 1;
         } else {
@@ -289,7 +326,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           Backlinks
         </Pane>
         <OptimisationTab
-          data={dataFromLink}
+          data={dataBacklinks}
           mobile={mobile}
           nodeIpfs={nodeIpfs}
         />

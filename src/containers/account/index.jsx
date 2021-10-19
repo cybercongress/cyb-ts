@@ -115,7 +115,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           defaultAccount.account.cyber.bech32,
           addressFromIpfs
         );
-        console.log(`response`, response)
+        console.log(`response`, response);
         if (
           response !== null &&
           response.total_count > 0 &&
