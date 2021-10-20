@@ -60,7 +60,7 @@ function useGetBalance(address, updateAddress) {
             Object.keys(delegationResponses).length > 0
           ) {
             delegationResponses.forEach((itemDelegation) => {
-              delegationsAmount += itemDelegation.balance.amount;
+              delegationsAmount += parseFloat(itemDelegation.balance.amount);
             });
           }
           setBalance((item) => ({

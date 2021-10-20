@@ -17,6 +17,7 @@ import {
   Tooltip,
   LinkWindow,
   NumberCurrency,
+  ValueImg,
 } from '../../../components';
 import {
   trimString,
@@ -31,7 +32,6 @@ import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
-import { ValueImg } from '../../energy/ui';
 
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -56,7 +56,7 @@ const DetailsBalance = ({
       <RowBalance>
         <div>liquid</div>
         {currency === CYBER.DENOM_CYBER ? (
-          <NumberCurrency amount={total.available} currencyNetwork={currency} />
+          <FormatNumberTokens value={total.available} text={currency} />
         ) : (
           <FormatNumber
             number={formatNumber(
@@ -73,10 +73,7 @@ const DetailsBalance = ({
             <Link to="/halloffame">
               <div>staked</div>
             </Link>
-            <NumberCurrency
-              amount={total.delegation}
-              currencyNetwork={currency}
-            />
+            <FormatNumberTokens value={total.delegation} text={currency} />
           </>
         ) : (
           <>
@@ -97,10 +94,7 @@ const DetailsBalance = ({
             <Link to={`network/bostrom/contract/${address}/heroes`}>
               <div>unstaking</div>
             </Link>
-            <NumberCurrency
-              amount={total.unbonding}
-              currencyNetwork={currency}
-            />
+            <FormatNumberTokens value={total.unbonding} text={currency} />
           </>
         ) : (
           <>
@@ -121,7 +115,7 @@ const DetailsBalance = ({
             <Link to={`network/bostrom/contract/${address}/heroes`}>
               <div>rewards</div>
             </Link>
-            <NumberCurrency amount={total.rewards} currencyNetwork={currency} />
+            <FormatNumberTokens value={total.rewards} text={currency} />
           </>
         ) : (
           <>
@@ -141,7 +135,7 @@ const DetailsBalance = ({
 };
 
 const FormatNumberTokens = ({ text, value, ...props }) => (
-  <Pane display="grid" gridTemplateColumns="1fr 45px" gridGap="5px" {...props}>
+  <Pane display="grid" gridTemplateColumns="1fr 65px" gridGap="5px" {...props}>
     <Pane
       // paddingRight={5}
       whiteSpace="nowrap"
@@ -150,7 +144,9 @@ const FormatNumberTokens = ({ text, value, ...props }) => (
     >
       <span>{formatNumber(Math.floor(value))}</span>
     </Pane>
-    <ValueImg text={text} />
+    {text && (
+      <ValueImg marginImg="0 0 0 3px" justifyContent="flex-start" text={text} />
+    )}
   </Pane>
 );
 
@@ -397,9 +393,13 @@ const EULnetworkInfo = ({
               ) : (
                 <div className="details-balance">details</div>
               )}
-              <NumberCurrency
+              {/* <NumberCurrency
                 amount={totalCyber.total}
                 currencyNetwork={CYBER.DENOM_CYBER}
+              /> */}
+              <FormatNumberTokens
+                value={totalCyber.total}
+                text={CYBER.DENOM_CYBER}
               />
               {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
             </RowBalance>

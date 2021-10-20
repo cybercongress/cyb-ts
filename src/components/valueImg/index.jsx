@@ -3,7 +3,8 @@ import React from 'react';
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
 const hydrogen = require('../../image/hydrogen.svg');
-const boot = require('../../image/boot.png');
+const tocyb = require('../../image/boot.png');
+const boot = require('../../image/large-green.png');
 
 const ValueImg = ({
   text,
@@ -11,11 +12,12 @@ const ValueImg = ({
   onlyText,
   marginImg,
   marginContainer,
+  justifyContent,
   zIndexImg,
   size,
   ...props
 }) => {
-  let img;
+  let img = null;
   let textCurency = text;
 
   switch (text) {
@@ -39,10 +41,21 @@ const ValueImg = ({
       textCurency = 'BOOT';
       break;
 
-    default:
-      textCurency = text;
-      img = voltImg;
+    case 'tocyb':
+      img = tocyb;
+      textCurency = 'TOCYB';
       break;
+
+    default:
+      if (text.length > 6) {
+        textCurency = text.slice(6);
+        img = null;
+        break;
+      } else {
+        textCurency = text;
+        img = null;
+        break;
+      }
   }
 
   return (
@@ -50,13 +63,13 @@ const ValueImg = ({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: justifyContent || 'center',
         margin: marginContainer || 0,
       }}
       {...props}
     >
       {!onlyImg && <span>{textCurency}</span>}
-      {!onlyText && (
+      {!onlyText && img !== null && (
         <img
           style={{
             margin: marginImg || 0,

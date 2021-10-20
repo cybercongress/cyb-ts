@@ -31,6 +31,7 @@ const TSX_SEND = 1;
 const BASE_VESTING_AMOUNT = 10000000;
 const BASE_VESTING_TIME = 86400;
 const VESTING_TIME_HOURS = 3600;
+const BASE_MAX_MINT_TIME = 41;
 
 const PREFIXES = [
   {
@@ -87,6 +88,7 @@ function Mint({ defaultAccount }) {
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
   const [max, setMax] = useState(0);
+  const [maxMintTime, setMaxMintTime] = useState(BASE_MAX_MINT_TIME);
   const [eRatio, setERatio] = useState(0);
   const [resourceToken, setResourceToken] = useState(0);
   const [height, setHeight] = useState(0);
@@ -159,6 +161,28 @@ function Mint({ defaultAccount }) {
   }, [balance, vested, originalVesting]);
 
   useEffect(() => {
+    let maxValueTaime = BASE_MAX_MINT_TIME;
+    if (resourcesParams !== null) {
+      const {
+        halvingPeriodAmpereBlocks: halvingPeriodBlocksAmpere,
+        halvingPeriodVoltBlocks: halvingPeriodBlocksVolt,
+      } = resourcesParams;
+      let halvingPeriod = 0;
+      if (selected === 'millivolt') {
+        halvingPeriod = halvingPeriodBlocksVolt;
+      } else {
+        halvingPeriod = halvingPeriodBlocksAmpere;
+      }
+
+      const halving = 2 ** Math.floor(height / halvingPeriod);
+      maxValueTaime = Math.floor(
+        (halvingPeriod * 5 * halving) / VESTING_TIME_HOURS
+      );
+    }
+    setMaxMintTime(maxValueTaime);
+  }, [resourcesParams, height, selected]);
+
+  useEffect(() => {
     let token = 0;
     if (resourcesParams !== null) {
       const hydrogen = value;
@@ -185,7 +209,7 @@ function Mint({ defaultAccount }) {
       const vestingTime = valueDays * VESTING_TIME_HOURS;
       const cycles = vestingTime / baseLength;
       const base = hydrogen / baseAmount;
-      const halving = 0.5 ** (height / halvingPeriod);
+      const halving = 0.5 ** Math.floor(height / halvingPeriod);
 
       token = Math.floor(cycles * base * halving);
     }
@@ -315,10 +339,10 @@ function Mint({ defaultAccount }) {
             <Slider
               value={valueDays}
               min={1}
-              max={168}
+              max={maxMintTime}
               marks={{
                 1: returnColorDot('1 hour'),
-                168: returnColorDot('168 hour'),
+                [maxMintTime]: returnColorDot(`${maxMintTime} hour`),
               }}
               onChange={(eValue) => setValueDays(eValue)}
               trackStyle={{ backgroundColor: '#3ab793' }}
