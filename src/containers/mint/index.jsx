@@ -77,7 +77,7 @@ function Mint({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
-  const { balance } = useGetBalance(addressActive, updateAddress);
+  // const { balance } = useGetBalance(addressActive, updateAddress);
   const {
     slotsData,
     vested,
@@ -93,6 +93,24 @@ function Mint({ defaultAccount }) {
   const [resourceToken, setResourceToken] = useState(0);
   const [height, setHeight] = useState(0);
   const [resourcesParams, setResourcesParams] = useState(null);
+  const [balanceHydrogen, SetBalanceHydrogen] = useState(0);
+
+  useEffect(() => {
+    const getBalanceH = async () => {
+      let amountHydrogen = 0;
+      if (jsCyber !== null && addressActive !== null) {
+        const responseBalance = await jsCyber.getBalance(
+          addressActive,
+          'hydrogen'
+        );
+        if (responseBalance.amount) {
+          amountHydrogen = parseFloat(responseBalance.amount);
+        }
+      }
+      SetBalanceHydrogen(amountHydrogen);
+    };
+    getBalanceH();
+  }, [jsCyber, addressActive]);
 
   useEffect(() => {
     const getParam = async () => {
@@ -136,14 +154,14 @@ function Mint({ defaultAccount }) {
       vestedTokens =
         parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
     }
-    if (balance.delegation > 0) {
-      maxValue = Math.floor(balance.delegation) - vestedTokens;
+    if (balanceHydrogen > 0) {
+      maxValue = Math.floor(balanceHydrogen) - vestedTokens;
     } else {
       maxValue = 0;
     }
 
     setMax(maxValue);
-  }, [balance, vested, originalVesting]);
+  }, [balanceHydrogen, vested, originalVesting]);
 
   useEffect(() => {
     let vestedTokens = 0;
@@ -151,14 +169,14 @@ function Mint({ defaultAccount }) {
       vestedTokens =
         parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
     }
-    if (vestedTokens > 0 && balance.delegation > 0) {
-      const procent = (vestedTokens / balance.delegation) * 100;
+    if (vestedTokens > 0 && balanceHydrogen > 0) {
+      const procent = (vestedTokens / balanceHydrogen) * 100;
       const eRatioTemp = Math.floor(procent * 100) / 100;
       setERatio(eRatioTemp);
     } else {
       setERatio(0);
     }
-  }, [balance, vested, originalVesting]);
+  }, [balanceHydrogen, vested, originalVesting]);
 
   useEffect(() => {
     let maxValueTaime = BASE_MAX_MINT_TIME;
@@ -184,7 +202,7 @@ function Mint({ defaultAccount }) {
 
   useEffect(() => {
     let token = 0;
-    if (resourcesParams !== null) {
+    if (resourcesParams !== null && value > 0 && valueDays > 0) {
       const hydrogen = value;
       const {
         baseInvestmintAmountVolt,
@@ -297,7 +315,11 @@ function Mint({ defaultAccount }) {
             />
             <ItemBalance
               text="Frozen"
-              amount={loadingAuthAccounts ? null : originalVesting.hydrogen}
+              amount={
+                loadingAuthAccounts
+                  ? null
+                  : originalVesting.hydrogen - vested.hydrogen
+              }
               currency={<ValueImg text="hydrogen" />}
             />
           </div>

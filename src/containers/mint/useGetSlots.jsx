@@ -81,7 +81,9 @@ function useGetSlots(addressActive, updateAddress) {
             originalVestingInitAmount.hydrogen = balances.hydrogen;
           }
           if (balances.millivolt) {
-            originalVestingInitAmount.millivolt = convertResources(balances.millivolt);
+            originalVestingInitAmount.millivolt = convertResources(
+              balances.millivolt
+            );
           }
           if (balances.milliampere) {
             originalVestingInitAmount.milliampere = convertResources(
@@ -181,7 +183,10 @@ function useGetSlots(addressActive, updateAddress) {
         // obj.status = 'empty';
         item.amount.forEach((itemAmount) => {
           const amount = {};
-          if (itemAmount.denom === 'millivolt' || itemAmount.denom === 'milliampere') {
+          if (
+            itemAmount.denom === 'millivolt' ||
+            itemAmount.denom === 'milliampere'
+          ) {
             amount[itemAmount.denom] = convertResources(
               parseFloat(itemAmount.amount)
             );

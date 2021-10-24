@@ -14,6 +14,7 @@ const ValueImg = ({
   marginContainer,
   justifyContent,
   zIndexImg,
+  flexDirection,
   size,
   ...props
 }) => {
@@ -65,6 +66,7 @@ const ValueImg = ({
         alignItems: 'center',
         justifyContent: justifyContent || 'center',
         margin: marginContainer || 0,
+        flexDirection: flexDirection || 'unset',
       }}
       {...props}
     >

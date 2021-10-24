@@ -4,6 +4,7 @@ import Iframe from 'react-iframe';
 import { Pane } from '@cybercongress/gravity';
 import CodeBlock from '../codeBlock';
 import { Dots, LinkWindow } from '../../../components';
+import { CYBER } from '../../../utils/config'
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -38,7 +39,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
               // loading={<Dots />}
               id="iframeCid"
               className="iframe-SearchItem"
-              src={`https://io.cybernode.ai/ipfs/${cid}`}
+              src={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`}
               style={{
                 backgroundColor: '#fff',
               }}

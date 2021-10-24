@@ -145,7 +145,12 @@ const FormatNumberTokens = ({ text, value, ...props }) => (
       <span>{formatNumber(Math.floor(value))}</span>
     </Pane>
     {text && (
-      <ValueImg marginImg="0 0 0 3px" justifyContent="flex-start" text={text} />
+      <ValueImg
+        marginImg="0 3px 0 0"
+        flexDirection="row-reverse"
+        justifyContent="flex-end"
+        text={text}
+      />
     )}
   </Pane>
 );
