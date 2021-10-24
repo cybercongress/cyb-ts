@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { TokenSetter } from './components';
-import { ButtonIcon, ValueImg } from '../../components';
+import { ValueImg } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
-import Slider from './components/slider';
+import { ButtonIcon } from './components/slider';
 
-const imgSwap = require('../../image/swap-horizontal.svg');
+const imgSwap = require('../../image/exchange-arrows.svg');
 
 function Swap({ stateSwap, text }) {
   const {
@@ -65,21 +65,23 @@ function Swap({ stateSwap, text }) {
         valueInput={tokenAAmount}
         textLeft={text ? 'Sell' : ''}
       />
-      <Slider
+      {/* <Slider
         id="tokenAAmount"
         tokenA={tokenA}
         tokenB={tokenB}
         tokenAAmount={tokenAAmount}
         accountBalances={accountBalances}
-      />
-      {/* <ButtonIcon
-        onClick={() => tokenChange()}
-        // active={selectMethod === 'ledger'}
-        placement="left"
-        img={imgSwap}
-        text="reverse"
-        style={{ transform: 'rotate(90deg)' }}
       /> */}
+      <ButtonIcon
+        onClick={() => tokenChange()}
+        img={imgSwap}
+        style={{
+          position: 'relative',
+          top: 0,
+          transform: 'unset',
+          left: 0,
+        }}
+      />
       <TokenSetter
         id="tokenBAmount"
         accountBalances={accountBalances}

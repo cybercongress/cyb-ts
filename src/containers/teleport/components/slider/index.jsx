@@ -37,7 +37,7 @@ const Mark = ({ value }) => {
   );
 };
 
-const ButtonIcon = ({ img, disabled, ...props }) => {
+export const ButtonIcon = ({ img, disabled, ...props }) => {
   return (
     <button
       type="button"

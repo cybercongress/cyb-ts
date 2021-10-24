@@ -16,7 +16,7 @@ function TabList({ selected }) {
     <Tablist
       display="grid"
       gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-      gridGap="10px"
+      // gridGap="10px"
       marginBottom={30}
       maxWidth="390px"
       marginX="auto"
@@ -34,18 +34,21 @@ function TabList({ selected }) {
       /> */}
       <ButtonTeleport
         status="left"
+        isSelected={selected === 'add-liquidity'}
         onClick={() => handleHistory('/teleport/add-liquidity')}
       >
         Add liquidity
       </ButtonTeleport>
       <ButtonTeleport
         status="center"
+        isSelected={selected === 'swap'}
         onClick={() => handleHistory('/teleport')}
       >
         Swap
       </ButtonTeleport>
       <ButtonTeleport
         status="right"
+        isSelected={selected === 'sub-liquidity'}
         onClick={() => handleHistory('/teleport/sub-liquidity')}
       >
         Sub liquidity

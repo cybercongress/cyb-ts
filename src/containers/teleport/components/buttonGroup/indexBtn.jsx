@@ -3,21 +3,25 @@ import stylesBtn from './stylesBtn.scss';
 
 const classNames = require('classnames');
 
-function ButtonTeleport({ status, children, ...props }) {
+function ButtonTeleport({ status, children, isSelected, ...props }) {
   return (
     <button
       {...props}
       type="button"
       className={classNames(stylesBtn.teleportBtn, {
-        [stylesBtn.teleportBtnActive]: status === 'center',
+        [stylesBtn.teleportBtnCenter]: status === 'center',
         [stylesBtn.teleportBtnRight]: status === 'right',
         [stylesBtn.teleportBtnLeft]: status === 'left',
+        [stylesBtn.teleportBtnSelected]: isSelected,
+        [stylesBtn.teleportBtnDefault]: !isSelected,
       })}
     >
       <div
         className={classNames(stylesBtn.lampMenu, {
-          [stylesBtn.lampMenuActive]: status === 'center',
-          [stylesBtn.lampMenuActiveLeft]: status === 'center',
+          [stylesBtn.teleportBtnSelected]: isSelected,
+          [stylesBtn.teleportBtnDefault]: !isSelected,
+          [stylesBtn.lampMenuCenter]: status === 'center',
+          [stylesBtn.lampMenuCenterLeft]: status === 'center',
           // state for RIGHT menu button
           [stylesBtn.lampMenuRight]: status === 'right',
           // state for LEFT Lamp when menu button -> RIGHT
@@ -30,8 +34,10 @@ function ButtonTeleport({ status, children, ...props }) {
       />
       <div
         className={classNames(stylesBtn.lampMenu, {
-          [stylesBtn.lampMenuActive]: status === 'center',
-          [stylesBtn.lampMenuActiveRight]: status === 'center',
+          [stylesBtn.teleportBtnSelected]: isSelected,
+          [stylesBtn.teleportBtnDefault]: !isSelected,
+          [stylesBtn.lampMenuCenter]: status === 'center',
+          [stylesBtn.lampMenuCenterRight]: status === 'center',
           // state for RIGHT menu button
           [stylesBtn.lampMenuRight]: status === 'right',
           // state for RIGHT Lamp when menu button -> RIGHT

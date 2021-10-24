@@ -7,7 +7,6 @@ const tocyb = require('../../image/boot.png');
 const boot = require('../../image/large-green.png');
 const downOutline = require('../../image/chevronDownOutline.svg');
 
-
 const ValueImg = ({
   text,
   onlyImg,
