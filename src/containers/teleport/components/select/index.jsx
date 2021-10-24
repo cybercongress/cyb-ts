@@ -1,61 +1,119 @@
-import React, { useContext, useEffect, useState } from 'react';
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  Children,
+} from 'react';
 import { Dots, ValueImg } from '../../../../components';
+import { LinearGradientContainer } from '../input';
+import styles from './styles.scss';
+import { reduceTextCoin } from '../../utils';
+import { SelectContext, useSelectContext } from './selectContext';
 
-const reduceTextCoin = (text) => {
-  switch (text) {
-    case 'millivolt':
-      return 'V';
+const classNames = require('classnames');
 
-    case 'milliampere':
-      return 'A';
+const useOnClickOutside = (ref, handler) => {
+  useEffect(() => {
+    const listener = (event) => {
+      const el = ref?.current;
+      if (!el || el.contains(event?.target || null)) {
+        return;
+      }
 
-    case 'hydrogen':
-      return 'H';
+      handler(event); // Call the handler only if the click is outside of the element passed.
+    };
 
-    case 'boot':
-      return 'BOOT';
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
 
-    default:
-      return text;
-  }
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
 };
 
-const Select = ({ data, selected, valueSelect, onChangeSelect }) => {
-  let items = {};
+export const OptionSelect = ({ text, img, value, ...props }) => {
+  const { changeSelectedOption } = useSelectContext();
+  return (
+    <div
+      className={styles.listItem}
+      onClick={() => changeSelectedOption(value)}
+    >
+      <div className={styles.bgrImg}>{img || ''}</div>
+      {text}
+    </div>
+  );
+};
 
-  if (data === null) {
-    items = <option value="">pick token</option>;
-  } else {
-    items = (
-      <>
-        <option value="">pick token</option>
-        {Object.keys(data)
-          .filter((item) => item.indexOf('pool') === -1 && item !== selected)
-          .map((key) => (
-            <option
-              key={key}
-              value={key}
-              // style={{
-              //   backgroundImage: `url(${tokenImg(key)})`,
-              // }}
-            >
-              {reduceTextCoin(key)}
-            </option>
-          ))}
-      </>
-    );
-  }
+const Select = ({
+  valueSelect,
+  textSelectValue,
+  imgSelectValue,
+  onChangeSelect,
+  children,
+}) => {
+  const selectContainerRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const toggling = () => setIsOpen((value) => !value);
+
+  const clickOutsideHandler = () => setIsOpen(false);
+
+  const updateSelectedOption = (option) => {
+    onChangeSelect(option);
+    setIsOpen(false);
+  };
+
+  useOnClickOutside(selectContainerRef, clickOutsideHandler);
 
   return (
-    <select
-      style={{
-        width: '120px',
+    <SelectContext.Provider
+      value={{
+        selectedOption: valueSelect,
+        changeSelectedOption: updateSelectedOption,
       }}
-      value={valueSelect}
-      onChange={onChangeSelect}
     >
-      {items}
-    </select>
+      <div className={styles.dropDown} ref={selectContainerRef}>
+        <div className={styles.dropDownContainer}>
+          <div onClick={toggling} className={styles.dropDownContainerHeader}>
+            <div className={styles.dropDownHeader}>
+              {valueSelect === '' ? (
+                <OptionSelect
+                  text="choose"
+                  img={<ValueImg text="choose" onlyImg />}
+                  value=""
+                />
+              ) : (
+                <OptionSelect
+                  text={reduceTextCoin(textSelectValue)}
+                  img={
+                    imgSelectValue || (
+                      <ValueImg text={textSelectValue} onlyImg />
+                    )
+                  }
+                  value={valueSelect}
+                />
+              )}
+            </div>
+            <LinearGradientContainer />
+          </div>
+          {isOpen && (
+            <div className={styles.dropDownListContainer}>
+              <div className={styles.dropDownList}>{children}</div>
+              <div
+                className={classNames(
+                  styles.ListContainer,
+                  styles.dropDownBottomLine
+                )}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </SelectContext.Provider>
   );
 };
 

@@ -336,6 +336,7 @@ function Teleport({ defaultAccount }) {
           display="flex"
           alignItems="center"
           flexDirection="column"
+          height="60vh"
         >
           {content}
         </Pane>

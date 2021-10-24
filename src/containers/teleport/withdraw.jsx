@@ -1,43 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { Pane, Input } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { ButtonIcon, ValueImg, Dots } from '../../components';
 import BalanceToken from './components/balanceToken';
+import Input from './components/input';
+import Select, { OptionSelect } from './components/select';
+
+const groupImgToken = (pool) => (
+  <div style={{ display: 'flex' }}>
+    <ValueImg text={pool.reserveCoinDenoms[0]} onlyImg />
+    <ValueImg
+      text={pool.reserveCoinDenoms[1]}
+      onlyImg
+      zIndexImg={1}
+      marginContainer="0px 0px 0px -15px"
+    />
+  </div>
+);
 
 const renderOptions = (data) => {
   let items = {};
-  if (data === null) {
-    items = (
-      <option value="">
-        <Dots />
-      </option>
-    );
-  } else {
+  if (data !== null) {
     items = (
       <>
-        <option value="">pick token</option>
         {Object.keys(data).map((key) => (
-          <option key={key} value={key}>
-            {data[key].coinDenom}
-          </option>
+          <OptionSelect
+            key={key}
+            value={key}
+            text={data[key].coinDenom}
+            img={groupImgToken(data[key])}
+          />
+          // <option key={key} value={key}>
+          //   {data[key].coinDenom}
+          // </option>
         ))}
       </>
     );
   }
   return items;
-};
-
-const Select = ({ option, valueSelect, onChangeSelect }) => {
-  return (
-    <select
-      style={{
-        width: '120px',
-      }}
-      value={valueSelect}
-      onChange={onChangeSelect}
-    >
-      {option}
-    </select>
-  );
 };
 
 function Withdraw({ stateSwap }) {
@@ -59,13 +58,29 @@ function Withdraw({ stateSwap }) {
     >
       <Pane>
         <BalanceToken data={accountBalances} token={selectMyPool} />
-        <Pane display="flex" alignItems="center" marginBottom={20}>
+        <Pane
+          display="grid"
+          gridTemplateColumns="153px 170px"
+          gridGap="27px"
+          alignItems="center"
+          marginBottom={20}
+        >
           {/* <Pane fontSize="18px">{textLeft}</Pane> */}
-          <Select
-            option={renderOptions(myPools)}
-            valueSelect={selectMyPool}
-            onChangeSelect={(e) => setSelectMyPool(e.target.value)}
-          />
+          <Pane display="flex" alignItems="center">
+            <Pane width="33px" fontSize="20px" paddingBottom={10} />
+            <Select
+              valueSelect={selectMyPool}
+              textSelectValue={
+                selectMyPool !== '' ? myPools[selectMyPool].coinDenom : ''
+              }
+              imgSelectValue={
+                selectMyPool !== '' ? groupImgToken(myPools[selectMyPool]) : ''
+              }
+              onChangeSelect={(value) => setSelectMyPool(value)}
+            >
+              {renderOptions(myPools)}
+            </Select>
+          </Pane>
           <Input
             // id={id}
             value={amountPoolCoin}

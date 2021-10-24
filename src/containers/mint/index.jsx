@@ -133,6 +133,18 @@ function Mint({ defaultAccount }) {
   }, [jsCyber]);
 
   useEffect(() => {
+    const getParam = async () => {
+      if (jsCyber !== null) {
+        const responseEnergyParams = await jsCyber.energyParams();
+        console.log(`responseEnergyParams`, responseEnergyParams);
+        const responseResourcesParams = await jsCyber.resourcesParams();
+        console.log(`responseResourcesParams`, responseResourcesParams);
+      }
+    };
+    getParam();
+  }, [jsCyber]);
+
+  useEffect(() => {
     const { account } = defaultAccount;
     let addressPocket = null;
     if (

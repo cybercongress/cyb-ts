@@ -33,10 +33,11 @@ export async function createClient(signer) {
       editRouteAlias: 128000,
       deleteRoute: 128000,
     };
-    const options = { gasPrice, gasLimits };
+    const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
     const client = await SigningCyberClient.connectWithSigner(
       CYBER.CYBER_NODE_URL_API,
-      signer
+      signer,
+      options
     );
 
     // client.firstAddress = firstAddress;

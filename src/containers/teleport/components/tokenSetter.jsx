@@ -1,7 +1,38 @@
 import React from 'react';
-import { Pane, Input } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import BalanceToken from './balanceToken';
-import Select from './select';
+import Select, { OptionSelect } from './select';
+import Input from './input';
+import { reduceTextCoin } from '../utils';
+import { ValueImg } from '../../../components';
+
+const renderOptions = (data, selected, valueSelect) => {
+  let items = {};
+
+  if (data !== null) {
+    items = (
+      <>
+        {Object.keys(data)
+          .filter(
+            (item) =>
+              item.indexOf('pool') === -1 &&
+              item !== selected &&
+              item !== valueSelect
+          )
+          .map((key) => (
+            <OptionSelect
+              key={key}
+              value={key}
+              text={reduceTextCoin(key)}
+              img={<ValueImg text={key} onlyImg />}
+            />
+          ))}
+      </>
+    );
+  }
+
+  return items;
+};
 
 function TokenSetter({
   accountBalances,
@@ -16,14 +47,25 @@ function TokenSetter({
   return (
     <Pane>
       <BalanceToken data={accountBalances} token={token} />
-      <Pane display="flex" alignItems="center" marginBottom={20}>
-        <Pane fontSize="18px">{textLeft}</Pane>
-        <Select
-          data={accountBalances}
-          valueSelect={token}
-          selected={selected}
-          onChangeSelect={(e) => onChangeSelect(e.target.value)}
-        />
+      <Pane
+        display="grid"
+        gridTemplateColumns="153px 170px"
+        gridGap="27px"
+        alignItems="center"
+        marginBottom={20}
+      >
+        <Pane display="flex" alignItems="center">
+          <Pane width="33px" fontSize="20px" paddingBottom={10}>
+            {textLeft}
+          </Pane>
+          <Select
+            valueSelect={token}
+            textSelectValue={token !== '' ? token : ''}
+            onChangeSelect={(item) => onChangeSelect(item)}
+          >
+            {renderOptions(accountBalances, selected, token)}
+          </Select>
+        </Pane>
         <Input
           id={id}
           value={valueInput}

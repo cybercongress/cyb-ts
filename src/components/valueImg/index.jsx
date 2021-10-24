@@ -5,6 +5,8 @@ const amperImg = require('../../image/light.png');
 const hydrogen = require('../../image/hydrogen.svg');
 const tocyb = require('../../image/boot.png');
 const boot = require('../../image/large-green.png');
+const downOutline = require('../../image/chevronDownOutline.svg');
+
 
 const ValueImg = ({
   text,
@@ -47,6 +49,11 @@ const ValueImg = ({
       textCurency = 'TOCYB';
       break;
 
+    case 'choose':
+      img = downOutline;
+      textCurency = 'choose';
+      break;
+
     default:
       if (text.length > 6) {
         textCurency = text.slice(6);
@@ -77,7 +84,7 @@ const ValueImg = ({
             margin: marginImg || 0,
             width: size || 20,
             height: size || 20,
-            objectFit: 'contain',
+            // objectFit: 'cover',
             zIndex: zIndexImg || 0,
           }}
           src={img}
