@@ -120,7 +120,7 @@ const MultiSend = ({ msg }) => {
 
 const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
   <ContainerMsgsType type={msg.type}>
-    <Row title="Address" value={<Account address={msg.value.address} />} />
+    <Row title="Address" value={<Account address={msg.value.neuron} />} />
     {msg.value.links
       .slice(0, seeAll ? msg.value.length : 1)
       .map((item, index) => (
