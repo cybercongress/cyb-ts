@@ -39,39 +39,13 @@ const TableDiscipline = ({ address }) => {
               padding: 7,
             }}
           >
-            <RowTable
-              text="takeoff"
-              cybWon={formatNumber(Math.floor(resultGol.takeoff))}
-            />
-            <RowTable
-              text="relevance"
-              cybWon={formatNumber(Math.floor(resultGol.relevance))}
-            />
-            <RowTable
-              text="load"
-              cybWon={formatNumber(Math.floor(resultGol.load))}
-            />
-            <RowTable
-              text="delegation"
-              cybWon={formatNumber(Math.floor(resultGol.delegation))}
-            />
-            <RowTable
-              text="lifetime"
-              cybWon={formatNumber(Math.floor(resultGol.lifetime))}
-            />
-            <RowTable
-              text="euler 4 rewards"
-              cybWon={formatNumber(Math.floor(resultGol['euler-4']))}
-            />
-            <RowTable text="full validator set" cybWon={0} />
-            <RowTable
-              text="community pool"
-              cybWon={formatNumber(Math.floor(resultGol.comm_pool))}
-            />
-            <RowTable
-              text="total"
-              cybWon={formatNumber(Math.floor(resultGol.sum))}
-            />
+            {Object.keys(resultGol).length > 0 &&
+              Object.keys(resultGol).map((key) => (
+                <RowTable
+                  text={key}
+                  cybWon={formatNumber(Math.floor(resultGol[key]))}
+                />
+              ))}
           </Table.Body>
         </Table>
       </Pane>
