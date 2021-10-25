@@ -132,7 +132,7 @@ function Market({ node, mobile, defaultAccount }) {
                 particle: item.particle,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
-                status: node !== null ? 'understandingState' : 'impossibleLoad',
+                status: 'impossibleLoad',
                 query: selectedTokens,
                 text: item.particle,
                 content: false,

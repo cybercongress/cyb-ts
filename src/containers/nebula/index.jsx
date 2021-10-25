@@ -77,7 +77,7 @@ function Nebula({ node, mobile, defaultAccount }) {
                 particle: item.particle,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
-                status: node !== null ? 'understandingState' : 'impossibleLoad',
+                status: 'impossibleLoad',
                 query: querySearch,
                 text: item.particle,
                 content: false,

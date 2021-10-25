@@ -96,7 +96,7 @@ function Brain({ node, mobile, defaultAccount }) {
                 cid: item.cid,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
-                status: node !== null ? 'understandingState' : 'impossibleLoad',
+                status: 'impossibleLoad',
                 query: 'apps',
                 text: item.cid,
                 content: false,

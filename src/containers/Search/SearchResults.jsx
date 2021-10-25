@@ -79,7 +79,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
                 particle: item.particle,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
-                status: node !== null ? 'understandingState' : 'impossibleLoad',
+                status: 'impossibleLoad',
                 query,
                 text: item.particle,
                 content: false,

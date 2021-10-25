@@ -102,9 +102,6 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           setStatus('availableDownload');
           setText(cid);
         }
-      } else {
-        setText(cid);
-        setStatus('impossibleLoad');
       }
     };
     feachData();

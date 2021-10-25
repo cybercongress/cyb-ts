@@ -122,13 +122,13 @@ const Home = ({ node, mobile, defaultAccount }) => {
           const dataApps = responseApps.reduce(
             (obj, item) => ({
               ...obj,
-              [item.particles]: {
-                particles: item.particles,
+              [item.particle]: {
+                particle: item.particle,
                 rank: item.rank,
                 grade: getRankGrade(item.rank),
-                status: node !== null ? 'understandingState' : 'impossibleLoad',
+                status: 'impossibleLoad',
                 query: 'superintelligence',
-                text: item.particles,
+                text: item.particle,
                 content: false,
               },
             }),

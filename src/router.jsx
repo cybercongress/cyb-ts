@@ -46,6 +46,8 @@ import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
 
+import useIpfsFactory from './useIpfsFactory';
+
 import { TIME_START, CYBER } from './utils/config';
 
 export const history = createBrowserHistory({});
@@ -56,6 +58,7 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
+  // const dataIpfsStart = useIpfsFactory();
   const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
@@ -69,7 +72,7 @@ function AppRouter({
     setIpfsStatusProps(dataIpfsStart.status);
     setTypeDeviceProps(dataIpfsStart.mobile);
     setIpfsIDProps(dataIpfsStart.id);
-    setLoader(dataIpfsStart.loader);
+    // setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
 
   // eslint-disable-next-line no-lone-blocks

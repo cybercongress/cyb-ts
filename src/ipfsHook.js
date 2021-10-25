@@ -112,19 +112,19 @@ const useIpfsStart = () => {
       setMobile(isMobile);
       //     setLoader(false);
       // //     console.log('DetectRTC.isWebRTCSupported', DetectRTC.isWebRTCSupported);
-      if (!isMobile) {
-        if (DetectRTC.isWebRTCSupported && !isSafari) {
-          const data = await initIpfsNode();
-          setNode(data.nodeIpfs);
-          setStatus(data.ipfsStatus);
-          setLoader(false);
-          setId(data.id);
-        } else {
-          setLoader(false);
-        }
-      } else {
-        setLoader(false);
-      }
+      // if (!isMobile) {
+      //   if (DetectRTC.isWebRTCSupported && !isSafari) {
+      const data = await initIpfsNode();
+      setNode(data.nodeIpfs);
+      setStatus(data.ipfsStatus);
+      setLoader(false);
+      setId(data.id);
+      //   } else {
+      //     setLoader(false);
+      //   }
+      // } else {
+      //   setLoader(false);
+      // }
     };
     init();
   }, []);

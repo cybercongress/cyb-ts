@@ -8,7 +8,6 @@ import { ValueImg } from '../../../components';
 
 const renderOptions = (data, selected, valueSelect) => {
   let items = {};
-
   if (data !== null) {
     items = (
       <>

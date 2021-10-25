@@ -120,7 +120,7 @@ const useGetTweets = (defaultAccount, node = null) => {
         (obj, item) => ({
           ...obj,
           [item.tx.value.msg[0].value.links[0].to]: {
-            status: node !== null ? 'understandingState' : 'impossibleLoad',
+            status: 'impossibleLoad',
             text: item.tx.value.msg[0].value.links[0].to,
             address: item.tx.value.msg[0].value.address,
             content: false,
@@ -171,7 +171,7 @@ const useGetTweets = (defaultAccount, node = null) => {
     ) {
       setTweets((item) => ({
         [objectTo]: {
-          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          status: 'impossibleLoad',
           text: objectTo,
           address: subject,
           content: false,
