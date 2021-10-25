@@ -26,7 +26,7 @@ import ButtonImgText from '../Button/buttonImgText';
 
 import { i18n } from '../../i18n/en';
 
-import { CYBER } from '../../utils/config';
+import { CYBER, BOND_STATUS } from '../../utils/config';
 
 const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
 
@@ -982,20 +982,19 @@ export const ReDelegate = ({
 }) => (
   <ActionBar>
     <ActionBarContentText>
-      <Text fontSize="16px" color="#fff">
+      <Text marginRight={5} fontSize="16px" color="#fff">
         Enter the amount{' '}
-        <input
-          value={toSend}
-          autoFocus
-          style={{
-            height: 32,
-            width: '70px',
-            margin: '0px 5px',
-            textAlign: 'end',
-          }}
-          onChange={onChangeInputAmount}
-          placeholder="amount"
-        />{' '}
+      </Text>
+      <Input
+        value={toSend}
+        autoFocus
+        height="32px"
+        width="70px"
+        textAlign="end"
+        onChange={onChangeInputAmount}
+        placeholder="amount"
+      />
+      <Text marginLeft={5} fontSize="16px" color="#fff">
         {DENOM_CYBER.toUpperCase()} restake from{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
           {validators.description.moniker}
@@ -1013,14 +1012,17 @@ export const ReDelegate = ({
       >
         <option value="">pick hero</option>
         {validatorsAll
-          .filter((validator) => validator.status > 0)
+          .filter(
+            (validator) =>
+              BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
+          )
           .map((item) => (
             <option
-              key={item.operator_address}
-              value={item.operator_address}
+              key={item.operatorAddress}
+              value={item.operatorAddress}
               style={{
                 display:
-                  validators.operator_address === item.operator_address
+                  validators.operatorAddress === item.operatorAddress
                     ? 'none'
                     : 'block',
               }}

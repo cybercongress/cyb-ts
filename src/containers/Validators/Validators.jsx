@@ -7,16 +7,7 @@ import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, TextBoard, TabBtnList } from './components';
 import { AppContext } from '../../context';
 import getHeroes from './getHeroesHook';
-
-const status = {
-  BOND_STATUS_UNSPECIFIED: 0,
-  /** BOND_STATUS_UNBONDED - UNBONDED defines a validator that is not bonded. */
-  BOND_STATUS_UNBONDED: 1,
-  /** BOND_STATUS_UNBONDING - UNBONDING defines a validator that is unbonding. */
-  BOND_STATUS_UNBONDING: 2,
-  /** BOND_STATUS_BONDED - BONDED defines a validator that is bonded. */
-  BOND_STATUS_BONDED: 3,
-};
+import { BOND_STATUS } from '../../utils/config';
 
 function Validators({ mobile, defaultAccount }) {
   const location = useLocation();
@@ -205,8 +196,8 @@ function Validators({ mobile, defaultAccount }) {
           {validatorsData
             .filter((validator) =>
               selected === 'jailed'
-                ? status[validator.status] < 3
-                : status[validator.status] === 3
+                ? BOND_STATUS[validator.status] < 3
+                : BOND_STATUS[validator.status] === 3
             )
             .map((validator, index) => {
               const commission = formatNumber(

@@ -192,6 +192,16 @@ const VOTE_OPTION = {
   UNRECOGNIZED: -1,
 };
 
+const BOND_STATUS = {
+  BOND_STATUS_UNSPECIFIED: 0,
+  /** BOND_STATUS_UNBONDED - UNBONDED defines a validator that is not bonded. */
+  BOND_STATUS_UNBONDED: 1,
+  /** BOND_STATUS_UNBONDING - UNBONDING defines a validator that is unbonding. */
+  BOND_STATUS_UNBONDING: 2,
+  /** BOND_STATUS_BONDED - BONDED defines a validator that is bonded. */
+  BOND_STATUS_BONDED: 3,
+};
+
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
@@ -232,4 +242,5 @@ export {
   DEFAULT_GAS_LIMITS,
   PROPOSAL_STATUS,
   VOTE_OPTION,
+  BOND_STATUS,
 };
