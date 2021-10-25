@@ -58,7 +58,7 @@ const Select = ({
 }) => {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const toggling = () => setIsOpen((value) => !value);
+  const toggling = () => setIsOpen(!isOpen);
 
   const clickOutsideHandler = () => setIsOpen(false);
 
@@ -102,7 +102,10 @@ const Select = ({
           </div>
           {isOpen && (
             <div className={styles.dropDownListContainer}>
-              <div className={styles.dropDownList}>{children}</div>
+              <div className={styles.dropDownList}>
+                {Object.keys(children).length > 0 ? children : ''}
+              </div>
+
               <div
                 className={classNames(
                   styles.ListContainer,
