@@ -35,6 +35,7 @@ const renderOptions = (data, selected, valueSelect) => {
 
 function TokenSetter({
   accountBalances,
+  totalSupply,
   selected,
   token,
   onChangeSelect,
@@ -62,7 +63,7 @@ function TokenSetter({
             textSelectValue={token !== '' ? token : ''}
             onChangeSelect={(item) => onChangeSelect(item)}
           >
-            {renderOptions(accountBalances, selected, token)}
+            {renderOptions(totalSupply, selected, token)}
           </Select>
         </Pane>
         <Input

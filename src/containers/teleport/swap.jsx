@@ -7,9 +7,10 @@ import { ButtonIcon } from './components/slider';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
-function Swap({ stateSwap, text }) {
+function Swap({ stateSwap, swap }) {
   const {
     accountBalances,
+    totalSupply,
     tokenB,
     setTokenB,
     tokenBAmount,
@@ -58,12 +59,13 @@ function Swap({ stateSwap, text }) {
       <TokenSetter
         id="tokenAAmount"
         accountBalances={accountBalances}
+        totalSupply={totalSupply}
         selected={tokenB}
         token={tokenA}
         onChangeSelect={setTokenA}
         onChangeInput={amountChangeHandler}
         valueInput={tokenAAmount}
-        textLeft={text ? 'Sell' : ''}
+        textLeft={swap ? 'Sell' : ''}
       />
       {/* <Slider
         id="tokenAAmount"
@@ -85,12 +87,13 @@ function Swap({ stateSwap, text }) {
       <TokenSetter
         id="tokenBAmount"
         accountBalances={accountBalances}
+        totalSupply={totalSupply}
         token={tokenB}
         selected={tokenA}
         onChangeSelect={setTokenB}
         onChangeInput={amountChangeHandler}
         valueInput={tokenBAmount}
-        textLeft={text ? 'Buy' : ''}
+        textLeft={swap ? 'Buy' : ''}
       />
       <Pane
         display="flex"

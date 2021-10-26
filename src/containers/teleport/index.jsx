@@ -47,7 +47,7 @@ function Teleport({ defaultAccount }) {
   const [swapPrice, setSwapPrice] = useState(0);
   const [tokenPrice, setTokenPrice] = useState(null);
   const [selectedTab, setSelectedTab] = useState('swap');
-  // const [totalSupply, setTotalSupply] = useState(null);
+  const [totalSupply, setTotalSupply] = useState(null);
   const [myPools, setMyPools] = useState({});
   const [selectMyPool, setSelectMyPool] = useState('');
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
@@ -95,16 +95,18 @@ function Teleport({ defaultAccount }) {
     getBalances();
   }, [jsCyber, addressActive, update]);
 
-  // useEffect(() => {
-  //   const getTotalSupply = async () => {
-  //     if (jsCyber !== null) {
-  //       const responseTotalSupply = await jsCyber.totalSupply();
-  //       const data = reduceBalances(responseTotalSupply);
-  //       setTotalSupply(data);
-  //     }
-  //   };
-  //   getTotalSupply();
-  // }, [jsCyber]);
+  useEffect(() => {
+    const getTotalSupply = async () => {
+      if (jsCyber !== null) {
+        const responseTotalSupply = await jsCyber.totalSupply();
+
+        const datareduceTotalSupply = reduceBalances(responseTotalSupply);
+        console.log(`reduceBalances`, datareduceTotalSupply);
+        setTotalSupply(datareduceTotalSupply);
+      }
+    };
+    getTotalSupply();
+  }, [jsCyber]);
 
   useEffect(() => {
     let orderPrice = 0;
@@ -175,6 +177,29 @@ function Teleport({ defaultAccount }) {
       setMyPools(poolTokenDataIndexer);
     }
   }, [accountBalances, poolsData]);
+
+  useEffect(() => {
+    let exceeded = true;
+    if (accountBalances !== null) {
+      if (
+        selectedTab === 'swap' &&
+        Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
+        accountBalances[tokenA] > 0
+      ) {
+        exceeded = false;
+      }
+      if (
+        selectedTab === 'add-liquidity' &&
+        Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
+        Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
+        accountBalances[tokenA] > 0 &&
+        accountBalances[tokenB] > 0
+      ) {
+        exceeded = false;
+      }
+    }
+    setIsExceeded(exceeded);
+  }, [accountBalances, tokenA, tokenB, selectedTab]);
 
   function getMyTokenBalanceNumber(denom, indexer) {
     return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
@@ -276,6 +301,7 @@ function Teleport({ defaultAccount }) {
 
   const stateSwap = {
     accountBalances,
+    totalSupply,
     tokenB,
     setTokenB,
     tokenBAmount,
@@ -303,7 +329,7 @@ function Teleport({ defaultAccount }) {
     content = (
       <Route
         path="/teleport"
-        render={() => <Swap text stateSwap={stateSwap} />}
+        render={() => <Swap swap stateSwap={stateSwap} />}
       />
     );
   }
