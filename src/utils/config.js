@@ -71,7 +71,7 @@ const CYBER = {
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
-  CHAIN_ID: 'bostrom-testnet-6',
+  CHAIN_ID: 'bostrom-testnet-7',
   CYBER_NODE_URL_API: 'https://rpc.bostromdev.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostromdev.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
