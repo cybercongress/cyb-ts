@@ -11,7 +11,7 @@ import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
-import PoolData from './poolData';
+import PoolData from '../teleport/poolData';
 import { reduceBalances } from '../../utils/utils';
 
 const ContainerGrid = ({ children }) => (
@@ -37,36 +37,32 @@ const search = async (client, hash) => {
 };
 
 const chekPathname = (pathname) => {
-  if (pathname === '/market') {
+  if (pathname === '/token/BOOT') {
     return 'BOOT';
   }
 
-  if (pathname === '/market/CYB') {
+  if (pathname === '/token/CYB') {
     return 'CYB';
   }
 
-  if (pathname === '/market/A') {
+  if (pathname === '/token/A') {
     return 'A';
   }
 
-  if (pathname === '/market/V') {
+  if (pathname === '/token/V') {
     return 'V';
   }
 
-  if (pathname === '/market/GOL') {
+  if (pathname === '/token/GOL') {
     return 'GOL';
   }
 
-  if (pathname === '/market/H') {
+  if (pathname === '/token/H') {
     return 'H';
   }
 
-  if (pathname === '/market/TOCYB') {
+  if (pathname === '/token/TOCYB') {
     return 'TOCYB';
-  }
-
-  if (pathname === '/market/pools') {
-    return 'pools';
   }
 
   return 'BOOT';
@@ -84,8 +80,6 @@ function Market({ node, mobile, defaultAccount }) {
     milliampere,
     millivolt,
     tocyb,
-    poolsData,
-    totalSupplyData,
   } = useGetCybernomics();
   const [selectedTokens, setSelectedTokens] = useState('BOOT');
   const [resultSearch, setResultSearch] = useState([]);
@@ -171,7 +165,7 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'BOOT') {
     content = (
       <Route
-        path="/market"
+        path="/token"
         render={() => (
           <InfoTokens selectedTokens={selectedTokens} data={boot} />
         )}
@@ -182,7 +176,7 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'H') {
     content = (
       <Route
-        path="/market/H"
+        path="/token/H"
         render={() => (
           <InfoTokens selectedTokens={selectedTokens} data={hydrogen} />
         )}
@@ -193,7 +187,7 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'A') {
     content = (
       <Route
-        path="/market/A"
+        path="/token/A"
         render={() => (
           <InfoTokens selectedTokens={selectedTokens} data={milliampere} />
         )}
@@ -204,7 +198,7 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'V') {
     content = (
       <Route
-        path="/market/V"
+        path="/token/V"
         render={() => (
           <InfoTokens selectedTokens={selectedTokens} data={millivolt} />
         )}
@@ -215,7 +209,7 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'TOCYB') {
     content = (
       <Route
-        path="/market/TOCYB"
+        path="/token/TOCYB"
         render={() => (
           <InfoTokens selectedTokens={selectedTokens} data={tocyb} />
         )}
@@ -226,7 +220,7 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'GOL') {
     content = (
       <Route
-        path="/market/GOL"
+        path="/token/GOL"
         render={() => (
           <InfoTokens
             selectedTokens={selectedTokens}
@@ -243,27 +237,12 @@ function Market({ node, mobile, defaultAccount }) {
   if (selectedTokens === 'CYB') {
     content = (
       <Route
-        path="/market/CYB"
+        path="/token/CYB"
         render={() => (
           <InfoTokens
             selectedTokens={selectedTokens}
             data={cyb}
             titlePrice="Port price of GCYB in ETH"
-          />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'pools') {
-    content = (
-      <Route
-        path="/market/pools"
-        render={() => (
-          <PoolData
-            data={poolsData}
-            totalSupplyData={totalSupplyData}
-            accountBalances={accountBalances}
           />
         )}
       />

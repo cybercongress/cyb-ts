@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CardStatisics, LinkWindow, Dots, ValueImg } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
-import { PoolItemsList } from '../teleport/components';
+import { PoolItemsList } from './components';
 
 // const test = [
 //   {
@@ -85,31 +85,35 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
       totalSupplyData !== null &&
       Object.prototype.hasOwnProperty.call(
         totalSupplyData,
-        pool.poolCoinDenom
+        pool.pool_coin_denom
       ) &&
       accountBalances !== null &&
-      Object.prototype.hasOwnProperty.call(accountBalances, pool.poolCoinDenom)
+      Object.prototype.hasOwnProperty.call(
+        accountBalances,
+        pool.pool_coin_denom
+      )
     ) {
-      const amountTotal = totalSupplyData[pool.poolCoinDenom];
-      const amountAccountBalances = accountBalances[pool.poolCoinDenom];
+      const amountTotal = totalSupplyData[pool.pool_coin_denom];
+      const amountAccountBalances = accountBalances[pool.pool_coin_denom];
       const procent = (amountAccountBalances / amountTotal) * 100;
       const shares = exponentialToDecimal(procent.toPrecision(2));
       setSharesToken(shares);
     }
   }, [totalSupplyData, pool, accountBalances]);
+
   return (
     <div style={styleContainer}>
       <div style={styleTitleContainer}>
         <div style={styleContainerImg}>
           <ValueImg
             size={30}
-            text={pool.reserveCoinDenoms[0]}
+            text={pool.reserve_coin_denoms[0]}
             onlyImg
             zIndexImg={1}
           />
           <ValueImg
             size={30}
-            text={pool.reserveCoinDenoms[1]}
+            text={pool.reserve_coin_denoms[1]}
             onlyImg
             marginContainer="0px 0px 0px -8px"
           />
@@ -119,17 +123,17 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
             Pool #{pool.id}
           </div>
           <div style={styleTitleDenomContainer}>
-            <ValueImg text={pool.reserveCoinDenoms[0]} onlyText />/
-            <ValueImg text={pool.reserveCoinDenoms[1]} onlyText />
+            <ValueImg text={pool.pool_coin_denom[0]} onlyText />/
+            <ValueImg text={pool.pool_coin_denom[1]} onlyText />
           </div>
         </div>
       </div>
       <div style={sharesToken !== null ? styleAmountPoolContainer : {}}>
         <span style={styleTitleAmountPoolContainer}>Total amount</span>
-        {pool.reserveCoinDenoms.map((items) => (
+        {pool.reserve_coin_denoms.map((items) => (
           <>
             <PoolItemsList
-              addressPool={pool.reserveAccountAddress}
+              addressPool={pool.reserve_account_address}
               token={items}
             />
           </>

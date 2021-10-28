@@ -71,38 +71,63 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
   );
 };
 
+const renderSubItems = (subItems, onClickSubItem, selectedItemSub) => {
+  let itemsSub = [];
+  if (subItems.length > 0) {
+    itemsSub = subItems.map((itemSub) => {
+      return (
+        <Items
+          selected={itemSub.name === selectedItemSub}
+          key={itemSub.name}
+          item={itemSub}
+          onClick={() => onClickSubItem(itemSub.name)}
+        />
+      );
+    });
+  }
+
+  return itemsSub;
+};
+
 export const Bookmarks = ({ items, ...props }) => {
-  const location = useLocation();
-  const { main } = useCheckPathname();
+  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItemSub, setSelectedItemSub] = useState('');
+  // const { main } = useCheckPathname();
+
+  const onClickItem = (itemKey) => {
+    setSelectedItem(itemKey);
+    setSelectedItemSub('');
+  };
+
+  const onClickSubItem = (itemKey) => {
+    setSelectedItemSub(itemKey);
+  };
+
+  useEffect(() => {
+    setSelectedItemSub('');
+  }, [selectedItem]);
 
   return (
     <div className="bookmarks">
       {items.map((item, index) => {
-        let itemsSub = [];
-        const { subItems } = item;
-        if (subItems.length > 0) {
-          itemsSub = subItems.map((itemSub) => {
-            return (
-              <Items
-                selected={itemSub.to === location.pathname}
-                {...props}
-                key={itemSub.name}
-                item={itemSub}
-              />
-            );
-          });
-        }
         return (
           <>
             <Items
               selected={
-                item.to === location.pathname && item.active === undefined
+                item.name === selectedItem &&
+                selectedItemSub === '' &&
+                item.active === undefined
               }
-              {...props}
+              // {...props}
               key={item.name}
               item={item}
+              onClick={() => onClickItem(item.name)}
             />
-            {item.name === main && <Pane paddingLeft={20}>{itemsSub}</Pane>}
+            {item.name === selectedItem && (
+              <Pane paddingLeft={20}>
+                {renderSubItems(item.subItems, onClickSubItem, selectedItemSub)}
+              </Pane>
+            )}
           </>
         );
       })}

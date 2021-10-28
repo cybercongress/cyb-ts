@@ -254,9 +254,9 @@ function AppRouter({
         <Route path="/portal" component={PortPages} />
         <Route path="/test" component={TestKeplr} />
         <Route path="/mint" component={Mint} />
-        <Route path="/energy" component={RoutedEnergy} />
+        <Route path="/grid" component={RoutedEnergy} />
         {/* <Route path="/bootcycle" component={Bootcycle} /> */}
-        <Route path="/market" component={Market} />
+        <Route path="/token" component={Market} />
         <Route path="/oracle" component={Oracle} />
         <Route path="/particles" component={Objects} />
         <Route path="/sixthSense" component={Taverna} />

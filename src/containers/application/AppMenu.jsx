@@ -21,7 +21,11 @@ const items = [
   {
     name: 'Genesis',
     to: '/genesis',
-    subItems: [],
+    subItems: [
+      { name: 'BOOT', to: '/token/BOOT' },
+      { name: 'TOCYB', to: '/token/TOCYB' },
+      { name: 'CYB', to: '/token/CYB' },
+    ],
   },
   {
     name: 'Superintelligence',
@@ -41,47 +45,47 @@ const items = [
   },
   {
     name: 'Portal',
-    to: '/portal',
-    active: false,
+    to: '/search/portal',
     subItems: [
-      { name: 'Manifesto', to: '/portal' },
-      { name: 'Leaderboard', to: '/portal/leaderboard' },
-      { name: 'Progress', to: '/portal/progress' },
+      // { name: 'Manifesto', to: '/portal' },
+      // { name: 'Leaderboard', to: '/portal/leaderboard' },
+      // { name: 'Progress', to: '/portal/progress' },
       { name: 'Cyber vs Corp', to: '/portal/cyber-vs-corp' },
       { name: 'Cyber vs Gov', to: '/portal/cyber-vs-gov' },
     ],
   },
   {
-    name: 'Hall of Fame',
-    to: '/halloffame',
-    active: false,
+    name: 'Dyson Sphere',
+    to: '/search/dyson shpere',
     subItems: [
       { name: 'Active heroes', to: '/halloffame' },
       { name: 'Heroes at rest', to: '/halloffame/jailed' },
       { name: 'Become a Hero', to: '/search/Become a Hero' },
+      { name: 'BOOT', to: '/token/BOOT' },
+      { name: 'H', to: '/token/H' },
     ],
   },
   {
-    name: 'Dyson Sphere',
-    to: '/search/Dyson Sphere',
+    name: 'Biosynthesis Reactor',
+    to: '/search/biosynthesis reactor',
+    subItems: [{ name: 'H', to: '/token/H' }],
+  },
+  {
+    name: 'HFR',
+    to: '/search/hfr',
     subItems: [
-      { name: 'Minting', to: '/mint' },
-      { name: 'Routing', to: '/energy' },
+      { name: 'Investmint', to: '/mint' },
+      { name: 'A', to: '/token/A' },
+      { name: 'V', to: '/token/V' },
     ],
   },
   {
-    name: 'Market',
-    to: '/market',
-    active: false,
+    name: 'Grid',
+    to: '/search/grid',
     subItems: [
-      { name: 'BOOT', to: '/market' },
-      { name: 'H', to: '/market/H' },
-      { name: 'A', to: '/market/A' },
-      { name: 'V', to: '/market/V' },
-      { name: 'TOCYB', to: '/market/TOCYB' },
-      { name: 'GOL', to: '/market/GOL' },
-      { name: 'CYB', to: '/market/CYB' },
-      { name: 'Pools', to: '/market/pools' },
+      { name: 'My energy', to: '/grid' },
+      { name: 'Income', to: '/grid/income' },
+      { name: 'Outcome', to: '/grid/outcome' },
     ],
   },
   {
@@ -89,9 +93,18 @@ const items = [
     to: '/teleport',
     active: false,
     subItems: [
-      { name: 'Add liquidity', to: '/teleport/add-liquidity' },
       { name: 'Swap', to: '/teleport' },
+      { name: 'Add liquidity', to: '/teleport/add-liquidity' },
       { name: 'Sub liquidity', to: '/teleport/sub-liquidity' },
+      { name: 'Pools', to: '/teleport/pools' },
+    ],
+  },
+  {
+    name: 'Great Web',
+    to: '/search/great web',
+    subItems: [
+      { name: 'Foundation', to: '/search/greatweb foundation' },
+      { name: 'GOL', to: '/token/GOL' },
     ],
   },
   {

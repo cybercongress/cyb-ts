@@ -279,13 +279,15 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  // if (stage === STAGE_INIT) {
-  //   return (
-  //     <ActionBarContainer>
-  //       <Button onClick={() => createPool()}>create Pool</Button>
-  //     </ActionBarContainer>
-  //   );
-  // }
+  if (selectedTab === 'pools' && stage === STAGE_INIT) {
+    return (
+      <ActionBarContainer>
+        <Button disabled onClick={() => createPool()}>
+          create Pool
+        </Button>
+      </ActionBarContainer>
+    );
+  }
 
   if (selectedTab === 'sub-liquidity' && stage === STAGE_INIT) {
     return (

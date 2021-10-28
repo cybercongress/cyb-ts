@@ -52,6 +52,7 @@ function Swap({ stateSwap, swap }) {
   return (
     <Pane
       maxWidth="390px"
+      height="500px"
       display="flex"
       alignItems="center"
       flexDirection="column"

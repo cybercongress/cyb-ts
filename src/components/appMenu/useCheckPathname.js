@@ -15,6 +15,12 @@ const useCheckPathname = () => {
       pathname.match(/genesis/gm).length > 0
     ) {
       setMain('Genesis');
+    } else if (pathname === '/token/TOCYB') {
+      setMain('Genesis');
+    } else if (pathname === '/token/CYB') {
+      setMain('Genesis');
+    } else if (pathname === '/token/BOOT') {
+      setMain('Genesis');
     } else if (
       pathname.match(/oracle/gm) &&
       pathname.match(/oracle/gm).length > 0
@@ -30,44 +36,34 @@ const useCheckPathname = () => {
       setMain('Oracle');
     } else if (pathname === '/search/richlist') {
       setMain('Oracle');
-    } else if (
-      pathname.match(/market/gm) &&
-      pathname.match(/market/gm).length > 0
-    ) {
-      setMain('Market');
-    } else if (pathname === '/market/GOL') {
-      setMain('Market');
-    } else if (pathname === '/market/amper') {
-      setMain('Market');
-    } else if (pathname === '/market/volt') {
-      setMain('Market');
-    } else if (pathname === '/market/cyb') {
-      setMain('Market');
-    } else if (pathname === '/market/pools') {
-      setMain('Market');
     } else if (pathname === '/search/Dyson Sphere') {
       setMain('Dyson Sphere');
+    } else if (pathname === '/search/hfr') {
+      setMain('HFR');
     } else if (pathname === '/mint') {
-      setMain('Dyson Sphere');
-    } else if (
-      pathname.match(/energy/gm) &&
-      pathname.match(/energy/gm).length > 0
-    ) {
-      setMain('Dyson Sphere');
+      setMain('HFR');
+    } else if (pathname === '/token/A') {
+      setMain('HFR');
+    } else if (pathname === '/token/V') {
+      setMain('HFR');
+    } else if (pathname === '/search/grid') {
+      setMain('Grid');
+    } else if (pathname === '/grid') {
+      setMain('Grid');
+    } else if (pathname === '/grid/income') {
+      setMain('Grid');
+    } else if (pathname === '/grid/outcome') {
+      setMain('Grid');
     } else if (
       pathname.match(/sixthSense/gm) &&
       pathname.match(/sixthSense/gm).length > 0
     ) {
       setMain('Sixth Sense');
-    } else if (pathname === '/portal') {
-      setMain('Portal');
-    } else if (pathname === '/portal/leaderboard') {
+    } else if (pathname === '/search/portal') {
       setMain('Portal');
     } else if (pathname === '/portal/cyber-vs-corp') {
       setMain('Portal');
     } else if (pathname === '/portal/cyber-vs-gov') {
-      setMain('Portal');
-    } else if (pathname === '/portal/progress') {
       setMain('Portal');
     } else if (pathname === '/nebula') {
       setMain('Nebula');
@@ -78,20 +74,29 @@ const useCheckPathname = () => {
       pathname.match(/senate/gm).length > 0
     ) {
       setMain('Senate');
-    } else if (
-      pathname.match(/halloffame/gm) &&
-      pathname.match(/halloffame/gm).length > 0
-    ) {
-      setMain('Hall of Fame');
+    } else if (pathname === '/search/dyson shpere') {
+      setMain('Dyson Sphere');
+    } else if (pathname === '/halloffame') {
+      setMain('Dyson Sphere');
     } else if (pathname === '/halloffame/jailed') {
-      setMain('Hall of Fame');
+      setMain('Dyson Sphere');
     } else if (pathname === '/search/Become a Hero') {
-      setMain('Hall of Fame');
+      setMain('Dyson Sphere');
+    } else if (pathname === '/search/biosynthesis reactor') {
+      setMain('Biosynthesis Reactor');
+    } else if (pathname === '/token/H') {
+      setMain('Biosynthesis Reactor');
     } else if (
       pathname.match(/teleport/gm) &&
       pathname.match(/teleport/gm).length > 0
     ) {
       setMain('Teleport');
+    } else if (pathname === '/search/great web') {
+      setMain('Great Web');
+    } else if (pathname === '/search/greatweb foundation') {
+      setMain('Great Web');
+    } else if (pathname === '/token/GOL') {
+      setMain('Great Web');
     } else {
       setMain('');
     }

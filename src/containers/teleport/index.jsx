@@ -28,6 +28,7 @@ import PoolsList from './poolsList';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
 import Swap from './swap';
 import Withdraw from './withdraw';
+import PoolData from './poolData';
 
 function Teleport({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
@@ -65,6 +66,11 @@ function Teleport({ defaultAccount }) {
       pathname.match(/sub-liquidity/gm).length > 0
     ) {
       setSelectedTab('sub-liquidity');
+    } else if (
+      pathname.match(/pools/gm) &&
+      pathname.match(/pools/gm).length > 0
+    ) {
+      setSelectedTab('pools');
     } else {
       setSelectedTab('swap');
     }
@@ -352,17 +358,32 @@ function Teleport({ defaultAccount }) {
     );
   }
 
+  if (selectedTab === 'pools') {
+    content = (
+      <Route
+        path="/teleport/pools"
+        render={() => (
+          <PoolData
+            data={poolsData}
+            totalSupplyData={totalSupply}
+            accountBalances={accountBalances}
+          />
+        )}
+      />
+    );
+  }
+
   return (
     <>
       <main className="block-body">
-        <TabList selected={selectedTab} />
+        {selectedTab !== 'pools' && <TabList selected={selectedTab} />}
 
         <Pane
           width="100%"
           display="flex"
           alignItems="center"
           flexDirection="column"
-          height="60vh"
+          // height="84vh"
         >
           {content}
         </Pane>

@@ -945,7 +945,8 @@ export const Delegate = ({
           {moniker}
         </Text>
       </Text>
-      <input
+      <Input
+        width="100px"
         value={toSend}
         style={{
           height: 42,
