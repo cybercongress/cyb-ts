@@ -17,6 +17,7 @@ const GET_CHARACTERS = gql`
       transactions {
         messages
         hash
+        height
         success
       }
     }

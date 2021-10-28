@@ -35,6 +35,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
 
   const displayedPalettes = useMemo(() => data.slice(0, itemsToShow), [
     itemsToShow,
+    data,
   ]);
 
   const validatorRows = displayedPalettes.map((item, index) => (
