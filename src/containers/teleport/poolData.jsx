@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CardStatisics, LinkWindow, Dots, ValueImg } from '../../components';
+import { CardStatisics, LinkWindow, NoItems, ValueImg } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import { PoolItemsList } from './components';
 
@@ -171,7 +171,15 @@ function PoolData({ data, totalSupplyData, accountBalances }) {
     ));
   }
 
-  return <div style={stylePoolDataContainer}>{itemsPools}</div>;
+  return (
+    <div style={stylePoolDataContainer}>
+      {Object.keys(itemsPools).length > 0 ? (
+        itemsPools
+      ) : (
+        <NoItems text="No Pools" />
+      )}
+    </div>
+  );
 }
 
 export default PoolData;

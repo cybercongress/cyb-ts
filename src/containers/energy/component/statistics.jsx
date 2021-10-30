@@ -41,7 +41,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'myEnegy'}
         title="My Enegy"
         value={formatCurrency(myEnegy, 'W', 2, PREFIXES)}
-        onClick={() => history.push('/energy')}
+        onClick={() => history.push('/grid')}
       />
       <Pane marginX={5} fontSize="20px">
         +
@@ -50,7 +50,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'income'}
         title="Income"
         value={formatCurrency(income, 'W', 2, PREFIXES)}
-        onClick={() => history.push('/energy/income')}
+        onClick={() => history.push('/grid/income')}
       />
       <Pane marginX={5} fontSize="20px">
         -
@@ -59,7 +59,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
         active={active === 'outcome'}
         title="Outcome"
         value={formatCurrency(outcome, 'W', 2, PREFIXES)}
-        onClick={() => history.push('/energy/outcome')}
+        onClick={() => history.push('/grid/outcome')}
       />
       <Pane marginX={5} fontSize="20px">
         =

@@ -26,7 +26,7 @@ const {
   STAGE_CONFIRMED,
 } = LEDGER;
 
-const VESTING_TIME_HOURS = 3600;
+const VESTING_TIME_HOURS = 3601;
 
 function ActionBar({
   value,

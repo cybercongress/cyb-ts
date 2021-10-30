@@ -71,13 +71,13 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
   );
 };
 
-const renderSubItems = (subItems, onClickSubItem, selectedItemSub) => {
+const renderSubItems = (subItems, location, onClickSubItem) => {
   let itemsSub = [];
   if (subItems.length > 0) {
     itemsSub = subItems.map((itemSub) => {
       return (
         <Items
-          selected={itemSub.name === selectedItemSub}
+          selected={itemSub.to === location.pathname}
           key={itemSub.name}
           item={itemSub}
           onClick={() => onClickSubItem(itemSub.name)}
@@ -92,6 +92,7 @@ const renderSubItems = (subItems, onClickSubItem, selectedItemSub) => {
 export const Bookmarks = ({ items, ...props }) => {
   const [selectedItem, setSelectedItem] = useState('');
   const [selectedItemSub, setSelectedItemSub] = useState('');
+  const location = useLocation();
   // const { main } = useCheckPathname();
 
   const onClickItem = (itemKey) => {
@@ -125,7 +126,7 @@ export const Bookmarks = ({ items, ...props }) => {
             />
             {item.name === selectedItem && (
               <Pane paddingLeft={20}>
-                {renderSubItems(item.subItems, onClickSubItem, selectedItemSub)}
+                {renderSubItems(item.subItems, location, onClickSubItem)}
               </Pane>
             )}
           </>

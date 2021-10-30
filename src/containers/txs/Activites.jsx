@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
-import { Account, MsgType, LinkWindow } from '../../components';
+import { Account, MsgType, LinkWindow, ValueImg } from '../../components';
 import { CYBER } from '../../utils/config';
+import { timeSince } from '../../utils/utils';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
+
+const S_TO_MS = 1 * 10 ** 3;
 
 const Cid = ({ cid }) => <Link to={`/ipfs/${cid}`}>{cid}</Link>;
 
@@ -155,6 +158,83 @@ const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
     )}
   </ContainerMsgsType>
 );
+
+const MsgInvestmint = ({ msg }) => (
+  <ContainerMsgsType type={msg.type}>
+    {msg.value.neuron && (
+      <Row title="neuron" value={<Account address={msg.value.neuron} />} />
+    )}
+    {msg.value.amount && (
+      <Row
+        title="amount"
+        value={
+          <Pane display="flex">
+            {formatNumber(msg.value.amount.amount)}
+            <ValueImg
+              marginContainer="0 0 0 5px"
+              marginImg="0 0 0 3px"
+              text={msg.value.amount.denom}
+            />
+          </Pane>
+        }
+      />
+    )}
+    {msg.value.resource && (
+      <Row title="resource" value={<ValueImg text={msg.value.resource} />} />
+    )}
+    {msg.value.length && (
+      <Row title="length" value={timeSince(msg.value.length * S_TO_MS)} />
+    )}
+  </ContainerMsgsType>
+);
+
+const MsgCreateRoute = ({ msg }) => (
+  <ContainerMsgsType type={msg.type}>
+    <Row title="source" value={<Account address={msg.value.source} />} />
+    <Row title="name" value={msg.value.name} />
+    <Row
+      title="destination"
+      value={<Account address={msg.value.destination} />}
+    />
+  </ContainerMsgsType>
+);
+
+const MsgEditRoute = ({ msg }) => (
+  <ContainerMsgsType type={msg.type}>
+    <Row title="source" value={<Account address={msg.value.source} />} />
+    {msg.value.value && (
+      <Row
+        title="amount"
+        value={
+          <Pane display="flex">
+            {formatNumber(msg.value.value.amount)}
+            <ValueImg
+              marginContainer="0 0 0 5px"
+              marginImg="0 0 0 3px"
+              text={msg.value.amount.denom}
+            />
+          </Pane>
+        }
+      />
+    )}
+    <Row
+      title="destination"
+      value={<Account address={msg.value.destination} />}
+    />
+  </ContainerMsgsType>
+);
+
+const MsgDeleteRoute = ({ msg }) => (
+  <ContainerMsgsType type={msg.type}>
+    <Row title="source" value={<Account address={msg.value.source} />} />
+    <Row
+      title="destination"
+      value={<Account address={msg.value.destination} />}
+    />
+  </ContainerMsgsType>
+);
+
+const MsgEditRouteName = ({ msg }) => <MsgCreateRoute msg={msg} />;
 
 function Activites({ msg }) {
   console.log(msg);
@@ -428,6 +508,26 @@ function Activites({ msg }) {
           )}
         </ContainerMsgsType>
       );
+
+    // Investmint
+    case 'cyber/MsgInvestmint':
+      return <MsgInvestmint msg={msg} />;
+
+    // grid
+    case 'cyber/MsgCreateRoute':
+      return <MsgCreateRoute msg={msg} />;
+
+    case 'cyber/MsgEditRoute':
+      return <MsgEditRoute msg={msg} />;
+
+    case 'cyber/MsgDeleteRoute':
+      return <MsgDeleteRoute msg={msg} />;
+
+    case 'cyber/MsgEditRouteName':
+      return <MsgEditRouteName msg={msg} />;
+
+    // swap
+    
 
     default:
       return <div>{JSON.stringify(msg.value)}</div>;

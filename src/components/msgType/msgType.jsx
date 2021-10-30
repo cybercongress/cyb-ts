@@ -9,7 +9,12 @@ const stake = require('../../image/stake.svg');
 const gov = require('../../image/gov.svg');
 const distribution = require('../../image/distribution.svg');
 const slashing = require('../../image/slashing.svg');
-const investmint = require('../../image/swap-horizontal.svg');
+const investmint = require('../../image/sync-outline.svg');
+const grid = require('../../image/share-social-outline.svg');
+const swap = require('../../image/swap-horizontal.svg');
+const addLiquidity = require('../../image/msgs_ic_pooladd.svg');
+const subLiquidity = require('../../image/msgs_ic_poolremove.svg');
+const createPool = require('../../image/flask-outline.svg');
 
 const ContainerTitle = ({ img, children }) => (
   <Pane display="flex" alignItems="center">
@@ -41,6 +46,35 @@ const MsgType = ({ type }) => {
 
   if (type.includes('MsgInvestmint')) {
     return <ContainerTitle img={investmint}>Investmint</ContainerTitle>;
+  }
+
+  // grid
+
+  if (type.includes('MsgCreateRoute')) {
+    return <ContainerTitle img={grid}>Create Route</ContainerTitle>;
+  }
+  if (type.includes('MsgEditRoute')) {
+    return <ContainerTitle img={grid}>Edit Route</ContainerTitle>;
+  }
+  if (type.includes('MsgDeleteRoute')) {
+    return <ContainerTitle img={grid}>Delete Route</ContainerTitle>;
+  }
+  if (type.includes('MsgEditRouteName')) {
+    return <ContainerTitle img={grid}>Edit Route Name</ContainerTitle>;
+  }
+
+  // swap
+  if (type.includes('MsgSwapWithinBatch')) {
+    return <ContainerTitle img={swap}>Swap</ContainerTitle>;
+  }
+  if (type.includes('MsgDepositWithinBatch')) {
+    return <ContainerTitle img={addLiquidity}>Add-Liquidity</ContainerTitle>;
+  }
+  if (type.includes('MsgWithdrawWithinBatch')) {
+    return <ContainerTitle img={subLiquidity}>Sub-Liquidity</ContainerTitle>;
+  }
+  if (type.includes('MsgCreatePool')) {
+    return <ContainerTitle img={createPool}>Create Pool</ContainerTitle>;
   }
 
   // bank
