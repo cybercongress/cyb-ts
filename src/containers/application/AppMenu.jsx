@@ -33,7 +33,10 @@ const items = [
   {
     name: 'Superintelligence',
     to: '/superintelligence',
-    subItems: {},
+    subItems: [
+      { name: 'Transactions', to: '/network/bostrom/tx' },
+      { name: 'Blocks', to: '/network/bostrom/block' },
+    ],
   },
   {
     name: 'Oracle',
@@ -41,9 +44,7 @@ const items = [
     subItems: [
       { name: 'Cyberlinks', to: '/graph' },
       { name: 'Particles', to: '/particles' },
-      // { name: 'Richlist', to: '/search/richlist' },
-      { name: 'Transactions', to: '/network/bostrom/tx' },
-      { name: 'Blocks', to: '/network/bostrom/block' },
+      { name: 'Neurons', to: '/search/neurons' },
     ],
   },
   {
@@ -113,6 +114,8 @@ const items = [
     subItems: [
       { name: 'Rating', to: '/nebula' },
       { name: 'Create app', to: '/nebula/create app' },
+      { name: 'Deploy contract', to: '/nebula/deploy contract' },
+      { name: 'Give life', to: '/nebula/give life' },      
     ],
   },
   {
