@@ -115,7 +115,7 @@ const items = [
       { name: 'Rating', to: '/nebula' },
       { name: 'Create app', to: '/nebula/create app' },
       { name: 'Deploy contract', to: '/nebula/deploy contract' },
-      { name: 'Give life', to: '/nebula/give life' },      
+      { name: 'Give life', to: '/nebula/give life' },
     ],
   },
   {

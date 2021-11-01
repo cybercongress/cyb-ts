@@ -65,7 +65,7 @@ const chekPathname = (pathname) => {
     return 'TOCYB';
   }
 
-  return 'BOOT';
+  return '';
 };
 
 function Market({ node, mobile, defaultAccount }) {
@@ -81,7 +81,7 @@ function Market({ node, mobile, defaultAccount }) {
     millivolt,
     tocyb,
   } = useGetCybernomics();
-  const [selectedTokens, setSelectedTokens] = useState('BOOT');
+  const [selectedTokens, setSelectedTokens] = useState('');
   const [resultSearch, setResultSearch] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
