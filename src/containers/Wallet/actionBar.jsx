@@ -11,6 +11,8 @@ import ActionBarWeb3 from './actionBarWeb3';
 import ActionBarUser from './actionBarUser';
 import ActionBarLedger from './actionBarLedger';
 import ActionBarConnect from './actionBarConnect';
+import waitForWeb3 from '../../components/web3/waitForWeb3';
+import { NETWORKSIDS } from '../../utils/config';
 
 const imgLedger = require('../../image/ledger.svg');
 const imgKeplr = require('../../image/keplr-icon.svg');
@@ -45,7 +47,6 @@ function ActionBar({
   // actionBar keplr props
   keplr,
   // actionBar web3
-  web3,
   accountsETH,
   // actionBar tweet
   refreshTweet,
@@ -59,6 +60,20 @@ function ActionBar({
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
   const [connect, setConnect] = useState(false);
+  const [web3, setWeb3] = useState(null);
+
+  useEffect(() => {
+    //
+    const getWeb3 = async () => {
+      const web3response = await waitForWeb3();
+      web3response.eth.net.getId().then((id) => {
+        if (id === NETWORKSIDS.main) {
+          setWeb3(web3response);
+        }
+      });
+    };
+    getWeb3();
+  }, []);
 
   useEffect(() => {
     if (stage === STAGE_INIT) {

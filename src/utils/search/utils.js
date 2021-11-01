@@ -402,7 +402,7 @@ export const getAccountBandwidth = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/bandwidth/account/${address}`,
+      url: `${CYBER_NODE_URL_LCD}/bandwidth/neuron/${address}`,
     });
     return response.data.result;
   } catch (e) {

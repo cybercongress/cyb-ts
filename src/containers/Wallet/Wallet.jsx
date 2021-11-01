@@ -678,4 +678,4 @@ const mapStateToProps = (store) => {
 
 Wallet.contextType = AppContext;
 
-export default connect(mapStateToProps, mapDispatchprops)((Wallet));
+export default connect(mapStateToProps, mapDispatchprops)(Wallet);

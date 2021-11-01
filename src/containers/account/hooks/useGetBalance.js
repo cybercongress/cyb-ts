@@ -160,6 +160,7 @@ function useGetBalance(address, updateAddress) {
           vested: 0,
           total: 0,
         },
+        pools: {},
       };
 
       if (jsCyber !== null && address !== null) {
@@ -167,6 +168,8 @@ function useGetBalance(address, updateAddress) {
         setLoadingBalanceToken(true);
         const getAllBalancesPromise = await jsCyber.getAllBalances(address);
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
+        const pools = getPools(balancesToken);
+        initValueTokenAmount.pools = pools;
         if (balancesToken.milliampere) {
           initValueTokenAmount.milliampere.available = convertResources(
             balancesToken.milliampere
@@ -238,6 +241,17 @@ function useGetBalance(address, updateAddress) {
 
     return balances;
   };
+
+  const getPools = (data) =>
+    Object.keys(data)
+      .filter((key) => key.includes('pool'))
+      .reduce(
+        (obj, key) => ({
+          ...obj,
+          [key]: data[key],
+        }),
+        {}
+      );
 
   return { balance, loadingBalanceInfo, balanceToken, loadingBalanceToken };
 }

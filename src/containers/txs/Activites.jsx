@@ -207,11 +207,11 @@ const MsgEditRoute = ({ msg }) => (
         title="amount"
         value={
           <Pane display="flex">
-            {formatNumber(msg.value.value.amount)}
+            {formatNumber(msg.value.value.amount * 10 ** -3)}
             <ValueImg
               marginContainer="0 0 0 5px"
               marginImg="0 0 0 3px"
-              text={msg.value.amount.denom}
+              text={msg.value.value.denom}
             />
           </Pane>
         }
@@ -527,7 +527,6 @@ function Activites({ msg }) {
       return <MsgEditRouteName msg={msg} />;
 
     // swap
-    
 
     default:
       return <div>{JSON.stringify(msg.value)}</div>;

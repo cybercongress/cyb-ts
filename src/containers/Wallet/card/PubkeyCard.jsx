@@ -58,12 +58,9 @@ const DetailsBalance = ({
         {currency === CYBER.DENOM_CYBER ? (
           <FormatNumberTokens value={total.available} text={currency} />
         ) : (
-          <FormatNumber
-            number={formatNumber(
-              Math.floor((total.available / divisor) * 1000) / 1000,
-              3
-            )}
-            currency={currency}
+          <FormatNumberTokens
+            value={Math.floor((total.available / divisor) * 1000) / 1000}
+            text={currency}
           />
         )}
       </RowBalance>
@@ -78,12 +75,11 @@ const DetailsBalance = ({
         ) : (
           <>
             <div>staked</div>
-            <FormatNumber
-              number={formatNumber(
-                Math.floor((total.delegation / divisor) * 1000) / 1000,
-                3
+            <FormatNumberTokens
+              value={formatNumber(
+                Math.floor((total.delegation / divisor) * 1000) / 1000
               )}
-              currency={currency}
+              text={currency}
             />
           </>
         )}
@@ -99,12 +95,9 @@ const DetailsBalance = ({
         ) : (
           <>
             <div>unstaking</div>
-            <FormatNumber
-              number={formatNumber(
-                Math.floor((total.unbonding / divisor) * 1000) / 1000,
-                3
-              )}
-              currency={currency}
+            <FormatNumberTokens
+              value={Math.floor((total.unbonding / divisor) * 1000) / 1000}
+              text={currency}
             />
           </>
         )}
@@ -120,12 +113,9 @@ const DetailsBalance = ({
         ) : (
           <>
             <div>rewards</div>
-            <FormatNumber
-              number={formatNumber(
-                Math.floor((total.rewards / divisor) * 1000) / 1000,
-                3
-              )}
-              currency={currency}
+            <FormatNumberTokens
+              value={Math.floor((total.rewards / divisor) * 1000) / 1000}
+              text={currency}
             />
           </>
         )}
@@ -142,7 +132,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => (
       display="flex"
       alignItems="center"
     >
-      <span>{formatNumber(Math.floor(value))}</span>
+      <span>{formatNumber(value)}</span>
     </Pane>
     {text && (
       <ValueImg
@@ -203,12 +193,13 @@ const CosmosAddressInfo = ({
       <Pane flexDirection="column" display="flex" alignItems="flex-end">
         {loading ? (
           <span>
-            <Dots /> CYB
+            <Dots /> ATOM
           </span>
         ) : (
           <>
             <RowBalance
               onClick={() => setOpen(!open)}
+              marginBottom={3}
               className="cosmos-address-balance"
             >
               {open ? (
@@ -216,12 +207,11 @@ const CosmosAddressInfo = ({
               ) : (
                 <div className="details-balance">details</div>
               )}
-              <FormatNumber
-                number={formatNumber(
-                  ((totalCosmos.total / COSMOS.DIVISOR_ATOM) * 1000) / 1000,
-                  3
-                )}
-                currency="ATOM"
+              <FormatNumberTokens
+                value={
+                  ((totalCosmos.total / COSMOS.DIVISOR_ATOM) * 1000) / 1000
+                }
+                text="ATOM"
               />
             </RowBalance>
             {open && (
@@ -416,73 +406,29 @@ const EULnetworkInfo = ({
               />
             )}
 
-            {Object.keys(balanceToken).map((key) => {
-              return (
-                <BalanceToken
-                  onClickOpen={props[`onClickOpen${key}`]}
-                  open={props[`open${key}`]}
-                  balanceToken={balanceToken[key]}
-                  currency={key}
-                  address={address}
-                />
-              );
-            })}
+            {Object.keys(balanceToken)
+              .filter((keyFilter) => keyFilter.indexOf('pool') === -1)
+              .map((key) => {
+                return (
+                  <BalanceToken
+                    onClickOpen={props[`onClickOpen${key}`]}
+                    open={props[`open${key}`]}
+                    balanceToken={balanceToken[key]}
+                    currency={key}
+                    address={address}
+                  />
+                );
+              })}
 
-            {/* {balanceToken.millivolt && (
-              <>
-                <RowBalance
-                  onClick={onClickOpenVolt}
-                  className="cosmos-address-balance"
-                  marginBottom={3}
-                >
-                  {openVolt ? (
-                    <div>total</div>
-                  ) : (
-                    <div className="details-balance">details</div>
-                  )}
+            {balanceToken.pools &&
+              Object.keys(balanceToken.pools).map((key) => {
+                return (
                   <FormatNumberTokens
-                    value={balanceToken.millivolt.total}
-                    text="millivolt"
+                    value={balanceToken.pools[key]}
+                    text={key}
                   />
-                </RowBalance>
-                {openVolt && (
-                  <DetailsBalanceTokens
-                    total={balanceToken.millivolt}
-                    address={address.bech32}
-                    paddingLeft={15}
-                    currency="millivolt"
-                  />
-                )}
-              </>
-            )} */}
-
-            {/* {balanceToken.milliampere && (
-              <>
-                <RowBalance
-                  onClick={onClickOpenAmper}
-                  className="cosmos-address-balance"
-                  marginBottom={3}
-                >
-                  {openAmper ? (
-                    <div>total</div>
-                  ) : (
-                    <div className="details-balance">details</div>
-                  )}
-                  <FormatNumberTokens
-                    value={balanceToken.milliampere.total}
-                    text="milliampere"
-                  />
-                </RowBalance>
-                {openAmper && (
-                  <DetailsBalanceTokens
-                    total={balanceToken.milliampere}
-                    address={address.bech32}
-                    paddingLeft={15}
-                    currency="milliampere"
-                  />
-                )}
-              </>
-            )} */}
+                );
+              })}
           </>
         )}
       </Pane>
@@ -551,7 +497,7 @@ const EthAddressInfo = ({
   onClickDeleteAddress,
   network,
 }) => {
-  const { eth, gol } = useGetBalanceEth(address, web3, contractToken);
+  const { eth, gol } = useGetBalanceEth(address, contractToken);
 
   return (
     <ContainerAddressInfo>
@@ -566,14 +512,11 @@ const EthAddressInfo = ({
         }
       />
       <Pane flexDirection="column" display="flex" alignItems="flex-end">
-        <FormatNumber
-          number={formatNumber(
-            exponentialToDecimal(parseFloat(eth).toPrecision(6)),
-            3
-          )}
-          currency="ETH"
+        <FormatNumberTokens
+          value={exponentialToDecimal(parseFloat(eth).toPrecision(6))}
+          text="ETH"
         />
-        <NumberCurrency amount={parseFloat(gol)} currencyNetwork="GOL" />
+        <FormatNumberTokens value={parseFloat(gol)} text="GOL" />
       </Pane>
     </ContainerAddressInfo>
   );

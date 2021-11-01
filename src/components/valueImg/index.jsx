@@ -1,4 +1,5 @@
 import React from 'react';
+import { trimString } from '../../utils/utils';
 
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
@@ -54,7 +55,10 @@ const ValueImg = ({
       break;
 
     default:
-      if (text.length > 6) {
+      if (text.includes('pool')) {
+        textCurency = trimString(text, 4, 3);
+        img = null;
+      } else if (text.length > 6) {
         textCurency = text.slice(6);
         img = null;
         break;
