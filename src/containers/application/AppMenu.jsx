@@ -63,7 +63,7 @@ const items = [
     subItems: [
       { name: 'Active heroes', to: '/halloffame' },
       { name: 'Heroes at rest', to: '/halloffame/jailed' },
-      { name: 'Become a Hero', to: '/search/Become a Hero' },
+      { name: 'Become a Hero', to: '/search/become hero' },
       { name: 'BOOT', to: '/token/BOOT' },
       { name: 'Biosynthesis', to: '/search/biosynthesis reactor'},
       { name: 'H', to: '/token/H' },
@@ -112,7 +112,7 @@ const items = [
     active: false,
     subItems: [
       { name: 'Rating', to: '/nebula' },
-      { name: 'Create app', to: '/nebula/Create app' },
+      { name: 'Create app', to: '/nebula/create app' },
     ],
   },
   {
