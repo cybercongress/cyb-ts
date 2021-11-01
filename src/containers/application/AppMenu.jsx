@@ -16,7 +16,10 @@ const items = [
   {
     name: 'My robot',
     to: '/',
-    subItems: {},
+    subItems: [
+      { name: 'Sixth Sense', to: '/sixthSense' },
+      { name: 'Avatar', to: '/' },
+    ],
   },
   {
     name: 'Genesis',
@@ -62,13 +65,9 @@ const items = [
       { name: 'Heroes at rest', to: '/halloffame/jailed' },
       { name: 'Become a Hero', to: '/search/Become a Hero' },
       { name: 'BOOT', to: '/token/BOOT' },
+      { name: 'Biosynthesis', to: '/search/biosynthesis reactor'},
       { name: 'H', to: '/token/H' },
     ],
-  },
-  {
-    name: 'Biosynthesis Reactor',
-    to: '/search/biosynthesis reactor',
-    subItems: [{ name: 'H', to: '/token/H' }],
   },
   {
     name: 'HFR',
@@ -115,11 +114,6 @@ const items = [
       { name: 'Rating', to: '/nebula' },
       { name: 'Create app', to: '/nebula/Create app' },
     ],
-  },
-  {
-    name: 'Sixth Sense',
-    to: '/sixthSense',
-    subItems: [],
   },
   {
     name: 'Senate',
