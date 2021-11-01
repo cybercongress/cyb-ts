@@ -302,6 +302,13 @@ class ActionBarContainer extends Component {
             console.log('hash :>> ', hash);
             this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
             this.timeOut = setTimeout(this.confirmTx, 1500);
+          } else if (result.code === 4) {
+            this.setState({
+              txHash: null,
+              stage: STAGE_ERROR,
+              errorMessage:
+                'Cyberlinking and investmint is not working. Wait updates.',
+            });
           } else {
             this.setState({
               txHash: null,

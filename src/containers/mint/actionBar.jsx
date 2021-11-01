@@ -86,8 +86,15 @@ function ActionBar({
           parseFloat(VESTING_TIME_HOURS * valueDays),
           fee
         );
+        console.log(`response`, response);
         if (response.code === 0) {
           setTxHash(response.transactionHash);
+        } else if (response.code === 4) {
+          setTxHash(null);
+          setErrorMessage(
+            'Cyberlinking and investmint is not working. Wait updates.'
+          );
+          setStage(STAGE_ERROR);
         } else {
           setTxHash(null);
           setErrorMessage(response.rawLog.toString());

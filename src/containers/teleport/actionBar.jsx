@@ -99,12 +99,18 @@ function ActionBar({ stateActionBar }) {
     );
 
     console.log(`response`, response);
-    if (response.code) {
+    if (response.code === 0) {
+      setTxHash(response.transactionHash);
+    } else if (response.code === 4) {
+      setTxHash(null);
+      setErrorMessage(
+        'Cyberlinking and investmint is not working. Wait updates.'
+      );
+      setStage(STAGE_ERROR);
+    } else {
       setTxHash(null);
       setErrorMessage(response.rawLog.toString());
       setStage(STAGE_ERROR);
-    } else {
-      setTxHash(response.transactionHash);
     }
   };
 
@@ -126,12 +132,18 @@ function ActionBar({ stateActionBar }) {
       );
 
       console.log(`response`, response);
-      if (response.code) {
+      if (response.code === 0) {
+        setTxHash(response.transactionHash);
+      } else if (response.code === 4) {
+        setTxHash(null);
+        setErrorMessage(
+          'Cyberlinking and investmint is not working. Wait updates.'
+        );
+        setStage(STAGE_ERROR);
+      } else {
         setTxHash(null);
         setErrorMessage(response.rawLog.toString());
         setStage(STAGE_ERROR);
-      } else {
-        setTxHash(response.transactionHash);
       }
     } else {
       setErrorMessage(
@@ -186,12 +198,18 @@ function ActionBar({ stateActionBar }) {
       );
 
       console.log(`response`, response);
-      if (response.code) {
+      if (response.code === 0) {
+        setTxHash(response.transactionHash);
+      } else if (response.code === 4) {
+        setTxHash(null);
+        setErrorMessage(
+          'Cyberlinking and investmint is not working. Wait updates.'
+        );
+        setStage(STAGE_ERROR);
+      } else {
         setTxHash(null);
         setErrorMessage(response.rawLog.toString());
         setStage(STAGE_ERROR);
-      } else {
-        setTxHash(response.transactionHash);
       }
     } else {
       setErrorMessage(
@@ -240,12 +258,18 @@ function ActionBar({ stateActionBar }) {
 
       console.log(`response`, response);
 
-      if (response.code) {
+      if (response.code === 0) {
+        setTxHash(response.transactionHash);
+      } else if (response.code === 4) {
+        setTxHash(null);
+        setErrorMessage(
+          'Cyberlinking and investmint is not working. Wait updates.'
+        );
+        setStage(STAGE_ERROR);
+      } else {
         setTxHash(null);
         setErrorMessage(response.rawLog.toString());
         setStage(STAGE_ERROR);
-      } else {
-        setTxHash(response.transactionHash);
       }
     } else {
       setErrorMessage(
