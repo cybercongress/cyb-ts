@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
 import db from '../../db';
+import { getPinsCid } from '../../utils/search/utils';
 
 const isSvg = require('is-svg');
 
@@ -159,6 +160,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         meta.blockSizes = linksCid;
         if (responseDag.value.size < size * 10 ** 6) {
           nodeIpfs.pin.add(cid);
+          getPinsCid(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
           const someVar = responseCat;
           // const responseCat = await nodeIpfs.cat(cid);

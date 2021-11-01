@@ -1301,6 +1301,7 @@ export const getAvatarIpfs = async (cid, ipfs) => {
 
     if (responseDag.value.size <= 1.5 * 10 ** 7) {
       const responsePin = ipfs.pin.add(cid);
+      getPinsCid(cid);
       console.log('responsePin', responsePin);
       let mime;
 
@@ -1345,6 +1346,19 @@ export const getIpfsGatway = async (cid) => {
     return response.data;
   } catch (error) {
     console.log(error);
+    return null;
+  }
+};
+
+export const getPinsCid = async (cid) => {
+  try {
+    const response = await axios({
+      method: 'post',
+      url: `https://io.cybernode.ai/pins/${cid}`,
+    });
+    return response;
+  } catch (e) {
+    console.log(e);
     return null;
   }
 };

@@ -25,12 +25,11 @@ const headers = {
 const url =
   'https://io.cybernode.ai/pins/QmU713Qs3atZVXfNc2jV1maGNsA2sKLR5YDXvfed86ZneP';
 
-export const getVersion = async () => {
+export const getPinsCid = async (cid) => {
   try {
     const response = await axios({
-      method: 'get',
-      url:
-        'https://io.cybernode.ai/pins/QmU713Qs3atZVXfNc2jV1maGNsA2sKLR5YDXvfed86ZneP',
+      method: 'post',
+      url: `https://io.cybernode.ai/pins/${cid}`,
       auth: {
         username: 'anonymas',
         password: 'mouse123west',
@@ -48,9 +47,9 @@ function TestKeplr({ block }) {
 
   useEffect(() => {
     const getResponse = async () => {
-      const data = await getVersion();
+      // const data = await getPinsCid();
       
-      console.log(`data`, data);
+      // console.log(`data`, data);
     };
     getResponse();
   }, []);

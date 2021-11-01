@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { SearchItem } from '@cybercongress/gravity';
 import Iframe from 'react-iframe';
-import { getRankGrade } from '../../utils/search/utils';
+import { getRankGrade, getPinsCid } from '../../utils/search/utils';
 import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
 import db from '../../db';
@@ -70,6 +70,8 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         if (responseDag.value.size < 1.5 * 10 ** 6) {
           const responsePin = nodeIpfs.pin.add(cid);
           console.log('responsePin', responsePin);
+          const datagetPinsCid = await getPinsCid(cid);
+          console.log(`datagetPinsCid`, datagetPinsCid)
 
           // const cids = new CID(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
