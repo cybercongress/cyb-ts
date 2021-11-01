@@ -16,7 +16,10 @@ const items = [
   {
     name: 'My robot',
     to: '/',
-    subItems: {},
+    subItems: [
+      { name: 'Sixth Sense', to: '/sixthSense' },
+      { name: 'Avatar', to: '/' },
+    ],
   },
   {
     name: 'Genesis',
@@ -30,7 +33,10 @@ const items = [
   {
     name: 'Superintelligence',
     to: '/superintelligence',
-    subItems: {},
+    subItems: [
+      { name: 'Transactions', to: '/network/bostrom/tx' },
+      { name: 'Blocks', to: '/network/bostrom/block' },
+    ],
   },
   {
     name: 'Oracle',
@@ -38,9 +44,7 @@ const items = [
     subItems: [
       { name: 'Cyberlinks', to: '/graph' },
       { name: 'Particles', to: '/particles' },
-      // { name: 'Richlist', to: '/search/richlist' },
-      { name: 'Transactions', to: '/network/bostrom/tx' },
-      { name: 'Blocks', to: '/network/bostrom/block' },
+      { name: 'Neurons', to: '/search/neurons' },
     ],
   },
   {
@@ -60,15 +64,11 @@ const items = [
     subItems: [
       { name: 'Active heroes', to: '/halloffame' },
       { name: 'Heroes at rest', to: '/halloffame/jailed' },
-      { name: 'Become a Hero', to: '/search/Become a Hero' },
+      { name: 'Become a Hero', to: '/search/become hero' },
       { name: 'BOOT', to: '/token/BOOT' },
+      { name: 'Biosynthesis', to: '/search/biosynthesis reactor'},
       { name: 'H', to: '/token/H' },
     ],
-  },
-  {
-    name: 'Biosynthesis Reactor',
-    to: '/search/biosynthesis reactor',
-    subItems: [{ name: 'H', to: '/token/H' }],
   },
   {
     name: 'HFR',
@@ -113,13 +113,10 @@ const items = [
     active: false,
     subItems: [
       { name: 'Rating', to: '/nebula' },
-      { name: 'Create app', to: '/nebula/Create app' },
+      { name: 'Create app', to: '/nebula/create app' },
+      { name: 'Deploy contract', to: '/nebula/deploy contract' },
+      { name: 'Give life', to: '/nebula/give life' },      
     ],
-  },
-  {
-    name: 'Sixth Sense',
-    to: '/sixthSense',
-    subItems: [],
   },
   {
     name: 'Senate',
