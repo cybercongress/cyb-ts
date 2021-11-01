@@ -12,7 +12,7 @@ import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import PoolData from '../teleport/poolData';
-import { reduceBalances } from '../../utils/utils';
+import { reduceBalances, coinDecimals } from '../../utils/utils';
 
 const ContainerGrid = ({ children }) => (
   <Pane
@@ -124,8 +124,8 @@ function Market({ node, mobile, defaultAccount }) {
               ...obj,
               [item.particle]: {
                 particle: item.particle,
-                rank: item.rank,
-                grade: getRankGrade(item.rank),
+                rank: coinDecimals(item.rank),
+                grade: getRankGrade(coinDecimals(item.rank)),
                 status: 'impossibleLoad',
                 query: selectedTokens,
                 text: item.particle,

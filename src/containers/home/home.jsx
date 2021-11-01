@@ -7,7 +7,7 @@ import { CardStatisics, Dots, Loading } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import AccountCount from '../brain/accountCount';
-import { formatCurrency } from '../../utils/utils';
+import { formatCurrency, coinDecimals } from '../../utils/utils';
 import { setQuery } from '../../redux/actions/query';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import ActionBarCont from '../market/actionBarContainer';
@@ -124,8 +124,8 @@ const Home = ({ node, mobile, defaultAccount }) => {
               ...obj,
               [item.particle]: {
                 particle: item.particle,
-                rank: item.rank,
-                grade: getRankGrade(item.rank),
+                rank: coinDecimals(item.rank),
+                grade: getRankGrade(coinDecimals(item.rank)),
                 status: 'impossibleLoad',
                 query: 'superintelligence',
                 text: item.particle,

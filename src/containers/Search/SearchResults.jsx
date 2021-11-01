@@ -7,6 +7,7 @@ import {
   formatNumber,
   exponentialToDecimal,
   trimString,
+  coinDecimals
 } from '../../utils/utils';
 import {
   Loading,
@@ -77,8 +78,8 @@ function SearchResults({ node, mobile, setQueryProps }) {
               ...obj,
               [item.particle]: {
                 particle: item.particle,
-                rank: item.rank,
-                grade: getRankGrade(item.rank),
+                rank: coinDecimals(item.rank),
+                grade: getRankGrade(coinDecimals(item.rank)),
                 status: 'impossibleLoad',
                 query,
                 text: item.particle,

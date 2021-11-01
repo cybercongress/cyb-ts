@@ -22,7 +22,7 @@ import {
 } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
-import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
+import { formatNumber, trimString, coinDecimals } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
   DiscussionTab,
@@ -77,8 +77,8 @@ const reduceParticleArr = (data, query = '') => {
       ...obj,
       [item.particle]: {
         particle: item.particle,
-        rank: item.rank,
-        grade: getRankGrade(item.rank),
+        rank: coinDecimals(item.rank),
+        grade: getRankGrade(coinDecimals(item.rank)),
         status: 'impossibleLoad',
         query,
         text: item.particle,

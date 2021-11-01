@@ -9,6 +9,7 @@ import { AppContext } from '../../context';
 import SearchTokenInfo from '../market/searchTokensInfo';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { coinDecimals } from '../../utils/utils';
 
 const ContainerGrid = ({ children }) => (
   <Pane
@@ -75,8 +76,8 @@ function Nebula({ node, mobile, defaultAccount }) {
               ...obj,
               [item.particle]: {
                 particle: item.particle,
-                rank: item.rank,
-                grade: getRankGrade(item.rank),
+                rank: coinDecimals(item.rank),
+                grade: getRankGrade(coinDecimals(item.rank)),
                 status: 'impossibleLoad',
                 query: querySearch,
                 text: item.particle,
