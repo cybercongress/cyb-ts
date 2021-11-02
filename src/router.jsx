@@ -217,7 +217,7 @@ function AppRouter({
       <Route path="/" component={App} />
       <Switch>
         <Route path="/" exact component={Wallet} />
-        <Route path="/superintelligence" component={Home} />
+        <Route path="/bootloader" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
         <Route path="/gift/:address?" component={Gift} />
         <Route path="/gol/takeoff" component={Funding} />

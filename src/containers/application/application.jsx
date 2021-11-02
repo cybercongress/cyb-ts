@@ -31,8 +31,8 @@ const cyber = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const bug = require('../../image/alert-circle-outline.svg');
-const circleRed = require('../../image/large-red-circle.png');
 const lensIcon = require('../../image/lens-icon.svg');
+const circleYellow = require('../../image/large-yellow-circle.png');
 
 const ListAccounts = ({
   accounts,
@@ -415,20 +415,24 @@ function App({
               tooltip={
                 <span>
                   <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://github.com/cybercongress/dot-cyber"
+                    href="/search/cyb"
                   >
-                    The dot-cyber
+                    Cyb app
                   </a>{' '}
-                  app has not been audited yet. Please, use it with caution.
+                  has not been audited yet. Be especially careful when interracting with apps from search results! They can trick you with what you actually sign! {' '}
+                  <a
+                    href="/search/secure cyb"
+                  >
+                   Join the discussion {' '}
+                  </a>  
+                  on how to make apps in search results secure
                 </span>
               }
             >
               <img
                 alt="bugs"
-                style={{ width: '20px', height: '20px' }}
-                src={circleRed}
+                style={{ width: '15px', height: '15px' }}
+                src={circleYellow}
               />
             </Tooltip>
           </Pane>

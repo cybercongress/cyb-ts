@@ -3,12 +3,11 @@ import { connect } from 'react-redux';
 import Iframe from 'react-iframe';
 import Timer from './timer';
 
-function Genesis({ block }) {
+function Genesis() {
   const time = true;
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
-      <div>{block}</div>
       {time ? (
         <Timer />
       ) : (
@@ -24,11 +23,4 @@ function Genesis({ block }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    block: store.block.block,
-  };
-};
-
-export default connect(mapStateToProps)(Genesis);
-// export default Genesis;
+export default Genesis;

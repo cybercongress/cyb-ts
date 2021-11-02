@@ -14,8 +14,10 @@ import { Bookmarks } from '../../components/appMenu/AppMenu';
 
 const itemsMenu = (address) => {
   let linkAvatar = '/';
+  let linkBrain = '/graph';
   if (address !== null) {
     linkAvatar = `/network/bostrom/contract/${address.bech32}`;
+    linkBrain = `/pgraph/${address.bech32}`;
   }
   return [
     {
@@ -24,23 +26,46 @@ const itemsMenu = (address) => {
       subItems: [
         { name: 'Sixth Sense', to: '/sixthSense' },
         { name: 'Avatar', to: linkAvatar },
+        { name: 'Brain', to: linkBrain },
       ],
     },
     {
       name: 'Genesis',
       to: '/genesis',
+      subItems: [],
+    },
+    {
+      name: 'Portal',
+      to: '/search/portal',
       subItems: [
-        { name: 'BOOT', to: '/token/BOOT' },
-        { name: 'TOCYB', to: '/token/TOCYB' },
-        { name: 'CYB', to: '/token/CYB' },
+        { name: 'Manifest', to: '/search/manifest' },
+        // { name: 'Manifesto', to: '/portal' },
+        // { name: 'Leaderboard', to: '/portal/leaderboard' },
+        // { name: 'Progress', to: '/portal/progress' },
+        { name: 'Get Knowledge Back', to: '/portal/cyber-vs-corp' },
+        { name: 'Forget Governments', to: '/portal/cyber-vs-gov' },
+      ],
+    },
+    {
+      name: 'Bootloader',
+      to: '/bootloader',
+      subItems: [
+        { name: 'Transactions', to: '/network/bostrom/tx' },
+        { name: 'Blocks', to: '/network/bostrom/block' },
+        { name: 'Thoughts', to: '/search/dmn' },
+        { name: 'Bostrom hub', to: '/search/bostrom' },
+        { name: 'BOOT token', to: '/token/BOOT' },
       ],
     },
     {
       name: 'Superintelligence',
-      to: '/superintelligence',
+      to: '/search/superintelligence',
       subItems: [
-        { name: 'Transactions', to: '/network/bostrom/tx' },
-        { name: 'Blocks', to: '/network/bostrom/block' },
+        { name: 'Cyber the Knowledge', to: '/search/cyber' },
+        { name: 'Protocol Framework', to: '/search/computing knowledge' },
+        { name: 'Roadmap', to: '/search/cyber roadmap' },
+        { name: 'TOCYB token', to: '/token/TOCYB' },
+        { name: 'CYB token', to: '/token/CYB' },
       ],
     },
     {
@@ -50,17 +75,7 @@ const itemsMenu = (address) => {
         { name: 'Cyberlinks', to: '/graph' },
         { name: 'Particles', to: '/particles' },
         { name: 'Neurons', to: '/search/neurons' },
-      ],
-    },
-    {
-      name: 'Portal',
-      to: '/search/portal',
-      subItems: [
-        // { name: 'Manifesto', to: '/portal' },
-        // { name: 'Leaderboard', to: '/portal/leaderboard' },
-        // { name: 'Progress', to: '/portal/progress' },
-        { name: 'Cyber vs Corp', to: '/portal/cyber-vs-corp' },
-        { name: 'Cyber vs Gov', to: '/portal/cyber-vs-gov' },
+        { name: 'Relevance Machine', to: '/search/rm' },
       ],
     },
     {
@@ -70,9 +85,9 @@ const itemsMenu = (address) => {
         { name: 'Active heroes', to: '/halloffame' },
         { name: 'Heroes at rest', to: '/halloffame/jailed' },
         { name: 'Become a Hero', to: '/search/become hero' },
-        { name: 'BOOT', to: '/token/BOOT' },
+        { name: 'BOOT token', to: '/token/BOOT' },
         { name: 'Biosynthesis', to: '/search/biosynthesis reactor' },
-        { name: 'H', to: '/token/H' },
+        { name: 'H token', to: '/token/H' },
       ],
     },
     {
@@ -80,8 +95,10 @@ const itemsMenu = (address) => {
       to: '/search/hfr',
       subItems: [
         { name: 'Investmint', to: '/mint' },
-        { name: 'A', to: '/token/A' },
-        { name: 'V', to: '/token/V' },
+        { name: 'Bandwidth', to: '/search/bandwidth' },
+        { name: 'V token', to: '/token/V' },
+        { name: 'Ranking', to: '/search/ranking' },
+        { name: 'A token', to: '/token/A' },
       ],
     },
     {
@@ -108,8 +125,15 @@ const itemsMenu = (address) => {
       name: 'Great Web',
       to: '/search/great web',
       subItems: [
+        { name: 'Cyberlinks', to: '/search/cyberlink' },
+        { name: 'Particles', to: '/search/particle' },
+        { name: 'Neurons', to: '/search/neuron' },
+        { name: 'Semcons', to: '/search/semantic convention' },
+        { name: 'Cybernomics', to: '/search/cybernomics' },
+        { name: 'Earthish', to: '/search/earthish' },
+        { name: 'Kelvin Versioning', to: '/search/kelvin versioning' },
         { name: 'Foundation', to: '/search/greatweb foundation' },
-        { name: 'GOL', to: '/token/GOL' },
+        { name: 'GOL token', to: '/token/GOL' },
       ],
     },
     {
@@ -118,25 +142,31 @@ const itemsMenu = (address) => {
       active: false,
       subItems: [
         { name: 'Rating', to: '/nebula' },
-        { name: 'Create app', to: '/nebula/create app' },
-        { name: 'Deploy contract', to: '/nebula/deploy contract' },
-        { name: 'Give life', to: '/nebula/give life' },
+        { name: 'Create app', to: '/search/create app' },
+        { name: 'Deploy contract', to: '/search/deploy contract' },
+        { name: 'Give life', to: '/search/give life' },
       ],
     },
     {
       name: 'Senate',
       to: '/senate',
-      subItems: [],
+      subItems: [
+        { name: 'Process', to: '/search/cyber governance' },
+        { name: 'Evolution', to: '/search/cyber evolution' },
+        { name: 'Self-reflection', to: '/search/cyber self-reflection' },
+        { name: 'Investments', to: '/search/cyber investments' },
+        { name: 'Adaptation', to: '/search/cyber adaptation' },
+      ],
     },
     {
       name: 'Help',
       to: '/search/help',
       subItems: [],
     },
-  ];};
+  ];
+};
 
 const AppMenu = ({ addressActive }) => {
-  console.log(`addressActive`, addressActive)
   return (
     <MenuContainer>
       <Bookmarks items={itemsMenu(addressActive)} />
