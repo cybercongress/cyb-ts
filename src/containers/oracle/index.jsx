@@ -9,7 +9,7 @@ import AccountCount from '../brain/accountCount';
 import useGetStatisticsCyber from './useGetStatisticsCyber';
 import ForceGraph from '../forceGraph/forceGraph';
 
-function Oracle({ block }) {
+function Oracle() {
   const { knowledge } = useGetStatisticsCyber();
 
   const { linksCount, cidsCount } = knowledge;
@@ -47,19 +47,8 @@ function Oracle({ block }) {
               styleContainer={{ minWidth: 'unset' }}
             />
           </Link>
-          <Link to="/network/bostrom/tx">
-            <CardStatisics
-              title="Transactions"
-              value={<Txs />}
-              styleContainer={{ minWidth: 'unset' }}
-            />
-          </Link>
-          <Link to="/network/bostrom/block">
-            <CardStatisics
-              title="Blocks"
-              value={formatNumber(parseFloat(block))}
-              styleContainer={{ minWidth: 'unset' }}
-            />
+          <Link to="/search/neurons">
+            <CardStatisics value={<AccountCount />} title="Neurons" />
           </Link>
         </Pane>
       </main>
@@ -68,10 +57,4 @@ function Oracle({ block }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    block: store.block.block,
-  };
-};
-
-export default connect(mapStateToProps)(Oracle);
+export default Oracle;
