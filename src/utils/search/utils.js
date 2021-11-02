@@ -582,11 +582,11 @@ export const getBalanceWallet = (address) =>
 
 export const getDrop = async (address) => {
   try {
-    const response = await axios({
-      method: 'get',
-      url: `https://io.cybernode.ai/ipfs_api/api/v0/dag/get?arg=bafyreifheyc6rhjhxenu3df3pwbxv5r6vb273szvwufjbly4m6rlv3jyni/${address}`,
-    });
-    return response.data;
+    // const response = await axios({
+    //   method: 'get',
+    //   url: `https://io.cybernode.ai/ipfs_api/api/v0/dag/get?arg=bafyreifheyc6rhjhxenu3df3pwbxv5r6vb273szvwufjbly4m6rlv3jyni/${address}`,
+    // });
+    return 0;
   } catch (e) {
     return 0;
   }
@@ -1350,13 +1350,55 @@ export const getIpfsGatway = async (cid) => {
   }
 };
 
-export const getPinsCid = async (cid) => {
+export const getPinsCidPost = async (cid) => {
   try {
     const response = await axios({
       method: 'post',
       url: `https://io.cybernode.ai/pins/${cid}`,
     });
-    return response;
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getPinsCidGet = async (cid) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://io.cybernode.ai/pins/${cid}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getPinsCid = async (cid) => {
+  try {
+    const responseGetPinsCidGet = await getPinsCidGet(cid);
+    console.log(`responseGetPinsCidGet`, responseGetPinsCidGet);
+    if (
+      responseGetPinsCidGet.peer_map &&
+      Object.keys(responseGetPinsCidGet.peer_map).length > 0
+    ) {
+      const { peer_map: peerMap } = responseGetPinsCidGet;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in peerMap) {
+        if (Object.hasOwnProperty.call(peerMap, key)) {
+          const element = peerMap[key];
+          if (element.status !== 'unpinned') {
+            console.log(`!== unpinned`);
+            return null;
+          }
+        }
+      }
+      const responseGetPinsCidPost = await getPinsCidPost(cid);
+      return responseGetPinsCidPost;
+    }
+    return null;
   } catch (e) {
     console.log(e);
     return null;

@@ -8,6 +8,7 @@ function Genesis({ block }) {
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
+      <div>{block}</div>
       {time ? (
         <Timer />
       ) : (
@@ -23,11 +24,11 @@ function Genesis({ block }) {
   );
 }
 
-// const mapStateToProps = (store) => {
-//   return {
-//     block: store.block.block,
-//   };
-// };
+const mapStateToProps = (store) => {
+  return {
+    block: store.block.block,
+  };
+};
 
-// export default connect(mapStateToProps)(Genesis);
-export default Genesis;
+export default connect(mapStateToProps)(Genesis);
+// export default Genesis;

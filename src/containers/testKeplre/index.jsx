@@ -14,6 +14,7 @@ import { CYBER } from '../../utils/config';
 import { trimString, formatNumber } from '../../utils/utils';
 import { Btn } from './ui';
 import Convert from './convert';
+import { getPinsCid } from '../../utils/search/utils'
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -25,33 +26,11 @@ const headers = {
 const url =
   'https://io.cybernode.ai/pins/QmU713Qs3atZVXfNc2jV1maGNsA2sKLR5YDXvfed86ZneP';
 
-export const getPinsCid = async (cid) => {
-  try {
-    const response = await axios({
-      method: 'post',
-      url: `https://io.cybernode.ai/pins/${cid}`,
-      auth: {
-        username: 'anonymas',
-        password: 'mouse123west',
-      },
-    });
-    return response;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 function TestKeplr({ block }) {
   window.block = block;
 
   useEffect(() => {
-    const getResponse = async () => {
-      // const data = await getPinsCid();
-      
-      // console.log(`data`, data);
-    };
-    getResponse();
+    getPinsCid('QmZueK4L54q4FyrwBhCVv74bRY7xi1ni3jN6kAVvS6qZ7y');
   }, []);
 
   return (
