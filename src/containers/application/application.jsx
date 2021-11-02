@@ -25,6 +25,7 @@ import {
 } from '../../utils/utils';
 import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 const cyber = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
@@ -94,6 +95,7 @@ function App({
   children,
 }) {
   const { jsCyber } = useContext(AppContext);
+  const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
   const location = useLocation();
@@ -309,7 +311,7 @@ function App({
             onCloseSidebar={() => setOpenMenu(false)}
             openMenu={openMenu}
           >
-            <AppMenu />
+            <AppMenu addressActive={addressActive} />
           </AppSideBar>
           <MenuButton onClick={() => setOpenMenu(!openMenu)} imgLogo={cyber} />
           <Pane bottom="-10px" right="-20%" position="absolute">
