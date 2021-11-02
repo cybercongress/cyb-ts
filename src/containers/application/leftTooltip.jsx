@@ -22,18 +22,12 @@ function LeftTooltip({ block }) {
           </a>{' '}
           network at block{' '}
           <span style={{ color: '#4ed6ae' }}>
+            <a
+            href="/network/bostrom/block"
+            >
             {formatNumber(parseFloat(block))}
+            </a>
           </span>
-          . {CYBER.CHAIN_ID} is incentivized test network. Be careful. Details
-          in{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3"
-          >
-            whitepaper
-          </a>
-          .
         </span>
       }
     >

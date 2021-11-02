@@ -41,7 +41,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, amounPower, countLink }) => {
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
-          <Link to="/portal">Get {CYBER.DENOM_CYBER.toUpperCase()}</Link>
+          <Link to="/search/get BOOT">Get {CYBER.DENOM_CYBER.toUpperCase()}</Link>
         </Text>
       </Pane>
     </Pane>
