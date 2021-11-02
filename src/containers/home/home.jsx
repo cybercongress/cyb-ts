@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
 import { CardStatisics, Dots, Loading } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import AccountCount from '../brain/accountCount';
-import { formatCurrency, coinDecimals } from '../../utils/utils';
+import Txs from '../brain/tx';
+import { formatCurrency, coinDecimals, formatNumber } from '../../utils/utils';
 import { setQuery } from '../../redux/actions/query';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import ActionBarCont from '../market/actionBarContainer';
@@ -48,14 +49,14 @@ const ContainerGrid = ({ children }) => (
     marginTop={10}
     marginBottom={50}
     display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+    gridTemplateColumns="repeat(auto-fit, minmax(210px, 1fr))"
     gridGap="20px"
   >
     {children}
   </Pane>
 );
 
-const Home = ({ node, mobile, defaultAccount }) => {
+const Home = ({ node, mobile, defaultAccount, block }) => {
   const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [entropy, setEntropy] = useState(0);
@@ -167,14 +168,29 @@ const Home = ({ node, mobile, defaultAccount }) => {
           <CardStatisics
             value={entropyLoader ? <Dots /> : `${entropy} bits`}
             title="Negentropy"
+            styleContainer={{ minWidth: 'unset' }}
           />
           <CardStatisics
             value={
               memoryLoader ? <Dots /> : formatCurrency(memory, 'B', 2, PREFIXES)
             }
             title="GPU memory"
+            styleContainer={{ minWidth: 'unset' }}
           />
-          <CardStatisics value={<AccountCount />} title="Neurons" />
+          <Link to="/network/bostrom/tx">
+            <CardStatisics
+              title="Transactions"
+              value={<Txs />}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
+          <Link to="/network/bostrom/block">
+            <CardStatisics
+              title="Blocks"
+              value={formatNumber(parseFloat(block))}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
         </ContainerGrid>
         <ContainerGrid>
           {loadingSearch ? (
@@ -219,6 +235,7 @@ const mapStateToProps = (store) => {
     mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
+    block: store.block.block,
   };
 };
 
