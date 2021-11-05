@@ -45,6 +45,7 @@ import Taverna from './containers/taverna';
 import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
+import Movie from './containers/movie';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -63,6 +64,7 @@ function AppRouter({
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
   const [genesis, setGenesis] = useState(false);
+  const [baseUrl, setBaseUrl] = useState(true);
   const [wsClient, setWsClient] = useState(null);
 
   // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
@@ -75,11 +77,34 @@ function AppRouter({
     // setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
 
-  // eslint-disable-next-line no-lone-blocks
-  {
-    /*  // useEffect(() => {
-  //   initClock();
-  // }, []);
+  useEffect(() => {
+    let timeinterval;
+    const genesisDate = TIME_START;
+    const countDown = new Date(genesisDate).getTime();
+    const changeTime = () => {
+      const now = Date.parse(new Date().toUTCString());
+      const distance = countDown - now;
+
+      if (distance <= 0) {
+        clearInterval(timeinterval);
+        setTime(false);
+      } else {
+        setTime(true);
+      }
+    };
+    changeTime();
+    timeinterval = setInterval(changeTime, 1000);
+    return () => {
+      clearInterval(timeinterval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (time) {
+      history.push('/genesis');
+    }
+    setLoader(false);
+  }, [time]);
 
   // useEffect(() => {
   //   if (blockProps >= 6 && genesis) {
@@ -155,20 +180,9 @@ function AppRouter({
   //   };
   // }, [wsClient]);
 
-  // const initClock = () => {
-  //   const deadline = TIME_START;
-  //   const startTime = Date.parse(deadline) - Date.parse(new Date());
-  //   if (startTime <= 0) {
-  //     setTime(false);
-  //   } else {
-  //     setTime(true);
-  //     setGenesis(true);
-  //   }
-  // };
+  // add Switch to Router
 
-  // // add Switch to Router
-
-  // if (time && genesis) {
+  // if (time) {
   //   return (
   //     <div
   //       style={{
@@ -209,12 +223,14 @@ function AppRouter({
   //     </div>
   //   );
   // }
-*/
+
+  if (loader) {
+    return <div>...</div>;
   }
 
   return (
     <Router history={history}>
-      <Route path="/" component={App} />
+      <Route path="/" component={() => <App time={time} />} />
       <Switch>
         <Route path="/" exact component={Wallet} />
         <Route path="/bootloader" component={Home} />
@@ -262,7 +278,8 @@ function AppRouter({
         <Route path="/sixthSense" component={Taverna} />
         <Route path="/teleport" component={Teleport} />
         <Route path="/nebula" component={Nebula} />
-        <Route path="/genesis" component={Genesis} />
+        {/* <Route path="/genesis" component={Genesis} /> */}
+        <Route path="/genesis" component={Movie} />
       </Switch>
     </Router>
   );

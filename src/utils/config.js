@@ -1,4 +1,4 @@
-const TIME_START = 'Sep 18 2021 19:00:00 GMT +3';
+const TIME_START = '2021-11-05T13:22:42Z';
 const INFINITY = '∞';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
@@ -72,7 +72,7 @@ const CYBER = {
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
-  CHAIN_ID: 'bostrom-testnet-7',
+  CHAIN_ID: 'bostrom',
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',

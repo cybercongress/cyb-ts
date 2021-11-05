@@ -15,7 +15,7 @@
 }
 
 #electricityLineRect {
-  fill: #000;
+  fill: rgba(0, 0, 0, 0);
 }
 
 .btn-home {

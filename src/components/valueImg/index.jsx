@@ -7,6 +7,9 @@ const hydrogen = require('../../image/hydrogen.svg');
 const tocyb = require('../../image/boot.png');
 const boot = require('../../image/large-green.png');
 const downOutline = require('../../image/chevronDownOutline.svg');
+const gol = require('../../image/seedling.png');
+const atom = require('../../image/cosmos-2.svg');
+const eth = require('../../image/Ethereum_logo_2014.svg');
 
 const ValueImg = ({
   text,
@@ -52,6 +55,21 @@ const ValueImg = ({
     case 'choose':
       img = downOutline;
       textCurency = 'choose';
+      break;
+
+    case 'GOL':
+      img = gol;
+      textCurency = 'GOL';
+      break;
+
+    case 'atom':
+      img = atom;
+      textCurency = 'ATOM';
+      break;
+
+    case 'eth':
+      img = eth;
+      textCurency = 'ETH';
       break;
 
     default:

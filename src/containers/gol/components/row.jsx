@@ -14,6 +14,11 @@ const RowTable = ({ text, cybWon }) => (
         {cybWon}
       </Text>
     </Table.TextCell>
+    <Table.TextCell textAlign="end">
+      <Text fontSize="16px" color="#fff">
+        {cybWon}
+      </Text>
+    </Table.TextCell>
   </Table.Row>
 );
 

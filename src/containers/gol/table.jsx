@@ -28,7 +28,12 @@ const TableDiscipline = ({ address }) => {
             </Table.TextHeaderCell>
             <Table.TextHeaderCell textAlign="center">
               <Text fontSize="18px" color="#fff">
-                CYB won
+                TOCYB
+              </Text>
+            </Table.TextHeaderCell>
+            <Table.TextHeaderCell textAlign="center">
+              <Text fontSize="18px" color="#fff">
+                BOOT
               </Text>
             </Table.TextHeaderCell>
           </Table.Head>
@@ -43,6 +48,7 @@ const TableDiscipline = ({ address }) => {
               Object.keys(resultGol).map((key) => (
                 <RowTable
                   text={key}
+                  key={key}
                   cybWon={formatNumber(Math.floor(resultGol[key]))}
                 />
               ))}

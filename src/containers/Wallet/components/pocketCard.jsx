@@ -12,7 +12,7 @@ const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
 const deleteIcon = require('../../../image/trash-outline.svg');
 const imgEth = require('../../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../../image/blue-circle.png');
+const imgCyber = require('../../../image/large-green.png');
 const imgCosmos = require('../../../image/cosmos-2.svg');
 
 const imgData = {

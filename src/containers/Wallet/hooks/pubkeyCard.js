@@ -74,7 +74,7 @@ export const useGetBalanceEth = (address) => {
         setBalanceEth((item) => ({ ...item, gol: responseGol }));
       }
     };
-    feachData();
+    setTimeout(feachData, 100);
   }, [address]);
 
   return balanceEth;

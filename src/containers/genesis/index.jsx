@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Iframe from 'react-iframe';
 import Timer from './timer';
@@ -16,7 +17,7 @@ function Genesis() {
           height="100%"
           id="iframeCid"
           className="iframe-SearchItem"
-          src="http://127.0.0.1:8080/ipfs/QmadZMMwcAkgwVQ5vd6bbRpSQo1NVe9ihmsdYc8HwJhSLu/"
+          src="http://127.0.0.1:8080/ipfs/QmY37mCc1FuSMzpKaHoz5aDtJsz4gnJWG13Vrih8ifxXjS/"
         />
       )}
     </div>

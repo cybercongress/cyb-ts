@@ -310,7 +310,6 @@ function TweetCard({
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     node: store.ipfs.ipfs,
   };
 };

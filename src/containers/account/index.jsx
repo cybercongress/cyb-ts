@@ -6,7 +6,7 @@ import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './tabs/heroes';
-import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
+import { coinDecimals, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading, Copy, ContainerCard, Card, Dots } from '../../components';
 import ActionBarContainer from './actionBar';
 import GetTxs from './tabs/txs';
@@ -18,7 +18,7 @@ import AvatarIpfs from './component/avatarIpfs';
 import CyberLinkCount from './component/cyberLinkCount';
 import { AppContext } from '../../context';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
-import { CYBER } from '../../utils/config';
+import { CYBER, PATTERN_CYBER } from '../../utils/config';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -57,6 +57,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   const [tweets, setTweets] = useState(false);
   const [follow, setFollow] = useState(false);
   const [activeAddress, setActiveAddress] = useState(null);
+  const [karmaNeuron, setKarmaNeuron] = useState(0);
 
   useEffect(() => {
     const { pathname } = location;
@@ -106,6 +107,17 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     };
     getFeeds();
   }, [address, updateAddress]);
+
+  useEffect(() => {
+    const getKarma = async () => {
+      if (jsCyber !== null && address.match(PATTERN_CYBER)) {
+        const responseKarma = await jsCyber.karma(address);
+        const karma = parseFloat(responseKarma.karma);
+        setKarmaNeuron(karma);
+      }
+    };
+    getKarma();
+  }, [jsCyber, address]);
 
   useEffect(() => {
     const chekFollowAddress = async () => {
@@ -237,7 +249,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
         <ContainerCard col={3}>
           <Card
             title="cyberlinks"
-            value={<CyberLinkCount accountUser={address} />}
+            value={formatNumber(karmaNeuron)}
             stylesContainer={{
               width: '100%',
               maxWidth: 'unset',

@@ -211,7 +211,7 @@ const CosmosAddressInfo = ({
                 value={
                   ((totalCosmos.total / COSMOS.DIVISOR_ATOM) * 1000) / 1000
                 }
-                text="ATOM"
+                text="atom"
               />
             </RowBalance>
             {open && (
@@ -219,7 +219,7 @@ const CosmosAddressInfo = ({
                 total={totalCosmos}
                 paddingLeft={15}
                 divisor={COSMOS.DIVISOR_ATOM}
-                currency="ATOM"
+                currency="atom"
               />
             )}
           </>
@@ -411,6 +411,7 @@ const EULnetworkInfo = ({
               .map((key) => {
                 return (
                   <BalanceToken
+                    key={key}
                     onClickOpen={props[`onClickOpen${key}`]}
                     open={props[`open${key}`]}
                     balanceToken={balanceToken[key]}
@@ -424,6 +425,7 @@ const EULnetworkInfo = ({
               Object.keys(balanceToken.pools).map((key) => {
                 return (
                   <FormatNumberTokens
+                    key={key}
                     value={balanceToken.pools[key]}
                     text={key}
                   />
@@ -514,7 +516,7 @@ const EthAddressInfo = ({
       <Pane flexDirection="column" display="flex" alignItems="flex-end">
         <FormatNumberTokens
           value={exponentialToDecimal(parseFloat(eth).toPrecision(6))}
-          text="ETH"
+          text="eth"
         />
         <FormatNumberTokens value={parseFloat(gol)} text="GOL" />
       </Pane>
