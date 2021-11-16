@@ -28,7 +28,7 @@ function useGetCommunity(address, updateAddress) {
 
       if (responseFollows !== null && responseFollows.txs) {
         responseFollows.txs.forEach(async (item) => {
-          const addressFollowers = item.tx.value.msg[0].value.address;
+          const addressFollowers = item.tx.value.msg[0].value.neuron;
           // console.log(`addressFollowers`, addressFollowers)
           setFollowers((items) => [...items, addressFollowers]);
         });

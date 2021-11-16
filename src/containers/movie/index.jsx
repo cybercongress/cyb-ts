@@ -8,7 +8,7 @@ import { Dots, Loading } from '../../components';
 //   'http://127.0.0.1:8080/ipfs/QmY37mCc1FuSMzpKaHoz5aDtJsz4gnJWG13Vrih8ifxXjS/';
 
 const linkMovie =
-  'https://gateway.ipfs.cybernode.ai/ipfs/QmTx3ZpdER5pVWR2x2E7vNrg3r7w7eLR3D2tr11pTViU2M';
+  'https://gateway.ipfs.cybernode.ai/ipfs/QmYDKZCb4G4XpE3KpNwZTuBLpcnPj33ZUmvWqgi3BPupWa';
 
 function Movie() {
   const [loading, setLoading] = useState(true);

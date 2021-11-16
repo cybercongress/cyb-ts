@@ -248,7 +248,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
         </Pane>
         <ContainerCard col={3}>
           <Card
-            title="cyberlinks"
+            title="Karma"
             value={formatNumber(karmaNeuron)}
             stylesContainer={{
               width: '100%',

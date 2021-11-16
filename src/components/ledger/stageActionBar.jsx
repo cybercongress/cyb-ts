@@ -1074,7 +1074,7 @@ export const SendLedger = ({
           height={42}
           width="24%"
           onChange={onChangeInputAmount}
-          placeholder="EUL"
+          placeholder={CYBER.DENOM_CYBER}
           isInvalid={amountSendInputValid !== null}
           message={amountSendInputValid}
         />
@@ -1367,12 +1367,12 @@ export const ConnectAddress = ({
         >
           {(cyberNetwork || cosmosNetwork) && (
             <>
-              <ButtonIcon
+              {/* <ButtonIcon
                 onClick={() => selectMethodFunc('ledger')}
                 active={selectMethod === 'ledger'}
                 img={imgLedger}
                 text="ledger"
-              />
+              /> */}
               {keplr && (
                 <ButtonIcon
                   onClick={() => selectMethodFunc('keplr')}

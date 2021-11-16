@@ -77,34 +77,34 @@ function AppRouter({
     // setLoader(dataIpfsStart.loader);
   }, [dataIpfsStart]);
 
-  useEffect(() => {
-    let timeinterval;
-    const genesisDate = TIME_START;
-    const countDown = new Date(genesisDate).getTime();
-    const changeTime = () => {
-      const now = Date.parse(new Date().toUTCString());
-      const distance = countDown - now;
+  // useEffect(() => {
+  //   let timeinterval;
+  //   const genesisDate = TIME_START;
+  //   const countDown = new Date(genesisDate).getTime();
+  //   const changeTime = () => {
+  //     const now = Date.parse(new Date().toUTCString());
+  //     const distance = countDown - now;
 
-      if (distance <= 0) {
-        clearInterval(timeinterval);
-        setTime(false);
-      } else {
-        setTime(true);
-      }
-    };
-    changeTime();
-    timeinterval = setInterval(changeTime, 1000);
-    return () => {
-      clearInterval(timeinterval);
-    };
-  }, []);
+  //     if (distance <= 0) {
+  //       clearInterval(timeinterval);
+  //       setTime(false);
+  //     } else {
+  //       setTime(true);
+  //     }
+  //   };
+  //   changeTime();
+  //   timeinterval = setInterval(changeTime, 1000);
+  //   return () => {
+  //     clearInterval(timeinterval);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    if (time) {
-      history.push('/genesis');
-    }
-    setLoader(false);
-  }, [time]);
+  // useEffect(() => {
+  //   if (time) {
+  //     history.push('/genesis');
+  //   }
+  //   setLoader(false);
+  // }, [time]);
 
   // useEffect(() => {
   //   if (blockProps >= 6 && genesis) {
@@ -224,18 +224,14 @@ function AppRouter({
   //   );
   // }
 
-  if (loader) {
-    return <div>...</div>;
-  }
-
   return (
     <Router history={history}>
-      <Route path="/" component={() => <App time={time} />} />
+      <Route path="/" component={App} />
       <Switch>
         <Route path="/" exact component={Wallet} />
         <Route path="/bootloader" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
-        <Route path="/gift/:address?" component={Gift} />
+        {/* <Route path="/gift/:address?" component={Gift} /> */}
         <Route path="/gol/takeoff" component={Funding} />
         <Route path="/tot" component={Got} />
         <Route path="/brain" component={Brain} />
