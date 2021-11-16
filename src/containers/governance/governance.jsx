@@ -83,9 +83,9 @@ function Governance({ defaultAccount }) {
             totalCyb[item.denom] = parseFloat(item.amount);
           });
         }
-        if (totalCyb.boot && totalCyb.sboot) {
-          const { boot, sboot } = totalCyb;
-          stakedBoot = sboot / boot;
+        if (totalCyb.boot && totalCyb.hydrogen) {
+          const { boot, hydrogen } = totalCyb;
+          stakedBoot = hydrogen / boot;
         }
         setStaked(stakedBoot);
       }
