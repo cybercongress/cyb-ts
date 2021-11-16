@@ -131,26 +131,26 @@ function SearchResults({ node, mobile, setQueryProps }) {
     );
   }
 
-  if (query.match(PATTERN)) {
-    searchItems.push(
-      <Pane
-        position="relative"
-        className="hover-rank"
-        display="flex"
-        alignItems="center"
-        marginBottom="10px"
-      >
-        <Link className="SearchItem" to={`/gift/${query}`}>
-          <SearchItem
-            hash={`${query}_PATTERN`}
-            text="Don't wait! Claim your gift, and join the Game of Links!"
-            status="sparkApp"
-            // address={query}
-          />
-        </Link>
-      </Pane>
-    );
-  }
+  // if (query.match(PATTERN)) {
+  //   searchItems.push(
+  //     <Pane
+  //       position="relative"
+  //       className="hover-rank"
+  //       display="flex"
+  //       alignItems="center"
+  //       marginBottom="10px"
+  //     >
+  //       <Link className="SearchItem" to={`/gift/${query}`}>
+  //         <SearchItem
+  //           hash={`${query}_PATTERN`}
+  //           text="Don't wait! Claim your gift, and join the Game of Links!"
+  //           status="sparkApp"
+  //           // address={query}
+  //         />
+  //       </Link>
+  //     </Pane>
+  //   );
+  // }
 
   if (query.match(PATTERN_CYBER)) {
     searchItems.push(
