@@ -185,8 +185,8 @@ class ActionBar extends Component {
             {
               typeUrl: '/cosmos.gov.v1beta1.TextProposal',
               value: {
-                title,
-                description,
+                Title: title,
+                Description: description,
               },
             },
             deposit,

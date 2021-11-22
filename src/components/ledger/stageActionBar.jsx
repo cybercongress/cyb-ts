@@ -926,6 +926,50 @@ export const Cyberlink = ({
   );
 };
 
+const IntupAutoSize = ({ value, onChangeInputAmount, placeholder }) => {
+  function isOverflown(element) {
+    return element.scrollWidth > element.clientWidth;
+  }
+
+  function changefontsize() {
+    const myInput = document.getElementById('myInput');
+    let currentfontsize = 18;
+    if (myInput && myInput !== null) {
+      if (isOverflown(myInput)) {
+        while (isOverflown(myInput)) {
+          currentfontsize -= 1;
+          myInput.style.fontSize = `${currentfontsize}px`;
+        }
+      } else {
+        currentfontsize = 18;
+        myInput.style.fontSize = `${currentfontsize}px`;
+        while (isOverflown(myInput)) {
+          currentfontsize -= 1;
+          myInput.style.fontSize = `${currentfontsize}px`;
+        }
+      }
+    }
+  }
+
+  return (
+    <Input
+      width="125px"
+      value={value}
+      style={{
+        height: 42,
+        width: '125px',
+        marginLeft: 20,
+        textAlign: 'end',
+      }}
+      id="myInput"
+      onkeypress={changefontsize()}
+      autoFocus
+      onChange={onChangeInputAmount}
+      placeholder={placeholder}
+    />
+  );
+};
+
 export const Delegate = ({
   moniker,
   generateTx,
@@ -942,20 +986,12 @@ export const Delegate = ({
           ? T.actionBar.delegate.delegate
           : T.actionBar.delegate.unDelegateFrom}{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
-          {moniker}
+          {moniker.length > 14 ? `${moniker.substring(0, 14)}...` : moniker}
         </Text>
       </Text>
-      <Input
-        width="100px"
+      <IntupAutoSize
         value={toSend}
-        style={{
-          height: 42,
-          width: '100px',
-          marginLeft: 20,
-          textAlign: 'end',
-        }}
-        autoFocus
-        onChange={onChangeInputAmount}
+        onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
     </ActionBarContentText>
@@ -998,7 +1034,9 @@ export const ReDelegate = ({
       <Text marginLeft={5} fontSize="16px" color="#fff">
         {DENOM_CYBER.toUpperCase()} restake from{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
-          {validators.description.moniker}
+          {validators.description.moniker.length > 14
+            ? `${validators.description.moniker.substring(0, 14)}...`
+            : validators.description.moniker}
         </Text>
       </Text>
       <Text marginX={5} fontSize="16px" color="#fff">
