@@ -26,6 +26,7 @@ import { TabList } from './components';
 import ActionBar from './actionBar';
 import PoolsList from './poolsList';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
+import getBalances from './hooks/getBalances';
 import Swap from './swap';
 import Withdraw from './withdraw';
 import PoolData from './poolData';
@@ -34,10 +35,11 @@ function Teleport({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
+  const { liquidBalances: accountBalances } = getBalances(addressActive);
   const [update, setUpdate] = useState(0);
   const { params } = useGetParams();
   const { poolsData } = usePoolListInterval();
-  const [accountBalances, setAccountBalances] = useState(null);
+  // const [accountBalances, setAccountBalances] = useState(null);
   const [tokenA, setTokenA] = useState('');
   const [tokenB, setTokenB] = useState('');
   const [tokenAAmount, setTokenAAmount] = useState('');
@@ -86,20 +88,20 @@ function Teleport({ defaultAccount }) {
     setIsExceeded(false);
   }, [update, selectedTab]);
 
-  useEffect(() => {
-    const getBalances = async () => {
-      if (jsCyber !== null && addressActive !== null && addressActive.bech32) {
-        const getAllBalancesPromise = await jsCyber.getAllBalances(
-          addressActive.bech32
-        );
+  // useEffect(() => {
+  //   const getBalances = async () => {
+  //     if (jsCyber !== null && addressActive !== null && addressActive.bech32) {
+  //       const getAllBalancesPromise = await jsCyber.getAllBalances(
+  //         addressActive.bech32
+  //       );
 
-        const datareduceBalances = reduceBalances(getAllBalancesPromise);
-        console.log(`reduceBalances`, datareduceBalances);
-        setAccountBalances(datareduceBalances);
-      }
-    };
-    getBalances();
-  }, [jsCyber, addressActive, update]);
+  //       const datareduceBalances = reduceBalances(getAllBalancesPromise);
+  //       // console.log(`reduceBalances`, datareduceBalances);
+  //       setAccountBalances(datareduceBalances);
+  //     }
+  //   };
+  //   getBalances();
+  // }, [jsCyber, addressActive, update]);
 
   useEffect(() => {
     const getTotalSupply = async () => {
@@ -107,7 +109,7 @@ function Teleport({ defaultAccount }) {
         const responseTotalSupply = await jsCyber.totalSupply();
 
         const datareduceTotalSupply = reduceBalances(responseTotalSupply);
-        console.log(`reduceBalances`, datareduceTotalSupply);
+        // console.log(`reduceBalances`, datareduceTotalSupply);
         setTotalSupply(datareduceTotalSupply);
       }
     };
