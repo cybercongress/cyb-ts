@@ -121,7 +121,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   let contentTab;
 
   useEffect(() => {
-    console.log(`dataGetIpfsContent`, dataGetIpfsContent);
+    // console.log(`dataGetIpfsContent`, dataGetIpfsContent);
     setContent(dataGetIpfsContent.content);
     setTypeContent(dataGetIpfsContent.typeContent);
     setGateway(dataGetIpfsContent.gateway);

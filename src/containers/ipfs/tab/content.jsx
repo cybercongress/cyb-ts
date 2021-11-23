@@ -4,13 +4,28 @@ import Iframe from 'react-iframe';
 import { Pane } from '@cybercongress/gravity';
 import CodeBlock from '../codeBlock';
 import { Dots, LinkWindow } from '../../../components';
-import { CYBER } from '../../../utils/config'
+import { CYBER } from '../../../utils/config';
 
 const htmlParser = require('react-markdown/plugins/html-parser');
 
 const parseHtml = htmlParser({
-  isValidNode: node => node.type !== 'script',
+  isValidNode: (node) => node.type !== 'script',
 });
+
+// const AsyncImage = ({ src }) => {
+//   React.useEffect(() => {
+//     const canvas = document.getElementById('ipfsImg');
+//     const ctx = canvas.getContext('2d');
+
+//     const image = new Image();
+//     image.onload = function () {
+//       ctx.drawImage(image, 0, 0);
+//     };
+//     image.src = src
+//   }, [src]);
+
+//   return <canvas id="ipfsImg" />;
+// };
 
 function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
   try {
@@ -54,6 +69,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
       return (
         <img
           alt="content"
+          id="imgIpfs"
           style={stylesImg || { objectFit: 'contain', width: '100%' }}
           src={content}
         />

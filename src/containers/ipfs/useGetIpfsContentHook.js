@@ -27,6 +27,7 @@ export const getTypeContent = async (dataCid, cid) => {
   // console.log('data', data);
   const data = dataCid;
   const dataFileType = await FileType.fromBuffer(data);
+  // console.log(`dataFileType`, dataFileType)
   if (dataFileType !== undefined) {
     const { mime } = dataFileType;
     const dataBase64 = data.toString('base64');
@@ -93,7 +94,9 @@ export const getTypeContent = async (dataCid, cid) => {
   return response;
 };
 
-const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
+const size = 15;
+
+const useGetIpfsContent = (cid, nodeIpfs) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
@@ -112,6 +115,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
     const feachData = async () => {
       setLoading(true);
       const dataIndexdDb = await db.table('cid').get({ cid });
+      // const dataIndexdDb = undefined;
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);
