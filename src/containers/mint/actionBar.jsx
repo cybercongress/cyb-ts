@@ -27,6 +27,7 @@ const {
 } = LEDGER;
 
 const VESTING_TIME_HOURS = 3601;
+const BASE_VESTING_TIME = 86401;
 
 function ActionBar({
   value,
@@ -83,7 +84,7 @@ function ActionBar({
           address,
           coin(parseFloat(value), 'hydrogen'),
           selected,
-          parseFloat(VESTING_TIME_HOURS * valueDays),
+          parseFloat(BASE_VESTING_TIME * valueDays),
           fee
         );
         console.log(`response`, response);

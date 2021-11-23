@@ -29,7 +29,7 @@ const INIT_STAGE = 0;
 const TSX_SEND = 1;
 
 const BASE_VESTING_AMOUNT = 10000000;
-const BASE_VESTING_TIME = 86400;
+const BASE_VESTING_TIME = 86401;
 const VESTING_TIME_HOURS = 3601;
 const BASE_MAX_MINT_TIME = 41;
 
@@ -194,7 +194,7 @@ function Mint({ defaultAccount }) {
 
       const halving = 2 ** Math.floor(height / halvingPeriod);
       maxValueTaime = Math.floor(
-        (halvingPeriod * 5 * halving) / VESTING_TIME_HOURS
+        (halvingPeriod * 5 * halving) / BASE_VESTING_TIME
       );
     }
     setMaxMintTime(maxValueTaime);
@@ -224,7 +224,7 @@ function Mint({ defaultAccount }) {
         baseAmount = parseFloat(baseInvestmintAmountAmpere.amount);
         halvingPeriod = halvingPeriodBlocksAmpere;
       }
-      const vestingTime = valueDays * VESTING_TIME_HOURS;
+      const vestingTime = valueDays * BASE_VESTING_TIME;
       const cycles = vestingTime / baseLength;
       const base = hydrogen / baseAmount;
       const halving = 0.5 ** Math.floor(height / halvingPeriod);
@@ -363,8 +363,8 @@ function Mint({ defaultAccount }) {
               min={1}
               max={maxMintTime}
               marks={{
-                1: returnColorDot('1 hour'),
-                [maxMintTime]: returnColorDot(`${maxMintTime} hour`),
+                1: returnColorDot('1 day'),
+                [maxMintTime]: returnColorDot(`${maxMintTime} days`),
               }}
               onChange={(eValue) => setValueDays(eValue)}
               trackStyle={{ backgroundColor: '#3ab793' }}
@@ -396,7 +396,7 @@ function Mint({ defaultAccount }) {
                 bottom: '30px',
               }}
             >
-              You’re freezing {formatNumber(value)} H for {valueDays} hours. It
+              You’re freezing {formatNumber(value)} H for {valueDays} days. It
               will release {resourceToken} {<ValueImg text={selected} />} for
               you. At the end of the period, {selected} becomes liquid
               automatically, but you can use it to boost ranking during the
