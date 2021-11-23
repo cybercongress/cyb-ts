@@ -8,7 +8,7 @@ import { Dots, Loading } from '../../components';
 //   'http://127.0.0.1:8080/ipfs/QmY37mCc1FuSMzpKaHoz5aDtJsz4gnJWG13Vrih8ifxXjS/';
 
 const linkMovie =
-  'https://gateway.ipfs.cybernode.ai/ipfs/QmYDKZCb4G4XpE3KpNwZTuBLpcnPj33ZUmvWqgi3BPupWa';
+  'https://gateway.ipfs.cybernode.ai/ipfs/QmbUgKbdJ7ZcUzmAyrGKonDK7oVPUaCEUgMj4y6v3WXsaN';
 
 function Movie() {
   const [loading, setLoading] = useState(true);
@@ -43,7 +43,14 @@ function Movie() {
   }, []);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0 }}>
+    <div
+      style={{
+        width: '100vw',
+        height: 'calc(100vh - 70px)',
+        position: 'fixed',
+        top: '70px',
+      }}
+    >
       {loading && (
         <div
           style={{
