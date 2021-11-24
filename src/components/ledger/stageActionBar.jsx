@@ -23,6 +23,7 @@ import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString } from '../../utils/utils';
 import ButtonImgText from '../Button/buttonImgText';
+import { IconStatus } from '../governance/governance';
 
 import { i18n } from '../../i18n/en';
 
@@ -1411,13 +1412,23 @@ export const ConnectAddress = ({
                 img={imgLedger}
                 text="ledger"
               /> */}
-              {keplr && (
+              {keplr ? (
                 <ButtonIcon
                   onClick={() => selectMethodFunc('keplr')}
                   active={selectMethod === 'keplr'}
                   img={imgKeplr}
                   text="keplr"
                 />
+              ) : (
+                <LinkWindow to="https://www.keplr.app/">
+                  <Pane marginRight={5} width={34} height={30}>
+                    <img
+                      style={{ width: '34px', height: '30px' }}
+                      src={imgKeplr}
+                      alt="icon"
+                    />
+                  </Pane>
+                </LinkWindow>
               )}
             </>
           )}
