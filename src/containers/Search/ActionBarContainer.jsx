@@ -25,6 +25,7 @@ import {
   statusNode,
   getAccountBandwidth,
   getCurrentBandwidthPrice,
+  getPinsCid,
 } from '../../utils/search/utils';
 
 import {
@@ -218,6 +219,9 @@ class ActionBarContainer extends Component {
     this.setState({
       toCid,
     });
+
+    const datagetPinsCid = await getPinsCid(toCid);
+    console.log(`datagetPinsCid`, datagetPinsCid);
   };
 
   calculationIpfsFrom = async () => {

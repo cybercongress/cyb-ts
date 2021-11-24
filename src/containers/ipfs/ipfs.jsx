@@ -61,11 +61,11 @@ const Pill = ({ children, active, ...props }) => (
   </Pane>
 );
 
-const search = async (client, hash) => {
+const search = async (client, hash, page) => {
   try {
-    const responseSearchResults = await client.search(hash);
+    const responseSearchResults = await client.search(hash, page);
     console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults.result : [];
+    return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
     return [];
   }
@@ -106,6 +106,8 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [dataFromLink, setDataFromLink] = useState([]);
   const [dataAnswers, setDataAnswers] = useState([]);
   const [dataBacklinks, setDataBacklinks] = useState([]);
+  const [page, setPage] = useState(0);
+  const [allPage, setAllPage] = useState(1);
   const [creator, setCreator] = useState({
     address: '',
     timestamp: '',
@@ -160,8 +162,25 @@ function Ipfs({ nodeIpfs, mobile }) {
   };
 
   const feacDataSearch = async () => {
-    const responseSearch = await search(jsCyber, cid);
-    setDataAnswers(responseSearch);
+    setDataAnswers([]);
+    const responseSearch = await search(jsCyber, cid, page);
+    if (responseSearch.result && responseSearch.result.length > 0) {
+      setDataAnswers(responseSearch.result);
+      setAllPage(Math.ceil(parseFloat(responseSearch.pagination.total) / 10));
+      setPage((item) => item + 1);
+    }
+  };
+
+  const fetchMoreData = async () => {
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    const data = await search(jsCyber, cid, page);
+    if (data.result) {
+      setTimeout(() => {
+        setDataAnswers((itemState) => [...itemState, ...data.result]);
+        setPage((itemPage) => itemPage + 1);
+      }, 500);
+    }
   };
 
   const feachCidTo = async () => {
@@ -266,7 +285,14 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   if (selected === 'answers') {
     contentTab = (
-      <AnswersTab data={dataAnswers} mobile={mobile} nodeIpfs={nodeIpfs} />
+      <AnswersTab
+        data={dataAnswers}
+        mobile={mobile}
+        nodeIpfs={nodeIpfs}
+        fetchMoreData={fetchMoreData}
+        page={page}
+        allPage={allPage}
+      />
     );
   }
 
@@ -342,12 +368,12 @@ function Ipfs({ nodeIpfs, mobile }) {
     <>
       <main
         className="block-body"
-        style={{
-          minHeight: 'calc(100vh - 70px)',
-          paddingBottom: '5px',
-          height: '1px',
-          width: '100%',
-        }}
+        // style={{
+        //   minHeight: 'calc(100vh - 70px)',
+        //   paddingBottom: '5px',
+        //   height: '1px',
+        //   width: '100%',
+        // }}
       >
         {content.length === 0 ? (
           <div

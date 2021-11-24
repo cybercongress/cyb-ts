@@ -1,11 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { Rank, NoItems } from '../../components';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Rank, NoItems, Dots } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import ContentItem from '../ipfs/contentItem';
 
-function SearchTokenInfo({ data, node, mobile, selectedTokens, onClickRank }) {
+function SearchTokenInfo({
+  data,
+  node,
+  mobile,
+  selectedTokens,
+  onClickRank,
+  fetchMoreData,
+  page,
+  allPage,
+}) {
   try {
     const apps = [];
     if (Object.keys(data).length > 0) {
@@ -55,11 +65,35 @@ function SearchTokenInfo({ data, node, mobile, selectedTokens, onClickRank }) {
         flexDirection="column"
       >
         <div className="container-contentItem" style={{ width: '100%' }}>
-          {Object.keys(data).length > 0 ? (
-            apps
-          ) : (
-            <NoItems text={`No information about ${selectedTokens}`} />
-          )}
+          <InfiniteScroll
+            dataLength={Object.keys(data).length}
+            next={fetchMoreData}
+            hasMore={page < allPage}
+            loader={
+              <h4>
+                Loading
+                <Dots />
+              </h4>
+            }
+            pullDownToRefresh
+            pullDownToRefreshContent={
+              <h3 style={{ textAlign: 'center' }}>
+                &#8595; Pull down to refresh
+              </h3>
+            }
+            releaseToRefreshContent={
+              <h3 style={{ textAlign: 'center' }}>
+                &#8593; Release to refresh
+              </h3>
+            }
+            refreshFunction={fetchMoreData}
+          >
+            {Object.keys(data).length > 0 ? (
+              apps
+            ) : (
+              <NoItems text={`No information about ${selectedTokens}`} />
+            )}
+          </InfiniteScroll>
         </div>
       </Pane>
     );

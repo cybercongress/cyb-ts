@@ -8,6 +8,7 @@ import {
 } from '@cybercongress/gravity';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
+// import usePopperTooltip from 'react-popper-tooltip';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import { MenuButton, BandwidthBar, Tooltip } from '../../components';
@@ -105,6 +106,21 @@ function App({
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  // const data = usePopperTooltip({
+  //   trigger: 'click',
+  //   interactive: true,
+  //   // onVisibleChange: setMountedOnceVisible(),
+  // });
+
+  //  function setMountedOnceVisible(visible) {
+  //    if (!mounted && visible) {
+  //      setMounted(true);
+  //    }
+  //  }
+
+  //  console.log('data', data);
 
   useEffect(() => {
     const { pathname } = location;

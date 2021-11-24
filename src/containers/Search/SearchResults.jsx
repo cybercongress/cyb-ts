@@ -2,12 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
   exponentialToDecimal,
   trimString,
-  coinDecimals
+  coinDecimals,
 } from '../../utils/utils';
 import {
   Loading,
@@ -17,6 +18,7 @@ import {
   LinkWindow,
   Rank,
   NoItems,
+  Dots,
 } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
@@ -31,14 +33,31 @@ import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../ipfs/contentItem';
 import { AppContext } from '../../context';
 
-const search = async (client, hash) => {
+const search = async (client, hash, page) => {
   try {
-    const responseSearchResults = await client.search(hash);
-    console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults.result : [];
+    const responseSearchResults = await client.search(hash, page);
+    return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
     return [];
   }
+};
+
+const reduceSearchResults = (data, query) => {
+  return data.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item.particle]: {
+        particle: item.particle,
+        rank: coinDecimals(item.rank),
+        grade: getRankGrade(coinDecimals(item.rank)),
+        status: 'impossibleLoad',
+        query,
+        text: item.particle,
+        content: false,
+      },
+    }),
+    {}
+  );
 };
 
 function SearchResults({ node, mobile, setQueryProps }) {
@@ -50,9 +69,11 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
+  const [page, setPage] = useState(0);
+  const [allPage, setAllPage] = useState(1);
 
   useEffect(() => {
-    const feachData = async () => {
+    const getFirstItem = async () => {
       setLoading(true);
       setQueryProps(query);
       if (jsCyber !== null) {
@@ -65,37 +86,53 @@ function SearchResults({ node, mobile, setQueryProps }) {
           keywordHashTemp = await getIpfsHash(query.toLowerCase());
         }
 
-        let responseSearchResults = await search(jsCyber, keywordHashTemp);
-        console.log(`responseSearchResults`, responseSearchResults);
+        let responseSearchResults = await search(
+          jsCyber,
+          keywordHashTemp,
+          page
+        );
         if (responseSearchResults.length === 0) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          responseSearchResults = await search(jsCyber, keywordHashNull);
+          responseSearchResults = await search(jsCyber, keywordHashNull, page);
         }
-        if (responseSearchResults.length > 0) {
-          searchResultsData = responseSearchResults.reduce(
-            (obj, item) => ({
-              ...obj,
-              [item.particle]: {
-                particle: item.particle,
-                rank: coinDecimals(item.rank),
-                grade: getRankGrade(coinDecimals(item.rank)),
-                status: 'impossibleLoad',
-                query,
-                text: item.particle,
-                content: false,
-              },
-            }),
-            {}
+        console.log(`responseSearchResults`, responseSearchResults);
+
+        if (
+          responseSearchResults.result &&
+          responseSearchResults.result.length > 0
+        ) {
+          searchResultsData = reduceSearchResults(
+            responseSearchResults.result,
+            query
           );
+          setAllPage(
+            Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
+          );
+          setPage((item) => item + 1);
         }
         setKeywordHash(keywordHashTemp);
         setSearchResults(searchResultsData);
         setLoading(false);
       }
     };
-    feachData();
+    getFirstItem();
   }, [query, location, update, jsCyber]);
+
+  const fetchMoreData = async () => {
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    let links = [];
+    const data = await search(jsCyber, keywordHash, page);
+    if (data.result) {
+      links = reduceSearchResults(data.result, query);
+    }
+
+    setTimeout(() => {
+      setSearchResults((itemState) => ({ ...itemState, ...links }));
+      setPage((itemPage) => itemPage + 1);
+    }, 500);
+  };
 
   useEffect(() => {
     setRankLink(null);
@@ -130,27 +167,6 @@ function SearchResults({ node, mobile, setQueryProps }) {
       </div>
     );
   }
-
-  // if (query.match(PATTERN)) {
-  //   searchItems.push(
-  //     <Pane
-  //       position="relative"
-  //       className="hover-rank"
-  //       display="flex"
-  //       alignItems="center"
-  //       marginBottom="10px"
-  //     >
-  //       <Link className="SearchItem" to={`/gift/${query}`}>
-  //         <SearchItem
-  //           hash={`${query}_PATTERN`}
-  //           text="Don't wait! Claim your gift, and join the Game of Links!"
-  //           status="sparkApp"
-  //           // address={query}
-  //         />
-  //       </Link>
-  //     </Pane>
-  //   );
-  // }
 
   if (query.match(PATTERN_CYBER)) {
     searchItems.push(
@@ -281,7 +297,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
 
   return (
     <div>
-      <main className="block-body" style={{ paddingTop: 30 }}>
+      <main
+        className="block-body"
+        // style={{ paddingTop: 30 }}
+      >
         <Pane
           width="90%"
           marginX="auto"
@@ -290,11 +309,35 @@ function SearchResults({ node, mobile, setQueryProps }) {
           flexDirection="column"
         >
           <div className="container-contentItem" style={{ width: '100%' }}>
-            {Object.keys(searchItems).length > 0 ? (
-              searchItems
-            ) : (
-              <NoItems text={`No information about ${query}`} />
-            )}
+            <InfiniteScroll
+              dataLength={Object.keys(searchResults).length}
+              next={fetchMoreData}
+              hasMore={page < allPage}
+              loader={
+                <h4>
+                  Loading
+                  <Dots />
+                </h4>
+              }
+              pullDownToRefresh
+              pullDownToRefreshContent={
+                <h3 style={{ textAlign: 'center' }}>
+                  &#8595; Pull down to refresh
+                </h3>
+              }
+              releaseToRefreshContent={
+                <h3 style={{ textAlign: 'center' }}>
+                  &#8593; Release to refresh
+                </h3>
+              }
+              refreshFunction={fetchMoreData}
+            >
+              {Object.keys(searchItems).length > 0 ? (
+                searchItems
+              ) : (
+                <NoItems text={`No information about ${query}`} />
+              )}
+            </InfiniteScroll>
           </div>
         </Pane>
       </main>
