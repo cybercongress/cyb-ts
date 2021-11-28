@@ -10,7 +10,7 @@ const BalanceToken = ({ token, data }) => {
   if (data === null) {
     balance = <Dots />;
   } else if (data[token]) {
-    balance = formatNumber(reduceAmounToken(data[token], token));
+    balance = formatNumber(data[token]);
   } else {
     balance = 0;
   }

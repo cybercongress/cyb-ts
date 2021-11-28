@@ -60,20 +60,22 @@ function getBalances(addressActive, updateAddress) {
 
   useEffect(() => {
     const getAuth = async () => {
-      if (jsCyber !== null && addressActive !== null) {
+      if (addressActive !== null) {
         const vested = {
           hydrogen: 0,
           millivolt: 0,
           milliampere: 0,
         };
         const getAccount = await authAccounts(addressActive.bech32);
-        const { vesting_periods: vestingPeriods } = getAccount.result.value;
-        const {
-          original_vesting: originalVestingAmount,
-        } = getAccount.result.value.base_vesting_account;
-        const { start_time: startTime } = getAccount.result.value;
-
-        if (vestingPeriods && originalVestingAmount) {
+        if (
+          getAccount.result.value.vesting_periods &&
+          getAccount.result.value.base_vesting_account.original_vesting
+        ) {
+          const { vesting_periods: vestingPeriods } = getAccount.result.value;
+          const {
+            original_vesting: originalVestingAmount,
+          } = getAccount.result.value.base_vesting_account;
+          const { start_time: startTime } = getAccount.result.value;
           const reduceOriginalVestingAmount = reduceBalances(
             originalVestingAmount
           );

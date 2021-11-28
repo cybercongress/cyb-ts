@@ -15,6 +15,7 @@ const renderOptions = (data, selected, valueSelect) => {
           .filter(
             (item) =>
               item.indexOf('pool') === -1 &&
+              item.indexOf('ibc') === -1 &&
               item !== selected &&
               item !== valueSelect
           )

@@ -139,7 +139,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       }
     };
     chekFollowAddress();
-  }, [defaultAccount.name, address]);
+  }, [defaultAccount.name, address, updateAddress]);
 
   useEffect(() => {
     const chekAddress = async () => {
