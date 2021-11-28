@@ -107,7 +107,7 @@ function Market({ node, mobile, defaultAccount }) {
   const [rankLink, setRankLink] = useState(null);
   const [accountBalances, setAccountBalances] = useState(null);
   const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(1);
+  const [allPage, setAllPage] = useState(0);
 
   useEffect(() => {
     const { pathname } = location;
@@ -133,11 +133,13 @@ function Market({ node, mobile, defaultAccount }) {
   useEffect(() => {
     const getFirstItem = async () => {
       if (jsCyber !== null) {
+        setPage(0);
+        setAllPage(0);
         setResultSearch([]);
         setLoadingSearch(true);
         const hash = await getIpfsHash(selectedTokens);
         setKeywordHash(hash);
-        const responseApps = await search(jsCyber, hash, page);
+        const responseApps = await search(jsCyber, hash, 0);
         if (responseApps.result && responseApps.result.length > 0) {
           const dataApps = reduceSearchResults(
             responseApps.result,

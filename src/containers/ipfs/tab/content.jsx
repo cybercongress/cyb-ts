@@ -44,8 +44,10 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
             style={{
               textAlign: 'center',
               backgroundColor: '#000',
-
-              minHeight: 'calc(100% - 100px)',
+              minHeight: 'calc(100vh - 70px)',
+              paddingBottom: '5px',
+              height: '1px',
+              width: '100%',
             }}
           >
             <Iframe

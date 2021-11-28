@@ -107,7 +107,8 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [dataAnswers, setDataAnswers] = useState([]);
   const [dataBacklinks, setDataBacklinks] = useState([]);
   const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(1);
+  const [allPage, setAllPage] = useState(0);
+  const [total, setTotal] = useState(0);
   const [creator, setCreator] = useState({
     address: '',
     timestamp: '',
@@ -163,10 +164,14 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   const feacDataSearch = async () => {
     setDataAnswers([]);
-    const responseSearch = await search(jsCyber, cid, page);
+    setAllPage(0);
+    setPage(0);
+    setTotal(0);
+    const responseSearch = await search(jsCyber, cid, 0);
     if (responseSearch.result && responseSearch.result.length > 0) {
       setDataAnswers(responseSearch.result);
       setAllPage(Math.ceil(parseFloat(responseSearch.pagination.total) / 10));
+      setTotal(parseFloat(responseSearch.pagination.total));
       setPage((item) => item + 1);
     }
   };
@@ -292,6 +297,7 @@ function Ipfs({ nodeIpfs, mobile }) {
         fetchMoreData={fetchMoreData}
         page={page}
         allPage={allPage}
+        total={total}
       />
     );
   }
@@ -366,15 +372,7 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   return (
     <>
-      <main
-        className="block-body"
-        // style={{
-        //   minHeight: 'calc(100vh - 70px)',
-        //   paddingBottom: '5px',
-        //   height: '1px',
-        //   width: '100%',
-        // }}
-      >
+      <main className="block-body">
         {content.length === 0 ? (
           <div
             style={{

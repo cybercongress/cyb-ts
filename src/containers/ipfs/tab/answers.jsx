@@ -6,7 +6,15 @@ import { Rank, NoItems, Dots } from '../../../components';
 import { getRankGrade } from '../../../utils/search/utils';
 import { exponentialToDecimal } from '../../../utils/utils';
 
-function AnswersTab({ data, mobile, nodeIpfs, fetchMoreData, page, allPage }) {
+function AnswersTab({
+  data,
+  mobile,
+  nodeIpfs,
+  fetchMoreData,
+  page,
+  allPage,
+  total,
+}) {
   const answers = [];
   if (Object.keys(data).length > 0) {
     answers.push(
@@ -51,7 +59,7 @@ function AnswersTab({ data, mobile, nodeIpfs, fetchMoreData, page, allPage }) {
       <InfiniteScroll
         dataLength={Object.keys(data).length}
         next={fetchMoreData}
-        hasMore={page < allPage}
+        hasMore={Object.keys(data).length < total}
         loader={
           <h4>
             Loading

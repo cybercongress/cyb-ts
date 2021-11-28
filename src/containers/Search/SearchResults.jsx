@@ -71,11 +71,14 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [rankLink, setRankLink] = useState(null);
   const [page, setPage] = useState(0);
   const [allPage, setAllPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
       setQueryProps(query);
+      setPage(0);
+      setAllPage(1);
       if (jsCyber !== null) {
         let keywordHashTemp = '';
         let keywordHashNull = '';
@@ -86,17 +89,15 @@ function SearchResults({ node, mobile, setQueryProps }) {
           keywordHashTemp = await getIpfsHash(query.toLowerCase());
         }
 
-        let responseSearchResults = await search(
-          jsCyber,
-          keywordHashTemp,
-          page
-        );
+        let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);
         if (responseSearchResults.length === 0) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          responseSearchResults = await search(jsCyber, keywordHashNull, page);
+          console.log(`keywordHashNull`, keywordHashNull);
+          responseSearchResults = await search(jsCyber, keywordHashNull, 0);
+          console.log(` responseSearchResults`, responseSearchResults);
         }
-        console.log(`responseSearchResults`, responseSearchResults);
+        // console.log(`responseSearchResults`, responseSearchResults);
 
         if (
           responseSearchResults.result &&
@@ -109,6 +110,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
           setAllPage(
             Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
           );
+          setTotal(parseFloat(responseSearchResults.pagination.total));
           setPage((item) => item + 1);
         }
         setKeywordHash(keywordHashTemp);
@@ -295,6 +297,13 @@ function SearchResults({ node, mobile, setQueryProps }) {
     );
   }
 
+  console.log(
+    `searchResults`,
+    searchResults,
+    Object.keys(searchResults).length
+  );
+  console.log(`total`, total);
+
   return (
     <div>
       <main
@@ -312,7 +321,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
             <InfiniteScroll
               dataLength={Object.keys(searchResults).length}
               next={fetchMoreData}
-              hasMore={page < allPage}
+              hasMore={Object.keys(searchResults).length < total}
               loader={
                 <h4>
                   Loading

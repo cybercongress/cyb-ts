@@ -34,11 +34,11 @@ const PREFIXES = [
   },
 ];
 
-const search = async (client, hash) => {
+const search = async (client, hash, page) => {
   try {
-    const responseSearchResults = await client.search(hash);
+    const responseSearchResults = await client.search(hash, page);
     console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults.result : [];
+    return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
     return [];
   }
@@ -56,6 +56,24 @@ const ContainerGrid = ({ children }) => (
   </Pane>
 );
 
+const reduceSearchResults = (data, query) => {
+  return data.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item.particle]: {
+        particle: item.particle,
+        rank: coinDecimals(item.rank),
+        grade: getRankGrade(coinDecimals(item.rank)),
+        status: 'impossibleLoad',
+        query,
+        text: item.particle,
+        content: false,
+      },
+    }),
+    {}
+  );
+};
+
 const Home = ({ node, mobile, defaultAccount, block }) => {
   const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -68,6 +86,8 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
   const [keywordHash, setKeywordHash] = useState('');
   const [rankLink, setRankLink] = useState(null);
   const [update, setUpdate] = useState(0);
+  const [page, setPage] = useState(0);
+  const [allPage, setAllPage] = useState(0);
 
   useEffect(() => {
     getEntropy();
@@ -114,29 +134,22 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
   useEffect(() => {
     const feachData = async () => {
       if (jsCyber !== null) {
+        setPage(0);
+        setAllPage(0);
         setResultSearch([]);
         setLoadingSearch(true);
-        const hash = await getIpfsHash('superintelligence');
+        const hash = await getIpfsHash('bootloader');
         setKeywordHash(hash);
         const responseApps = await search(jsCyber, hash);
-        if (responseApps.length > 0) {
-          const dataApps = responseApps.reduce(
-            (obj, item) => ({
-              ...obj,
-              [item.particle]: {
-                particle: item.particle,
-                rank: coinDecimals(item.rank),
-                grade: getRankGrade(coinDecimals(item.rank)),
-                status: 'impossibleLoad',
-                query: 'superintelligence',
-                text: item.particle,
-                content: false,
-              },
-            }),
-            {}
+        if (Object.keys(responseApps).length > 0) {
+          const dataApps = reduceSearchResults(
+            responseApps.result,
+            'bootloader'
           );
           setResultSearch(dataApps);
           setLoadingSearch(false);
+          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
+          setPage((item) => item + 1);
         } else {
           setResultSearch([]);
           setLoadingSearch(false);
@@ -148,6 +161,21 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
     };
     feachData();
   }, [jsCyber, update]);
+
+  const fetchMoreData = async () => {
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    let links = [];
+    const data = await search(jsCyber, keywordHash, page);
+    if (data.result) {
+      links = reduceSearchResults(data.result, 'bootloader');
+    }
+
+    setTimeout(() => {
+      setResultSearch((itemState) => ({ ...itemState, ...links }));
+      setPage((itemPage) => itemPage + 1);
+    }, 500);
+  };
 
   useEffect(() => {
     setRankLink(null);
@@ -172,7 +200,7 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
           />
           <CardStatisics
             value={
-              memoryLoader ? <Dots /> : formatCurrency(memory, 'B', 2, PREFIXES)
+              memoryLoader ? <Dots /> : formatCurrency(memory, 'B', 0, PREFIXES)
             }
             title="GPU memory"
             styleContainer={{ minWidth: 'unset' }}
@@ -213,8 +241,11 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
               data={resultSearch}
               node={node}
               mobile={mobile}
-              selectedTokens="superintelligence"
+              selectedTokens="bootloader"
               onClickRank={onClickRank}
+              fetchMoreData={fetchMoreData}
+              page={page}
+              allPage={allPage}
             />
           )}
         </ContainerGrid>

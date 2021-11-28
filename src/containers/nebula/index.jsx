@@ -23,14 +23,32 @@ const ContainerGrid = ({ children }) => (
   </Pane>
 );
 
-const search = async (client, hash) => {
+const search = async (client, hash, page) => {
   try {
-    const responseSearchResults = await client.search(hash);
+    const responseSearchResults = await client.search(hash, page);
     console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults.result : [];
+    return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
     return [];
   }
+};
+
+const reduceSearchResults = (data, query) => {
+  return data.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item.particle]: {
+        particle: item.particle,
+        rank: coinDecimals(item.rank),
+        grade: getRankGrade(coinDecimals(item.rank)),
+        status: 'impossibleLoad',
+        query,
+        text: item.particle,
+        content: false,
+      },
+    }),
+    {}
+  );
 };
 
 const chekPathname = (pathname) => {
@@ -55,6 +73,8 @@ function Nebula({ node, mobile, defaultAccount }) {
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(0);
   const [rankLink, setRankLink] = useState(null);
+  const [page, setPage] = useState(0);
+  const [allPage, setAllPage] = useState(0);
 
   useEffect(() => {
     const { pathname } = location;
@@ -65,29 +85,22 @@ function Nebula({ node, mobile, defaultAccount }) {
   useEffect(() => {
     const feachData = async () => {
       if (jsCyber !== null) {
+        setPage(0);
+        setAllPage(0);
         setResultSearch([]);
         setLoadingSearch(true);
         const hash = await getIpfsHash(querySearch);
         setKeywordHash(hash);
         const responseApps = await search(jsCyber, hash);
-        if (responseApps.length > 0) {
-          const dataApps = responseApps.reduce(
-            (obj, item) => ({
-              ...obj,
-              [item.particle]: {
-                particle: item.particle,
-                rank: coinDecimals(item.rank),
-                grade: getRankGrade(coinDecimals(item.rank)),
-                status: 'impossibleLoad',
-                query: querySearch,
-                text: item.particle,
-                content: false,
-              },
-            }),
-            {}
+        if (responseApps.result && responseApps.result.length > 0) {
+          const dataApps = reduceSearchResults(
+            responseApps.result,
+            querySearch
           );
           setResultSearch(dataApps);
           setLoadingSearch(false);
+          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
+          setPage((item) => item + 1);
         } else {
           setResultSearch([]);
           setLoadingSearch(false);
@@ -99,6 +112,21 @@ function Nebula({ node, mobile, defaultAccount }) {
     };
     feachData();
   }, [jsCyber, querySearch, update]);
+
+  const fetchMoreData = async () => {
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    let links = [];
+    const data = await search(jsCyber, keywordHash, page);
+    if (data.result) {
+      links = reduceSearchResults(data.result, querySearch);
+    }
+
+    setTimeout(() => {
+      setResultSearch((itemState) => ({ ...itemState, ...links }));
+      setPage((itemPage) => itemPage + 1);
+    }, 500);
+  };
 
   useEffect(() => {
     setRankLink(null);
@@ -138,6 +166,9 @@ function Nebula({ node, mobile, defaultAccount }) {
               mobile={mobile}
               selectedTokens={querySearch}
               onClickRank={onClickRank}
+              fetchMoreData={fetchMoreData}
+              page={page}
+              allPage={allPage}
             />
           )}
         </ContainerGrid>
