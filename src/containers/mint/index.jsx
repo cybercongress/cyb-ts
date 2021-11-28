@@ -261,12 +261,9 @@ function Mint({ defaultAccount }) {
           />
           <CardStatisics
             title="My Energy"
-            value={formatCurrency(
-              originalVesting.milliampere * originalVesting.millivolt,
-              'W',
-              2,
-              PREFIXES
-            )}
+            value={`${formatNumber(
+              originalVesting.milliampere * originalVesting.millivolt
+            )} W`}
           />
         </Pane>
         <div

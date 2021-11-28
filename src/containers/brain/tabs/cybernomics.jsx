@@ -23,7 +23,7 @@ function CybernomicsTab({ data }) {
           />
         </LinkWindow>
         <CardStatisics
-          title="GOL cap in ETH"
+          title="Cap in ETH"
           value={gol.loading ? <Dots /> : formatNumber(gol.cap)}
         />
 
@@ -32,7 +32,7 @@ function CybernomicsTab({ data }) {
           title="Port price of GCYB in ETH"
           value={formatNumber(Math.floor(cyb.price * 1000) / 1000)}
         />
-        <CardStatisics title="CYB cap in ETH" value={formatNumber(cyb.cap)} />
+        <CardStatisics title="Cap in ETH" value={formatNumber(cyb.cap)} />
       </>
     );
   } catch (error) {

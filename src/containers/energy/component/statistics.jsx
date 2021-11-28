@@ -2,7 +2,7 @@ import React from 'react';
 import { Pane, Icon } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 import Card from '../ui/card';
-import { formatCurrency } from '../../../utils/utils';
+import { formatNumber } from '../../../utils/utils';
 
 const PREFIXES = [
   {
@@ -40,7 +40,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
       <Card
         active={active === 'myEnegy'}
         title="My Enegy"
-        value={formatCurrency(myEnegy, 'W', 2, PREFIXES)}
+        value={`${formatNumber(myEnegy)} W`}
         onClick={() => history.push('/grid')}
       />
       <Pane marginX={5} fontSize="20px">
@@ -49,7 +49,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
       <Card
         active={active === 'income'}
         title="Income"
-        value={formatCurrency(income, 'W', 2, PREFIXES)}
+        value={`${formatNumber(income)} W`}
         onClick={() => history.push('/grid/income')}
       />
       <Pane marginX={5} fontSize="20px">
@@ -58,7 +58,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
       <Card
         active={active === 'outcome'}
         title="Outcome"
-        value={formatCurrency(outcome, 'W', 2, PREFIXES)}
+        value={`${formatNumber(outcome)} W`}
         onClick={() => history.push('/grid/outcome')}
       />
       <Pane marginX={5} fontSize="20px">
@@ -66,12 +66,7 @@ function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
       </Pane>
       <Card
         title="Free Energy"
-        value={formatCurrency(
-          freeEnergy > 0 ? freeEnergy : 0,
-          'W',
-          2,
-          PREFIXES
-        )}
+        value={`${formatNumber(freeEnergy > 0 ? freeEnergy : 0)} W`}
 
         // tooltipValue="Your rating in relation to the rating of the network is less than 1000%"
         // positionTooltip="bottom"
