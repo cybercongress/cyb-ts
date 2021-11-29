@@ -58,6 +58,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   const [selected, setSelected] = useState('tweets');
   const [dataTweet, setDataTweet] = useState([]);
   const [tweets, setTweets] = useState(false);
+  const [loaderTweets, setLoaderTweets] = useState(true);
   const [follow, setFollow] = useState(false);
   const [activeAddress, setActiveAddress] = useState(null);
   const [karmaNeuron, setKarmaNeuron] = useState(0);
@@ -100,6 +101,8 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     const getFeeds = async () => {
       let responseTweet = null;
       let dataTweets = [];
+      setDataTweet([]);
+      setLoaderTweets(true);
 
       responseTweet = await getTweet(address);
       console.log(`responseTweet`, responseTweet);
@@ -107,6 +110,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
         dataTweets = [...dataTweets, ...responseTweet.txs];
       }
       setDataTweet(dataTweets);
+      setLoaderTweets(false);
     };
     getFeeds();
   }, [address, updateAddress]);
@@ -217,12 +221,16 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   }
 
   if (selected === 'tweets') {
-    content = (
-      <Route
-        path="/network/bostrom/contract/:address"
-        render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
-      />
-    );
+    if (loaderTweets) {
+      content = <Dots />;
+    } else {
+      content = (
+        <Route
+          path="/network/bostrom/contract/:address"
+          render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
+        />
+      );
+    }
     // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
   }
 
