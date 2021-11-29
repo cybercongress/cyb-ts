@@ -315,6 +315,7 @@ export const StartStageSearchActionBar = ({
           >
             <TextareaAutosize
               value={contentHash}
+              maxRows={20}
               style={{
                 height: 42,
                 width: '100%',
