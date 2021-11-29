@@ -47,7 +47,10 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const [updateAddress, setUpdateAddress] = useState(0);
   const { community } = useGetCommunity(address, updateAddress);
-  const { balance, loadingBalanceInfo } = useGetBalance(address, updateAddress);
+  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
+    address,
+    updateAddress
+  );
   const { staking, totalRewards, loadingHeroesInfo } = useGetHeroes(
     address,
     updateAddress
@@ -187,7 +190,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     if (loadingBalanceInfo) {
       content = <Dots />;
     } else {
-      content = <Main balance={balance} />;
+      content = <Main balance={balance} balanceToken={balanceToken} />;
     }
   }
 

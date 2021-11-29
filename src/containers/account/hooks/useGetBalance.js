@@ -149,6 +149,7 @@ function useGetBalance(address, updateAddress) {
         millivolt: {
           ...initValueTokens,
         },
+        tocyb: 0,
       };
 
       if (jsCyber !== null && address !== null) {
@@ -166,7 +167,10 @@ function useGetBalance(address, updateAddress) {
               if (key === 'millivolt' || key === 'milliampere') {
                 elementBalancesToken = convertResources(elementBalancesToken);
               }
-              if (Object.hasOwnProperty.call(initValueTokenAmount, key)) {
+              if (
+                Object.hasOwnProperty.call(initValueTokenAmount, key) &&
+                Object.hasOwnProperty.call(initValueTokenAmount[key], 'total')
+              ) {
                 initValueTokenAmount[key].total = elementBalancesToken;
                 initValueTokenAmount[key].liquid = elementBalancesToken;
               } else {

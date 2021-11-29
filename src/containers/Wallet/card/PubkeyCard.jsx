@@ -124,29 +124,35 @@ const DetailsBalance = ({
   );
 };
 
-const FormatNumberTokens = ({ text, value, ...props }) =>{ 
-  
+const FormatNumberTokens = ({ text, value, ...props }) => {
   // console.log(text, value);
-  return(
-  <Pane display="grid" gridTemplateColumns="1fr 65px" gridGap="5px" {...props}>
+  return (
     <Pane
-      // paddingRight={5}
-      whiteSpace="nowrap"
-      display="flex"
-      alignItems="center"
+      display="grid"
+      gridTemplateColumns="1fr 80px"
+      gridGap="5px"
+      fontSize="15px"
+      {...props}
     >
-      <span>{formatNumber(value)}</span>
+      <Pane
+        // paddingRight={5}
+        whiteSpace="nowrap"
+        display="flex"
+        alignItems="center"
+      >
+        <span>{formatNumber(value)}</span>
+      </Pane>
+      {text && (
+        <ValueImg
+          marginImg="0 3px 0 0"
+          flexDirection="row-reverse"
+          justifyContent="flex-end"
+          text={text}
+        />
+      )}
     </Pane>
-    {text && (
-      <ValueImg
-        marginImg="0 3px 0 0"
-        flexDirection="row-reverse"
-        justifyContent="flex-end"
-        text={text}
-      />
-    )}
-  </Pane>
-)};
+  );
+};
 
 const DetailsBalanceTokens = ({
   total,
@@ -325,7 +331,7 @@ const BalanceToken = ({
       <RowBalance
         onClick={onClickOpen}
         className="cosmos-address-balance"
-        marginBottom={3}
+        marginBottom={4}
       >
         {open ? (
           <div>total</div>
@@ -382,7 +388,7 @@ const EULnetworkInfo = ({
           <>
             <RowBalance
               {...props}
-              marginBottom={3}
+              marginBottom={4}
               className="cosmos-address-balance"
             >
               {openEul ? (
@@ -427,6 +433,7 @@ const EULnetworkInfo = ({
                   key={key}
                   value={balanceToken[key]}
                   text={key}
+                  marginBottom={4}
                 />
               );
             })}

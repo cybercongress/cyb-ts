@@ -10,6 +10,8 @@ const downOutline = require('../../image/chevronDownOutline.svg');
 const gol = require('../../image/seedling.png');
 const atom = require('../../image/cosmos-2.svg');
 const eth = require('../../image/Ethereum_logo_2014.svg');
+const pool = require('../../image/gravitydexPool.png');
+const ibc = require('../../image/ibc-unauth.png');
 
 const ValueImg = ({
   text,
@@ -74,11 +76,11 @@ const ValueImg = ({
 
     default:
       if (text.includes('pool')) {
-        textCurency = trimString(text, 4, 3);
-        img = null;
+        textCurency = trimString(text, 3, 3);
+        img = pool;
       } else if (text.includes('ibc')) {
-        textCurency = trimString(text, 4, 3);
-        img = null;
+        textCurency = trimString(text, 3, 3);
+        img = ibc;
       } else if (text.length > 6) {
         textCurency = text.slice(6);
         img = null;
