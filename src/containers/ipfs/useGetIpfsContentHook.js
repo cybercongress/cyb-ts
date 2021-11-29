@@ -201,12 +201,6 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
           setText(cid);
         }
         setLoading(false);
-      } else {
-        setLoading(false);
-        setContent(cid);
-        setText(cid);
-        setGateway(true);
-        setStatus('impossibleLoad');
       }
     };
     feachData();

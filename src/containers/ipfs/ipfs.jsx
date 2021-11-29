@@ -93,7 +93,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   const { jsCyber } = useContext(AppContext);
   const { cid } = useParams();
   const location = useLocation();
-  const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs, 10);
+  const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs);
 
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');

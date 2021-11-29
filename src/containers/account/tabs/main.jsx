@@ -135,7 +135,6 @@ const Tokens = ({ balanceToken, balance }) => {
 };
 
 const Main = ({ balance, balanceToken, ...props }) => {
-  console.log(`balanceToken`, balanceToken);
   try {
     return (
       <Pane {...props} display="grid" gridGap="20px">
