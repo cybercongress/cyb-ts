@@ -36,7 +36,6 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
 
   useEffect(() => {
     const getRank = async () => {
-      console.log(`data`, data.rank);
       if ((data.rank === undefined || data.rank === null) && jsCyber !== null) {
         const response = await jsCyber.rank(cid);
 

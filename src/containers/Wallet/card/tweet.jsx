@@ -30,7 +30,7 @@ const STAGE_READY = 3;
 
 const QueryCyberlink = (address, yesterday, time) =>
   `query MyQuery {
-    cyberlink_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx"}}, {neuron: {_in: [${address}]}}]}) {
+    cyberlinks_aggregate(where: {_and: [{timestamp: {_gte: "${yesterday}"}}, {timestamp: {_lt: "${time}"}}, {particle_from: {_eq: "QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx"}}, {neuron: {_in: [${address}]}}]}) {
       aggregate {
         count
       }
@@ -43,23 +43,22 @@ const useNewsToday = (account) => {
   const [follows, setFollows] = useState([]);
 
   useEffect(() => {
-    const addressFollows = [];
-
     if (account.match(PATTERN_CYBER)) {
       const feachData = async () => {
         const responseFollows = await getFollows(account);
         if (responseFollows !== null && responseFollows.total_count > 0) {
-          for (const item of responseFollows.txs) {
+          responseFollows.txs.forEach(async (item) => {
             const cid = item.tx.value.msg[0].value.links[0].to;
             const addressResolve = await getContent(cid);
             if (addressResolve) {
-              const addressFollow = addressResolve;
-              if (addressFollow.match(PATTERN_CYBER)) {
-                addressFollows.push(`"${addressFollow}"`);
+              if (addressResolve.match(PATTERN_CYBER)) {
+                setFollows((itemState) => [
+                  ...itemState,
+                  `"${addressResolve}"`,
+                ]);
               }
             }
-          }
-          setFollows(addressFollows);
+          });
         }
       };
       feachData();
@@ -74,19 +73,19 @@ const useNewsToday = (account) => {
 
   const feachDataCyberlink = async (followsProps) => {
     const d = new Date();
-    const time = dateFormat(d, 'yyyy-mm-dd');
+    const time = dateFormat(d, 'UTC:yyyy-mm-dd"T"HH:MM:ss');
     const yesterday = dateFormat(
       new Date(Date.parse(d) - 86400000),
-      'yyyy-mm-dd'
+      'UTC:yyyy-mm-dd"T"HH:MM:ss'
     );
     const response = await getGraphQLQuery(
       QueryCyberlink(followsProps, yesterday, time)
     );
     if (
-      response.cyberlink_aggregate &&
-      response.cyberlink_aggregate.aggregate
+      response.cyberlinks_aggregate &&
+      response.cyberlinks_aggregate.aggregate
     ) {
-      setCount(response.cyberlink_aggregate.aggregate.count);
+      setCount(response.cyberlinks_aggregate.aggregate.count);
       setLoading(false);
     }
   };
@@ -261,7 +260,7 @@ function TweetCard({
         <Pane display="flex" flex={1}>
           <AvatarIpfs addressCyber={account} node={node} />
         </Pane>
-        <Link style={{ margin: '0 10px' }} to="/brain">
+        <Link style={{ margin: '0 10px' }} to="/sixthSense">
           <Pane
             marginX={10}
             alignItems="center"
