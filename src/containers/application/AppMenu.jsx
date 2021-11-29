@@ -15,8 +15,10 @@ import { Bookmarks } from '../../components/appMenu/AppMenu';
 const itemsMenu = (address) => {
   let linkAvatar = '/';
   let linkBrain = '/graph';
+  let linkCommunity = '/';
   if (address !== null) {
     linkAvatar = `/network/bostrom/contract/${address.bech32}`;
+    linkCommunity = `/network/bostrom/contract/${address.bech32}/community`;
     linkBrain = `/pgraph/${address.bech32}`;
   }
   return [
@@ -27,6 +29,7 @@ const itemsMenu = (address) => {
         { name: 'Sixth Sense', to: '/sixthSense' },
         { name: 'Avatar', to: linkAvatar },
         { name: 'Brain', to: linkBrain },
+        { name: 'Community', to: linkCommunity },
       ],
     },
     {
