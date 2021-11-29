@@ -4,6 +4,7 @@ import Room from 'ipfs-pubsub-room';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
 import { trimString } from '../../utils/utils';
+import { ActionBarContentText, NoItems } from '../../components';
 
 const imgSend = require('../../image/paper-plane-outline.svg');
 
@@ -37,6 +38,8 @@ const MessageItem = ({ name = '', text = '' }) => (
     paddingX={5}
     paddingY={5}
     marginY={5}
+    width="70%"
+    marginX="auto"
   >
     {/* <Pane overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
       {name}
@@ -55,28 +58,31 @@ const SendMessage = ({
   valueInputMassage = '',
   handleKeyDown,
 }) => (
-  <Pane display="flex" paddingX={0} alignItems="center" paddingY={10}>
-    <TextareaAutosize
-      value={valueInputMassage}
-      style={{
-        height: 42,
-        width: '100%',
-        color: '#fff',
-        paddingLeft: '10px',
-        borderRadius: '20px',
-        textAlign: 'start',
-        paddingRight: '35px',
-        paddingTop: '10px',
-        paddingBottom: '10px',
-        marginRight: '15px',
-      }}
-      className="resize-none minHeightTextarea"
-      onChange={onChangeMessage}
-      placeholder={placeholder}
-      onFocus={(e) => (e.target.placeholder = '')}
-      onBlur={(e) => (e.target.placeholder = placeholder)}
-      onKeyDown={(e) => handleKeyDown(e)}
-    />
+  <Pane width="65%" alignItems="flex-end" display="flex">
+    <ActionBarContentText>
+      <TextareaAutosize
+        value={valueInputMassage}
+        maxRows={20}
+        style={{
+          height: 42,
+          width: '100%',
+          color: '#fff',
+          paddingLeft: '10px',
+          borderRadius: '20px',
+          textAlign: 'start',
+          paddingRight: '35px',
+          paddingTop: '10px',
+          paddingBottom: '10px',
+          marginRight: '15px',
+        }}
+        className="resize-none minHeightTextarea"
+        onChange={onChangeMessage}
+        placeholder={placeholder}
+        onFocus={(e) => (e.target.placeholder = '')}
+        onBlur={(e) => (e.target.placeholder = placeholder)}
+        onKeyDown={(e) => handleKeyDown(e)}
+      />
+    </ActionBarContentText>
     <button
       className="container-buttonIcon"
       type="button"
@@ -238,52 +244,50 @@ class TrollBoxx extends React.PureComponent {
     console.log('messages', messages);
 
     return (
-      <main
-        className="block-body"
-        style={{ paddingTop: 30, alignItems: 'center' }}
-      >
-        <Pane
-          // width="250px"
-          width="500px"
-          boxShadow="0 0 2px 0px #36d6ae"
-          borderRadius="5px"
-          paddingRight={5}
-          paddingLeft={10}
-          paddingTop={10}
+      <>
+        <main
+          className="block-body"
+          style={{ paddingTop: 30, alignItems: 'center' }}
         >
-          <Pane height="500px" overflowY="scroll" paddingRight={5}>
-            {messages.length > 0 &&
-              messages.map((item, i) => (
-                <>
-                  <MessageItem key={i} name={item.name} text={item.text} />
-                  <div ref={this.chatContainer} />
-                </>
-              ))}
+          <Pane
+            width="90%"
+            marginX="auto"
+            marginY={0}
+            display="flex"
+            flexDirection="column"
+          >
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {/* <Pane height="500px" overflowY="scroll" paddingRight={5}> */}
+              {messages.length > 0 ? (
+                messages.map((item, i) => (
+                  <>
+                    <MessageItem key={i} name={item.name} text={item.text} />
+                    <div ref={this.chatContainer} />
+                  </>
+                ))
+              ) : (
+                <NoItems
+                  text={
+                    <Pane textAlign="center">
+                      <Pane marginBottom={5}>No messages.</Pane>
+                      <Pane>You can write something</Pane>
+                    </Pane>
+                  }
+                />
+              )}
+              {/* </Pane> */}
+            </div>
           </Pane>
+        </main>
+        <ActionBar>
           <SendMessage
             valueInputMassage={valueInputMassage}
             onChangeMessage={(e) => this.onChangeMessage(e)}
             onClickSend={() => this.onClickSend()}
             handleKeyDown={this.handleKeyDown}
           />
-        </Pane>
-        <div>
-          {/* <div>
-            <div>{name}</div>
-            <input value={valueInputName} type="text" />
-          </div> */}
-          {/* <div>
-            <input
-              value={valueInputMassage}
-              onChange={(e) => this.onChangeMessage(e)}
-              type="text"
-            />
-            <Button onClick={() => this.onClickSend()} type="button">
-              send
-            </Button>
-          </div> */}
-        </div>
-      </main>
+        </ActionBar>
+      </>
     );
   }
 }
