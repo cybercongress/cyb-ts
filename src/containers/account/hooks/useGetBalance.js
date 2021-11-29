@@ -17,7 +17,7 @@ const initValue = {
 };
 
 const initValueTokens = {
-  available: 0,
+  liquid: 0,
   vested: 0,
   total: 0,
 };
@@ -141,26 +141,14 @@ function useGetBalance(address, updateAddress) {
     const getBalance = async () => {
       const initValueTokenAmount = {
         hydrogen: {
-          available: 0,
-          vested: 0,
-          total: 0,
+          ...initValueTokens,
         },
         milliampere: {
-          available: 0,
-          vested: 0,
-          total: 0,
+          ...initValueTokens,
         },
         millivolt: {
-          available: 0,
-          vested: 0,
-          total: 0,
+          ...initValueTokens,
         },
-        tocyb: {
-          available: 0,
-          vested: 0,
-          total: 0,
-        },
-        pools: {},
       };
 
       if (jsCyber !== null && address !== null) {
@@ -168,63 +156,38 @@ function useGetBalance(address, updateAddress) {
         setLoadingBalanceToken(true);
         const getAllBalancesPromise = await jsCyber.getAllBalances(address);
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
-        const pools = getPools(balancesToken);
-        initValueTokenAmount.pools = pools;
-        if (balancesToken.milliampere) {
-          initValueTokenAmount.milliampere.available = convertResources(
-            balancesToken.milliampere
-          );
-          initValueTokenAmount.milliampere.total = convertResources(
-            balancesToken.milliampere
-          );
+        if (Object.keys(balancesToken).length > 0) {
+          Object.keys(balancesToken).forEach((key) => {
+            if (
+              Object.hasOwnProperty.call(balancesToken, key) &&
+              key !== 'boot'
+            ) {
+              let elementBalancesToken = balancesToken[key];
+              if (key === 'millivolt' || key === 'milliampere') {
+                elementBalancesToken = convertResources(elementBalancesToken);
+              }
+              if (Object.hasOwnProperty.call(initValueTokenAmount, key)) {
+                initValueTokenAmount[key].total = elementBalancesToken;
+                initValueTokenAmount[key].liquid = elementBalancesToken;
+              } else {
+                initValueTokenAmount[key] = elementBalancesToken;
+              }
+              if (
+                Object.hasOwnProperty.call(originalVesting, key) &&
+                Object.hasOwnProperty.call(vested, key)
+              ) {
+                const vestedTokens =
+                  parseFloat(originalVesting[key]) - parseFloat(vested[key]);
+                const liquidAmount = elementBalancesToken - vestedTokens;
+                initValueTokenAmount[key].liquid =
+                  liquidAmount > 0 ? liquidAmount : 0;
+                initValueTokenAmount[key].vested = vestedTokens;
+              }
+            }
+          });
         }
-        if (balancesToken.millivolt) {
-          initValueTokenAmount.millivolt.available = convertResources(
-            balancesToken.millivolt
-          );
-          initValueTokenAmount.millivolt.total = convertResources(
-            balancesToken.millivolt
-          );
-        }
-        if (balancesToken.hydrogen) {
-          initValueTokenAmount.hydrogen.available = balancesToken.hydrogen;
-          initValueTokenAmount.hydrogen.total = balancesToken.hydrogen;
-        }
-        if (balancesToken.tocyb) {
-          initValueTokenAmount.tocyb.available = balancesToken.tocyb;
-          initValueTokenAmount.tocyb.total = balancesToken.tocyb;
-        }
-        // console.log(`vested`, address, vested);
-        // console.log(`originalVesting`, address, originalVesting);
-
-        if (vested.milliampere >= 0 && originalVesting.milliampere > 0) {
-          const vestedTokens =
-            parseFloat(originalVesting.milliampere) -
-            parseFloat(vested.milliampere);
-          if (initValueTokenAmount.milliampere.available > 0) {
-            initValueTokenAmount.milliampere.available -= vestedTokens;
-            initValueTokenAmount.milliampere.vested = vestedTokens;
-          }
-        }
-        if (vested.millivolt >= 0 && originalVesting.millivolt > 0) {
-          const vestedTokens =
-            parseFloat(originalVesting.millivolt) -
-            parseFloat(vested.millivolt);
-          if (initValueTokenAmount.millivolt.available > 0) {
-            initValueTokenAmount.millivolt.available -= vestedTokens;
-            initValueTokenAmount.millivolt.vested = vestedTokens;
-          }
-        }
-        if (vested.hydrogen >= 0 && originalVesting.hydrogen > 0) {
-          const vestedTokens =
-            parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
-          if (initValueTokenAmount.hydrogen.available > 0) {
-            initValueTokenAmount.hydrogen.available -= vestedTokens;
-          }
-          initValueTokenAmount.hydrogen.vested = vestedTokens;
-        }
-        // console.log(address, initValueTokenAmount);
       }
+      // console.log(`initValueTokenAmount`, initValueTokenAmount);
       setBalanceToken(initValueTokenAmount);
       setLoadingBalanceToken(false);
     };

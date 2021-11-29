@@ -76,6 +76,9 @@ const ValueImg = ({
       if (text.includes('pool')) {
         textCurency = trimString(text, 4, 3);
         img = null;
+      } else if (text.includes('ibc')) {
+        textCurency = trimString(text, 4, 3);
+        img = null;
       } else if (text.length > 6) {
         textCurency = text.slice(6);
         img = null;

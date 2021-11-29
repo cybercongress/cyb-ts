@@ -124,7 +124,10 @@ const DetailsBalance = ({
   );
 };
 
-const FormatNumberTokens = ({ text, value, ...props }) => (
+const FormatNumberTokens = ({ text, value, ...props }) =>{ 
+  
+  // console.log(text, value);
+  return(
   <Pane display="grid" gridTemplateColumns="1fr 65px" gridGap="5px" {...props}>
     <Pane
       // paddingRight={5}
@@ -143,7 +146,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => (
       />
     )}
   </Pane>
-);
+)};
 
 const DetailsBalanceTokens = ({
   total,
@@ -155,7 +158,7 @@ const DetailsBalanceTokens = ({
     <Pane width="100%" {...props}>
       <RowBalance marginBottom={3}>
         <div>liquid</div>
-        <FormatNumberTokens value={total.available} text={currency} />
+        <FormatNumberTokens value={total.liquid} text={currency} />
       </RowBalance>
       <RowBalance>
         <>
@@ -358,7 +361,6 @@ const EULnetworkInfo = ({
   balanceToken,
   ...props
 }) => {
-  // console.log(`balanceToken`, balanceToken)
   return (
     <ContainerAddressInfo>
       <Address
@@ -406,9 +408,9 @@ const EULnetworkInfo = ({
               />
             )}
 
-            {Object.keys(balanceToken)
-              .filter((keyFilter) => keyFilter.indexOf('pool') === -1)
-              .map((key) => {
+            {Object.keys(balanceToken).map((key) => {
+              // console.log('Object', Object.keys(balanceToken[key].length))
+              if (Object.keys(balanceToken[key]).length > 0) {
                 return (
                   <BalanceToken
                     key={key}
@@ -419,18 +421,15 @@ const EULnetworkInfo = ({
                     address={address}
                   />
                 );
-              })}
-
-            {balanceToken.pools &&
-              Object.keys(balanceToken.pools).map((key) => {
-                return (
-                  <FormatNumberTokens
-                    key={key}
-                    value={balanceToken.pools[key]}
-                    text={key}
-                  />
-                );
-              })}
+              }
+              return (
+                <FormatNumberTokens
+                  key={key}
+                  value={balanceToken[key]}
+                  text={key}
+                />
+              );
+            })}
           </>
         )}
       </Pane>
