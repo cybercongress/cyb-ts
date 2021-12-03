@@ -5,32 +5,17 @@ import { Loading, Dots } from '../../components';
 import { formatNumber, fromBech32 } from '../../utils/utils';
 
 function useUptime({ accountUser }) {
+  console.log(`accountUser`, accountUser)
   try {
     const GET_CHARACTERS = gql`
     query uptime {
-      pre_commit(where: {validator_address: {_eq: "${fromBech32(
-        accountUser,
-        'bostromvalcons'
-      )}"}}, limit: 1) {
-        validator {
-          blocks(order_by: {height: asc}, limit: 1) {
-            height
-          }
-        }
-      }
-      block_aggregate(limit: 1, order_by: {height: desc}) {
-        nodes {
-          height
-        }
-      }
-      pre_commit_aggregate(where: {validator_address: {_eq: "${fromBech32(
+      uptime(where: {consensus_address: {_eq: "${fromBech32(
         accountUser,
         'bostromvalcons'
       )}"}}) {
-        aggregate {
-          count
-        }
+        uptime
       }
+     
     }
   `;
 
@@ -41,6 +26,12 @@ function useUptime({ accountUser }) {
     }
 
     let uptime = 0;
+
+    console.log(
+      `
+      )`,
+      fromBech32(accountUser, 'bostromvalcons')
+    );
 
     console.log('data', data);
 

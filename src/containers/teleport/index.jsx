@@ -397,7 +397,10 @@ function Teleport({ defaultAccount }) {
           selectedTab={selectedTab}
         /> */}
       </main>
-      <ActionBar stateActionBar={stateActionBar} />
+      <ActionBar
+        addressActive={addressActive}
+        stateActionBar={stateActionBar}
+      />
     </>
   );
 }

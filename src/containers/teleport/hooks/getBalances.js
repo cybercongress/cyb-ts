@@ -27,7 +27,7 @@ const getVestingPeriodsData = (data, startTime) => {
             if (Object.hasOwnProperty.call(amount, key)) {
               const element = amount[key];
               if (Object.hasOwnProperty.call(vestedAmount, key)) {
-                vestedAmount[key] = element;
+                vestedAmount[key] += element;
               }
             }
           }

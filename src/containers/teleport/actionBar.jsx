@@ -303,6 +303,20 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
+  if (addressActive !== null && addressActive.keys !== 'keplr') {
+    return (
+      <ActionBarContainer>
+        <ActionBarContentText>
+          Start by connecting keplr wallet to
+          <Link style={{ marginLeft: 5 }} to="/">
+            your pocket
+          </Link>
+          .
+        </ActionBarContentText>
+      </ActionBarContainer>
+    );
+  }
+
   if (selectedTab === 'pools' && stage === STAGE_INIT) {
     return (
       <ActionBarContainer>

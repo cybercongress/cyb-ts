@@ -11,10 +11,11 @@ import {
 import { Tablist, Pane } from '@cybercongress/gravity';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
-import { trimString, formatNumber } from '../../utils/utils';
+import { trimString, formatNumber, reduceBalances } from '../../utils/utils';
 import { Btn } from './ui';
 import Convert from './convert';
-import { getPinsCid } from '../../utils/search/utils'
+import { getPinsCid } from '../../utils/search/utils';
+import Denom from '../../components/denom';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -23,40 +24,39 @@ const headers = {
   authorization: `Basic YW5vbnltYXM6bW91c2UxMjN3ZXN0`,
 };
 
-const url =
-  'https://io.cybernode.ai/pins/QmU713Qs3atZVXfNc2jV1maGNsA2sKLR5YDXvfed86ZneP';
+const bootTocyb =
+  'pool5D83035BE0E7AB904379161D3C52FB4C1C392265AC19CE39A864146198610628';
+const milliampere = 'milliampere';
 
-function TestKeplr({ block }) {
-  window.block = block;
+function TestKeplr() {
+  const { jsCyber } = useContext(AppContext);
+  const [totalSupply, setTotalSupply] = useState(null);
 
   useEffect(() => {
-    getPinsCid('QmZueK4L54q4FyrwBhCVv74bRY7xi1ni3jN6kAVvS6qZ7y');
-  }, []);
+    const feachData = async () => {
+      if (jsCyber !== null) {
+        const responseTotalSupply = await jsCyber.totalSupply();
+        const datareduceTotalSupply = reduceBalances(responseTotalSupply);
+        setTotalSupply(datareduceTotalSupply);
+      }
+    };
+    feachData();
+  }, [jsCyber]);
+
+  console.log(`totalSupply`, totalSupply);
 
   return (
-    // <webview
-    //   id="foo"
-    //   src="https://ipfs.io/ipfs/QmU713Qs3atZVXfNc2jV1maGNsA2sKLR5YDXvfed86ZneP/#/swap"
-    //   style="display:inline-flex; width:640px; height:480px"
-    // ></webview>
-    <div>0</div>
-
-    // <ReactMarkdown
-    //   source="https://ipfs.io/ipfs/QmU713Qs3atZVXfNc2jV1maGNsA2sKLR5YDXvfed86ZneP/#/swap"
-    //   // escapeHtml
-    //   // skipHtml={false}
-    //   // astPlugins={[parseHtml]}
-    //   // renderers={{ code: CodeBlock }}
-    //   // plugins={[toc]}
-    //   // escapeHtml={false}
-    // />
+    <div>
+      {totalSupply !== null &&
+        Object.keys(totalSupply).map((key) => {
+          return (
+            <>
+              <Denom denomValue={key} />
+            </>
+          );
+        })}
+    </div>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    block: store.block.block,
-  };
-};
-
-export default connect(mapStateToProps)(TestKeplr);
+export default TestKeplr;

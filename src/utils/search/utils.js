@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { CYBER, TAKEOFF, COSMOS } from '../config';
+import * as config from '../config';
 
 const all = require('it-all');
 const uint8ArrayConcat = require('uint8arrays/concat');
@@ -10,7 +10,7 @@ const {
   CYBER_NODE_URL_API,
   CYBER_NODE_URL_LCD,
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
-} = CYBER;
+} = config.CYBER;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
@@ -556,12 +556,12 @@ export const getTotalEUL = (data) => {
 export const getAmountATOM = (data) => {
   let amount = 0;
   for (let item = 0; item < data.length; item++) {
-    if (amount <= TAKEOFF.ATOMsALL) {
+    if (amount <= config.TAKEOFF.ATOMsALL) {
       amount +=
         Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) /
-        COSMOS.DIVISOR_ATOM;
+        config.COSMOS.DIVISOR_ATOM;
     } else {
-      amount = TAKEOFF.ATOMsALL;
+      amount = config.TAKEOFF.ATOMsALL;
       break;
     }
   }
@@ -772,7 +772,7 @@ export const getPreCommits = async (consensusAddress) => {
 
     const response = await axios({
       method: 'post',
-      url: CYBER.CYBER_INDEX_HTTPS,
+      url: config.CYBER.CYBER_INDEX_HTTPS,
       headers,
       data: body,
     });
@@ -785,7 +785,7 @@ export const getPreCommits = async (consensusAddress) => {
 
 export const getGraphQLQuery = async (
   query,
-  urlGraphql = CYBER.CYBER_INDEX_HTTPS
+  urlGraphql = config.CYBER.CYBER_INDEX_HTTPS
 ) => {
   try {
     const body = JSON.stringify({
@@ -825,7 +825,7 @@ export const getSendTxToTakeoff = async (sender, recipient) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
+      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
     });
     return response.data.txs;
   } catch (e) {
@@ -1083,7 +1083,7 @@ export const getTxCosmos = async (page = 1) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000&page=${page}`,
+      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${config.COSMOS.ADDR_FUNDING}&limit=1000000000&page=${page}`,
     });
     return response.data;
   } catch (e) {
@@ -1340,7 +1340,7 @@ export const getIpfsGatway = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
+      url: `${config.CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
     });
 
     return response.data;
@@ -1402,5 +1402,16 @@ export const getPinsCid = async (cid) => {
   } catch (e) {
     console.log(e);
     return null;
+  }
+};
+
+export const searchClient = async (client, query, page) => {
+  try {
+    const hash = await getIpfsHash(query.toLowerCase());
+    const responseSearchResults = await client.search(hash, page);
+    console.log(`responseSearchResults`, responseSearchResults);
+    return responseSearchResults.result ? responseSearchResults : [];
+  } catch (error) {
+    return [];
   }
 };
