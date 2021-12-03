@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { coin, coins, parseCoins } from '@cosmjs/launchpad';
+import { coin, coins, GasPrice, parseCoins } from '@cosmjs/launchpad';
+import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { Pane, Button, Input } from '@cybercongress/gravity';
 import Long from 'long';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import { AppContext } from '../../context';
 import { getTxs } from '../../utils/search/utils';
+import { configKeplr } from './configKepler';
+import useSetupIbc from './useSetupIbc';
+import { config } from './utils';
 
 const {
   STAGE_INIT,
@@ -20,7 +24,9 @@ const fee = {
 };
 
 function Ibc() {
-  const { keplr, jsCyber } = useContext(AppContext);
+  // const { keplr, jsCyber } = useContext(AppContext);
+  const { signerA } = useSetupIbc();
+  const [cyberClient, setCyberClient] = useState(null);
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
@@ -31,15 +37,30 @@ function Ibc() {
     'bostrom180tz4ahtyfhwnqwkpdqj3jelyxff4wlx2ymsv3'
   );
 
+  useEffect(() => {
+    const createClient = async () => {
+      if (signerA !== null) {
+        const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
+        const client = await SigningCyberClient.connectWithSigner(
+          config.chainA.rpcEndpoint,
+          signerA,
+          options
+        );
+        setCyberClient(client);
+      }
+    };
+    createClient();
+  }, [signerA]);
+
   const sendIBCtransaction = async () => {
-    const [{ address }] = await keplr.signer.getAccounts();
+    const [{ address }] = await cyberClient.signer.getAccounts();
 
     const transferAmount = parseCoins(amount)[0];
     const sourcePort = 'transfer';
     const timeoutTimestamp = Long.fromString(
       `${new Date().getTime() + 60000}000000`
     );
-    const timeoutHeight = undefined;
+    // const timeoutHeight = undefined;
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {
@@ -64,8 +85,13 @@ function Ibc() {
     // );
 
     try {
-      const response = await keplr.signAndBroadcast(address, [msg], fee, '');
-      console.log(`response`, response)
+      const response = await cyberClient.signAndBroadcast(
+        address,
+        [msg],
+        fee,
+        ''
+      );
+      console.log(`response`, response);
     } catch (e) {
       console.error(`Caught error: `, e);
     }
@@ -90,7 +116,7 @@ function Ibc() {
       />
 
       <button
-        disabled={keplr === null}
+        disabled={cyberClient === null}
         onClick={() => sendIBCtransaction()}
         type="button"
       >
