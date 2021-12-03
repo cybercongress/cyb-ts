@@ -46,6 +46,7 @@ import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
 import Movie from './containers/movie';
+import Ibc from './containers/ibc';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -276,6 +277,7 @@ function AppRouter({
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
+        <Route path="/ibc" component={Ibc} />
       </Switch>
     </Router>
   );
