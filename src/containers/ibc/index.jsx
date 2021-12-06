@@ -8,7 +8,8 @@ import { AppContext } from '../../context';
 import { getTxs } from '../../utils/search/utils';
 import { configKeplr } from './configKepler';
 import useSetupIbc from './useSetupIbc';
-import { config } from './utils';
+import { config, STEPS } from './utils';
+import { IbcTxs, Relayer } from './components';
 
 const {
   STAGE_INIT,
@@ -25,7 +26,9 @@ const fee = {
 
 function Ibc() {
   // const { keplr, jsCyber } = useContext(AppContext);
-  const { signerA } = useSetupIbc();
+  const [step, setStep] = useState(STEPS.ENTER_CHAIN_A);
+  const [configChains, setConfigChains] = useState(config);
+  const { signerA } = useSetupIbc(step);
   const [cyberClient, setCyberClient] = useState(null);
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
@@ -42,7 +45,7 @@ function Ibc() {
       if (signerA !== null) {
         const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
         const client = await SigningCyberClient.connectWithSigner(
-          config.chainA.rpcEndpoint,
+          configChains.chainA.rpcEndpoint,
           signerA,
           options
         );
@@ -50,7 +53,7 @@ function Ibc() {
       }
     };
     createClient();
-  }, [signerA]);
+  }, [signerA, configChains.chainA]);
 
   const sendIBCtransaction = async () => {
     const [{ address }] = await cyberClient.signer.getAccounts();
@@ -97,31 +100,26 @@ function Ibc() {
     }
   };
 
+  const stateIbcTxs = {
+    amount,
+    setAmount,
+    sourceChannel,
+    setSourceChannel,
+    recipientAddress,
+    setRecipientAddress,
+    cyberClient,
+    sendIBCtransaction,
+  };
+
+  const stateRelayer = {
+    configChains,
+    setConfigChains,
+  };
+
   return (
     <main className="block-body">
-      <Input
-        placeholder="amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-      <Input
-        placeholder="sourceChannel"
-        value={sourceChannel}
-        onChange={(e) => setSourceChannel(e.target.value)}
-      />
-      <Input
-        placeholder="recipientAddress"
-        value={recipientAddress}
-        onChange={(e) => setRecipientAddress(e.target.value)}
-      />
-
-      <button
-        disabled={cyberClient === null}
-        onClick={() => sendIBCtransaction()}
-        type="button"
-      >
-        send
-      </button>
+      <IbcTxs state={stateIbcTxs} />
+      <Relayer step={step} state={stateRelayer} />
     </main>
   );
 }

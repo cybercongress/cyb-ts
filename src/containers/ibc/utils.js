@@ -23,4 +23,13 @@ const config = {
   },
 };
 
-export { config };
+const STEPS = {
+  INIT_STATE: 0,
+  ENTER_CHAIN_A: 1.1,
+  ENTER_CHAIN_B: 1.2,
+  SETUP_RELAYER: 2,
+  RUN_RELAYER: 3,
+  STOP_RELAYER: 4,
+};
+
+export { config, STEPS };

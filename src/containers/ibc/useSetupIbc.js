@@ -1,7 +1,8 @@
+/* eslint-disable no-await-in-loop */
 import { useEffect, useState } from 'react';
 import { IbcClient, Link } from '@confio/relayer/build';
 import { GasPrice } from '@cosmjs/launchpad';
-import { config } from './utils';
+import { config, STEPS } from './utils';
 import { configKeplr } from './configKepler';
 
 const init = async (option) => {
@@ -44,6 +45,10 @@ const logger = (setRelayerLog) => {
   };
 };
 
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 const getKeplr = async () => {
   if (window.keplr) {
     return window.keplr;
@@ -65,7 +70,8 @@ const getKeplr = async () => {
   });
 };
 
-function useSetupIbc() {
+function useSetupIbc(step) {
+  const [running, setRunning] = useState(false);
   const [signerA, setSignerA] = useState(null);
   const [signerB, setSignerB] = useState(null);
   const [clientA, setClientA] = useState(null);
@@ -75,20 +81,63 @@ function useSetupIbc() {
   const [relayerLog, setRelayerLog] = useState([]);
 
   useEffect(() => {
+    if (step === STEPS.INIT_STATE) {
+      setRunning(false);
+    }
+
+    if (step === STEPS.SETUP_RELAYER) {
+      setupRelayer();
+    }
+
+    if (step === STEPS.RUN_RELAYER) {
+      setRunning(true);
+    }
+
+    if (step === STEPS.STOP_RELAYER) {
+      setRunning(false);
+    }
+  }, [step]);
+
+  useEffect(() => {
     const getKeplrClient = async () => {
-      const keplr = await getKeplr();
-      if (keplr) {
-        initSigner();
+      if (step === STEPS.ENTER_CHAIN_B) {
+        const keplr = await getKeplr();
+        if (keplr) {
+          initSigner();
+        }
       }
     };
     getKeplrClient();
-  }, []);
+  }, [step]);
 
   useEffect(() => {
     window.addEventListener('keplr_keystorechange', () => {
       initSigner();
     });
   }, []);
+
+  useEffect(() => {
+    const relayerLoop = async (
+      options = { poll: 5000, maxAgeDest: 300, maxAgeSrc: 300 }
+    ) => {
+      if (link !== null) {
+        while (running) {
+          try {
+            const nextRelay = await link.checkAndRelayPacketsAndAcks({}, 2, 6);
+            console.group('Next Relay:');
+            console.log(nextRelay);
+            console.groupEnd('Next Relay:');
+            await link.updateClientIfStale('A', options.maxAgeDest);
+            await link.updateClientIfStale('B', options.maxAgeSrc);
+          } catch (e) {
+            console.error(`Caught error: `, e);
+          }
+          await sleep(options.poll);
+        }
+      }
+    };
+    relayerLoop();
+  }, [link, running]);
 
   const initSigner = async () => {
     const signerChainA = await init(config.chainA);
