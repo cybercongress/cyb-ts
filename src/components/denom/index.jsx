@@ -4,6 +4,7 @@ import { AppContext } from '../../context';
 import { searchClient } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import db from '../../db';
+import ValueImg from '../valueImg';
 
 const FileType = require('file-type');
 const all = require('it-all');
@@ -27,16 +28,28 @@ const getTypeContent = async (dataCid) => {
 
 function useGetDenom(denomValue, nodeIpfs) {
   const { jsCyber } = useContext(AppContext);
-  const [denom, setDenom] = useState('');
+  const [denom, setDenom] = useState(denomValue);
   const [cid, setCid] = useState(null);
+  const [type, setType] = useState('');
+
+  useEffect(() => {
+    setType('');
+    if (denomValue.includes('ibc')) {
+      setType('ibc');
+    } else if (denomValue.includes('pool')) {
+      setType('pool');
+    } else {
+      setType('');
+    }
+  }, [denomValue]);
 
   useEffect(() => {
     const search = async () => {
+      setDenom(denomValue);
       if (
         (jsCyber !== null && denomValue.includes('pool')) ||
         denomValue.includes('ibc')
       ) {
-        setDenom(denomValue);
         const response = await searchClient(jsCyber, denomValue, 0);
         console.log(`response`, response);
         if (response.result) {
@@ -103,16 +116,14 @@ function useGetDenom(denomValue, nodeIpfs) {
     feachData();
   }, [nodeIpfs, cid, denomValue]);
 
-  return { denom };
+  return { denom, type };
 }
 
-function Denom({ nodeIpfs, denomValue }) {
+function Denom({ nodeIpfs, denomValue, ...props }) {
   try {
-    const { denom } = useGetDenom(denomValue, nodeIpfs);
+    const { denom, type } = useGetDenom(denomValue, nodeIpfs);
 
-    return (
-      <div>{denom.length > 10 ? `${denom.substring(0, 10)}...` : denom}</div>
-    );
+    return <ValueImg text={denom} type={type} {...props} />;
   } catch (error) {
     return <div>{denomValue}</div>;
   }

@@ -23,6 +23,7 @@ const ValueImg = ({
   zIndexImg,
   flexDirection,
   size,
+  type,
   ...props
 }) => {
   let img = null;
@@ -78,11 +79,13 @@ const ValueImg = ({
       if (text.includes('pool')) {
         textCurency = trimString(text, 3, 3);
         img = pool;
+        break;
       } else if (text.includes('ibc')) {
         textCurency = trimString(text, 3, 3);
         img = ibc;
-      } else if (text.length > 6) {
-        textCurency = text.slice(6);
+        break;
+      } else if (text.length > 32) {
+        textCurency = text.slice(0, 32);
         img = null;
         break;
       } else {
@@ -90,6 +93,13 @@ const ValueImg = ({
         img = null;
         break;
       }
+  }
+
+  if (type && type === 'pool') {
+    img = pool;
+  }
+  if (type && type === 'ibc') {
+    img = ibc;
   }
 
   return (
