@@ -26,20 +26,20 @@ function AddTest({ nodeIpfs }) {
   // }, [nodeIpfs]);
 
   const addPin = async () => {
-    console.log(`file`, file)
-    let dataFile;
-    if (typeof file === 'string') {
-      dataFile = new File([file], 'file.txt');
-    } else if (file.name) {
-      dataFile = new File([file], file.name);
-    }
-    const formData = new FormData();
-    formData.append('file', dataFile);
+    // console.log(`file`, file)
+    // let dataFile;
+    // if (typeof file === 'string') {
+    //   dataFile = new File([file], 'file.txt');
+    // } else if (file.name) {
+    //   dataFile = new File([file], file.name);
+    // }
+    // const formData = new FormData();
+    // formData.append('file', dataFile);
     try {
       const response = await axios({
-        method: 'post',
-        url: 'https://io.cybernode.ai/add',
-        data: formData,
+        method: 'get',
+        url:
+          'https://gateway.ipfs.cybernode.ai/ipfs/QmVdVFZDsSTVCeVLgWLU1fWxmZnYLCM5yD5RS4NpZQmDBp',
       });
       console.log(`response`, response);
     } catch (error) {

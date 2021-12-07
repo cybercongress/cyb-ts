@@ -22,7 +22,7 @@ function DenomTest() {
   console.log(`totalSupply`, totalSupply);
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {totalSupply !== null &&
         Object.keys(totalSupply).map((key) => {
           return (

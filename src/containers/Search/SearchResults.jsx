@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
-import { useParams, useLocation, Link } from 'react-router-dom';
+import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
@@ -9,6 +9,8 @@ import {
   exponentialToDecimal,
   trimString,
   coinDecimals,
+  encodeSlash,
+  replaceSlash,
 } from '../../utils/utils';
 import {
   Loading,
@@ -64,6 +66,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const { jsCyber } = useContext(AppContext);
   const { query } = useParams();
   const location = useLocation();
+  const history = useHistory();
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
@@ -74,9 +77,15 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
+    if (query.match(/\//g)) {
+      history.push(`/search/${replaceSlash(query)}`);
+    }
+  }, [query]);
+
+  useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
-      setQueryProps(query);
+      setQueryProps(encodeSlash(query));
       setPage(0);
       setAllPage(1);
       if (jsCyber !== null) {
@@ -86,16 +95,16 @@ function SearchResults({ node, mobile, setQueryProps }) {
         if (query.match(PATTERN_IPFS_HASH)) {
           keywordHashTemp = query;
         } else {
-          keywordHashTemp = await getIpfsHash(query.toLowerCase());
+          keywordHashTemp = await getIpfsHash(encodeSlash(query).toLowerCase());
         }
 
         let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);
         if (responseSearchResults.length === 0) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          console.log(`keywordHashNull`, keywordHashNull);
+          // console.log(`keywordHashNull`, keywordHashNull);
           responseSearchResults = await search(jsCyber, keywordHashNull, 0);
-          console.log(` responseSearchResults`, responseSearchResults);
+          // console.log(` responseSearchResults`, responseSearchResults);
         }
         // console.log(`responseSearchResults`, responseSearchResults);
 
@@ -127,7 +136,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
     let links = [];
     const data = await search(jsCyber, keywordHash, page);
     if (data.result) {
-      links = reduceSearchResults(data.result, query);
+      links = reduceSearchResults(data.result, encodeSlash(query));
     }
 
     setTimeout(() => {
@@ -302,7 +311,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
     searchResults,
     Object.keys(searchResults).length
   );
-  console.log(`total`, total);
+  // console.log(`total`, total);
 
   return (
     <div>

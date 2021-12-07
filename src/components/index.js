@@ -46,6 +46,7 @@ import NoItems from './ui/noItems';
 import ValueImg from './valueImg';
 import NumberCurrency from './numberCurrency';
 import SearchSnippet from './searchSnippet';
+import Denom from './denom';
 
 export {
   GovernanceChangeParam,
@@ -94,6 +95,7 @@ export {
   ValueImg,
   NumberCurrency,
   SearchSnippet,
+  Denom,
 };
 
 export { Nums } from './ui/Numbers';

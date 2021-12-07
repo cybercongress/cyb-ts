@@ -385,6 +385,10 @@ const reduceBalances = (data) => {
   }
 };
 
+const replaceSlash = (text) => text.replace(/\//g, '%2F');
+
+const encodeSlash = (text) => text.replace(/%2F/g, '/');
+
 export {
   run,
   sort,
@@ -405,4 +409,6 @@ export {
   convertResources,
   timeSince,
   reduceBalances,
+  replaceSlash,
+  encodeSlash,
 };

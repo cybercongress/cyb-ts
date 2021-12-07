@@ -15,6 +15,7 @@ import { trimString, formatNumber, reduceBalances } from '../../utils/utils';
 import { Btn } from './ui';
 import Convert from './convert';
 import { getPinsCid } from '../../utils/search/utils';
+import Denom from '../../components/denom';
 
 import DenomTest from './testDenom';
 import AddTest from './testAdd';
@@ -30,8 +31,12 @@ const bootTocyb =
   'pool5D83035BE0E7AB904379161D3C52FB4C1C392265AC19CE39A864146198610628';
 const milliampere = 'milliampere';
 
+const testDenom =
+  'ibc/13B2C536BB057AC79D5696B8EA1B6720EC1F2170708CAFF6F0183C963FFFED0B';
+
 function TestKeplr() {
-  return <AddTest />;
+  // return <Denom denomValue={testDenom} />;
+  return <DenomTest />;
 }
 
 export default TestKeplr;

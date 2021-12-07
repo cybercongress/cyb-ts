@@ -23,6 +23,8 @@ import {
   convertResources,
   coinDecimals,
   reduceBalances,
+  replaceSlash,
+  encodeSlash,
 } from '../../utils/utils';
 import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
@@ -126,6 +128,13 @@ function App({
     const { pathname } = location;
     if (pathname.indexOf(query) === -1) {
       setQueryProps('');
+    }
+
+    const strIndexOf = '/search/ibc';
+    if (pathname.indexOf(strIndexOf) === 0) {
+      const querySubstr = pathname.substr(8, pathname.length);
+      history.push(`/search/${replaceSlash(querySubstr)}`);
+      setQueryProps(replaceSlash(querySubstr));
     }
   }, [location.pathname]);
 
@@ -281,7 +290,7 @@ function App({
   const handleKeyPress = async (e) => {
     if (query.length > 0) {
       if (e.key === 'Enter') {
-        history.push(`/search/${query}`);
+        history.push(`/search/${replaceSlash(query)}`);
         setQueryProps(query);
       }
     }
@@ -366,7 +375,7 @@ function App({
               onKeyPress={handleKeyPress}
               className="search-input"
               ref={textInput}
-              value={query}
+              value={encodeSlash(query)}
               autoComplete="off"
               id="search-input-searchBar"
               style={{
