@@ -203,24 +203,25 @@ class ActionBarContainer extends Component {
   calculationIpfsTo = async () => {
     const { contentHash, file } = this.state;
     const { node } = this.props;
+    let content = '';
+    let toCid;
 
-    let toCid = contentHash;
+    content = contentHash;
     if (file !== null) {
-      toCid = file;
+      content = file;
     }
-    console.log('toCid', toCid);
-    if (file !== null) {
-      toCid = await getPin(node, toCid);
-    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      console.log('object');
-      toCid = await getPin(node, toCid);
+    console.log('toCid', content);
+    if (file === null && content.match(PATTERN_IPFS_HASH)) {
+      toCid = content;
+    } else {
+      toCid = await getPin(node, content);
     }
 
     this.setState({
       toCid,
     });
 
-    const datagetPinsCid = await getPinsCid(toCid);
+    const datagetPinsCid = await getPinsCid(toCid, content);
     console.log(`datagetPinsCid`, datagetPinsCid);
   };
 

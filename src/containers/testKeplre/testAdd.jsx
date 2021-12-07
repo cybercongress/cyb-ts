@@ -26,15 +26,13 @@ function AddTest({ nodeIpfs }) {
   // }, [nodeIpfs]);
 
   const addPin = async () => {
-    // console.log(`file`, file);
-    // if (file !== null && file !== undefined && file.name) {
-    // const data = new Buffer(file);
-    // console.log(`data`, data);
-    // const dataFileType = await FileType.fromBuffer(data);
-    // console.log(`dataFileType`, dataFileType);
-
-    const dataFile = new File([file], file.name);
-    // const file1 = new File(['fo1o'], 'foo1.txt');
+    console.log(`file`, file)
+    let dataFile;
+    if (typeof file === 'string') {
+      dataFile = new File([file], 'file.txt');
+    } else if (file.name) {
+      dataFile = new File([file], file.name);
+    }
     const formData = new FormData();
     formData.append('file', dataFile);
     try {
@@ -47,7 +45,6 @@ function AddTest({ nodeIpfs }) {
     } catch (error) {
       console.log(`error`, error);
     }
-    // }
   };
 
   console.log(`totalSupply`, totalSupply);

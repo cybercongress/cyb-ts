@@ -9,9 +9,7 @@
     "devserver": "parcel serve src/index.html -p 8001 --no-cache",
     "lint": "eslint src/"
   },
-  "browserslist": [
-    "last 2 Chrome versions"
-  ],
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.2.2",
