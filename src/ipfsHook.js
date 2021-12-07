@@ -75,7 +75,7 @@ const initIpfsNode = async () => {
           ],
         },
         Bootstrap: [
-          '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
+          // '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
           // '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
           // '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
         ],
