@@ -1387,7 +1387,10 @@ export const addFileToCluster = async (cid, file) => {
     return responseGetPinsCidPost;
   }
 
-  if (typeof file === 'string') {
+  if (file instanceof Blob) {
+    console.log(`Blob`);
+    dataFile = file;
+  } else if (typeof file === 'string') {
     dataFile = new File([file], 'file.txt');
   } else if (file.name && file.size < 8 * 10 ** 6) {
     dataFile = new File([file], file.name);
@@ -1402,7 +1405,7 @@ export const addFileToCluster = async (cid, file) => {
         url: 'https://io.cybernode.ai/add',
         data: formData,
       });
-      console.log(`response`, response);
+      return response;
     } catch (error) {
       const responseGetPinsCidPost = await getPinsCidPost(cid);
       return responseGetPinsCidPost;

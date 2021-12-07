@@ -10,6 +10,7 @@ import db from '../../db';
 
 const uint8ArrayConcat = require('uint8arrays/concat');
 const all = require('it-all');
+const FileType = require('file-type');
 
 const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
   const [content, setContent] = useState('');
@@ -42,9 +43,8 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           setStatus('impossibleLoad');
           setContent(cid);
         }, 15000);
-        const responseDag = await nodeIpfs.dag.get(cid, {
-          localResolve: false,
-        });
+        const responseDag = await nodeIpfs.dag.get(cid);
+        console.log(`responseDag`, responseDag)
         const meta = {
           type: 'file',
           size: 0,
@@ -70,11 +70,19 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         if (responseDag.value.size < 15 * 10 ** 6) {
           const responsePin = nodeIpfs.pin.add(cid);
           console.log('responsePin', responsePin);
-          const datagetPinsCid = await getPinsCid(cid);
-          console.log(`datagetPinsCid`, datagetPinsCid)
 
           // const cids = new CID(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
+          const dataFileType = await FileType.fromBuffer(responseCat);
+          let mimeType = '';
+          if (dataFileType !== undefined) {
+            const { mime } = dataFileType;
+
+            mimeType = mime;
+          }
+          const blob = new Blob([responseCat], { type: mimeType });
+          const datagetPinsCid = await getPinsCid(cid, blob);
+          console.log(`datagetPinsCid`, cid, datagetPinsCid);
           const someVar = responseCat;
           meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
@@ -132,7 +140,9 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         grade={
           item.rank
             ? getRankGrade(item.rank)
-            : grade ? grade : { from: 'n/a', to: 'n/a', value: 'n/a' }
+            : grade
+            ? grade
+            : { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
         {typeContent === 'image' && (

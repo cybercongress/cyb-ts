@@ -74,155 +74,37 @@ function AppRouter({
     setIpfsStatusProps(dataIpfsStart.status);
     setTypeDeviceProps(dataIpfsStart.mobile);
     setIpfsIDProps(dataIpfsStart.id);
-    // setLoader(dataIpfsStart.loader);
+    // tryConnectToPeer(dataIpfsStart.node);
   }, [dataIpfsStart]);
 
-  // useEffect(() => {
-  //   let timeinterval;
-  //   const genesisDate = TIME_START;
-  //   const countDown = new Date(genesisDate).getTime();
-  //   const changeTime = () => {
-  //     const now = Date.parse(new Date().toUTCString());
-  //     const distance = countDown - now;
-
-  //     if (distance <= 0) {
-  //       clearInterval(timeinterval);
-  //       setTime(false);
-  //     } else {
-  //       setTime(true);
+  // const tryConnectToPeer = async (node) => {
+  //   try {
+  //     if (node !== null) {
+  //       const peerSwarm =
+  //         '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star';
+  //       const peerBootstrap =
+  //         '/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt';
+  //       await node.bootstrap.add(peerBootstrap);
+  //            node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
+  //              console.log(`🪐 Connected to ${peerSwarm}`);
+  //            });
+  //       // dataIpfsStart.node.libp2p
+  //       //   .ping(peerSwarm)
+  //       //   .then((latency) => {
+  //       //     console.log(`latency`, latency);
+  //       //     node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
+  //       //       console.log(`🪐 Connected to ${peerSwarm}`);
+  //       //     });
+  //       //   })
+  //       //   .catch(() => {
+  //       //     console.log(`🪓 Could not connect to ${peerSwarm}`);
+  //       //   });
+  //       // setLoader(dataIpfsStart.loader);
   //     }
-  //   };
-  //   changeTime();
-  //   timeinterval = setInterval(changeTime, 1000);
-  //   return () => {
-  //     clearInterval(timeinterval);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (time) {
-  //     history.push('/genesis');
+  //   } catch (error) {
+  //     console.log(`error`, error);
   //   }
-  //   setLoader(false);
-  // }, [time]);
-
-  // useEffect(() => {
-  //   if (blockProps >= 6 && genesis) {
-  //     history.push('/episode-1');
-  //     setGenesis(false);
-  //   }
-  // }, [blockProps, genesis]);
-
-  // useEffect(() => {
-  //   let ws = null;
-  //   const closeHandler = () => {
-  //     console.log(`close WS`);
-  //     setTimeout(createConnect, 3000);
-  //   };
-
-  //   const createConnect = () => {
-  //     if (ws !== null) {
-  //       ws.removeEventListener('close', closeHandler);
-  //     }
-  //     ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
-  //     ws.addEventListener('close', closeHandler);
-  //     console.log(`open`);
-  //     setWsClient(ws);
-  //   };
-  //   createConnect();
-
-  //   return () => {
-  //     ws.removeEventListener('close', closeHandler);
-  //     ws.close();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const handlerOpen = () => {
-  //     wsClient.send(
-  //       JSON.stringify({
-  //         method: 'subscribe',
-  //         params: ["tm.event='NewBlockHeader'"],
-  //         id: '1',
-  //         jsonrpc: '2.0',
-  //       })
-  //     );
-  //   };
-
-  //   if (wsClient !== null) {
-  //     wsClient.addEventListener('open', handlerOpen);
-  //   }
-
-  //   return () => {
-  //     if (wsClient !== null) {
-  //       wsClient.removeEventListener('close', handlerOpen);
-  //     }
-  //   };
-  // }, [wsClient]);
-
-  // useEffect(() => {
-  //   const handlerMessage = (evt) => {
-  //     const message = JSON.parse(evt.data);
-  //     if (Object.keys(message.result).length > 0) {
-  //       const block = message.result.data.value.header.height;
-  //       setBlockProps(block);
-  //     }
-  //   };
-
-  //   if (wsClient !== null) {
-  //     wsClient.addEventListener('message', handlerMessage);
-  //   }
-
-  //   return () => {
-  //     if (wsClient !== null) {
-  //       wsClient.removeEventListener('message', handlerMessage);
-  //     }
-  //   };
-  // }, [wsClient]);
-
-  // add Switch to Router
-
-  // if (time) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '100vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'column',
-  //       }}
-  //     >
-  //       <div className="countdown-time text-glich" data-text="Start">
-  //         Start
-  //       </div>
-  //       <Timer startTime={TIME_START} updateFunc={initClock} />
-  //     </div>
-  //   );
-  // }
-
-  // if (blockProps < 6 && genesis) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '100vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'row',
-  //       }}
-  //     >
-  //       <div className="countdown-time text-glich" data-text="Block:">
-  //         Block:
-  //       </div>
-  //       <div className="countdown-time text-glich" data-text={blockProps}>
-  //         {blockProps}
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  // };
 
   return (
     <Router history={history}>

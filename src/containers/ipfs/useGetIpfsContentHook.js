@@ -164,8 +164,16 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
         meta.blockSizes = linksCid;
         if (responseDag.value.size < size * 10 ** 6) {
           nodeIpfs.pin.add(cid);
-          getPinsCid(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
+          const dataFileType = await FileType.fromBuffer(responseCat);
+          let mimeType = '';
+          if (dataFileType !== undefined) {
+            const { mime } = dataFileType;
+
+            mimeType = mime;
+          }
+          const blob = new Blob([responseCat], { type: mimeType });
+          getPinsCid(cid, blob);
           const someVar = responseCat;
           // const responseCat = await nodeIpfs.cat(cid);
           // console.log('responseCat', someVar);
