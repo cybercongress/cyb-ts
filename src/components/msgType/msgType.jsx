@@ -34,12 +34,12 @@ const ContainerTitle = ({ img, children }) => (
 );
 
 const MsgType = ({ type }) => {
-  if (type.includes('Link')) {
-    return <ContainerTitle img={link}>Link</ContainerTitle>;
-  }
+  // if (type.includes('Link')) {
+  //   return <ContainerTitle img={link}>Link</ContainerTitle>;
+  // }
 
   if (type.includes('MsgCyberlink')) {
-    return <ContainerTitle img={link}>Link</ContainerTitle>;
+    return <ContainerTitle img={link}>Cyberlink</ContainerTitle>;
   }
 
   // investmint
@@ -68,10 +68,10 @@ const MsgType = ({ type }) => {
     return <ContainerTitle img={swap}>Swap</ContainerTitle>;
   }
   if (type.includes('MsgDepositWithinBatch')) {
-    return <ContainerTitle img={addLiquidity}>Add-Liquidity</ContainerTitle>;
+    return <ContainerTitle img={addLiquidity}>Add Liquidity</ContainerTitle>;
   }
   if (type.includes('MsgWithdrawWithinBatch')) {
-    return <ContainerTitle img={subLiquidity}>Sub-Liquidity</ContainerTitle>;
+    return <ContainerTitle img={subLiquidity}>Sub Liquidity</ContainerTitle>;
   }
   if (type.includes('MsgCreatePool')) {
     return <ContainerTitle img={createPool}>Create Pool</ContainerTitle>;
@@ -144,6 +144,23 @@ const MsgType = ({ type }) => {
   }
 
   // ibc
+
+  if (type.includes('MsgUpdateClient')) {
+    return <ContainerTitle img={investmint}>IBC Update client</ContainerTitle>;
+  }
+
+  if (type.includes('MsgRecvPacket')) {
+    return <ContainerTitle img={investmint}>IBC Recv packet</ContainerTitle>;
+  }
+
+  if (type.includes('MsgAcknowledgement')) {
+    return <ContainerTitle img={investmint}>IBC Ack packet</ContainerTitle>;
+  }
+
+  if (type.includes('MsgTransfer')) {
+    return <ContainerTitle img={bank}>IBC Transfer</ContainerTitle>;
+  }
+
 
   return <div>{type}</div>;
 };
