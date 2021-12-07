@@ -71,7 +71,7 @@ const initIpfsNode = async () => {
             // '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
             // '/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
             '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
+            // '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
           ],
         },
         Bootstrap: [
