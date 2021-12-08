@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { IbcClient, Link } from '@confio/relayer/build';
 import { GasPrice } from '@cosmjs/launchpad';
+import { stringToPath } from '@cosmjs/crypto';
+import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
 import { config, STEPS } from './utils';
 import { configKeplr } from './configKepler';
 
@@ -20,29 +22,6 @@ const init = async (option) => {
     }
   }
   return signer;
-};
-
-const logger = (setRelayerLog) => {
-  return {
-    log: (msg) => {
-      setRelayerLog((item) => [...item, `LOG:  ${msg}`]);
-    },
-    info: (msg) => {
-      setRelayerLog((item) => [...item, `INFO:  ${msg}`]);
-    },
-    error: (msg) => {
-      setRelayerLog((item) => [...item, `ERROR:  ${msg}`]);
-    },
-    warn: (msg) => {
-      setRelayerLog((item) => [...item, `WARN:  ${msg}`]);
-    },
-    verbose: (msg) => {
-      setRelayerLog((item) => [...item, `VERBOSE:  ${msg}`]);
-    },
-    debug: (msg) => {
-      setRelayerLog((item) => [...item, `DEBUG:  ${msg}`]);
-    },
-  };
 };
 
 const sleep = (ms) => {
@@ -70,7 +49,9 @@ const getKeplr = async () => {
   });
 };
 
-function useSetupIbc(step) {
+let nextRelay = {};
+
+function useSetupIbc(step, configChains, setStep) {
   const [running, setRunning] = useState(false);
   const [signerA, setSignerA] = useState(null);
   const [signerB, setSignerB] = useState(null);
@@ -100,7 +81,7 @@ function useSetupIbc(step) {
 
   useEffect(() => {
     const getKeplrClient = async () => {
-      if (step === STEPS.ENTER_CHAIN_B) {
+      if (step === STEPS.SETUP_SIGNERS) {
         const keplr = await getKeplr();
         if (keplr) {
           initSigner();
@@ -123,7 +104,12 @@ function useSetupIbc(step) {
       if (link !== null) {
         while (running) {
           try {
-            const nextRelay = await link.checkAndRelayPacketsAndAcks({}, 2, 6);
+            const nextRelayTemp = await link.checkAndRelayPacketsAndAcks(
+              { nextRelay },
+              2,
+              6
+            );
+            nextRelay = nextRelayTemp;
             console.group('Next Relay:');
             console.log(nextRelay);
             console.groupEnd('Next Relay:');
@@ -140,28 +126,47 @@ function useSetupIbc(step) {
   }, [link, running]);
 
   const initSigner = async () => {
-    const signerChainA = await init(config.chainA);
+    // const signerChainA = await init(configChains.chainA);
+    const signerChainA = await DirectSecp256k1HdWallet.fromMnemonic(
+      config.chainA.mnemonic,
+      {
+        hdPaths: [stringToPath("m/44'/118'/0'/0/0")],
+        prefix: config.chainA.addrPrefix,
+      }
+    );
+    console.log(`signerChainA`, signerChainA);
     // console.warn(`signerChainA`, signerChainA);
     setSignerA(signerChainA);
-    const signerChainB = await init(config.chainB);
+    // const signerChainB = await init(configChains.chainB);
+    const signerChainB = await DirectSecp256k1HdWallet.fromMnemonic(
+      config.chainB.mnemonic,
+      {
+        hdPaths: [stringToPath("m/44'/118'/0'/0/0")],
+        prefix: config.chainB.addrPrefix,
+      }
+    );
+    console.log(`signerChainB`, signerChainB);
     setSignerB(signerChainB);
+    setStep(STEPS.SETUP_RELAYER);
   };
 
   const setupRelayer = async () => {
     if (signerA !== null && signerB !== null) {
       // get addresses
       const accountA = (await signerA.getAccounts())[0].address;
+      console.log(`accountA`, accountA)
       const accountB = (await signerB.getAccounts())[0].address;
+      console.log(`accountB`, accountB)
 
       // Create IBC Client for chain A
       const clientIbcA = await IbcClient.connectWithSigner(
-        config.chainA.rpcEndpoint,
+        configChains.chainA.rpcEndpoint,
         signerA,
         accountA,
         {
-          prefix: config.chainA.addrPrefix,
+          prefix: configChains.chainA.addrPrefix,
           logger: logger(),
-          gasPrice: GasPrice.fromString(config.chainA.gasPrice),
+          gasPrice: GasPrice.fromString(configChains.chainA.gasPrice),
         }
       );
       console.group('IBC Client for chain A');
@@ -169,13 +174,13 @@ function useSetupIbc(step) {
       console.groupEnd('IBC Client for chain A');
       // Create IBC Client for chain B
       const clientIbcB = await IbcClient.connectWithSigner(
-        config.chainB.endpoint,
+        configChains.chainB.rpcEndpoint,
         signerB,
-        accountB.address,
+        accountB,
         {
-          prefix: config.chainB.addrPrefix,
+          prefix: configChains.chainB.addrPrefix,
           logger: logger(),
-          gasPrice: GasPrice.fromString(config.chainB.gasPrice),
+          gasPrice: GasPrice.fromString(configChains.chainB.gasPrice),
         }
       );
       console.group('IBC Client for chain B');
@@ -192,6 +197,7 @@ function useSetupIbc(step) {
       console.group('IBC Link Details');
       console.log(linkIbc);
       console.groupEnd('IBC Link Details');
+      setLink(linkIbc);
       // Create a channel for the connections
       const channelsIbc = await linkIbc.createChannel(
         'A',
@@ -204,7 +210,42 @@ function useSetupIbc(step) {
       console.group('IBC Channel Details');
       console.log(channelsIbc);
       console.groupEnd('IBC Channel Details');
+      setStep(STEPS.RELAYER_READY);
     }
+  };
+
+  const logger = () => {
+    return {
+      log: (msg) => {
+        // console.log(`log`, msg);
+        setRelayerLog((item) => [...item, `LOG:  ${msg}`]);
+      },
+      info: (msg) => {
+        // console.log(`info`, msg);
+
+        setRelayerLog((item) => [...item, `INFO:  ${msg}`]);
+      },
+      error: (msg) => {
+        // console.log(`error`, msg);
+
+        setRelayerLog((item) => [...item, `ERROR:  ${msg}`]);
+      },
+      warn: (msg) => {
+        // console.log(`warn`, msg);
+
+        setRelayerLog((item) => [...item, `WARN:  ${msg}`]);
+      },
+      verbose: (msg) => {
+        // console.log(`verbose`, msg);
+
+        setRelayerLog((item) => [...item, `VERBOSE:  ${msg}`]);
+      },
+      debug: (msg) => {
+        // console.log(`debug`, msg);
+
+        setRelayerLog((item) => [...item, `DEBUG:  ${msg}`]);
+      },
+    };
   };
 
   return { signerA, signerB, link, channels, relayerLog };
