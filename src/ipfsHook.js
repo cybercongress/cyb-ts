@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isMobileTablet } from './utils/utils';
+import configIpfs from './utils/configIpfs';
 
 const IPFS = require('ipfs');
 const DetectRTC = require('detectrtc');
@@ -9,34 +10,8 @@ const initIpfsNode = async () => {
   let ipfsStatus = false;
   let id = null;
   try {
-    const node = await IPFS.create({
-      repo: 'ipfs-repo-cyber',
-      init: true,
-      start: true,
-      relay: {
-        enabled: true,
-        hop: {
-          enabled: true,
-        },
-      },
-      EXPERIMENTAL: {
-        pubsub: true,
-      },
-      config: {
-        Addresses: {
-          Swarm: [
-            // '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
-            // '/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
-            '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-          ],
-        },
-        // Bootstrap: [
-        //   '/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
-        //   '/dns4/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
-        // ],
-      },
-    });
-    console.log('node init false', node);
+    const node = await IPFS.create(configIpfs(true));
+    console.log('node init true', node);
     nodeIpfs = node;
     if (nodeIpfs !== null) {
       const status = await node.isOnline();
@@ -52,36 +27,8 @@ const initIpfsNode = async () => {
     };
   } catch (error) {
     console.log(error);
-    const node = await IPFS.create({
-      repo: 'ipfs-repo-cyber',
-      init: false,
-      start: true,
-      relay: {
-        enabled: true,
-        hop: {
-          enabled: true,
-        },
-      },
-      EXPERIMENTAL: {
-        pubsub: true,
-      },
-      config: {
-        Addresses: {
-          Swarm: [
-            // '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
-            // '/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
-            '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
-            // '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
-          ],
-        },
-        Bootstrap: [
-          // '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB'
-          // '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-          // '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-        ],
-      },
-    });
-    console.log('node init true', node);
+    const node = await IPFS.create(configIpfs(false));
+    console.log('node init false', node);
     nodeIpfs = node;
     if (node !== null) {
       const status = await node.isOnline();

@@ -81,24 +81,24 @@ function AppRouter({
   //   try {
   //     if (node !== null) {
   //       const peerSwarm =
-  //         '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star';
+  //         '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
   //       const peerBootstrap =
-  //         '/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt';
+  //         '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
   //       await node.bootstrap.add(peerBootstrap);
-  //            node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
-  //              console.log(`🪐 Connected to ${peerSwarm}`);
-  //            });
-  //       // dataIpfsStart.node.libp2p
-  //       //   .ping(peerSwarm)
-  //       //   .then((latency) => {
-  //       //     console.log(`latency`, latency);
-  //       //     node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
-  //       //       console.log(`🪐 Connected to ${peerSwarm}`);
-  //       //     });
-  //       //   })
-  //       //   .catch(() => {
-  //       //     console.log(`🪓 Could not connect to ${peerSwarm}`);
-  //       //   });
+  //       node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
+  //         console.log(`🪐 Connected to ${peerSwarm}`);
+  //       });
+  //       dataIpfsStart.node.libp2p
+  //         .ping(peerSwarm)
+  //         .then((latency) => {
+  //           console.log(`latency`, latency);
+  //           node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
+  //             console.log(`🪐 Connected to ${peerSwarm}`);
+  //           });
+  //         })
+  //         .catch(() => {
+  //           console.log(`🪓 Could not connect to ${peerSwarm}`);
+  //         });
   //       // setLoader(dataIpfsStart.loader);
   //     }
   //   } catch (error) {

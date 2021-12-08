@@ -39,10 +39,6 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         setLink(linkContent);
         setStatus('downloaded');
       } else if (nodeIpfs !== null) {
-        const timerId = setTimeout(() => {
-          setStatus('impossibleLoad');
-          setContent(cid);
-        }, 15000);
         const responseDag = await nodeIpfs.dag.get(cid);
         console.log(`responseDag`, responseDag)
         const meta = {
@@ -66,7 +62,6 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         }
         meta.size = responseDag.value.size;
         meta.blockSizes = linksCid;
-        clearTimeout(timerId);
         if (responseDag.value.size < 15 * 10 ** 6) {
           const responsePin = nodeIpfs.pin.add(cid);
           console.log('responsePin', responsePin);
