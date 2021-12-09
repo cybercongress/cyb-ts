@@ -96,7 +96,14 @@ const useIpfsStart = () => {
           })
           .catch(() => {
             console.log(`🪓 Could not connect to ${peerSwarm}`);
+          })
+          .then(() => {
+            nodeIpfs.swarm.peers().then((item) => {
+              console.log('peerInfos', item);
+            });
           });
+        // const peerInfos = await nodeIpfs.swarm.peers();
+        // console.log('peerInfos', peerInfos);
         // setLoader(dataIpfsStart.loader);
       }
     } catch (error) {
