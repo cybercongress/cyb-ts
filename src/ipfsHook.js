@@ -73,9 +73,36 @@ const useIpfsStart = () => {
       // } else {
       //   setLoader(false);
       // }
+      tryConnectToPeer(data.nodeIpfs);
     };
     init();
   }, []);
+
+  const tryConnectToPeer = async (nodeIpfs) => {
+    try {
+      if (nodeIpfs !== null) {
+        const peerSwarm =
+          '/dns4/ws-star.discovery.cybernode.ai/tcp/4430/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+        const peerBootstrap =
+          '/dns4/ws-star.discovery.cybernode.ai/tcp/4430/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
+        await nodeIpfs.bootstrap.add(peerBootstrap);
+        nodeIpfs.libp2p
+          .ping(peerSwarm)
+          .then((latency) => {
+            console.log(`latency`, latency);
+            nodeIpfs.swarm.connect(peerSwarm, 1 * 1000).then(() => {
+              console.log(`🪐 Connected to ${peerSwarm}`);
+            });
+          })
+          .catch(() => {
+            console.log(`🪓 Could not connect to ${peerSwarm}`);
+          });
+        // setLoader(dataIpfsStart.loader);
+      }
+    } catch (error) {
+      console.log(`error`, error);
+    }
+  };
 
   return {
     node,

@@ -77,35 +77,6 @@ function AppRouter({
     // tryConnectToPeer(dataIpfsStart.node);
   }, [dataIpfsStart]);
 
-  // const tryConnectToPeer = async (node) => {
-  //   try {
-  //     if (node !== null) {
-  //       const peerSwarm =
-  //         '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
-  //       const peerBootstrap =
-  //         '/ip6/64:ff9b::5863:6992/udp/4001/quic/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB';
-  //       await node.bootstrap.add(peerBootstrap);
-  //       node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
-  //         console.log(`🪐 Connected to ${peerSwarm}`);
-  //       });
-  //       dataIpfsStart.node.libp2p
-  //         .ping(peerSwarm)
-  //         .then((latency) => {
-  //           console.log(`latency`, latency);
-  //           node.swarm.connect(peerSwarm, 1 * 1000).then(() => {
-  //             console.log(`🪐 Connected to ${peerSwarm}`);
-  //           });
-  //         })
-  //         .catch(() => {
-  //           console.log(`🪓 Could not connect to ${peerSwarm}`);
-  //         });
-  //       // setLoader(dataIpfsStart.loader);
-  //     }
-  //   } catch (error) {
-  //     console.log(`error`, error);
-  //   }
-  // };
-
   return (
     <Router history={history}>
       <Route path="/" component={App} />
