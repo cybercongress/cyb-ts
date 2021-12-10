@@ -137,7 +137,11 @@ const LogRelayer = ({ relayerLog }) => {
 
 const StartStopRelayer = ({ step, setStep }) => {
   if (step === STEPS.RELAYER_READY || step === STEPS.STOP_RELAYER) {
-    return <Button onClick={() => setStep(STEPS.RUN_RELAYER)}>run</Button>;
+    return (
+      <>
+        <Button onClick={() => setStep(STEPS.RUN_RELAYER)}>run</Button>
+      </>
+    );
   }
 
   if (step === STEPS.RUN_RELAYER) {
@@ -150,6 +154,16 @@ function Relayer({ step, state }) {
   const { configChains, onChangeConfigChains, setStep, relayerLog } = state;
   return (
     <div style={{ maxWidth: '400px' }}>
+      {step === STEPS.INIT_RELAYER && (
+        <>
+          <Button onClick={() => setStep(STEPS.SETUP_RELAYER)}>
+            setup new
+          </Button>
+          <Button onClick={() => setStep(STEPS.RUN_RELAYER_WITH_EXISTING)}>
+            createWithExistingConnections
+          </Button>
+        </>
+      )}
       {step >= STEPS.RELAYER_READY && (
         <div style={{ marginBottom: 20 }}>
           <StartStopRelayer step={step} setStep={setStep} />

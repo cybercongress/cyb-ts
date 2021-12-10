@@ -7,7 +7,7 @@ import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import { AppContext } from '../../context';
 import { getTxs } from '../../utils/search/utils';
 import { configKeplr } from './configKepler';
-import useSetupIbc from './useSetupIbc';
+import useSetupIbc, { getKeplr } from './useSetupIbc';
 import { config, STEPS } from './utils';
 import { IbcTxs, Relayer } from './components';
 
@@ -24,14 +24,14 @@ const fee = {
   gas: DEFAULT_GAS_LIMITS.toString(),
 };
 
-const init = async (option) => {
+const init = async (keplr, option) => {
   let signer = null;
-  console.log(`window.keplr `, window.keplr);
+  console.log(`window.keplr `, keplr);
   console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
-  if (window.keplr || window.getOfflineSignerAuto) {
-    if (window.keplr.experimentalSuggestChain) {
-      await window.keplr.experimentalSuggestChain(configKeplr(option));
-      await window.keplr.enable(option.chainId);
+  if (keplr || window.getOfflineSignerAuto) {
+    if (keplr.experimentalSuggestChain) {
+      await keplr.experimentalSuggestChain(configKeplr(option));
+      await keplr.enable(option.chainId);
       const offlineSigner = await window.getOfflineSignerAuto(option.chainId);
       signer = offlineSigner;
       console.log(`offlineSigner`, offlineSigner);
@@ -65,17 +65,21 @@ function Ibc() {
 
   useEffect(() => {
     const createClient = async () => {
-      const signerChainA = await init(configChains.chainA);
+      const keplr = await getKeplr();
+      const signerChainA = await init(keplr, configChains.chainA);
+      console.log(`signerChainA createClient`, signerChainA);
       const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
       const client = await SigningCyberClient.connectWithSigner(
         configChains.chainA.rpcEndpoint,
         signerChainA,
         options
       );
+      console.log(`options createClient`, signerChainA);
+
       setCyberClient(client);
     };
     createClient();
-  }, [signerA, configChains.chainA]);
+  }, [configChains.chainA]);
 
   const sendIBCtransaction = async () => {
     const [{ address }] = await cyberClient.signer.getAccounts();

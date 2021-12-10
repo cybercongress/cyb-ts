@@ -28,7 +28,7 @@ const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-const getKeplr = async () => {
+export const getKeplr = async () => {
   if (window.keplr) {
     return window.keplr;
   }
@@ -66,7 +66,10 @@ function useSetupIbc(step, configChains, setStep) {
       setRunning(false);
     }
 
-    if (step === STEPS.SETUP_RELAYER) {
+    if (
+      step === STEPS.SETUP_RELAYER ||
+      step === STEPS.RUN_RELAYER_WITH_EXISTING
+    ) {
       setupRelayer();
     }
 
@@ -147,16 +150,16 @@ function useSetupIbc(step, configChains, setStep) {
     );
     console.log(`signerChainB`, signerChainB);
     setSignerB(signerChainB);
-    setStep(STEPS.SETUP_RELAYER);
+    setStep(STEPS.INIT_RELAYER);
   };
 
   const setupRelayer = async () => {
     if (signerA !== null && signerB !== null) {
       // get addresses
       const accountA = (await signerA.getAccounts())[0].address;
-      console.log(`accountA`, accountA)
+      console.log(`accountA`, accountA);
       const accountB = (await signerB.getAccounts())[0].address;
-      console.log(`accountB`, accountB)
+      console.log(`accountB`, accountB);
 
       // Create IBC Client for chain A
       const clientIbcA = await IbcClient.connectWithSigner(
@@ -187,12 +190,26 @@ function useSetupIbc(step, configChains, setStep) {
       console.log(clientIbcB);
       console.groupEnd('IBC Client for chain B');
 
-      // Create new connectiosn for the 2 clients
-      const linkIbc = await Link.createWithNewConnections(
-        clientIbcA,
-        clientIbcB,
-        logger()
-      );
+      let linkIbc = null;
+
+      if (step === STEPS.SETUP_RELAYER) {
+        // Create new connectiosn for the 2 clients
+        linkIbc = await Link.createWithNewConnections(
+          clientIbcA,
+          clientIbcB,
+          logger()
+        );
+      }
+
+      if (step === STEPS.RUN_RELAYER_WITH_EXISTING) {
+        linkIbc = await Link.createWithExistingConnections(
+          clientIbcA,
+          clientIbcB,
+          'connection-20',
+          'connection-20',
+          logger()
+        );
+      }
 
       console.group('IBC Link Details');
       console.log(linkIbc);
