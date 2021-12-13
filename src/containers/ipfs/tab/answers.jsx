@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ContentItem from '../contentItem';
 import { Rank, NoItems, Dots } from '../../../components';
 import { getRankGrade } from '../../../utils/search/utils';
-import { exponentialToDecimal } from '../../../utils/utils';
+import { exponentialToDecimal, coinDecimals } from '../../../utils/utils';
 
 function AnswersTab({
   data,
@@ -19,7 +19,8 @@ function AnswersTab({
   if (Object.keys(data).length > 0) {
     answers.push(
       Object.keys(data).map((item, i) => {
-        const grade = getRankGrade(data[item].rank);
+        const rank = coinDecimals(data[item].rank);
+        const grade = getRankGrade(rank);
         return (
           <Pane
             position="relative"
@@ -36,9 +37,7 @@ function AnswersTab({
               >
                 <Rank
                   hash={data[item].particle}
-                  rank={exponentialToDecimal(
-                    parseFloat(data[item].rank).toPrecision(3)
-                  )}
+                  rank={exponentialToDecimal(parseFloat(rank).toPrecision(3))}
                   grade={grade}
                 />
               </Pane>

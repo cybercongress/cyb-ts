@@ -85,11 +85,15 @@ export function calculateSlippage(swapAmount, poolReserve) {
   return slippage;
 }
 
-export const reduceAmounToken = (amount, token) => {
+export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
 
   if (token === 'millivolt' || token === 'milliampere') {
-    amountReduce = convertResources(amount);
+    if (reverse) {
+      amountReduce = amount * 10 ** 3;
+    } else {
+      amountReduce = amount * 10 ** -3;
+    }
   }
 
   return amountReduce;

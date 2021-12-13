@@ -13,7 +13,7 @@ import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
 import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
-import { getAccountBandwidth } from '../../utils/search/utils';
+import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
@@ -33,7 +33,7 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 const cyber = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
-const bug = require('../../image/alert-circle-outline.svg');
+const info = require('../../image/info-circle-outline.svg');
 const lensIcon = require('../../image/lens-icon.svg');
 const circleYellow = require('../../image/large-yellow-circle.png');
 
@@ -109,6 +109,7 @@ function App({
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [keywordHash, setKeywordHash] = useState(null);
 
   // const data = usePopperTooltip({
   //   trigger: 'click',
@@ -137,6 +138,21 @@ function App({
       setQueryProps(replaceSlash(querySubstr));
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    const { pathname } = location;
+    if (pathname.match(/search/gm) && pathname.match(/search/gm).length > 0) {
+      const querySubstr = pathname.substr(8, pathname.length);
+      getKeywordHash(querySubstr);
+    } else {
+      setKeywordHash(null);
+    }
+  }, [location]);
+
+  const getKeywordHash = async (text) => {
+    const hash = await getIpfsHash(encodeSlash(text).toLowerCase());
+    setKeywordHash(hash);
+  };
 
   useEffect(() => {
     const getPrice = async () => {
@@ -387,6 +403,7 @@ function App({
                 top: '50%',
                 transform: 'translate(0, -50%)',
                 zIndex: 1,
+                paddingLeft: '35px',
                 backgroundColor: '#000',
               }}
             />
@@ -402,6 +419,25 @@ function App({
                 zIndex: 1,
               }}
             />
+            {keywordHash !== null && (
+              <Link to={`/ipfs/${keywordHash}`}>
+                <div>
+                  <img
+                    src={info}
+                    alt="lensIcon"
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '35px',
+                      transform: 'translate(0, -50%)',
+                      width: '15px',
+                      zIndex: 1,
+                      cursor: 'pointer',
+                    }}
+                  />
+                </div>
+              </Link>
+            )}
           </Pane>
         )}
         <Electricity />
