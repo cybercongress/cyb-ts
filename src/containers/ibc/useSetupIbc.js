@@ -28,6 +28,24 @@ const sleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+const setupClientIbc = async (signer, option, logger) => {
+  const account = (await signer.getAccounts())[0].address;
+
+  // Create IBC Client for chain A
+  const clientIbc = await IbcClient.connectWithSigner(
+    option.rpcEndpoint,
+    signer,
+    account,
+    {
+      prefix: option.addrPrefix,
+      logger,
+      gasPrice: GasPrice.fromString(option.gasPrice),
+    }
+  );
+
+  return clientIbc;
+};
+
 export const getKeplr = async () => {
   if (window.keplr) {
     return window.keplr;
@@ -51,7 +69,7 @@ export const getKeplr = async () => {
 
 let nextRelay = {};
 
-function useSetupIbc(step, configChains, setStep) {
+function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
   const [running, setRunning] = useState(false);
   const [signerA, setSignerA] = useState(null);
   const [signerB, setSignerB] = useState(null);
@@ -155,37 +173,22 @@ function useSetupIbc(step, configChains, setStep) {
 
   const setupRelayer = async () => {
     if (signerA !== null && signerB !== null) {
-      // get addresses
-      const accountA = (await signerA.getAccounts())[0].address;
-      console.log(`accountA`, accountA);
-      const accountB = (await signerB.getAccounts())[0].address;
-      console.log(`accountB`, accountB);
-
       // Create IBC Client for chain A
-      const clientIbcA = await IbcClient.connectWithSigner(
-        configChains.chainA.rpcEndpoint,
+      const clientIbcA = await setupClientIbc(
         signerA,
-        accountA,
-        {
-          prefix: configChains.chainA.addrPrefix,
-          logger: logger(),
-          gasPrice: GasPrice.fromString(configChains.chainA.gasPrice),
-        }
+        configChains.chainA,
+        logger()
       );
       console.group('IBC Client for chain A');
       console.log(clientIbcA);
       console.groupEnd('IBC Client for chain A');
       // Create IBC Client for chain B
-      const clientIbcB = await IbcClient.connectWithSigner(
-        configChains.chainB.rpcEndpoint,
+      const clientIbcB = await setupClientIbc(
         signerB,
-        accountB,
-        {
-          prefix: configChains.chainB.addrPrefix,
-          logger: logger(),
-          gasPrice: GasPrice.fromString(configChains.chainB.gasPrice),
-        }
+        configChains.chainB,
+        logger()
       );
+
       console.group('IBC Client for chain B');
       console.log(clientIbcB);
       console.groupEnd('IBC Client for chain B');
@@ -205,8 +208,8 @@ function useSetupIbc(step, configChains, setStep) {
         linkIbc = await Link.createWithExistingConnections(
           clientIbcA,
           clientIbcB,
-          'connection-20',
-          'connection-20',
+          valueChannelsRelayer.src.connectionId,
+          valueChannelsRelayer.dest.connectionId,
           logger()
         );
       }
@@ -215,14 +218,32 @@ function useSetupIbc(step, configChains, setStep) {
       console.log(linkIbc);
       console.groupEnd('IBC Link Details');
       setLink(linkIbc);
-      // Create a channel for the connections
-      const channelsIbc = await linkIbc.createChannel(
-        'A',
-        'transfer',
-        'transfer',
-        1,
-        'ics20-1'
-      );
+
+      let channelsIbc;
+      // Create a new channel for the connections
+      if (step === STEPS.SETUP_RELAYER) {
+        channelsIbc = await linkIbc.createChannel(
+          'A',
+          'transfer',
+          'transfer',
+          1,
+          'ics20-1'
+        );
+      }
+      // setup channel for the connections
+      if (step === STEPS.RUN_RELAYER_WITH_EXISTING) {
+        channelsIbc = {
+          src: {
+            portId: valueChannelsRelayer.src.portId,
+            cannelId: valueChannelsRelayer.src.cannelId,
+          },
+          dest: {
+            portId: valueChannelsRelayer.dest.portId,
+            cannelId: valueChannelsRelayer.dest.cannelId,
+          },
+        };
+      }
+
       setChannels(channelsIbc);
       console.group('IBC Channel Details');
       console.log(channelsIbc);

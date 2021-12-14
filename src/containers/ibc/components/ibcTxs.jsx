@@ -1,23 +1,24 @@
 import React from 'react';
 import { Pane, Button, Input } from '@cybercongress/gravity';
 
-function IbcTxs({ state }) {
+function IbcTxs({ ...props }) {
   const {
+    id,
     amount,
-    setAmount,
     sourceChannel,
-    setSourceChannel,
     recipientAddress,
+    onChangeAmount,
+    setSourceChannel,
     setRecipientAddress,
-    cyberClient,
-    sendIBCtransaction,
-  } = state;
+    onClickSend,
+    disabledSend,
+  } = props;
   return (
     <div style={{ maxWidth: '400px' }}>
       <Input
         placeholder="amount"
         value={amount}
-        onChange={(e) => setAmount(e.target.value)}
+        onChange={(e) => onChangeAmount(e.target.value)}
       />
       <Input
         placeholder="sourceChannel"
@@ -33,8 +34,8 @@ function IbcTxs({ state }) {
       />
 
       <Button
-        disabled={cyberClient === null}
-        onClick={() => sendIBCtransaction()}
+        disabled={disabledSend}
+        onClick={() => onClickSend(id)}
         type="button"
       >
         send

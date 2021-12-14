@@ -90,6 +90,67 @@ const SetUpChain = ({ configChains, onChangeConfigChains, id }) => {
   );
 };
 
+const SetUpConfigRelayerForm = ({
+  valueChannelsRelayer,
+  onChangeValue,
+  id,
+}) => {
+  return (
+    <>
+      <hr />
+      <div>{id}</div>
+      <br />
+      {Object.keys(valueChannelsRelayer[id]).length > 0 && (
+        <>
+          portId
+          <Input
+            placeholder="portId"
+            value={valueChannelsRelayer[id].portId}
+            onChange={(e) => onChangeValue(id, 'portId', e.target.value)}
+          />
+          cannelId
+          <Input
+            placeholder="cannelId"
+            value={valueChannelsRelayer[id].cannelId}
+            onChange={(e) => onChangeValue(id, 'cannelId', e.target.value)}
+          />
+          connectionId
+          <Input
+            placeholder="connectionId"
+            value={valueChannelsRelayer[id].connectionId}
+            onChange={(e) => onChangeValue(id, 'connectionId', e.target.value)}
+          />
+        </>
+      )}
+    </>
+  );
+};
+
+const SetUpConfigRelayer = ({
+  valueChannelsRelayer,
+  onChangeValueChannelsRelayer,
+  setStep,
+}) => {
+  return (
+    <>
+      <SetUpConfigRelayerForm
+        valueChannelsRelayer={valueChannelsRelayer}
+        onChangeValue={onChangeValueChannelsRelayer}
+        id="src"
+      />
+      <SetUpConfigRelayerForm
+        valueChannelsRelayer={valueChannelsRelayer}
+        onChangeValue={onChangeValueChannelsRelayer}
+        id="dest"
+      />
+
+      <Button onClick={() => setStep(STEPS.RUN_RELAYER_WITH_EXISTING)}>
+        createConnections
+      </Button>
+    </>
+  );
+};
+
 const StateSetUpChain = ({
   step,
   onChangeConfigChains,
@@ -151,7 +212,15 @@ const StartStopRelayer = ({ step, setStep }) => {
 };
 
 function Relayer({ step, state }) {
-  const { configChains, onChangeConfigChains, setStep, relayerLog } = state;
+  const {
+    configChains,
+    onChangeConfigChains,
+    setStep,
+    relayerLog,
+    valueChannelsRelayer,
+    onChangeValueChannelsRelayer,
+  } = state;
+
   return (
     <div style={{ maxWidth: '400px' }}>
       {step === STEPS.INIT_RELAYER && (
@@ -159,7 +228,7 @@ function Relayer({ step, state }) {
           <Button onClick={() => setStep(STEPS.SETUP_RELAYER)}>
             setup new
           </Button>
-          <Button onClick={() => setStep(STEPS.RUN_RELAYER_WITH_EXISTING)}>
+          <Button onClick={() => setStep(STEPS.INIT_RELAYER_WITH_EXISTING)}>
             createWithExistingConnections
           </Button>
         </>
@@ -180,6 +249,15 @@ function Relayer({ step, state }) {
           />
         </div>
       )}
+
+      {step === STEPS.INIT_RELAYER_WITH_EXISTING && (
+        <SetUpConfigRelayer
+          onChangeValueChannelsRelayer={onChangeValueChannelsRelayer}
+          valueChannelsRelayer={valueChannelsRelayer}
+          setStep={setStep}
+        />
+      )}
+
       <LogRelayer relayerLog={relayerLog} />
     </div>
   );

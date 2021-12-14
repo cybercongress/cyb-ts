@@ -1,27 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { coin, coins, GasPrice, parseCoins } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
-import { Pane, Button, Input } from '@cybercongress/gravity';
 import Long from 'long';
-import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
-import { AppContext } from '../../context';
-import { getTxs } from '../../utils/search/utils';
+import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { configKeplr } from './configKepler';
 import useSetupIbc, { getKeplr } from './useSetupIbc';
 import { config, STEPS } from './utils';
 import { IbcTxs, Relayer } from './components';
 
-const {
-  STAGE_INIT,
-  STAGE_ERROR,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-} = LEDGER;
-
 const fee = {
   amount: [],
   gas: DEFAULT_GAS_LIMITS.toString(),
+};
+
+const channelsIbcValue = {
+  src: {
+    portId: 'transfer',
+    cannelId: 'channel-1',
+    connectionId: 'connection-1',
+  },
+  dest: {
+    portId: 'transfer',
+    cannelId: 'channel-1',
+    connectionId: 'connection-1',
+  },
 };
 
 const init = async (keplr, option) => {
@@ -41,47 +43,64 @@ const init = async (keplr, option) => {
   return signer;
 };
 
+const setupClient = async (keplr, option) => {
+  const signer = await init(keplr, option);
+  const options = { prefix: option.addrPrefix };
+  const client = await SigningCyberClient.connectWithSigner(
+    option.rpcEndpoint,
+    signer,
+    options
+  );
+
+  return client;
+};
+
 function Ibc() {
   // const { keplr, jsCyber } = useContext(AppContext);
   const [step, setStep] = useState(STEPS.ENTER_CHAIN_A);
   const [configChains, setConfigChains] = useState(config);
-  const { signerA, relayerLog, channels } = useSetupIbc(
+  const [valueChannelsRelayer, setValueChannelsRelayer] = useState(
+    channelsIbcValue
+  );
+  const { relayerLog, channels } = useSetupIbc(
     step,
     configChains,
-    setStep
+    setStep,
+    valueChannelsRelayer
   );
-  const [cyberClient, setCyberClient] = useState(null);
-  const [stage, setStage] = useState(STAGE_INIT);
-  const [txHash, setTxHash] = useState(null);
-  const [txHeight, setTxHeight] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [sourceChannel, setSourceChannel] = useState('channel-1');
-  const [recipientAddress, setRecipientAddress] = useState(
+  const [cyberClientA, setCyberClientA] = useState(null);
+  const [cyberClientB, setCyberClientB] = useState(null);
+  const [amountA, setAmountA] = useState('');
+  const [sourceChannelA, setSourceChannelA] = useState('channel-1');
+  const [recipientAddressA, setRecipientAddressA] = useState(
     'bostrom180tz4ahtyfhwnqwkpdqj3jelyxff4wlx2ymsv3'
   );
-
+  const [amountB, setAmountB] = useState('');
+  const [sourceChannelB, setSourceChannelB] = useState('channel-1');
+  const [recipientAddressB, setRecipientAddressB] = useState(
+    'bostrom180tz4ahtyfhwnqwkpdqj3jelyxff4wlx2ymsv3'
+  );
   // console.log(`relayerLog`, relayerLog)
 
   useEffect(() => {
     const createClient = async () => {
       const keplr = await getKeplr();
-      const signerChainA = await init(keplr, configChains.chainA);
-      console.log(`signerChainA createClient`, signerChainA);
-      const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
-      const client = await SigningCyberClient.connectWithSigner(
-        configChains.chainA.rpcEndpoint,
-        signerChainA,
-        options
-      );
-      console.log(`options createClient`, signerChainA);
 
-      setCyberClient(client);
+      const clientA = await setupClient(keplr, configChains.chainA);
+      setCyberClientA(clientA);
+
+      const clientB = await setupClient(keplr, configChains.chainB);
+      setCyberClientB(clientB);
     };
     createClient();
-  }, [configChains.chainA]);
+  }, [configChains]);
 
-  const sendIBCtransaction = async () => {
+  const sendIBCtransaction = async (
+    cyberClient,
+    amount,
+    recipientAddress,
+    sourceChannel
+  ) => {
     const [{ address }] = await cyberClient.signer.getAccounts();
 
     const transferAmount = parseCoins(amount)[0];
@@ -89,7 +108,7 @@ function Ibc() {
     const timeoutTimestamp = Long.fromString(
       `${new Date().getTime() + 60000}000000`
     );
-    // const timeoutHeight = undefined;
+
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {
@@ -101,17 +120,6 @@ function Ibc() {
         token: transferAmount,
       },
     };
-
-    // const response = await keplr.sendIbcTokens(
-    //   address,
-    //   recipientAddress,
-    //   transferAmount,
-    //   sourcePort,
-    //   sourceChannel,
-    //   timeoutHeight,
-    //   timeoutTimestamp,
-    //   fee
-    // );
 
     try {
       const response = await cyberClient.signAndBroadcast(
@@ -136,15 +144,32 @@ function Ibc() {
     }));
   };
 
-  const stateIbcTxs = {
-    amount,
-    setAmount,
-    sourceChannel,
-    setSourceChannel,
-    recipientAddress,
-    setRecipientAddress,
-    cyberClient,
-    sendIBCtransaction,
+  const onChangeValueChannelsRelayer = (id, key, value) => {
+    setValueChannelsRelayer((item) => ({
+      ...item,
+      [id]: {
+        ...item[id],
+        [key]: value,
+      },
+    }));
+  };
+
+  const onClickSendIBCtransaction = (id) => {
+    if (id === 'A') {
+      sendIBCtransaction(
+        cyberClientA,
+        amountA,
+        recipientAddressA,
+        sourceChannelA
+      );
+    } else {
+      sendIBCtransaction(
+        cyberClientB,
+        amountB,
+        recipientAddressB,
+        sourceChannelB
+      );
+    }
   };
 
   const stateRelayer = {
@@ -152,6 +177,8 @@ function Ibc() {
     onChangeConfigChains,
     setStep,
     relayerLog,
+    valueChannelsRelayer,
+    onChangeValueChannelsRelayer,
   };
 
   return (
@@ -160,7 +187,33 @@ function Ibc() {
       style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}
     >
       <div>
-        <IbcTxs state={stateIbcTxs} />
+        chainA
+        <IbcTxs
+          id="A"
+          onChangeAmount={setAmountA}
+          setSourceChannel={setSourceChannelA}
+          setRecipientAddress={setRecipientAddressA}
+          amount={amountA}
+          sourceChannel={sourceChannelA}
+          recipientAddress={recipientAddressA}
+          onClickSend={onClickSendIBCtransaction}
+          disabledSend={cyberClientA === null}
+        />
+        <br />
+        <hr />
+        <br />
+        chainB
+        <IbcTxs
+          id="B"
+          onChangeAmount={setAmountB}
+          setSourceChannel={setSourceChannelB}
+          setRecipientAddress={setRecipientAddressB}
+          amount={amountB}
+          sourceChannel={sourceChannelB}
+          recipientAddress={recipientAddressB}
+          onClickSend={onClickSendIBCtransaction}
+          disabledSend={cyberClientB === null}
+        />
         <br />
         <hr />
         <br />
