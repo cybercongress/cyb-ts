@@ -55,6 +55,8 @@
     "react-hot-loader": "^4.8.8",
     "react-iframe": "^1.8.0",
     "react-infinite-scroll-component": "^5.0.4",
+    "react-json-editor-ajrm": "^2.5.13",
+    "react-json-view": "^1.21.3",
     "react-plotly.js": "^2.3.0",
     "react-popper-tooltip": "^2.8.3",
     "react-redux": "^7.2.0",

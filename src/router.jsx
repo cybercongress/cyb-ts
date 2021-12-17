@@ -47,6 +47,7 @@ import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
 import Movie from './containers/movie';
 import Ibc from './containers/ibc';
+import { Codes, CodePage, ContractPage } from './containers/wasm';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -77,153 +78,6 @@ function AppRouter({
   //   setIpfsIDProps(dataIpfsStart.id);
   //   // setLoader(dataIpfsStart.loader);
   // }, [dataIpfsStart]);
-
-  // useEffect(() => {
-  //   let timeinterval;
-  //   const genesisDate = TIME_START;
-  //   const countDown = new Date(genesisDate).getTime();
-  //   const changeTime = () => {
-  //     const now = Date.parse(new Date().toUTCString());
-  //     const distance = countDown - now;
-
-  //     if (distance <= 0) {
-  //       clearInterval(timeinterval);
-  //       setTime(false);
-  //     } else {
-  //       setTime(true);
-  //     }
-  //   };
-  //   changeTime();
-  //   timeinterval = setInterval(changeTime, 1000);
-  //   return () => {
-  //     clearInterval(timeinterval);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (time) {
-  //     history.push('/genesis');
-  //   }
-  //   setLoader(false);
-  // }, [time]);
-
-  // useEffect(() => {
-  //   if (blockProps >= 6 && genesis) {
-  //     history.push('/episode-1');
-  //     setGenesis(false);
-  //   }
-  // }, [blockProps, genesis]);
-
-  // useEffect(() => {
-  //   let ws = null;
-  //   const closeHandler = () => {
-  //     console.log(`close WS`);
-  //     setTimeout(createConnect, 3000);
-  //   };
-
-  //   const createConnect = () => {
-  //     if (ws !== null) {
-  //       ws.removeEventListener('close', closeHandler);
-  //     }
-  //     ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
-  //     ws.addEventListener('close', closeHandler);
-  //     console.log(`open`);
-  //     setWsClient(ws);
-  //   };
-  //   createConnect();
-
-  //   return () => {
-  //     ws.removeEventListener('close', closeHandler);
-  //     ws.close();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const handlerOpen = () => {
-  //     wsClient.send(
-  //       JSON.stringify({
-  //         method: 'subscribe',
-  //         params: ["tm.event='NewBlockHeader'"],
-  //         id: '1',
-  //         jsonrpc: '2.0',
-  //       })
-  //     );
-  //   };
-
-  //   if (wsClient !== null) {
-  //     wsClient.addEventListener('open', handlerOpen);
-  //   }
-
-  //   return () => {
-  //     if (wsClient !== null) {
-  //       wsClient.removeEventListener('close', handlerOpen);
-  //     }
-  //   };
-  // }, [wsClient]);
-
-  // useEffect(() => {
-  //   const handlerMessage = (evt) => {
-  //     const message = JSON.parse(evt.data);
-  //     if (Object.keys(message.result).length > 0) {
-  //       const block = message.result.data.value.header.height;
-  //       setBlockProps(block);
-  //     }
-  //   };
-
-  //   if (wsClient !== null) {
-  //     wsClient.addEventListener('message', handlerMessage);
-  //   }
-
-  //   return () => {
-  //     if (wsClient !== null) {
-  //       wsClient.removeEventListener('message', handlerMessage);
-  //     }
-  //   };
-  // }, [wsClient]);
-
-  // add Switch to Router
-
-  // if (time) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '100vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'column',
-  //       }}
-  //     >
-  //       <div className="countdown-time text-glich" data-text="Start">
-  //         Start
-  //       </div>
-  //       <Timer startTime={TIME_START} updateFunc={initClock} />
-  //     </div>
-  //   );
-  // }
-
-  // if (blockProps < 6 && genesis) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '100vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'row',
-  //       }}
-  //     >
-  //       <div className="countdown-time text-glich" data-text="Block:">
-  //         Block:
-  //       </div>
-  //       <div className="countdown-time text-glich" data-text={blockProps}>
-  //         {blockProps}
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <Router history={history}>
@@ -278,6 +132,11 @@ function AppRouter({
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
         <Route path="/ibc" component={Ibc} />
+
+        {/* wasm */}
+        <Route path="/codes" exact component={Codes} />
+        <Route path="/codes/:codeId" component={CodePage} />
+        <Route path="/contracts/:contractAddress" component={ContractPage} />
       </Switch>
     </Router>
   );
