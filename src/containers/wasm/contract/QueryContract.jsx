@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
-import ReactJson from 'react-json-view';
 import { AppContext } from '../../../context';
 import { JsonView, jsonInputStyle } from '../ui/ui';
 
