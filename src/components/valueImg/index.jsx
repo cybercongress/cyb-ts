@@ -107,13 +107,24 @@ const ValueImg = ({
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: justifyContent || 'center',
+        justifyContent: justifyContent || 'flex-start',
         margin: marginContainer || 0,
         flexDirection: flexDirection || 'unset',
+        width: '100%',
       }}
       {...props}
     >
-      {!onlyImg && <span>{textCurency}</span>}
+      {!onlyImg && (
+        <span
+          style={{
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
+        >
+          {textCurency}
+        </span>
+      )}
       {!onlyText && img !== null && (
         <img
           style={{

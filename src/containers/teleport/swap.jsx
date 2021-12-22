@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { TokenSetter } from './components';
-import { ValueImg } from '../../components';
-import { exponentialToDecimal } from '../../utils/utils';
+import { Denom } from '../../components';
+import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
@@ -20,30 +20,42 @@ function Swap({ stateSwap, swap }) {
     amountChangeHandler,
     tokenAPoolAmount,
     tokenBPoolAmount,
+    swapPrice,
     tokenChange,
   } = stateSwap;
 
   const getTokenPrice = useMemo(() => {
-    const price = tokenAPoolAmount / tokenBPoolAmount;
+    const price = swapPrice;
     if (price && price !== Infinity) {
       return (
-        <span>
-          {exponentialToDecimal(price.toPrecision(3))}{' '}
-          <ValueImg text={tokenA} /> / <ValueImg text={tokenB} />
-        </span>
+        <div style={{ display: 'flex' }}>
+          <div style={{ whiteSpace: 'nowrap' }}>
+            {price % 1 === 0
+              ? formatNumber(Math.floor(price))
+              : exponentialToDecimal(price.toPrecision(3))}
+          </div>
+          <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> /{' '}
+          <Denom denomValue={tokenB} />
+        </div>
       );
     }
     return <span> </span>;
-  }, [tokenAPoolAmount, tokenBPoolAmount]);
+  }, [swapPrice]);
 
   const getSwapFees = useMemo(() => {
     const price = tokenAAmount / tokenBAmount;
     if (price && price !== Infinity) {
       return (
-        <span>
-          {Math.floor(tokenAAmount * 0.0015)} <ValueImg text={tokenA} /> <br />{' '}
-          {Math.floor(tokenBAmount * 0.0015)} <ValueImg text={tokenB} />
-        </span>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex' }}>
+            <div>{Math.floor(tokenAAmount * 0.0015)}</div>
+            <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} />
+          </div>
+          <div style={{ display: 'flex' }}>
+            <div>{Math.floor(tokenBAmount * 0.0015)}</div>
+            <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} />
+          </div>
+        </div>
       );
     }
     return <span> </span>;

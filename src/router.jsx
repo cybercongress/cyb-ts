@@ -87,7 +87,7 @@ function AppRouter({
         {/* <Route path="/gift/:address?" component={Gift} /> */}
         <Route path="/gol/takeoff" component={Funding} />
         <Route path="/tot" component={Got} />
-        <Route path="/brain" component={Brain} />
+        {/* <Route path="/brain" component={Brain} /> */}
         <Route exact path="/senate" component={Governance} />
         <Route path="/senate/:proposalId" component={ProposalsDetail} />
         <Route path="/halloffame" component={Validators} />

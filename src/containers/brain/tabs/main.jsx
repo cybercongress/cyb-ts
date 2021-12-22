@@ -8,11 +8,11 @@ import { formatNumber } from '../../../utils/utils';
 import CodeBlock from '../../ipfs/codeBlock';
 import ContentItem from '../../ipfs/contentItem';
 
-const htmlParser = require('react-markdown/plugins/html-parser');
+// const htmlParser = require('react-markdown/plugins/html-parser');
 
-const parseHtml = htmlParser({
-  isValidNode: (node) => node.type !== 'script',
-});
+// const parseHtml = htmlParser({
+//   isValidNode: (node) => node.type !== 'script',
+// });
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);

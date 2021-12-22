@@ -7,7 +7,7 @@ import React, {
   useRef,
   Children,
 } from 'react';
-import { Dots, ValueImg } from '../../../../components';
+import { Denom, ValueImg } from '../../../../components';
 import { LinearGradientContainer } from '../input';
 import styles from './styles.scss';
 import { reduceTextCoin } from '../../utils';
@@ -44,7 +44,7 @@ export const OptionSelect = ({ text, img, value, ...props }) => {
       onClick={() => changeSelectedOption(value)}
     >
       <div className={styles.bgrImg}>{img || ''}</div>
-      {text}
+      <div>{text}</div>
     </div>
   );
 };
@@ -83,15 +83,25 @@ const Select = ({
               {valueSelect === '' ? (
                 <OptionSelect
                   text="choose"
-                  img={<ValueImg text="choose" onlyImg />}
+                  img={
+                    <Denom
+                      justifyContent="center"
+                      denomValue="choose"
+                      onlyImg
+                    />
+                  }
                   value=""
                 />
               ) : (
                 <OptionSelect
-                  text={reduceTextCoin(textSelectValue)}
+                  text={<Denom denomValue={textSelectValue} onlyText />}
                   img={
                     imgSelectValue || (
-                      <ValueImg text={textSelectValue} onlyImg />
+                      <Denom
+                        justifyContent="center"
+                        denomValue={textSelectValue}
+                        onlyImg
+                      />
                     )
                   }
                   value={valueSelect}
