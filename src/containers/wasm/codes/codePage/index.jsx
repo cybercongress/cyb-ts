@@ -2,7 +2,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AppContext } from '../../../../context';
 import { makeTags } from '../../../../utils/utils';
-import InstanceRow from './InstanceRow';
+import InstantiationContract from '../../contract/InstantiationContract';
+import CodeInfo from './CodeInfo';
+import TableInstance from './TableInstance';
+import styles from './styles.scss';
 
 const initDetails = {
   checksum: '',
@@ -66,56 +69,29 @@ function CodePage() {
 
   return (
     <main className="block-body">
-      <div>
-        CodePage
-        <hr />
-        <br />
-        <div>
-          <div>
-            <div>code #{codeId}</div>
+      <div className={styles.containerCodeDetails}>
+        <div className={styles.containerCodeDetailsHeader}>
+          <div className={styles.containerCodeDetailsHeaderTitle}>
+            Code #{codeId}
+          </div>
+          <div className={styles.containerCodeDetailsHeaderFileInfo}>
+            <div className={styles.containerCodeDetailsHeaderFileInfoType}>
+              type: Wasm
+            </div>
             <div>
-              <div>type Wasm</div>
-              <div>
-                Size:{' '}
-                {details.data.length > 0 &&
-                  Math.round(details.data.length / 1024)}{' '}
-                KiB
-              </div>
+              Size:{' '}
+              {details.data.length > 0 &&
+                Math.round(details.data.length / 1024)}{' '}
+              KiB
             </div>
           </div>
-          <div>
-            <div>Upload transaction: {uploadTxHash}</div>
-            <div>Creator: {details.creator}</div>
-            <div>Checksum: {details.checksum}</div>
-          </div>
         </div>
-        <br />
-        <hr />
-        <br />
         <div>
-          <table style={{ width: '100%' }}>
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Label</th>
-                <th scope="col">Contract</th>
-                <th scope="col">Creator</th>
-                <th scope="col">Admin</th>
-                <th scope="col">Executions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contracts.map((address, index) => (
-                <InstanceRow
-                  position={index + 1}
-                  address={address}
-                  key={address}
-                />
-              ))}
-            </tbody>
-          </table>
+          <CodeInfo uploadTxHash={uploadTxHash} details={details} />
+          <InstantiationContract codeId={codeId} />
         </div>
       </div>
+      <TableInstance contracts={contracts} />
     </main>
   );
 }

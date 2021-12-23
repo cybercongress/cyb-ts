@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ReactJson from 'react-json-view';
+import { CardCantainer } from '../ui/ui';
+import styles from './stylesHistoryInfo.scss';
 
 const CodeLink = ({ codeId, text }) => {
   return <Link to={`/codes/${codeId}`}>{text || `Code #${codeId}`}</Link>;
@@ -8,12 +10,12 @@ const CodeLink = ({ codeId, text }) => {
 
 function HistoryInfo({ contractCodeHistory }) {
   return (
-    <div>
-      <div>
-        <div>History</div>
+    <CardCantainer>
+      <div className={styles.containerHistoryInfo}>
+        <span className={styles.containerHistoryInfoTitle}>History</span>
         {contractCodeHistory.map((item) => (
-          <>
-            <div>
+          <div className={styles.containerHistoryInfoItem}>
+            <div className={styles.containerHistoryInfoItemTitle}>
               {item.operation}-<CodeLink codeId={item.codeId} />
             </div>
             <ReactJson
@@ -22,10 +24,10 @@ function HistoryInfo({ contractCodeHistory }) {
               displayObjectSize={false}
               displayDataTypes={false}
             />
-          </>
+          </div>
         ))}
       </div>
-    </div>
+    </CardCantainer>
   );
 }
 

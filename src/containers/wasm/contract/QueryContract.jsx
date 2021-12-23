@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import JSONInput from 'react-json-editor-ajrm';
 import { AppContext } from '../../../context';
 import { JsonView, jsonInputStyle } from '../ui/ui';
+import styles from './stylesQueryContract.scss';
+import { JSONInputCard } from './InstantiationContract';
 
 const queryPlaceholder = {
   balance: { address: 'bostrom180tz4ahtyfhwnqwkpdqj3jelyxff4wlx2ymsv3' },
@@ -28,7 +30,7 @@ function QueryContract({ contractAddress }) {
       return;
     }
 
-    setError(undefined);
+    setError(null);
   }, [queryObject, queryResponse]);
 
   const runQuery = async () => {
@@ -49,16 +51,14 @@ function QueryContract({ contractAddress }) {
   };
 
   return (
-    <div>
-      <div>Query contract:</div>{' '}
-      <JSONInput
-        width="100%"
-        height="200px"
+    <div className={styles.containerQueryContract}>
+      <JSONInputCard
         placeholder={queryPlaceholder}
-        confirmGood={false}
-        style={jsonInputStyle}
-        onChange={({ jsObject }) => setQueryObject({ result: jsObject })}
+        setState={setQueryObject}
+        title="Query contract"
+        height="200px"
       />
+
       <button
         type="button"
         className="btn btn-primary"
@@ -70,14 +70,15 @@ function QueryContract({ contractAddress }) {
       >
         Run query
       </button>
+
       {queryResponse.result && (
-        <>
+        <div className={styles.containerQueryContractMessage}>
           <div>Response:</div>
           <JsonView src={JSON.parse(queryResponse.result)} />
-        </>
+        </div>
       )}
       {error !== null && (
-        <div>
+        <div className={styles.containerQueryContractMessage}>
           <span className="text-danger" title="The contract query error">
             {error}
           </span>

@@ -72,6 +72,12 @@ const CYBER = {
   CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
+
+  // CHAIN_ID: 'bostrom1',
+  // CYBER_NODE_URL_API: 'http://localhost:26657',
+  // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
+  // CYBER_NODE_URL_LCD: 'http://localhost:1317',
+
   // CHAIN_ID: 'bostrom',
   // CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   // CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',

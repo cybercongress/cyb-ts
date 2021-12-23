@@ -1,0 +1,24 @@
+@import '../globalStyle.scss';
+
+.containerFlexWrapCantainer {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0px auto 20px auto;
+  @include border-card;
+
+  & > * {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+  }
+}
+
+.containerCardCantainer {
+  @include border-card;
+  @include displayFlexGap;
+}

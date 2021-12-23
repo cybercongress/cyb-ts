@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import ReactJson from 'react-json-view';
+import styles from './styles.scss';
 
 function JsonView({ src, strLength }) {
   return (
@@ -20,4 +22,27 @@ const jsonInputStyle = {
   warningBox: { order: '2' },
 };
 
-export { jsonInputStyle, JsonView };
+const FlexWrapCantainer = ({ children }) => (
+  <div className={styles.containerFlexWrapCantainer}>{children}</div>
+);
+
+const CardCantainer = ({ children }) => (
+  <div className={styles.containerCardCantainer}>{children}</div>
+);
+
+const LinkTx = ({ children, txs }) => (
+  <Link to={`/network/bostrom/tx/${txs}`}>{children}</Link>
+);
+
+const LinkCreator = ({ children, address }) => (
+  <Link to={`/network/bostrom/contract/${address}`}>{children}</Link>
+);
+
+export {
+  jsonInputStyle,
+  JsonView,
+  FlexWrapCantainer,
+  CardCantainer,
+  LinkTx,
+  LinkCreator,
+};

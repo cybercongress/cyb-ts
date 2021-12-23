@@ -1,18 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AppContext } from '../../../context';
-import { makeTags } from '../../../utils/utils';
+import { makeTags, trimString } from '../../../utils/utils';
 import HistoryInfo from './HistoryInfo';
 import InitializationInfo from './InitializationInfo';
+import ExecuteContract from './ExecuteContract';
 import QueryContract from './QueryContract';
-
-const Separator = () => (
-  <>
-    <br />
-    <hr />
-    <br />
-  </>
-);
+import { FlexWrapCantainer } from '../ui/ui';
+import styles from './stylesContractPage.scss';
 
 const getAndSetDetails = async (client, contractAddress, setDetails) => {
   try {
@@ -103,16 +98,27 @@ function ContractPage() {
 
   return (
     <main className="block-body">
-      <div>Contract {contractAddress}</div>
-      <div>
-        Balance: {balance.amount} {balance.denom}
-      </div>
-      <Separator />
-      <InitializationInfo initTxHash={instantiationTxHash} details={details} />
-      <Separator />
-      <HistoryInfo contractCodeHistory={contractCodeHistory} />
-      <Separator />
-      <QueryContract contractAddress={contractAddress} />
+      <FlexWrapCantainer>
+        <div className={styles.containerContractPageContainerTitle}>
+          <div className={styles.containerContractPageContainerTitleTitle}>
+            Contract {trimString(contractAddress, 12)}
+          </div>
+          <div className={styles.containerContractPageContainerTitleBalance}>
+            Balance: {balance.amount} {balance.denom}
+          </div>
+        </div>
+        <div>
+          <InitializationInfo
+            initTxHash={instantiationTxHash}
+            details={details}
+          />
+          <HistoryInfo contractCodeHistory={contractCodeHistory} />
+
+          <QueryContract contractAddress={contractAddress} />
+
+          <ExecuteContract contractAddress={contractAddress} />
+        </div>
+      </FlexWrapCantainer>
     </main>
   );
 }

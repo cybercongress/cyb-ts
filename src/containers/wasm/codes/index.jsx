@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
 import Code from './code';
 
+import styles from './styles.scss';
+
 function Codes() {
   const { jsCyber } = useContext(AppContext);
   const [codes, setCodes] = useState([]);
@@ -27,14 +29,12 @@ function Codes() {
 
   return (
     <main className="block-body">
-      {codes.length > 0 &&
-        codes.map((item) => {
-          return (
-            <>
-              <Code data={item} key={item.id} />
-            </>
-          );
-        })}
+      <div className={styles.containerCodes}>
+        {codes.length > 0 &&
+          codes.map((item) => {
+            return <Code data={item} key={item.id} />;
+          })}
+      </div>
     </main>
   );
 }
