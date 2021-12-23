@@ -128,7 +128,7 @@ function Teleport({ defaultAccount }) {
     // }
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.9974;
+      orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.97;
     } else {
       orderPrice = (Number(poolAmountA) / Number(poolAmountB)) * 1.03;
     }
