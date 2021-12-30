@@ -33,6 +33,11 @@ const itemsMenu = (address) => {
       ],
     },
     {
+      name: 'Codes',
+      to: '/codes',
+      subItems: [],
+    },
+    {
       name: 'Genesis',
       to: '/genesis',
       subItems: [],
