@@ -19,6 +19,76 @@ html {
   font-family: 'Play';
 }
 
+.rjsf fieldset {
+  border: none;
+  margin-bottom: 10px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* form.rjsf {
+    border-bottom: 1px solid #5c5c5c;
+} */
+
+.rjsf legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 20px;
+  font-size: 22px;
+  line-height: inherit;
+  color: #fff;
+  border: 0;
+}
+
+.rjsf label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.rjsf .form-control {
+  height: 42px;
+  border: none;
+  background-color: transparent;
+  box-shadow: #36d6ae 0px 0px 5px;
+  color: #fff;
+  font-size: 18px;
+  text-align: start;
+  caret-color: #fff;
+  padding: 2px 15px;
+  border-radius: 5px;
+  margin: 0;
+  width: 100%;
+}
+
+.rjsf .panel {
+  background: #000;
+  border-radius: 5px;
+  box-shadow: none;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  padding-bottom: 20px;
+  font-size: 16px;
+  margin: 0;
+}
+
+.rjsf .panel-body {
+  padding: 15px;
+}
+
+.rjsf .form-group {
+  margin-bottom: 15px;
+}
+
+.rjsf .panel-default {
+  border: 1px solid #fbfbfb59;
+}
+
 p {
   margin-block-start: 0;
   margin-block-end: 0;

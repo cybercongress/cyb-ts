@@ -14,7 +14,7 @@ const initDetails = {
   id: '',
 };
 
-const useGetContractsInfo = (codeId) => {
+const useGetContractsInfo = (codeId, updateFnc) => {
   const { jsCyber } = useContext(AppContext);
   const [details, setDetails] = useState(initDetails);
   const [contracts, setContracts] = useState([]);
@@ -29,7 +29,7 @@ const useGetContractsInfo = (codeId) => {
       }
     };
     getContracts();
-  }, [jsCyber, codeId]);
+  }, [jsCyber, codeId, updateFnc]);
 
   useEffect(() => {
     const getCodeDetails = async () => {
@@ -65,7 +65,11 @@ const useGetContractsInfo = (codeId) => {
 
 function CodePage() {
   const { codeId } = useParams();
-  const { uploadTxHash, contracts, details } = useGetContractsInfo(codeId);
+  const [updateFnc, setUpdateFnc] = useState(0);
+  const { uploadTxHash, contracts, details } = useGetContractsInfo(
+    codeId,
+    updateFnc
+  );
 
   return (
     <main className="block-body">
@@ -88,7 +92,10 @@ function CodePage() {
         </div>
         <div>
           <CodeInfo uploadTxHash={uploadTxHash} details={details} />
-          <InstantiationContract codeId={codeId} />
+          <InstantiationContract
+            updateFnc={() => setUpdateFnc((item) => item + 1)}
+            codeId={codeId}
+          />
         </div>
       </div>
       <TableInstance contracts={contracts} />

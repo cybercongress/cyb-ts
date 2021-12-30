@@ -13,7 +13,17 @@ import { CardItem } from '../codes/code';
 const executePlaceholder = {
   name: 'Nation coin',
   symbol: 'NTN',
-  decimals: 6,
+  decimals: 0,
+  initial_balances: [
+    {
+      address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
+      amount: '100000',
+    },
+  ],
+  mint: {
+    minter: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
+    cap: '1000000',
+  },
 };
 
 export const JSONInputCard = ({ title, placeholder, setState, height }) => (
@@ -33,20 +43,46 @@ export const JSONInputCard = ({ title, placeholder, setState, height }) => (
 const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
-function InstantiationContract({ codeId }) {
-  const { keplr } = useContext(AppContext);
+function InstantiationContract({ codeId, updateFnc }) {
+  const { keplr, jsCyber } = useContext(AppContext);
 
   const [executing, setExecuting] = useState(false);
   const [error, setError] = useState(null);
+  const [txHash, setTxHash] = useState(null);
 
   const [memo, setMemo] = useState('');
-
   const [label, setLabel] = useState('');
 
   const [msgObject, setMsgObject] = useState({});
   const [coinsObject, setCoinsObject] = useState({});
-
   const [executeResponse, setExecuteResponse] = useState({});
+
+  useEffect(() => {
+    const confirmTx = async () => {
+      if (jsCyber !== null && txHash !== null) {
+        const response = await jsCyber.getTx(txHash);
+        console.log('response :>> ', response);
+        if (response && response !== null) {
+          if (response.code === 0) {
+            setExecuteResponse({ result: response });
+            if (updateFnc) {
+              updateFnc();
+            }
+            setExecuting(false);
+            setTxHash(null);
+            return;
+          }
+          if (response.code) {
+            setExecuting(false);
+            setError(response.rawLog);
+            return;
+          }
+        }
+        setTimeout(confirmTx, 1500);
+      }
+    };
+    confirmTx();
+  }, [txHash]);
 
   useEffect(() => {
     setMsgObject({ result: executePlaceholder });
@@ -91,13 +127,16 @@ function InstantiationContract({ codeId }) {
           funds: coinsObject.result,
         }
       );
-      console.log(`executeResponseResult`, executeResponseResult);
-      setExecuteResponse({ result: executeResponseResult });
+      if (executeResponseResult.code === 0) {
+        setTxHash(executeResponseResult.transactionHash);
+      } else {
+        setTxHash(null);
+        setError(executeResponseResult.rawLog.toString());
+      }
     } catch (e) {
-      setExecuteResponse({ error: `Execute error: ${e}` });
+      setError(`Execute error: ${e}`);
+      setExecuting(false);
     }
-
-    setExecuting(false);
   };
 
   return (
@@ -156,20 +195,10 @@ function InstantiationContract({ codeId }) {
         <div className={styles.containerJsonContractResult}>
           <span>Response:</span>
           <CardItem
-            title="Contract"
-            value={
-              <Link to={`/contracts/${executeResponse.result.contractAddress}`}>
-                {trimString(executeResponse.result.contractAddress, 10)}
-              </Link>
-            }
-          />
-          <CardItem
             title="Tx"
             value={
-              <Link
-                to={`/network/bostrom/tx/${executeResponse.result.transactionHash}`}
-              >
-                {trimString(executeResponse.result.transactionHash, 8, 8)}
+              <Link to={`/network/bostrom/tx/${executeResponse.result.hash}`}>
+                {trimString(executeResponse.result.hash, 8, 8)}
               </Link>
             }
           />

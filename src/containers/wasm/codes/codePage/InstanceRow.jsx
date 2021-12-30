@@ -38,8 +38,6 @@ function InstanceRow({ position, address }) {
           tags: tags(address),
         });
 
-        console.log(`response searchTx`, response);
-
         if (response.length > 0) {
           setExecutionCount(response.length);
         }

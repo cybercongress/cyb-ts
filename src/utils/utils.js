@@ -1,4 +1,5 @@
 import bech32 from 'bech32';
+import { fromUtf8 } from '@cosmjs/encoding';
 import { CYBER } from './config';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
@@ -385,6 +386,24 @@ const reduceBalances = (data) => {
   }
 };
 
+const reduceObj = (data) => {
+  try {
+    let objTemp = {};
+    if (Object.keys(data).length > 0) {
+      objTemp = data.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.key]: item.value,
+        }),
+        {}
+      );
+    }
+    return objTemp;
+  } catch (error) {
+    return {};
+  }
+};
+
 // example: oneLiner -> message.module=wasm&message.action=/cosmwasm.wasm.v1.MsgStoreCode&store_code.code_id=${codeId}
 function makeTags(oneLiner) {
   return oneLiner.split('&').map((pair) => {
@@ -403,6 +422,12 @@ function makeTags(oneLiner) {
     }
     return { key, value };
   });
+}
+
+function parseMsgContract(msg) {
+  const json = fromUtf8(msg);
+
+  return JSON.parse(json);
 }
 
 export {
@@ -426,4 +451,6 @@ export {
   timeSince,
   reduceBalances,
   makeTags,
+  reduceObj,
+  parseMsgContract,
 };

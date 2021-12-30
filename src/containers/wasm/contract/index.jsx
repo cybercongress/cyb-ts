@@ -1,13 +1,29 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { Tx } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
+import { Registry } from '@cosmjs/proto-signing';
+import {
+  MsgClearAdmin,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgMigrateContract,
+  MsgStoreCode,
+  MsgUpdateAdmin,
+} from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 import { AppContext } from '../../../context';
 import { makeTags, trimString } from '../../../utils/utils';
 import HistoryInfo from './HistoryInfo';
 import InitializationInfo from './InitializationInfo';
 import ExecuteContract from './ExecuteContract';
 import QueryContract from './QueryContract';
-import { FlexWrapCantainer } from '../ui/ui';
+import { FlexWrapCantainer, CardCantainer } from '../ui/ui';
 import styles from './stylesContractPage.scss';
+import RenderAbi from './renderAbi';
+import ExecuteTable from './ExecuteTable';
+
+function isStargateMsgExecuteContract(msg) {
+  return msg.typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract' && !!msg.value;
+}
 
 const getAndSetDetails = async (client, contractAddress, setDetails) => {
   try {
@@ -54,12 +70,51 @@ const getAndSetInstantiationTxHash = async (
   }
 };
 
-const useGetInfoContractAddress = (contractAddress) => {
+const getExecutionFromStargateMsgExecuteContract = (typeRegistry, tx) => {
+  return (msg, i) => {
+    const decodedMsg = typeRegistry.decode({
+      typeUrl: msg.typeUrl,
+      value: msg.value,
+    });
+    return {
+      key: `${tx.hash}_${i}`,
+      height: tx.height,
+      transactionId: tx.hash,
+      msg: decodedMsg,
+    };
+  };
+};
+
+const getExecutions = async (client, contractAddress, setExecutions) => {
+  const typeRegistry = new Registry([
+    ['/cosmwasm.wasm.v1.MsgExecuteContract', MsgExecuteContract],
+  ]);
+
+  const response = await client.searchTx({
+    tags: makeTags(
+      `message.module=wasm&message.action=/cosmwasm.wasm.v1.MsgExecuteContract&execute._contract_address=${contractAddress}`
+    ),
+  });
+
+  const out = response.reduce((executions, tx) => {
+    const decodedTx = Tx.decode(tx.tx);
+    const txExecutions = decodedTx.body.messages
+      .filter(isStargateMsgExecuteContract)
+      .map(getExecutionFromStargateMsgExecuteContract(typeRegistry, tx));
+    return [...executions, ...txExecutions];
+  }, []);
+
+  if (out.length > 0) {
+    setExecutions(out.reverse());
+  }
+};
+
+const useGetInfoContractAddress = (contractAddress, updateFnc) => {
   const { jsCyber } = useContext(AppContext);
   const [instantiationTxHash, setInstantiationTxHash] = useState('');
   const [contractCodeHistory, setContractCodeHistory] = useState([]);
-  const [executions, setExecutions] = useState([]);
   const [details, setDetails] = useState({});
+  const [executions, setExecutions] = useState([]);
   const [balance, setBalance] = useState({ denom: '', amount: 0 });
 
   useEffect(() => {
@@ -78,6 +133,12 @@ const useGetInfoContractAddress = (contractAddress) => {
     }
   }, [jsCyber, contractAddress]);
 
+  useEffect(() => {
+    if (jsCyber !== null) {
+      getExecutions(jsCyber, contractAddress, setExecutions);
+    }
+  }, [jsCyber, contractAddress, updateFnc]);
+
   return {
     balance,
     details,
@@ -89,12 +150,14 @@ const useGetInfoContractAddress = (contractAddress) => {
 
 function ContractPage() {
   const { contractAddress } = useParams();
+  const [updateFnc, setUpdateFnc] = useState(0);
   const {
     balance,
     details,
+    executions,
     instantiationTxHash,
     contractCodeHistory,
-  } = useGetInfoContractAddress(contractAddress);
+  } = useGetInfoContractAddress(contractAddress, updateFnc);
 
   return (
     <main className="block-body">
@@ -119,6 +182,15 @@ function ContractPage() {
           <ExecuteContract contractAddress={contractAddress} />
         </div>
       </FlexWrapCantainer>
+      <FlexWrapCantainer>
+        <RenderAbi
+          contractAddress={contractAddress}
+          updateFnc={() => setUpdateFnc((item) => item + 1)}
+        />
+      </FlexWrapCantainer>
+      <CardCantainer>
+        <ExecuteTable executions={executions} />
+      </CardCantainer>
     </main>
   );
 }
