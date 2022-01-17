@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { Dots, ValueImg } from '../../../components';
+import { Dots, Denom } from '../../../components';
 import { AppContext } from '../../../context';
 import { reduceAmounToken } from '../utils';
 import { formatNumber } from '../../../utils/utils';
@@ -15,7 +15,8 @@ export const PoolTokenAmount = ({ addressPool, token }) => {
       setLoading(true);
       if (jsCyber !== null) {
         const getBalancePromise = await jsCyber.getBalance(addressPool, token);
-        setAmounToken(parseFloat(getBalancePromise.amount));
+        const amount = parseFloat(getBalancePromise.amount);
+        setAmounToken(parseFloat(amount));
         setLoading(false);
       }
     };
@@ -37,14 +38,14 @@ const PoolItemsList = ({ addressPool, token, ...props }) => (
     marginBottom={10}
     {...props}
   >
-    <ValueImg
+    <Denom
       style={{
         flexDirection: 'row-reverse',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
       }}
-      text={token}
+      denomValue={token}
       marginImg="0 5px"
     />
     <PoolTokenAmount addressPool={addressPool} token={token} />

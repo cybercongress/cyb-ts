@@ -122,13 +122,13 @@ function Teleport({ defaultAccount }) {
     let poolAmountA = tokenAPoolAmount;
     let poolAmountB = tokenBPoolAmount;
 
-    if (poolAmountA && poolAmountB) {
-      poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
-      poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
-    }
+    // if (poolAmountA && poolAmountB) {
+    //   poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
+    //   poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
+    // }
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.9974;
+      orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.97;
     } else {
       orderPrice = (Number(poolAmountA) / Number(poolAmountB)) * 1.03;
     }
@@ -148,12 +148,14 @@ function Teleport({ defaultAccount }) {
         );
         const dataReduceBalances = reduceBalances(getAllBalancesPromise);
         if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
-          setTokenAPoolAmount(
-            reduceAmounToken(dataReduceBalances[tokenA], tokenA)
-          );
-          setTokenBPoolAmount(
-            reduceAmounToken(dataReduceBalances[tokenB], tokenB)
-          );
+          setTokenAPoolAmount(dataReduceBalances[tokenA]);
+          setTokenBPoolAmount(dataReduceBalances[tokenB]);
+          // setTokenAPoolAmount(
+          //   reduceAmounToken(dataReduceBalances[tokenA], tokenA, true)
+          // );
+          // setTokenBPoolAmount(
+          //   reduceAmounToken(dataReduceBalances[tokenB], tokenB, true)
+          // );
         }
       }
     };
@@ -328,6 +330,7 @@ function Teleport({ defaultAccount }) {
     tokenAPoolAmount,
     tokenBPoolAmount,
     tokenChange,
+    swapPrice,
   };
 
   const stateWithdraw = {

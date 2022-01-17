@@ -1,4 +1,5 @@
 import { formatNumber, convertResources } from '../../utils/utils';
+import coinDecimalsIbc from './configToken';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
@@ -75,6 +76,27 @@ export function calculateCounterPairAmount(e, state, type) {
   };
 }
 
+function pow(a) {
+  let result = 1;
+  for (let i = 0; i < a; i++) {
+    result *= 10;
+  }
+  return result;
+}
+
+const decFnc = (number, dec, reverse) => {
+  let amount = number;
+
+  if (reverse) {
+    if (dec > 0) {
+      amount = parseFloat(number) * pow(dec);
+    }
+  } else if (dec > 0) {
+    amount = parseFloat(number) / pow(dec);
+  }
+  return amount;
+};
+
 export function calculateSlippage(swapAmount, poolReserve) {
   let slippage = (2 * swapAmount) / poolReserve;
 
@@ -93,6 +115,17 @@ export const reduceAmounToken = (amount, token, reverse) => {
       amountReduce = amount * 10 ** 3;
     } else {
       amountReduce = amount * 10 ** -3;
+    }
+  }
+
+  if (token.includes('ibc')) {
+    if (Object.prototype.hasOwnProperty.call(coinDecimalsIbc, token)) {
+      const { coinDecimals } = coinDecimalsIbc[token];
+      if (reverse) {
+        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+      } else {
+        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+      }
     }
   }
 

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { SearchItem } from '@cybercongress/gravity';
 import Iframe from 'react-iframe';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
 import { getRankGrade, getPinsCid } from '../../utils/search/utils';
 import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
@@ -40,7 +42,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         setStatus('downloaded');
       } else if (nodeIpfs !== null) {
         const responseDag = await nodeIpfs.dag.get(cid);
-        console.log(`responseDag`, responseDag)
+        console.log(`responseDag`, responseDag);
         const meta = {
           type: 'file',
           size: 0,
@@ -88,7 +90,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
           db.table('cid')
             .add(ipfsContentAddtToInddexdDB)
-            .then(id => {
+            .then((id) => {
               console.log('item :>> ', id);
             });
           const dataTypeContent = await getTypeContent(someVar, cid);
@@ -120,12 +122,15 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           <div className="container-text-SearchItem">
             {/* {`${text}`} */}
             <ReactMarkdown
-              source={text}
-              escapeHtml
-              skipHtml={false}
+              children={text}
+              rehypePlugins={[rehypeSanitize]}
+              // skipHtml
+              // escapeHtml
+              // skipHtml={false}
               // astPlugins={[parseHtml]}
-              renderers={{ code: CodeBlock }}
-              // plugins={[toc]}
+              // renderers={{ code: CodeBlock }}
+              remarkPlugins={[remarkGfm]}
+
               // escapeHtml={false}
             />
           </div>
@@ -135,9 +140,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         grade={
           item.rank
             ? getRankGrade(item.rank)
-            : grade
-            ? grade
-            : { from: 'n/a', to: 'n/a', value: 'n/a' }
+            : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
         {typeContent === 'image' && (

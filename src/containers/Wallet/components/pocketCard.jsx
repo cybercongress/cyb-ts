@@ -70,7 +70,7 @@ export const ContainerAddressInfo = ({ children, ...props }) => (
   <Pane
     width="100%"
     display="grid"
-    gridTemplateColumns="1fr 1fr"
+    gridTemplateColumns="0.8fr 1fr"
     gridGap="5px"
     alignItems="baseline"
     className="cosmos-address-container"

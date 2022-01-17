@@ -87,7 +87,9 @@ const RowToken = ({ denom, amount }) => {
         justifyContent="flex-end"
         denomValue={denom}
       />
-      <Pane textAlign="right">{formatNumber(amount)}</Pane>
+      <Pane whiteSpace="nowrap" textAlign="right">
+        {formatNumber(amount)}
+      </Pane>
     </Pane>
   );
 };
