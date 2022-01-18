@@ -122,10 +122,10 @@ function Teleport({ defaultAccount }) {
     let poolAmountA = tokenAPoolAmount;
     let poolAmountB = tokenBPoolAmount;
 
-    // if (poolAmountA && poolAmountB) {
-    //   poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
-    //   poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
-    // }
+    if (poolAmountA && poolAmountB) {
+      poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
+      poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
+    }
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
       orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.97;
@@ -150,12 +150,12 @@ function Teleport({ defaultAccount }) {
         if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
           setTokenAPoolAmount(dataReduceBalances[tokenA]);
           setTokenBPoolAmount(dataReduceBalances[tokenB]);
-          // setTokenAPoolAmount(
-          //   reduceAmounToken(dataReduceBalances[tokenA], tokenA, true)
-          // );
-          // setTokenBPoolAmount(
-          //   reduceAmounToken(dataReduceBalances[tokenB], tokenB, true)
-          // );
+          setTokenAPoolAmount(
+            reduceAmounToken(dataReduceBalances[tokenA], tokenA)
+          );
+          setTokenBPoolAmount(
+            reduceAmounToken(dataReduceBalances[tokenB], tokenB)
+          );
         }
       }
     };
