@@ -24,7 +24,7 @@ function InstanceRow({ position, address }) {
     const getContract = async () => {
       if (jsCyber !== null) {
         const response = await jsCyber.getContract(address);
-        console.log(`response`, response);
+        // console.log(`response`, response);
         setContractInfo(response);
       }
     };

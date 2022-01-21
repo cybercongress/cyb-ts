@@ -29,6 +29,7 @@ function JsonSchemaParse({
   contractResponse,
   keyItem,
   onSubmitFnc,
+  disabledOnSubmit,
 }) {
   return (
     <div style={styles}>
@@ -42,7 +43,7 @@ function JsonSchemaParse({
         // onSubmit={(e) => runExecute(e)}
       >
         <div>
-          <button className="btn" type="submit">
+          <button disabled={disabledOnSubmit} className="btn" type="submit">
             {activeKey === keyItem && executing ? (
               <p>
                 Executing

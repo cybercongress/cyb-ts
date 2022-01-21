@@ -9,6 +9,9 @@ import { CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import styles from './stylesInstantiationContract.scss';
 import { CardItem } from '../codes/code';
+import RenderInstantiateMsg from './RenderInstantiateMsg';
+import SelectFile from './renderAbi/SelectFile';
+import useParseJsonSchema from './renderAbi/useParseJsonSchema';
 
 const executePlaceholder = {
   name: 'Nation coin',
@@ -40,121 +43,51 @@ export const JSONInputCard = ({ title, placeholder, setState, height }) => (
   </div>
 );
 
-const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
-const gasPrice = GasPrice.fromString('0.001boot');
-
 function InstantiationContract({ codeId, updateFnc }) {
-  const { keplr, jsCyber } = useContext(AppContext);
-
-  const [executing, setExecuting] = useState(false);
   const [error, setError] = useState(null);
-  const [txHash, setTxHash] = useState(null);
 
   const [memo, setMemo] = useState('');
   const [label, setLabel] = useState('');
 
-  const [msgObject, setMsgObject] = useState({});
-  const [coinsObject, setCoinsObject] = useState({});
-  const [executeResponse, setExecuteResponse] = useState({});
+  const [fileAbiExecute, setFileAbiExecute] = useState(null);
+  const { dataObj: schemaExecute } = useParseJsonSchema(fileAbiExecute);
 
-  useEffect(() => {
-    const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
-        const response = await jsCyber.getTx(txHash);
-        console.log('response :>> ', response);
-        if (response && response !== null) {
-          if (response.code === 0) {
-            setExecuteResponse({ result: response });
-            if (updateFnc) {
-              updateFnc();
-            }
-            setExecuting(false);
-            setTxHash(null);
-            return;
-          }
-          if (response.code) {
-            setExecuting(false);
-            setError(response.rawLog);
-            return;
-          }
-        }
-        setTimeout(confirmTx, 1500);
-      }
-    };
-    confirmTx();
-  }, [txHash]);
+  let content;
 
-  useEffect(() => {
-    setMsgObject({ result: executePlaceholder });
-    setCoinsObject({ result: coinsPlaceholder });
-  }, []);
-
-  useEffect(() => {
-    if (msgObject.error) {
-      setError(msgObject.error);
-      return;
+  const updateFncInst = () => {
+    if (updateFnc) {
+      updateFnc();
     }
-
-    if (executeResponse.error) {
-      setError(executeResponse.error);
-      return;
-    }
-
-    if (coinsObject.error) {
-      setError(coinsObject.error);
-      return;
-    }
-
-    setError(undefined);
-  }, [coinsObject, executeResponse, msgObject]);
-
-  const executeContract = async () => {
-    if (!msgObject.result || !label || keplr === null) return;
-
-    setExecuting(true);
-
-    try {
-      const [{ address }] = await keplr.signer.getAccounts();
-
-      const executeResponseResult = await keplr.instantiate(
-        address,
-        parseFloat(codeId),
-        msgObject.result,
-        label,
-        calculateFee(600000, gasPrice),
-        {
-          memo,
-          funds: coinsObject.result,
-        }
-      );
-      if (executeResponseResult.code === 0) {
-        setTxHash(executeResponseResult.transactionHash);
-      } else {
-        setTxHash(null);
-        setError(executeResponseResult.rawLog.toString());
-      }
-    } catch (e) {
-      setError(`Execute error: ${e}`);
-      setExecuting(false);
-    }
+    setFileAbiExecute(null);
+    setLabel('');
+    setMemo('');
   };
+
+  if (fileAbiExecute === null) {
+    if (label.length === 0) {
+      content = <div style={{ fontSize: '18px' }}>You must add a label</div>;
+    } else {
+      content = (
+        <SelectFile
+          text="Upload instantiate schema"
+          useStateCallback={setFileAbiExecute}
+        />
+      );
+    }
+  } else {
+    content = (
+      <RenderInstantiateMsg
+        schema={schemaExecute}
+        codeId={codeId}
+        memo={memo}
+        label={label}
+        updateFnc={updateFncInst}
+      />
+    );
+  }
 
   return (
     <div className={styles.containerJsonContract}>
-      <JSONInputCard
-        placeholder={executePlaceholder}
-        setState={setMsgObject}
-        title="Instantiate contract"
-        height="200px"
-      />
-
-      <JSONInputCard
-        placeholder={coinsPlaceholder}
-        setState={setCoinsObject}
-        title="Coins to transfer"
-        height="120px"
-      />
-
       <div className={styles.containerJsonContractInputContainer}>
         <div className={styles.containerJsonContractInputContainerItem}>
           <span>Label</span>
@@ -174,36 +107,7 @@ function InstantiationContract({ codeId, updateFnc }) {
         </div>
       </div>
 
-      <br />
-
-      {executing ? (
-        <button className="btn btn-primary" type="button" disabled>
-          Executing...
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={executeContract}
-          disabled={!msgObject.result || keplr === null}
-        >
-          Instantiate contract
-        </button>
-      )}
-
-      {executeResponse.result && (
-        <div className={styles.containerJsonContractResult}>
-          <span>Response:</span>
-          <CardItem
-            title="Tx"
-            value={
-              <Link to={`/network/bostrom/tx/${executeResponse.result.hash}`}>
-                {trimString(executeResponse.result.hash, 8, 8)}
-              </Link>
-            }
-          />
-        </div>
-      )}
+      {content}
 
       {error !== null && (
         <div>

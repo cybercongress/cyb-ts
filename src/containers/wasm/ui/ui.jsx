@@ -38,6 +38,14 @@ const LinkCreator = ({ children, address }) => (
   <Link to={`/network/bostrom/contract/${address}`}>{children}</Link>
 );
 
+const ContainerCardStatisics = ({ children }) => (
+  <div className={styles.containerCardStatisics}>{children}</div>
+);
+
+const ContainerCol = ({ children }) => (
+  <div className={styles.containerCol}>{children}</div>
+);
+
 export {
   jsonInputStyle,
   JsonView,
@@ -45,4 +53,6 @@ export {
   CardCantainer,
   LinkTx,
   LinkCreator,
+  ContainerCardStatisics,
+  ContainerCol,
 };

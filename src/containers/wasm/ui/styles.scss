@@ -22,3 +22,14 @@
   @include border-card;
   @include displayFlexGap;
 }
+
+.containerCardStatisics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 20px;
+}
+
+.containerCol {
+  display: grid;
+  grid-gap: 20px;
+}
