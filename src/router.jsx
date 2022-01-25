@@ -46,6 +46,7 @@ import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
 import Movie from './containers/movie';
+import PortalGift from './containers/portal';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -60,7 +61,7 @@ function AppRouter({
   setIpfsIDProps,
 }) {
   // const dataIpfsStart = useIpfsFactory();
-  const dataIpfsStart = useIpfsStart();
+  // const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
   const [genesis, setGenesis] = useState(false);
@@ -69,13 +70,13 @@ function AppRouter({
 
   // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    // tryConnectToPeer(dataIpfsStart.node);
-  }, [dataIpfsStart]);
+  // useEffect(() => {
+  //   initIpfsProps(dataIpfsStart.node);
+  //   setIpfsStatusProps(dataIpfsStart.status);
+  //   setTypeDeviceProps(dataIpfsStart.mobile);
+  //   setIpfsIDProps(dataIpfsStart.id);
+  //   // tryConnectToPeer(dataIpfsStart.node);
+  // }, [dataIpfsStart]);
 
   return (
     <Router history={history}>
@@ -129,6 +130,7 @@ function AppRouter({
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
+        <Route path="/portalGift" component={PortalGift} />
       </Switch>
     </Router>
   );

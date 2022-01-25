@@ -133,6 +133,7 @@
     "react-markdown": "^7.1.1",
     "react-router-dom": "^5.1.2",
     "react-textarea-autosize": "^8.2.0",
+    "react-transition-group": "1.x",
     "regenerator-runtime": "^0.13.7",
     "ripemd160": "^2.0.2",
     "secp256k1": "^3.7.1",

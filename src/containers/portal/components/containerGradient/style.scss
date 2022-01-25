@@ -1,0 +1,173 @@
+@mixin linear-gradient-green($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) -3.3%,
+    rgba(54, 214, 174, 0.3) 100%
+  );
+}
+
+@mixin linear-gradient-grey($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) -3.3%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+}
+
+@mixin linear-gradient-yellow($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) -3.3%,
+    rgba(255, 217, 0, 0.3) 100%
+  );
+}
+
+@mixin linear-gradient-danger($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) -3.3%,
+    rgba(255, 0, 0, 0.3) 100%
+  );
+}
+
+@mixin styleGradientPseudoEl {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 50px;
+  top: 0;
+  bottom: 0;
+}
+
+.containerContainerGradient {
+  width: 100%;
+  min-height: 50px;
+  position: relative;
+  padding: 0px 5px;
+
+  &Primary {
+    &::after {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-green(90deg);
+      right: 0;
+    }
+  }
+
+  &Danger {
+    &::after {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-danger(90deg);
+      right: 0;
+    }
+  }
+
+  &Title {
+    min-height: 50px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: 0px -5px;
+    padding: 15px;
+
+    &::before {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-grey(-90deg);
+      left: 0;
+    }
+  }
+
+  &Content {
+    position: relative;
+    margin: 0px -5px;
+    padding: 15px;
+    min-height: 200px;
+    height: 1px;
+    z-index: 0;
+
+    &Primary {
+      &::before {
+        @include styleGradientPseudoEl;
+        @include linear-gradient-green(-90deg);
+        left: 0;
+        z-index: -1;
+      }
+    }
+
+    &Danger {
+      &::before {
+        @include styleGradientPseudoEl;
+        @include linear-gradient-danger(-90deg);
+        left: 0;
+        z-index: -1;
+      }
+    }
+  }
+}
+
+@mixin ion-lamp {
+  content: '';
+  position: absolute;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 6px 2px rgba(255, 255, 255, 0.3);
+  top: 0;
+  bottom: 0;
+}
+
+.wrapContainerLamp {
+  position: relative;
+  padding: 2px;
+
+  &::before {
+    @include ion-lamp;
+    left: 0;
+    border-radius: 2px 0px 0px 2px;
+  }
+
+  &::after {
+    @include ion-lamp;
+    right: 0;
+    border-radius: 0px 2px 2px 0px;
+  }
+}
+
+.containerTxs {
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &Confirmed {
+    position: relative;
+
+    &::before {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-green(-90deg);
+      left: 0;
+    }
+
+    &::after {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-green(90deg);
+      right: 0;
+    }
+  }
+  &Pending {
+    position: relative;
+
+    &::before {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-yellow(-90deg);
+      left: 0;
+    }
+
+    &::after {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-yellow(90deg);
+      right: 0;
+    }
+  }
+}
