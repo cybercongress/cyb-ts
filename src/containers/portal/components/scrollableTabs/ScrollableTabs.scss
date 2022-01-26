@@ -146,7 +146,7 @@ $level2-left: 50px;
 }
 
 .left-leave.left-leave-active {
-  left: 365px;
+  left: 360px;
   opacity: 0;
   height: $item-height;
   line-height: 40px;
@@ -177,7 +177,7 @@ $level2-left: 50px;
 }
 
 .right-leave {
-  left: $level2-left;
+  left: 0;
   height: $item-height;
   opacity: 1;
   margin-top: 0px;
@@ -186,10 +186,10 @@ $level2-left: 50px;
 }
 
 .right-leave.right-leave-active {
-  left: $level2-left - $item-width;
+  left: 0 - $item-width;
   opacity: 0;
   height: $item-height;
-  width: $item-width - 20;
+  width: $item-width;
   line-height: $item-height;
   margin-top: 0px;
   transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s,
