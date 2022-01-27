@@ -1,37 +1,66 @@
-import React, { useEffect, useCallback, useState, useContext } from 'react';
-import { AppContext } from '../../../context';
-import { makeTags, trimString, formatNumber } from '../../../utils/utils';
-import { CardStatisics } from '../../../components';
+import React, { useEffect, useState } from 'react';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+import { formatNumber } from '../../../utils/utils';
+import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 50;
 
-const getContracts = async (pageSize = 10, offset = 0) => {
-  const response = await fetch(
-    `https://graph.juno.giansalex.dev/api/rest/page/${pageSize}/${offset}`
-  );
-  const contracts = await response.json();
-  return contracts;
+const GET_CHARACTERS = gql`
+  query MyQuery($offset: Int) {
+    contracts(limit: 50, offset: $offset, order_by: { tx: desc }) {
+      address
+      admin
+      code_id
+      creator
+      fees
+      gas
+      label
+      tx
+    }
+    contracts_aggregate {
+      aggregate {
+        sum {
+          gas
+          fees
+          tx
+        }
+        count(columns: address)
+      }
+    }
+  }
+`;
+
+const useGetContracts = (offset) => {
+  const [dataContracts, setDataContracts] = useState([]);
+  const [dataAggregate, setDataAggregate] = useState(null);
+  const { loading, error, data } = useQuery(GET_CHARACTERS, {
+    variables: {
+      offset: offset * PAGE_SIZE,
+    },
+  });
+
+  if (error) {
+    console.log(`Error!`, `Error! ${error.message}`);
+  }
+
+  useEffect(() => {
+    if (data && data.contracts && data.contracts_aggregate) {
+      setDataContracts((items) => [...items, ...data.contracts]);
+      if (data.contracts_aggregate.aggregate) {
+        setDataAggregate(data.contracts_aggregate.aggregate);
+      }
+    }
+  }, [data]);
+
+  return { dataContracts, dataAggregate, loading };
 };
 
 function DashboardPage() {
-  const [contract, setContract] = useState(null);
-
-  const loadContracts = useCallback(async (offset) => {
-    try {
-      const contracts = await getContracts(PAGE_SIZE, offset);
-      setContract(contracts);
-    } catch {
-      setContract(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadContracts(0);
-  }, [loadContracts]);
-
-  // console.log(`contract`, contract);
+  const [offset, setOffset] = useState(0);
+  const { dataContracts, dataAggregate } = useGetContracts(offset);
 
   return (
     <main className="block-body">
@@ -40,40 +69,54 @@ function DashboardPage() {
           <CardStatisics
             title="Contracts"
             value={
-              contract !== null
-                ? formatNumber(contract.contracts_aggregate.aggregate.count)
-                : 0
+              dataAggregate !== null ? (
+                formatNumber(dataAggregate.count)
+              ) : (
+                <Dots />
+              )
             }
           />
           <CardStatisics
             title="Fees used"
             value={
-              contract !== null
-                ? formatNumber(contract.contracts_aggregate.aggregate.sum.fees)
-                : 0
+              dataAggregate !== null ? (
+                formatNumber(dataAggregate.sum.fees)
+              ) : (
+                <Dots />
+              )
             }
           />
           <CardStatisics
             title="Gas used"
             value={
-              contract !== null
-                ? formatNumber(contract.contracts_aggregate.aggregate.sum.gas)
-                : 0
+              dataAggregate !== null ? (
+                formatNumber(dataAggregate.sum.gas)
+              ) : (
+                <Dots />
+              )
             }
           />
           <CardStatisics
             title="Total txs"
             value={
-              contract !== null
-                ? formatNumber(contract.contracts_aggregate.aggregate.sum.tx)
-                : 0
+              dataAggregate !== null ? (
+                formatNumber(dataAggregate.sum.tx)
+              ) : (
+                <Dots />
+              )
             }
           />
         </ContainerCardStatisics>
 
-        <ContractTable
-          contracts={contract !== null ? contract.contracts : []}
-        />
+        {dataContracts.length === 0 ? (
+          <Dots />
+        ) : (
+          <ContractTable
+            contracts={dataContracts}
+            setOffset={setOffset}
+            count={dataAggregate !== null ? dataAggregate.count : 0}
+          />
+        )}
       </ContainerCol>
     </main>
   );

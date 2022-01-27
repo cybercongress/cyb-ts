@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { AppContext } from '../../../context';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinkTx, LinkCreator } from '../ui/ui';
 import {
   formatNumber,
   trimString,
   parseMsgContract,
 } from '../../../utils/utils';
+import { Dots } from '../../../components';
 
 function ExecuteTable({ executions }) {
   const [itemsToShow, setItemsToShow] = useState(40);
@@ -42,17 +43,36 @@ function ExecuteTable({ executions }) {
   });
 
   return (
-    <table style={{ width: '100%' }}>
-      <thead>
-        <tr>
-          <th scope="col">Height</th>
-          <th scope="col">Txs</th>
-          <th scope="col">Action</th>
-          <th scope="col">Sender</th>
-        </tr>
-      </thead>
-      <tbody>{itemTable}</tbody>
-    </table>
+    <InfiniteScroll
+      dataLength={Object.keys(displayedPalettes).length}
+      next={setNextDisplayedPalettes}
+      hasMore={itemsToShow < executions.length}
+      loader={
+        <h4>
+          Loading <Dots />
+        </h4>
+      }
+    >
+      <table style={{ width: '100%' }}>
+        <thead>
+          <tr>
+            <th scope="col">Height</th>
+            <th scope="col">Txs</th>
+            <th scope="col">Action</th>
+            <th scope="col">Sender</th>
+          </tr>
+        </thead>
+        <tbody>
+          {itemTable.length > 0 ? (
+            itemTable
+          ) : (
+            <h4>
+              Loading <Dots />
+            </h4>
+          )}
+        </tbody>
+      </table>
+    </InfiniteScroll>
   );
 }
 

@@ -1,32 +1,31 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinkCreator } from '../ui/ui';
-import { trimString } from '../../../utils/utils';
+import { NoItems, Dots } from '../../../components';
+import { trimString, formatNumber } from '../../../utils/utils';
 
-const ContractTable = ({ contracts }) => {
-  const [itemsToShow, setItemsToShow] = useState(40);
+const styleLable = {
+  textAlign: 'start',
+  maxWidth: '200px',
+  textOverflow: 'ellipsis',
+  overflowX: 'hidden',
+  whiteSpace: 'nowrap',
+};
 
+const ContractTable = ({ contracts, count, setOffset }) => {
   const setNextDisplayedPalettes = useCallback(() => {
     setTimeout(() => {
-      setItemsToShow(itemsToShow + 5);
+      setOffset((itemsState) => itemsState + 1);
     }, 250);
-  }, [itemsToShow, setItemsToShow]);
+  }, []);
 
-  const displayedPalettes = useMemo(() => contracts.slice(0, itemsToShow), [
-    itemsToShow,
-    contracts,
-  ]);
-
-  const itemTable = displayedPalettes.map((item) => {
+  const itemTable = contracts.map((item) => {
     const { address, fees, gas, label, creator, tx } = item;
     return (
       <tr style={{ textAlign: 'center' }} key={address}>
         <td>
-          <div
-            className="name-column"
-            style={{ textAlign: 'start' }}
-            title={label}
-          >
+          <div className="name-column" style={styleLable} title={label}>
             {label}
           </div>
         </td>
@@ -38,33 +37,50 @@ const ContractTable = ({ contracts }) => {
             {trimString(creator, 10, 8)}
           </LinkCreator>
         </td>
-        <td>{tx}</td>
-        <td>{gas}</td>
-        <td>{fees}</td>
+        <td style={{ textAlign: 'end' }}>{formatNumber(tx)}</td>
+        <td style={{ textAlign: 'end' }}>{formatNumber(gas)}</td>
+        <td style={{ textAlign: 'end' }}>{formatNumber(fees)}</td>
       </tr>
     );
   });
 
   return (
-    <table
-      style={{
-        borderSpacing: '5px 16px',
-        borderCollapse: 'separate',
-      }}
-      className="table"
+    <InfiniteScroll
+      dataLength={contracts.length}
+      next={setNextDisplayedPalettes}
+      hasMore={count > contracts.length}
+      loader={
+        <h4>
+          Loading
+          <Dots />
+        </h4>
+      }
     >
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Address</th>
-          <th scope="col">Owner</th>
-          <th scope="col">Txs</th>
-          <th scope="col">Gas</th>
-          <th scope="col">Fees</th>
-        </tr>
-      </thead>
-      <tbody>{itemTable}</tbody>
-    </table>
+      {contracts.length > 0 ? (
+        <table
+          style={{
+            borderSpacing: '5px 16px',
+            borderCollapse: 'separate',
+          }}
+          className="table"
+        >
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Address</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Txs</th>
+              <th scope="col">Gas</th>
+              <th scope="col">Fees</th>
+            </tr>
+          </thead>
+
+          <tbody>{itemTable}</tbody>
+        </table>
+      ) : (
+        <NoItems text="No cyberLinks" />
+      )}
+    </InfiniteScroll>
   );
 };
 
