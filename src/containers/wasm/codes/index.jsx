@@ -19,7 +19,7 @@ function Codes({ defaultAccount }) {
         if (jsCyber !== null) {
           const resposeCodes = await jsCyber.getCodes();
           if (resposeCodes && resposeCodes.length > 0) {
-            setCodes(resposeCodes);
+            setCodes(resposeCodes.reverse());
           }
         }
       } catch (error) {
