@@ -71,7 +71,7 @@ const ContractTable = ({ contracts, count, setOffset }) => {
               <th scope="col">Owner</th>
               <th scope="col">Txs</th>
               <th scope="col">Gas</th>
-              <th scope="col">Fees</th>
+              <th scope="col">Income</th>
             </tr>
           </thead>
 

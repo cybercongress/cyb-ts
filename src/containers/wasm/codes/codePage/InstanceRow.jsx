@@ -15,6 +15,14 @@ const tags = (address) => [
   },
 ];
 
+const styleLable = {
+  textAlign: 'start',
+  maxWidth: '200px',
+  textOverflow: 'ellipsis',
+  overflowX: 'hidden',
+  whiteSpace: 'nowrap',
+};
+
 function InstanceRow({ position, address }) {
   const { jsCyber } = useContext(AppContext);
   const [executionCount, setExecutionCount] = useState(0);
@@ -51,17 +59,19 @@ function InstanceRow({ position, address }) {
       {Object.keys(contract).length > 0 && (
         <tr style={{ textAlign: 'center' }}>
           <th scope="row">{position}</th>
-          <td>{contract.label}</td>
+          <td>
+            <div style={styleLable}>{contract.label}</div>
+          </td>
           <td>
             <Link to={`/contracts/${contract.address}`}>
-              {trimString(contract.address, 10)}
+              {trimString(contract.address, 10, 6)}
             </Link>
           </td>
           <td>
             <Account address={contract.creator} />
           </td>
           <td>{contract.admin ? contract.admin : '-'}</td>
-          <td>{executionCount}</td>
+          <td style={{ textAlign: 'end' }}>{executionCount}</td>
         </tr>
       )}
     </>

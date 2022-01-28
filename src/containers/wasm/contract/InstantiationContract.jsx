@@ -4,7 +4,7 @@ import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';
 import { AppContext } from '../../../context';
-import { jsonInputStyle } from '../ui/ui';
+import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 import styles from './stylesInstantiationContract.scss';
@@ -68,10 +68,12 @@ function InstantiationContract({ codeId, updateFnc }) {
       content = <div style={{ fontSize: '18px' }}>You must add a label</div>;
     } else {
       content = (
-        <SelectFile
-          text="Upload instantiate schema"
-          useStateCallback={setFileAbiExecute}
-        />
+        <div>
+          <SelectFile
+            text="Upload instantiate schema"
+            useStateCallback={setFileAbiExecute}
+          />
+        </div>
       );
     }
   } else {
@@ -106,8 +108,9 @@ function InstantiationContract({ codeId, updateFnc }) {
           />
         </div>
       </div>
-
-      {content}
+      <FlexWrapCantainer style={{ flexDirection: 'column' }}>
+        {content}
+      </FlexWrapCantainer>
 
       {error !== null && (
         <div>

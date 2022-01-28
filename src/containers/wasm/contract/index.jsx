@@ -161,7 +161,9 @@ function ContractPage() {
 
   return (
     <main className="block-body">
-      <FlexWrapCantainer>
+      <FlexWrapCantainer
+        style={{ flexDirection: 'column', width: '60%', boxShadow: 'none' }}
+      >
         <div className={styles.containerContractPageContainerTitle}>
           <div className={styles.containerContractPageContainerTitleTitle}>
             Contract {trimString(contractAddress, 12)}
@@ -170,25 +172,25 @@ function ContractPage() {
             Balance: {balance.amount} {balance.denom}
           </div>
         </div>
-        <div>
-          <InitializationInfo
-            initTxHash={instantiationTxHash}
-            details={details}
-          />
-          <HistoryInfo contractCodeHistory={contractCodeHistory} />
 
-          <QueryContract contractAddress={contractAddress} />
+        <InitializationInfo
+          initTxHash={instantiationTxHash}
+          details={details}
+        />
+        <HistoryInfo contractCodeHistory={contractCodeHistory} />
 
-          <ExecuteContract contractAddress={contractAddress} />
-        </div>
+        <QueryContract contractAddress={contractAddress} />
+
+        <ExecuteContract contractAddress={contractAddress} />
       </FlexWrapCantainer>
-      <FlexWrapCantainer>
+
+      <FlexWrapCantainer style={{ width: '60%' }}>
         <RenderAbi
           contractAddress={contractAddress}
           updateFnc={() => setUpdateFnc((item) => item + 1)}
         />
       </FlexWrapCantainer>
-      <CardCantainer>
+      <CardCantainer style={{ width: '60%', margin: '0 auto' }}>
         <ExecuteTable executions={executions} />
       </CardCantainer>
     </main>

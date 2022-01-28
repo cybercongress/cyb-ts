@@ -15,9 +15,12 @@
   }
 
   &Header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     &Title {
       font-size: 20px;
-      margin-bottom: 20px;
     }
 
     &FileInfo {

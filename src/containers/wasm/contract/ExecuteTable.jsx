@@ -29,13 +29,13 @@ function ExecuteTable({ executions }) {
         <td>{formatNumber(item.height)}</td>
         <td>
           <LinkTx txs={item.transactionId}>
-            {trimString(item.transactionId, 8, 8)}
+            {trimString(item.transactionId, 3, 3)}
           </LinkTx>
         </td>
         <td>{Object.keys(parseMsgContract(item.msg.msg))[0]}</td>
         <td>
           <LinkCreator address={item.msg.sender}>
-            {trimString(item.msg.sender, 10)}
+            {trimString(item.msg.sender, 10, 4)}
           </LinkCreator>
         </td>
       </tr>

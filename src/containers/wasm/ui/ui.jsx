@@ -22,12 +22,14 @@ const jsonInputStyle = {
   warningBox: { order: '2' },
 };
 
-const FlexWrapCantainer = ({ children }) => (
-  <div className={styles.containerFlexWrapCantainer}>{children}</div>
+const FlexWrapCantainer = ({ children, ...props }) => (
+  <div {...props} className={styles.containerFlexWrapCantainer}>
+    {children}
+  </div>
 );
 
-const CardCantainer = ({ children }) => (
-  <div className={styles.containerCardCantainer}>{children}</div>
+const CardCantainer = ({ children, ...props }) => (
+  <div {...props} className={styles.containerCardCantainer}>{children}</div>
 );
 
 const LinkTx = ({ children, txs }) => (

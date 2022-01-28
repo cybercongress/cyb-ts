@@ -6,6 +6,7 @@ import InstantiationContract from '../../contract/InstantiationContract';
 import CodeInfo from './CodeInfo';
 import TableInstance from './TableInstance';
 import styles from './styles.scss';
+import { FlexWrapCantainer, a } from '../../ui/ui';
 
 const initDetails = {
   checksum: '',
@@ -73,7 +74,9 @@ function CodePage() {
 
   return (
     <main className="block-body">
-      <div className={styles.containerCodeDetails}>
+      <FlexWrapCantainer
+        style={{ flexDirection: 'column', width: '60%', boxShadow: 'none' }}
+      >
         <div className={styles.containerCodeDetailsHeader}>
           <div className={styles.containerCodeDetailsHeaderTitle}>
             Code #{codeId}
@@ -90,14 +93,13 @@ function CodePage() {
             </div>
           </div>
         </div>
-        <div>
-          <CodeInfo uploadTxHash={uploadTxHash} details={details} />
-          <InstantiationContract
-            updateFnc={() => setUpdateFnc((item) => item + 1)}
-            codeId={codeId}
-          />
-        </div>
-      </div>
+        <CodeInfo uploadTxHash={uploadTxHash} details={details} />
+        <InstantiationContract
+          updateFnc={() => setUpdateFnc((item) => item + 1)}
+          codeId={codeId}
+        />
+      </FlexWrapCantainer>
+
       <TableInstance contracts={contracts} />
     </main>
   );

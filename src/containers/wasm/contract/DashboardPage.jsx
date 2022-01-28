@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { formatNumber } from '../../../utils/utils';
 import { CardStatisics, Dots } from '../../../components';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
+import { CYBER } from '../../../utils/config';
+import { AppContext } from '../../../context';
 
 const PAGE_SIZE = 50;
 
@@ -58,9 +61,36 @@ const useGetContracts = (offset) => {
   return { dataContracts, dataAggregate, loading };
 };
 
+const useGetCodes = () => {
+  const { jsCyber } = useContext(AppContext);
+  const [codes, setCodes] = useState(null);
+
+  useEffect(() => {
+    const getCodes = async () => {
+      try {
+        if (jsCyber !== null) {
+          const resposeCodes = await jsCyber.getCodes();
+          if (resposeCodes && resposeCodes.length > 0) {
+            setCodes(resposeCodes.length);
+          } else {
+            setCodes(0);
+          }
+        }
+      } catch (error) {
+        console.log(`error getCodes`, error);
+        setCodes(0);
+      }
+    };
+    getCodes();
+  }, [jsCyber]);
+
+  return { codes };
+};
+
 function DashboardPage() {
   const [offset, setOffset] = useState(0);
   const { dataContracts, dataAggregate } = useGetContracts(offset);
+  const { codes } = useGetCodes();
 
   return (
     <main className="block-body">
@@ -77,7 +107,7 @@ function DashboardPage() {
             }
           />
           <CardStatisics
-            title="Fees used"
+            title={`Contracts Income, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={
               dataAggregate !== null ? (
                 formatNumber(dataAggregate.sum.fees)
@@ -106,6 +136,13 @@ function DashboardPage() {
               )
             }
           />
+          {/* <Link to="/codes">
+            <CardStatisics
+              title="Codes"
+              value={codes !== null ? formatNumber(codes) : <Dots />}
+              link
+            />
+          </Link> */}
         </ContainerCardStatisics>
 
         {dataContracts.length === 0 ? (
