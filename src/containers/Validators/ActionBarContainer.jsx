@@ -506,7 +506,9 @@ class ActionBarContainer extends Component {
       unStake,
       mobile,
       validatorsAll,
-      keplr,
+      balance: balanceInfo,
+      loadingBalanceInfo,
+      balanceToken,
     } = this.props;
 
     const {

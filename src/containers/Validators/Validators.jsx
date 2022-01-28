@@ -4,48 +4,49 @@ import { useLocation } from 'react-router-dom';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import { TableHeroes, TableItem, TextBoard, TabBtnList } from './components';
+import {
+  TableHeroes,
+  TableItem,
+  TextBoard,
+  TabBtnList,
+  InfoBalance,
+} from './components';
 import { AppContext } from '../../context';
 import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
+import { useGetBalance } from '../account/hooks';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 function Validators({ mobile, defaultAccount }) {
   const location = useLocation();
   const { jsCyber } = useContext(AppContext);
+  const [updatePage, setUpdatePage] = useState(0);
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
+    addressActive,
+    updatePage
+  );
   const { validators, countHeroes, loadingValidators } = getHeroes();
   const [loadingSelf, setLoadingSelf] = useState(true);
   const [loadingBond, setLoadingBond] = useState(true);
   const [bondedTokens, setBondedTokens] = useState(0);
   const [validatorSelect, setValidatorSelect] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState('');
-  const [addressPocket, setAddressPocket] = useState(null);
   const [selected, setSelected] = useState('active');
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
   const [validatorsData, setValidatorsData] = useState([]);
-  const [updatePage, setUpdatePage] = useState(0);
 
   useEffect(() => {
     setValidatorsData(validators);
   }, [validators]);
 
   useEffect(() => {
-    const { account } = defaultAccount;
-    let addressActive = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
-      const { keys, bech32 } = account.cyber;
-      addressActive = {
-        bech32,
-        keys,
-      };
+    if (addressActive !== null) {
+      setLoadingBond(true);
+      setLoadingSelf(true);
     }
-    setLoadingBond(true);
-    setLoadingSelf(true);
-    setAddressPocket(addressActive);
-  }, [defaultAccount.name]);
+  }, [addressActive]);
 
   useEffect(() => {
     const { pathname } = location;
@@ -73,9 +74,9 @@ function Validators({ mobile, defaultAccount }) {
     try {
       const feachDelegatorDelegations = async () => {
         let delegationsDataTemp = [];
-        if (addressPocket !== null && jsCyber !== null) {
+        if (addressActive !== null && jsCyber !== null) {
           const responseDelegatorDelegations = await jsCyber.delegatorDelegations(
-            addressPocket.bech32
+            addressActive.bech32
           );
           delegationsDataTemp =
             responseDelegatorDelegations.delegationResponses;
@@ -87,7 +88,7 @@ function Validators({ mobile, defaultAccount }) {
       console.log(`e`, e);
       setDelegationsData([]);
     }
-  }, [addressPocket, jsCyber, updatePage]);
+  }, [addressActive, jsCyber, updatePage]);
 
   useEffect(() => {
     if (validators.length > 0 && delegationsData.length > 0) {
@@ -191,7 +192,11 @@ function Validators({ mobile, defaultAccount }) {
     <div>
       <main className="block-body" style={{ paddingTop: 0 }}>
         {/* <TabBtnList selected={selected} countHeroes={countHeroes} /> */}
-
+        <InfoBalance
+          balance={balance}
+          loadingBalanceInfo={loadingBalanceInfo}
+          balanceToken={balanceToken}
+        />
         <TableHeroes mobile={mobile} showJailed={selected === 'jailed'}>
           {validatorsData
             .filter((validator) =>
@@ -230,9 +235,12 @@ function Validators({ mobile, defaultAccount }) {
         updateTable={() => setUpdatePage(updatePage + 1)}
         validators={validatorSelect}
         validatorsAll={validatorsData}
-        addressPocket={addressPocket}
+        addressPocket={addressActive}
         unStake={unStake}
         mobile={mobile}
+        balance={balance}
+        loadingBalanceInfo={loadingBalanceInfo}
+        balanceToken={balanceToken}
       />
     </div>
   );
