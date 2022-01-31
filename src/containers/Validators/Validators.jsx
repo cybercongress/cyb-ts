@@ -39,7 +39,13 @@ function Validators({ mobile, defaultAccount }) {
 
   useEffect(() => {
     setValidatorsData(validators);
+    setSelectedIndex('');
   }, [validators]);
+
+  const updateFnc = () => {
+    setUpdatePage((item) => item + 1);
+    setValidatorSelect([]);
+  };
 
   useEffect(() => {
     if (addressActive !== null) {
@@ -121,19 +127,23 @@ function Validators({ mobile, defaultAccount }) {
               validatorsData[item].operatorAddress
             );
             let shares = 0;
-            const getSelfDelegation = await jsCyber.delegation(
-              delegatorAddress,
-              validatorsData[item].operatorAddress
-            );
-            const { delegationResponse } = getSelfDelegation;
-            if (
-              delegationResponse.balance.amount &&
-              validatorsData[item].delegatorShares > 0
-            ) {
-              const selfShares = delegationResponse.balance.amount;
-              const delegatorShares =
-                validatorsData[item].delegatorShares * 10 ** -18;
-              shares = (selfShares / delegatorShares) * 100;
+            try {
+              const getSelfDelegation = await jsCyber.delegation(
+                delegatorAddress,
+                validatorsData[item].operatorAddress
+              );
+              const { delegationResponse } = getSelfDelegation;
+              if (
+                delegationResponse.balance.amount &&
+                validatorsData[item].delegatorShares > 0
+              ) {
+                const selfShares = delegationResponse.balance.amount;
+                const delegatorShares =
+                  validatorsData[item].delegatorShares * 10 ** -18;
+                shares = (selfShares / delegatorShares) * 100;
+              }
+            } catch (error) {
+              shares = 0;
             }
             validatorsData[item].shares = formatNumber(
               Math.floor(shares * 100) / 100,
@@ -232,7 +242,7 @@ function Validators({ mobile, defaultAccount }) {
         </TableHeroes>
       </main>
       <ActionBarContainer
-        updateTable={() => setUpdatePage(updatePage + 1)}
+        updateFnc={updateFnc}
         validators={validatorSelect}
         validatorsAll={validatorsData}
         addressPocket={addressActive}

@@ -12,7 +12,7 @@ const ContainerGrid = ({ children }) => (
     marginTop={10}
     marginBottom={50}
     display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+    gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))"
     gridGap="20px"
   >
     {children}
@@ -59,6 +59,17 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
           link
         />
       </Link>
+
+      <CardStatisics
+        title={`${DENOM_CYBER.toUpperCase()} rewards`}
+        value={
+          loadingBalanceInfo ? (
+            <Dots />
+          ) : (
+            formatNumber(balance.rewards ? balance.rewards : 0)
+          )
+        }
+      />
     </ContainerGrid>
   );
 }
