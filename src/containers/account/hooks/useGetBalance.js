@@ -35,7 +35,10 @@ function useGetBalance(address, updateAddress) {
   const [loadingBalanceToken, setLoadingBalanceToken] = useState(true);
   const [balance, setBalance] = useState(initValue);
   const [balanceToken, setBalanceToken] = useState(initValueToken);
-  const { vested, originalVesting } = useGetSlots(addressActive, updateAddress);
+  const { vested, originalVesting, loadingAuthAccounts } = useGetSlots(
+    addressActive,
+    updateAddress
+  );
 
   useEffect(() => {
     if (address !== null) {
@@ -168,7 +171,7 @@ function useGetBalance(address, updateAddress) {
         tocyb: 0,
       };
 
-      if (jsCyber !== null && addressActive !== null) {
+      if (jsCyber !== null && addressActive !== null && !loadingAuthAccounts) {
         setBalanceToken(initValueToken);
         setLoadingBalanceToken(true);
         const getAllBalancesPromise = await jsCyber.getAllBalances(
@@ -214,7 +217,7 @@ function useGetBalance(address, updateAddress) {
       setLoadingBalanceToken(false);
     };
     getBalance();
-  }, [jsCyber, addressActive, vested, originalVesting]);
+  }, [jsCyber, addressActive, vested, originalVesting, loadingAuthAccounts]);
 
   const getCalculationBalance = (data) => {
     const balances = {};

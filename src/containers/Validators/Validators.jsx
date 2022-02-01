@@ -36,6 +36,7 @@ function Validators({ mobile, defaultAccount }) {
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
   const [validatorsData, setValidatorsData] = useState([]);
+  // console.log('balanceToken', balanceToken);
 
   useEffect(() => {
     setValidatorsData(validators);
