@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { coins, coin } from '@cosmjs/launchpad';
 import { useHistory } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import {
   JsonTransaction,
   ConnectLadger,
@@ -350,6 +351,28 @@ function ActionBarContainer({
 
   const validRestakeBtn = parseFloat(amount) > 0 && valueSelect.length > 0;
 
+  const validRewards = useMemo(() => {
+    if (
+      balance.delegation &&
+      balance.delegation !== 0 &&
+      balance.rewards &&
+      balance.rewards !== 0
+    ) {
+      const delegation = new BigNumber(balance.delegation);
+      const rewards = new BigNumber(balance.rewards);
+      const procentRewards = rewards
+        .div(delegation)
+        .multipliedBy(100)
+        .toNumber();
+
+      if (procentRewards > 0.01) {
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }, [balance]);
+
   // addressPocket empty
   if (
     Object.keys(validators).length === 0 &&
@@ -426,7 +449,7 @@ function ActionBarContainer({
             {balanceToken.hydrogen.liquid === 0 &&
               balance.available !== 0 &&
               'Choose hero to get H'}
-            {balance.rewards && balance.rewards !== 0 && (
+            {validRewards && (
               <Pane marginLeft={15}>
                 or
                 <button

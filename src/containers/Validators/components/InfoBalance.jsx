@@ -7,6 +7,12 @@ import { CYBER } from '../../../utils/config';
 
 const { DENOM_CYBER, HYDROGEN } = CYBER;
 
+const TootipContent = () => (
+  <div style={{ padding: '5px' }}>
+    you receive H form staked BOOT, you can use H for investmint A and V
+  </div>
+);
+
 const ContainerGrid = ({ children }) => (
   <Pane
     marginTop={10}
@@ -56,7 +62,9 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
               )
             )
           }
-          link
+          tooltipValue={<TootipContent />}
+          positionTooltip="bottom"
+          styleTitle={{ alignItems: 'center' }}
         />
       </Link>
 
