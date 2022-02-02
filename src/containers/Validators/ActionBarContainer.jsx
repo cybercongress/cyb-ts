@@ -407,7 +407,6 @@ function ActionBarContainer({
           <Pane fontSize="18px" display="flex" alignItems="center">
             {balanceToken.hydrogen && balanceToken.hydrogen.liquid !== 0 && (
               <Pane>
-                Investmin yor free H to get A and V
                 <button
                   type="button"
                   className="btn-disabled"
@@ -416,11 +415,12 @@ function ActionBarContainer({
                     height: 42,
                     maxWidth: '200px',
                     padding: '0 20px',
-                    marginLeft: '15px',
+                    marginRight: '15px',
                   }}
                 >
                   Investmint
                 </button>
+                yor free H to get A and V
               </Pane>
             )}
             {balanceToken.hydrogen.liquid === 0 &&
