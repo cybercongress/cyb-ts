@@ -28,7 +28,7 @@ const getTypeContent = async (dataCid) => {
 
 function useGetDenom(denomValue, nodeIpfs) {
   const { jsCyber } = useContext(AppContext);
-  const [denom, setDenom] = useState(denomValue);
+  const [denom, setDenom] = useState('');
   const [cid, setCid] = useState(null);
   const [type, setType] = useState('');
 
@@ -46,6 +46,7 @@ function useGetDenom(denomValue, nodeIpfs) {
   useEffect(() => {
     const search = async () => {
       setDenom(denomValue);
+      setCid(null);
       if (
         (jsCyber !== null && denomValue.includes('pool')) ||
         denomValue.includes('ibc')
@@ -54,12 +55,7 @@ function useGetDenom(denomValue, nodeIpfs) {
         console.log(`response`, response);
         if (response.result) {
           setCid(response.result[0].particle);
-        } else {
-          setDenom(denomValue);
         }
-      } else {
-        setDenom(denomValue);
-        setCid(null);
       }
     };
     search();
@@ -114,6 +110,11 @@ function useGetDenom(denomValue, nodeIpfs) {
       }
     };
     feachData();
+
+    return () => {
+      setDenom(denomValue);
+      setCid(null);
+    };
   }, [nodeIpfs, cid, denomValue]);
 
   return { denom, type };

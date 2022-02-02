@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { ValueImg, NoItems } from '../../components';
+import { Denom, NoItems } from '../../components';
 import { PoolItemsList } from './components';
 import { formatNumber } from '../../utils/utils';
 
@@ -42,11 +42,11 @@ const PoolInfo = ({ pool, accountBalances, totalSupply }) => {
     >
       <Pane display="flex" alignItems="center" marginBottom={10}>
         {pool.reserve_coin_denoms.map((items) => (
-          <ValueImg text={items} onlyImg />
+          <Denom denomValue={items} onlyImg />
         ))}
         <Pane marginLeft={10} fontSize="18px">
-          <ValueImg text={pool.reserve_coin_denoms[0]} onlyText /> -{' '}
-          <ValueImg text={pool.reserve_coin_denoms[1]} onlyText />
+          <Denom denomValue={pool.reserve_coin_denoms[0]} onlyText /> -{' '}
+          <Denom denomValue={pool.reserve_coin_denoms[1]} onlyText />
         </Pane>
       </Pane>
       {pool.reserve_coin_denoms.map((items) => (

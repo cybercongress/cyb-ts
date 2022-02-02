@@ -4,7 +4,7 @@ import BalanceToken from './balanceToken';
 import Select, { OptionSelect } from './select';
 import Input from './input';
 import { reduceTextCoin } from '../utils';
-import { ValueImg } from '../../../components';
+import { Denom } from '../../../components';
 
 const renderOptions = (data, selected, valueSelect) => {
   let items = {};
@@ -23,8 +23,8 @@ const renderOptions = (data, selected, valueSelect) => {
             <OptionSelect
               key={key}
               value={key}
-              text={reduceTextCoin(key)}
-              img={<ValueImg text={key} onlyImg />}
+              text={<Denom denomValue={key} onlyText />}
+              img={<Denom justifyContent="center" denomValue={key} onlyImg />}
             />
           ))}
       </>
@@ -45,6 +45,7 @@ function TokenSetter({
   id,
   textLeft,
 }) {
+  console.log(`token`, token);
   return (
     <Pane>
       <BalanceToken data={accountBalances} token={token} />

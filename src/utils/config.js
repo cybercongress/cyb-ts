@@ -68,6 +68,7 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'boot',
   DENOM_CYBER_G: `GBOOT`,
+  HYDROGEN: 'H',
   // CHAIN_ID: 'dev',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',

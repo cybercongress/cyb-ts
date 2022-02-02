@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CardStatisics, LinkWindow, NoItems, ValueImg } from '../../components';
+import { CardStatisics, LinkWindow, NoItems, Denom } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import { PoolItemsList } from './components';
 
@@ -49,11 +49,13 @@ const styleTitleContainer = {
 };
 
 const styleContainerImg = {
+  display: 'flex',
   padding: '5px',
   marginRight: '20px',
 };
 
 const styleTitleDenomContainer = {
+  display: 'flex',
   fontWeight: '600',
   color: '#ffffffb3',
 };
@@ -105,15 +107,15 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
     <div style={styleContainer}>
       <div style={styleTitleContainer}>
         <div style={styleContainerImg}>
-          <ValueImg
+          <Denom
             size={30}
-            text={pool.reserve_coin_denoms[0]}
+            denomValue={pool.reserve_coin_denoms[0]}
             onlyImg
             zIndexImg={1}
           />
-          <ValueImg
+          <Denom
             size={30}
-            text={pool.reserve_coin_denoms[1]}
+            denomValue={pool.reserve_coin_denoms[1]}
             onlyImg
             marginContainer="0px 0px 0px -8px"
           />
@@ -123,8 +125,8 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
             Pool #{pool.id}
           </div>
           <div style={styleTitleDenomContainer}>
-            <ValueImg text={pool.pool_coin_denom[0]} onlyText />/
-            <ValueImg text={pool.pool_coin_denom[1]} onlyText />
+            <Denom denomValue={pool.reserve_coin_denoms[0]} onlyText />/
+            <Denom denomValue={pool.reserve_coin_denoms[1]} onlyText />
           </div>
         </div>
       </div>

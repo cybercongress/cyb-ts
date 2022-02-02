@@ -117,10 +117,10 @@ function getBalances(addressActive, updateAddress) {
         if (Object.hasOwnProperty.call(vestedAmount, key)) {
           const elementVestedAmount = vestedAmount[key];
           if (Object.hasOwnProperty.call(liquid, key)) {
-            let liquidAmount = liquid[key] - elementVestedAmount;
-            if (key === 'millivolt' || key === 'milliampere') {
-              liquidAmount = convertResources(liquidAmount);
-            }
+            const liquidAmount = liquid[key] - elementVestedAmount;
+            // if (key === 'millivolt' || key === 'milliampere') {
+            //   liquidAmount = liquidAmount;
+            // }
             liquid[key] = liquidAmount > 0 ? liquidAmount : 0;
           }
         }
