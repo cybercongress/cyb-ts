@@ -7,6 +7,29 @@ import { ButtonIcon } from './components/slider';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
+// return (
+//   <>
+//     <div style={{ display: 'flex' }}>
+//       1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> =
+//       <div style={{ whiteSpace: 'nowrap' }}>
+//         {price % 10 > 0
+//           ? formatNumber(Math.floor(price))
+//           : exponentialToDecimal(price.toPrecision(3))}
+//       </div>
+//       <Denom denomValue={tokenB} />
+//     </div>
+//     <div style={{ display: 'flex' }}>
+//       1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} /> =
+//       <div style={{ whiteSpace: 'nowrap' }}>
+//         {reversePrice % 10 > 0
+//           ? formatNumber(Math.floor(reversePrice))
+//           : exponentialToDecimal(reversePrice.toPrecision(3))}
+//       </div>
+//       <Denom denomValue={tokenA} />
+//     </div>
+//   </>
+// );
+
 function Swap({ stateSwap, swap }) {
   const {
     accountBalances,
@@ -40,28 +63,7 @@ function Swap({ stateSwap, swap }) {
         reversePrice = orderPrice;
         price = 1 / orderPrice;
       }
-      return (
-        <>
-          <div style={{ display: 'flex' }}>
-            1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> =
-            <div style={{ whiteSpace: 'nowrap' }}>
-              {price % 10 > 0
-                ? formatNumber(Math.floor(price))
-                : exponentialToDecimal(price.toPrecision(3))}
-            </div>
-            <Denom denomValue={tokenB} />
-          </div>
-          <div style={{ display: 'flex' }}>
-            1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} /> =
-            <div style={{ whiteSpace: 'nowrap' }}>
-              {reversePrice % 10 > 0
-                ? formatNumber(Math.floor(reversePrice))
-                : exponentialToDecimal(reversePrice.toPrecision(3))}
-            </div>
-            <Denom denomValue={tokenA} />
-          </div>
-        </>
-      );
+      // console.log('price', price);
     }
     return <span> </span>;
   }, [tokenAPoolAmount, tokenBPoolAmount, tokenA, tokenB]);
@@ -130,6 +132,7 @@ function Swap({ stateSwap, swap }) {
         onChangeInput={amountChangeHandler}
         valueInput={tokenBAmount}
         textLeft={swap ? 'Buy' : ''}
+        readonly="readonly"
       />
       <Pane
         display="flex"

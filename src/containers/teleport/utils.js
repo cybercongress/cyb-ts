@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { formatNumber, convertResources } from '../../utils/utils';
 import coinDecimalsIbc from './configToken';
 
@@ -26,47 +27,31 @@ export function getMyTokenBalance(token, indexer) {
 export function calculateCounterPairAmount(e, state, type) {
   const inputAmount = e.target.value;
 
-  let price = null;
+  const price = null;
   let counterPairAmount = 0;
-  let counterPair = '';
+  const counterPair = '';
 
   if (state.tokenAPoolAmount > 0 && state.tokenBPoolAmount > 0) {
-    if (type === 'swap') {
-      const swapFeeRatio = 0.9985; // ultimaetly get params
-      let swapPrice = null;
-
-      if (e.target.id === 'tokenAAmount') {
-        swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
-
-        counterPairAmount = Math.floor(
-          (inputAmount / swapPrice) * swapFeeRatio
-        );
-
-        console.log('From');
-        console.log('swapPrice', swapPrice);
-        console.log('counterPairAmount', counterPairAmount);
-      } else {
-        swapPrice = state.tokenBPoolAmount / state.tokenAPoolAmount;
-        counterPairAmount = Math.floor(inputAmount / swapFeeRatio / swapPrice);
-
-        console.log('To');
-        console.log('swapPrice', swapPrice);
-        console.log('counterPairAmount', counterPairAmount);
-      }
-
-      price = 1 / swapPrice;
+    const { tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount } = state;
+    const poolAmountA = new BigNumber(Number(tokenAPoolAmount));
+    const poolAmountB = new BigNumber(Number(tokenBPoolAmount));
+    let swapPrice = null;
+    if ([tokenA, tokenB].sort()[0] === tokenA) {
+      swapPrice = poolAmountB.dividedBy(poolAmountA).toNumber();
     } else {
-      if (e.target.id === 'tokenAAmount') {
-        price = state.tokenBPoolAmount / state.tokenAPoolAmount;
-        counterPair = 'tokenBAmount';
-        counterPairAmount = inputAmount * price;
-      } else {
-        price = state.tokenAPoolAmount / state.tokenBPoolAmount;
-        counterPair = 'tokenAAmount';
-        counterPairAmount = inputAmount * price;
-      }
-      counterPairAmount = Math.floor(counterPairAmount);
+      swapPrice = poolAmountB.dividedBy(poolAmountA).toNumber();
     }
+    counterPairAmount = Math.floor(inputAmount * swapPrice);
+
+    // const swapFeeRatio = 0.9985; // ultimaetly get params
+
+    // swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
+
+    // counterPairAmount = Math.floor((inputAmount / swapPrice) * swapFeeRatio);
+
+    console.log('From');
+    console.log('swapPrice', swapPrice);
+    console.log('counterPairAmount', counterPairAmount);
   }
 
   return {

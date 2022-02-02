@@ -1,39 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { AppContext } from '../../context';
-import { searchClient } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
-import db from '../../db';
 import ValueImg from '../valueImg';
+import coinDecimalsIbc from '../../utils/configToken';
 
-const FileType = require('file-type');
-const all = require('it-all');
-const uint8ArrayConcat = require('uint8arrays/concat');
-const uint8ArrayToAsciiString = require('uint8arrays/to-string');
-
-const testDenom =
-  'pool5D83035BE0E7AB904379161D3C52FB4C1C392265AC19CE39A864146198610628';
-
-const getTypeContent = async (dataCid) => {
-  let response = '';
-  const dataFileType = await FileType.fromBuffer(dataCid);
-  if (dataFileType === undefined) {
-    const dataBase64 = uint8ArrayToAsciiString(dataCid);
-    if (dataBase64.length < 40) {
-      response = dataBase64;
-    }
-  }
-  return response;
-};
-
-function useGetDenom(denomValue, nodeIpfs) {
-  const { jsCyber } = useContext(AppContext);
+function useGetDenom(denomValue) {
   const [denom, setDenom] = useState('');
-  const [cid, setCid] = useState(null);
   const [type, setType] = useState('');
 
   useEffect(() => {
-    setType('');
     if (denomValue.includes('ibc')) {
       setType('ibc');
     } else if (denomValue.includes('pool')) {
@@ -44,85 +18,19 @@ function useGetDenom(denomValue, nodeIpfs) {
   }, [denomValue]);
 
   useEffect(() => {
-    const search = async () => {
+    if (Object.hasOwnProperty.call(coinDecimalsIbc, denomValue)) {
+      setDenom(coinDecimalsIbc[denomValue].denom);
+    } else {
       setDenom(denomValue);
-      setCid(null);
-      if (
-        (jsCyber !== null && denomValue.includes('pool')) ||
-        denomValue.includes('ibc')
-      ) {
-        const response = await searchClient(jsCyber, denomValue, 0);
-        console.log(`response`, response);
-        if (response.result) {
-          setCid(response.result[0].particle);
-        }
-      }
-    };
-    search();
-  }, [jsCyber, denomValue]);
-
-  useEffect(() => {
-    const feachData = async () => {
-      if (cid !== null) {
-        const dataIndexdDb = await db.table('cid').get({ cid });
-        if (dataIndexdDb !== undefined && dataIndexdDb.content) {
-          const contentCidDB = Buffer.from(dataIndexdDb.content);
-          const dataTypeContent = await getTypeContent(contentCidDB);
-          if (dataTypeContent.length > 0) {
-            setDenom(dataTypeContent);
-          } else {
-            setDenom(denomValue);
-          }
-        } else if (nodeIpfs !== null) {
-          const responseDag = await nodeIpfs.dag.get(cid, {
-            localResolve: false,
-          });
-          const meta = {
-            type: 'file',
-            size: 0,
-            blockSizes: [],
-            data: '',
-          };
-          meta.size = responseDag.value.size;
-
-          if (responseDag.value.size < 1.5 * 10 ** 6) {
-            nodeIpfs.pin.add(cid);
-            const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
-            meta.data = responseCat;
-            const ipfsContentAddtToInddexdDB = {
-              cid,
-              content: responseCat,
-              meta,
-            };
-            db.table('cid')
-              .add(ipfsContentAddtToInddexdDB)
-              .then((id) => {
-                console.log('item :>> ', id);
-              });
-            const dataTypeContent = await getTypeContent(responseCat);
-            if (dataTypeContent.length > 0) {
-              setDenom(dataTypeContent);
-            } else {
-              setDenom(denomValue);
-            }
-          }
-        }
-      }
-    };
-    feachData();
-
-    return () => {
-      setDenom(denomValue);
-      setCid(null);
-    };
-  }, [nodeIpfs, cid, denomValue]);
+    }
+  }, [denomValue]);
 
   return { denom, type };
 }
 
 function Denom({ nodeIpfs, denomValue, ...props }) {
   try {
-    const { denom, type } = useGetDenom(denomValue, nodeIpfs);
+    const { denom, type } = useGetDenom(denomValue);
 
     return <ValueImg text={denom} type={type} {...props} />;
   } catch (error) {

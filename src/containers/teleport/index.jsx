@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { useLocation, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import useSWR from 'swr';
+import BigNumber from 'bignumber.js';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -88,21 +89,6 @@ function Teleport({ defaultAccount }) {
     setIsExceeded(false);
   }, [update, selectedTab]);
 
-  // useEffect(() => {
-  //   const getBalances = async () => {
-  //     if (jsCyber !== null && addressActive !== null && addressActive.bech32) {
-  //       const getAllBalancesPromise = await jsCyber.getAllBalances(
-  //         addressActive.bech32
-  //       );
-
-  //       const datareduceBalances = reduceBalances(getAllBalancesPromise);
-  //       // console.log(`reduceBalances`, datareduceBalances);
-  //       setAccountBalances(datareduceBalances);
-  //     }
-  //   };
-  //   getBalances();
-  // }, [jsCyber, addressActive, update]);
-
   useEffect(() => {
     const getTotalSupply = async () => {
       if (jsCyber !== null) {
@@ -119,18 +105,24 @@ function Teleport({ defaultAccount }) {
   useEffect(() => {
     let orderPrice = 0;
 
-    let poolAmountA = tokenAPoolAmount;
-    let poolAmountB = tokenBPoolAmount;
+    const poolAmountA = new BigNumber(Number(tokenAPoolAmount));
+    const poolAmountB = new BigNumber(Number(tokenBPoolAmount));
 
-    if (poolAmountA && poolAmountB) {
-      poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
-      poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
-    }
+    // if (poolAmountA && poolAmountB) {
+    //   poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
+    //   poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
+    // }
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.97;
+      orderPrice = poolAmountB
+        .dividedBy(poolAmountA)
+        .multipliedBy(0.97)
+        .toNumber();
     } else {
-      orderPrice = (Number(poolAmountA) / Number(poolAmountB)) * 1.03;
+      orderPrice = poolAmountA
+        .dividedBy(poolAmountB)
+        .multipliedBy(1.03)
+        .toNumber();
     }
     console.log(`orderPrice`, orderPrice);
     if (orderPrice && orderPrice !== Infinity) {
@@ -150,12 +142,12 @@ function Teleport({ defaultAccount }) {
         if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
           setTokenAPoolAmount(dataReduceBalances[tokenA]);
           setTokenBPoolAmount(dataReduceBalances[tokenB]);
-          setTokenAPoolAmount(
-            reduceAmounToken(dataReduceBalances[tokenA], tokenA)
-          );
-          setTokenBPoolAmount(
-            reduceAmounToken(dataReduceBalances[tokenB], tokenB)
-          );
+          // setTokenAPoolAmount(
+          //   reduceAmounToken(dataReduceBalances[tokenA], tokenA)
+          // );
+          // setTokenBPoolAmount(
+          //   reduceAmounToken(dataReduceBalances[tokenB], tokenB)
+          // );
         }
       }
     };
@@ -226,39 +218,16 @@ function Teleport({ defaultAccount }) {
   function amountChangeHandler(e) {
     const inputAmount = e.target.value;
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-    const isReverse = e.target.id !== 'tokenAAmount';
-    const state = { tokenAPoolAmount, tokenBPoolAmount };
-
-    let type = 'swap';
-
-    if (selectedTab !== 'swap') {
-      type = 'deposit';
-    }
+    const state = { tokenAPoolAmount, tokenBPoolAmount, tokenA, tokenB };
 
     let exceeded = false;
-    const { counterPairAmount, price } = calculateCounterPairAmount(
-      e,
-      state,
-      type
-    );
+    const { counterPairAmount } = calculateCounterPairAmount(e, state);
 
-    // is exceeded?(좌변에 fee 더해야함)
-    if (isReverse) {
-      // input from "to"(reverse)
-      setTokenBAmount(inputAmount);
-      setTokenAAmount(counterPairAmount);
+    setTokenAAmount(inputAmount);
+    setTokenBAmount(counterPairAmount);
 
-      if (counterPairAmount > myATokenBalance) {
-        exceeded = true;
-      }
-    } else {
-      // input from "from"(normal)
-      setTokenAAmount(inputAmount);
-      setTokenBAmount(counterPairAmount);
-
-      if (inputAmount > myATokenBalance) {
-        exceeded = true;
-      }
+    if (inputAmount > myATokenBalance) {
+      exceeded = true;
     }
     // console.log(`price`, price);
 

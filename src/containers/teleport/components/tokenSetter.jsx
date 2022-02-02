@@ -43,6 +43,7 @@ function TokenSetter({
   valueInput,
   id,
   textLeft,
+  readonly,
 }) {
   console.log(`token`, token);
   return (
@@ -77,6 +78,7 @@ function TokenSetter({
           fontSize="20px"
           autoComplete="off"
           textAlign="end"
+          readonly={readonly || false}
         />
       </Pane>
     </Pane>
