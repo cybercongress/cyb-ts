@@ -29,6 +29,9 @@ const executePlaceholder = {
   },
 };
 
+const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
+const gasPrice = GasPrice.fromString('0.001boot');
+
 export const JSONInputCard = ({ title, placeholder, setState, height }) => (
   <div className={styles.containerJsonContractJSONInput}>
     <span className={styles.containerJsonContractJSONInputTitle}>{title}:</span>
@@ -44,15 +47,75 @@ export const JSONInputCard = ({ title, placeholder, setState, height }) => (
 );
 
 function InstantiationContract({ codeId, updateFnc }) {
+  const { keplr } = useContext(AppContext);
   const [error, setError] = useState(null);
+  const [executing, setExecuting] = useState(false);
+  const [executeResponse, setExecuteResponse] = useState({});
 
   const [memo, setMemo] = useState('');
   const [label, setLabel] = useState('');
+
+  const [msgObject, setMsgObject] = useState({});
+  const [coinsObject, setCoinsObject] = useState({});
 
   const [fileAbiExecute, setFileAbiExecute] = useState(null);
   const { dataObj: schemaExecute } = useParseJsonSchema(fileAbiExecute);
 
   let content;
+
+  useEffect(() => {
+    setMsgObject({ result: executePlaceholder });
+    setCoinsObject({ result: coinsPlaceholder });
+  }, []);
+
+  useEffect(() => {
+    if (msgObject.error) {
+      setError(msgObject.error);
+      return;
+    }
+
+    if (executeResponse.error) {
+      setError(executeResponse.error);
+      return;
+    }
+
+    if (coinsObject.error) {
+      setError(coinsObject.error);
+      return;
+    }
+
+    setError(undefined);
+  }, [coinsObject, executeResponse, msgObject]);
+
+  const executeContract = async () => {
+    if (!msgObject.result || !label || keplr === null) {
+      return;
+    }
+
+    setExecuting(true);
+
+    try {
+      const [{ address }] = await keplr.signer.getAccounts();
+
+      const executeResponseResult = await keplr.instantiate(
+        address,
+        parseFloat(codeId),
+        msgObject.result,
+        label,
+        calculateFee(600000, gasPrice),
+        {
+          memo,
+          funds: coinsObject.result,
+        }
+      );
+      console.log(`executeResponseResult`, executeResponseResult);
+      setExecuteResponse({ result: executeResponseResult });
+    } catch (e) {
+      setExecuteResponse({ error: `Execute error: ${e}` });
+    }
+
+    setExecuting(false);
+  };
 
   const updateFncInst = () => {
     if (updateFnc) {
@@ -65,7 +128,14 @@ function InstantiationContract({ codeId, updateFnc }) {
 
   if (fileAbiExecute === null) {
     if (label.length === 0) {
-      content = <div style={{ fontSize: '18px' }}>You must add a label</div>;
+      content = (
+        <div style={{ fontSize: '18px' }}>
+          You must add a label{' '}
+          <button type="button" className="btn-disabled" disabled>
+            Upload schema
+          </button>
+        </div>
+      );
     } else {
       content = (
         <div>
@@ -90,6 +160,19 @@ function InstantiationContract({ codeId, updateFnc }) {
 
   return (
     <div className={styles.containerJsonContract}>
+      <JSONInputCard
+        placeholder={executePlaceholder}
+        setState={setMsgObject}
+        title="Instantiate contract"
+        height="200px"
+      />
+
+      <JSONInputCard
+        placeholder={coinsPlaceholder}
+        setState={setCoinsObject}
+        title="Coins to transfer"
+        height="120px"
+      />
       <div className={styles.containerJsonContractInputContainer}>
         <div className={styles.containerJsonContractInputContainerItem}>
           <span>Label</span>
@@ -108,6 +191,46 @@ function InstantiationContract({ codeId, updateFnc }) {
           />
         </div>
       </div>
+
+      {executing ? (
+        <button className="btn btn-primary" type="button" disabled>
+          Executing...
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={executeContract}
+          disabled={!msgObject.result || keplr === null}
+        >
+          Instantiate contract
+        </button>
+      )}
+
+      {executeResponse.result && (
+        <div className={styles.containerJsonContractResult}>
+          <span>Response:</span>
+          <CardItem
+            title="Contract"
+            value={
+              <Link to={`/contracts/${executeResponse.result.contractAddress}`}>
+                {trimString(executeResponse.result.contractAddress, 10)}
+              </Link>
+            }
+          />
+          <CardItem
+            title="Tx"
+            value={
+              <Link
+                to={`/network/bostrom/tx/${executeResponse.result.transactionHash}`}
+              >
+                {trimString(executeResponse.result.transactionHash, 8, 8)}
+              </Link>
+            }
+          />
+        </div>
+      )}
+
       <FlexWrapCantainer style={{ flexDirection: 'column' }}>
         {content}
       </FlexWrapCantainer>

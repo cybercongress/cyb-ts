@@ -107,7 +107,7 @@ function DashboardPage() {
             }
           />
           <CardStatisics
-            title={`Contracts Income, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            title={`Income, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={
               dataAggregate !== null ? (
                 formatNumber(dataAggregate.sum.fees)
@@ -136,13 +136,13 @@ function DashboardPage() {
               )
             }
           />
-          {/* <Link to="/codes">
+          <Link to="/codes">
             <CardStatisics
               title="Codes"
               value={codes !== null ? formatNumber(codes) : <Dots />}
               link
             />
-          </Link> */}
+          </Link>
         </ContainerCardStatisics>
 
         {dataContracts.length === 0 ? (
