@@ -12,12 +12,7 @@ const renderOptions = (data, selected, valueSelect) => {
     items = (
       <>
         {Object.keys(data)
-          .filter(
-            (item) =>
-              item.indexOf('pool') === -1 &&
-              item !== selected &&
-              item !== valueSelect
-          )
+          .filter((item) => item !== selected && item !== valueSelect)
           .map((key) => (
             <OptionSelect
               key={key}
@@ -45,7 +40,7 @@ function TokenSetter({
   textLeft,
   readonly,
 }) {
-  console.log(`token`, token);
+  // console.log(`token`, token);
   return (
     <Pane>
       <BalanceToken data={accountBalances} token={token} />

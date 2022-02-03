@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
@@ -22,6 +22,7 @@ import {
   getMyTokenBalance,
   reduceAmounToken,
   getPoolToken,
+  getCoinDecimals,
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
@@ -31,18 +32,33 @@ import getBalances from './hooks/getBalances';
 import Swap from './swap';
 import Withdraw from './withdraw';
 import PoolData from './poolData';
+import coinDecimalsConfig from '../../utils/configToken';
+
+const tokenADefaultValue = 'boot';
+const tokenBDefaultValue = 'hydrogen';
+
+const defaultTokenList = {
+  boot: 0,
+  hydrogen: 0,
+  milliampere: 0,
+  millivolt: 0,
+  tocyb: 0,
+};
 
 function Teleport({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { liquidBalances: accountBalances } = getBalances(addressActive);
   const [update, setUpdate] = useState(0);
+  const { liquidBalances: accountBalances } = getBalances(
+    addressActive,
+    update
+  );
   const { params } = useGetParams();
   const { poolsData } = usePoolListInterval();
   // const [accountBalances, setAccountBalances] = useState(null);
-  const [tokenA, setTokenA] = useState('');
-  const [tokenB, setTokenB] = useState('');
+  const [tokenA, setTokenA] = useState(tokenADefaultValue);
+  const [tokenB, setTokenB] = useState(tokenBDefaultValue);
   const [tokenAAmount, setTokenAAmount] = useState('');
   const [tokenBAmount, setTokenBAmount] = useState('');
   const [tokenAPoolAmount, setTokenAPoolAmount] = useState(0);
@@ -79,15 +95,15 @@ function Teleport({ defaultAccount }) {
     }
   }, [location.pathname]);
 
-  useEffect(() => {
-    setTokenA('');
-    setTokenB('');
-    setTokenAAmount('');
-    setTokenBAmount('');
-    setSelectMyPool('');
-    setAmountPoolCoin('');
-    setIsExceeded(false);
-  }, [update, selectedTab]);
+  // useEffect(() => {
+  //   setTokenA('');
+  //   setTokenB('');
+  //   setTokenAAmount('');
+  //   setTokenBAmount('');
+  //   setSelectMyPool('');
+  //   setAmountPoolCoin('');
+  //   setIsExceeded(false);
+  // }, [update, selectedTab]);
 
   useEffect(() => {
     const getTotalSupply = async () => {
@@ -95,8 +111,7 @@ function Teleport({ defaultAccount }) {
         const responseTotalSupply = await jsCyber.totalSupply();
 
         const datareduceTotalSupply = reduceBalances(responseTotalSupply);
-        // console.log(`reduceBalances`, datareduceTotalSupply);
-        setTotalSupply(datareduceTotalSupply);
+        setTotalSupply({ ...defaultTokenList, ...datareduceTotalSupply });
       }
     };
     getTotalSupply();
@@ -105,26 +120,21 @@ function Teleport({ defaultAccount }) {
   useEffect(() => {
     let orderPrice = 0;
 
-    const poolAmountA = new BigNumber(Number(tokenAPoolAmount));
-    const poolAmountB = new BigNumber(Number(tokenBPoolAmount));
-
-    // if (poolAmountA && poolAmountB) {
-    //   poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
-    //   poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
-    // }
+    const poolAmountA = new BigNumber(
+      getCoinDecimals(Number(tokenAPoolAmount), tokenA)
+    );
+    const poolAmountB = new BigNumber(
+      getCoinDecimals(Number(tokenBPoolAmount), tokenB)
+    );
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = poolAmountB
-        .dividedBy(poolAmountA)
-        .multipliedBy(0.97)
-        .toNumber();
+      orderPrice = poolAmountB.dividedBy(poolAmountA);
+      orderPrice = orderPrice.multipliedBy(0.97).toNumber();
     } else {
-      orderPrice = poolAmountA
-        .dividedBy(poolAmountB)
-        .multipliedBy(1.03)
-        .toNumber();
+      orderPrice = poolAmountA.dividedBy(poolAmountB);
+      orderPrice = orderPrice.multipliedBy(1.03).toNumber();
     }
-    console.log(`orderPrice`, orderPrice);
+
     if (orderPrice && orderPrice !== Infinity) {
       setSwapPrice(orderPrice);
     }
@@ -142,12 +152,6 @@ function Teleport({ defaultAccount }) {
         if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
           setTokenAPoolAmount(dataReduceBalances[tokenA]);
           setTokenBPoolAmount(dataReduceBalances[tokenB]);
-          // setTokenAPoolAmount(
-          //   reduceAmounToken(dataReduceBalances[tokenA], tokenA)
-          // );
-          // setTokenBPoolAmount(
-          //   reduceAmounToken(dataReduceBalances[tokenB], tokenB)
-          // );
         }
       }
     };
@@ -215,26 +219,53 @@ function Teleport({ defaultAccount }) {
     return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
   }
 
-  function amountChangeHandler(e) {
-    const inputAmount = e.target.value;
+  useEffect(() => {
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-    const state = { tokenAPoolAmount, tokenBPoolAmount, tokenA, tokenB };
-
     let exceeded = false;
-    const { counterPairAmount } = calculateCounterPairAmount(e, state);
 
-    setTokenAAmount(inputAmount);
-    setTokenBAmount(counterPairAmount);
-
-    if (inputAmount > myATokenBalance) {
+    if (Number(tokenAAmount) > myATokenBalance) {
       exceeded = true;
     }
-    // console.log(`price`, price);
 
-    // setSlippage(slippage);
     setIsExceeded(exceeded);
-    // setTokenPrice(price);
-    // helper
+  }, [tokenA, tokenAAmount]);
+
+  const getDecimals = (denom) => {
+    let decimals = 0;
+    if (Object.hasOwnProperty.call(coinDecimalsConfig, denom)) {
+      decimals = 3;
+    }
+    return decimals;
+  };
+
+  useEffect(() => {
+    let counterPairAmount = '';
+    const decimals = getDecimals();
+    if (swapPrice && swapPrice !== Infinity && tokenAAmount.length > 0) {
+      if ([tokenA, tokenB].sort()[0] === tokenA) {
+        const x1 = new BigNumber(1);
+        const price = x1.dividedBy(swapPrice);
+        counterPairAmount = price
+          .multipliedBy(Number(tokenAAmount))
+          .dp(decimals, BigNumber.ROUND_FLOOR)
+          .toString();
+      } else {
+        const price = new BigNumber(swapPrice);
+
+        counterPairAmount = price
+          .multipliedBy(Number(tokenAAmount))
+          .dp(decimals, BigNumber.ROUND_FLOOR)
+          .toString();
+      }
+    }
+    setTokenBAmount(counterPairAmount);
+  }, [tokenAAmount, tokenA, tokenB, swapPrice]);
+
+  function amountChangeHandler(e) {
+    const inputAmount = e.target.value;
+    if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
+      setTokenAAmount(inputAmount);
+    }
   }
 
   const onChangeInputWithdraw = (e) => {
@@ -276,7 +307,6 @@ function Teleport({ defaultAccount }) {
     tokenA,
     tokenB,
     params,
-    swapPrice,
     selectedPool,
     selectedTab,
     updateFunc,
@@ -284,6 +314,8 @@ function Teleport({ defaultAccount }) {
     myPools,
     amountPoolCoin,
     isExceeded,
+    tokenAPoolAmount,
+    tokenBPoolAmount,
   };
 
   const stateSwap = {

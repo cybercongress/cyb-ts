@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import ValueImg from '../valueImg';
-import coinDecimalsIbc from '../../utils/configToken';
+import coinDecimalsConfig from '../../utils/configToken';
 
 function useGetDenom(denomValue) {
   const [denom, setDenom] = useState('');
@@ -18,8 +18,11 @@ function useGetDenom(denomValue) {
   }, [denomValue]);
 
   useEffect(() => {
-    if (Object.hasOwnProperty.call(coinDecimalsIbc, denomValue)) {
-      setDenom(coinDecimalsIbc[denomValue].denom);
+    if (
+      denomValue.includes('ibc') &&
+      Object.hasOwnProperty.call(coinDecimalsConfig, denomValue)
+    ) {
+      setDenom(coinDecimalsConfig[denomValue].denom);
     } else {
       setDenom(denomValue);
     }

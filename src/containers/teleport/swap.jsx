@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
+import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
 import { Denom } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
+import { getCoinDecimals } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
@@ -41,50 +43,31 @@ function Swap({ stateSwap, swap }) {
     setTokenA,
     tokenAAmount,
     amountChangeHandler,
-    swapPrice,
     tokenChange,
     tokenAPoolAmount,
     tokenBPoolAmount,
+    swapPrice,
   } = stateSwap;
 
   const getTokenPrice = useMemo(() => {
-    let price = 0;
-    let reversePrice = 0;
     if (tokenAPoolAmount > 0 && tokenBPoolAmount > 0) {
-      let orderPrice = 0;
-      if ([tokenA, tokenB].sort()[0] !== tokenA) {
-        orderPrice =
-          (Number(tokenBPoolAmount) / Number(tokenAPoolAmount)) * 0.97;
-        price = orderPrice;
-        reversePrice = 1 / orderPrice;
-      } else {
-        orderPrice =
-          (Number(tokenAPoolAmount) / Number(tokenBPoolAmount)) * 1.03;
-        reversePrice = orderPrice;
-        price = 1 / orderPrice;
-      }
-      // console.log('price', price);
-    }
-    return <span> </span>;
-  }, [tokenAPoolAmount, tokenBPoolAmount, tokenA, tokenB]);
-
-  const getSwapFees = useMemo(() => {
-    if (swapPrice && swapPrice !== Infinity) {
+      const price = swapPrice;
       return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex' }}>
-            <div>{Math.floor(tokenAAmount * 0.0015)}</div>
-            <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} />
+        <div
+          style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}
+        >
+          <div style={{ whiteSpace: 'nowrap' }}>
+            {price >= 1
+              ? formatNumber(price)
+              : exponentialToDecimal(price.toPrecision(3))}
           </div>
-          <div style={{ display: 'flex' }}>
-            <div>{Math.floor(tokenBAmount * 0.0015)}</div>
-            <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} />
-          </div>
+          <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> /{' '}
+          <Denom denomValue={tokenB} />
         </div>
       );
     }
     return <span> </span>;
-  }, [tokenAAmount, tokenBAmount, swapPrice]);
+  }, [swapPrice]);
 
   return (
     <Pane
@@ -136,24 +119,25 @@ function Swap({ stateSwap, swap }) {
       />
       <Pane
         display="flex"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         width="100%"
-        flexDirection="column"
-        alignItems=" flex-end"
+        flexDirection="row"
+        alignItems="flex-end"
+        marginTop={20}
       >
         <div>Rate:</div>
         <div>{getTokenPrice}</div>
       </Pane>
       <Pane
         display="flex"
-        justifyContent="flex-end"
+        justifyContent="space-between"
         width="100%"
-        flexDirection="column"
-        alignItems=" flex-end"
+        flexDirection="row"
+        alignItems="flex-end"
         marginTop={10}
       >
         <div>Swap Fees:</div>
-        <div>{getSwapFees}</div>
+        <div>0.3%</div>
       </Pane>
     </Pane>
   );

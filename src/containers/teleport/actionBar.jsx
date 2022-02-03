@@ -6,6 +6,7 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { coin, coins } from '@cosmjs/launchpad';
+import BigNumber from 'bignumber.js';
 import { ActionBarContentText, Account } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
@@ -36,6 +37,7 @@ function ActionBar({ stateActionBar }) {
   const [txHash, setTxHash] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [swapPrice, setSwapPrice] = useState(0);
 
   const {
     addressActive,
@@ -44,7 +46,6 @@ function ActionBar({ stateActionBar }) {
     tokenA,
     tokenB,
     params,
-    swapPrice,
     selectedPool,
     selectedTab,
     updateFunc,
@@ -52,7 +53,28 @@ function ActionBar({ stateActionBar }) {
     myPools,
     amountPoolCoin,
     isExceeded,
+    tokenAPoolAmount,
+    tokenBPoolAmount,
   } = stateActionBar;
+
+  useEffect(() => {
+    let orderPrice = 0;
+
+    const poolAmountA = new BigNumber(Number(tokenAPoolAmount));
+    const poolAmountB = new BigNumber(Number(tokenBPoolAmount));
+
+    if ([tokenA, tokenB].sort()[0] !== tokenA) {
+      orderPrice = poolAmountB.dividedBy(poolAmountA);
+      orderPrice = orderPrice.multipliedBy(0.97).toNumber();
+    } else {
+      orderPrice = poolAmountA.dividedBy(poolAmountB);
+      orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+    }
+
+    if (orderPrice && orderPrice !== Infinity) {
+      setSwapPrice(orderPrice);
+    }
+  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount]);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -223,6 +245,7 @@ function ActionBar({ stateActionBar }) {
   const swapWithinBatch = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
 
+    console.log('tokenAAmount', tokenAAmount);
     let amountTokenA = tokenAAmount;
 
     if (tokenA === 'millivolt' || tokenA === 'milliampere') {
@@ -244,6 +267,7 @@ function ActionBar({ stateActionBar }) {
     );
 
     const offerCoin = coin(parseFloat(amountTokenA), tokenA);
+    console.log('offerCoin', offerCoin);
     const demandCoinDenom = tokenB;
     console.log(`swapPrice`, swapPrice);
     if (addressActive !== null && addressActive.bech32 === address) {
