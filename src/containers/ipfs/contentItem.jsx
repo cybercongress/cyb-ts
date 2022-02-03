@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { SearchItem } from '@cybercongress/gravity';
 import Iframe from 'react-iframe';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
 import { getRankGrade, getPinsCid } from '../../utils/search/utils';
 import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
@@ -10,6 +12,7 @@ import db from '../../db';
 
 const uint8ArrayConcat = require('uint8arrays/concat');
 const all = require('it-all');
+const FileType = require('file-type');
 
 const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
   const [content, setContent] = useState('');
@@ -38,13 +41,8 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         setLink(linkContent);
         setStatus('downloaded');
       } else if (nodeIpfs !== null) {
-        const timerId = setTimeout(() => {
-          setStatus('impossibleLoad');
-          setContent(cid);
-        }, 15000);
-        const responseDag = await nodeIpfs.dag.get(cid, {
-          localResolve: false,
-        });
+        const responseDag = await nodeIpfs.dag.get(cid);
+        console.log(`responseDag`, responseDag);
         const meta = {
           type: 'file',
           size: 0,
@@ -66,15 +64,22 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         }
         meta.size = responseDag.value.size;
         meta.blockSizes = linksCid;
-        clearTimeout(timerId);
         if (responseDag.value.size < 15 * 10 ** 6) {
           const responsePin = nodeIpfs.pin.add(cid);
           console.log('responsePin', responsePin);
-          const datagetPinsCid = await getPinsCid(cid);
-          console.log(`datagetPinsCid`, datagetPinsCid)
 
           // const cids = new CID(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
+          const dataFileType = await FileType.fromBuffer(responseCat);
+          let mimeType = '';
+          if (dataFileType !== undefined) {
+            const { mime } = dataFileType;
+
+            mimeType = mime;
+          }
+          const blob = new Blob([responseCat], { type: mimeType });
+          const datagetPinsCid = await getPinsCid(cid, blob);
+          console.log(`datagetPinsCid`, cid, datagetPinsCid);
           const someVar = responseCat;
           meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
@@ -85,7 +90,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
           db.table('cid')
             .add(ipfsContentAddtToInddexdDB)
-            .then(id => {
+            .then((id) => {
               console.log('item :>> ', id);
             });
           const dataTypeContent = await getTypeContent(someVar, cid);
@@ -117,12 +122,15 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           <div className="container-text-SearchItem">
             {/* {`${text}`} */}
             <ReactMarkdown
-              source={text}
-              escapeHtml
-              skipHtml={false}
+              children={text}
+              rehypePlugins={[rehypeSanitize]}
+              // skipHtml
+              // escapeHtml
+              // skipHtml={false}
               // astPlugins={[parseHtml]}
-              renderers={{ code: CodeBlock }}
-              // plugins={[toc]}
+              // renderers={{ code: CodeBlock }}
+              remarkPlugins={[remarkGfm]}
+
               // escapeHtml={false}
             />
           </div>
@@ -132,7 +140,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         grade={
           item.rank
             ? getRankGrade(item.rank)
-            : grade ? grade : { from: 'n/a', to: 'n/a', value: 'n/a' }
+            : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
         {typeContent === 'image' && (

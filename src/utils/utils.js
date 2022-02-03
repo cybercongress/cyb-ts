@@ -429,6 +429,9 @@ function parseMsgContract(msg) {
 
   return JSON.parse(json);
 }
+const replaceSlash = (text) => text.replace(/\//g, '%2F');
+
+const encodeSlash = (text) => text.replace(/%2F/g, '/');
 
 export {
   run,
@@ -453,4 +456,6 @@ export {
   makeTags,
   reduceObj,
   parseMsgContract,
+  replaceSlash,
+  encodeSlash,
 };

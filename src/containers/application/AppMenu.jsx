@@ -30,6 +30,7 @@ const itemsMenu = (address) => {
         { name: 'Avatar', to: linkAvatar },
         { name: 'Brain', to: linkBrain },
         { name: 'Community', to: linkCommunity },
+        { name: 'Degenbox', to: '/degenbox' },
       ],
     },
     {

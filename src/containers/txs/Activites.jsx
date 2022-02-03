@@ -123,7 +123,7 @@ const MultiSend = ({ msg }) => {
 
 const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
   <ContainerMsgsType type={msg.type}>
-    <Row title="Address" value={<Account address={msg.value.neuron} />} />
+    <Row title="Neuron" value={<Account address={msg.value.neuron} />} />
     {msg.value.links
       .slice(0, seeAll ? msg.value.length : 1)
       .map((item, index) => (
@@ -241,7 +241,7 @@ function Activites({ msg }) {
   const [seeAll, setSeeAll] = useState(false);
 
   switch (msg.type) {
-    case 'cyber/Link':
+    case 'cyber/MsgCyberlink':
       return (
         <MsgLink
           msg={msg}
@@ -486,25 +486,13 @@ function Activites({ msg }) {
       );
 
     // wasm
-    case 'wasm/instantiate':
+    case 'wasm/MsgInstantiate':
       return (
         <ContainerMsgsType type={msg.type}>
           <Row title="address" value={<Account address={msg.value.sender} />} />
           <Row title="label" value={msg.value.label} />
           {msg.value.code_id && (
             <Row title="code id" value={msg.value.code_id} />
-          )}
-          {msg.value.init_msg.purchase_price && (
-            <Row
-              title="purchase_price"
-              value={msg.value.init_msg.transfer_price}
-            />
-          )}
-          {msg.value.init_msg.transfer_price && (
-            <Row
-              title="transfer price"
-              value={msg.value.init_msg.transfer_price}
-            />
           )}
         </ContainerMsgsType>
       );
@@ -527,6 +515,80 @@ function Activites({ msg }) {
       return <MsgEditRouteName msg={msg} />;
 
     // swap
+    case 'liquidity/MsgSwapWithinBatch':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="Swap requester address" value={<Account address={msg.value.swap_requester_address} />} />
+          <Row title="Demand coin denom" value={msg.value.demand_coin_denom} />
+          <Row
+            title="Offer coin"
+            value={
+              `${formatNumber(msg.value.offer_coin.amount)} ${msg.value.offer_coin.denom.toUpperCase()}`
+            }
+          />
+          <Row
+            title="Offer coin fee"
+            value={
+              `${formatNumber(msg.value.offer_coin_fee.amount)} ${msg.value.offer_coin_fee.denom.toUpperCase()}`
+            }
+          />
+          <Row title="Order price" value={msg.value.order_price} />
+          <Row title="Pool ID" value={msg.value.pool_id} />
+          <Row title="Swap type id" value={msg.value.swap_type_id} />
+        </ContainerMsgsType>
+      )
+
+    case 'liquidity/MsgDepositWithinBatch':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="Depositor address" value={<Account address={msg.value.depositor_address} />} />
+          <Row title="Pool id" value={msg.value.pool_id} />
+          <Row
+            title="Deposit coins"
+            value={msg.value.deposit_coins.map((data, i) => {
+              return (
+                `${formatNumber(data.amount)} ${data.denom.toUpperCase()} /`
+              );
+            })}
+          />
+        </ContainerMsgsType>
+      )
+
+    case 'liquidity/MsgWithdrawWithinBatch':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="Withdrawer address" value={<Account address={msg.value.withdrawer_address} />} />
+          <Row title="Pool id" value={msg.value.pool_id} />
+          <Row
+            title="Pool coin"
+            value={
+                `${formatNumber(msg.value.pool_coin.amount)} ${msg.value.pool_coin.denom.toUpperCase()}`
+            }
+          />
+        </ContainerMsgsType>
+      )
+
+    case 'cosmos-sdk/MsgTransfer': 
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="Sender" value={<Account address={msg.value.sender} />} />
+          <Row title="Receiver" value={<Account address={msg.value.receiver} />} />
+          <Row title="Source channel" value={msg.value.source_channel} />
+          <Row title="Source port" value={msg.value.source_port} />
+          <Row
+            title="Token"
+            value={
+              `${formatNumber(msg.value.token.amount)} ${msg.value.token.denom.toUpperCase()}`
+            }
+          />
+          <Row
+            title="Timeout height"
+            value={
+              `${formatNumber(msg.value.timeout_height.revision_height)} / ${formatNumber(msg.value.timeout_height.revision_number)}`
+            }
+          />
+        </ContainerMsgsType>
+      )   
 
     default:
       return <div>{JSON.stringify(msg.value)}</div>;

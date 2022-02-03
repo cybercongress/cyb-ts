@@ -286,12 +286,12 @@ function Mint({ defaultAccount }) {
           justifyContent="center"
         >
           <Btn
-            text={<ValueImg text="millivolt" />}
+            text={<ValueImg justifyContent="center" text="millivolt" />}
             checkedSwitch={selected === 'millivolt'}
             onSelect={() => setSelected('millivolt')}
           />
           <Btn
-            text={<ValueImg text="milliampere" />}
+            text={<ValueImg justifyContent="center" text="milliampere" />}
             checkedSwitch={selected === 'milliampere'}
             onSelect={() => setSelected('milliampere')}
           />

@@ -143,6 +143,7 @@ function Ipfs({ nodeIpfs, mobile }) {
       setDataBacklinks([]);
       if (jsCyber !== null) {
         const responseBacklinks = await jsCyber.backlinks(cid);
+        // console.log(`responseBacklinks`, responseBacklinks)
         if (
           responseBacklinks.result &&
           Object.keys(responseBacklinks.result).length > 0
@@ -169,7 +170,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     setTotal(0);
     const responseSearch = await search(jsCyber, cid, 0);
     if (responseSearch.result && responseSearch.result.length > 0) {
-      setDataAnswers(responseSearch.result);
+      setDataAnswers(reduceParticleArr(responseSearch.result, cid));
       setAllPage(Math.ceil(parseFloat(responseSearch.pagination.total) / 10));
       setTotal(parseFloat(responseSearch.pagination.total));
       setPage((item) => item + 1);
@@ -180,9 +181,11 @@ function Ipfs({ nodeIpfs, mobile }) {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     const data = await search(jsCyber, cid, page);
+    // console.log(`data`, data)
     if (data.result) {
+      const result = reduceParticleArr(data.result, cid);
       setTimeout(() => {
-        setDataAnswers((itemState) => [...itemState, ...data.result]);
+        setDataAnswers((itemState) => ({ ...itemState, ...result }));
         setPage((itemPage) => itemPage + 1);
       }, 500);
     }

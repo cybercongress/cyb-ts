@@ -129,7 +129,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
   return (
     <Pane
       display="grid"
-      gridTemplateColumns="1fr 80px"
+      gridTemplateColumns="1fr 90px"
       gridGap="5px"
       fontSize="15px"
       {...props}

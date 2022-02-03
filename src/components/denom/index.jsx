@@ -4,6 +4,7 @@ import { AppContext } from '../../context';
 import { searchClient } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import db from '../../db';
+import ValueImg from '../valueImg';
 
 const FileType = require('file-type');
 const all = require('it-all');
@@ -29,24 +30,32 @@ function useGetDenom(denomValue, nodeIpfs) {
   const { jsCyber } = useContext(AppContext);
   const [denom, setDenom] = useState('');
   const [cid, setCid] = useState(null);
+  const [type, setType] = useState('');
+
+  useEffect(() => {
+    setType('');
+    if (denomValue.includes('ibc')) {
+      setType('ibc');
+    } else if (denomValue.includes('pool')) {
+      setType('pool');
+    } else {
+      setType('');
+    }
+  }, [denomValue]);
 
   useEffect(() => {
     const search = async () => {
+      setDenom(denomValue);
+      setCid(null);
       if (
         (jsCyber !== null && denomValue.includes('pool')) ||
         denomValue.includes('ibc')
       ) {
-        setDenom(denomValue);
         const response = await searchClient(jsCyber, denomValue, 0);
         console.log(`response`, response);
         if (response.result) {
           setCid(response.result[0].particle);
-        } else {
-          setDenom(denomValue);
         }
-      } else {
-        setDenom(denomValue);
-        setCid(null);
       }
     };
     search();
@@ -101,18 +110,21 @@ function useGetDenom(denomValue, nodeIpfs) {
       }
     };
     feachData();
+
+    return () => {
+      setDenom(denomValue);
+      setCid(null);
+    };
   }, [nodeIpfs, cid, denomValue]);
 
-  return { denom };
+  return { denom, type };
 }
 
-function Denom({ nodeIpfs, denomValue }) {
+function Denom({ nodeIpfs, denomValue, ...props }) {
   try {
-    const { denom } = useGetDenom(denomValue, nodeIpfs);
+    const { denom, type } = useGetDenom(denomValue, nodeIpfs);
 
-    return (
-      <div>{denom.length > 10 ? `${denom.substring(0, 10)}...` : denom}</div>
-    );
+    return <ValueImg text={denom} type={type} {...props} />;
   } catch (error) {
     return <div>{denomValue}</div>;
   }

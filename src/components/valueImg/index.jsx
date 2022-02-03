@@ -23,6 +23,7 @@ const ValueImg = ({
   zIndexImg,
   flexDirection,
   size,
+  type,
   ...props
 }) => {
   let img = null;
@@ -78,11 +79,13 @@ const ValueImg = ({
       if (text.includes('pool')) {
         textCurency = trimString(text, 3, 3);
         img = pool;
+        break;
       } else if (text.includes('ibc')) {
         textCurency = trimString(text, 3, 3);
         img = ibc;
-      } else if (text.length > 6) {
-        textCurency = text.slice(6);
+        break;
+      } else if (text.length > 32) {
+        textCurency = text.slice(0, 32);
         img = null;
         break;
       } else {
@@ -92,18 +95,36 @@ const ValueImg = ({
       }
   }
 
+  if (type && type === 'pool') {
+    img = pool;
+  }
+  if (type && type === 'ibc') {
+    img = ibc;
+  }
+
   return (
     <div
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: justifyContent || 'center',
+        justifyContent: justifyContent || 'flex-start',
         margin: marginContainer || 0,
         flexDirection: flexDirection || 'unset',
+        width: '100%',
       }}
       {...props}
     >
-      {!onlyImg && <span>{textCurency}</span>}
+      {!onlyImg && (
+        <span
+          style={{
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
+        >
+          {textCurency}
+        </span>
+      )}
       {!onlyText && img !== null && (
         <img
           style={{

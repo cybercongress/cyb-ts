@@ -3,7 +3,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../../utils/utils';
 import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
-import { ValueImg } from '../../../components';
+import { Denom } from '../../../components';
 
 const Row = ({ text, number, procent, color }) => (
   <Pane display="flex" alignItems="center" paddingY={7}>
@@ -81,13 +81,15 @@ const RowToken = ({ denom, amount }) => {
       justifyContent="space-between"
       width="100%"
     >
-      <ValueImg
+      <Denom
         marginImg="0 3px 0 0"
         flexDirection="row-reverse"
         justifyContent="flex-end"
-        text={denom}
+        denomValue={denom}
       />
-      <Pane textAlign="right">{formatNumber(amount)}</Pane>
+      <Pane whiteSpace="nowrap" textAlign="right">
+        {formatNumber(amount)}
+      </Pane>
     </Pane>
   );
 };

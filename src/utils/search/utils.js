@@ -12,6 +12,8 @@ const {
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
 } = config.CYBER;
 
+const { PATTERN_IPFS_HASH } = config;
+
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
 const IPFS = require('ipfs-api');
@@ -1351,6 +1353,7 @@ export const getIpfsGatway = async (cid) => {
 };
 
 export const getPinsCidPost = async (cid) => {
+  console.log(`getPinsCidPost`);
   try {
     const response = await axios({
       method: 'post',
@@ -1376,7 +1379,44 @@ export const getPinsCidGet = async (cid) => {
   }
 };
 
-export const getPinsCid = async (cid) => {
+export const addFileToCluster = async (cid, file) => {
+  console.log(`addFileToCluster`);
+  let dataFile = null;
+  if (cid === file) {
+    const responseGetPinsCidPost = await getPinsCidPost(cid);
+    return responseGetPinsCidPost;
+  }
+
+  if (file instanceof Blob) {
+    console.log(`Blob`);
+    dataFile = file;
+  } else if (typeof file === 'string') {
+    dataFile = new File([file], 'file.txt');
+  } else if (file.name && file.size < 8 * 10 ** 6) {
+    dataFile = new File([file], file.name);
+  }
+
+  if (dataFile !== null) {
+    const formData = new FormData();
+    formData.append('file', dataFile);
+    try {
+      const response = await axios({
+        method: 'post',
+        url: 'https://io.cybernode.ai/add',
+        data: formData,
+      });
+      return response;
+    } catch (error) {
+      const responseGetPinsCidPost = await getPinsCidPost(cid);
+      return responseGetPinsCidPost;
+    }
+  } else {
+    const responseGetPinsCidPost = await getPinsCidPost(cid);
+    return responseGetPinsCidPost;
+  }
+};
+
+export const getPinsCid = async (cid, file) => {
   try {
     const responseGetPinsCidGet = await getPinsCidGet(cid);
     console.log(`responseGetPinsCidGet`, responseGetPinsCidGet);
@@ -1394,6 +1434,11 @@ export const getPinsCid = async (cid) => {
             return null;
           }
         }
+      }
+
+      if (file !== undefined) {
+        const responseGetPinsCidPost = await addFileToCluster(cid, file);
+        return responseGetPinsCidPost;
       }
       const responseGetPinsCidPost = await getPinsCidPost(cid);
       return responseGetPinsCidPost;

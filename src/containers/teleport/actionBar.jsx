@@ -11,7 +11,7 @@ import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import { exponentialToDecimal, coinDecimals } from '../../utils/utils';
 import { getTxs } from '../../utils/search/utils';
-import { sortReserveCoinDenoms } from './utils';
+import { sortReserveCoinDenoms, reduceAmounToken } from './utils';
 
 import ActionBarStaps from './actionBarSteps';
 
@@ -169,19 +169,17 @@ function ActionBar({ stateActionBar }) {
       [tokenB]: amountY,
     };
 
-    if (
-      arrangedReserveCoinDenoms[0] === 'millivolt' ||
-      arrangedReserveCoinDenoms[0] === 'milliampere'
-    ) {
-      deposit[arrangedReserveCoinDenoms[0]] *= 1000;
-    }
+    deposit[arrangedReserveCoinDenoms[0]] = reduceAmounToken(
+      deposit[arrangedReserveCoinDenoms[0]],
+      arrangedReserveCoinDenoms[0],
+      true
+    );
 
-    if (
-      arrangedReserveCoinDenoms[1] === 'millivolt' ||
-      arrangedReserveCoinDenoms[1] === 'milliampere'
-    ) {
-      deposit[arrangedReserveCoinDenoms[1]] *= 1000;
-    }
+    deposit[arrangedReserveCoinDenoms[1]] = reduceAmounToken(
+      deposit[arrangedReserveCoinDenoms[1]],
+      arrangedReserveCoinDenoms[1],
+      true
+    );
 
     const depositCoins = [
       coin(deposit[arrangedReserveCoinDenoms[0]], arrangedReserveCoinDenoms[0]),
@@ -229,6 +227,10 @@ function ActionBar({ stateActionBar }) {
 
     if (tokenA === 'millivolt' || tokenA === 'milliampere') {
       amountTokenA *= 1000;
+    }
+
+    if (tokenA.includes('ibc')) {
+      amountTokenA = reduceAmounToken(amountTokenA, tokenA, true);
     }
 
     setStage(STAGE_SUBMITTED);

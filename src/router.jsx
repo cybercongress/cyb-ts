@@ -67,7 +67,7 @@ function AppRouter({
   setIpfsIDProps,
 }) {
   // const dataIpfsStart = useIpfsFactory();
-  // const dataIpfsStart = useIpfsStart();
+  const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
   const [genesis, setGenesis] = useState(false);
@@ -76,13 +76,13 @@ function AppRouter({
 
   // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   // setLoader(dataIpfsStart.loader);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    // tryConnectToPeer(dataIpfsStart.node);
+  }, [dataIpfsStart]);
 
   return (
     <Router history={history}>
@@ -94,7 +94,7 @@ function AppRouter({
         {/* <Route path="/gift/:address?" component={Gift} /> */}
         <Route path="/gol/takeoff" component={Funding} />
         <Route path="/tot" component={Got} />
-        <Route path="/brain" component={Brain} />
+        {/* <Route path="/brain" component={Brain} /> */}
         <Route exact path="/senate" component={Governance} />
         <Route path="/senate/:proposalId" component={ProposalsDetail} />
         <Route path="/halloffame" component={Validators} />

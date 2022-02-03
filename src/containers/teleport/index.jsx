@@ -119,12 +119,20 @@ function Teleport({ defaultAccount }) {
   useEffect(() => {
     let orderPrice = 0;
 
-    if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = (Number(tokenBPoolAmount) / Number(tokenAPoolAmount)) * 0.9;
-    } else {
-      orderPrice = (Number(tokenAPoolAmount) / Number(tokenBPoolAmount)) * 1.1;
-    }
+    let poolAmountA = tokenAPoolAmount;
+    let poolAmountB = tokenBPoolAmount;
 
+    // if (poolAmountA && poolAmountB) {
+    //   poolAmountA = reduceAmounToken(tokenAPoolAmount, tokenA, true);
+    //   poolAmountB = reduceAmounToken(tokenBPoolAmount, tokenB, true);
+    // }
+
+    if ([tokenA, tokenB].sort()[0] !== tokenA) {
+      orderPrice = (Number(poolAmountB) / Number(poolAmountA)) * 0.97;
+    } else {
+      orderPrice = (Number(poolAmountA) / Number(poolAmountB)) * 1.03;
+    }
+    console.log(`orderPrice`, orderPrice);
     if (orderPrice && orderPrice !== Infinity) {
       setSwapPrice(orderPrice);
     }
@@ -140,12 +148,14 @@ function Teleport({ defaultAccount }) {
         );
         const dataReduceBalances = reduceBalances(getAllBalancesPromise);
         if (dataReduceBalances[tokenA] && dataReduceBalances[tokenB]) {
-          setTokenAPoolAmount(
-            reduceAmounToken(dataReduceBalances[tokenA], tokenA)
-          );
-          setTokenBPoolAmount(
-            reduceAmounToken(dataReduceBalances[tokenB], tokenB)
-          );
+          setTokenAPoolAmount(dataReduceBalances[tokenA]);
+          setTokenBPoolAmount(dataReduceBalances[tokenB]);
+          // setTokenAPoolAmount(
+          //   reduceAmounToken(dataReduceBalances[tokenA], tokenA, true)
+          // );
+          // setTokenBPoolAmount(
+          //   reduceAmounToken(dataReduceBalances[tokenB], tokenB, true)
+          // );
         }
       }
     };
@@ -250,11 +260,11 @@ function Teleport({ defaultAccount }) {
         exceeded = true;
       }
     }
-    console.log(`price`, price);
+    // console.log(`price`, price);
 
     // setSlippage(slippage);
     setIsExceeded(exceeded);
-    setTokenPrice(price);
+    // setTokenPrice(price);
     // helper
   }
 
@@ -320,6 +330,7 @@ function Teleport({ defaultAccount }) {
     tokenAPoolAmount,
     tokenBPoolAmount,
     tokenChange,
+    swapPrice,
   };
 
   const stateWithdraw = {

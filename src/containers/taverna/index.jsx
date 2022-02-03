@@ -82,6 +82,7 @@ function Taverna({ node, mobile, defaultAccount }) {
           }
           return (
             <SearchSnippet
+              key={key}
               cid={key}
               data={tweets[key]}
               mobile={mobile}
