@@ -68,11 +68,18 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'boot',
   DENOM_CYBER_G: `GBOOT`,
-  HYDROGEN: 'H',
-  // CHAIN_ID: 'dev',
+
+//   CHAIN_ID: 'space-pussy-1',
+//   CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
+//   CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
+//   CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
+
+  // CHAIN_ID: 'bostrom1',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
+
+  HYDROGEN: 'H',
   CHAIN_ID: 'bostrom',
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
@@ -80,6 +87,7 @@ const CYBER = {
   CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
   CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
+
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
@@ -206,6 +214,7 @@ const BOND_STATUS = {
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
@@ -226,6 +235,7 @@ export {
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
   PATTERN_CYBER,
+  PATTERN_CYBER_CONTRACT,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
   PATTERN_IPFS_HASH,

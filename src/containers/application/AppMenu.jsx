@@ -34,6 +34,11 @@ const itemsMenu = (address) => {
       ],
     },
     {
+      name: 'Contracts',
+      to: '/contracts',
+      subItems: [],
+    },
+    {
       name: 'Genesis',
       to: '/genesis',
       subItems: [],
