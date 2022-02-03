@@ -84,8 +84,10 @@ const CYBER = {
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
+
   CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+
   CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
 
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
