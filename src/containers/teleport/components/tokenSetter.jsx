@@ -41,6 +41,7 @@ function TokenSetter({
   readonly,
 }) {
   // console.log(`token`, token);
+
   return (
     <Pane>
       <BalanceToken data={accountBalances} token={token} />

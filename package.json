@@ -114,7 +114,6 @@
     "highlight.js": "^10.0.3",
     "ipfs": "0.54.3",
     "ipfs-api": "^26.1.2",
-    "ipfs-pubsub-room": "^2.0.1",
     "ipfs-unixfs": "^0.2.0",
     "ipld-dag-pb": "0.15.3",
     "is-svg": "^4.2.1",

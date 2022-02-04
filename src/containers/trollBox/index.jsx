@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import Room from 'ipfs-pubsub-room';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
 import { trimString } from '../../utils/utils';
@@ -110,7 +109,7 @@ class TrollBoxx extends React.PureComponent {
   async componentDidMount() {
     const { node } = this.props;
     if (node !== null) {
-      await this.init();
+      // await this.init();
     }
     this.scrollToBottom();
   }
@@ -118,7 +117,7 @@ class TrollBoxx extends React.PureComponent {
   componentDidUpdate(prevProps) {
     const { node } = this.props;
     if (node !== prevProps.node) {
-      this.init();
+      // this.init();
     }
     this.scrollToBottom();
   }
@@ -130,42 +129,42 @@ class TrollBoxx extends React.PureComponent {
     }
   };
 
-  init = async () => {
-    const { node, ipfsId } = this.props;
+  // init = async () => {
+  //   const { node, ipfsId } = this.props;
 
-    const roomIpfs = new Room(node, TOPIC);
-    this.setState({
-      room: roomIpfs,
-    });
-    console.log('roomIpfs', roomIpfs);
-    // setRoom(roomIpfs);
-    roomIpfs.on('peer joined', (peer) => console.log(`peer ${peer} joined`));
-    roomIpfs.on('peer left', (peer) => console.log(`peer ${peer} left`));
-    // roomIpfs.on('peer joined', (peer) =>
-    //   roomIpfs.sendTo(peer, `Hello ${peer}`)
-    // );
-    const peers = roomIpfs.getPeers();
-    console.log(peers);
+  //   const roomIpfs = new Room(node, TOPIC);
+  //   this.setState({
+  //     room: roomIpfs,
+  //   });
+  //   console.log('roomIpfs', roomIpfs);
+  //   // setRoom(roomIpfs);
+  //   roomIpfs.on('peer joined', (peer) => console.log(`peer ${peer} joined`));
+  //   roomIpfs.on('peer left', (peer) => console.log(`peer ${peer} left`));
+  //   // roomIpfs.on('peer joined', (peer) =>
+  //   //   roomIpfs.sendTo(peer, `Hello ${peer}`)
+  //   // );
+  //   const peers = roomIpfs.getPeers();
+  //   console.log(peers);
 
-    roomIpfs.on('message', (message) => {
-      console.log('message', message);
-      console.log('message', message.data.toString());
-      const { from } = message;
-      const data = message.data.toString();
-      let msg = {};
-      // if (data.indexOf('{"name":') !== -1) {
-      //   const msgObj = JSON.parse(data);
-      //   msg = { ...msgObj };
-      // } else {
-      msg = {
-        name: from,
-        text: data,
-      };
-      // }
-      // Update Messages
-      this.updatedMessages(msg);
-    });
-  };
+  //   roomIpfs.on('message', (message) => {
+  //     console.log('message', message);
+  //     console.log('message', message.data.toString());
+  //     const { from } = message;
+  //     const data = message.data.toString();
+  //     let msg = {};
+  //     // if (data.indexOf('{"name":') !== -1) {
+  //     //   const msgObj = JSON.parse(data);
+  //     //   msg = { ...msgObj };
+  //     // } else {
+  //     msg = {
+  //       name: from,
+  //       text: data,
+  //     };
+  //     // }
+  //     // Update Messages
+  //     this.updatedMessages(msg);
+  //   });
+  // };
 
   updatedMessages = (msg = {}) => {
     const { messages } = this.state;
