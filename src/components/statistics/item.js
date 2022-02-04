@@ -60,6 +60,8 @@ export const CardStatisics = ({
   styleContainer,
   styleValue,
   styleTitle,
+  tooltipValue,
+  positionTooltip,
 }) => (
   <div style={styleContainer} className="container-statistics-card">
     {(value || value === 0) && (
@@ -71,6 +73,13 @@ export const CardStatisics = ({
       <Pane display="flex" alignItems="center">
         <span style={styleTitle} className="card-statistics-title">
           {title}
+          {tooltipValue && (
+            <Pane marginLeft={5}>
+              <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
+                <Icon icon="info-sign" color="#3ab793d4" />
+              </Tooltip>
+            </Pane>
+          )}
         </span>
         {link && <Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
       </Pane>

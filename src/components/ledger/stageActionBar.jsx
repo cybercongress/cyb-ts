@@ -1022,7 +1022,7 @@ export const ReDelegate = ({
   <ActionBar>
     <ActionBarContentText>
       <Text marginRight={5} fontSize="16px" color="#fff">
-        Enter the amount{' '}
+        amount{' '}
       </Text>
       <Input
         value={toSend}

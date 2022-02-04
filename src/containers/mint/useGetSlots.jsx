@@ -159,9 +159,7 @@ function useGetSlots(addressActive, updateAddress) {
     const tempData = [];
     let length = parseFloat(startTime);
     const vestedAmount = {
-      hydrogen: 0,
-      millivolt: 0,
-      milliampere: 0,
+      ...initStateVested,
     };
 
     if (data.length > 0) {

@@ -21,6 +21,7 @@ import {
   CYBER,
   LEDGER,
   PATTERN_CYBER,
+  PATTERN_CYBER_CONTRACT,
   DEFAULT_GAS_LIMITS,
 } from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
@@ -130,10 +131,13 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
 
   useEffect(() => {
     if (addressAddRouteInput !== '') {
-      if (!addressAddRouteInput.match(PATTERN_CYBER)) {
-        setRecipientInputValid('Invalid bech32 address');
-      } else {
+      if (
+        addressAddRouteInput.match(PATTERN_CYBER) ||
+        addressAddRouteInput.match(PATTERN_CYBER_CONTRACT)
+      ) {
         setRecipientInputValid(null);
+      } else {
+        setRecipientInputValid('Invalid bech32 address');
       }
     }
   }, [addressAddRouteInput]);

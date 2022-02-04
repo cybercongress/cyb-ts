@@ -1,0 +1,13 @@
+@import '../globalStyle.scss';
+
+.containerContractPageContainerTitle {
+  &Title {
+    font-size: 20px;
+  }
+
+  &Balance {
+    display: inline-flex;
+    font-size: 18px;
+    // @include border-card;
+  }
+}
