@@ -45,6 +45,20 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
+const replaceFunc = (number) => {
+  return number.replace(/ /g, '');
+};
+
+const numberString = (num) =>
+  String(num).replace(/^\d+/, (number) =>
+    [...number]
+      .map(
+        (digit, index, digits) =>
+          (!index || (digits.length - index) % 3 ? '' : ' ') + digit
+      )
+      .join('')
+  );
+
 function Teleport({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
   const location = useLocation();
@@ -262,32 +276,18 @@ function Teleport({ defaultAccount }) {
       }
     }
     setTokenBAmount(counterPairAmount);
+
+    // setTokenBAmount(numberString(counterPairAmount));
   }, [tokenAAmount, tokenA, tokenB, swapPrice]);
-
-  // const numberString = (num) =>
-  //   String(num).replace(/^\d+/, (number) =>
-  //     [...number]
-  //       .map(
-  //         (digit, index, digits) =>
-  //           (!index || (digits.length - index) % 3 ? '' : ' ') + digit
-  //       )
-  //       .join('')
-  //   );
-  // function addThousandsSeparator(x) {
-  //   // remove commas
-  //   console.log('first', x);
-  //   const retVal = x ? parseFloat(x.replace(/ /g, '')) : 0;
-
-  //   // apply formatting
-  //   return numberString(retVal.toString());
-  // }
 
   function amountChangeHandler(e) {
     const inputAmount = e.target.value;
+    // const retVal = replaceFunc(inputAmount);
+    // if (/^[\d]*\.?[\d]{0,3}$/.test(retVal)) {
     if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
+      // setTokenAAmount(numberString(retVal));
       setTokenAAmount(inputAmount);
     }
-    // setTokenAAmount(inputAmount);
   }
 
   const onChangeInputWithdraw = (e) => {
