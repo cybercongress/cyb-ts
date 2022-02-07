@@ -161,6 +161,32 @@ const MsgType = ({ type }) => {
     return <ContainerTitle img={bank}>IBC Transfer</ContainerTitle>;
   }
 
+  // wasm
+
+  if (type.includes('MsgExecuteContract')) {
+    return <ContainerTitle img={bank}>Execute Program</ContainerTitle>;
+  }
+
+  if (type.includes('MsgInstantiateContract')) {
+    return <ContainerTitle img={bank}>Instantiate Program</ContainerTitle>;
+  }
+
+  if (type.includes('MsgStoreCode')) {
+    return <ContainerTitle img={bank}>Store Program Code</ContainerTitle>;
+  }
+
+  if (type.includes('MsgMigrateContract')) {
+    return <ContainerTitle img={bank}>Migrate Program</ContainerTitle>;
+  }
+
+  if (type.includes('MsgUpdateAdmin')) {
+    return <ContainerTitle img={bank}>Update Program Admin</ContainerTitle>;
+  }
+
+  if (type.includes('MsgClearAdmin')) {
+    return <ContainerTitle img={bank}>Clear Program Admin</ContainerTitle>;
+  }
+
 
   return <div>{type}</div>;
 };
