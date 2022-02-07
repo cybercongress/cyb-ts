@@ -5,6 +5,7 @@ import { formatNumber } from '../../utils/search/utils';
 import { Account, MsgType, LinkWindow, ValueImg } from '../../components';
 import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -486,7 +487,7 @@ function Activites({ msg }) {
       );
 
     // wasm
-    case 'wasm/MsgInstantiate':
+    case 'wasm/MsgInstantiateContract':
       return (
         <ContainerMsgsType type={msg.type}>
           <Row title="address" value={<Account address={msg.value.sender} />} />
@@ -494,6 +495,48 @@ function Activites({ msg }) {
           {msg.value.code_id && (
             <Row title="code id" value={msg.value.code_id} />
           )}
+          <Row title="message" value={fromUtf8(fromBase64(msg.value.msg))} />
+          <Row title="funds" value={
+              msg.value.funds.length > 0
+              ? msg.value.funds.map((amount, i) => {
+                  if (i > 0) {
+                    return ` ,${amount.amount} ${amount.denom}`;
+                  }
+                  return `${formatNumber(
+                    amount.amount
+                  )} ${amount.denom.toUpperCase()}`;
+                })
+              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+          } />
+        </ContainerMsgsType>
+      );
+
+    case 'wasm/MsgStoreCode':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="address" value={<Account address={msg.value.sender} />} />
+          <Row title="wasm byte code" value={msg.value.wasm_byte_code} />
+        </ContainerMsgsType>
+      );
+
+    case 'wasm/MsgExecuteContract':
+      return (
+        <ContainerMsgsType type={msg.type}>
+          <Row title="address" value={<Account address={msg.value.sender} />} />
+          <Row title="contract" value={<Account address={msg.value.contract} />} />
+          <Row title="message" value={fromUtf8(fromBase64(msg.value.msg))} />
+          <Row title="funds" value={
+              msg.value.funds.length > 0
+              ? msg.value.funds.map((amount, i) => {
+                  if (i > 0) {
+                    return ` ,${amount.amount} ${amount.denom}`;
+                  }
+                  return `${formatNumber(
+                    amount.amount
+                  )} ${amount.denom.toUpperCase()}`;
+                })
+              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+          } />
         </ContainerMsgsType>
       );
 
