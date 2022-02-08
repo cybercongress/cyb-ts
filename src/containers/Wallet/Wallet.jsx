@@ -573,7 +573,6 @@ class Wallet extends React.Component {
                 For 1 supllied BOOT neurons get 1 H plus newly born BOOT.
                 <br></br>
                 <br></br>
-                
               </Text>
             </Pane>
             <NotFound text=" " />
