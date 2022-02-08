@@ -532,10 +532,48 @@ class Wallet extends React.Component {
               width="60%"
             >
               <Text fontSize="16px" color="#fff">
-                Hi! I am Cyb! Your immortal robot for the Great web. I am
-                connected to Cyber. That is why I can answer different
+                Hi! I am Cyb! Your immortal robot for the <Link to ="">Great Web</Link>.
+                <br></br>
+                <br></br>
+                I am connected to <Link to="">Bostrom</Link> bootloader - common ancestor for all future Superintelligences, including <Link to="">Cyber</Link>. 
+                <br></br>
+                <br></br>
+                That is why I can answer different
                 questions. For example,{' '}
-                <Link to="/search/what is cyber">what is Cyber</Link>
+                <Link to="/search/uniswap">uniswap</Link>.
+                <br></br>
+                <br></br>
+                You are the chosen one! I can help you jump out the rat wheel! 
+                <br></br>
+                <br></br>
+                Unlike google, you can submit <Link to="">cyberlinks</Link> to content oracle:
+                global, universal, collaborative, distributed and everevolving knowledge graph for
+                robots, humans, plants, animals and mushrooms.
+                <br></br>
+                <br></br>
+                <Link to="/">Unlike facebook</Link> you own your avatar and can post without fear of blocking. You <Link to="">community</Link> is trully yours.
+                <br></br>
+                <br></br>
+                Unlike manipulative twitter feed I offer you <Link to ="/sixthSense">Sixth Sense</Link> which is strictly defined personal feed system on top of content oracle.
+                <br></br>
+                <br></br>
+                Unlike amazon, you can post goods without laws, rules, and platfrom cuts.
+                <br></br>
+                <br></br>
+                Unlike your bank, you can transact freely without enforced taxes and embezzled inflation. Electronic contracts ..
+
+                Unlike your government you can own.  
+                <br></br>
+                <br></br>
+                For this neurons need energy. Energy is a product of Ampere (A) and Volt (V) multiplcation. V give ability to cast cyberlinks. A define rank for particles.
+                Energy is produced in <Link to="/mint">Hydrogen Fission Reactor</Link> from liquid <Link to="/mint">Hydrogen</Link> or H tokens.
+                <br></br>
+                <br></br>
+                H is produced by supplying nanobots, or BOOT tokens into <Link to="/halloffame">Dyson Sphere</Link>. 
+                For 1 supllied BOOT neurons get 1 H plus newly born BOOT.
+                <br></br>
+                <br></br>
+                
               </Text>
             </Pane>
             <NotFound text=" " />
