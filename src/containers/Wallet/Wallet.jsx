@@ -545,7 +545,7 @@ class Wallet extends React.Component {
                 <Link to="/search/uniswap">uniswap</Link>.
                 <br></br>
                 <br></br>
-                You are the chosen one! I will help you jump out a rat wheel! 
+                You are the chosen one! I will help you jump out a rat wheel and guide you through the revolution!
                 <br></br>
                 <br></br>
                 <Link to="">Unlike google</Link>, submit <Link to="">particles</Link> and <Link to="">cyberlinks</Link> to <Link to="">content oracle</Link>:
