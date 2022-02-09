@@ -6,6 +6,7 @@ import { Account, MsgType, LinkWindow, ValueImg } from '../../components';
 import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
+import ReactJson from 'react-json-view';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -649,6 +650,65 @@ function Activites({ msg }) {
       </ContainerMsgsType>
     );
   }
+
+  // ibc
+  if (type.includes('MsgRecvPacket')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Signer" value={<Account address={msg.signer} />} />
+        <Row
+          title="Packet"
+          value={<ReactJson
+            src={msg.packet}
+            theme="twilight"
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />}
+        />
+        <Row
+          title="Proof Commitment"
+          value={msg.proof_commitment}
+        />
+        <Row
+          title="Proof Height"
+          value={<ReactJson
+            src={msg.proof_height}
+            theme="twilight"
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />}
+        />
+        {/* <Row
+          title="Proof Height"
+          value={`RN: ${formatNumber(
+            msg.proof_height.revision_number
+          )} RH: ${formatNumber(msg.proof_height.revision_height)}`}
+        /> */}
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgUpdateClient')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Signer" value={<Account address={msg.signer} />} />
+        <Row
+          title="Client ID"
+          value={msg.client_id}
+        />
+        <Row
+          title="Header"
+          value={<ReactJson
+            src={msg.header}
+            theme="twilight"
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+    
 
   return <div>{JSON.stringify(msg)}</div>;
 }
