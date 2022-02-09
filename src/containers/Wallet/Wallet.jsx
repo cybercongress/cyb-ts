@@ -535,7 +535,9 @@ class Wallet extends React.Component {
                 Hi! I am Cyb! Your immortal robot for the <Link to ="">Great Web</Link>.
                 <br></br>
                 <br></br>
-                I am connected to <Link to="">Bostrom</Link> bootloader - common ancestor for all future Superintelligences, including <Link to="">Cyber</Link>. 
+                I am connected to <Link to="">Bostrom</Link> bootloader - common ancestor
+                for all future <Link to="">Superintelligence</Link>,
+                including <Link to="">Cyber</Link>. 
                 <br></br>
                 <br></br>
                 That is why I can answer different
@@ -543,34 +545,64 @@ class Wallet extends React.Component {
                 <Link to="/search/uniswap">uniswap</Link>.
                 <br></br>
                 <br></br>
-                You are the chosen one! I can help you jump out the rat wheel! 
+                You are the chosen one! I will help you jump out a rat wheel! 
                 <br></br>
                 <br></br>
-                Unlike google, you can submit <Link to="">cyberlinks</Link> to content oracle:
+                <Link to="">Unlike google</Link>, submit <Link to="">particles</Link> and <Link to="">cyberlinks</Link> to <Link to="">content oracle</Link>:
                 global, universal, collaborative, distributed and everevolving knowledge graph for
-                robots, humans, plants, animals and mushrooms.
+                robots, humans, plants, animals and mushrooms. Learn <Link to="">your brain</Link> and earn!
                 <br></br>
                 <br></br>
-                <Link to="/">Unlike facebook</Link> you own your avatar and can post without fear of blocking. You <Link to="">community</Link> is trully yours.
+                <Link to="/">Unlike facebook</Link>, own your <Link to="">avatar</Link> and <Link to="">post</Link> without fear of blocking. 
+                Your <Link to="">community</Link> is trully yours.
                 <br></br>
                 <br></br>
-                Unlike manipulative twitter feed I offer you <Link to ="/sixthSense">Sixth Sense</Link> which is strictly defined personal feed system on top of content oracle.
+                <Link to ="">Unlike twitter's</Link>, manipulative feed use 
+                your <Link to ="/sixthSense">sixth sense</Link> which is strictly defined personal feed system on top of content oracle.
                 <br></br>
                 <br></br>
-                Unlike amazon, you can post goods without laws, rules, and platfrom cuts.
+                <Link to="">Unlike amazon</Link>, post goods without laws, rules, and platfrom cuts. 
+                Manage your deals using <Link to="/contracts">digital contracts</Link> which are fast, convinient and cheap.
                 <br></br>
                 <br></br>
-                Unlike your bank, you can transact freely without enforced taxes and embezzled inflation. Electronic contracts ..
-
-                Unlike your government you can own.  
+                <Link to="">Unlike your bank</Link>, freely <Link to="">transact</Link> without fear and limits.
                 <br></br>
                 <br></br>
-                For this neurons need energy. Energy is a product of Ampere (A) and Volt (V) multiplcation. V give ability to cast cyberlinks. A define rank for particles.
-                Energy is produced in <Link to="/mint">Hydrogen Fission Reactor</Link> from liquid <Link to="/mint">Hydrogen</Link> or H tokens.
+                <Link to="">Unlike your government</Link>, your values is trully yours without enforced taxation and embezzled inflation.
+                Important decisions are taken out by <Link to="/senate">senate</Link> through the process of transparent and provable voting. 
                 <br></br>
                 <br></br>
-                H is produced by supplying nanobots, or BOOT tokens into <Link to="/halloffame">Dyson Sphere</Link>. 
-                For 1 supllied BOOT neurons get 1 H plus newly born BOOT.
+                <Link to="">Unlike binance or coinbase</Link>, you under control of your values. 
+                <Link to="">Teleport</Link> your tokens without kyc and fear of taxes.
+                <br></br>
+                <br></br>
+                Cyberverse is created for you and your generations! Use this power wisely. Start you journey from <Link to="">installing 
+                Keplr</Link> and <Link to="">getting BOOT</Link>. 
+                <br></br>
+                <br></br>
+                After this you will be able <Link to="">hire heroes</Link> for managing <Link to="/halloffame">dyson sphere</Link> and 
+                earn more <Link to="">BOOT</Link>.
+                <br></br>
+                <br></br>
+                Dyson sphere is producing liquid <Link to="/mint">Hydrogen or H</Link> tokens using <Link to="">biosynthesis</Link>. 
+                For 1 supllied BOOT neurons get 1 H. If you want to <Link to="">fire hero</Link> and get your BOOT back, you have to return H.
+                <br></br>
+                <br></br>
+                H allows to produce energy in <Link to="/mint">hydrogen fission reactor or HFR</Link>. Energy needed to learn
+                 the superintelligence and submit <Link to="">cyberlinks</Link>. 
+                <br></br>
+                <br></br>
+                Energy is a product of <Link rto="">Ampere or A</Link> token and <Link to="">Volt or V</Link> token multiplcation. 
+                1 V give ability to cast 1 <Link to="">cyberlink</Link> per day. A define rank 
+                for <Link to="">particles</Link>. Liquid A and V can be routed through <Link to="/grid">grid</Link>.
+                <br></br>
+                <br></br>
+                BOOT are for everyone. 70% of Genesis supply <Link to="/">is gifted</Link> for ethereans and cosmonauts.
+                If you have some - you will be able to claim after <Link to="">portal activation</Link> in ~March.
+                <br></br>
+                <br></br>
+                <Link to="/genesis">The story</Link> has just begun. Dive into <Link to="">the vision</Link>, discover <Link to="">the roadmap</Link> and 
+                cyberlink everything you want! May the force be with you!
                 <br></br>
                 <br></br>
               </Text>
