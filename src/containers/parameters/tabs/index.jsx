@@ -9,6 +9,7 @@ import ResourcesParam from './resources';
 import WasmParam from './wasm';
 import LiquidityParam from './liquidity'
 import GridParam from './grid'
+import DmnParam from './dmn';
 
 export {
   BandwidthParam,
@@ -22,4 +23,5 @@ export {
   WasmParam,
   LiquidityParam,
   GridParam,
+  DmnParam,
 };

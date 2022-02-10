@@ -15,6 +15,7 @@ import {
   WasmParam,
   LiquidityParam,
   GridParam,
+  DmnParam,
 } from './tabs';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -49,7 +50,8 @@ const initParam = {
   resources: null,
   grid: null,
   wasm: null,
-  liquidity: null
+  liquidity: null,
+  dmn: null,
 };
 
 function ParamNetwork({ location }) {
@@ -104,6 +106,11 @@ function ParamNetwork({ location }) {
       pathname.match(/grid/gm).length > 0
     ) {
       setSelected('grid');
+    } else if (
+      pathname.match(/dmn/gm) &&
+      pathname.match(/dmn/gm).length > 0
+    ) {
+      setSelected('dmn');
     } else {
       setSelected('bandwidth');
     }
@@ -238,6 +245,15 @@ function ParamNetwork({ location }) {
     );
   }
 
+  if (selected === 'dmn') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/dmn"
+        render={() => <DmnParam data={dataParam.dmn} />}
+      />
+    );
+  }
+
   return (
     <main className="block-body">
       <Pane
@@ -310,6 +326,11 @@ function ParamNetwork({ location }) {
           text="Grid"
           isSelected={selected === 'grid'}
           to="/network/bostrom/parameters/grid"
+        />
+        <TabBtn
+          text="DMN"
+          isSelected={selected === 'dmn'}
+          to="/network/bostrom/parameters/dmn"
         />
       </Tablist>
       <Pane

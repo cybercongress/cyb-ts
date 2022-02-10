@@ -983,6 +983,19 @@ export const getParamGrid = async () => {
   }
 };
 
+export const getParamDmn = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/dmn/v1beta1/dmn/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getParamNetwork = async (address, node) => {
   try {
     let staking = null;
@@ -995,6 +1008,7 @@ export const getParamNetwork = async (address, node) => {
     let resources = null;
     let liquidity = null;
     let grid = null;
+    let dmn = null;
 
     const dataStaking = await getParamStaking();
     if (dataStaking !== null) {
@@ -1042,6 +1056,11 @@ export const getParamNetwork = async (address, node) => {
       grid = dataGrid;
     }
 
+    const dataDmn = await getParamDmn();
+    if (dataDmn !== null) {
+      dmn = dataDmn;
+    }
+
     const response = {
       staking,
       slashing,
@@ -1053,6 +1072,7 @@ export const getParamNetwork = async (address, node) => {
       resources,
       liquidity,
       grid,
+      dmn,
     };
 
     return response;
