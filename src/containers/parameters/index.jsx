@@ -11,8 +11,10 @@ import {
   StakingParam,
   RankParam,
   InlfationParam,
-  ParamEnergy,
+  ResourcesParam,
   WasmParam,
+  LiquidityParam,
+  GridParam,
 } from './tabs';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -44,7 +46,10 @@ const initParam = {
   gov: null,
   rank: null,
   mint: null,
-  energy: null,
+  resources: null,
+  grid: null,
+  wasm: null,
+  liquidity: null
 };
 
 function ParamNetwork({ location }) {
@@ -94,6 +99,11 @@ function ParamNetwork({ location }) {
       pathname.match(/liquidity/gm).length > 0
     ) {
       setSelected('liquidity');
+    } else if (
+      pathname.match(/grid/gm) &&
+      pathname.match(/grid/gm).length > 0
+    ) {
+      setSelected('grid');
     } else {
       setSelected('bandwidth');
     }
@@ -103,7 +113,6 @@ function ParamNetwork({ location }) {
     chekPathname();
     const feachData = async () => {
       const response = await getParamNetwork();
-      console.log('response Param', response);
       if (response !== null) {
         setDataParam(response);
       }
@@ -197,7 +206,25 @@ function ParamNetwork({ location }) {
     content = (
       <Route
         path="/network/bostrom/parameters/resources"
-        render={() => <ParamEnergy data={dataParam.energy} />}
+        render={() => <ResourcesParam data={dataParam.resources} />}
+      />
+    );
+  }
+
+  if (selected === 'liquidity') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/liquidity"
+        render={() => <LiquidityParam data={dataParam.liquidity} />}
+      />
+    );
+  }
+
+  if (selected === 'grid') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/grid"
+        render={() => <GridParam data={dataParam.grid} />}
       />
     );
   }
@@ -278,6 +305,11 @@ function ParamNetwork({ location }) {
           text="Liquidity"
           isSelected={selected === 'liquidity'}
           to="/network/bostrom/parameters/liquidity"
+        />
+        <TabBtn
+          text="Grid"
+          isSelected={selected === 'grid'}
+          to="/network/bostrom/parameters/grid"
         />
       </Tablist>
       <Pane
