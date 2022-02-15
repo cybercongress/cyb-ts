@@ -31,7 +31,7 @@ function useGetDenom(denomValue) {
   return { denom, type };
 }
 
-function Denom({ nodeIpfs, denomValue, ...props }) {
+function Denom({ denomValue, ...props }) {
   try {
     const { denom, type } = useGetDenom(denomValue);
 
