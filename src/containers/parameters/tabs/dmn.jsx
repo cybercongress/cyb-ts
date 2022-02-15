@@ -2,7 +2,7 @@ import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Vitalik } from '../../../components';
 
-function RankParam({ data }) {
+function DmnParam({ data }) {
   try {
     return (
       <Pane
@@ -10,19 +10,13 @@ function RankParam({ data }) {
         gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
         gridGap="20px"
       >
-        <CardStatisics
-          title="calculation period"
-          value={parseFloat(data.calculation_period)}
-        />
-        <CardStatisics
-          title="damping factor"
-          value={parseFloat(data.damping_factor)}
-        />
-        <CardStatisics title="tolerance" value={parseFloat(data.tolerance)} />
+        <CardStatisics title="max slots" value={data.max_slots} />
+        <CardStatisics title="max gas" value={data.max_gas} />
+        <CardStatisics title="fee ttl" value={data.fee_ttl} />
       </Pane>
     );
   } catch (error) {
-    console.warn('RankParam', error);
+    console.warn('DmnParam', error);
     return (
       <Pane
         justifyContent="center"
@@ -37,4 +31,4 @@ function RankParam({ data }) {
   }
 }
 
-export default RankParam;
+export default DmnParam;
