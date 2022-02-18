@@ -23,6 +23,7 @@ import {
   reduceAmounToken,
   getPoolToken,
   getCoinDecimals,
+  networkList,
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
@@ -33,6 +34,8 @@ import Swap from './swap';
 import Withdraw from './withdraw';
 import PoolData from './poolData';
 import coinDecimalsConfig from '../../utils/configToken';
+import useSetupIbcClient from './hooks/useSetupIbcClient';
+import { networkList as networks } from './hooks/useGetBalancesIbc';
 
 const tokenADefaultValue = 'boot';
 const tokenBDefaultValue = 'hydrogen';
@@ -60,7 +63,7 @@ const numberString = (num) =>
   );
 
 function Teleport({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, keplr } = useContext(AppContext);
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
@@ -86,6 +89,33 @@ function Teleport({ defaultAccount }) {
   const [selectMyPool, setSelectMyPool] = useState('');
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
   const [isExceeded, setIsExceeded] = useState(false);
+  const [networkA, setNetworkA] = useState(CYBER.CHAIN_ID);
+  const [networkB, setNetworkB] = useState(CYBER.CHAIN_ID);
+  const [typeTxs, setTypeTxs] = useState('swap');
+  const { ibcClient, balanceIbc, denomIbc } = useSetupIbcClient(
+    tokenA,
+    networkA,
+    keplr
+  );
+  const [sourceChannel, setSourceChannel] = useState(null);
+
+  useEffect(() => {
+    if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
+      setTypeTxs('swap');
+    }
+
+    if (networkA !== CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
+      setTypeTxs('deposit');
+      const { sourceChannelId } = networks[networkList[networkA]];
+      setSourceChannel(sourceChannelId);
+    }
+
+    if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
+      setTypeTxs('withdraw');
+      const { destChannelId } = networks[networkList[networkB]];
+      setSourceChannel(destChannelId);
+    }
+  }, [networkB, networkA]);
 
   useEffect(() => {
     const { pathname } = location;
@@ -133,6 +163,7 @@ function Teleport({ defaultAccount }) {
 
   useEffect(() => {
     let orderPrice = 0;
+    setSwapPrice(0);
 
     const poolAmountA = new BigNumber(
       getCoinDecimals(Number(tokenAPoolAmount), tokenA)
@@ -142,17 +173,67 @@ function Teleport({ defaultAccount }) {
     );
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
+      // const poolFee = 1 - 0.003;
+      // const imputNumber = new BigNumber(tokenAAmount).multipliedBy(2);
+      // const secondNumb = poolAmountA.plus(imputNumber);
+      // const testPrice = poolAmountB
+      //   .multipliedBy(poolFee)
+      //   .dividedBy(secondNumb)
+      //   .toNumber();
+      // orderPrice = testPrice;
+      // console.log('testPrice', testPrice);
       orderPrice = poolAmountB.dividedBy(poolAmountA);
       orderPrice = orderPrice.multipliedBy(0.97).toNumber();
     } else {
+      // const poolFee = 1 - 0.003;
+      // const imputNumber = new BigNumber(tokenAAmount).multipliedBy(2);
+      // const secondNumb = poolAmountB.plus(imputNumber);
+      // const testPrice = poolAmountA
+      //   .multipliedBy(poolFee)
+      //   .dividedBy(secondNumb)
+      //   .toNumber();
+      // orderPrice = testPrice;
+      // console.log('testPrice', testPrice);
       orderPrice = poolAmountA.dividedBy(poolAmountB);
       orderPrice = orderPrice.multipliedBy(1.03).toNumber();
     }
 
     if (orderPrice && orderPrice !== Infinity) {
+      // console.log('orderPrice', orderPrice);
       setSwapPrice(orderPrice);
     }
-  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount]);
+  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
+
+  // useEffect(() => {
+  //   const poolAmountA = new BigNumber(
+  //     getCoinDecimals(Number(tokenAPoolAmount), tokenA)
+  //   );
+  //   const poolAmountB = new BigNumber(
+  //     getCoinDecimals(Number(tokenBPoolAmount), tokenB)
+  //   );
+
+  //   let decimals = 0;
+  //   if (tokenB.length > 0) {
+  //     decimals = getDecimals(tokenB);
+  //   }
+  //   if (tokenAAmount.length > 0) {
+  //     const amount = new BigNumber(Number(tokenAAmount));
+  //     const amount2 = amount.multipliedBy(2);
+  //     const poolFee = new BigNumber(1).minus(0.003);
+
+  //     const firstamount = poolAmountB
+  //       .multipliedBy(poolFee)
+  //       .multipliedBy(amount);
+  //     const secondamount = poolAmountA.plus(amount2);
+
+  //     const target = firstamount
+  //       .dividedBy(secondamount)
+  //       .dp(decimals, BigNumber.ROUND_FLOOR)
+  //       .toString();
+  //     setTokenBAmount(target);
+  //     // console.log('target', target);
+  //   }
+  // }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
   useEffect(() => {
     const getAmountPool = async () => {
@@ -338,6 +419,11 @@ function Teleport({ defaultAccount }) {
     isExceeded,
     tokenAPoolAmount,
     tokenBPoolAmount,
+    typeTxs,
+    ibcClient,
+    sourceChannel,
+    denomIbc,
+    networkB,
   };
 
   const stateSwap = {
@@ -354,6 +440,13 @@ function Teleport({ defaultAccount }) {
     tokenBPoolAmount,
     tokenChange,
     swapPrice,
+    networkA,
+    setNetworkA,
+    networkB,
+    setNetworkB,
+    typeTxs,
+    denomIbc,
+    balanceIbc,
   };
 
   const stateWithdraw = {

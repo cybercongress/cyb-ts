@@ -85,7 +85,7 @@ export function calculateCounterPairAmount(e, state, type) {
   };
 }
 
-const decFnc = (number, dec, reverse) => {
+export const decFnc = (number, dec, reverse) => {
   let amount = number;
 
   if (reverse) {
@@ -111,22 +111,20 @@ export function calculateSlippage(swapAmount, poolReserve) {
 export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
 
-  if (token === 'millivolt' || token === 'milliampere') {
-    if (reverse) {
-      amountReduce = amount * 10 ** 3;
-    } else {
-      amountReduce = amount * 10 ** -3;
-    }
-  }
+  // if (token === 'millivolt' || token === 'milliampere') {
+  //   if (reverse) {
+  //     amountReduce = amount * 10 ** 3;
+  //   } else {
+  //     amountReduce = amount * 10 ** -3;
+  //   }
+  // }
 
-  if (token.includes('ibc')) {
-    if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
-      const { coinDecimals } = coinDecimalsConfig[token];
-      if (reverse) {
-        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-      } else {
-        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-      }
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+    const { coinDecimals } = coinDecimalsConfig[token];
+    if (reverse) {
+      amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+    } else {
+      amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
     }
   }
 
@@ -176,3 +174,9 @@ export function getPoolToken(pool, myPoolTokens) {
 
   return myPools;
 }
+
+export const networkList = {
+  bostrom: 'bostrom',
+  osmosis: 'osmosis-1',
+  cosmos: 'cosmoshub-4',
+};

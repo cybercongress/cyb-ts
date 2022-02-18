@@ -47,6 +47,13 @@ function Swap({ stateSwap, swap }) {
     tokenAPoolAmount,
     tokenBPoolAmount,
     swapPrice,
+    networkA,
+    setNetworkA,
+    networkB,
+    setNetworkB,
+    typeTxs,
+    balanceIbc,
+    denomIbc,
   } = stateSwap;
 
   const getTokenPrice = useMemo(() => {
@@ -69,6 +76,26 @@ function Swap({ stateSwap, swap }) {
     return <span> </span>;
   }, [swapPrice]);
 
+  const getTextSellSend = useMemo(() => {
+    if (swap) {
+      if (typeTxs === 'swap') {
+        return 'sell';
+      }
+      return 'send';
+    }
+    return 'add';
+  }, [typeTxs, swap]);
+
+  const getTextToBuy = useMemo(() => {
+    if (swap) {
+      if (typeTxs === 'swap') {
+        return 'buy';
+      }
+      return 'to';
+    }
+    return 'add';
+  }, [typeTxs, swap]);
+
   return (
     <Pane
       maxWidth="390px"
@@ -76,6 +103,7 @@ function Swap({ stateSwap, swap }) {
       display="flex"
       alignItems="center"
       flexDirection="column"
+      gridGap="10px"
     >
       <TokenSetter
         id="tokenAAmount"
@@ -86,7 +114,15 @@ function Swap({ stateSwap, swap }) {
         onChangeSelect={setTokenA}
         onChangeInput={amountChangeHandler}
         valueInput={tokenAAmount}
-        textLeft={swap ? 'Sell' : ''}
+        textLeft={getTextSellSend}
+        selectedNetwork={networkA}
+        onChangeSelectNetwork={setNetworkA}
+        typeTxs={typeTxs}
+        denomIbc={denomIbc}
+        // ibc={typeTxs !== 'swap'}
+        balanceIbc={balanceIbc}
+        ibc={typeTxs === 'deposit'}
+        swap={swap}
       />
       {/* <Slider
         id="tokenAAmount"
@@ -114,31 +150,40 @@ function Swap({ stateSwap, swap }) {
         onChangeSelect={setTokenB}
         onChangeInput={amountChangeHandler}
         valueInput={tokenBAmount}
-        textLeft={swap ? 'Buy' : ''}
+        textLeft={getTextToBuy}
         readonly="readonly"
+        selectedNetwork={networkB}
+        onChangeSelectNetwork={setNetworkB}
+        typeTxs={typeTxs}
+        ibcTokenB={typeTxs !== 'swap'}
+        swap={swap}
       />
-      <Pane
-        display="flex"
-        justifyContent="space-between"
-        width="100%"
-        flexDirection="row"
-        alignItems="flex-end"
-        marginTop={20}
-      >
-        <div>Rate:</div>
-        <div>{getTokenPrice}</div>
-      </Pane>
-      <Pane
-        display="flex"
-        justifyContent="space-between"
-        width="100%"
-        flexDirection="row"
-        alignItems="flex-end"
-        marginTop={10}
-      >
-        <div>Swap Fees:</div>
-        <div>0.3%</div>
-      </Pane>
+      {typeTxs === 'swap' && swap && (
+        <>
+          <Pane
+            display="flex"
+            justifyContent="space-between"
+            width="100%"
+            flexDirection="row"
+            alignItems="flex-end"
+            marginTop={20}
+          >
+            <div>Rate:</div>
+            <div>{getTokenPrice}</div>
+          </Pane>
+          <Pane
+            display="flex"
+            justifyContent="space-between"
+            width="100%"
+            flexDirection="row"
+            alignItems="flex-end"
+            marginTop={10}
+          >
+            <div>Swap Fees:</div>
+            <div>0.3%</div>
+          </Pane>
+        </>
+      )}
     </Pane>
   );
 }

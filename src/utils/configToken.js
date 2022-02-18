@@ -4,7 +4,6 @@ const coinDecimalsConfig = {
     coinDecimals: 6,
     denom: 'OSMO',
     coinMinimalDenom: 'uosmo',
-    channel: 'channel-2',
     rpc: 'https://rpc-osmosis.blockapsis.com/',
     prefix: 'osmo',
     sourceChannelId: 'channel-95',
@@ -15,7 +14,6 @@ const coinDecimalsConfig = {
     coinDecimals: 6,
     denom: 'ATOM',
     coinMinimalDenom: 'uatom',
-    channel: '',
     rpc: 'https://rpc.cosmoshub-4.cybernode.ai/',
     prefix: 'cosmos',
     sourceChannelId: 'channel-240',
@@ -30,6 +28,12 @@ const coinDecimalsConfig = {
     coinDecimals: 3,
     denom: 'V',
     coinMinimalDenom: 'millivolt',
+  },
+  uosmo: {
+    coinDecimals: 6,
+  },
+  uatom: {
+    coinDecimals: 6,
   },
 };
 

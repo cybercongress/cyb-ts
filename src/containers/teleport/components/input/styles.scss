@@ -35,6 +35,7 @@ $color-border-botton-blue: #00edeb;
     flex-direction: column;
     padding: 0px 2px;
     align-self: stretch;
+    width: 100%;
   }
 
   &Text {
@@ -47,7 +48,6 @@ $color-border-botton-blue: #00edeb;
     color: $text-color;
     text-align: end;
     -webkit-filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
-    max-width: 170px;
 
     &::placeholder {
       color: #272343;

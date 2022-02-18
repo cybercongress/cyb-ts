@@ -68,18 +68,21 @@ const CYBER = {
   DIVISOR_CYBER_G: 10 ** 9,
   DENOM_CYBER: 'boot',
   DENOM_CYBER_G: `GBOOT`,
+  HYDROGEN: 'H',
 
-//   CHAIN_ID: 'space-pussy-1',
-//   CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
-//   CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
-//   CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
+  // CHAIN_ID: 'space-pussy-1',
+  // CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
+  // CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
+  // CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
+
+  // CYBER_INDEX_HTTPS: 'https://index.space-pussy-1.cybernode.ai/v1/graphql',
+  // CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy-1.cybernode.ai/v1/graphql',
 
   // CHAIN_ID: 'bostrom1',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
 
-  HYDROGEN: 'H',
   CHAIN_ID: 'bostrom',
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
