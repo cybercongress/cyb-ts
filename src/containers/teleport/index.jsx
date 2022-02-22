@@ -1,9 +1,16 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import { connect } from 'react-redux';
-import { useLocation, Route } from 'react-router-dom';
+import { useLocation, useHistory, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import useSWR from 'swr';
 import BigNumber from 'bignumber.js';
+import queryString from 'query-string';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -65,6 +72,7 @@ const numberString = (num) =>
 function Teleport({ defaultAccount }) {
   const { jsCyber, keplr } = useContext(AppContext);
   const location = useLocation();
+  const history = useHistory();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
   const { liquidBalances: accountBalances } = getBalances(
@@ -99,6 +107,60 @@ function Teleport({ defaultAccount }) {
   );
   const [sourceChannel, setSourceChannel] = useState(null);
 
+  let { search } = useLocation();
+  console.log('search', search);
+
+  if (search.startsWith('?')) {
+    search = search.slice(1);
+  } else if (selectedTab !== 'sub-liquidity') {
+    const query = {
+      from: tokenA,
+      to: tokenB,
+    };
+
+    const searchQuery = queryString.stringify(query);
+
+    history.replace({
+      search: searchQuery,
+    });
+  }
+
+  let query = queryString.parse(search);
+  const firstEffectOccured = useRef(false);
+
+  useEffect(() => {
+    // Update current in and out currency to query string.
+    // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
+    if (firstEffectOccured.current) {
+      // Mobx is mutable, but react's state is immutable.
+      // This causes an infinite loop with other effects that use the same state
+      // because the state of mobx is updated but the state of react will be updated in the next render.
+      // To solve this problem, we ignore the state processing of react and change the variable itself.
+      query = {
+        from: tokenA,
+        to: tokenB,
+      };
+
+      const searchQuery = queryString.stringify(query);
+
+      history.replace({
+        search: searchQuery,
+      });
+    } else {
+      firstEffectOccured.current = true;
+    }
+  }, [tokenA, tokenB]);
+
+  useEffect(() => {
+    if (query.from) {
+      setTokenA(query.from);
+    }
+
+    if (query.to) {
+      setTokenB(query.to);
+    }
+  }, [query]);
+
   useEffect(() => {
     if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
       setTypeTxs('swap');
@@ -129,6 +191,9 @@ function Teleport({ defaultAccount }) {
       pathname.match(/sub-liquidity/gm).length > 0
     ) {
       setSelectedTab('sub-liquidity');
+      history.replace({
+        search: '',
+      });
     } else if (
       pathname.match(/pools/gm) &&
       pathname.match(/pools/gm).length > 0

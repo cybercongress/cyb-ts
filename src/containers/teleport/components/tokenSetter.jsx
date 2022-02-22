@@ -69,8 +69,8 @@ function TokenSetter({
   denomIbc,
   swap,
 }) {
-  console.log(`denomIbc`, denomIbc);
-  console.log('balanceIbc', balanceIbc);
+  // console.log(`denomIbc`, denomIbc);
+  // console.log('balanceIbc', balanceIbc);
 
   return (
     <Pane>
