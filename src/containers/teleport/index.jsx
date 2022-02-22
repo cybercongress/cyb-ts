@@ -186,6 +186,8 @@ function Teleport({ defaultAccount }) {
       pathname.match(/add-liquidity/gm).length > 0
     ) {
       setSelectedTab('add-liquidity');
+      setNetworkA(CYBER.CHAIN_ID);
+      setNetworkB(CYBER.CHAIN_ID);
     } else if (
       pathname.match(/sub-liquidity/gm) &&
       pathname.match(/sub-liquidity/gm).length > 0
