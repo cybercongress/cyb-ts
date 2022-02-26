@@ -8,7 +8,7 @@ import { reduceBalances } from '../../../utils/utils';
 const initValueBalance = { amount: 0, denom: '' };
 
 export const networkList = {
-  bostrom: { chainId: 'bostrom' },
+  bostrom: { chainId: 'bostrom', rpc: CYBER.CYBER_NODE_URL_API },
   'osmosis-1': {
     chainId: 'osmosis-1',
     sourceChannelId: 'channel-95',

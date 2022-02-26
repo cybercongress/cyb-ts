@@ -5,6 +5,7 @@ import {
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
+// import { logs } from '@cosmjs/stargate';
 import { Link } from 'react-router-dom';
 import { coin, coins } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
@@ -23,6 +24,8 @@ import coinDecimalsConfig from '../../utils/configToken';
 import { networkList as networks } from './hooks/useGetBalancesIbc';
 
 import ActionBarStaps from './actionBarSteps';
+
+// import testVar from './testJson.json';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -160,14 +163,18 @@ function ActionBar({ stateActionBar }) {
   //   // }
   // }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
+  // useEffect(() => {
+  //   console.log('first', logs.parseRawLog(testVar));
+  // }, []);
+
   useEffect(() => {
     const confirmTx = async () => {
       if (jsCyber !== null && txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
+        const response = await jsCyber.getTx(txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
-          if (response.logs) {
+          if (response.code === 0) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
             if (updateFunc) {
@@ -178,7 +185,7 @@ function ActionBar({ stateActionBar }) {
           if (response.code) {
             setStage(STAGE_ERROR);
             setTxHeight(response.height);
-            setErrorMessage(response.raw_log);
+            setErrorMessage(response.rawLog);
             return;
           }
         }
@@ -392,6 +399,11 @@ function ActionBar({ stateActionBar }) {
     setLinkIbcTxs(null);
   };
 
+  // const parseRawLog = useCallback((log) => {
+  //   const parsedLogs = logs.parseRawLog(log);
+  //   console.log('log', parsedLogs);
+  // }, []);
+
   const depositOnClick = useCallback(async () => {
     console.log('tokenAAmount', tokenAAmount);
     const [{ address }] = await ibcClient.signer.getAccounts();
@@ -439,6 +451,9 @@ function ActionBar({ stateActionBar }) {
           )}`
         );
         setStage(STAGE_CONFIRMED_IBC);
+        // if (response.rawLog.length > 0) {
+        //   parseRawLog(response.rawLog);
+        // }
       } else {
         setTxHashIbc(null);
         setErrorMessage(response.rawLog.toString());

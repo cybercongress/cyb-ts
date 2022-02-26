@@ -43,9 +43,15 @@ import PoolData from './poolData';
 import coinDecimalsConfig from '../../utils/configToken';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
 import { networkList as networks } from './hooks/useGetBalancesIbc';
+// import TracerTx from './tx/TracerTx';
+// import TraceTxTable from './components/ibc-history/traceTxTable';
+// import HistoryContextProvider from './components/ibc-history/historyContext';
 
 const tokenADefaultValue = 'boot';
 const tokenBDefaultValue = 'hydrogen';
+
+// const txHash =
+//   'E15BC5F5B62696F5D08C0860CDA13D39E385BD6245595EB07899954336760C8C';
 
 const defaultTokenList = {
   boot: 0,
@@ -108,7 +114,22 @@ function Teleport({ defaultAccount }) {
   const [sourceChannel, setSourceChannel] = useState(null);
 
   let { search } = useLocation();
-  console.log('search', search);
+  // console.log('search', search);
+
+  // useEffect(() => {
+  // const txTracerFunc = async () => {
+  //   const txTracer = new TracerTx(networks.bostrom.rpc, '/websocket');
+  //   console.log('txTracer', txTracer)
+  //   // const result = await txTracer.traceTx(Buffer.from(txHash, 'hex'));
+  //   const result = await txTracer.traceTx({
+  //     'recv_packet.packet_src_channel': 'channel-95',
+  //     'recv_packet.packet_sequence': '26930',
+  //   });
+  //   console.log('result !!!!!!!', result);
+  //   txTracer.close();
+  // };
+  // txTracerFunc();
+  // }, []);
 
   if (search.startsWith('?')) {
     search = search.slice(1);
@@ -583,6 +604,8 @@ function Teleport({ defaultAccount }) {
         >
           {content}
         </Pane>
+
+        {/* <TraceTxTable /> */}
 
         {/* <PoolsList
           poolsData={poolsData}
