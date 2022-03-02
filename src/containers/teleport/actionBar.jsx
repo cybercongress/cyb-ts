@@ -5,7 +5,7 @@ import {
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
-// import { logs } from '@cosmjs/stargate';
+import { logs } from '@cosmjs/stargate';
 import { Link } from 'react-router-dom';
 import { coin, coins } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
@@ -25,7 +25,7 @@ import { networkList as networks } from './hooks/useGetBalancesIbc';
 
 import ActionBarStaps from './actionBarSteps';
 
-// import testVar from './testJson.json';
+import testVar from './testJson.json';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -163,9 +163,69 @@ function ActionBar({ stateActionBar }) {
   //   // }
   // }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
-  // useEffect(() => {
-  //   console.log('first', logs.parseRawLog(testVar));
-  // }, []);
+  useEffect(() => {
+    console.log('first', logs.parseRawLog(testVar));
+    const logsValue = parseLog(logs.parseRawLog(testVar));
+    console.log('logsValue', logsValue)
+  }, []);
+
+  const parseLog = (log) => {
+    try {
+      if (log && Object.keys(log).length > 0) {
+        const { events } = log[0];
+        if (events) {
+          // eslint-disable-next-line no-restricted-syntax
+          for (const event of events) {
+            if (event.type === 'send_packet') {
+              const { attributes } = event;
+              const sourceChannelAttr = attributes.find(
+                (attr) => attr.key === 'packet_src_channel'
+              );
+              const sourceChannelValue = sourceChannelAttr
+                ? sourceChannelAttr.value
+                : undefined;
+              const destChannelAttr = attributes.find(
+                (attr) => attr.key === 'packet_dst_channel'
+              );
+              const destChannelValue = destChannelAttr
+                ? destChannelAttr.value
+                : undefined;
+              const sequenceAttr = attributes.find(
+                (attr) => attr.key === 'packet_sequence'
+              );
+              const sequence = sequenceAttr ? sequenceAttr.value : undefined;
+              const timeoutHeightAttr = attributes.find(
+                (attr) => attr.key === 'packet_timeout_height'
+              );
+              const timeoutHeight = timeoutHeightAttr
+                ? timeoutHeightAttr.value
+                : undefined;
+              const timeoutTimestampAttr = attributes.find(
+                (attr) => attr.key === 'packet_timeout_timestamp'
+              );
+              const timeoutTimestamp = timeoutTimestampAttr
+                ? timeoutTimestampAttr.value
+                : undefined;
+
+              if (sequence && destChannelValue && sourceChannelValue) {
+                return {
+                  destChannel: destChannelValue,
+                  sourceChannel: sourceChannelValue,
+                  sequence,
+                  timeoutHeight,
+                  timeoutTimestamp,
+                };
+              }
+            }
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      console.log('error parseLog', e);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const confirmTx = async () => {
