@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './style.scss';
+import { trimString } from '../../../../utils/utils'
 
 const classNames = require('classnames');
 
@@ -39,9 +40,9 @@ function ContainerGradient({
             [styles.containerTxsConfirmed]: status === 'confirmed',
           })}
         >
-          <div>1J2NF...3K2N</div>
-          <div>5 min ago</div>
-          <div>pending</div>
+          <div>{trimString(txs, 5, 5)}</div>
+          {/* <div>5 min ago</div> */}
+          <div>{status}</div>
         </div>
       )}
     </ContainerLamp>

@@ -60,8 +60,7 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsFactory();
-  // const dataIpfsStart = useIpfsStart();
+  const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
   const [genesis, setGenesis] = useState(false);
@@ -70,13 +69,13 @@ function AppRouter({
 
   // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
 
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   // tryConnectToPeer(dataIpfsStart.node);
-  // }, [dataIpfsStart]);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    // tryConnectToPeer(dataIpfsStart.node);
+  }, [dataIpfsStart]);
 
   return (
     <Router history={history}>

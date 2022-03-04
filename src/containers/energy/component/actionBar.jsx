@@ -58,7 +58,7 @@ const Btn = ({ onSelect, checkedSwitch, text, ...props }) => (
   </Tab>
 );
 
-const ActionBarSteps = ({
+export const ActionBarSteps = ({
   children,
   btnText,
   onClickFnc,
