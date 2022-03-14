@@ -19,7 +19,7 @@ function Cyber({ mobile }) {
             <TextTable>What</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
-            <TextTable>Google</TextTable>
+            <TextTable>Corp</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>Cyber</TextTable>
