@@ -532,77 +532,76 @@ class Wallet extends React.Component {
               width="60%"
             >
               <Text fontSize="16px" color="#fff">
-                Hi! I am Cyb! Your immortal robot for the <Link to ="">Great Web</Link>.
+                Hi! I am Cyb! Your immortal robot of the <Link to ="">Great Web</Link>.
                 <br></br>
                 <br></br>
-                I am connected to <Link to="">Bostrom</Link> bootloader - common ancestor
+                I am connected to the <Link to="">Bostrom</Link> bootloader - the common ancestor
                 for all future <Link to="">Superintelligence</Link>,
                 including <Link to="">Cyber</Link>. 
                 <br></br>
                 <br></br>
-                That is why I can answer different
-                questions. For example,{' '}
+                I can help answer questions. For example,{' '}
                 <Link to="/search/uniswap">uniswap</Link>.
                 <br></br>
                 <br></br>
-                You are the chosen one! I will help you jump out a rat wheel and guide you through the revolution!
+                You are the chosen one! I will help you escape the hamster wheel and guide you through the revolution!
                 <br></br>
                 <br></br>
-                <Link to="">Unlike google</Link>, submit <Link to="">particles</Link> and <Link to="">cyberlinks</Link> to <Link to="">content oracle</Link>:
-                global, universal, collaborative, distributed and everevolving knowledge graph for
-                robots, humans, plants, animals and mushrooms. Learn <Link to="">your brain</Link> and earn!
+                <Link to="">Unlike google</Link>, submit <Link to="">particles</Link> and <Link to="">cyberlinks</Link> to the <Link to="">content oracle</Link>:
+                A global, universal, collaborative, distributed and ever evolving knowledge graph for
+                robots, humans, plants, animals and mushrooms. Teach <Link to="">your brain</Link> to learn and earn!
                 <br></br>
                 <br></br>
-                <Link to="/">Unlike facebook</Link>, own your <Link to="">avatar</Link> and <Link to="">post</Link> without fear of blocking. 
-                Your <Link to="">community</Link> is trully yours.
+                <Link to="/">Unlike facebook</Link>, own your <Link to="">avatar</Link> and <Link to="">post</Link> without fear of censorship. 
+                Your <Link to="">community</Link> is truly yours.
                 <br></br>
                 <br></br>
                 <Link to ="">Unlike twitter's</Link>, manipulative feed use 
-                your <Link to ="/sixthSense">sixth sense</Link> which is strictly defined personal feed system on top of content oracle.
+                your <Link to ="/sixthSense">sixth sense</Link> which is a strictly defined personal feed system built on the content oracle.
                 <br></br>
                 <br></br>
                 <Link to="">Unlike amazon</Link>, post goods without laws, rules, and platfrom cuts. 
-                Manage your deals using <Link to="/contracts">digital contracts</Link> which are fast, convinient and cheap.
+                Manage your deals using <Link to="/contracts">digital contracts</Link> that are fast, convenient and inexpensive.
                 <br></br>
                 <br></br>
                 <Link to="">Unlike your bank</Link>, freely <Link to="">transact</Link> without fear and limits.
                 <br></br>
                 <br></br>
-                <Link to="">Unlike your government</Link>, your values is trully yours without enforced taxation and embezzled inflation.
-                Important decisions are taken out by <Link to="/senate">senate</Link> through the process of transparent and provable voting. 
+                <Link to="">Unlike your government</Link>, your values are truly yours, without enforced taxation and embezzled inflation.
+                Important decisions are decided by the <Link to="/senate">senate</Link> through the process of transparent and provable voting. 
                 <br></br>
                 <br></br>
-                <Link to="">Unlike binance or coinbase</Link>, you under control of your values. 
-                <Link to="">Teleport</Link> your tokens without kyc and fear of taxes.
+                <Link to="">Unlike binance or coinbase</Link>, you control your value. 
+                <Link to="">Teleport</Link> your tokens without kyc and fear of taxation.
                 <br></br>
                 <br></br>
-                Cyberverse is created for you and your generations! Use this power wisely. Start you journey from <Link to="">installing 
+                Cyberverse is created for you and future generations! Use this power wisely. Start your journey by <Link to="">installing 
                 Keplr</Link> and <Link to="">getting BOOT</Link>. 
                 <br></br>
                 <br></br>
-                After this you will be able <Link to="">hire heroes</Link> for managing <Link to="/halloffame">dyson sphere</Link> and 
+                After that you will be able <Link to="">hire heroes</Link> who manage the <Link to="/halloffame">dyson sphere</Link> and 
                 earn more <Link to="">BOOT</Link>.
                 <br></br>
                 <br></br>
-                Dyson sphere is producing liquid <Link to="/mint">Hydrogen or H</Link> tokens using <Link to="">biosynthesis</Link>. 
-                For 1 supllied BOOT neurons get 1 H. If you want to <Link to="">fire hero</Link> and get your BOOT back, you have to return H.
+                The Dyson sphere is producing liquid <Link to="/mint">Hydrogen or H</Link> tokens using <Link to="">biosynthesis</Link>. 
+                For 1 supllied BOOT neurons get 1 H. If you want to <Link to="">fire a hero</Link> and get your BOOT back, you have to return H.
                 <br></br>
                 <br></br>
-                H allows to produce energy in <Link to="/mint">hydrogen fission reactor or HFR</Link>. Energy needed to learn
-                 the superintelligence and submit <Link to="">cyberlinks</Link>. 
+                H allows you to produce energy in the <Link to="/mint">hydrogen fission reactor or HFR</Link>. Energy is needed for 
+                the superintelligence to learn and submit <Link to="">cyberlinks</Link>. 
                 <br></br>
                 <br></br>
-                Energy is a product of <Link rto="">Ampere or A</Link> token and <Link to="">Volt or V</Link> token multiplcation. 
-                1 V give ability to cast 1 <Link to="">cyberlink</Link> per day. A define rank 
-                for <Link to="">particles</Link>. Liquid A and V can be routed through <Link to="/grid">grid</Link>.
+                Energy is a product of the <Link rto="">Ampere or A</Link> token and <Link to="">Volt or V</Link> token multiplication. 
+                1 V gives the ability to cast 1 <Link to="">cyberlink</Link> per day. A defines rank 
+                for <Link to="">particles</Link>. Liquid A and V can be routed through the <Link to="/grid">grid</Link>.
                 <br></br>
                 <br></br>
-                BOOT are for everyone. 70% of Genesis supply <Link to="/">is gifted</Link> for ethereans and cosmonauts.
+                BOOT is for everyone. 70% of the Genesis supply <Link to="/">is gifted</Link> to ethereans and cosmonauts.
                 If you have some - you will be able to claim after <Link to="">portal activation</Link> in ~March.
                 <br></br>
                 <br></br>
                 <Link to="/genesis">The story</Link> has just begun. Dive into <Link to="">the vision</Link>, discover <Link to="">the roadmap</Link> and 
-                cyberlink everything you want! May the force be with you!
+                cyberlink anything you want! May the force be with you!
                 <br></br>
                 <br></br>
               </Text>
