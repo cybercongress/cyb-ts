@@ -532,7 +532,7 @@ class Wallet extends React.Component {
               width="60%"
             >
               <Text fontSize="16px" color="#fff">
-                Hi! I am Cyb! Your immortal robot for the <Link to ="/search/great%20web">Great Web</Link>.
+                Hi! I am Cyb! Your immortal robot for the <Link to ="/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57">Great Web</Link>.
                 <br></br>
                 <br></br>
                 I am connected to <Link to="/bootloader">Bostrom</Link> bootloader - common ancestor
