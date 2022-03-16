@@ -1,4 +1,5 @@
 import bech32 from 'bech32';
+import { fromUtf8 } from '@cosmjs/encoding';
 import { CYBER } from './config';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
@@ -385,6 +386,49 @@ const reduceBalances = (data) => {
   }
 };
 
+const reduceObj = (data) => {
+  try {
+    let objTemp = {};
+    if (Object.keys(data).length > 0) {
+      objTemp = data.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.key]: item.value,
+        }),
+        {}
+      );
+    }
+    return objTemp;
+  } catch (error) {
+    return {};
+  }
+};
+
+// example: oneLiner -> message.module=wasm&message.action=/cosmwasm.wasm.v1.MsgStoreCode&store_code.code_id=${codeId}
+function makeTags(oneLiner) {
+  return oneLiner.split('&').map((pair) => {
+    if (pair.indexOf('=') === -1) {
+      throw new Error('Parsing error: Equal sign missing');
+    }
+    const parts = pair.split('=');
+    if (parts.length > 2) {
+      throw new Error(
+        'Parsing error: Multiple equal signs found. If you need escaping support, please create a PR.'
+      );
+    }
+    const [key, value] = parts;
+    if (!key) {
+      throw new Error('Parsing error: Key must not be empty');
+    }
+    return { key, value };
+  });
+}
+
+function parseMsgContract(msg) {
+  const json = fromUtf8(msg);
+
+  return JSON.parse(json);
+}
 const replaceSlash = (text) => text.replace(/\//g, '%2F');
 
 const encodeSlash = (text) => text.replace(/%2F/g, '/');
@@ -409,6 +453,9 @@ export {
   convertResources,
   timeSince,
   reduceBalances,
+  makeTags,
+  reduceObj,
+  parseMsgContract,
   replaceSlash,
   encodeSlash,
 };

@@ -133,7 +133,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
       <div className="markdown">
         <ReactMarkdown
           children={content}
-          rehypePlugins={[rehypeParse, rehypeStringify, rehypeSanitize]}
+          rehypePlugins={[rehypeStringify, rehypeSanitize]}
           // skipHtml
           // astPlugins={[parseHtml]}
           // renderers={{ code: CodeBlock }}

@@ -4,42 +4,41 @@ workflows:
   version: 2
   default_workflow:
     jobs:
-      - update_distribution_app:
+      - build_cyb:
           filters:
             branches:
-              only: episode-1
-      - build_and_deploy_rebyc
+              only: bostrom-rc
       
 jobs:
 
-  update_distribution_app:
-    working_directory: ~/workdir
-    docker:
-      - image: circleci/node:14.15.4-browsers
+#   update_distribution_app:
+#     working_directory: ~/workdir
+#     docker:
+#       - image: circleci/node:14.15.4-browsers
 
-    steps:
-      - checkout
-      - run:
-          name: Update app
-          command: |
-            git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
-      - deploy:
-          name: Update app from dot-cyber repo
-          working_directory: ~/workdir
-          command: |
-            rm -rf build/
-            yarn install
-            yarn build
-            cd build
-            git init
-            echo "cyber.page" > CNAME
-            git config user.email "cybercongress42@gmail.com"
-            git config user.name "Cyber Admin"
-            git add --all
-            git commit -m "Circle CI: Update Site [skip ci]"
-            git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git master:gh-pages
+#     steps:
+#       - checkout
+#       - run:
+#           name: Update app
+#           command: |
+#             git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
+#       - deploy:
+#           name: Update app from dot-cyber repo
+#           working_directory: ~/workdir
+#           command: |
+#             rm -rf build/
+#             yarn install
+#             yarn build
+#             cd build
+#             git init
+#             echo "cyber.page" > CNAME
+#             git config user.email "cybercongress42@gmail.com"
+#             git config user.name "Cyber Admin"
+#             git add --all
+#             git commit -m "Circle CI: Update Site [skip ci]"
+#             git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git master:gh-pages
 
-  build_and_deploy_rebyc:
+  build_cyb:
     working_directory: ~/workdir
     docker:
       - image: circleci/node:14.16.0-browsers
@@ -50,7 +49,7 @@ jobs:
           command: |
             git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
       - deploy:
-          name: Build app from commited branch
+          name: Build app from production branch
           working_directory: ~/workdir
           command: |
             rm -rf build/
@@ -58,7 +57,7 @@ jobs:
             yarn build
             cd build
             git init
-            echo "rebyc.cyber.page" > CNAME
+            echo "cyb.ai" > CNAME
             git config user.email "cybercongress42@gmail.com"
             git config user.name "Cyber Admin"
             git add --all

@@ -4,8 +4,12 @@
     "es6": true,
     "amd": true
   },
-  "extends": ["airbnb", "prettier", "prettier/react"],
-  "parser": "babel-eslint",
+  "extends": [
+    "airbnb",
+    "prettier",
+    "prettier/react"
+  ],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {

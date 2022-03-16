@@ -11,8 +11,11 @@ import {
   StakingParam,
   RankParam,
   InlfationParam,
-  ParamEnergy,
+  ResourcesParam,
   WasmParam,
+  LiquidityParam,
+  GridParam,
+  DmnParam,
 } from './tabs';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
@@ -44,7 +47,11 @@ const initParam = {
   gov: null,
   rank: null,
   mint: null,
-  energy: null,
+  resources: null,
+  grid: null,
+  wasm: null,
+  liquidity: null,
+  dmn: null,
 };
 
 function ParamNetwork({ location }) {
@@ -94,6 +101,16 @@ function ParamNetwork({ location }) {
       pathname.match(/liquidity/gm).length > 0
     ) {
       setSelected('liquidity');
+    } else if (
+      pathname.match(/grid/gm) &&
+      pathname.match(/grid/gm).length > 0
+    ) {
+      setSelected('grid');
+    } else if (
+      pathname.match(/dmn/gm) &&
+      pathname.match(/dmn/gm).length > 0
+    ) {
+      setSelected('dmn');
     } else {
       setSelected('bandwidth');
     }
@@ -103,7 +120,6 @@ function ParamNetwork({ location }) {
     chekPathname();
     const feachData = async () => {
       const response = await getParamNetwork();
-      console.log('response Param', response);
       if (response !== null) {
         setDataParam(response);
       }
@@ -197,7 +213,25 @@ function ParamNetwork({ location }) {
     content = (
       <Route
         path="/network/bostrom/parameters/resources"
-        render={() => <ParamEnergy data={dataParam.energy} />}
+        render={() => <ResourcesParam data={dataParam.resources} />}
+      />
+    );
+  }
+
+  if (selected === 'liquidity') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/liquidity"
+        render={() => <LiquidityParam data={dataParam.liquidity} />}
+      />
+    );
+  }
+
+  if (selected === 'grid') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/grid"
+        render={() => <GridParam data={dataParam.grid} />}
       />
     );
   }
@@ -207,6 +241,15 @@ function ParamNetwork({ location }) {
       <Route
         path="/network/bostrom/parameters/wasm"
         render={() => <WasmParam />}
+      />
+    );
+  }
+
+  if (selected === 'dmn') {
+    content = (
+      <Route
+        path="/network/bostrom/parameters/dmn"
+        render={() => <DmnParam data={dataParam.dmn} />}
       />
     );
   }
@@ -278,6 +321,16 @@ function ParamNetwork({ location }) {
           text="Liquidity"
           isSelected={selected === 'liquidity'}
           to="/network/bostrom/parameters/liquidity"
+        />
+        <TabBtn
+          text="Grid"
+          isSelected={selected === 'grid'}
+          to="/network/bostrom/parameters/grid"
+        />
+        <TabBtn
+          text="DMN"
+          isSelected={selected === 'dmn'}
+          to="/network/bostrom/parameters/dmn"
         />
       </Tablist>
       <Pane

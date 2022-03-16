@@ -48,6 +48,13 @@ import Genesis from './containers/genesis';
 import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
+import Ibc from './containers/ibc';
+import {
+  Codes,
+  CodePage,
+  ContractPage,
+  DashboardPage,
+} from './containers/wasm';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -132,6 +139,12 @@ function AppRouter({
         <Route path="/genesis" component={Movie} />
         <Route path="/portalCitizenship" component={PortalCitizenship} />
         <Route path="/portalGift" component={PortalGift} />
+        <Route path="/ibc" component={Ibc} />
+        {/* wasm */}
+        <Route path="/codes" exact component={Codes} />
+        <Route path="/codes/:codeId" component={CodePage} />
+        <Route exact path="/contracts" component={DashboardPage} />
+        <Route path="/contracts/:contractAddress" component={ContractPage} />
       </Switch>
     </Router>
   );

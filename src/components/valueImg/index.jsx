@@ -110,7 +110,6 @@ const ValueImg = ({
         justifyContent: justifyContent || 'flex-start',
         margin: marginContainer || 0,
         flexDirection: flexDirection || 'unset',
-        width: '100%',
       }}
       {...props}
     >

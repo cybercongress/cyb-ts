@@ -30,19 +30,36 @@ const initValueToken = {
 
 function useGetBalance(address, updateAddress) {
   const { jsCyber } = useContext(AppContext);
+  const [addressActive, setAddressActive] = useState(null);
   const [loadingBalanceInfo, setLoadingBalanceInfo] = useState(true);
   const [loadingBalanceToken, setLoadingBalanceToken] = useState(true);
   const [balance, setBalance] = useState(initValue);
   const [balanceToken, setBalanceToken] = useState(initValueToken);
-  const { vested, originalVesting } = useGetSlots(address, updateAddress);
+  const { vested, originalVesting, loadingAuthAccounts } = useGetSlots(
+    addressActive,
+    updateAddress
+  );
+
+  useEffect(() => {
+    if (address !== null) {
+      if (address.bech32) {
+        setAddressActive(address.bech32);
+      } else {
+        setAddressActive(address);
+      }
+    }
+  }, [address]);
 
   useEffect(() => {
     const getBalance = async () => {
       try {
-        if (jsCyber !== null && address !== null) {
+        if (jsCyber !== null && addressActive !== null) {
           setBalance(initValue);
           setLoadingBalanceInfo(true);
-          const availablePromise = await jsCyber.getBalance(address, 'boot');
+          const availablePromise = await jsCyber.getBalance(
+            addressActive,
+            'boot'
+          );
           setBalance((item) => ({
             ...item,
             available: parseFloat(availablePromise.amount),
@@ -50,7 +67,7 @@ function useGetBalance(address, updateAddress) {
           }));
 
           const delegationsPromise = await jsCyber.delegatorDelegations(
-            address
+            addressActive
           );
           let delegationsAmount = 0;
 
@@ -70,7 +87,7 @@ function useGetBalance(address, updateAddress) {
           }));
 
           const unbondingPromise = await jsCyber.delegatorUnbondingDelegations(
-            address
+            addressActive
           );
           if (
             unbondingPromise.unbondingResponses &&
@@ -89,7 +106,9 @@ function useGetBalance(address, updateAddress) {
               });
             });
           }
-          const rewardsPropsise = await jsCyber.delegationTotalRewards(address);
+          const rewardsPropsise = await jsCyber.delegationTotalRewards(
+            addressActive
+          );
           if (rewardsPropsise.total && rewardsPropsise.total.length > 0) {
             setBalance((item) => ({
               ...item,
@@ -103,7 +122,7 @@ function useGetBalance(address, updateAddress) {
             }));
           }
           const dataValidatorAddress = fromBech32(
-            address,
+            addressActive,
             CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER
           );
           const resultGetDistribution = await jsCyber.validatorCommission(
@@ -135,7 +154,7 @@ function useGetBalance(address, updateAddress) {
       }
     };
     getBalance();
-  }, [jsCyber, address, updateAddress]);
+  }, [jsCyber, addressActive, updateAddress]);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -152,10 +171,12 @@ function useGetBalance(address, updateAddress) {
         tocyb: 0,
       };
 
-      if (jsCyber !== null && address !== null) {
+      if (jsCyber !== null && addressActive !== null && !loadingAuthAccounts) {
         setBalanceToken(initValueToken);
         setLoadingBalanceToken(true);
-        const getAllBalancesPromise = await jsCyber.getAllBalances(address);
+        const getAllBalancesPromise = await jsCyber.getAllBalances(
+          addressActive
+        );
         const balancesToken = getCalculationBalance(getAllBalancesPromise);
         if (Object.keys(balancesToken).length > 0) {
           Object.keys(balancesToken).forEach((key) => {
@@ -196,7 +217,7 @@ function useGetBalance(address, updateAddress) {
       setLoadingBalanceToken(false);
     };
     getBalance();
-  }, [jsCyber, address, vested, originalVesting]);
+  }, [jsCyber, addressActive, vested, originalVesting, loadingAuthAccounts]);
 
   const getCalculationBalance = (data) => {
     const balances = {};

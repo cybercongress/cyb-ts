@@ -5,6 +5,8 @@ import { formatNumber } from '../../utils/search/utils';
 import { Account, MsgType, LinkWindow, ValueImg } from '../../components';
 import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
+import ReactJson from 'react-json-view';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -69,10 +71,10 @@ export const Row = ({ value, title }) => (
 
 const MultiSend = ({ msg }) => {
   return (
-    <ContainerMsgsType type={msg.type}>
+    <ContainerMsgsType type={msg['@type']}>
       <Row
         title="Inputs"
-        value={msg.value.inputs.map((data, i) => {
+        value={msg.inputs.map((data, i) => {
           return (
             <div
               key={i}
@@ -96,7 +98,7 @@ const MultiSend = ({ msg }) => {
       />
       <Row
         title="Outputs"
-        value={msg.value.outputs.map((data, i) => {
+        value={msg.outputs.map((data, i) => {
           return (
             <div
               key={i}
@@ -122,25 +124,23 @@ const MultiSend = ({ msg }) => {
 };
 
 const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
-  <ContainerMsgsType type={msg.type}>
-    <Row title="Neuron" value={<Account address={msg.value.neuron} />} />
-    {msg.value.links
-      .slice(0, seeAll ? msg.value.length : 1)
-      .map((item, index) => (
-        <div
-          key={`${item.from}-${index}`}
-          style={{
-            padding: '10px',
-            paddingBottom: 0,
-            marginBottom: '10px',
-            borderTop: '1px solid #3ab79366',
-          }}
-        >
-          <Row title="from" value={<Cid cid={item.from} />} />
-          <Row title="to" value={<Cid cid={item.to} />} />
-        </div>
-      ))}
-    {msg.value.links.length > 1 && (
+  <ContainerMsgsType type={msg['@type']}>
+    <Row title="Neuron" value={<Account address={msg.neuron} />} />
+    {msg.links.slice(0, seeAll ? msg.length : 1).map((item, index) => (
+      <div
+        key={`${item.from}-${index}`}
+        style={{
+          padding: '10px',
+          paddingBottom: 0,
+          marginBottom: '10px',
+          borderTop: '1px solid #3ab79366',
+        }}
+      >
+        <Row title="from" value={<Cid cid={item.from} />} />
+        <Row title="to" value={<Cid cid={item.to} />} />
+      </div>
+    ))}
+    {msg.links.length > 1 && (
       <button
         style={{
           width: '25px',
@@ -160,77 +160,68 @@ const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
 );
 
 const MsgInvestmint = ({ msg }) => (
-  <ContainerMsgsType type={msg.type}>
-    {msg.value.neuron && (
-      <Row title="neuron" value={<Account address={msg.value.neuron} />} />
+  <ContainerMsgsType type={msg['@type']}>
+    {msg.neuron && (
+      <Row title="neuron" value={<Account address={msg.neuron} />} />
     )}
-    {msg.value.amount && (
+    {msg.amount && (
       <Row
         title="amount"
         value={
           <Pane display="flex">
-            {formatNumber(msg.value.amount.amount)}
+            {formatNumber(msg.amount.amount)}
             <ValueImg
               marginContainer="0 0 0 5px"
               marginImg="0 0 0 3px"
-              text={msg.value.amount.denom}
+              text={msg.amount.denom}
             />
           </Pane>
         }
       />
     )}
-    {msg.value.resource && (
-      <Row title="resource" value={<ValueImg text={msg.value.resource} />} />
+    {msg.resource && (
+      <Row title="resource" value={<ValueImg text={msg.resource} />} />
     )}
-    {msg.value.length && (
-      <Row title="length" value={timeSince(msg.value.length * S_TO_MS)} />
+    {msg.length && (
+      <Row title="length" value={timeSince(msg.length * S_TO_MS)} />
     )}
   </ContainerMsgsType>
 );
 
 const MsgCreateRoute = ({ msg }) => (
-  <ContainerMsgsType type={msg.type}>
-    <Row title="source" value={<Account address={msg.value.source} />} />
-    <Row title="name" value={msg.value.name} />
-    <Row
-      title="destination"
-      value={<Account address={msg.value.destination} />}
-    />
+  <ContainerMsgsType type={msg['@type']}>
+    <Row title="source" value={<Account address={msg.source} />} />
+    <Row title="name" value={msg.name} />
+    <Row title="destination" value={<Account address={msg.destination} />} />
   </ContainerMsgsType>
 );
 
 const MsgEditRoute = ({ msg }) => (
-  <ContainerMsgsType type={msg.type}>
-    <Row title="source" value={<Account address={msg.value.source} />} />
-    {msg.value.value && (
+  <ContainerMsgsType type={msg['@type']}>
+    <Row title="source" value={<Account address={msg.source} />} />
+    {msg && (
       <Row
         title="amount"
         value={
           <Pane display="flex">
-            {formatNumber(msg.value.value.amount * 10 ** -3)}
+            {formatNumber(msg.amount * 10 ** -3)}
             <ValueImg
               marginContainer="0 0 0 5px"
               marginImg="0 0 0 3px"
-              text={msg.value.value.denom}
+              text={msg.denom}
             />
           </Pane>
         }
       />
     )}
-    <Row
-      title="destination"
-      value={<Account address={msg.value.destination} />}
-    />
+    <Row title="destination" value={<Account address={msg.destination} />} />
   </ContainerMsgsType>
 );
 
 const MsgDeleteRoute = ({ msg }) => (
-  <ContainerMsgsType type={msg.type}>
-    <Row title="source" value={<Account address={msg.value.source} />} />
-    <Row
-      title="destination"
-      value={<Account address={msg.value.destination} />}
-    />
+  <ContainerMsgsType type={msg['@type']}>
+    <Row title="source" value={<Account address={msg.source} />} />
+    <Row title="destination" value={<Account address={msg.destination} />} />
   </ContainerMsgsType>
 );
 
@@ -239,360 +230,487 @@ const MsgEditRouteName = ({ msg }) => <MsgCreateRoute msg={msg} />;
 function Activites({ msg }) {
   console.log(msg);
   const [seeAll, setSeeAll] = useState(false);
+  let type = '';
 
-  switch (msg.type) {
-    case 'cyber/MsgCyberlink':
-      return (
-        <MsgLink
-          msg={msg}
-          seeAll={seeAll}
-          onClickBtnSeeAll={() => setSeeAll(!seeAll)}
-        />
-      );
-
-    // bank
-    case 'cosmos-sdk/MsgSend':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="From"
-            value={<Account address={msg.value.from_address} />}
-          />
-          <Row title="To" value={<Account address={msg.value.to_address} />} />
-          <Row
-            title="amount"
-            value={
-              msg.value.amount.length > 0
-                ? msg.value.amount.map((amount, i) => {
-                    if (i > 0) {
-                      return ` ,${amount.amount} ${amount.denom}`;
-                    }
-                    return `${formatNumber(
-                      amount.amount
-                    )} ${amount.denom.toUpperCase()}`;
-                  })
-                : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
-            }
-          />
-        </ContainerMsgsType>
-      );
-
-    case 'cosmos-sdk/MsgMultiSend':
-      return <MultiSend msg={msg} />;
-
-    // staking
-    case 'cosmos-sdk/MsgCreateValidator':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Delegator"
-            value={<Account address={msg.value.delegator_address} />}
-          />
-          <Row
-            title="Validator"
-            value={<Account address={msg.value.validator_address} />}
-          />
-          <Row
-            title="Mininum Self Delegation"
-            value={`${formatNumber(msg.value.min_self_delegation)} 
-             ${CYBER.DENOM_CYBER.toUpperCase()}`}
-          />
-          <Row title="Commission Rate" value={msg.value.commission.rate} />
-          <Row title="Description" value={msg.value.description.moniker} />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgEditValidator':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Address"
-            value={<Account address={msg.value.address} />}
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgDelegate':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Delegator"
-            value={<Account address={msg.value.delegator_address} />}
-          />
-          <Row
-            title="Validator"
-            value={<Account address={msg.value.validator_address} />}
-          />
-          <Row
-            title="Delegation Amount"
-            value={`${formatNumber(
-              msg.value.amount.amount
-            )} ${msg.value.amount.denom.toUpperCase()}`}
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgUndelegate':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Delegator"
-            value={<Account address={msg.value.delegator_address} />}
-          />
-          <Row
-            title="Validator"
-            value={<Account address={msg.value.validator_address} />}
-          />
-          <Row
-            title="Undelegation Amount"
-            value={`${formatNumber(
-              msg.value.amount.amount
-            )} ${msg.value.amount.denom.toUpperCase()}`}
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgBeginRedelegate':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Delegator"
-            value={<Account address={msg.value.delegator_address} />}
-          />
-          <Row
-            title="Redelegated from"
-            value={<Account address={msg.value.validator_src_address} />}
-          />
-          <Row
-            title="Redelegated to"
-            value={<Account address={msg.value.validator_dst_address} />}
-          />
-          <Row
-            title="Redelegation Amount"
-            value={`${formatNumber(
-              msg.value.amount.amount
-            )} ${msg.value.amount.denom.toUpperCase()}`}
-          />
-        </ContainerMsgsType>
-      );
-
-    // gov
-    case 'cosmos-sdk/MsgSubmitProposal':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Proposer"
-            value={<Account address={msg.value.proposer} />}
-          />
-          <Row
-            title="Initail Deposit"
-            value={
-              msg.value.initial_deposit.length > 0
-                ? msg.value.initial_deposit.map((amount, i) => {
-                    if (i > 0) {
-                      return ` ,${amount.amount} ${amount.denom}`;
-                    }
-                    return `${formatNumber(
-                      amount.amount
-                    )} ${amount.denom.toUpperCase()}`;
-                  })
-                : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
-            }
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgDeposit':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Proposal Id"
-            value={
-              <Link to={`/senate/${msg.value.proposal_id}`}>
-                {msg.value.proposal_id}
-              </Link>
-            }
-          />
-          <Row
-            title="Depositor"
-            value={<Account address={msg.value.depositor} />}
-          />
-          <Row
-            title="Amount"
-            value={msg.value.amount.map((amount, i) => {
-              if (i > 0) {
-                return ` ,${amount.amount} ${amount.denom}`;
-              }
-              return `${formatNumber(
-                amount.amount
-              )} ${amount.denom.toUpperCase()}`;
-            })}
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgVote':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="Proposal Id"
-            value={
-              <Link to={`/senate/${msg.value.proposal_id}`}>
-                {msg.value.proposal_id}
-              </Link>
-            }
-          />
-          <Row title="Voter" value={<Account address={msg.value.voter} />} />
-          <Row title="Vote Option" value={msg.value.option} />
-        </ContainerMsgsType>
-      );
-
-    // distribution
-    case 'cosmos-sdk/MsgWithdrawValidatorCommission':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="address"
-            value={<Account address={msg.value.validator_address} />}
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgWithdrawDelegationReward':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="delegator"
-            value={<Account address={msg.value.delegator_address} />}
-          />
-          <Row
-            title="validator"
-            value={<Account address={msg.value.validator_address} />}
-          />
-        </ContainerMsgsType>
-      );
-    case 'cosmos-sdk/MsgModifyWithdrawAddress':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="delegator"
-            value={<Account address={msg.value.delegator_address} />}
-          />
-        </ContainerMsgsType>
-      );
-
-    // slashing
-    case 'cosmos-sdk/MsgUnjail':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row
-            title="address"
-            value={<Account address={msg.value.address} />}
-          />
-        </ContainerMsgsType>
-      );
-
-    // wasm
-    case 'wasm/MsgInstantiate':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row title="address" value={<Account address={msg.value.sender} />} />
-          <Row title="label" value={msg.value.label} />
-          {msg.value.code_id && (
-            <Row title="code id" value={msg.value.code_id} />
-          )}
-        </ContainerMsgsType>
-      );
-
-    // Investmint
-    case 'cyber/MsgInvestmint':
-      return <MsgInvestmint msg={msg} />;
-
-    // grid
-    case 'cyber/MsgCreateRoute':
-      return <MsgCreateRoute msg={msg} />;
-
-    case 'cyber/MsgEditRoute':
-      return <MsgEditRoute msg={msg} />;
-
-    case 'cyber/MsgDeleteRoute':
-      return <MsgDeleteRoute msg={msg} />;
-
-    case 'cyber/MsgEditRouteName':
-      return <MsgEditRouteName msg={msg} />;
-
-    // swap
-    case 'liquidity/MsgSwapWithinBatch':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row title="Swap requester address" value={<Account address={msg.value.swap_requester_address} />} />
-          <Row title="Demand coin denom" value={msg.value.demand_coin_denom} />
-          <Row
-            title="Offer coin"
-            value={
-              `${formatNumber(msg.value.offer_coin.amount)} ${msg.value.offer_coin.denom.toUpperCase()}`
-            }
-          />
-          <Row
-            title="Offer coin fee"
-            value={
-              `${formatNumber(msg.value.offer_coin_fee.amount)} ${msg.value.offer_coin_fee.denom.toUpperCase()}`
-            }
-          />
-          <Row title="Order price" value={msg.value.order_price} />
-          <Row title="Pool ID" value={msg.value.pool_id} />
-          <Row title="Swap type id" value={msg.value.swap_type_id} />
-        </ContainerMsgsType>
-      )
-
-    case 'liquidity/MsgDepositWithinBatch':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row title="Depositor address" value={<Account address={msg.value.depositor_address} />} />
-          <Row title="Pool id" value={msg.value.pool_id} />
-          <Row
-            title="Deposit coins"
-            value={msg.value.deposit_coins.map((data, i) => {
-              return (
-                `${formatNumber(data.amount)} ${data.denom.toUpperCase()} /`
-              );
-            })}
-          />
-        </ContainerMsgsType>
-      )
-
-    case 'liquidity/MsgWithdrawWithinBatch':
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row title="Withdrawer address" value={<Account address={msg.value.withdrawer_address} />} />
-          <Row title="Pool id" value={msg.value.pool_id} />
-          <Row
-            title="Pool coin"
-            value={
-                `${formatNumber(msg.value.pool_coin.amount)} ${msg.value.pool_coin.denom.toUpperCase()}`
-            }
-          />
-        </ContainerMsgsType>
-      )
-
-    case 'cosmos-sdk/MsgTransfer': 
-      return (
-        <ContainerMsgsType type={msg.type}>
-          <Row title="Sender" value={<Account address={msg.value.sender} />} />
-          <Row title="Receiver" value={<Account address={msg.value.receiver} />} />
-          <Row title="Source channel" value={msg.value.source_channel} />
-          <Row title="Source port" value={msg.value.source_port} />
-          <Row
-            title="Token"
-            value={
-              `${formatNumber(msg.value.token.amount)} ${msg.value.token.denom.toUpperCase()}`
-            }
-          />
-          <Row
-            title="Timeout height"
-            value={
-              `${formatNumber(msg.value.timeout_height.revision_height)} / ${formatNumber(msg.value.timeout_height.revision_number)}`
-            }
-          />
-        </ContainerMsgsType>
-      )   
-
-    default:
-      return <div>{JSON.stringify(msg.value)}</div>;
+  if (msg['@type']) {
+    type = msg['@type'];
   }
+
+  if (type.includes('MsgCyberlink')) {
+    return (
+      <MsgLink
+        msg={msg}
+        seeAll={seeAll}
+        onClickBtnSeeAll={() => setSeeAll(!seeAll)}
+      />
+    );
+  }
+
+  // bank
+  if (type.includes('MsgSend')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="From" value={<Account address={msg.from_address} />} />
+        <Row title="To" value={<Account address={msg.to_address} />} />
+        <Row
+          title="amount"
+          value={
+            msg.amount.length > 0
+              ? msg.amount.map((amount, i) => {
+                  if (i > 0) {
+                    return ` ,${amount.amount} ${amount.denom}`;
+                  }
+                  return `${formatNumber(
+                    amount.amount
+                  )} ${amount.denom.toUpperCase()}`;
+                })
+              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+          }
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  // case 'cosmos-sdk/MsgMultiSend':
+  if (type.includes('MsgMultiSend')) {
+    return <MultiSend msg={msg} />;
+  }
+
+  // staking
+  if (type.includes('MsgCreateValidator')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+        <Row
+          title="Validator"
+          value={<Account address={msg.validator_address} />}
+        />
+        <Row
+          title="Mininum Self Delegation"
+          value={`${formatNumber(msg.min_self_delegation)}
+           ${CYBER.DENOM_CYBER.toUpperCase()}`}
+        />
+        <Row title="Commission Rate" value={msg.commission.rate} />
+        <Row title="Description" value={msg.description.moniker} />
+      </ContainerMsgsType>
+    );
+  }
+  if (type.includes('MsgEditValidator')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Address" value={<Account address={msg.address} />} />
+      </ContainerMsgsType>
+    );
+  }
+  if (type.includes('MsgDelegate')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+        <Row
+          title="Validator"
+          value={<Account address={msg.validator_address} />}
+        />
+        <Row
+          title="Delegation Amount"
+          value={`${formatNumber(
+            msg.amount.amount
+          )} ${msg.amount.denom.toUpperCase()}`}
+        />
+      </ContainerMsgsType>
+    );
+  }
+  if (type.includes('MsgUndelegate')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+        <Row
+          title="Validator"
+          value={<Account address={msg.validator_address} />}
+        />
+        <Row
+          title="Undelegation Amount"
+          value={`${formatNumber(
+            msg.amount.amount
+          )} ${msg.amount.denom.toUpperCase()}`}
+        />
+      </ContainerMsgsType>
+    );
+  }
+  if (type.includes('MsgBeginRedelegate')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+        <Row
+          title="Redelegated from"
+          value={<Account address={msg.validator_src_address} />}
+        />
+        <Row
+          title="Redelegated to"
+          value={<Account address={msg.validator_dst_address} />}
+        />
+        <Row
+          title="Redelegation Amount"
+          value={`${formatNumber(
+            msg.amount.amount
+          )} ${msg.amount.denom.toUpperCase()}`}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  // gov
+  if (type.includes('MsgSubmitProposal')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Proposer" value={<Account address={msg.proposer} />} />
+        <Row
+          title="Initail Deposit"
+          value={
+            msg.initial_deposit.length > 0
+              ? msg.initial_deposit.map((amount, i) => {
+                  if (i > 0) {
+                    return ` ,${amount.amount} ${amount.denom}`;
+                  }
+                  return `${formatNumber(
+                    amount.amount
+                  )} ${amount.denom.toUpperCase()}`;
+                })
+              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+          }
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgDeposit')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Proposal Id"
+          value={
+            <Link to={`/senate/${msg.proposal_id}`}>{msg.proposal_id}</Link>
+          }
+        />
+        <Row title="Depositor" value={<Account address={msg.depositor} />} />
+        <Row
+          title="Amount"
+          value={msg.amount.map((amount, i) => {
+            if (i > 0) {
+              return ` ,${amount.amount} ${amount.denom}`;
+            }
+            return `${formatNumber(
+              amount.amount
+            )} ${amount.denom.toUpperCase()}`;
+          })}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgVote')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Proposal Id"
+          value={
+            <Link to={`/senate/${msg.proposal_id}`}>{msg.proposal_id}</Link>
+          }
+        />
+        <Row title="Voter" value={<Account address={msg.voter} />} />
+        <Row title="Vote Option" value={msg.option} />
+      </ContainerMsgsType>
+    );
+  }
+
+  // distribution
+  if (type.includes('MsgWithdrawValidatorCommission')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="address"
+          value={<Account address={msg.validator_address} />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgWithdrawDelegatorReward')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+        <Row
+          title="validator"
+          value={<Account address={msg.validator_address} />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgModifyWithdrawAddress')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  // slashing
+  if (type.includes('MsgUnjail')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="address" value={<Account address={msg.address} />} />
+      </ContainerMsgsType>
+    );
+  }
+
+  // wasm
+  if (type.includes('MsgInstantiateContract')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="address" value={<Account address={msg.sender} />} />
+        <Row title="label" value={msg.label} />
+        {msg.code_id && <Row title="code id" value={msg.code_id} />}
+        <Row title="message" value={fromUtf8(fromBase64(msg.msg))} />
+        <Row
+          title="funds"
+          value={
+            msg.funds.length > 0
+              ? msg.funds.map((amount, i) => {
+                  if (i > 0) {
+                    return ` ,${amount.amount} ${amount.denom}`;
+                  }
+                  return `${formatNumber(
+                    amount.amount
+                  )} ${amount.denom.toUpperCase()}`;
+                })
+              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+          }
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgStoreCode')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="address" value={<Account address={msg.sender} />} />
+        <Row title="wasm byte code" value={msg.wasm_byte_code} />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgExecuteContract')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="address" value={<Account address={msg.sender} />} />
+        <Row title="contract" value={<Account address={msg.contract} />} />
+        <Row title="message" value={fromUtf8(fromBase64(msg.msg))} />
+        <Row
+          title="funds"
+          value={
+            msg.funds.length > 0
+              ? msg.funds.map((amount, i) => {
+                  if (i > 0) {
+                    return ` ,${amount.amount} ${amount.denom}`;
+                  }
+                  return `${formatNumber(
+                    amount.amount
+                  )} ${amount.denom.toUpperCase()}`;
+                })
+              : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
+          }
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  // Investmint
+  if (type.includes('MsgInvestmint')) {
+    return <MsgInvestmint msg={msg} />;
+  }
+
+  // grid
+  if (type.includes('MsgCreateRoute')) {
+    return <MsgCreateRoute msg={msg} />;
+  }
+
+  if (type.includes('MsgEditRoute')) {
+    return <MsgEditRoute msg={msg} />;
+  }
+
+  if (type.includes('MsgDeleteRoute')) {
+    return <MsgDeleteRoute msg={msg} />;
+  }
+
+  if (type.includes('MsgEditRouteName')) {
+    return <MsgEditRouteName msg={msg} />;
+  }
+
+  // swap
+  if (type.includes('MsgSwapWithinBatch')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Swap requester address"
+          value={<Account address={msg.swap_requester_address} />}
+        />
+        <Row title="Demand coin denom" value={msg.demand_coin_denom} />
+        <Row
+          title="Offer coin"
+          value={`${formatNumber(
+            msg.offer_coin.amount
+          )} ${msg.offer_coin.denom.toUpperCase()}`}
+        />
+        <Row
+          title="Offer coin fee"
+          value={`${formatNumber(
+            msg.offer_coin_fee.amount
+          )} ${msg.offer_coin_fee.denom.toUpperCase()}`}
+        />
+        <Row title="Order price" value={msg.order_price} />
+        <Row title="Pool ID" value={msg.pool_id} />
+        <Row title="Swap type id" value={msg.swap_type_id} />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgDepositWithinBatch')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Depositor address"
+          value={<Account address={msg.depositor_address} />}
+        />
+        <Row title="Pool id" value={msg.pool_id} />
+        <Row
+          title="Deposit coins"
+          value={msg.deposit_coins.map((data, i) => {
+            return `${formatNumber(data.amount)} ${data.denom.toUpperCase()} /`;
+          })}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgWithdrawWithinBatch')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Withdrawer address"
+          value={<Account address={msg.withdrawer_address} />}
+        />
+        <Row title="Pool id" value={msg.pool_id} />
+        <Row
+          title="Pool coin"
+          value={`${formatNumber(
+            msg.pool_coin.amount
+          )} ${msg.pool_coin.denom.toUpperCase()}`}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgTransfer')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Sender" value={<Account address={msg.sender} />} />
+        <Row title="Receiver" value={<Account address={msg.receiver} />} />
+        <Row title="Source channel" value={msg.source_channel} />
+        <Row title="Source port" value={msg.source_port} />
+        <Row
+          title="Token"
+          value={`${formatNumber(
+            msg.token.amount
+          )} ${msg.token.denom.toUpperCase()}`}
+        />
+        <Row
+          title="Timeout height"
+          value={`${formatNumber(
+            msg.timeout_height.revision_height
+          )} / ${formatNumber(msg.timeout_height.revision_number)}`}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  // ibc
+  if (type.includes('MsgRecvPacket')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Signer" value={<Account address={msg.signer} />} />
+        <Row
+          title="Packet"
+          value={<ReactJson
+            src={msg.packet}
+            theme="twilight"
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />}
+        />
+        <Row
+          title="Proof Commitment"
+          value={msg.proof_commitment}
+        />
+        <Row
+          title="Proof Height"
+          value={<ReactJson
+            src={msg.proof_height}
+            theme="twilight"
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />}
+        />
+        {/* <Row
+          title="Proof Height"
+          value={`RN: ${formatNumber(
+            msg.proof_height.revision_number
+          )} RH: ${formatNumber(msg.proof_height.revision_height)}`}
+        /> */}
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgUpdateClient')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row title="Signer" value={<Account address={msg.signer} />} />
+        <Row
+          title="Client ID"
+          value={msg.client_id}
+        />
+        <Row
+          title="Header"
+          value={<ReactJson
+            src={msg.header}
+            theme="twilight"
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+    
+
+  return <div>{JSON.stringify(msg)}</div>;
 }
 
 export default Activites;

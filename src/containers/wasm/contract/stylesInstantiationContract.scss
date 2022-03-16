@@ -1,0 +1,42 @@
+@import '../globalStyle.scss';
+
+@mixin displayFlexGap {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 20px;
+}
+
+.containerJsonContract {
+  @include displayFlexGap;
+
+  &JSONInput {
+    @include border-card;
+    @include displayFlexGap;
+
+    &Title {
+      font-size: 18px;
+    }
+  }
+
+  &InputContainer {
+    @include border-card;
+    @include displayFlexGap;
+    &Item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+
+      span {
+        line-height: 42px;
+      }
+
+      &Input {
+        @include input-style;
+      }
+    }
+  }
+
+  &Result {
+    @include border-card;
+    @include displayFlexGap;
+  }
+}

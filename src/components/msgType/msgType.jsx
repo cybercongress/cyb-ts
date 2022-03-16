@@ -146,19 +146,45 @@ const MsgType = ({ type }) => {
   // ibc
 
   if (type.includes('MsgUpdateClient')) {
-    return <ContainerTitle img={investmint}>IBC Update client</ContainerTitle>;
+    return <ContainerTitle img={investmint}>IBC Update Client</ContainerTitle>;
   }
 
   if (type.includes('MsgRecvPacket')) {
-    return <ContainerTitle img={investmint}>IBC Recv packet</ContainerTitle>;
+    return <ContainerTitle img={investmint}>IBC Recv Packet</ContainerTitle>;
   }
 
   if (type.includes('MsgAcknowledgement')) {
-    return <ContainerTitle img={investmint}>IBC Ack packet</ContainerTitle>;
+    return <ContainerTitle img={investmint}>IBC Ack Packet</ContainerTitle>;
   }
 
   if (type.includes('MsgTransfer')) {
     return <ContainerTitle img={bank}>IBC Transfer</ContainerTitle>;
+  }
+
+  // wasm
+
+  if (type.includes('MsgExecuteContract')) {
+    return <ContainerTitle img={bank}>Execute Program</ContainerTitle>;
+  }
+
+  if (type.includes('MsgInstantiateContract')) {
+    return <ContainerTitle img={bank}>Instantiate Program</ContainerTitle>;
+  }
+
+  if (type.includes('MsgStoreCode')) {
+    return <ContainerTitle img={bank}>Store Program Code</ContainerTitle>;
+  }
+
+  if (type.includes('MsgMigrateContract')) {
+    return <ContainerTitle img={bank}>Migrate Program</ContainerTitle>;
+  }
+
+  if (type.includes('MsgUpdateAdmin')) {
+    return <ContainerTitle img={bank}>Update Program Admin</ContainerTitle>;
+  }
+
+  if (type.includes('MsgClearAdmin')) {
+    return <ContainerTitle img={bank}>Clear Program Admin</ContainerTitle>;
   }
 
 

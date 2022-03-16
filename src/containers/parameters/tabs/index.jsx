@@ -5,9 +5,11 @@ import DistributionParam from './distribution';
 import GovParam from './gov';
 import RankParam from './rank';
 import InlfationParam from './inlfation';
-import ParamEnergy from './energy';
+import ResourcesParam from './resources';
 import WasmParam from './wasm';
 import LiquidityParam from './liquidity'
+import GridParam from './grid'
+import DmnParam from './dmn';
 
 export {
   BandwidthParam,
@@ -17,7 +19,9 @@ export {
   StakingParam,
   RankParam,
   InlfationParam,
-  ParamEnergy,
+  ResourcesParam,
   WasmParam,
   LiquidityParam,
+  GridParam,
+  DmnParam,
 };

@@ -89,6 +89,7 @@ const CYBER = {
   CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy-1.cybernode.ai/v1/graphql',
 
   CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
+
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
@@ -215,6 +216,7 @@ const BOND_STATUS = {
 
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
@@ -235,6 +237,7 @@ export {
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
   PATTERN_CYBER,
+  PATTERN_CYBER_CONTRACT,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
   PATTERN_IPFS_HASH,

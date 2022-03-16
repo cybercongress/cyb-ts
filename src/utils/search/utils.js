@@ -944,11 +944,50 @@ export const getParamInlfation = async () => {
   }
 };
 
-export const getParamEnergy = async () => {
+export const getParamResources = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/cyber/energy/v1beta1/resources/params`,
+      url: `${CYBER_NODE_URL_LCD}/cyber/resources/v1beta1/resources/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamLiquidity = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cosmos/liquidity/v1beta1/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamGrid = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/grid/v1beta1/grid/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamDmn = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/dmn/v1beta1/dmn/params`,
     });
     return response.data.params;
   } catch (e) {
@@ -966,49 +1005,60 @@ export const getParamNetwork = async (address, node) => {
     let gov = null;
     let rank = null;
     let mint = null;
-    let energy = null;
+    let resources = null;
+    let liquidity = null;
+    let grid = null;
+    let dmn = null;
 
     const dataStaking = await getParamStaking();
-    console.log(`dataStaking`, dataStaking);
     if (dataStaking !== null) {
       staking = dataStaking;
     }
     const dataSlashing = await getParamSlashing();
-    console.log(`dataSlashing`, dataSlashing);
     if (dataSlashing !== null) {
       slashing = dataSlashing;
     }
     const dataDistribution = await getParamDistribution();
-    console.log(`dataDistribution`, dataDistribution);
     if (dataDistribution !== null) {
       distribution = dataDistribution;
     }
     const dataGov = await getParamGov();
-    console.log(`dataGov`, dataGov);
     if (dataGov !== null) {
       gov = dataGov;
     }
     const dataBandwidth = await getParamBandwidth();
-    console.log(`dataBandwidth`, dataBandwidth);
     if (dataBandwidth !== null) {
       bandwidth = dataBandwidth;
     }
 
     const dataRank = await getParamRank();
-    console.log(`dataRank`, dataRank);
     if (dataRank !== null) {
       rank = dataRank;
     }
 
     const dataInlfation = await getParamInlfation();
-    console.log(`dataInlfation`, dataInlfation);
     if (dataInlfation !== null) {
       mint = dataInlfation;
     }
 
-    const dataEnergy = await getParamEnergy();
-    if (dataEnergy !== null) {
-      energy = dataEnergy;
+    const dataResources = await getParamResources();
+    if (dataResources !== null) {
+      resources = dataResources;
+    }
+
+    const dataLiquidity = await getParamLiquidity();
+    if (dataLiquidity !== null) {
+      liquidity = dataLiquidity;
+    }
+
+    const dataGrid = await getParamGrid();
+    if (dataGrid !== null) {
+      grid = dataGrid;
+    }
+
+    const dataDmn = await getParamDmn();
+    if (dataDmn !== null) {
+      dmn = dataDmn;
     }
 
     const response = {
@@ -1019,7 +1069,10 @@ export const getParamNetwork = async (address, node) => {
       gov,
       rank,
       mint,
-      energy,
+      resources,
+      liquidity,
+      grid,
+      dmn,
     };
 
     return response;
