@@ -53,7 +53,7 @@ const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
   TIME_END: 'November 31 2020 24:00:00 GMT +3',
-  CHAIN_ID: 'cosmoshub-3',
+  CHAIN_ID: 'cosmoshub-4',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',

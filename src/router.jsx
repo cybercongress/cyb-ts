@@ -46,7 +46,8 @@ import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
 import Movie from './containers/movie';
-import PortalGift from './containers/portal';
+import PortalCitizenship from './containers/portal';
+import PortalGift from './containers/portal/gift';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -129,6 +130,7 @@ function AppRouter({
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
+        <Route path="/portalCitizenship" component={PortalCitizenship} />
         <Route path="/portalGift" component={PortalGift} />
       </Switch>
     </Router>

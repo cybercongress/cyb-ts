@@ -39,7 +39,8 @@ export default function GetTxs({ accountUser }) {
               }
             }
           ]
-        }
+        },
+        distinct_on: hash
       ) {
         hash
         height

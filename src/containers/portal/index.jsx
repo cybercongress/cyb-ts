@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
+import { ActionBar, Button } from '@cybercongress/gravity';
+import { useHistory } from 'react-router-dom';
 import { ContainerGradient, Signatures, ScrollableTabs } from './components';
 import Input from '../teleport/components/input';
 import { AppContext } from '../../context';
@@ -23,20 +25,24 @@ const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
-function PortalGift({ defaultAccount }) {
+function PortalCitizenship({ defaultAccount }) {
+  const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
+  const [citizenship, setCitizenship] = useState(null);
 
   console.log('addressActive', addressActive);
 
   useEffect(() => {
     const getPasport = async () => {
+      // setStagePortal(STAGE_LOADING);
       if (jsCyber !== null) {
         if (addressActive !== null) {
           const response = await activePassport(jsCyber, addressActive.bech32);
           if (response !== null) {
             console.log('response', response);
+            setCitizenship(response);
             setStagePortal(STAGE_READY);
           } else {
             setStagePortal(STAGE_INIT);
@@ -49,7 +55,11 @@ function PortalGift({ defaultAccount }) {
       }
     };
     getPasport();
-  }, [jsCyber, keplr, addressActive]);
+
+    return () => {
+      setCitizenship(null);
+    };
+  }, [jsCyber, addressActive]);
 
   const checkKeplr = () => {
     console.log(`window.keplr `, window.keplr);
@@ -65,7 +75,16 @@ function PortalGift({ defaultAccount }) {
   }
 
   if (stagePortal === STAGE_READY) {
-    return <PasportCitizenship />;
+    return (
+      <>
+        <PasportCitizenship citizenship={citizenship} />
+        <ActionBar>
+          <Button onClick={() => history.push('/portalGift')}>
+            check gift
+          </Button>
+        </ActionBar>
+      </>
+    );
   }
 
   return null;
@@ -218,4 +237,4 @@ const mapStateToProps = (store) => {
   };
 };
 
-export default connect(mapStateToProps)(PortalGift);
+export default connect(mapStateToProps)(PortalCitizenship);

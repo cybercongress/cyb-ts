@@ -6,6 +6,10 @@
   );
 }
 
+@mixin linear-gradient-blue($route) {
+  background: linear-gradient($route, rgba(0, 0, 0, 0) -3.3%, rgba(31, 203, 255, 0.35) 100%);
+}
+
 @mixin linear-gradient-grey($route) {
   background: linear-gradient(
     $route,
@@ -48,7 +52,7 @@
   &Primary {
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-green(90deg);
+      @include linear-gradient-blue(90deg);
       right: 0;
     }
   }
@@ -88,7 +92,7 @@
     &Primary {
       &::before {
         @include styleGradientPseudoEl;
-        @include linear-gradient-green(-90deg);
+        @include linear-gradient-blue(-90deg);
         left: 0;
         z-index: -1;
       }

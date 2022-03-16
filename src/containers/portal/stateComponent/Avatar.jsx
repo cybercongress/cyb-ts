@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use } from 'react';
 import { ContainerGradient } from '../components';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 

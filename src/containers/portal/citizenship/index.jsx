@@ -1,14 +1,25 @@
 import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
 import { calculateFee } from '@cosmjs/stargate';
-import { GasPrice } from '@cosmjs/launchpad';
+import { coins, GasPrice } from '@cosmjs/launchpad';
 import { ContainerGradient, Signatures, ScrollableTabs } from '../components';
-import { Welcome, Rules, InputNickname, Avatar } from '../stateComponent';
+import {
+  Welcome,
+  Rules,
+  InputNickname,
+  Avatar,
+  InitKeplr,
+  SetupKeplr,
+  ConnectKeplr,
+  Passport,
+} from '../stateComponent';
 import ActionBar from './ActionBar';
 import { getPin } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS } from '../utils';
+import { CYBER } from '../../../utils/config';
+import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 
 const STEP_INIT = 0;
 const STEP_NICKNAME = 1;
@@ -20,18 +31,18 @@ const STEP_KEPLR_SETUP = 4.2;
 const STEP_KEPLR_CONNECT = 4.3;
 const STEP_KEPLR_REGISTER = 5;
 const STEP_DONE = 6;
+const STEP_CHECK_GIFT = 7;
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
-function GetCitizenship({ node }) {
-  const { keplr } = useContext(AppContext);
-  const [step, setStep] = useState(STEP_DONE);
+function GetCitizenship({ node, defaultAccount }) {
+  const { keplr, jsCyber } = useContext(AppContext);
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [step, setStep] = useState(STEP_INIT);
   const [valueNickname, setValueNickname] = useState('');
   const [avatarIpfs, setAvatarIpfs] = useState(null);
   const [avatarImg, setAvatarImg] = useState(null);
-  const [txsHash, setTxsHash] = useState(
-    'C7E9D7091A40E616F27A6F731CA6BC8EF87A1813E6224B0933CF474554DDD3C4'
-  );
+  const [txHash, setTxHash] = useState(null);
 
   useEffect(() => {
     const localStorageNickname = localStorage.getItem('nickname');
@@ -43,7 +54,7 @@ function GetCitizenship({ node }) {
       if (localStorageAvatarCid !== null) {
         const localStorageAvatarCidData = JSON.parse(localStorageAvatarCid);
         setAvatarIpfs(localStorageAvatarCidData);
-        setStep(STEP_KEPLR_REGISTER);
+        setStep(STEP_KEPLR_INIT);
       } else {
         setStep(STEP_NICKNAME);
       }
@@ -63,6 +74,57 @@ function GetCitizenship({ node }) {
     getPinAvatar();
   }, [node, avatarImg]);
 
+  useEffect(() => {
+    const getKeplr = async () => {
+      if (step === STEP_KEPLR_INIT) {
+        if (window.keplr === undefined) {
+          setStep(STEP_KEPLR_INIT);
+        } else {
+          const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
+          try {
+            await offlineSigner.getAccounts();
+            setStep(STEP_KEPLR_CONNECT);
+          } catch (error) {
+            setStep(STEP_KEPLR_SETUP);
+          }
+        }
+      }
+    };
+    getKeplr();
+  }, [step]);
+
+  useEffect(() => {
+    const confirmTx = async () => {
+      if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
+        const response = await jsCyber.getTx(txHash.txHash);
+        console.log('response :>> ', response);
+        if (response && response !== null) {
+          if (response.code === 0) {
+            setTxHash((item) => ({
+              ...item,
+              status: 'confirmed',
+            }));
+            localStorage.removeItem('nickname');
+            localStorage.removeItem('avatarCid');
+            setStep(STEP_CHECK_GIFT);
+
+            return;
+          }
+          if (response.code) {
+            setTxHash((item) => ({
+              ...item,
+              status: 'error',
+            }));
+            // setErrorMessage(response.rawLog);
+            return;
+          }
+        }
+        setTimeout(confirmTx, 1500);
+      }
+    };
+    confirmTx();
+  }, [jsCyber, txHash]);
+
   const setupNickname = useCallback(() => {
     localStorage.setItem('nickname', JSON.stringify(valueNickname));
     setStep(STEP_RULES);
@@ -71,7 +133,7 @@ function GetCitizenship({ node }) {
   const uploadAvatarImg = useCallback(() => {
     if (avatarIpfs !== null) {
       localStorage.setItem('avatarCid', JSON.stringify(avatarIpfs));
-      setStep(STEP_KEPLR_REGISTER);
+      setStep(STEP_KEPLR_INIT);
     }
   }, [avatarIpfs]);
 
@@ -84,16 +146,25 @@ function GetCitizenship({ node }) {
           nickname: valueNickname,
         },
       };
+      let funds = false;
+      if (valueNickname.length < 8) {
+        const priceName = 1000000 * 10 * (8 - valueNickname.length);
+        funds = coins(priceName, CYBER.DENOM_CYBER);
+      }
       const executeResponseResult = await keplr.execute(
         address,
         CONTRACT_ADDRESS,
         msgObject,
         calculateFee(400000, gasPrice),
-        'cyber'
+        'cyber',
+        funds
       );
       console.log('executeResponseResult', executeResponseResult);
       if (executeResponseResult.code === 0) {
-        setTxsHash(executeResponseResult.transactionHash);
+        setTxHash({
+          status: 'pending',
+          txHash: executeResponseResult.transactionHash,
+        });
         setStep(STEP_DONE);
       }
     } catch (error) {
@@ -102,8 +173,6 @@ function GetCitizenship({ node }) {
   }, [valueNickname, avatarIpfs, keplr]);
 
   let content;
-
-  console.log('step', step)
 
   if (step === STEP_INIT) {
     content = <Welcome />;
@@ -123,24 +192,49 @@ function GetCitizenship({ node }) {
   }
 
   if (step === STEP_AVATAR_UPLOAD) {
-    content = <Avatar valueNickname={valueNickname} avatar="upload avatar" />;
-  }
-
-  if (step === STEP_KEPLR_REGISTER) {
     content = (
       <Avatar
         valueNickname={valueNickname}
-        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
+        avatar={
+          avatarIpfs === null ? (
+            'upload avatar'
+          ) : (
+            <AvataImgIpfs cidAvatar={avatarIpfs} node={node} />
+          )
+        }
       />
     );
   }
 
-  if (step === STEP_DONE) {
+  if (step === STEP_KEPLR_INIT) {
+    content = <InitKeplr />;
+  }
+
+  if (step === STEP_KEPLR_SETUP) {
+    content = <SetupKeplr />;
+  }
+
+  if (step === STEP_KEPLR_CONNECT) {
+    content = <ConnectKeplr />;
+  }
+
+  if (step === STEP_KEPLR_REGISTER) {
     content = (
-      <Avatar
+      <Passport
         valueNickname={valueNickname}
         avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
-        txs={txsHash}
+        addressActive={addressActive}
+      />
+    );
+  }
+
+  if (step === STEP_DONE || step === STEP_CHECK_GIFT) {
+    content = (
+      <Passport
+        valueNickname={valueNickname}
+        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
+        txs={txHash}
+        addressActive={addressActive}
       />
     );
   }
@@ -165,6 +259,7 @@ function GetCitizenship({ node }) {
         </div>
       </main>
       <ActionBar
+        keplr={keplr}
         step={step}
         setStep={setStep}
         setupNickname={setupNickname}
@@ -181,6 +276,7 @@ function GetCitizenship({ node }) {
 const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

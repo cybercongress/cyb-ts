@@ -204,7 +204,8 @@ function App({
             };
           }
         } else {
-          localStorage.clear();
+          localStorage.removeItem('pocket');
+          localStorage.removeItem('pocketAccount');
         }
         setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
         setAccountsProps(accountsTemp);

@@ -1,29 +1,47 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { ContainerGradient } from '../components';
+import {
+  ContainerGradient,
+  Signatures,
+  ParseAddressesImg,
+} from '../components';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 
-function PasportCitizenship({ defaultAccount, node }) {
-  const { jsCyber } = useContext(AppContext);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [citizenship, setCitizenship] = useState(null);
+function PasportCitizenship({ citizenship, txHash, node }) {
+  const [owner, setOwner] = useState(null);
+  const [addresses, setAddresses] = useState(null);
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
     const getPasport = async () => {
-      if (jsCyber !== null && addressActive !== null) {
-        const response = await activePassport(jsCyber, addressActive.bech32);
-        if (response !== null) {
-          console.log('response', response);
-          setCitizenship(response);
+      if (citizenship !== null) {
+        setOwner(citizenship.owner);
+        const addressesData = [];
+        if (
+          citizenship.extension.addresses &&
+          citizenship.extension.addresses.length > 0
+        ) {
+          addressesData.push(...citizenship.extension.addresses);
         }
+        setAddresses([citizenship.owner, ...addressesData]);
       }
     };
     getPasport();
-  }, [jsCyber, addressActive]);
+  }, [citizenship]);
+
+  const addressActiveSignatures = useMemo(() => {
+    if (
+      addresses !== null &&
+      Object.prototype.hasOwnProperty.call(addresses, active)
+    ) {
+      return { bech32: addresses[active] };
+    }
+    return null;
+  }, [addresses, active]);
 
   return (
     <main className="block-body">
@@ -35,7 +53,7 @@ function PasportCitizenship({ defaultAccount, node }) {
           gap: '70px',
         }}
       >
-        <ContainerGradient title="Moon Citizenship">
+        <ContainerGradient txs={txHash} title="Moon Citizenship">
           <div
             style={{
               height: '100%',
@@ -45,7 +63,7 @@ function PasportCitizenship({ defaultAccount, node }) {
             <div
               style={{
                 display: 'grid',
-                height: '100px',
+                height: '50px',
               }}
             >
               <div style={{ color: '#36D6AE' }}>
@@ -60,7 +78,29 @@ function PasportCitizenship({ defaultAccount, node }) {
                 />
               </ContainerAvatar>
             </div>
-            {/* <Signatures /> */}
+            {addresses !== null && (
+              <div
+                style={{
+                  height: 'calc(100% - 50px)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  gridGap: '20px',
+                }}
+              >
+                <div style={{ display: 'flex', gridGap: '15px' }}>
+                  {addresses.map((item, index) => (
+                    <ParseAddressesImg
+                      key={item}
+                      address={item}
+                      active={index === active}
+                      onClick={() => setActive(index)}
+                    />
+                  ))}
+                </div>
+                <Signatures addressActive={addressActiveSignatures} />
+              </div>
+            )}
           </div>
         </ContainerGradient>
       </div>
@@ -70,7 +110,6 @@ function PasportCitizenship({ defaultAccount, node }) {
 
 const mapStateToProps = (store) => {
   return {
-    defaultAccount: store.pocket.defaultAccount,
     node: store.ipfs.ipfs,
   };
 };

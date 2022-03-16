@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './style.scss';
-import { trimString } from '../../../../utils/utils'
+import { trimString } from '../../../../utils/utils';
 
 const classNames = require('classnames');
 
@@ -8,11 +8,25 @@ const ContainerLamp = ({ children }) => (
   <div className={styles.wrapContainerLamp}>{children}</div>
 );
 
+const TxsStatus = ({ data }) => {
+  return (
+    <div
+      className={classNames(styles.containerTxs, {
+        [styles.containerTxsPending]: data.status === 'pending',
+        [styles.containerTxsConfirmed]: data.status === 'confirmed',
+      })}
+    >
+      <div>{trimString(data.txHash, 5, 5)}</div>
+      {/* <div>5 min ago</div> */}
+      <div>{data.status}</div>
+    </div>
+  );
+};
+
 function ContainerGradient({
   title = 'Moon Citizenship',
   children,
   txs,
-  status = 'pending',
   danger,
 }) {
   return (
@@ -33,18 +47,7 @@ function ContainerGradient({
           {children}
         </div>
       </div>
-      {txs && (
-        <div
-          className={classNames(styles.containerTxs, {
-            [styles.containerTxsPending]: status === 'pending',
-            [styles.containerTxsConfirmed]: status === 'confirmed',
-          })}
-        >
-          <div>{trimString(txs, 5, 5)}</div>
-          {/* <div>5 min ago</div> */}
-          <div>{status}</div>
-        </div>
-      )}
+      {txs && txs !== null && <TxsStatus data={txs} />}
     </ContainerLamp>
   );
 }

@@ -1,0 +1,48 @@
+import React from 'react';
+import {
+  ContainerGradient,
+  Signatures,
+  ParseAddressesImg,
+} from '../components';
+import ContainerAvatar from '../components/avataIpfs/containerAvatar';
+
+function Passport({ txs, valueNickname, avatar, addressActive }) {
+  return (
+    <ContainerGradient txs={txs} title="Moon Citizenship">
+      <div
+        style={{
+          paddingLeft: '15px',
+          height: '50px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+        }}
+      >
+        <div style={{ color: '#36D6AE' }}>{valueNickname}</div>
+
+        <ContainerAvatar>{avatar}</ContainerAvatar>
+      </div>
+      <div
+        style={{
+          height: 'calc(100% - 50px)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          gridGap: '20px',
+        }}
+      >
+        {addressActive !== null && (
+          <div style={{ display: 'flex', gridGap: '15px' }}>
+            <ParseAddressesImg
+              key={addressActive.bech32}
+              address={addressActive.bech32}
+              active
+            />
+          </div>
+        )}
+        <Signatures addressActive={addressActive} />
+      </div>
+    </ContainerGradient>
+  );
+}
+
+export default Passport;

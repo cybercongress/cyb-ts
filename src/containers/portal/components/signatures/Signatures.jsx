@@ -1,7 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './styles.scss';
-
-const bostrom = 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445';
 
 function isNumeric(value) {
   return /^-?\d+$/.test(value);
@@ -22,23 +20,38 @@ const getHeight = (value) => {
   }
 };
 
-const Signatures = () => {
-  const sliceBostrom = bostrom.slice(9, bostrom.length - 2);
-  console.log('sliceBostrom', sliceBostrom);
-  const hexBostrom = Buffer.from(sliceBostrom).toString('hex');
+const Signatures = ({ addressActive }) => {
+  const hexBostrom = useMemo(() => {
+    if (addressActive !== null) {
+      const { bech32 } = addressActive;
+      const sliceBostrom = bech32.slice(9, bech32.length - 2);
+      return Buffer.from(sliceBostrom).toString('hex');
+    }
+    return null;
+  }, [addressActive]);
+
+  const address = useMemo(() => {
+    if (addressActive !== null) {
+      const { bech32 } = addressActive;
+      return bech32;
+    }
+    return null;
+  }, [addressActive]);
 
   let inx = 0;
   const items = [];
-  while (inx <= hexBostrom.length - 2) {
-    items.push(hexBostrom.substr(inx, 3));
-    inx += 3;
+  if (hexBostrom !== null) {
+    while (inx <= hexBostrom.length - 2) {
+      items.push(hexBostrom.substr(inx, 3));
+      inx += 3;
+    }
   }
 
   return (
     <div>
-      <div>Signatures</div>
+      {/* <div>Signatures</div> */}
       <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-        {bostrom.slice(0, 9)}
+        {address !== null && address.slice(0, 9)}
         {items.map((code, i) => (
           <div
             key={i}
@@ -53,7 +66,7 @@ const Signatures = () => {
             }}
           />
         ))}
-        {bostrom.slice(bostrom.length - 2)}
+        {address !== null && address.slice(address.length - 2)}
       </div>
     </div>
   );
