@@ -535,19 +535,19 @@ class Wallet extends React.Component {
                 Hi! I am Cyb! Your immortal robot for the <Link to ="/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57">Great Web</Link>.
                 <br></br>
                 <br></br>
-                I am connected to <Link to="/bootloader">Bostrom</Link> bootloader - common ancestor
-                for all future <Link to="/search/superintelligence">Superintelligence</Link>,
-                including <Link to="/search/cyber">Cyber</Link>. 
+                I am connected to <Link to="/ipfs/QmYaf3J118vExRV6gFv2CjwYCyHmzV6Z9ACV7avWb652XZ">Bostrom</Link> bootloader - common ancestor
+                for all future <Link to="/ipfs/Qmc2iYgPEqMhtc9Q85b9fc4ZnqrzwQui8vHn17CPyXo1GU">Superintelligence</Link>,
+                including <Link to="/ipfs/QmXzGkfxZV2fzpFmq7CjAYsYL1M581ZD4yuF9jztPVTpCn">Cyber</Link>. 
                 <br></br>
                 <br></br>
                 That is why I can answer different
-                questions. For example, <Link to="/search/uniswap">uniswap</Link>.
+                questions. For example, <Link to="/ipfs/QmTm51X4BDgx1vkG966BM3Qo1BTPXDL9kV5XSbHLtVc6PV">uniswap</Link>.
                 <br></br>
                 <br></br>
                 You are the chosen one! I will help you jump out a rat wheel and guide you through the revolution!
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike google</Link>, submit <Link to="/particles">particles</Link> and <Link to="/graph">cyberlinks</Link> to <Link to="/oracle">content oracle</Link>:
+                <Link to="/portal/cyber-vs-corp">Unlike google</Link>, submit <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link> and <Link to="/ipfs/QmZYkxA8GhSNoWz5TidxqqUpAReJRnn5a7n9N3GGk5Suat">cyberlinks</Link> to <Link to="/ipfs/QmYEgyizN7BP3QX1eUmBpwELbLui84PHDfCP6Ski8KMMrc">content oracle</Link>:
                 global, universal, collaborative, distributed and everevolving knowledge graph for
                 robots, humans, plants, animals and mushrooms. Learn <Link to="">your brain</Link> and earn!
                 <br></br>
@@ -564,7 +564,7 @@ class Wallet extends React.Component {
                 Manage your deals using <Link to="/contracts">digital contracts</Link> which are fast, convinient and cheap.
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike your bank</Link>, freely <Link to="/">transact</Link> without fear and limits.
+                <Link to="/portal/cyber-vs-corp">Unlike your bank</Link>, freely transact without fear and limits.
                 <br></br>
                 <br></br>
                 <Link to="/portal/cyber-vs-gov">Unlike your government</Link>, your values is trully yours without enforced taxation and embezzled inflation.
@@ -576,31 +576,31 @@ class Wallet extends React.Component {
                 <br></br>
                 <br></br>
                 Cyberverse is created for you and your generations! Use this power wisely. Start you journey from <Link to="/search/keplr">installing 
-                Keplr</Link> and <Link to="/get%20BOOT">getting BOOT</Link>. 
+                Keplr</Link> and <Link to="/ipfs/QmUwwE1gYC6xJZaT6jJHA7aac8wspN9s5puA3otDcq3jQ4">getting BOOT</Link>. 
                 <br></br>
                 <br></br>
-                After this you will be able <Link to="/halloffame">hire heroes</Link> for managing <Link to="/halloffame">dyson sphere</Link> and 
+                After this you will be able <Link to="/ipfs/QmVLCFLHGjjiUuUAMPWRkeBF1xoHNZ2MiktGMU7ZofBkKs">hire heroes</Link> for managing <Link to="/halloffame">dyson sphere</Link> and 
                 earn more <Link to="/token/BOOT">BOOT</Link>.
                 <br></br>
                 <br></br>
-                Dyson sphere is producing liquid <Link to="/token/H">Hydrogen or H</Link> tokens using <Link to="/search/biosynthesis">biosynthesis</Link>. 
-                For 1 supllied BOOT neurons get 1 H. If you want to <Link to="/halloffame">fire hero</Link> and get your BOOT back, you have to return H.
+                Dyson sphere is producing liquid <Link to="/token/H">Hydrogen or H</Link> tokens using <Link to="/ipfs/QmdBfd7dY3zHfGxQ6qbeq6fcH52ggeePWeadkTQrHBwL1b">biosynthesis</Link>. 
+                For 1 supplied BOOT neurons get 1 H. If you want to <Link to="/halloffame">fire hero</Link> and get your BOOT back, you have to return H.
                 <br></br>
                 <br></br>
                 H allows to produce energy in <Link to="/mint">hydrogen fission reactor or HFR</Link>. Energy needed to learn
-                 the superintelligence and submit <Link to="/graph">cyberlinks</Link>. 
+                 the superintelligence and <Link to="/ipfs/QmWSPQ6krsRfxm852aVsDDSFspcdpcUXutDVBTPQqNGBBD">submit cyberlinks</Link>. 
                 <br></br>
                 <br></br>
                 Energy is a product of <Link to="/token/A">Ampere or A</Link> token and <Link to="/token/V">Volt or V</Link> token multiplcation. 
-                1 V give ability to cast 1 <Link to="/graph">cyberlink</Link> per day. A define rank 
-                for <Link to="/particles">particles</Link>. Liquid A and V can be routed through <Link to="/grid">grid</Link>.
+                1 V give ability to cast 1 <Link to="/ipfs/QmZYkxA8GhSNoWz5TidxqqUpAReJRnn5a7n9N3GGk5Suat">cyberlink</Link> per day. A define rank 
+                for <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link>. Liquid A and V can be routed through <Link to="/grid">grid</Link>.
                 <br></br>
                 <br></br>
                 BOOT are for everyone. 70% of Genesis supply <Link to="/">is gifted</Link> for ethereans and cosmonauts.
-                If you have some - you will be able to claim after <Link to="/">portal activation</Link> in ~March.
+                If you have some - you will be able to claim after <Link to="/ipfs/QmddJLTE1MwNR42Tvt6AEzyEAUTCddhpyD7JxCnTB8HPgB">portal activation</Link> in ~March.
                 <br></br>
                 <br></br>
-                <Link to="/genesis">The story</Link> has just begun. Dive into the vision, discover <Link to="https://github.com/cybercongress/cyber/blob/9d1a2a53c0746eed524d68c058bfa66252000e88/story/cyber-roadmap.md">the roadmap</Link> and 
+                <Link to="/genesis">The story</Link> has just begun. Dive into the vision, discover <Link to="/ipfs/QmSBYCCYFNfHNQD7MWm4zBaNuztMaT2KghA2SbeZZm9vLH">the roadmap</Link> and 
                 cyberlink everything you want! May the force be with you!
                 <br></br>
                 <br></br>
