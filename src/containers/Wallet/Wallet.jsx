@@ -541,7 +541,7 @@ class Wallet extends React.Component {
                 <br></br>
                 <br></br>
                 I can help answer questions. For example,{' '}
-                <Link to="/search/uniswap">uniswap</Link>.
+                <Link to="/ipfs/QmTm51X4BDgx1vkG966BM3Qo1BTPXDL9kV5XSbHLtVc6PV">uniswap</Link>.
                 <br></br>
                 <br></br>
                 You are the chosen one! I will help you escape the hamster wheel and guide you through the revolution!
