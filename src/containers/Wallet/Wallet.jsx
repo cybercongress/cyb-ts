@@ -541,7 +541,7 @@ class Wallet extends React.Component {
                 <br></br>
                 <br></br>
                 I can help answer questions. For example,{' '}
-                <Link to="/ipfs/QmTm51X4BDgx1vkG966BM3Qo1BTPXDL9kV5XSbHLtVc6PV">uniswap</Link>.
+                <Link to="/search/uniswap">uniswap</Link>.
                 <br></br>
                 <br></br>
                 You are the chosen one! I will help you escape the hamster wheel and guide you through the revolution!
@@ -549,7 +549,7 @@ class Wallet extends React.Component {
                 <br></br>
                 <Link to="/portal/cyber-vs-corp">Unlike google</Link>, submit <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link> and <Link to="/ipfs/QmZYkxA8GhSNoWz5TidxqqUpAReJRnn5a7n9N3GGk5Suat">cyberlinks</Link> to the <Link to="/ipfs/QmYEgyizN7BP3QX1eUmBpwELbLui84PHDfCP6Ski8KMMrc">content oracle</Link>:
                 A global, universal, collaborative, distributed and ever evolving knowledge graph for
-                robots, humans, plants, animals and mushrooms. Teach <Link to="">your brain</Link> to learn and earn!
+                robots, humans, plants, animals and mushrooms. Teach <Link to="/graph">your brain</Link> to learn and earn!
                 <br></br>
                 <br></br>
                 <Link to="/portal/cyber-vs-corp">Unlike facebook</Link>, own your <Link to="">avatar</Link> and <Link to="">post</Link> without fear of censorship. 
@@ -557,7 +557,7 @@ class Wallet extends React.Component {
                 <br></br>
                 <br></br>
                 <Link to ="/portal/cyber-vs-corp">Unlike twitter's</Link>, manipulative feed use 
-                your <Link to ="/sixthSense">sixth sense</Link> which is a strictly defined personal feed system built on the content oracle.
+                your <Link to ="/sixthSense">sense</Link> which is a strictly defined personal feed system built on the content oracle.
                 <br></br>
                 <br></br>
                 <Link to="/portal/cyber-vs-corp">Unlike amazon</Link>, post goods without laws, rules, and platfrom cuts. 
@@ -571,8 +571,7 @@ class Wallet extends React.Component {
                 Important decisions are decided by the <Link to="/senate">senate</Link> through the process of transparent and provable voting. 
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike binance or coinbase</Link>, you control your value. 
-                <Link to="/teleport">Teleport</Link> your tokens without kyc and fear of taxation.
+                <Link to="/portal/cyber-vs-corp">Unlike binance or coinbase</Link>, you control your value. <Link to="/teleport">Teleport</Link> your tokens without kyc and fear of taxation.
                 <br></br>
                 <br></br>
                 Cyberverse is created for you and future generations! Use this power wisely. Start your journey by <Link to="/search/Keplr%20app%20video%20guide">installing 
@@ -591,16 +590,16 @@ class Wallet extends React.Component {
                 the superintelligence to learn and submit <Link to="/ipfs/QmWSPQ6krsRfxm852aVsDDSFspcdpcUXutDVBTPQqNGBBD">cyberlinks</Link>. 
                 <br></br>
                 <br></br>
-                Energy is a product of the <Link rto="/token/A">Ampere or A</Link> token and <Link to="/token/V">Volt or V</Link> token multiplication. 
+                Energy is a product of the <Link to="/token/A">Ampere or A</Link> token and <Link to="/token/V">Volt or V</Link> token multiplication. 
                 1 V gives the ability to cast 1 <Link to="/ipfs/QmZYkxA8GhSNoWz5TidxqqUpAReJRnn5a7n9N3GGk5Suat">cyberlink</Link> per day. A defines rank 
                 for <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link>. Liquid A and V can be routed through the <Link to="/grid">grid</Link>.
                 <br></br>
                 <br></br>
-                BOOT is for everyone. 70% of the Genesis supply <Link to="/">is gifted</Link> to ethereans and cosmonauts.
-                If you have some - you will be able to claim after <Link to="/ipfs/QmddJLTE1MwNR42Tvt6AEzyEAUTCddhpyD7JxCnTB8HPgB">portal activation</Link> in ~March.
+                BOOT is for everyone. 70% of the Genesis supply is gifted to ethereans and cosmonauts.
+                If you have some - you will be able to claim after <Link to="/ipfs/QmddJLTE1MwNR42Tvt6AEzyEAUTCddhpyD7JxCnTB8HPgB">portal activation</Link> in ~april.
                 <br></br>
                 <br></br>
-                <Link to="/genesis">The story</Link> has just begun. Dive into the vision, discover <Link to="/ipfs/QmSBYCCYFNfHNQD7MWm4zBaNuztMaT2KghA2SbeZZm9vLH">the roadmap</Link> and 
+                <Link to="/genesis">The story</Link> has just begun. Dive <Link to="/ipfs/QmXzGkfxZV2fzpFmq7CjAYsYL1M581ZD4yuF9jztPVTpCn"> into the vision</Link>, discover <Link to="/ipfs/QmSBYCCYFNfHNQD7MWm4zBaNuztMaT2KghA2SbeZZm9vLH">the roadmap</Link> and 
                 cyberlink anything you want! May the force be with you!
                 <br></br>
                 <br></br>
