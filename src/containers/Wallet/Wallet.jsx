@@ -547,38 +547,38 @@ class Wallet extends React.Component {
                 You are the chosen one! I will help you escape the hamster wheel and guide you through the revolution!
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike google</Link>, submit <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link> and <Link to="/ipfs/QmZYkxA8GhSNoWz5TidxqqUpAReJRnn5a7n9N3GGk5Suat">cyberlinks</Link> to the <Link to="/ipfs/QmYEgyizN7BP3QX1eUmBpwELbLui84PHDfCP6Ski8KMMrc">content oracle</Link>:
+                <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">Unlike google</Link>, submit <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link> and <Link to="/ipfs/QmZYkxA8GhSNoWz5TidxqqUpAReJRnn5a7n9N3GGk5Suat">cyberlinks</Link> to the <Link to="/ipfs/QmYEgyizN7BP3QX1eUmBpwELbLui84PHDfCP6Ski8KMMrc">content oracle</Link>:
                 A global, universal, collaborative, distributed and ever evolving knowledge graph for
                 robots, humans, plants, animals and mushrooms. Teach <Link to="/graph">your brain</Link> to learn and earn!
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike facebook</Link>, own your <Link to="">avatar</Link> and <Link to="">post</Link> without fear of censorship. 
+                <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">Unlike facebook</Link>, own your <Link to="">avatar</Link> and <Link to="">post</Link> without fear of censorship. 
                 Your <Link to="">community</Link> is truly yours.
                 <br></br>
                 <br></br>
-                <Link to ="/portal/cyber-vs-corp">Unlike twitter's</Link>, manipulative feed use 
+                <Link to ="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">Unlike twitter's</Link>, manipulative feed use 
                 your <Link to ="/sixthSense">sense</Link> which is a strictly defined personal feed system built on the content oracle.
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike amazon</Link>, post goods without laws, rules, and platfrom cuts. 
+                <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">Unlike amazon</Link>, post goods without laws, rules, and platfrom cuts. 
                 Manage your deals using <Link to="/contracts">digital contracts</Link> that are fast, convenient and inexpensive.
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike your bank</Link>, freely transact without fear and limits.
+                <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">Unlike your bank</Link>, freely transact without fear and limits.
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-gov">Unlike your government</Link>, your values are truly yours, without enforced taxation and embezzled inflation.
+                <Link to="/ipfs/QmPmJ4JwzCi82HZp7adtv5GVBFTsKF5Yoy43wshHH7x3ty">Unlike your government</Link>, your values are truly yours, without enforced taxation and embezzled inflation.
                 Important decisions are decided by the <Link to="/senate">senate</Link> through the process of transparent and provable voting. 
                 <br></br>
                 <br></br>
-                <Link to="/portal/cyber-vs-corp">Unlike binance or coinbase</Link>, you control your value. <Link to="/teleport">Teleport</Link> your tokens without kyc and fear of taxation.
+                <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">Unlike binance or coinbase</Link>, you control your value. <Link to="/teleport">Teleport</Link> your tokens without kyc and fear of taxation.
                 <br></br>
                 <br></br>
-                Cyberverse is created for you and future generations! Use this power wisely. Start your journey by <Link to="/search/Keplr%20app%20video%20guide">installing 
-                Keplr</Link> and <Link to="/ipfs/QmUwwE1gYC6xJZaT6jJHA7aac8wspN9s5puA3otDcq3jQ4">getting BOOT</Link>. 
+                Cyberverse is created for you and future generations! Use this power wisely. Start your journey by <Link to="/ipfs/QmX9xMeNioHnMeeUqBXQCKPktG79UEoYjG8sanxysh1MqX">installing 
+                Keplr</Link>, then <Link to="/ipfs/QmSWJNCBxj4m5Lpg1XGueh38NbEVDLAGsQrueD937xSnMC">set up</Link> your wallet, <Link to="/ipfs/QmSWJNCBxj4m5Lpg1XGueh38NbEVDLAGsQrueD937xSnMC">connect</Link> to Bostrom, and <Link to="/ipfs/QmUwwE1gYC6xJZaT6jJHA7aac8wspN9s5puA3otDcq3jQ4">get BOOT</Link>. 
                 <br></br>
                 <br></br>
-                After that you will be able <Link to="/ipfs/QmVLCFLHGjjiUuUAMPWRkeBF1xoHNZ2MiktGMU7ZofBkKs">hire heroes</Link> who manage the <Link to="/halloffame">dyson sphere</Link> and 
+                After that you will be able <Link to="/ipfs/QmP6Nk65ZE7jfvaNFLh7qsq3dyWqakMjfQ4te3UzRNbsXH">hire heroes</Link> who manage the <Link to="/halloffame">dyson sphere</Link> and 
                 earn more <Link to="/token/BOOT">BOOT</Link>.
                 <br></br>
                 <br></br>
