@@ -269,8 +269,8 @@ class TrollBoxx extends React.PureComponent {
                 <NoItems
                   text={
                     <Pane textAlign="center">
-                      <Pane marginBottom={5}>No messages.</Pane>
-                      <Pane>You can write something</Pane>
+                      <Pane marginBottom={5}>No messages.</Pane> 
+                      <Pane>Write something below to begin</Pane>
                     </Pane>
                   }
                 />
