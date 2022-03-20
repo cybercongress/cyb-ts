@@ -595,7 +595,7 @@ class Wallet extends React.Component {
                 for <Link to="/ipfs/QmXw2etpbTRr6XfK2rKUieBreKZXAu2rfzASB22P6VAG8x">particles</Link>. Liquid A and V can be routed through the <Link to="/grid">grid</Link>.
                 <br></br>
                 <br></br>
-                BOOT is for everyone. 70% of the Genesis supply is gifted to ethereans and cosmonauts.
+                BOOT is for everyone. 70% of the Genesis supply is <Link to="/ipfs/Qmcgoy9bV6zsqnzoLB4YunEWXadavKMXKgvmUdToh2Nr3E">gifted</Link> to ethereans and cosmonauts.
                 If you have some - you will be able to claim after <Link to="/ipfs/QmddJLTE1MwNR42Tvt6AEzyEAUTCddhpyD7JxCnTB8HPgB">portal activation</Link> in ~april.
                 <br></br>
                 <br></br>
