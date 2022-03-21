@@ -164,7 +164,7 @@ function Teleport({ defaultAccount }) {
 
   useEffect(() => {
     setSelectedPool([]);
-    if (poolsData.length > 0) {
+    if (poolsData && poolsData.length > 0) {
       if (tokenA.length > 0 && tokenB.length > 0) {
         console.log(`setSelectedPool`);
         const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
@@ -181,7 +181,7 @@ function Teleport({ defaultAccount }) {
   }, [poolsData, tokenA, tokenB]);
 
   useEffect(() => {
-    if (accountBalances !== null && poolsData !== null) {
+    if (accountBalances !== null &&poolsData && poolsData !== null) {
       const poolTokenData = getPoolToken(poolsData, accountBalances);
       let poolTokenDataIndexer = {};
 

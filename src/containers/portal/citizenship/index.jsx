@@ -155,7 +155,7 @@ function GetCitizenship({ node, defaultAccount }) {
         address,
         CONTRACT_ADDRESS,
         msgObject,
-        calculateFee(400000, gasPrice),
+        calculateFee(500000, gasPrice),
         'cyber',
         funds
       );
