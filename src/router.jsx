@@ -53,6 +53,7 @@ import {
   ContractPage,
   DashboardPage,
 } from './containers/wasm';
+import Help from './containers/help';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -142,6 +143,7 @@ function AppRouter({
         <Route path="/codes/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
+        <Route path="/help" component={Help} />
       </Switch>
     </Router>
   );

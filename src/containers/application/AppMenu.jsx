@@ -20,21 +20,26 @@ const itemsMenu = (address) => {
     linkBrain = `/pgraph/${address.bech32}`;
   }
   return [
-    { name: 'My robot', to: '/', subItems: []},
+    { name: 'My robot', to: '/', subItems: [] },
     { name: 'Portal', to: '/search/portal', subItems: [] },
     { name: 'Teleport', to: '/teleport', subItems: [] },
-    { name: 'Dyson Sphere', to: 'halloffame', subItems: [] },
+    {
+      name: 'Dyson Sphere',
+      to: '/halloffame',
+      subItems: [{ name: 'Heroes at rest', to: '/halloffame/jailed' }],
+    },
     { name: 'HFR', to: '/mint', subItems: [] },
     { name: 'My Avatar', to: linkAvatar, subItems: [] },
     { name: 'My Community', to: linkCommunity, subItems: [] },
     { name: 'My Sense', to: '/sixthSense', subItems: [] },
     { name: 'My Brain', to: linkBrain, subItems: [] },
     { name: 'My Energy', to: '/grid', subItems: [] },
-    { name: 'Lifeforms',to: '/contracts', subItems: [] },
+    { name: 'Lifeforms', to: '/contracts', subItems: [] },
     { name: 'Oracle', to: '/bootloader', subItems: [] },
 
     { name: 'Nebula', to: '/nebula', subItems: [] },
-    { name: 'Senate', to: '/senate', subItems: [] }
+    { name: 'Senate', to: '/senate', subItems: [] },
+    { name: 'Help', to: '/help', subItems: [] },
   ];
 };
 

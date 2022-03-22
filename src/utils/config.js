@@ -214,6 +214,8 @@ const BOND_STATUS = {
   BOND_STATUS_BONDED: 3,
 };
 
+const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs'
+
 const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
@@ -257,4 +259,5 @@ export {
   PROPOSAL_STATUS,
   VOTE_OPTION,
   BOND_STATUS,
+  CID_AVATAR,
 };
