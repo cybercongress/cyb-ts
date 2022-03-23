@@ -3,7 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import BalanceToken from './balanceToken';
 import Select, { OptionSelect } from './select';
 import Input from './input';
-import { reduceTextCoin } from '../utils';
+import { networkList } from '../utils';
 import { Denom } from '../../../components';
 
 const renderOptions = (data, selected, valueSelect) => {
@@ -12,13 +12,29 @@ const renderOptions = (data, selected, valueSelect) => {
     items = (
       <>
         {Object.keys(data)
-          .filter(
-            (item) =>
-              item.indexOf('pool') === -1 &&
-              item.indexOf('ibc') === -1 &&
-              item !== selected &&
-              item !== valueSelect
-          )
+          .filter((item) => item !== selected && item !== valueSelect)
+          .map((key) => (
+            <OptionSelect
+              key={key}
+              value={key}
+              text={<Denom denomValue={key} onlyText />}
+              img={<Denom justifyContent="center" denomValue={key} onlyImg />}
+            />
+          ))}
+      </>
+    );
+  }
+
+  return items;
+};
+
+const renderNetwork = (data, selected) => {
+  let items = {};
+  if (data !== null) {
+    items = (
+      <>
+        {Object.keys(data)
+          .filter((item) => item !== selected)
           .map((key) => (
             <OptionSelect
               key={key}
@@ -44,22 +60,47 @@ function TokenSetter({
   valueInput,
   id,
   textLeft,
+  readonly,
+  selectedNetwork,
+  onChangeSelectNetwork,
+  ibc,
+  ibcTokenB,
+  balanceIbc,
+  denomIbc,
+  swap,
 }) {
-  console.log(`token`, token);
+  // console.log(`denomIbc`, denomIbc);
+  // console.log('balanceIbc', balanceIbc);
+
   return (
     <Pane>
-      <BalanceToken data={accountBalances} token={token} />
+      {!ibcTokenB && (
+        <BalanceToken
+          data={ibc ? balanceIbc : accountBalances}
+          token={ibc ? denomIbc : token}
+        />
+      )}
+
       <Pane
         display="grid"
-        gridTemplateColumns="153px 170px"
+        gridTemplateColumns="40px 1fr 1fr"
         gridGap="27px"
         alignItems="center"
         marginBottom={20}
       >
-        <Pane display="flex" alignItems="center">
-          <Pane width="33px" fontSize="20px" paddingBottom={10}>
-            {textLeft}
-          </Pane>
+        <Pane width="33px" fontSize="20px" paddingBottom={10}>
+          {textLeft}
+        </Pane>
+        {swap && (
+          <Select
+            valueSelect={selectedNetwork}
+            textSelectValue={selectedNetwork !== '' ? selectedNetwork : ''}
+            onChangeSelect={(item) => onChangeSelectNetwork(item)}
+          >
+            {renderNetwork(networkList, selectedNetwork)}
+          </Select>
+        )}
+        {!ibcTokenB && (
           <Select
             valueSelect={token}
             textSelectValue={token !== '' ? token : ''}
@@ -67,7 +108,9 @@ function TokenSetter({
           >
             {renderOptions(totalSupply, selected, token)}
           </Select>
-        </Pane>
+        )}
+      </Pane>
+      {!ibcTokenB && (
         <Input
           id={id}
           value={valueInput}
@@ -78,8 +121,9 @@ function TokenSetter({
           fontSize="20px"
           autoComplete="off"
           textAlign="end"
+          readonly={readonly || false}
         />
-      </Pane>
+      )}
     </Pane>
   );
 }

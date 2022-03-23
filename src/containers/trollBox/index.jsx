@@ -110,7 +110,7 @@ class TrollBoxx extends React.PureComponent {
   async componentDidMount() {
     const { node } = this.props;
     if (node !== null) {
-      await this.init();
+      // await this.init();
     }
     this.scrollToBottom();
   }
@@ -118,7 +118,7 @@ class TrollBoxx extends React.PureComponent {
   componentDidUpdate(prevProps) {
     const { node } = this.props;
     if (node !== prevProps.node) {
-      this.init();
+      // this.init();
     }
     this.scrollToBottom();
   }

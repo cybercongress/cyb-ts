@@ -1,11 +1,36 @@
 import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
+import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
 import { Denom } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
+import { getCoinDecimals } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
+
+// return (
+//   <>
+//     <div style={{ display: 'flex' }}>
+//       1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> =
+//       <div style={{ whiteSpace: 'nowrap' }}>
+//         {price % 10 > 0
+//           ? formatNumber(Math.floor(price))
+//           : exponentialToDecimal(price.toPrecision(3))}
+//       </div>
+//       <Denom denomValue={tokenB} />
+//     </div>
+//     <div style={{ display: 'flex' }}>
+//       1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} /> =
+//       <div style={{ whiteSpace: 'nowrap' }}>
+//         {reversePrice % 10 > 0
+//           ? formatNumber(Math.floor(reversePrice))
+//           : exponentialToDecimal(reversePrice.toPrecision(3))}
+//       </div>
+//       <Denom denomValue={tokenA} />
+//     </div>
+//   </>
+// );
 
 function Swap({ stateSwap, swap }) {
   const {
@@ -18,20 +43,29 @@ function Swap({ stateSwap, swap }) {
     setTokenA,
     tokenAAmount,
     amountChangeHandler,
+    tokenChange,
     tokenAPoolAmount,
     tokenBPoolAmount,
     swapPrice,
-    tokenChange,
+    networkA,
+    setNetworkA,
+    networkB,
+    setNetworkB,
+    typeTxs,
+    balanceIbc,
+    denomIbc,
   } = stateSwap;
 
   const getTokenPrice = useMemo(() => {
-    const price = swapPrice;
-    if (price && price !== Infinity) {
+    if (tokenAPoolAmount > 0 && tokenBPoolAmount > 0) {
+      const price = swapPrice;
       return (
-        <div style={{ display: 'flex' }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}
+        >
           <div style={{ whiteSpace: 'nowrap' }}>
-            {price % 1 === 0
-              ? formatNumber(Math.floor(price))
+            {price >= 1
+              ? formatNumber(price)
               : exponentialToDecimal(price.toPrecision(3))}
           </div>
           <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> /{' '}
@@ -42,24 +76,25 @@ function Swap({ stateSwap, swap }) {
     return <span> </span>;
   }, [swapPrice]);
 
-  const getSwapFees = useMemo(() => {
-    const price = tokenAAmount / tokenBAmount;
-    if (price && price !== Infinity) {
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex' }}>
-            <div>{Math.floor(tokenAAmount * 0.0015)}</div>
-            <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} />
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div>{Math.floor(tokenBAmount * 0.0015)}</div>
-            <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} />
-          </div>
-        </div>
-      );
+  const getTextSellSend = useMemo(() => {
+    if (swap) {
+      if (typeTxs === 'swap') {
+        return 'sell';
+      }
+      return 'send';
     }
-    return <span> </span>;
-  }, [tokenAAmount, tokenBAmount]);
+    return 'add';
+  }, [typeTxs, swap]);
+
+  const getTextToBuy = useMemo(() => {
+    if (swap) {
+      if (typeTxs === 'swap') {
+        return 'buy';
+      }
+      return 'to';
+    }
+    return 'add';
+  }, [typeTxs, swap]);
 
   return (
     <Pane
@@ -68,6 +103,7 @@ function Swap({ stateSwap, swap }) {
       display="flex"
       alignItems="center"
       flexDirection="column"
+      gridGap="10px"
     >
       <TokenSetter
         id="tokenAAmount"
@@ -78,7 +114,15 @@ function Swap({ stateSwap, swap }) {
         onChangeSelect={setTokenA}
         onChangeInput={amountChangeHandler}
         valueInput={tokenAAmount}
-        textLeft={swap ? 'Sell' : ''}
+        textLeft={getTextSellSend}
+        selectedNetwork={networkA}
+        onChangeSelectNetwork={setNetworkA}
+        typeTxs={typeTxs}
+        denomIbc={denomIbc}
+        // ibc={typeTxs !== 'swap'}
+        balanceIbc={balanceIbc}
+        ibc={typeTxs === 'deposit'}
+        swap={swap}
       />
       {/* <Slider
         id="tokenAAmount"
@@ -106,29 +150,40 @@ function Swap({ stateSwap, swap }) {
         onChangeSelect={setTokenB}
         onChangeInput={amountChangeHandler}
         valueInput={tokenBAmount}
-        textLeft={swap ? 'Buy' : ''}
+        textLeft={getTextToBuy}
+        readonly="readonly"
+        selectedNetwork={networkB}
+        onChangeSelectNetwork={setNetworkB}
+        typeTxs={typeTxs}
+        ibcTokenB={typeTxs !== 'swap'}
+        swap={swap}
       />
-      <Pane
-        display="flex"
-        justifyContent="flex-end"
-        width="100%"
-        flexDirection="column"
-        alignItems=" flex-end"
-      >
-        <div>Price:</div>
-        <div>{getTokenPrice}</div>
-      </Pane>
-      <Pane
-        display="flex"
-        justifyContent="flex-end"
-        width="100%"
-        flexDirection="column"
-        alignItems=" flex-end"
-        marginTop={10}
-      >
-        <div>Swap Fees:</div>
-        <div>{getSwapFees}</div>
-      </Pane>
+      {typeTxs === 'swap' && swap && (
+        <>
+          <Pane
+            display="flex"
+            justifyContent="space-between"
+            width="100%"
+            flexDirection="row"
+            alignItems="flex-end"
+            marginTop={20}
+          >
+            <div>Rate:</div>
+            <div>{getTokenPrice}</div>
+          </Pane>
+          <Pane
+            display="flex"
+            justifyContent="space-between"
+            width="100%"
+            flexDirection="row"
+            alignItems="flex-end"
+            marginTop={10}
+          >
+            <div>Swap Fees:</div>
+            <div>0.3%</div>
+          </Pane>
+        </>
+      )}
     </Pane>
   );
 }
