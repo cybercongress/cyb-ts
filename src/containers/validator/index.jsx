@@ -211,7 +211,9 @@ class ValidatorsDetails extends React.PureComponent {
       Object.keys(fans).forEach((key) => {
         if (unStake === false) {
           if (addressPocket !== null) {
-            if (fans[key].delegator_address === addressPocket.bech32) {
+            if (
+              fans[key].delegation.delegator_address === addressPocket.bech32
+            ) {
               this.setState({
                 unStake: true,
               });

@@ -27,11 +27,13 @@ import {
   formatCurrencyNumber,
   getDecimal,
 } from '../../../utils/utils';
+import { decFnc } from '../../teleport/utils';
 import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
 import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
+import coinDecimalsConfig from '../../../utils/configToken';
 
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -43,6 +45,23 @@ const RowBalance = ({ children, ...props }) => (
     {children}
   </Pane>
 );
+
+const reduceAmounToken = (amount, token, reverse) => {
+  let amountReduce = amount;
+
+  if (token.includes('ibc')) {
+    if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+      const { coinDecimals } = coinDecimalsConfig[token];
+      if (reverse) {
+        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+      } else {
+        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+      }
+    }
+  }
+
+  return amountReduce;
+};
 
 const DetailsBalance = ({
   total,
@@ -140,7 +159,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
         display="flex"
         alignItems="center"
       >
-        <span>{formatNumber(value)}</span>
+        <span>{formatNumber(reduceAmounToken(value, text))}</span>
       </Pane>
       {text && (
         <ValueImg

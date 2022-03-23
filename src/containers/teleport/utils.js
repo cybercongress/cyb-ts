@@ -1,8 +1,17 @@
+import BigNumber from 'bignumber.js';
 import { formatNumber, convertResources } from '../../utils/utils';
-import coinDecimalsIbc from './configToken';
+import coinDecimalsConfig from '../../utils/configToken';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
+}
+
+function pow(a) {
+  let result = 1;
+  for (let i = 0; i < a; i++) {
+    result *= 10;
+  }
+  return result;
 }
 
 export function getDepositCoins(denoms, amounts) {
@@ -23,50 +32,50 @@ export function getMyTokenBalance(token, indexer) {
   return `My Balance: 0`;
 }
 
+export const getCoinDecimals = (amount, token) => {
+  let amountReduce = amount;
+
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+    const { coinDecimals } = coinDecimalsConfig[token];
+    amountReduce = parseFloat(amount) / pow(coinDecimals);
+  }
+  return amountReduce;
+};
+
 export function calculateCounterPairAmount(e, state, type) {
   const inputAmount = e.target.value;
 
-  let price = null;
+  const price = null;
   let counterPairAmount = 0;
-  let counterPair = '';
+  const counterPair = '';
 
   if (state.tokenAPoolAmount > 0 && state.tokenBPoolAmount > 0) {
-    if (type === 'swap') {
-      const swapFeeRatio = 0.9985; // ultimaetly get params
-      let swapPrice = null;
-
-      if (e.target.id === 'tokenAAmount') {
-        swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
-
-        counterPairAmount = Math.floor(
-          (inputAmount / swapPrice) * swapFeeRatio
-        );
-
-        console.log('From');
-        console.log('swapPrice', swapPrice);
-        console.log('counterPairAmount', counterPairAmount);
-      } else {
-        swapPrice = state.tokenBPoolAmount / state.tokenAPoolAmount;
-        counterPairAmount = Math.floor(inputAmount / swapFeeRatio / swapPrice);
-
-        console.log('To');
-        console.log('swapPrice', swapPrice);
-        console.log('counterPairAmount', counterPairAmount);
-      }
-
-      price = 1 / swapPrice;
+    const { tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount } = state;
+    const poolAmountA = new BigNumber(
+      getCoinDecimals(Number(tokenAPoolAmount), tokenA)
+    );
+    const poolAmountB = new BigNumber(
+      getCoinDecimals(Number(tokenBPoolAmount), tokenB)
+    );
+    let swapPrice = null;
+    if ([tokenA, tokenB].sort()[0] === tokenA) {
+      swapPrice = poolAmountB
+        .dividedBy(poolAmountA)
+        .multipliedBy(0.97)
+        .toNumber();
     } else {
-      if (e.target.id === 'tokenAAmount') {
-        price = state.tokenBPoolAmount / state.tokenAPoolAmount;
-        counterPair = 'tokenBAmount';
-        counterPairAmount = inputAmount * price;
-      } else {
-        price = state.tokenAPoolAmount / state.tokenBPoolAmount;
-        counterPair = 'tokenAAmount';
-        counterPairAmount = inputAmount * price;
-      }
-      counterPairAmount = Math.floor(counterPairAmount);
+      swapPrice = poolAmountB
+        .dividedBy(poolAmountA)
+        .multipliedBy(1.03)
+        .toNumber();
     }
+    counterPairAmount = Math.floor(inputAmount * swapPrice);
+
+    // const swapFeeRatio = 0.9985; // ultimaetly get params
+
+    // swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
+
+    // counterPairAmount = Math.floor((inputAmount / swapPrice) * swapFeeRatio);
   }
 
   return {
@@ -76,15 +85,7 @@ export function calculateCounterPairAmount(e, state, type) {
   };
 }
 
-function pow(a) {
-  let result = 1;
-  for (let i = 0; i < a; i++) {
-    result *= 10;
-  }
-  return result;
-}
-
-const decFnc = (number, dec, reverse) => {
+export const decFnc = (number, dec, reverse) => {
   let amount = number;
 
   if (reverse) {
@@ -110,22 +111,20 @@ export function calculateSlippage(swapAmount, poolReserve) {
 export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
 
-  if (token === 'millivolt' || token === 'milliampere') {
-    if (reverse) {
-      amountReduce = amount * 10 ** 3;
-    } else {
-      amountReduce = amount * 10 ** -3;
-    }
-  }
+  // if (token === 'millivolt' || token === 'milliampere') {
+  //   if (reverse) {
+  //     amountReduce = amount * 10 ** 3;
+  //   } else {
+  //     amountReduce = amount * 10 ** -3;
+  //   }
+  // }
 
-  if (token.includes('ibc')) {
-    if (Object.prototype.hasOwnProperty.call(coinDecimalsIbc, token)) {
-      const { coinDecimals } = coinDecimalsIbc[token];
-      if (reverse) {
-        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-      } else {
-        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-      }
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+    const { coinDecimals } = coinDecimalsConfig[token];
+    if (reverse) {
+      amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+    } else {
+      amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
     }
   }
 
@@ -175,3 +174,9 @@ export function getPoolToken(pool, myPoolTokens) {
 
   return myPools;
 }
+
+export const networkList = {
+  bostrom: 'bostrom',
+  osmosis: 'osmosis-1',
+  cosmos: 'cosmoshub-4',
+};
