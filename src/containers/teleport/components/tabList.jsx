@@ -19,6 +19,7 @@ function TabList({ selected }) {
       // gridGap="10px"
       marginBottom={30}
       maxWidth="390px"
+      width="375px"
       marginX="auto"
     >
       {/* <TabBtn

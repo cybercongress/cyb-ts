@@ -6,7 +6,11 @@ import BanerHelp from './banerHelp';
 function Help({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
 
-  return <BanerHelp addressActive={addressActive} />;
+  return (
+    <main className="block-body">
+      <BanerHelp addressActive={addressActive} />
+    </main>
+  );
 }
 
 const mapStateToProps = (store) => {

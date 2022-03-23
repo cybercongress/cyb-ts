@@ -73,7 +73,7 @@ function TokenSetter({
   // console.log('balanceIbc', balanceIbc);
 
   return (
-    <Pane>
+    <Pane width="inherit">
       {!ibcTokenB && (
         <BalanceToken
           data={ibc ? balanceIbc : accountBalances}
