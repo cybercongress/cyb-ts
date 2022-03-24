@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
+const CONTRACT_ADDRESS_GIFT =
+  'bostrom1lygwh737vx3z2h3lutww8px4dkwst82kvf43cjk6zjr2mfu0mztqpy62ur';
 const CONTRACT_ADDRESS =
   'bostrom1yx8p96sqhxjkg94tn55za04a9uhjc7m6lkwy606m84wvuxvhe0hqaljtdp';
 // const CONTRACT_ADDRESS =
@@ -62,4 +64,5 @@ export {
   CONTRACT_ADDRESS,
   useGetActivePassport,
   CONSTITUTION_HASH,
+  CONTRACT_ADDRESS_GIFT,
 };

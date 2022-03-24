@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import React, { useContext, useEffect, useState } from 'react';
 import {
   Pane,
@@ -302,8 +303,7 @@ function ProposalsDetail({ defaultAccount }) {
                 value={
                   <Pane className="container-description">
                     <ReactMarkdown
-                      source={proposals.description.replace(/\\n/g, '\n')}
-                      escapeHtml={false}
+                      children={proposals.description.replace(/\\n/g, '\n')}
                     />
                   </Pane>
                 }

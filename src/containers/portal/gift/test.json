@@ -1,0 +1,38 @@
+{
+  "cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn": {
+    "address": "cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn",
+    "amount": "1477000",
+    "proof": [
+      "adf472227ab63d1e86856a1f42cfb40ba5c7e2a705a975d8f0e3c34ebbf91453",
+      "8dadcce7c9a5e4112b54b9ccf836f8edaf0be040b1989380e2e742a417a33e44"
+    ],
+    "root": "c0eb3b0a400404122592d56e9abb563b6a7a0876a4f2971aaa9e982eaddc960e"
+  },
+  "0xfc689e70d3a351a56738a92f104a0dd051bf5f7b": {
+    "address": "0xfc689e70d3a351a56738a92f104a0dd051bf5f7b",
+    "amount": "1477000",
+    "proof": [
+      "68bdbb0bef7e9a621468ff232b4843b51c4f137f0eaacdd07d6e33824b5a046f",
+      "97bc7fead88dbac0c92d10baa9b21ee0227811bbf14283867504c76ae507e14d"
+    ],
+    "root": "c0eb3b0a400404122592d56e9abb563b6a7a0876a4f2971aaa9e982eaddc960e"
+  },
+  "cosmos16ahkkv0jzhtp73z83qlhqrypss6jpjm862zjst": {
+    "address": "cosmos16ahkkv0jzhtp73z83qlhqrypss6jpjm862zjst",
+    "amount": "1477000",
+    "proof": [
+      "e4e5433011182d043d64b5701ee00a1388cb9ad2bf968900f3d9eb8157dff4df",
+      "8dadcce7c9a5e4112b54b9ccf836f8edaf0be040b1989380e2e742a417a33e44"
+    ],
+    "root": "c0eb3b0a400404122592d56e9abb563b6a7a0876a4f2971aaa9e982eaddc960e"
+  },
+  "0x5059e42d33d7af7c688ca7cbca8b771d3ef0c436": {
+    "address": "0x5059e42d33d7af7c688ca7cbca8b771d3ef0c436",
+    "amount": "1477000",
+    "proof": [
+      "9214bb2553f8ee47cb2e50fd6e402c7aa5981fcf68d4e7d0439d3c3c284b08df",
+      "97bc7fead88dbac0c92d10baa9b21ee0227811bbf14283867504c76ae507e14d"
+    ],
+    "root": "c0eb3b0a400404122592d56e9abb563b6a7a0876a4f2971aaa9e982eaddc960e"
+  }
+}

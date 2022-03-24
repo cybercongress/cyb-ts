@@ -11,10 +11,23 @@ import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 
-function PasportCitizenship({ citizenship, txHash, node }) {
+function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (updateFunc) {
+      if (
+        addresses !== null &&
+        Object.prototype.hasOwnProperty.call(addresses, active)
+      ) {
+        updateFunc(addresses[active]);
+      } else {
+        updateFunc(null);
+      }
+    }
+  }, [addresses, active, updateFunc]);
 
   useEffect(() => {
     const getPasport = async () => {
@@ -44,67 +57,56 @@ function PasportCitizenship({ citizenship, txHash, node }) {
   }, [addresses, active]);
 
   return (
-    <main className="block-body">
+    <ContainerGradient txs={txHash} title="Moon Citizenship">
       <div
         style={{
-          width: '60%',
-          margin: '0px auto',
-          display: 'grid',
-          gap: '70px',
+          height: '100%',
+          color: '#36D6AE',
         }}
       >
-        <ContainerGradient txs={txHash} title="Moon Citizenship">
+        <div
+          style={{
+            display: 'grid',
+            height: '50px',
+          }}
+        >
+          <div style={{ color: '#36D6AE' }}>
+            {citizenship !== null && citizenship.extension.nickname}
+          </div>
+          <ContainerAvatar>
+            <AvataImgIpfs
+              cidAvatar={
+                citizenship !== null ? citizenship.extension.avatar : false
+              }
+              node={node}
+            />
+          </ContainerAvatar>
+        </div>
+        {addresses !== null && (
           <div
             style={{
-              height: '100%',
-              color: '#36D6AE',
+              height: 'calc(100% - 50px)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              gridGap: '20px',
             }}
           >
-            <div
-              style={{
-                display: 'grid',
-                height: '50px',
-              }}
-            >
-              <div style={{ color: '#36D6AE' }}>
-                {citizenship !== null && citizenship.extension.nickname}
-              </div>
-              <ContainerAvatar>
-                <AvataImgIpfs
-                  cidAvatar={
-                    citizenship !== null ? citizenship.extension.avatar : false
-                  }
-                  node={node}
+            <div style={{ display: 'flex', gridGap: '15px' }}>
+              {addresses.map((item, index) => (
+                <ParseAddressesImg
+                  key={item}
+                  address={item}
+                  active={index === active}
+                  onClick={() => setActive(index)}
                 />
-              </ContainerAvatar>
+              ))}
             </div>
-            {addresses !== null && (
-              <div
-                style={{
-                  height: 'calc(100% - 50px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  gridGap: '20px',
-                }}
-              >
-                <div style={{ display: 'flex', gridGap: '15px' }}>
-                  {addresses.map((item, index) => (
-                    <ParseAddressesImg
-                      key={item}
-                      address={item}
-                      active={index === active}
-                      onClick={() => setActive(index)}
-                    />
-                  ))}
-                </div>
-                <Signatures addressActive={addressActiveSignatures} />
-              </div>
-            )}
+            <Signatures addressActive={addressActiveSignatures} />
           </div>
-        </ContainerGradient>
+        )}
       </div>
-    </main>
+    </ContainerGradient>
   );
 }
 
