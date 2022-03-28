@@ -22,7 +22,11 @@ const itemsMenu = (address) => {
   return [
     { name: 'My robot', to: '/', subItems: [] },
     { name: 'Portal', to: '/search/portal', subItems: [] },
-    { name: 'Teleport', to: '/teleport', subItems: [] },
+    {
+      name: 'Teleport',
+      to: '/teleport',
+      subItems: [{ name: 'Pools', to: '/teleport/pools' }],
+    },
     {
       name: 'Dyson Sphere',
       to: '/halloffame',
@@ -34,7 +38,7 @@ const itemsMenu = (address) => {
     { name: 'My Sense', to: '/sixthSense', subItems: [] },
     { name: 'My Brain', to: linkBrain, subItems: [] },
     { name: 'My Energy', to: '/grid', subItems: [] },
-    { name: 'Lifeforms', to: '/contracts', subItems: [] },
+    // { name: 'Lifeforms', to: '/contracts', subItems: [] },
     { name: 'Oracle', to: '/bootloader', subItems: [] },
 
     { name: 'Nebula', to: '/nebula', subItems: [] },
