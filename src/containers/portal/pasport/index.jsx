@@ -22,7 +22,7 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
         addresses !== null &&
         Object.prototype.hasOwnProperty.call(addresses, active)
       ) {
-        updateFunc(addresses[active]);
+        updateFunc(addresses[active].address);
       } else {
         updateFunc(null);
       }
@@ -40,7 +40,7 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
         ) {
           addressesData.push(...citizenship.extension.addresses);
         }
-        setAddresses([citizenship.owner, ...addressesData]);
+        setAddresses([{ address: citizenship.owner }, ...addressesData]);
       }
     };
     getPasport();
@@ -51,13 +51,45 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
       addresses !== null &&
       Object.prototype.hasOwnProperty.call(addresses, active)
     ) {
-      return { bech32: addresses[active] };
+      return { bech32: addresses[active].address };
     }
     return null;
   }, [addresses, active]);
 
+  const useClosedTitle = useMemo(() => {
+    if (citizenship !== null) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'space-between',
+            zIndex: '1',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ color: '#36D6AE' }}>
+            {citizenship !== null && citizenship.extension.nickname}
+          </div>
+
+          <div style={{ width: '32px', height: '32px' }}>
+            <AvataImgIpfs
+              cidAvatar={citizenship.extension.avatar}
+              node={node}
+            />
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }, [citizenship, node]);
+
   return (
-    <ContainerGradient txs={txHash} title="Moon Citizenship">
+    <ContainerGradient
+      txs={txHash}
+      closedTitle={useClosedTitle}
+      title="Moon Citizenship"
+    >
       <div
         style={{
           height: '100%',

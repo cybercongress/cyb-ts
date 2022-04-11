@@ -34,7 +34,7 @@ function Passport({ txs, valueNickname, avatar, addressActive }) {
           <div style={{ display: 'flex', gridGap: '15px' }}>
             <ParseAddressesImg
               key={addressActive.bech32}
-              address={addressActive.bech32}
+              address={{ address: addressActive.bech32 }}
               active
             />
           </div>

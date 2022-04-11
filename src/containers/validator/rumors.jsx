@@ -47,18 +47,23 @@ function Rumors({ accountUser }) {
   }
 
   console.log('data wss', dataTxs);
-
-  return (
-    <div>
-      {loading ? (
-        <div className="container-loading">
-          <Loading />
-        </div>
-      ) : (
-        <TableTxs accountUser={accountUser} amount data={dataTxs.transaction} />
-      )}
-    </div>
-  );
+  if (dataTxs) {
+    return (
+      <div>
+        {loading ? (
+          <div className="container-loading">
+            <Loading />
+          </div>
+        ) : (
+          <TableTxs
+            accountUser={accountUser}
+            amount
+            data={dataTxs.transaction}
+          />
+        )}
+      </div>
+    );
+  }
 }
 
 export default Rumors;

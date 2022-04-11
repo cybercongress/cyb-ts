@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Router, Switch } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -48,6 +49,7 @@ import Genesis from './containers/genesis';
 import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
+import Release from './containers/portal/release';
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -139,6 +141,7 @@ function AppRouter({
         <Route path="/genesis" component={Movie} />
         <Route path="/portalCitizenship" component={PortalCitizenship} />
         <Route path="/portalGift" component={PortalGift} />
+        <Route path="/portalRelease" component={Release} />
         <Route path="/ibc" component={Ibc} />
         {/* wasm */}
         <Route path="/codes" exact component={Codes} />

@@ -240,7 +240,7 @@ function dhm(t) {
   let h = Math.floor((t - d * cd) / ch);
   let m = Math.round((t - d * cd - h * ch) / 60000);
   const pad = function (n, unit) {
-    return n < 10 ? `0${n}${unit}` : n;
+    return n < 10 ? `0${n}${unit}` : `${n}${unit}`;
   };
   if (m === 60) {
     h++;

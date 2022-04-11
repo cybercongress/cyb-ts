@@ -5,6 +5,7 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { useGetActivePassport, CONTRACT_ADDRESS_GIFT } from '../utils';
 import PasportCitizenship from '../pasport';
 import ActionBarPortalGift from './ActionBarPortalGift';
+import { CurrentGift } from '../components';
 
 import testDataJson from './test.json';
 
@@ -23,6 +24,8 @@ function PortalGift({ defaultAccount, node }) {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const { citizenship } = useGetActivePassport(addressActive, updateFunc);
   const [currentGift, setCurrentGift] = useState(null);
+  const [isClaimed, setIsClaimed] = useState(null);
+  const [isRelease, setIsRelease] = useState(null);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -42,6 +45,7 @@ function PortalGift({ defaultAccount, node }) {
             setTxHash((item) => ({
               ...item,
               status: 'error',
+              rawLog: response.rawLog.toString(),
             }));
             // setErrorMessage(response.rawLog);
             return;
@@ -60,11 +64,13 @@ function PortalGift({ defaultAccount, node }) {
         checkClaim();
       } else {
         setCurrentGift(null);
+        setIsClaimed(null);
       }
     } else {
       setCurrentGift(null);
+      setIsClaimed(null);
     }
-  }, [selectedAddress]);
+  }, [selectedAddress, updateFunc]);
 
   const checkClaim = useCallback(async () => {
     if (selectedAddress !== null && jsCyber !== null) {
@@ -76,9 +82,64 @@ function PortalGift({ defaultAccount, node }) {
           },
         }
       );
-      console.log('queryResponseResult', queryResponseResult);
+      if (
+        queryResponseResult &&
+        Object.prototype.hasOwnProperty.call(queryResponseResult, 'is_claimed')
+      ) {
+        console.log(
+          'queryResponseResult.is_claimed',
+          queryResponseResult.is_claimed
+        );
+        setIsClaimed(queryResponseResult.is_claimed);
+        if (queryResponseResult.is_claimed) {
+          setIsRelease(true);
+        }
+      }
+    } else {
+      setIsClaimed(null);
     }
   }, [selectedAddress, jsCyber]);
+
+  // const useCheckRelease = useCallback(async () => {
+  //   try {
+  //     if (selectedAddress !== null && jsCyber !== null) {
+  //       const queryResponseResultRelease = await jsCyber.queryContractSmart(
+  //         CONTRACT_ADDRESS_GIFT,
+  //         {
+  //           release_state: {
+  //             address: selectedAddress,
+  //           },
+  //         }
+  //       );
+  //       console.log('queryResponseResultRelease', queryResponseResultRelease);
+  //       if (
+  //         queryResponseResultRelease !== null &&
+  //         Object.prototype.hasOwnProperty.call(
+  //           queryResponseResultRelease,
+  //           'stage_expiration'
+  //         )
+  //       ) {
+  //         const {
+  //           stage_expiration: stageExpiration,
+  //           stage,
+  //         } = queryResponseResultRelease;
+  //         // if (stage === 0) {
+  //         //   setIsRelease(true);
+  //         // }
+  //         if (Object.prototype.hasOwnProperty.call(stageExpiration, 'never')) {
+  //           setIsRelease(true);
+  //         } else {
+  //           setIsRelease(true);
+  //         }
+  //           // setIsRelease(true);
+
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log('error', error);
+  //     setIsRelease(null);
+  //   }
+  // }, [selectedAddress, jsCyber]);
 
   // useEffect(() => {
   //   const checkClaim = async () => {
@@ -134,13 +195,16 @@ function PortalGift({ defaultAccount, node }) {
   if (citizenship !== null) {
     content = (
       <>
-        <main className="block-body">
+        <main
+          style={{ minHeight: 'calc(100vh - 162px)' }}
+          className="block-body"
+        >
           <div
             style={{
               width: '60%',
               margin: '0px auto',
               display: 'grid',
-              gap: '70px',
+              gap: '20px',
             }}
           >
             <PasportCitizenship
@@ -148,12 +212,21 @@ function PortalGift({ defaultAccount, node }) {
               citizenship={citizenship}
               updateFunc={setSelectedAddress}
             />
+
+            <CurrentGift currentGift={currentGift} />
+            {/* {currentGift !== null && (
+
+            )} */}
           </div>
         </main>
         <ActionBarPortalGift
           // updateFunc={() => setUpdateFunc((item) => item + 1)}
           citizenship={citizenship}
           updateTxHash={updateTxHash}
+          isClaimed={isClaimed}
+          selectedAddress={selectedAddress}
+          currentGift={currentGift}
+          isRelease={isRelease}
         />
       </>
     );

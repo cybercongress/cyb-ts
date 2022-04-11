@@ -3,11 +3,16 @@ import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1lygwh737vx3z2h3lutww8px4dkwst82kvf43cjk6zjr2mfu0mztqpy62ur';
+  'bostrom1ppaqu7q47xgzx0ykwtgcmjazh74pqw3zw57w93zrrznu3lgluq0qyxq48n';
 const CONTRACT_ADDRESS =
-  'bostrom1yx8p96sqhxjkg94tn55za04a9uhjc7m6lkwy606m84wvuxvhe0hqaljtdp';
+  'bostrom1g59m935w4kxmtfx5hhykre7w9q497ptp66asspz76vhgarss5ensdy35s8';
 // const CONTRACT_ADDRESS =
 //   'bostrom15hzg7eaxgs6ecn46gmu4juc9tau2w45l9cnf8n0797nmmtkdv7jscv88ra';
+
+const COUNT_STAGES = 10;
+
+const GIFT_ICON = '🎁';
+const BOOT_ICON = '🟢';
 
 const useGetActivePassport = (addressActive, updateFunc) => {
   const { jsCyber } = useContext(AppContext);
@@ -65,4 +70,7 @@ export {
   useGetActivePassport,
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_GIFT,
+  GIFT_ICON,
+  BOOT_ICON,
+  COUNT_STAGES,
 };

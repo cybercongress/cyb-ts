@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import ContainerAvatar from './containerAvatar';
+import styles from './styles.scss';
 
 function AvataImgIpfs({ node, cidAvatar, addressCyber, ...props }) {
   const [avatar, setAvatar] = useState(null);
@@ -20,6 +21,7 @@ function AvataImgIpfs({ node, cidAvatar, addressCyber, ...props }) {
 
   return (
     <img
+      className={styles.imgAvatar}
       alt="img-avatar"
       src={avatar !== null ? avatar : `https://robohash.org/${addressCyber}`}
     />

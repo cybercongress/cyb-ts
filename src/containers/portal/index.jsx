@@ -31,8 +31,7 @@ function PortalCitizenship({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [citizenship, setCitizenship] = useState(null);
-
-  console.log('addressActive', addressActive);
+// console.log('stagePortal', stagePortal)
 
   useEffect(() => {
     const getPasport = async () => {
@@ -77,7 +76,21 @@ function PortalCitizenship({ defaultAccount }) {
   if (stagePortal === STAGE_READY) {
     return (
       <>
-        <PasportCitizenship citizenship={citizenship} />
+        <main
+          style={{ minHeight: 'calc(100vh - 162px)', overflow: 'hidden' }}
+          className="block-body"
+        >
+          <div
+            style={{
+              width: '60%',
+              margin: '0px auto',
+              display: 'grid',
+              gap: '20px',
+            }}
+          >
+            <PasportCitizenship citizenship={citizenship} />
+          </div>
+        </main>
         <ActionBar>
           <Button onClick={() => history.push('/portalGift')}>
             check gift

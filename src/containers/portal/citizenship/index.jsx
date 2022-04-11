@@ -114,6 +114,7 @@ function GetCitizenship({ node, defaultAccount }) {
             setTxHash((item) => ({
               ...item,
               status: 'error',
+              rawLog: response.rawLog.toString(),
             }));
             // setErrorMessage(response.rawLog);
             return;
@@ -146,11 +147,11 @@ function GetCitizenship({ node, defaultAccount }) {
           nickname: valueNickname,
         },
       };
-      let funds = false;
-      if (valueNickname.length < 8) {
-        const priceName = 1000000 * 10 * (8 - valueNickname.length);
-        funds = coins(priceName, CYBER.DENOM_CYBER);
-      }
+      let funds = [];
+      // if (valueNickname.length < 8) {
+      //   const priceName = 1000000 * 10 * (8 - valueNickname.length);
+      //   funds = coins(priceName, CYBER.DENOM_CYBER);
+      // }
       const executeResponseResult = await keplr.execute(
         address,
         CONTRACT_ADDRESS,
@@ -166,6 +167,14 @@ function GetCitizenship({ node, defaultAccount }) {
           txHash: executeResponseResult.transactionHash,
         });
         setStep(STEP_DONE);
+      }
+
+      if (executeResponseResult.code) {
+        setTxHash({
+          txHash: executeResponseResult?.transactionHash,
+          status: 'error',
+          rawLog: executeResponseResult?.rawLog.toString(),
+        });
       }
     } catch (error) {
       console.log('error', error);

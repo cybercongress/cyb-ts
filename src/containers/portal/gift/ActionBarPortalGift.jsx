@@ -11,6 +11,7 @@ import {
   Button,
   Pane,
 } from '@cybercongress/gravity';
+import { useHistory } from 'react-router-dom';
 import Web3 from 'web3';
 import { calculateFee } from '@cosmjs/stargate';
 import { coins, GasPrice } from '@cosmjs/launchpad';
@@ -20,14 +21,23 @@ import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 import { ActionBarSteps } from '../../energy/component/actionBar';
 import { ActionBarContentText, Dots, ButtonIcon } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
-import { trimString } from '../../../utils/utils';
+import { trimString, dhm, timeSince } from '../../../utils/utils';
 import { AppContext } from '../../../context';
-import { CONSTITUTION_HASH, CONTRACT_ADDRESS } from '../utils';
+import {
+  CONSTITUTION_HASH,
+  CONTRACT_ADDRESS,
+  CONTRACT_ADDRESS_GIFT,
+} from '../utils';
+import configTerraKeplr from './configTerraKeplr';
+
+const dateFormat = require('dateformat');
 
 const imgKeplr = require('../../../image/keplr-icon.svg');
 const imgMetaMask = require('../../../image/mm-logo.svg');
 const imgEth = require('../../../image/Ethereum_logo_2014.svg');
 const imgBostrom = require('../../../image/large-green.png');
+const imgOsmosis = require('../../../image/osmosis.svg');
+const imgTerra = require('../../../image/terra.svg');
 const imgCosmos = require('../../../image/cosmos-2.svg');
 
 const gasPrice = GasPrice.fromString('0.001boot');
@@ -70,12 +80,59 @@ const proofAddressMsg = (address, nickname, signature) => {
   };
 };
 
-function ActionBarPortalGift({ citizenship, updateTxHash }) {
+const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
+  return {
+    claim: {
+      proof,
+      gift_amount: giftAmount,
+      gift_claiming_address: giftClaimingAddress,
+      nickname,
+    },
+  };
+};
+
+const releaseMsg = (giftAddress) => {
+  return {
+    release: {
+      gift_address: giftAddress,
+    },
+  };
+};
+
+function ActionBarPortalGift({
+  citizenship,
+  updateTxHash,
+  isClaimed,
+  selectedAddress,
+  currentGift,
+  isRelease,
+}) {
+  const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
   const [step, setStep] = useState(STEP_INIT);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
+
+  // useEffect(() => {
+  //   const NS_TO_S = 1 * 10 ** -6;
+
+  //   const timeTest = 1648642766728729204 * NS_TO_S;
+
+  //   const d = new Date();
+  //   console.log('Date.parse(d)', Date.parse(d))
+  //   const time = timeTest - Date.parse(d);
+
+  //   console.log('data', timeSince(time));
+  //   console.log('1648637426714169237', 1648642766728729204 * NS_TO_S);
+  //   console.log(
+  //     'data timeSince',
+  //     dateFormat(
+  //       new Date(1648642766728729204 * NS_TO_S),
+  //       'dd/mm/yyyy, hh:MM:ss tt'
+  //     )
+  //   );
+  // }, []);
 
   useEffect(() => {
     const checkAddress = async () => {
@@ -112,15 +169,20 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
 
   const signMsgKeplr = useCallback(async () => {
     const keplrWindow = await getKeplr();
-    if (keplrWindow && citizenship !== null) {
+    if (keplrWindow && citizenship !== null && selectNetwork !== '') {
       const { owner } = citizenship;
 
-      await keplrWindow.enable('cosmoshub');
-      const signer = await keplrWindow.getOfflineSignerAuto('cosmoshub');
+      if (selectNetwork === 'columbus-5') {
+        if (window.keplr.experimentalSuggestChain) {
+          await window.keplr.experimentalSuggestChain(configTerraKeplr());
+        }
+      }
+      await keplrWindow.enable(selectNetwork);
+      const signer = await keplrWindow.getOfflineSignerAuto(selectNetwork);
 
       const [{ address }] = await signer.getAccounts();
       const data = `${owner}:${CONSTITUTION_HASH}`;
-      const res = await keplrWindow.signArbitrary('cosmoshub', address, data);
+      const res = await keplrWindow.signArbitrary(selectNetwork, address, data);
 
       const proveData = {
         pub_key: res.pub_key.value,
@@ -132,7 +194,7 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
       setStep(STEP_CHECK_ACCOUNT);
     }
     return null;
-  }, [citizenship]);
+  }, [citizenship, selectNetwork]);
 
   const proveAddressKeplr = useCallback(async () => {
     if (keplr !== null && citizenship !== null && signedMessageKeplr !== null) {
@@ -161,6 +223,14 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
           });
           setStep(STEP_INIT);
         }
+
+        if (executeResponseResult.code) {
+          updateTxHash({
+            txHash: executeResponseResult?.transactionHash,
+            status: 'error',
+            rawLog: executeResponseResult?.rawLog.toString(),
+          });
+        }
       } catch (error) {
         console.log('error', error);
         setStep(STEP_INIT);
@@ -169,6 +239,7 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
   }, [keplr, citizenship, signedMessageKeplr]);
 
   const signMsgETH = async (owner) => {
+ console.log('signMsgETH')
     if (window.ethereum) {
       const { ethereum } = window;
       console.log('ethereum.isConnected()', ethereum.isConnected());
@@ -185,6 +256,13 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
       const sign = await ethereum.request({
         method: 'personal_sign',
         params: [msg, from, 'proveAddress'],
+      });
+
+      console.log('first', {
+        account,
+        message,
+        messageHash: msg,
+        sign,
       });
 
       return { sign, account };
@@ -225,6 +303,14 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
             });
             setStep(STEP_INIT);
           }
+
+          if (executeResponseResult.code) {
+            updateTxHash({
+              txHash: executeResponseResult?.transactionHash,
+              status: 'error',
+              rawLog: executeResponseResult?.rawLog.toString(),
+            });
+          }
         } catch (error) {
           console.log('error', error);
           setStep(STEP_INIT);
@@ -233,10 +319,79 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
     }
   }, [keplr, citizenship]);
 
-  if (step === STEP_INIT) {
+  const useClaime = useCallback(async () => {
+    try {
+      if (
+        keplr !== null &&
+        selectedAddress !== null &&
+        currentGift !== null &&
+        citizenship !== null
+      ) {
+        const { address, proof, amount } = currentGift;
+        const { nickname } = citizenship.extension;
+
+        if (currentGift.address === selectedAddress) {
+          const msgObject = claimMsg(nickname, address, amount, proof);
+
+          const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+
+          const executeResponseResult = await keplr.execute(
+            addressKeplr,
+            CONTRACT_ADDRESS_GIFT,
+            msgObject,
+            calculateFee(400000, gasPrice),
+            'cyber'
+          );
+
+          console.log('executeResponseResult', executeResponseResult);
+          if (executeResponseResult.code === 0) {
+            updateTxHash({
+              status: 'pending',
+              txHash: executeResponseResult.transactionHash,
+            });
+            setStep(STEP_INIT);
+          }
+
+          if (executeResponseResult.code) {
+            updateTxHash({
+              txHash: executeResponseResult?.transactionHash,
+              status: 'error',
+              rawLog: executeResponseResult?.rawLog.toString(),
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.log('error', error);
+      setStep(STEP_INIT);
+    }
+  }, [keplr, selectedAddress, currentGift, citizenship]);
+
+  if (step === STEP_INIT && isClaimed === null) {
     return (
       <ActionBarContainer>
         <Button onClick={() => setStep(STEP_CONNECT)}>prove address</Button>
+      </ActionBarContainer>
+    );
+  }
+
+  if (
+    step === STEP_INIT &&
+    isClaimed !== undefined &&
+    isClaimed !== null &&
+    !isClaimed
+  ) {
+    return (
+      <ActionBarContainer>
+        <Button onClick={() => useClaime()}>claime</Button>
+      </ActionBarContainer>
+    );
+  }
+
+  if (step === STEP_INIT && isClaimed) {
+    return (
+      <ActionBarContainer>
+        <Button onClick={() => history.push('/portalRelease')}>release</Button>
       </ActionBarContainer>
     );
   }
@@ -271,18 +426,25 @@ function ActionBarPortalGift({ citizenship, updateTxHash }) {
         onClickBack={() => setStep(STEP_CONNECT)}
         onClickFnc={() => signMsgKeplr()}
         btnText="sign message"
+        disabled={selectNetwork === ''}
       >
-        {/* <ButtonIcon
-              onClick={() => setSelectNetwork('bostrom')}
-              active={selectNetwork === 'bostrom'}
-              img={imgBostrom}
-              text="bostrom"
-            /> */}
         <ButtonIcon
-          onClick={() => setSelectNetwork('cosmos')}
-          active={selectNetwork === 'cosmos'}
+          onClick={() => setSelectNetwork('osmosis')}
+          active={selectNetwork === 'osmosis'}
+          img={imgOsmosis}
+          text="osmosis"
+        />
+        <ButtonIcon
+          onClick={() => setSelectNetwork('columbus-5')}
+          active={selectNetwork === 'columbus-5'}
+          img={imgTerra}
+          text="terra"
+        />
+        <ButtonIcon
+          onClick={() => setSelectNetwork('cosmoshub')}
+          active={selectNetwork === 'cosmoshub'}
           img={imgCosmos}
-          text="cosmos"
+          text="cosmoshub"
         />
       </ActionBarSteps>
     );
