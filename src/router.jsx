@@ -126,7 +126,7 @@ function AppRouter({
         <Route path="/network/bostrom/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
         <Route path="/degenbox" component={TrollBoxx} />
-        <Route path="/portal" component={PortPages} />
+        {/* <Route path="/portal" component={PortPages} /> */}
         <Route path="/test" component={TestKeplr} />
         <Route path="/mint" component={Mint} />
         <Route path="/grid" component={RoutedEnergy} />

@@ -1,13 +1,28 @@
 import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
 import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1ppaqu7q47xgzx0ykwtgcmjazh74pqw3zw57w93zrrznu3lgluq0qyxq48n';
+  'bostrom1rryc0kedge42p4dtqcja7v8mhemv8ep36wydp9wcp9529mf2v2lqj4exyu';
 const CONTRACT_ADDRESS =
   'bostrom1g59m935w4kxmtfx5hhykre7w9q497ptp66asspz76vhgarss5ensdy35s8';
 // const CONTRACT_ADDRESS =
 //   'bostrom15hzg7eaxgs6ecn46gmu4juc9tau2w45l9cnf8n0797nmmtkdv7jscv88ra';
+
+const DICTIONARY = {
+  Astronauts: 'Astronaut',
+  'Average Citizens. ETH Analysis': 'Average Citizens',
+  'Cyberpunks. ERC20 and ERC721 Analysis': 'Cyberpunk',
+  'Extraordinary Hackers. Gas Analysis': 'Extraordinary Hacker',
+  'Key Opinion Leaders. ERC20 Analysis': 'Key Opinion Leader',
+  'Masters of the Great Web. Gas and ERC721 Analysis':
+    'Master of the Great Web',
+  'Passionate Investors. ERC20 Analysis': 'Passionate Investor',
+  'Heroes of the Great Web. Genesis and ETH2 Stakers':
+    'True Heroe of the Great Web',
+  Leeches: 'Devil',
+};
 
 const COUNT_STAGES = 10;
 
@@ -64,6 +79,57 @@ const activePassport = async (client, address) => {
   }
 };
 
+const parseValue = (data) => {
+  if (data.length > 0) {
+    const newData = data.replace(/'/g, '"');
+    return JSON.parse(newData);
+  }
+  return null;
+};
+
+const parseValueDetails = (data) => {
+  const value = parseValue(data);
+  if (value !== null) {
+    const details = {};
+    value.forEach((item) => {
+      details[DICTIONARY[item.audience]] = { gift: item.gift };
+    });
+    return details;
+  }
+  return null;
+};
+
+const parseResponse = (obj) => {
+  return {
+    ...obj,
+    details: parseValueDetails(obj.details),
+    proof: parseValue(obj.proof),
+  };
+};
+
+const checkGift = async (address) => {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`,
+    });
+
+    if (response && response.data) {
+      const { data } = response;
+      if (
+        Object.prototype.hasOwnProperty.call(data, 'cyber_gift_proofs') &&
+        Object.keys(data.cyber_gift_proofs).length > 0
+      ) {
+        const { cyber_gift_proofs: cyberGiftData } = data;
+        return parseResponse(cyberGiftData[0]);
+      }
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
 export {
   activePassport,
   CONTRACT_ADDRESS,
@@ -73,4 +139,5 @@ export {
   GIFT_ICON,
   BOOT_ICON,
   COUNT_STAGES,
+  checkGift,
 };

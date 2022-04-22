@@ -2,6 +2,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AppContainer } from 'react-hot-loader';
 import ApolloClient from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
@@ -19,8 +20,6 @@ import AppContextProvider from './context';
 import './style/main.css';
 // import './style/index.scss';
 import './image/favicon.ico';
-
-const root = document.getElementById('root');
 
 const getHeaders = (token) => {
   const headers = {
@@ -68,8 +67,11 @@ const client = new ApolloClient({
   cache,
 });
 
+const container = document.getElementById('root');
+const root = createRoot(container);
+
 const render = () => {
-  ReactDOM.render(
+  root.render(
     <>
       <Provider store={store}>
         <ApolloProvider client={client}>
@@ -80,8 +82,7 @@ const render = () => {
           </AppContextProvider>
         </ApolloProvider>
       </Provider>
-    </>,
-    root
+    </>
   );
 };
 

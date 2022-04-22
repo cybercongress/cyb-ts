@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import {
   ContainerGradient,
   Signatures,
@@ -10,6 +11,21 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
+
+const addressActive = {
+  bech32: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
+};
+
+const addressTest = [
+  { address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445' },
+  { address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445' },
+  { address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445' },
+  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
+  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
+  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
+  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
+  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
+];
 
 function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
   const [owner, setOwner] = useState(null);
@@ -84,6 +100,38 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
     return null;
   }, [citizenship, node]);
 
+  // const renderItemImg = useMemo(() => {
+  //   if (addresses !== null) {
+  //     return addresses.map((item, index) => {
+  //       const key = uuidv4();
+  //       return (
+  //         <ParseAddressesImg
+  //           key={key}
+  //           address={item}
+  //           active={index === active}
+  //           onClick={() => setActive(index)}
+  //         />
+  //       );
+  //     });
+  //   }
+  // }, [active, addresses]);
+
+  const renderItemImg = useMemo(() => {
+    if (addressTest !== null) {
+      return addressTest.map((item, index) => {
+        const key = uuidv4();
+        return (
+          <ParseAddressesImg
+            key={key}
+            address={item}
+            active={index === active}
+            onClick={() => setActive(index)}
+          />
+        );
+      });
+    }
+  }, [active, addressTest]);
+
   return (
     <ContainerGradient
       txs={txHash}
@@ -94,17 +142,23 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
         style={{
           height: '100%',
           color: '#36D6AE',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '7px',
         }}
       >
         <div
           style={{
             display: 'grid',
-            height: '50px',
+            // height: '60px',
+            gap: '20px',
           }}
         >
-          <div style={{ color: '#36D6AE' }}>
-            {citizenship !== null && citizenship.extension.nickname}
+          <div style={{ color: '#36D6AE', lineHeight: '18px' }}>
+            {/* {citizenship !== null && citizenship.extension.nickname} */}
+            test_name
           </div>
+          <div style={{ lineHeight: '18px' }}>karma 🔮 </div>
           <ContainerAvatar>
             <AvataImgIpfs
               cidAvatar={
@@ -114,27 +168,27 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
             />
           </ContainerAvatar>
         </div>
-        {addresses !== null && (
+        {addressTest !== null && (
           <div
             style={{
-              height: 'calc(100% - 50px)',
+              // height: 'calc(100% - 50px)',
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'flex-end',
-              gridGap: '20px',
+              // justifyContent: 'flex-end',
+              gridGap: '10px',
             }}
           >
-            <div style={{ display: 'flex', gridGap: '15px' }}>
-              {addresses.map((item, index) => (
-                <ParseAddressesImg
-                  key={item}
-                  address={item}
-                  active={index === active}
-                  onClick={() => setActive(index)}
-                />
-              ))}
+            <div
+              style={{
+                display: 'grid',
+                gap: '17.5px',
+                gridTemplateColumns: 'repeat(8, 30px)',
+                width: '100%',
+              }}
+            >
+              {renderItemImg}
             </div>
-            <Signatures addressActive={addressActiveSignatures} />
+            <Signatures addressActive={addressActive} />
           </div>
         )}
       </div>

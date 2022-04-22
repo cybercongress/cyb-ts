@@ -15,13 +15,13 @@ import { CYBER, LEDGER } from '../../../utils/config';
 const STEP_INIT = 0;
 const STEP_NICKNAME = 1;
 const STEP_RULES = 2;
-const STEP_AVATAR_UPLOAD = 3.1;
-const STEP_AVATAR = 3.2;
-const STEP_KEPLR_INIT = 4.1;
-const STEP_KEPLR_SETUP = 4.2;
-const STEP_KEPLR_CONNECT = 4.3;
-const STEP_KEPLR_REGISTER = 5;
-const STEP_CHECK_GIFT = 7;
+const STEP_AVATAR_UPLOAD = 3;
+const STEP_KEPLR_INIT = 4;
+const STEP_KEPLR_SETUP = 5;
+const STEP_KEPLR_CONNECT = 6;
+const STEP_CHECK_ADDRESS = 7;
+const STEP_KEPLR_REGISTER = 8;
+const STEP_CHECK_GIFT = 10;
 
 function ActionBar({
   step,
@@ -121,7 +121,7 @@ function ActionBar({
       setAccountsProps(pocketAccount);
       setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
 
-      setStep(STEP_KEPLR_REGISTER);
+      setStep(STEP_CHECK_ADDRESS);
     }
   };
 
@@ -218,6 +218,14 @@ function ActionBar({
         ) : (
           <Button onClick={() => connectAccToCyber()}>connect</Button>
         )}
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_CHECK_ADDRESS) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
+        check your bostrom address <Dots />
       </ActionBarSteps>
     );
   }

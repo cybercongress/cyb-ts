@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './styles.scss';
 
 function isNumeric(value) {
@@ -52,20 +53,24 @@ const Signatures = ({ addressActive }) => {
       {/* <div>Signatures</div> */}
       <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
         {address !== null && address.slice(0, 9)}
-        {items.map((code, i) => (
-          <div
-            key={i}
-            className={styles.hashPart}
-            style={{
-              background: `#${code}`,
-              color: `#${code}`,
-              width: '8px',
-              maxHeight: '20px',
-              height: `${getHeight(code)}px`,
-              borderRadius: '2px',
-            }}
-          />
-        ))}
+        {items.map((code, i) => {
+          const key = uuidv4();
+
+          return (
+            <div
+              key={key}
+              className={styles.hashPart}
+              style={{
+                background: `#${code}`,
+                color: `#${code}`,
+                width: '8px',
+                maxHeight: '20px',
+                height: `${getHeight(code)}px`,
+                borderRadius: '2px',
+              }}
+            />
+          );
+        })}
         {address !== null && address.slice(address.length - 2)}
       </div>
     </div>
