@@ -2,7 +2,12 @@ import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
 import { calculateFee } from '@cosmjs/stargate';
 import { coins, GasPrice } from '@cosmjs/launchpad';
-import { ContainerGradient, Signatures, ScrollableTabs } from '../components';
+import {
+  ContainerGradient,
+  Signatures,
+  ScrollableTabs,
+  MainContainer,
+} from '../components';
 import {
   Welcome,
   Rules,
@@ -20,18 +25,22 @@ import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS } from '../utils';
 import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
+import { steps } from './utils';
+// import InfoCard from '../components/infoCard/infoCard';
 
-const STEP_INIT = 0;
-const STEP_NICKNAME = 1;
-const STEP_RULES = 2;
-const STEP_AVATAR_UPLOAD = 3;
-const STEP_KEPLR_INIT = 4;
-const STEP_KEPLR_SETUP = 5;
-const STEP_KEPLR_CONNECT = 6;
-const STEP_CHECK_ADDRESS = 7;
-const STEP_KEPLR_REGISTER = 8;
-const STEP_DONE = 9;
-const STEP_CHECK_GIFT = 10;
+const {
+  STEP_INIT,
+  STEP_NICKNAME,
+  STEP_RULES,
+  STEP_AVATAR_UPLOAD,
+  STEP_KEPLR_INIT,
+  STEP_KEPLR_SETUP,
+  STEP_KEPLR_CONNECT,
+  STEP_CHECK_ADDRESS,
+  STEP_KEPLR_REGISTER,
+  STEP_DONE,
+  STEP_CHECK_GIFT,
+} = steps;
 
 const items = {
   [STEP_NICKNAME]: 'nickname',
@@ -289,25 +298,17 @@ function GetCitizenship({ node, defaultAccount }) {
   console.log('step', step);
   return (
     <>
-      <main className="block-body">
-        <div
-          style={{
-            width: '60%',
-            margin: '0px auto',
-            display: 'grid',
-            gap: '20px',
-          }}
-        >
-          {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
+      <MainContainer>
+        {/* {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
             <ScrollableTabs items={items} active={step} setStep={setStep} />
-          )}
-          {content}
+          )} */}
+        {content}
 
-          {/* <button type="button" onClick={() => checkKeplr()}>
+        {/* <button type="button" onClick={() => checkKeplr()}>
           keplr
         </button> */}
-        </div>
-      </main>
+      </MainContainer>
+
       <ActionBar
         keplr={keplr}
         step={step}

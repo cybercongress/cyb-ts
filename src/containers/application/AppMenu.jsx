@@ -47,12 +47,14 @@ const itemsMenu = (address) => {
       name: 'Portal',
       to: '/search/portal',
       subItems: [
-        { name: 'Manifest', to: '/search/manifest' },
+        { name: 'Citizenship', to: '/portalCitizenship' },
+        { name: 'Gift', to: '/portalGift' },
+        { name: 'Release', to: '/portalRelease' },
         // { name: 'Manifesto', to: '/portal' },
         // { name: 'Leaderboard', to: '/portal/leaderboard' },
         // { name: 'Progress', to: '/portal/progress' },
-        { name: 'Get Knowledge Back', to: '/portal/cyber-vs-corp' },
-        { name: 'Forget Governments', to: '/portal/cyber-vs-gov' },
+        // { name: 'Get Knowledge Back', to: '/portal/cyber-vs-corp' },
+        // { name: 'Forget Governments', to: '/portal/cyber-vs-gov' },
       ],
     },
     {

@@ -11,17 +11,20 @@ import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 import { ActionBarSteps } from '../../energy/component/actionBar';
 import { ActionBarContentText, Dots } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
+import { steps } from './utils';
 
-const STEP_INIT = 0;
-const STEP_NICKNAME = 1;
-const STEP_RULES = 2;
-const STEP_AVATAR_UPLOAD = 3;
-const STEP_KEPLR_INIT = 4;
-const STEP_KEPLR_SETUP = 5;
-const STEP_KEPLR_CONNECT = 6;
-const STEP_CHECK_ADDRESS = 7;
-const STEP_KEPLR_REGISTER = 8;
-const STEP_CHECK_GIFT = 10;
+const {
+  STEP_INIT,
+  STEP_NICKNAME,
+  STEP_RULES,
+  STEP_AVATAR_UPLOAD,
+  STEP_KEPLR_INIT,
+  STEP_KEPLR_SETUP,
+  STEP_KEPLR_CONNECT,
+  STEP_CHECK_ADDRESS,
+  STEP_KEPLR_REGISTER,
+  STEP_CHECK_GIFT,
+} = steps;
 
 function ActionBar({
   step,

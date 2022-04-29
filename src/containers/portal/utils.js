@@ -4,9 +4,9 @@ import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1rryc0kedge42p4dtqcja7v8mhemv8ep36wydp9wcp9529mf2v2lqj4exyu';
+  'bostrom1n8ze4phtshhlucclf2hkrxs3u29gtyv2cc9v5ld8fu7en6838caqtqh4es';
 const CONTRACT_ADDRESS =
-  'bostrom1g59m935w4kxmtfx5hhykre7w9q497ptp66asspz76vhgarss5ensdy35s8';
+  'bostrom1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsjxcwgf';
 // const CONTRACT_ADDRESS =
 //   'bostrom15hzg7eaxgs6ecn46gmu4juc9tau2w45l9cnf8n0797nmmtkdv7jscv88ra';
 

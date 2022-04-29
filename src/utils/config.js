@@ -218,6 +218,8 @@ const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
+const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
@@ -243,6 +245,8 @@ export {
   PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
   PATTERN_ETH,
+  PATTERN_TERRA,
+  PATTERN_OSMOS,
   PATTERN_BLOCK,
   TIME_START,
   TAKEOFF_SUPPLY,

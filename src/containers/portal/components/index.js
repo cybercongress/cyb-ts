@@ -6,6 +6,8 @@ import CurrentGift from './currentGift';
 import BeforeActivation from './beforeActivation';
 import NextUnfreeze from './nextUnfreeze';
 import Released from './Released';
+import MainContainer from './mainContainer/mainContainer';
+import InfoCard from './infoCard/infoCard';
 
 export {
   ContainerGradient,
@@ -16,4 +18,6 @@ export {
   BeforeActivation,
   NextUnfreeze,
   Released,
+  MainContainer,
+  InfoCard,
 };

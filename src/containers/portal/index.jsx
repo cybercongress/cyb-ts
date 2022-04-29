@@ -2,7 +2,12 @@ import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { ActionBar, Button } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
-import { ContainerGradient, Signatures, ScrollableTabs } from './components';
+import {
+  ContainerGradient,
+  Signatures,
+  ScrollableTabs,
+  MainContainer,
+} from './components';
 import Input from '../teleport/components/input';
 import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -29,9 +34,9 @@ function PortalCitizenship({ defaultAccount }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [stagePortal, setStagePortal] = useState(STAGE_READY);
+  const [stagePortal, setStagePortal] = useState(STAGE_INIT);
   const [citizenship, setCitizenship] = useState(null);
-// console.log('stagePortal', stagePortal)
+  // console.log('stagePortal', stagePortal)
 
   // useEffect(() => {
   //   const getPasport = async () => {
@@ -76,21 +81,9 @@ function PortalCitizenship({ defaultAccount }) {
   if (stagePortal === STAGE_READY) {
     return (
       <>
-        <main
-          style={{ minHeight: 'calc(100vh - 162px)', overflow: 'hidden' }}
-          className="block-body"
-        >
-          <div
-            style={{
-              width: '60%',
-              margin: '0px auto',
-              display: 'grid',
-              gap: '20px',
-            }}
-          >
-            <PasportCitizenship citizenship={citizenship} />
-          </div>
-        </main>
+        <MainContainer>
+          <PasportCitizenship citizenship={citizenship} />
+        </MainContainer>
         <ActionBar>
           <Button onClick={() => history.push('/portalGift')}>
             check gift

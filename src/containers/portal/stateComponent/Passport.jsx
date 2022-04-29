@@ -11,7 +11,6 @@ function Passport({ txs, valueNickname, avatar, addressActive }) {
     <ContainerGradient txs={txs} title="Moon Citizenship">
       <div
         style={{
-          paddingLeft: '15px',
           height: '50px',
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',

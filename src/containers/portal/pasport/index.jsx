@@ -12,21 +12,6 @@ import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 
-const addressActive = {
-  bech32: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445',
-};
-
-const addressTest = [
-  { address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445' },
-  { address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445' },
-  { address: 'bostrom1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjwxgd445' },
-  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
-  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
-  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
-  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
-  { address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn' },
-];
-
 function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
@@ -100,25 +85,9 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
     return null;
   }, [citizenship, node]);
 
-  // const renderItemImg = useMemo(() => {
-  //   if (addresses !== null) {
-  //     return addresses.map((item, index) => {
-  //       const key = uuidv4();
-  //       return (
-  //         <ParseAddressesImg
-  //           key={key}
-  //           address={item}
-  //           active={index === active}
-  //           onClick={() => setActive(index)}
-  //         />
-  //       );
-  //     });
-  //   }
-  // }, [active, addresses]);
-
   const renderItemImg = useMemo(() => {
-    if (addressTest !== null) {
-      return addressTest.map((item, index) => {
+    if (addresses !== null) {
+      return addresses.map((item, index) => {
         const key = uuidv4();
         return (
           <ParseAddressesImg
@@ -130,7 +99,9 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
         );
       });
     }
-  }, [active, addressTest]);
+
+    return [];
+  }, [active, addresses]);
 
   return (
     <ContainerGradient
@@ -155,8 +126,7 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
           }}
         >
           <div style={{ color: '#36D6AE', lineHeight: '18px' }}>
-            {/* {citizenship !== null && citizenship.extension.nickname} */}
-            test_name
+            {citizenship !== null && citizenship.extension.nickname}
           </div>
           <div style={{ lineHeight: '18px' }}>karma 🔮 </div>
           <ContainerAvatar>
@@ -168,7 +138,7 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
             />
           </ContainerAvatar>
         </div>
-        {addressTest !== null && (
+        {addressActiveSignatures !== null && (
           <div
             style={{
               // height: 'calc(100% - 50px)',
@@ -181,14 +151,14 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
             <div
               style={{
                 display: 'grid',
-                gap: '17.5px',
+                gap: '15.5px',
                 gridTemplateColumns: 'repeat(8, 30px)',
                 width: '100%',
               }}
             >
               {renderItemImg}
             </div>
-            <Signatures addressActive={addressActive} />
+            <Signatures addressActive={addressActiveSignatures} />
           </div>
         )}
       </div>
