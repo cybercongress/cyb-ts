@@ -123,9 +123,10 @@ export const ButtonIcon = ({
   disabled,
   text,
   placement = 'top',
+  styleContainer,
   ...props
 }) => (
-  <Pane>
+  <Pane style={styleContainer}>
     <Tooltip placement={placement} tooltip={<Pane>{text}</Pane>}>
       <button
         type="button"

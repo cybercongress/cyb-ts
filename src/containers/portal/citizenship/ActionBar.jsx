@@ -1,27 +1,33 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState, useContext, useRef } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Button,
-  Pane,
-} from '@cybercongress/gravity';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
+import { Button, Pane } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
-import { ActionBarSteps } from '../../energy/component/actionBar';
+// import { ActionBarSteps } from '../../energy/component/actionBar';
 import { ActionBarContentText, Dots } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
+import { steps } from './utils';
+import { BtnGrd, ActionBarSteps } from '../components';
 
-const STEP_INIT = 0;
-const STEP_NICKNAME = 1;
-const STEP_RULES = 2;
-const STEP_AVATAR_UPLOAD = 3.1;
-const STEP_AVATAR = 3.2;
-const STEP_KEPLR_INIT = 4.1;
-const STEP_KEPLR_SETUP = 4.2;
-const STEP_KEPLR_CONNECT = 4.3;
-const STEP_KEPLR_REGISTER = 5;
-const STEP_CHECK_GIFT = 7;
+const {
+  STEP_INIT,
+  STEP_NICKNAME,
+  STEP_RULES,
+  STEP_AVATAR_UPLOAD,
+  STEP_KEPLR_INIT,
+  STEP_KEPLR_SETUP,
+  STEP_KEPLR_CONNECT,
+  STEP_CHECK_ADDRESS,
+  STEP_KEPLR_REGISTER,
+  STEP_CHECK_GIFT,
+} = steps;
 
 function ActionBar({
   step,
@@ -35,22 +41,11 @@ function ActionBar({
   keplr,
   setAccountsProps,
   setDefaultAccountProps,
+  checkAddressNetwork,
 }) {
   const history = useHistory();
-  const inputOpenFileRef = useRef();
-
-  const showOpenFileDlg = () => {
-    inputOpenFileRef.current.click();
-  };
-
-  const onFilePickerChange = (files) => {
-    const file = files.current.files[0];
-    setAvatarImg(file);
-  };
-
-  const onClickClear = () => {
-    setAvatarImg(null);
-  };
+  const [checkAddressNetworkState, setCheckAddressNetworkState] =
+    useState(false);
 
   const checkAddress = (obj, network, address) =>
     Object.keys(obj).filter(
@@ -121,22 +116,35 @@ function ActionBar({
       setAccountsProps(pocketAccount);
       setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
 
-      setStep(STEP_KEPLR_REGISTER);
+      setStep(STEP_CHECK_ADDRESS);
     }
   };
 
+  const checkAddressNetworkOnClick = () => {
+    if (checkAddressNetwork) {
+      setCheckAddressNetworkState(true);
+      checkAddressNetwork();
+    }
+  };
+
+  useEffect(() => {
+    if (step === STEP_KEPLR_REGISTER) {
+      setCheckAddressNetworkState(false);
+    }
+  }, [step]);
+
   if (step === STEP_INIT) {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => setStep(STEP_NICKNAME)}>start</Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd onClick={() => setStep(STEP_NICKNAME)} text="start" />
+      </ActionBarSteps>
     );
   }
 
   if (step === STEP_NICKNAME) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_INIT)}>
-        <Button onClick={() => setupNickname()}>chose nickname</Button>
+        <BtnGrd onClick={() => setupNickname()} text="chose nickname" />
       </ActionBarSteps>
     );
   }
@@ -144,9 +152,10 @@ function ActionBar({
   if (step === STEP_RULES) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME)}>
-        <Button onClick={() => setStep(STEP_AVATAR_UPLOAD)}>
-          I endorce rules
-        </Button>
+        <BtnGrd
+          onClick={() => setStep(STEP_AVATAR_UPLOAD)}
+          text="I endorce rules"
+        />
       </ActionBarSteps>
     );
   }
@@ -154,8 +163,8 @@ function ActionBar({
   if (step === STEP_AVATAR_UPLOAD) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_RULES)}>
-        <Pane width="65%" alignItems="flex-end" display="flex">
-          <ActionBarContentText>
+        {/* <Pane width="65%" alignItems="flex-end" display="flex"> */}
+        {/* <ActionBarContentText>
             <div>
               {avatarImg !== null && avatarImg.name
                 ? avatarImg.name
@@ -180,14 +189,19 @@ function ActionBar({
                   : showOpenFileDlg
               }
             />
-          </ActionBarContentText>
-          <Button
+          </ActionBarContentText> */}
+        <BtnGrd
+          disabled={avatarIpfs === null}
+          onClick={() => uploadAvatarImg()}
+          text={avatarIpfs == null ? <Dots /> : 'Upload'}
+        />
+        {/* <Button
             disabled={avatarIpfs === null}
             onClick={() => uploadAvatarImg()}
           >
             {avatarIpfs == null ? <Dots /> : 'Upload'}
-          </Button>
-        </Pane>
+          </Button> */}
+        {/* </Pane> */}
       </ActionBarSteps>
     );
   }
@@ -195,7 +209,11 @@ function ActionBar({
   if (step === STEP_KEPLR_INIT) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
-        <Button onClick={() => setStep(STEP_KEPLR_SETUP)}>install Keplr</Button>
+        <BtnGrd
+          onClick={() => setStep(STEP_KEPLR_SETUP)}
+          text="install Keplr"
+        />
+        {/* <Button onClick={() => setStep(STEP_KEPLR_SETUP)}>install Keplr</Button> */}
       </ActionBarSteps>
     );
   }
@@ -203,9 +221,13 @@ function ActionBar({
   if (step === STEP_KEPLR_SETUP) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
-        <Button onClick={() => setStep(STEP_KEPLR_CONNECT)}>
+        <BtnGrd
+          onClick={() => setStep(STEP_KEPLR_CONNECT)}
+          text="I created account"
+        />
+        {/* <Button onClick={() => setStep(STEP_KEPLR_CONNECT)}>
           I created account
-        </Button>
+        </Button> */}
       </ActionBarSteps>
     );
   }
@@ -216,25 +238,49 @@ function ActionBar({
         {keplr === null ? (
           'update page'
         ) : (
-          <Button onClick={() => connectAccToCyber()}>connect</Button>
+          <BtnGrd onClick={() => connectAccToCyber()} text="connect" />
+          // <Button onClick={() => connectAccToCyber()}>connect</Button>
         )}
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_CHECK_ADDRESS) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
+        {/* check your bostrom address <Dots /> */}
+        <BtnGrd
+          disabled={checkAddressNetworkState}
+          onClick={checkAddressNetworkOnClick}
+          text={
+            checkAddressNetworkState ? (
+              <>
+                check your bostrom address <Dots />
+              </>
+            ) : (
+              'check your bostrom address'
+            )
+          }
+        />
       </ActionBarSteps>
     );
   }
 
   if (step === STEP_KEPLR_REGISTER) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
-        <Button onClick={() => onClickRegister()}>register</Button>
+      <ActionBarSteps onClickBack={() => setStep(STEP_CHECK_ADDRESS)}>
+        <BtnGrd onClick={() => onClickRegister()} text="register" />
+        {/* <Button onClick={() => onClickRegister()}>register</Button> */}
       </ActionBarSteps>
     );
   }
 
   if (step === STEP_CHECK_GIFT) {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => history.push('/portalGift')}>check gift</Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd onClick={() => history.push('/portalGift')} text="check gift" />
+        {/* <Button onClick={() => history.push('/portalGift')}>check gift</Button> */}
+      </ActionBarSteps>
     );
   }
 

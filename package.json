@@ -7,6 +7,7 @@
     "start": "webpack-dev-server --config=webpack.config.dev.js --hot --https -d --disable-host-check",
     "build": "webpack --config=webpack.config.prod.js -p && ncp build/index.html build/404.html && echo 'rebyc.cyber.page' > build/CNAME",
     "devserver": "parcel serve src/index.html -p 8001 --no-cache",
+    "upgradeDep": "yarn upgrade-interactive --latest",
     "lint": "eslint src/"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
@@ -136,9 +137,9 @@
     "qrcode.react": "^1.0.0",
     "query-string": "^6.12.1",
     "rc-slider": "^9.7.2",
-    "react": "^16.9.0",
+    "react": "^18.0.0",
     "react-apollo": "^3.1.3",
-    "react-dom": "^16.9.0",
+    "react-dom": "^18.0.0",
     "react-force-graph": "^1.39.5",
     "react-infinite-scroller": "^1.2.4",
     "react-localization": "^1.0.15",
@@ -150,6 +151,7 @@
     "ripemd160": "^2.0.2",
     "secp256k1": "^3.7.1",
     "subscriptions-transport-ws": "^0.9.18",
+    "tone": "^14.7.77",
     "web3": "1.2.4",
     "web3-utils": "^1.2.4"
   },

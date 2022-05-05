@@ -9,16 +9,16 @@
 @mixin linear-gradient-blue($route) {
   background: linear-gradient(
     $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgba(31, 203, 255, 0.35) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(31, 203, 255, 1) 100%
   );
 }
 
 @mixin linear-gradient-grey($route) {
   background: linear-gradient(
     $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgba(255, 255, 255, 0.3) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
   );
 }
 
@@ -34,7 +34,7 @@
   background: linear-gradient(
     $route,
     rgba(0, 0, 0, 0) -3.3%,
-    rgba(255, 0, 0, 0.3) 100%
+    rgb(255, 0, 0) 100%
   );
 }
 
@@ -42,7 +42,7 @@
   content: '';
   position: absolute;
   height: 100%;
-  width: 50px;
+  width: 100px;
   top: 0;
   bottom: 0;
 }
@@ -51,10 +51,11 @@
   width: 100%;
   min-height: 50px;
   position: relative;
-  padding: 0px 5px;
+  padding: 0px;
 
   &Primary {
     &::after {
+      opacity: 11%;
       @include styleGradientPseudoEl;
       @include linear-gradient-blue(90deg);
       right: 0;
@@ -63,6 +64,7 @@
 
   &Danger {
     &::after {
+      opacity: 11%;
       @include styleGradientPseudoEl;
       @include linear-gradient-danger(90deg);
       right: 0;
@@ -75,11 +77,12 @@
     display: flex;
     align-items: center;
     position: relative;
-    margin: 0px -5px;
+    margin: 0px;
     padding: 15px;
     cursor: pointer;
 
     &::before {
+      opacity: 14%;
       @include styleGradientPseudoEl;
       @include linear-gradient-grey(-90deg);
       left: 0;
@@ -88,7 +91,8 @@
     &Content {
       display: flex;
       align-items: center;
-      min-height: 32px;
+      // min-height: 32px;
+      line-height: 25px;
       width: 100%;
       transition: 1.5s ease-in-out;
       opacity: 0;
@@ -115,11 +119,11 @@
 
   &Content {
     position: relative;
-    margin: 0px -5px;
-    padding: 15px;
-    min-height: 200px;
+    margin: 0px;
+    padding: 17px 15px;
+    min-height: 170px;
     height: 1px;
-    z-index: 0;
+    z-index: 1;
     transition: 1s ease-in-out;
 
     &entering {
@@ -128,9 +132,9 @@
 
     &entered {
       opacity: 1;
-      padding: 15px;
+      padding: 17px 15px;
       height: 1px;
-      min-height: 200px;
+      min-height: 170px;
     }
 
     &exiting {
@@ -147,6 +151,7 @@
 
     &Primary {
       &::before {
+        opacity: 11%;
         @include styleGradientPseudoEl;
         @include linear-gradient-blue(-90deg);
         left: 0;
@@ -156,6 +161,7 @@
 
     &Danger {
       &::before {
+        opacity: 11%;
         @include styleGradientPseudoEl;
         @include linear-gradient-danger(-90deg);
         left: 0;
@@ -171,25 +177,117 @@
   background: #ffffff;
   border: 1px solid #ffffff;
   box-sizing: border-box;
-  box-shadow: 0px 0px 6px 2px rgba(255, 255, 255, 0.3);
+  // box-shadow: 0px 0px 6px 2px rgba(255, 255, 255, 0.3);
+  // box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
   top: 0;
   bottom: 0;
 }
 
 .wrapContainerLamp {
   position: relative;
-  padding: 2px;
 
   &::before {
     @include ion-lamp;
     left: 0;
-    border-radius: 2px 0px 0px 2px;
+    // border-radius: 2px 0px 0px 2px;
+    box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
   }
 
   &::after {
     @include ion-lamp;
     right: 0;
-    border-radius: 0px 2px 2px 0px;
+    // border-radius: 0px 2px 2px 0px;
+    box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+  }
+}
+
+.wrapContainerLampBefore {
+  position: relative;
+
+  &Default {
+    &::before {
+      @include ion-lamp;
+      border-radius: 2px 0px 0px 0px;
+      box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+      left: 0;
+    }
+  }
+  &Red {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      left: 0;
+    }
+  }
+  &Green {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      left: 0;
+    }
+  }
+  &Blue {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      left: 0;
+    }
+  }
+  &Yellow {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      left: 0;
+    }
+  }
+}
+
+.wrapContainerLampAfter {
+  position: relative;
+
+  &Default {
+    &::after {
+      @include ion-lamp;
+      border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+      right: 0;
+    }
+  }
+  &Red {
+    &::after {
+      @include ion-lamp;
+      border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      right: 0;
+    }
+  }
+  &Green {
+    &::after {
+      @include ion-lamp;
+      border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      right: 0;
+    }
+  }
+  &Blue {
+    &::after {
+      @include ion-lamp;
+      border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      right: 0;
+    }
+  }
+  &Yellow {
+    &::after {
+      @include ion-lamp;
+      border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      right: 0;
+    }
   }
 }
 
@@ -222,12 +320,14 @@
       @include styleGradientPseudoEl;
       @include linear-gradient-green(-90deg);
       left: 0;
+      opacity: 11%;
     }
 
     &::after {
       @include styleGradientPseudoEl;
       @include linear-gradient-green(90deg);
       right: 0;
+      opacity: 11%;
     }
   }
   &Pending {
@@ -237,12 +337,14 @@
       @include styleGradientPseudoEl;
       @include linear-gradient-yellow(-90deg);
       left: 0;
+      opacity: 11%;
     }
 
     &::after {
       @include styleGradientPseudoEl;
       @include linear-gradient-yellow(90deg);
       right: 0;
+      opacity: 11%;
     }
   }
 
@@ -253,12 +355,14 @@
       @include styleGradientPseudoEl;
       @include linear-gradient-danger(90deg);
       right: 0;
+      opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
       @include linear-gradient-danger(-90deg);
       left: 0;
+      opacity: 11%;
     }
   }
 }
@@ -274,12 +378,14 @@
       @include styleGradientPseudoEl;
       @include linear-gradient-blue(90deg);
       right: 0;
+      opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
       @include linear-gradient-blue(-90deg);
       left: 0;
+      opacity: 11%;
     }
   }
 
@@ -288,12 +394,14 @@
       @include styleGradientPseudoEl;
       @include linear-gradient-danger(90deg);
       right: 0;
+      opacity: 11%;
     }
 
     &::before {
       @include styleGradientPseudoEl;
       @include linear-gradient-danger(-90deg);
       left: 0;
+      opacity: 11%;
     }
   }
 
@@ -301,12 +409,14 @@
     &::after {
       @include styleGradientPseudoEl;
       @include linear-gradient-green(90deg);
+      opacity: 11%;
       right: 0;
     }
 
     &::before {
       @include styleGradientPseudoEl;
       @include linear-gradient-green(-90deg);
+      opacity: 11%;
       left: 0;
     }
   }

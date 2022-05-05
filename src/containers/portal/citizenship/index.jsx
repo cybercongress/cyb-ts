@@ -2,7 +2,12 @@ import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
 import { calculateFee } from '@cosmjs/stargate';
 import { coins, GasPrice } from '@cosmjs/launchpad';
-import { ContainerGradient, Signatures, ScrollableTabs } from '../components';
+import {
+  ContainerGradient,
+  Signatures,
+  ScrollableTabs,
+  MainContainer,
+} from '../components';
 import {
   Welcome,
   Rules,
@@ -14,24 +19,41 @@ import {
   Passport,
 } from '../stateComponent';
 import ActionBar from './ActionBar';
-import { getPin } from '../../../utils/search/utils';
+import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS } from '../utils';
 import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
+import { steps } from './utils';
+import Info from './Info';
+// import InfoCard from '../components/infoCard/infoCard';
 
-const STEP_INIT = 0;
-const STEP_NICKNAME = 1;
-const STEP_RULES = 2;
-const STEP_AVATAR_UPLOAD = 3.1;
-const STEP_AVATAR = 3.2;
-const STEP_KEPLR_INIT = 4.1;
-const STEP_KEPLR_SETUP = 4.2;
-const STEP_KEPLR_CONNECT = 4.3;
-const STEP_KEPLR_REGISTER = 5;
-const STEP_DONE = 6;
-const STEP_CHECK_GIFT = 7;
+const {
+  STEP_INIT,
+  STEP_NICKNAME,
+  STEP_RULES,
+  STEP_AVATAR_UPLOAD,
+  STEP_KEPLR_INIT,
+  STEP_KEPLR_SETUP,
+  STEP_KEPLR_CONNECT,
+  STEP_CHECK_ADDRESS,
+  STEP_KEPLR_REGISTER,
+  STEP_DONE,
+  STEP_CHECK_GIFT,
+} = steps;
+
+const items = {
+  [STEP_NICKNAME]: 'nickname',
+  [STEP_RULES]: 'rules',
+  [STEP_AVATAR_UPLOAD]: 'avatar',
+  [STEP_KEPLR_INIT]: 'install keplr',
+  [STEP_KEPLR_SETUP]: 'setup keplr',
+  [STEP_KEPLR_CONNECT]: 'connect keplr',
+  [STEP_CHECK_ADDRESS]: 'check address',
+  [STEP_KEPLR_REGISTER]: 'register',
+  [STEP_DONE]: 'passport look',
+};
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -126,6 +148,55 @@ function GetCitizenship({ node, defaultAccount }) {
     confirmTx();
   }, [jsCyber, txHash]);
 
+  // useEffect(() => {
+  //   const checkAddress = async () => {
+  //     if (
+  //       step === STEP_CHECK_ADDRESS &&
+  //       jsCyber !== null &&
+  //       addressActive !== null
+  //     ) {
+  //       const { bech32 } = addressActive;
+  //       const response = await jsCyber.getAccount(bech32);
+  //       console.log('response', response);
+  //       if (
+  //         response &&
+  //         Object.prototype.hasOwnProperty.call(response, 'accountNumber')
+  //       ) {
+  //         setStep(STEP_KEPLR_REGISTER);
+  //       } else {
+  //         const responseCredit = await getCredit(bech32);
+  //         if (responseCredit !== null && responseCredit.data === 'ok') {
+  //           checkAddress();
+  //         }
+  //       }
+  //     }
+  //   };
+  //   checkAddress();
+  // }, [jsCyber, addressActive, step]);
+
+  const checkAddressNetwork = useCallback(async () => {
+    if (
+      step === STEP_CHECK_ADDRESS &&
+      jsCyber !== null &&
+      addressActive !== null
+    ) {
+      const { bech32 } = addressActive;
+      const response = await jsCyber.getAccount(bech32);
+      console.log('response', response);
+      if (
+        response &&
+        Object.prototype.hasOwnProperty.call(response, 'accountNumber')
+      ) {
+        setStep(STEP_KEPLR_REGISTER);
+      } else {
+        const responseCredit = await getCredit(bech32);
+        if (responseCredit !== null && responseCredit.data === 'ok') {
+          checkAddressNetwork();
+        }
+      }
+    }
+  }, [jsCyber, addressActive, step]);
+
   const setupNickname = useCallback(() => {
     localStorage.setItem('nickname', JSON.stringify(valueNickname));
     setStep(STEP_RULES);
@@ -147,7 +218,7 @@ function GetCitizenship({ node, defaultAccount }) {
           nickname: valueNickname,
         },
       };
-      let funds = [];
+      const funds = [];
       // if (valueNickname.length < 8) {
       //   const priceName = 1000000 * 10 * (8 - valueNickname.length);
       //   funds = coins(priceName, CYBER.DENOM_CYBER);
@@ -204,6 +275,8 @@ function GetCitizenship({ node, defaultAccount }) {
     content = (
       <Avatar
         valueNickname={valueNickname}
+        upload={avatarIpfs === null}
+        setAvatarImg={setAvatarImg}
         avatar={
           avatarIpfs === null ? (
             'upload avatar'
@@ -227,7 +300,7 @@ function GetCitizenship({ node, defaultAccount }) {
     content = <ConnectKeplr />;
   }
 
-  if (step === STEP_KEPLR_REGISTER) {
+  if (step === STEP_KEPLR_REGISTER || step === STEP_CHECK_ADDRESS) {
     content = (
       <Passport
         valueNickname={valueNickname}
@@ -248,25 +321,21 @@ function GetCitizenship({ node, defaultAccount }) {
     );
   }
 
+  console.log('step', step);
   return (
     <>
-      <main className="block-body">
-        <div
-          style={{
-            width: '60%',
-            margin: '0px auto',
-            display: 'grid',
-            gap: '70px',
-          }}
-        >
-          {content}
-          {/* <ScrollableTabs items={items} active={0} /> */}
+      <MainContainer>
+        <Info nickname={valueNickname} stepCurrent={step} />
+        {/* {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
+            <ScrollableTabs items={items} active={step} setStep={setStep} />
+          )} */}
+        {content}
 
-          {/* <button type="button" onClick={() => checkKeplr()}>
+        {/* <button type="button" onClick={() => checkKeplr()}>
           keplr
         </button> */}
-        </div>
-      </main>
+      </MainContainer>
+
       <ActionBar
         keplr={keplr}
         step={step}
@@ -277,6 +346,7 @@ function GetCitizenship({ node, defaultAccount }) {
         setAvatarImg={setAvatarImg}
         avatarIpfs={avatarIpfs}
         onClickRegister={onClickRegister}
+        checkAddressNetwork={checkAddressNetwork}
       />
     </>
   );

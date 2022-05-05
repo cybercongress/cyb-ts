@@ -1,11 +1,23 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
 import { connect } from 'react-redux';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import { useGetActivePassport, CONTRACT_ADDRESS_GIFT } from '../utils';
+import {
+  useGetActivePassport,
+  CONTRACT_ADDRESS_GIFT,
+  checkGift,
+} from '../utils';
 import PasportCitizenship from '../pasport';
 import ActionBarPortalGift from './ActionBarPortalGift';
 import { CurrentGift } from '../components';
+import useCheckGift from '../hook/useCheckGift';
+import { PATTERN_CYBER } from '../../../utils/config';
 
 import testDataJson from './test.json';
 
@@ -26,6 +38,14 @@ function PortalGift({ defaultAccount, node }) {
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
   const [isRelease, setIsRelease] = useState(null);
+  const { totalGift, totalGiftAmount, checkIsClaim } = useCheckGift(
+    citizenship,
+    addressActive,
+    updateFunc
+  );
+
+  // console.log('generalGift | PortalGift', totalGift);
+  console.log('totalGiftAmount', totalGiftAmount);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -58,10 +78,44 @@ function PortalGift({ defaultAccount, node }) {
   }, [jsCyber, txHash]);
 
   useEffect(() => {
-    if (selectedAddress !== null) {
-      if (Object.prototype.hasOwnProperty.call(testDataJson, selectedAddress)) {
-        setCurrentGift(testDataJson[selectedAddress]);
-        checkClaim();
+    if (selectedAddress !== null && totalGift !== null) {
+      if (Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)) {
+        setCurrentGift([totalGift[selectedAddress]]);
+        if (
+          Object.prototype.hasOwnProperty.call(
+            totalGift[selectedAddress],
+            'isClaimed'
+          )
+        ) {
+          const { isClaimed: isClaimedAddress } = totalGift[selectedAddress];
+          setIsClaimed(isClaimedAddress);
+          if (isClaimedAddress) {
+            setIsRelease(true);
+          }
+          // checkClaim();
+        }
+      } else if (
+        selectedAddress !== null &&
+        selectedAddress.match(PATTERN_CYBER) &&
+        totalGift !== null
+      ) {
+        const tempGift = [];
+        Object.keys(totalGift).forEach((key) => {
+          if (!totalGift[key].isClaimed) {
+            tempGift.push({ ...totalGift[key] });
+          }
+        });
+        if (Object.keys(tempGift).length > 0) {
+          setIsClaimed(false);
+          setCurrentGift(tempGift);
+        }
+
+        if (
+          Object.keys(tempGift).length === 0 &&
+          Object.keys(totalGift).length === 0
+        ) {
+          setIsClaimed(true);
+        }
       } else {
         setCurrentGift(null);
         setIsClaimed(null);
@@ -70,7 +124,7 @@ function PortalGift({ defaultAccount, node }) {
       setCurrentGift(null);
       setIsClaimed(null);
     }
-  }, [selectedAddress, updateFunc]);
+  }, [selectedAddress, totalGift]);
 
   const checkClaim = useCallback(async () => {
     if (selectedAddress !== null && jsCyber !== null) {
@@ -100,139 +154,83 @@ function PortalGift({ defaultAccount, node }) {
     }
   }, [selectedAddress, jsCyber]);
 
-  // const useCheckRelease = useCallback(async () => {
-  //   try {
-  //     if (selectedAddress !== null && jsCyber !== null) {
-  //       const queryResponseResultRelease = await jsCyber.queryContractSmart(
-  //         CONTRACT_ADDRESS_GIFT,
-  //         {
-  //           release_state: {
-  //             address: selectedAddress,
-  //           },
-  //         }
-  //       );
-  //       console.log('queryResponseResultRelease', queryResponseResultRelease);
-  //       if (
-  //         queryResponseResultRelease !== null &&
-  //         Object.prototype.hasOwnProperty.call(
-  //           queryResponseResultRelease,
-  //           'stage_expiration'
-  //         )
-  //       ) {
-  //         const {
-  //           stage_expiration: stageExpiration,
-  //           stage,
-  //         } = queryResponseResultRelease;
-  //         // if (stage === 0) {
-  //         //   setIsRelease(true);
-  //         // }
-  //         if (Object.prototype.hasOwnProperty.call(stageExpiration, 'never')) {
-  //           setIsRelease(true);
-  //         } else {
-  //           setIsRelease(true);
-  //         }
-  //           // setIsRelease(true);
-
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log('error', error);
-  //     setIsRelease(null);
-  //   }
-  // }, [selectedAddress, jsCyber]);
-
-  // useEffect(() => {
-  //   const checkClaim = async () => {
-  //     if (selectedAddress !== null && jsCyber !== null) {
-  //       const queryResponseResult = await jsCyber.queryContractSmart(
-  //         CONTRACT_ADDRESS_GIFT,
-  //         {
-  //           is_claimed: {
-  //             address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn',
-  //           },
-  //         }
-  //       );
-  //       console.log('queryResponseResult', queryResponseResult);
-
-  //       const queryResponseResultRelease = await jsCyber.queryContractSmart(
-  //         CONTRACT_ADDRESS_GIFT,
-  //         {
-  //           release_state: {
-  //             address: 'cosmos1p0r7uxstcw8ehrwuj4kn8qzzs0yypsjw9mextn',
-  //           },
-  //         }
-  //       );
-  //       console.log('queryResponseResultRelease', queryResponseResultRelease)
-  //     }
-  //   };
-  //   checkClaim();
-  // }, [selectedAddress]);
-
-  // useEffect(() => {
-  //   const checkGift = async () => {
-  //     if (node !== null) {
-  //       const responseCat = uint8ArrayConcat(await all(node.cat(cid)));
-
-  //       const dataFileType = await FileType.fromBuffer(responseCat);
-  //       if (dataFileType === undefined) {
-  //         const dataBase64 = uint8ArrayToAsciiString(responseCat);
-  //         console.log('dataBase64', JSON.parse(dataBase64));
-  //       }
-  //     }
-  //   };
-  //   checkGift();
-  // }, [node]);
-
   const updateTxHash = (data) => {
     setTxHash(data);
   };
 
-  console.log('citizenship', citizenship);
+  const useSelectedGiftData = useMemo(() => {
+    if (selectedAddress !== null) {
+      if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
+        return totalGiftAmount;
+      }
+
+      if (currentGift !== null) {
+        return currentGift[0];
+      }
+    }
+
+    return null;
+  }, [selectedAddress, currentGift, totalGiftAmount]);
+
+  // console.log('citizenship', citizenship);
+  console.log('selectedAddress', selectedAddress);
   console.log('currentGift', currentGift);
 
-  let content;
-
-  if (citizenship !== null) {
-    content = (
-      <>
-        <main
-          style={{ minHeight: 'calc(100vh - 162px)' }}
-          className="block-body"
+  if (citizenship === null) {
+    return (
+      <main style={{ minHeight: 'calc(100vh - 162px)' }} className="block-body">
+        <div
+          style={{
+            width: '60%',
+            margin: '0px auto',
+            display: 'grid',
+            gap: '20px',
+          }}
         >
-          <div
-            style={{
-              width: '60%',
-              margin: '0px auto',
-              display: 'grid',
-              gap: '20px',
-            }}
-          >
-            <PasportCitizenship
-              txHash={txHash}
-              citizenship={citizenship}
-              updateFunc={setSelectedAddress}
-            />
-
-            <CurrentGift currentGift={currentGift} />
-            {/* {currentGift !== null && (
-
-            )} */}
-          </div>
-        </main>
-        <ActionBarPortalGift
-          // updateFunc={() => setUpdateFunc((item) => item + 1)}
-          citizenship={citizenship}
-          updateTxHash={updateTxHash}
-          isClaimed={isClaimed}
-          selectedAddress={selectedAddress}
-          currentGift={currentGift}
-          isRelease={isRelease}
-        />
-      </>
+          <PasportCitizenship txHash={txHash} citizenship={null} />
+        </div>
+      </main>
     );
   }
 
-  return <>{content}</>;
+  return (
+    <>
+      <main
+        style={{ minHeight: 'calc(100vh - 162px)', overflow: 'hidden' }}
+        className="block-body"
+      >
+        <div
+          style={{
+            width: '60%',
+            margin: '0px auto',
+            display: 'grid',
+            gap: '20px',
+          }}
+        >
+          {/* <button onClick={() => checkIsClaim()}>test</button> */}
+          <PasportCitizenship
+            txHash={txHash}
+            citizenship={citizenship}
+            updateFunc={setSelectedAddress}
+          />
+
+          <CurrentGift currentGift={useSelectedGiftData} />
+          {/* {currentGift !== null && (
+
+            )} */}
+        </div>
+      </main>
+      <ActionBarPortalGift
+        // updateFunc={() => setUpdateFunc((item) => item + 1)}
+        citizenship={citizenship}
+        updateTxHash={updateTxHash}
+        isClaimed={isClaimed}
+        selectedAddress={selectedAddress}
+        currentGift={currentGift}
+        isRelease={isRelease}
+      />
+    </>
+  );
 }
 
 const mapStateToProps = (store) => {

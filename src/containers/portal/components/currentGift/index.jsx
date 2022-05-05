@@ -3,9 +3,22 @@ import { Link } from 'react-router-dom';
 import { trimString, formatNumber } from '../../../../utils/utils';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
+import { CYBER } from '../../../../utils/config';
 
 const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';
+
+const keyTable = [
+  'Astronaut',
+  'Average Citizens',
+  'Cyberpunk',
+  'Extraordinary Hacker',
+  'Key Opinion Leader',
+  'Devil',
+  'Master of the Great Web',
+  'Passionate Investor',
+  'True Heroe of the Great Web',
+];
 
 const ItemValue = ({ value, title }) => (
   <div className={styles.containerItemValue}>
@@ -18,31 +31,32 @@ const ItemTable = ({ title, value }) => (
   <div className={styles.containerItemTable}>
     <div>{title}</div>
     <div>
-      {value} {BOOT_ICON}
+      {formatNumber(value)} {BOOT_ICON}
     </div>
   </div>
 );
 
-const TableAllocation = () => {
-  return (
-    <div className={styles.containerTableAllocation}>
-      <ItemTable value={0} title="Astronaut" />
-      <ItemTable value={0} title="Average Citizen" />
-      <ItemTable value={0} title="Cyberpunk" />
-      <ItemTable value={0} title="Extraordinary Hacker" />
-      <ItemTable value={0} title="Key Opinion Leader" />
-      <ItemTable value={0} title="Devil" />
-      <ItemTable value={0} title="Master of the Great Web" />
-      <ItemTable value={0} title="Passionate Investor" />
-      <ItemTable value={0} title="True Heroe of the Great Web" />
-    </div>
-  );
+const TableAllocation = ({ currentGift }) => {
+  const itemTable = useMemo(() => {
+    if (currentGift !== null && currentGift.details) {
+      const { details } = currentGift;
+      return keyTable.map((item) => {
+        const value = details[item] ? details[item].gift * 10 ** 6 : 0;
+        return <ItemTable key={item} value={value} title={item} />;
+      });
+    }
+    return keyTable.map((item) => (
+      <ItemTable key={item} value={0} title={item} />
+    ));
+  }, [currentGift]);
+
+  return <div className={styles.containerTableAllocation}>{itemTable}</div>;
 };
 
 function CurrentGift({ currentGift, stateOpen }) {
   const useTitle = useMemo(() => {
     if (currentGift && currentGift !== null) {
-      const { address, amount } = currentGift;
+      const { amount } = currentGift;
       return (
         <div
           style={{
@@ -53,9 +67,9 @@ function CurrentGift({ currentGift, stateOpen }) {
             alignItems: 'center',
           }}
         >
-          <div style={{ color: '#36D6AE' }}>{trimString(address, 8, 4)}</div>
+          <div style={{ color: '#00C4FF' }}>gift {GIFT_ICON}</div>
           <div>
-            {GIFT_ICON} {formatNumber(parseFloat(amount))} {BOOT_ICON}
+            {formatNumber(parseFloat(amount))} {BOOT_ICON}
           </div>
         </div>
       );
@@ -76,7 +90,7 @@ function CurrentGift({ currentGift, stateOpen }) {
     <ContainerGradient
       userStyleContent={{ height: '485px' }}
       closedTitle={useTitle}
-      title={`${GIFT_ICON} Gift`}
+      title={`Gift ${GIFT_ICON}`}
       stateOpen={stateOpen}
     >
       <div className={styles.containerCurrentGift}>
@@ -94,7 +108,7 @@ function CurrentGift({ currentGift, stateOpen }) {
           You are the one, who been chosen for good deeds in cyberverse on 5th
           of November 2021:
         </div>
-        <TableAllocation />
+        <TableAllocation currentGift={currentGift} />
         <div>
           Please check <Link to="/search/gift">details of the gift</Link>
         </div>

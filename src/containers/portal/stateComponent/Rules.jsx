@@ -3,7 +3,7 @@ import { ContainerGradient } from '../components';
 
 function Rules() {
   return (
-    <ContainerGradient danger title="Moon Citizenship rules">
+    <ContainerGradient styleLampContent="red" title="Moon Citizenship rules">
       <div style={{ paddingLeft: '15px', height: '100%' }}>
         <ol
           style={{

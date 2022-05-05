@@ -84,7 +84,7 @@ const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
   return {
     claim: {
       proof,
-      gift_amount: giftAmount,
+      gift_amount: giftAmount.toString(),
       gift_claiming_address: giftClaimingAddress,
       nickname,
     },
@@ -239,7 +239,7 @@ function ActionBarPortalGift({
   }, [keplr, citizenship, signedMessageKeplr]);
 
   const signMsgETH = async (owner) => {
- console.log('signMsgETH')
+    console.log('signMsgETH');
     if (window.ethereum) {
       const { ethereum } = window;
       console.log('ethereum.isConnected()', ethereum.isConnected());
@@ -327,37 +327,40 @@ function ActionBarPortalGift({
         currentGift !== null &&
         citizenship !== null
       ) {
-        const { address, proof, amount } = currentGift;
         const { nickname } = citizenship.extension;
-
-        if (currentGift.address === selectedAddress) {
-          const msgObject = claimMsg(nickname, address, amount, proof);
-
+        if (Object.keys(currentGift).length > 0) {
+          const msgs = [];
+          Object.keys(currentGift).forEach((key) => {
+            const { address, proof, amount } = currentGift[key];
+            const msgObject = claimMsg(nickname, address, amount, proof);
+            msgs.push(msgObject);
+          });
+          const gasLimits = 400000 * Object.keys(currentGift).length;
           const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+          if (msgs.length > 0) {
+            const executeResponseResult = await keplr.executeArray(
+              addressKeplr,
+              CONTRACT_ADDRESS_GIFT,
+              msgs,
+              calculateFee(gasLimits, gasPrice),
+              'cyber'
+            );
+            console.log('executeResponseResult', executeResponseResult);
+            if (executeResponseResult.code === 0) {
+              updateTxHash({
+                status: 'pending',
+                txHash: executeResponseResult.transactionHash,
+              });
+              setStep(STEP_INIT);
+            }
 
-          const executeResponseResult = await keplr.execute(
-            addressKeplr,
-            CONTRACT_ADDRESS_GIFT,
-            msgObject,
-            calculateFee(400000, gasPrice),
-            'cyber'
-          );
-
-          console.log('executeResponseResult', executeResponseResult);
-          if (executeResponseResult.code === 0) {
-            updateTxHash({
-              status: 'pending',
-              txHash: executeResponseResult.transactionHash,
-            });
-            setStep(STEP_INIT);
-          }
-
-          if (executeResponseResult.code) {
-            updateTxHash({
-              txHash: executeResponseResult?.transactionHash,
-              status: 'error',
-              rawLog: executeResponseResult?.rawLog.toString(),
-            });
+            if (executeResponseResult.code) {
+              updateTxHash({
+                txHash: executeResponseResult?.transactionHash,
+                status: 'error',
+                rawLog: executeResponseResult?.rawLog.toString(),
+              });
+            }
           }
         }
       }

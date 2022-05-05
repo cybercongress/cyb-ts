@@ -1,74 +1,93 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import styles from './styles.scss';
+import {
+  DICTIONARY_ABC,
+  getHeight,
+  getNoteFromAdd,
+  makeSound,
+  cutAddress,
+} from './utils';
 
-function isNumeric(value) {
-  return /^-?\d+$/.test(value);
-}
-
-const getHeight = (value) => {
-  try {
-    if (isNumeric(value)) {
-      if (value / 10 > 20) {
-        return Math.ceil((value / 10) * 0.18);
-      }
-      return Math.ceil(value / 10);
-    }
-    return 2;
-  } catch (e) {
-    console.log('e', e);
-    return 2;
-  }
-};
+const classNames = require('classnames');
 
 const Signatures = ({ addressActive }) => {
-  const hexBostrom = useMemo(() => {
-    if (addressActive !== null) {
-      const { bech32 } = addressActive;
-      const sliceBostrom = bech32.slice(9, bech32.length - 2);
-      return Buffer.from(sliceBostrom).toString('hex');
-    }
-    return null;
-  }, [addressActive]);
+  const [plaing, setPlaing] = useState(true);
 
   const address = useMemo(() => {
     if (addressActive !== null) {
       const { bech32 } = addressActive;
-      return bech32;
+      return cutAddress(bech32);
     }
     return null;
   }, [addressActive]);
 
-  let inx = 0;
-  const items = [];
-  if (hexBostrom !== null) {
-    while (inx <= hexBostrom.length - 2) {
-      items.push(hexBostrom.substr(inx, 3));
-      inx += 3;
+  const useGetItems = useMemo(() => {
+    const items = [];
+
+    if (address !== null) {
+      const { address: sliceAddress } = address;
+      const arrayAddress = sliceAddress.split('');
+      const bufferAddress = Buffer.from(sliceAddress)
+        .toString('hex')
+        .replace(/[a-z]/g, '')
+        .split('');
+      arrayAddress.forEach((item, index) => {
+        items.push({
+          color: DICTIONARY_ABC[item].color,
+          code: bufferAddress[index] || 2,
+        });
+      });
     }
-  }
+
+    return items;
+  }, [address]);
+
+  const onClickMusicalAddress = useCallback(() => {
+    if (!plaing) {
+      return;
+    }
+
+    if (address !== null) {
+      const { address: sliceAddress } = address;
+      const arrNote = getNoteFromAdd(sliceAddress);
+      setPlaing(false);
+      makeSound(arrNote);
+      setTimeout(() => {
+        setPlaing(true);
+      }, 7000);
+    }
+  }, [address, plaing]);
 
   return (
-    <div>
-      {/* <div>Signatures</div> */}
-      <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-        {address !== null && address.slice(0, 9)}
-        {items.map((code, i) => (
-          <div
-            key={i}
-            className={styles.hashPart}
-            style={{
-              background: `#${code}`,
-              color: `#${code}`,
-              width: '8px',
-              maxHeight: '20px',
-              height: `${getHeight(code)}px`,
-              borderRadius: '2px',
-            }}
-          />
-        ))}
-        {address !== null && address.slice(address.length - 2)}
+    <button
+      type="button"
+      onClick={() => onClickMusicalAddress()}
+      className={styles.containerSignaturesBtnPlay}
+    >
+      <div
+        className={classNames(styles.containerSignatures, {
+          [styles.containerSignaturesPlaing]: !plaing,
+        })}
+      >
+        {address !== null && address.prefix}
+        {useGetItems.map((item) => {
+          const key = uuidv4();
+          return (
+            <div
+              key={key}
+              className={styles.containerSignaturesItemNote}
+              style={{
+                background: item.color,
+                color: item.color,
+                height: `${getHeight(item.code)}px`,
+              }}
+            />
+          );
+        })}
+        {address !== null && address.end}
       </div>
-    </div>
+    </button>
   );
 };
 

@@ -1,26 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { CSSTransitionGroup as ReactCSSTransitionGroup } from 'react-transition-group';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  TransitionGroup as ReactCSSTransitionGroup,
+  CSSTransition,
+} from 'react-transition-group';
 import styles from './ScrollableTabs.scss';
 
 const cx = require('classnames');
 
-function ScrollableTabs({ items, active }) {
+function ScrollableTabs({ items, active, setStep }) {
   const [direction, setDirection] = useState('');
   const [activeItem, setActiveItem] = useState(active);
+
+  // useEffect(() => {
+  //   setActiveItem(active);
+  // }, [active]);
+
+  // useEffect(() => {
+  //   setStep(activeItem);
+  // }, [setStep, activeItem]);
 
   const generateItems = () => {
     const itemsTabs = [];
     let level;
-    console.log(activeItem);
-    for (let i = activeItem - 1; i < activeItem + 2; i++) {
+    console.log('activeItem', active);
+    for (let i = active - 1; i < active + 2; i++) {
       let index = i;
       let funcOnClick;
       if (i < 0) {
-        index = items.length + i;
-      } else if (i >= items.length) {
-        index = i % items.length;
+        index = Object.keys(items).length + i;
+      } else if (i >= Object.keys(items).length) {
+        index = i % Object.keys(items).length;
       }
-      level = activeItem - i;
+      level = active - i;
       if (level < 0) {
         funcOnClick = moveRight;
       }
@@ -28,42 +39,55 @@ function ScrollableTabs({ items, active }) {
         funcOnClick = moveLeft;
       }
       itemsTabs.push(
-        <Item
+        <CSSTransition
           key={index}
-          id={items[index]}
-          level={level}
-          onClick={funcOnClick}
-        />
+          classNames={{
+            enter: styles[`${direction}-enter`],
+            enterActive: styles[`${direction}-enter-active`],
+            leave: styles[`${direction}-leave`],
+            leaveActive: styles[`${direction}-leave-active`],
+            appear: styles[`${direction}-appear`],
+            appearActive: styles[`${direction}-appear-active`],
+          }}
+        >
+          <Item
+            key={index}
+            id={items[index]}
+            level={level}
+            onClick={funcOnClick}
+          />
+        </CSSTransition>
       );
     }
+    console.log('itemsTabs', itemsTabs);
     return itemsTabs;
   };
 
-  const moveLeft = () => {
-    let newActive = activeItem;
+  const moveLeft = useCallback(() => {
+    let newActive = active;
     newActive -= 1;
-    setActiveItem(newActive < 0 ? items.length - 1 : newActive);
+    setActiveItem(newActive < 0 ? Object.keys(items).length - 1 : newActive);
     setDirection('left');
-  };
+  }, [items, active]);
 
-  const moveRight = () => {
-    const newActive = activeItem;
-    setActiveItem((newActive + 1) % items.length);
+  const moveRight = useCallback(() => {
+    const newActive = active;
+    setActiveItem((newActive + 1) % Object.keys(items).length);
     setDirection('right');
-  };
+  }, [items, active]);
 
   return (
     <div className={cx(styles.noselect, styles.carousel)}>
       <ReactCSSTransitionGroup
-        // transitionName={direction}
-        transitionName={{
-          enter: styles[`${direction}-enter`],
-          enterActive: styles[`${direction}-enter-active`],
-          leave: styles[`${direction}-leave`],
-          leaveActive: styles[`${direction}-leave-active`],
-          appear: styles[`${direction}-appear`],
-          appearActive: styles[`${direction}-appear-active`],
-        }}
+      // transitionName={direction}
+      // classNames={{
+      //   enter: styles[`${direction}-enter`],
+      //   enterActive: styles[`${direction}-enter-active`],
+      //   leave: styles[`${direction}-leave`],
+      //   leaveActive: styles[`${direction}-leave-active`],
+      //   appear: styles[`${direction}-appear`],
+      //   appearActive: styles[`${direction}-appear-active`],
+      // }}
       >
         {generateItems()}
       </ReactCSSTransitionGroup>

@@ -1513,3 +1513,26 @@ export const searchClient = async (client, query, page) => {
     return [];
   }
 };
+
+export const getCredit = async (address) => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const fromData = {
+      denom: 'boot',
+      address,
+    };
+    const response = await axios({
+      method: 'post',
+      url: 'http://localhost:8000/credit',
+      // url: 'https://mars.cybernode.ai/credit',
+      headers,
+      data: JSON.stringify(fromData),
+    });
+
+    return response;
+  } catch (error) {
+    return null;
+  }
+};
