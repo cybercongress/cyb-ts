@@ -26,6 +26,7 @@ import { CONTRACT_ADDRESS } from '../utils';
 import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
+import Info from './Info';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const {
@@ -147,30 +148,53 @@ function GetCitizenship({ node, defaultAccount }) {
     confirmTx();
   }, [jsCyber, txHash]);
 
-  useEffect(() => {
-    const checkAddress = async () => {
+  // useEffect(() => {
+  //   const checkAddress = async () => {
+  //     if (
+  //       step === STEP_CHECK_ADDRESS &&
+  //       jsCyber !== null &&
+  //       addressActive !== null
+  //     ) {
+  //       const { bech32 } = addressActive;
+  //       const response = await jsCyber.getAccount(bech32);
+  //       console.log('response', response);
+  //       if (
+  //         response &&
+  //         Object.prototype.hasOwnProperty.call(response, 'accountNumber')
+  //       ) {
+  //         setStep(STEP_KEPLR_REGISTER);
+  //       } else {
+  //         const responseCredit = await getCredit(bech32);
+  //         if (responseCredit !== null && responseCredit.data === 'ok') {
+  //           checkAddress();
+  //         }
+  //       }
+  //     }
+  //   };
+  //   checkAddress();
+  // }, [jsCyber, addressActive, step]);
+
+  const checkAddressNetwork = useCallback(async () => {
+    if (
+      step === STEP_CHECK_ADDRESS &&
+      jsCyber !== null &&
+      addressActive !== null
+    ) {
+      const { bech32 } = addressActive;
+      const response = await jsCyber.getAccount(bech32);
+      console.log('response', response);
       if (
-        step === STEP_CHECK_ADDRESS &&
-        jsCyber !== null &&
-        addressActive !== null
+        response &&
+        Object.prototype.hasOwnProperty.call(response, 'accountNumber')
       ) {
-        const { bech32 } = addressActive;
-        const response = await jsCyber.getAccount(bech32);
-        console.log('response', response);
-        if (
-          response &&
-          Object.prototype.hasOwnProperty.call(response, 'accountNumber')
-        ) {
-          setStep(STEP_KEPLR_REGISTER);
-        } else {
-          const responseCredit = await getCredit(bech32);
-          if (responseCredit !== null && responseCredit.data === 'ok') {
-            checkAddress();
-          }
+        setStep(STEP_KEPLR_REGISTER);
+      } else {
+        const responseCredit = await getCredit(bech32);
+        if (responseCredit !== null && responseCredit.data === 'ok') {
+          checkAddressNetwork();
         }
       }
-    };
-    checkAddress();
+    }
   }, [jsCyber, addressActive, step]);
 
   const setupNickname = useCallback(() => {
@@ -251,6 +275,8 @@ function GetCitizenship({ node, defaultAccount }) {
     content = (
       <Avatar
         valueNickname={valueNickname}
+        upload={avatarIpfs === null}
+        setAvatarImg={setAvatarImg}
         avatar={
           avatarIpfs === null ? (
             'upload avatar'
@@ -299,6 +325,7 @@ function GetCitizenship({ node, defaultAccount }) {
   return (
     <>
       <MainContainer>
+        <Info nickname={valueNickname} stepCurrent={step} />
         {/* {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
             <ScrollableTabs items={items} active={step} setStep={setStep} />
           )} */}
@@ -319,6 +346,7 @@ function GetCitizenship({ node, defaultAccount }) {
         setAvatarImg={setAvatarImg}
         avatarIpfs={avatarIpfs}
         onClickRegister={onClickRegister}
+        checkAddressNetwork={checkAddressNetwork}
       />
     </>
   );

@@ -14,6 +14,8 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { activePassport } from './utils';
 import PasportCitizenship from './pasport';
 import GetCitizenship from './citizenship';
+import Info from './citizenship/Info';
+import { steps } from './citizenship/utils';
 
 const styleSteps = { width: '120px', height: '40px' };
 const items = [
@@ -34,36 +36,36 @@ function PortalCitizenship({ defaultAccount }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [stagePortal, setStagePortal] = useState(STAGE_INIT);
+  const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [citizenship, setCitizenship] = useState(null);
   // console.log('stagePortal', stagePortal)
 
-  // useEffect(() => {
-  //   const getPasport = async () => {
-  //     setStagePortal(STAGE_LOADING);
-  //     if (jsCyber !== null) {
-  //       if (addressActive !== null) {
-  //         const response = await activePassport(jsCyber, addressActive.bech32);
-  //         if (response !== null) {
-  //           console.log('response', response);
-  //           setCitizenship(response);
-  //           setStagePortal(STAGE_READY);
-  //         } else {
-  //           setStagePortal(STAGE_INIT);
-  //         }
-  //       } else {
-  //         setStagePortal(STAGE_INIT);
-  //       }
-  //     } else {
-  //       setStagePortal(STAGE_LOADING);
-  //     }
-  //   };
-  //   getPasport();
+  useEffect(() => {
+    const getPasport = async () => {
+      setStagePortal(STAGE_LOADING);
+      if (jsCyber !== null) {
+        if (addressActive !== null) {
+          const response = await activePassport(jsCyber, addressActive.bech32);
+          if (response !== null) {
+            console.log('response', response);
+            setCitizenship(response);
+            setStagePortal(STAGE_READY);
+          } else {
+            setStagePortal(STAGE_INIT);
+          }
+        } else {
+          setStagePortal(STAGE_INIT);
+        }
+      } else {
+        setStagePortal(STAGE_LOADING);
+      }
+    };
+    getPasport();
 
-  //   return () => {
-  //     setCitizenship(null);
-  //   };
-  // }, [jsCyber, addressActive]);
+    return () => {
+      setCitizenship(null);
+    };
+  }, [jsCyber, addressActive]);
 
   const checkKeplr = () => {
     console.log(`window.keplr `, window.keplr);
@@ -82,6 +84,7 @@ function PortalCitizenship({ defaultAccount }) {
     return (
       <>
         <MainContainer>
+          <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={citizenship} />
           <PasportCitizenship citizenship={citizenship} />
         </MainContainer>
         <ActionBar>

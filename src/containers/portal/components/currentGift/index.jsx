@@ -10,7 +10,7 @@ const BOOT_ICON = '🟢';
 
 const keyTable = [
   'Astronaut',
-  'Average Citizen',
+  'Average Citizens',
   'Cyberpunk',
   'Extraordinary Hacker',
   'Key Opinion Leader',
@@ -41,9 +41,7 @@ const TableAllocation = ({ currentGift }) => {
     if (currentGift !== null && currentGift.details) {
       const { details } = currentGift;
       return keyTable.map((item) => {
-        const value = details[item]
-          ? details[item].gift * CYBER.DIVISOR_CYBER_G
-          : 0;
+        const value = details[item] ? details[item].gift * 10 ** 6 : 0;
         return <ItemTable key={item} value={value} title={item} />;
       });
     }

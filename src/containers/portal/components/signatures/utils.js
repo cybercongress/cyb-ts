@@ -8,42 +8,42 @@ import {
 } from '../../../../utils/config';
 
 const DICTIONARY_ABC = {
-  a: { note: 'E3', bass: 'E3', color: '#00EDEB' },
-  b: { note: 'G3', bass: 'E3', color: '#FCF000' },
-  c: { note: 'A3', bass: 'E3', color: '#F62BFD' },
-  d: { note: 'B3', bass: 'E3', color: '#36D6AE' },
-  e: { note: 'D3', bass: 'E3', color: '#000AFF' },
-  f: { note: 'B3', bass: 'E3', color: '#00C4FF' },
-  g: { note: 'E3', bass: 'E3', color: '#FF5C00' },
-  h: { note: 'G3', bass: 'E3', color: '#C4C4C4' },
-  i: { note: 'A3', bass: 'E3', color: '#999999' },
-  j: { note: 'B3', bass: 'E3', color: '#00EDEB' },
-  k: { note: 'D3', bass: 'E3', color: '#FCF000' },
-  l: { note: 'E3', bass: 'E3', color: '#F62BFD' },
-  m: { note: 'E3', bass: 'E3', color: '#36D6AE' },
-  n: { note: 'G3', bass: 'E3', color: '#000AFF' },
-  o: { note: 'A3', bass: 'E3', color: '#00C4FF' },
-  p: { note: 'B3', bass: 'E3', color: '#FF5C00' },
-  q: { note: 'D3', bass: 'E3', color: '#C4C4C4' },
-  r: { note: 'B3', bass: 'E3', color: '#999999' },
-  s: { note: 'E3', bass: 'A3', color: '#00EDEB' },
-  t: { note: 'G3', bass: 'A3', color: '#FCF000' },
-  u: { note: 'A3', bass: 'A3', color: '#F62BFD' },
-  v: { note: 'B3', bass: 'A3', color: '#36D6AE' },
-  w: { note: 'D3', bass: 'A3', color: '#000AFF' },
-  x: { note: 'B2', bass: 'A3', color: '#00C4FF' },
-  y: { note: 'F#3', bass: 'A3', color: '#00EDEB' },
-  z: { note: 'B2', bass: 'A3', color: '#000AFF' },
-  0: { note: 'sustein', bass: 'G3', color: '#00EDEB' },
-  1: { note: 'sustein', bass: 'G3', color: '#FCF000' },
-  2: { note: 'sustein', bass: 'G3', color: '#F62BFD' },
-  3: { note: 'sustein', bass: 'G3', color: '#36D6AE' },
-  4: { note: 'sustein', bass: 'G3', color: '#000AFF' },
-  5: { note: 'sustein', bass: 'G3', color: '#00C4FF' },
-  6: { note: 'sustein', bass: 'G3', color: '#FF5C00' },
-  7: { note: 'sustein', bass: 'G3', color: '#C4C4C4' },
-  8: { note: 'sustein', bass: 'G3', color: '#999999' },
-  9: { note: 'sustein', bass: 'G3', color: '#00EDEB' },
+  a: { note: 'E3', height: 16, gain: 1, color: '#36D6AE' },
+  b: { note: 'G3', height: 16, gain: 1, color: '#00EDEB' },
+  c: { note: 'A3', height: 16, gain: 1, color: '#000AFF' },
+  d: { note: 'B3', height: 16, gain: 1, color: '#00C4FF' },
+  e: { note: 'D3', height: 16, gain: 1, color: '#F62BFD' },
+  f: { note: 'B3', height: 14, gain: 0.9, color: '#00C4FF' },
+  g: { note: 'E3', height: 14, gain: 0.9, color: '#36D6AE' },
+  h: { note: 'G3', height: 12, gain: 0.8, color: '#00EDEB' },
+  i: { note: 'A3', height: 12, gain: 0.8, color: '#000AFF' },
+  j: { note: 'B3', height: 12, gain: 0.8, color: '#00C4FF' },
+  k: { note: 'D3', height: 12, gain: 0.8, color: '#F62BFD' },
+  l: { note: 'E3', height: 10, gain: 0.7, color: '#36D6AE' },
+  m: { note: 'E3', height: 8, gain: 0.6, color: '#36D6AE' },
+  n: { note: 'G3', height: 8, gain: 0.6, color: '#00EDEB' },
+  o: { note: 'A3', height: 8, gain: 0.6, color: '#000AFF' },
+  p: { note: 'B3', height: 10, gain: 0.7, color: '#00C4FF' },
+  q: { note: 'D3', height: 8, gain: 0.6, color: '#F62BFD' },
+  r: { note: 'B3', height: 8, gain: 0.6, color: '#00C4FF' },
+  s: { note: 'E3', height: 4, gain: 0.4, color: '#36D6AE' },
+  t: { note: 'G3', height: 4, gain: 0.4, color: '#00EDEB' },
+  u: { note: 'A3', height: 4, gain: 0.4, color: '#000AFF' },
+  v: { note: 'B3', height: 6, gain: 0.5, color: '#00C4FF' },
+  w: { note: 'D3', height: 4, gain: 0.4, color: '#F62BFD' },
+  x: { note: 'B2', height: 10, gain: 0.7, color: '#FCF000' },
+  y: { note: 'F#3', height: 10, gain: 0.7, color: '#FF5C00' },
+  z: { note: 'B2', height: 8, gain: 0.6, color: '#FCF000' },
+  0: { note: 'sustein', height: 2, color: '#777777' },
+  1: { note: 'sustein', height: 2, color: '#777777' },
+  2: { note: 'sustein', height: 2, color: '#777777' },
+  3: { note: 'sustein', height: 2, color: '#777777' },
+  4: { note: 'sustein', height: 2, color: '#777777' },
+  5: { note: 'sustein', height: 2, color: '#777777' },
+  6: { note: 'sustein', height: 2, color: '#777777' },
+  7: { note: 'sustein', height: 2, color: '#777777' },
+  8: { note: 'sustein', height: 2, color: '#777777' },
+  9: { note: 'sustein', height: 2, color: '#777777' },
 };
 
 const getHeight = (value) => {
@@ -51,12 +51,12 @@ const getHeight = (value) => {
   return number * (100 - 2) + 2;
 };
 
-const lead10 = new Tone.Sampler({
-  urls: {
-    E3: 'E3.mp3',
-  },
-  baseUrl: 'https://el-nivvo.github.io/files/lead10/',
-}).toDestination();
+// const lead10 = new Tone.Sampler({
+//   urls: {
+//     E3: 'E3.mp3',
+//   },
+//   baseUrl: 'https://el-nivvo.github.io/files/lead10/',
+// }).toDestination();
 
 const lead10pads = new Tone.Sampler({
   urls: {
@@ -87,6 +87,13 @@ const getNoteFromAdd = (addrr) => {
 
 const makeSound = (arrNote) => {
   try {
+    let gain;
+    const lead = new Tone.Sampler({
+      urls: {
+        E3: 'E3.mp3',
+      },
+      baseUrl: 'https://el-nivvo.github.io/files/lead10/',
+    }).toDestination(gain || 1);
     Tone.loaded().then(() => {
       let cout = 0;
       const now = Tone.now();
@@ -94,7 +101,10 @@ const makeSound = (arrNote) => {
       arrNote.forEach((item) => {
         if (item.note !== 'sustein') {
           const time = now + cout;
-          lead10.triggerAttackRelease([item.note], 1, time);
+          gain = new Tone.Gain(item.gain || 1).toDestination();
+          // Tone.loaded().then(() => {
+          lead.triggerAttackRelease([item.note], 1, time);
+          // });
           cout += 0.2;
         } else {
           cout += 0.2;

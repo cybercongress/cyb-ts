@@ -8,6 +8,9 @@ import NextUnfreeze from './nextUnfreeze';
 import Released from './Released';
 import MainContainer from './mainContainer/mainContainer';
 import InfoCard from './infoCard/infoCard';
+import BtnGrd from './btnGrd';
+import ActionBarContainer from './ActionBar';
+import ActionBarSteps from './ActionBar/ActionBarSteps';
 
 export {
   ContainerGradient,
@@ -20,4 +23,7 @@ export {
   Released,
   MainContainer,
   InfoCard,
+  BtnGrd,
+  ActionBarContainer,
+  ActionBarSteps,
 };

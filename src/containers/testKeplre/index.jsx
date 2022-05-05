@@ -19,6 +19,7 @@ import Denom from '../../components/denom';
 
 import DenomTest from './testDenom';
 import AddTest from './testAdd';
+import {Signatures} from '../portal/components';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -87,9 +88,10 @@ function TestKeplr() {
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
       <div>
-        <button type="button" onClick={checkGift}>
+        <Signatures addressActive={{ bech32: addressTest }} />
+        {/* <button type="button" onClick={checkGift}>
           getCredit
-        </button>
+        </button> */}
       </div>
     </main>
   );
