@@ -1,15 +1,14 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useContext, useCallback } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Button,
-} from '@cybercongress/gravity';
+import React, { useMemo, useContext, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { calculateFee } from '@cosmjs/stargate';
 import { GasPrice } from '@cosmjs/launchpad';
 
 import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
+import { Dots } from '../../../components';
+import { ActionBarSteps, BtnGrd } from '../components';
+import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -47,93 +46,144 @@ function ActionBarRelease({
   selectedAddress,
   activeReleases,
   isRelease,
-  isClaimed,
-  currentGift,
+  currentRelease,
+  totalGift,
+  totalRelease,
+  loadingRelease,
 }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
 
-  // useEffect(() => {
-  //   const NS_TO_S = 1 * 10 ** -6;
-
-  //   const timeTest = 1648642766728729204 * NS_TO_S;
-
-  //   const d = new Date();
-  //   console.log('Date.parse(d)', Date.parse(d));
-  //   const time = timeTest - Date.parse(d);
-
-  //   console.log('data', timeSince(time));
-  //   console.log('1648637426714169237', 1648642766728729204 * NS_TO_S);
-  //   console.log(
-  //     'data timeSince',
-  //     dateFormat(
-  //       new Date(1648642766728729204 * NS_TO_S),
-  //       'dd/mm/yyyy, hh:MM:ss tt'
-  //     )
-  //   );
-  // }, []);
-
   const useRelease = useCallback(async () => {
     try {
-      if (keplr !== null && selectedAddress !== null) {
-        const msgObject = releaseMsg(selectedAddress);
-
-        const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
-
-        const executeResponseResult = await keplr.execute(
-          addressKeplr,
-          CONTRACT_ADDRESS_GIFT,
-          msgObject,
-          calculateFee(400000, gasPrice),
-          'cyber'
-        );
-
-        console.log('executeResponseResult', executeResponseResult);
-        if (executeResponseResult.code === 0) {
-          updateTxHash({
-            status: 'pending',
-            txHash: executeResponseResult.transactionHash,
+      if (keplr !== null && currentRelease !== null) {
+        const msgs = [];
+        if (currentRelease.length > 0) {
+          currentRelease.forEach((item) => {
+            const { address } = item;
+            const msgObject = releaseMsg(address);
+            msgs.push(msgObject);
           });
         }
 
-        if (executeResponseResult.code) {
-          updateTxHash({
-            txHash: executeResponseResult?.transactionHash,
-            status: 'error',
-            rawLog: executeResponseResult?.rawLog.toString(),
-          });
+        const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+
+        if (msgs.length > 0) {
+          const gasLimits = 400000 * msgs.length;
+          const executeResponseResult = await keplr.executeArray(
+            addressKeplr,
+            CONTRACT_ADDRESS_GIFT,
+            msgs,
+            calculateFee(gasLimits, gasPrice),
+            CYBER.MEMO_KEPLR
+          );
+
+          console.log('executeResponseResult', executeResponseResult);
+          if (executeResponseResult.code === 0) {
+            updateTxHash({
+              status: 'pending',
+              txHash: executeResponseResult.transactionHash,
+            });
+          }
+
+          if (executeResponseResult.code) {
+            updateTxHash({
+              txHash: executeResponseResult?.transactionHash,
+              status: 'error',
+              rawLog: executeResponseResult?.rawLog.toString(),
+            });
+          }
         }
       }
     } catch (error) {
       console.log('error', error);
     }
-  }, [keplr, selectedAddress]);
+  }, [keplr, currentRelease]);
 
-  if (activeReleases && currentGift === null) {
+  const isValidClaime = useMemo(() => {
+    if (
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER) &&
+      totalGift !== null &&
+      totalRelease === null
+    ) {
+      return true;
+    }
+
+    const validFields =
+      selectedAddress !== null &&
+      totalGift !== null &&
+      totalRelease !== null &&
+      !selectedAddress.match(PATTERN_CYBER);
+
+    if (
+      validFields &&
+      Object.prototype.hasOwnProperty.call(totalGift, selectedAddress) &&
+      !Object.prototype.hasOwnProperty.call(totalRelease, selectedAddress)
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [selectedAddress, totalGift, totalRelease]);
+
+  const isValidProve = useMemo(() => {
+    if (
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER) &&
+      totalGift === null
+    ) {
+      return true;
+    }
+
+    if (
+      selectedAddress !== null &&
+      totalGift !== null &&
+      !selectedAddress.match(PATTERN_CYBER) &&
+      !Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [selectedAddress, totalGift]);
+
+  if (activeReleases && loadingRelease) {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => history.push('portalGift')}>
-          prove address
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd disabled text={<Dots />} />
+      </ActionBarSteps>
     );
   }
 
-  if (activeReleases && isClaimed === false) {
+  if (activeReleases && isValidProve) {
     return (
-      <ActionBarContainer>
-        <Button onClick={() => history.push('portalGift')}>claimed</Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          onClick={() => history.push('portalGift')}
+          text="go to prove address"
+        />
+      </ActionBarSteps>
     );
   }
 
-  if (activeReleases && isClaimed === true) {
+  if (activeReleases && isValidClaime) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isRelease === false} onClick={() => useRelease()}>
-          release {GIFT_ICON}
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd onClick={() => history.push('portalGift')} text="claimed" />
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeReleases && totalRelease !== null) {
+    return (
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isRelease === false || isRelease === null}
+          onClick={() => useRelease()}
+          text={`release ${GIFT_ICON}`}
+        />
+      </ActionBarSteps>
     );
   }
 

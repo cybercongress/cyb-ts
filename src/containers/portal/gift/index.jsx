@@ -11,30 +11,42 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {
   useGetActivePassport,
   CONTRACT_ADDRESS_GIFT,
-  checkGift,
+  getStateGift,
+  getConfigGift,
 } from '../utils';
 import PasportCitizenship from '../pasport';
 import ActionBarPortalGift from './ActionBarPortalGift';
-import { CurrentGift } from '../components';
+import {
+  CurrentGift,
+  MainContainer,
+  ScrollableTabs,
+  AboutGift,
+} from '../components';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
+import TabsList from './tabsList';
 
-import testDataJson from './test.json';
+const STEP_GIFT_INFO = 0;
+const STEP_PROVE_ADD = 1;
+const STEP_CLAIME = 2;
 
-const all = require('it-all');
-const uint8ArrayConcat = require('uint8arrays/concat');
-const uint8ArrayToAsciiString = require('uint8arrays/to-string');
-const FileType = require('file-type');
-
-const cid = 'QmZqMHgfAe4rB6GLDQcEtWgrZmQTsXZ4hTieuD1ULo9vX1';
+const initStateBonus = {
+  up: 0,
+  down: 0,
+  current: 0,
+};
 
 function PortalGift({ defaultAccount, node }) {
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [updateFunc, setUpdateFunc] = useState(0);
+  const [currentBonus, setCurrentBonus] = useState(initStateBonus);
   const [txHash, setTxHash] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const { citizenship } = useGetActivePassport(addressActive, updateFunc);
+  const { citizenship, loading } = useGetActivePassport(
+    addressActive,
+    updateFunc
+  );
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
   const [isRelease, setIsRelease] = useState(null);
@@ -43,9 +55,10 @@ function PortalGift({ defaultAccount, node }) {
     addressActive,
     updateFunc
   );
+  const [active, setActive] = useState(STEP_GIFT_INFO);
 
   // console.log('generalGift | PortalGift', totalGift);
-  console.log('totalGiftAmount', totalGiftAmount);
+  // console.log('totalGiftAmount', totalGiftAmount);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -78,6 +91,32 @@ function PortalGift({ defaultAccount, node }) {
   }, [jsCyber, txHash]);
 
   useEffect(() => {
+    const cheeckStateFunc = async () => {
+      if (jsCyber !== null) {
+        const queryResponseResultConfig = await getConfigGift(jsCyber);
+        const queryResponseResultState = await getStateGift(jsCyber);
+
+        if (
+          queryResponseResultConfig !== null &&
+          queryResponseResultState !== null
+        ) {
+          const { coefficient_down: down, coefficient_up: up } =
+            queryResponseResultConfig;
+          const { coefficient } = queryResponseResultState;
+          if (down && up && coefficient) {
+            setCurrentBonus({
+              down: parseFloat(down),
+              up: parseFloat(up),
+              current: parseFloat(coefficient),
+            });
+          }
+        }
+      }
+    };
+    cheeckStateFunc();
+  }, [jsCyber]);
+
+  useEffect(() => {
     if (selectedAddress !== null && totalGift !== null) {
       if (Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)) {
         setCurrentGift([totalGift[selectedAddress]]);
@@ -105,15 +144,13 @@ function PortalGift({ defaultAccount, node }) {
             tempGift.push({ ...totalGift[key] });
           }
         });
+
         if (Object.keys(tempGift).length > 0) {
           setIsClaimed(false);
           setCurrentGift(tempGift);
         }
 
-        if (
-          Object.keys(tempGift).length === 0 &&
-          Object.keys(totalGift).length === 0
-        ) {
+        if (Object.keys(tempGift).length === 0) {
           setIsClaimed(true);
         }
       } else {
@@ -173,53 +210,54 @@ function PortalGift({ defaultAccount, node }) {
   }, [selectedAddress, currentGift, totalGiftAmount]);
 
   // console.log('citizenship', citizenship);
-  console.log('selectedAddress', selectedAddress);
-  console.log('currentGift', currentGift);
+  // console.log('selectedAddress', selectedAddress);
+  // console.log('currentGift', currentGift);
+  let content;
+
+  if (loading) {
+    return '...';
+  }
 
   if (citizenship === null) {
     return (
-      <main style={{ minHeight: 'calc(100vh - 162px)' }} className="block-body">
-        <div
-          style={{
-            width: '60%',
-            margin: '0px auto',
-            display: 'grid',
-            gap: '20px',
-          }}
-        >
-          <PasportCitizenship txHash={txHash} citizenship={null} />
-        </div>
-      </main>
+      <MainContainer>
+        <PasportCitizenship txHash={txHash} citizenship={null} />
+      </MainContainer>
+    );
+  }
+
+  if (active === STEP_GIFT_INFO) {
+    content = <AboutGift coefficient={currentBonus} />;
+  }
+
+  if (active !== STEP_GIFT_INFO) {
+    content = (
+      <>
+        <PasportCitizenship
+          txHash={txHash}
+          citizenship={citizenship}
+          updateFunc={setSelectedAddress}
+        />
+
+        <CurrentGift
+          currentBonus={currentBonus}
+          currentGift={useSelectedGiftData}
+        />
+      </>
     );
   }
 
   return (
     <>
-      <main
-        style={{ minHeight: 'calc(100vh - 162px)', overflow: 'hidden' }}
-        className="block-body"
-      >
-        <div
-          style={{
-            width: '60%',
-            margin: '0px auto',
-            display: 'grid',
-            gap: '20px',
-          }}
-        >
-          {/* <button onClick={() => checkIsClaim()}>test</button> */}
-          <PasportCitizenship
-            txHash={txHash}
-            citizenship={citizenship}
-            updateFunc={setSelectedAddress}
-          />
-
-          <CurrentGift currentGift={useSelectedGiftData} />
-          {/* {currentGift !== null && (
+      <MainContainer>
+        {/* <ScrollableTabs items={items} active={active} setStep={setActive} /> */}
+        {/* <button onClick={() => checkIsClaim()}>test</button> */}
+        <TabsList active={active} setStep={setActive} />
+        {content}
+        {/* {currentGift !== null && (
 
             )} */}
-        </div>
-      </main>
+      </MainContainer>
       <ActionBarPortalGift
         // updateFunc={() => setUpdateFunc((item) => item + 1)}
         citizenship={citizenship}
@@ -227,7 +265,7 @@ function PortalGift({ defaultAccount, node }) {
         isClaimed={isClaimed}
         selectedAddress={selectedAddress}
         currentGift={currentGift}
-        isRelease={isRelease}
+        activeStep={active}
       />
     </>
   );

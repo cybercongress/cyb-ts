@@ -12,7 +12,7 @@ $color-text: #36d6ae;
   content: '';
   position: absolute;
   background: #ffffff;
-  border: 1px solid #ffffff;
+  border: 1.5px solid #ffffff;
   box-sizing: border-box;
   top: 0;
   bottom: 0;
@@ -74,7 +74,7 @@ $color-text: #36d6ae;
   &::before {
     @include styleGradientPseudoEl;
     @include linear-gradient-green(-90deg);
-    left: 2px;
+    left: 3px;
     transform-origin: left;
     transform: perspective(100px) rotateY(55deg);
   }
@@ -82,7 +82,7 @@ $color-text: #36d6ae;
   &::after {
     @include styleGradientPseudoEl;
     @include linear-gradient-green(90deg);
-    right: 2px;
+    right: 3px;
     transform-origin: right;
     transform: perspective(100px) rotateY(-55deg);
   }

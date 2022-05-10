@@ -1,0 +1,104 @@
+.carousel {
+	.controls {
+		margin-bottom: 8px;
+	}
+	.slidesContainer {
+		// overflow: hidden;
+		position: relative;
+		.slideIndicator {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			z-index: 10;
+			left: 0;
+			background: rgba(0, 0, 0, 0.1);
+			height: 40px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			.dot {
+				width: 10px;
+				height: 10px;
+				background: white;
+				margin: 0 5px;
+				cursor: pointer;
+				border-radius: 50%;
+			}
+			.dot.active {
+				background: #b73a3a;
+			}
+		}
+		.scrollLeft {
+			position: absolute;
+			top: 50%;
+			margin-top: -10px;
+			z-index: 10;
+			font-size: 0.7em;
+			background: white;
+			padding: 4px 6px;
+			border-radius: 3px;
+			left: 6px;
+		}
+		.scrollRight {
+			position: absolute;
+			top: 50%;
+			margin-top: -10px;
+			z-index: 10;
+			font-size: 0.7em;
+			background: white;
+			padding: 4px 6px;
+			border-radius: 3px;
+			right: 6px;
+		}
+		.scrollLeft.disabled {
+			opacity: 0.3;
+		}
+		.scrollRight.disabled {
+			opacity: 0.3;
+		}
+	}
+	.slides {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: flex;
+		.slide {
+			background: #dadada;
+			display: flex;
+			position: relative;
+			.slideInner {
+				background: #dadada;
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 5;
+				width: 100%;
+				height: 100%;
+				justify-content: center;
+				align-items: center;
+				display: flex;
+				text-align: center;
+			}
+			.title {
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 8;
+				font-size: 0.7em;
+				padding: 6px;
+			}
+		}
+	}
+}
+.transition {
+	transition: ease all 0.5s;
+}
+.customSlide {
+	flex-direction: row;
+	background: orange;
+	width: 100%;
+	height: 100%;
+}
+.withImage {
+	overflow: hidden;
+}

@@ -14,6 +14,7 @@ const ContainerLamp = ({ style, children }) => (
       [styles.wrapContainerLampBlue]: style === 'blue',
       [styles.wrapContainerLampRed]: style === 'red',
       [styles.wrapContainerLampYellow]: style === 'yellow',
+      [styles.wrapContainerLampPurple]: style === 'purple',
       [styles.wrapContainerLampDefault]: !style,
     })}
   >
@@ -28,6 +29,7 @@ const ContainerLampAfter = ({ style, children }) => (
       [styles.wrapContainerLampAfterBlue]: style === 'blue',
       [styles.wrapContainerLampAfterRed]: style === 'red',
       [styles.wrapContainerLampAfterYellow]: style === 'yellow',
+      [styles.wrapContainerLampAfterPurple]: style === 'purple',
       [styles.wrapContainerLampAfterDefault]: !style,
     })}
   >
@@ -42,6 +44,7 @@ const ContainerLampBefore = ({ style, children }) => (
       [styles.wrapContainerLampBeforeBlue]: style === 'blue',
       [styles.wrapContainerLampBeforeRed]: style === 'red',
       [styles.wrapContainerLampBeforeYellow]: style === 'yellow',
+      [styles.wrapContainerLampBeforePurple]: style === 'purple',
       [styles.wrapContainerLampBeforeDefault]: !style,
     })}
   >
@@ -50,35 +53,52 @@ const ContainerLampBefore = ({ style, children }) => (
 );
 
 const TxsStatus = ({ data }) => {
+  let style;
+  switch (data.status) {
+    case 'pending':
+      style = 'yellow';
+      break;
+    case 'confirmed':
+      style = 'green';
+      break;
+    case 'error':
+      style = 'red';
+      break;
+
+    default:
+      break;
+  }
   return (
-    <div
-      className={classNames(styles.containerTxs, {
-        [styles.containerTxsPending]: data.status === 'pending',
-        [styles.containerTxsConfirmed]: data.status === 'confirmed',
-        [styles.containerTxsDanger]: data.status === 'error',
-      })}
-    >
-      <div className={styles.containerTxsTxHash}>
-        <Link to={`/network/bostrom/tx/${data.txHash}`}>
-          <div>{trimString(data.txHash, 5, 5)}</div>
-        </Link>
-        {/* <div>5 min ago</div> */}
-        <div>{data.status}</div>
+    <ContainerLamp style={style}>
+      <div
+        className={classNames(styles.containerTxs, {
+          [styles.containerTxsPending]: data.status === 'pending',
+          [styles.containerTxsConfirmed]: data.status === 'confirmed',
+          [styles.containerTxsDanger]: data.status === 'error',
+        })}
+      >
+        <div className={styles.containerTxsTxHash}>
+          <Link to={`/network/bostrom/tx/${data.txHash}`}>
+            <div>{trimString(data.txHash, 5, 5)}</div>
+          </Link>
+          {/* <div>5 min ago</div> */}
+          <div>{data.status}</div>
+        </div>
+        {data.rawLog && (
+          <div className={styles.containerTxsRawLog}>{data.rawLog}</div>
+        )}
       </div>
-      {data.rawLog && (
-        <div className={styles.containerTxsRawLog}>{data.rawLog}</div>
-      )}
-    </div>
+    </ContainerLamp>
   );
 };
 
-export const ContainerGradientText = ({ children, status = 'primary' }) => {
+export const ContainerGradientText = ({ children, status = 'blue' }) => {
   return (
-    <ContainerLamp>
+    <ContainerLamp style={status}>
       <div
         className={classNames(styles.containerGradientText, {
-          [styles.containerGradientTextPrimary]: status === 'primary',
-          [styles.containerGradientTextDanger]: status === 'danger',
+          [styles.containerGradientTextPrimary]: status === 'blue',
+          [styles.containerGradientTextDanger]: status === 'red',
           [styles.containerGradientTextGreen]: status === 'green',
         })}
       >
@@ -119,6 +139,8 @@ function ContainerGradient({
               styleLampContent === 'blue',
             [styles.containerContainerGradientDanger]:
               styleLampContent === 'red',
+            [styles.containerContainerGradientPurple]:
+              styleLampContent === 'purple',
           })}
         >
           <Transition in={isOpen} timeout={500}>
@@ -149,11 +171,14 @@ function ContainerGradient({
                       className={classNames(
                         styles.containerContainerGradientContent,
                         {
-                          [styles.containerContainerGradientContentPrimary]: !styleLampContent,
+                          [styles.containerContainerGradientContentPrimary]:
+                            !styleLampContent,
                           [styles.containerContainerGradientContentPrimary]:
                             styleLampContent === 'blue',
                           [styles.containerContainerGradientContentDanger]:
                             styleLampContent === 'red',
+                          [styles.containerContainerGradientContentPurple]:
+                            styleLampContent === 'purple',
                         },
                         styles[`containerContainerGradientContent${state}`]
                       )}
@@ -167,11 +192,7 @@ function ContainerGradient({
           </Transition>
         </div>
       </ContainerLampAfter>
-      {txs && txs !== null && (
-        <ContainerLamp>
-          <TxsStatus data={txs} />
-        </ContainerLamp>
-      )}
+      {txs && txs !== null && <TxsStatus data={txs} />}
     </div>
   );
 }

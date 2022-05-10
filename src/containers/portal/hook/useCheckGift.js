@@ -80,18 +80,20 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     const result = {};
     if (citizenship !== null) {
       const { addresses } = citizenship.extension;
-      for (let index = 0; index < addresses.length; index++) {
-        const element = addresses[index];
-        if (
-          totalGift === null ||
-          !Object.prototype.hasOwnProperty.call(totalGift, element.address)
-        ) {
-          const responseGift = await checkGift(element.address);
-          console.log('responseGift', responseGift);
-          if (responseGift !== null) {
-            result[element.address] = {
-              ...responseGift,
-            };
+      if (addresses !== null) {
+        for (let index = 0; index < addresses.length; index++) {
+          const element = addresses[index];
+          if (
+            totalGift === null ||
+            !Object.prototype.hasOwnProperty.call(totalGift, element.address)
+          ) {
+            const responseGift = await checkGift(element.address);
+            // console.log('responseGift', responseGift);
+            if (responseGift !== null) {
+              result[element.address] = {
+                ...responseGift,
+              };
+            }
           }
         }
       }

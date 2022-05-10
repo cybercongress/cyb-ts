@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import * as Tone from 'tone';
 import {
   PATTERN_CYBER,
@@ -76,7 +77,11 @@ const getNoteFromAdd = (addrr) => {
     if (DICTIONARY_ABC[item].note === 'sustein') {
       duration = '4n';
     }
-    const obj = { note: DICTIONARY_ABC[item].note, duration };
+    const obj = {
+      note: DICTIONARY_ABC[item].note,
+      gain: DICTIONARY_ABC[item].gain,
+      duration,
+    };
     arrNote.push(obj);
     if (DICTIONARY_ABC[item].note !== 'sustein') {
       duration = '16n';
@@ -87,22 +92,38 @@ const getNoteFromAdd = (addrr) => {
 
 const makeSound = (arrNote) => {
   try {
-    let gain;
+    const gain = new Tone.Gain(0.9).toDestination();
     const lead = new Tone.Sampler({
       urls: {
         E3: 'E3.mp3',
       },
       baseUrl: 'https://el-nivvo.github.io/files/lead10/',
-    }).toDestination(gain || 1);
+    }).toDestination();
+    // const leadObject = [];
+    // for (const key in arrNote) {
+    //   if (Object.hasOwnProperty.call(arrNote, key)) {
+    //     const element = arrNote[key];
+    //     const gain = new Tone.Gain(0.9).toDestination();
+    //     const lead = new Tone.Sampler({
+    //       urls: {
+    //         E3: 'E3.mp3',
+    //       },
+    //       baseUrl: 'https://el-nivvo.github.io/files/lead10/',
+    //     }).toDestination(gain);
+
+    //     leadObject.push(lead);
+    //   }
+    // }
+
     Tone.loaded().then(() => {
       let cout = 0;
       const now = Tone.now();
 
-      arrNote.forEach((item) => {
+      arrNote.forEach((item, index) => {
         if (item.note !== 'sustein') {
           const time = now + cout;
-          gain = new Tone.Gain(item.gain || 1).toDestination();
           // Tone.loaded().then(() => {
+          // const templlead = leadObject[index];
           lead.triggerAttackRelease([item.note], 1, time);
           // });
           cout += 0.2;

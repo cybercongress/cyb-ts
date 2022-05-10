@@ -300,7 +300,7 @@ function GetCitizenship({ node, defaultAccount }) {
     content = <ConnectKeplr />;
   }
 
-  if (step === STEP_KEPLR_REGISTER || step === STEP_CHECK_ADDRESS) {
+  if (step === STEP_CHECK_ADDRESS || step === STEP_KEPLR_REGISTER) {
     content = (
       <Passport
         valueNickname={valueNickname}

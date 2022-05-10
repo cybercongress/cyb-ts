@@ -14,7 +14,7 @@ $color-border-lamp-white: #e2e2e2;
 @mixin linear-gradient-green($route) {
   background: linear-gradient(
     $route,
-    rgba(0, 237, 235, 0.076) 0%,
+    rgba(0, 237, 235, 0) 0%,
     rgba(0, 237, 235, 0.4) 100%
   );
 }

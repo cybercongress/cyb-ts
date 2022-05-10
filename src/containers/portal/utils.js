@@ -4,9 +4,9 @@ import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom12njsx22ne73swjqxxn5e7xtc2n95y2aw8r73cqdth0g86way24cqgex4kw';
+  'bostrom1t3f4zxve6725sf4glrnlar8uku78j0nyfl0ppzgfju9ft9phvqwqcqau6f';
 const CONTRACT_ADDRESS =
-  'bostrom18v47nqmhvejx3vc498pantg8vr435xa0rt6x0m6kzhp6yuqmcp8syatwkd';
+  'bostrom1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsjxcwgf';
 // const CONTRACT_ADDRESS =
 //   'bostrom15hzg7eaxgs6ecn46gmu4juc9tau2w45l9cnf8n0797nmmtkdv7jscv88ra';
 
@@ -130,6 +130,45 @@ const checkGift = async (address) => {
   }
 };
 
+const queryContractSmartGift = async (client, query) => {
+  try {
+    const response = await client.queryContractSmart(
+      CONTRACT_ADDRESS_GIFT,
+      query
+    );
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
+const getStateGift = async (client) => {
+  try {
+    const query = {
+      state: {},
+    };
+    const response = await queryContractSmartGift(client, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
+const getConfigGift = async (client) => {
+  try {
+    const query = {
+      config: {},
+    };
+    const response = await queryContractSmartGift(client, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
 export {
   activePassport,
   CONTRACT_ADDRESS,
@@ -140,4 +179,6 @@ export {
   BOOT_ICON,
   COUNT_STAGES,
   checkGift,
+  getConfigGift,
+  getStateGift,
 };
