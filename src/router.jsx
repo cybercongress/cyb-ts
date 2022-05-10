@@ -146,10 +146,10 @@ function AppRouter({
         <Route path="/portalRelease" component={Release} />
         <Route path="/ibc" component={Ibc} />
         {/* wasm */}
-        {/* <Route path="/codes" exact component={Codes} />
+        <Route path="/codes" exact component={Codes} />
         <Route path="/codes/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
-        <Route path="/contracts/:contractAddress" component={ContractPage} /> */}
+        <Route path="/contracts/:contractAddress" component={ContractPage} />
 
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
