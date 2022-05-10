@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
+import ReactJson from 'react-json-view';
 import { formatNumber } from '../../utils/search/utils';
 import { Account, MsgType, LinkWindow, ValueImg } from '../../components';
 import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
-import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
-import ReactJson from 'react-json-view';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -653,30 +653,40 @@ function Activites({ msg }) {
 
   // ibc
   if (type.includes('MsgRecvPacket')) {
+    const { packet } = msg;
+    if (Object.prototype.hasOwnProperty.call(packet, 'data')) {
+      try {
+        const dataPacketSring = fromUtf8(fromBase64(packet.data));
+        packet.data = dataPacketSring;
+      } catch (e) {
+        // That string wasn't valid.
+      }
+    }
     return (
       <ContainerMsgsType type={msg['@type']}>
         <Row title="Signer" value={<Account address={msg.signer} />} />
         <Row
           title="Packet"
-          value={<ReactJson
-            src={msg.packet}
-            theme="twilight"
-            displayObjectSize={false}
-            displayDataTypes={false}
-          />}
+          value={
+            <ReactJson
+              src={msg.packet}
+              theme="twilight"
+              displayObjectSize={false}
+              displayDataTypes={false}
+            />
+          }
         />
-        <Row
-          title="Proof Commitment"
-          value={msg.proof_commitment}
-        />
+        <Row title="Proof Commitment" value={msg.proof_commitment} />
         <Row
           title="Proof Height"
-          value={<ReactJson
-            src={msg.proof_height}
-            theme="twilight"
-            displayObjectSize={false}
-            displayDataTypes={false}
-          />}
+          value={
+            <ReactJson
+              src={msg.proof_height}
+              theme="twilight"
+              displayObjectSize={false}
+              displayDataTypes={false}
+            />
+          }
         />
         {/* <Row
           title="Proof Height"
@@ -692,23 +702,21 @@ function Activites({ msg }) {
     return (
       <ContainerMsgsType type={msg['@type']}>
         <Row title="Signer" value={<Account address={msg.signer} />} />
-        <Row
-          title="Client ID"
-          value={msg.client_id}
-        />
+        <Row title="Client ID" value={msg.client_id} />
         <Row
           title="Header"
-          value={<ReactJson
-            src={msg.header}
-            theme="twilight"
-            displayObjectSize={false}
-            displayDataTypes={false}
-          />}
+          value={
+            <ReactJson
+              src={msg.header}
+              theme="twilight"
+              displayObjectSize={false}
+              displayDataTypes={false}
+            />
+          }
         />
       </ContainerMsgsType>
     );
   }
-    
 
   return <div>{JSON.stringify(msg)}</div>;
 }

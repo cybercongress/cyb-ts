@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroll-component';
+// import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from 'react-infinite-scroller';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -72,9 +74,11 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
-  const [page, setPage] = useState(0);
+  // const [page, setPage] = useState(0);
   const [allPage, setAllPage] = useState(1);
   const [total, setTotal] = useState(0);
+  // const [fetching, setFetching] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     if (query.match(/\//g)) {
@@ -84,9 +88,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
 
   useEffect(() => {
     const getFirstItem = async () => {
+      setHasMore(true);
       setLoading(true);
       setQueryProps(encodeSlash(query));
-      setPage(0);
+      // setPage(0);
       setAllPage(1);
       if (jsCyber !== null) {
         let keywordHashTemp = '';
@@ -120,7 +125,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
             Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
           );
           setTotal(parseFloat(responseSearchResults.pagination.total));
-          setPage((item) => item + 1);
+          // setPage((item) => item + 1);
         }
         setKeywordHash(keywordHashTemp);
         setSearchResults(searchResultsData);
@@ -130,18 +135,20 @@ function SearchResults({ node, mobile, setQueryProps }) {
     getFirstItem();
   }, [query, location, update, jsCyber]);
 
-  const fetchMoreData = async () => {
+  const fetchMoreData = async (page) => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
     const data = await search(jsCyber, keywordHash, page);
-    if (data.result) {
+    if (data && Object.keys(data).length > 0 && data.result) {
       links = reduceSearchResults(data.result, encodeSlash(query));
+    } else {
+      setHasMore(false);
     }
 
     setTimeout(() => {
       setSearchResults((itemState) => ({ ...itemState, ...links }));
-      setPage((itemPage) => itemPage + 1);
+      // setPage((itemPage) => itemPage + 1);
     }, 500);
   };
 
@@ -180,8 +187,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
   }
 
   if (query.match(PATTERN_CYBER)) {
+    const key = uuidv4();
     searchItems.push(
       <Pane
+        key={key}
         position="relative"
         className="hover-rank"
         display="flex"
@@ -201,8 +210,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
   }
 
   if (query.match(PATTERN_CYBER_VALOPER)) {
+    const key = uuidv4();
     searchItems.push(
       <Pane
+        key={key}
         position="relative"
         className="hover-rank"
         display="flex"
@@ -222,8 +233,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
   }
 
   if (query.match(PATTERN_TX)) {
+    const key = uuidv4();
     searchItems.push(
       <Pane
+        key={key}
         position="relative"
         className="hover-rank"
         display="flex"
@@ -243,8 +256,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
   }
 
   if (query.match(PATTERN_BLOCK)) {
+    const key = uuidv4();
     searchItems.push(
       <Pane
+        key={key}
         position="relative"
         className="hover-rank"
         display="flex"
@@ -270,6 +285,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
       Object.keys(searchResults).map((key) => {
         return (
           <Pane
+            key={key}
             position="relative"
             className="hover-rank"
             display="flex"
@@ -306,12 +322,13 @@ function SearchResults({ node, mobile, setQueryProps }) {
     );
   }
 
-  console.log(
-    `searchResults`,
-    searchResults,
-    Object.keys(searchResults).length
-  );
+  // console.log(
+  //   `searchResults`,
+  //   searchResults,
+  //   Object.keys(searchResults).length
+  // );
   // console.log(`total`, total);
+  console.log(Object.keys(searchResults).length, total);
 
   return (
     <div>
@@ -327,7 +344,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
           flexDirection="column"
         >
           <div className="container-contentItem" style={{ width: '100%' }}>
-            <InfiniteScroll
+            {/* <InfiniteScroll
               dataLength={Object.keys(searchResults).length}
               next={fetchMoreData}
               hasMore={Object.keys(searchResults).length < total}
@@ -337,18 +354,25 @@ function SearchResults({ node, mobile, setQueryProps }) {
                   <Dots />
                 </h4>
               }
-              pullDownToRefresh
-              pullDownToRefreshContent={
-                <h3 style={{ textAlign: 'center' }}>
-                  &#8595; Pull down to refresh
-                </h3>
-              }
-              releaseToRefreshContent={
-                <h3 style={{ textAlign: 'center' }}>
-                  &#8593; Release to refresh
-                </h3>
-              }
               refreshFunction={fetchMoreData}
+            >
+              {Object.keys(searchItems).length > 0 ? (
+                searchItems
+              ) : (
+                <NoItems text={`No information about ${query}`} />
+              )}
+            </InfiniteScroll> */}
+            <InfiniteScroll
+              pageStart={-1}
+              // initialLoad
+              loadMore={fetchMoreData}
+              hasMore={hasMore}
+              loader={
+                <h4>
+                  Loading
+                  <Dots />
+                </h4>
+              }
             >
               {Object.keys(searchItems).length > 0 ? (
                 searchItems

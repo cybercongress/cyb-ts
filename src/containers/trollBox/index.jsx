@@ -110,7 +110,7 @@ class TrollBoxx extends React.PureComponent {
   async componentDidMount() {
     const { node } = this.props;
     if (node !== null) {
-      await this.init();
+      // await this.init();
     }
     this.scrollToBottom();
   }
@@ -118,7 +118,7 @@ class TrollBoxx extends React.PureComponent {
   componentDidUpdate(prevProps) {
     const { node } = this.props;
     if (node !== prevProps.node) {
-      this.init();
+      // this.init();
     }
     this.scrollToBottom();
   }
@@ -269,8 +269,8 @@ class TrollBoxx extends React.PureComponent {
                 <NoItems
                   text={
                     <Pane textAlign="center">
-                      <Pane marginBottom={5}>No messages.</Pane>
-                      <Pane>You can write something</Pane>
+                      <Pane marginBottom={5}>No messages.</Pane> 
+                      <Pane>Write something below to begin</Pane>
                     </Pane>
                   }
                 />

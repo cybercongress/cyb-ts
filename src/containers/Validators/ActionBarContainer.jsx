@@ -353,6 +353,7 @@ function ActionBarContainer({
 
   const validRewards = useMemo(() => {
     if (
+      balance &&
       balance.delegation &&
       balance.delegation !== 0 &&
       balance.rewards &&
@@ -411,6 +412,7 @@ function ActionBarContainer({
   if (
     Object.keys(validators).length === 0 &&
     stage === STAGE_INIT &&
+    balance.delegation  &&
     balance.delegation === 0
   ) {
     return (

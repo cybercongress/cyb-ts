@@ -12,6 +12,8 @@ const atom = require('../../image/cosmos-2.svg');
 const eth = require('../../image/Ethereum_logo_2014.svg');
 const pool = require('../../image/gravitydexPool.png');
 const ibc = require('../../image/ibc-unauth.png');
+const cosmos = require('../../image/cosmos-2.svg');
+const osmosis = require('../../image/osmosis.svg');
 
 const ValueImg = ({
   text,
@@ -73,6 +75,21 @@ const ValueImg = ({
     case 'eth':
       img = eth;
       textCurency = 'ETH';
+      break;
+
+    case 'cosmos':
+      img = cosmos;
+      textCurency = 'cosmos';
+      break;
+
+    case 'bostrom':
+      img = boot;
+      textCurency = 'bostrom';
+      break;
+
+    case 'osmosis':
+      img = osmosis;
+      textCurency = 'osmosis';
       break;
 
     default:

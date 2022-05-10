@@ -70,6 +70,8 @@ $color-border-botton-yellow: #fcf000;
     font-size: 20px;
     line-height: 23px;
     backdrop-filter: blur(10px);
+    max-height: 215px;
+    overflow-y: auto;
   }
 
   .listItem {
