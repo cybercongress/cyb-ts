@@ -11,6 +11,7 @@ import InfoCard from './infoCard/infoCard';
 import BtnGrd from './btnGrd';
 import ActionBarContainer from './ActionBar';
 import ActionBarSteps from './ActionBar/ActionBarSteps';
+import AboutGift from './AboutGift/aboutGift';
 
 export {
   ContainerGradient,
@@ -26,4 +27,5 @@ export {
   BtnGrd,
   ActionBarContainer,
   ActionBarSteps,
+  AboutGift,
 };

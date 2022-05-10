@@ -163,45 +163,11 @@ function ActionBar({
   if (step === STEP_AVATAR_UPLOAD) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_RULES)}>
-        {/* <Pane width="65%" alignItems="flex-end" display="flex"> */}
-        {/* <ActionBarContentText>
-            <div>
-              {avatarImg !== null && avatarImg.name
-                ? avatarImg.name
-                : 'Select img file'}
-            </div>
-            <input
-              ref={inputOpenFileRef}
-              onChange={() => onFilePickerChange(inputOpenFileRef)}
-              type="file"
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className={
-                avatarImg !== null && avatarImg !== undefined
-                  ? 'btn-add-close'
-                  : 'btn-add-file'
-              }
-              onClick={
-                avatarImg !== null && avatarImg !== undefined
-                  ? onClickClear
-                  : showOpenFileDlg
-              }
-            />
-          </ActionBarContentText> */}
         <BtnGrd
           disabled={avatarIpfs === null}
           onClick={() => uploadAvatarImg()}
           text={avatarIpfs == null ? <Dots /> : 'Upload'}
         />
-        {/* <Button
-            disabled={avatarIpfs === null}
-            onClick={() => uploadAvatarImg()}
-          >
-            {avatarIpfs == null ? <Dots /> : 'Upload'}
-          </Button> */}
-        {/* </Pane> */}
       </ActionBarSteps>
     );
   }

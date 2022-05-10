@@ -2,26 +2,51 @@ import React from 'react';
 import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
-const ProgressBar = ({ progress = 0 }) => {
+export const ProgressBar = ({
+  progress = 0,
+  styleContainer,
+  styleContainerTrack,
+  rotate = 0,
+  coefficient,
+  amount,
+}) => {
   return (
-    <div className={styles.containerProgressBar}>
-      <div className={styles.containerProgressBarTrack}>
+    <div
+      className={styles.containerProgressBar}
+      style={{ ...styleContainer, transform: `rotate(${rotate}deg)` }}
+    >
+      {coefficient && (
+        <span style={{ transform: `rotate(-${rotate}deg)` }}>
+          {coefficient.up}x
+        </span>
+      )}
+      <div
+        className={styles.containerProgressBarTrack}
+        style={styleContainerTrack}
+      >
         <div
           style={{ width: `${progress}%` }}
           className={styles.containerProgressBarTrackProgress}
         >
           <div className={styles.containerProgressBarTrackProgressValue}>
-            {progress}%
+            <span style={{ transform: `rotate(-${rotate}deg)` }}>
+              {amount || `${progress}%`}
+            </span>
           </div>
         </div>
       </div>
+      {coefficient && (
+        <span style={{ transform: `rotate(-${rotate}deg)` }}>
+          {coefficient.down}x
+        </span>
+      )}
     </div>
   );
 };
 
 function BeforeActivation({ citizens = 0, progress = 0 }) {
   return (
-    <ContainerGradientText status="danger">
+    <ContainerGradientText status="red">
       <div className={styles.containerBeforeActivation}>
         <div className={styles.containerBeforeActivationTitle}>
           <div>before activation</div>

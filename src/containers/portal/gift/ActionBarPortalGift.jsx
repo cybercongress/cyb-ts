@@ -18,9 +18,8 @@ import { coins, GasPrice } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
 import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
-import { ActionBarSteps } from '../../energy/component/actionBar';
 import { ActionBarContentText, Dots, ButtonIcon } from '../../../components';
-import { CYBER, LEDGER } from '../../../utils/config';
+import { CYBER, LEDGER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, dhm, timeSince } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 import {
@@ -29,6 +28,7 @@ import {
   CONTRACT_ADDRESS_GIFT,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
+import { ActionBarSteps, BtnGrd } from '../components';
 
 const dateFormat = require('dateformat');
 
@@ -48,6 +48,10 @@ const STEP_SIGN = 2;
 const STEP_CHECK_ACCOUNT = 2.1;
 const STEP_CHANGE_ACCOUNT = 2.2;
 const STEP_SEND_SIGN = 3;
+
+const STEP_GIFT_INFO = 0;
+const STEP_PROVE_ADD = 1;
+const STEP_CLAIME = 2;
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -91,21 +95,13 @@ const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
   };
 };
 
-const releaseMsg = (giftAddress) => {
-  return {
-    release: {
-      gift_address: giftAddress,
-    },
-  };
-};
-
 function ActionBarPortalGift({
   citizenship,
   updateTxHash,
   isClaimed,
   selectedAddress,
   currentGift,
-  isRelease,
+  activeStep,
 }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
@@ -370,31 +366,50 @@ function ActionBarPortalGift({
     }
   }, [keplr, selectedAddress, currentGift, citizenship]);
 
-  if (step === STEP_INIT && isClaimed === null) {
+  const isProve = useMemo(() => {
+    if (citizenship !== null && citizenship.extension.addresses === null) {
+      return false;
+    }
+    const validObj =
+      citizenship !== null && citizenship.extension.addresses !== null;
+    if (validObj && Object.keys(citizenship.extension.addresses).length <= 8) {
+      return false;
+    }
+
+    return true;
+  }, [citizenship]);
+
+  const isClaime = useMemo(() => {
+    if (isClaimed !== undefined && isClaimed !== null && !isClaimed) {
+      return false;
+    }
+    return true;
+  }, [isClaimed]);
+
+  if (step === STEP_INIT && activeStep === STEP_PROVE_ADD) {
     return (
       <ActionBarContainer>
-        <Button onClick={() => setStep(STEP_CONNECT)}>prove address</Button>
+        <BtnGrd
+          disabled={isProve}
+          onClick={() => setStep(STEP_CONNECT)}
+          text="prove address"
+        />
       </ActionBarContainer>
     );
   }
 
-  if (
-    step === STEP_INIT &&
-    isClaimed !== undefined &&
-    isClaimed !== null &&
-    !isClaimed
-  ) {
+  if (step === STEP_INIT && activeStep === STEP_CLAIME && isClaimed) {
     return (
       <ActionBarContainer>
-        <Button onClick={() => useClaime()}>claime</Button>
+        <BtnGrd onClick={() => history.push('/portalRelease')} text="release" />
       </ActionBarContainer>
     );
   }
 
-  if (step === STEP_INIT && isClaimed) {
+  if (step === STEP_INIT && activeStep === STEP_CLAIME) {
     return (
       <ActionBarContainer>
-        <Button onClick={() => history.push('/portalRelease')}>release</Button>
+        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claime" />
       </ActionBarContainer>
     );
   }
@@ -472,7 +487,10 @@ function ActionBarPortalGift({
   if (step === STEP_SEND_SIGN && selectMethod === 'keplr') {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_CONNECT)}>
-        <Button onClick={() => proveAddressKeplr()}>send signed message</Button>
+        <BtnGrd
+          onClick={() => proveAddressKeplr()}
+          text="send signed message"
+        />
       </ActionBarSteps>
     );
   }

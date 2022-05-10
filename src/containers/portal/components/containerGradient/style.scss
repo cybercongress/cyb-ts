@@ -1,8 +1,8 @@
 @mixin linear-gradient-green($route) {
   background: linear-gradient(
     $route,
-    rgba(0, 0, 0, 0) -3.3%,
-    rgba(54, 214, 174, 0.3) 100%
+    rgba(0, 0, 0, 0) 0%,
+    rgba(54, 214, 174, 1) 100%
   );
 }
 
@@ -26,7 +26,7 @@
   background: linear-gradient(
     $route,
     rgba(0, 0, 0, 0) -3.3%,
-    rgba(255, 217, 0, 0.3) 100%
+    rgba(255, 217, 0, 1) 100%
   );
 }
 
@@ -35,6 +35,14 @@
     $route,
     rgba(0, 0, 0, 0) -3.3%,
     rgb(255, 0, 0) 100%
+  );
+}
+
+@mixin linear-gradient-purple($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 10, 255, 1) 100%
   );
 }
 
@@ -67,6 +75,15 @@
       opacity: 11%;
       @include styleGradientPseudoEl;
       @include linear-gradient-danger(90deg);
+      right: 0;
+    }
+  }
+
+  &Purple {
+    &::after {
+      opacity: 11%;
+      @include styleGradientPseudoEl;
+      @include linear-gradient-purple(90deg);
       right: 0;
     }
   }
@@ -168,6 +185,16 @@
         z-index: -1;
       }
     }
+
+    &Purple {
+      &::before {
+        opacity: 11%;
+        @include styleGradientPseudoEl;
+        @include linear-gradient-purple(-90deg);
+        left: 0;
+        z-index: -1;
+      }
+    }
   }
 }
 
@@ -186,18 +213,93 @@
 .wrapContainerLamp {
   position: relative;
 
-  &::before {
-    @include ion-lamp;
-    left: 0;
-    // border-radius: 2px 0px 0px 2px;
-    box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+  &Default {
+    &::before {
+      @include ion-lamp;
+      left: 0;
+      // border-radius: 2px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+    }
+
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+    }
   }
 
-  &::after {
-    @include ion-lamp;
-    right: 0;
-    // border-radius: 0px 2px 2px 0px;
-    box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
+  &Red {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+      left: 0;
+    }
+
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
+    }
+  }
+  &Green {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+      left: 0;
+    }
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
+    }
+  }
+  &Blue {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+      left: 0;
+    }
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
+    }
+  }
+  &Yellow {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      left: 0;
+    }
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+    }
+  }
+
+  &Purple {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+      left: 0;
+    }
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+    }
   }
 }
 
@@ -244,6 +346,14 @@
       left: 0;
     }
   }
+  &Purple {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
+      left: 0;
+    }
+  }
 }
 
 .wrapContainerLampAfter {
@@ -286,6 +396,14 @@
       @include ion-lamp;
       border-radius: 0px 2px 2px 0px;
       box-shadow: 3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
+      right: 0;
+    }
+  }
+  &Purple {
+    &::after {
+      @include ion-lamp;
+      border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
       right: 0;
     }
   }
@@ -337,14 +455,14 @@
       @include styleGradientPseudoEl;
       @include linear-gradient-yellow(-90deg);
       left: 0;
-      opacity: 11%;
+      opacity: 12%;
     }
 
     &::after {
       @include styleGradientPseudoEl;
       @include linear-gradient-yellow(90deg);
       right: 0;
-      opacity: 11%;
+      opacity: 12%;
     }
   }
 

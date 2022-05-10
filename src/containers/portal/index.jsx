@@ -35,37 +35,55 @@ const STAGE_READY = 2;
 function PortalCitizenship({ defaultAccount }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
+  // const { addressActive } = useSetActiveAddress(defaultAccount);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [citizenship, setCitizenship] = useState(null);
-  // console.log('stagePortal', stagePortal)
 
   useEffect(() => {
     const getPasport = async () => {
-      setStagePortal(STAGE_LOADING);
-      if (jsCyber !== null) {
-        if (addressActive !== null) {
-          const response = await activePassport(jsCyber, addressActive.bech32);
-          if (response !== null) {
+      if (stagePortal === STAGE_LOADING) {
+        setStagePortal(STAGE_LOADING);
+        if (jsCyber !== null) {
+          const addressActive = getActiveAddress(defaultAccount);
+          if (addressActive !== null) {
+            const response = await activePassport(
+              jsCyber,
+              addressActive.bech32
+            );
             console.log('response', response);
-            setCitizenship(response);
-            setStagePortal(STAGE_READY);
+            if (response !== null) {
+              console.log('response', response);
+              setCitizenship(response);
+              setStagePortal(STAGE_READY);
+            } else {
+              setStagePortal(STAGE_INIT);
+            }
           } else {
             setStagePortal(STAGE_INIT);
           }
         } else {
-          setStagePortal(STAGE_INIT);
+          setStagePortal(STAGE_LOADING);
         }
-      } else {
-        setStagePortal(STAGE_LOADING);
       }
     };
     getPasport();
+  }, [jsCyber, defaultAccount, stagePortal]);
 
-    return () => {
-      setCitizenship(null);
-    };
-  }, [jsCyber, addressActive]);
+  const getActiveAddress = (address) => {
+    const { account } = address;
+    let addressPocket = null;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      const { keys, bech32 } = account.cyber;
+      addressPocket = {
+        bech32,
+        keys,
+      };
+    }
+    return addressPocket;
+  };
 
   const checkKeplr = () => {
     console.log(`window.keplr `, window.keplr);
@@ -81,10 +99,11 @@ function PortalCitizenship({ defaultAccount }) {
   }
 
   if (stagePortal === STAGE_READY) {
+    const nickname = citizenship !== null ? citizenship.extension.nickname : '';
     return (
       <>
         <MainContainer>
-          <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={citizenship} />
+          <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={nickname || ''} />
           <PasportCitizenship citizenship={citizenship} />
         </MainContainer>
         <ActionBar>

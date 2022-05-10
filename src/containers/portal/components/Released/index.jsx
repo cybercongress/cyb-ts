@@ -4,7 +4,7 @@ import styles from './styles.scss';
 
 function Released({ released = 0 }) {
   return (
-    <ContainerGradientText status="danger">
+    <ContainerGradientText status="red">
       <div className={styles.containerReleased}>
         <div>released</div>
         <div>{released}%</div>

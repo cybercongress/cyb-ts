@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import { trimString, formatNumber } from '../../../../utils/utils';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
@@ -53,7 +54,7 @@ const TableAllocation = ({ currentGift }) => {
   return <div className={styles.containerTableAllocation}>{itemTable}</div>;
 };
 
-function CurrentGift({ currentGift, stateOpen }) {
+function CurrentGift({ currentGift, currentBonus, stateOpen }) {
   const useTitle = useMemo(() => {
     if (currentGift && currentGift !== null) {
       const { amount } = currentGift;
@@ -84,7 +85,16 @@ function CurrentGift({ currentGift, stateOpen }) {
     }
 
     return 0;
-  }, [currentGift]);
+  }, [currentGift, currentBonus]);
+
+  const useCurrentBonus = useMemo(() => {
+    if (currentBonus && currentBonus?.current) {
+      return new BigNumber(parseFloat(currentBonus.current))
+        .dp(1, BigNumber.ROUND_FLOOR)
+        .toNumber();
+    }
+    return 0;
+  }, [currentBonus]);
 
   return (
     <ContainerGradient
@@ -97,7 +107,7 @@ function CurrentGift({ currentGift, stateOpen }) {
         <div className={styles.containerCurrentGiftContaiterAmountGift}>
           <ItemValue value={`${useBaseGift} ${BOOT_ICON}`} title="base gift" />
           *
-          <ItemValue value={0} title="bonus" />
+          <ItemValue value={useCurrentBonus} title="bonus" />
           =
           <ItemValue
             value={`${GIFT_ICON} ${useBaseGift} ${BOOT_ICON}`}

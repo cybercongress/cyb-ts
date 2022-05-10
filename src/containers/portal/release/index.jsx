@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { AppContext } from '../../../context';
@@ -16,27 +22,48 @@ import {
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
-import testDataJson from '../gift/test.json';
+import useCheckRelease from '../hook/useCheckRelease';
+import useCheckGift from '../hook/useCheckGift';
+import { PATTERN_CYBER } from '../../../utils/config';
 
 const NS_TO_MS = 1 * 10 ** -6;
 
 function Release({ defaultAccount }) {
   const { keplr, jsCyber } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
-  const [txHash, setTxHash] = useState(null);
   const [updateFunc, setUpdateFunc] = useState(0);
+
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const { citizenship } = useGetActivePassport(addressActive);
+  const { totalGift, totalGiftAmount } = useCheckGift(
+    citizenship,
+    addressActive
+  );
+  const {
+    totalRelease,
+    totalReadyRelease,
+    totalReadyAmount,
+    loadingRelease,
+    timeNextFirstrelease,
+  } = useCheckRelease(totalGift, updateFunc);
+
+  const [txHash, setTxHash] = useState(null);
   const [activeReleases, setActiveReleases] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const { citizenship } = useGetActivePassport(addressActive, updateFunc);
   const [isRelease, setIsRelease] = useState(null);
-  const [isClaimed, setIsClaimed] = useState(null);
-  const [currentGift, setCurrentGift] = useState(null);
+  const [currentRelease, setCurrentRelease] = useState(null);
   const [progress, setProgress] = useState(0);
   const [citizens, setCitizens] = useState(0);
   const [timeNext, setTimeNext] = useState(null);
   const [readyRelease, setReadyRelease] = useState(0);
   const [released, setReleased] = useState(0);
+
+  // console.log(
+  //   'totalRelease, totalReadyRelease, totalReadyAmount,',
+  //   totalRelease,
+  //   totalReadyRelease,
+  //   totalReadyAmount
+  // );
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -73,14 +100,20 @@ function Release({ defaultAccount }) {
       setLoading(true);
       if (jsCyber !== null) {
         try {
-          const queryResponseResult = await jsCyber.queryContractSmart(
+          const queryResponseResultConfig = await jsCyber.queryContractSmart(
             CONTRACT_ADDRESS_GIFT,
             {
               config: {},
             }
           );
-
-          const { target_claim: targetClaim, claims } = queryResponseResult;
+          const queryResponseResultState = await jsCyber.queryContractSmart(
+            CONTRACT_ADDRESS_GIFT,
+            {
+              state: {},
+            }
+          );
+          const { target_claim: targetClaim } = queryResponseResultConfig;
+          const { claims } = queryResponseResultState;
           if (targetClaim && claims) {
             if (parseFloat(targetClaim) > parseFloat(claims)) {
               setActiveReleases(false);
@@ -105,54 +138,50 @@ function Release({ defaultAccount }) {
     setTimeNext(null);
     setReadyRelease(0);
     setIsRelease(null);
-    setIsClaimed(null);
   };
 
   useEffect(() => {
-    if (selectedAddress !== null) {
+    if (selectedAddress !== null && totalRelease !== null) {
       initState();
-      if (Object.prototype.hasOwnProperty.call(testDataJson, selectedAddress)) {
-        setCurrentGift(testDataJson[selectedAddress]);
-        checkClaim();
-      } else {
-        setCurrentGift(null);
-        setIsClaimed(null);
-      }
-    } else {
-      setCurrentGift(null);
-      setIsClaimed(null);
-    }
-  }, [selectedAddress, updateFunc]);
-
-  const checkClaim = useCallback(async () => {
-    if (selectedAddress !== null && jsCyber !== null) {
-      const queryResponseResult = await jsCyber.queryContractSmart(
-        CONTRACT_ADDRESS_GIFT,
-        {
-          is_claimed: {
-            address: selectedAddress,
-          },
-        }
-      );
-      if (
-        queryResponseResult &&
-        Object.prototype.hasOwnProperty.call(queryResponseResult, 'is_claimed')
+      if (Object.prototype.hasOwnProperty.call(totalRelease, selectedAddress)) {
+        const {
+          readyRelease: readyReleaseAddrr,
+          timeNext: timeNextAddrr,
+          isRelease: isReleaseAddrr,
+          stageRelease,
+        } = totalRelease[selectedAddress];
+        setReleased(stageRelease);
+        setCurrentRelease([totalRelease[selectedAddress]]);
+        setIsRelease(isReleaseAddrr);
+        setTimeNext(timeNextAddrr);
+        setReadyRelease(parseFloat(readyReleaseAddrr));
+      } else if (
+        selectedAddress !== null &&
+        selectedAddress.match(PATTERN_CYBER)
       ) {
-        console.log(
-          'queryResponseResult.is_claimed',
-          queryResponseResult.is_claimed
-        );
-        setIsClaimed(queryResponseResult.is_claimed);
-        if (queryResponseResult.is_claimed) {
-          useCheckRelease();
+        if (totalReadyRelease !== null) {
+          setCurrentRelease(totalReadyRelease);
+          setIsRelease(true);
+          setTimeNext(null);
+          setReadyRelease(parseFloat(totalReadyAmount));
+        } else {
+          setTimeNext(timeNextFirstrelease);
         }
+      } else {
+        setCurrentRelease(null);
       }
     } else {
-      setIsClaimed(null);
+      setCurrentRelease(null);
     }
-  }, [selectedAddress, jsCyber]);
+  }, [
+    selectedAddress,
+    totalRelease,
+    totalReadyAmount,
+    totalReadyRelease,
+    timeNextFirstrelease,
+  ]);
 
-  const useCheckRelease = useCallback(async () => {
+  const useCheckRelease1 = useCallback(async () => {
     try {
       if (selectedAddress !== null && jsCyber !== null) {
         const queryResponseResultRelease = await jsCyber.queryContractSmart(
@@ -227,12 +256,32 @@ function Release({ defaultAccount }) {
     setTxHash(data);
   };
 
+  const useSelectedGiftData = useMemo(() => {
+    try {
+      if (selectedAddress !== null) {
+        if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
+          return totalGiftAmount;
+        }
+
+        if (totalGift !== null && totalGift[selectedAddress]) {
+          return totalGift[selectedAddress];
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.log('error', error);
+      return null;
+    }
+  }, [selectedAddress, totalGift, totalGiftAmount]);
+
   if (loading) {
     return <div>...</div>;
   }
 
-  console.log('progress', progress);
   let content;
+
+  // console.log('currentRelease', currentRelease);
 
   if (!activeReleases) {
     content = (
@@ -242,7 +291,7 @@ function Release({ defaultAccount }) {
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
         />
-        <CurrentGift stateOpen={false} currentGift={currentGift} />
+        <CurrentGift stateOpen={false} currentGift={useSelectedGiftData} />
         <BeforeActivation citizens={citizens} progress={progress} />
       </>
     );
@@ -257,7 +306,7 @@ function Release({ defaultAccount }) {
           updateFunc={setSelectedAddress}
         />
 
-        <CurrentGift stateOpen={false} currentGift={currentGift} />
+        <CurrentGift stateOpen={false} currentGift={useSelectedGiftData} />
 
         <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
 
@@ -288,8 +337,10 @@ function Release({ defaultAccount }) {
         updateTxHash={updateTxHash}
         isRelease={isRelease}
         selectedAddress={selectedAddress}
-        isClaimed={isClaimed}
-        currentGift={currentGift}
+        currentRelease={currentRelease}
+        totalGift={totalGift}
+        totalRelease={totalRelease}
+        loadingRelease={loadingRelease}
       />
     </>
   );
