@@ -215,8 +215,8 @@ function TweetCard({
       <PocketCard display="flex" alignItems="flex-start" {...props}>
         <Text fontSize="16px" color="#fff">
           You can start{' '}
-          <Link to={`/network/bostrom/contract/${account}`}>tweet</Link> right
-          now. But adding avatar will let others recognize your content
+          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link> right
+          now. Adding an avatar will help others recognize your content.
         </Text>
       </PocketCard>
     );

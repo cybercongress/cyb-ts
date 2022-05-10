@@ -14,6 +14,7 @@ import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from './injectKeplr';
+import BanerHelp from '../help/banerHelp';
 
 import { LEDGER, COSMOS, PATTERN_CYBER } from '../../utils/config';
 import {
@@ -247,6 +248,7 @@ class Wallet extends React.Component {
         importLinkCli: false,
         linkSelected: null,
         selectCard: '',
+        selectAccount: null,
       });
     }
   };
@@ -471,6 +473,13 @@ class Wallet extends React.Component {
     }
   };
 
+  routeChange = () => {
+    const { history } = this.props;
+    if (history) {
+      history.push('/help');
+    }
+  };
+
   render() {
     const {
       pocket,
@@ -521,24 +530,10 @@ class Wallet extends React.Component {
 
     if (addAddress && stage === STAGE_INIT) {
       return (
-        <div>
-          <main className="block-body-home">
-            <Pane
-              boxShadow="0px 0px 5px #36d6ae"
-              paddingX={20}
-              paddingY={20}
-              marginY={20}
-              marginX="auto"
-              width="60%"
-            >
-              <Text fontSize="16px" color="#fff">
-                Hi! I am Cyb! Your immortal robot for the Great web. I am
-                connected to Cyber. That is why I can answer different
-                questions. For example,{' '}
-                <Link to="/search/what is cyber">what is Cyber</Link>
-              </Text>
-            </Pane>
-            <NotFound text=" " />
+        <>
+          <main className="block-body">
+            <BanerHelp />
+            {/* <NotFound text=" " /> */}
           </main>
           <ActionBarConnect
             keplr={keplr}
@@ -548,13 +543,13 @@ class Wallet extends React.Component {
             accountsETH={accountsETH}
             selectAccount={selectAccount}
           />
-        </div>
+        </>
       );
     }
 
     if (!addAddress) {
       return (
-        <div>
+        <>
           <main
             style={{ minHeight: 'calc(100vh - 162px)', alignItems: 'center' }}
             className="block-body"
@@ -567,6 +562,16 @@ class Wallet extends React.Component {
               flexDirection="column"
               height="100%"
             >
+              <PocketCard
+                alignItems="flex-start"
+                marginBottom={20}
+                onClick={() => this.routeChange()}
+              >
+                <Text fontSize="16px" color="#fff">
+                  Hi! I am Cyb! Your immortal robot of the Great Web.
+                </Text>
+              </PocketCard>
+
               {defaultAccounts !== null && defaultAccounts.cyber && (
                 <TweetCard
                   refresh={refreshTweet}
@@ -579,7 +584,6 @@ class Wallet extends React.Component {
                   id="tweet"
                 />
               )}
-
               {storageManager && storageManager !== null && ipfsId !== null && (
                 <IpfsCard
                   storageManager={storageManager}
@@ -590,7 +594,6 @@ class Wallet extends React.Component {
                   id="storageManager"
                 />
               )}
-
               {accounts !== null &&
                 Object.keys(accounts).map((key, i) => (
                   <PubkeyCard
@@ -611,7 +614,6 @@ class Wallet extends React.Component {
                     updateFunc={this.checkAddressLocalStorage}
                   />
                 ))}
-
               {link !== null && (
                 <PocketCard
                   marginBottom={20}
@@ -652,7 +654,7 @@ class Wallet extends React.Component {
             defaultAccounts={defaultAccounts}
             defaultAccountsKeys={defaultAccountsKeys}
           />
-        </div>
+        </>
       );
     }
     return null;

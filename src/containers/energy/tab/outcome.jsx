@@ -64,7 +64,7 @@ function Outcome({ sourceRouted, selectRouteFunc, selected }) {
   return (
     <div>
       <Pane marginY={30} textAlign="center">
-        Route your free energy
+        Route your
         <LinkWindow> free energy </LinkWindow> (W) to those who deserve it
       </Pane>
 

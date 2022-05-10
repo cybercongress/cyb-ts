@@ -280,9 +280,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   if (stage === STAGE_ADD_ROUTER) {
     return (
       <ActionBarSteps
-        disabled={
-          !addressAddRouteInput.match(PATTERN_CYBER) || aliasInput.length === 0
-        }
+        disabled={aliasInput.length === 0}
         onClickFnc={generationTxs}
         onClickBack={() => setStage(STAGE_INIT)}
         btnText="Add Router"
