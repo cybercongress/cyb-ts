@@ -14,6 +14,7 @@ const {
   STEP_KEPLR_REGISTER,
   STEP_DONE,
   STEP_CHECK_GIFT,
+  STEP_ACTIVE_ADD
 } = steps;
 
 // Choose your nickname.You will own it as nft
@@ -98,14 +99,12 @@ const infoTextFnc = (step, nickname) => {
         </span>
       );
 
+    case STEP_ACTIVE_ADD:
     case STEP_CHECK_ADDRESS:
       return (
-        <span>
-          Activation takes time, patience, <br /> and a lot of lube. After that,
-          <br />
-          you can register your passport.
-        </span>
+        <span>Your passport can be registered after address activation.</span>
       );
+
     case STEP_KEPLR_REGISTER:
       return (
         <span>

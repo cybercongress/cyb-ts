@@ -29,6 +29,7 @@ import {
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import { ActionBarSteps, BtnGrd } from '../components';
+import { STEP_INFO } from './utils';
 
 const dateFormat = require('dateformat');
 
@@ -102,6 +103,7 @@ function ActionBarPortalGift({
   selectedAddress,
   currentGift,
   activeStep,
+  setInfoStep,
 }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
@@ -386,12 +388,22 @@ function ActionBarPortalGift({
     return true;
   }, [isClaimed]);
 
+  const funcChangeState = (actionBarState, infoState) => {
+    if (actionBarState !== undefined) {
+      setStep(actionBarState);
+    }
+
+    if (infoState) {
+      setInfoStep(infoState);
+    }
+  };
+
   if (step === STEP_INIT && activeStep === STEP_PROVE_ADD) {
     return (
       <ActionBarContainer>
         <BtnGrd
           disabled={isProve}
-          onClick={() => setStep(STEP_CONNECT)}
+          onClick={() => funcChangeState(STEP_CONNECT, STEP_INFO.STATE_CONNECT)}
           text="prove address"
         />
       </ActionBarContainer>
@@ -417,8 +429,15 @@ function ActionBarPortalGift({
   if (step === STEP_CONNECT) {
     return (
       <ActionBarSteps
-        onClickBack={() => setStep(STEP_INIT)}
-        onClickFnc={() => setStep(STEP_SIGN)}
+        onClickBack={() => funcChangeState(STEP_INIT, STEP_INFO.STATE_PROVE)}
+        onClickFnc={() =>
+          funcChangeState(
+            STEP_SIGN,
+            selectMethod === 'keplr'
+              ? STEP_INFO.STATE_SIGN_KEPLR
+              : STEP_INFO.STATE_SIGN_MM
+          )
+        }
         btnText="connect"
         disabled={selectMethod === ''}
       >
@@ -441,7 +460,9 @@ function ActionBarPortalGift({
   if (step === STEP_SIGN && selectMethod === 'keplr') {
     return (
       <ActionBarSteps
-        onClickBack={() => setStep(STEP_CONNECT)}
+        onClickBack={() =>
+          funcChangeState(STEP_CONNECT, STEP_INFO.STATE_CONNECT)
+        }
         onClickFnc={() => signMsgKeplr()}
         btnText="sign message"
         disabled={selectNetwork === ''}

@@ -38,6 +38,7 @@ const {
   STEP_KEPLR_SETUP,
   STEP_KEPLR_CONNECT,
   STEP_CHECK_ADDRESS,
+  STEP_ACTIVE_ADD,
   STEP_KEPLR_REGISTER,
   STEP_DONE,
   STEP_CHECK_GIFT,
@@ -148,35 +149,32 @@ function GetCitizenship({ node, defaultAccount }) {
     confirmTx();
   }, [jsCyber, txHash]);
 
-  // useEffect(() => {
-  //   const checkAddress = async () => {
-  //     if (
-  //       step === STEP_CHECK_ADDRESS &&
-  //       jsCyber !== null &&
-  //       addressActive !== null
-  //     ) {
-  //       const { bech32 } = addressActive;
-  //       const response = await jsCyber.getAccount(bech32);
-  //       console.log('response', response);
-  //       if (
-  //         response &&
-  //         Object.prototype.hasOwnProperty.call(response, 'accountNumber')
-  //       ) {
-  //         setStep(STEP_KEPLR_REGISTER);
-  //       } else {
-  //         const responseCredit = await getCredit(bech32);
-  //         if (responseCredit !== null && responseCredit.data === 'ok') {
-  //           checkAddress();
-  //         }
-  //       }
-  //     }
-  //   };
-  //   checkAddress();
-  // }, [jsCyber, addressActive, step]);
+  useEffect(() => {
+    const checkAddress = async () => {
+      if (
+        step === STEP_CHECK_ADDRESS &&
+        jsCyber !== null &&
+        addressActive !== null
+      ) {
+        const { bech32 } = addressActive;
+        const response = await jsCyber.getAccount(bech32);
+        console.log('response', response);
+        if (
+          response &&
+          Object.prototype.hasOwnProperty.call(response, 'accountNumber')
+        ) {
+          setStep(STEP_KEPLR_REGISTER);
+        } else {
+          setStep(STEP_ACTIVE_ADD);
+        }
+      }
+    };
+    checkAddress();
+  }, [jsCyber, addressActive, step]);
 
   const checkAddressNetwork = useCallback(async () => {
     if (
-      step === STEP_CHECK_ADDRESS &&
+      step === STEP_ACTIVE_ADD &&
       jsCyber !== null &&
       addressActive !== null
     ) {
@@ -300,7 +298,11 @@ function GetCitizenship({ node, defaultAccount }) {
     content = <ConnectKeplr />;
   }
 
-  if (step === STEP_CHECK_ADDRESS || step === STEP_KEPLR_REGISTER) {
+  if (
+    step === STEP_CHECK_ADDRESS ||
+    step === STEP_ACTIVE_ADD ||
+    step === STEP_KEPLR_REGISTER
+  ) {
     content = (
       <Passport
         valueNickname={valueNickname}

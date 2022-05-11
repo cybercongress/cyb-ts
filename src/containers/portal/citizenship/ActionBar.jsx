@@ -27,6 +27,7 @@ const {
   STEP_CHECK_ADDRESS,
   STEP_KEPLR_REGISTER,
   STEP_CHECK_GIFT,
+  STEP_ACTIVE_ADD,
 } = steps;
 
 function ActionBar({
@@ -128,7 +129,7 @@ function ActionBar({
   };
 
   useEffect(() => {
-    if (step === STEP_KEPLR_REGISTER) {
+    if (step === STEP_KEPLR_REGISTER || step === STEP_ACTIVE_ADD) {
       setCheckAddressNetworkState(false);
     }
   }, [step]);
@@ -216,15 +217,31 @@ function ActionBar({
       <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
         {/* check your bostrom address <Dots /> */}
         <BtnGrd
+          disabled
+          text={
+            <>
+              check your bostrom address <Dots />
+            </>
+          }
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_ACTIVE_ADD) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_CHECK_ADDRESS)}>
+        {/* check your bostrom address <Dots /> */}
+        <BtnGrd
           disabled={checkAddressNetworkState}
           onClick={checkAddressNetworkOnClick}
           text={
             checkAddressNetworkState ? (
               <>
-                check your bostrom address <Dots />
+                Activation <Dots />
               </>
             ) : (
-              'check your bostrom address'
+              'Active address'
             )
           }
         />
@@ -234,7 +251,7 @@ function ActionBar({
 
   if (step === STEP_KEPLR_REGISTER) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_CHECK_ADDRESS)}>
+      <ActionBarSteps onClickBack={() => setStep(STEP_ACTIVE_ADD)}>
         <BtnGrd onClick={() => onClickRegister()} text="register" />
         {/* <Button onClick={() => onClickRegister()}>register</Button> */}
       </ActionBarSteps>

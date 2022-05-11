@@ -7,6 +7,8 @@ import {
   Signatures,
   ScrollableTabs,
   MainContainer,
+  ActionBarSteps,
+  BtnGrd,
 } from './components';
 import Input from '../teleport/components/input';
 import { AppContext } from '../../context';
@@ -106,11 +108,12 @@ function PortalCitizenship({ defaultAccount }) {
           <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={nickname || ''} />
           <PasportCitizenship citizenship={citizenship} />
         </MainContainer>
-        <ActionBar>
-          <Button onClick={() => history.push('/portalGift')}>
-            check gift
-          </Button>
-        </ActionBar>
+        <ActionBarSteps>
+          <BtnGrd
+            text="check gift"
+            onClick={() => history.push('/portalGift')}
+          />
+        </ActionBarSteps>
       </>
     );
   }

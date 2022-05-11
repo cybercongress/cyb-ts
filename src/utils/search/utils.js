@@ -1525,8 +1525,8 @@ export const getCredit = async (address) => {
     };
     const response = await axios({
       method: 'post',
-      url: 'http://localhost:8000/credit',
-      // url: 'https://mars.cybernode.ai/credit',
+      // url: 'http://localhost:8000/credit',
+      url: 'https://mars.cybernode.ai/credit',
       headers,
       data: JSON.stringify(fromData),
     });

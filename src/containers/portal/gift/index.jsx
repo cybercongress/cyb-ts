@@ -25,6 +25,8 @@ import {
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
 import TabsList from './tabsList';
+import { STEP_INFO } from './utils';
+import Info from './Info';
 
 const STEP_GIFT_INFO = 0;
 const STEP_PROVE_ADD = 1;
@@ -50,12 +52,13 @@ function PortalGift({ defaultAccount, node }) {
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
   const [isRelease, setIsRelease] = useState(null);
-  const { totalGift, totalGiftAmount, checkIsClaim } = useCheckGift(
+  const { totalGift, totalGiftAmount, loadingGift } = useCheckGift(
     citizenship,
     addressActive,
     updateFunc
   );
   const [active, setActive] = useState(STEP_GIFT_INFO);
+  const [infoStep, setInfoStep] = useState(null);
 
   // console.log('generalGift | PortalGift', totalGift);
   // console.log('totalGiftAmount', totalGiftAmount);
@@ -89,6 +92,69 @@ function PortalGift({ defaultAccount, node }) {
     };
     confirmTx();
   }, [jsCyber, txHash]);
+
+  useEffect(() => {
+    if (
+      active === STEP_GIFT_INFO &&
+      selectedAddress === null &&
+      citizenship !== null &&
+      citizenship.owner
+    ) {
+      setSelectedAddress(citizenship.owner);
+    }
+  }, [selectedAddress, active, citizenship]);
+
+  useEffect(() => {
+    if (active === STEP_GIFT_INFO && !loading) {
+      if (citizenship === null) {
+        setInfoStep(STEP_INFO.STATE_GIFT_NULL);
+      } else if (totalGift === null) {
+        setInfoStep(STEP_INFO.STATE_INIT_PROVE);
+      } else if (!isClaimed) {
+        setInfoStep(STEP_INFO.STATE_INIT_CLAIM);
+      } else if (isClaimed) {
+        setInfoStep(STEP_INFO.STATE_INIT_RELEASE);
+      } else {
+        setInfoStep(null);
+      }
+    }
+
+    if (active === STEP_PROVE_ADD) {
+      setInfoStep(STEP_INFO.STATE_PROVE);
+    }
+
+    if (active === STEP_CLAIME && !loadingGift) {
+      if (
+        (isClaimed === null || totalGift === null) &&
+        selectedAddress !== null &&
+        selectedAddress.match(PATTERN_CYBER)
+      ) {
+        setInfoStep(STEP_INFO.STATE_GIFT_NULL_ALL);
+      } else if (isClaimed === null || totalGift === null) {
+        setInfoStep(STEP_INFO.STATE_GIFT_NULL);
+      } else if (
+        isClaimed === false &&
+        selectedAddress !== null &&
+        selectedAddress.match(PATTERN_CYBER)
+      ) {
+        setInfoStep(STEP_INFO.STATE_CLAIME_ALL);
+      } else if (isClaimed === false) {
+        setInfoStep(STEP_INFO.STATE_GIFT_CLAIME);
+      } else if (isClaimed === true) {
+        setInfoStep(STEP_INFO.STATE_RELEASE);
+      } else {
+        setInfoStep(null);
+      }
+    }
+  }, [
+    active,
+    citizenship,
+    isClaimed,
+    totalGift,
+    loadingGift,
+    selectedAddress,
+    loading,
+  ]);
 
   useEffect(() => {
     const cheeckStateFunc = async () => {
@@ -163,34 +229,6 @@ function PortalGift({ defaultAccount, node }) {
     }
   }, [selectedAddress, totalGift]);
 
-  const checkClaim = useCallback(async () => {
-    if (selectedAddress !== null && jsCyber !== null) {
-      const queryResponseResult = await jsCyber.queryContractSmart(
-        CONTRACT_ADDRESS_GIFT,
-        {
-          is_claimed: {
-            address: selectedAddress,
-          },
-        }
-      );
-      if (
-        queryResponseResult &&
-        Object.prototype.hasOwnProperty.call(queryResponseResult, 'is_claimed')
-      ) {
-        console.log(
-          'queryResponseResult.is_claimed',
-          queryResponseResult.is_claimed
-        );
-        setIsClaimed(queryResponseResult.is_claimed);
-        if (queryResponseResult.is_claimed) {
-          setIsRelease(true);
-        }
-      }
-    } else {
-      setIsClaimed(null);
-    }
-  }, [selectedAddress, jsCyber]);
-
   const updateTxHash = (data) => {
     setTxHash(data);
   };
@@ -252,6 +290,9 @@ function PortalGift({ defaultAccount, node }) {
       <MainContainer>
         {/* <ScrollableTabs items={items} active={active} setStep={setActive} /> */}
         {/* <button onClick={() => checkIsClaim()}>test</button> */}
+        {infoStep !== null && (
+          <Info stepCurrent={infoStep} selectedAddress={selectedAddress} />
+        )}
         <TabsList active={active} setStep={setActive} />
         {content}
         {/* {currentGift !== null && (
@@ -266,6 +307,7 @@ function PortalGift({ defaultAccount, node }) {
         selectedAddress={selectedAddress}
         currentGift={currentGift}
         activeStep={active}
+        setInfoStep={setInfoStep}
       />
     </>
   );

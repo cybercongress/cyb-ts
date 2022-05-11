@@ -13,6 +13,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
   const { jsCyber } = useContext(AppContext);
   const [totalGift, setTotalGift] = useState(null);
   const [totalGiftAmount, setTotalGiftAmount] = useState(null);
+  const [loadingGift, setLoadingGift] = useState(true);
 
   useEffect(() => {
     // console.log('useEffect | useCheckGift');
@@ -20,6 +21,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
       if (citizenship !== null && addressActive !== null) {
         setTotalGift(null);
         setTotalGiftAmount(null);
+        setLoadingGift(true);
         const { owner } = citizenship;
         const { bech32 } = addressActive;
         if (owner === bech32) {
@@ -33,12 +35,18 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
               Object.keys(responseClaim).length > 0
             ) {
               setTotalGift(responseClaim);
+              setLoadingGift(false);
             } else {
               setTotalGift(null);
+              setLoadingGift(false);
             }
+          } else {
+            setLoadingGift(false);
+            setTotalGift(null);
           }
         } else {
           setTotalGift(null);
+          setLoadingGift(false);
         }
       }
     };
@@ -140,7 +148,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     [jsCyber]
   );
 
-  return { totalGift, totalGiftAmount, funcCheckGiftLoop };
+  return { totalGift, totalGiftAmount, loadingGift, funcCheckGiftLoop };
 }
 
 export default useCheckGift;

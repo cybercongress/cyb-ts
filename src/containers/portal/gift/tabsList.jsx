@@ -7,23 +7,27 @@ const STEP_GIFT_INFO = 0;
 const STEP_PROVE_ADD = 1;
 const STEP_CLAIME = 2;
 
-// const slidesTest = [
-//   {
-//     title: 'STEP_GIFT_INFO',
-//   },
-//   {
-//     title: 'STEP_PROVE_ADD',
-//   },
-//   {
-//     title: 'STEP_CLAIME',
-//   },
-// ];
+const slidesTest = [
+  {
+    title: 'STEP_GIFT_INFO',
+  },
+  {
+    title: 'STEP_PROVE_ADD',
+  },
+  {
+    title: 'STEP_CLAIME',
+  },
+];
 
 // const Tab = ({ children, onClick }) => {
 //   return <div onClick={onClick}>{children}</div>;
 // };
 
 // /* <Carousel slides={slidesTest} /> */
+
+// function TabsList({ active, setStep }) {
+//   return <Carousel slides={slidesTest} />;
+// }
 
 function TabsList({ active, setStep }) {
   return (

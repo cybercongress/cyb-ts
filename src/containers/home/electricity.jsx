@@ -15,29 +15,29 @@ function Electricity({ setBlockProps }) {
   const [stage, setStage] = useState(false);
   const [wsClient, setWsClient] = useState(null);
 
-  // useEffect(() => {
-  //   let ws = null;
-  //   const closeHandler = () => {
-  //     console.log(`close WS`);
-  //     setTimeout(createConnect, 3000);
-  //   };
+  useEffect(() => {
+    let ws = null;
+    const closeHandler = () => {
+      console.log(`close WS`);
+      setTimeout(createConnect, 7000);
+    };
 
-  //   const createConnect = () => {
-  //     if (ws !== null) {
-  //       ws.removeEventListener('close', closeHandler);
-  //     }
-  //     ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
-  //     ws.addEventListener('close', closeHandler);
-  //     console.log(`open`);
-  //     setWsClient(ws);
-  //   };
-  //   createConnect();
+    const createConnect = () => {
+      if (ws !== null) {
+        ws.removeEventListener('close', closeHandler);
+      }
+      ws = new WebSocket(CYBER.CYBER_WEBSOCKET_URL);
+      ws.addEventListener('close', closeHandler);
+      console.log(`open`);
+      setWsClient(ws);
+    };
+    createConnect();
 
-  //   return () => {
-  //     ws.removeEventListener('close', closeHandler);
-  //     ws.close();
-  //   };
-  // }, []);
+    return () => {
+      ws.removeEventListener('close', closeHandler);
+      ws.close();
+    };
+  }, []);
 
   useEffect(() => {
     const handlerOpen = () => {
