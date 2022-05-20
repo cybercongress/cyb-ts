@@ -9,11 +9,7 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import {
-  useGetActivePassport,
-  CONTRACT_ADDRESS_GIFT,
-  COUNT_STAGES,
-} from '../utils';
+import { useGetActivePassport, getConfigGift, getStateGift } from '../utils';
 import {
   CurrentGift,
   BeforeActivation,
@@ -29,7 +25,7 @@ import { PATTERN_CYBER } from '../../../utils/config';
 const NS_TO_MS = 1 * 10 ** -6;
 
 function Release({ defaultAccount }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { jsCyber } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
   const [updateFunc, setUpdateFunc] = useState(0);
 
@@ -42,7 +38,7 @@ function Release({ defaultAccount }) {
   const {
     totalRelease,
     totalReadyRelease,
-    totalReadyAmount,
+    totalBalanceClaimAmount,
     loadingRelease,
     timeNextFirstrelease,
   } = useCheckRelease(totalGift, updateFunc);
@@ -100,32 +96,31 @@ function Release({ defaultAccount }) {
       setLoading(true);
       if (jsCyber !== null) {
         try {
-          const queryResponseResultConfig = await jsCyber.queryContractSmart(
-            CONTRACT_ADDRESS_GIFT,
-            {
-              config: {},
+          const queryResponseResultConfig = await getConfigGift(jsCyber);
+          const queryResponseResultState = await getStateGift(jsCyber);
+
+          const validResponse =
+            queryResponseResultState !== null &&
+            queryResponseResultConfig !== null;
+
+          if (validResponse) {
+            const { target_claim: targetClaim } = queryResponseResultConfig;
+            const { claims } = queryResponseResultState;
+            if (targetClaim && claims) {
+              if (parseFloat(targetClaim) > parseFloat(claims)) {
+                setActiveReleases(false);
+                setProgress(
+                  Math.floor(
+                    (parseFloat(claims) / parseFloat(targetClaim)) * 100
+                  )
+                );
+              } else {
+                setActiveReleases(true);
+              }
             }
-          );
-          const queryResponseResultState = await jsCyber.queryContractSmart(
-            CONTRACT_ADDRESS_GIFT,
-            {
-              state: {},
-            }
-          );
-          const { target_claim: targetClaim } = queryResponseResultConfig;
-          const { claims } = queryResponseResultState;
-          if (targetClaim && claims) {
-            if (parseFloat(targetClaim) > parseFloat(claims)) {
-              setActiveReleases(false);
-              setProgress(
-                Math.floor((parseFloat(claims) / parseFloat(targetClaim)) * 100)
-              );
-            } else {
-              setActiveReleases(true);
-            }
+            setCitizens(targetClaim);
+            setLoading(false);
           }
-          setCitizens(targetClaim);
-          setLoading(false);
         } catch (error) {
           console.log('error', error);
         }
@@ -145,12 +140,10 @@ function Release({ defaultAccount }) {
       initState();
       if (Object.prototype.hasOwnProperty.call(totalRelease, selectedAddress)) {
         const {
-          readyRelease: readyReleaseAddrr,
+          balanceClaim: readyReleaseAddrr,
           timeNext: timeNextAddrr,
           isRelease: isReleaseAddrr,
-          stageRelease,
         } = totalRelease[selectedAddress];
-        setReleased(stageRelease);
         setCurrentRelease([totalRelease[selectedAddress]]);
         setIsRelease(isReleaseAddrr);
         setTimeNext(timeNextAddrr);
@@ -163,7 +156,7 @@ function Release({ defaultAccount }) {
           setCurrentRelease(totalReadyRelease);
           setIsRelease(true);
           setTimeNext(null);
-          setReadyRelease(parseFloat(totalReadyAmount));
+          setReadyRelease(parseFloat(totalBalanceClaimAmount));
         } else {
           setTimeNext(timeNextFirstrelease);
         }
@@ -176,81 +169,10 @@ function Release({ defaultAccount }) {
   }, [
     selectedAddress,
     totalRelease,
-    totalReadyAmount,
+    totalBalanceClaimAmount,
     totalReadyRelease,
     timeNextFirstrelease,
   ]);
-
-  const useCheckRelease1 = useCallback(async () => {
-    try {
-      if (selectedAddress !== null && jsCyber !== null) {
-        const queryResponseResultRelease = await jsCyber.queryContractSmart(
-          CONTRACT_ADDRESS_GIFT,
-          {
-            release_state: {
-              address: selectedAddress,
-            },
-          }
-        );
-        console.log('queryResponseResultRelease', queryResponseResultRelease);
-        if (
-          queryResponseResultRelease !== null &&
-          Object.prototype.hasOwnProperty.call(
-            queryResponseResultRelease,
-            'stage_expiration'
-          )
-        ) {
-          const {
-            stage_expiration: stageExpiration,
-            balance_claim: balanceClaim,
-            stage,
-          } = queryResponseResultRelease;
-
-          if (stage > 0) {
-            const curentProcent = new BigNumber(COUNT_STAGES).minus(stage);
-
-            setReleased(
-              curentProcent
-                .dividedBy(COUNT_STAGES)
-                .multipliedBy(100)
-                .dp(1, BigNumber.ROUND_FLOOR)
-                .toNumber()
-            );
-          } else {
-            setReleased(0);
-          }
-
-          if (Object.prototype.hasOwnProperty.call(stageExpiration, 'never')) {
-            setIsRelease(true);
-            setTimeNext(null);
-            setReadyRelease(parseFloat(balanceClaim));
-          }
-
-          if (
-            Object.prototype.hasOwnProperty.call(stageExpiration, 'at_time')
-          ) {
-            const { at_time: atTime } = stageExpiration;
-            const d = new Date();
-            const convertAtTime = atTime * NS_TO_MS;
-            const time = convertAtTime - Date.parse(d);
-
-            if (time > 0) {
-              setTimeNext(time);
-              setIsRelease(false);
-              setReadyRelease(0);
-            } else {
-              setIsRelease(true);
-              setTimeNext(null);
-              setReadyRelease(parseFloat(balanceClaim));
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.log('error', error);
-      setIsRelease(null);
-    }
-  }, [selectedAddress, jsCyber]);
 
   const updateTxHash = (data) => {
     setTxHash(data);
@@ -260,7 +182,7 @@ function Release({ defaultAccount }) {
     try {
       if (selectedAddress !== null) {
         if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
-          return totalGiftAmount;
+          return { address: selectedAddress, ...totalGiftAmount };
         }
 
         if (totalGift !== null && totalGift[selectedAddress]) {
@@ -282,6 +204,8 @@ function Release({ defaultAccount }) {
   let content;
 
   // console.log('currentRelease', currentRelease);
+
+  const useReleasedStage = useMemo(() => {}, [useSelectedGiftData, selectedAddress]);
 
   if (!activeReleases) {
     content = (

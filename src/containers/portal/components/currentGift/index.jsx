@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { trimString, formatNumber } from '../../../../utils/utils';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
-import { CYBER } from '../../../../utils/config';
+import { PATTERN_CYBER } from '../../../../utils/config';
 
 const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';
@@ -57,7 +57,7 @@ const TableAllocation = ({ currentGift }) => {
 function CurrentGift({ currentGift, currentBonus, stateOpen }) {
   const useTitle = useMemo(() => {
     if (currentGift && currentGift !== null) {
-      const { amount } = currentGift;
+      const { amount, claim } = currentGift;
       return (
         <div
           style={{
@@ -70,7 +70,10 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
         >
           <div style={{ color: '#00C4FF' }}>gift {GIFT_ICON}</div>
           <div>
-            {formatNumber(parseFloat(amount))} {BOOT_ICON}
+            {claim
+              ? formatNumber(parseFloat(claim))
+              : formatNumber(parseFloat(amount))}{' '}
+            {BOOT_ICON}
           </div>
         </div>
       );
@@ -80,21 +83,68 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
 
   const useBaseGift = useMemo(() => {
     if (currentGift && currentGift !== null) {
-      const { amount } = currentGift;
+      const { amount, baseAmount } = currentGift;
+      if (baseAmount) {
+        return formatNumber(parseFloat(baseAmount));
+      }
+
       return formatNumber(parseFloat(amount));
     }
 
     return 0;
+  }, [currentGift]);
+
+  const useClaimableGift = useMemo(() => {
+    if (currentGift && currentGift !== null) {
+      const { amount, claim, address } = currentGift;
+      if (claim) {
+        return formatNumber(parseFloat(claim));
+      }
+      if (
+        address &&
+        !address.match(PATTERN_CYBER) &&
+        currentBonus &&
+        currentBonus?.current
+      ) {
+        const multiplier = new BigNumber(parseFloat(currentBonus.current))
+          .dp(1, BigNumber.ROUND_FLOOR)
+          .toNumber();
+        return formatNumber(parseFloat(amount) * multiplier);
+      }
+
+      return formatNumber(parseFloat(amount));
+    }
+    return 0;
   }, [currentGift, currentBonus]);
 
   const useCurrentBonus = useMemo(() => {
+    if (
+      currentGift &&
+      currentGift !== null &&
+      Object.prototype.hasOwnProperty.call(currentGift, 'address') &&
+      currentGift.address.match(PATTERN_CYBER)
+    ) {
+      return '~';
+    }
+
+    if (
+      currentGift &&
+      currentGift !== null &&
+      Object.prototype.hasOwnProperty.call(currentGift, 'multiplier')
+    ) {
+      return new BigNumber(parseFloat(currentGift.multiplier))
+        .dp(1, BigNumber.ROUND_FLOOR)
+        .toNumber();
+    }
+
     if (currentBonus && currentBonus?.current) {
       return new BigNumber(parseFloat(currentBonus.current))
         .dp(1, BigNumber.ROUND_FLOOR)
         .toNumber();
     }
-    return 0;
-  }, [currentBonus]);
+
+    return '~';
+  }, [currentBonus, currentGift]);
 
   return (
     <ContainerGradient
@@ -110,7 +160,7 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
           <ItemValue value={useCurrentBonus} title="bonus" />
           =
           <ItemValue
-            value={`${GIFT_ICON} ${useBaseGift} ${BOOT_ICON}`}
+            value={`${GIFT_ICON} ${useClaimableGift} ${BOOT_ICON}`}
             title="claimable gift"
           />
         </div>

@@ -169,6 +169,51 @@ const getConfigGift = async (client) => {
   }
 };
 
+const getReleaseState = async (client, address) => {
+  try {
+    const query = {
+      release_state: {
+        address,
+      },
+    };
+    const response = await queryContractSmartGift(client, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
+const getClaimedAmount = async (client, address) => {
+  try {
+    const query = {
+      claim: {
+        address,
+      },
+    };
+    const response = await queryContractSmartGift(client, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
+const getIsClaimed = async (client, address) => {
+  try {
+    const query = {
+      is_claimed: {
+        address,
+      },
+    };
+    const response = await queryContractSmartGift(client, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
 export {
   activePassport,
   CONTRACT_ADDRESS,
@@ -181,4 +226,7 @@ export {
   checkGift,
   getConfigGift,
   getStateGift,
+  getReleaseState,
+  getClaimedAmount,
+  getIsClaimed,
 };

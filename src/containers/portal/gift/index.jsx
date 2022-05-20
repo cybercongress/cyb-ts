@@ -27,6 +27,7 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import TabsList from './tabsList';
 import { STEP_INFO } from './utils';
 import Info from './Info';
+// import useCheckStatusTx from '../../../hooks/useCheckTxs';
 
 const STEP_GIFT_INFO = 0;
 const STEP_PROVE_ADD = 1;
@@ -75,6 +76,9 @@ function PortalGift({ defaultAccount, node }) {
               status: 'confirmed',
             }));
             setUpdateFunc((item) => item + 1);
+            // setTimeout(() => {
+            //   setTxHash(null);
+            // }, 6000);
             return;
           }
           if (response.code) {
@@ -84,6 +88,10 @@ function PortalGift({ defaultAccount, node }) {
               rawLog: response.rawLog.toString(),
             }));
             // setErrorMessage(response.rawLog);
+            setTimeout(() => {
+              setTxHash(null);
+            }, 6000);
+
             return;
           }
         }
@@ -236,7 +244,7 @@ function PortalGift({ defaultAccount, node }) {
   const useSelectedGiftData = useMemo(() => {
     if (selectedAddress !== null) {
       if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
-        return totalGiftAmount;
+        return { address: selectedAddress, ...totalGiftAmount };
       }
 
       if (currentGift !== null) {

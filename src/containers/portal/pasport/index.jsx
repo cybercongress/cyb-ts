@@ -152,7 +152,7 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
               style={{
                 display: 'grid',
                 gap: '15.5px',
-                gridTemplateColumns: 'repeat(8, 30px)',
+                gridTemplateColumns: 'repeat(9, 30px)',
                 width: '100%',
               }}
             >

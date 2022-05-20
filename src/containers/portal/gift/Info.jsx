@@ -32,8 +32,7 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           Check gift & basic information. <br />
-          Hurry up! <br />
-          Get citizenship to be able to claim
+          Hurry up! Get citizenship to be able to claim
         </span>
       );
 
@@ -41,8 +40,7 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           Check gift & basic information. <br />
-          Hurry up! <br />
-          Prove address to claim the gift
+          Hurry up! Prove address to claim the gift
         </span>
       );
 
@@ -58,8 +56,7 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           You claimed all gifts. <br />
-          Go to release <br />
-          or prove another address.
+          Go to release or prove another address.
         </span>
       );
 
@@ -67,7 +64,6 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           Prove ethereum, cosmos, osmosis, <br /> terra or bostrom signatures by{' '}
-          <br />
           selecting signer to check the gift
         </span>
       );
@@ -88,7 +84,7 @@ const infoTextFnc = (step, selectedAddress) => {
           {address !== '' && (
             <span style={{ color: '#38d6ae' }}>{address}</span>
           )}{' '}
-          has no gift <br /> 
+          has no gift <br />
           Prove another to try your luck
         </span>
       );
@@ -112,8 +108,7 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           Chose bostrom address <br />
-          to claim all gifts, <br />
-          or claim one by one
+          to claim all gifts, or claim one by one
         </span>
       );
 
@@ -121,8 +116,7 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           You claimed all gifts. <br />
-          Go to release <br />
-          or prove another address.
+          Go to release or prove another address.
         </span>
       );
 

@@ -36,10 +36,10 @@ function NextUnfreeze({ timeNext = '', readyRelease = 0 }) {
       <ContainerGradientText status="green">
         <div className={styles.containerNextUnfreeze}>
           <ItemRow value={useTimeNext} title="next unfreeze" />
-          <ItemRow
+          {/* <ItemRow
             value={`${formatNumber(readyRelease)} ${BOOT_ICON}`}
             title="ready to release"
-          />
+          /> */}
         </div>
       </ContainerGradientText>
     );
@@ -48,7 +48,7 @@ function NextUnfreeze({ timeNext = '', readyRelease = 0 }) {
       <ContainerGradientText status="green">
         <div className={styles.containerNextUnfreeze}>
           <ItemRow value="" title="next unfreeze" />
-          <ItemRow value={`0 ${BOOT_ICON}`} title="ready to release" />
+          {/* <ItemRow value={`0 ${BOOT_ICON}`} title="ready to release" /> */}
         </div>
       </ContainerGradientText>
     );

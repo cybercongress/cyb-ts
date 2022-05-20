@@ -112,6 +112,10 @@ function ActionBarPortalGift({
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
 
+  useEffect(() => {
+    setStep(STEP_INIT);
+  }, [activeStep]);
+
   // useEffect(() => {
   //   const NS_TO_S = 1 * 10 ** -6;
 
@@ -413,7 +417,10 @@ function ActionBarPortalGift({
   if (step === STEP_INIT && activeStep === STEP_CLAIME && isClaimed) {
     return (
       <ActionBarContainer>
-        <BtnGrd onClick={() => history.push('/portalRelease')} text="release" />
+        <BtnGrd
+          onClick={() => history.push('/portalRelease')}
+          text="go to release"
+        />
       </ActionBarContainer>
     );
   }

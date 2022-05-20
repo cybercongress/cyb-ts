@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 import { useEffect, useState, useCallback, useContext } from 'react';
 import { AppContext } from '../../../context';
-import { checkGift, CONTRACT_ADDRESS_GIFT } from '../utils';
+import { checkGift, getClaimedAmount, getIsClaimed } from '../utils';
 
 const initValueGiftAmount = {
   details: {},
@@ -62,11 +62,16 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
   useEffect(() => {
     if (totalGift !== null) {
       let amountTotal = 0;
+      let baseGiftAmountTotal = 0;
       const detailsTotal = {};
       Object.keys(totalGift).forEach((key) => {
-        const { amount, details } = totalGift[key];
-        if (amount) {
+        const { amount, details, claim } = totalGift[key];
+        if (claim) {
+          amountTotal += claim;
+          baseGiftAmountTotal += amount;
+        } else if (amount) {
           amountTotal += amount;
+          baseGiftAmountTotal += amount;
         }
         if (details) {
           Object.keys(details).forEach((keyD) => {
@@ -78,7 +83,11 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
           });
         }
       });
-      setTotalGiftAmount({ details: detailsTotal, amount: amountTotal });
+      setTotalGiftAmount({
+        details: detailsTotal,
+        amount: amountTotal,
+        baseAmount: baseGiftAmountTotal,
+      });
     } else {
       setTotalGiftAmount(null);
     }
@@ -119,14 +128,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
             const { address, isClaimed } = element;
             if (isClaimed === undefined || isClaimed === false) {
               // console.log('element.address', address);
-              const queryResponseResult = await jsCyber.queryContractSmart(
-                CONTRACT_ADDRESS_GIFT,
-                {
-                  is_claimed: {
-                    address,
-                  },
-                }
-              );
+              const queryResponseResult = await getIsClaimed(jsCyber, address);
 
               if (
                 queryResponseResult &&
@@ -137,6 +139,23 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
               ) {
                 templGiftData[address].isClaimed =
                   queryResponseResult.is_claimed;
+                if (queryResponseResult.is_claimed) {
+                  const responseClaimedAmount = await getClaimedAmount(
+                    jsCyber,
+                    address
+                  );
+                  if (
+                    responseClaimedAmount !== null &&
+                    Object.prototype.hasOwnProperty.call(
+                      responseClaimedAmount,
+                      'claim'
+                    )
+                  ) {
+                    const { claim, multiplier } = responseClaimedAmount;
+                    templGiftData[address].claim = parseFloat(claim);
+                    templGiftData[address].multiplier = parseFloat(multiplier);
+                  }
+                }
               }
             }
           }
