@@ -30,7 +30,8 @@ $sizeProgressValue: 37px;
     width: 100%;
     height: 2px;
     background: #ffffff26;
-    padding: 0px 40px;
+    padding: 0px 15px;
+    transition: 1s ease-out;
 
     &Progress {
       position: relative;

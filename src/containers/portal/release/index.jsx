@@ -9,10 +9,15 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import { useGetActivePassport, getConfigGift, getStateGift } from '../utils';
+import {
+  useGetActivePassport,
+  getConfigGift,
+  getStateGift,
+  BOOT_ICON,
+} from '../utils';
 import {
   CurrentGift,
-  BeforeActivation,
+  ProgressCard,
   NextUnfreeze,
   Released,
 } from '../components';
@@ -21,6 +26,7 @@ import ActionBarRelease from './ActionBarRelease';
 import useCheckRelease from '../hook/useCheckRelease';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
+import { formatNumber } from '../../../utils/search/utils';
 
 const NS_TO_MS = 1 * 10 ** -6;
 
@@ -51,7 +57,7 @@ function Release({ defaultAccount }) {
   const [progress, setProgress] = useState(0);
   const [citizens, setCitizens] = useState(0);
   const [timeNext, setTimeNext] = useState(null);
-  const [readyRelease, setReadyRelease] = useState(0);
+  const [readyRelease, setReadyRelease] = useState(null);
   const [released, setReleased] = useState(0);
 
   // console.log(
@@ -131,7 +137,7 @@ function Release({ defaultAccount }) {
 
   const initState = () => {
     setTimeNext(null);
-    setReadyRelease(0);
+    setReadyRelease(null);
     setIsRelease(null);
   };
 
@@ -147,7 +153,10 @@ function Release({ defaultAccount }) {
         setCurrentRelease([totalRelease[selectedAddress]]);
         setIsRelease(isReleaseAddrr);
         setTimeNext(timeNextAddrr);
-        setReadyRelease(parseFloat(readyReleaseAddrr));
+        setReadyRelease({
+          address: selectedAddress,
+          amount: parseFloat(readyReleaseAddrr),
+        });
       } else if (
         selectedAddress !== null &&
         selectedAddress.match(PATTERN_CYBER)
@@ -156,7 +165,10 @@ function Release({ defaultAccount }) {
           setCurrentRelease(totalReadyRelease);
           setIsRelease(true);
           setTimeNext(null);
-          setReadyRelease(parseFloat(totalBalanceClaimAmount));
+          setReadyRelease({
+            address: selectedAddress,
+            amount: parseFloat(totalBalanceClaimAmount),
+          });
         } else {
           setTimeNext(timeNextFirstrelease);
         }
@@ -197,6 +209,32 @@ function Release({ defaultAccount }) {
     }
   }, [selectedAddress, totalGift, totalGiftAmount]);
 
+  const useReleasedStage = useMemo(() => {
+    const statusRelease = {
+      progress: 0,
+      gift: 0,
+      leftRelease: 0,
+    };
+
+    if (useSelectedGiftData !== null && readyRelease !== null) {
+      const { amount, address } = readyRelease;
+      const { claim, address: addressGift } = useSelectedGiftData;
+      if (claim && address === addressGift) {
+        statusRelease.gift = claim;
+        statusRelease.leftRelease = formatNumber(amount);
+        const progressRelease = new BigNumber(amount).dividedBy(claim);
+        const curentProgressRelease = new BigNumber(1)
+          .minus(progressRelease)
+          .multipliedBy(100)
+          .dp(1, BigNumber.ROUND_FLOOR)
+          .toNumber();
+        statusRelease.progress = curentProgressRelease;
+      }
+    }
+
+    return statusRelease;
+  }, [readyRelease, useSelectedGiftData]);
+
   if (loading) {
     return <div>...</div>;
   }
@@ -204,8 +242,6 @@ function Release({ defaultAccount }) {
   let content;
 
   // console.log('currentRelease', currentRelease);
-
-  const useReleasedStage = useMemo(() => {}, [useSelectedGiftData, selectedAddress]);
 
   if (!activeReleases) {
     content = (
@@ -216,7 +252,12 @@ function Release({ defaultAccount }) {
           updateFunc={setSelectedAddress}
         />
         <CurrentGift stateOpen={false} currentGift={useSelectedGiftData} />
-        <BeforeActivation citizens={citizens} progress={progress} />
+        <ProgressCard
+          titleValue={`${citizens} citizens`}
+          headerText="before activation"
+          footerText="citizenship registered"
+          progress={progress}
+        />
       </>
     );
   }
@@ -234,7 +275,17 @@ function Release({ defaultAccount }) {
 
         <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
 
-        {isRelease !== null && <Released released={released} />}
+        <ProgressCard
+          titleValue={`${useReleasedStage.leftRelease} ${BOOT_ICON}`}
+          headerText="left released"
+          footerText="total gift released"
+          progress={useReleasedStage.progress}
+          styleContainerTrack={
+            useReleasedStage.progress === 0
+              ? { padding: '0px 25px'}
+              : {}
+          }
+        />
       </>
     );
   }

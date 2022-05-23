@@ -3,7 +3,7 @@ import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';
 import CurrentGift from './currentGift';
-import BeforeActivation from './beforeActivation';
+import ProgressCard from './progressCard';
 import NextUnfreeze from './nextUnfreeze';
 import Released from './Released';
 import MainContainer from './mainContainer/mainContainer';
@@ -19,7 +19,7 @@ export {
   ScrollableTabs,
   ParseAddressesImg,
   CurrentGift,
-  BeforeActivation,
+  ProgressCard,
   NextUnfreeze,
   Released,
   MainContainer,

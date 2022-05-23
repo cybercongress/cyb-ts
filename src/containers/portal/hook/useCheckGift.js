@@ -85,8 +85,8 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
       });
       setTotalGiftAmount({
         details: detailsTotal,
-        amount: amountTotal,
-        baseAmount: baseGiftAmountTotal,
+        claim: amountTotal,
+        amount: baseGiftAmountTotal,
       });
     } else {
       setTotalGiftAmount(null);

@@ -11,7 +11,7 @@ const ItemRow = ({ value, title }) => (
   </div>
 );
 
-function NextUnfreeze({ timeNext = '', readyRelease = 0 }) {
+function NextUnfreeze({ timeNext = '', readyRelease }) {
   try {
     const useTimeNext = useMemo(() => {
       if (timeNext !== null) {
@@ -22,7 +22,7 @@ function NextUnfreeze({ timeNext = '', readyRelease = 0 }) {
         );
       }
 
-      if (readyRelease !== 0) {
+      if (readyRelease && readyRelease !== null) {
         return (
           <span className={styles.colorTextStatusTimeReady}>
             ready {GIFT_ICON}
