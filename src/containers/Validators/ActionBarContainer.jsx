@@ -39,7 +39,7 @@ const {
 
 const fee = {
   amount: [],
-  gas: DEFAULT_GAS_LIMITS.toString(),
+  gas: (DEFAULT_GAS_LIMITS * 2).toString(),
 };
 export const TXTYPE_DELEGATE = 0;
 export const TXTYPE_UNDELEGATE = 1;
@@ -319,7 +319,7 @@ function ActionBarContainer({
             }
           });
           const gasLimitsRewards =
-            100000 * Object.keys(validatorAddress).length;
+            150000 * Object.keys(validatorAddress).length;
           const feeRewards = {
             amount: [],
             gas: gasLimitsRewards.toString(),

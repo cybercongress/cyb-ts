@@ -59,7 +59,7 @@ function ActionBarKeplr({
       const [{ address }] = await keplr.signer.getAccounts();
       const fee = {
         amount: [],
-        gas: DEFAULT_GAS_LIMITS.toString(),
+        gas: (DEFAULT_GAS_LIMITS * 2).toString(),
       };
       const result = await keplr.sendTokens(
         address,
