@@ -10,6 +10,9 @@ import { fromAscii, fromBase64 } from '@cosmjs/encoding';
 import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
+
 import {
   Votes,
   Legend,
@@ -208,6 +211,7 @@ function ProposalsDetail({ defaultAccount }) {
       const resultgProposalsDetailVotes = await getProposalsDetailVotes(
         proposalId
       );
+      console.log('resultgProposalsDetailVotes', resultgProposalsDetailVotes)
       if (resultgProposalsDetailVotes) {
         yes = resultgProposalsDetailVotes.filter(
           (item) => item.option === VOTE_OPTION.VOTE_OPTION_YES
@@ -227,7 +231,7 @@ function ProposalsDetail({ defaultAccount }) {
       votesTemp.no = no;
       votesTemp.abstain = abstain;
       votesTemp.noWithVeto = noWithVeto;
-
+      console.log('votesTemp', votesTemp)
       setVotes(votesTemp);
     };
     getVotes();
@@ -304,6 +308,8 @@ function ProposalsDetail({ defaultAccount }) {
                   <Pane className="container-description">
                     <ReactMarkdown
                       children={proposals.description.replace(/\\n/g, '\n')}
+                      rehypePlugins={[rehypeSanitize]}
+                      remarkPlugins={[remarkGfm]}
                     />
                   </Pane>
                 }
