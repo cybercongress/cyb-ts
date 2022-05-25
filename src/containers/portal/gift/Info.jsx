@@ -100,7 +100,7 @@ const infoTextFnc = (step, selectedAddress) => {
       return (
         <span>
           You have unclaimed gifts. <br />
-          Claim now, br // or prove another address
+          Claim now, or prove another address
         </span>
       );
 

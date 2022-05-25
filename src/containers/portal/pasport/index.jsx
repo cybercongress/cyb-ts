@@ -11,6 +11,7 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
+import { trimString } from '../../../utils/utils';
 
 function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
   const [owner, setOwner] = useState(null);
@@ -67,10 +68,26 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
             justifyContent: 'space-between',
             zIndex: '1',
             alignItems: 'center',
+            height: 32,
           }}
         >
           <div style={{ color: '#36D6AE' }}>
             {citizenship !== null && citizenship.extension.nickname}
+          </div>
+
+          <div style={{ color: '#36D6AE' }}>
+            {addresses !== null &&
+              Object.prototype.hasOwnProperty.call(addresses, active) && (
+                <div
+                  style={{ display: 'flex', alignItems: 'center', height: 25 }}
+                >
+                  {trimString(addresses[active].address, 8, 4)}
+                  <ParseAddressesImg
+                    key={addresses[active].address}
+                    address={addresses[active]}
+                  />
+                </div>
+              )}
           </div>
 
           <div style={{ width: '32px', height: '32px' }}>
@@ -83,7 +100,7 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
       );
     }
     return null;
-  }, [citizenship, node]);
+  }, [citizenship, addresses, active, node]);
 
   const renderItemImg = useMemo(() => {
     if (addresses !== null) {

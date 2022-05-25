@@ -78,7 +78,7 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
         </div>
       );
     }
-    return null;
+    return <div style={{ color: '#00C4FF' }}>no gift {GIFT_ICON}</div>;
   }, [currentGift]);
 
   const useBaseGift = useMemo(() => {

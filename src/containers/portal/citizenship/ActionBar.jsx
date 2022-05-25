@@ -18,7 +18,9 @@ import { BtnGrd, ActionBarSteps } from '../components';
 
 const {
   STEP_INIT,
-  STEP_NICKNAME,
+  STEP_NICKNAME_CHOSE,
+  STEP_NICKNAME_APROVE,
+  STEP_NICKNAME_INVALID,
   STEP_RULES,
   STEP_AVATAR_UPLOAD,
   STEP_KEPLR_INIT,
@@ -34,6 +36,7 @@ function ActionBar({
   step,
   setStep,
   setupNickname,
+  checkNickname,
   setAvatarImg,
   avatarImg,
   uploadAvatarImg,
@@ -137,22 +140,30 @@ function ActionBar({
   if (step === STEP_INIT) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => setStep(STEP_NICKNAME)} text="start" />
+        <BtnGrd onClick={() => setStep(STEP_NICKNAME_CHOSE)} text="start" />
       </ActionBarSteps>
     );
   }
 
-  if (step === STEP_NICKNAME) {
+  if (step === STEP_NICKNAME_CHOSE || step === STEP_NICKNAME_INVALID) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_INIT)}>
-        <BtnGrd onClick={() => setupNickname()} text="chose nickname" />
+        <BtnGrd onClick={() => checkNickname()} text="chose nickname" />
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_NICKNAME_APROVE) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_CHOSE)}>
+        <BtnGrd onClick={() => setupNickname()} text="I like it" />
       </ActionBarSteps>
     );
   }
 
   if (step === STEP_RULES) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME)}>
+      <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_APROVE)}>
         <BtnGrd
           onClick={() => setStep(STEP_AVATAR_UPLOAD)}
           text="I endorce rules"

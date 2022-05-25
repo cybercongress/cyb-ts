@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import ContainerGradient from '../containerGradient/ContainerGradient';
-import { ProgressBar } from '../beforeActivation';
+import { ProgressBar } from '../progressCard';
 import styles from './styles.scss';
 
 function AboutGift({ coefficient }) {

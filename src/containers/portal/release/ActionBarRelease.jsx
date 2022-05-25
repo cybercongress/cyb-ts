@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useMemo, useContext, useCallback } from 'react';
+import React, { useMemo, useContext, useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { calculateFee } from '@cosmjs/stargate';
 import { GasPrice } from '@cosmjs/launchpad';
@@ -52,11 +52,13 @@ function ActionBarRelease({
   loadingRelease,
 }) {
   const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { keplr } = useContext(AppContext);
+  const [pendingRelease, setPendingRelease] = useState(false);
 
   const useRelease = useCallback(async () => {
     try {
       if (keplr !== null && currentRelease !== null) {
+        setPendingRelease(true);
         const msgs = [];
         if (currentRelease.length > 0) {
           currentRelease.forEach((item) => {
@@ -94,6 +96,7 @@ function ActionBarRelease({
             });
           }
         }
+        setPendingRelease(false);
       }
     } catch (error) {
       console.log('error', error);
@@ -182,6 +185,7 @@ function ActionBarRelease({
           disabled={isRelease === false || isRelease === null}
           onClick={() => useRelease()}
           text={`release ${GIFT_ICON}`}
+          pending={pendingRelease}
         />
       </ActionBarSteps>
     );

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
@@ -122,12 +122,27 @@ function ContainerGradient({
 
   const toggling = () => setIsOpen(!isOpen);
 
-  const useTitle = useMemo(() => {
-    if (!isOpen && closedTitle && closedTitle !== null) {
-      return closedTitle;
-    }
-    return title;
-  }, [isOpen, closedTitle, title]);
+  const useTitle = useCallback(
+    (state) => {
+      if (
+        !isOpen &&
+        closedTitle &&
+        closedTitle !== null &&
+        state === 'exited'
+      ) {
+        // setTimeout(() => {
+        //   console.log('first', first)
+        // }, 500);
+        return closedTitle;
+      }
+      // setTimeout(() => {
+      if (state === 'entered') {
+        return title;
+      }
+      // }, 500);
+    },
+    [isOpen, closedTitle, title]
+  );
 
   return (
     <div>
@@ -161,7 +176,7 @@ function ContainerGradient({
                           ]
                         )}
                       >
-                        {useTitle}
+                        {useTitle(state)}
                       </div>
                     </div>
                   </ContainerLampBefore>

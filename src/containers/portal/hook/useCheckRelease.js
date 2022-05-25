@@ -36,6 +36,7 @@ function useCheckRelease(totalGift, updateFunc) {
                 jsCyber,
                 address
               );
+              console.log('queryResponseResultRelease', queryResponseResultRelease)
 
               if (
                 queryResponseResultRelease !== null &&
@@ -48,8 +49,10 @@ function useCheckRelease(totalGift, updateFunc) {
                   queryResponseResultRelease
                 );
                 const { balanceClaim, isRelease, timeNext } = calculationState;
-                if (isRelease) {
+                if (balanceClaim !== undefined) {
                   balanceClaimAmount += balanceClaim;
+                }
+                if (isRelease) {
                   totalReady.push({ address, ...calculationState });
                 }
                 const tempTime = timeNext;
@@ -97,6 +100,10 @@ function useCheckRelease(totalGift, updateFunc) {
       releaseAddObj.isRelease = true;
       releaseAddObj.timeNext = null;
       releaseAddObj.balanceClaim = parseFloat(balanceClaim);
+
+      if (parseFloat(balanceClaim) === 0) {
+        releaseAddObj.isRelease = false;
+      }
     }
 
     if (Object.prototype.hasOwnProperty.call(stageExpiration, 'at_time')) {

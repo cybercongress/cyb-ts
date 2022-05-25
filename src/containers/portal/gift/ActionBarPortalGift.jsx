@@ -428,7 +428,7 @@ function ActionBarPortalGift({
   if (step === STEP_INIT && activeStep === STEP_CLAIME) {
     return (
       <ActionBarContainer>
-        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claime" />
+        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claim" />
       </ActionBarContainer>
     );
   }

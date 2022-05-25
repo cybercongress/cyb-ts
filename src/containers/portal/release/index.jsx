@@ -20,6 +20,7 @@ import {
   ProgressCard,
   NextUnfreeze,
   Released,
+  MainContainer,
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
@@ -27,6 +28,15 @@ import useCheckRelease from '../hook/useCheckRelease';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
 import { formatNumber } from '../../../utils/search/utils';
+import { STEP_INFO } from './utils';
+import Info from './Info';
+
+const {
+  STATE_BEFORE_ACTIVATION,
+  STATE_READY_TO_RELEASE,
+  STATE_NEXT_UNFREEZE,
+  STATE_PROVE_ADDRESS,
+} = STEP_INFO;
 
 const NS_TO_MS = 1 * 10 ** -6;
 
@@ -58,14 +68,29 @@ function Release({ defaultAccount }) {
   const [citizens, setCitizens] = useState(0);
   const [timeNext, setTimeNext] = useState(null);
   const [readyRelease, setReadyRelease] = useState(null);
-  const [released, setReleased] = useState(0);
+  const [stateInfo, setStateInfo] = useState(null);
 
-  // console.log(
-  //   'totalRelease, totalReadyRelease, totalReadyAmount,',
-  //   totalRelease,
-  //   totalReadyRelease,
-  //   totalReadyAmount
-  // );
+  useEffect(() => {
+    if (!loadingRelease) {
+      if (!activeReleases) {
+        setStateInfo(STATE_BEFORE_ACTIVATION);
+      } else if (currentRelease !== null) {
+        if (isRelease) {
+          setStateInfo(STATE_READY_TO_RELEASE);
+        } else {
+          setStateInfo(STATE_NEXT_UNFREEZE);
+        }
+      } else {
+        setStateInfo(STATE_PROVE_ADDRESS);
+      }
+    }
+  }, [activeReleases, loadingRelease, isRelease]);
+
+  useEffect(() => {
+    if (txHash !== null && txHash.status !== 'pending') {
+      setTimeout(() => setTxHash(null), 5000);
+    }
+  }, [txHash]);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -142,7 +167,7 @@ function Release({ defaultAccount }) {
   };
 
   useEffect(() => {
-    if (selectedAddress !== null && totalRelease !== null) {
+    if (selectedAddress !== null && totalRelease !== null && !loadingRelease) {
       initState();
       if (Object.prototype.hasOwnProperty.call(totalRelease, selectedAddress)) {
         const {
@@ -170,6 +195,12 @@ function Release({ defaultAccount }) {
             amount: parseFloat(totalBalanceClaimAmount),
           });
         } else {
+          setCurrentRelease([]);
+          setIsRelease(false);
+          setReadyRelease({
+            address: selectedAddress,
+            amount: parseFloat(totalBalanceClaimAmount),
+          });
           setTimeNext(timeNextFirstrelease);
         }
       } else {
@@ -184,6 +215,7 @@ function Release({ defaultAccount }) {
     totalBalanceClaimAmount,
     totalReadyRelease,
     timeNextFirstrelease,
+    loadingRelease,
   ]);
 
   const updateTxHash = (data) => {
@@ -281,9 +313,7 @@ function Release({ defaultAccount }) {
           footerText="total gift released"
           progress={useReleasedStage.progress}
           styleContainerTrack={
-            useReleasedStage.progress === 0
-              ? { padding: '0px 25px'}
-              : {}
+            useReleasedStage.progress === 0 ? { padding: '0px 25px' } : {}
           }
         />
       </>
@@ -292,21 +322,11 @@ function Release({ defaultAccount }) {
 
   return (
     <>
-      <main
-        style={{ minHeight: 'calc(100vh - 162px)', overflow: 'hidden' }}
-        className="block-body"
-      >
-        <div
-          style={{
-            width: '60%',
-            margin: '0px auto',
-            display: 'grid',
-            gap: '20px',
-          }}
-        >
-          {content}
-        </div>
-      </main>
+      <MainContainer>
+        <Info useReleasedStage={useReleasedStage} stepCurrent={stateInfo} />
+        {content}
+      </MainContainer>
+
       <ActionBarRelease
         activeReleases={activeReleases}
         updateTxHash={updateTxHash}

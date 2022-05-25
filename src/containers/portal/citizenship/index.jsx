@@ -22,7 +22,7 @@ import ActionBar from './ActionBar';
 import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
-import { CONTRACT_ADDRESS } from '../utils';
+import { CONTRACT_ADDRESS, getPassportByNickname } from '../utils';
 import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
@@ -31,7 +31,9 @@ import Info from './Info';
 
 const {
   STEP_INIT,
-  STEP_NICKNAME,
+  STEP_NICKNAME_CHOSE,
+  STEP_NICKNAME_INVALID,
+  STEP_NICKNAME_APROVE,
   STEP_RULES,
   STEP_AVATAR_UPLOAD,
   STEP_KEPLR_INIT,
@@ -45,7 +47,7 @@ const {
 } = steps;
 
 const items = {
-  [STEP_NICKNAME]: 'nickname',
+  [STEP_NICKNAME_CHOSE]: 'nickname',
   [STEP_RULES]: 'rules',
   [STEP_AVATAR_UPLOAD]: 'avatar',
   [STEP_KEPLR_INIT]: 'install keplr',
@@ -63,6 +65,7 @@ function GetCitizenship({ node, defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [step, setStep] = useState(STEP_INIT);
   const [valueNickname, setValueNickname] = useState('');
+  // const [validNickname, setValidNickname] = useState(true);
   const [avatarIpfs, setAvatarIpfs] = useState(null);
   const [avatarImg, setAvatarImg] = useState(null);
   const [txHash, setTxHash] = useState(null);
@@ -195,6 +198,22 @@ function GetCitizenship({ node, defaultAccount }) {
     }
   }, [jsCyber, addressActive, step]);
 
+  const checkNickname = useCallback(async () => {
+    try {
+      if (jsCyber !== null) {
+        const responsData = await getPassportByNickname(jsCyber, valueNickname);
+        if (responsData === null) {
+          setStep(STEP_NICKNAME_APROVE);
+        } else {
+          setStep(STEP_NICKNAME_INVALID);
+        }
+      }
+    } catch (error) {
+      console.log('error', error);
+      setStep(STEP_NICKNAME_INVALID);
+    }
+  }, [jsCyber, valueNickname]);
+
   const setupNickname = useCallback(() => {
     localStorage.setItem('nickname', JSON.stringify(valueNickname));
     setStep(STEP_RULES);
@@ -256,9 +275,14 @@ function GetCitizenship({ node, defaultAccount }) {
     content = <Welcome />;
   }
 
-  if (step === STEP_NICKNAME) {
+  if (
+    step === STEP_NICKNAME_CHOSE ||
+    step === STEP_NICKNAME_APROVE ||
+    step === STEP_NICKNAME_INVALID
+  ) {
     content = (
       <InputNickname
+        step={step}
         valueNickname={valueNickname}
         setValueNickname={setValueNickname}
       />
@@ -323,7 +347,6 @@ function GetCitizenship({ node, defaultAccount }) {
     );
   }
 
-  console.log('step', step);
   return (
     <>
       <MainContainer>
@@ -343,6 +366,7 @@ function GetCitizenship({ node, defaultAccount }) {
         step={step}
         setStep={setStep}
         setupNickname={setupNickname}
+        checkNickname={checkNickname}
         uploadAvatarImg={uploadAvatarImg}
         avatarImg={avatarImg}
         setAvatarImg={setAvatarImg}

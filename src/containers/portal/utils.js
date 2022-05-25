@@ -3,8 +3,10 @@ import axios from 'axios';
 import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
+// const CONTRACT_ADDRESS_GIFT =
+//   'bostrom1t3f4zxve6725sf4glrnlar8uku78j0nyfl0ppzgfju9ft9phvqwqcqau6f';
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1t3f4zxve6725sf4glrnlar8uku78j0nyfl0ppzgfju9ft9phvqwqcqau6f';
+  'bostrom1rkwdu9kskn97dn6ahmm5gsra2jluzd53muqfth9ly0upu0wa2exqqs9df9';
 const CONTRACT_ADDRESS =
   'bostrom1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsjxcwgf';
 // const CONTRACT_ADDRESS =
@@ -111,21 +113,39 @@ const checkGift = async (address) => {
   try {
     const response = await axios({
       method: 'GET',
-      url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`,
+      // url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`,
+      url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`,
     });
 
     if (response && response.data) {
       const { data } = response;
+      // if (
+      //   Object.prototype.hasOwnProperty.call(data, 'cyber_gift_proofs') &&
+      //   Object.keys(data.cyber_gift_proofs).length > 0
+      // ) {
+      //   const { cyber_gift_proofs: cyberGiftData } = data;
+      //   return parseResponse(cyberGiftData[0]);
+      // }
       if (
-        Object.prototype.hasOwnProperty.call(data, 'cyber_gift_proofs') &&
-        Object.keys(data.cyber_gift_proofs).length > 0
+        Object.prototype.hasOwnProperty.call(data, 'test_gift') &&
+        Object.keys(data.test_gift).length > 0
       ) {
-        const { cyber_gift_proofs: cyberGiftData } = data;
+        const { test_gift: cyberGiftData } = data;
         return parseResponse(cyberGiftData[0]);
       }
     }
     return null;
   } catch (error) {
+    return null;
+  }
+};
+
+const queryContractSmartPassport = async (client, query) => {
+  try {
+    const response = await client.queryContractSmart(CONTRACT_ADDRESS, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
     return null;
   }
 };
@@ -214,6 +234,21 @@ const getIsClaimed = async (client, address) => {
   }
 };
 
+const getPassportByNickname = async (client, nickname) => {
+  try {
+    const query = {
+      passport_by_nickname: {
+        nickname,
+      },
+    };
+    const response = await queryContractSmartPassport(client, query);
+    return response;
+  } catch (error) {
+    console.log('error', error);
+    return null;
+  }
+};
+
 export {
   activePassport,
   CONTRACT_ADDRESS,
@@ -229,4 +264,5 @@ export {
   getReleaseState,
   getClaimedAmount,
   getIsClaimed,
+  getPassportByNickname,
 };

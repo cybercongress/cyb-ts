@@ -65,6 +65,12 @@ function PortalGift({ defaultAccount, node }) {
   // console.log('totalGiftAmount', totalGiftAmount);
 
   useEffect(() => {
+    if (txHash !== null && txHash.status !== 'pending') {
+      setTimeout(() => setTxHash(null), 5000);
+    }
+  }, [txHash]);
+
+  useEffect(() => {
     const confirmTx = async () => {
       if (jsCyber !== null && txHash !== null && txHash.status === 'pending') {
         const response = await jsCyber.getTx(txHash.txHash);
@@ -76,9 +82,6 @@ function PortalGift({ defaultAccount, node }) {
               status: 'confirmed',
             }));
             setUpdateFunc((item) => item + 1);
-            // setTimeout(() => {
-            //   setTxHash(null);
-            // }, 6000);
             return;
           }
           if (response.code) {
@@ -88,10 +91,6 @@ function PortalGift({ defaultAccount, node }) {
               rawLog: response.rawLog.toString(),
             }));
             // setErrorMessage(response.rawLog);
-            setTimeout(() => {
-              setTxHash(null);
-            }, 6000);
-
             return;
           }
         }
@@ -260,7 +259,7 @@ function PortalGift({ defaultAccount, node }) {
   // console.log('currentGift', currentGift);
   let content;
 
-  if (loading) {
+  if (loading && citizenship === null) {
     return '...';
   }
 
