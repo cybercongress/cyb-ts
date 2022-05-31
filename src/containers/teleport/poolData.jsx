@@ -162,7 +162,7 @@ const stylePoolDataContainer = {
 function PoolData({ data, totalSupplyData, accountBalances }) {
   let itemsPools = [];
 
-  if (Object.keys(data).length > 0) {
+  if (data && Object.keys(data).length > 0) {
     itemsPools = data.map((item) => (
       <PoolCard
         key={item.id}

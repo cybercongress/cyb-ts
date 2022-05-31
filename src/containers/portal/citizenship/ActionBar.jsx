@@ -24,9 +24,11 @@ const {
   STEP_RULES,
   STEP_AVATAR_UPLOAD,
   STEP_KEPLR_INIT,
+  STEP_KEPLR_INIT_CHECK_FNC,
   STEP_KEPLR_SETUP,
   STEP_KEPLR_CONNECT,
   STEP_CHECK_ADDRESS,
+  STEP_CHECK_ADDRESS_CHECK_FNC,
   STEP_KEPLR_REGISTER,
   STEP_CHECK_GIFT,
   STEP_ACTIVE_ADD,
@@ -46,6 +48,7 @@ function ActionBar({
   setAccountsProps,
   setDefaultAccountProps,
   checkAddressNetwork,
+  registerDisabled,
 }) {
   const history = useHistory();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
@@ -120,7 +123,7 @@ function ActionBar({
       setAccountsProps(pocketAccount);
       setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
 
-      setStep(STEP_CHECK_ADDRESS);
+      setStep(STEP_CHECK_ADDRESS_CHECK_FNC);
     }
   };
 
@@ -184,7 +187,7 @@ function ActionBar({
     );
   }
 
-  if (step === STEP_KEPLR_INIT) {
+  if (step === STEP_KEPLR_INIT || step === STEP_KEPLR_INIT_CHECK_FNC) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
         <BtnGrd
@@ -198,7 +201,7 @@ function ActionBar({
 
   if (step === STEP_KEPLR_SETUP) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
+      <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_INIT)}>
         <BtnGrd
           onClick={() => setStep(STEP_KEPLR_CONNECT)}
           text="I created account"
@@ -223,7 +226,7 @@ function ActionBar({
     );
   }
 
-  if (step === STEP_CHECK_ADDRESS) {
+  if (step === STEP_CHECK_ADDRESS || step === STEP_CHECK_ADDRESS_CHECK_FNC) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
         {/* check your bostrom address <Dots /> */}
@@ -241,7 +244,7 @@ function ActionBar({
 
   if (step === STEP_ACTIVE_ADD) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_CHECK_ADDRESS)}>
+      <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
         {/* check your bostrom address <Dots /> */}
         <BtnGrd
           disabled={checkAddressNetworkState}
@@ -252,7 +255,7 @@ function ActionBar({
                 Activation <Dots />
               </>
             ) : (
-              'Active address'
+              'activate address'
             )
           }
         />
@@ -263,7 +266,11 @@ function ActionBar({
   if (step === STEP_KEPLR_REGISTER) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_ACTIVE_ADD)}>
-        <BtnGrd onClick={() => onClickRegister()} text="register" />
+        <BtnGrd
+          disabled={!registerDisabled}
+          onClick={() => onClickRegister()}
+          text="register"
+        />
         {/* <Button onClick={() => onClickRegister()}>register</Button> */}
       </ActionBarSteps>
     );

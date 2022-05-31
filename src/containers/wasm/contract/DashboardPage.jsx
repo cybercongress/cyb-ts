@@ -109,7 +109,7 @@ function DashboardPage() {
           <CardStatisics
             title={`Income, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={
-              dataAggregate !== null ? (
+              dataAggregate !== null && dataAggregate.sum.fees !== null ? (
                 formatNumber(dataAggregate.sum.fees)
               ) : (
                 <Dots />
@@ -119,7 +119,7 @@ function DashboardPage() {
           <CardStatisics
             title="Gas used"
             value={
-              dataAggregate !== null ? (
+              dataAggregate !== null && dataAggregate.sum.gas !== null ? (
                 formatNumber(dataAggregate.sum.gas)
               ) : (
                 <Dots />
@@ -129,7 +129,7 @@ function DashboardPage() {
           <CardStatisics
             title="Total txs"
             value={
-              dataAggregate !== null ? (
+              dataAggregate !== null && dataAggregate.sum.tx !== null ? (
                 formatNumber(dataAggregate.sum.tx)
               ) : (
                 <Dots />

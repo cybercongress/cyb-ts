@@ -64,6 +64,12 @@ function PortalGift({ defaultAccount, node }) {
   // console.log('generalGift | PortalGift', totalGift);
   // console.log('totalGiftAmount', totalGiftAmount);
 
+  // useEffect(() => {
+  //   keplr.signer.keplr.getKey('space-pussy-1').then((info) => {
+  //     console.log('info keplr', info);
+  //   });
+  // }, [keplr]);
+
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
       setTimeout(() => setTxHash(null), 5000);
@@ -285,6 +291,7 @@ function PortalGift({ defaultAccount, node }) {
         />
 
         <CurrentGift
+          selectedAddress={selectedAddress}
           currentBonus={currentBonus}
           currentGift={useSelectedGiftData}
         />

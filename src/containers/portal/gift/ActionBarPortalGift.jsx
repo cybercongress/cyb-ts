@@ -392,6 +392,14 @@ function ActionBarPortalGift({
     return true;
   }, [isClaimed]);
 
+  const useSelectCyber = useMemo(() => {
+    return (
+      selectedAddress &&
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER)
+    );
+  }, [selectedAddress]);
+
   const funcChangeState = (actionBarState, infoState) => {
     if (actionBarState !== undefined) {
       setStep(actionBarState);
@@ -428,7 +436,11 @@ function ActionBarPortalGift({
   if (step === STEP_INIT && activeStep === STEP_CLAIME) {
     return (
       <ActionBarContainer>
-        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claim" />
+        <BtnGrd
+          disabled={isClaime}
+          onClick={() => useClaime()}
+          text={useSelectCyber ? 'claim all' : 'claim'}
+        />
       </ActionBarContainer>
     );
   }

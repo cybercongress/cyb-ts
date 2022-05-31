@@ -151,6 +151,14 @@ function ActionBarRelease({
     return false;
   }, [selectedAddress, totalGift]);
 
+  const useSelectCyber = useMemo(() => {
+    return (
+      selectedAddress &&
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER)
+    );
+  }, [selectedAddress]);
+
   if (activeReleases && loadingRelease) {
     return (
       <ActionBarSteps>
@@ -184,7 +192,9 @@ function ActionBarRelease({
         <BtnGrd
           disabled={isRelease === false || isRelease === null}
           onClick={() => useRelease()}
-          text={`release ${GIFT_ICON}`}
+          text={
+            useSelectCyber ? `release all ${GIFT_ICON}` : `release ${GIFT_ICON}`
+          }
           pending={pendingRelease}
         />
       </ActionBarSteps>

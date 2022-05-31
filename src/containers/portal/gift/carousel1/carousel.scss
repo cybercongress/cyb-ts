@@ -1,104 +1,206 @@
+$color-green: #36d6ae;
+$color-white: #fff;
+$color-shadow-lamp-green: rgba(54, 214, 174, 0.5);
+$color-shadow-lamp-white: rgba(255, 255, 255, 0.44);
+$color-border-lamp-green: #00edeb;
+$color-border-lamp-white: #e2e2e2;
+
+@mixin linear-gradient-gray-el {
+  content: '';
+  height: 100%;
+  position: absolute;
+  width: 20%;
+  bottom: 0;
+  opacity: 11%;
+}
+
+@mixin init-pseudo-el-gren-default {
+  content: '';
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  border-radius: 2px;
+  opacity: 11%;
+}
+
+@mixin linear-gradient-green($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 237, 235, 0) 0%,
+    rgba(0, 237, 235, 1) 100%
+  );
+}
+
+@mixin linear-gradient-gray($route) {
+  background: linear-gradient(
+    $route,
+    rgba(217, 217, 217, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+
+@mixin light-lamp($color-bgr, $color-border, $color-shadow) {
+  background: $color-bgr;
+  border: 1px solid $color-border;
+  box-sizing: border-box;
+  box-shadow: 0px 0px 5px 1px $color-shadow;
+}
+
+@mixin pils {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #d8d8d8;
+  box-shadow: 0px 0px 3px 1px rgba(255, 255, 255, 0.39);
+}
+
 .carousel {
-	.controls {
-		margin-bottom: 8px;
-	}
-	.slidesContainer {
-		// overflow: hidden;
-		position: relative;
-		.slideIndicator {
-			position: absolute;
-			bottom: 0;
-			width: 100%;
-			z-index: 10;
-			left: 0;
-			background: rgba(0, 0, 0, 0.1);
-			height: 40px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			.dot {
-				width: 10px;
-				height: 10px;
-				background: white;
-				margin: 0 5px;
-				cursor: pointer;
-				border-radius: 50%;
-			}
-			.dot.active {
-				background: #b73a3a;
-			}
-		}
-		.scrollLeft {
-			position: absolute;
-			top: 50%;
-			margin-top: -10px;
-			z-index: 10;
-			font-size: 0.7em;
-			background: white;
-			padding: 4px 6px;
-			border-radius: 3px;
-			left: 6px;
-		}
-		.scrollRight {
-			position: absolute;
-			top: 50%;
-			margin-top: -10px;
-			z-index: 10;
-			font-size: 0.7em;
-			background: white;
-			padding: 4px 6px;
-			border-radius: 3px;
-			right: 6px;
-		}
-		.scrollLeft.disabled {
-			opacity: 0.3;
-		}
-		.scrollRight.disabled {
-			opacity: 0.3;
-		}
-	}
-	.slides {
-		position: absolute;
-		top: 0;
-		left: 0;
-		display: flex;
-		.slide {
-			background: #dadada;
-			display: flex;
-			position: relative;
-			.slideInner {
-				background: #dadada;
-				position: absolute;
-				top: 0;
-				left: 0;
-				z-index: 5;
-				width: 100%;
-				height: 100%;
-				justify-content: center;
-				align-items: center;
-				display: flex;
-				text-align: center;
-			}
-			.title {
-				position: absolute;
-				top: 0;
-				left: 0;
-				z-index: 8;
-				font-size: 0.7em;
-				padding: 6px;
-			}
-		}
-	}
+  width: 100%;
+  max-width: 600px;
+  overflow-x: hidden;
+  height: 40px;
+
+  .slidesContainer {
+    height: 100%;
+    // overflow: hidden;
+    position: relative;
+  }
+  .slides {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    .slide {
+      // background: #dadada;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .slide.active {
+      cursor: pointer;
+      color: $color-white;
+      &::before {
+        @include linear-gradient-gray-el;
+        @include linear-gradient-gray(270deg);
+        left: 0;
+      }
+      &::after {
+        @include linear-gradient-gray-el;
+        @include linear-gradient-gray(90deg);
+        right: 0;
+      }
+    }
+    .slide.left {
+      cursor: pointer;
+      color: $color-green;
+      &::before {
+        @include init-pseudo-el-gren-default;
+        @include linear-gradient-green(90deg);
+      }
+    }
+    .slide.right {
+      &::before {
+        @include init-pseudo-el-gren-default;
+        @include linear-gradient-green(270deg);
+      }
+      color: $color-green;
+    }
+
+    .containerContent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 16px;
+    }
+
+    .lamp.active {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        @include light-lamp(
+          $color-white,
+          $color-border-lamp-white,
+          $color-shadow-lamp-white
+        );
+        border-radius: 0px 1px 1px 0px;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        @include light-lamp(
+          $color-white,
+          $color-border-lamp-white,
+          $color-shadow-lamp-white
+        );
+        border-radius: 1px 0px 0px 1px;
+      }
+    }
+
+    .lamp.left {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 6px;
+        transform: translate(6px, -50%);
+        @include pils;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        @include light-lamp(
+          $color-white,
+          $color-border-lamp-green,
+          $color-shadow-lamp-green
+        );
+        border-radius: 1px 0px 0px 1px;
+      }
+    }
+
+    .lamp.right {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        @include light-lamp(
+          $color-white,
+          $color-border-lamp-green,
+          $color-shadow-lamp-green
+        );
+        border-radius: 0px 1px 1px 0px;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        transform: translate(-6px, -50%);
+        @include pils;
+      }
+    }
+  }
 }
 .transition {
-	transition: ease all 0.5s;
-}
-.customSlide {
-	flex-direction: row;
-	background: orange;
-	width: 100%;
-	height: 100%;
-}
-.withImage {
-	overflow: hidden;
+  transition: ease all 0.5s;
 }

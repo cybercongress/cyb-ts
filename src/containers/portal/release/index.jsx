@@ -283,7 +283,11 @@ function Release({ defaultAccount }) {
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
         />
-        <CurrentGift stateOpen={false} currentGift={useSelectedGiftData} />
+        <CurrentGift
+          stateOpen={false}
+          selectedAddress={selectedAddress}
+          currentGift={useSelectedGiftData}
+        />
         <ProgressCard
           titleValue={`${citizens} citizens`}
           headerText="before activation"
@@ -303,7 +307,11 @@ function Release({ defaultAccount }) {
           updateFunc={setSelectedAddress}
         />
 
-        <CurrentGift stateOpen={false} currentGift={useSelectedGiftData} />
+        <CurrentGift
+          stateOpen={false}
+          selectedAddress={selectedAddress}
+          currentGift={useSelectedGiftData}
+        />
 
         <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
 

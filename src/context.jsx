@@ -20,7 +20,8 @@ export const useContextProvider = () => useContext(AppContext);
 
 export async function createClient(signer) {
   if (signer) {
-    const firstAddress = (await signer.getAccounts())[0].address;
+    const firstAddress = await signer.getAccounts();
+    console.log('firstAddress', firstAddress);
     // const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
     const gasPrice = GasPrice.fromString('0.001boot');
 

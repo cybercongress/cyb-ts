@@ -54,10 +54,24 @@ const TableAllocation = ({ currentGift }) => {
   return <div className={styles.containerTableAllocation}>{itemTable}</div>;
 };
 
-function CurrentGift({ currentGift, currentBonus, stateOpen }) {
+function CurrentGift({
+  currentGift,
+  currentBonus,
+  stateOpen,
+  selectedAddress,
+}) {
+  const useSelectCyber = useMemo(() => {
+    return (
+      selectedAddress &&
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER)
+    );
+  }, [selectedAddress]);
+
   const useTitle = useMemo(() => {
     if (currentGift && currentGift !== null) {
       const { amount, claim } = currentGift;
+
       return (
         <div
           style={{
@@ -68,7 +82,9 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
             alignItems: 'center',
           }}
         >
-          <div style={{ color: '#00C4FF' }}>gift {GIFT_ICON}</div>
+          <div style={{ color: '#00C4FF' }}>
+            {useSelectCyber ? 'gift all' : 'gift'} {GIFT_ICON}
+          </div>
           <div>
             {claim
               ? formatNumber(parseFloat(claim))
@@ -79,7 +95,7 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
       );
     }
     return <div style={{ color: '#00C4FF' }}>no gift {GIFT_ICON}</div>;
-  }, [currentGift]);
+  }, [currentGift, useSelectCyber]);
 
   const useBaseGift = useMemo(() => {
     if (currentGift && currentGift !== null) {
@@ -150,7 +166,7 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
     <ContainerGradient
       userStyleContent={{ height: '485px' }}
       closedTitle={useTitle}
-      title={`Gift ${GIFT_ICON}`}
+      title={useSelectCyber ? `Gift All ${GIFT_ICON}` : `Gift ${GIFT_ICON}`}
       stateOpen={stateOpen}
     >
       <div className={styles.containerCurrentGift}>
