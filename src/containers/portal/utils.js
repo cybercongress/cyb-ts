@@ -6,9 +6,9 @@ const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 // const CONTRACT_ADDRESS_GIFT =
 //   'bostrom1t3f4zxve6725sf4glrnlar8uku78j0nyfl0ppzgfju9ft9phvqwqcqau6f';
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1rkwdu9kskn97dn6ahmm5gsra2jluzd53muqfth9ly0upu0wa2exqqs9df9';
+  'bostrom1fkwjqyfdyktgu5f59jpwhvl23zh8aav7f98ml9quly62jx2sehys3xeq0u';
 const CONTRACT_ADDRESS =
-  'bostrom1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsjxcwgf';
+  'bostrom1fzm6gzyccl8jvdv3qq6hp9vs6ylaruervs4m06c7k0ntzn2f8faq7ha2z2';
 // const CONTRACT_ADDRESS =
 //   'bostrom15hzg7eaxgs6ecn46gmu4juc9tau2w45l9cnf8n0797nmmtkdv7jscv88ra';
 
@@ -56,8 +56,6 @@ const useGetActivePassport = (addressActive, updateFunc) => {
           setCitizenship(null);
           setLoading(false);
         }
-      } else {
-        setLoading(false);
       }
     };
     getActivePassport();

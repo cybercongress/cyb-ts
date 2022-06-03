@@ -124,6 +124,7 @@ function GetCitizenship({ node, defaultAccount }) {
   const [txHash, setTxHash] = useState(null);
   const [registerDisabled, setRegisterDisabled] = useState(false);
 
+  // console.log('avatarImg', avatarImg);
   useEffect(() => {
     const localStorageNickname = localStorage.getItem('nickname');
     if (localStorageNickname !== null) {
@@ -289,6 +290,12 @@ function GetCitizenship({ node, defaultAccount }) {
     }
   }, [jsCyber, addressActive, step]);
 
+  const fncClearAvatar = () => {
+    localStorage.removeItem('avatarCid');
+    setAvatarIpfs(null);
+    setAvatarImg(null);
+  };
+
   const checkNickname = useCallback(async () => {
     try {
       if (jsCyber !== null) {
@@ -359,9 +366,9 @@ function GetCitizenship({ node, defaultAccount }) {
 
   let content;
 
-  if (step === STEP_INIT) {
-    content = <Welcome />;
-  }
+  // if (step === STEP_INIT) {
+  //   content = <Welcome />;
+  // }
 
   if (
     step === STEP_NICKNAME_CHOSE ||
@@ -387,6 +394,7 @@ function GetCitizenship({ node, defaultAccount }) {
         valueNickname={valueNickname}
         upload={avatarIpfs === null}
         setAvatarImg={setAvatarImg}
+        fncClearAvatar={fncClearAvatar}
         avatar={
           avatarIpfs === null ? (
             'upload avatar'
@@ -463,7 +471,6 @@ function GetCitizenship({ node, defaultAccount }) {
             <ScrollableTabs items={items} active={step} setStep={setStep} />
           )} */}
         {content}
-
         {/* <button type="button" onClick={() => checkKeplr()}>
           keplr
         </button> */}

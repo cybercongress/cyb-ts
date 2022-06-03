@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import ValueImg from '../valueImg';
 import coinDecimalsConfig from '../../utils/configToken';
 
@@ -41,11 +40,4 @@ function Denom({ denomValue, ...props }) {
   }
 }
 
-const mapStateToProps = (store) => {
-  return {
-    nodeIpfs: store.ipfs.ipfs,
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(Denom);
+export default Denom;

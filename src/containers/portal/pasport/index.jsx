@@ -13,7 +13,14 @@ import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { trimString } from '../../../utils/utils';
 
-function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
+function PasportCitizenship({
+  citizenship,
+  txHash,
+  node,
+  updateFunc,
+  stateOpen,
+  initStateCard,
+}) {
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [active, setActive] = useState(0);
@@ -125,6 +132,8 @@ function PasportCitizenship({ citizenship, txHash, node, updateFunc }) {
       txs={txHash}
       closedTitle={useClosedTitle}
       title="Moon Citizenship"
+      initState={initStateCard}
+      stateOpen={stateOpen}
     >
       <div
         style={{

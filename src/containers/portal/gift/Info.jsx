@@ -128,7 +128,7 @@ const infoTextFnc = (step, selectedAddress) => {
 function Info({ stepCurrent, selectedAddress }) {
   try {
     return (
-      <InfoCard>
+      <InfoCard style={{ minHeight: '90px' }}>
         <div style={{ textAlign: 'center' }}>
           {infoTextFnc(stepCurrent, selectedAddress)}
         </div>

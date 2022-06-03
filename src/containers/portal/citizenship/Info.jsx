@@ -32,6 +32,25 @@ function Info({
   let content;
 
   switch (stepCurrent) {
+    case STEP_INIT:
+      content = (
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '10px 50px 0px 50px',
+            gap: 20,
+            display: 'grid',
+          }}
+        >
+          <div>My name is Cyb.</div>
+          <div>
+            I can help you to recieve Moon Citizenship in 7 simple steps.
+          </div>
+          <div>Also I have a gift for you if you tried hard!</div>
+        </div>
+      );
+      break;
+
     case STEP_NICKNAME_CHOSE:
       content = (
         <span>
@@ -57,7 +76,7 @@ function Info({
           Nickname is available <br /> at that moment <br />
           {valuePriceNickname &&
             valuePriceNickname !== null &&
-            `${valuePriceNickname.amountPrice} ${valuePriceNickname.denomPrice}`}
+            `${formatNumber(valuePriceNickname.amountPrice)} ${valuePriceNickname.denomPrice}`}
         </span>
       );
       break;

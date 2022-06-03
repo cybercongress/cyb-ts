@@ -4,7 +4,7 @@ import ContainerGradient from '../containerGradient/ContainerGradient';
 import { ProgressBar } from '../progressCard';
 import styles from './styles.scss';
 
-function AboutGift({ coefficient }) {
+function AboutGift({ coefficient, stateOpen, initStateCard }) {
   const useProgress = useMemo(() => {
     if (coefficient && coefficient !== null) {
       const maxValue = coefficient.up - coefficient.down;

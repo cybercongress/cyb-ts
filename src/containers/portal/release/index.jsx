@@ -284,7 +284,7 @@ function Release({ defaultAccount }) {
           updateFunc={setSelectedAddress}
         />
         <CurrentGift
-          stateOpen={false}
+          initStateCard={false}
           selectedAddress={selectedAddress}
           currentGift={useSelectedGiftData}
         />
@@ -308,7 +308,7 @@ function Release({ defaultAccount }) {
         />
 
         <CurrentGift
-          stateOpen={false}
+          initStateCard={false}
           selectedAddress={selectedAddress}
           currentGift={useSelectedGiftData}
         />

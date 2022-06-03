@@ -1,8 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { ContainerGradient } from '../components';
-import ContainerAvatar from '../components/avataIpfs/containerAvatar';
+import ContainerAvatar, {
+  ButtonContainerAvatar,
+} from '../components/avataIpfs/containerAvatar';
 
-function Avatar({ txs, valueNickname, upload, setAvatarImg, avatar }) {
+function Avatar({
+  txs,
+  valueNickname,
+  upload,
+  setAvatarImg,
+  avatar,
+  fncClearAvatar,
+}) {
   const inputOpenFileRef = useRef();
 
   const showOpenFileDlg = () => {
@@ -15,7 +24,9 @@ function Avatar({ txs, valueNickname, upload, setAvatarImg, avatar }) {
   };
 
   const onClickClear = () => {
-    setAvatarImg(null);
+    if (fncClearAvatar) {
+      fncClearAvatar();
+    }
   };
 
   return (
@@ -37,27 +48,24 @@ function Avatar({ txs, valueNickname, upload, setAvatarImg, avatar }) {
               type="file"
               style={{ display: 'none' }}
             />
-            <button
-              type="button"
-              style={{
-                color: '#36d6ae',
-                background: 'transparent',
-                border: 'none',
-                fontSize: '15.5px',
-                cursor: 'pointer',
-              }}
-              // className={
-              //   avatarImg !== null && avatarImg !== undefined
-              //     ? 'btn-add-close'
-              //     : 'btn-add-file'
-              // }
-              onClick={showOpenFileDlg}
-            >
-              upload avatar
-            </button>
+            <ButtonContainerAvatar onClick={showOpenFileDlg}>
+              <span>upload avatar</span>
+            </ButtonContainerAvatar>
           </ContainerAvatar>
         )}
-        {!upload && <ContainerAvatar>{avatar}</ContainerAvatar>}
+        {!upload && (
+          <ContainerAvatar>
+            <input
+              ref={inputOpenFileRef}
+              onChange={() => onFilePickerChange(inputOpenFileRef)}
+              type="file"
+              style={{ display: 'none' }}
+            />
+            <ButtonContainerAvatar uploadNew onClick={showOpenFileDlg}>
+              {avatar}
+            </ButtonContainerAvatar>
+          </ContainerAvatar>
+        )}
       </div>
     </ContainerGradient>
   );

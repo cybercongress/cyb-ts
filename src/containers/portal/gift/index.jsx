@@ -25,19 +25,35 @@ import {
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
 import TabsList from './tabsList';
+import Carousel from './carousel1/Carousel';
 import { STEP_INFO } from './utils';
 import Info from './Info';
 // import useCheckStatusTx from '../../../hooks/useCheckTxs';
 
-const STEP_GIFT_INFO = 0;
-const STEP_PROVE_ADD = 1;
-const STEP_CLAIME = 2;
+const STEP_GIFT_INFO = 1;
+const STEP_PROVE_ADD = 2;
+const STEP_CLAIME = 3;
 
 const initStateBonus = {
   up: 0,
   down: 0,
   current: 0,
 };
+
+const itemsStep = [
+  {
+    title: 'gift',
+    step: STEP_GIFT_INFO,
+  },
+  {
+    title: 'prove address',
+    step: STEP_PROVE_ADD,
+  },
+  {
+    title: ' claim',
+    step: STEP_CLAIME,
+  },
+];
 
 function PortalGift({ defaultAccount, node }) {
   const { keplr, jsCyber } = useContext(AppContext);
@@ -58,8 +74,7 @@ function PortalGift({ defaultAccount, node }) {
     addressActive,
     updateFunc
   );
-  const [active, setActive] = useState(STEP_GIFT_INFO);
-  const [infoStep, setInfoStep] = useState(null);
+  const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
 
   // console.log('generalGift | PortalGift', totalGift);
   // console.log('totalGiftAmount', totalGiftAmount);
@@ -72,9 +87,36 @@ function PortalGift({ defaultAccount, node }) {
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
-      setTimeout(() => setTxHash(null), 5000);
+      if (
+        appStep === STEP_INFO.STATE_PROVE_IN_PROCESS &&
+        txHash.status === 'confirmed'
+      ) {
+        setStepApp(STEP_INFO.STATE_CLAIME);
+      }
+
+      if (
+        appStep === STEP_INFO.STATE_PROVE_IN_PROCESS &&
+        txHash.status === 'error'
+      ) {
+        setStepApp(STEP_INFO.STATE_PROVE);
+      }
+
+      if (
+        appStep === STEP_INFO.STATE_CLAIM_IN_PROCESS &&
+        txHash.status === 'confirmed'
+      ) {
+        setStepApp(STEP_INFO.STATE_RELEASE);
+      }
+
+      if (
+        appStep === STEP_INFO.STATE_CLAIM_IN_PROCESS &&
+        txHash.status === 'error'
+      ) {
+        setStepApp(STEP_INFO.STATE_CLAIME);
+      }
+      setTimeout(() => setTxHash(null), 15000);
     }
-  }, [txHash]);
+  }, [txHash, appStep]);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -106,68 +148,68 @@ function PortalGift({ defaultAccount, node }) {
     confirmTx();
   }, [jsCyber, txHash]);
 
-  useEffect(() => {
-    if (
-      active === STEP_GIFT_INFO &&
-      selectedAddress === null &&
-      citizenship !== null &&
-      citizenship.owner
-    ) {
-      setSelectedAddress(citizenship.owner);
-    }
-  }, [selectedAddress, active, citizenship]);
+  // useEffect(() => {
+  //   if (
+  //     active === STEP_GIFT_INFO &&
+  //     selectedAddress === null &&
+  //     citizenship !== null &&
+  //     citizenship.owner
+  //   ) {
+  //     setSelectedAddress(citizenship.owner);
+  //   }
+  // }, [selectedAddress, active, citizenship]);
 
-  useEffect(() => {
-    if (active === STEP_GIFT_INFO && !loading) {
-      if (citizenship === null) {
-        setInfoStep(STEP_INFO.STATE_GIFT_NULL);
-      } else if (totalGift === null) {
-        setInfoStep(STEP_INFO.STATE_INIT_PROVE);
-      } else if (!isClaimed) {
-        setInfoStep(STEP_INFO.STATE_INIT_CLAIM);
-      } else if (isClaimed) {
-        setInfoStep(STEP_INFO.STATE_INIT_RELEASE);
-      } else {
-        setInfoStep(null);
-      }
-    }
+  // useEffect(() => {
+  //   if (active === STEP_GIFT_INFO && !loading) {
+  //     if (citizenship === null) {
+  //       setStepApp(STEP_INFO.STATE_GIFT_NULL);
+  //     } else if (totalGift === null) {
+  //       setStepApp(STEP_INFO.STATE_INIT_PROVE);
+  //     } else if (!isClaimed) {
+  //       setStepApp(STEP_INFO.STATE_INIT_CLAIM);
+  //     } else if (isClaimed) {
+  //       setStepApp(STEP_INFO.STATE_INIT_RELEASE);
+  //     } else {
+  //       setStepApp(null);
+  //     }
+  //   }
 
-    if (active === STEP_PROVE_ADD) {
-      setInfoStep(STEP_INFO.STATE_PROVE);
-    }
+  //   if (active === STEP_PROVE_ADD) {
+  //     setStepApp(STEP_INFO.STATE_PROVE);
+  //   }
 
-    if (active === STEP_CLAIME && !loadingGift) {
-      if (
-        (isClaimed === null || totalGift === null) &&
-        selectedAddress !== null &&
-        selectedAddress.match(PATTERN_CYBER)
-      ) {
-        setInfoStep(STEP_INFO.STATE_GIFT_NULL_ALL);
-      } else if (isClaimed === null || totalGift === null) {
-        setInfoStep(STEP_INFO.STATE_GIFT_NULL);
-      } else if (
-        isClaimed === false &&
-        selectedAddress !== null &&
-        selectedAddress.match(PATTERN_CYBER)
-      ) {
-        setInfoStep(STEP_INFO.STATE_CLAIME_ALL);
-      } else if (isClaimed === false) {
-        setInfoStep(STEP_INFO.STATE_GIFT_CLAIME);
-      } else if (isClaimed === true) {
-        setInfoStep(STEP_INFO.STATE_RELEASE);
-      } else {
-        setInfoStep(null);
-      }
-    }
-  }, [
-    active,
-    citizenship,
-    isClaimed,
-    totalGift,
-    loadingGift,
-    selectedAddress,
-    loading,
-  ]);
+  //   if (active === STEP_CLAIME && !loadingGift) {
+  //     if (
+  //       (isClaimed === null || totalGift === null) &&
+  //       selectedAddress !== null &&
+  //       selectedAddress.match(PATTERN_CYBER)
+  //     ) {
+  //       setStepApp(STEP_INFO.STATE_GIFT_NULL_ALL);
+  //     } else if (isClaimed === null || totalGift === null) {
+  //       setStepApp(STEP_INFO.STATE_GIFT_NULL);
+  //     } else if (
+  //       isClaimed === false &&
+  //       selectedAddress !== null &&
+  //       selectedAddress.match(PATTERN_CYBER)
+  //     ) {
+  //       setStepApp(STEP_INFO.STATE_CLAIME_ALL);
+  //     } else if (isClaimed === false) {
+  //       setStepApp(STEP_INFO.STATE_GIFT_CLAIME);
+  //     } else if (isClaimed === true) {
+  //       setStepApp(STEP_INFO.STATE_RELEASE);
+  //     } else {
+  //       setStepApp(null);
+  //     }
+  //   }
+  // }, [
+  //   active,
+  //   citizenship,
+  //   isClaimed,
+  //   totalGift,
+  //   loadingGift,
+  //   selectedAddress,
+  //   loading,
+  // ]);
 
   useEffect(() => {
     const cheeckStateFunc = async () => {
@@ -260,6 +302,17 @@ function PortalGift({ defaultAccount, node }) {
     return null;
   }, [selectedAddress, currentGift, totalGiftAmount]);
 
+  const useDisableNext = useMemo(() => {
+    return true;
+  }, []);
+
+  const useStateOpenPassport = useMemo(() => {
+    if (Math.floor(appStep) === STEP_CLAIME) {
+      return true;
+    }
+    return false;
+  }, [appStep]);
+
   // console.log('citizenship', citizenship);
   // console.log('selectedAddress', selectedAddress);
   // console.log('currentGift', currentGift);
@@ -277,24 +330,29 @@ function PortalGift({ defaultAccount, node }) {
     );
   }
 
-  if (active === STEP_GIFT_INFO) {
+  if (Math.floor(appStep) === STEP_GIFT_INFO) {
     content = <AboutGift coefficient={currentBonus} />;
   }
 
-  if (active !== STEP_GIFT_INFO) {
+  if (Math.floor(appStep) !== STEP_GIFT_INFO) {
+    const { addresses } = citizenship.extension;
     content = (
       <>
         <PasportCitizenship
+          stateOpen={useStateOpenPassport}
           txHash={txHash}
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
+          initStateCard={false}
         />
 
-        <CurrentGift
-          selectedAddress={selectedAddress}
-          currentBonus={currentBonus}
-          currentGift={useSelectedGiftData}
-        />
+        {addresses !== null && (
+          <CurrentGift
+            selectedAddress={selectedAddress}
+            currentBonus={currentBonus}
+            currentGift={useSelectedGiftData}
+          />
+        )}
       </>
     );
   }
@@ -304,10 +362,16 @@ function PortalGift({ defaultAccount, node }) {
       <MainContainer>
         {/* <ScrollableTabs items={items} active={active} setStep={setActive} /> */}
         {/* <button onClick={() => checkIsClaim()}>test</button> */}
-        {infoStep !== null && (
-          <Info stepCurrent={infoStep} selectedAddress={selectedAddress} />
+        {appStep !== null && (
+          <Info stepCurrent={appStep} selectedAddress={selectedAddress} />
         )}
-        <TabsList active={active} setStep={setActive} />
+        <Carousel
+          slides={itemsStep}
+          activeStep={Math.floor(appStep)}
+          setStep={setStepApp}
+          // disableNext={useDisableNext}
+        />
+        {/* <TabsList active={active} setStep={setActive} /> */}
         {content}
         {/* {currentGift !== null && (
 
@@ -320,8 +384,8 @@ function PortalGift({ defaultAccount, node }) {
         isClaimed={isClaimed}
         selectedAddress={selectedAddress}
         currentGift={currentGift}
-        activeStep={active}
-        setInfoStep={setInfoStep}
+        activeStep={appStep}
+        setStepApp={setStepApp}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
@@ -115,10 +115,17 @@ function ContainerGradient({
   txs,
   danger,
   userStyleContent,
-  stateOpen = true,
+  stateOpen,
+  initState = true,
   styleLampContent = 'blue',
 }) {
-  const [isOpen, setIsOpen] = useState(stateOpen);
+  const [isOpen, setIsOpen] = useState(initState);
+
+  useEffect(() => {
+    if (stateOpen !== undefined) {
+      setIsOpen(stateOpen);
+    }
+  }, [stateOpen]);
 
   const toggling = () => setIsOpen(!isOpen);
 

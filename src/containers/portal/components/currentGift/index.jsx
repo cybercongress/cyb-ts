@@ -59,6 +59,7 @@ function CurrentGift({
   currentBonus,
   stateOpen,
   selectedAddress,
+  initStateCard,
 }) {
   const useSelectCyber = useMemo(() => {
     return (
@@ -164,6 +165,7 @@ function CurrentGift({
 
   return (
     <ContainerGradient
+      initState={initStateCard}
       userStyleContent={{ height: '485px' }}
       closedTitle={useTitle}
       title={useSelectCyber ? `Gift All ${GIFT_ICON}` : `Gift ${GIFT_ICON}`}

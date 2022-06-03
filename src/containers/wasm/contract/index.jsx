@@ -2,16 +2,10 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Tx } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 import { Registry } from '@cosmjs/proto-signing';
-import {
-  MsgClearAdmin,
-  MsgExecuteContract,
-  MsgInstantiateContract,
-  MsgMigrateContract,
-  MsgStoreCode,
-  MsgUpdateAdmin,
-} from 'cosmjs-types/cosmwasm/wasm/v1/tx';
+import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 import { AppContext } from '../../../context';
-import { makeTags, trimString } from '../../../utils/utils';
+import { formatNumber, makeTags, trimString } from '../../../utils/utils';
+import { CYBER } from '../../../utils/config';
 import HistoryInfo from './HistoryInfo';
 import InitializationInfo from './InitializationInfo';
 import ExecuteContract from './ExecuteContract';
@@ -20,6 +14,7 @@ import { FlexWrapCantainer, CardCantainer } from '../ui/ui';
 import styles from './stylesContractPage.scss';
 import RenderAbi from './renderAbi';
 import ExecuteTable from './ExecuteTable';
+import { Denom } from '../../../components';
 
 function isStargateMsgExecuteContract(msg) {
   return msg.typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract' && !!msg.value;
@@ -109,6 +104,21 @@ const getExecutions = async (client, contractAddress, setExecutions) => {
   }
 };
 
+const getBalance = async (client, contractAddress, setBalance) => {
+  try {
+    const response = await client.getBalance(
+      contractAddress,
+      CYBER.DENOM_CYBER
+    );
+    if (response !== null) {
+      setBalance(response);
+    }
+  } catch (error) {
+    console.log(`error`, error);
+    setBalance({ denom: '', amount: 0 });
+  }
+};
+
 const useGetInfoContractAddress = (contractAddress, updateFnc) => {
   const { jsCyber } = useContext(AppContext);
   const [instantiationTxHash, setInstantiationTxHash] = useState('');
@@ -130,6 +140,7 @@ const useGetInfoContractAddress = (contractAddress, updateFnc) => {
         contractAddress,
         setInstantiationTxHash
       );
+      getBalance(jsCyber, contractAddress, setBalance);
     }
   }, [jsCyber, contractAddress]);
 
@@ -169,7 +180,14 @@ function ContractPage() {
             Contract {trimString(contractAddress, 12)}
           </div>
           <div className={styles.containerContractPageContainerTitleBalance}>
-            Balance: {balance.amount} {balance.denom}
+            Balance: {formatNumber(parseFloat(balance.amount))}
+            {balance.denom && (
+              <Denom
+                onlyImg
+                marginContainer="0px 0px 0px 3px"
+                denomValue={balance.denom}
+              />
+            )}
           </div>
         </div>
 
