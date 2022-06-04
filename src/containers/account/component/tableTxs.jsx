@@ -33,10 +33,10 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
     }, 250);
   }, [itemsToShow, setItemsToShow]);
 
-  const displayedPalettes = useMemo(() => data.slice(0, itemsToShow), [
-    itemsToShow,
-    data,
-  ]);
+  const displayedPalettes = useMemo(
+    () => data.slice(0, itemsToShow),
+    [itemsToShow, data]
+  );
 
   const validatorRows = displayedPalettes.map((item, index) => (
     <Table.Row
@@ -69,7 +69,7 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       <Table.TextCell flex={1.3} textAlign="center">
         {item.height && <TextTable>{formatNumber(item.height)}</TextTable>}
       </Table.TextCell>
-      <Table.TextCell textAlign="center">
+      <Table.TextCell flex={1.5} textAlign="center">
         {item.messages && (
           <TextTable display="flex" flexDirection="column">
             {item.messages.length > 4 ? (
@@ -101,32 +101,49 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
         )}
       </Table.TextCell>
       {amount && (
-        <Table.TextCell textAlign="end">
-          {item.messages.map((items, i) => (
-            // <Tooltip
-            //   position="bottom"
-            //   key={i}
-            //   content={`${formatNumber(
-            //     Math.floor(items.value.amount.amount)
-            //   )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-            // >
-            <TextTable
-              color={
-                items['@type'].includes('MsgDelegate') ? '#4ed6ae' : '#f4516b'
-              }
-            >
-              {items['@type'].includes('MsgDelegate') ? (
-                <>
-                  + <NumberCurrency amount={items.amount.amount} />
-                </>
-              ) : (
-                <>
-                  - <NumberCurrency amount={items.amount.amount} />
-                </>
-              )}
-            </TextTable>
-            // </Tooltip>
-          ))}
+        <Table.TextCell flex={1.5} textAlign="end">
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+            }}
+          >
+            {item.messages.map((items, i) => (
+              // <Tooltip
+              //   position="bottom"
+              //   key={i}
+              //   content={`${formatNumber(
+              //     Math.floor(items.value.amount.amount)
+              //   )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
+              // >
+              <TextTable
+                color={
+                  items['@type'].includes('MsgDelegate') ? '#4ed6ae' : '#f4516b'
+                }
+              >
+                {items['@type'].includes('MsgDelegate') && (
+                  <>
+                    {items.amount?.amount && (
+                      <>
+                        + <NumberCurrency amount={items.amount.amount} />
+                      </>
+                    )}
+                  </>
+                )}
+                {items['@type'].includes('MsgUndelegate') && (
+                  <>
+                    {items.amount?.amount && (
+                      <>
+                        - <NumberCurrency amount={items.amount.amount} />
+                      </>
+                    )}
+                  </>
+                )}
+              </TextTable>
+              // </Tooltip>
+            ))}
+          </div>
         </Table.TextCell>
       )}
     </Table.Row>
@@ -157,11 +174,11 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
             </Tooltip> */}
           </TextTable>
         </Table.TextHeaderCell>
-        <Table.TextHeaderCell textAlign="center">
+        <Table.TextHeaderCell flex={1.5} textAlign="center">
           <TextTable>type</TextTable>
         </Table.TextHeaderCell>
         {amount && (
-          <Table.TextHeaderCell textAlign="center">
+          <Table.TextHeaderCell flex={1.5} textAlign="center">
             <TextTable>amount</TextTable>
           </Table.TextHeaderCell>
         )}
