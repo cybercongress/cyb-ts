@@ -62,7 +62,7 @@ function PortalGift({ defaultAccount, node }) {
   const [currentBonus, setCurrentBonus] = useState(initStateBonus);
   const [txHash, setTxHash] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const { citizenship, loading } = useGetActivePassport(
+  const { citizenship, loading, setLoading } = useGetActivePassport(
     addressActive,
     updateFunc
   );
@@ -89,7 +89,9 @@ function PortalGift({ defaultAccount, node }) {
     if (txHash !== null && txHash.status !== 'pending') {
       if (
         appStep === STEP_INFO.STATE_PROVE_IN_PROCESS &&
-        txHash.status === 'confirmed'
+        txHash.status === 'confirmed' &&
+        !loading &&
+        citizenship !== null
       ) {
         setStepApp(STEP_INFO.STATE_CLAIME);
       }
@@ -114,9 +116,9 @@ function PortalGift({ defaultAccount, node }) {
       ) {
         setStepApp(STEP_INFO.STATE_CLAIME);
       }
-      setTimeout(() => setTxHash(null), 15000);
+      setTimeout(() => setTxHash(null), 35000);
     }
-  }, [txHash, appStep]);
+  }, [txHash, appStep, loading, citizenship]);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -125,11 +127,12 @@ function PortalGift({ defaultAccount, node }) {
         console.log('response :>> ', response);
         if (response && response !== null) {
           if (response.code === 0) {
+            setUpdateFunc((item) => item + 1);
             setTxHash((item) => ({
               ...item,
               status: 'confirmed',
             }));
-            setUpdateFunc((item) => item + 1);
+
             return;
           }
           if (response.code) {
@@ -238,49 +241,51 @@ function PortalGift({ defaultAccount, node }) {
   }, [jsCyber]);
 
   useEffect(() => {
-    if (selectedAddress !== null && totalGift !== null) {
-      if (Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)) {
-        setCurrentGift([totalGift[selectedAddress]]);
-        if (
-          Object.prototype.hasOwnProperty.call(
-            totalGift[selectedAddress],
-            'isClaimed'
-          )
+    if (!loadingGift) {
+      if (selectedAddress !== null && totalGift !== null) {
+        if (Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)) {
+          setCurrentGift([totalGift[selectedAddress]]);
+          if (
+            Object.prototype.hasOwnProperty.call(
+              totalGift[selectedAddress],
+              'isClaimed'
+            )
+          ) {
+            const { isClaimed: isClaimedAddress } = totalGift[selectedAddress];
+            setIsClaimed(isClaimedAddress);
+            if (isClaimedAddress) {
+              setIsRelease(true);
+            }
+            // checkClaim();
+          }
+        } else if (
+          selectedAddress !== null &&
+          selectedAddress.match(PATTERN_CYBER) &&
+          totalGift !== null
         ) {
-          const { isClaimed: isClaimedAddress } = totalGift[selectedAddress];
-          setIsClaimed(isClaimedAddress);
-          if (isClaimedAddress) {
-            setIsRelease(true);
-          }
-          // checkClaim();
-        }
-      } else if (
-        selectedAddress !== null &&
-        selectedAddress.match(PATTERN_CYBER) &&
-        totalGift !== null
-      ) {
-        const tempGift = [];
-        Object.keys(totalGift).forEach((key) => {
-          if (!totalGift[key].isClaimed) {
-            tempGift.push({ ...totalGift[key] });
-          }
-        });
+          const tempGift = [];
+          Object.keys(totalGift).forEach((key) => {
+            if (!totalGift[key].isClaimed) {
+              tempGift.push({ ...totalGift[key] });
+            }
+          });
 
-        if (Object.keys(tempGift).length > 0) {
-          setIsClaimed(false);
-          setCurrentGift(tempGift);
-        }
+          if (Object.keys(tempGift).length > 0) {
+            setIsClaimed(false);
+            setCurrentGift(tempGift);
+          }
 
-        if (Object.keys(tempGift).length === 0) {
-          setIsClaimed(true);
+          if (Object.keys(tempGift).length === 0) {
+            setIsClaimed(true);
+          }
+        } else {
+          setCurrentGift(null);
+          setIsClaimed(null);
         }
       } else {
         setCurrentGift(null);
         setIsClaimed(null);
       }
-    } else {
-      setCurrentGift(null);
-      setIsClaimed(null);
     }
   }, [selectedAddress, totalGift]);
 
@@ -313,6 +318,24 @@ function PortalGift({ defaultAccount, node }) {
     return false;
   }, [appStep]);
 
+  const useSetActiveItem = useMemo(() => {
+    if (
+      txHash !== null &&
+      appStep === STEP_INFO.STATE_PROVE_IN_PROCESS &&
+      txHash.status === 'confirmed' &&
+      !loading &&
+      citizenship !== null
+    ) {
+      const { addresses } = citizenship.extension;
+      if (addresses && addresses !== null) {
+        const lastIndex = Object.keys(addresses).length - 1;
+        return lastIndex + 1;
+      }
+    }
+  }, [loading, appStep, txHash, citizenship]);
+
+  // console.log('useSetActiveItem', useSetActiveItem)
+
   // console.log('citizenship', citizenship);
   // console.log('selectedAddress', selectedAddress);
   // console.log('currentGift', currentGift);
@@ -344,6 +367,7 @@ function PortalGift({ defaultAccount, node }) {
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
           initStateCard={false}
+          setActiveItem={useSetActiveItem}
         />
 
         {addresses !== null && (
@@ -386,6 +410,7 @@ function PortalGift({ defaultAccount, node }) {
         currentGift={currentGift}
         activeStep={appStep}
         setStepApp={setStepApp}
+        setLoading={setLoading}
       />
     </>
   );

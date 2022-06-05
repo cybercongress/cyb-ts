@@ -104,6 +104,7 @@ function ActionBarPortalGift({
   currentGift,
   activeStep,
   setStepApp,
+  setLoading,
 }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
@@ -231,6 +232,9 @@ function ActionBarPortalGift({
             txHash: executeResponseResult.transactionHash,
           });
           setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
+          if (setLoading) {
+            setLoading(true);
+          }
         }
 
         if (executeResponseResult.code) {
@@ -245,7 +249,7 @@ function ActionBarPortalGift({
         setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
       }
     }
-  }, [keplr, citizenship, signedMessageKeplr]);
+  }, [keplr, citizenship, signedMessageKeplr, setLoading]);
 
   const useClaime = useCallback(async () => {
     try {

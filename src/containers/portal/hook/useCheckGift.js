@@ -19,9 +19,9 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     // console.log('useEffect | useCheckGift');
     const createObjGift = async () => {
       if (citizenship !== null && addressActive !== null) {
+        setLoadingGift(true);
         setTotalGift(null);
         setTotalGiftAmount(null);
-        setLoadingGift(true);
         const { owner } = citizenship;
         const { bech32 } = addressActive;
         if (owner === bech32) {

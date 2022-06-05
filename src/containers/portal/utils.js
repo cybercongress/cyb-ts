@@ -61,7 +61,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
     getActivePassport();
   }, [addressActive, jsCyber, updateFunc]);
 
-  return { citizenship, loading };
+  return { citizenship, loading, setLoading };
 };
 
 const activePassport = async (client, address) => {

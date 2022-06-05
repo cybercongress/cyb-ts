@@ -20,10 +20,17 @@ function PasportCitizenship({
   updateFunc,
   stateOpen,
   initStateCard,
+  setActiveItem,
 }) {
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (setActiveItem) {
+      setActive(setActiveItem);
+    }
+  }, [setActiveItem]);
 
   useEffect(() => {
     if (updateFunc) {
