@@ -25,7 +25,7 @@ export default function GetTxs({ accountUser }) {
   const GET_CHARACTERS = gql`
     subscription MyQuery {
       _transaction(
-        order_by: { height: desc }
+        order_by: { height: desc },
         where: {
           _or: [
             {
