@@ -488,7 +488,17 @@ function Activites({ msg }) {
         <Row title="address" value={<Account address={msg.sender} />} />
         <Row title="label" value={msg.label} />
         {msg.code_id && <Row title="code id" value={msg.code_id} />}
-        <Row title="message" value={fromUtf8(fromBase64(msg.msg))} />
+        <Row
+          title="message"
+          value={
+            <ReactJson
+              src={msg.msg}
+              theme="twilight"
+              displayObjectSize={false}
+              displayDataTypes={false}
+            />
+          }
+        />
         <Row
           title="funds"
           value={
@@ -518,11 +528,22 @@ function Activites({ msg }) {
   }
 
   if (type.includes('MsgExecuteContract')) {
+    console.log(msg.msg)
     return (
       <ContainerMsgsType type={msg['@type']}>
         <Row title="address" value={<Account address={msg.sender} />} />
         <Row title="contract" value={<Account address={msg.contract} />} />
-        <Row title="message" value={fromUtf8(fromBase64(msg.msg))} />
+        <Row
+          title="message"
+          value={
+            <ReactJson
+              src={msg.msg}
+              theme="twilight"
+              displayObjectSize={false}
+              displayDataTypes={false}
+            />
+          }
+        />
         <Row
           title="funds"
           value={
