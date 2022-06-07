@@ -71,8 +71,10 @@ function ActionBar({
     await window.keplr.enable(chainId);
 
     let count = 1;
-    const [{ address, pubkey }] = await keplr.signer.getAccounts();
-    const pk = Buffer.from(pubkey).toString('hex');
+    const { bech32Address, pubKey, name } = await keplr.signer.keplr.getKey(
+      chainId
+    );
+    const pk = Buffer.from(pubKey).toString('hex');
 
     const localStoragePocketAccount = localStorage.getItem('pocketAccount');
     const localStorageCount = localStorage.getItem('count');
@@ -87,7 +89,7 @@ function ActionBar({
       valueObj = { ...dataPocketAccount };
     }
 
-    const acc = checkAddress(valueObj, 'cyber', address);
+    const acc = checkAddress(valueObj, 'cyber', bech32Address);
     if (acc && acc.length > 0) {
       const activeKey = acc[0];
       key = activeKey;
@@ -96,10 +98,11 @@ function ActionBar({
       };
     } else {
       accounts.cyber = {
-        bech32: address,
+        bech32: bech32Address,
         keys: 'keplr',
         pk,
         path: LEDGER.HDPATH,
+        name,
       };
     }
 

@@ -12,6 +12,7 @@ const valueContext = {
   ws: null,
   jsCyber: null,
   updatejsCyber: () => {},
+  initSigner: () => {},
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -100,17 +101,17 @@ const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     window.onload = async () => {
-      init();
+      initSigner();
     };
   }, []);
 
   useEffect(() => {
     window.addEventListener('keplr_keystorechange', () => {
-      init();
+      initSigner();
     });
   }, []);
 
-  const init = async () => {
+  const initSigner = async () => {
     console.log(`window.keplr `, window.keplr);
     console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
     if (window.keplr || window.getOfflineSignerAuto) {
@@ -143,7 +144,7 @@ const AppContextProvider = ({ children }) => {
   }
 
   return (
-    <AppContext.Provider value={{ ...value, updatejsCyber }}>
+    <AppContext.Provider value={{ ...value, updatejsCyber, initSigner }}>
       {children}
     </AppContext.Provider>
   );

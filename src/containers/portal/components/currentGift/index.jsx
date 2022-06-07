@@ -60,6 +60,7 @@ function CurrentGift({
   stateOpen,
   selectedAddress,
   initStateCard,
+  release,
 }) {
   const useSelectCyber = useMemo(() => {
     return (
@@ -84,6 +85,7 @@ function CurrentGift({
           }}
         >
           <div style={{ color: '#00C4FF' }}>
+            {release && 'Claimed '}
             {useSelectCyber ? 'gift all' : 'gift'} {GIFT_ICON}
           </div>
           <div>
@@ -96,7 +98,7 @@ function CurrentGift({
       );
     }
     return <div style={{ color: '#00C4FF' }}>no gift {GIFT_ICON}</div>;
-  }, [currentGift, useSelectCyber]);
+  }, [currentGift, useSelectCyber, release]);
 
   const useBaseGift = useMemo(() => {
     if (currentGift && currentGift !== null) {

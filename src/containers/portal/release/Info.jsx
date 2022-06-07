@@ -7,10 +7,26 @@ const {
   STATE_READY_TO_RELEASE,
   STATE_NEXT_UNFREEZE,
   STATE_PROVE_ADDRESS,
+  STATE_INIT_NULL_ACTIVE,
+  STATE_INIT_NULL_BEFORE,
 } = STEP_INFO;
 
 const infoTextFnc = (step, useReleasedStage) => {
   switch (step) {
+    case STATE_INIT_NULL_ACTIVE:
+      return (
+        <span>
+          Gift started to release <br /> Get your citizenship and check gift
+        </span>
+      );
+    case STATE_INIT_NULL_BEFORE:
+      return (
+        <span>
+          Gift will start to release <br /> after 100 000 citizen. <br /> Invite
+          friends to make it faster
+        </span>
+      );
+
     case STATE_BEFORE_ACTIVATION:
       return (
         <span>

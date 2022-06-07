@@ -36,6 +36,8 @@ const {
   STATE_READY_TO_RELEASE,
   STATE_NEXT_UNFREEZE,
   STATE_PROVE_ADDRESS,
+  STATE_INIT_NULL_ACTIVE,
+  STATE_INIT_NULL_BEFORE,
 } = STEP_INFO;
 
 const NS_TO_MS = 1 * 10 ** -6;
@@ -46,8 +48,9 @@ function Release({ defaultAccount }) {
   const [updateFunc, setUpdateFunc] = useState(0);
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { citizenship } = useGetActivePassport(addressActive);
-  const { totalGift, totalGiftAmount } = useCheckGift(
+  const { citizenship, loading: loadingCitizenship } =
+    useGetActivePassport(addressActive);
+  const { totalGift, totalGiftClaimed } = useCheckGift(
     citizenship,
     addressActive
   );
@@ -71,20 +74,48 @@ function Release({ defaultAccount }) {
   const [stateInfo, setStateInfo] = useState(null);
 
   useEffect(() => {
-    if (!loadingRelease) {
+    if (!loadingCitizenship) {
       if (!activeReleases) {
-        setStateInfo(STATE_BEFORE_ACTIVATION);
-      } else if (currentRelease !== null) {
-        if (isRelease) {
-          setStateInfo(STATE_READY_TO_RELEASE);
+        if (citizenship === null) {
+          setStateInfo(STATE_INIT_NULL_BEFORE);
         } else {
-          setStateInfo(STATE_NEXT_UNFREEZE);
+          setStateInfo(STATE_BEFORE_ACTIVATION);
         }
-      } else {
-        setStateInfo(STATE_PROVE_ADDRESS);
+      } else if (citizenship === null) {
+        setStateInfo(STATE_INIT_NULL_ACTIVE);
+      } else if (!loadingRelease) {
+        if (currentRelease !== null) {
+          if (isRelease) {
+            setStateInfo(STATE_READY_TO_RELEASE);
+          } else {
+            setStateInfo(STATE_NEXT_UNFREEZE);
+          }
+        } else {
+          setStateInfo(STATE_PROVE_ADDRESS);
+        }
       }
     }
-  }, [activeReleases, loadingRelease, isRelease]);
+
+    // if (!loadingRelease) {
+    //   if (!activeReleases) {
+    //     setStateInfo(STATE_BEFORE_ACTIVATION);
+    //   } else if (currentRelease !== null) {
+    //     if (isRelease) {
+    //       setStateInfo(STATE_READY_TO_RELEASE);
+    //     } else {
+    //       setStateInfo(STATE_NEXT_UNFREEZE);
+    //     }
+    //   } else {
+    //     setStateInfo(STATE_PROVE_ADDRESS);
+    //   }
+    // }
+  }, [
+    loadingCitizenship,
+    activeReleases,
+    loadingRelease,
+    isRelease,
+    citizenship,
+  ]);
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
@@ -147,6 +178,7 @@ function Release({ defaultAccount }) {
                 );
               } else {
                 setActiveReleases(true);
+                setProgress(Math.floor(100));
               }
             }
             setCitizens(targetClaim);
@@ -225,11 +257,15 @@ function Release({ defaultAccount }) {
   const useSelectedGiftData = useMemo(() => {
     try {
       if (selectedAddress !== null) {
-        if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
-          return { address: selectedAddress, ...totalGiftAmount };
+        if (selectedAddress.match(PATTERN_CYBER) && totalGiftClaimed !== null) {
+          return { address: selectedAddress, ...totalGiftClaimed };
         }
 
-        if (totalGift !== null && totalGift[selectedAddress]) {
+        if (
+          totalGift !== null &&
+          totalGift[selectedAddress] &&
+          totalGift[selectedAddress].isClaimed
+        ) {
           return totalGift[selectedAddress];
         }
       }
@@ -239,7 +275,7 @@ function Release({ defaultAccount }) {
       console.log('error', error);
       return null;
     }
-  }, [selectedAddress, totalGift, totalGiftAmount]);
+  }, [selectedAddress, totalGift, totalGiftClaimed]);
 
   const useReleasedStage = useMemo(() => {
     const statusRelease = {
@@ -267,6 +303,10 @@ function Release({ defaultAccount }) {
     return statusRelease;
   }, [readyRelease, useSelectedGiftData]);
 
+  if (loadingCitizenship) {
+    return <div>...</div>;
+  }
+
   if (loading) {
     return <div>...</div>;
   }
@@ -275,19 +315,47 @@ function Release({ defaultAccount }) {
 
   // console.log('currentRelease', currentRelease);
 
-  if (!activeReleases) {
+  if (!activeReleases && stateInfo === STATE_INIT_NULL_BEFORE) {
+    content = (
+      <ProgressCard
+        titleValue={`${citizens} citizens`}
+        headerText="before activation"
+        footerText="citizenship registered"
+        progress={progress}
+      />
+    );
+  }
+
+  if (activeReleases && stateInfo === STATE_INIT_NULL_ACTIVE) {
+    content = (
+      <ProgressCard
+        titleValue={`${citizens} citizens`}
+        headerText="activated"
+        footerText="citizenship registered"
+        progress={progress}
+        styleContainerTrack={{ padding: '0px 25px 0px 15px' }}
+        status="green"
+      />
+    );
+  }
+
+  if (!activeReleases && stateInfo !== STATE_INIT_NULL_BEFORE) {
     content = (
       <>
         <PasportCitizenship
           txHash={txHash}
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
-        />
-        <CurrentGift
           initStateCard={false}
-          selectedAddress={selectedAddress}
-          currentGift={useSelectedGiftData}
         />
+        {useSelectedGiftData !== null && (
+          <CurrentGift
+            initStateCard={false}
+            selectedAddress={selectedAddress}
+            currentGift={useSelectedGiftData}
+            release
+          />
+        )}
         <ProgressCard
           titleValue={`${citizens} citizens`}
           headerText="before activation"
@@ -298,20 +366,24 @@ function Release({ defaultAccount }) {
     );
   }
 
-  if (activeReleases) {
+  if (activeReleases && stateInfo !== STATE_INIT_NULL_ACTIVE) {
     content = (
       <>
         <PasportCitizenship
           txHash={txHash}
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
+          initStateCard={false}
         />
 
-        <CurrentGift
-          initStateCard={false}
-          selectedAddress={selectedAddress}
-          currentGift={useSelectedGiftData}
-        />
+        {useSelectedGiftData !== null && (
+          <CurrentGift
+            initStateCard={false}
+            selectedAddress={selectedAddress}
+            currentGift={useSelectedGiftData}
+            release
+          />
+        )}
 
         <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
 
@@ -336,6 +408,8 @@ function Release({ defaultAccount }) {
       </MainContainer>
 
       <ActionBarRelease
+        stateInfo={stateInfo}
+        addressActive={addressActive}
         activeReleases={activeReleases}
         updateTxHash={updateTxHash}
         isRelease={isRelease}

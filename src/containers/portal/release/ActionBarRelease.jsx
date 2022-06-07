@@ -1,5 +1,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useMemo, useContext, useCallback, useState } from 'react';
+import React, {
+  useMemo,
+  useContext,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react';
 import { useHistory } from 'react-router-dom';
 import { calculateFee } from '@cosmjs/stargate';
 import { GasPrice } from '@cosmjs/launchpad';
@@ -9,6 +15,10 @@ import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
 import { Dots } from '../../../components';
 import { ActionBarSteps, BtnGrd } from '../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
+import { trimString } from '../../../utils/utils';
+import { STEP_INFO } from './utils';
+
+const { STATE_INIT_NULL_ACTIVE, STATE_INIT_NULL_BEFORE } = STEP_INFO;
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -41,7 +51,13 @@ const releaseMsg = (giftAddress) => {
   };
 };
 
+const STEP_INIT = 0;
+const STEP_CHECK_ACC = 1;
+const STATE_CHANGE_ACCOUNT = 1.1;
+const STEP_RELEASE = 2;
+
 function ActionBarRelease({
+  stateInfo,
   updateTxHash,
   selectedAddress,
   activeReleases,
@@ -50,15 +66,15 @@ function ActionBarRelease({
   totalGift,
   totalRelease,
   loadingRelease,
+  addressActive,
 }) {
   const history = useHistory();
+  const [step, setStep] = useState(STEP_INIT);
   const { keplr } = useContext(AppContext);
-  const [pendingRelease, setPendingRelease] = useState(false);
 
   const useRelease = useCallback(async () => {
     try {
       if (keplr !== null && currentRelease !== null) {
-        setPendingRelease(true);
         const msgs = [];
         if (currentRelease.length > 0) {
           currentRelease.forEach((item) => {
@@ -96,12 +112,54 @@ function ActionBarRelease({
             });
           }
         }
-        setPendingRelease(false);
+        setStep(STEP_INIT);
       }
     } catch (error) {
       console.log('error', error);
+      setStep(STEP_INIT);
     }
   }, [keplr, currentRelease]);
+
+  useEffect(() => {
+    const checkAddress = async () => {
+      if (step === STEP_CHECK_ACC || step === STATE_CHANGE_ACCOUNT) {
+        if (keplr !== null && addressActive !== null) {
+          const [{ address }] = await keplr.signer.getAccounts();
+          const { bech32 } = addressActive;
+          if (address === bech32) {
+            setStep(STEP_RELEASE);
+            useRelease();
+          } else {
+            setStep(STATE_CHANGE_ACCOUNT);
+          }
+        }
+      }
+    };
+    checkAddress();
+  }, [step, keplr, addressActive]);
+
+  const useAddressOwner = useMemo(() => {
+    if (addressActive !== null) {
+      const { name, bech32 } = addressActive;
+      if (name !== undefined && name !== null) {
+        return (
+          <>
+            account
+            <span style={{ color: '#36d6ae', padding: '0 5px' }}>{name}</span>
+          </>
+        );
+      }
+      return (
+        <>
+          address
+          <span style={{ color: '#36d6ae', padding: '0 5px' }}>
+            {trimString(bech32, 10, 4)}
+          </span>
+        </>
+      );
+    }
+    return '';
+  }, [addressActive]);
 
   const isValidClaime = useMemo(() => {
     if (
@@ -159,6 +217,28 @@ function ActionBarRelease({
     );
   }, [selectedAddress]);
 
+  if (
+    stateInfo === STATE_INIT_NULL_ACTIVE ||
+    stateInfo === STATE_INIT_NULL_BEFORE
+  ) {
+    return (
+      <ActionBarSteps>
+        <BtnGrd
+          onClick={() => history.push('portalCitizenship')}
+          text="get citizenship"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STATE_CHANGE_ACCOUNT) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_INIT)}>
+        choose this {useAddressOwner} in keplr
+      </ActionBarSteps>
+    );
+  }
+
   if (activeReleases && loadingRelease) {
     return (
       <ActionBarSteps>
@@ -181,7 +261,7 @@ function ActionBarRelease({
   if (activeReleases && isValidClaime) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('portalGift')} text="claimed" />
+        <BtnGrd onClick={() => history.push('portalGift')} text="go to claim" />
       </ActionBarSteps>
     );
   }
@@ -191,11 +271,11 @@ function ActionBarRelease({
       <ActionBarSteps>
         <BtnGrd
           disabled={isRelease === false || isRelease === null}
-          onClick={() => useRelease()}
+          onClick={() => setStep(STEP_CHECK_ACC)}
           text={
             useSelectCyber ? `release all ${GIFT_ICON}` : `release ${GIFT_ICON}`
           }
-          pending={pendingRelease}
+          pending={step === STEP_RELEASE || step === STEP_CHECK_ACC}
         />
       </ActionBarSteps>
     );

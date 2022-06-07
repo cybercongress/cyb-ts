@@ -67,23 +67,12 @@ function PortalGift({ defaultAccount, node }) {
     updateFunc
   );
   const [currentGift, setCurrentGift] = useState(null);
+  const [currentGiftAll, setCurrentGiftALl] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
   const [isRelease, setIsRelease] = useState(null);
-  const { totalGift, totalGiftAmount, loadingGift } = useCheckGift(
-    citizenship,
-    addressActive,
-    updateFunc
-  );
+  const { totalGift, totalGiftAmount, loadingGift, setLoadingGift } =
+    useCheckGift(citizenship, addressActive, updateFunc);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
-
-  // console.log('generalGift | PortalGift', totalGift);
-  // console.log('totalGiftAmount', totalGiftAmount);
-
-  // useEffect(() => {
-  //   keplr.signer.keplr.getKey('space-pussy-1').then((info) => {
-  //     console.log('info keplr', info);
-  //   });
-  // }, [keplr]);
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
@@ -151,68 +140,69 @@ function PortalGift({ defaultAccount, node }) {
     confirmTx();
   }, [jsCyber, txHash]);
 
-  // useEffect(() => {
-  //   if (
-  //     active === STEP_GIFT_INFO &&
-  //     selectedAddress === null &&
-  //     citizenship !== null &&
-  //     citizenship.owner
-  //   ) {
-  //     setSelectedAddress(citizenship.owner);
-  //   }
-  // }, [selectedAddress, active, citizenship]);
+  useEffect(() => {
+    if (
+      appStep === STEP_INFO.STATE_INIT &&
+      selectedAddress === null &&
+      citizenship !== null &&
+      citizenship.owner
+    ) {
+      setSelectedAddress(citizenship.owner);
+    }
+  }, [selectedAddress, appStep, citizenship]);
 
-  // useEffect(() => {
-  //   if (active === STEP_GIFT_INFO && !loading) {
-  //     if (citizenship === null) {
-  //       setStepApp(STEP_INFO.STATE_GIFT_NULL);
-  //     } else if (totalGift === null) {
-  //       setStepApp(STEP_INFO.STATE_INIT_PROVE);
-  //     } else if (!isClaimed) {
-  //       setStepApp(STEP_INFO.STATE_INIT_CLAIM);
-  //     } else if (isClaimed) {
-  //       setStepApp(STEP_INFO.STATE_INIT_RELEASE);
-  //     } else {
-  //       setStepApp(null);
-  //     }
-  //   }
+  useEffect(() => {
+    if (Math.floor(appStep) === STEP_INFO.STATE_INIT) {
+      if (!loading) {
+        if (citizenship !== null) {
+          setStepApp(STEP_INFO.STATE_INIT_PROVE);
+        } else {
+          setStepApp(STEP_INFO.STATE_INIT_NULL);
+        }
+      }
+    }
 
-  //   if (active === STEP_PROVE_ADD) {
-  //     setStepApp(STEP_INFO.STATE_PROVE);
-  //   }
+    // if (appStep === STEP_INFO.STATE_PROVE) {
+    //   setStepApp(STEP_INFO.STATE_PROVE_CONNECT);
+    // }
 
-  //   if (active === STEP_CLAIME && !loadingGift) {
-  //     if (
-  //       (isClaimed === null || totalGift === null) &&
-  //       selectedAddress !== null &&
-  //       selectedAddress.match(PATTERN_CYBER)
-  //     ) {
-  //       setStepApp(STEP_INFO.STATE_GIFT_NULL_ALL);
-  //     } else if (isClaimed === null || totalGift === null) {
-  //       setStepApp(STEP_INFO.STATE_GIFT_NULL);
-  //     } else if (
-  //       isClaimed === false &&
-  //       selectedAddress !== null &&
-  //       selectedAddress.match(PATTERN_CYBER)
-  //     ) {
-  //       setStepApp(STEP_INFO.STATE_CLAIME_ALL);
-  //     } else if (isClaimed === false) {
-  //       setStepApp(STEP_INFO.STATE_GIFT_CLAIME);
-  //     } else if (isClaimed === true) {
-  //       setStepApp(STEP_INFO.STATE_RELEASE);
-  //     } else {
-  //       setStepApp(null);
-  //     }
-  //   }
-  // }, [
-  //   active,
-  //   citizenship,
-  //   isClaimed,
-  //   totalGift,
-  //   loadingGift,
-  //   selectedAddress,
-  //   loading,
-  // ]);
+    if (Math.floor(appStep) === STEP_INFO.STATE_CLAIME) {
+      if (!loadingGift) {
+        if (citizenship === null) {
+          setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
+        } else if (totalGift === null) {
+          setStepApp(STEP_INFO.STATE_GIFT_NULL_ALL);
+        } else if (isClaimed === null) {
+          setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
+        } else if (!isClaimed) {
+          setStepApp(STEP_INFO.STATE_CLAIME);
+        } else if (isClaimed) {
+          setStepApp(STEP_INFO.STATE_RELEASE);
+        }
+      }
+    }
+    // if (appStep === STEP_GIFT_INFO && !loading) {
+    //   if (citizenship === null) {
+    //     setStepApp(STEP_INFO.STATE_GIFT_NULL);
+    //   } else if (totalGift === null) {
+    //     setStepApp(STEP_INFO.STATE_INIT_PROVE);
+    //   } else if (!isClaimed) {
+    //     setStepApp(STEP_INFO.STATE_INIT_CLAIM);
+    //   } else if (isClaimed) {
+    //     setStepApp(STEP_INFO.STATE_INIT_RELEASE);
+    //   } else {
+    //     setStepApp(null);
+    //   }
+    // }
+  }, [
+    appStep,
+    citizenship,
+    isClaimed,
+    totalGift,
+    loadingGift,
+    selectedAddress,
+    loading,
+  ]);
 
   useEffect(() => {
     const cheeckStateFunc = async () => {
@@ -243,44 +233,20 @@ function PortalGift({ defaultAccount, node }) {
   useEffect(() => {
     if (!loadingGift) {
       if (selectedAddress !== null && totalGift !== null) {
-        if (Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)) {
-          setCurrentGift([totalGift[selectedAddress]]);
-          if (
-            Object.prototype.hasOwnProperty.call(
-              totalGift[selectedAddress],
-              'isClaimed'
-            )
-          ) {
-            const { isClaimed: isClaimedAddress } = totalGift[selectedAddress];
-            setIsClaimed(isClaimedAddress);
-            if (isClaimedAddress) {
-              setIsRelease(true);
-            }
-            // checkClaim();
+        const tempGift = [];
+        Object.keys(totalGift).forEach((key) => {
+          if (!totalGift[key].isClaimed) {
+            tempGift.push({ ...totalGift[key] });
           }
-        } else if (
-          selectedAddress !== null &&
-          selectedAddress.match(PATTERN_CYBER) &&
-          totalGift !== null
-        ) {
-          const tempGift = [];
-          Object.keys(totalGift).forEach((key) => {
-            if (!totalGift[key].isClaimed) {
-              tempGift.push({ ...totalGift[key] });
-            }
-          });
+        });
 
-          if (Object.keys(tempGift).length > 0) {
-            setIsClaimed(false);
-            setCurrentGift(tempGift);
-          }
+        if (Object.keys(tempGift).length > 0) {
+          setIsClaimed(false);
+          setCurrentGift(tempGift);
+        }
 
-          if (Object.keys(tempGift).length === 0) {
-            setIsClaimed(true);
-          }
-        } else {
-          setCurrentGift(null);
-          setIsClaimed(null);
+        if (Object.keys(tempGift).length === 0) {
+          setIsClaimed(true);
         }
       } else {
         setCurrentGift(null);
@@ -299,17 +265,25 @@ function PortalGift({ defaultAccount, node }) {
         return { address: selectedAddress, ...totalGiftAmount };
       }
 
-      if (currentGift !== null) {
-        return currentGift[0];
+      if (
+        totalGift !== null &&
+        Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
+      ) {
+        return totalGift[selectedAddress];
       }
     }
 
     return null;
-  }, [selectedAddress, currentGift, totalGiftAmount]);
+  }, [selectedAddress, totalGift, totalGiftAmount]);
 
   const useDisableNext = useMemo(() => {
-    return true;
-  }, []);
+    if (!loading) {
+      if (citizenship !== null) {
+        return false;
+      }
+      return true;
+    }
+  }, [loading, citizenship]);
 
   const useStateOpenPassport = useMemo(() => {
     if (Math.floor(appStep) === STEP_CLAIME) {
@@ -340,18 +314,6 @@ function PortalGift({ defaultAccount, node }) {
   // console.log('selectedAddress', selectedAddress);
   // console.log('currentGift', currentGift);
   let content;
-
-  if (loading && citizenship === null) {
-    return '...';
-  }
-
-  if (citizenship === null) {
-    return (
-      <MainContainer>
-        <PasportCitizenship txHash={txHash} citizenship={null} />
-      </MainContainer>
-    );
-  }
 
   if (Math.floor(appStep) === STEP_GIFT_INFO) {
     content = <AboutGift coefficient={currentBonus} />;
@@ -393,7 +355,7 @@ function PortalGift({ defaultAccount, node }) {
           slides={itemsStep}
           activeStep={Math.floor(appStep)}
           setStep={setStepApp}
-          // disableNext={useDisableNext}
+          disableNext={useDisableNext}
         />
         {/* <TabsList active={active} setStep={setActive} /> */}
         {content}
@@ -403,6 +365,7 @@ function PortalGift({ defaultAccount, node }) {
       </MainContainer>
       <ActionBarPortalGift
         // updateFunc={() => setUpdateFunc((item) => item + 1)}
+        addressActive={addressActive}
         citizenship={citizenship}
         updateTxHash={updateTxHash}
         isClaimed={isClaimed}
@@ -411,6 +374,8 @@ function PortalGift({ defaultAccount, node }) {
         activeStep={appStep}
         setStepApp={setStepApp}
         setLoading={setLoading}
+        setLoadingGift={setLoadingGift}
+        loadingGift={loadingGift}
       />
     </>
   );

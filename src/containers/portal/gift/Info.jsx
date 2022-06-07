@@ -5,19 +5,24 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 
 const {
+  STATE_INIT,
   STATE_INIT_NULL,
   STATE_INIT_PROVE,
   STATE_INIT_CLAIM,
   STATE_INIT_RELEASE,
   STATE_PROVE,
-  STATE_CONNECT,
-  STATE_SIGN_MM,
-  STATE_SIGN_KEPLR,
-  STATE_GIFT_NULL,
+  STATE_PROVE_CONNECT,
+  STATE_PROVE_SIGN_MM,
+  STATE_PROVE_SIGN_KEPLR,
+  STATE_PROVE_SEND_SIGN,
+  STATE_PROVE_CHANGE_ACCOUNT,
+  STATE_CLAIME_TO_PROVE,
   STATE_GIFT_NULL_ALL,
-  STATE_GIFT_CLAIME,
+  STATE_CLAIME,
   STATE_CLAIME_ALL,
   STATE_RELEASE,
+  STATE_CLAIM_IN_PROCESS,
+  STATE_PROVE_IN_PROCESS,
 } = STEP_INFO;
 
 const infoTextFnc = (step, selectedAddress) => {
@@ -36,6 +41,7 @@ const infoTextFnc = (step, selectedAddress) => {
         </span>
       );
 
+    case STATE_INIT:
     case STATE_INIT_PROVE:
       return (
         <span>
@@ -68,16 +74,22 @@ const infoTextFnc = (step, selectedAddress) => {
         </span>
       );
 
-    case STATE_CONNECT:
+    case STATE_PROVE_CONNECT:
       return <span>Select signer</span>;
 
-    case STATE_SIGN_MM:
+    case STATE_PROVE_SIGN_MM:
       return <span>Sign message in metamask</span>;
 
-    case STATE_SIGN_KEPLR:
+    case STATE_PROVE_SIGN_KEPLR:
       return <span>sign message in keplr</span>;
 
-    case STATE_GIFT_NULL:
+    case STATE_PROVE_SEND_SIGN:
+      return <span>send your signature</span>;
+
+    case STATE_PROVE_CHANGE_ACCOUNT:
+      return <span> you need change account in keplr</span>;
+
+    case STATE_CLAIME_TO_PROVE:
       return (
         <span>
           Address{' '}
@@ -96,7 +108,7 @@ const infoTextFnc = (step, selectedAddress) => {
         </span>
       );
 
-    case STATE_GIFT_CLAIME:
+    case STATE_CLAIME:
       return (
         <span>
           You have unclaimed gifts. <br />
@@ -119,6 +131,12 @@ const infoTextFnc = (step, selectedAddress) => {
           Go to release or prove another address.
         </span>
       );
+
+    case STATE_PROVE_IN_PROCESS:
+      return <span>prove address take time</span>;
+
+    case STATE_CLAIM_IN_PROCESS:
+      return <span>claim take time</span>;
 
     default:
       return null;

@@ -97,6 +97,7 @@ const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
 };
 
 function ActionBarPortalGift({
+  addressActive,
   citizenship,
   updateTxHash,
   isClaimed,
@@ -105,9 +106,11 @@ function ActionBarPortalGift({
   activeStep,
   setStepApp,
   setLoading,
+  setLoadingGift,
+  loadingGift,
 }) {
   const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { keplr, jsCyber, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
@@ -118,10 +121,10 @@ function ActionBarPortalGift({
         activeStep === STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT ||
         activeStep === STEP_INFO.STATE_PROVE_CHECK_ACCOUNT
       ) {
-        if (keplr !== null && citizenship !== null) {
+        if (keplr !== null && addressActive !== null) {
           const [{ address }] = await keplr.signer.getAccounts();
-          const { owner } = citizenship;
-          if (address === owner) {
+          const { bech32 } = addressActive;
+          if (address === bech32) {
             setStepApp(STEP_INFO.STATE_PROVE_SEND_SIGN);
           } else {
             setStepApp(STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT);
@@ -130,19 +133,31 @@ function ActionBarPortalGift({
       }
     };
     checkAddress();
-  }, [keplr, citizenship, selectMethod, activeStep]);
+  }, [keplr, addressActive, selectMethod, activeStep]);
 
-  const addressOwner = useMemo(() => {
-    if (citizenship !== null) {
+  const useAddressOwner = useMemo(() => {
+    if (citizenship !== null && addressActive !== null) {
       const { owner } = citizenship;
+      const { name } = addressActive;
+      if (name !== undefined && name !== null) {
+        return (
+          <>
+            account
+            <span style={{ color: '#36d6ae', padding: '0 5px' }}>{name}</span>
+          </>
+        );
+      }
       return (
-        <span style={{ color: '#36d6ae', padding: '0 5px' }}>
-          {trimString(owner, 10, 4)}
-        </span>
+        <>
+          address
+          <span style={{ color: '#36d6ae', padding: '0 5px' }}>
+            {trimString(owner, 10, 4)}
+          </span>
+        </>
       );
     }
     return '';
-  }, [citizenship]);
+  }, [citizenship, addressActive]);
 
   const signMsgKeplr = useCallback(async () => {
     const keplrWindow = await getKeplr();
@@ -235,6 +250,9 @@ function ActionBarPortalGift({
           if (setLoading) {
             setLoading(true);
           }
+          if (setLoadingGift) {
+            setLoadingGift(true);
+          }
         }
 
         if (executeResponseResult.code) {
@@ -253,6 +271,12 @@ function ActionBarPortalGift({
 
   const useClaime = useCallback(async () => {
     try {
+      if (keplr === null) {
+        if (initSigner) {
+          initSigner();
+        }
+      }
+
       if (
         keplr !== null &&
         selectedAddress !== null &&
@@ -284,6 +308,9 @@ function ActionBarPortalGift({
                 txHash: executeResponseResult.transactionHash,
               });
               // setStep(STEP_INIT);
+              if (setLoadingGift) {
+                setLoadingGift(true);
+              }
               setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
             }
 
@@ -302,7 +329,7 @@ function ActionBarPortalGift({
       // setStep(STEP_INIT);
       setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
     }
-  }, [keplr, selectedAddress, currentGift, citizenship]);
+  }, [keplr, selectedAddress, currentGift, citizenship, initSigner]);
 
   const isProve = useMemo(() => {
     if (citizenship !== null && citizenship.extension.addresses === null) {
@@ -332,10 +359,22 @@ function ActionBarPortalGift({
     );
   }, [selectedAddress]);
 
+  if (activeStep === STEP_INFO.STATE_INIT_NULL) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd
+          onClick={() => history.push('/portalCitizenship')}
+          text="get citizenship"
+        />
+      </ActionBarContainer>
+    );
+  }
+
   if (
     activeStep === STEP_INFO.STATE_INIT_PROVE ||
     activeStep === STEP_INFO.STATE_PROVE ||
-    activeStep === STEP_INFO.STATE_CLAIME_TO_PROVE
+    activeStep === STEP_INFO.STATE_CLAIME_TO_PROVE ||
+    activeStep === STEP_INFO.STATE_GIFT_NULL_ALL
   ) {
     return (
       <ActionBarContainer>
@@ -451,7 +490,7 @@ function ActionBarPortalGift({
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
       >
-        choose this address {addressOwner} in keplr
+        choose this {useAddressOwner} in keplr
       </ActionBarSteps>
     );
   }
@@ -466,6 +505,14 @@ function ActionBarPortalGift({
           text="send signed message"
         />
       </ActionBarSteps>
+    );
+  }
+
+  if (loadingGift && activeStep === STEP_INFO.STATE_RELEASE) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd pending />
+      </ActionBarContainer>
     );
   }
 

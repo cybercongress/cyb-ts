@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
+import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
 export const ProgressBar = ({
@@ -55,14 +55,24 @@ function ProgressCard({
   titleValue = 0,
   progress = 0,
   styleContainerTrack,
+  status = 'red',
 }) {
+  const title = (
+    <div className={styles.containerBeforeActivationTitle}>
+      <div>{headerText}</div>
+      <div>{titleValue}</div>
+    </div>
+  );
+
   return (
-    <ContainerGradientText status="red">
+    <ContainerGradient
+      title={title}
+      closedTitle={title}
+      styleLampTitle={status}
+      styleLampContent={status}
+      userStyleContent={{ height: '194px' }}
+    >
       <div className={styles.containerBeforeActivation}>
-        <div className={styles.containerBeforeActivationTitle}>
-          <div>{headerText}</div>
-          <div>{titleValue}</div>
-        </div>
         <ProgressBar
           progress={progress}
           styleContainerTrack={styleContainerTrack}
@@ -73,7 +83,7 @@ function ProgressCard({
           <div>100%</div>
         </div>
       </div>
-    </ContainerGradientText>
+    </ContainerGradient>
   );
 }
 

@@ -40,6 +40,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
     const getActivePassport = async () => {
       setLoading(true);
       if (addressActive !== null && jsCyber !== null) {
+        setLoading(true);
         try {
           const query = {
             active_passport: {
@@ -56,6 +57,8 @@ const useGetActivePassport = (addressActive, updateFunc) => {
           setCitizenship(null);
           setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     };
     getActivePassport();

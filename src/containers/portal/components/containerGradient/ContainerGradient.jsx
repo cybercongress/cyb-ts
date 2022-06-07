@@ -118,6 +118,7 @@ function ContainerGradient({
   stateOpen,
   initState = true,
   styleLampContent = 'blue',
+  styleLampTitle,
 }) {
   const [isOpen, setIsOpen] = useState(initState);
 
@@ -163,17 +164,29 @@ function ContainerGradient({
               styleLampContent === 'red',
             [styles.containerContainerGradientPurple]:
               styleLampContent === 'purple',
+            [styles.containerContainerGradientGreen]:
+              styleLampContent === 'green',
           })}
         >
           <Transition in={isOpen} timeout={500}>
             {(state) => {
               return (
                 <>
-                  <ContainerLampBefore>
+                  <ContainerLampBefore style={styleLampTitle}>
                     <div
                       onClick={() => toggling()}
                       role="presentation"
-                      className={styles.containerContainerGradientTitle}
+                      className={classNames(
+                        styles.containerContainerGradientTitle,
+                        {
+                          [styles.containerContainerGradientTitlePrimary]:
+                            !styleLampTitle,
+                          [styles.containerContainerGradientTitleDanger]:
+                            styleLampTitle === 'red',
+                          [styles.containerContainerGradientTitleGreen]:
+                            styleLampTitle === 'green',
+                        }
+                      )}
                     >
                       <div
                         className={classNames(
@@ -201,6 +214,8 @@ function ContainerGradient({
                             styleLampContent === 'red',
                           [styles.containerContainerGradientContentPurple]:
                             styleLampContent === 'purple',
+                          [styles.containerContainerGradientContentGreen]:
+                            styleLampContent === 'green',
                         },
                         styles[`containerContainerGradientContent${state}`]
                       )}

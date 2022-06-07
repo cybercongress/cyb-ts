@@ -13,6 +13,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
   const { jsCyber } = useContext(AppContext);
   const [totalGift, setTotalGift] = useState(null);
   const [totalGiftAmount, setTotalGiftAmount] = useState(null);
+  const [totalGiftClaimed, setTotalGiftClaimed] = useState(null);
   const [loadingGift, setLoadingGift] = useState(true);
 
   useEffect(() => {
@@ -93,6 +94,42 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     }
   }, [totalGift]);
 
+  useEffect(() => {
+    if (totalGift !== null) {
+      let amountTotal = 0;
+      let baseGiftAmountTotal = 0;
+      const detailsTotal = {};
+      Object.keys(totalGift).forEach((key) => {
+        const { amount, details, claim, isClaimed } = totalGift[key];
+        if (isClaimed) {
+          if (claim) {
+            amountTotal += claim;
+            baseGiftAmountTotal += amount;
+          } else if (amount) {
+            amountTotal += amount;
+            baseGiftAmountTotal += amount;
+          }
+          if (details) {
+            Object.keys(details).forEach((keyD) => {
+              if (Object.prototype.hasOwnProperty.call(detailsTotal, keyD)) {
+                detailsTotal[keyD].gift += details[keyD].gift;
+              } else {
+                detailsTotal[keyD] = { gift: details[keyD].gift };
+              }
+            });
+          }
+        }
+      });
+      setTotalGiftClaimed({
+        details: detailsTotal,
+        claim: amountTotal,
+        amount: baseGiftAmountTotal,
+      });
+    } else {
+      setTotalGiftClaimed(null);
+    }
+  }, [totalGift]);
+
   const funcCheckGiftLoop = useCallback(async () => {
     const result = {};
     if (citizenship !== null) {
@@ -167,7 +204,14 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     [jsCyber]
   );
 
-  return { totalGift, totalGiftAmount, loadingGift, funcCheckGiftLoop };
+  return {
+    totalGift,
+    totalGiftAmount,
+    totalGiftClaimed,
+    loadingGift,
+    funcCheckGiftLoop,
+    setLoadingGift,
+  };
 }
 
 export default useCheckGift;
