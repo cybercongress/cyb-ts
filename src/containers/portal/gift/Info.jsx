@@ -31,44 +31,35 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_INIT_NULL:
       return (
         <span>
-          Check gift & basic information. <br />
-          Hurry up! <br />
-          Get citizenship to be able to claim
+          Check gift & basic information. Hurry up! Get citizenship to be able to claim
         </span>
       );
 
     case STATE_INIT_PROVE:
       return (
         <span>
-          Check gift & basic information. <br />
-          Hurry up! <br />
-          Prove address to claim the gift
+          Check gift & basic information. Hurry up! Prove address to claim the gift
         </span>
       );
 
     case STATE_INIT_CLAIM:
       return (
         <span>
-          You have unclaimed gifts - <br />
-          go to claim
+          You have unclaimed gifts - go to claim
         </span>
       );
 
     case STATE_INIT_RELEASE:
       return (
         <span>
-          You claimed all gifts. <br />
-          Go to release <br />
-          or prove another address.
+          You claimed all gifts. Go to release or prove another address.
         </span>
       );
 
     case STATE_PROVE:
       return (
         <span>
-          Prove ethereum, cosmos, osmosis, <br /> terra or bostrom signatures by{' '}
-          <br />
-          selecting signer to check the gift
+          Prove ethereum, cosmos, osmosis, terra or bostrom signatures by{' '} selecting signer to check the gift
         </span>
       );
 
@@ -88,8 +79,7 @@ const infoTextFnc = (step, selectedAddress) => {
           {address !== '' && (
             <span style={{ color: '#38d6ae' }}>{address}</span>
           )}{' '}
-          has no gift <br /> 
-          Prove another to try your luck
+          has no gift. Prove another to try your luck
         </span>
       );
 
@@ -103,26 +93,21 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_GIFT_CLAIME:
       return (
         <span>
-          You have unclaimed gifts. <br />
-          Claim now, br // or prove another address
+          You have unclaimed gifts. Claim now, or prove another address
         </span>
       );
 
     case STATE_CLAIME_ALL:
       return (
         <span>
-          Chose bostrom address <br />
-          to claim all gifts, <br />
-          or claim one by one
+          Chose bostrom address to claim all gifts, or claim one by one
         </span>
       );
 
     case STATE_RELEASE:
       return (
         <span>
-          You claimed all gifts. <br />
-          Go to release <br />
-          or prove another address.
+          You claimed all gifts. Go to release or prove another address.
         </span>
       );
 
