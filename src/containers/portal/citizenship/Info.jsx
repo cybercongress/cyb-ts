@@ -56,16 +56,14 @@ const infoTextFnc = (step, nickname) => {
     case STEP_NICKNAME:
       return (
         <span>
-          Choose your nickname.
-          <br />
-          You will own it as nft
+          Choose your nickname. You will own it as nft
         </span>
       );
 
     case STEP_RULES:
       return (
         <span>
-          Dear {nickname}, <br /> before setting up your account you must
+          Dear {nickname}, before setting up your account you must
           endorce the rules
         </span>
       );
@@ -73,21 +71,19 @@ const infoTextFnc = (step, nickname) => {
     case STEP_AVATAR_UPLOAD:
       return (
         <span>
-          Upload gif or picture. <br /> You will own it as nft also
+          Upload gif or picture. You will also own it as nft
         </span>
       );
     case STEP_KEPLR_INIT:
       return (
         <span>
-          You need keplr to use cyb. <br />
-          it is opensource and cool. <br />
-          Check repository if need
+          You need keplr to use cyb. it is opensource and cool. Check repository if need
         </span>
       );
     case STEP_KEPLR_SETUP:
       return (
         <span>
-          Create account in keplr. <br /> Then you will have addresses <br /> in
+          Create account in keplr. Then you will have addresses in
           Cyber ecosystem
         </span>
       );
@@ -95,7 +91,7 @@ const infoTextFnc = (step, nickname) => {
     case STEP_KEPLR_CONNECT:
       return (
         <span>
-          Connect keplr. <br /> One click left
+          Connect keplr. One click left
         </span>
       );
 
@@ -108,9 +104,7 @@ const infoTextFnc = (step, nickname) => {
     case STEP_KEPLR_REGISTER:
       return (
         <span>
-          Register passport,
-          <br /> then check the gift proving ethereum, <br /> cosmos, osmosis
-          and terra address.
+          Register passport, then check the gift proving ethereum, cosmos, osmosis and terra address.
         </span>
       );
 
@@ -118,8 +112,7 @@ const infoTextFnc = (step, nickname) => {
     case STEP_CHECK_GIFT:
       return (
         <span>
-          Congratulations, {nickname} - <br /> you are citizen of the Moon. Try
-          your luck and check the gift
+          Congratulations, {nickname} - you are citizen of the Moon. Try your luck and check the gift
         </span>
       );
 
@@ -129,35 +122,35 @@ const infoTextFnc = (step, nickname) => {
 
   //   [STEP_AVATAR_UPLOAD]: (
   //     <span>
-  //       Upload gif or picture. <br /> You will own it as nft also
+  //       Upload gif or picture. You will own it as nft also
   //     </span>
   //   ),
   //   [STEP_KEPLR_INIT]: (
   //     <span>
-  //       You need keplr to use cyb. <br /> it is opensource and cool. <br /> Check
+  //       You need keplr to use cyb. it is opensource and cool. <br /> Check
   //       repository if need
   //     </span>
   //   ),
   //   [STEP_KEPLR_SETUP]: (
   //     <span>
-  //       Create account in keplr. <br /> Then you will have addresses in Cyber
+  //       Create account in keplr. Then you will have addresses in Cyber
   //       ecosystem
   //     </span>
   //   ),
   //   [STEP_KEPLR_CONNECT]: (
   //     <span>
-  //       Connect keplr. <br /> One click left
+  //       Connect keplr. One click left
   //     </span>
   //   ),
   //   [STEP_CHECK_ADDRESS]: (
   //     <span>
-  //       Activation takes time, patience, <br /> and a lot of lube. After that, you
+  //       Activation takes time, patience, and a lot of lube. After that, you
   //       can register your passport.
   //     </span>
   //   ),
   //   [STEP_KEPLR_REGISTER]: (
   //     <span>
-  //       Register passport, then check the <br /> gift proving ethereum, cosmos,
+  //       Register passport, then check the gift proving ethereum, cosmos,
   //       osmosis and terra address.
   //     </span>
   //   ),
