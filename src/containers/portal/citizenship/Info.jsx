@@ -63,8 +63,7 @@ const infoTextFnc = (step, nickname) => {
     case STEP_RULES:
       return (
         <span>
-          Dear {nickname}, before setting up your account you must
-          follow these steps.
+          Dear {nickname}, before setting up your account abide by these rules.
         </span>
       );
 
