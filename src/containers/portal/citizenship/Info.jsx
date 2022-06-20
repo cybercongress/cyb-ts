@@ -17,81 +17,80 @@ const {
   STEP_ACTIVE_ADD
 } = steps;
 
-// Choose your nickname.You will own it as nft
+// Choose your nickname. You will own this as an NFT.
 
-// Nickname is available at that moment
+// Nickname is currently available.
 
 // Dear ~mastercyb,
-// before setting up your account you must endorce the rules
+// Before setting up your account you must follow these steps.
 
-// Upload gif or picture.You will own it as nft also
+// Upload a gif or picture. You will own this as an NFT also.
 
-// Looks good.You will own it as nft alsoNext step is to get address
+// Looks good. The next step is to get an address.
 
-// You need keplr to use cyb.
-// it is opensource and cool.
-//  Check repository if need
+// You need Keplr to use cyb.
+// It is opensource and cool!
+// Check repository if necessary.
 
-// Create account in keplr.
-// Then you will have addresses
-// in Cyber ecosystem
+// Create an account in Keplr.
+// You will then have addresses
+// in the Cyber ecosystem.
 
-// Connect keplr.
-// One click left
+// Connect Keplr.
+// One click left!
 
 // Activation takes time, patience, and a lot of lube. After that, you can register your passport.
 
-// Register passport, then check the gift proving ethereum, cosmos, osmosis and terra address.
+// Register passport, then check for a gift proving Ethereum, Cosmos, Osmosis and Terra addresses.
 
-// Registration take time.
+// Registration takes time.
 // Time, patience and a lot of lube.
 // Check gift while waiting.
 
 // Congratulations, ~mastercyb -
-// you are citizen of the Moon.
-// Try your luck and check the gift
+// You are a citizen of the Moon.
+// Try your luck and check for a gift!
 
 const infoTextFnc = (step, nickname) => {
   switch (step) {
     case STEP_NICKNAME:
       return (
         <span>
-          Choose your nickname. You will own it as nft
+          Choose your nickname. You will own it as an NFT.
         </span>
       );
 
     case STEP_RULES:
       return (
         <span>
-          Dear {nickname}, before setting up your account you must
-          endorce the rules
+          Dear {nickname}, before setting up your account abide by these rules.
         </span>
       );
 
     case STEP_AVATAR_UPLOAD:
       return (
         <span>
-          Upload gif or picture. You will also own it as nft
+          Upload a gif or picture. You will also own this as an NFT.
         </span>
       );
     case STEP_KEPLR_INIT:
       return (
         <span>
-          You need keplr to use cyb. it is opensource and cool. Check repository if need
+          You need Keplr to use cyb. It is opensource and cool! Check repository if necesarry. 
         </span>
       );
     case STEP_KEPLR_SETUP:
       return (
         <span>
-          Create account in keplr. Then you will have addresses in
-          Cyber ecosystem
+          Create an account in Keplr. You will then have addresses in the
+          Cyber ecosystem.
         </span>
       );
 
     case STEP_KEPLR_CONNECT:
       return (
         <span>
-          Connect keplr. One click left
+          Connect Keplr. One click left! 
         </span>
       );
 
@@ -104,7 +103,7 @@ const infoTextFnc = (step, nickname) => {
     case STEP_KEPLR_REGISTER:
       return (
         <span>
-          Register passport, then check the gift proving ethereum, cosmos, osmosis and terra address.
+          Register passport, then check for a gift proving Ethereum, Cosmos, Osmosis and Terra addresses.
         </span>
       );
 
@@ -112,7 +111,7 @@ const infoTextFnc = (step, nickname) => {
     case STEP_CHECK_GIFT:
       return (
         <span>
-          Congratulations, {nickname} - you are citizen of the Moon. Try your luck and check the gift
+          Congratulations, {nickname} - you are a citizen of the Moon! Try your luck and check for a gift.
         </span>
       );
 
@@ -122,24 +121,24 @@ const infoTextFnc = (step, nickname) => {
 
   //   [STEP_AVATAR_UPLOAD]: (
   //     <span>
-  //       Upload gif or picture. You will own it as nft also
+  //       Upload a gif or picture. You will own it as an NFT also.
   //     </span>
   //   ),
   //   [STEP_KEPLR_INIT]: (
   //     <span>
-  //       You need keplr to use cyb. it is opensource and cool. <br /> Check
-  //       repository if need
+  //       You need Keplr to use cyb. It is opensource and cool! <br /> Check
+  //       repository if necesarry.
   //     </span>
   //   ),
   //   [STEP_KEPLR_SETUP]: (
   //     <span>
-  //       Create account in keplr. Then you will have addresses in Cyber
-  //       ecosystem
+  //       Create an account in Keplr. You will then have addresses in the Cyber
+  //       ecosystem.
   //     </span>
   //   ),
   //   [STEP_KEPLR_CONNECT]: (
   //     <span>
-  //       Connect keplr. One click left
+  //       Connect Keplr. One click left!
   //     </span>
   //   ),
   //   [STEP_CHECK_ADDRESS]: (
@@ -150,8 +149,8 @@ const infoTextFnc = (step, nickname) => {
   //   ),
   //   [STEP_KEPLR_REGISTER]: (
   //     <span>
-  //       Register passport, then check the gift proving ethereum, cosmos,
-  //       osmosis and terra address.
+  //       Register passport, then check for a gift proving Ethereum, Cosmos,
+  //       Osmosis and Terra addresses.
   //     </span>
   //   ),
 };
