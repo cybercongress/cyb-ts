@@ -31,14 +31,14 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_INIT_NULL:
       return (
         <span>
-          Check gift & basic information. Hurry up! Get citizenship to be able to claim
+          Check gift & basic information. Hurry up! Get your citizenship to be able to claim.
         </span>
       );
 
     case STATE_INIT_PROVE:
       return (
         <span>
-          Check gift & basic information. Hurry up! Prove address to claim the gift
+          Check gift & basic information. Hurry up! Prove an address to claim the gift.
         </span>
       );
 
@@ -52,14 +52,14 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_INIT_RELEASE:
       return (
         <span>
-          You claimed all gifts. Go to release or prove another address.
+          You have claimed all gifts. Go to release or prove another address.
         </span>
       );
 
     case STATE_PROVE:
       return (
         <span>
-          Prove ethereum, cosmos, osmosis, terra or bostrom signatures by{' '} selecting signer to check the gift
+          Prove Ethereum, Cosmos, Osmosis, Terra or Bostrom signatures by{' '} selecting signer to check for the gift.
         </span>
       );
 
@@ -79,28 +79,28 @@ const infoTextFnc = (step, selectedAddress) => {
           {address !== '' && (
             <span style={{ color: '#38d6ae' }}>{address}</span>
           )}{' '}
-          has no gift. Prove another to try your luck
+          has no gift. Prove another to try your luck.
         </span>
       );
 
     case STATE_GIFT_NULL_ALL:
       return (
         <span>
-          You have nothing to claim. Prove another address with the gift.
+          You have nothing to claim. Prove another address for the gift.
         </span>
       );
 
     case STATE_GIFT_CLAIME:
       return (
         <span>
-          You have unclaimed gifts. Claim now, or prove another address
+          You have unclaimed gifts. Claim now or prove another address.
         </span>
       );
 
     case STATE_CLAIME_ALL:
       return (
         <span>
-          Chose bostrom address to claim all gifts, or claim one by one
+          Chose Bostrom address to claim all gifts, or claim one by one.
         </span>
       );
 
