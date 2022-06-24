@@ -38,7 +38,7 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_INIT_PROVE:
       return (
         <span>
-          Check gift & basic information. Hurry up! Prove address to claim the gift.
+          Check gift & basic information. Hurry up! Prove an address to claim the gift.
         </span>
       );
 
@@ -52,7 +52,7 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_INIT_RELEASE:
       return (
         <span>
-          You claimed all gifts. Go to release or prove another address.
+          You have claimed all gifts. Go to release or prove another address.
         </span>
       );
 
@@ -79,7 +79,7 @@ const infoTextFnc = (step, selectedAddress) => {
           {address !== '' && (
             <span style={{ color: '#38d6ae' }}>{address}</span>
           )}{' '}
-          has no gift. Prove another address to try your luck!
+          has no gift. Prove another to try your luck.
         </span>
       );
 
@@ -93,14 +93,14 @@ const infoTextFnc = (step, selectedAddress) => {
     case STATE_GIFT_CLAIME:
       return (
         <span>
-          You have unclaimed gifts. Claim now, or prove another address.
+          You have unclaimed gifts. Claim now or prove another address.
         </span>
       );
 
     case STATE_CLAIME_ALL:
       return (
         <span>
-          Choose Bostrom address to claim all gifts, or claim one by one.
+          Chose Bostrom address to claim all gifts, or claim one by one.
         </span>
       );
 
