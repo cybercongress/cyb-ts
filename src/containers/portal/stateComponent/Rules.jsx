@@ -17,7 +17,7 @@ function Rules() {
           <li>Never give your keys to anyone </li>
           <li>Learn to trust your keys to apps </li>
           <li>Always verify your keys </li>
-          <li>Consider how to inherit your keys</li>
+          <li>Consider how to pass down your keys</li>
         </ol>
       </div>
     </ContainerGradient>
