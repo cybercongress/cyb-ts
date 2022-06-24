@@ -18,7 +18,7 @@ const keyTable = [
   'Devil',
   'Master of the Great Web',
   'Passionate Investor',
-  'True Heroe of the Great Web',
+  'True Hero of the Great Web',
 ];
 
 const ItemValue = ({ value, title }) => (
@@ -115,7 +115,7 @@ function CurrentGift({ currentGift, currentBonus, stateOpen }) {
           />
         </div>
         <div>
-          You are the one, who been chosen for good deeds in cyberverse on 5th
+          You have been chosen for good deeds in the cyberverse on the 5th
           of November 2021:
         </div>
         <TableAllocation currentGift={currentGift} />
