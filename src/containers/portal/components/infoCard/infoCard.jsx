@@ -23,11 +23,13 @@ const ContainerGradienAfter = ({ status, children }) => (
   </div>
 );
 
-function InfoCard({ children }) {
+function InfoCard({ children, ...props }) {
   return (
     <ContainerLampAfter>
       <ContainerGradienAfter>
-        <div className={styles.containerInfoCard}>{children}</div>
+        <div className={styles.containerInfoCard} {...props}>
+          {children}
+        </div>
       </ContainerGradienAfter>
       {/* <div className={styles.triangle} /> */}
     </ContainerLampAfter>

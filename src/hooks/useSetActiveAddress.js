@@ -10,11 +10,15 @@ function useSetActiveAddress(defaultAccount) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
+      const { keys, bech32, name } = account.cyber;
       addressPocket = {
         bech32,
         keys,
       };
+
+      if (name) {
+        addressPocket.name = name;
+      }
     }
     setAddressActive(addressPocket);
   }, [defaultAccount.name]);

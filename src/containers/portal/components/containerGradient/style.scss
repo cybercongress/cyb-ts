@@ -88,6 +88,15 @@
     }
   }
 
+  &Green {
+    &::after {
+      opacity: 11%;
+      @include styleGradientPseudoEl;
+      @include linear-gradient-green(90deg);
+      right: 0;
+    }
+  }
+
   &Title {
     min-height: 50px;
     font-size: 18px;
@@ -98,17 +107,37 @@
     padding: 15px;
     cursor: pointer;
 
-    &::before {
-      opacity: 14%;
-      @include styleGradientPseudoEl;
-      @include linear-gradient-grey(-90deg);
-      left: 0;
+    &Primary {
+      &::before {
+        opacity: 14%;
+        @include styleGradientPseudoEl;
+        @include linear-gradient-grey(-90deg);
+        left: 0;
+      }
+    }
+
+    &Danger {
+      &::before {
+        opacity: 11%;
+        @include styleGradientPseudoEl;
+        @include linear-gradient-danger(-90deg);
+        left: 0;
+      }
+    }
+
+    &Green {
+      &::before {
+        opacity: 11%;
+        @include styleGradientPseudoEl;
+        @include linear-gradient-green(-90deg);
+        left: 0;
+      }
     }
 
     &Content {
       display: flex;
       align-items: center;
-      // min-height: 32px;
+      min-height: 32px;
       line-height: 25px;
       width: 100%;
       transition: 1.5s ease-in-out;
@@ -164,6 +193,7 @@
       padding: 0px;
       height: 0px !important;
       min-height: 0px;
+      visibility: hidden;
     }
 
     &Primary {
@@ -191,6 +221,16 @@
         opacity: 11%;
         @include styleGradientPseudoEl;
         @include linear-gradient-purple(-90deg);
+        left: 0;
+        z-index: -1;
+      }
+    }
+
+    &Green {
+      &::before {
+        opacity: 11%;
+        @include styleGradientPseudoEl;
+        @include linear-gradient-green(-90deg);
         left: 0;
         z-index: -1;
       }

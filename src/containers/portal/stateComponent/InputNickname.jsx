@@ -1,20 +1,27 @@
 import React from 'react';
 import Input from '../../teleport/components/input';
 import { ContainerGradient } from '../components';
+import { steps } from '../citizenship/utils';
 
-function InputNickname({ valueNickname, setValueNickname }) {
+function InputNickname({ valueNickname, step, onChangeNickname }) {
   return (
     <ContainerGradient>
-      <div style={{ width: '160px' }}>
-        <Input
-          value={valueNickname}
-          onChange={(e) => setValueNickname(e.target.value)}
-          placeholder="choose username"
-          autoComplete="off"
-          textalign="end"
-          style={{ fontSize: '16px' }}
-        />
-      </div>
+      {(step === steps.STEP_NICKNAME_CHOSE ||
+        step === steps.STEP_NICKNAME_INVALID) && (
+        <div style={{ width: '160px' }}>
+          <Input
+            value={valueNickname}
+            onChange={onChangeNickname}
+            placeholder="choose username"
+            autoComplete="off"
+            textalign="end"
+            style={{ fontSize: '16px' }}
+          />
+        </div>
+      )}
+      {step === steps.STEP_NICKNAME_APROVE && (
+        <div style={{ color: '#36D6AE' }}>{valueNickname}</div>
+      )}
     </ContainerGradient>
   );
 }

@@ -7,11 +7,33 @@ import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
 
+export const getKeplr = async () => {
+  if (window.keplr) {
+    return window.keplr;
+  }
+
+  if (document.readyState === 'complete') {
+    return window.keplr;
+  }
+
+  return new Promise((resolve) => {
+    const documentStateChange = (event) => {
+      if (event.target && event.target.readyState === 'complete') {
+        resolve(window.keplr);
+        document.removeEventListener('readystatechange', documentStateChange);
+      }
+    };
+
+    document.addEventListener('readystatechange', documentStateChange);
+  });
+};
+
 const valueContext = {
   keplr: null,
   ws: null,
   jsCyber: null,
   updatejsCyber: () => {},
+  initSigner: () => {},
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -20,7 +42,8 @@ export const useContextProvider = () => useContext(AppContext);
 
 export async function createClient(signer) {
   if (signer) {
-    const firstAddress = (await signer.getAccounts())[0].address;
+    const firstAddress = await signer.getAccounts();
+    console.log('firstAddress', firstAddress);
     // const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
     const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -99,25 +122,27 @@ const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     window.onload = async () => {
-      init();
+      const windowKeplr = await getKeplr();
+      if (windowKeplr) {
+        initSigner();
+      }
     };
   }, []);
 
   useEffect(() => {
     window.addEventListener('keplr_keystorechange', () => {
-      init();
+      initSigner();
     });
   }, []);
 
-  const init = async () => {
-    console.log(`window.keplr `, window.keplr);
-    console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
-    if (window.keplr || window.getOfflineSignerAuto) {
-      if (window.keplr.experimentalSuggestChain) {
-        await window.keplr.experimentalSuggestChain(
+  const initSigner = async () => {
+    const windowKeplr = await getKeplr();
+    if (windowKeplr || window.getOfflineSignerAuto) {
+      if (windowKeplr.experimentalSuggestChain) {
+        await windowKeplr.experimentalSuggestChain(
           configKeplr(CYBER.BECH32_PREFIX_ACC_ADDR_CYBER)
         );
-        await window.keplr.enable(CYBER.CHAIN_ID);
+        await windowKeplr.enable(CYBER.CHAIN_ID);
         const offlineSigner = await window.getOfflineSignerAuto(CYBER.CHAIN_ID);
         console.log(`offlineSigner`, offlineSigner);
         setSigner(offlineSigner);
@@ -142,7 +167,7 @@ const AppContextProvider = ({ children }) => {
   }
 
   return (
-    <AppContext.Provider value={{ ...value, updatejsCyber }}>
+    <AppContext.Provider value={{ ...value, updatejsCyber, initSigner }}>
       {children}
     </AppContext.Provider>
   );

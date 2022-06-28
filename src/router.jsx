@@ -59,6 +59,7 @@ import {
 } from './containers/wasm';
 import Help from './containers/help';
 import Assets from './containers/assets';
+import MainPartal from './containers/portal/mainPortal';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -141,9 +142,10 @@ function AppRouter({
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
-        <Route path="/portalCitizenship" component={PortalCitizenship} />
-        <Route path="/portalGift" component={PortalGift} />
-        <Route path="/portalRelease" component={Release} />
+        <Route path="/citizenship" component={PortalCitizenship} />
+        <Route path="/gift" component={PortalGift} />
+        <Route path="/release" component={Release} />
+        <Route path="/portal" component={MainPartal} />
         <Route path="/ibc" component={Ibc} />
         {/* wasm */}
         <Route path="/codes" exact component={Codes} />

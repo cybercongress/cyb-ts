@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
@@ -115,19 +115,42 @@ function ContainerGradient({
   txs,
   danger,
   userStyleContent,
-  stateOpen = true,
+  stateOpen,
+  initState = true,
   styleLampContent = 'blue',
+  styleLampTitle,
 }) {
-  const [isOpen, setIsOpen] = useState(stateOpen);
+  const [isOpen, setIsOpen] = useState(initState);
+
+  useEffect(() => {
+    if (stateOpen !== undefined) {
+      setIsOpen(stateOpen);
+    }
+  }, [stateOpen]);
 
   const toggling = () => setIsOpen(!isOpen);
 
-  const useTitle = useMemo(() => {
-    if (!isOpen && closedTitle && closedTitle !== null) {
-      return closedTitle;
-    }
-    return title;
-  }, [isOpen, closedTitle, title]);
+  const useTitle = useCallback(
+    (state) => {
+      if (
+        !isOpen &&
+        closedTitle &&
+        closedTitle !== null &&
+        state === 'exited'
+      ) {
+        // setTimeout(() => {
+        //   console.log('first', first)
+        // }, 500);
+        return closedTitle;
+      }
+      // setTimeout(() => {
+      if (state === 'entered') {
+        return title;
+      }
+      // }, 500);
+    },
+    [isOpen, closedTitle, title]
+  );
 
   return (
     <div>
@@ -141,17 +164,29 @@ function ContainerGradient({
               styleLampContent === 'red',
             [styles.containerContainerGradientPurple]:
               styleLampContent === 'purple',
+            [styles.containerContainerGradientGreen]:
+              styleLampContent === 'green',
           })}
         >
           <Transition in={isOpen} timeout={500}>
             {(state) => {
               return (
                 <>
-                  <ContainerLampBefore>
+                  <ContainerLampBefore style={styleLampTitle}>
                     <div
                       onClick={() => toggling()}
                       role="presentation"
-                      className={styles.containerContainerGradientTitle}
+                      className={classNames(
+                        styles.containerContainerGradientTitle,
+                        {
+                          [styles.containerContainerGradientTitlePrimary]:
+                            !styleLampTitle,
+                          [styles.containerContainerGradientTitleDanger]:
+                            styleLampTitle === 'red',
+                          [styles.containerContainerGradientTitleGreen]:
+                            styleLampTitle === 'green',
+                        }
+                      )}
                     >
                       <div
                         className={classNames(
@@ -161,7 +196,7 @@ function ContainerGradient({
                           ]
                         )}
                       >
-                        {useTitle}
+                        {useTitle(state)}
                       </div>
                     </div>
                   </ContainerLampBefore>
@@ -179,6 +214,8 @@ function ContainerGradient({
                             styleLampContent === 'red',
                           [styles.containerContainerGradientContentPurple]:
                             styleLampContent === 'purple',
+                          [styles.containerContainerGradientContentGreen]:
+                            styleLampContent === 'green',
                         },
                         styles[`containerContainerGradientContent${state}`]
                       )}

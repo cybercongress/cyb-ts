@@ -28,11 +28,11 @@ const itemsMenu = (address) => {
     },
     {
       name: 'Portal',
-      to: '/search/portal',
+      to: '/portal',
       subItems: [
-        { name: 'Citizenship', to: '/portalCitizenship' },
-        { name: 'Gift', to: '/portalGift' },
-        { name: 'Release', to: '/portalRelease' },
+        { name: 'Citizenship', to: '/citizenship' },
+        { name: 'Gift', to: '/gift' },
+        // { name: 'Release', to: '/release' },
       ],
     },
     {

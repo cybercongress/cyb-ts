@@ -43,12 +43,20 @@ const Signatures = ({ addressActive }) => {
     return items;
   }, [address]);
 
+  const copyAddress = useCallback(() => {
+    if (addressActive !== null) {
+      const { bech32 } = addressActive;
+      navigator.clipboard.writeText(bech32);
+    }
+  }, [addressActive]);
+
   const onClickMusicalAddress = useCallback(() => {
     if (!plaing) {
       return;
     }
 
     if (address !== null) {
+      copyAddress();
       const { address: sliceAddress } = address;
       const arrNote = getNoteFromAdd(sliceAddress);
       setPlaing(false);

@@ -1,180 +1,270 @@
-import React from 'react';
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { steps } from './utils';
 import { InfoCard } from '../components';
+import { formatNumber } from '../../../utils/search/utils';
+import { BOOT_ICON } from '../utils';
+import { LinkWindow } from '../../../components';
 
 const {
   STEP_INIT,
-  STEP_NICKNAME,
+  STEP_NICKNAME_CHOSE,
+  STEP_NICKNAME_APROVE,
+  STEP_NICKNAME_INVALID,
   STEP_RULES,
   STEP_AVATAR_UPLOAD,
   STEP_KEPLR_INIT,
+  STEP_KEPLR_INIT_INSTALLED,
+  STEP_KEPLR_INIT_CHECK_FNC,
   STEP_KEPLR_SETUP,
   STEP_KEPLR_CONNECT,
   STEP_CHECK_ADDRESS,
   STEP_KEPLR_REGISTER,
   STEP_DONE,
   STEP_CHECK_GIFT,
-  STEP_ACTIVE_ADD
+  STEP_CHECK_ADDRESS_CHECK_FNC,
+  STEP_ACTIVE_ADD,
 } = steps;
 
-// Choose your nickname.You will own it as nft
-
-// Nickname is available at that moment
-
-// Dear ~mastercyb,
-// before setting up your account you must endorce the rules
-
-// Upload gif or picture.You will own it as nft also
-
-// Looks good.You will own it as nft alsoNext step is to get address
-
-// You need keplr to use cyb.
-// it is opensource and cool.
-//  Check repository if need
-
-// Create account in keplr.
-// Then you will have addresses
-// in Cyber ecosystem
-
-// Connect keplr.
-// One click left
-
-// Activation takes time, patience, and a lot of lube. After that, you can register your passport.
-
-// Register passport, then check the gift proving ethereum, cosmos, osmosis and terra address.
-
-// Registration take time.
-// Time, patience and a lot of lube.
-// Check gift while waiting.
-
-// Congratulations, ~mastercyb -
-// you are citizen of the Moon.
-// Try your luck and check the gift
-
-const infoTextFnc = (step, nickname) => {
-  switch (step) {
-    case STEP_NICKNAME:
-      return (
-        <span>
-          Choose your nickname.
-          <br />
-          You will own it as nft
-        </span>
-      );
-
-    case STEP_RULES:
-      return (
-        <span>
-          Dear {nickname}, <br /> before setting up your account you must
-          endorce the rules
-        </span>
-      );
-
-    case STEP_AVATAR_UPLOAD:
-      return (
-        <span>
-          Upload gif or picture. <br /> You will own it as nft also
-        </span>
-      );
-    case STEP_KEPLR_INIT:
-      return (
-        <span>
-          You need keplr to use cyb. <br />
-          it is opensource and cool. <br />
-          Check repository if need
-        </span>
-      );
-    case STEP_KEPLR_SETUP:
-      return (
-        <span>
-          Create account in keplr. <br /> Then you will have addresses <br /> in
-          Cyber ecosystem
-        </span>
-      );
-
-    case STEP_KEPLR_CONNECT:
-      return (
-        <span>
-          Connect keplr. <br /> One click left
-        </span>
-      );
-
-    case STEP_ACTIVE_ADD:
-    case STEP_CHECK_ADDRESS:
-      return (
-        <span>Your passport can be registered after address activation.</span>
-      );
-
-    case STEP_KEPLR_REGISTER:
-      return (
-        <span>
-          Register passport,
-          <br /> then check the gift proving ethereum, <br /> cosmos, osmosis
-          and terra address.
-        </span>
-      );
-
-    case STEP_DONE:
-    case STEP_CHECK_GIFT:
-      return (
-        <span>
-          Congratulations, {nickname} - <br /> you are citizen of the Moon. Try
-          your luck and check the gift
-        </span>
-      );
-
-    default:
-      return null;
-  }
-
-  //   [STEP_AVATAR_UPLOAD]: (
-  //     <span>
-  //       Upload gif or picture. <br /> You will own it as nft also
-  //     </span>
-  //   ),
-  //   [STEP_KEPLR_INIT]: (
-  //     <span>
-  //       You need keplr to use cyb. <br /> it is opensource and cool. <br /> Check
-  //       repository if need
-  //     </span>
-  //   ),
-  //   [STEP_KEPLR_SETUP]: (
-  //     <span>
-  //       Create account in keplr. <br /> Then you will have addresses in Cyber
-  //       ecosystem
-  //     </span>
-  //   ),
-  //   [STEP_KEPLR_CONNECT]: (
-  //     <span>
-  //       Connect keplr. <br /> One click left
-  //     </span>
-  //   ),
-  //   [STEP_CHECK_ADDRESS]: (
-  //     <span>
-  //       Activation takes time, patience, <br /> and a lot of lube. After that, you
-  //       can register your passport.
-  //     </span>
-  //   ),
-  //   [STEP_KEPLR_REGISTER]: (
-  //     <span>
-  //       Register passport, then check the <br /> gift proving ethereum, cosmos,
-  //       osmosis and terra address.
-  //     </span>
-  //   ),
+const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
+const typeInterval = () => {
+  const randomMs = 100 * Math.random();
+  return randomMs < 50 ? 10 : randomMs;
 };
 
-function Info({ stepCurrent, nickname }) {
-  if (infoTextFnc(stepCurrent, nickname) !== null) {
-    return (
-      <InfoCard>
-        <div style={{ textAlign: 'center' }}>
-          {infoTextFnc(stepCurrent, nickname)}
-        </div>
-      </InfoCard>
-    );
-  }
+const InfoTypingText = ({ content }) => {
+  // useEffect(() => {
+  //   const typingFunc = async () => {
+  //     const node = document.querySelector('#TypingText');
+  //     node.innerHTML = '';
+  //     if (content !== null) {
+  //       const { children } = content.props;
+  //       for (const key in children) {
+  //         if (Object.hasOwnProperty.call(children, key)) {
+  //           const item = children[key];
+  //           if (item.type && item.type === 'br') {
+  //             node.innerHTML += '<br />';
+  //           } else {
+  //             for (const character in item) {
+  //               if (Object.hasOwnProperty.call(item, character)) {
+  //                 const element = item[character];
+  //                 node.innerHTML += element;
+  //                 await sleep(typeInterval());
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   };
+  //   typingFunc();
+  // }, [content]);
 
-  return null;
+  useEffect(() => {
+    const typingFunc = async () => {
+      const node = document.querySelector('#TypingText');
+      console.log('node', node);
+      node.innerText = '';
+      await node.type('Hello, \n dfsd');
+    };
+    typingFunc();
+  }, [content]);
+
+  // return customElements.define('type-async', TypeAsync, { extends: 'span' });
+  // return <type-async id="TypingText" />;
+  // return <span id="TypingText" />;
+};
+
+function Info({
+  stepCurrent,
+  nickname,
+  valuePriceNickname,
+  registerDisabled,
+  setStep,
+  counCitizenshipst,
+}) {
+  const useContent = useMemo(() => {
+    let content;
+
+    switch (stepCurrent) {
+      case STEP_INIT:
+        content = (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '10px 50px 0px 50px',
+              gap: 20,
+              display: 'grid',
+            }}
+          >
+            <div>My name is Cyb.</div>
+            <div>
+              I helped you to receive{' '}
+              <span style={{ color: '#36d6ae' }}>
+                {formatNumber(counCitizenshipst)}
+              </span>{' '}
+              Moon Citizenships.
+            </div>
+            <div>I can help you also in 7 simple steps.</div>
+            <div>Also I have a gift for you if you tried hard!</div>
+          </div>
+        );
+        break;
+
+      case STEP_NICKNAME_CHOSE:
+        content = (
+          <span>
+            Choose your nickname.
+            <br />
+            You will own it as nft
+          </span>
+        );
+        break;
+
+      case STEP_NICKNAME_INVALID:
+        content = (
+          <span>
+            Nickname is unavailable. <br />
+            Choose another nickname
+          </span>
+        );
+        break;
+
+      case STEP_NICKNAME_APROVE:
+        content = (
+          <span>
+            Nickname is available <br /> at that moment <br />
+            {valuePriceNickname &&
+              valuePriceNickname !== null &&
+              `${formatNumber(valuePriceNickname.amountPrice)} ${BOOT_ICON}`}
+          </span>
+        );
+        break;
+
+      case STEP_RULES:
+        content = (
+          <span>
+            Dear {nickname}, <br /> before setting up your account you must
+            endorce the rules
+          </span>
+        );
+        break;
+
+      case STEP_AVATAR_UPLOAD:
+        content = (
+          <span>
+            Upload gif or picture. <br /> You will own it as nft also
+          </span>
+        );
+        break;
+
+      case STEP_KEPLR_INIT_CHECK_FNC:
+      case STEP_KEPLR_INIT:
+      case STEP_KEPLR_INIT_INSTALLED:
+        content = (
+          <span>
+            You need keplr to use cyb. <br />
+            it is opensource and cool. <br /> Check{' '}
+            <LinkWindow to="https://www.keplr.app/">repository</LinkWindow> if
+            need
+          </span>
+        );
+        break;
+
+      case STEP_KEPLR_SETUP:
+        content = (
+          <span>
+            Create account in keplr. <br /> Then you will have addresses <br />{' '}
+            in Cyber ecosystem
+          </span>
+        );
+        break;
+
+      case STEP_KEPLR_CONNECT:
+        content = (
+          <span>
+            Connect keplr. <br /> One click left
+          </span>
+        );
+        break;
+
+      case STEP_ACTIVE_ADD:
+      case STEP_CHECK_ADDRESS:
+        content = (
+          <span>
+            Your passport can be registered <br /> after address activation.
+          </span>
+        );
+        break;
+
+      case STEP_CHECK_ADDRESS_CHECK_FNC:
+        content = (
+          <span>
+            Verification takes time. After that, you can register your passport.
+          </span>
+        );
+        break;
+
+      case STEP_KEPLR_REGISTER:
+        if (!registerDisabled) {
+          content = (
+            <span>
+              you need{' '}
+              {valuePriceNickname &&
+                valuePriceNickname !== null &&
+                `${formatNumber(
+                  valuePriceNickname.amountPrice
+                )} ${BOOT_ICON}`}{' '}
+              <br /> for register your nickname, <br /> you can{' '}
+              <span
+                style={{ color: '#36d6ae', cursor: 'pointer' }}
+                onClick={() => setStep(STEP_NICKNAME_CHOSE)}
+              >
+                change
+              </span>{' '}
+              nickname or <Link to="/teleport">buy {BOOT_ICON}</Link>
+            </span>
+          );
+        } else {
+          content = (
+            <span>
+              Register passport, then check the gift <br /> proving ethereum,
+              cosmos, osmosis and terra address.
+            </span>
+          );
+        }
+        break;
+
+      case STEP_DONE:
+      case STEP_CHECK_GIFT:
+        content = (
+          <span>
+            Congratulations, {nickname} - <br /> you are citizen of the Moon.
+            Try your luck and check the gift
+          </span>
+        );
+        break;
+
+      default:
+        content = null;
+        break;
+    }
+
+    return content;
+  }, [stepCurrent, counCitizenshipst]);
+
+  return (
+    <InfoCard style={{ minHeight: '102px' }}>
+      <div style={{ textAlign: 'center' }}>
+        {/* <InfoTypingText content={useContent} /> */}
+        {useContent !== null && useContent}
+      </div>
+    </InfoCard>
+  );
 }
 
 export default Info;

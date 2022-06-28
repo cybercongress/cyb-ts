@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
 import ReactJson from 'react-json-view';
 import { CardCantainer } from '../ui/ui';
@@ -13,19 +14,23 @@ function HistoryInfo({ contractCodeHistory }) {
     <CardCantainer>
       <div className={styles.containerHistoryInfo}>
         <span className={styles.containerHistoryInfoTitle}>History</span>
-        {contractCodeHistory.map((item) => (
-          <div className={styles.containerHistoryInfoItem}>
-            <div className={styles.containerHistoryInfoItemTitle}>
-              {item.operation}-<CodeLink codeId={item.codeId} />
+        {contractCodeHistory.map((item) => {
+          const key = uuidv4();
+
+          return (
+            <div key={key} className={styles.containerHistoryInfoItem}>
+              <div className={styles.containerHistoryInfoItemTitle}>
+                {item.operation}-<CodeLink codeId={item.codeId} />
+              </div>
+              <ReactJson
+                src={item.msg}
+                theme="twilight"
+                displayObjectSize={false}
+                displayDataTypes={false}
+              />
             </div>
-            <ReactJson
-              src={item.msg}
-              theme="twilight"
-              displayObjectSize={false}
-              displayDataTypes={false}
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </CardCantainer>
   );

@@ -111,7 +111,7 @@ function PortalCitizenship({ defaultAccount }) {
         <ActionBarSteps>
           <BtnGrd
             text="check gift"
-            onClick={() => history.push('/portalGift')}
+            onClick={() => history.push('/gift')}
           />
         </ActionBarSteps>
       </>

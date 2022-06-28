@@ -1,10 +1,16 @@
 import React, { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import ContainerGradient from '../containerGradient/ContainerGradient';
-import { ProgressBar } from '../beforeActivation';
+import { ProgressBar } from '../progressCard';
 import styles from './styles.scss';
+import { formatNumber } from '../../../../utils/utils';
 
-function AboutGift({ coefficient }) {
+function AboutGift({
+  coefficient,
+  stateOpen,
+  initStateCard,
+  addressesClaimed,
+}) {
   const useProgress = useMemo(() => {
     if (coefficient && coefficient !== null) {
       const maxValue = coefficient.up - coefficient.down;
@@ -28,14 +34,19 @@ function AboutGift({ coefficient }) {
 
   return (
     <ContainerGradient
-      userStyleContent={{ height: '382px' }}
+      userStyleContent={{ height: '410px' }}
       styleLampContent="purple"
       title="about gift"
     >
+      <div style={{ marginBottom: '10px' }}>
+        Hurry up! {formatNumber(parseFloat(addressesClaimed))} addresses already
+        claimed the gift. Only the most dexterous will catch the luck. The early
+        birds get higher bonus.
+      </div>
       <div>
-        70% of BOOT in genesis of Bostrom bootloader allocated to 6 million
-        ethereum and 200 thousands cosmos addresses. Gift become releasable
-        after 100 000 citizenship registration.
+        70% of BOOT in genesis of the Bostrom bootloader is allocated to 6 million
+        Ethereum and 200 thousand Cosmos addresses. Gift to be released
+        after 100 000 citizenship registrations.
       </div>
       <div className={styles.containerAboutGiftProgressBar}>
         <div className={styles.containerAboutGiftProgressBarTitle}>
@@ -56,7 +67,7 @@ function AboutGift({ coefficient }) {
         </div>
       </div>
       <div>
-        Only the most dexterous will catch the luck. The early birds get higher
+        Only the most dexterous will be lucky. The early birds get a higher
         bonus.
       </div>
     </ContainerGradient>

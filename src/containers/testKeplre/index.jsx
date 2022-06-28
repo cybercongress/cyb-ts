@@ -19,7 +19,8 @@ import Denom from '../../components/denom';
 
 import DenomTest from './testDenom';
 import AddTest from './testAdd';
-import {Signatures} from '../portal/components';
+import { Signatures } from '../portal/components';
+import Carousel from '../portal/gift/carousel1/Carousel';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -41,6 +42,18 @@ const milliampere = 'milliampere';
 const testDenom =
   'ibc/13B2C536BB057AC79D5696B8EA1B6720EC1F2170708CAFF6F0183C963FFFED0B';
 
+const slidesTest = [
+  {
+    title: 'STEP_GIFT_INFO',
+  },
+  {
+    title: 'STEP_PROVE_ADD',
+  },
+  {
+    title: 'STEP_CLAIME',
+  },
+];
+
 function TestKeplr() {
   const { keplr, jsCyber } = useContext(AppContext);
   // return <Denom denomValue={testDenom} />;
@@ -49,8 +62,7 @@ function TestKeplr() {
   const checkGift = async () => {
     const response = await axios({
       method: 'GET',
-      url:
-        'https://titan.cybernode.ai/graphql/api/rest/get-cybergift/0x0000000c01915e253a7f1017c975812edd5e8ec3',
+      url: 'https://titan.cybernode.ai/graphql/api/rest/get-cybergift/0x0000000c01915e253a7f1017c975812edd5e8ec3',
     });
 
     console.log('response', response.data);
@@ -87,12 +99,11 @@ function TestKeplr() {
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      <div>
-        <Signatures addressActive={{ bech32: addressTest }} />
-        {/* <button type="button" onClick={checkGift}>
+      <Carousel slides={slidesTest} />
+      {/* <Signatures addressActive={{ bech32: addressTest }} /> */}
+      {/* <button type="button" onClick={checkGift}>
           getCredit
         </button> */}
-      </div>
     </main>
   );
 }

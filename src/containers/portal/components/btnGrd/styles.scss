@@ -52,6 +52,10 @@ $color-text: #36d6ae;
     left: 0;
     box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
     border-radius: 2px 0px 0px 2px;
+    animation: blink 1s infinite;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
+    opacity: 1;
   }
 
   &::after {
@@ -59,7 +63,24 @@ $color-text: #36d6ae;
     @include ion-lamp;
     box-shadow: -3px 0 20px 1.5px rgba(255, 255, 255, 0.7);
     border-radius: 0px 2px 2px 0px;
+    animation: blink 1s infinite;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
+    opacity: 1;
   }
+}
+
+@keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+
+  // 100% {
+  //   opacity: 0.7;
+  // }
 }
 
 .GradientContainer {
