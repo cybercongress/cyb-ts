@@ -39,7 +39,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
         content = (
           <span>
             Check gift & basic information. <br />
-            Hurry up! Get citizenship to be able to claim
+            Hurry up! Get your citizenship to be able to claim.
           </span>
         );
         break;
@@ -49,7 +49,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
         content = (
           <span>
             Check gift & basic information. <br />
-            Hurry up! Prove address to claim the gift
+            Hurry up! Prove an address to claim the gift.
           </span>
         );
         break;
@@ -66,7 +66,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
       case STATE_INIT_RELEASE:
         content = (
           <span>
-            You claimed all gifts. <br />
+            You have claimed all gifts. <br />
             Go to release or prove another address.
           </span>
         );
@@ -76,7 +76,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
         content = (
           <span>
             Prove ethereum, cosmos, osmosis, <br /> terra or bostrom signatures
-            by selecting signer to check the gift
+            by selecting signer to check for the gift
           </span>
         );
         break;
@@ -109,7 +109,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
             <span style={{ color: '#38d6ae' }}>{address}</span>
           )}{' '}
           has no gift <br />
-          Prove another to try your luck */}
+          Prove another address to try your luck */}
             You did not work hard to get gift. No wories ! You have a
             citizenship, just go and buy BOOT
           </span>
@@ -119,7 +119,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
       case STATE_GIFT_NULL_ALL:
         content = (
           <span>
-            You have nothing to claim. Prove another address with the gift.
+            You have nothing to claim. Prove another address for the gift.
           </span>
         );
         break;
@@ -128,7 +128,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
         content = (
           <span>
             You have unclaimed gifts. <br />
-            Claim now, or prove another address
+            Claim now, or prove another address.
           </span>
         );
         break;
@@ -136,7 +136,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
       case STATE_CLAIME_ALL:
         content = (
           <span>
-            Chose bostrom address <br />
+            Choose bostrom address <br />
             to claim all gifts, or claim one by one
           </span>
         );

@@ -293,8 +293,8 @@ function CurrentGift({
         {useBaseGift !== 0 && (
           <>
             <div>
-              You are the one, who been chosen for good deeds in cyberverse on
-              5th of November 2021:
+              You have been chosen for good deeds in the cyberverse on the 5th
+              of November 2021:
             </div>
             <TableAllocation
               currentBonus={useCurrentBonus}

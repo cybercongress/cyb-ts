@@ -44,8 +44,8 @@ function AboutGift({
         birds get higher bonus.
       </div>
       <div>
-        70% of BOOT in genesis of the Bostrom bootloader is allocated to 6 million
-        Ethereum and 200 thousand Cosmos addresses. Gift to be released
+        70% of BOOT in genesis of the Bostrom bootloader is allocated to 6
+        million Ethereum and 200 thousand Cosmos addresses. Gift to be released
         after 100 000 citizenship registrations.
       </div>
       <div className={styles.containerAboutGiftProgressBar}>
