@@ -1,4 +1,4 @@
-.containerNextUnfreeze {
+.containerUnclaimedGift {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -10,17 +10,4 @@
   line-height: 20px;
   font-size: 18px;
   justify-content: space-between;
-}
-
-.colorTextStatusTime {
-  color: #fff;
-
-  &Unfreeze {
-    color: #ff9100;
-  }
-
-  &Ready {
-    color: #3ab793;
-    // font-weight: 600;
-  }
 }

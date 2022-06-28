@@ -12,6 +12,7 @@ import BtnGrd from './btnGrd';
 import ActionBarContainer from './ActionBar';
 import ActionBarSteps from './ActionBar/ActionBarSteps';
 import AboutGift from './AboutGift/aboutGift';
+import UnclaimedGift from './UnclaimedGift/UnclaimedGift';
 
 export {
   ContainerGradient,
@@ -28,4 +29,5 @@ export {
   ActionBarContainer,
   ActionBarSteps,
   AboutGift,
+  UnclaimedGift,
 };

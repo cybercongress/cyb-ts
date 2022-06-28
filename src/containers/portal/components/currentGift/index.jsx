@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { trimString, formatNumber } from '../../../../utils/utils';
@@ -37,13 +37,26 @@ const ItemTable = ({ title, value }) => (
   </div>
 );
 
-const TableAllocation = ({ currentGift }) => {
+const formatBonus = (amount) => {
+  if (typeof amount === 'number') {
+    return new BigNumber(amount).dp(1, BigNumber.ROUND_FLOOR).toNumber();
+  }
+  return '';
+};
+
+const TableAllocation = ({ currentBonus, currentGift }) => {
   const itemTable = useMemo(() => {
     if (currentGift !== null && currentGift.details) {
       const { details } = currentGift;
       return keyTable.map((item) => {
         const value = details[item] ? details[item].gift * 10 ** 6 : 0;
-        return <ItemTable key={item} value={value} title={item} />;
+        return (
+          <ItemTable
+            key={item}
+            value={Math.floor(parseFloat(value) * currentBonus)}
+            title={item}
+          />
+        );
       });
     }
     return keyTable.map((item) => (
@@ -60,8 +73,34 @@ function CurrentGift({
   stateOpen,
   selectedAddress,
   initStateCard,
-  release,
+  totalGiftClaimed,
+  totalGiftAmount,
+  title,
+  valueTextResult,
 }) {
+  const useTotalAmountByBonus = useMemo(() => {
+    if (
+      totalGiftClaimed &&
+      totalGiftClaimed !== null &&
+      totalGiftAmount &&
+      totalGiftAmount !== null
+    ) {
+      if (totalGiftAmount.claim === totalGiftClaimed.claim) {
+        return totalGiftAmount.claim;
+      }
+
+      if (currentBonus?.current) {
+        const unclaimedGift = totalGiftAmount.amount - totalGiftClaimed.amount;
+        const unclaimedGiftByBonus = Math.floor(
+          unclaimedGift * currentBonus.current
+        );
+        const totalGiftByBonus = unclaimedGiftByBonus + totalGiftClaimed.claim;
+        return totalGiftByBonus;
+      }
+    }
+    return null;
+  }, [totalGiftClaimed, totalGiftAmount, currentBonus]);
+
   const useSelectCyber = useMemo(() => {
     return (
       selectedAddress &&
@@ -85,8 +124,8 @@ function CurrentGift({
           }}
         >
           <div style={{ color: '#00C4FF' }}>
-            {release && 'Claimed '}
-            {useSelectCyber ? 'gift all' : 'gift'} {GIFT_ICON}
+            {title} gift {GIFT_ICON}
+            {/* {useSelectCyber ? 'all gift ' : 'gift'} */}
           </div>
           <div>
             {claim
@@ -98,7 +137,7 @@ function CurrentGift({
       );
     }
     return <div style={{ color: '#00C4FF' }}>no gift {GIFT_ICON}</div>;
-  }, [currentGift, useSelectCyber, release]);
+  }, [currentGift, useSelectCyber, title]);
 
   const useBaseGift = useMemo(() => {
     if (currentGift && currentGift !== null) {
@@ -113,82 +152,156 @@ function CurrentGift({
     return 0;
   }, [currentGift]);
 
+  const useCurrentBonus = useMemo(() => {
+    if (currentGift && currentGift !== null) {
+      const { amount, claim } = currentGift;
+
+      const curentBonus = new BigNumber(parseFloat(claim))
+        .dividedBy(parseFloat(amount))
+        .toNumber();
+
+      if ((curentBonus === 1 || claim === undefined) && currentBonus?.current) {
+        const bonusByAddress = new BigNumber(
+          parseFloat(currentBonus.current)
+        ).toNumber();
+
+        return bonusByAddress;
+      }
+
+      if (
+        currentGift.address.match(PATTERN_CYBER) &&
+        useTotalAmountByBonus !== null
+      ) {
+        const tempCurentBonus = new BigNumber(parseFloat(useTotalAmountByBonus))
+          .dividedBy(parseFloat(amount))
+
+          .toNumber();
+        return tempCurentBonus;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(currentGift, 'multiplier')) {
+        const temp2 = new BigNumber(
+          parseFloat(currentGift.multiplier)
+        ).toNumber();
+        return temp2;
+      }
+
+      return curentBonus;
+    }
+
+    return 1;
+  }, [currentBonus, currentGift, useTotalAmountByBonus]);
+
   const useClaimableGift = useMemo(() => {
     if (currentGift && currentGift !== null) {
       const { amount, claim, address } = currentGift;
+      if (amount === claim || claim === undefined) {
+        return formatNumber(Math.floor(parseFloat(amount) * useCurrentBonus));
+      }
+
+      if (
+        claim &&
+        address.match(PATTERN_CYBER) &&
+        useTotalAmountByBonus !== null
+      ) {
+        return formatNumber(parseFloat(useTotalAmountByBonus));
+      }
+
       if (claim) {
         return formatNumber(parseFloat(claim));
-      }
-      if (
-        address &&
-        !address.match(PATTERN_CYBER) &&
-        currentBonus &&
-        currentBonus?.current
-      ) {
-        const multiplier = new BigNumber(parseFloat(currentBonus.current))
-          .dp(1, BigNumber.ROUND_FLOOR)
-          .toNumber();
-        return formatNumber(parseFloat(amount) * multiplier);
       }
 
       return formatNumber(parseFloat(amount));
     }
     return 0;
-  }, [currentGift, currentBonus]);
+  }, [currentGift, currentBonus, useCurrentBonus, useTotalAmountByBonus]);
 
-  const useCurrentBonus = useMemo(() => {
+  const useValueTextResult = useMemo(() => {
     if (
-      currentGift &&
-      currentGift !== null &&
-      Object.prototype.hasOwnProperty.call(currentGift, 'address') &&
-      currentGift.address.match(PATTERN_CYBER)
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER) &&
+      valueTextResult
     ) {
-      return '~';
+      return valueTextResult;
     }
 
-    if (
-      currentGift &&
-      currentGift !== null &&
-      Object.prototype.hasOwnProperty.call(currentGift, 'multiplier')
-    ) {
-      return new BigNumber(parseFloat(currentGift.multiplier))
-        .dp(1, BigNumber.ROUND_FLOOR)
-        .toNumber();
-    }
+    if (currentGift !== null) {
+      const { isClaimed } = currentGift;
 
-    if (currentBonus && currentBonus?.current) {
-      return new BigNumber(parseFloat(currentBonus.current))
-        .dp(1, BigNumber.ROUND_FLOOR)
-        .toNumber();
+      if (isClaimed) {
+        return 'claimed';
+      }
     }
+    return 'claimable';
+  }, [currentGift, valueTextResult, selectedAddress]);
 
-    return '~';
-  }, [currentBonus, currentGift]);
+  const useTitleMain = useMemo(() => {
+    if (useSelectCyber) {
+      return (
+        <>
+          <span style={{ textTransform: 'capitalize', marginRight: 5 }}>
+            {useValueTextResult}
+          </span>
+          gift all {GIFT_ICON}
+        </>
+      );
+    }
+    return (
+      <>
+        <span style={{ textTransform: 'capitalize', marginRight: 5 }}>
+          {useValueTextResult}
+        </span>
+        gift {GIFT_ICON}
+      </>
+    );
+  }, [useValueTextResult, useSelectCyber]);
 
   return (
     <ContainerGradient
+      styleLampContent="green"
       initState={initStateCard}
-      userStyleContent={{ height: '485px' }}
+      userStyleContent={{
+        height: '485px',
+      }}
       closedTitle={useTitle}
-      title={useSelectCyber ? `Gift All ${GIFT_ICON}` : `Gift ${GIFT_ICON}`}
+      title={useTitleMain}
       stateOpen={stateOpen}
     >
       <div className={styles.containerCurrentGift}>
         <div className={styles.containerCurrentGiftContaiterAmountGift}>
-          <ItemValue value={`${useBaseGift} ${BOOT_ICON}`} title="base gift" />
-          *
-          <ItemValue value={useCurrentBonus} title="bonus" />
-          =
-          <ItemValue
-            value={`${GIFT_ICON} ${useClaimableGift} ${BOOT_ICON}`}
-            title="claimable gift"
-          />
+          {useBaseGift === 0 ? (
+            <ItemValue
+              value={`${useBaseGift} ${BOOT_ICON}`}
+              title="base gift"
+            />
+          ) : (
+            <>
+              <ItemValue
+                value={`${useBaseGift} ${BOOT_ICON}`}
+                title="base gift"
+              />
+              *
+              <ItemValue value={formatBonus(useCurrentBonus)} title="bonus" />
+              =
+              <ItemValue
+                value={`${GIFT_ICON} ${useClaimableGift} ${BOOT_ICON}`}
+                title={`${useValueTextResult} gift`}
+              />
+            </>
+          )}
         </div>
-        <div>
-          You are the one, who been chosen for good deeds in cyberverse on 5th
-          of November 2021:
-        </div>
-        <TableAllocation currentGift={currentGift} />
+        {useBaseGift !== 0 && (
+          <>
+            <div>
+              You are the one, who been chosen for good deeds in cyberverse on
+              5th of November 2021:
+            </div>
+            <TableAllocation
+              currentBonus={useCurrentBonus}
+              currentGift={currentGift}
+            />
+          </>
+        )}
         <div>
           Please check <Link to="/search/gift">details of the gift</Link>
         </div>

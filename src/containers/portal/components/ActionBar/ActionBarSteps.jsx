@@ -6,13 +6,14 @@ import BtnGrd from '../btnGrd';
 
 const back = require('../../../../image/arrow-left-img.svg');
 
-export const ActionBarContentText = ({ children, ...props }) => (
+export const ActionBarContentText = ({ children, gridGap, ...props }) => (
   <Pane
     display="flex"
     fontSize="20px"
     justifyContent="center"
     alignItems="center"
     flexGrow={1}
+    gridGap={gridGap}
     // marginRight="15px"
     {...props}
   >
@@ -26,6 +27,7 @@ function ActionBarSteps({
   onClickFnc,
   onClickBack,
   disabled,
+  gridGap,
 }) {
   return (
     <ActionBarContainer>
@@ -39,7 +41,8 @@ function ActionBarSteps({
         />
       )}
       <ActionBarContentText
-      //  marginLeft={onClickBack ? 30 : 0}
+        gridGap={gridGap}
+        //  marginLeft={onClickBack ? 30 : 0}
       >
         {children}
       </ActionBarContentText>

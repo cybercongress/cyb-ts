@@ -64,10 +64,17 @@ function ProgressCard({
     </div>
   );
 
+  const closedTitle = (
+    <div className={styles.containerBeforeActivationTitle}>
+      <div style={{ color: '#00C4FF' }}>{headerText}</div>
+      <div>{titleValue}</div>
+    </div>
+  );
+
   return (
     <ContainerGradient
       title={title}
-      closedTitle={title}
+      closedTitle={closedTitle}
       styleLampTitle={status}
       styleLampContent={status}
       userStyleContent={{ height: '194px' }}
