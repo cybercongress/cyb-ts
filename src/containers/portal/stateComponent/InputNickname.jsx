@@ -3,7 +3,7 @@ import Input from '../../teleport/components/input';
 import { ContainerGradient } from '../components';
 import { steps } from '../citizenship/utils';
 
-function InputNickname({ valueNickname, step, setValueNickname }) {
+function InputNickname({ valueNickname, step, onChangeNickname }) {
   return (
     <ContainerGradient>
       {(step === steps.STEP_NICKNAME_CHOSE ||
@@ -11,7 +11,7 @@ function InputNickname({ valueNickname, step, setValueNickname }) {
         <div style={{ width: '160px' }}>
           <Input
             value={valueNickname}
-            onChange={(e) => setValueNickname(e.target.value)}
+            onChange={onChangeNickname}
             placeholder="choose username"
             autoComplete="off"
             textalign="end"

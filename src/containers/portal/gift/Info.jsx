@@ -25,130 +25,150 @@ const {
   STATE_PROVE_IN_PROCESS,
 } = STEP_INFO;
 
-const infoTextFnc = (step, selectedAddress) => {
-  let address = '';
-  if (selectedAddress && !selectedAddress.match(PATTERN_CYBER)) {
-    address = trimString(selectedAddress, 10, 3);
-  } else {
-    address = '';
-  }
-  switch (step) {
-    case STATE_INIT_NULL:
-      return (
-        <span>
-          Check gift & basic information. <br />
-          Hurry up! Get citizenship to be able to claim
-        </span>
-      );
 
-    case STATE_INIT:
-    case STATE_INIT_PROVE:
-      return (
-        <span>
-          Check gift & basic information. <br />
-          Hurry up! Prove address to claim the gift
-        </span>
-      );
+function Info({ stepCurrent, selectedAddress, amountClaims }) {
+  try {
+    let content;
+    let address = '';
+    if (selectedAddress && !selectedAddress.match(PATTERN_CYBER)) {
+      address = trimString(selectedAddress, 10, 3);
+    } else {
+      address = '';
+    }
+    switch (stepCurrent) {
+      case STATE_INIT_NULL:
+        content = (
+          <span>
+            Check gift & basic information. <br />
+            Hurry up! Get citizenship to be able to claim
+          </span>
+        );
+        break;
 
-    case STATE_INIT_CLAIM:
-      return (
-        <span>
-          You have unclaimed gifts - <br />
-          go to claim
-        </span>
-      );
+      case STATE_INIT:
+      case STATE_INIT_PROVE:
+        content = (
+          <span>
+            Check gift & basic information. <br />
+            Hurry up! Prove address to claim the gift
+          </span>
+        );
+        break;
 
-    case STATE_INIT_RELEASE:
-      return (
-        <span>
-          You claimed all gifts. <br />
-          Go to release or prove another address.
-        </span>
-      );
+      case STATE_INIT_CLAIM:
+        content = (
+          <span>
+            You have unclaimed gifts - <br />
+            go to claim
+          </span>
+        );
+        break;
 
-    case STATE_PROVE:
-      return (
-        <span>
-          Prove ethereum, cosmos, osmosis, <br /> terra or bostrom signatures by{' '}
-          selecting signer to check the gift
-        </span>
-      );
+      case STATE_INIT_RELEASE:
+        content = (
+          <span>
+            You claimed all gifts. <br />
+            Go to release or prove another address.
+          </span>
+        );
+        break;
 
-    case STATE_PROVE_CONNECT:
-      return <span>Select signer</span>;
+      case STATE_PROVE:
+        content = (
+          <span>
+            Prove ethereum, cosmos, osmosis, <br /> terra or bostrom signatures
+            by selecting signer to check the gift
+          </span>
+        );
+        break;
 
-    case STATE_PROVE_SIGN_MM:
-      return <span>Sign message in metamask</span>;
+      case STATE_PROVE_CONNECT:
+        content = <span>Select signer</span>;
+        break;
 
-    case STATE_PROVE_SIGN_KEPLR:
-      return <span>sign message in keplr</span>;
+      case STATE_PROVE_SIGN_MM:
+        content = <span>Sign message in metamask</span>;
+        break;
 
-    case STATE_PROVE_SEND_SIGN:
-      return <span>send your signature</span>;
+      case STATE_PROVE_SIGN_KEPLR:
+        content = <span>sign message in keplr</span>;
+        break;
 
-    case STATE_PROVE_CHANGE_ACCOUNT:
-      return <span> you need change account in keplr</span>;
+      case STATE_PROVE_SEND_SIGN:
+        content = <span>send your signature</span>;
+        break;
 
-    case STATE_CLAIME_TO_PROVE:
-      return (
-        <span>
-          Address{' '}
+      case STATE_PROVE_CHANGE_ACCOUNT:
+        content = <span> you need change account in keplr</span>;
+        break;
+
+      case STATE_CLAIME_TO_PROVE:
+        content = (
+          <span>
+            {/* Address{' '}
           {address !== '' && (
             <span style={{ color: '#38d6ae' }}>{address}</span>
           )}{' '}
           has no gift <br />
-          Prove another to try your luck
-        </span>
-      );
+          Prove another to try your luck */}
+            You did not work hard to get gift. No wories ! You have a
+            citizenship, just go and buy BOOT
+          </span>
+        );
+        break;
 
-    case STATE_GIFT_NULL_ALL:
-      return (
-        <span>
-          You have nothing to claim. Prove another address with the gift.
-        </span>
-      );
+      case STATE_GIFT_NULL_ALL:
+        content = (
+          <span>
+            You have nothing to claim. Prove another address with the gift.
+          </span>
+        );
+        break;
 
-    case STATE_CLAIME:
-      return (
-        <span>
-          You have unclaimed gifts. <br />
-          Claim now, or prove another address
-        </span>
-      );
+      case STATE_CLAIME:
+        content = (
+          <span>
+            You have unclaimed gifts. <br />
+            Claim now, or prove another address
+          </span>
+        );
+        break;
 
-    case STATE_CLAIME_ALL:
-      return (
-        <span>
-          Chose bostrom address <br />
-          to claim all gifts, or claim one by one
-        </span>
-      );
+      case STATE_CLAIME_ALL:
+        content = (
+          <span>
+            Chose bostrom address <br />
+            to claim all gifts, or claim one by one
+          </span>
+        );
+        break;
 
-    case STATE_RELEASE:
-      return (
-        <span>
-          You claimed all gifts. <br />
-          Go to release or prove another address.
-        </span>
-      );
+      case STATE_RELEASE:
+        content = (
+          <span>
+            You claimed all gifts. <br />
+            Go to release or prove another address.
+          </span>
+        );
+        break;
 
-    case STATE_PROVE_IN_PROCESS:
-      return <span>prove address take time</span>;
+      case STATE_PROVE_IN_PROCESS:
+        content = <span>prove address take time</span>;
+        break;
 
-    case STATE_CLAIM_IN_PROCESS:
-      return <span>claim take time</span>;
+      case STATE_CLAIM_IN_PROCESS:
+        content = <span>claim take time</span>;
+        break;
 
-    default:
-      return null;
-  }
-};
+      default:
+        content = null;
+        break;
+    }
 
-function Info({ stepCurrent, selectedAddress }) {
-  try {
     return (
       <InfoCard style={{ minHeight: '90px' }}>
         <div style={{ textAlign: 'center' }}>
-          {infoTextFnc(stepCurrent, selectedAddress)}
+          {content && content !== null && content}
         </div>
       </InfoCard>
     );

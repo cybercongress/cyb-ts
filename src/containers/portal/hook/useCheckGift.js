@@ -14,6 +14,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
   const [totalGift, setTotalGift] = useState(null);
   const [totalGiftAmount, setTotalGiftAmount] = useState(null);
   const [totalGiftClaimed, setTotalGiftClaimed] = useState(null);
+  const [giftData, setGiftData] = useState(null);
   const [loadingGift, setLoadingGift] = useState(true);
 
   useEffect(() => {
@@ -53,12 +54,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     };
     createObjGift();
   }, [citizenship, addressActive, updateFunc]);
-
-  // useEffect(() => {
-  //   if (totalGift !== null) {
-  //     checkIsClaim();
-  //   }
-  // }, [totalGift]);
 
   useEffect(() => {
     if (totalGift !== null) {
@@ -130,6 +125,57 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     }
   }, [totalGift]);
 
+  useEffect(() => {
+    if (totalGift !== null) {
+      const totalObj = {
+        claimed: {
+          addresses: {},
+          amount: 0,
+          claim: 0,
+          details: {},
+        },
+        unClaimed: { addresses: {}, amount: 0, claim: 0, details: {} },
+      };
+      Object.keys(totalGift).forEach((key) => {
+        const { amount, details, claim, isClaimed } = totalGift[key];
+        if (isClaimed) {
+          totalObj.claimed.addresses[key] = { ...totalGift[key] };
+          totalObj.claimed.amount += amount;
+          totalObj.claimed.claim += claim;
+          const { details: detailsClaim } = totalObj.claimed;
+          if (details) {
+            Object.keys(details).forEach((keyD) => {
+              if (Object.prototype.hasOwnProperty.call(detailsClaim, keyD)) {
+                detailsClaim[keyD].gift += details[keyD].gift;
+              } else {
+                detailsClaim[keyD] = { gift: details[keyD].gift };
+              }
+            });
+          }
+        } else {
+          totalObj.unClaimed.addresses[key] = { ...totalGift[key] };
+          totalObj.unClaimed.amount += amount;
+          const { details: detailsUnClaim } = totalObj.unClaimed;
+          if (details) {
+            Object.keys(details).forEach((keyD) => {
+              if (Object.prototype.hasOwnProperty.call(detailsUnClaim, keyD)) {
+                detailsUnClaim[keyD].gift += details[keyD].gift;
+              } else {
+                detailsUnClaim[keyD] = { gift: details[keyD].gift };
+              }
+            });
+          }
+        }
+      });
+      if (
+        Object.keys(totalObj.claimed.addresses).length > 0 ||
+        Object.keys(totalObj.unClaimed.addresses).length > 0
+      ) {
+        setGiftData(totalObj);
+      }
+    }
+  }, [totalGift]);
+
   const funcCheckGiftLoop = useCallback(async () => {
     const result = {};
     if (citizenship !== null) {
@@ -164,7 +210,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
             const element = dataGift[key];
             const { address, isClaimed } = element;
             if (isClaimed === undefined || isClaimed === false) {
-              // console.log('element.address', address);
               const queryResponseResult = await getIsClaimed(jsCyber, address);
 
               if (
@@ -208,6 +253,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     totalGift,
     totalGiftAmount,
     totalGiftClaimed,
+    giftData,
     loadingGift,
     funcCheckGiftLoop,
     setLoadingGift,

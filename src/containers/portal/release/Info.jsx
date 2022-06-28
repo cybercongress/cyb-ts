@@ -11,70 +11,76 @@ const {
   STATE_INIT_NULL_BEFORE,
 } = STEP_INFO;
 
-const infoTextFnc = (step, useReleasedStage) => {
-  switch (step) {
-    case STATE_INIT_NULL_ACTIVE:
-      return (
-        <span>
-          Gift started to release <br /> Get your citizenship and check gift
-        </span>
-      );
-    case STATE_INIT_NULL_BEFORE:
-      return (
-        <span>
-          Gift will start to release <br /> after 100 000 citizen. <br /> Invite
-          friends to make it faster
-        </span>
-      );
-
-    case STATE_BEFORE_ACTIVATION:
-      return (
-        <span>
-          Gift will start to release <br />
-          after 100 000 citizen. <br />
-          Invite friends to make it faster
-        </span>
-      );
-
-    case STATE_READY_TO_RELEASE:
-      return (
-        <span>
-          10% of your BOOT is liquid. <br />
-          1% become liquid every new day. <br /> Start your day releasing BOOT
-          gift
-        </span>
-      );
-
-    case STATE_NEXT_UNFREEZE:
-      return (
-        <span>
-          Release 1% tomorrow. <br />
-          Hire hero and <br />
-          get H token for free
-        </span>
-      );
-
-    case STATE_PROVE_ADDRESS:
-      return (
-        <span>
-          You have nothing to release. <br />
-          Prove another address <br />
-          or claime address with the gift.
-        </span>
-      );
-
-    default:
-      return null;
-  }
-};
-
-function Info({ stepCurrent, useReleasedStage }) {
+function Info({ stepCurrent, citizensTargetClaim = 0 }) {
   try {
+    let content;
+
+    switch (stepCurrent) {
+      case STATE_INIT_NULL_ACTIVE:
+        content = (
+          <span>
+            Gift started to release <br /> Get your citizenship and check gift
+          </span>
+        );
+        break;
+
+      case STATE_INIT_NULL_BEFORE:
+        content = (
+          <span>
+            Gift will start to release <br /> after {citizensTargetClaim}{' '}
+            addresses. <br /> Invite friends to make it faster
+          </span>
+        );
+        break;
+
+      case STATE_BEFORE_ACTIVATION:
+        content = (
+          <span>
+            Gift will start to release <br />
+            after {citizensTargetClaim} addresses. <br />
+            Invite friends to make it faster
+          </span>
+        );
+        break;
+
+      case STATE_READY_TO_RELEASE:
+        content = (
+          <span>
+            10% of your BOOT is liquid. <br />
+            1% become liquid every new day. <br /> Start your day releasing BOOT
+            gift
+          </span>
+        );
+        break;
+
+      case STATE_NEXT_UNFREEZE:
+        content = (
+          <span>
+            Release 1% tomorrow. <br />
+            Hire hero and <br />
+            get H token for free
+          </span>
+        );
+        break;
+
+      case STATE_PROVE_ADDRESS:
+        content = (
+          <span>
+            You have nothing to release. <br />
+            Prove another address <br />
+            or claim address with the gift.
+          </span>
+        );
+        break;
+
+      default:
+        content = null;
+        break;
+    }
+
     return (
       <InfoCard>
-        <div style={{ textAlign: 'center' }}>
-          {infoTextFnc(stepCurrent, useReleasedStage)}
-        </div>
+        <div style={{ textAlign: 'center' }}>{content !== null && content}</div>
       </InfoCard>
     );
   } catch (error) {

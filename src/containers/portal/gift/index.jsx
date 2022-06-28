@@ -13,6 +13,7 @@ import {
   CONTRACT_ADDRESS_GIFT,
   getStateGift,
   getConfigGift,
+  parseRowLog,
 } from '../utils';
 import PasportCitizenship from '../pasport';
 import ActionBarPortalGift from './ActionBarPortalGift';
@@ -63,16 +64,29 @@ function PortalGift({ defaultAccount, node }) {
   const [txHash, setTxHash] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const { citizenship, loading, setLoading } = useGetActivePassport(
-    addressActive,
+    defaultAccount,
     updateFunc
   );
   const [currentGift, setCurrentGift] = useState(null);
-  const [currentGiftAll, setCurrentGiftALl] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
-  const [isRelease, setIsRelease] = useState(null);
-  const { totalGift, totalGiftAmount, loadingGift, setLoadingGift } =
-    useCheckGift(citizenship, addressActive, updateFunc);
+  const {
+    totalGift,
+    totalGiftAmount,
+    totalGiftClaimed,
+    loadingGift,
+    giftData,
+    setLoadingGift,
+  } = useCheckGift(citizenship, addressActive, updateFunc);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
+  const [amountClaims, setAmountCaims] = useState(0);
+
+  // console.log('totalGift', totalGift)
+
+  // console.log('<<<<-------------------------');
+  // console.log('totalGiftClaimed', totalGiftClaimed)
+  // console.log('-------------------------')
+  // console.log('totalGiftAmount', totalGiftAmount)
+  // console.log('<<<<-------------------------');
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
@@ -128,7 +142,7 @@ function PortalGift({ defaultAccount, node }) {
             setTxHash((item) => ({
               ...item,
               status: 'error',
-              rawLog: response.rawLog.toString(),
+              rawLog: parseRowLog(response.rawLog.toString()),
             }));
             // setErrorMessage(response.rawLog);
             return;
@@ -154,23 +168,27 @@ function PortalGift({ defaultAccount, node }) {
   useEffect(() => {
     if (Math.floor(appStep) === STEP_INFO.STATE_INIT) {
       if (!loading) {
-        if (citizenship !== null) {
-          setStepApp(STEP_INFO.STATE_INIT_PROVE);
-        } else {
+        if (citizenship === null) {
           setStepApp(STEP_INFO.STATE_INIT_NULL);
+        } else if (!loadingGift) {
+          if (isClaimed !== null && !isClaimed) {
+            setStepApp(STEP_INFO.STATE_INIT_CLAIM);
+          } else {
+            setStepApp(STEP_INFO.STATE_INIT_PROVE);
+          }
         }
       }
     }
 
-    // if (appStep === STEP_INFO.STATE_PROVE) {
-    //   setStepApp(STEP_INFO.STATE_PROVE_CONNECT);
-    // }
+    if (appStep === STEP_INFO.STATE_PROVE) {
+      setStepApp(STEP_INFO.STATE_PROVE_CONNECT);
+    }
 
     if (Math.floor(appStep) === STEP_INFO.STATE_CLAIME) {
       if (!loadingGift) {
         if (citizenship === null) {
           setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
-        } else if (totalGift === null) {
+        } else if (totalGift === null && selectedAddress.match(PATTERN_CYBER)) {
           setStepApp(STEP_INFO.STATE_GIFT_NULL_ALL);
         } else if (isClaimed === null) {
           setStepApp(STEP_INFO.STATE_CLAIME_TO_PROVE);
@@ -181,19 +199,6 @@ function PortalGift({ defaultAccount, node }) {
         }
       }
     }
-    // if (appStep === STEP_GIFT_INFO && !loading) {
-    //   if (citizenship === null) {
-    //     setStepApp(STEP_INFO.STATE_GIFT_NULL);
-    //   } else if (totalGift === null) {
-    //     setStepApp(STEP_INFO.STATE_INIT_PROVE);
-    //   } else if (!isClaimed) {
-    //     setStepApp(STEP_INFO.STATE_INIT_CLAIM);
-    //   } else if (isClaimed) {
-    //     setStepApp(STEP_INFO.STATE_INIT_RELEASE);
-    //   } else {
-    //     setStepApp(null);
-    //   }
-    // }
   }, [
     appStep,
     citizenship,
@@ -216,13 +221,14 @@ function PortalGift({ defaultAccount, node }) {
         ) {
           const { coefficient_down: down, coefficient_up: up } =
             queryResponseResultConfig;
-          const { coefficient } = queryResponseResultState;
-          if (down && up && coefficient) {
+          const { coefficient, claims } = queryResponseResultState;
+          if ((down && up && coefficient, claims)) {
             setCurrentBonus({
               down: parseFloat(down),
               up: parseFloat(up),
               current: parseFloat(coefficient),
             });
+            setAmountCaims(claims);
           }
         }
       }
@@ -232,7 +238,46 @@ function PortalGift({ defaultAccount, node }) {
 
   useEffect(() => {
     if (!loadingGift) {
-      if (selectedAddress !== null && totalGift !== null) {
+      if (totalGift !== null) {
+        // if (selectedAddress.match(PATTERN_CYBER)) {
+        const tempGift = [];
+        Object.keys(totalGift).forEach((key) => {
+          if (!totalGift[key].isClaimed) {
+            tempGift.push({ ...totalGift[key] });
+          }
+        });
+
+        if (Object.keys(tempGift).length > 0) {
+          setCurrentGift(tempGift);
+        }
+        // } else if (
+        //   Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
+        // ) {
+        //   setCurrentGift([totalGift[selectedAddress]]);
+        // }
+      } else {
+        setCurrentGift(null);
+      }
+    }
+  }, [loadingGift, totalGift, selectedAddress]);
+
+  useEffect(() => {
+    if (selectedAddress !== null && totalGift !== null) {
+      if (Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)) {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            totalGift[selectedAddress],
+            'isClaimed'
+          )
+        ) {
+          const { isClaimed: isClaimedAddress } = totalGift[selectedAddress];
+          setIsClaimed(isClaimedAddress);
+        }
+      } else if (
+        selectedAddress !== null &&
+        selectedAddress.match(PATTERN_CYBER) &&
+        totalGift !== null
+      ) {
         const tempGift = [];
         Object.keys(totalGift).forEach((key) => {
           if (!totalGift[key].isClaimed) {
@@ -242,55 +287,79 @@ function PortalGift({ defaultAccount, node }) {
 
         if (Object.keys(tempGift).length > 0) {
           setIsClaimed(false);
-          setCurrentGift(tempGift);
         }
 
         if (Object.keys(tempGift).length === 0) {
           setIsClaimed(true);
         }
       } else {
-        setCurrentGift(null);
         setIsClaimed(null);
       }
+    } else {
+      setIsClaimed(null);
     }
-  }, [selectedAddress, totalGift]);
+  }, [selectedAddress, loadingGift, totalGift]);
 
   const updateTxHash = (data) => {
     setTxHash(data);
   };
 
+  // const useSelectedGiftData = useMemo(() => {
+  //   if (selectedAddress !== null) {
+  //     if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
+  //       return { address: selectedAddress, ...totalGiftAmount };
+  //     }
+
+  //     if (
+  //       totalGift !== null &&
+  //       Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
+  //     ) {
+  //       return totalGift[selectedAddress];
+  //     }
+  //   }
+
+  //   return null;
+  // }, [selectedAddress, totalGift, totalGiftAmount]);
+
   const useSelectedGiftData = useMemo(() => {
-    if (selectedAddress !== null) {
-      if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
-        return { address: selectedAddress, ...totalGiftAmount };
+    try {
+      if (selectedAddress !== null) {
+        if (selectedAddress.match(PATTERN_CYBER) && totalGiftClaimed !== null) {
+          const { amount } = totalGiftClaimed;
+          if (amount && amount > 0) {
+            return { address: selectedAddress, ...totalGiftClaimed };
+          }
+        }
+
+        if (
+          totalGift !== null &&
+          totalGift[selectedAddress] &&
+          totalGift[selectedAddress].isClaimed
+        ) {
+          return totalGift[selectedAddress];
+        }
+
+        if (
+          totalGift !== null &&
+          Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
+        ) {
+          return totalGift[selectedAddress];
+        }
       }
 
-      if (
-        totalGift !== null &&
-        Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
-      ) {
-        return totalGift[selectedAddress];
-      }
+      return null;
+    } catch (error) {
+      console.log('error', error);
+      return null;
     }
-
-    return null;
-  }, [selectedAddress, totalGift, totalGiftAmount]);
+  }, [selectedAddress, totalGift, totalGiftClaimed]);
 
   const useDisableNext = useMemo(() => {
-    if (!loading) {
-      if (citizenship !== null) {
-        return false;
-      }
-      return true;
+    if (citizenship !== null) {
+      return false;
     }
+    return true;
   }, [loading, citizenship]);
-
-  const useStateOpenPassport = useMemo(() => {
-    if (Math.floor(appStep) === STEP_CLAIME) {
-      return true;
-    }
-    return false;
-  }, [appStep]);
 
   const useSetActiveItem = useMemo(() => {
     if (
@@ -308,6 +377,22 @@ function PortalGift({ defaultAccount, node }) {
     }
   }, [loading, appStep, txHash, citizenship]);
 
+  const useUnClaimedGiftData = useMemo(() => {
+    if (
+      giftData !== null &&
+      citizenship !== null &&
+      Object.keys(giftData.unClaimed.addresses).length > 0
+    ) {
+      if (currentBonus?.current) {
+        giftData.unClaimed.claim = Math.floor(
+          giftData.unClaimed.amount * currentBonus.current
+        );
+        return { ...giftData.unClaimed, address: citizenship.owner };
+      }
+    }
+    return null;
+  }, [giftData, currentBonus, citizenship]);
+
   // console.log('useSetActiveItem', useSetActiveItem)
 
   // console.log('citizenship', citizenship);
@@ -316,7 +401,9 @@ function PortalGift({ defaultAccount, node }) {
   let content;
 
   if (Math.floor(appStep) === STEP_GIFT_INFO) {
-    content = <AboutGift coefficient={currentBonus} />;
+    content = (
+      <AboutGift addressesClaimed={amountClaims} coefficient={currentBonus} />
+    );
   }
 
   if (Math.floor(appStep) !== STEP_GIFT_INFO) {
@@ -324,21 +411,44 @@ function PortalGift({ defaultAccount, node }) {
     content = (
       <>
         <PasportCitizenship
-          stateOpen={useStateOpenPassport}
           txHash={txHash}
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
-          initStateCard={false}
           setActiveItem={useSetActiveItem}
+          totalGift={totalGift}
         />
 
-        {addresses !== null && (
+        {useUnClaimedGiftData !== null &&
+          selectedAddress !== null &&
+          selectedAddress.match(PATTERN_CYBER) && (
+            <CurrentGift
+              title="Unclaimed"
+              valueTextResult="unclaimed"
+              initStateCard={false}
+              selectedAddress={selectedAddress}
+              currentGift={useUnClaimedGiftData}
+            />
+          )}
+
+        {addressActive !== null && (
+          <CurrentGift
+            title="Claimed"
+            valueTextResult="claimed"
+            selectedAddress={selectedAddress}
+            currentGift={useSelectedGiftData}
+            currentBonus={currentBonus}
+          />
+        )}
+
+        {/* {addresses !== null && (
           <CurrentGift
             selectedAddress={selectedAddress}
             currentBonus={currentBonus}
             currentGift={useSelectedGiftData}
+            totalGiftAmount={totalGiftAmount}
+            totalGiftClaimed={totalGiftClaimed}
           />
-        )}
+        )} */}
       </>
     );
   }
@@ -349,7 +459,11 @@ function PortalGift({ defaultAccount, node }) {
         {/* <ScrollableTabs items={items} active={active} setStep={setActive} /> */}
         {/* <button onClick={() => checkIsClaim()}>test</button> */}
         {appStep !== null && (
-          <Info stepCurrent={appStep} selectedAddress={selectedAddress} />
+          <Info
+            stepCurrent={appStep}
+            selectedAddress={selectedAddress}
+            amountClaims={amountClaims}
+          />
         )}
         <Carousel
           slides={itemsStep}

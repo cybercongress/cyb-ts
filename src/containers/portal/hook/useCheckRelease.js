@@ -6,7 +6,7 @@ import { AppContext } from '../../../context';
 
 const NS_TO_MS = 1 * 10 ** -6;
 
-function useCheckRelease(totalGift, updateFunc) {
+function useCheckRelease(totalGift, loadingGift, updateFunc) {
   const { jsCyber } = useContext(AppContext);
   const [loadingRelease, setLoadingRelease] = useState(true);
   const [totalRelease, setTotalRelease] = useState(null);
@@ -16,9 +16,14 @@ function useCheckRelease(totalGift, updateFunc) {
 
   useEffect(() => {
     const checkReleaseFunc = async () => {
-      if (
+      if (!loadingGift && totalGift !== undefined && totalGift === null) {
+        setLoadingRelease(false);
+        setTotalRelease(null);
+        setTotalBalanceClaimAmount(0);
+        setTimeNextFirstrelease(null);
+      } else if (
         jsCyber !== null &&
-        totalGift &&
+        totalGift !== undefined &&
         totalGift !== null &&
         Object.keys(totalGift).length > 0
       ) {
@@ -36,7 +41,10 @@ function useCheckRelease(totalGift, updateFunc) {
                 jsCyber,
                 address
               );
-              console.log('queryResponseResultRelease', queryResponseResultRelease)
+              console.log(
+                'queryResponseResultRelease',
+                queryResponseResultRelease
+              );
 
               if (
                 queryResponseResultRelease !== null &&
@@ -84,7 +92,7 @@ function useCheckRelease(totalGift, updateFunc) {
       }
     };
     checkReleaseFunc();
-  }, [totalGift, updateFunc]);
+  }, [totalGift, loadingGift, updateFunc]);
 
   const calculationStateRelease = (dataQuery) => {
     const { stage_expiration: stageExpiration, balance_claim: balanceClaim } =

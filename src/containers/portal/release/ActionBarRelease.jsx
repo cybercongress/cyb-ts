@@ -224,7 +224,7 @@ function ActionBarRelease({
     return (
       <ActionBarSteps>
         <BtnGrd
-          onClick={() => history.push('portalCitizenship')}
+          onClick={() => history.push('citizenship')}
           text="get citizenship"
         />
       </ActionBarSteps>
@@ -234,7 +234,7 @@ function ActionBarRelease({
   if (step === STATE_CHANGE_ACCOUNT) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_INIT)}>
-        choose this {useAddressOwner} in keplr
+        choose {useAddressOwner} in keplr
       </ActionBarSteps>
     );
   }
@@ -251,7 +251,7 @@ function ActionBarRelease({
     return (
       <ActionBarSteps>
         <BtnGrd
-          onClick={() => history.push('portalGift')}
+          onClick={() => history.push('gift')}
           text="go to prove address"
         />
       </ActionBarSteps>
@@ -261,7 +261,7 @@ function ActionBarRelease({
   if (activeReleases && isValidClaime) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('portalGift')} text="go to claim" />
+        <BtnGrd onClick={() => history.push('gift')} text="go to claim" />
       </ActionBarSteps>
     );
   }

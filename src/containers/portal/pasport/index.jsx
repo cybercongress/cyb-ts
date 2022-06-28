@@ -11,7 +11,8 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
-import { trimString } from '../../../utils/utils';
+import { formatNumber, trimString } from '../../../utils/utils';
+import { PATTERN_CYBER } from '../../../utils/config';
 
 function PasportCitizenship({
   citizenship,
@@ -21,10 +22,13 @@ function PasportCitizenship({
   stateOpen,
   initStateCard,
   setActiveItem,
+  totalGift,
 }) {
+  const { jsCyber } = useContext(AppContext);
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
   const [active, setActive] = useState(0);
+  const [karma, setKarma] = useState(0);
 
   useEffect(() => {
     if (setActiveItem) {
@@ -44,6 +48,24 @@ function PasportCitizenship({
       }
     }
   }, [addresses, active, updateFunc]);
+
+  // const useGetOwner
+
+  useEffect(() => {
+    const getKarma = async () => {
+      try {
+        if (owner !== null && owner.match(PATTERN_CYBER) && jsCyber !== null) {
+          const responseKarma = await jsCyber.karma(owner);
+          if (responseKarma.karma) {
+            setKarma(parseFloat(responseKarma.karma));
+          }
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+    getKarma();
+  }, [owner, jsCyber]);
 
   useEffect(() => {
     const getPasport = async () => {
@@ -85,7 +107,7 @@ function PasportCitizenship({
             height: 32,
           }}
         >
-          <div style={{ color: '#36D6AE' }}>
+          <div style={{ color: '#00C4FF' }}>
             {citizenship !== null && citizenship.extension.nickname}
           </div>
 
@@ -116,23 +138,50 @@ function PasportCitizenship({
     return null;
   }, [citizenship, addresses, active, node]);
 
+  const checkClaimedAddress = (itemAddress, totalGiftArr) => {
+    const statusAddress = {
+      gift: false,
+      claimed: false,
+    };
+
+    if (
+      totalGiftArr &&
+      totalGiftArr !== null &&
+      Object.prototype.hasOwnProperty.call(totalGiftArr, itemAddress)
+    ) {
+      statusAddress.gift = true;
+      const giftByAddress = totalGiftArr[itemAddress];
+      if (giftByAddress.isClaimed) {
+        statusAddress.claimed = true;
+      }
+    }
+
+    return statusAddress;
+  };
+
   const renderItemImg = useMemo(() => {
     if (addresses !== null) {
       return addresses.map((item, index) => {
         const key = uuidv4();
+        const statusAddressGiftData = checkClaimedAddress(
+          item.address,
+          totalGift
+        );
+
         return (
           <ParseAddressesImg
             key={key}
             address={item}
             active={index === active}
             onClick={() => setActive(index)}
+            statusAddressGift={statusAddressGiftData}
           />
         );
       });
     }
 
     return [];
-  }, [active, addresses]);
+  }, [active, addresses, totalGift]);
 
   return (
     <ContainerGradient
@@ -161,7 +210,9 @@ function PasportCitizenship({
           <div style={{ color: '#36D6AE', lineHeight: '18px' }}>
             {citizenship !== null && citizenship.extension.nickname}
           </div>
-          <div style={{ lineHeight: '18px' }}>karma 🔮 </div>
+          <div style={{ lineHeight: '18px' }}>
+            karma {karma > 0 ? formatNumber(karma) : ''} 🔮
+          </div>
           <ContainerAvatar>
             <AvataImgIpfs
               cidAvatar={
@@ -181,6 +232,7 @@ function PasportCitizenship({
               gridGap: '10px',
             }}
           >
+            {/* <div> */}
             <div
               style={{
                 display: 'grid',
@@ -191,6 +243,20 @@ function PasportCitizenship({
             >
               {renderItemImg}
             </div>
+            {/* <button
+                style={{
+                  position: 'absolute',
+                  top: '0',
+                  bottom: '0',
+                  width: '50px',
+                  transform: 'translate(18px, 0px)',
+                  width: '10px',
+                  left: '100%',
+                }}
+              >
+                +
+              </button> */}
+            {/* </div> */}
             <Signatures addressActive={addressActiveSignatures} />
           </div>
         )}

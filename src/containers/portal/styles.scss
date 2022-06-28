@@ -1,0 +1,57 @@
+.buttonSpacePussy {
+  position: absolute;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -20%);
+  bottom: 20%;
+  color: #f62bfd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.textSpacePussy {
+  font-size: 20px;
+  transition: 1s;
+
+  &:hover {
+    font-size: 24px;
+    text-shadow: 0 0 6px #f62bfd;
+    opacity: 1;
+    animation: blink2 2s infinite;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in-out;
+  }
+}
+
+.arrowSpacePussy {
+  opacity: 1;
+  animation: blink 0.7s infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes blink2 {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

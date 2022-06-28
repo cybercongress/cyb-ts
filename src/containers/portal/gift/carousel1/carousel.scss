@@ -104,6 +104,7 @@ $color-border-lamp-white: #e2e2e2;
       }
     }
     .slide.right {
+      cursor: pointer;
       &::before {
         @include init-pseudo-el-gren-default;
         @include linear-gradient-green(270deg);

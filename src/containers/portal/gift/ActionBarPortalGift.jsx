@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect,
@@ -20,12 +22,13 @@ import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 import { ActionBarContentText, Dots, ButtonIcon } from '../../../components';
 import { CYBER, LEDGER, PATTERN_CYBER } from '../../../utils/config';
-import { trimString, dhm, timeSince } from '../../../utils/utils';
+import { trimString, dhm, timeSince, groupMsg } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS,
   CONTRACT_ADDRESS_GIFT,
+  BOOT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import { ActionBarSteps, BtnGrd } from '../components';
@@ -121,6 +124,8 @@ function ActionBarPortalGift({
         activeStep === STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT ||
         activeStep === STEP_INFO.STATE_PROVE_CHECK_ACCOUNT
       ) {
+        console.log('keplr', keplr);
+        console.log('addressActive', addressActive);
         if (keplr !== null && addressActive !== null) {
           const [{ address }] = await keplr.signer.getAccounts();
           const { bech32 } = addressActive;
@@ -291,16 +296,31 @@ function ActionBarPortalGift({
             const msgObject = claimMsg(nickname, address, amount, proof);
             msgs.push(msgObject);
           });
-          const gasLimits = 400000 * Object.keys(currentGift).length;
-          const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+          const gasLimits = 500000 * Object.keys(currentGift).length;
+          const { isNanoLedger, bech32Address } =
+            await keplr.signer.keplr.getKey(CYBER.CHAIN_ID);
           if (msgs.length > 0) {
-            const executeResponseResult = await keplr.executeArray(
-              addressKeplr,
-              CONTRACT_ADDRESS_GIFT,
-              msgs,
-              calculateFee(gasLimits, gasPrice),
-              'cyber'
-            );
+            let executeResponseResult;
+            if (isNanoLedger && msgs.length > 1) {
+              const groupMsgData = groupMsg(msgs, 1);
+              const elementMsg = groupMsgData[0];
+              executeResponseResult = await keplr.executeArray(
+                bech32Address,
+                CONTRACT_ADDRESS_GIFT,
+                elementMsg,
+                calculateFee(gasLimits, gasPrice),
+                'cyber'
+              );
+            } else {
+              executeResponseResult = await keplr.executeArray(
+                bech32Address,
+                CONTRACT_ADDRESS_GIFT,
+                msgs,
+                calculateFee(gasLimits, gasPrice),
+                'cyber'
+              );
+            }
+
             console.log('executeResponseResult', executeResponseResult);
             if (executeResponseResult.code === 0) {
               updateTxHash({
@@ -359,11 +379,16 @@ function ActionBarPortalGift({
     );
   }, [selectedAddress]);
 
+  const onClickMMSigner = () => {
+    setSelectNetwork('eth');
+    setSelectMethod('MetaMask');
+  };
+
   if (activeStep === STEP_INFO.STATE_INIT_NULL) {
     return (
       <ActionBarContainer>
         <BtnGrd
-          onClick={() => history.push('/portalCitizenship')}
+          onClick={() => history.push('/citizenship')}
           text="get citizenship"
         />
       </ActionBarContainer>
@@ -372,9 +397,7 @@ function ActionBarPortalGift({
 
   if (
     activeStep === STEP_INFO.STATE_INIT_PROVE ||
-    activeStep === STEP_INFO.STATE_PROVE ||
-    activeStep === STEP_INFO.STATE_CLAIME_TO_PROVE ||
-    activeStep === STEP_INFO.STATE_GIFT_NULL_ALL
+    activeStep === STEP_INFO.STATE_PROVE
   ) {
     return (
       <ActionBarContainer>
@@ -395,6 +418,25 @@ function ActionBarPortalGift({
           text="go to claim"
         />
       </ActionBarContainer>
+    );
+  }
+
+  if (
+    activeStep === STEP_INFO.STATE_CLAIME_TO_PROVE ||
+    activeStep === STEP_INFO.STATE_GIFT_NULL_ALL
+  ) {
+    return (
+      <ActionBarSteps gridGap="35px">
+        <BtnGrd
+          disabled={isProve}
+          onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+          text="prove one more address"
+        />
+        <BtnGrd
+          onClick={() => history.push('/teleport')}
+          text={`buy ${BOOT_ICON}`}
+        />
+      </ActionBarSteps>
     );
   }
 
@@ -419,7 +461,7 @@ function ActionBarPortalGift({
           text="keplr"
         />
         <ButtonIcon
-          onClick={() => setSelectMethod('MetaMask')}
+          onClick={() => onClickMMSigner()}
           active={selectMethod === 'MetaMask'}
           img={imgMetaMask}
           text="metaMask"
@@ -490,7 +532,7 @@ function ActionBarPortalGift({
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
       >
-        choose this {useAddressOwner} in keplr
+        choose {useAddressOwner} in keplr
       </ActionBarSteps>
     );
   }
@@ -523,23 +565,21 @@ function ActionBarPortalGift({
   ) {
     return (
       <ActionBarContainer>
-        <BtnGrd
-          onClick={() => history.push('/portalRelease')}
-          text="go to release"
-        />
+        <BtnGrd onClick={() => history.push('/release')} text="go to release" />
       </ActionBarContainer>
     );
   }
 
   if (activeStep === STEP_INFO.STATE_CLAIME) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps gridGap="35px">
         <BtnGrd
-          disabled={isClaime}
-          onClick={() => useClaime()}
-          text={useSelectCyber ? 'claim all' : 'claim'}
+          disabled={isProve}
+          onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+          text="prove one more address"
         />
-      </ActionBarContainer>
+        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claim" />
+      </ActionBarSteps>
     );
   }
 
@@ -571,7 +611,7 @@ function ActionBarPortalGift({
     return (
       <ActionBarContainer>
         <BtnGrd
-          onClick={() => history.push('/portalRelease')}
+          onClick={() => history.push('/release')}
           text="go to release"
         />
       </ActionBarContainer>

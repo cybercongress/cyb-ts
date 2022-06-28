@@ -11,24 +11,10 @@ function Avatar({
   setAvatarImg,
   avatar,
   fncClearAvatar,
+  inputOpenFileRef,
+  onFilePickerChange,
+  showOpenFileDlg,
 }) {
-  const inputOpenFileRef = useRef();
-
-  const showOpenFileDlg = () => {
-    inputOpenFileRef.current.click();
-  };
-
-  const onFilePickerChange = (files) => {
-    const file = files.current.files[0];
-    setAvatarImg(file);
-  };
-
-  const onClickClear = () => {
-    if (fncClearAvatar) {
-      fncClearAvatar();
-    }
-  };
-
   return (
     <ContainerGradient txs={txs} title="Moon Citizenship">
       <div

@@ -21,6 +21,7 @@ import {
   NextUnfreeze,
   Released,
   MainContainer,
+  UnclaimedGift,
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
@@ -42,6 +43,10 @@ const {
 
 const NS_TO_MS = 1 * 10 ** -6;
 
+const initStateBonus = {
+  current: 0,
+};
+
 function Release({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
@@ -49,26 +54,31 @@ function Release({ defaultAccount }) {
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { citizenship, loading: loadingCitizenship } =
-    useGetActivePassport(addressActive);
-  const { totalGift, totalGiftClaimed } = useCheckGift(
-    citizenship,
-    addressActive
-  );
+    useGetActivePassport(defaultAccount);
+  const {
+    totalGift,
+    totalGiftClaimed,
+    giftData,
+    totalGiftAmount,
+    loadingGift,
+  } = useCheckGift(citizenship, addressActive);
   const {
     totalRelease,
     totalReadyRelease,
     totalBalanceClaimAmount,
     loadingRelease,
     timeNextFirstrelease,
-  } = useCheckRelease(totalGift, updateFunc);
+  } = useCheckRelease(totalGift, loadingGift, updateFunc);
 
   const [txHash, setTxHash] = useState(null);
+  const [currentBonus, setCurrentBonus] = useState(initStateBonus);
   const [activeReleases, setActiveReleases] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isRelease, setIsRelease] = useState(null);
   const [currentRelease, setCurrentRelease] = useState(null);
   const [progress, setProgress] = useState(0);
-  const [citizens, setCitizens] = useState(0);
+  const [citizensTargetClaim, setCitizensTargetClaim] = useState(0);
+  const [citizensClaim, setCitizensClaim] = useState(0);
   const [timeNext, setTimeNext] = useState(null);
   const [readyRelease, setReadyRelease] = useState(null);
   const [stateInfo, setStateInfo] = useState(null);
@@ -115,11 +125,12 @@ function Release({ defaultAccount }) {
     loadingRelease,
     isRelease,
     citizenship,
+    currentRelease,
   ]);
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
-      setTimeout(() => setTxHash(null), 5000);
+      setTimeout(() => setTxHash(null), 35000);
     }
   }, [txHash]);
 
@@ -167,8 +178,15 @@ function Release({ defaultAccount }) {
 
           if (validResponse) {
             const { target_claim: targetClaim } = queryResponseResultConfig;
-            const { claims } = queryResponseResultState;
+            const { claims, coefficient } = queryResponseResultState;
+            if (coefficient) {
+              setCurrentBonus({
+                current: parseFloat(coefficient),
+              });
+            }
             if (targetClaim && claims) {
+              setCitizensClaim(claims);
+              setCitizensTargetClaim(targetClaim);
               if (parseFloat(targetClaim) > parseFloat(claims)) {
                 setActiveReleases(false);
                 setProgress(
@@ -181,7 +199,6 @@ function Release({ defaultAccount }) {
                 setProgress(Math.floor(100));
               }
             }
-            setCitizens(targetClaim);
             setLoading(false);
           }
         } catch (error) {
@@ -303,6 +320,52 @@ function Release({ defaultAccount }) {
     return statusRelease;
   }, [readyRelease, useSelectedGiftData]);
 
+  const useBeforeActivation = useMemo(() => {
+    if (citizensClaim > 0 && citizensTargetClaim > 0) {
+      const left = citizensTargetClaim - citizensClaim;
+      if (left > 0) {
+        return left;
+      }
+      return citizensClaim;
+    }
+    return '';
+  }, [citizensTargetClaim, citizensClaim]);
+
+  const useUnClaimedGiftAmount = useMemo(() => {
+    if (totalGiftClaimed !== null && totalGiftAmount !== null) {
+      if (totalGiftAmount.claim === totalGiftClaimed.claim) {
+        return false;
+      }
+
+      if (currentBonus?.current) {
+        const unclaimedGift = totalGiftAmount.amount - totalGiftClaimed.amount;
+        const unclaimedGiftByBonus = Math.floor(
+          unclaimedGift * currentBonus.current
+        );
+        return formatNumber(parseFloat(unclaimedGiftByBonus));
+      }
+
+      return false;
+    }
+    return false;
+  }, [totalGiftAmount, totalGiftClaimed, currentBonus]);
+
+  const useUnClaimedGiftData = useMemo(() => {
+    if (
+      giftData !== null &&
+      citizenship !== null &&
+      Object.keys(giftData.unClaimed.addresses).length > 0
+    ) {
+      if (currentBonus?.current) {
+        giftData.unClaimed.claim = Math.floor(
+          giftData.unClaimed.amount * currentBonus.current
+        );
+        return { ...giftData.unClaimed, address: citizenship.owner };
+      }
+    }
+    return null;
+  }, [giftData, currentBonus, citizenship]);
+
   if (loadingCitizenship) {
     return <div>...</div>;
   }
@@ -315,12 +378,16 @@ function Release({ defaultAccount }) {
 
   // console.log('currentRelease', currentRelease);
 
+  const validNextUnfreeze =
+    (timeNext === null && readyRelease !== null) ||
+    (timeNext !== null && readyRelease === null);
+
   if (!activeReleases && stateInfo === STATE_INIT_NULL_BEFORE) {
     content = (
       <ProgressCard
-        titleValue={`${citizens} citizens`}
+        titleValue={`${useBeforeActivation} addresses`}
         headerText="before activation"
-        footerText="citizenship registered"
+        footerText="addresses registered"
         progress={progress}
       />
     );
@@ -329,9 +396,9 @@ function Release({ defaultAccount }) {
   if (activeReleases && stateInfo === STATE_INIT_NULL_ACTIVE) {
     content = (
       <ProgressCard
-        titleValue={`${citizens} citizens`}
+        titleValue={`${useBeforeActivation} addresses`}
         headerText="activated"
-        footerText="citizenship registered"
+        footerText="addresses registered"
         progress={progress}
         styleContainerTrack={{ padding: '0px 25px 0px 15px' }}
         status="green"
@@ -342,24 +409,10 @@ function Release({ defaultAccount }) {
   if (!activeReleases && stateInfo !== STATE_INIT_NULL_BEFORE) {
     content = (
       <>
-        <PasportCitizenship
-          txHash={txHash}
-          citizenship={citizenship}
-          updateFunc={setSelectedAddress}
-          initStateCard={false}
-        />
-        {useSelectedGiftData !== null && (
-          <CurrentGift
-            initStateCard={false}
-            selectedAddress={selectedAddress}
-            currentGift={useSelectedGiftData}
-            release
-          />
-        )}
         <ProgressCard
-          titleValue={`${citizens} citizens`}
+          titleValue={`${useBeforeActivation} addresses`}
           headerText="before activation"
-          footerText="citizenship registered"
+          footerText="addresses registered"
           progress={progress}
         />
       </>
@@ -369,27 +422,43 @@ function Release({ defaultAccount }) {
   if (activeReleases && stateInfo !== STATE_INIT_NULL_ACTIVE) {
     content = (
       <>
+        <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
+
         <PasportCitizenship
           txHash={txHash}
           citizenship={citizenship}
           updateFunc={setSelectedAddress}
           initStateCard={false}
+          totalGift={totalGift}
         />
 
         {useSelectedGiftData !== null && (
           <CurrentGift
+            title="Claimed"
+            valueTextResult="claimed"
             initStateCard={false}
             selectedAddress={selectedAddress}
             currentGift={useSelectedGiftData}
-            release
           />
         )}
 
-        <NextUnfreeze timeNext={timeNext} readyRelease={readyRelease} />
+        {/* {useUnClaimedGiftAmount !== false && (
+          <UnclaimedGift unClaimedGiftAmount={useUnClaimedGiftAmount} />
+        )} */}
+
+        {useUnClaimedGiftData !== null && (
+          <CurrentGift
+            title="Unclaimed"
+            valueTextResult="unclaimed"
+            initStateCard={false}
+            selectedAddress={selectedAddress}
+            currentGift={useUnClaimedGiftData}
+          />
+        )}
 
         <ProgressCard
           titleValue={`${useReleasedStage.leftRelease} ${BOOT_ICON}`}
-          headerText="left released"
+          headerText="left to release"
           footerText="total gift released"
           progress={useReleasedStage.progress}
           styleContainerTrack={
@@ -403,7 +472,11 @@ function Release({ defaultAccount }) {
   return (
     <>
       <MainContainer>
-        <Info useReleasedStage={useReleasedStage} stepCurrent={stateInfo} />
+        <Info
+          useReleasedStage={useReleasedStage}
+          stepCurrent={stateInfo}
+          citizensTargetClaim={citizensTargetClaim}
+        />
         {content}
       </MainContainer>
 
