@@ -25,7 +25,6 @@ const {
   STATE_PROVE_IN_PROCESS,
 } = STEP_INFO;
 
-
 function Info({ stepCurrent, selectedAddress, amountClaims }) {
   try {
     let content;

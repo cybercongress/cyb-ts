@@ -13,8 +13,8 @@ function Welcome() {
         }}
       >
         <div>My name is Cyb.</div>
-        <div>I can help you to recieve Moon Citizenship in 7 simple steps.</div>
-        <div>Also I have a gift for you if you tried hard!</div>
+        <div>I can help you receive Moon Citizenship in 7 simple steps.</div>
+        <div>I have a gift for you if you worked hard!</div>
       </div>
     </ContainerGradient>
   );

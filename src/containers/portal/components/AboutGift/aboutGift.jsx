@@ -44,9 +44,9 @@ function AboutGift({
         birds get higher bonus.
       </div>
       <div>
-        70% of BOOT in genesis of Bostrom bootloader allocated to 6 million
-        ethereum and 200 thousands cosmos addresses. Gift become releasable
-        after 100 000 citizenship registration.
+        70% of BOOT in genesis of the Bostrom bootloader is allocated to 6 million
+        Ethereum and 200 thousand Cosmos addresses. Gift to be released
+        after 100 000 citizenship registrations.
       </div>
       <div className={styles.containerAboutGiftProgressBar}>
         <div className={styles.containerAboutGiftProgressBarTitle}>
@@ -67,7 +67,7 @@ function AboutGift({
         </div>
       </div>
       <div>
-        Only the most dexterous will catch the luck. The early birds get higher
+        Only the most dexterous will be lucky. The early birds get a higher
         bonus.
       </div>
     </ContainerGradient>

@@ -24,7 +24,7 @@ const DICTIONARY = {
     'Master of the Great Web',
   'Passionate Investors. ERC20 Analysis': 'Passionate Investor',
   'Heroes of the Great Web. Genesis and ETH2 Stakers':
-    'True Heroe of the Great Web',
+    'True Hero of the Great Web',
   Leeches: 'Devil',
 };
 

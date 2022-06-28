@@ -18,7 +18,7 @@ const keyTable = [
   'Devil',
   'Master of the Great Web',
   'Passionate Investor',
-  'True Heroe of the Great Web',
+  'True Hero of the Great Web',
 ];
 
 const ItemValue = ({ value, title }) => (
