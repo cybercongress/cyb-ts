@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
+import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
 export const ProgressBar = ({
@@ -44,23 +44,54 @@ export const ProgressBar = ({
   );
 };
 
-function BeforeActivation({ citizens = 0, progress = 0 }) {
+// progressCard
+// headerTitle
+// footerText
+// titleValue
+
+function ProgressCard({
+  headerText = '',
+  footerText = '',
+  titleValue = 0,
+  progress = 0,
+  styleContainerTrack,
+  status = 'red',
+}) {
+  const title = (
+    <div className={styles.containerBeforeActivationTitle}>
+      <div>{headerText}</div>
+      <div>{titleValue}</div>
+    </div>
+  );
+
+  const closedTitle = (
+    <div className={styles.containerBeforeActivationTitle}>
+      <div style={{ color: '#00C4FF' }}>{headerText}</div>
+      <div>{titleValue}</div>
+    </div>
+  );
+
   return (
-    <ContainerGradientText status="red">
+    <ContainerGradient
+      title={title}
+      closedTitle={closedTitle}
+      styleLampTitle={status}
+      styleLampContent={status}
+      userStyleContent={{ height: '194px' }}
+    >
       <div className={styles.containerBeforeActivation}>
-        <div className={styles.containerBeforeActivationTitle}>
-          <div>before activation</div>
-          <div>{citizens} citizens</div>
-        </div>
-        <ProgressBar progress={progress} />
+        <ProgressBar
+          progress={progress}
+          styleContainerTrack={styleContainerTrack}
+        />
         <div className={styles.containerBeforeActivationFooter}>
           <div>0%</div>
-          <div style={{ color: '#999999' }}>citizenship registered</div>
+          <div style={{ color: '#999999' }}> {footerText}</div>
           <div>100%</div>
         </div>
       </div>
-    </ContainerGradientText>
+    </ContainerGradient>
   );
 }
 
-export default BeforeActivation;
+export default ProgressCard;

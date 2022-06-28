@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect,
@@ -20,12 +22,13 @@ import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 import { ActionBarContentText, Dots, ButtonIcon } from '../../../components';
 import { CYBER, LEDGER, PATTERN_CYBER } from '../../../utils/config';
-import { trimString, dhm, timeSince } from '../../../utils/utils';
+import { trimString, dhm, timeSince, groupMsg } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS,
   CONTRACT_ADDRESS_GIFT,
+  BOOT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import { ActionBarSteps, BtnGrd } from '../components';
@@ -50,9 +53,9 @@ const STEP_CHECK_ACCOUNT = 2.1;
 const STEP_CHANGE_ACCOUNT = 2.2;
 const STEP_SEND_SIGN = 3;
 
-const STEP_GIFT_INFO = 0;
-const STEP_PROVE_ADD = 1;
-const STEP_CLAIME = 2;
+const STEP_GIFT_INFO = 1;
+const STEP_PROVE_ADD = 2;
+const STEP_CLAIME = 3;
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -97,73 +100,69 @@ const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
 };
 
 function ActionBarPortalGift({
+  addressActive,
   citizenship,
   updateTxHash,
   isClaimed,
   selectedAddress,
   currentGift,
   activeStep,
-  setInfoStep,
+  setStepApp,
+  setLoading,
+  setLoadingGift,
+  loadingGift,
 }) {
   const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
-  const [step, setStep] = useState(STEP_INIT);
+  const { keplr, jsCyber, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
 
-  // useEffect(() => {
-  //   const NS_TO_S = 1 * 10 ** -6;
-
-  //   const timeTest = 1648642766728729204 * NS_TO_S;
-
-  //   const d = new Date();
-  //   console.log('Date.parse(d)', Date.parse(d))
-  //   const time = timeTest - Date.parse(d);
-
-  //   console.log('data', timeSince(time));
-  //   console.log('1648637426714169237', 1648642766728729204 * NS_TO_S);
-  //   console.log(
-  //     'data timeSince',
-  //     dateFormat(
-  //       new Date(1648642766728729204 * NS_TO_S),
-  //       'dd/mm/yyyy, hh:MM:ss tt'
-  //     )
-  //   );
-  // }, []);
-
   useEffect(() => {
     const checkAddress = async () => {
-      if (step === STEP_CHANGE_ACCOUNT || step === STEP_CHECK_ACCOUNT) {
-        if (
-          keplr !== null &&
-          citizenship !== null &&
-          selectMethod === 'keplr'
-        ) {
+      if (
+        activeStep === STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT ||
+        activeStep === STEP_INFO.STATE_PROVE_CHECK_ACCOUNT
+      ) {
+        console.log('keplr', keplr);
+        console.log('addressActive', addressActive);
+        if (keplr !== null && addressActive !== null) {
           const [{ address }] = await keplr.signer.getAccounts();
-          const { owner } = citizenship;
-          if (address === owner) {
-            setStep(STEP_SEND_SIGN);
+          const { bech32 } = addressActive;
+          if (address === bech32) {
+            setStepApp(STEP_INFO.STATE_PROVE_SEND_SIGN);
           } else {
-            setStep(STEP_CHANGE_ACCOUNT);
+            setStepApp(STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT);
           }
         }
       }
     };
     checkAddress();
-  }, [keplr, citizenship, selectMethod, step]);
+  }, [keplr, addressActive, selectMethod, activeStep]);
 
-  const addressOwner = useMemo(() => {
-    if (citizenship !== null) {
+  const useAddressOwner = useMemo(() => {
+    if (citizenship !== null && addressActive !== null) {
       const { owner } = citizenship;
+      const { name } = addressActive;
+      if (name !== undefined && name !== null) {
+        return (
+          <>
+            account
+            <span style={{ color: '#36d6ae', padding: '0 5px' }}>{name}</span>
+          </>
+        );
+      }
       return (
-        <span style={{ color: '#36d6ae', padding: '0 5px' }}>
-          {trimString(owner, 10, 4)}
-        </span>
+        <>
+          address
+          <span style={{ color: '#36d6ae', padding: '0 5px' }}>
+            {trimString(owner, 10, 4)}
+          </span>
+        </>
       );
     }
     return '';
-  }, [citizenship]);
+  }, [citizenship, addressActive]);
 
   const signMsgKeplr = useCallback(async () => {
     const keplrWindow = await getKeplr();
@@ -187,21 +186,54 @@ function ActionBarPortalGift({
         signature: res.signature,
       };
 
-      const proveDataBase64 = toBase64(toAscii(JSON.stringify(proveData)));
-      setSignedMessageKeplr({ proveDataBase64, address });
-      setStep(STEP_CHECK_ACCOUNT);
+      const signature = toBase64(toAscii(JSON.stringify(proveData)));
+      setSignedMessageKeplr({ signature, address });
+      setStepApp(STEP_INFO.STATE_PROVE_CHECK_ACCOUNT);
     }
     return null;
   }, [citizenship, selectNetwork]);
 
-  const proveAddressKeplr = useCallback(async () => {
+  const signMsgETH = useCallback(async () => {
+    if (window.ethereum && citizenship !== null) {
+      const { owner } = citizenship;
+      const { ethereum } = window;
+      console.log('ethereum.isConnected()', ethereum.isConnected());
+
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+
+      const address = accounts[0];
+      const message = `${owner}:${CONSTITUTION_HASH}`;
+      const msg = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
+      const from = address;
+
+      const signature = await ethereum.request({
+        method: 'personal_sign',
+        params: [msg, from, 'proveAddress'],
+      });
+
+      console.log('first', {
+        address,
+        message,
+        messageHash: msg,
+        signature,
+      });
+
+      setSignedMessageKeplr({ signature, address });
+      setStepApp(STEP_INFO.STATE_PROVE_CHECK_ACCOUNT);
+    }
+    return null;
+  }, [citizenship]);
+
+  const sendSignedMessage = useCallback(async () => {
     if (keplr !== null && citizenship !== null && signedMessageKeplr !== null) {
       const { nickname } = citizenship.extension;
 
       const msgObject = proofAddressMsg(
         signedMessageKeplr.address,
         nickname,
-        signedMessageKeplr.proveDataBase64
+        signedMessageKeplr.signature
       );
 
       try {
@@ -219,7 +251,13 @@ function ActionBarPortalGift({
             status: 'pending',
             txHash: executeResponseResult.transactionHash,
           });
-          setStep(STEP_INIT);
+          setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
+          if (setLoading) {
+            setLoading(true);
+          }
+          if (setLoadingGift) {
+            setLoadingGift(true);
+          }
         }
 
         if (executeResponseResult.code) {
@@ -231,94 +269,19 @@ function ActionBarPortalGift({
         }
       } catch (error) {
         console.log('error', error);
-        setStep(STEP_INIT);
+        setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
       }
     }
-  }, [keplr, citizenship, signedMessageKeplr]);
-
-  const signMsgETH = async (owner) => {
-    console.log('signMsgETH');
-    if (window.ethereum) {
-      const { ethereum } = window;
-      console.log('ethereum.isConnected()', ethereum.isConnected());
-
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-
-      const account = accounts[0];
-      const message = `${owner}:${CONSTITUTION_HASH}`;
-      const msg = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
-      const from = account;
-
-      const sign = await ethereum.request({
-        method: 'personal_sign',
-        params: [msg, from, 'proveAddress'],
-      });
-
-      console.log('first', {
-        account,
-        message,
-        messageHash: msg,
-        sign,
-      });
-
-      return { sign, account };
-    }
-    return null;
-  };
-
-  const proveAddressETH = useCallback(async () => {
-    if (keplr !== null && citizenship !== null) {
-      const { nickname } = citizenship.extension;
-      const { owner } = citizenship;
-
-      const signData = await signMsgETH(owner);
-
-      if (signData !== null) {
-        const msgObject = proofAddressMsg(
-          signData.account,
-          nickname,
-          signData.sign
-        );
-
-        try {
-          const [{ address }] = await keplr.signer.getAccounts();
-
-          const executeResponseResult = await keplr.execute(
-            address,
-            CONTRACT_ADDRESS,
-            msgObject,
-            calculateFee(400000, gasPrice),
-            'cyber'
-          );
-
-          console.log('executeResponseResult', executeResponseResult);
-          if (executeResponseResult.code === 0) {
-            updateTxHash({
-              status: 'pending',
-              txHash: executeResponseResult.transactionHash,
-            });
-            setStep(STEP_INIT);
-          }
-
-          if (executeResponseResult.code) {
-            updateTxHash({
-              txHash: executeResponseResult?.transactionHash,
-              status: 'error',
-              rawLog: executeResponseResult?.rawLog.toString(),
-            });
-          }
-        } catch (error) {
-          console.log('error', error);
-          setStep(STEP_INIT);
-        }
-      }
-    }
-  }, [keplr, citizenship]);
+  }, [keplr, citizenship, signedMessageKeplr, setLoading]);
 
   const useClaime = useCallback(async () => {
     try {
+      if (keplr === null) {
+        if (initSigner) {
+          initSigner();
+        }
+      }
+
       if (
         keplr !== null &&
         selectedAddress !== null &&
@@ -333,23 +296,42 @@ function ActionBarPortalGift({
             const msgObject = claimMsg(nickname, address, amount, proof);
             msgs.push(msgObject);
           });
-          const gasLimits = 400000 * Object.keys(currentGift).length;
-          const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+          const gasLimits = 500000 * Object.keys(currentGift).length;
+          const { isNanoLedger, bech32Address } =
+            await keplr.signer.keplr.getKey(CYBER.CHAIN_ID);
           if (msgs.length > 0) {
-            const executeResponseResult = await keplr.executeArray(
-              addressKeplr,
-              CONTRACT_ADDRESS_GIFT,
-              msgs,
-              calculateFee(gasLimits, gasPrice),
-              'cyber'
-            );
+            let executeResponseResult;
+            if (isNanoLedger && msgs.length > 1) {
+              const groupMsgData = groupMsg(msgs, 1);
+              const elementMsg = groupMsgData[0];
+              executeResponseResult = await keplr.executeArray(
+                bech32Address,
+                CONTRACT_ADDRESS_GIFT,
+                elementMsg,
+                calculateFee(gasLimits, gasPrice),
+                'cyber'
+              );
+            } else {
+              executeResponseResult = await keplr.executeArray(
+                bech32Address,
+                CONTRACT_ADDRESS_GIFT,
+                msgs,
+                calculateFee(gasLimits, gasPrice),
+                'cyber'
+              );
+            }
+
             console.log('executeResponseResult', executeResponseResult);
             if (executeResponseResult.code === 0) {
               updateTxHash({
                 status: 'pending',
                 txHash: executeResponseResult.transactionHash,
               });
-              setStep(STEP_INIT);
+              // setStep(STEP_INIT);
+              if (setLoadingGift) {
+                setLoadingGift(true);
+              }
+              setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
             }
 
             if (executeResponseResult.code) {
@@ -364,9 +346,10 @@ function ActionBarPortalGift({
       }
     } catch (error) {
       console.log('error', error);
-      setStep(STEP_INIT);
+      // setStep(STEP_INIT);
+      setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
     }
-  }, [keplr, selectedAddress, currentGift, citizenship]);
+  }, [keplr, selectedAddress, currentGift, citizenship, initSigner]);
 
   const isProve = useMemo(() => {
     if (citizenship !== null && citizenship.extension.addresses === null) {
@@ -388,16 +371,230 @@ function ActionBarPortalGift({
     return true;
   }, [isClaimed]);
 
-  const funcChangeState = (actionBarState, infoState) => {
-    if (actionBarState !== undefined) {
-      setStep(actionBarState);
-    }
+  const useSelectCyber = useMemo(() => {
+    return (
+      selectedAddress &&
+      selectedAddress !== null &&
+      selectedAddress.match(PATTERN_CYBER)
+    );
+  }, [selectedAddress]);
 
-    if (infoState) {
-      setInfoStep(infoState);
-    }
+  const onClickMMSigner = () => {
+    setSelectNetwork('eth');
+    setSelectMethod('MetaMask');
   };
 
+  if (activeStep === STEP_INFO.STATE_INIT_NULL) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd
+          onClick={() => history.push('/citizenship')}
+          text="get citizenship"
+        />
+      </ActionBarContainer>
+    );
+  }
+
+  if (
+    activeStep === STEP_INFO.STATE_INIT_PROVE ||
+    activeStep === STEP_INFO.STATE_PROVE
+  ) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd
+          disabled={isProve}
+          onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+          text="prove address"
+        />
+      </ActionBarContainer>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_INIT_CLAIM) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd
+          onClick={() => setStepApp(STEP_INFO.STATE_CLAIME)}
+          text="go to claim"
+        />
+      </ActionBarContainer>
+    );
+  }
+
+  if (
+    activeStep === STEP_INFO.STATE_CLAIME_TO_PROVE ||
+    activeStep === STEP_INFO.STATE_GIFT_NULL_ALL
+  ) {
+    return (
+      <ActionBarSteps gridGap="35px">
+        <BtnGrd
+          disabled={isProve}
+          onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+          text="prove one more address"
+        />
+        <BtnGrd
+          onClick={() => history.push('/teleport')}
+          text={`buy ${BOOT_ICON}`}
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_PROVE_CONNECT) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_INIT_PROVE)}
+        onClickFnc={() =>
+          setStepApp(
+            selectMethod === 'keplr'
+              ? STEP_INFO.STATE_PROVE_SIGN_KEPLR
+              : STEP_INFO.STATE_PROVE_SIGN_MM
+          )
+        }
+        btnText="connect"
+        disabled={selectMethod === ''}
+      >
+        <ButtonIcon
+          onClick={() => setSelectMethod('keplr')}
+          active={selectMethod === 'keplr'}
+          img={imgKeplr}
+          text="keplr"
+        />
+        <ButtonIcon
+          onClick={() => onClickMMSigner()}
+          active={selectMethod === 'MetaMask'}
+          img={imgMetaMask}
+          text="metaMask"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_PROVE_SIGN_KEPLR) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+        onClickFnc={() => signMsgKeplr()}
+        btnText="sign message"
+        disabled={selectNetwork === ''}
+      >
+        <ButtonIcon
+          onClick={() => setSelectNetwork('osmosis')}
+          active={selectNetwork === 'osmosis'}
+          img={imgOsmosis}
+          text="osmosis"
+        />
+        <ButtonIcon
+          onClick={() => setSelectNetwork('columbus-5')}
+          active={selectNetwork === 'columbus-5'}
+          img={imgTerra}
+          text="terra"
+        />
+        <ButtonIcon
+          onClick={() => setSelectNetwork('cosmoshub')}
+          active={selectNetwork === 'cosmoshub'}
+          img={imgCosmos}
+          text="cosmoshub"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_PROVE_SIGN_MM) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+        onClickFnc={() => signMsgETH()}
+        btnText="sign message"
+      >
+        <ButtonIcon
+          onClick={() => setSelectNetwork('eth')}
+          active={selectNetwork === 'eth'}
+          img={imgEth}
+          text="eth"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_PROVE_CHECK_ACCOUNT) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+      >
+        address comparison <Dots />
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_PROVE_CHANGE_ACCOUNT) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+      >
+        choose {useAddressOwner} in keplr
+      </ActionBarSteps>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_PROVE_SEND_SIGN) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+      >
+        <BtnGrd
+          onClick={() => sendSignedMessage()}
+          text="send signed message"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (loadingGift && activeStep === STEP_INFO.STATE_RELEASE) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd pending />
+      </ActionBarContainer>
+    );
+  }
+
+  if (
+    (activeStep === STEP_INFO.STATE_INIT_RELEASE ||
+      activeStep === STEP_INFO.STATE_RELEASE) &&
+    isClaimed
+  ) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd onClick={() => history.push('/release')} text="go to release" />
+      </ActionBarContainer>
+    );
+  }
+
+  if (activeStep === STEP_INFO.STATE_CLAIME) {
+    return (
+      <ActionBarSteps gridGap="35px">
+        <BtnGrd
+          disabled={isProve}
+          onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
+          text="prove one more address"
+        />
+        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claim" />
+      </ActionBarSteps>
+    );
+  }
+
+  if (
+    activeStep === STEP_INFO.STATE_CLAIM_IN_PROCESS ||
+    activeStep === STEP_INFO.STATE_PROVE_IN_PROCESS
+  ) {
+    return (
+      <ActionBarContainer>
+        <BtnGrd pending />
+      </ActionBarContainer>
+    );
+  }
+
+  /*
   if (step === STEP_INIT && activeStep === STEP_PROVE_ADD) {
     return (
       <ActionBarContainer>
@@ -413,7 +610,10 @@ function ActionBarPortalGift({
   if (step === STEP_INIT && activeStep === STEP_CLAIME && isClaimed) {
     return (
       <ActionBarContainer>
-        <BtnGrd onClick={() => history.push('/portalRelease')} text="release" />
+        <BtnGrd
+          onClick={() => history.push('/release')}
+          text="go to release"
+        />
       </ActionBarContainer>
     );
   }
@@ -421,7 +621,11 @@ function ActionBarPortalGift({
   if (step === STEP_INIT && activeStep === STEP_CLAIME) {
     return (
       <ActionBarContainer>
-        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claime" />
+        <BtnGrd
+          disabled={isClaime}
+          onClick={() => useClaime()}
+          text={useSelectCyber ? 'claim all' : 'claim'}
+        />
       </ActionBarContainer>
     );
   }
@@ -505,11 +709,11 @@ function ActionBarPortalGift({
     );
   }
 
-  if (step === STEP_SEND_SIGN && selectMethod === 'keplr') {
+  if (step === STEP_SEND_SIGN) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_CONNECT)}>
         <BtnGrd
-          onClick={() => proveAddressKeplr()}
+          onClick={() => sendSignedMessage()}
           text="send signed message"
         />
       </ActionBarSteps>
@@ -520,11 +724,11 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps
         onClickBack={() => setStep(STEP_CONNECT)}
-        onClickFnc={() => proveAddressETH()}
+        onClickFnc={() => signMsgETH()}
         btnText="sign message"
       >
         <ButtonIcon
-          onClick={() => setSelectNetwork('bosethtrom')}
+          onClick={() => setSelectNetwork('eth')}
           active={selectNetwork === 'eth'}
           img={imgEth}
           text="eth"
@@ -532,6 +736,7 @@ function ActionBarPortalGift({
       </ActionBarSteps>
     );
   }
+  */
 
   return null;
 }

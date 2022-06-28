@@ -1,31 +1,35 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import { useState, useEffect, useContext } from 'react';
-import BigNumber from 'bignumber.js';
-import { CONTRACT_ADDRESS_GIFT, COUNT_STAGES } from '../utils';
+import { getReleaseState } from '../utils';
 import { AppContext } from '../../../context';
 
 const NS_TO_MS = 1 * 10 ** -6;
 
-function useCheckRelease(totalGift, updateFunc) {
+function useCheckRelease(totalGift, loadingGift, updateFunc) {
   const { jsCyber } = useContext(AppContext);
   const [loadingRelease, setLoadingRelease] = useState(true);
   const [totalRelease, setTotalRelease] = useState(null);
   const [totalReadyRelease, setTotalReadyRelease] = useState(null);
-  const [totalReadyAmount, setTotalReadyAmount] = useState(0);
+  const [totalBalanceClaimAmount, setTotalBalanceClaimAmount] = useState(0);
   const [timeNextFirstrelease, setTimeNextFirstrelease] = useState(null);
 
   useEffect(() => {
     const checkReleaseFunc = async () => {
-      if (
+      if (!loadingGift && totalGift !== undefined && totalGift === null) {
+        setLoadingRelease(false);
+        setTotalRelease(null);
+        setTotalBalanceClaimAmount(0);
+        setTimeNextFirstrelease(null);
+      } else if (
         jsCyber !== null &&
-        totalGift &&
+        totalGift !== undefined &&
         totalGift !== null &&
         Object.keys(totalGift).length > 0
       ) {
         setLoadingRelease(true);
         const result = {};
-        let readyAmount = 0;
+        let balanceClaimAmount = 0;
         const totalReady = [];
         let timeFirstRelease = null;
         for (const key in totalGift) {
@@ -33,12 +37,14 @@ function useCheckRelease(totalGift, updateFunc) {
             const element = totalGift[key];
             const { address, isClaimed } = element;
             if (isClaimed) {
-              const queryResponseResultRelease =
-                await jsCyber.queryContractSmart(CONTRACT_ADDRESS_GIFT, {
-                  release_state: {
-                    address,
-                  },
-                });
+              const queryResponseResultRelease = await getReleaseState(
+                jsCyber,
+                address
+              );
+              console.log(
+                'queryResponseResultRelease',
+                queryResponseResultRelease
+              );
 
               if (
                 queryResponseResultRelease !== null &&
@@ -50,9 +56,11 @@ function useCheckRelease(totalGift, updateFunc) {
                 const calculationState = calculationStateRelease(
                   queryResponseResultRelease
                 );
-                const { readyRelease, isRelease, timeNext } = calculationState;
+                const { balanceClaim, isRelease, timeNext } = calculationState;
+                if (balanceClaim !== undefined) {
+                  balanceClaimAmount += balanceClaim;
+                }
                 if (isRelease) {
-                  readyAmount += readyRelease;
                   totalReady.push({ address, ...calculationState });
                 }
                 const tempTime = timeNext;
@@ -68,7 +76,7 @@ function useCheckRelease(totalGift, updateFunc) {
           }
         }
         setTimeNextFirstrelease(timeFirstRelease);
-        setTotalReadyAmount(readyAmount);
+        setTotalBalanceClaimAmount(balanceClaimAmount);
         if (Object.keys(result).length > 0) {
           setTotalRelease(result);
         } else {
@@ -84,37 +92,26 @@ function useCheckRelease(totalGift, updateFunc) {
       }
     };
     checkReleaseFunc();
-  }, [totalGift, updateFunc]);
+  }, [totalGift, loadingGift, updateFunc]);
 
   const calculationStateRelease = (dataQuery) => {
-    const {
-      stage_expiration: stageExpiration,
-      balance_claim: balanceClaim,
-      stage,
-    } = dataQuery;
+    const { stage_expiration: stageExpiration, balance_claim: balanceClaim } =
+      dataQuery;
 
     const releaseAddObj = {
       isRelease: false,
       timeNext: null,
-      readyRelease: 0,
-      stageRelease: 0,
+      balanceClaim: 0,
     };
-
-    if (stage > 0) {
-      const curentProcent = new BigNumber(COUNT_STAGES).minus(stage);
-      releaseAddObj.stageRelease = curentProcent
-        .dividedBy(COUNT_STAGES)
-        .multipliedBy(100)
-        .dp(1, BigNumber.ROUND_FLOOR)
-        .toNumber();
-    } else {
-      releaseAddObj.stageRelease = 0;
-    }
 
     if (Object.prototype.hasOwnProperty.call(stageExpiration, 'never')) {
       releaseAddObj.isRelease = true;
       releaseAddObj.timeNext = null;
-      releaseAddObj.readyRelease = parseFloat(balanceClaim);
+      releaseAddObj.balanceClaim = parseFloat(balanceClaim);
+
+      if (parseFloat(balanceClaim) === 0) {
+        releaseAddObj.isRelease = false;
+      }
     }
 
     if (Object.prototype.hasOwnProperty.call(stageExpiration, 'at_time')) {
@@ -123,14 +120,16 @@ function useCheckRelease(totalGift, updateFunc) {
       const convertAtTime = atTime * NS_TO_MS;
       const time = convertAtTime - Date.parse(d);
 
+      if (balanceClaim) {
+        releaseAddObj.balanceClaim = parseFloat(balanceClaim);
+      }
+
       if (time > 0) {
         releaseAddObj.isRelease = false;
         releaseAddObj.timeNext = time;
-        releaseAddObj.readyRelease = parseFloat(0);
       } else {
         releaseAddObj.isRelease = true;
         releaseAddObj.timeNext = null;
-        releaseAddObj.readyRelease = parseFloat(balanceClaim);
       }
     }
 
@@ -139,7 +138,7 @@ function useCheckRelease(totalGift, updateFunc) {
 
   return {
     totalRelease,
-    totalReadyAmount,
+    totalBalanceClaimAmount,
     totalReadyRelease,
     loadingRelease,
     timeNextFirstrelease,

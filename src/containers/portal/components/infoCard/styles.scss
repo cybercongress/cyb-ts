@@ -32,6 +32,13 @@
   padding: 15px;
   z-index: 1;
   position: relative;
+  line-height: 20px;
+  min-height: 70px;
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  line-height: 24px;
+  font-size: 20px;
 }
 
 .containerLampAfter {

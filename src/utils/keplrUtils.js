@@ -63,8 +63,8 @@ const configKeplr = (prefix) => {
     coinType: 118,
     gasPriceStep: {
       low: 0,
-      average: 0.01,
-      high: 0.025,
+      average: 0,
+      high: 0.01,
     },
     features: ['stargate', 'ibc-transfer'],
   };
