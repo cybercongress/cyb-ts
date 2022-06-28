@@ -31,7 +31,7 @@ import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
 import {
-  CONTRACT_ADDRESS,
+  CONTRACT_ADDRESS_PASSPORT,
   getPassportByNickname,
   getNumTokens,
 } from '../utils';
@@ -366,7 +366,7 @@ function GetCitizenship({ node, defaultAccount }) {
       console.log('funds', funds);
       const executeResponseResult = await keplr.execute(
         address,
-        CONTRACT_ADDRESS,
+        CONTRACT_ADDRESS_PASSPORT,
         msgObject,
         calculateFee(500000, gasPrice),
         'cyber',

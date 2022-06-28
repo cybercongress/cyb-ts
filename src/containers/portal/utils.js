@@ -3,15 +3,21 @@ import axios from 'axios';
 import { AppContext } from '../../context';
 
 const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
+
+// test root
 // const CONTRACT_ADDRESS_GIFT =
 //   'bostrom1fkwjqyfdyktgu5f59jpwhvl23zh8aav7f98ml9quly62jx2sehys3xeq0u';
-// ;
+
+// prod root
 const CONTRACT_ADDRESS_GIFT =
   'bostrom1hz2lvf367zjmlwe65lgskhuxjntyl08z7yutsunzc8wha4f66mvs5nsmtx';
-// const CONTRACT_ADDRESS =
+
+// test root
+// const CONTRACT_ADDRESS_PASSPORT =
 //   'bostrom1fzm6gzyccl8jvdv3qq6hp9vs6ylaruervs4m06c7k0ntzn2f8faq7ha2z2';
-// bostrom1mypljhatv0prfr9cjzzvamxdf2ctg34xkt50sudxads9zhqnynequc66y5;
-const CONTRACT_ADDRESS =
+
+// prod root
+const CONTRACT_ADDRESS_PASSPORT =
   'bostrom1mypljhatv0prfr9cjzzvamxdf2ctg34xkt50sudxads9zhqnynequc66y5';
 
 const DICTIONARY = {
@@ -71,7 +77,7 @@ const useGetActivePassport = (addressActive, updateFunc) => {
               },
             };
             const response = await jsCyber.queryContractSmart(
-              CONTRACT_ADDRESS,
+              CONTRACT_ADDRESS_PASSPORT,
               query
             );
             setCitizenship(response);
@@ -98,7 +104,10 @@ const activePassport = async (client, address) => {
         address,
       },
     };
-    const response = await client.queryContractSmart(CONTRACT_ADDRESS, query);
+    const response = await client.queryContractSmart(
+      CONTRACT_ADDRESS_PASSPORT,
+      query
+    );
     return response;
   } catch (error) {
     console.log('error', error);
@@ -138,8 +147,8 @@ const checkGift = async (address) => {
   try {
     const response = await axios({
       method: 'GET',
-      url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`,
-      // url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`,
+      url: `https://titan.cybernode.ai/graphql/api/rest/get-cybergift/${address}`, // prod root
+      // url: `https://titan.cybernode.ai/graphql/api/rest/get-test-gift/${address}`, // test root
     });
 
     if (response && response.data) {
@@ -167,7 +176,10 @@ const checkGift = async (address) => {
 
 const queryContractSmartPassport = async (client, query) => {
   try {
-    const response = await client.queryContractSmart(CONTRACT_ADDRESS, query);
+    const response = await client.queryContractSmart(
+      CONTRACT_ADDRESS_PASSPORT,
+      query
+    );
     return response;
   } catch (error) {
     console.log('error', error);
@@ -303,7 +315,7 @@ const parseRowLog = (rawlog) => {
 
 export {
   activePassport,
-  CONTRACT_ADDRESS,
+  CONTRACT_ADDRESS_PASSPORT,
   useGetActivePassport,
   CONSTITUTION_HASH,
   CONTRACT_ADDRESS_GIFT,

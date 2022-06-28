@@ -26,7 +26,7 @@ import { trimString, dhm, timeSince, groupMsg } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
-  CONTRACT_ADDRESS,
+  CONTRACT_ADDRESS_PASSPORT,
   CONTRACT_ADDRESS_GIFT,
   BOOT_ICON,
 } from '../utils';
@@ -240,7 +240,7 @@ function ActionBarPortalGift({
         const [{ address }] = await keplr.signer.getAccounts();
         const executeResponseResult = await keplr.execute(
           address,
-          CONTRACT_ADDRESS,
+          CONTRACT_ADDRESS_PASSPORT,
           msgObject,
           calculateFee(400000, gasPrice),
           'cyber'
