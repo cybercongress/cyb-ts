@@ -25,6 +25,7 @@ const {
   STEP_AVATAR_UPLOAD,
   STEP_KEPLR_INIT,
   STEP_KEPLR_INIT_CHECK_FNC,
+  STEP_KEPLR_INIT_INSTALLED,
   STEP_KEPLR_SETUP,
   STEP_KEPLR_CONNECT,
   STEP_CHECK_ADDRESS,
@@ -49,6 +50,7 @@ function ActionBar({
   setDefaultAccountProps,
   checkAddressNetwork,
   registerDisabled,
+  showOpenFileDlg,
 }) {
   const history = useHistory();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
@@ -137,6 +139,22 @@ function ActionBar({
     }
   };
 
+  const openInNewTab = (url) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) {
+      newWindow.opener = null;
+    }
+  };
+
+  const onClickInstallKeplr = useCallback(() => {
+    if (keplr === null) {
+      setStep(STEP_KEPLR_INIT_INSTALLED);
+      openInNewTab('https://www.keplr.app');
+    } else {
+      setStep(STEP_KEPLR_SETUP);
+    }
+  }, [keplr]);
+
   useEffect(() => {
     if (step === STEP_KEPLR_REGISTER || step === STEP_ACTIVE_ADD) {
       setCheckAddressNetworkState(false);
@@ -181,11 +199,15 @@ function ActionBar({
   if (step === STEP_AVATAR_UPLOAD) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_RULES)}>
-        <BtnGrd
-          disabled={avatarIpfs === null}
-          onClick={() => uploadAvatarImg()}
-          text={avatarIpfs == null ? <Dots /> : 'Upload'}
-        />
+        {avatarIpfs === null ? (
+          <BtnGrd onClick={showOpenFileDlg} text="Upload avatar" />
+        ) : (
+          <BtnGrd
+            disabled={avatarIpfs === null}
+            onClick={uploadAvatarImg}
+            text={avatarIpfs == null ? <Dots /> : 'Upload'}
+          />
+        )}
       </ActionBarSteps>
     );
   }
@@ -194,8 +216,20 @@ function ActionBar({
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
         <BtnGrd
+          onClick={() => onClickInstallKeplr()}
+          text={keplr === null ? 'install Keplr' : 'I installed Keplr'}
+        />
+        {/* <Button onClick={() => setStep(STEP_KEPLR_SETUP)}>install Keplr</Button> */}
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_KEPLR_INIT_INSTALLED) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_AVATAR_UPLOAD)}>
+        <BtnGrd
           onClick={() => setStep(STEP_KEPLR_SETUP)}
-          text="install Keplr"
+          text="I installed Keplr"
         />
         {/* <Button onClick={() => setStep(STEP_KEPLR_SETUP)}>install Keplr</Button> */}
       </ActionBarSteps>
@@ -220,7 +254,10 @@ function ActionBar({
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_SETUP)}>
         {keplr === null ? (
-          'update page'
+          <BtnGrd
+            onClick={() => document.location.reload(true)}
+            text="update page"
+          />
         ) : (
           <BtnGrd onClick={() => connectAccToCyber()} text="connect" />
           // <Button onClick={() => connectAccToCyber()}>connect</Button>
@@ -229,7 +266,19 @@ function ActionBar({
     );
   }
 
-  if (step === STEP_CHECK_ADDRESS || step === STEP_CHECK_ADDRESS_CHECK_FNC) {
+  if (step === STEP_CHECK_ADDRESS) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
+        {/* check your bostrom address <Dots /> */}
+        <BtnGrd
+          onClick={() => setStep(STEP_CHECK_ADDRESS_CHECK_FNC)}
+          text="check address"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_CHECK_ADDRESS_CHECK_FNC) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_KEPLR_CONNECT)}>
         {/* check your bostrom address <Dots /> */}
@@ -282,8 +331,8 @@ function ActionBar({
   if (step === STEP_CHECK_GIFT) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('/portalGift')} text="check gift" />
-        {/* <Button onClick={() => history.push('/portalGift')}>check gift</Button> */}
+        <BtnGrd onClick={() => history.push('/gift')} text="check gift" />
+        {/* <Button onClick={() => history.push('/gift')}>check gift</Button> */}
       </ActionBarSteps>
     );
   }

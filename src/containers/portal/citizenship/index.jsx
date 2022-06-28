@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useMemo,
+  useRef,
 } from 'react';
 import { connect } from 'react-redux';
 import { calculateFee } from '@cosmjs/stargate';
@@ -29,7 +30,11 @@ import ActionBar from './ActionBar';
 import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
-import { CONTRACT_ADDRESS, getPassportByNickname } from '../utils';
+import {
+  CONTRACT_ADDRESS,
+  getPassportByNickname,
+  getNumTokens,
+} from '../utils';
 import { CYBER } from '../../../utils/config';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
@@ -45,6 +50,7 @@ const {
   STEP_RULES,
   STEP_AVATAR_UPLOAD,
   STEP_KEPLR_INIT,
+  STEP_KEPLR_INIT_INSTALLED,
   STEP_KEPLR_INIT_CHECK_FNC,
   STEP_KEPLR_SETUP,
   STEP_KEPLR_CONNECT,
@@ -90,12 +96,12 @@ const items = [
     step: STEP_KEPLR_SETUP,
   },
   {
-    title: 'connect keplr',
-    step: STEP_KEPLR_CONNECT,
+    title: 'active address',
+    step: STEP_CHECK_ADDRESS,
   },
   {
     title: 'passport',
-    step: STEP_CHECK_ADDRESS,
+    step: STEP_KEPLR_REGISTER,
   },
 ];
 
@@ -123,6 +129,8 @@ function GetCitizenship({ node, defaultAccount }) {
   const [avatarImg, setAvatarImg] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [registerDisabled, setRegisterDisabled] = useState(false);
+  const [counCitizenshipst, setCounCitizenshipst] = useState(0);
+  const inputOpenFileRef = useRef();
 
   // console.log('avatarImg', avatarImg);
   useEffect(() => {
@@ -145,6 +153,18 @@ function GetCitizenship({ node, defaultAccount }) {
   }, []);
 
   useEffect(() => {
+    const getCounCitizenshipst = async () => {
+      if (jsCyber !== null) {
+        const respnseNumTokens = await getNumTokens(jsCyber);
+        if (respnseNumTokens !== null && respnseNumTokens.count) {
+          setCounCitizenshipst(parseFloat(respnseNumTokens.count));
+        }
+      }
+    };
+    getCounCitizenshipst();
+  }, [jsCyber]);
+
+  useEffect(() => {
     const getPinAvatar = async () => {
       if (node !== null && avatarImg !== null) {
         const toCid = await getPin(node, avatarImg);
@@ -163,8 +183,17 @@ function GetCitizenship({ node, defaultAccount }) {
         } else {
           const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
           try {
-            await offlineSigner.getAccounts();
-            setStep(STEP_KEPLR_CONNECT);
+            const [{ address }] = await offlineSigner.getAccounts();
+            if (addressActive !== null) {
+              const { bech32 } = addressActive;
+              if (bech32 === address) {
+                setStep(STEP_CHECK_ADDRESS_CHECK_FNC);
+              } else {
+                setStep(STEP_KEPLR_CONNECT);
+              }
+            } else {
+              setStep(STEP_KEPLR_CONNECT);
+            }
           } catch (error) {
             setStep(STEP_KEPLR_SETUP);
           }
@@ -172,7 +201,7 @@ function GetCitizenship({ node, defaultAccount }) {
       }
     };
     getKeplr();
-  }, [step]);
+  }, [step, addressActive]);
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -364,11 +393,29 @@ function GetCitizenship({ node, defaultAccount }) {
     }
   }, [valueNickname, avatarIpfs, keplr]);
 
-  let content;
+  const onChangeNickname = useCallback((e) => {
+    const { value } = e.target;
+    if (value.match(/^([a-z0-9-]*)$/g)) {
+      setValueNickname(value);
+    }
+  }, []);
 
-  // if (step === STEP_INIT) {
-  //   content = <Welcome />;
-  // }
+  const showOpenFileDlg = () => {
+    inputOpenFileRef.current.click();
+  };
+
+  const onFilePickerChange = (files) => {
+    const file = files.current.files[0];
+    setAvatarImg(file);
+  };
+
+  const onClickClear = () => {
+    if (fncClearAvatar) {
+      fncClearAvatar();
+    }
+  };
+
+  let content;
 
   if (
     step === STEP_NICKNAME_CHOSE ||
@@ -379,7 +426,7 @@ function GetCitizenship({ node, defaultAccount }) {
       <InputNickname
         step={step}
         valueNickname={valueNickname}
-        setValueNickname={setValueNickname}
+        onChangeNickname={onChangeNickname}
       />
     );
   }
@@ -395,6 +442,9 @@ function GetCitizenship({ node, defaultAccount }) {
         upload={avatarIpfs === null}
         setAvatarImg={setAvatarImg}
         fncClearAvatar={fncClearAvatar}
+        inputOpenFileRef={inputOpenFileRef}
+        onFilePickerChange={onFilePickerChange}
+        showOpenFileDlg={showOpenFileDlg}
         avatar={
           avatarIpfs === null ? (
             'upload avatar'
@@ -406,17 +456,21 @@ function GetCitizenship({ node, defaultAccount }) {
     );
   }
 
-  if (step === STEP_KEPLR_INIT || step === STEP_KEPLR_INIT_CHECK_FNC) {
+  if (
+    step === STEP_KEPLR_INIT ||
+    step === STEP_KEPLR_INIT_CHECK_FNC ||
+    step === STEP_KEPLR_INIT_INSTALLED
+  ) {
     content = <InitKeplr />;
   }
 
-  if (step === STEP_KEPLR_SETUP) {
+  if (step === STEP_KEPLR_SETUP || step === STEP_KEPLR_CONNECT) {
     content = <SetupKeplr />;
   }
 
-  if (step === STEP_KEPLR_CONNECT) {
-    content = <ConnectKeplr />;
-  }
+  // if (step === STEP_KEPLR_CONNECT) {
+  //   content = <ConnectKeplr />;
+  // }
 
   if (
     step === STEP_CHECK_ADDRESS ||
@@ -458,6 +512,7 @@ function GetCitizenship({ node, defaultAccount }) {
           valuePriceNickname={usePriceNickname}
           registerDisabled={registerDisabled}
           setStep={setStep}
+          counCitizenshipst={counCitizenshipst}
         />
         {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
           <Carousel
@@ -489,6 +544,7 @@ function GetCitizenship({ node, defaultAccount }) {
         onClickRegister={onClickRegister}
         checkAddressNetwork={checkAddressNetwork}
         registerDisabled={registerDisabled}
+        showOpenFileDlg={showOpenFileDlg}
       />
     </>
   );
