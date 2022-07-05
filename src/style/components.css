@@ -393,34 +393,39 @@
 .markdown p {
   margin-bottom: 20px;
   text-align: justify;
+  line-height: 20px;
 }
 
 .markdown a {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .markdown h1 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .markdown h2 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .markdown h3 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .markdown table {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .markdown hr {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 .markdown div {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .markdown ul {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   margin-left: 20px;
   padding-left: 20px;
+}
+
+.markdown li {
+  line-height: 25px;
 }
 
 .markdown blockquote {
