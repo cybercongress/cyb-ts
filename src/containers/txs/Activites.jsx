@@ -370,6 +370,108 @@ function Activites({ msg }) {
     );
   }
 
+  // swap
+  if (type.includes('MsgSwapWithinBatch')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Swap requester address"
+          value={<Account address={msg.swap_requester_address} />}
+        />
+        <Row title="Demand coin denom" value={msg.demand_coin_denom} />
+        <Row
+          title="Offer coin"
+          value={`${formatNumber(
+            msg.offer_coin.amount
+          )} ${msg.offer_coin.denom.toUpperCase()}`}
+        />
+        <Row
+          title="Offer coin fee"
+          value={`${formatNumber(
+            msg.offer_coin_fee.amount
+          )} ${msg.offer_coin_fee.denom.toUpperCase()}`}
+        />
+        <Row title="Order price" value={msg.order_price} />
+        <Row title="Pool ID" value={msg.pool_id} />
+        <Row title="Swap type id" value={msg.swap_type_id} />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgDepositWithinBatch')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Depositor address"
+          value={<Account address={msg.depositor_address} />}
+        />
+        <Row title="Pool id" value={msg.pool_id} />
+        <Row
+          title="Deposit coins"
+          value={msg.deposit_coins.map((data, i) => {
+            return `${formatNumber(data.amount)} ${data.denom.toUpperCase()} /`;
+          })}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgWithdrawWithinBatch')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="Withdrawer address"
+          value={<Account address={msg.withdrawer_address} />}
+        />
+        <Row title="Pool id" value={msg.pool_id} />
+        <Row
+          title="Pool coin"
+          value={`${formatNumber(
+            msg.pool_coin.amount
+          )} ${msg.pool_coin.denom.toUpperCase()}`}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  // distribution
+  if (type.includes('MsgWithdrawValidatorCommission')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="address"
+          value={<Account address={msg.validator_address} />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgWithdrawDelegatorReward')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+        <Row
+          title="validator"
+          value={<Account address={msg.validator_address} />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
+  if (type.includes('MsgModifyWithdrawAddress')) {
+    return (
+      <ContainerMsgsType type={msg['@type']}>
+        <Row
+          title="delegator"
+          value={<Account address={msg.delegator_address} />}
+        />
+      </ContainerMsgsType>
+    );
+  }
+
   // gov
   if (type.includes('MsgSubmitProposal')) {
     return (
@@ -434,44 +536,6 @@ function Activites({ msg }) {
     );
   }
 
-  // distribution
-  if (type.includes('MsgWithdrawValidatorCommission')) {
-    return (
-      <ContainerMsgsType type={msg['@type']}>
-        <Row
-          title="address"
-          value={<Account address={msg.validator_address} />}
-        />
-      </ContainerMsgsType>
-    );
-  }
-
-  if (type.includes('MsgWithdrawDelegatorReward')) {
-    return (
-      <ContainerMsgsType type={msg['@type']}>
-        <Row
-          title="delegator"
-          value={<Account address={msg.delegator_address} />}
-        />
-        <Row
-          title="validator"
-          value={<Account address={msg.validator_address} />}
-        />
-      </ContainerMsgsType>
-    );
-  }
-
-  if (type.includes('MsgModifyWithdrawAddress')) {
-    return (
-      <ContainerMsgsType type={msg['@type']}>
-        <Row
-          title="delegator"
-          value={<Account address={msg.delegator_address} />}
-        />
-      </ContainerMsgsType>
-    );
-  }
-
   // slashing
   if (type.includes('MsgUnjail')) {
     return (
@@ -528,7 +592,9 @@ function Activites({ msg }) {
   }
 
   if (type.includes('MsgExecuteContract')) {
+
     console.log(msg.msg)
+
     return (
       <ContainerMsgsType type={msg['@type']}>
         <Row title="address" value={<Account address={msg.sender} />} />
@@ -583,70 +649,6 @@ function Activites({ msg }) {
 
   if (type.includes('MsgEditRouteName')) {
     return <MsgEditRouteName msg={msg} />;
-  }
-
-  // swap
-  if (type.includes('MsgSwapWithinBatch')) {
-    return (
-      <ContainerMsgsType type={msg['@type']}>
-        <Row
-          title="Swap requester address"
-          value={<Account address={msg.swap_requester_address} />}
-        />
-        <Row title="Demand coin denom" value={msg.demand_coin_denom} />
-        <Row
-          title="Offer coin"
-          value={`${formatNumber(
-            msg.offer_coin.amount
-          )} ${msg.offer_coin.denom.toUpperCase()}`}
-        />
-        <Row
-          title="Offer coin fee"
-          value={`${formatNumber(
-            msg.offer_coin_fee.amount
-          )} ${msg.offer_coin_fee.denom.toUpperCase()}`}
-        />
-        <Row title="Order price" value={msg.order_price} />
-        <Row title="Pool ID" value={msg.pool_id} />
-        <Row title="Swap type id" value={msg.swap_type_id} />
-      </ContainerMsgsType>
-    );
-  }
-
-  if (type.includes('MsgDepositWithinBatch')) {
-    return (
-      <ContainerMsgsType type={msg['@type']}>
-        <Row
-          title="Depositor address"
-          value={<Account address={msg.depositor_address} />}
-        />
-        <Row title="Pool id" value={msg.pool_id} />
-        <Row
-          title="Deposit coins"
-          value={msg.deposit_coins.map((data, i) => {
-            return `${formatNumber(data.amount)} ${data.denom.toUpperCase()} /`;
-          })}
-        />
-      </ContainerMsgsType>
-    );
-  }
-
-  if (type.includes('MsgWithdrawWithinBatch')) {
-    return (
-      <ContainerMsgsType type={msg['@type']}>
-        <Row
-          title="Withdrawer address"
-          value={<Account address={msg.withdrawer_address} />}
-        />
-        <Row title="Pool id" value={msg.pool_id} />
-        <Row
-          title="Pool coin"
-          value={`${formatNumber(
-            msg.pool_coin.amount
-          )} ${msg.pool_coin.denom.toUpperCase()}`}
-        />
-      </ContainerMsgsType>
-    );
   }
 
   if (type.includes('MsgTransfer')) {
