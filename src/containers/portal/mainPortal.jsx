@@ -7,10 +7,10 @@ import { activePassport } from './utils';
 import Release from './release';
 import PortalGift from './gift';
 import styles from './styles.scss';
-
-const spacePussy = require('../../image/space-pussy.svg');
 // const rocketSpacePussy = require('../../image/rocket.svg');
 import RocketSpacePussy from './RocketSpacePussy';
+
+const spacePussy = require('../../image/space-pussy.svg');
 
 const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
@@ -33,11 +33,13 @@ const getActiveAddress = (address) => {
   return addressPocket;
 };
 
+const scaleInitValue = 0.9;
+
 function MainPartal({ defaultAccount }) {
   const history = useHistory();
   const { jsCyber } = useContext(AppContext);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(scaleInitValue);
 
   useEffect(() => {
     const getPasport = async () => {
@@ -86,7 +88,7 @@ function MainPartal({ defaultAccount }) {
   if (stagePortal === STAGE_INIT) {
     return (
       <MainContainer minHeight="100vh">
-        {scale === 1 && (
+        {scale === scaleInitValue && (
           <InfoCard>
             The measure of intelligence is ability to change. Albert Einstein
           </InfoCard>
@@ -98,7 +100,7 @@ function MainPartal({ defaultAccount }) {
             zIndex: '3',
             left: '50%',
             marginRight: '-50%',
-            transform: `translate(-50%, 70px) scale(${scale})`,
+            transform: `translate(-50%, 40px) scale(${scale})`,
             transition: 'all 2.3s cubic-bezier(0.67, 0.01, 0.37, 1.01) 0s',
           }}
         >

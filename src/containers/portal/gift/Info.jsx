@@ -136,7 +136,7 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
       case STATE_CLAIME_ALL:
         content = (
           <span>
-            Choose bostrom address <br />
+            Chose bostrom address <br />
             to claim all gifts, or claim one by one
           </span>
         );

@@ -116,13 +116,7 @@ function Info({
         break;
 
       case STEP_NICKNAME_CHOSE:
-        content = (
-          <span>
-            Choose your nickname.
-            <br />
-            You will own it as nft
-          </span>
-        );
+        content = <span>Choose your nickname. You will own it as an NFT.</span>;
         break;
 
       case STEP_NICKNAME_INVALID:
@@ -148,8 +142,8 @@ function Info({
       case STEP_RULES:
         content = (
           <span>
-            Dear {nickname}, <br /> before setting up your account you must
-            endorce the rules
+            Dear {nickname}, before setting up your account abide by these
+            rules.
           </span>
         );
         break;
@@ -157,7 +151,7 @@ function Info({
       case STEP_AVATAR_UPLOAD:
         content = (
           <span>
-            Upload gif or picture. <br /> You will own it as nft also
+            Upload a gif or picture. You will also own this as an NFT.
           </span>
         );
         break;
@@ -167,10 +161,10 @@ function Info({
       case STEP_KEPLR_INIT_INSTALLED:
         content = (
           <span>
-            You need keplr to use cyb. <br />
-            it is opensource and cool. <br /> Check{' '}
+            You need Keplr to use cyb. <br />
+            It is opensource and cool! <br /> Check{' '}
             <LinkWindow to="https://www.keplr.app/">repository</LinkWindow> if
-            need
+            necesarry
           </span>
         );
         break;
@@ -178,8 +172,8 @@ function Info({
       case STEP_KEPLR_SETUP:
         content = (
           <span>
-            Create account in keplr. <br /> Then you will have addresses <br />{' '}
-            in Cyber ecosystem
+            Create an account in keplr. <br />
+            You will then have addresses in the Cyber ecosystem.
           </span>
         );
         break;
@@ -232,8 +226,8 @@ function Info({
         } else {
           content = (
             <span>
-              Register passport, then check the gift <br /> proving ethereum,
-              cosmos, osmosis and terra address.
+              Register passport, then check for a gift <br /> proving ethereum,
+              cosmos, osmosis and terra addresses.
             </span>
           );
         }
@@ -243,8 +237,8 @@ function Info({
       case STEP_CHECK_GIFT:
         content = (
           <span>
-            Congratulations, {nickname} - <br /> you are citizen of the Moon.
-            Try your luck and check the gift
+            Congratulations, {nickname} - <br /> you are a citizen of the Moon.
+            Try your luck and check for a gift
           </span>
         );
         break;
