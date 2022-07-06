@@ -103,14 +103,14 @@ function Info({
           >
             <div>My name is Cyb.</div>
             <div>
-              I helped to receive{' '}
+              I have helped{' '}
               <span style={{ color: '#36d6ae' }}>
                 {formatNumber(counCitizenshipst)}
               </span>{' '}
-              Moon Citizenships.
+              beings recieve Moon Citizenship.
             </div>
-            <div>I can help you also in 7 simple steps.</div>
-            <div>Also I have a gift for you if you tried hard!</div>
+            <div>I can also assist you in 7 simple steps.</div>
+            <div>If you work hard, you may get a gift!</div>
           </div>
         );
         break;

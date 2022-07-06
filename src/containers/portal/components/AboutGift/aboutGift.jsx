@@ -40,13 +40,12 @@ function AboutGift({
     >
       <div style={{ marginBottom: '10px' }}>
         Hurry up! {formatNumber(parseFloat(addressesClaimed))} addresses already
-        claimed the gift. Only the most dexterous will catch the luck. The early
-        birds get higher bonus.
+        claimed a gift. Only the most dexterous will be lucky. The early birds
+        get a higher bonus.
       </div>
       <div>
-        70% of BOOT in genesis of the Bostrom bootloader is allocated to 6
-        million Ethereum and 200 thousand Cosmos addresses. Gift to be released
-        after 100 000 citizenship registrations.
+        70% of BOOT in the genesis of the Bostrom bootloader is allocated to ~4
+        million addresses in Ethereum, Cosmos, Osmosis and Terra.
       </div>
       <div className={styles.containerAboutGiftProgressBar}>
         <div className={styles.containerAboutGiftProgressBarTitle}>
@@ -66,10 +65,7 @@ function AboutGift({
           <div>100%</div>
         </div>
       </div>
-      <div>
-        Only the most dexterous will be lucky. The early birds get a higher
-        bonus.
-      </div>
+      <div>Gift to be released after 100 000 addresses claimed.</div>
     </ContainerGradient>
   );
 }
