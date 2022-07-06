@@ -4,7 +4,6 @@ import { STEP_INFO } from './utils';
 import { PATTERN_CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
 
-/* test comment */
 
 const {
   STATE_INIT,
