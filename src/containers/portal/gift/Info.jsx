@@ -75,8 +75,8 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
       case STATE_PROVE:
         content = (
           <span>
-            Prove ethereum, cosmos, osmosis, <br /> terra or bostrom signatures
-            by selecting signer to check for the gift
+            Prove ethereum, cosmos, osmosis, <br /> terra signatures by
+            selecting signer to check for the gift
           </span>
         );
         break;

@@ -103,7 +103,7 @@ function Info({
           >
             <div>My name is Cyb.</div>
             <div>
-              I helped you to receive{' '}
+              I helped to receive{' '}
               <span style={{ color: '#36d6ae' }}>
                 {formatNumber(counCitizenshipst)}
               </span>{' '}

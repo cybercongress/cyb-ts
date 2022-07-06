@@ -18,6 +18,7 @@ import PasportCitizenship from './pasport';
 import GetCitizenship from './citizenship';
 import Info from './citizenship/Info';
 import { steps } from './citizenship/utils';
+import PasportMoonCitizenship from './PasportMoonCitizenship';
 
 const styleSteps = { width: '120px', height: '40px' };
 const items = [
@@ -35,11 +36,8 @@ const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
 function PortalCitizenship({ defaultAccount }) {
-  const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
-  // const { addressActive } = useSetActiveAddress(defaultAccount);
+  const { jsCyber } = useContext(AppContext);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
-  const [citizenship, setCitizenship] = useState(null);
 
   useEffect(() => {
     const getPasport = async () => {
@@ -55,7 +53,6 @@ function PortalCitizenship({ defaultAccount }) {
             console.log('response', response);
             if (response !== null) {
               console.log('response', response);
-              setCitizenship(response);
               setStagePortal(STAGE_READY);
             } else {
               setStagePortal(STAGE_INIT);
@@ -87,11 +84,6 @@ function PortalCitizenship({ defaultAccount }) {
     return addressPocket;
   };
 
-  const checkKeplr = () => {
-    console.log(`window.keplr `, window.keplr);
-    console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
-  };
-
   if (stagePortal === STAGE_LOADING) {
     return <div>...</div>;
   }
@@ -101,21 +93,7 @@ function PortalCitizenship({ defaultAccount }) {
   }
 
   if (stagePortal === STAGE_READY) {
-    const nickname = citizenship !== null ? citizenship.extension.nickname : '';
-    return (
-      <>
-        <MainContainer>
-          <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={nickname || ''} />
-          <PasportCitizenship citizenship={citizenship} />
-        </MainContainer>
-        <ActionBarSteps>
-          <BtnGrd
-            text="check gift"
-            onClick={() => history.push('/gift')}
-          />
-        </ActionBarSteps>
-      </>
-    );
+    return <PasportMoonCitizenship />;
   }
 
   return null;

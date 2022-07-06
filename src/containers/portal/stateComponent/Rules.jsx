@@ -1,24 +1,35 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
 import { ContainerGradient } from '../components';
+import MoonCode from './MoonCode';
+import { LinkWindow } from '../../../components';
 
 function Rules() {
   return (
-    <ContainerGradient styleLampContent="red" title="Moon Citizenship rules">
-      <div style={{ paddingLeft: '15px', height: '100%' }}>
-        <ol
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            height: '100%',
+    <ContainerGradient
+      userStyleContent={{ height: 'auto' }}
+      styleLampContent="red"
+      title="Moon Code"
+    >
+      <div
+        className="markdown"
+        style={{ paddingRight: '15px', height: '100%', width: '100%' }}
+      >
+        <ReactMarkdown
+          children={MoonCode}
+          rehypePlugins={[rehypeSanitize]}
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: ({ node, ...props }) => {
+              if (node.properties && node.properties.href) {
+                const { href } = node.properties;
+                return <LinkWindow to={href} {...props} />;
+              }
+            },
           }}
-        >
-          <li>Always remember your keys </li>
-          <li>Never give your keys to anyone </li>
-          <li>Learn to trust your keys to apps </li>
-          <li>Always verify your keys </li>
-          <li>Consider how to pass down your keys</li>
-        </ol>
+        />
       </div>
     </ContainerGradient>
   );

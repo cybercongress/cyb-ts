@@ -7,16 +7,12 @@ const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 // test root
 // const CONTRACT_ADDRESS_GIFT =
 //   'bostrom1fkwjqyfdyktgu5f59jpwhvl23zh8aav7f98ml9quly62jx2sehys3xeq0u';
-
-// prod root
-const CONTRACT_ADDRESS_GIFT =
-  'bostrom1hz2lvf367zjmlwe65lgskhuxjntyl08z7yutsunzc8wha4f66mvs5nsmtx';
-
-// test root
 // const CONTRACT_ADDRESS_PASSPORT =
 //   'bostrom1fzm6gzyccl8jvdv3qq6hp9vs6ylaruervs4m06c7k0ntzn2f8faq7ha2z2';
 
 // prod root
+const CONTRACT_ADDRESS_GIFT =
+  'bostrom1hz2lvf367zjmlwe65lgskhuxjntyl08z7yutsunzc8wha4f66mvs5nsmtx';
 const CONTRACT_ADDRESS_PASSPORT =
   'bostrom1mypljhatv0prfr9cjzzvamxdf2ctg34xkt50sudxads9zhqnynequc66y5';
 

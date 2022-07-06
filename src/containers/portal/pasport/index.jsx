@@ -13,6 +13,8 @@ import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
+import BtnPasport from './btnPasport';
+import plus from '../../../image/plus.svg';
 
 function PasportCitizenship({
   citizenship,
@@ -23,6 +25,9 @@ function PasportCitizenship({
   initStateCard,
   setActiveItem,
   totalGift,
+  onClickDeleteAddress,
+  onClickProveeAddress,
+  onClickEditAvatar,
 }) {
   const { jsCyber } = useContext(AppContext);
   const [owner, setOwner] = useState(null);
@@ -31,7 +36,7 @@ function PasportCitizenship({
   const [karma, setKarma] = useState(0);
 
   useEffect(() => {
-    if (setActiveItem) {
+    if (setActiveItem !== undefined) {
       setActive(setActiveItem);
     }
   }, [setActiveItem]);
@@ -85,12 +90,14 @@ function PasportCitizenship({
   }, [citizenship]);
 
   const addressActiveSignatures = useMemo(() => {
-    if (
-      addresses !== null &&
-      Object.prototype.hasOwnProperty.call(addresses, active)
-    ) {
-      return { bech32: addresses[active].address };
+    if (addresses !== null) {
+      if (Object.prototype.hasOwnProperty.call(addresses, active)) {
+        return { bech32: addresses[active].address };
+      }
+      setActive(0);
+      return { bech32: addresses[0].address };
     }
+
     return null;
   }, [addresses, active]);
 
@@ -220,6 +227,11 @@ function PasportCitizenship({
               }
               node={node}
             />
+            {onClickEditAvatar && (
+              <BtnPasport onClick={onClickEditAvatar} typeBtn="blue">
+                edit
+              </BtnPasport>
+            )}
           </ContainerAvatar>
         </div>
         {addressActiveSignatures !== null && (
@@ -232,31 +244,32 @@ function PasportCitizenship({
               gridGap: '10px',
             }}
           >
-            {/* <div> */}
-            <div
-              style={{
-                display: 'grid',
-                gap: '15.5px',
-                gridTemplateColumns: 'repeat(9, 30px)',
-                width: '100%',
-              }}
-            >
-              {renderItemImg}
-            </div>
-            {/* <button
+            <div style={{ position: 'relative' }}>
+              <div
                 style={{
-                  position: 'absolute',
-                  top: '0',
-                  bottom: '0',
-                  width: '50px',
-                  transform: 'translate(18px, 0px)',
-                  width: '10px',
-                  left: '100%',
+                  display: 'grid',
+                  gap: '15.5px',
+                  gridTemplateColumns: 'repeat(9, 30px)',
+                  width: '100%',
                 }}
               >
-                +
-              </button> */}
-            {/* </div> */}
+                {renderItemImg}
+              </div>
+              {active === 0 && onClickProveeAddress && (
+                <BtnPasport onClick={onClickProveeAddress} typeBtn="blue">
+                  <img
+                    style={{ width: '13', height: '13px' }}
+                    src={plus}
+                    alt="plus"
+                  />
+                </BtnPasport>
+              )}
+              {active !== 0 && onClickDeleteAddress && (
+                <BtnPasport onClick={onClickDeleteAddress} typeBtn="red">
+                  X
+                </BtnPasport>
+              )}
+            </div>
             <Signatures addressActive={addressActiveSignatures} />
           </div>
         )}

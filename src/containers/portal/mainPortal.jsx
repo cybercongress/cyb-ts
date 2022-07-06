@@ -9,7 +9,8 @@ import PortalGift from './gift';
 import styles from './styles.scss';
 
 const spacePussy = require('../../image/space-pussy.svg');
-const arrowSpacePussy = require('../../image/arrowSpacePussy.svg');
+// const rocketSpacePussy = require('../../image/rocket.svg');
+import RocketSpacePussy from './RocketSpacePussy';
 
 const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
@@ -108,11 +109,12 @@ function MainPartal({ defaultAccount }) {
             className={styles.buttonSpacePussy}
           >
             <div className={styles.textSpacePussy}>cyberverse</div>
-            <img
+            {/* <img
               className={styles.arrowSpacePussy}
-              src={arrowSpacePussy}
+              src={rocketSpacePussy}
               alt="arrowSpacePussy"
-            />
+            /> */}
+            <RocketSpacePussy />
           </button>
         </div>
       </MainContainer>

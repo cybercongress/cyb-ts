@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import { connect } from 'react-redux';
+import { useLocation, useHistory } from 'react-router-dom';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {
@@ -58,6 +59,8 @@ const itemsStep = [
 
 function PortalGift({ defaultAccount, node }) {
   const { keplr, jsCyber } = useContext(AppContext);
+  const location = useLocation();
+  const history = useHistory();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [updateFunc, setUpdateFunc] = useState(0);
   const [currentBonus, setCurrentBonus] = useState(initStateBonus);
@@ -87,6 +90,32 @@ function PortalGift({ defaultAccount, node }) {
   // console.log('-------------------------')
   // console.log('totalGiftAmount', totalGiftAmount)
   // console.log('<<<<-------------------------');
+
+  // useEffect(() => {
+  //   const { pathname } = location;
+  //   if (!loading && citizenship !== null) {
+  //     if (appStep === STEP_INFO.STATE_INIT) {
+  //       if (pathname === '/gift/prove') {
+  //         setStepApp(STEP_INFO.STATE_PROVE);
+  //       }
+  //       if (pathname === '/gift/claim') {
+  //         setStepApp(STEP_INFO.STATE_CLAIME);
+  //       }
+  //     } else if (Math.floor(appStep) === STEP_INFO.STATE_PROVE) {
+  //       if (pathname !== '/gift/prove') {
+  //         history.push('/gift/prove');
+  //       }
+  //     } else if (Math.floor(appStep) === STEP_INFO.STATE_CLAIME) {
+  //       if (pathname !== '/gift/claim') {
+  //         history.push('/gift/claim');
+  //       }
+  //     } else if (Math.floor(appStep) === STEP_INFO.STATE_INIT) {
+  //       if (pathname !== '/gift') {
+  //         history.push('/gift');
+  //       }
+  //     }
+  //   }
+  // }, [appStep, location.pathname, loading, citizenship]);
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {

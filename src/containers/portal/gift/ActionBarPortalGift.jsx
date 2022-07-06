@@ -88,6 +88,15 @@ const proofAddressMsg = (address, nickname, signature) => {
   };
 };
 
+const deleteAddressMsg = (address, nickname) => {
+  return {
+    remove_address: {
+      address,
+      nickname,
+    },
+  };
+};
+
 const claimMsg = (nickname, giftClaimingAddress, giftAmount, proof) => {
   return {
     claim: {
@@ -269,7 +278,7 @@ function ActionBarPortalGift({
         }
       } catch (error) {
         console.log('error', error);
-        setStepApp(STEP_INFO.STATE_PROVE_IN_PROCESS);
+        setStepApp(STEP_INFO.STATE_PROVE);
       }
     }
   }, [keplr, citizenship, signedMessageKeplr, setLoading]);
@@ -347,7 +356,7 @@ function ActionBarPortalGift({
     } catch (error) {
       console.log('error', error);
       // setStep(STEP_INIT);
-      setStepApp(STEP_INFO.STATE_CLAIM_IN_PROCESS);
+      setStepApp(STEP_INFO.STATE_CLAIME);
     }
   }, [keplr, selectedAddress, currentGift, citizenship, initSigner]);
 
@@ -371,12 +380,57 @@ function ActionBarPortalGift({
     return true;
   }, [isClaimed]);
 
-  const useSelectCyber = useMemo(() => {
-    return (
-      selectedAddress &&
-      selectedAddress !== null &&
-      selectedAddress.match(PATTERN_CYBER)
-    );
+  const useDeleteAddress = useCallback(async () => {
+    if (keplr !== null) {
+      if (
+        selectedAddress !== null &&
+        !selectedAddress.match(PATTERN_CYBER) &&
+        citizenship !== null
+      ) {
+        const { nickname } = citizenship.extension;
+        const msgObject = deleteAddressMsg(selectedAddress, nickname);
+        try {
+          const [{ address }] = await keplr.signer.getAccounts();
+          const executeResponseResult = await keplr.execute(
+            address,
+            CONTRACT_ADDRESS_PASSPORT,
+            msgObject,
+            calculateFee(400000, gasPrice),
+            'cyber'
+          );
+          console.log('executeResponseResult', executeResponseResult);
+          if (executeResponseResult.code === 0) {
+            updateTxHash({
+              status: 'pending',
+              txHash: executeResponseResult.transactionHash,
+            });
+            setStepApp(STEP_INFO.STATE_DELETE_IN_PROCESS);
+          }
+
+          if (executeResponseResult.code) {
+            updateTxHash({
+              txHash: executeResponseResult?.transactionHash,
+              status: 'error',
+              rawLog: executeResponseResult?.rawLog.toString(),
+            });
+          }
+        } catch (error) {
+          console.log('error', error);
+          setStepApp(STEP_INFO.STATE_INIT);
+        }
+      }
+    }
+  }, [keplr, selectedAddress, citizenship]);
+
+  const useGetSelectAddress = useMemo(() => {
+    if (selectedAddress && selectedAddress !== null) {
+      return (
+        <span style={{ color: '#36d6ae', padding: '0 5px' }}>
+          {trimString(selectedAddress, 10, 4)}
+        </span>
+      );
+    }
+    return '';
   }, [selectedAddress]);
 
   const onClickMMSigner = () => {
@@ -582,10 +636,22 @@ function ActionBarPortalGift({
       </ActionBarSteps>
     );
   }
+  if (activeStep === STEP_INFO.STATE_DELETE_ADDRESS) {
+    return (
+      <ActionBarSteps
+        onClickBack={() => setStepApp(STEP_INFO.STATE_INIT)}
+        onClickFnc={useDeleteAddress}
+        btnText="delete"
+      >
+        you want to delete {useGetSelectAddress} from your passport
+      </ActionBarSteps>
+    );
+  }
 
   if (
     activeStep === STEP_INFO.STATE_CLAIM_IN_PROCESS ||
-    activeStep === STEP_INFO.STATE_PROVE_IN_PROCESS
+    activeStep === STEP_INFO.STATE_PROVE_IN_PROCESS ||
+    activeStep === STEP_INFO.STATE_DELETE_IN_PROCESS
   ) {
     return (
       <ActionBarContainer>
