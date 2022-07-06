@@ -1,8 +1,17 @@
-## Cyb: Love and Robots
+# Cyb: Love and Robots
+@mastercyb @natgirl
+
+@natgirl role:
+- force development of the architecture (time spent by @mastercyb and strcuture of thoughts)
+- verbal becomes text
+- knowledge acquired epower future improvements
+- help finalize
 
 Cyb mission is to link and persist knowledge that allows everyone prosper.
 
 Technically Cyb is a browser based on the idea of state transition function defined by cyberlink (signed transition from one state to another).
+
+Immortal Robot for the Great Web
 
 ## Principles
 
@@ -18,7 +27,19 @@ Technically Cyb is a browser based on the idea of state transition function defi
 - Minimalizm:
 - Wisdom: Educative approach
 
-## Resources
+## Проблематика
+
+## Объектная модель 
+
+  avatars can create neurons. Neurons creates cyberlinks. Cyberlinks are Data behond cyberlinks are deliver by providers. 
+  - providers
+  - particles
+!!!!
+
+## Рантайм Васм
+
+
+### Resources
 
 In the core is the robust resource permissions signed by agent for every particle. Personal robots can be generated from the avatar's key for signing permissions for particles (local contracts).
 
@@ -26,10 +47,31 @@ In the core is the robust resource permissions signed by agent for every particl
 - GPU time
 - volatile memory
 - persistent memory
-  - avatars
-  - providers
-  - particles
+
 - other websys resources
+
+## Раст как язык 
+
+## Рантайм
+
+## ipfs и waku
+
+## Ноды: bitcoin, ethereum, cosmos
+
+## Терминальный интерфейс
+
+## Графический интерфейс
+
+## Сайгнер
+
+## Пакетный менеджер
+
+## .cyb файл в репе
+- Адрес для верификации подписей
+- кельвин версионирование
+- билды под разные архитектуры 
+- Язык разметки вместо html
+- .w расширение
 
 ## Components
 

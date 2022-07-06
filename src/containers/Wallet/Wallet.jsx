@@ -568,7 +568,7 @@ class Wallet extends React.Component {
                 onClick={() => this.routeChange()}
               >
                 <Text fontSize="16px" color="#fff">
-                  Hi! I am Cyb! Your immortal robot of the Great Web.
+                  Hi! I am Cyb! Your immortal robot of the Great Web. Click here for help. 
                 </Text>
               </PocketCard>
 
