@@ -455,12 +455,12 @@ function ActionBarPortalGift({
 
   if (activeStep === STEP_INFO.STATE_INIT_NULL) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps>
         <BtnGrd
           onClick={() => history.push('/citizenship')}
           text="get citizenship"
         />
-      </ActionBarContainer>
+      </ActionBarSteps>
     );
   }
 
@@ -469,24 +469,24 @@ function ActionBarPortalGift({
     activeStep === STEP_INFO.STATE_PROVE
   ) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps>
         <BtnGrd
           disabled={isProve}
           onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
           text="prove address"
         />
-      </ActionBarContainer>
+      </ActionBarSteps>
     );
   }
 
   if (activeStep === STEP_INFO.STATE_INIT_CLAIM) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps>
         <BtnGrd
           onClick={() => setStepApp(STEP_INFO.STATE_CLAIME)}
           text="go to claim"
         />
-      </ActionBarContainer>
+      </ActionBarSteps>
     );
   }
 
@@ -621,9 +621,9 @@ function ActionBarPortalGift({
 
   if (loadingGift && activeStep === STEP_INFO.STATE_RELEASE) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps>
         <BtnGrd pending />
-      </ActionBarContainer>
+      </ActionBarSteps>
     );
   }
 
@@ -633,9 +633,9 @@ function ActionBarPortalGift({
     isClaimed
   ) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps>
         <BtnGrd onClick={() => history.push('/release')} text="go to release" />
-      </ActionBarContainer>
+      </ActionBarSteps>
     );
   }
 
@@ -669,9 +669,9 @@ function ActionBarPortalGift({
     activeStep === STEP_INFO.STATE_DELETE_IN_PROCESS
   ) {
     return (
-      <ActionBarContainer>
+      <ActionBarSteps>
         <BtnGrd pending />
-      </ActionBarContainer>
+      </ActionBarSteps>
     );
   }
 
