@@ -13,6 +13,7 @@ import ActionBarContainer from './ActionBar';
 import ActionBarSteps from './ActionBar/ActionBarSteps';
 import AboutGift from './AboutGift/aboutGift';
 import UnclaimedGift from './UnclaimedGift/UnclaimedGift';
+import MoonAnimation from './MoonAnimation/MoonAnimation';
 
 export {
   ContainerGradient,
@@ -30,4 +31,5 @@ export {
   ActionBarSteps,
   AboutGift,
   UnclaimedGift,
+  MoonAnimation,
 };

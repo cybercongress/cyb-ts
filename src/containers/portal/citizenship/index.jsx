@@ -15,6 +15,7 @@ import {
   Signatures,
   ScrollableTabs,
   MainContainer,
+  MoonAnimation,
 } from '../components';
 import {
   Welcome,
@@ -119,7 +120,7 @@ const calculatePriceNicname = (valueNickname) => {
   return funds;
 };
 
-function GetCitizenship({ node, defaultAccount }) {
+function GetCitizenship({ node, defaultAccount, mobile }) {
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [step, setStep] = useState(STEP_INIT);
@@ -360,6 +361,7 @@ function GetCitizenship({ node, defaultAccount }) {
         create_passport: {
           avatar: avatarIpfs,
           nickname: valueNickname,
+          // signature,
         },
       };
       const funds = calculatePriceNicname(valueNickname);
@@ -506,6 +508,9 @@ function GetCitizenship({ node, defaultAccount }) {
   return (
     <>
       <MainContainer>
+        {(step === STEP_INIT || !mobile) && (
+          <MoonAnimation stepCurrent={step} />
+        )}
         <Info
           nickname={valueNickname}
           stepCurrent={step}
@@ -554,6 +559,7 @@ const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
+    mobile: store.settings.mobile,
   };
 };
 
