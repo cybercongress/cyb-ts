@@ -23,6 +23,7 @@ import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 import { ActionBarContentText, Dots, ButtonIcon } from '../../../components';
 import { CYBER, LEDGER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, dhm, timeSince, groupMsg } from '../../../utils/utils';
+import { getPin, getPinsCid } from '../../../utils/search/utils';
 import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
@@ -120,6 +121,7 @@ function ActionBarPortalGift({
   setLoading,
   setLoadingGift,
   loadingGift,
+  node,
 }) {
   const history = useHistory();
   const { keplr, jsCyber, initSigner } = useContext(AppContext);
@@ -235,6 +237,16 @@ function ActionBarPortalGift({
     return null;
   }, [citizenship]);
 
+  const pinPassportData = async (nodeIpfs, address) => {
+    try {
+      const cidAddress = await getPin(nodeIpfs, address);
+      console.log('cidAddress', cidAddress);
+      getPinsCid(cidAddress, address);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   const sendSignedMessage = useCallback(async () => {
     if (keplr !== null && citizenship !== null && signedMessageKeplr !== null) {
       const { nickname } = citizenship.extension;
@@ -276,12 +288,15 @@ function ActionBarPortalGift({
             rawLog: executeResponseResult?.rawLog.toString(),
           });
         }
+        if (node !== null) {
+          pinPassportData(node, signedMessageKeplr.address);
+        }
       } catch (error) {
         console.log('error', error);
         setStepApp(STEP_INFO.STATE_PROVE);
       }
     }
-  }, [keplr, citizenship, signedMessageKeplr, setLoading]);
+  }, [keplr, citizenship, signedMessageKeplr, setLoading, node]);
 
   const useClaime = useCallback(async () => {
     try {
