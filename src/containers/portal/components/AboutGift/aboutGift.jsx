@@ -5,6 +5,9 @@ import { ProgressBar } from '../progressCard';
 import styles from './styles.scss';
 import { formatNumber } from '../../../../utils/utils';
 
+const linkMovie =
+  'https://gateway.ipfs.cybernode.ai/ipfs/QmQd2migYNL1Mb7CHhPEdz99we2a5SeRf3kUuV1Lx1muVE';
+
 function AboutGift({
   coefficient,
   stateOpen,
@@ -34,10 +37,23 @@ function AboutGift({
 
   return (
     <ContainerGradient
-      userStyleContent={{ height: '410px' }}
+      userStyleContent={{ height: '710px' }}
       styleLampContent="purple"
       title="about gift"
     >
+      <div
+        style={{
+          width: '100%',
+          background: 'transparent',
+          position: 'relative',
+          height: '300px',
+          marginBottom: '10px',
+        }}
+      >
+        <video width="100%" height="100%" controls>
+          <source src={linkMovie} type="video/mp4" />
+        </video>
+      </div>
       <div style={{ marginBottom: '10px' }}>
         Hurry up! {formatNumber(parseFloat(addressesClaimed))} addresses already
         claimed a gift. Only the most dexterous will be lucky. The early birds

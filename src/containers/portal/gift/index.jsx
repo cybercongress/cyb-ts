@@ -23,6 +23,8 @@ import {
   MainContainer,
   ScrollableTabs,
   AboutGift,
+  Stars,
+  MoonAnimation,
 } from '../components';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
@@ -57,7 +59,7 @@ const itemsStep = [
   },
 ];
 
-function PortalGift({ defaultAccount, node }) {
+function PortalGift({ defaultAccount, node, mobile }) {
   const { keplr, jsCyber } = useContext(AppContext);
   const location = useLocation();
   const history = useHistory();
@@ -485,6 +487,8 @@ function PortalGift({ defaultAccount, node }) {
   return (
     <>
       <MainContainer>
+        <Stars />
+        {!mobile && <MoonAnimation />}
         {/* <ScrollableTabs items={items} active={active} setStep={setActive} /> */}
         {/* <button onClick={() => checkIsClaim()}>test</button> */}
         {appStep !== null && (
@@ -519,6 +523,7 @@ function PortalGift({ defaultAccount, node }) {
         setLoading={setLoading}
         setLoadingGift={setLoadingGift}
         loadingGift={loadingGift}
+        node={node}
       />
     </>
   );
@@ -528,6 +533,7 @@ const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
     node: store.ipfs.ipfs,
+    mobile: store.settings.mobile,
   };
 };
 
