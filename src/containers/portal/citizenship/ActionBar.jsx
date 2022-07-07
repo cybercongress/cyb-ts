@@ -40,7 +40,7 @@ function ActionBar({
   setStep,
   setupNickname,
   checkNickname,
-  setAvatarImg,
+  valueNickname,
   avatarImg,
   uploadAvatarImg,
   avatarIpfs,
@@ -51,6 +51,8 @@ function ActionBar({
   checkAddressNetwork,
   registerDisabled,
   showOpenFileDlg,
+  onClickSignMoonCode,
+  signedMessage,
 }) {
   const history = useHistory();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
@@ -161,6 +163,14 @@ function ActionBar({
     }
   }, [step]);
 
+  const onClickSignMoonCodeCheckSined = useCallback(() => {
+    if (signedMessage !== null) {
+      setStep(STEP_KEPLR_REGISTER);
+    } else {
+      onClickSignMoonCode();
+    }
+  }, [signedMessage]);
+
   if (step === STEP_INIT) {
     return (
       <ActionBarSteps>
@@ -172,7 +182,11 @@ function ActionBar({
   if (step === STEP_NICKNAME_CHOSE || step === STEP_NICKNAME_INVALID) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_INIT)}>
-        <BtnGrd onClick={() => checkNickname()} text="chose nickname" />
+        <BtnGrd
+          disabled={valueNickname === ''}
+          onClick={() => checkNickname()}
+          text="chose nickname"
+        />
       </ActionBarSteps>
     );
   }
@@ -185,20 +199,9 @@ function ActionBar({
     );
   }
 
-  if (step === STEP_RULES) {
-    return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_APROVE)}>
-        <BtnGrd
-          onClick={() => setStep(STEP_AVATAR_UPLOAD)}
-          text="I endorce rules"
-        />
-      </ActionBarSteps>
-    );
-  }
-
   if (step === STEP_AVATAR_UPLOAD) {
     return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_RULES)}>
+      <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_APROVE)}>
         {avatarIpfs === null ? (
           <BtnGrd onClick={showOpenFileDlg} text="Upload avatar" />
         ) : (
@@ -315,9 +318,20 @@ function ActionBar({
     );
   }
 
-  if (step === STEP_KEPLR_REGISTER) {
+  if (step === STEP_RULES) {
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_ACTIVE_ADD)}>
+        <BtnGrd
+          onClick={onClickSignMoonCodeCheckSined}
+          text={signedMessage === null ? 'sign code' : 'next'}
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (step === STEP_KEPLR_REGISTER) {
+    return (
+      <ActionBarSteps onClickBack={() => setStep(STEP_RULES)}>
         <BtnGrd
           disabled={!registerDisabled}
           onClick={() => onClickRegister()}
