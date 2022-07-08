@@ -305,7 +305,10 @@ function CurrentGift({
           </>
         )}
         <div>
-          Please check <Link to="/search/gift">details of the gift</Link>
+          Please check{' '}
+          <Link to="/ipfs/QmPAi1h1rwWnHkNnxnHZg28eGivpUK8wy8eciqoPSR4PHv">
+            details of the gift
+          </Link>
         </div>
       </div>
     </ContainerGradient>

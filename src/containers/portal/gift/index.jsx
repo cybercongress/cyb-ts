@@ -34,6 +34,27 @@ import { STEP_INFO } from './utils';
 import Info from './Info';
 // import useCheckStatusTx from '../../../hooks/useCheckTxs';
 
+const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
+const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
+
+const portalAmbientObg = new Audio(portalAmbient);
+const portalConfirmedObg = new Audio(portalConfirmed);
+
+const playPortalConfirmed = () => {
+  portalConfirmedObg.play();
+};
+
+const playPortalAmbient = () => {
+  portalAmbientObg.loop = true;
+  portalAmbientObg.play();
+};
+
+const stopPortalAmbient = () => {
+  portalAmbientObg.loop = false;
+  portalAmbientObg.pause();
+  portalAmbientObg.currentTime = 0;
+};
+
 const STEP_GIFT_INFO = 1;
 const STEP_PROVE_ADD = 2;
 const STEP_CLAIME = 3;
@@ -84,6 +105,14 @@ function PortalGift({ defaultAccount, node, mobile }) {
   } = useCheckGift(citizenship, addressActive, updateFunc);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
   const [amountClaims, setAmountCaims] = useState(0);
+
+  useEffect(() => {
+    playPortalAmbient();
+
+    return () => {
+      stopPortalAmbient();
+    };
+  }, []);
 
   // console.log('totalGift', totalGift)
 
@@ -166,6 +195,11 @@ function PortalGift({ defaultAccount, node, mobile }) {
               ...item,
               status: 'confirmed',
             }));
+            try {
+              playPortalConfirmed();
+            } catch (error) {
+              console.log('error', error);
+            }
 
             return;
           }

@@ -34,6 +34,27 @@ import { formatNumber } from '../../../utils/search/utils';
 import { STEP_INFO } from './utils';
 import Info from './Info';
 
+const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
+const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
+
+const portalAmbientObg = new Audio(portalAmbient);
+const portalConfirmedObg = new Audio(portalConfirmed);
+
+const playPortalConfirmed = () => {
+  portalConfirmedObg.play();
+};
+
+const playPortalAmbient = () => {
+  portalAmbientObg.loop = true;
+  portalAmbientObg.play();
+};
+
+const stopPortalAmbient = () => {
+  portalAmbientObg.loop = false;
+  portalAmbientObg.pause();
+  portalAmbientObg.currentTime = 0;
+};
+
 const {
   STATE_BEFORE_ACTIVATION,
   STATE_READY_TO_RELEASE,
@@ -84,6 +105,14 @@ function Release({ defaultAccount, mobile }) {
   const [timeNext, setTimeNext] = useState(null);
   const [readyRelease, setReadyRelease] = useState(null);
   const [stateInfo, setStateInfo] = useState(null);
+
+  useEffect(() => {
+    playPortalAmbient();
+
+    return () => {
+      stopPortalAmbient();
+    };
+  }, []);
 
   useEffect(() => {
     if (!loadingCitizenship) {
@@ -148,6 +177,11 @@ function Release({ defaultAccount, mobile }) {
               status: 'confirmed',
             }));
             setUpdateFunc((item) => item + 1);
+            try {
+              playPortalConfirmed();
+            } catch (error) {
+              console.log('error', error);
+            }
             return;
           }
           if (response.code) {

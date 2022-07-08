@@ -530,27 +530,31 @@ class Wallet extends React.Component {
           <main className="block-body">
             <div
               style={{
-                display: 'flex',
-                margin: '0 auto 12px auto',
+                margin: '0px auto 12px auto',
                 width: '60%',
               }}
             >
-              <InfoCard>
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '10px 50px 0px 50px',
-                    gap: 20,
-                    display: 'grid',
-                  }}
-                >
-                  <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
-                  <div>
-                    <Link to="/portal">Go to portal</Link> to register your
-                    citizenship and check for your gift
+              <Link to="/portal">
+                <InfoCard>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '10px 50px 0px 50px',
+                      gap: 20,
+                      display: 'grid',
+                      color: '#fff',
+                    }}
+                  >
+                    <div style={{ fontSize: '28px' }}>
+                      The portal is open! 🎉
+                    </div>
+                    <div>
+                      <span style={{ color: '#36d6ae' }}>Go to portal</span> to
+                      register your citizenship and <br /> check for your gift
+                    </div>
                   </div>
-                </div>
-              </InfoCard>
+                </InfoCard>
+              </Link>
             </div>
             <BanerHelp />
             {/* <NotFound text=" " /> */}

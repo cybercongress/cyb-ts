@@ -47,6 +47,27 @@ import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
 // import InfoCard from '../components/infoCard/infoCard';
 
+const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
+const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
+
+const portalConfirmedObg = new Audio(portalConfirmed);
+const portalAmbientObg = new Audio(portalAmbient);
+
+const playPortalConfirmed = () => {
+  portalConfirmedObg.play();
+};
+
+const playPortalAmbient = () => {
+  portalAmbientObg.loop = true;
+  portalAmbientObg.play();
+};
+
+const stopPortalAmbient = () => {
+  portalAmbientObg.loop = false;
+  portalAmbientObg.pause();
+  portalAmbientObg.currentTime = 0;
+};
+
 const {
   STEP_INIT,
   STEP_NICKNAME_CHOSE,
@@ -138,6 +159,14 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
   const [counCitizenshipst, setCounCitizenshipst] = useState(0);
   const inputOpenFileRef = useRef();
 
+  useEffect(() => {
+    playPortalAmbient();
+
+    return () => {
+      stopPortalAmbient();
+    };
+  }, []);
+
   // console.log('avatarImg', avatarImg);
   useEffect(() => {
     const localStorageNickname = localStorage.getItem('nickname');
@@ -226,6 +255,11 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
               ...item,
               status: 'confirmed',
             }));
+            try {
+              playPortalConfirmed();
+            } catch (error) {
+              console.log('error', error);
+            }
             localStorage.removeItem('nickname');
             localStorage.removeItem('avatarCid');
             setStep(STEP_CHECK_GIFT);

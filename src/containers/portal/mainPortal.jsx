@@ -11,6 +11,13 @@ import styles from './styles.scss';
 import RocketSpacePussy from './RocketSpacePussy';
 
 const spacePussy = require('../../image/space-pussy.svg');
+const portalPussyEnter = require('../../sounds/portalPussyEnter.mp3');
+
+const audioBtnObg = new Audio(portalPussyEnter);
+
+const playAudioClick = () => {
+  audioBtnObg.play();
+};
 
 const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
@@ -78,7 +85,8 @@ function MainPartal({ defaultAccount }) {
     setTimeout(() => {
       history.push('/citizenship');
       // setScale(1);
-    }, 2305);
+    }, 2705);
+    playAudioClick();
   };
 
   if (stagePortal === STAGE_LOADING) {
@@ -102,7 +110,7 @@ function MainPartal({ defaultAccount }) {
             left: '50%',
             marginRight: '-50%',
             transform: `translate(-50%, 40px) scale(${scale})`,
-            transition: 'all 2.3s cubic-bezier(0.67, 0.01, 0.37, 1.01) 0s',
+            transition: 'all 2.7s cubic-bezier(0.67, 0.01, 0.37, 1.01) 0s',
           }}
         >
           <img style={{ width: '100%' }} src={spacePussy} alt="spacePussy" />

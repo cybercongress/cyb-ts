@@ -3,7 +3,7 @@ const coinDecimalsIbc = {
     coinDecimals: 6,
     denom: 'OSMO channel-2',
   },
-  'ibc/BA313C4A19DFBF943586C0387E6B11286F9E416B4DD27574E6909CABE0E342FA': {
+  'ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159': {
     coinDecimals: 6,
     denom: 'ATOM',
   },

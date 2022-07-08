@@ -23,12 +23,26 @@ import { STEP_INFO } from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
 
+const portalAmbient = require('../../sounds/portalAmbient112.mp3');
+
 const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
 const STATE_AVATAR = 15;
 const STATE_AVATAR_IN_PROCESS = 15.1;
+
+const portalAmbientObg = new Audio(portalAmbient);
+const playPortalAmbient = () => {
+  portalAmbientObg.loop = true;
+  portalAmbientObg.play();
+};
+
+const stopPortalAmbient = () => {
+  portalAmbientObg.loop = false;
+  portalAmbientObg.pause();
+  portalAmbientObg.currentTime = 0;
+};
 
 function PasportMoonCitizenship({ defaultAccount, mobile }) {
   const history = useHistory();
@@ -40,6 +54,14 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
   const [citizenship, setCitizenship] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
   const [txHash, setTxHash] = useState(null);
+
+  useEffect(() => {
+    playPortalAmbient();
+
+    return () => {
+      stopPortalAmbient();
+    };
+  }, []);
 
   useEffect(() => {
     const confirmTx = async () => {

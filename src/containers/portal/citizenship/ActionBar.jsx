@@ -185,7 +185,7 @@ function ActionBar({
         <BtnGrd
           disabled={valueNickname === ''}
           onClick={() => checkNickname()}
-          text="chose nickname"
+          text="choose nickname"
         />
       </ActionBarSteps>
     );
@@ -203,12 +203,12 @@ function ActionBar({
     return (
       <ActionBarSteps onClickBack={() => setStep(STEP_NICKNAME_APROVE)}>
         {avatarIpfs === null ? (
-          <BtnGrd onClick={showOpenFileDlg} text="Upload avatar" />
+          <BtnGrd onClick={showOpenFileDlg} text="upload avatar" />
         ) : (
           <BtnGrd
             disabled={avatarIpfs === null}
             onClick={uploadAvatarImg}
-            text={avatarIpfs == null ? <Dots /> : 'Upload'}
+            text={avatarIpfs == null ? <Dots /> : 'upload'}
           />
         )}
       </ActionBarSteps>

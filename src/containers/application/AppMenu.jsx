@@ -56,7 +56,49 @@ const itemsMenu = (address) => {
 
     { name: 'Nebula', to: '/nebula', subItems: [] },
     { name: 'Senate', to: '/senate', subItems: [] },
-    { name: 'Help', to: '/help', subItems: [] },
+    {
+      name: 'Help',
+      to: '/help',
+      subItems: [
+        {
+          name: 'Guide',
+          to: '/ipfs/QmZytdQq4feQZYAxu9hJCpwYm8mUCW1wDrPZRVCzo2YDsG',
+        },
+        { name: 'story', to: '/genesis' },
+        {
+          name: 'vision',
+          to: '/ipfs/QmXzGkfxZV2fzpFmq7CjAYsYL1M581ZD4yuF9jztPVTpCn',
+        },
+        {
+          name: 'great web',
+          to: '/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57',
+        },
+        {
+          name: 'vs govs',
+          to: '/ipfs/QmPmJ4JwzCi82HZp7adtv5GVBFTsKF5Yoy43wshHH7x3ty',
+        },
+        {
+          name: 'vs corps',
+          to: '/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi',
+        },
+        {
+          name: 'roadmap',
+          to: '/ipfs/QmSBYCCYFNfHNQD7MWm4zBaNuztMaT2KghA2SbeZZm9vLH',
+        },
+        {
+          name: 'distribution',
+          to: '/ipfs/QmVPgNeay23Ae5itAamMcr4iEAUKuhw5qD9U1zNqN4gpew',
+        },
+        {
+          name: 'gift',
+          to: '/ipfs/QmPAi1h1rwWnHkNnxnHZg28eGivpUK8wy8eciqoPSR4PHv',
+        },
+        {
+          name: 'congress',
+          to: '/network/bostrom/contract/bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw',
+        },
+      ],
+    },
   ];
 };
 

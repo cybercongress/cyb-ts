@@ -22,8 +22,8 @@ export const networkList = {
   },
   'cosmoshub-4': {
     chainId: 'cosmoshub-4',
-    sourceChannelId: 'channel-240',
-    destChannelId: 'channel-5',
+    sourceChannelId: 'channel-341',
+    destChannelId: 'channel-8',
     coinMinimalDenom: 'uatom',
     coinDecimals: 6,
     denom: 'ATOM',
