@@ -116,7 +116,8 @@ function Info({
         break;
 
       case STEP_NICKNAME_CHOSE:
-        content = <span>Choose your nickname. You will own it as an NFT.</span>;
+        content = <span>Choose your nickname. You will own it as an NFT.<br />8+ symbols are free  
+</span>;
         break;
 
       case STEP_NICKNAME_INVALID:
@@ -131,10 +132,10 @@ function Info({
       case STEP_NICKNAME_APROVE:
         content = (
           <span>
-            Nickname is available <br /> at that moment <br />
+            Nickname is available for
             {valuePriceNickname &&
               valuePriceNickname !== null &&
-              `${formatNumber(valuePriceNickname.amountPrice)} ${BOOT_ICON}`}
+              `${formatNumber(valuePriceNickname.amountPrice)} ${BOOT_ICON}`} <br /> 8+ symbols are free 
           </span>
         );
         break;
@@ -142,8 +143,7 @@ function Info({
       case STEP_RULES:
         content = (
           <span>
-            Dear {nickname}, before setting up your account abide by these
-            rules.
+            Dear {nickname}, sign the Moon Code before setting up your account.
           </span>
         );
         break;
@@ -213,14 +213,14 @@ function Info({
                 `${formatNumber(
                   valuePriceNickname.amountPrice
                 )} ${BOOT_ICON}`}{' '}
-              <br /> for register your nickname, <br /> you can{' '}
+              for register your nickname, <br /> you can{' '}
               <span
                 style={{ color: '#36d6ae', cursor: 'pointer' }}
                 onClick={() => setStep(STEP_NICKNAME_CHOSE)}
               >
                 change
               </span>{' '}
-              nickname or <Link to="/teleport">buy {BOOT_ICON}</Link>
+              nickname or <Link to="/teleport">buy {BOOT_ICON}</Link>, 8+ symbols are free  
             </span>
           );
         } else {
