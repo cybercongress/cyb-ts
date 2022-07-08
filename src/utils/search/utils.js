@@ -1356,7 +1356,7 @@ export const getAvatarIpfs = async (cid, ipfs) => {
 
     if (responseDag.value.size <= 1.5 * 10 ** 7) {
       const responsePin = ipfs.pin.add(cid);
-      getPinsCid(cid);
+      // getPinsCid(cid);
       console.log('responsePin', responsePin);
       let mime;
 

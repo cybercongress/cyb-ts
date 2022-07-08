@@ -12,9 +12,9 @@ const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 
 // prod root
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1hz2lvf367zjmlwe65lgskhuxjntyl08z7yutsunzc8wha4f66mvs5nsmtx';
+  'bostrom1z5ww2lvvn36qw5h6unvjy5dzu3d9lwf6jszelvfzqwwqrrzpxzpqenjcae';
 const CONTRACT_ADDRESS_PASSPORT =
-  'bostrom1mypljhatv0prfr9cjzzvamxdf2ctg34xkt50sudxads9zhqnynequc66y5';
+  'bostrom1w2c5p38dj8ff9d08qqdsp6m6j32d4xdpln2cd8xq4prvph8ajmcsehs602';
 
 const DICTIONARY = {
   Astronauts: 'Astronaut',

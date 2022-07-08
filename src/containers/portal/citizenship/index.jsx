@@ -9,6 +9,7 @@ import React, {
 import { connect } from 'react-redux';
 import { calculateFee } from '@cosmjs/stargate';
 import { coins, GasPrice } from '@cosmjs/launchpad';
+import { toAscii, toBase64 } from '@cosmjs/encoding';
 import BigNumber from 'bignumber.js';
 import {
   ContainerGradient,
@@ -16,6 +17,7 @@ import {
   ScrollableTabs,
   MainContainer,
   MoonAnimation,
+  Stars,
 } from '../components';
 import {
   Welcome,
@@ -28,10 +30,11 @@ import {
   Passport,
 } from '../stateComponent';
 import ActionBar from './ActionBar';
-import { getPin, getCredit } from '../../../utils/search/utils';
+import { getPin, getCredit, getPinsCid } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
 import {
+  CONSTITUTION_HASH,
   CONTRACT_ADDRESS_PASSPORT,
   getPassportByNickname,
   getNumTokens,
@@ -41,6 +44,7 @@ import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
+import { getKeplr } from '../gift/ActionBarPortalGift';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const {
@@ -81,10 +85,6 @@ const items = [
     step: STEP_NICKNAME_CHOSE,
   },
   {
-    title: 'rules',
-    step: STEP_RULES,
-  },
-  {
     title: 'avatar',
     step: STEP_AVATAR_UPLOAD,
   },
@@ -99,6 +99,10 @@ const items = [
   {
     title: 'active address',
     step: STEP_CHECK_ADDRESS,
+  },
+  {
+    title: 'code',
+    step: STEP_RULES,
   },
   {
     title: 'passport',
@@ -130,6 +134,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
   const [avatarImg, setAvatarImg] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [registerDisabled, setRegisterDisabled] = useState(false);
+  const [signedMessage, setSignedMessage] = useState(null);
   const [counCitizenshipst, setCounCitizenshipst] = useState(0);
   const inputOpenFileRef = useRef();
 
@@ -167,17 +172,23 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
 
   useEffect(() => {
     const getPinAvatar = async () => {
-      if (node !== null && avatarImg !== null) {
-        const toCid = await getPin(node, avatarImg);
-        console.log('toCid', toCid);
-        setAvatarIpfs(toCid);
+      try {
+        if (node !== null && avatarImg !== null) {
+          const toCid = await getPin(node, avatarImg);
+          console.log('toCid', toCid);
+          setAvatarIpfs(toCid);
+          const datagetPinsCid = await getPinsCid(toCid, avatarImg);
+          console.log(`datagetPinsCid`, datagetPinsCid);
+        }
+      } catch (error) {
+        console.log('error', error);
       }
     };
     getPinAvatar();
   }, [node, avatarImg]);
 
   useEffect(() => {
-    const getKeplr = async () => {
+    const getKeplrSetup = async () => {
       if (step === STEP_KEPLR_INIT_CHECK_FNC) {
         if (window.keplr === undefined) {
           setStep(STEP_KEPLR_INIT_CHECK_FNC);
@@ -201,7 +212,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         }
       }
     };
-    getKeplr();
+    getKeplrSetup();
   }, [step, addressActive]);
 
   useEffect(() => {
@@ -263,7 +274,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
           response &&
           Object.prototype.hasOwnProperty.call(response, 'accountNumber')
         ) {
-          setStep(STEP_KEPLR_REGISTER);
+          setStep(STEP_RULES);
         } else {
           setStep(STEP_ACTIVE_ADD);
         }
@@ -310,7 +321,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         response &&
         Object.prototype.hasOwnProperty.call(response, 'accountNumber')
       ) {
-        setStep(STEP_KEPLR_REGISTER);
+        setStep(STEP_RULES);
       } else {
         const responseCredit = await getCredit(bech32);
         if (responseCredit !== null && responseCredit.data === 'ok') {
@@ -319,6 +330,30 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
       }
     }
   }, [jsCyber, addressActive, step]);
+
+  const onClickSignMoonCode = async () => {
+    const keplrWindow = await getKeplr();
+
+    if (keplrWindow) {
+      await keplrWindow.enable(CYBER.CHAIN_ID);
+      const signer = await keplrWindow.getOfflineSignerAuto(CYBER.CHAIN_ID);
+      const [{ address }] = await signer.getAccounts();
+      const data = `${address}:${CONSTITUTION_HASH}`;
+
+      const res = await keplrWindow.signArbitrary(
+        CYBER.CHAIN_ID,
+        address,
+        data
+      );
+      const proveData = {
+        pub_key: res.pub_key.value,
+        signature: res.signature,
+      };
+      const signature = toBase64(toAscii(JSON.stringify(proveData)));
+      setSignedMessage(signature);
+      setStep(STEP_KEPLR_REGISTER);
+    }
+  };
 
   const fncClearAvatar = () => {
     localStorage.removeItem('avatarCid');
@@ -344,7 +379,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
 
   const setupNickname = useCallback(() => {
     localStorage.setItem('nickname', JSON.stringify(valueNickname));
-    setStep(STEP_RULES);
+    setStep(STEP_AVATAR_UPLOAD);
   }, [valueNickname]);
 
   const uploadAvatarImg = useCallback(() => {
@@ -354,14 +389,33 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
     }
   }, [avatarIpfs]);
 
+  const pinPassportData = async (nodeIpfs, data) => {
+    try {
+      const { address, nickname } = data;
+      const cidNickname = await getPin(nodeIpfs, nickname);
+      console.log('cidNickname', cidNickname);
+      const cidAddress = await getPin(nodeIpfs, address);
+      console.log('cidAddress', cidAddress);
+      getPinsCid(cidAddress, address);
+      getPinsCid(cidNickname, nickname);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   const onClickRegister = useCallback(async () => {
     try {
       const [{ address }] = await keplr.signer.getAccounts();
+      console.log('create_passport', {
+        signedMessage,
+        valueNickname,
+        avatarIpfs,
+      });
       const msgObject = {
         create_passport: {
           avatar: avatarIpfs,
           nickname: valueNickname,
-          // signature,
+          signature: signedMessage,
         },
       };
       const funds = calculatePriceNicname(valueNickname);
@@ -390,10 +444,14 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
           rawLog: executeResponseResult?.rawLog.toString(),
         });
       }
+
+      if (node !== null) {
+        pinPassportData(node, { nickname: valueNickname, address });
+      }
     } catch (error) {
       console.log('error', error);
     }
-  }, [valueNickname, avatarIpfs, keplr]);
+  }, [valueNickname, avatarIpfs, keplr, signedMessage, node]);
 
   const onChangeNickname = useCallback((e) => {
     const { value } = e.target;
@@ -433,10 +491,6 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
     );
   }
 
-  if (step === STEP_RULES) {
-    content = <Rules />;
-  }
-
   if (step === STEP_AVATAR_UPLOAD) {
     content = (
       <Avatar
@@ -474,6 +528,10 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
   //   content = <ConnectKeplr />;
   // }
 
+  if (step === STEP_RULES) {
+    content = <Rules />;
+  }
+
   if (
     step === STEP_CHECK_ADDRESS ||
     step === STEP_CHECK_ADDRESS_CHECK_FNC ||
@@ -508,6 +566,8 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
   return (
     <>
       <MainContainer>
+        <Stars />
+
         {(step === STEP_INIT || !mobile) && (
           <MoonAnimation stepCurrent={step} />
         )}
@@ -539,6 +599,8 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
       <ActionBar
         keplr={keplr}
         step={step}
+        valueNickname={valueNickname}
+        signedMessage={signedMessage}
         setStep={setStep}
         setupNickname={setupNickname}
         checkNickname={checkNickname}
@@ -550,6 +612,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         checkAddressNetwork={checkAddressNetwork}
         registerDisabled={registerDisabled}
         showOpenFileDlg={showOpenFileDlg}
+        onClickSignMoonCode={onClickSignMoonCode}
       />
     </>
   );

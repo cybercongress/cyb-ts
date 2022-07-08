@@ -14,6 +14,7 @@ import ActionBarSteps from './ActionBar/ActionBarSteps';
 import AboutGift from './AboutGift/aboutGift';
 import UnclaimedGift from './UnclaimedGift/UnclaimedGift';
 import MoonAnimation from './MoonAnimation/MoonAnimation';
+import Stars from './stars';
 
 export {
   ContainerGradient,
@@ -32,4 +33,5 @@ export {
   AboutGift,
   UnclaimedGift,
   MoonAnimation,
+  Stars,
 };

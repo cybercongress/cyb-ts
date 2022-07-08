@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { MainContainer, InfoCard } from './components';
+import { MainContainer, InfoCard, Stars } from './components';
 import { AppContext } from '../../context';
 import { activePassport } from './utils';
 import Release from './release';
@@ -88,6 +88,7 @@ function MainPartal({ defaultAccount }) {
   if (stagePortal === STAGE_INIT) {
     return (
       <MainContainer minHeight="100vh">
+        <Stars />
         {scale === scaleInitValue && (
           <InfoCard>
             The measure of intelligence is ability to change. Albert Einstein

@@ -9,6 +9,8 @@ import {
   MainContainer,
   ActionBarSteps,
   BtnGrd,
+  MoonAnimation,
+  Stars,
 } from './components';
 import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
@@ -28,7 +30,7 @@ const STAGE_READY = 2;
 const STATE_AVATAR = 15;
 const STATE_AVATAR_IN_PROCESS = 15.1;
 
-function PasportMoonCitizenship({ defaultAccount }) {
+function PasportMoonCitizenship({ defaultAccount, mobile }) {
   const history = useHistory();
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -130,6 +132,8 @@ function PasportMoonCitizenship({ defaultAccount }) {
   return (
     <>
       <MainContainer>
+        <Stars />
+        {!mobile && <MoonAnimation />}
         <Info stepCurrent={steps.STEP_CHECK_GIFT} nickname={nickname || ''} />
         <PasportCitizenship
           citizenship={citizenship}
@@ -173,6 +177,7 @@ function PasportMoonCitizenship({ defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
+    mobile: store.settings.mobile,
   };
 };
 
