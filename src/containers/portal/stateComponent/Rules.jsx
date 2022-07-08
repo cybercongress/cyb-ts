@@ -7,7 +7,7 @@ import MoonCode from './MoonCode';
 import { LinkWindow } from '../../../components';
 
 const linkMovie =
-  'https://gateway.ipfs.cybernode.ai/ipfs/QmanZyMFnEti618crNPkn93g7MFaoDGrZ4Pta5drfdt9jb';
+  'https://gateway.ipfs.cybernode.ai/ipfs/QmZKL7toTbohUtrd57LaUgcFB8Z47PfAEU1MdLFNP66tXP';
 
 function Rules() {
   return (

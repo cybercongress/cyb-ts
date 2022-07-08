@@ -586,6 +586,30 @@ class Wallet extends React.Component {
               flexDirection="column"
               height="100%"
             >
+              <Link
+                style={{ marginBottom: '20px', width: '100%' }}
+                to="/portal"
+              >
+                <InfoCard>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '10px 50px 0px 50px',
+                      gap: 20,
+                      display: 'grid',
+                      color: '#fff',
+                    }}
+                  >
+                    <div style={{ fontSize: '28px' }}>
+                      The portal is open! 🎉
+                    </div>
+                    <div>
+                      <span style={{ color: '#36d6ae' }}>Go to portal</span> to
+                      register your citizenship and <br /> check for your gift
+                    </div>
+                  </div>
+                </InfoCard>
+              </Link>
               <PocketCard
                 alignItems="flex-start"
                 marginBottom={20}

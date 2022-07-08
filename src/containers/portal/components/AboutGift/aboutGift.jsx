@@ -6,7 +6,7 @@ import styles from './styles.scss';
 import { formatNumber } from '../../../../utils/utils';
 
 const linkMovie =
-  'https://gateway.ipfs.cybernode.ai/ipfs/QmQd2migYNL1Mb7CHhPEdz99we2a5SeRf3kUuV1Lx1muVE';
+  'https://gateway.ipfs.cybernode.ai/ipfs/QmX138nJEXWjf37M85HjWwBzY88H3ULpJZNHgFPwfCQycA';
 
 function AboutGift({
   coefficient,

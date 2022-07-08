@@ -116,8 +116,13 @@ function Info({
         break;
 
       case STEP_NICKNAME_CHOSE:
-        content = <span>Choose your nickname. You will own it as an NFT.<br />8+ symbols are free  
-</span>;
+        content = (
+          <span>
+            Choose your nickname. You will own it as an NFT.
+            <br />
+            8+ symbols are free
+          </span>
+        );
         break;
 
       case STEP_NICKNAME_INVALID:
@@ -132,10 +137,16 @@ function Info({
       case STEP_NICKNAME_APROVE:
         content = (
           <span>
-            Nickname is available for
-            {valuePriceNickname &&
-              valuePriceNickname !== null &&
-              `${formatNumber(valuePriceNickname.amountPrice)} ${BOOT_ICON}`} <br /> 8+ symbols are free 
+            Nickname is available{' '}
+            {valuePriceNickname && valuePriceNickname !== null && (
+              <>
+                for
+                {` ${formatNumber(
+                  valuePriceNickname.amountPrice
+                )} ${BOOT_ICON}`}
+                <br /> 8+ symbols are freexs
+              </>
+            )}
           </span>
         );
         break;
@@ -220,16 +231,12 @@ function Info({
               >
                 change
               </span>{' '}
-              nickname or <Link to="/teleport">buy {BOOT_ICON}</Link>, 8+ symbols are free  
+              nickname or <Link to="/teleport">buy {BOOT_ICON}</Link>, 8+
+              symbols are free
             </span>
           );
         } else {
-          content = (
-            <span>
-              Register passport, then check for a gift <br /> proving ethereum,
-              cosmos, osmosis and terra addresses.
-            </span>
-          );
+          content = <span>Register passport, then check for a gift</span>;
         }
         break;
 

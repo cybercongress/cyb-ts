@@ -495,7 +495,7 @@ function PortalGift({ defaultAccount, node, mobile }) {
             />
           )}
 
-        {addressActive !== null && (
+        {useSelectedGiftData !== null && (
           <CurrentGift
             title="Claimed"
             valueTextResult="claimed"
