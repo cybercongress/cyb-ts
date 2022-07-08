@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useMemo } from 'react';
 import axios from 'axios';
 import { AppContext } from '../../context';
 
-const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
+const CONSTITUTION_HASH = 'QmcHB9GKHAKCLQhmSj71qNJhENJJg8Gymd1PvvsCQBhG7M';
 
 // test root
 // const CONTRACT_ADDRESS_GIFT =
@@ -12,9 +12,9 @@ const CONSTITUTION_HASH = 'QmRX8qYgeZoYM3M5zzQaWEpVFdpin6FvVXvp6RPQK3oufV';
 
 // prod root
 const CONTRACT_ADDRESS_GIFT =
-  'bostrom1z5ww2lvvn36qw5h6unvjy5dzu3d9lwf6jszelvfzqwwqrrzpxzpqenjcae';
+  'bostrom16t6tucgcqdmegye6c9ltlkr237z8yfndmasrhvh7ucrfuqaev6xq7cpvek';
 const CONTRACT_ADDRESS_PASSPORT =
-  'bostrom1w2c5p38dj8ff9d08qqdsp6m6j32d4xdpln2cd8xq4prvph8ajmcsehs602';
+  'bostrom1xut80d09q0tgtch8p0z4k5f88d3uvt8cvtzm5h3tu3tsy4jk9xlsfzhxel';
 
 const DICTIONARY = {
   Astronauts: 'Astronaut',
@@ -30,7 +30,7 @@ const DICTIONARY = {
   Leeches: 'Devil',
 };
 
-const COUNT_STAGES = 10;
+const COUNT_STAGES = 91;
 
 const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';
