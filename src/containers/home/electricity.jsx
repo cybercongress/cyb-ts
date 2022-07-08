@@ -19,7 +19,7 @@ function Electricity({ setBlockProps }) {
     let ws = null;
     const closeHandler = () => {
       console.log(`close WS`);
-      setTimeout(createConnect, 3000);
+      setTimeout(createConnect, 7000);
     };
 
     const createConnect = () => {

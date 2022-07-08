@@ -1,0 +1,63 @@
+.containetAvatar {
+  width: 105px;
+  height: 105px;
+  border: 1px solid #36d6ae;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  position: absolute;
+  top: -35px;
+  right: 15px;
+  color: #36d6ae;
+
+  img {
+    position: absolute;
+    margin-right: -50%;
+    transform: translate(-50%, 0);
+    right: 50%;
+    left: 50%;
+    padding: 2px;
+  }
+}
+
+.imgAvatar {
+  object-fit: cover;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+}
+
+.buttonContainerAvatar {
+  color: #36d6ae;
+  background: transparent;
+  border: none;
+  font-size: 15.5px;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.new {
+  &:hover {
+    &::before {
+      content: 'new avatar';
+      width: 100%;
+      font-size: 17px;
+      display: flex;
+      justify-content: center;
+      z-index: 1;
+      background: #000000c2;
+      height: 100%;
+      border-radius: 50%;
+      align-items: center;
+    }
+    & > * {
+      opacity: 0.5;
+    }
+  }
+}

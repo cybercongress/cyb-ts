@@ -240,7 +240,7 @@ function dhm(t) {
   let h = Math.floor((t - d * cd) / ch);
   let m = Math.round((t - d * cd - h * ch) / 60000);
   const pad = function (n, unit) {
-    return n < 10 ? `0${n}${unit}` : n;
+    return n < 10 ? `0${n}${unit}` : `${n}${unit}`;
   };
   if (m === 60) {
     h++;
@@ -433,6 +433,14 @@ const replaceSlash = (text) => text.replace(/\//g, '%2F');
 
 const encodeSlash = (text) => text.replace(/%2F/g, '/');
 
+const groupMsg = (ArrMsg, size = 2) => {
+  const link = [];
+  for (let i = 0; i < Math.ceil(ArrMsg.length / size); i += 1) {
+    link[i] = ArrMsg.slice(i * size, i * size + size);
+  }
+  return link;
+};
+
 export {
   run,
   sort,
@@ -458,4 +466,5 @@ export {
   parseMsgContract,
   replaceSlash,
   encodeSlash,
+  groupMsg,
 };

@@ -59,7 +59,7 @@ const Btn = ({ onSelect, checkedSwitch, text, ...props }) => (
   </Tab>
 );
 
-const ActionBarSteps = ({
+export const ActionBarSteps = ({
   children,
   btnText,
   onClickFnc,
@@ -78,9 +78,11 @@ const ActionBarSteps = ({
     <ActionBarContentText marginLeft={onClickBack ? 30 : 0}>
       {children}
     </ActionBarContentText>
-    <Button disabled={disabled} onClick={onClickFnc}>
-      {btnText}
-    </Button>
+    {btnText && (
+      <Button disabled={disabled} onClick={onClickFnc}>
+        {btnText}
+      </Button>
+    )}
   </ActionBarContainer>
 );
 

@@ -592,7 +592,9 @@ function Activites({ msg }) {
   }
 
   if (type.includes('MsgExecuteContract')) {
-    console.log(msg.msg);
+
+    console.log(msg.msg)
+
     return (
       <ContainerMsgsType type={msg['@type']}>
         <Row title="address" value={<Account address={msg.sender} />} />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useLocation, Link } from 'react-router-dom';
 // import CybLink from '../CybLink';
 import './AppMenu.css';
@@ -110,9 +111,10 @@ export const Bookmarks = ({ items, ...props }) => {
 
   return (
     <div className="bookmarks">
-      {items.map((item, index) => {
+      {items.map((item) => {
+        const key = uuidv4();
         return (
-          <>
+          <div key={key}>
             <Items
               selected={
                 item.name === selectedItem &&
@@ -120,7 +122,7 @@ export const Bookmarks = ({ items, ...props }) => {
                 item.active === undefined
               }
               // {...props}
-              key={item.name}
+
               item={item}
               onClick={() => onClickItem(item.name)}
             />
@@ -129,7 +131,7 @@ export const Bookmarks = ({ items, ...props }) => {
                 {renderSubItems(item.subItems, location, onClickSubItem)}
               </Pane>
             )}
-          </>
+          </div>
         );
       })}
     </div>

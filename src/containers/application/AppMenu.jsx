@@ -26,7 +26,15 @@ const itemsMenu = (address) => {
       to: '/contracts',
       subItems: [],
     },
-    { name: 'Portal', to: '/search/portal', subItems: [] },
+    {
+      name: 'Portal',
+      to: '/portal',
+      subItems: [
+        { name: 'Citizenship', to: '/citizenship' },
+        { name: 'Gift', to: '/gift' },
+        // { name: 'Release', to: '/release' },
+      ],
+    },
     {
       name: 'Teleport',
       to: '/teleport',
@@ -56,9 +64,7 @@ const AppMenu = ({ addressActive }) => {
   return (
     <MenuContainer>
       <Bookmarks items={itemsMenu(addressActive)} />
-      <ReportLinkContainer>
-        {}
-      </ReportLinkContainer>
+      <ReportLinkContainer>{}</ReportLinkContainer>
     </MenuContainer>
   );
 };

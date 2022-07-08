@@ -53,7 +53,7 @@ const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
   TIME_END: 'November 31 2020 24:00:00 GMT +3',
-  CHAIN_ID: 'cosmoshub-3',
+  CHAIN_ID: 'cosmoshub-4',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',
@@ -70,15 +70,7 @@ const CYBER = {
   DENOM_CYBER_G: `GBOOT`,
   HYDROGEN: 'H',
 
-  // CHAIN_ID: 'space-pussy-1',
-  // CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
-  // CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
-  // CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
-
-  // CYBER_INDEX_HTTPS: 'https://index.space-pussy-1.cybernode.ai/v1/graphql',
-  // CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy-1.cybernode.ai/v1/graphql',
-
-  // CHAIN_ID: 'bostrom1',
+  // CHAIN_ID: 'dev',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
@@ -87,9 +79,15 @@ const CYBER = {
   CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
   CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
   CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
-
   CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+
+  // CHAIN_ID: 'space-pussy-1',
+  // CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
+  // CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
+  // CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
+  // CYBER_INDEX_HTTPS: 'https://index.space-pussy-1.cybernode.ai/v1/graphql',
+  // CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy-1.cybernode.ai/v1/graphql',
 
   CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
 
@@ -223,6 +221,8 @@ const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-
 const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
 const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
+const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
 const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
@@ -248,6 +248,8 @@ export {
   PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
   PATTERN_ETH,
+  PATTERN_TERRA,
+  PATTERN_OSMOS,
   PATTERN_BLOCK,
   TIME_START,
   TAKEOFF_SUPPLY,

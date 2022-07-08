@@ -18,7 +18,7 @@ function useSetupIbcClient(denom, network, keplrCybre) {
       setIbcClient(null);
 
       let client = null;
-      if (networkList[network] !== CYBER.CHAIN_ID) {
+      if (networkList[network] && networkList[network] !== CYBER.CHAIN_ID) {
         const keplr = await getKeplr();
         const { rpc, prefix, chainId } = networks[networkList[network]];
         await keplr.enable(chainId);

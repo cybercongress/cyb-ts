@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Router, Switch } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -46,6 +47,9 @@ import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Genesis from './containers/genesis';
 import Movie from './containers/movie';
+import PortalCitizenship from './containers/portal';
+import PortalGift from './containers/portal/gift';
+import Release from './containers/portal/release';
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -55,6 +59,7 @@ import {
 } from './containers/wasm';
 import Help from './containers/help';
 import Assets from './containers/assets';
+import MainPartal from './containers/portal/mainPortal';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -68,7 +73,6 @@ function AppRouter({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  // const dataIpfsStart = useIpfsFactory();
   const dataIpfsStart = useIpfsStart();
   const [loader, setLoader] = useState(true);
   const [time, setTime] = useState(false);
@@ -125,7 +129,7 @@ function AppRouter({
         <Route path="/network/bostrom/parameters" component={ParamNetwork} />
         <Route path="/evangelism" component={Evangelism} />
         <Route path="/degenbox" component={TrollBoxx} />
-        <Route path="/portal" component={PortPages} />
+        {/* <Route path="/portal" component={PortPages} /> */}
         <Route path="/test" component={TestKeplr} />
         <Route path="/mint" component={Mint} />
         <Route path="/grid" component={RoutedEnergy} />
@@ -138,6 +142,10 @@ function AppRouter({
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
+        <Route path="/citizenship" component={PortalCitizenship} />
+        <Route path="/gift" component={PortalGift} />
+        <Route path="/release" component={Release} />
+        <Route path="/portal" component={MainPartal} />
         <Route path="/ibc" component={Ibc} />
         {/* wasm */}
         <Route path="/codes" exact component={Codes} />

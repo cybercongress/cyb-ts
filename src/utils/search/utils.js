@@ -1356,7 +1356,7 @@ export const getAvatarIpfs = async (cid, ipfs) => {
 
     if (responseDag.value.size <= 1.5 * 10 ** 7) {
       const responsePin = ipfs.pin.add(cid);
-      getPinsCid(cid);
+      // getPinsCid(cid);
       console.log('responsePin', responsePin);
       let mime;
 
@@ -1511,5 +1511,28 @@ export const searchClient = async (client, query, page) => {
     return responseSearchResults.result ? responseSearchResults : [];
   } catch (error) {
     return [];
+  }
+};
+
+export const getCredit = async (address) => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const fromData = {
+      denom: 'boot',
+      address,
+    };
+    const response = await axios({
+      method: 'post',
+      // url: 'http://localhost:8000/credit',
+      url: 'https://mars.cybernode.ai/credit',
+      headers,
+      data: JSON.stringify(fromData),
+    });
+
+    return response;
+  } catch (error) {
+    return null;
   }
 };

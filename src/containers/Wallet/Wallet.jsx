@@ -37,6 +37,7 @@ import {
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
 import { AppContext } from '../../context';
+import { InfoCard } from '../portal/components';
 
 import db from '../../db';
 
@@ -172,11 +173,8 @@ class Wallet extends React.Component {
 
   checkAddressLocalStorage = async () => {
     const { updateCard } = this.state;
-    const {
-      setBandwidthProps,
-      setDefaultAccountProps,
-      setAccountsProps,
-    } = this.props;
+    const { setBandwidthProps, setDefaultAccountProps, setAccountsProps } =
+      this.props;
     let localStoragePocketAccountData = [];
     let defaultAccounts = null;
     let defaultAccountsKeys = null;
@@ -260,10 +258,8 @@ class Wallet extends React.Component {
     if (defaultAccounts !== null && defaultAccounts.cyber) {
       const response = await getAccountBandwidth(defaultAccounts.cyber.bech32);
       if (response !== null) {
-        const {
-          remained_value: remained,
-          max_value: maxValue,
-        } = response.neuron_bandwidth;
+        const { remained_value: remained, max_value: maxValue } =
+          response.neuron_bandwidth;
         if (remained && maxValue) {
           setBandwidthProps(remained, maxValue);
         } else {
@@ -532,6 +528,30 @@ class Wallet extends React.Component {
       return (
         <>
           <main className="block-body">
+            <div
+              style={{
+                display: 'flex',
+                margin: '0 auto 12px auto',
+                width: '60%',
+              }}
+            >
+              <InfoCard>
+                <div
+                  style={{
+                    textAlign: 'center',
+                    padding: '10px 50px 0px 50px',
+                    gap: 20,
+                    display: 'grid',
+                  }}
+                >
+                  <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
+                  <div>
+                    <Link to="/portal">Go to portal</Link> to register your
+                    citizenship and check for your gift
+                  </div>
+                </div>
+              </InfoCard>
+            </div>
             <BanerHelp />
             {/* <NotFound text=" " /> */}
           </main>
@@ -568,7 +588,8 @@ class Wallet extends React.Component {
                 onClick={() => this.routeChange()}
               >
                 <Text fontSize="16px" color="#fff">
-                  Hi! I am Cyb! Your immortal robot of the Great Web. Click here for help. 
+                  Hi! I am Cyb! Your immortal robot of the Great Web. Click here
+                  for help.
                 </Text>
               </PocketCard>
 
