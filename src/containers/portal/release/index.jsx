@@ -22,6 +22,8 @@ import {
   Released,
   MainContainer,
   UnclaimedGift,
+  MoonAnimation,
+  Stars,
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
@@ -47,7 +49,7 @@ const initStateBonus = {
   current: 0,
 };
 
-function Release({ defaultAccount }) {
+function Release({ defaultAccount, mobile }) {
   const { jsCyber } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
   const [updateFunc, setUpdateFunc] = useState(0);
@@ -472,6 +474,8 @@ function Release({ defaultAccount }) {
   return (
     <>
       <MainContainer>
+        <Stars />
+        {!mobile && <MoonAnimation />}
         <Info
           useReleasedStage={useReleasedStage}
           stepCurrent={stateInfo}
@@ -499,6 +503,7 @@ function Release({ defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
+    mobile: store.settings.mobile,
   };
 };
 
