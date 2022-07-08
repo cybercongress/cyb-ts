@@ -8,7 +8,7 @@ function MoonAnimation({ stepCurrent }) {
     <div
       className={styles.mask}
       style={{
-        right: stepCurrent === STEP_INIT ? '50%' : 0,
+        right: stepCurrent === STEP_INIT ? '50%' : '7%',
       }}
     >
       <div className={styles.mask__inner} />
