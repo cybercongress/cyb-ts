@@ -9,9 +9,10 @@ import { LinkWindow } from '../../../components';
 function Rules() {
   return (
     <ContainerGradient
-      userStyleContent={{ height: 'auto' }}
+      userStyleContent={{ height: '2050px' }}
       styleLampContent="red"
       title="Moon Code"
+      closedTitle="Moon Code"
     >
       <div
         className="markdown"

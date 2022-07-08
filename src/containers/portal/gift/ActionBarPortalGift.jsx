@@ -544,7 +544,7 @@ function ActionBarPortalGift({
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
         onClickFnc={() => signMsgKeplr()}
-        btnText="sign message"
+        btnText="sign Moon Code in keplr"
         disabled={selectNetwork === ''}
       >
         <ButtonIcon
@@ -574,7 +574,7 @@ function ActionBarPortalGift({
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
         onClickFnc={() => signMsgETH()}
-        btnText="sign message"
+        btnText="sign Moon Code in metamask"
       >
         <ButtonIcon
           onClick={() => setSelectNetwork('eth')}
@@ -613,7 +613,7 @@ function ActionBarPortalGift({
       >
         <BtnGrd
           onClick={() => sendSignedMessage()}
-          text="send signed message"
+          text="send signature of Moon Code"
         />
       </ActionBarSteps>
     );

@@ -236,25 +236,27 @@ function CurrentGift({
   }, [currentGift, valueTextResult, selectedAddress]);
 
   const useTitleMain = useMemo(() => {
-    if (useSelectCyber) {
+    if (currentGift !== undefined && currentGift !== null) {
+      if (useSelectCyber) {
+        return (
+          <>
+            All
+            <span style={{ margin: '0px 5px' }}>{useValueTextResult}</span>
+            gift {GIFT_ICON}
+          </>
+        );
+      }
       return (
         <>
           <span style={{ textTransform: 'capitalize', marginRight: 5 }}>
             {useValueTextResult}
           </span>
-          gift all {GIFT_ICON}
+          gift {GIFT_ICON}
         </>
       );
     }
-    return (
-      <>
-        <span style={{ textTransform: 'capitalize', marginRight: 5 }}>
-          {useValueTextResult}
-        </span>
-        gift {GIFT_ICON}
-      </>
-    );
-  }, [useValueTextResult, useSelectCyber]);
+    return <div>no gift {GIFT_ICON}</div>;
+  }, [useValueTextResult, useSelectCyber, currentGift]);
 
   return (
     <ContainerGradient
