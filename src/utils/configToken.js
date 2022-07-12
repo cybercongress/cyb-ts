@@ -9,15 +9,15 @@ const coinDecimalsConfig = {
     sourceChannelId: 'channel-95',
     destChannelId: 'channel-2',
   },
-  'ibc/BA313C4A19DFBF943586C0387E6B11286F9E416B4DD27574E6909CABE0E342FA': {
+  'ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159': {
     chainId: 'cosmoshub-4',
     coinDecimals: 6,
     denom: 'ATOM',
     coinMinimalDenom: 'uatom',
     rpc: 'https://rpc.cosmoshub-4.cybernode.ai/',
     prefix: 'cosmos',
-    sourceChannelId: 'channel-240',
-    destChannelId: 'channel-5',
+    sourceChannelId: 'channel-341',
+    destChannelId: 'channel-8',
   },
   milliampere: {
     coinDecimals: 3,
