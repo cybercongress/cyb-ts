@@ -3,6 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import { Denom, NoItems } from '../../components';
 import { PoolItemsList } from './components';
 import { formatNumber } from '../../utils/utils';
+import { coinDecimalsConfig } from '../../utils/configToken';
 
 const checkValue = (obj, value) => {
   return Object.prototype.hasOwnProperty.call(obj, value);

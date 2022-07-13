@@ -67,6 +67,7 @@ const ValueImg = ({
       textCurency = 'GOL';
       break;
 
+    case 'ATOM':
     case 'atom':
       img = atom;
       textCurency = 'ATOM';
@@ -85,6 +86,12 @@ const ValueImg = ({
     case 'bostrom':
       img = boot;
       textCurency = 'bostrom';
+      break;
+
+    case 'osmo':
+    case 'OSMO':
+      img = osmosis;
+      textCurency = 'OSMO';
       break;
 
     case 'osmosis':

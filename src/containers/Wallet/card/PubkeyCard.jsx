@@ -18,6 +18,7 @@ import {
   LinkWindow,
   NumberCurrency,
   ValueImg,
+  DenomArr,
 } from '../../../components';
 import {
   trimString,
@@ -46,7 +47,7 @@ const RowBalance = ({ children, ...props }) => (
   </Pane>
 );
 
-const reduceAmounToken = (amount, token, reverse) => {
+export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
 
   if (token.includes('ibc')) {
@@ -148,7 +149,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
   return (
     <Pane
       display="grid"
-      gridTemplateColumns="1fr 90px"
+      gridTemplateColumns="1fr 55px"
       gridGap="5px"
       fontSize="15px"
       {...props}
@@ -162,11 +163,12 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
         <span>{formatNumber(reduceAmounToken(value, text))}</span>
       </Pane>
       {text && (
-        <ValueImg
+        <DenomArr
           marginImg="0 3px 0 0"
           flexDirection="row-reverse"
           justifyContent="flex-end"
-          text={text}
+          denomValue={text}
+          onlyImg
         />
       )}
     </Pane>

@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable no-restricted-syntax */
+import React, { useEffect, useState, useMemo } from 'react';
 import { CardStatisics, LinkWindow, NoItems, Denom } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import { PoolItemsList } from './components';
+import coinDecimalsConfig from '../../utils/configToken';
 
 // const test = [
 //   {
@@ -40,6 +42,7 @@ const styleContainer = {
   // maxWidth: '500px',
   boxShadow: '0 0 5px #36d6ae',
   borderRadius: '5px',
+  position: 'relative',
 };
 
 const styleTitleContainer = {
@@ -78,6 +81,15 @@ const styleMySharesContainer = {
   justifyContent: 'space-between',
 };
 
+const inactiveStyle = {
+  position: 'absolute',
+  right: '0',
+  marginRight: '10px',
+  padding: '5px',
+  color: '#ff9100',
+  fontSize: '18px',
+};
+
 const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
   const [sharesToken, setSharesToken] = useState(null);
 
@@ -103,8 +115,36 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
     }
   }, [totalSupplyData, pool, accountBalances]);
 
+  const useInactive = useMemo(() => {
+    try {
+      const { reserve_coin_denoms: reserveCoinDenoms } = pool;
+      if (reserveCoinDenoms && Object.keys(reserveCoinDenoms).length > 0) {
+        for (const key in reserveCoinDenoms) {
+          if (Object.hasOwnProperty.call(reserveCoinDenoms, key)) {
+            const item = reserveCoinDenoms[key];
+            if (item.includes('ibc')) {
+              if (
+                !Object.prototype.hasOwnProperty.call(coinDecimalsConfig, item)
+              ) {
+                return true;
+              }
+            }
+          }
+        }
+      }
+
+      return false;
+    } catch (error) {
+      console.log('error', error);
+      return false;
+    }
+  }, [pool]);
+
+  // console.log('useInactive', useInactive)
+
   return (
     <div style={styleContainer}>
+      {useInactive && <div style={inactiveStyle}>inactive</div>}
       <div style={styleTitleContainer}>
         <div style={styleContainerImg}>
           <Denom
