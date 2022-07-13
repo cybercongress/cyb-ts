@@ -7,7 +7,7 @@ import React, {
   useRef,
   Children,
 } from 'react';
-import { Denom, ValueImg } from '../../../../components';
+import { DenomArr, ValueImg } from '../../../../components';
 import { LinearGradientContainer } from '../input';
 import styles from './styles.scss';
 import { reduceTextCoin } from '../../utils';
@@ -36,14 +36,19 @@ const useOnClickOutside = (ref, handler) => {
   }, [ref, handler]);
 };
 
-export const OptionSelect = ({ text, img, value, ...props }) => {
+export const OptionSelect = ({ text, img, bgrImg, value, ...props }) => {
   const { changeSelectedOption } = useSelectContext();
   return (
     <div
       className={styles.listItem}
       onClick={() => changeSelectedOption(value)}
     >
-      <div className={styles.bgrImg}>{img || ''}</div>
+      <div
+        className={styles.bgrImg}
+        style={bgrImg ? { boxShadow: 'none', background: 'transparent' } : {}}
+      >
+        {img || ''}
+      </div>
       <div>{text}</div>
     </div>
   );
@@ -84,7 +89,7 @@ const Select = ({
                 <OptionSelect
                   text="choose"
                   img={
-                    <Denom
+                    <DenomArr
                       justifyContent="center"
                       denomValue="choose"
                       onlyImg
@@ -94,10 +99,11 @@ const Select = ({
                 />
               ) : (
                 <OptionSelect
-                  text={<Denom denomValue={textSelectValue} onlyText />}
+                  text={<DenomArr denomValue={textSelectValue} onlyText />}
+                  bgrImg={textSelectValue.includes('pool')}
                   img={
                     imgSelectValue || (
-                      <Denom
+                      <DenomArr
                         justifyContent="center"
                         denomValue={textSelectValue}
                         onlyImg
