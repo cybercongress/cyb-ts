@@ -6,6 +6,14 @@
   );
 }
 
+@mixin linear-gradient-pink($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(246, 43, 253, 1) 100%
+  );
+}
+
 @mixin linear-gradient-blue($route) {
   background: linear-gradient(
     $route,
@@ -341,6 +349,21 @@
       box-shadow: 3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
     }
   }
+
+  &Pink {
+    &::before {
+      @include ion-lamp;
+      border-radius: 0px 0px 0px 2px;
+      box-shadow: -3px 0 20px 1.5px rgba(246, 43, 253, 0.5);;
+      left: 0;
+    }
+    &::after {
+      @include ion-lamp;
+      right: 0;
+      // border-radius: 0px 2px 2px 0px;
+      box-shadow: 3px 0 20px 1.5px rgba(246, 43, 253, 0.5);;
+    }
+  }
 }
 
 .wrapContainerLampBefore {
@@ -576,6 +599,22 @@
       @include linear-gradient-green(-90deg);
       opacity: 11%;
       left: 0;
+    }
+  }
+
+  &Pink {
+    &::after {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-pink(90deg);
+      right: 0;
+      opacity: 11%;
+    }
+
+    &::before {
+      @include styleGradientPseudoEl;
+      @include linear-gradient-pink(-90deg);
+      left: 0;
+      opacity: 11%;
     }
   }
 

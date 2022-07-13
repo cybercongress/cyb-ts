@@ -3,7 +3,8 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../../utils/utils';
 import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
-import { Denom } from '../../../components';
+import { DenomArr } from '../../../components';
+import { reduceAmounToken } from '../../Wallet/card/PubkeyCard';
 
 const Row = ({ text, number, procent, color }) => (
   <Pane display="flex" alignItems="center" paddingY={7}>
@@ -81,14 +82,14 @@ const RowToken = ({ denom, amount }) => {
       justifyContent="space-between"
       width="100%"
     >
-      <Denom
+      <DenomArr
         marginImg="0 3px 0 0"
         flexDirection="row-reverse"
         justifyContent="flex-end"
         denomValue={denom}
       />
       <Pane whiteSpace="nowrap" textAlign="right">
-        {formatNumber(amount)}
+        {formatNumber(reduceAmounToken(parseFloat(amount), denom))}
       </Pane>
     </Pane>
   );

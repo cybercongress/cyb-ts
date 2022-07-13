@@ -15,6 +15,7 @@ const ContainerLamp = ({ style, children }) => (
       [styles.wrapContainerLampRed]: style === 'red',
       [styles.wrapContainerLampYellow]: style === 'yellow',
       [styles.wrapContainerLampPurple]: style === 'purple',
+      [styles.wrapContainerLampPink]: style === 'pink',
       [styles.wrapContainerLampDefault]: !style,
     })}
   >
@@ -100,6 +101,7 @@ export const ContainerGradientText = ({ children, status = 'blue' }) => {
           [styles.containerGradientTextPrimary]: status === 'blue',
           [styles.containerGradientTextDanger]: status === 'red',
           [styles.containerGradientTextGreen]: status === 'green',
+          [styles.containerGradientTextPink]: status === 'pink',
         })}
       >
         <div className={styles.containerGradientTextContent}>{children}</div>

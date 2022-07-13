@@ -360,7 +360,7 @@ function Teleport({ defaultAccount }) {
   }, [poolsData, tokenA, tokenB]);
 
   useEffect(() => {
-    if (accountBalances !== null &&poolsData && poolsData !== null) {
+    if (accountBalances !== null && poolsData && poolsData !== null) {
       const poolTokenData = getPoolToken(poolsData, accountBalances);
       let poolTokenDataIndexer = {};
 
@@ -375,43 +375,71 @@ function Teleport({ defaultAccount }) {
     }
   }, [accountBalances, poolsData]);
 
-  useEffect(() => {
-    let exceeded = true;
-    if (accountBalances !== null) {
-      if (
-        selectedTab === 'swap' &&
-        Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
-        accountBalances[tokenA] > 0
-      ) {
-        exceeded = false;
-      }
-      if (
-        selectedTab === 'add-liquidity' &&
-        Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
-        Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
-        accountBalances[tokenA] > 0 &&
-        accountBalances[tokenB] > 0
-      ) {
-        exceeded = false;
+  const checkInactiveFunc = (token) => {
+    if (token.includes('ibc')) {
+      if (!Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+        return false;
       }
     }
-    setIsExceeded(exceeded);
-  }, [accountBalances, tokenA, tokenB, selectedTab]);
+    return true;
+  };
 
   function getMyTokenBalanceNumber(denom, indexer) {
     return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
   }
 
   useEffect(() => {
+    let exceeded = true;
+    const validTokenA = checkInactiveFunc(tokenA);
+    const validTokenB = checkInactiveFunc(tokenB);
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-    let exceeded = false;
 
-    if (Number(tokenAAmount) > myATokenBalance) {
+    if (validTokenA && validTokenB) {
+      if (accountBalances !== null) {
+        if (
+          selectedTab === 'swap' &&
+          Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
+          accountBalances[tokenA] > 0
+        ) {
+          exceeded = false;
+        }
+
+        if (
+          selectedTab === 'add-liquidity' &&
+          Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
+          Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
+          accountBalances[tokenA] > 0 &&
+          accountBalances[tokenB] > 0
+        ) {
+          exceeded = false;
+        }
+
+        if (
+          reduceAmounToken(Number(tokenAAmount), tokenA, true) > myATokenBalance
+        ) {
+          exceeded = true;
+        }
+
+        if (swapPrice === 0) {
+          exceeded = true;
+        }
+      }
+    } else {
       exceeded = true;
     }
-
     setIsExceeded(exceeded);
-  }, [tokenA, tokenAAmount]);
+  }, [accountBalances, tokenA, tokenB, selectedTab, tokenAAmount, swapPrice]);
+
+  // useEffect(() => {
+  //   const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
+  //   let exceeded = false;
+
+  //   if (Number(tokenAAmount) > myATokenBalance) {
+  //     exceeded = true;
+  //   }
+
+  //   setIsExceeded(exceeded);
+  // }, [tokenA, tokenAAmount]);
 
   const getDecimals = (denom) => {
     let decimals = 0;

@@ -4,9 +4,16 @@ import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
 import ReactJson from 'react-json-view';
 import { formatNumber } from '../../utils/search/utils';
-import { Account, MsgType, LinkWindow, ValueImg } from '../../components';
+import {
+  Account,
+  MsgType,
+  LinkWindow,
+  ValueImg,
+  DenomArr,
+} from '../../components';
 import { CYBER } from '../../utils/config';
 import { timeSince } from '../../utils/utils';
+import { reduceAmounToken } from '../teleport/utils';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -225,6 +232,15 @@ const MsgDeleteRoute = ({ msg }) => (
   </ContainerMsgsType>
 );
 
+const AmountDenom = ({ amountValue, denom }) => {
+  return (
+    <div style={{ display: 'flex' }}>
+      {formatNumber(reduceAmounToken(parseFloat(amountValue), denom))}
+      <DenomArr marginContainer="0px 0px 0px 5px" denomValue={denom} />
+    </div>
+  );
+};
+
 const MsgEditRouteName = ({ msg }) => <MsgCreateRoute msg={msg} />;
 
 function Activites({ msg }) {
@@ -257,12 +273,18 @@ function Activites({ msg }) {
           value={
             msg.amount.length > 0
               ? msg.amount.map((amount, i) => {
+                  const { denom, amount: amountValue } = amount;
                   if (i > 0) {
-                    return ` ,${amount.amount} ${amount.denom}`;
+                    return (
+                      <>
+                        {' '}
+                        ,<AmountDenom amountValue={amountValue} denom={denom} />
+                      </>
+                    );
                   }
-                  return `${formatNumber(
-                    amount.amount
-                  )} ${amount.denom.toUpperCase()}`;
+                  return (
+                    <AmountDenom amountValue={amountValue} denom={denom} />
+                  );
                 })
               : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
           }
@@ -592,8 +614,7 @@ function Activites({ msg }) {
   }
 
   if (type.includes('MsgExecuteContract')) {
-
-    console.log(msg.msg)
+    console.log(msg.msg);
 
     return (
       <ContainerMsgsType type={msg['@type']}>
@@ -660,9 +681,12 @@ function Activites({ msg }) {
         <Row title="Source port" value={msg.source_port} />
         <Row
           title="Token"
-          value={`${formatNumber(
-            msg.token.amount
-          )} ${msg.token.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.token.amount}
+              denom={msg.token.denom}
+            />
+          }
         />
         <Row
           title="Timeout height"
