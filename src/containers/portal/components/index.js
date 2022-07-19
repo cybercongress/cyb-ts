@@ -1,4 +1,6 @@
-import ContainerGradient from './containerGradient/ContainerGradient';
+import ContainerGradient, {
+  ContainerGradientText,
+} from './containerGradient/ContainerGradient';
 import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';
@@ -17,6 +19,7 @@ import MoonAnimation from './MoonAnimation/MoonAnimation';
 import Stars from './stars';
 
 export {
+  ContainerGradientText,
   ContainerGradient,
   Signatures,
   ScrollableTabs,

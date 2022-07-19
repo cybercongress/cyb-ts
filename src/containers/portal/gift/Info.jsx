@@ -16,6 +16,7 @@ const {
   STATE_PROVE_SIGN_KEPLR,
   STATE_PROVE_SEND_SIGN,
   STATE_PROVE_CHANGE_ACCOUNT,
+  STATE_PROVE_YOU_ADDED_ADDR,
   STATE_CLAIME_TO_PROVE,
   STATE_GIFT_NULL_ALL,
   STATE_CLAIME,
@@ -99,6 +100,14 @@ function Info({ stepCurrent, selectedAddress, amountClaims }) {
 
       case STATE_PROVE_CHANGE_ACCOUNT:
         content = <span> you need change account in keplr</span>;
+        break;
+
+      case STATE_PROVE_YOU_ADDED_ADDR:
+        content = (
+          <span>
+            you have already added this address. Сhoose another address
+          </span>
+        );
         break;
 
       case STATE_CLAIME_TO_PROVE:

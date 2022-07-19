@@ -4,7 +4,7 @@ import BalanceToken from './balanceToken';
 import Select, { OptionSelect } from './select';
 import Input from './input';
 import { networkList } from '../utils';
-import { Denom } from '../../../components';
+import { DenomArr } from '../../../components';
 
 const renderOptions = (data, selected, valueSelect) => {
   let items = {};
@@ -17,8 +17,11 @@ const renderOptions = (data, selected, valueSelect) => {
             <OptionSelect
               key={key}
               value={key}
-              text={<Denom denomValue={key} onlyText />}
-              img={<Denom justifyContent="center" denomValue={key} onlyImg />}
+              bgrImg={key.includes('pool')}
+              text={<DenomArr denomValue={key} onlyText />}
+              img={
+                <DenomArr justifyContent="center" denomValue={key} onlyImg />
+              }
             />
           ))}
       </>
@@ -39,8 +42,11 @@ const renderNetwork = (data, selected) => {
             <OptionSelect
               key={key}
               value={key}
-              text={<Denom denomValue={key} onlyText />}
-              img={<Denom justifyContent="center" denomValue={key} onlyImg />}
+              bgrImg={key.includes('pool')}
+              text={<DenomArr denomValue={key} onlyText />}
+              img={
+                <DenomArr justifyContent="center" denomValue={key} onlyImg />
+              }
             />
           ))}
       </>

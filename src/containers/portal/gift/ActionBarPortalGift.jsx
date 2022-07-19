@@ -178,7 +178,8 @@ function ActionBarPortalGift({
   const signMsgKeplr = useCallback(async () => {
     const keplrWindow = await getKeplr();
     if (keplrWindow && citizenship !== null && selectNetwork !== '') {
-      const { owner } = citizenship;
+      const { owner, extension } = citizenship;
+      const { addresses } = extension;
 
       if (selectNetwork === 'columbus-5') {
         if (window.keplr.experimentalSuggestChain) {
@@ -189,6 +190,18 @@ function ActionBarPortalGift({
       const signer = await keplrWindow.getOfflineSignerAuto(selectNetwork);
 
       const [{ address }] = await signer.getAccounts();
+
+      if (addresses !== null && Object.keys(addresses).length > 0) {
+        const result = Object.keys(addresses).filter(
+          (key) => addresses[key].address === address
+        );
+
+        if (result.length > 0) {
+          setStepApp(STEP_INFO.STATE_PROVE_YOU_ADDED_ADDR);
+          return null;
+        }
+      }
+
       const data = `${owner}:${CONSTITUTION_HASH}`;
       const res = await keplrWindow.signArbitrary(selectNetwork, address, data);
 
@@ -206,7 +219,9 @@ function ActionBarPortalGift({
 
   const signMsgETH = useCallback(async () => {
     if (window.ethereum && citizenship !== null) {
-      const { owner } = citizenship;
+      const { owner, extension } = citizenship;
+      const { addresses } = extension;
+
       const { ethereum } = window;
       console.log('ethereum.isConnected()', ethereum.isConnected());
 
@@ -218,6 +233,17 @@ function ActionBarPortalGift({
       const message = `${owner}:${CONSTITUTION_HASH}`;
       const msg = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
       const from = address;
+
+      if (addresses !== null && Object.keys(addresses).length > 0) {
+        const result = Object.keys(addresses).filter(
+          (key) => addresses[key].address === address
+        );
+
+        if (result.length > 0) {
+          setStepApp(STEP_INFO.STATE_PROVE_YOU_ADDED_ADDR);
+          return null;
+        }
+      }
 
       const signature = await ethereum.request({
         method: 'personal_sign',
@@ -509,7 +535,10 @@ function ActionBarPortalGift({
     );
   }
 
-  if (activeStep === STEP_INFO.STATE_PROVE_CONNECT) {
+  if (
+    activeStep === STEP_INFO.STATE_PROVE_CONNECT ||
+    activeStep === STEP_INFO.STATE_PROVE_YOU_ADDED_ADDR
+  ) {
     return (
       <ActionBarSteps
         onClickBack={() => setStepApp(STEP_INFO.STATE_INIT_PROVE)}
