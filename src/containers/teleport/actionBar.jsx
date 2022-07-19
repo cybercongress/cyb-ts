@@ -362,7 +362,7 @@ function ActionBar({ stateActionBar }) {
         setTxHash(response.transactionHash);
       } else if (response.code === 4) {
         setTxHash(null);
-        setErrorMessage('Swap is not working. Wait updates.');
+        setErrorMessage('Swap is not working. Wait for updates.');
         setStage(STAGE_ERROR);
       } else {
         setTxHash(null);
@@ -427,7 +427,7 @@ function ActionBar({ stateActionBar }) {
           setTxHash(response.transactionHash);
         } else if (response.code === 4) {
           setTxHash(null);
-          setErrorMessage('Swap is not working. Wait updates.');
+          setErrorMessage('Swap is not working. Wait for updates.');
           setStage(STAGE_ERROR);
         } else {
           setTxHash(null);
