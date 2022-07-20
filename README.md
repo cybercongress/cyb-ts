@@ -20,7 +20,7 @@
 - [senate](https://cyb.ai/senate): manage collective thought process
 - [hfr](https://cyb.ai/mint): mint supercomputing resources
 - [nebula](https://cyb.ai/nebula): disover particles through tokens
-- [github](https://github.com/cybercongress): develop superintelligence
+- [hackerspace](https://github.com/cybercongress): develop superintelligence
 - booster: growth value of knowledge
 - warp: create and growth molecules
 - hub: create domain superintelligences
