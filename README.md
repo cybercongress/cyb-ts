@@ -31,4 +31,4 @@
 $ yarn install
 $ yarn start
 ```
-join community at [cyb.ai/~cyb](https://cyb.ai/~cyb)
+join community at [cyb.ai/~cyb](https://cyb.ai/search/cyb)
