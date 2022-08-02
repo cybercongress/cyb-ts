@@ -16,7 +16,7 @@
 - [portal](https://cyb.ai/portal): create public and private robot avatar and invite friends
 - [oracle](https://cyb.ai/bootloader): discover particles, neurons, signals and steps of [superintelligence](https://github.com/cybercongress/go-cyber)
 - [teleport](https://cyb.ai/teleport?from=boot&to=hydrogen): communicate sending and swaping tokens
-- [shpere](https://cyb.ai/halloffame): hire and fire heroes
+- [sphere](https://cyb.ai/halloffame): hire and fire heroes
 - [senate](https://cyb.ai/senate): manage collective thought process
 - [hfr](https://cyb.ai/mint): mint supercomputing resources
 - [nebula](https://cyb.ai/nebula): disover particles through tokens
