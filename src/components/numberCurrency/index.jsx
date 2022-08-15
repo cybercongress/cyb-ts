@@ -2,12 +2,14 @@ import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
+import Denom from '../denom';
 
 const NumberCurrency = ({
   amount,
   fontSizeDecimal,
   currencyNetwork = CYBER.DENOM_CYBER,
-  currencyNetworkG = 'G',
+  onlyImg,
+  onlyText = true,
   ...props
 }) => {
   // const number = formatNumber(amount / CYBER.DIVISOR_CYBER_G, 3);
@@ -21,7 +23,15 @@ const NumberCurrency = ({
       <Pane whiteSpace="nowrap" display="flex" alignItems="center">
         <span>{formatNumber(Math.floor(amount))}</span>
       </Pane>
-      <div style={{ textAlign: 'start' }}>{currencyNetwork.toUpperCase()}</div>
+      <div
+        style={{ textAlign: 'start', alignItems: 'center', display: 'flex' }}
+      >
+        <Denom
+          denomValue={currencyNetwork}
+          onlyText={onlyText}
+          onlyImg={onlyImg}
+        />
+      </div>
     </Pane>
   );
 };

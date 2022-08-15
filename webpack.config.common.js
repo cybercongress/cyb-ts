@@ -49,6 +49,10 @@ module.exports = {
         },
       },
       {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' },
+      },
+      {
         include: /node_modules/,
         test: /\.mjs$/,
         type: 'javascript/auto',

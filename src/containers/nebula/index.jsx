@@ -1,186 +1,361 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useContext } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
+import BigNumber from 'bignumber.js';
+import { TableEv as Table, Tooltip, Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { Route, Link, useLocation } from 'react-router-dom';
-import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
-import { Loading } from '../../components';
+import { useWorker } from '@koale/useworker';
 import { AppContext } from '../../context';
-import SearchTokenInfo from '../market/searchTokensInfo';
-import ActionBarCont from '../market/actionBarContainer';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { coinDecimals } from '../../utils/utils';
+import { MainContainer } from '../portal/components';
+import { DenomArr, NumberCurrency, FormatNumber } from '../../components';
+import { formatNumber, reduceBalances } from '../../utils/utils';
+import { getCoinDecimals, reduceAmounToken } from '../teleport/utils';
+import PillStatus from './pillStatus';
+import { CYBER } from '../../utils/config';
+// import { getMarketData } from './getMarketData';
+import { useWebworker } from './useWebworker';
 
-const ContainerGrid = ({ children }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-    gridGap="20px"
-  >
-    {children}
-  </Pane>
-);
-
-const search = async (client, hash, page) => {
-  try {
-    const responseSearchResults = await client.search(hash, page);
-    console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults : [];
-  } catch (error) {
-    return [];
-  }
+const defaultTokenList = {
+  boot: 0,
+  hydrogen: 0,
+  milliampere: 0,
+  millivolt: 0,
+  tocyb: 0,
 };
 
-const reduceSearchResults = (data, query) => {
-  return data.reduce(
-    (obj, item) => ({
-      ...obj,
-      [item.particle]: {
-        particle: item.particle,
-        rank: coinDecimals(item.rank),
-        grade: getRankGrade(coinDecimals(item.rank)),
-        status: 'impossibleLoad',
-        query,
-        text: item.particle,
-        content: false,
-      },
-    }),
-    {}
+const FormatNumberTokens = ({ text, value, ...props }) => {
+  // console.log(text, value);
+  return (
+    <Pane
+      display="grid"
+      gridTemplateColumns="1fr 55px"
+      gridGap="5px"
+      fontSize="15px"
+      {...props}
+    >
+      <Pane
+        // paddingRight={5}
+        whiteSpace="nowrap"
+        display="flex"
+        alignItems="center"
+      >
+        <span>{formatNumber(value)}</span>
+      </Pane>
+      {text && (
+        <DenomArr
+          marginImg="0 3px 0 0"
+          flexDirection="row-reverse"
+          justifyContent="flex-end"
+          denomValue={text}
+          onlyImg
+        />
+      )}
+    </Pane>
   );
 };
 
-const chekPathname = (pathname) => {
-  if (pathname === '/nebula') {
-    return 'app';
+const getTypeDenom = (denom) => {
+  if (denom.includes('ibc')) {
+    return 'ibc';
   }
 
-  if (pathname === '/nebula/Create app') {
-    return 'create app';
+  if (denom.includes('pool')) {
+    return 'pool';
   }
 
-  return 'app';
+  return 'native';
 };
 
-function Nebula({ node, mobile, defaultAccount }) {
-  const location = useLocation();
-  const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { jsCyber } = useContext(AppContext);
-  const [querySearch, setQuerySearch] = useState('app');
-  const [resultSearch, setResultSearch] = useState([]);
-  const [loadingSearch, setLoadingSearch] = useState(true);
-  const [keywordHash, setKeywordHash] = useState('');
-  const [update, setUpdate] = useState(0);
-  const [rankLink, setRankLink] = useState(null);
-  const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(0);
+export const TextTable = ({ children, fontSize, color, display, ...props }) => (
+  <Text
+    fontSize={`${fontSize || 13}px`}
+    color={`${color || '#fff'}`}
+    display={`${display || 'inline-flex'}`}
+    alignItems="center"
+    {...props}
+  >
+    {children}
+  </Text>
+);
 
-  useEffect(() => {
-    const { pathname } = location;
-    const requere = chekPathname(pathname);
-    setQuerySearch(requere);
-  }, [location.pathname]);
+const getPoolsBalance = async (data, client) => {
+  const copyObj = { ...data };
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in copyObj) {
+    if (Object.hasOwnProperty.call(copyObj, key)) {
+      const element = copyObj[key];
+      const { reserveAccountAddress } = element;
+      const dataBalsnce = await client.getAllBalances(reserveAccountAddress);
+      element.balances = reduceBalances(dataBalsnce);
+    }
+  }
+  return copyObj;
+};
 
-  useEffect(() => {
-    const feachData = async () => {
-      if (jsCyber !== null) {
-        setPage(0);
-        setAllPage(0);
-        setResultSearch([]);
-        setLoadingSearch(true);
-        const hash = await getIpfsHash(querySearch);
-        setKeywordHash(hash);
-        const responseApps = await search(jsCyber, hash);
-        if (responseApps.result && responseApps.result.length > 0) {
-          const dataApps = reduceSearchResults(
-            responseApps.result,
-            querySearch
-          );
-          setResultSearch(dataApps);
-          setLoadingSearch(false);
-          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
-          setPage((item) => item + 1);
+const calculatePrice = (coinsPair, balances) => {
+  let price = 0;
+  const tokenA = coinsPair[0];
+  const tokenB = coinsPair[1];
+  const amountA = new BigNumber(
+    getCoinDecimals(Number(balances[tokenA]), tokenA)
+  );
+  const amountB = new BigNumber(
+    getCoinDecimals(Number(balances[tokenB]), tokenB)
+  );
+
+  if ([tokenA, tokenB].sort()[0] !== tokenA) {
+    price = amountB.dividedBy(amountA);
+    price = price.multipliedBy(0.97).toNumber();
+  } else {
+    price = amountA.dividedBy(amountB);
+    price = price.multipliedBy(1.03).toNumber();
+  }
+  return price;
+};
+
+const getPoolPrice = (data) => {
+  const copyObj = { ...data };
+  Object.keys(copyObj).forEach((key) => {
+    const element = copyObj[key];
+    if (element.balances) {
+      const coinsPair = element.reserveCoinDenoms;
+      const { balances } = element;
+      let price = 0;
+      if (coinsPair[0] === 'hydrogen' || coinsPair[1] === 'hydrogen') {
+        if (coinsPair[0] === 'hydrogen') {
+          price = calculatePrice(coinsPair.reverse(), balances);
         } else {
-          setResultSearch([]);
-          setLoadingSearch(false);
+          price = calculatePrice(coinsPair, balances);
         }
       } else {
-        setResultSearch([]);
-        setLoadingSearch(false);
+        price = calculatePrice(coinsPair, balances);
       }
-    };
-    feachData();
-  }, [jsCyber, querySearch, update]);
 
-  const fetchMoreData = async () => {
-    // a fake async api call like which sends
-    // 20 more records in 1.5 secs
-    let links = [];
-    const data = await search(jsCyber, keywordHash, page);
-    if (data.result) {
-      links = reduceSearchResults(data.result, querySearch);
+      element.price = price;
     }
+  });
+  return copyObj;
+};
 
-    setTimeout(() => {
-      setResultSearch((itemState) => ({ ...itemState, ...links }));
-      setPage((itemPage) => itemPage + 1);
-    }, 500);
+function getMarketData() {
+  const getTokenIndexer = (wtl) => {
+    const tokenIndexer = {};
+    if (wtl) {
+      wtl.forEach((item) => {
+        tokenIndexer[item.denom] = item.amount;
+      });
+    }
+    return tokenIndexer;
   };
+  return new Promise((resolve) =>
+    fetch('https://lcd.bostrom.cybernode.ai//cosmos/liquidity/v1beta1/pools')
+      .then((response) => response.json())
+      .then((data) => data.pools)
+      .then((responseDataPools) => {
+        const copyObjTemp = [];
+
+        // console.log('responseDataPools', responseDataPools);
+        if (responseDataPools && Object.keys(responseDataPools).length > 0) {
+          // eslint-disable-next-line no-restricted-syntax
+          for (const key in responseDataPools) {
+            if (Object.hasOwnProperty.call(responseDataPools, key)) {
+              const element = responseDataPools[key];
+              const { reserve_account_address: reserveAccountAddress } =
+                element;
+              // eslint-disable-next-line no-await-in-loop
+              fetch(
+                `https://lcd.bostrom.cybernode.ai/bank/balances/${reserveAccountAddress}`
+              )
+                .then((response) => response.json())
+                .then((data) => data.result)
+                .then((dataBalance) => {
+                  // console.log('dataBalance', dataBalance);
+                  element.balances = getTokenIndexer(dataBalance);
+                  copyObjTemp.push(element);
+                });
+            }
+          }
+          console.log('copyObjTemp', copyObjTemp)
+          if (copyObjTemp.length > 0) {
+            console.log('copyObjTemp', copyObjTemp)
+            resolve(responseDataPools);
+          }
+        }
+        // console.log('responseDataPools', responseDataPools)
+      })
+      .catch((e) => [])
+  );
+}
+
+function Nebula({ node, mobile, defaultAccount }) {
+  const { jsCyber } = useContext(AppContext);
+  const [fetchDataWorker] = useWorker(getMarketData);
+  const [dataTotal, setDataTotal] = useState([]);
+  const [poolsTotal, setPoolsTotal] = useState([]);
+  const [marketData, setMarketData] = useState({});
 
   useEffect(() => {
-    setRankLink(null);
-  }, [update]);
-
-  const onClickRank = async (key) => {
-    if (rankLink === key) {
-      setRankLink(null);
-    } else {
-      setRankLink(key);
+    async function testFetchImageWorker(url) {
+      const blob = await fetchDataWorker(url);
+      console.log('blob', blob);
     }
-  };
+
+    const url = `${CYBER.CYBER_NODE_URL_LCD}/cosmos/liquidity/v1beta1/pools`;
+    testFetchImageWorker(url);
+  }, []);
+
+  useEffect(() => {
+    const getBankTotal = async () => {
+      if (jsCyber !== null) {
+        const dataTotalSupply = await jsCyber.totalSupply();
+        try {
+          if (dataTotalSupply && dataTotalSupply.length > 0) {
+            // const filteredDataTotalSupply = dataTotalSupply.filter(
+            //   (item) => !item.denom.includes('pool')
+            // );
+            const reduceDataTotalSupply = reduceBalances(dataTotalSupply);
+            setDataTotal({ ...defaultTokenList, ...reduceDataTotalSupply });
+          }
+        } catch (error) {
+          console.log('error', error);
+          setDataTotal([]);
+        }
+      }
+    };
+    getBankTotal();
+  }, [jsCyber]);
+
+  useEffect(() => {
+    const getPpools = async () => {
+      if (jsCyber !== null) {
+        const dataPools = await jsCyber.pools();
+        try {
+          const { pools } = dataPools;
+          if (dataPools && pools && Object.keys(pools).length > 0) {
+            const poolsBalance = await getPoolsBalance(pools, jsCyber);
+            const poolPriceObj = getPoolPrice(poolsBalance);
+            setPoolsTotal(poolPriceObj);
+          }
+        } catch (error) {
+          console.log('error', error);
+          setPoolsTotal([]);
+        }
+      }
+    };
+    getPpools();
+  }, [jsCyber]);
+
+  useEffect(() => {
+    try {
+      if (
+        Object.keys(dataTotal).length > 0 &&
+        Object.keys(poolsTotal).length > 0
+      ) {
+        const marketDataObj = {};
+        marketDataObj.hydrogen = 1;
+        Object.keys(dataTotal).forEach((keyI) => {
+          Object.keys(poolsTotal).forEach((keyJ) => {
+            const itemJ = poolsTotal[keyJ];
+            const { reserveCoinDenoms } = itemJ;
+            if (
+              reserveCoinDenoms[0] === keyI &&
+              reserveCoinDenoms[1] === 'hydrogen'
+            ) {
+              marketDataObj[keyI] = itemJ.price;
+            }
+          });
+        });
+        setMarketData(marketDataObj);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  }, [dataTotal, poolsTotal]);
+
+  const itemRowMarketData = useMemo(() => {
+    return Object.keys(dataTotal).map((key) => {
+      const amount = dataTotal[key];
+      let price = 0;
+      let cap = 0;
+      const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+      if (Object.prototype.hasOwnProperty.call(marketData, key)) {
+        const poolPrice = new BigNumber(marketData[key]);
+        cap = poolPrice
+          .multipliedBy(Number(reduceAmount))
+          .dp(0, BigNumber.ROUND_FLOOR)
+          .toNumber();
+        price = poolPrice.toNumber();
+      }
+      return (
+        <Table.Row
+          borderBottom="none"
+          // backgroundColor={index === selectedIndex ? '#ffffff29' : '#000'}
+          isSelectable
+        >
+          <Table.TextCell flex={0.7} paddingX={5} textAlign="end" isNumber>
+            <TextTable justifyContent="space-between" width="100%">
+              <PillStatus type={getTypeDenom(key)} />
+              <DenomArr marginImg="0 0 0 3px" denomValue={key} />
+            </TextTable>
+          </Table.TextCell>
+          <Table.TextCell paddingX={5} textAlign="end" isNumber>
+            <TextTable>{formatNumber(reduceAmount)}</TextTable>
+          </Table.TextCell>
+          <Table.TextCell paddingX={5} textAlign="end" isNumber>
+            <TextTable>
+              <FormatNumberTokens
+                text="hydrogen"
+                value={price}
+                fontSizeDecimal={11.5}
+              />
+            </TextTable>
+          </Table.TextCell>
+          <Table.TextCell paddingX={5} textAlign="end" isNumber>
+            <TextTable>
+              <FormatNumberTokens value={cap} text="hydrogen" />
+            </TextTable>
+          </Table.TextCell>
+        </Table.Row>
+      );
+    });
+  }, [dataTotal, marketData]);
 
   return (
-    <>
-      <main className="block-body">
-        <ContainerGrid>
-          {loadingSearch ? (
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-              }}
-            >
-              <Loading />
-              <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-                Searching
-              </div>
-            </div>
-          ) : (
-            <SearchTokenInfo
-              data={resultSearch}
-              node={node}
-              mobile={mobile}
-              selectedTokens={querySearch}
-              onClickRank={onClickRank}
-              fetchMoreData={fetchMoreData}
-              page={page}
-              allPage={allPage}
-            />
-          )}
-        </ContainerGrid>
-      </main>
-      <ActionBarCont
-        addressActive={addressActive}
-        mobile={mobile}
-        keywordHash={keywordHash}
-        updateFunc={() => setUpdate(update + 1)}
-        rankLink={rankLink}
-      />
-    </>
+    <main className="block-body">
+      <Table>
+        <Table.Head
+          style={{
+            backgroundColor: '#000',
+            borderBottom: '1px solid #ffffff80',
+            marginTop: '10px',
+            paddingBottom: '10px',
+          }}
+        >
+          <Table.TextHeaderCell flex={0.7} textAlign="center" paddingX={5}>
+            <TextTable fontSize={13}>token</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell paddingX={5} textAlign="center">
+            <TextTable fontSize={13} whiteSpace="nowrap">
+              supply
+            </TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell paddingX={5} textAlign="center">
+            <TextTable fontSize={13}>price</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell paddingX={5} textAlign="center">
+            <TextTable fontSize={13}>cap</TextTable>
+          </Table.TextHeaderCell>
+        </Table.Head>
+        <Table.Body
+          style={{
+            backgroundColor: '#000',
+            overflowY: 'hidden',
+            padding: 7,
+          }}
+        >
+          {itemRowMarketData}
+        </Table.Body>
+      </Table>
+    </main>
   );
 }
 

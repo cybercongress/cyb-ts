@@ -1,0 +1,34 @@
+.containerTooltipCard {
+  padding: 5px;
+}
+
+.defaultPillStatus {
+  display: flex;
+  content: '';
+  width: 7px;
+  height: 7px;
+  padding: 0 4px;
+  background-color: #cecece;
+  color: #cecece;
+  border-radius: 50%;
+}
+
+.defaultPillStatusColor {
+  color: #cecece;
+  background-color: transparent;  
+}
+
+.PillStatusNative {
+  background-color: #36D6AE;
+  color: #36D6AE;
+}
+
+.PillStatusIbc {
+  background-color: #d500f9;
+  color: #d500f9;
+}
+
+.PillStatusPool {
+  background-color: #ff3d00;
+  color: #ff3d00;
+}
