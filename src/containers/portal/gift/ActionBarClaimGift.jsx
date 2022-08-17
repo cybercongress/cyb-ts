@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from 'react';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import { CONTRACT_ADDRESS_GIFT } from '../utils';
 import { AppContext } from '../../../context';
@@ -45,7 +45,7 @@ function ActionBarClaimGift({
           addressKeplr,
           CONTRACT_ADDRESS_GIFT,
           msgObject,
-          calculateFee(400000, gasPrice),
+          txs.calculateFee(400000, gasPrice),
           'cyber'
         );
         console.log('executeResponseResult', executeResponseResult);
@@ -73,7 +73,7 @@ function ActionBarClaimGift({
           address,
           CONTRACT_ADDRESS_GIFT,
           msgObject,
-          calculateFee(400000, gasPrice),
+          txs.calculateFee(400000, gasPrice),
           'cyber'
         );
         console.log('executeResponseResult', executeResponseResult);

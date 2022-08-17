@@ -7,9 +7,8 @@ import React, {
   useEffect,
 } from 'react';
 import { useHistory } from 'react-router-dom';
-import { calculateFee } from '@cosmjs/stargate';
 import { GasPrice } from '@cosmjs/launchpad';
-
+import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
 import { Dots } from '../../../components';
@@ -92,7 +91,7 @@ function ActionBarRelease({
             addressKeplr,
             CONTRACT_ADDRESS_GIFT,
             msgs,
-            calculateFee(gasLimits, gasPrice),
+            txs.calculateFee(gasLimits, gasPrice),
             CYBER.MEMO_KEPLR
           );
 

@@ -233,6 +233,19 @@ function bootstrap() {
       // console.log(e.loaded, e.loaded / e.totalSize); // @TODO
     })
     .then((report) => {
+      if (window !== null) {
+        let pageloader = null;
+        pageloader = setInterval(function(){
+          if (typeof window.onload === 'function') {
+              clearInterval(pageloader);
+              window.onload();
+          } 
+        }, 300);
+        
+      } else {
+        console.error('No window');
+      }
+       
       //selfdestroy @TODO
     });
 }
