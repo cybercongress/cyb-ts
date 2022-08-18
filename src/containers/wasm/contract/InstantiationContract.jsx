@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';
@@ -102,7 +102,7 @@ function InstantiationContract({ codeId, updateFnc }) {
         parseFloat(codeId),
         msgObject.result,
         label,
-        calculateFee(600000, gasPrice),
+        txs.calculateFee(600000, gasPrice),
         {
           memo,
           funds: coinsObject.result,

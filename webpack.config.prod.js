@@ -1,22 +1,38 @@
 const { merge } = require('webpack-merge');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const commonConfig = require('./webpack.config.common');
 
+
 module.exports = merge(commonConfig, {
+
   mode: 'production',
   optimization: {
+    nodeEnv: 'production',
+    concatenateModules: true,
+    removeAvailableModules: true,
+    splitChunks: {
+      // chunks(chunk) {
+      //   return chunk.name !== 'my-excluded-chunk';
+      // },
+      chunks: 'all',
+      minSize: 2024000,
+      maxSize: 3024000,
+    },
     minimize: true,
     minimizer: [
-      new OptimizeCssAssetsPlugin({
-        cssProcessorOptions: {
-          map: {
-            inline: false,
-            annotation: true,
-          },
-        },
-      }),
+      new CssMinimizerPlugin(),
+      // new OptimizeCssAssetsPlugin({
+      //   cssProcessorOptions: {
+      //     map: {
+      //       inline: false,
+      //       annotation: true,
+      //     },
+      //   },
+      // }),
       new TerserPlugin({
         // Use multi-process parallel running to improve the build speed
         // Default number of concurrent runs: os.cpus().length - 1
@@ -32,6 +48,7 @@ module.exports = merge(commonConfig, {
         threshold: 10240,
         minRatio: 0.8,
       }),
+
     ],
   },
 });

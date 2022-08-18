@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import { AppContext } from '../../../../context';
 import { CYBER } from '../../../../utils/config';
@@ -72,11 +72,12 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
     try {
       const [{ address }] = await keplr.signer.getAccounts();
 
+     
       const executeResponseResult = await keplr.execute(
         address,
         contractAddress,
         formData,
-        calculateFee(400000, gasPrice),
+        txs.calculateFee(400000, gasPrice),
         CYBER.MEMO_KEPLR
         // coinsPlaceholder
       );
