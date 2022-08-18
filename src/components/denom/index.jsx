@@ -30,7 +30,7 @@ function useGetDenom(denomValue) {
   return { denom, type };
 }
 
-function Denom({ denomValue, onlyText, onlyImg, ...props }) {
+function Denom({ denomValue, onlyText, onlyImg, marginContainer, ...props }) {
   try {
     const { denom, type } = useGetDenom(denomValue);
 
@@ -38,6 +38,7 @@ function Denom({ denomValue, onlyText, onlyImg, ...props }) {
       <ValueImg
         onlyText={onlyText}
         onlyImg={onlyImg}
+        marginContainer={marginContainer}
         text={denom}
         type={type}
         {...props}

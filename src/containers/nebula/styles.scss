@@ -32,3 +32,38 @@
   background-color: #ff3d00;
   color: #ff3d00;
 }
+
+
+.containerRowItem {
+  display: grid;
+  grid-template-columns: 130px 1fr 0.7fr 1fr;
+  height: 40px;
+}
+
+.containerColItem {
+  display: flex;
+  align-items: baseline;
+}
+
+.containerFormatNumberTokens {
+  display: grid;
+  gap: 5px;
+  font-size: 16px;
+
+  &Number {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 19px;
+    white-space: nowrap;
+
+    &Decimal {
+      color: #777777;
+      font-size: 14px;
+    }
+  }
+
+  &DenomImg {
+
+  }
+}
