@@ -1,6 +1,7 @@
 import React from 'react';
-import { Pane, Pill, Tooltip, Text } from '@cybercongress/gravity';
+import { Pane, Pill, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
+import { Tooltip } from '../../../components';
 
 const statusHeroes = {
   BOND_STATUS_UNSPECIFIED: 0,
@@ -45,15 +46,13 @@ export const StatusTooltip = ({ status }) => {
   return (
     <Pane marginRight={10} display="flex" alignItems="center">
       <Tooltip
-        appearance="card"
-        content={
-          <Pane display="flex" alignItems="center" paddingX={18} paddingY={18}>
-            <Text>
-              Validator status:&nbsp;
-              {statusHeroes[status] === 1 && 'unbonded'}
-              {statusHeroes[status] === 2 && 'unbonding'}
-              {statusHeroes[status] === 3 && 'bonded'}
-            </Text>
+        placement="bottom"
+        tooltip={
+          <Pane display="flex" alignItems="center" paddingX={10} paddingY={10}>
+            Validator status:&nbsp;
+            {statusHeroes[status] === 1 && 'unbonded'}
+            {statusHeroes[status] === 2 && 'unbonding'}
+            {statusHeroes[status] === 3 && 'bonded'}
           </Pane>
         }
       >
