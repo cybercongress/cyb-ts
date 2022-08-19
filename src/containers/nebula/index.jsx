@@ -131,9 +131,7 @@ function Nebula({ node, mobile, defaultAccount }) {
 
   return (
     <MainContainer width="83%">
-      <InfoCard>
-        This is template text, here will be shown cyb help texts
-      </InfoCard>
+      <InfoCard>This is Nebula</InfoCard>
       <div>{itemRowMarketData}</div>
     </MainContainer>
   );
