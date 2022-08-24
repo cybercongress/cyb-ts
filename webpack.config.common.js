@@ -36,6 +36,7 @@ module.exports = {
       "http": require.resolve("stream-http") ,
       "assert": require.resolve("assert/"),
       "stream": require.resolve("stream-browserify"),
+       "buffer": require.resolve("buffer/"),
       // "path": require.resolve("path-browserify"),
       // "zlib": require.resolve("browserify-zlib"),
       "constants": require.resolve("constants-browserify")

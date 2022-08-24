@@ -11,7 +11,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import { useWorker } from '@koale/useworker';
 import { AppContext } from '../../context';
-import { MainContainer, ContainerGradientText, InfoCard } from '../portal/components';
+import {
+  MainContainer,
+  ContainerGradientText,
+  InfoCard,
+} from '../portal/components';
 import { DenomArr, NumberCurrency, FormatNumber } from '../../components';
 import {
   formatNumber,
@@ -38,7 +42,6 @@ const getTypeDenom = (denom) => {
 
   return 'green';
 };
-
 
 function getMarketData() {
   const getTokenIndexer = (wtl) => {
@@ -92,47 +95,131 @@ function getMarketData() {
 
 function Nebula({ node, mobile, defaultAccount }) {
   const { dataTotal, marketData } = useGetMarketData();
+  const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
+
+  useEffect(() => {
+    if (
+      Object.keys(marketData).length > 0 &&
+      Object.keys(dataTotal).length > 0
+    ) {
+      let cap = 0;
+      Object.keys(dataTotal).forEach((key) => {
+        const amount = dataTotal[key];
+        const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+        if (Object.prototype.hasOwnProperty.call(marketData, key)) {
+          const poolPrice = new BigNumber(marketData[key]);
+          const tempCap = poolPrice
+            .multipliedBy(Number(reduceAmount))
+            .dp(0, BigNumber.ROUND_FLOOR)
+            .toNumber();
+          cap += tempCap;
+        }
+      });
+
+      if (cap > 0) {
+        const localStorageDataCap = localStorage.getItem('lastCap');
+        if (localStorageDataCap !== null) {
+          let change = 0;
+          change = cap - localStorageDataCap;
+
+          setCapData({ currentCap: cap, change });
+
+          localStorage.setItem('lastCap', cap);
+        } else {
+          localStorage.setItem('lastCap', cap);
+          setCapData({ currentCap: cap, change: 0 });
+        }
+      }
+    }
+  }, [dataTotal, marketData]);
+
+  const dataRenderItems = useMemo(() => {
+    let dataObj = {};
+    if (
+      Object.keys(dataTotal).length > 0 &&
+      Object.keys(marketData).length > 0
+    ) {
+      Object.keys(dataTotal).forEach((key) => {
+        const amount = dataTotal[key];
+        let price = 0;
+        let cap = 0;
+        const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+        if (Object.prototype.hasOwnProperty.call(marketData, key)) {
+          const poolPrice = new BigNumber(marketData[key]);
+          cap = poolPrice
+            .multipliedBy(Number(reduceAmount))
+            .dp(0, BigNumber.ROUND_FLOOR)
+            .toNumber();
+          price = poolPrice.toNumber();
+        }
+        dataObj[key] = {
+          supply: reduceAmount,
+          price,
+          cap,
+        };
+      });
+    }
+    if (Object.keys(dataObj).length > 0) {
+      const sortable = Object.fromEntries(
+        Object.entries(dataObj).sort(([, a], [, b]) => b.cap - a.cap)
+      );
+      dataObj = sortable;
+    }
+    return dataObj;
+  }, [dataTotal, marketData]);
 
   const itemRowMarketData = useMemo(() => {
-    return Object.keys(dataTotal).map((key) => {
+    return Object.keys(dataRenderItems).map((key) => {
       const keyItem = uuidv4();
-      const amount = dataTotal[key];
-      let price = 0;
-      let cap = 0;
-      const reduceAmount = reduceAmounToken(parseFloat(amount), key);
-      if (Object.prototype.hasOwnProperty.call(marketData, key)) {
-        const poolPrice = new BigNumber(marketData[key]);
-        cap = poolPrice
-          .multipliedBy(Number(reduceAmount))
-          .dp(0, BigNumber.ROUND_FLOOR)
-          .toNumber();
-        price = poolPrice.toNumber();
-      }
       return (
-        <ContainerGradientText status={getTypeDenom(key)}>
-          <RowItem key={keyItem}>
-            <ColItem>
-              <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
-            </ColItem>
-            <ColItem justifyContent="flex-end">
-              <FormatNumberTokens text={key} value={reduceAmount} />
-            </ColItem>
-            <ColItem justifyContent="flex-end">
-              <FormatNumberTokens text="hydrogen" value={price} />
-            </ColItem>
-            <ColItem justifyContent="flex-end">
-              <FormatNumberTokens value={cap} text="hydrogen" />
-            </ColItem>
-          </RowItem>
-        </ContainerGradientText>
+        <RowItem key={keyItem}>
+          <ColItem>
+            <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
+          </ColItem>
+          <ColItem justifyContent="flex-end">
+            <FormatNumberTokens
+              text={key}
+              value={dataRenderItems[key].supply}
+            />
+          </ColItem>
+          <ColItem justifyContent="flex-end">
+            <FormatNumberTokens
+              text="hydrogen"
+              value={dataRenderItems[key].price}
+            />
+          </ColItem>
+          <ColItem justifyContent="flex-end">
+            <FormatNumberTokens
+              value={dataRenderItems[key].cap}
+              text="hydrogen"
+            />
+          </ColItem>
+        </RowItem>
       );
     });
-  }, [dataTotal, marketData]);
+  }, [dataRenderItems]);
 
   return (
     <MainContainer width="83%">
       <InfoCard>This is Nebula</InfoCard>
-      <div>{itemRowMarketData}</div>
+      <ContainerGradientText>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '40px 0px',
+          }}
+        >
+          <div style={{ fontSize: '22px' }}>Nebula</div>
+          <div style={{ display: 'flex', gap: '40px' }}>
+            <div style={{ color: capData.change > 0 ? '#7AFAA1' : '#FF0000' }}>
+              {capData.change > 0 ? '+' : '-'} {formatNumber(capData.change)}
+            </div>
+            <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
+          </div>
+        </div>
+        <div>{itemRowMarketData}</div>
+      </ContainerGradientText>
     </MainContainer>
   );
 }

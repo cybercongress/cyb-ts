@@ -75,19 +75,9 @@ const getPoolsBalance = async (data, client) => {
 function useGetMarketData() {
   const { jsCyber } = useContext(AppContext);
   // const [fetchDataWorker] = useWorker(getMarketData);
-  const [dataTotal, setDataTotal] = useState([]);
+  const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
   const [marketData, setMarketData] = useState({});
-
-  // useEffect(() => {
-  //   async function testFetchImageWorker(url) {
-  //     const blob = await fetchDataWorker(url);
-  //     console.log('blob', blob);
-  //   }
-
-  //   const url = `${CYBER.CYBER_NODE_URL_LCD}/cosmos/liquidity/v1beta1/pools`;
-  //   testFetchImageWorker(url);
-  // }, []);
 
   useEffect(() => {
     const getBankTotal = async () => {
@@ -95,9 +85,6 @@ function useGetMarketData() {
         const dataTotalSupply = await jsCyber.totalSupply();
         try {
           if (dataTotalSupply && dataTotalSupply.length > 0) {
-            // const filteredDataTotalSupply = dataTotalSupply.filter(
-            //   (item) => !item.denom.includes('pool')
-            // );
             const reduceDataTotalSupply = reduceBalances(dataTotalSupply);
             setDataTotal({ ...defaultTokenList, ...reduceDataTotalSupply });
           }
