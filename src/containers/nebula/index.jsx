@@ -199,14 +199,16 @@ function Nebula({ node, mobile, defaultAccount }) {
           }}
         >
           <div style={{ fontSize: '22px' }}>Nebula</div>
-          {capData.change !== 0 && (
+          {capData.currentCap !== 0 && (
             <div style={{ display: 'flex', gap: '40px' }}>
-              <div
-                style={{ color: capData.change > 0 ? '#7AFAA1' : '#FF0000' }}
-              >
-                {capData.change > 0 ? '+' : ''}
-                {formatNumber(capData.change)}
-              </div>
+              {capData.change !== 0 && (
+                <div
+                  style={{ color: capData.change > 0 ? '#7AFAA1' : '#FF0000' }}
+                >
+                  {capData.change > 0 ? '+' : ''}
+                  {formatNumber(capData.change)}
+                </div>
+              )}
               <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
             </div>
           )}
