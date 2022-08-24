@@ -1,33 +1,19 @@
 /* eslint-disable no-await-in-loop */
-import React, {
-  useEffect,
-  useState,
-  useMemo,
-  useContext,
-  useCallback,
-} from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import { useWorker } from '@koale/useworker';
-import { AppContext } from '../../context';
+import { Link } from 'react-router-dom';
 import {
   MainContainer,
   ContainerGradientText,
   InfoCard,
 } from '../portal/components';
-import { DenomArr, NumberCurrency, FormatNumber } from '../../components';
-import {
-  formatNumber,
-  reduceBalances,
-  exponentialToDecimal,
-  roundNumber,
-} from '../../utils/utils';
-import { getCoinDecimals, reduceAmounToken } from '../teleport/utils';
-import PillStatus from './pillStatus';
-import { CYBER } from '../../utils/config';
+import { DenomArr } from '../../components';
+import { formatNumber } from '../../utils/utils';
+import { reduceAmounToken } from '../teleport/utils';
 // import { getMarketData } from './getMarketData';
-import { useWebworker } from './useWebworker';
 import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens } from './components';
 
@@ -174,7 +160,9 @@ function Nebula({ node, mobile, defaultAccount }) {
       return (
         <RowItem key={keyItem}>
           <ColItem>
-            <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
+            <Link to={`/search/${key}`}>
+              <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
+            </Link>
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
@@ -213,7 +201,8 @@ function Nebula({ node, mobile, defaultAccount }) {
           <div style={{ fontSize: '22px' }}>Nebula</div>
           <div style={{ display: 'flex', gap: '40px' }}>
             <div style={{ color: capData.change > 0 ? '#7AFAA1' : '#FF0000' }}>
-              {capData.change > 0 ? '+' : '-'} {formatNumber(capData.change)}
+              {capData.change > 0 ? '+' : ''}
+              {formatNumber(capData.change)}
             </div>
             <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
           </div>

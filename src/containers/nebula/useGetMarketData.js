@@ -23,13 +23,8 @@ const calculatePrice = (coinsPair, balances) => {
     getCoinDecimals(Number(balances[tokenB]), tokenB)
   );
 
-  if ([tokenA, tokenB].sort()[0] !== tokenA) {
-    price = amountB.dividedBy(amountA);
-    price = price.multipliedBy(0.97).toNumber();
-  } else {
-    price = amountA.dividedBy(amountB);
-    price = price.multipliedBy(1.03).toNumber();
-  }
+  price = amountA.dividedBy(amountB).toNumber();
+
   return price;
 };
 
@@ -43,14 +38,13 @@ const getPoolPrice = (data) => {
       let price = 0;
       if (coinsPair[0] === 'hydrogen' || coinsPair[1] === 'hydrogen') {
         if (coinsPair[0] === 'hydrogen') {
-          price = calculatePrice(coinsPair.reverse(), balances);
-        } else {
           price = calculatePrice(coinsPair, balances);
+        } else {
+          price = calculatePrice(coinsPair.reverse(), balances);
         }
       } else {
         price = calculatePrice(coinsPair, balances);
       }
-
       element.price = price;
     }
   });
@@ -139,8 +133,8 @@ function useGetMarketData() {
             const itemJ = poolsTotal[keyJ];
             const { reserveCoinDenoms } = itemJ;
             if (
-              reserveCoinDenoms[0] === keyI &&
-              reserveCoinDenoms[1] === 'hydrogen'
+              reserveCoinDenoms[0] === 'hydrogen' &&
+              reserveCoinDenoms[1] === keyI
             ) {
               marketDataObj[keyI] = itemJ.price;
             }
@@ -175,7 +169,7 @@ function useGetMarketData() {
                 reserveCoinDenoms.forEach((itemJ) => {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
-                    const balancesA = balances[itemJ];
+                    const balancesA = getCoinDecimals(balances[itemJ], itemJ);
                     const marketCapaTemp = marketDataPrice * balancesA;
                     marketCapTemp += marketCapaTemp;
                   }
