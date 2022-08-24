@@ -491,8 +491,8 @@ function ActionBarConnect({
 
   const callbackSigner = async (signerCyber) => {
     console.log(`callbackSigner`, signerCyber);
-    const [{ address }] = await signerCyber.getAccounts();
-    const pk = Buffer.from(signerCyber.pubkey).toString('hex');
+    const [{ address, pubkey }] = await signerCyber.getAccounts();
+    const pk = Buffer.from(pubkey).toString('hex');
     console.log(`callbackSigner address`, address);
     console.log(`callbackSigner pk`, pk);
     updateCallbackSigner(null);

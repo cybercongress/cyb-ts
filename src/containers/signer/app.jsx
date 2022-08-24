@@ -46,10 +46,7 @@ function AppSign({ defaultAccount }) {
     const getSigner = async () => {
       const signerObj = new Signer();
       const signerCyber = await signerObj.initSigner(defaultAccount);
-      if (signerCyber !== null) {
-        const pk = Buffer.from(signerCyber.pubkey).toString('hex');
-        console.log(`pk`, pk);
-      }
+
       console.log(`signerCyber`, signerCyber);
       updateCyberSigner(signerCyber);
     };

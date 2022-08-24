@@ -21,17 +21,17 @@ function TestKeplr() {
 
   const [hashTx, setHashTx] = useState('');
 
-  useEffect(() => {
-    const seed =
-      'dune pottery shield bracket shuffle orchard frown mail exercise destroy enroll nothing scheme allow pudding match mass world glow razor that attend blame follow';
-    const seedBase64 = btoa(seed);
-    console.log(`seedBase64`, seedBase64);
+  // useEffect(() => {
+  //   const seed =
+  //     'dune pottery shield bracket shuffle orchard frown mail exercise destroy enroll nothing scheme allow pudding match mass world glow razor that attend blame follow';
+  //   const seedBase64 = btoa(seed);
+  //   console.log(`seedBase64`, seedBase64);
 
-    const string = atob(seedBase64);
-    console.log(`string`, string)
-  }, []);
+  //   const string = atob(seedBase64);
+  //   console.log(`string`, string)
+  // }, []);
 
-  console.log('keplr', keplr);
+  // console.log('keplr', keplr);
   //   cybervaloper15zs0cjct43xs4z4sesxcrynar5mxm82ftahux2;
 
   const signerTest = async () => {
@@ -63,8 +63,8 @@ function TestKeplr() {
 
   const callbackSigner = async (signerCyber) => {
     console.log(`callbackSigner`, signerCyber);
-    const [{ address }] = await signerCyber.getAccounts();
-    const pk = Buffer.from(signerCyber.pubkey).toString('hex');
+    const [{ address, pubkey }] = await signerCyber.getAccounts();
+    const pk = Buffer.from(pubkey).toString('hex');
     console.log(`callbackSigner address`, address);
     console.log(`callbackSigner pk`, pk);
     updateCallbackSigner(null);

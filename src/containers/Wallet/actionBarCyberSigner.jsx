@@ -166,7 +166,7 @@ function ActionBarCyberSigner({ updateAddress, updateBalance, selectAccount }) {
               height={42}
               width="24%"
               onChange={(e) => setAmountSend(e.target.value)}
-              placeholder="EUL"
+              placeholder="BOOT"
               isInvalid={amountSendInputValid !== null}
               message={amountSendInputValid}
             />

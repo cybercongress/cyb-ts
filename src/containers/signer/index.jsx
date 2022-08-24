@@ -1,13 +1,15 @@
 /* eslint-disable no-await-in-loop */
 import React from 'react';
 import {
-  Secp256k1HdWallet,
   SigningCosmosClient,
   coins,
   GasPrice,
+  BroadcastMode,
 } from '@cosmjs/launchpad';
+import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
 import { stringToPath } from '@cosmjs/crypto';
+import { Secp256k1HdWallet } from '@cosmjs/amino';
 import { CYBER } from '../../utils/config';
 
 class Signer {
@@ -27,11 +29,9 @@ class Signer {
       if (account.cyber.keys === 'cyberSigner' && account.cyber.secret) {
         const mnemonic = account.cyber.secret;
         const mnemonicString = atob(mnemonic);
-        const signer = await Secp256k1HdWallet.fromMnemonic(
-          mnemonicString,
-          this.hdPath,
-          this.prefix
-        );
+        const signer = await Secp256k1HdWallet.fromMnemonic(mnemonicString, {
+          prefix: this.prefix,
+        });
         return signer;
       }
     }
@@ -40,11 +40,9 @@ class Signer {
   };
 
   restorePhrase = async (mnemonic, callback) => {
-    const signer = await Secp256k1HdWallet.fromMnemonic(
-      mnemonic,
-      this.hdPath,
-      this.prefix
-    );
+    const signer = await Secp256k1HdWallet.fromMnemonic(mnemonic, {
+      prefix: this.prefix,
+    });
     if (callback) {
       callback(signer);
     }
@@ -60,13 +58,11 @@ class Signer {
     try {
       let condition = true;
       while (condition) {
-        const signer = await Secp256k1HdWallet.generate(
-          this.word,
-          this.hdPath,
-          this.prefix
-        );
+        const signer = await Secp256k1HdWallet.generate(this.word, {
+          prefix: this.prefix,
+        });
         const [{ address }] = await signer.getAccounts();
-        if (address.match(/^cyber1a[a-zA-Z0-9]{37}$/g)) {
+        if (address.match(/^bostrom1a[a-zA-Z0-9]{37}$/g)) {
           condition = false;
           if (callback) {
             callback(signer);
@@ -83,7 +79,7 @@ class Signer {
   sendTxs = async (signer, msgs, callback) => {
     try {
       const [{ address }] = await signer.getAccounts();
-      const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'uatom');
+      const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
       const gasLimits = { send: 100000 };
       const client = new SigningCosmosClient(
         CYBER.CYBER_NODE_URL_LCD,
@@ -91,11 +87,13 @@ class Signer {
         signer,
         gasPrice,
         gasLimits,
-        'sync'
+        BroadcastMode.Sync
       );
 
+      console.log('client', client)
+
       const fee = {
-        amount: coins(0, 'uatom'),
+        amount: [],
         gas: '100000',
       };
 
@@ -104,10 +102,11 @@ class Signer {
         fee,
         CYBER.MEMO_CYBER_SIGNER
       );
-      if (callback && callback !== null) {
-        callback(response);
-      }
-      return response;
+      console.log('response', response)
+      // if (callback && callback !== null) {
+      //   callback(response);
+      // }
+      // return response;
     } catch (error) {
       console.log(`error`, error);
       return error;
