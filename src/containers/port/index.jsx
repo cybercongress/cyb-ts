@@ -212,7 +212,7 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
   return (
     <>
       <main className="block-body takeoff">
-        {Object.keys(dataPin).length === 0 && (
+        {/* {Object.keys(dataPin).length === 0 && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
             paddingX={20}
@@ -232,8 +232,8 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
         )}
         {Object.keys(dataPin).length > 0 && (
           <Table styles={{ marginBottom: 20, marginTop: 0 }} data={dataPin} />
-        )}
-        <Tablist className="tab-list" marginY={20}>
+        )} */}
+        {/* <Tablist className="tab-list" marginY={20}>
           <TabBtn
             text="Leaderboard"
             isSelected={selected === 'leaderboard'}
@@ -259,15 +259,15 @@ function PortPages({ mobile, web3, accounts, defaultAccount }) {
             isSelected={selected === 'progress'}
             to={`${match.url}/progress`}
           />
-        </Tablist>
+        </Tablist> */}
         {content}
       </main>
-      <ActionBarContainer
+      {/* <ActionBarContainer
         visa={visa}
         accountsETH={accountsETH}
         pocketAddress={pocketAddress}
         web3={web3}
-      />
+      /> */}
     </>
   );
 }

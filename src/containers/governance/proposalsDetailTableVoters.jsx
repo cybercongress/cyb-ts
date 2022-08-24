@@ -8,11 +8,31 @@ import {
   Legend,
   Account,
 } from '../../components';
+import { VOTE_OPTION } from '../../utils/config';
 
-const ProposalsIdDetailTableVoters = ({ votes, data, ...props }) => {
+const optionText = (option) => {
+  switch (option) {
+    case VOTE_OPTION.VOTE_OPTION_YES:
+      return 'yes';
+
+    case VOTE_OPTION.VOTE_OPTION_NO:
+      return 'no';
+
+    case VOTE_OPTION.VOTE_OPTION_NO_WITH_VETO:
+      return 'no with veto';
+
+    case VOTE_OPTION.VOTE_OPTION_ABSTAIN:
+      return 'abstain';
+
+    default:
+      return '';
+  }
+};
+
+const ProposalsIdDetailTableVoters = ({ votes, ...props }) => {
   const { yes, abstain, no, noWithVeto } = votes;
 
-  const rowsTable = data.map(item => (
+  const rowsTable = votes.voter.map((item) => (
     <Table.Row
       borderBottom="none"
       paddingLeft={20}
@@ -23,11 +43,11 @@ const ProposalsIdDetailTableVoters = ({ votes, data, ...props }) => {
       <Table.TextCell>
         <Text color="#fff">
           <Account address={item.voter} />
-          {/* <Link to={`/network/euler/contract/${item.voter}`}>{item.voter}</Link> */}
+          {/* <Link to={`/network/bostrom/contract/${item.voter}`}>{item.voter}</Link> */}
         </Text>
       </Table.TextCell>
       <Table.TextCell>
-        <Text color="#fff">{item.option}</Text>
+        <Text color="#fff">{optionText(item.option)}</Text>
       </Table.TextCell>
     </Table.Row>
   ));

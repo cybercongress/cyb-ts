@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
-import LocalizedStrings from 'react-localization';
-import { coins } from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
+import { coins, coin } from '@cosmjs/launchpad';
+import { useHistory } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import {
   JsonTransaction,
   ConnectLadger,
@@ -19,19 +18,10 @@ import {
 } from '../../components';
 
 import { trimString, formatNumber } from '../../utils/utils';
-import {
-  getBalanceWallet,
-  selfDelegationShares,
-  getValidators,
-  statusNode,
-} from '../../utils/search/utils';
 
-import { LEDGER, CYBER } from '../../utils/config';
+import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { AppContext } from '../../context';
 
-import { i18n } from '../../i18n/en';
-
-const { DIVISOR_CYBER_G } = CYBER;
 const {
   MEMO,
   HDPATH,
@@ -47,8 +37,10 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-const T = new LocalizedStrings(i18n);
-
+const fee = {
+  amount: [],
+  gas: (DEFAULT_GAS_LIMITS * 2).toString(),
+};
 export const TXTYPE_DELEGATE = 0;
 export const TXTYPE_UNDELEGATE = 1;
 export const TXTYPE_REDELEGATE = 2;
@@ -69,730 +61,513 @@ const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-class InnerActionBarContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      stage: STAGE_INIT,
-      ledger: null,
-      address: null,
-      returnCode: null,
-      addressInfo: null,
-      ledgerVersion: [0, 0, 0],
-      balance: 0,
-      time: 0,
-      toSend: '',
-      txMsg: null,
-      txContext: null,
-      txBody: null,
-      txHeight: null,
-      txHash: null,
-      error: null,
-      txType: null,
-      valueSelect: '',
-      errorMessage: null,
-      validatorsAll: null,
-      connectLedger: null,
+const StatusTx = ({ stage, cleatState, errorMessage, txHash, txHeight }) => {
+  if (stage === LEDGER_GENERATION) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          tx generation <Dots big />
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (stage === STAGE_WAIT) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          approve tx
+          <Dots big />
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
+    return <TransactionSubmitted />;
+  }
+
+  if (stage === STAGE_CONFIRMED) {
+    return (
+      <Confirmed
+        txHash={txHash}
+        txHeight={txHeight}
+        onClickBtnCloce={cleatState}
+      />
+    );
+  }
+
+  if (stage === STAGE_ERROR && errorMessage !== null) {
+    return (
+      <TransactionError errorMessage={errorMessage} onClickBtn={cleatState} />
+    );
+  }
+
+  return null;
+};
+
+const getValidatorAddres = (validators) => {
+  let validatorAddres = null;
+  if (validators.operatorAddress) {
+    validatorAddres = validators.operatorAddress;
+  }
+  if (validators.operator_address) {
+    validatorAddres = validators.operator_address;
+  }
+
+  return validatorAddres;
+};
+
+const checkAddress = (addressPocket, addressKeplr, updateState) => {
+  if (addressPocket !== null && addressPocket.bech32 === addressKeplr) {
+    return true;
+  }
+  const { setStage, setErrorMessage } = updateState;
+  const trimAdd = trimString(addressKeplr, 9, 5);
+  setStage(STAGE_ERROR);
+  setErrorMessage(`Add address ${trimAdd} to your pocket or make active `);
+  return false;
+};
+
+const checkTxs = (response, updateState) => {
+  console.log('response', response);
+  const { setStage, setTxHash, setErrorMessage } = updateState;
+  if (response.code === 0) {
+    const hash = response.transactionHash;
+    console.log('hash :>> ', hash);
+    setStage(STAGE_SUBMITTED);
+    setTxHash(hash);
+  } else {
+    setStage(STAGE_ERROR);
+    setTxHash(null);
+    setErrorMessage(response.rawLog.toString());
+  }
+};
+
+const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
+  const { jsCyber } = useContext(AppContext);
+  const [txHeight, setTxHeight] = useState(null);
+
+  useEffect(() => {
+    const confirmTx = async () => {
+      if (jsCyber !== null && txHash !== null) {
+        setStage(STAGE_CONFIRMING);
+        const response = await jsCyber.getTx(txHash);
+        console.log('response :>> ', response);
+        if (response && response !== null) {
+          if (response.code === 0) {
+            setStage(STAGE_CONFIRMED);
+            setTxHeight(response.height);
+            if (updateFnc) {
+              updateFnc();
+            }
+            return;
+          }
+          if (response.code) {
+            setStage(STAGE_ERROR);
+            setTxHeight(response.height);
+            setErrorMessage(response.rawLog);
+            return;
+          }
+        }
+        setTimeout(confirmTx, 1500);
+      }
     };
-    this.timeOut = null;
-    this.transport = null;
-    this.ledger = null;
-  }
+    confirmTx();
+  }, [jsCyber, txHash]);
 
-  componentDidMount() {
-    this.ledger = new CosmosDelegateTool();
-  }
+  return { txHeight };
+};
 
-  componentDidUpdate(prevProps) {
-    const { validators } = this.props;
-    const { stage, addressInfo, address } = this.state;
-    if (prevProps.validators !== validators && stage === STAGE_READY) {
-      this.stageInit();
-    }
-    if (
-      addressInfo !== null &&
-      address !== null &&
-      stage === LEDGER_GENERATION
-    ) {
-      this.generateTx();
-    }
-  }
+function ActionBarContainer({
+  addressPocket,
+  validators,
+  validatorsAll,
+  balance,
+  loadingBalanceInfo,
+  balanceToken,
+  unStake,
+  updateFnc,
+}) {
+  const { keplr, jsCyber } = useContext(AppContext);
+  const history = useHistory();
+  const [stage, setStage] = useState(STAGE_INIT);
+  const [txType, setTxType] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [txHash, setTxHash] = useState(null);
+  const [amount, setAmount] = useState('');
+  const [valueSelect, setValueSelect] = useState('');
+  const { txHeight } = useCheckStatusTx(
+    txHash,
+    setStage,
+    setErrorMessage,
+    updateFnc
+  );
 
-  stageInit = () => {
-    this.setState({
-      stage: STAGE_INIT,
-    });
+  const errorState = (error) => {
+    setTxHash(null);
+    setStage(STAGE_ERROR);
+    setErrorMessage(error.toString());
   };
 
-  getLedgerAddress = async () => {
-    const { addressPocket } = this.props;
-    this.transport = await TransportWebUSB.create(120 * 1000);
-    this.ledger = new CosmosDelegateTool(this.transport);
-
-    const connect = await this.ledger.connect();
-    if (connect.return_code === LEDGER_OK) {
-      this.setState({
-        connectLedger: true,
-      });
-
-      const address = await this.ledger.retrieveAddressCyber(HDPATH);
-      if (addressPocket !== null && addressPocket.bech32 === address.bech32) {
-        this.setState({
-          address,
-        });
-        this.getAddressInfo();
-      } else {
-        this.setState({
-          stage: STAGE_ERROR,
-          errorMessage: `Add address ${trimString(
-            address.bech32,
-            9,
-            5
-          )} to your pocket or make active `,
-        });
-      }
-    } else {
-      this.setState({
-        connectLedger: false,
-      });
-    }
+  const clearFunc = () => {
+    setTxHash(null);
+    setAmount('');
+    setValueSelect('');
+    setErrorMessage(null);
+    setTxType(null);
+    setStage(STAGE_INIT);
   };
 
-  getAddressInfo = async () => {
-    const { address } = this.state;
-    const { validators } = this.props;
-    this.setState({
-      stage: LEDGER_TX_ACOUNT_INFO,
-    });
-
-    const validatorAddres = validators.operator_address;
-
-    let addressInfo = {};
-    const balance = 0;
+  const delegateTokens = async () => {
+    console.log('delegateTokens', delegateTokens);
     try {
-      const responseNode = await statusNode();
-      console.log('responseNode', responseNode);
-      const response = await getBalanceWallet(address.bech32);
-      console.log('getBalanceWallet', response);
-      const delegate = await selfDelegationShares(
-        address.bech32,
-        validatorAddres
-      );
-      console.log(delegate);
-
-      if (response) {
-        const data = response.account;
-        addressInfo = {
-          chainId: responseNode.node_info.network,
-          ...data,
-          delegate,
-        };
-      }
-
-      console.log('addressInfo', addressInfo);
-
-      this.setState({
-        addressInfo,
-        balance,
-        stage: LEDGER_GENERATION,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        //     // this just means we haven't found the device yet...
-        //     // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  getTxsMsgs = async (address) => {
-    const { validators } = this.props;
-    const { toSend, txType, valueSelect } = this.state;
-    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
-    const validatorAddres = validators.operator_address;
-    const msgs = [];
-    if (txType === TXTYPE_DELEGATE) {
-      msgs.push({
-        type: 'cosmos-sdk/MsgDelegate',
-        value: {
-          amount: {
-            amount: amount.toString(),
-            denom: CYBER.DENOM_CYBER,
-          },
-          delegator_address: address,
-          validator_address: validatorAddres,
-        },
-      });
-    }
-    if (txType === TXTYPE_UNDELEGATE) {
-      msgs.push({
-        type: 'cosmos-sdk/MsgUndelegate',
-        value: {
-          amount: {
-            amount: amount.toString(),
-            denom: CYBER.DENOM_CYBER,
-          },
-          delegator_address: address,
-          validator_address: validatorAddres,
-        },
-      });
-    }
-    if (txType === TXTYPE_REDELEGATE) {
-      msgs.push({
-        type: 'cosmos-sdk/MsgBeginRedelegate',
-        value: {
-          amount: {
-            amount: amount.toString(),
-            denom: CYBER.DENOM_CYBER,
-          },
-          delegator_address: address,
-          validator_dst_address: valueSelect,
-          validator_src_address: validatorAddres,
-        },
-      });
-    }
-
-    return msgs;
-  };
-
-  generateTxKeplr = async () => {
-    const { addressPocket, valueAppContext } = this.props;
-    const { keplr } = valueAppContext;
-
-    if (keplr !== null) {
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const { address } = await keplr.getAccount();
-      if (addressPocket !== null && addressPocket.bech32 === address) {
-        const msgs = await this.getTxsMsgs(address);
-        const fee = {
-          amount: coins(0, 'uatom'),
-          gas: '100000',
-        };
-        console.log('msg', msgs);
-        const result = await keplr.signAndBroadcast(
-          msgs,
+      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+      const validatorAddres = getValidatorAddres(validators);
+      if (
+        checkAddress(addressPocket, addressKeplr, {
+          setErrorMessage,
+          setStage,
+        })
+      ) {
+        setStage(STAGE_WAIT);
+        const response = await keplr.delegateTokens(
+          addressKeplr,
+          validatorAddres,
+          coin(parseFloat(amount), 'boot'),
           fee,
           CYBER.MEMO_KEPLR
         );
-        console.log('result: ', result);
-        const hash = result.transactionHash;
-        console.log('hash :>> ', hash);
-        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-        this.timeOut = setTimeout(this.confirmTx, 1500);
-      } else {
-        this.setState({
-          stage: STAGE_ERROR,
-          errorMessage: `Add address ${trimString(
-            address,
-            9,
-            5
-          )} to your pocket or make active `,
-        });
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       }
+    } catch (error) {
+      errorState(error);
     }
   };
 
-  generateTxCyberSigner = async () => {
-    const { addressPocket, valueAppContextSigner } = this.props;
-    const {
-      cyberSigner,
-      updateValueTxs,
-      updateCallbackSigner,
-    } = valueAppContextSigner;
+  const undelegateTokens = async () => {
+    try {
+      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
 
-    if (cyberSigner !== null) {
-      const [{ address }] = await cyberSigner.getAccounts();
-      if (addressPocket !== null && addressPocket.bech32 === address) {
-        const msgs = await this.getTxsMsgs(address);
-
-        updateCallbackSigner(this.updateCallbackFnc);
-        updateValueTxs(msgs);
-        this.setState({
-          stage: LEDGER_GENERATION,
-        });
-      } else {
-        this.setState({
-          stage: STAGE_ERROR,
-          errorMessage: `Add address ${trimString(
-            address,
-            9,
-            5
-          )} to your pocket or make active `,
-        });
+      const validatorAddres = getValidatorAddres(validators);
+      if (
+        checkAddress(addressPocket, addressKeplr, {
+          setErrorMessage,
+          setStage,
+        })
+      ) {
+        setStage(STAGE_WAIT);
+        const response = await keplr.undelegateTokens(
+          addressKeplr,
+          validatorAddres,
+          coin(parseFloat(amount), 'boot'),
+          fee,
+          CYBER.MEMO_KEPLR
+        );
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       }
+    } catch (error) {
+      errorState(error);
     }
   };
 
-  updateCallbackFnc = (result) => {
-    const { valueAppContextSigner } = this.props;
-    const { updateCallbackSigner } = valueAppContextSigner;
-
-    const hash = result.transactionHash;
-    updateCallbackSigner(null);
-    console.log('hash :>> ', hash);
-    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-    this.timeOut = setTimeout(this.confirmTx, 1500);
-  };
-
-  generateTx = async () => {
-    const { address, addressInfo, toSend, txType, valueSelect } = this.state;
-    const { validators } = this.props;
-
-    let tx = {};
-
-    const validatorAddres = validators.operator_address;
-
-    console.log(validatorAddres);
-
-    const amount = Math.floor(parseFloat(toSend) * DIVISOR_CYBER_G);
-
-    const { denom } = addressInfo.coins[0];
-
-    const txContext = {
-      accountNumber: addressInfo.account_number,
-      chainId: addressInfo.chainId,
-      sequence: addressInfo.sequence,
-      bech32: address.bech32,
-      pk: address.pk,
-      path: address.path,
-    };
-
-    switch (txType) {
-      case TXTYPE_DELEGATE:
-        tx = await this.ledger.txCreateDelegateCyber(
-          txContext,
-          validatorAddres,
-          amount,
-          MEMO,
-          denom
-        );
-        break;
-      case TXTYPE_UNDELEGATE:
-        tx = await this.ledger.txCreateUndelegateCyber(
-          txContext,
-          validatorAddres,
-          amount,
-          MEMO
-        );
-        break;
-      case TXTYPE_REDELEGATE:
-        tx = await this.ledger.txCreateRedelegateCyber(
-          txContext,
+  const redelegateTokens = async () => {
+    try {
+      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+      if (
+        checkAddress(addressPocket, addressKeplr, {
+          setErrorMessage,
+          setStage,
+        })
+      ) {
+        setStage(STAGE_WAIT);
+        const validatorAddres = getValidatorAddres(validators);
+        const response = await keplr.redelegateTokens(
+          addressKeplr,
           validatorAddres,
           valueSelect,
-          amount,
-          MEMO
+          coin(parseFloat(amount), 'boot'),
+          fee,
+          CYBER.MEMO_KEPLR
         );
-        break;
-      default:
-        break;
-    }
-    // console.log('txContext', txContext);
-    console.log('tx', tx);
-    await this.setState({
-      txMsg: tx,
-      txContext,
-      txBody: null,
-      error: null,
-    });
-    // debugger;
-    this.signTx();
-  };
-
-  signTx = async () => {
-    const { txMsg, txContext } = this.state;
-    // console.log('txContext', txContext);
-    this.setState({ stage: STAGE_WAIT });
-    const sing = await this.ledger.sign(txMsg, txContext);
-    console.log('sing', sing);
-    if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await this.ledger.applySignature(
-        sing,
-        txMsg,
-        txContext
-      );
-      if (applySignature !== null) {
-        this.setState({
-          txMsg: null,
-          txBody: applySignature,
-          stage: STAGE_SUBMITTED,
-        });
-        await this.injectTx();
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       }
-    } else {
-      this.setState({
-        stage: STAGE_ERROR,
-        txBody: null,
-        errorMessage: sing.error_message,
-      });
+    } catch (error) {
+      errorState(error);
     }
   };
 
-  injectTx = async () => {
-    const { txBody } = this.state;
-    const txSubmit = await this.ledger.txSubmitCyber(txBody);
-    const data = txSubmit;
-    console.log('data', data);
-    if (data.error) {
-      // if timeout...
-      // this.setState({stage: STAGE_CONFIRMING})
-      // else
-      this.setState({ stage: STAGE_ERROR, errorMessage: data.error });
-    } else {
-      this.setState({ stage: STAGE_SUBMITTED, txHash: data.data.txhash });
-      this.timeOut = setTimeout(this.confirmTx, 1500);
-    }
-  };
-
-  confirmTx = async () => {
-    const { updateTable } = this.props;
-    if (this.state.txHash !== null) {
-      this.setState({ stage: STAGE_CONFIRMING });
-      const data = await this.ledger.txStatusCyber(this.state.txHash);
-      // console.log(data);
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (updateTable) {
-          updateTable();
+  const claimRewards = async () => {
+    try {
+      const [{ address: addressKeplr }] = await keplr.signer.getAccounts();
+      const validatorAddress = [];
+      if (
+        checkAddress(addressPocket, addressKeplr, {
+          setErrorMessage,
+          setStage,
+        })
+      ) {
+        setStage(LEDGER_GENERATION);
+        const delegationTotalRewards = await jsCyber.delegationTotalRewards(
+          addressKeplr
+        );
+        if (delegationTotalRewards !== null && delegationTotalRewards.rewards) {
+          const { rewards } = delegationTotalRewards;
+          Object.keys(rewards).forEach((key) => {
+            if (rewards[key].reward !== null) {
+              validatorAddress.push(rewards[key].validatorAddress);
+            }
+          });
+          const gasLimitsRewards =
+            150000 * Object.keys(validatorAddress).length;
+          const feeRewards = {
+            amount: [],
+            gas: gasLimitsRewards.toString(),
+          };
+          setStage(STAGE_WAIT);
+          const response = await keplr.withdrawAllRewards(
+            addressKeplr,
+            validatorAddress,
+            feeRewards
+          );
+          checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
-        return;
       }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+    } catch (error) {
+      errorState(error);
+    }
+  };
+
+  const funcSetTxType = (type) => {
+    setTxType(type);
+    setStage(STAGE_READY);
+  };
+
+  // console.log('addressPocket', addressPocket);
+  // console.log('loadingBalanceInfo', loadingBalanceInfo);
+  // console.log('balance', balance);
+  // console.log('balanceToken', balanceToken);
+  // console.log('validators', validators);
+
+  const validRestakeBtn = parseFloat(amount) > 0 && valueSelect.length > 0;
+
+  const validRewards = useMemo(() => {
+    if (
+      balance &&
+      balance.delegation &&
+      balance.delegation !== 0 &&
+      balance.rewards &&
+      balance.rewards !== 0
+    ) {
+      const delegation = new BigNumber(balance.delegation);
+      const rewards = new BigNumber(balance.rewards);
+      const procentRewards = rewards
+        .div(delegation)
+        .multipliedBy(100)
+        .toNumber();
+
+      if (procentRewards > 0.01) {
+        return true;
       }
+      return false;
     }
-    this.timeOut = setTimeout(this.confirmTx, 1500);
-  };
+    return false;
+  }, [balance]);
 
-  initDevice = () => {
-    const { addressPocket } = this.props;
-    if (addressPocket !== null && addressPocket.keys === 'keplr') {
-      this.generateTxKeplr();
-    }
-
-    if (addressPocket !== null && addressPocket.keys === 'ledger') {
-      this.getLedgerAddress();
-    }
-
-    if (addressPocket !== null && addressPocket.keys === 'cyberSigner') {
-      this.generateTxCyberSigner();
-    }
-  };
-
-  onChangeInputAmount = (e) => {
-    this.setState({
-      toSend: e.target.value,
-    });
-  };
-
-  onChangeReDelegate = (e) => {
-    this.setState({
-      valueSelect: e.target.value,
-    });
-  };
-
-  cleatState = () => {
-    this.setState({
-      stage: STAGE_INIT,
-      ledger: null,
-      address: null,
-      returnCode: null,
-      addressInfo: null,
-      ledgerVersion: [0, 0, 0],
-      balance: 0,
-      time: 0,
-      toSend: '',
-      txMsg: null,
-      txContext: null,
-      txBody: null,
-      txHeight: null,
-      errorMessage: null,
-      txHash: null,
-      error: null,
-    });
-    this.timeOut = null;
-    this.transport = null;
-  };
-
-  onClickMax = () => {
-    const { txType } = this.state;
-    if (txType === TXTYPE_DELEGATE) {
-      this.setState((prevState) => ({
-        toSend: prevState.balance / DIVISOR_CYBER_G,
-      }));
-    } else {
-      this.setState((prevState) => ({
-        toSend: prevState.addressInfo.delegate / DIVISOR_CYBER_G,
-      }));
-    }
-  };
-
-  onClickDelegate = async () => {
-    await this.setState({
-      stage: STAGE_READY,
-      txType: TXTYPE_DELEGATE,
-    });
-  };
-
-  onClickUnDelegate = async () => {
-    await this.setState({
-      stage: STAGE_READY,
-      txType: TXTYPE_UNDELEGATE,
-    });
-  };
-
-  onClickRestake = async () => {
-    await this.setState({
-      stage: STAGE_READY,
-      txType: TXTYPE_REDELEGATE,
-    });
-  };
-
-  render() {
-    const {
-      validators,
-      addressPocket,
-      unStake,
-      mobile,
-      validatorsAll,
-      keplr,
-    } = this.props;
-
-    const {
-      stage,
-      ledgerVersion,
-      returnCode,
-      address,
-      balance,
-      toSend,
-      txMsg,
-      txHash,
-      txHeight,
-      txType,
-      addressInfo,
-      valueSelect,
-      errorMessage,
-      connectLedger,
-    } = this.state;
-
-    const validRestakeBtn = parseFloat(toSend) > 0 && valueSelect.length > 0;
-
-    const T_AB = T.actionBar.delegate;
-
-    if (mobile) {
-      return (
-        <ActionBar>
-          <a
-            className="btn"
-            target="_blank"
-            href="https://cybercongress.ai/docs/cyberd/run_validator/"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {T_AB.btnBecome}
-          </a>
-        </ActionBar>
-      );
-    }
-
-    if (
-      Object.keys(validators).length === 0 &&
-      (stage === STAGE_INIT || stage === STAGE_READY)
-    ) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Text fontSize="18px" color="#fff">
-              {T_AB.joinValidator}
-            </Text>
-          </ActionBarContentText>
-          <a
-            className="btn"
-            target="_blank"
-            href="https://cybercongress.ai/docs/cyberd/run_validator/"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {T_AB.btnBecome}
-          </a>
-        </ActionBar>
-      );
-    }
-
-    if (
-      Object.keys(validators).length !== 0 &&
-      stage === STAGE_INIT &&
-      addressPocket === null
-    ) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Pane fontSize="18px">
-              you don't have cyber address in your pocket
-            </Pane>
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (
-      Object.keys(validators).length !== 0 &&
-      stage === STAGE_INIT &&
-      addressPocket !== null &&
-      addressPocket.keys === 'read-only'
-    ) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Pane fontSize="18px">
-              this {trimString(addressPocket.bech32, 8, 6)} address is read-only
-            </Pane>
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (
-      Object.keys(validators).length !== 0 &&
-      stage === STAGE_INIT &&
-      addressPocket !== null &&
-      addressPocket.keys !== 'read-only'
-    ) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            <Text fontSize="18px" color="#fff" marginRight={5}>
-              {T_AB.heroes}
-            </Text>
-            <Text fontSize="18px" color="#fff" fontWeight={600}>
-              {validators.description.moniker}
-            </Text>
-          </ActionBarContentText>
-          <Button onClick={this.onClickDelegate}>Stake</Button>
-          {unStake && (
-            <div>
-              <Button marginX={25} onClick={this.onClickUnDelegate}>
-                Unstake
-              </Button>
-              <Button onClick={this.onClickRestake}>Restake</Button>
-            </div>
-          )}
-        </ActionBar>
-      );
-    }
-
-    if (
-      stage === STAGE_READY &&
-      Object.keys(validators).length !== 0 &&
-      (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE)
-    ) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
-      return (
-        <Delegate
-          moniker={validators.description.moniker}
-          onChangeInputAmount={(e) => this.onChangeInputAmount(e)}
-          toSend={toSend}
-          disabledBtn={toSend.length === 0}
-          generateTx={() => this.initDevice()}
-          delegate={txType === TXTYPE_DELEGATE}
-        />
-      );
-    }
-
-    if (
-      stage === STAGE_READY &&
-      Object.keys(validators).length !== 0 &&
-      txType === TXTYPE_REDELEGATE
-    ) {
-      // if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
-      return (
-        <ReDelegate
-          onClickBtnCloce={this.cleatState}
-          generateTx={() => this.initDevice()}
-          onChangeInputAmount={(e) => this.onChangeInputAmount(e)}
-          toSend={toSend}
-          disabledBtn={!validRestakeBtn}
-          validatorsAll={validatorsAll}
-          validators={validators}
-          onChangeReDelegate={(e) => this.onChangeReDelegate(e)}
-          valueSelect={valueSelect}
-        />
-      );
-    }
-
-    if (stage === STAGE_LEDGER_INIT) {
-      return (
-        <ConnectLadger
-          onClickConnect={() => this.getLedgerAddress()}
-          connectLedger={connectLedger}
-        />
-      );
-    }
-
-    if (stage === LEDGER_TX_ACOUNT_INFO) {
-      return <CheckAddressInfo />;
-    }
-
-    if (stage === LEDGER_GENERATION) {
-      return (
-        <ActionBar>
-          <ActionBarContentText>
-            transaction generation <Dots big />
-          </ActionBarContentText>
-        </ActionBar>
-      );
-    }
-
-    if (stage === STAGE_WAIT) {
-      return (
-        <JsonTransaction txMsg={txMsg} onClickBtnCloce={this.cleatState} />
-      );
-    }
-
-    if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
-      return <TransactionSubmitted onClickBtnCloce={this.cleatState} />;
-    }
-
-    if (stage === STAGE_CONFIRMED) {
-      return (
-        <Confirmed
-          txHash={txHash}
-          txHeight={txHeight}
-          onClickBtn={this.cleatState}
-          onClickBtnCloce={this.cleatState}
-        />
-      );
-    }
-
-    if (stage === STAGE_ERROR && errorMessage !== null) {
-      return (
-        <TransactionError
-          errorMessage={errorMessage}
-          onClickBtn={this.cleatState}
-          onClickBtnCloce={this.cleatState}
-        />
-      );
-    }
-
-    return null;
+  // addressPocket empty
+  if (
+    Object.keys(validators).length === 0 &&
+    stage === STAGE_INIT &&
+    addressPocket === null
+  ) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <Pane fontSize="18px">
+            you don't have cyber address in your pocket
+          </Pane>
+        </ActionBarContentText>
+      </ActionBar>
+    );
   }
+
+  // loadingBalanceInfo
+  if (
+    Object.keys(validators).length === 0 &&
+    stage === STAGE_INIT &&
+    loadingBalanceInfo
+  ) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <Pane fontSize="18px">
+            <Dots />
+          </Pane>
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  // stage balance.delegation === 0
+  if (
+    Object.keys(validators).length === 0 &&
+    stage === STAGE_INIT &&
+    balance.delegation  &&
+    balance.delegation === 0
+  ) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <Pane fontSize="18px">Choose hero to get H and earn rewards</Pane>
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  // stage balance.delegation === 0
+  if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <Pane fontSize="18px" display="flex" alignItems="center">
+            {balanceToken.hydrogen && balanceToken.hydrogen.liquid !== 0 && (
+              <Pane>
+                <button
+                  type="button"
+                  className="btn-disabled"
+                  onClick={() => history.push('/mint')}
+                  style={{
+                    height: 42,
+                    maxWidth: '200px',
+                    padding: '0 20px',
+                    marginRight: '15px',
+                  }}
+                >
+                  Investmint
+                </button>
+                yor free H to get A and V
+              </Pane>
+            )}
+            {balanceToken.hydrogen.liquid === 0 &&
+              balance.available !== 0 &&
+              'Choose hero to get H'}
+            {validRewards && (
+              <Pane marginLeft={15}>
+                or
+                <button
+                  type="button"
+                  className="btn-disabled"
+                  onClick={() => claimRewards()}
+                  style={{
+                    height: 42,
+                    maxWidth: '200px',
+                    padding: '0 20px',
+                    marginLeft: '15px',
+                  }}
+                >
+                  Claim rewards
+                </button>
+              </Pane>
+            )}
+          </Pane>
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (
+    Object.keys(validators).length !== 0 &&
+    stage === STAGE_INIT &&
+    addressPocket !== null &&
+    addressPocket.keys === 'read-only'
+  ) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <Pane fontSize="18px">
+            this {trimString(addressPocket.bech32, 8, 6)} address is read-only
+          </Pane>
+        </ActionBarContentText>
+      </ActionBar>
+    );
+  }
+
+  if (
+    Object.keys(validators).length !== 0 &&
+    stage === STAGE_INIT &&
+    txType === null
+  ) {
+    return (
+      <ActionBar>
+        <ActionBarContentText>
+          <Text fontSize="18px" color="#fff" fontWeight={600}>
+            {validators.description.moniker}
+          </Text>
+        </ActionBarContentText>
+        <Button onClick={() => funcSetTxType(TXTYPE_DELEGATE)}>Stake</Button>
+        {unStake && (
+          <div>
+            <Button
+              marginX={25}
+              onClick={() => funcSetTxType(TXTYPE_UNDELEGATE)}
+            >
+              Unstake
+            </Button>
+            <Button onClick={() => funcSetTxType(TXTYPE_REDELEGATE)}>
+              Restake
+            </Button>
+          </div>
+        )}
+      </ActionBar>
+    );
+  }
+
+  if (
+    stage === STAGE_READY &&
+    (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE)
+  ) {
+    return (
+      <Delegate
+        moniker={validators.description.moniker}
+        onChangeInputAmount={(e) => setAmount(e.target.value)}
+        toSend={amount}
+        disabledBtn={amount.length === 0}
+        generateTx={
+          txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
+        }
+        delegate={txType === TXTYPE_DELEGATE}
+      />
+    );
+  }
+
+  if (stage === STAGE_READY && txType === TXTYPE_REDELEGATE) {
+    return (
+      <ReDelegate
+        generateTx={() => redelegateTokens()}
+        onChangeInputAmount={(e) => setAmount(e.target.value)}
+        toSend={amount}
+        disabledBtn={!validRestakeBtn}
+        validatorsAll={validatorsAll}
+        validators={validators}
+        onChangeReDelegate={(e) => setValueSelect(e.target.value)}
+        valueSelect={valueSelect}
+      />
+    );
+  }
+
+  if (stage !== STAGE_READY) {
+    return (
+      <StatusTx
+        stage={stage}
+        cleatState={clearFunc}
+        errorMessage={errorMessage}
+        txHash={txHash}
+        txHeight={txHeight}
+      />
+    );
+  }
+
+  return null;
 }
 
-export default InnerActionBarContainer;
+export default ActionBarContainer;

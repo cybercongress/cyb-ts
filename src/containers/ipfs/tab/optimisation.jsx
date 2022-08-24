@@ -1,15 +1,13 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
-import { Rank } from '../../../components';
+import { Rank, NoItems } from '../../../components';
 
 const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
-  if (data && data.length > 0) {
+  if (data && Object.keys(data).length > 0) {
     return (
       <div style={{ width: '100%' }}>
-        {data.map((item, i) => {
-          const cid = item.tx.value.msg[0].value.links[0].from;
+        {Object.keys(data).map((key, i) => {
           return (
             <Pane
               position="relative"
@@ -17,24 +15,20 @@ const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
               display="flex"
               alignItems="center"
               marginBottom="10px"
-              key={`${cid}_${i}`}
+              key={`${key}_${i}`}
             >
               {!mobile && (
                 <Pane
                   className="time-discussion rank-contentItem"
                   position="absolute"
                 >
-                  <Rank
-                    hash={cid}
-                    rank="n/a"
-                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
-                  />
+                  <Rank hash={key} rank="n/a" grade={data[key].grade} />
                 </Pane>
               )}
               <ContentItem
                 nodeIpfs={nodeIpfs}
-                cid={cid}
-                item={item}
+                cid={key}
+                item={data[key]}
                 className="contentItem"
               />
             </Pane>
@@ -45,7 +39,7 @@ const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
   }
   return (
     <div className="container-contentItem">
-      <Noitem text="No cyberLinks" />
+      <NoItems text="No cyberLinks" />
     </div>
   );
 };

@@ -63,7 +63,7 @@ const ActionBarContainer = ({ addAddress }) => {
                 textAlign: 'center',
               }}
               className="btn"
-              to="/heroes"
+              to="/halloffame"
             >
               Hero
             </Link>

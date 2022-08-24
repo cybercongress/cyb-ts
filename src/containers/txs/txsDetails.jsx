@@ -1,112 +1,102 @@
-import React from 'react';
+/* eslint-disable camelcase */
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { Text, Pane } from '@cybercongress/gravity';
-import { getTxs } from '../../utils/search/utils';
-import InformationTxs from './informationTxs';
 import { connect } from 'react-redux';
+import InformationTxs from './informationTxs';
 import Msgs from './msgs';
-import ActionBarContainer from '../../containers/Search/ActionBarContainer';
+import ActionBarContainer from '../Search/ActionBarContainer';
+import { AppContext } from '../../context';
+import { CYBER } from '../../utils/config';
 
-const TextTitle = ({ children }) => (
-  <Text color="#fff" fontSize="20px">
-    {children}
-  </Text>
-);
-
-class TxsDetails extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      txs: {},
-      information: {
-        txHash: '',
-        height: '',
-        status: '',
-        timestamp: '',
-        memo: '',
-      },
-      messageError: '',
-      msgs: '',
-    };
-  }
-
-  async componentDidMount() {
-    await this.getTxHash();
-  }
-
-  componentDidUpdate(prevProps) {
-    const { location } = this.props;
-    if (prevProps.location.pathname !== location.pathname) {
-      this.getTxHash();
-    }
-  }
-
-  getTxHash = async () => {
-    // const proposals = proposalsIdJson[0].result;
-    const { match } = this.props;
-    const { txHash } = match.params;
-    let messageError = '';
-    let status = false;
-
-    console.log('txHash', txHash);
-
-    const {
-      height,
-      txhash,
-      tx,
-      code,
-      raw_log: rawLog,
-      timestamp,
-    } = await getTxs(txHash);
-
-    if (code !== undefined) {
-      if (code !== 0) {
-        status = false;
-        messageError = rawLog;
-      } else {
-        status = true;
-      }
-    } else {
-      status = true;
-    }
-
-    this.setState({
-      txs: tx,
-      information: {
-        txHash: txhash,
-        status,
-        height,
-        timestamp,
-        memo: tx.value.memo,
-      },
-      messageError,
-      msgs: tx.value.msg,
+export const getTxs = async (txs) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs/${txs}`,
     });
-  };
-
-  render() {
-    const { information, messageError, msgs } = this.state;
-    const { match, mobile } = this.props;
-    const { txHash } = match.params;
-
-    return (
-      <div>
-        <main className="block-body">
-          <InformationTxs
-            data={information}
-            messageError={messageError}
-            marginBottom={30}
-          />
-          {msgs.length > 0 && <Msgs data={msgs} />}
-        </main>
-        {!mobile && (
-        <ActionBarContainer valueSearchInput={txHash} keywordHash={txHash} />
-         )}
-      </div>
-    );
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
   }
+};
+
+const initValueInformation = {
+  txHash: '',
+  height: '',
+  status: '',
+  timestamp: '',
+  memo: '',
+};
+
+function TxsDetails({ mobile }) {
+  const { jsCyber } = useContext(AppContext);
+  const { txHash } = useParams();
+  const [msgs, setMsgs] = useState(null);
+  const [information, setInformation] = useState(initValueInformation);
+  const [messageError, setMessageError] = useState('');
+
+  useEffect(() => {
+    const getTxsResponse = async () => {
+      const response = await getTxs(txHash);
+      console.log('response', response);
+      if (response !== null && response.tx_response) {
+        let status = false;
+        let rawLog = '';
+        const {
+          code,
+          raw_log,
+          height,
+          txhash,
+          timestamp,
+          tx,
+        } = response.tx_response;
+        const { memo } = tx.body;
+        if (code !== undefined) {
+          if (code !== 0) {
+            status = false;
+            rawLog = raw_log;
+          } else {
+            status = true;
+          }
+        }
+        setInformation({ status, memo, height, timestamp, txHash: txhash });
+        setMessageError(rawLog);
+      }
+      if (response !== null && response.tx) {
+        const { messages } = response.tx.body;
+        setMsgs(messages);
+      }
+    };
+    getTxsResponse();
+
+    // return () => {
+
+    // };
+  }, [txHash, jsCyber]);
+
+  console.log('msgs', msgs);
+
+  return (
+    <div>
+      <main className="block-body">
+        <InformationTxs
+          data={information}
+          messageError={messageError}
+          marginBottom={30}
+        />
+        {msgs !== null && <Msgs data={msgs} />}
+      </main>
+      {!mobile && (
+        <ActionBarContainer valueSearchInput={txHash} keywordHash={txHash} />
+      )}
+    </div>
+  );
 }
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
   };

@@ -9,7 +9,7 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const URL_GRAPHQL = 'https://port.cybernode.ai/graphql/v1/graphql';
-const URL_GRAPHQL_WSS = 'wss://port.cybernode.ai/graphql/v1/graphql';
+// const URL_GRAPHQL_WSS = 'wss://port.cybernode.ai/graphql/v1/graphql';
 
 const httpLink = new HttpLink({
   uri: URL_GRAPHQL,
@@ -19,23 +19,23 @@ const httpLink = new HttpLink({
   },
 });
 
-const wsLink = new WebSocketLink({
-  uri: URL_GRAPHQL_WSS,
-  options: {
-    reconnect: true,
-  },
-  headers: {
-    'content-type': 'application/json',
-    authorization: '',
-  },
-});
+// const wsLink = new WebSocketLink({
+//   uri: URL_GRAPHQL_WSS,
+//   options: {
+//     reconnect: true,
+//   },
+//   headers: {
+//     'content-type': 'application/json',
+//     authorization: '',
+//   },
+// });
 
 const terminatingLink = split(
   ({ query }) => {
     const { kind, operation } = getMainDefinition(query);
     return kind === 'OperationDefinition' && operation === 'subscription';
   },
-  wsLink,
+  // wsLink,
   httpLink
 );
 

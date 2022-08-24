@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useParams, useLocation, useHistory } from 'react-router-dom';
 import { ForceGraph3D } from 'react-force-graph';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Loading } from '../../components';
@@ -20,60 +21,71 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceGraph = ({ match }) => {
+const ForceGraph = () => {
+  const location = useLocation();
+  const params = useParams();
+  const history = useHistory();
   let graph;
-  const { agent } = match.params;
+
   const [hasLoaded, setHasLoaded] = useState(true);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
 
-  var limit = 1024
-  var where
+  const limit = 1024;
+  let where;
+
+  // console.log(`location`, location);
+  // console.log(`params`, params);
+  // console.log(`history`, history);
+  // console.log(`window.location.href`, window.location.href);
+
   useEffect(() => {
     const feachData = async () => {
-      if (typeof(agent) != "undefined") {
-        where = `{subject: {_eq: "${agent}"}}`
-      } else { 
-        where = "{}"
+      if (params.agent) {
+        where = `{neuron: {_eq: "${params.agent}"}}`;
+      } else {
+        where = '{}';
       }
-      var GET_CYBERLINKS = `
+      const GET_CYBERLINKS = `
       query Cyberlinks {
-        cyberlink(limit: ${String(limit)}, order_by: {height: desc}, where: ${where}) {
-          object_from
-          object_to
-          subject
-          txhash
+        cyberlinks(limit: ${String(
+          limit
+        )}, order_by: {height: desc}, where: ${where}) {
+          particle_from
+          particle_to
+          neuron
+          transaction_hash
         }
       }
       `;
-      const { cyberlink } = await getGraphQLQuery(GET_CYBERLINKS);
-      const from = cyberlink.map((a) => a.object_from);
-      const to = cyberlink.map((a) => a.object_to);
+      const { cyberlinks } = await getGraphQLQuery(GET_CYBERLINKS);
+      const from = cyberlinks.map((a) => a.particle_from);
+      const to = cyberlinks.map((a) => a.particle_to);
       const set = new Set(from.concat(to));
       const object = [];
       set.forEach(function (value) {
         object.push({ id: value });
       });
 
-      for (let i = 0; i < cyberlink.length; i++) {
-        cyberlink[i] = {
-          source: cyberlink[i].object_from,
-          target: cyberlink[i].object_to,
-          name: cyberlink[i].txhash,
-          subject: cyberlink[i].subject,
+      for (let i = 0; i < cyberlinks.length; i++) {
+        cyberlinks[i] = {
+          source: cyberlinks[i].particle_from,
+          target: cyberlinks[i].particle_to,
+          name: cyberlinks[i].transaction_hash,
+          subject: cyberlinks[i].subject,
           // curvative: getRandomInt(20, 500) / 1000,
         };
       }
       graph = {
         nodes: object,
-        links: cyberlink,
+        links: cyberlinks,
       };
       setItems(graph);
       setLoading(false);
     };
     feachData();
-  }, []);
+  }, [params]);
 
   const handleNodeClick = useCallback(
     (node) => {
@@ -106,14 +118,14 @@ const ForceGraph = ({ match }) => {
 
   const handleNodeRightClick = useCallback(
     (node) => {
-      window.open(`https://cyber.page/ipfs/${node.id}`, '_blank');
+      window.open(`https://cyb.ai/ipfs/${node.id}`, '_blank');
     },
     [fgRef]
   );
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(`https://cyber.page/network/euler/tx/${link.name}`, '_blank');
+      window.open(`https://cyb.ai/network/bostrom/tx/${link.name}`, '_blank');
     },
     [fgRef]
   );
@@ -175,11 +187,11 @@ const ForceGraph = ({ match }) => {
     );
   }
 
-  var pocket
+  var pocket;
   if (localStorage.getItem('pocket') != null) {
     var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
     var keyPocket = Object.keys(localStoragePocketData)[0];
-    pocket = localStoragePocketData[keyPocket]["cyber"].bech32
+    pocket = localStoragePocketData[keyPocket]['cyber'].bech32;
   }
 
   return (
@@ -230,7 +242,6 @@ const ForceGraph = ({ match }) => {
         linkDirectionalParticleColor={() => 'rgba(9,255,13,1)'}
         linkDirectionalParticleWidth={4}
         linkDirectionalParticleSpeed={0.015}
-        
         // linkDirectionalArrowRelPos={1}
         // linkDirectionalArrowLength={10}
         // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}

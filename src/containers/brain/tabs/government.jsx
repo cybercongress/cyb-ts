@@ -19,15 +19,15 @@ function GovernmentTab({
           title={`Community pool, ${CYBER.DENOM_CYBER.toLocaleUpperCase()}`}
           value={formatNumber(communityPool)}
         />
-        <Link to="/governance">
+        <Link to="/senate">
           <CardStatisics
             title="Proposals"
             value={formatNumber(proposals)}
             link
           />
         </Link>
-        <Link to="/network/euler/parameters">
-          <CardStatisics title="Network parameters" value={30} link />
+        <Link to="/network/bostrom/parameters">
+          <CardStatisics title="Network parameters" value={53} link />
         </Link>
         {/* <Link
           to="/heroes"

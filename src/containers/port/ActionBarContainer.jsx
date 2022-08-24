@@ -80,7 +80,7 @@ const CyberAddress = ({
       />
     )}
     <ActionBarContentText>
-      <span>cyber address</span>
+      <span>bostrom address</span>
       <Input
         value={cyberAddress}
         onChange={onChange}

@@ -86,14 +86,17 @@ const ForceQuitter = ({ nodeIpfs }) => {
 
   const handleNodeRightClick = useCallback(
     (node) => {
-      window.open(`https://cyber.page/network/euler/contract/${node.id}`, '_blank');
+      window.open(
+        `https://cyb.ai/network/bostrom/contract/${node.id}`,
+        '_blank'
+      );
     },
     [fgRef]
   );
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(`https://cyber.page/network/euler/tx/${link.name}`, '_blank');
+      window.open(`https://cyb.ai/network/bostrom/tx/${link.name}`, '_blank');
     },
     [fgRef]
   );
@@ -101,7 +104,6 @@ const ForceQuitter = ({ nodeIpfs }) => {
   const handleEngineStop = useCallback(() => {
     console.log('rendering engine is stopped!');
     setHasLoaded(false);
-
   });
 
   if (loading) {
@@ -167,7 +169,8 @@ const ForceQuitter = ({ nodeIpfs }) => {
             ? link.id == pocket
               ? 'red'
               : 'white'
-            : 'white'}
+            : 'white'
+        }
         nodeOpacity={1.0}
         nodeRelSize={8}
         nodeResolution={16}
@@ -191,7 +194,6 @@ const ForceQuitter = ({ nodeIpfs }) => {
         }
         linkDirectionalParticleWidth={2}
         linkDirectionalParticleSpeed={0.01}
-        
         linkDirectionalArrowRelPos={1.15}
         linkDirectionalArrowLength={10}
         linkDirectionalArrowResolution={16}
@@ -202,7 +204,6 @@ const ForceQuitter = ({ nodeIpfs }) => {
               : 'blue'
             : 'blue'
         }
-
         onNodeClick={handleNodeRightClick}
         onNodeRightClick={handleNodeClick}
         onLinkClick={handleLinkRightClick}

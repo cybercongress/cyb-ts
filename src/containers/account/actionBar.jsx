@@ -19,7 +19,12 @@ import {
   Dots,
   ActionBarContentText,
 } from '../../components';
-import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import {
+  LEDGER,
+  CYBER,
+  PATTERN_IPFS_HASH,
+  DEFAULT_GAS_LIMITS,
+} from '../../utils/config';
 
 import {
   getBalanceWallet,
@@ -198,95 +203,77 @@ class InnerActionBarContainer extends Component {
   };
 
   generateTxSendKplr = async () => {
-    const { valueAppContext } = this.props;
-    const { keplr } = valueAppContext;
+    const { contentHash, toSendAddres, toSend } = this.state;
+    const { keplr } = this.context;
+    const { type, addressSend, node, follow, tweets } = this.props;
+    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
+    const fee = {
+      amount: [],
+      gas: DEFAULT_GAS_LIMITS.toString(),
+    };
 
     if (keplr !== null) {
-      await window.keplr.enable(CYBER.CHAIN_ID);
-      const { address } = await keplr.getAccount();
-      const msg = await this.getTxs(address);
-      console.log(`msg`, msg);
-      if (msg.length > 0) {
-        const fee = {
-          amount: coins(0, 'uatom'),
-          gas: '100000',
-        };
-        const result = await keplr.signAndBroadcast(msg, fee, CYBER.MEMO_KEPLR);
-        console.log('result: ', result);
-        const hash = result.transactionHash;
+      const [{ address }] = await keplr.signer.getAccounts();
+      let response = null;
+      const msg = [];
+      if (type === 'heroes') {
+        if (address === addressSend) {
+          const dataTotalRewards = await getTotalRewards(address);
+          console.log(`dataTotalRewards`, dataTotalRewards);
+          if (dataTotalRewards !== null && dataTotalRewards.rewards) {
+            const { rewards } = dataTotalRewards;
+            const validatorAddress = [];
+            Object.keys(rewards).forEach((key) => {
+              if (rewards[key].reward !== null) {
+                validatorAddress.push(rewards[key].validator_address);
+              }
+            });
+            const gasLimitsRewards =
+              100000 * Object.keys(validatorAddress).length;
+            const feeRewards = {
+              amount: [],
+              gas: gasLimitsRewards.toString(),
+            };
+            response = await keplr.withdrawAllRewards(
+              address,
+              validatorAddress,
+              feeRewards
+            );
+          }
+        }
+      } else if (type === 'tweets' && follow) {
+        const fromCid = await getPin(node, 'follow');
+        const toCid = await getPin(node, addressSend);
+        response = await keplr.cyberlink(address, fromCid, toCid, fee);
+      } else if (type === 'tweets' && tweets) {
+        const fromCid = await getPin(node, 'tweet');
+        const toCid = await this.calculationIpfsTo(contentHash);
+        response = await keplr.cyberlink(address, fromCid, toCid, fee);
+      } else {
+        msg.push({
+          type: 'cosmos-sdk/MsgSend',
+          value: {
+            amount: coins(amount, CYBER.DENOM_CYBER),
+            from_address: address,
+            to_address: toSendAddres,
+          },
+        });
+      }
+
+      console.log(`response`, response)
+      if (response.code === 0) {
+        const hash = response.transactionHash;
         console.log('hash :>> ', hash);
         this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
         this.timeOut = setTimeout(this.confirmTx, 1500);
+      } else {
+        this.setState({
+          txHash: null,
+          stage: STAGE_ERROR,
+          errorMessage: response.rawLog.toString(),
+        });
       }
     }
-  };
-
-  getTxs = async (address) => {
-    const { type, addressSend, node, follow, tweets } = this.props;
-    const { contentHash, toSendAddres, toSend } = this.state;
-    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
-
-    const msg = [];
-    if (type === 'heroes') {
-      if (address === addressSend) {
-        const dataTotalRewards = await getTotalRewards(address);
-        if (dataTotalRewards !== null && dataTotalRewards.rewards) {
-          const { rewards } = dataTotalRewards;
-          Object.keys(rewards).forEach((key) => {
-            if (rewards[key].reward !== null) {
-              const tempMsg = {
-                type: 'cosmos-sdk/MsgWithdrawDelegationReward',
-                value: {
-                  delegator_address: address,
-                  validator_address: rewards[key].validator_address,
-                },
-              };
-              msg.push(tempMsg);
-            }
-          });
-        }
-      }
-    } else if (type === 'tweets' && follow) {
-      const fromCid = await getPin(node, 'follow');
-      const toCid = await getPin(node, addressSend);
-      msg.push({
-        type: 'cyber/Link',
-        value: {
-          address,
-          links: [
-            {
-              from: fromCid,
-              to: toCid,
-            },
-          ],
-        },
-      });
-    } else if (type === 'tweets' && tweets) {
-      const fromCid = await getPin(node, 'tweet');
-      const toCid = await this.calculationIpfsTo(contentHash);
-      msg.push({
-        type: 'cyber/Link',
-        value: {
-          address,
-          links: [
-            {
-              from: fromCid,
-              to: toCid,
-            },
-          ],
-        },
-      });
-    } else {
-      msg.push({
-        type: 'cosmos-sdk/MsgSend',
-        value: {
-          amount: coins(amount, CYBER.DENOM_CYBER),
-          from_address: address,
-          to_address: toSendAddres,
-        },
-      });
-    }
-    return msg;
   };
 
   getTxType = async (type, txContext) => {
@@ -514,7 +501,6 @@ class InnerActionBarContainer extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      ledger: null,
       ledgerVersion: [0, 0, 0],
       returnCode: null,
       addressInfo: null,
@@ -604,7 +590,7 @@ class InnerActionBarContainer extends Component {
     //   );
     // }
 
-    console.log('rewards', groupLink(totalRewards.rewards));
+    // console.log('rewards', groupLink(totalRewards.rewards));
 
     if (stage === STAGE_INIT && type === 'tweets' && follow) {
       return (

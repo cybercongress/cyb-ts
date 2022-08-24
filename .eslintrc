@@ -9,7 +9,7 @@
     "prettier",
     "prettier/react"
   ],
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {
@@ -26,28 +26,50 @@
     "valid-jsdoc": "error",
     "prettier/prettier": "error",
     "linebreak-style": ["error", "unix"],
-    "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
+    "no-unused-vars": [
+      "error",
+      { "vars": "all", "args": "none", "ignoreRestSiblings": false }
+    ],
     "curly": ["warn", "all"],
     "no-alert": "warn",
     "no-debugger": "warn",
-    "no-duplicate-imports": ["warn", {
-      "includeExports": true
-    }],
+    "no-duplicate-imports": [
+      "warn",
+      {
+        "includeExports": true
+      }
+    ],
     "object-curly-spacing": ["warn", "always"],
     "object-property-newline": 0,
     "one-var-declaration-per-line": ["warn", "always"],
     "no-use-before-define": ["error", { "variables": false }],
-    "padded-blocks": ["warn", {
-      "blocks": "never",
-      "classes": "never",
-      "switches": "never"
-    }],
+    "padded-blocks": [
+      "warn",
+      {
+        "blocks": "never",
+        "classes": "never",
+        "switches": "never"
+      }
+    ],
     "react/jsx-closing-bracket-location": "warn",
     "react/jsx-indent-props": [2, 2],
     "react/prop-types": 0,
     // "react/jsx-indent": ["warn", 2],
     // "indent": ["warn", 2, {"ignoredNodes": ["JSXElement *", "JSXElement"]}],
     "react/jsx-props-no-spreading": "off",
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "jsx-a11y/no-noninteractive-element-interactions": [
+      "error",
+      {
+        "handlers": [
+          "onClick",
+          "onMouseDown",
+          "onMouseUp",
+          "onKeyPress",
+          "onKeyDown",
+          "onKeyUp"
+        ]
+      }
+    ]
   }
 }

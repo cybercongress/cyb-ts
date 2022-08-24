@@ -2,93 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, Route, useLocation } from 'react-router-dom';
 import { Text, Pane, Tablist } from '@cybercongress/gravity';
-import {
-  getAmountATOM,
-  getValidatorsInfo,
-  getValidators,
-  getCurrentNetworkLoad,
-  getGraphQLQuery,
-} from '../../utils/search/utils';
-import { CardStatisics, Loading, LinkWindow, TabBtn } from '../../components';
-import {
-  cybWon,
-  getDisciplinesAllocation,
-  getEstimation,
-} from '../../utils/fundingMath';
+import { LinkWindow, TabBtn } from '../../components';
 import TableDiscipline from './table';
 
-import {
-  fromBech32,
-  exponentialToDecimal,
-  formatNumber,
-} from '../../utils/utils';
 import ActionBarContainer from './actionBarContainer';
 import LoadTab from './tab/loadTab';
-import RelevanceTab from './tab/relevance';
 import { setGolTakeOff } from '../../redux/actions/gol';
 import setLeaderboard from './hooks/leaderboard';
 
-import { COSMOS, TAKEOFF, WP } from '../../utils/config';
+import { WP } from '../../utils/config';
 
-const test = {
-  'tx.hash': [
-    '1320F2C5F9022E21533BAB4F3E1938AD7C9CA493657C98E7435A44AA2850636B',
-  ],
-  'tx.height': ['1372872'],
-  'transfer.recipient': ['cosmos1809vlaew5u5p24tvmse9kvgytwwr3ej7vd7kgq'],
-  'transfer.amount': ['10000uatom'],
-  'message.sender': ['cosmos1gw5kdey7fs9wdh05w66s0h4s24tjdvtcxlwll7'],
-  'message.module': ['bank'],
-  'message.action': ['send'],
-  'tm.event': ['Tx'],
-};
-
-const Query = (address) =>
-  `query txs {
-    takeoff_aggregate(where: {donors: {_eq: "${address}"}}) {
-    aggregate {
-      sum {
-        cybs
-      }
-    }
-  }
-}`;
-
-function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
-  const {
-    data: dataLeaderboard,
-    loading: loadingLeaderboard,
-    progress: progressLeaderboard,
-  } = setLeaderboard();
+function GOL({ setGolTakeOffProps, mobile, defaultAccount, block }) {
+  const { data: dataLeaderboard } = setLeaderboard();
   const location = useLocation();
   const [selected, setSelected] = useState('disciplines');
-  const [address, setAddress] = useState({
-    addressLedger: null,
-    validatorAddress: null,
-    consensusAddress: null,
-  });
-  const [takeoff, setTakeoff] = useState({
-    estimation: 0,
-    amount: 0,
-  });
+  const [address, setAddress] = useState(null);
   const [addAddress, setAddAddress] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [herosCount, setHerosCount] = useState(0);
-  const [currentNetworkLoad, setCurrentNetworkLoad] = useState(0);
-
-  useEffect(() => {
-    const feachData = async () => {
-      chekPathname();
-      await checkAddressLocalStorage();
-      checkCurrentNetworkLoad();
-      getValidatorsCount();
-    };
-    feachData();
-  }, []);
-
-  useEffect(() => {
-    getAtom();
-  }, [address]);
 
   useEffect(() => {
     chekPathname();
@@ -117,140 +46,32 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
   };
 
   const checkAddressLocalStorage = async () => {
-    let consensusAddress = null;
-    let validatorAddress = null;
-
     const { account } = defaultAccount;
     if (
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const dataValidatorAddress = fromBech32(
-        account.cyber.bech32,
-        'cybervaloper'
-      );
-      const dataGetValidatorsInfo = await getValidatorsInfo(
-        dataValidatorAddress
-      );
-      if (dataGetValidatorsInfo !== null) {
-        consensusAddress = dataGetValidatorsInfo.consensus_pubkey;
-        validatorAddress = dataValidatorAddress;
-      }
       setAddAddress(false);
-      setAddress({
-        addressLedger: account.cyber,
-        validatorAddress,
-        consensusAddress,
-      });
+      setAddress(account.cyber.bech32);
     } else {
       setAddAddress(true);
       // setLoading(false);
     }
   };
 
-  const checkCurrentNetworkLoad = async () => {
-    let load = 0;
-    const dataCurrentNetworkLoad = await getCurrentNetworkLoad();
-    if (dataCurrentNetworkLoad !== null) {
-      load = parseFloat(dataCurrentNetworkLoad.load) * 100;
-    }
-
-    setCurrentNetworkLoad(load);
-  };
-
-  const getValidatorsCount = async () => {
-    const data = await getValidators();
-    let count = 0;
-    if (data !== null) {
-      count = data.length;
-    }
-
-    setHerosCount(count);
-  };
-
-  const getAtom = async () => {
-    const { addressLedger } = address;
-    const amount = 0;
-
-    const estimation = TAKEOFF.FINISH_ESTIMATION;
-    let addEstimation = 0;
-    let addressCosmos = null;
-
-    if (addressLedger !== null) {
-      addressCosmos = fromBech32(addressLedger.bech32, 'cosmos');
-    }
-
-    if (addressCosmos !== null) {
-      const { takeoff_aggregate: takeoffAggregate } = await getGraphQLQuery(
-        Query(addressCosmos)
-      );
-      if (
-        takeoffAggregate &&
-        takeoffAggregate.aggregate &&
-        takeoffAggregate.aggregate.sum
-      ) {
-        addEstimation = takeoffAggregate.aggregate.sum.cybs;
-      }
-    }
-
-    setGolTakeOffProps(
-      Math.floor(addEstimation * 10 ** 9),
-      Math.floor(estimation * 10 ** 9)
-    );
-
-    setTakeoff((prevState) => ({ ...prevState, estimation, amount }));
-    setLoading(false);
-  };
-
   let content;
-
-  // if (loading) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '50vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'column',
-  //       }}
-  //     >
-  //       <Loading />
-  //     </div>
-  //   );
-  // }
 
   if (selected === 'leaderboard') {
     content = (
       <Route
         path="/gol/leaderboard"
-        render={() => (
-          <LoadTab
-            data={dataLeaderboard}
-            loading={loadingLeaderboard}
-            progress={progressLeaderboard}
-          />
-        )}
+        render={() => <LoadTab data={dataLeaderboard} />}
       />
     );
   }
 
   if (selected === 'disciplines') {
-    content = (
-      <TableDiscipline
-        addressLedger={address.addressLedger}
-        validatorAddress={address.validatorAddress}
-        consensusAddress={address.consensusAddress}
-        takeoffDonations={TAKEOFF.FINISH_AMOUNT}
-        estimation={takeoff.estimation}
-        mobile={mobile}
-      />
-    );
-  }
-
-  if (selected === 'content') {
-    content = <Route path="/gol/content" render={() => <RelevanceTab />} />;
+    content = <TableDiscipline address={address} />;
   }
 
   return (
@@ -281,6 +102,11 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
           marginY={20}
         >
           <Text fontSize="16px" color="#fff">
+            <Pane paddingY={20}>
+              <Text fontSize="18px" color="#fff">
+                The Game of Links has already played
+              </Text>
+            </Pane>
             Welcome to the intergalactic tournament - Game of Links. GoL is the
             main preparation stage before{' '}
             <Link to="/search/genesis">the main network launch</Link> of{' '}
@@ -302,45 +128,7 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
             .
           </Text>
         </Pane>
-        <Pane
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-          gridGap="20px"
-          width="100%"
-          marginY={20}
-          alignItems="center"
-        >
-          <Link to="/gol/load">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Network load"
-              value={`${formatNumber(currentNetworkLoad, 2)} %`}
-            />
-          </Link>
-          <Link to="/gol/takeoff">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Donation goal"
-              value={`${formatNumber(
-                (TAKEOFF.FINISH_AMOUNT / TAKEOFF.ATOMsALL) * 100,
-                2
-              )} %`}
-            />
-          </Link>
-          <Link to="/heroes">
-            <CardStatisics
-              styleContainer={{ minWidth: '100px' }}
-              styleValue={{ fontSize: '18px', color: '#3ab793' }}
-              styleTitle={{ fontSize: '16px', color: '#3ab793' }}
-              title="Validator set"
-              value={`${formatNumber((herosCount / 146) * 100, 2)} %`}
-            />
-          </Link>
-        </Pane>
+
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -348,19 +136,14 @@ function GOL({ setGolTakeOffProps, mobile, defaultAccount }) {
           marginY={20}
         >
           <TabBtn
-            text="Leaderboard"
-            isSelected={selected === 'leaderboard'}
-            to="/gol/leaderboard"
-          />
-          <TabBtn
             text="Disciplines"
             isSelected={selected === 'disciplines'}
             to="/gol"
           />
           <TabBtn
-            text="Content"
-            isSelected={selected === 'content'}
-            to="/gol/content"
+            text="Leaderboard"
+            isSelected={selected === 'leaderboard'}
+            to="/gol/leaderboard"
           />
         </Tablist>
         <Pane display="flex" marginBottom={50} justifyContent="center">
@@ -381,6 +164,7 @@ const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
+    block: store.block.block,
   };
 };
 

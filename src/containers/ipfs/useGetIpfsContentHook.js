@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
 import db from '../../db';
+import { getPinsCid } from '../../utils/search/utils';
 
 const isSvg = require('is-svg');
 
@@ -26,6 +27,7 @@ export const getTypeContent = async (dataCid, cid) => {
   // console.log('data', data);
   const data = dataCid;
   const dataFileType = await FileType.fromBuffer(data);
+  // console.log(`dataFileType`, dataFileType)
   if (dataFileType !== undefined) {
     const { mime } = dataFileType;
     const dataBase64 = data.toString('base64');
@@ -92,7 +94,9 @@ export const getTypeContent = async (dataCid, cid) => {
   return response;
 };
 
-const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
+const size = 15;
+
+const useGetIpfsContent = (cid, nodeIpfs) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
@@ -111,6 +115,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
     const feachData = async () => {
       setLoading(true);
       const dataIndexdDb = await db.table('cid').get({ cid });
+      // const dataIndexdDb = undefined;
       if (dataIndexdDb !== undefined && dataIndexdDb.content) {
         const contentCidDB = Buffer.from(dataIndexdDb.content);
         const dataTypeContent = await getTypeContent(contentCidDB, cid);
@@ -160,6 +165,15 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
         if (responseDag.value.size < size * 10 ** 6) {
           nodeIpfs.pin.add(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
+          const dataFileType = await FileType.fromBuffer(responseCat);
+          let mimeType = '';
+          if (dataFileType !== undefined) {
+            const { mime } = dataFileType;
+
+            mimeType = mime;
+          }
+          const blob = new Blob([responseCat], { type: mimeType });
+          getPinsCid(cid, blob);
           const someVar = responseCat;
           // const responseCat = await nodeIpfs.cat(cid);
           // console.log('responseCat', someVar);
@@ -180,7 +194,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
             text: textContent,
             type,
             content: contentCid,
-            linkContent,
+            link: linkContent,
           } = dataTypeContent;
           setText(textContent);
           setTypeContent(type);
@@ -195,12 +209,6 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
           setText(cid);
         }
         setLoading(false);
-      } else {
-        setLoading(false);
-        setContent(cid);
-        setText(cid);
-        setGateway(true);
-        setStatus('impossibleLoad');
       }
     };
     feachData();

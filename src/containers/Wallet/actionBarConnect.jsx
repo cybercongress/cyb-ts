@@ -609,9 +609,10 @@ function ActionBarConnect({
     const chainId = CYBER.CHAIN_ID;
     await window.keplr.enable(chainId);
     let count = 1;
-
-    const { address, pubkey } = await keplr.getAccount();
-    const pk = Buffer.from(pubkey.value).toString('hex');
+    const { bech32Address, pubKey, name } = await keplr.signer.keplr.getKey(
+      chainId
+    );
+    const pk = Buffer.from(pubKey).toString('hex');
 
     const localStorageStory = await localStorage.getItem('pocketAccount');
     const localStoragePocket = await localStorage.getItem('pocket');
@@ -630,7 +631,7 @@ function ActionBarConnect({
       }
     }
     if (selectNetwork === 'cyber' || addCyberAddress) {
-      const cyberBech32 = address;
+      const cyberBech32 = bech32Address;
       if (
         selectAccount !== null ||
         !checkAddress(valueObj, 'cyber', cyberBech32)
@@ -640,11 +641,12 @@ function ActionBarConnect({
           keys: 'keplr',
           pk,
           path: HDPATH,
+          name,
         };
       }
     }
     if (selectNetwork === 'cosmos') {
-      const cosmosAddress = fromBech32(address, 'cosmos');
+      const cosmosAddress = fromBech32(bech32Address, 'cosmos');
       const cosmosBech32 = cosmosAddress;
       if (
         selectAccount !== null ||
@@ -655,6 +657,7 @@ function ActionBarConnect({
           keys: 'keplr',
           pk,
           path: HDPATH,
+          name,
         };
       }
     }
@@ -673,7 +676,6 @@ function ActionBarConnect({
     } else {
       dataPocketAccount[selectAccount.key][selectNetwork] =
         accounts[selectNetwork];
-      console.log('dataPocketAccount', dataPocketAccount);
       if (Object.keys(dataPocketAccount).length > 0) {
         localStorage.setItem(
           'pocketAccount',

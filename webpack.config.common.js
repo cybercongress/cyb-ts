@@ -1,7 +1,6 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
-const { ESBuildPlugin } = require('esbuild-loader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
@@ -34,7 +33,6 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
-    new ESBuildPlugin(),
   ],
   module: {
     rules: [
@@ -51,6 +49,11 @@ module.exports = {
         },
       },
       {
+        include: /node_modules/,
+        test: /\.mjs$/,
+        type: 'javascript/auto',
+      },
+      {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -61,6 +64,23 @@ module.exports = {
               sourceMap: false,
             },
           },
+        ],
+      },
+      {
+        test: /\.(scss|sass)$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              // modules: true,
+              importLoaders: 1,
+              modules: {
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+              },
+            },
+          },
+          'sass-loader',
         ],
       },
       {

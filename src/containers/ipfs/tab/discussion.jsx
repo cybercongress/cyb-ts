@@ -1,8 +1,7 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import Noitem from '../../account/noItem';
 import ContentItem from '../contentItem';
-import { Rank } from '../../../components';
+import { Rank, NoItems } from '../../../components';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
@@ -73,7 +72,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
                 nodeIpfs={nodeIpfs}
                 cid={cid}
                 item={item}
-                className="contentItem-discussion"
+                className="contentItem"
               />
               <Pane
                 className="time-discussion rank-contentItem"
@@ -93,7 +92,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
   }
   return (
     <div className="container-contentItem">
-      <Noitem text="no comments" />
+      <NoItems text="no comments" />
     </div>
   );
 }

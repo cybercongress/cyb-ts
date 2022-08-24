@@ -25,9 +25,15 @@ import {
   statusNode,
   getAccountBandwidth,
   getCurrentBandwidthPrice,
+  getPinsCid,
 } from '../../utils/search/utils';
 
-import { LEDGER, CYBER, PATTERN_IPFS_HASH } from '../../utils/config';
+import {
+  LEDGER,
+  CYBER,
+  PATTERN_IPFS_HASH,
+  DEFAULT_GAS_LIMITS,
+} from '../../utils/config';
 import { trimString } from '../../utils/utils';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
@@ -207,22 +213,26 @@ class InnerActionBarContainer extends Component {
   calculationIpfsTo = async () => {
     const { contentHash, file } = this.state;
     const { node } = this.props;
+    let content = '';
+    let toCid;
 
-    let toCid = contentHash;
+    content = contentHash;
     if (file !== null) {
-      toCid = file;
+      content = file;
     }
-    console.log('toCid', toCid);
-    if (file !== null) {
-      toCid = await getPin(node, toCid);
-    } else if (!toCid.match(PATTERN_IPFS_HASH)) {
-      console.log('object');
-      toCid = await getPin(node, toCid);
+    console.log('toCid', content);
+    if (file === null && content.match(PATTERN_IPFS_HASH)) {
+      toCid = content;
+    } else {
+      toCid = await getPin(node, content);
     }
 
     this.setState({
       toCid,
     });
+
+    const datagetPinsCid = await getPinsCid(toCid, content);
+    console.log(`datagetPinsCid`, datagetPinsCid);
   };
 
   calculationIpfsFrom = async () => {
@@ -298,57 +308,64 @@ class InnerActionBarContainer extends Component {
   };
 
   generateTx = async () => {
-    const { valueAppContext } = this.props;
-    const { keplr } = valueAppContext;
-    const { fromCid, toCid, addressLocalStor } = this.state;
+    try {
+      const { valueAppContext } = this.props;
+      const { keplr } = valueAppContext;
+      const { fromCid, toCid, addressLocalStor } = this.state;
 
-    this.setState({
-      stage: STAGE_KEPLR_APPROVE,
-    });
-    if (keplr !== null) {
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const { address } = await keplr.getAccount();
-      console.log('address', address);
-      if (addressLocalStor !== null && addressLocalStor.address === address) {
-        const msgs = [];
-        msgs.push({
-          type: 'cyber/Link',
-          value: {
-            address,
-            links: [
-              {
-                from: fromCid,
-                to: toCid,
-              },
-            ],
-          },
-        });
-        const fee = {
-          amount: coins(0, 'uatom'),
-          gas: '100000',
-        };
-        console.log('msg', msgs);
-        const result = await keplr.signAndBroadcast(
-          msgs,
-          fee,
-          CYBER.MEMO_KEPLR
-        );
-        console.log('result: ', result);
-        const hash = result.transactionHash;
-        console.log('hash :>> ', hash);
-        this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-        this.timeOut = setTimeout(this.confirmTx, 1500);
-      } else {
-        this.setState({
-          stage: STAGE_ERROR,
-          errorMessage: `Add address ${trimString(
-            address,
-            9,
-            5
-          )} to your pocket or make active `,
-        });
+      this.setState({
+        stage: STAGE_KEPLR_APPROVE,
+      });
+      if (keplr !== null) {
+        const chainId = CYBER.CHAIN_ID;
+        await window.keplr.enable(chainId);
+        const { address } = (await keplr.signer.getAccounts())[0];
+
+        console.log('address', address);
+        if (addressLocalStor !== null && addressLocalStor.address === address) {
+          const fee = {
+            amount: [],
+            gas: DEFAULT_GAS_LIMITS.toString(),
+          };
+          const result = await keplr.cyberlink(address, fromCid, toCid, fee);
+          if (result.code === 0) {
+            const hash = result.transactionHash;
+            console.log('hash :>> ', hash);
+            this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+            this.timeOut = setTimeout(this.confirmTx, 1500);
+          } else if (result.code === 4) {
+            this.setState({
+              txHash: null,
+              stage: STAGE_ERROR,
+              errorMessage:
+                'Cyberlinking and investmint is not working. Wait updates.',
+            });
+          } else {
+            this.setState({
+              txHash: null,
+              stage: STAGE_ERROR,
+              errorMessage: result.rawLog.toString(),
+            });
+          }
+          console.log('result: ', result);
+        } else {
+          this.setState({
+            stage: STAGE_ERROR,
+            errorMessage: `Add address ${trimString(
+              address,
+              9,
+              5
+            )} to your pocket or make active `,
+          });
+        }
       }
+    } catch (e) {
+      console.log(`e`, e);
+      this.setState({
+        stage: STAGE_ERROR,
+        txBody: null,
+        errorMessage: e.toString(),
+      });
     }
   };
 
@@ -618,7 +635,6 @@ class InnerActionBarContainer extends Component {
       return (
         <ActionBar>
           <ActionBarContentText>
-            Play Game of Links. Get EUL with
             <LinkRoute
               style={{
                 paddingTop: 10,
@@ -627,9 +643,9 @@ class InnerActionBarContainer extends Component {
                 display: 'block',
               }}
               className="btn"
-              to="/gol/takeoff"
+              to="/"
             >
-              ATOM
+              Connect
             </LinkRoute>
           </ActionBarContentText>
         </ActionBar>

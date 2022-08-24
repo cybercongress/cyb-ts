@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
-import { CYBER } from '../../utils/config';
+import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { Tooltip } from '../tooltip/tooltip';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
@@ -152,27 +152,34 @@ export const Votes = ({ finalVotes }) => {
   }
 };
 
-export const IconStatus = ({ status, size, ...props }) => {
+export const IconStatus = ({ status, size, text, ...props }) => {
   let imgIcon;
+  let statusText = '';
+
   switch (status) {
-    case 'DepositPeriod': {
+    case PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD: {
       imgIcon = submitted;
+      statusText = 'deposit period';
       break;
     }
-    case 'VotingPeriod': {
+    case PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD: {
       imgIcon = voting;
+      statusText = 'voting period';
       break;
     }
-    case 'Passed': {
+    case PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED: {
       imgIcon = passed;
+      statusText = 'passed';
       break;
     }
-    case 'Rejected': {
+    case PROPOSAL_STATUS.PROPOSAL_STATUS_REJECTED: {
       imgIcon = rejected;
+      statusText = 'rejected';
       break;
     }
-    case 'Failed': {
+    case PROPOSAL_STATUS.PROPOSAL_STATUS_FAILED: {
       imgIcon = failed;
+      statusText = 'failed';
       break;
     }
     default: {
@@ -180,8 +187,15 @@ export const IconStatus = ({ status, size, ...props }) => {
     }
   }
   return (
-    <Pane width={size || 20} height={size || 20} {...props}>
-      <img src={imgIcon} alt="icon" />
+    <Pane display="flex" alignItems="center" {...props}>
+      <Pane marginRight={5} width={size || 20} height={size || 20}>
+        <img src={imgIcon} alt="icon" />
+      </Pane>
+      {text && (
+        <Text fontSize="16px" color="#fff">
+          {statusText}
+        </Text>
+      )}
     </Pane>
   );
 };
@@ -222,8 +236,8 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
             width="100%"
             className="tooltip-text-deposit"
           >
-            Total Deposit {formatNumber(totalDeposit * 10 ** -9)}{' '}
-            {CYBER.DENOM_CYBER_G}
+            Total Deposit {formatNumber(totalDeposit)}{' '}
+            {CYBER.DENOM_CYBER.toUpperCase()}
           </Text>
         </Pane>
       </Pane>

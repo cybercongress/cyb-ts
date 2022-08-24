@@ -1,13 +1,18 @@
-import React from 'react';
+/* eslint-disable react/no-children-prop */
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Pane,
   Text,
   TableEv as Table,
   ActionBar,
 } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
+import { fromAscii, fromBase64 } from '@cosmjs/encoding';
+import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
+
 import {
   Votes,
   Legend,
@@ -35,9 +40,9 @@ import { formatNumber } from '../../utils/utils';
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
-import { CYBER } from '../../utils/config';
-
-const dateFormat = require('dateformat');
+import { CYBER, VOTE_OPTION } from '../../utils/config';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { AppContext } from '../../context';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -65,240 +70,174 @@ const finalTallyResult = (item) => {
   return finalVotes;
 };
 
-const description =
+const descriptionTest =
   '\nSummary of the proposal:\n\n- Change Signed Blocks Window from 300 to 1200.\n\nCurrent Network slashing parameters define that each validator must sign at least 70% of blocks in 300-block window.\n\n Converting those parameters into time, implying average block time of 5.75 seconds, gives us around 8.5 minutes of continuous downtime for each validator without jailing. But assuming current state of the chain, with almost half-million links in it, simply restart the node requires from 10 to 15 minutes even on the most nodes. That simply means that validator cannot restart the node without being jailed.\n\nHereby i propose to change Signed Blocks Window key of slashing module to value 1200 blocks. That will allow ~35 minutes of continuous downtime for validator before being jailed.\n\nThus validator operator will get enough time to perform hardware of software upgrades without fine for jailing.';
 
-class ProposalsDetail extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      proposals: {},
-      id: '',
-      proposalsInfo: {
-        title: '',
-        proposer: '',
-        type: '',
-        description: '',
-      },
-      time: {
-        submitTime: '',
-        depositEndTime: '',
-        votingStartTime: '',
-        votingEndTime: '',
-      },
-      totalDeposit: 0,
-      minDeposit: 0,
-      proposalStatus: '',
-      tallying: {
-        quorum: '',
-        threshold: '',
-        veto: '',
-      },
-      tally: {
-        participation: 0,
-        yes: 0,
-        abstain: 0,
-        no: 0,
-        noWithVeto: 0,
-      },
-      votes: {
-        yes: 0,
-        no: 0,
-        abstain: 0,
-        noWithVeto: 0,
-        voter: '',
-      },
-      tableVoters: [],
-      period: '',
+function ProposalsDetail({ defaultAccount }) {
+  const { proposalId } = useParams();
+  const { jsCyber } = useContext(AppContext);
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [proposals, setProposals] = useState({});
+  const [updateFunc, setUpdateFunc] = useState(0);
+  const [tally, setTally] = useState({
+    participation: 0,
+    yes: 0,
+    abstain: 0,
+    no: 0,
+    noWithVeto: 0,
+  });
+  const [tallying, setTallying] = useState({
+    quorum: 0,
+    threshold: 0,
+    veto_threshold: 0,
+  });
+
+  const [votes, setVotes] = useState({
+    yes: 0,
+    no: 0,
+    abstain: 0,
+    noWithVeto: 0,
+    voter: [],
+  });
+
+  const [totalDeposit, setTotalDeposit] = useState(0);
+  const [minDeposit, setMinDeposit] = useState(0);
+
+  useEffect(() => {
+    const getProposalsInfo = async () => {
+      setProposals({});
+      let proposalsInfo = {};
+      let totalDepositAmount = 0;
+      if (proposalId && proposalId > 0) {
+        const responseProposalsDetail = await getProposalsDetail(proposalId);
+        proposalsInfo = { ...responseProposalsDetail };
+        const {
+          title,
+          description,
+          plan,
+          changes,
+          recipient,
+          amount,
+        } = responseProposalsDetail.content.value;
+        proposalsInfo.title = title;
+        proposalsInfo.type = responseProposalsDetail.content.type;
+        proposalsInfo.description = description;
+
+        if (plan) {
+          proposalsInfo.plan = plan;
+        }
+        if (changes) {
+          proposalsInfo.changes = changes;
+        }
+        if (recipient) {
+          proposalsInfo.recipient = recipient;
+        }
+        if (amount) {
+          proposalsInfo.amount = amount;
+        }
+
+        const responseProposer = await getProposer(proposalId);
+
+        if (responseProposer !== null) {
+          proposalsInfo.proposer = responseProposer.proposer;
+        }
+
+        if (responseProposalsDetail.total_deposit.length) {
+          totalDepositAmount = parseFloat(
+            responseProposalsDetail.total_deposit[0].amount
+          );
+        }
+      }
+      setTotalDeposit(totalDepositAmount);
+      setProposals(proposalsInfo);
     };
-  }
+    getProposalsInfo();
+  }, [proposalId, updateFunc]);
 
-  async componentDidMount() {
-    this.init();
-  }
+  useEffect(() => {
+    const getStatusVoting = async () => {
+      setProposals({});
+      let tallyTemp = {};
+      let participation = 0;
+      let tallyResult = {};
+      if (proposalId && proposalId > 0) {
+        const stakingPool = await getStakingPool();
 
-  init = async () => {
-    await this.getProposalsInfo();
-    this.getTimes();
-    this.getStatusVoting();
-    this.getVotes();
-    this.getDeposit();
-    this.getTableVoters();
-  };
+        const tallyingResponse = await getTallying();
+        if (tallyingResponse !== null) {
+          setTallying({ ...tallyingResponse });
+        }
 
-  getProposalsInfo = async () => {
-    // const proposals = proposalsIdJson[0].result;
-    const { match } = this.props;
-    const proposalId = match.params.proposal_id;
-    const proposalsInfo = {};
+        const responceTallyingProposals = await getTallyingProposals(
+          proposalId
+        );
 
-    const proposals = await getProposalsDetail(proposalId);
-    const proposer = await getProposer(proposalId);
-    console.log('proposer', proposer);
+        if (responceTallyingProposals !== null) {
+          tallyResult = responceTallyingProposals;
+        } else {
+          tallyResult = proposals.final_tally_result;
+        }
 
-    proposalsInfo.title = proposals.content.value.title;
-    proposalsInfo.type = proposals.content.type;
-    proposalsInfo.description = proposals.content.value.description;
-    if (proposer !== null) {
-      proposalsInfo.proposer = proposer.proposer;
-    }
+        tallyTemp = finalTallyResult(tallyResult);
+        participation =
+          (tallyTemp.finalTotalVotes / stakingPool.bonded_tokens) * 100;
+        tallyTemp.participation = participation;
+      }
+      setTally(tallyTemp);
+    };
+    getStatusVoting();
+  }, [proposalId, updateFunc]);
 
-    if (proposals.content.value.changes) {
-      proposalsInfo.changes = proposals.content.value.changes;
-    }
+  useEffect(() => {
+    const getDeposit = async () => {
+      let minDepositAmount = 0;
+      const minDepositData = await getMinDeposit();
+      if (minDepositData !== null) {
+        minDepositAmount = parseFloat(minDepositData.min_deposit[0].amount);
+      }
 
-    if (proposals.content.value.plan) {
-      proposalsInfo.plan = proposals.content.value.plan;
-    }
+      setMinDeposit(minDepositAmount);
+    };
+    getDeposit();
+  }, [updateFunc]);
 
-    if (proposals.content.value.recipient) {
-      proposalsInfo.recipient = proposals.content.value.recipient;
-    }
+  useEffect(() => {
+    const getVotes = async () => {
+      const votesTemp = {};
+      let yes = [];
+      let no = [];
+      let abstain = [];
+      let noWithVeto = [];
+      const resultgProposalsDetailVotes = await getProposalsDetailVotes(
+        proposalId
+      );
+      console.log('resultgProposalsDetailVotes', resultgProposalsDetailVotes)
+      if (resultgProposalsDetailVotes) {
+        yes = resultgProposalsDetailVotes.filter(
+          (item) => item.option === VOTE_OPTION.VOTE_OPTION_YES
+        ).length;
+        no = resultgProposalsDetailVotes.filter(
+          (item) => item.option === VOTE_OPTION.VOTE_OPTION_NO
+        ).length;
+        abstain = resultgProposalsDetailVotes.filter(
+          (item) => item.option === VOTE_OPTION.VOTE_OPTION_ABSTAIN
+        ).length;
+        noWithVeto = resultgProposalsDetailVotes.filter(
+          (item) => item.option === VOTE_OPTION.VOTE_OPTION_NO_WITH_VETO
+        ).length;
+      }
+      votesTemp.voter = resultgProposalsDetailVotes;
+      votesTemp.yes = yes;
+      votesTemp.no = no;
+      votesTemp.abstain = abstain;
+      votesTemp.noWithVeto = noWithVeto;
+      console.log('votesTemp', votesTemp)
+      setVotes(votesTemp);
+    };
+    getVotes();
+  }, [proposalId, updateFunc]);
 
-    if (proposals.content.value.amount) {
-      proposalsInfo.amount = proposals.content.value.amount;
-    }
-
-    this.setState({
-      proposals,
-      proposalsInfo,
-      id: proposalId,
-    });
-  };
-
-  getStatusVoting = async () => {
-    const { proposals } = this.state;
-    // const proposals = proposalsIdJson[0].result;
-    let proposalStatus = '';
-    let tally = {};
-    let participation = 0;
-    let tallyResult = {};
-
-    const stakingPool = await getStakingPool();
-    const tallying = await getTallying();
-    proposalStatus = proposals.proposal_status;
-
-    const responceTallyingProposals = await getTallyingProposals(proposals.id);
-
-    if (responceTallyingProposals !== null) {
-      tallyResult = responceTallyingProposals;
-    } else {
-      tallyResult = proposals.final_tally_result;
-    }
-
-    tally = finalTallyResult(tallyResult);
-    participation = (tally.finalTotalVotes / stakingPool.bonded_tokens) * 100;
-    tally.participation = participation;
-
-    this.setState({
-      proposalStatus,
-      tally,
-      tallying,
-    });
-  };
-
-  getDeposit = async () => {
-    const { proposals } = this.state;
-    let period = '';
-    let minDeposit = 0;
-
-    let totalDeposit = 0;
-
-    const minDepositData = await getMinDeposit();
-
-    if (proposals.total_deposit.length) {
-      totalDeposit = parseFloat(proposals.total_deposit[0].amount);
-    }
-
-    minDeposit = parseFloat(minDepositData.min_deposit[0].amount);
-
-    if (totalDeposit < minDeposit) {
-      period = 'deposit';
-    } else {
-      period = 'vote';
-    }
-
-    this.setState({
-      period,
-      totalDeposit,
-      minDeposit,
-    });
-  };
-
-  getTimes = () => {
-    // const proposals = proposalsIdJson[0].result;
-    const { proposals } = this.state;
-
-    const time = {};
-
-    time.submitTime = dateFormat(
-      new Date(proposals.submit_time),
-      'dd/mm/yyyy, h:MM:ss TT'
-    );
-
-    time.depositEndTime = dateFormat(
-      new Date(proposals.deposit_end_time),
-      'dd/mm/yyyy, h:MM:ss TT'
-    );
-    time.votingStartTime = dateFormat(
-      new Date(proposals.voting_start_time),
-      'dd/mm/yyyy, h:MM:ss TT'
-    );
-    time.votingEndTime = dateFormat(
-      new Date(proposals.voting_end_time),
-      'dd/mm/yyyy, h:MM:ss TT'
-    );
-
-    this.setState({
-      time,
-    });
-  };
-
-  getVotes = async () => {
-    const { id } = this.state;
-    const votes = {};
-    let yes = [];
-    let no = [];
-    let abstain = [];
-    let noWithVeto = [];
-
-    const getVotes = await getProposalsDetailVotes(id);
-    if (getVotes) {
-      yes = getVotes.filter((item) => item.option === 'Yes').length;
-      no = getVotes.filter((item) => item.option === 'No').length;
-      abstain = getVotes.filter((item) => item.option === 'Abstain').length;
-      noWithVeto = getVotes.filter((item) => item.option === 'NoWithVeto')
-        .length;
-    }
-
-    votes.voter = getVotes;
-    votes.yes = yes;
-    votes.no = no;
-    votes.abstain = abstain;
-    votes.noWithVeto = noWithVeto;
-
-    this.setState({
-      votes,
-    });
-  };
-
-  getTableVoters = async () => {
-    const { id } = this.state;
-
-    let tableVoters = [];
-
-    const data = await getTableVoters(id);
-
-    if (data) {
-      tableVoters = data;
-    }
-
-    this.setState({
-      tableVoters,
-    });
-  };
-
-  getSubStr = (str) => {
+  const getSubStr = (str) => {
     let string = str;
     if (string.indexOf('cosmos-sdk/') !== -1) {
       string = string.slice(string.indexOf('/') + 1);
@@ -307,164 +246,149 @@ class ProposalsDetail extends React.Component {
     return string;
   };
 
-  render() {
-    const {
-      proposalsInfo,
-      time,
-      proposalStatus,
-      tally,
-      votes,
-      id,
-      totalDeposit,
-      minDeposit,
-      tallying,
-      tableVoters,
-      period,
-    } = this.state;
-    const { defaultAccount } = this.props;
+  console.log(`proposals`, proposals);
+  console.log(`addressActive`, addressActive)
 
-    return (
-      <div>
-        <main className="block-body">
-          <Pane paddingBottom={50}>
-            <Pane height={70} display="flex" alignItems="center">
-              <Text paddingLeft={20} fontSize="18px" color="#fff">
-                #{id} {proposalsInfo.title}
-              </Text>
+  return (
+    <div>
+      <main className="block-body">
+        <Pane paddingBottom={50}>
+          <Pane height={70} display="flex" alignItems="center">
+            <Text paddingLeft={20} fontSize="18px" color="#fff">
+              {proposals.title && ` #${proposalId} ${proposals.title}`}
+            </Text>
+          </Pane>
+
+          {proposals.status && (
+            <Pane paddingLeft={20} marginBottom={10}>
+              <IconStatus status={proposals.status} text marginRight={8} />
             </Pane>
-            <Pane display="flex" marginBottom={10} paddingLeft={20}>
-              <IconStatus status={proposalStatus} marginRight={8} />
-              <Text color="#fff">{proposalStatus}</Text>
-            </Pane>
-            <ContainerPane marginBottom={20}>
-              <Item
-                marginBottom={15}
-                title="Proposer"
-                value={
-                  <Link
-                    to={`/network/euler/contract/${proposalsInfo.proposer}`}
-                  >
-                    {proposalsInfo.proposer}
-                  </Link>
-                }
-              />
+          )}
+          <ContainerPane marginBottom={20}>
+            <Item
+              marginBottom={15}
+              title="Proposer"
+              value={
+                <Link to={`/network/bostrom/contract/${proposals.proposer}`}>
+                  {proposals.proposer}
+                </Link>
+              }
+            />
+            {proposals.type && (
               <Item
                 marginBottom={15}
                 title="Type"
-                value={this.getSubStr(proposalsInfo.type)}
+                value={getSubStr(proposals.type)}
               />
-              {proposalsInfo.recipient && (
-                <Item
-                  title="Recipient"
-                  marginBottom={15}
-                  value={
-                    <Link
-                      to={`/network/euler/contract/${proposalsInfo.recipient}`}
-                    >
-                      {proposalsInfo.recipient}
-                    </Link>
-                  }
-                />
-              )}
-              {proposalsInfo.amount && (
-                <Item
-                  title="Amount"
-                  marginBottom={15}
-                  value={`${formatNumber(
-                    parseFloat(proposalsInfo.amount[0].amount)
-                  )} ${proposalsInfo.amount[0].denom.toUpperCase()}`}
-                />
-              )}
+            )}
+            {proposals.recipient && (
+              <Item
+                title="Recipient"
+                marginBottom={15}
+                value={
+                  <Link to={`/network/bostrom/contract/${proposals.recipient}`}>
+                    {proposals.recipient}
+                  </Link>
+                }
+              />
+            )}
+            {proposals.amount && (
+              <Item
+                title="Amount"
+                marginBottom={15}
+                value={`${formatNumber(
+                  parseFloat(proposals.amount[0].amount)
+                )} ${proposals.amount[0].denom.toUpperCase()}`}
+              />
+            )}
+            {proposals.description && (
               <Item
                 title="Description"
                 value={
                   <Pane className="container-description">
                     <ReactMarkdown
-                      source={proposalsInfo.description.replace(/\\n/g, '\n')}
-                      escapeHtml={false}
+                      children={proposals.description.replace(/\\n/g, '\n')}
+                      rehypePlugins={[rehypeSanitize]}
+                      remarkPlugins={[remarkGfm]}
                     />
                   </Pane>
                 }
               />
-              {proposalsInfo.changes &&
-                Object.keys(proposalsInfo.changes).length > 0 && (
-                  <Item
-                    title="Changes"
-                    value={
-                      <Pane className="container-description">
-                        {proposalsInfo.changes.map((item) => (
-                          <Pane>
-                            {item.subspace}: {item.key} {item.value}
-                          </Pane>
-                        ))}
+            )}
+            {proposals.changes && Object.keys(proposals.changes).length > 0 && (
+              <Item
+                title="Changes"
+                value={
+                  <Pane className="container-description">
+                    {proposals.changes.map((item) => (
+                      <Pane>
+                        {item.subspace}: {item.key} {item.value}
                       </Pane>
-                    }
-                  />
-                )}
-              {proposalsInfo.plan && (
-                <Item
-                  title="Plan"
-                  value={
-                    <Pane className="container-description">
-                      <Pane>name: {proposalsInfo.plan.name}</Pane>
-                      <Pane>height: {proposalsInfo.plan.height}</Pane>
-                    </Pane>
-                  }
-                />
-              )}
-            </ContainerPane>
+                    ))}
+                  </Pane>
+                }
+              />
+            )}
+            {proposals.plan && (
+              <Item
+                title="Plan"
+                value={
+                  <Pane className="container-description">
+                    <Pane>name: {proposals.plan.name}</Pane>
+                    <Pane>height: {proposals.plan.height}</Pane>
+                  </Pane>
+                }
+              />
+            )}
+          </ContainerPane>
 
-            <ProposalsIdDetail
-              time={time}
-              proposalStatus={proposalStatus}
-              tallying={tallying}
-              tally={tally}
-              totalDeposit={totalDeposit}
-              marginBottom={20}
-            />
-
-            <ProposalsDetailProgressBar
-              proposalStatus={proposalStatus}
-              totalDeposit={totalDeposit}
-              minDeposit={minDeposit}
-              tallying={tallying}
-              tally={tally}
-            />
-
-            <ProposalsIdDetailTableVoters data={tableVoters} votes={votes} />
-          </Pane>
-        </main>
-        {defaultAccount.account !== null &&
-        defaultAccount.account.cyber &&
-        defaultAccount.account.cyber.keys !== 'read-only' ? (
-          <ActionBarContainer
-            id={id}
-            period={period}
-            minDeposit={minDeposit}
-            totalDeposit={totalDeposit}
-            update={this.init}
-            defaultAccount={defaultAccount.account.cyber}
+          <ProposalsIdDetail
+            proposals={proposals}
+            tallying={tallying}
+            tally={tally}
+            totalDeposit={0}
+            marginBottom={20}
           />
-        ) : (
-          <ActionBar>
-            <Pane>
-              <Link
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  display: 'block',
-                }}
-                className="btn"
-                to="/pocket"
-              >
-                add address to your pocket
-              </Link>
-            </Pane>
-          </ActionBar>
-        )}
-      </div>
-    );
-  }
+
+          <ProposalsDetailProgressBar
+            proposals={proposals}
+            totalDeposit={totalDeposit}
+            minDeposit={minDeposit}
+            tallying={tallying}
+            tally={tally}
+          />
+
+          <ProposalsIdDetailTableVoters votes={votes} />
+        </Pane>
+      </main>
+      {addressActive !== null && addressActive.keys === 'keplr' ? (
+        <ActionBarDetail
+          id={proposalId}
+          proposals={proposals}
+          minDeposit={minDeposit}
+          totalDeposit={totalDeposit}
+          update={() => setUpdateFunc((item) => item + 1)}
+          addressActive={addressActive}
+        />
+      ) : (
+        <ActionBar>
+          <Pane>
+            <Link
+              style={{
+                paddingTop: 10,
+                paddingBottom: 10,
+                display: 'block',
+              }}
+              className="btn"
+              to="/"
+            >
+              add address to your pocket from keplr
+            </Link>
+          </Pane>
+        </ActionBar>
+      )}
+    </div>
+  );
 }
 
 const mapStateToProps = (store) => {

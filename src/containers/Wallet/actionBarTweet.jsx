@@ -25,8 +25,17 @@ import {
   getAccountBandwidth,
   getCurrentBandwidthPrice,
 } from '../../utils/search/utils';
+import { trimString } from '../../utils/utils';
 
-import { LEDGER, CYBER, PATTERN_IPFS_HASH, POCKET } from '../../utils/config';
+import { AppContext } from '../../context';
+
+import {
+  LEDGER,
+  CYBER,
+  PATTERN_IPFS_HASH,
+  POCKET,
+  DEFAULT_GAS_LIMITS,
+} from '../../utils/config';
 
 const {
   MEMO,
@@ -56,7 +65,6 @@ class ActionBarTweet extends Component {
     this.state = {
       stage: STAGE_INIT,
       init: false,
-      ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
@@ -68,6 +76,7 @@ class ActionBarTweet extends Component {
       },
       linkPrice: 0,
       contentHash: '',
+      addressLocalStor: null,
       txMsg: null,
       txContext: null,
       txBody: null,
@@ -83,10 +92,12 @@ class ActionBarTweet extends Component {
       placeholder: '',
     };
     this.timeOut = null;
+    this.ledger = null;
     this.inputOpenFileRef = React.createRef();
   }
 
   async componentDidMount() {
+    await this.checkAddressLocalStorage();
     this.getNameBtn();
     console.warn('Looking for Ledger Nano');
     this.ledger = new CosmosDelegateTool();
@@ -94,21 +105,7 @@ class ActionBarTweet extends Component {
 
   componentDidUpdate(prevProps) {
     const { stage, address, addressInfo, fromCid, toCid } = this.state;
-    const { refresh } = this.props;
-    if (
-      stage === STAGE_LEDGER_INIT ||
-      stage === STAGE_READY ||
-      stage === LEDGER_TX_ACOUNT_INFO
-    ) {
-      if (
-        address !== null &&
-        addressInfo !== null &&
-        toCid !== null &&
-        fromCid !== null
-      ) {
-        this.stageReady();
-      }
-    }
+    const { refresh, defaultAccount } = this.props;
 
     if (prevProps.refresh !== refresh) {
       this.getNameBtn();
@@ -122,7 +119,34 @@ class ActionBarTweet extends Component {
     ) {
       this.generateTxKeplr();
     }
+    if (prevProps.defaultAccount.name !== defaultAccount.name) {
+      this.checkAddressLocalStorage();
+    }
   }
+
+  checkAddressLocalStorage = async () => {
+    const { defaultAccount } = this.props;
+    const { account } = defaultAccount;
+    if (
+      account !== null &&
+      Object.prototype.hasOwnProperty.call(account, 'cyber')
+    ) {
+      const { keys, bech32 } = account.cyber;
+      if (keys !== 'read-only') {
+        this.setState({
+          addressLocalStor: { address: bech32, keys },
+        });
+      } else {
+        this.setState({
+          addressLocalStor: null,
+        });
+      }
+    } else {
+      this.setState({
+        addressLocalStor: null,
+      });
+    }
+  };
 
   getNameBtn = () => {
     const { stageTweetActionBar } = this.props;
@@ -136,35 +160,6 @@ class ActionBarTweet extends Component {
       this.setState({
         textBtn: 'add Avatar',
         placeholder: 'Select an avatar',
-      });
-    }
-  };
-
-  getLedgerAddress = async () => {
-    const { stage } = this.state;
-
-    this.transport = await TransportWebUSB.create(120 * 1000);
-    this.ledger = new CosmosDelegateTool(this.transport);
-
-    const connectLedger = await this.ledger.connect();
-    console.log(connectLedger, stage);
-    if (connectLedger.return_code === LEDGER_OK) {
-      this.setState({
-        connectLedger: true,
-      });
-      if (stage === STAGE_LEDGER_INIT) {
-        const address = await this.ledger.retrieveAddressCyber(HDPATH);
-        console.log('address', address);
-        this.setState({
-          address,
-        });
-        this.getAddressInfo();
-        this.calculationIpfsFrom();
-        this.calculationIpfsTo();
-      }
-    } else {
-      this.setState({
-        connectLedger: false,
       });
     }
   };
@@ -221,71 +216,9 @@ class ActionBarTweet extends Component {
     this.link();
   };
 
-  getNetworkId = async () => {
-    const data = await statusNode();
-    return data.node_info.network;
-  };
-
-  getAddressInfo = async () => {
-    try {
-      const { address } = this.state;
-      this.setState({
-        stage: LEDGER_TX_ACOUNT_INFO,
-      });
-      const addressInfo = await this.ledger.getAccountInfoCyber(address);
-      const chainId = await this.getNetworkId();
-
-      addressInfo.chainId = chainId;
-
-      this.setState({
-        addressInfo,
-        stage: STAGE_READY,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== 'getAddressInfo') {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('getAddressInfo', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
-
-  link = async () => {
-    const { address, addressInfo, fromCid, toCid } = this.state;
-
-    const txContext = {
-      accountNumber: addressInfo.accountNumber,
-      chainId: addressInfo.chainId,
-      sequence: addressInfo.sequence,
-      bech32: address.bech32,
-      pk: address.pk,
-      path: address.path,
-    };
-
-    const tx = await this.ledger.txCreateLink(
-      txContext,
-      address.bech32,
-      fromCid,
-      toCid,
-      MEMO
-    );
-    console.log('tx', tx);
-
-    await this.setState({
-      txMsg: tx,
-      txContext,
-      txBody: null,
-      error: null,
-    });
-    // debugger;
-    this.signTx();
-  };
-
   generateTxKeplr = async () => {
-    const { keplr } = this.props;
-    const { fromCid, toCid } = this.state;
+    const { keplr } = this.context;
+    const { fromCid, toCid, addressLocalStor } = this.state;
 
     console.log('fromCid, toCid :>> ', fromCid, toCid);
 
@@ -294,76 +227,36 @@ class ActionBarTweet extends Component {
     });
     if (keplr !== null) {
       await window.keplr.enable(CYBER.CHAIN_ID);
-      const { address } = await keplr.getAccount();
-      const msgs = [];
-      msgs.push({
-        type: 'cyber/Link',
-        value: {
-          address,
-          links: [
-            {
-              from: fromCid,
-              to: toCid,
-            },
-          ],
-        },
-      });
+      const { address } = (await keplr.signer.getAccounts())[0];
       const fee = {
-        amount: coins(0, 'uatom'),
-        gas: '100000',
+        amount: [],
+        gas: DEFAULT_GAS_LIMITS.toString(),
       };
-      console.log('msg', msgs);
-      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
-      console.log('result: ', result);
-      const hash = result.transactionHash;
-      console.log('hash :>> ', hash);
-      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-      this.timeOut = setTimeout(this.confirmTx, 1500);
-    }
-  };
-
-  signTx = async () => {
-    const { txMsg, txContext } = this.state;
-    // console.log('txContext', txContext);
-    this.setState({ stage: STAGE_WAIT });
-    const sing = await this.ledger.sign(txMsg, txContext);
-    console.log('sing', sing);
-    if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await this.ledger.applySignature(
-        sing,
-        txMsg,
-        txContext
-      );
-      if (applySignature !== null) {
+      if (addressLocalStor !== null && addressLocalStor.address === address) {
+        const result = await keplr.cyberlink(address, fromCid, toCid, fee);
+        if (result.code === 0) {
+          const hash = result.transactionHash;
+          console.log('hash :>> ', hash);
+          this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+          this.timeOut = setTimeout(this.confirmTx, 1500);
+        } else {
+          this.setState({
+            txHash: null,
+            stage: STAGE_ERROR,
+            errorMessage: result.rawLog.toString(),
+          });
+        }
+        console.log('result: ', result);
+      } else {
         this.setState({
-          txMsg: null,
-          txBody: applySignature,
-          stage: STAGE_SUBMITTED,
+          stage: STAGE_ERROR,
+          errorMessage: `Add address ${trimString(
+            address,
+            9,
+            5
+          )} to your pocket or make active `,
         });
-        await this.injectTx();
       }
-    } else {
-      this.setState({
-        stage: STAGE_ERROR,
-        txBody: null,
-        errorMessage: sing.error_message,
-      });
-    }
-  };
-
-  injectTx = async () => {
-    const { txBody } = this.state;
-    const txSubmit = await this.ledger.txSubmitCyber(txBody);
-    const data = txSubmit;
-    console.log('data', data);
-    if (data.error) {
-      // if timeout...
-      // this.setState({stage: STAGE_CONFIRMING})
-      // else
-      this.setState({ stage: STAGE_ERROR, errorMessage: data.error });
-    } else {
-      this.setState({ stage: STAGE_SUBMITTED, txHash: data.data.txhash });
-      this.timeOut = setTimeout(this.confirmTx, 1500);
     }
   };
 
@@ -407,7 +300,6 @@ class ActionBarTweet extends Component {
     this.setState({
       stage: STAGE_INIT,
       init: false,
-      ledger: null,
       address: null,
       returnCode: null,
       addressInfo: null,
@@ -438,13 +330,6 @@ class ActionBarTweet extends Component {
 
   onClickInitLedger = async () => {
     const { defaultAccountsKeys } = this.props;
-
-    if (defaultAccountsKeys === 'ledger') {
-      await this.setState({
-        stage: STAGE_LEDGER_INIT,
-      });
-      this.getLedgerAddress();
-    }
 
     if (defaultAccountsKeys === 'keplr') {
       await this.setState({
@@ -506,7 +391,8 @@ class ActionBarTweet extends Component {
 
     if (
       stage === STAGE_INIT &&
-      stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW
+      stageTweetActionBar === POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW &&
+      defaultAccountsKeys === 'keplr'
     ) {
       return (
         <ActionBar>
@@ -521,7 +407,8 @@ class ActionBarTweet extends Component {
 
     if (
       stage === STAGE_INIT &&
-      stageTweetActionBar !== POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW
+      stageTweetActionBar !== POCKET.STAGE_TWEET_ACTION_BAR.FOLLOW &&
+      defaultAccountsKeys === 'keplr'
     ) {
       return (
         <StartStageSearchActionBar
@@ -537,6 +424,7 @@ class ActionBarTweet extends Component {
           onChangeInput={this.onFilePickerChange}
           onClickClear={this.onClickClear}
           file={file}
+          keys={defaultAccountsKeys}
         />
       );
     }
@@ -622,10 +510,13 @@ class ActionBarTweet extends Component {
   }
 }
 
+ActionBarTweet.contextType = AppContext;
+
 const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
     stageTweetActionBar: store.pocket.actionBar.tweet,
+    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

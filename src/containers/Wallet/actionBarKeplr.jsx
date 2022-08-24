@@ -18,6 +18,7 @@ import {
   PATTERN_COSMOS,
   PATTERN_CYBER,
   POCKET,
+  DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 import { deletPubkey } from './utils';
@@ -55,24 +56,17 @@ function ActionBarKeplr({
     const amount = parseFloat(amountSend);
     if (keplr !== null) {
       setStage(STAGE_SUBMITTED);
-      const chainId = CYBER.CHAIN_ID;
-      await window.keplr.enable(chainId);
-      const { address } = await keplr.getAccount();
-      const msgs = [];
-      msgs.push({
-        type: 'cosmos-sdk/MsgSend',
-        value: {
-          amount: coins(amount, CYBER.DENOM_CYBER),
-          from_address: address,
-          to_address: recipient,
-        },
-      });
+      const [{ address }] = await keplr.signer.getAccounts();
       const fee = {
-        amount: coins(0, 'uatom'),
-        gas: '100000',
+        amount: [],
+        gas: (DEFAULT_GAS_LIMITS * 2).toString(),
       };
-      console.log('msg', msgs);
-      const result = await keplr.signAndBroadcast(msgs, fee, CYBER.MEMO_KEPLR);
+      const result = await keplr.sendTokens(
+        address,
+        recipient,
+        coins(amount, CYBER.DENOM_CYBER),
+        fee
+      );
       console.log('result: ', result);
       const hash = result.transactionHash;
       console.log('hash :>> ', hash);
@@ -215,7 +209,7 @@ function ActionBarKeplr({
               height={42}
               width="24%"
               onChange={(e) => setAmountSend(e.target.value)}
-              placeholder="EUL"
+              placeholder="BOOT"
               isInvalid={amountSendInputValid !== null}
               message={amountSendInputValid}
             />

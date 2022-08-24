@@ -1,7 +1,32 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
+import { GasPrice } from '@cosmjs/launchpad';
+import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
+import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
+
 import { CYBER, CYBER_SIGNER } from './utils/config';
+import { configKeplr } from './utils/keplrUtils';
+
+export const getKeplr = async () => {
+  if (window.keplr) {
+    return window.keplr;
+  }
+
+  if (document.readyState === 'complete') {
+    return window.keplr;
+  }
+
+  return new Promise((resolve) => {
+    const documentStateChange = (event) => {
+      if (event.target && event.target.readyState === 'complete') {
+        resolve(window.keplr);
+        document.removeEventListener('readystatechange', documentStateChange);
+      }
+    };
+
+    document.addEventListener('readystatechange', documentStateChange);
+  });
+};
 
 const valueContext = {
   keplr: null,
@@ -21,79 +46,40 @@ export const AppContextSigner = React.createContext(valueSignerContxt);
 
 export const useContextProvider = () => useContext(AppContext);
 
-const configKeplr = () => {
-  return {
-    // Chain-id of the Cosmos SDK chain.
-    chainId: CYBER.CHAIN_ID,
-    // The name of the chain to be displayed to the user.
-    chainName: CYBER.CHAIN_ID,
-    // RPC endpoint of the chain.
-    rpc: CYBER.CYBER_NODE_URL_API,
-    rest: CYBER.CYBER_NODE_URL_LCD,
-    stakeCurrency: {
-      coinDenom: 'EUL',
-      coinMinimalDenom: 'eul',
-      coinDecimals: 0,
-    },
-    bip44: {
-      // You can only set the coin type of BIP44.
-      // 'Purpose' is fixed to 44.
-      coinType: 118,
-    },
-    bech32Config: {
-      bech32PrefixAccAddr: 'cyber',
-      bech32PrefixAccPub: 'cyberpub',
-      bech32PrefixValAddr: 'cybervaloper',
-      bech32PrefixValPub: 'cybervaloperpub',
-      bech32PrefixConsAddr: 'cybervalcons',
-      bech32PrefixConsPub: 'cybervalconspub',
-    },
-    currencies: [
-      {
-        // Coin denomination to be displayed to the user.
-        coinDenom: 'EUL',
-        // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'eul',
-        // # of decimal points to convert minimal denomination to user-facing denomination.
-        coinDecimals: 0,
-      },
-    ],
-    // List of coin/tokens used as a fee token in this chain.
-    feeCurrencies: [
-      {
-        // Coin denomination to be displayed to the user.
-        coinDenom: 'EUL',
-        // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'eul',
-        // # of decimal points to convert minimal denomination to user-facing denomination.
-        coinDecimals: 0,
-      },
-    ],
-    coinType: 118,
-    gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0,
-    },
-  };
-};
-
 export async function createClient(signer) {
   if (signer) {
-    const firstAddress = (await signer.getAccounts())[0].address;
-    const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'uatom');
-    const gasLimits = { send: 100000 };
+    const firstAddress = await signer.getAccounts();
+    console.log('firstAddress', firstAddress);
+    // const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
+    const gasPrice = GasPrice.fromString('0.001boot');
 
-    const cosmJS = new SigningCosmosClient(
-      CYBER.CYBER_NODE_URL_LCD,
-      firstAddress,
+    const gasLimits = {
+      send: 200000,
+      cyberlink: 256000,
+      investmint: 160000,
+      createRoute: 128000,
+      editRoute: 128000,
+      editRouteAlias: 128000,
+      deleteRoute: 128000,
+    };
+    const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
+    const client = await SigningCyberClient.connectWithSigner(
+      CYBER.CYBER_NODE_URL_API,
       signer,
-      gasPrice,
-      gasLimits,
-      'sync'
+      options
     );
 
-    return cosmJS;
+    // client.firstAddress = firstAddress;
+    // const cosmJS = new SigningCyberClient(
+    //   CYBER.CYBER_NODE_URL_LCD,
+    //   firstAddress,
+    //   signer,
+    //   gasPrice,
+    //   gasLimits,
+    //   'sync'
+    // );
+
+    return client;
   }
   return null;
 }
@@ -104,6 +90,33 @@ const AppContextProvider = ({ children }) => {
 
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
+
+  const updatejsCyber = (rpc) => {
+    const createQueryCliet = async () => {
+      const tendermintClient = await Tendermint34Client.connect(rpc);
+      const queryClient = new CyberClient(tendermintClient);
+
+      setValue((item) => ({
+        ...item,
+        jsCyber: queryClient,
+      }));
+    };
+    createQueryCliet();
+  };
+
+  useEffect(() => {
+    const createQueryCliet = async () => {
+      const tendermintClient = await Tendermint34Client.connect(
+        CYBER.CYBER_NODE_URL_API
+      );
+      const queryClient = new CyberClient(tendermintClient);
+      setValue((item) => ({
+        ...item,
+        jsCyber: queryClient,
+      }));
+    };
+    createQueryCliet();
+  }, []);
 
   useEffect(() => {
     if (signer !== null) {
@@ -116,24 +129,42 @@ const AppContextProvider = ({ children }) => {
   }, [signer]);
 
   useEffect(() => {
-    console.log('window.getOfflineSigner', window.getOfflineSigner);
-    console.log('window.keplr', window.keplr);
-    if (window.keplr || window.getOfflineSigner) {
-      if (window.keplr.experimentalSuggestChain) {
-        const init = async () => {
-          await window.keplr.experimentalSuggestChain(configKeplr());
-          await window.keplr.enable(CYBER.CHAIN_ID);
-          const offlineSigner = window.getOfflineSigner(CYBER.CHAIN_ID);
-          setSigner(offlineSigner);
-        };
-        init();
+    window.onload = async () => {
+      const windowKeplr = await getKeplr();
+      if (windowKeplr) {
+        initSigner();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('keplr_keystorechange', () => {
+      initSigner();
+    });
+  }, []);
+
+  const initSigner = async () => {
+    const windowKeplr = await getKeplr();
+    if (windowKeplr || window.getOfflineSignerAuto) {
+      if (windowKeplr.experimentalSuggestChain) {
+        await windowKeplr.experimentalSuggestChain(
+          configKeplr(CYBER.BECH32_PREFIX_ACC_ADDR_CYBER)
+        );
+        await windowKeplr.enable(CYBER.CHAIN_ID);
+        const offlineSigner = await window.getOfflineSignerAuto(CYBER.CHAIN_ID);
+        console.log(`offlineSigner`, offlineSigner);
+        setSigner(offlineSigner);
       }
     }
-  }, [window.keplr, window.getOfflineSigner]);
+  };
 
   useEffect(() => {
     if (client !== null) {
-      setValue((item) => ({ ...item, keplr: client }));
+      setValue((item) => ({
+        ...item,
+        keplr: client,
+        ws: CYBER.CYBER_WEBSOCKET_URL,
+      }));
     }
   }, [client]);
 
@@ -159,8 +190,12 @@ const AppContextProvider = ({ children }) => {
     setValueSigner((item) => ({ ...item, stage }));
   };
 
+  if (value.jsCyber && value.jsCyber === null) {
+    return <div>...</div>;
+  }
+
   return (
-    <AppContext.Provider value={value}>
+    <AppContext.Provider value={{ ...value, updatejsCyber, initSigner }}>
       <AppContextSigner.Provider
         value={{
           ...valueSigner,

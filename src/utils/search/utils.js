@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
-import { CYBER, TAKEOFF, COSMOS } from '../config';
+import * as config from '../config';
 
 const all = require('it-all');
 const uint8ArrayConcat = require('uint8arrays/concat');
@@ -10,7 +10,9 @@ const {
   CYBER_NODE_URL_API,
   CYBER_NODE_URL_LCD,
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
-} = CYBER;
+} = config.CYBER;
+
+const { PATTERN_IPFS_HASH } = config;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
@@ -210,10 +212,11 @@ export const getString = (string) =>
 export const search = async (keywordHash) =>
   axios({
     method: 'get',
-    url: `${CYBER_NODE_URL_API}/search?cid=%22${keywordHash}%22&page=0&perPage=1000`,
-  }).then((response) =>
-    response.data.result ? response.data.result.cids : []
-  );
+    url: `${CYBER_NODE_URL_LCD}/rank/search?cid=${keywordHash}&page=0&perPage=1000`,
+  }).then((response) => {
+    console.log('RESPONSE', response.data.result.result);
+    return response.data.result.result ? response.data.result.result : [];
+  });
 
 export const getRankGrade = (rank) => {
   let from;
@@ -326,7 +329,7 @@ export const getValidatorsUnbonding = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonding`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=BOND_STATUS_UNBONDING`,
     });
     return response.data.result;
   } catch (e) {
@@ -339,7 +342,7 @@ export const getValidatorsUnbonded = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=unbonded`,
+      url: `${CYBER_NODE_URL_LCD}/staking/validators?status=BOND_STATUS_UNBONDED`,
     });
     return response.data.result;
   } catch (e) {
@@ -401,7 +404,7 @@ export const getAccountBandwidth = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_API}/account_bandwidth?address="${address}"`,
+      url: `${CYBER_NODE_URL_LCD}/bandwidth/neuron/${address}`,
     });
     return response.data.result;
   } catch (e) {
@@ -423,11 +426,11 @@ export const statusNode = async () => {
   }
 };
 
-export const getRelevance = (page = 0, perPage = 50) =>
+export const getRelevance = (page = 0, limit = 50) =>
   new Promise((resolve) =>
     axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_API}/top?page=${page}&perPage=${perPage}`,
+      url: `${CYBER_NODE_URL_LCD}/rank/top?page=${page}&limit=${limit}`,
     })
       .then((response) => {
         resolve(response.data.result);
@@ -555,12 +558,12 @@ export const getTotalEUL = (data) => {
 export const getAmountATOM = (data) => {
   let amount = 0;
   for (let item = 0; item < data.length; item++) {
-    if (amount <= TAKEOFF.ATOMsALL) {
+    if (amount <= config.TAKEOFF.ATOMsALL) {
       amount +=
         Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) /
-        COSMOS.DIVISOR_ATOM;
+        config.COSMOS.DIVISOR_ATOM;
     } else {
-      amount = TAKEOFF.ATOMsALL;
+      amount = config.TAKEOFF.ATOMsALL;
       break;
     }
   }
@@ -581,11 +584,11 @@ export const getBalanceWallet = (address) =>
 
 export const getDrop = async (address) => {
   try {
-    const response = await axios({
-      method: 'get',
-      url: `https://io.cybernode.ai/ipfs_api/api/v0/dag/get?arg=bafyreifheyc6rhjhxenu3df3pwbxv5r6vb273szvwufjbly4m6rlv3jyni/${address}`,
-    });
-    return response.data;
+    // const response = await axios({
+    //   method: 'get',
+    //   url: `https://io.cybernode.ai/ipfs_api/api/v0/dag/get?arg=bafyreifheyc6rhjhxenu3df3pwbxv5r6vb273szvwufjbly4m6rlv3jyni/${address}`,
+    // });
+    return 0;
   } catch (e) {
     return 0;
   }
@@ -771,7 +774,7 @@ export const getPreCommits = async (consensusAddress) => {
 
     const response = await axios({
       method: 'post',
-      url: CYBER.CYBER_INDEX_HTTPS,
+      url: config.CYBER.CYBER_INDEX_HTTPS,
       headers,
       data: body,
     });
@@ -784,7 +787,7 @@ export const getPreCommits = async (consensusAddress) => {
 
 export const getGraphQLQuery = async (
   query,
-  urlGraphql = CYBER.CYBER_INDEX_HTTPS
+  urlGraphql = config.CYBER.CYBER_INDEX_HTTPS
 ) => {
   try {
     const body = JSON.stringify({
@@ -824,7 +827,7 @@ export const getSendTxToTakeoff = async (sender, recipient) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
+      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
     });
     return response.data.txs;
   } catch (e) {
@@ -941,6 +944,58 @@ export const getParamInlfation = async () => {
   }
 };
 
+export const getParamResources = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/resources/v1beta1/resources/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamLiquidity = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cosmos/liquidity/v1beta1/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamGrid = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/grid/v1beta1/grid/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getParamDmn = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cyber/dmn/v1beta1/dmn/params`,
+    });
+    return response.data.params;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getParamNetwork = async (address, node) => {
   try {
     let staking = null;
@@ -949,7 +1004,11 @@ export const getParamNetwork = async (address, node) => {
     let bandwidth = null;
     let gov = null;
     let rank = null;
-    let inlfation = null;
+    let mint = null;
+    let resources = null;
+    let liquidity = null;
+    let grid = null;
+    let dmn = null;
 
     const dataStaking = await getParamStaking();
     if (dataStaking !== null) {
@@ -979,7 +1038,27 @@ export const getParamNetwork = async (address, node) => {
 
     const dataInlfation = await getParamInlfation();
     if (dataInlfation !== null) {
-      inlfation = dataInlfation;
+      mint = dataInlfation;
+    }
+
+    const dataResources = await getParamResources();
+    if (dataResources !== null) {
+      resources = dataResources;
+    }
+
+    const dataLiquidity = await getParamLiquidity();
+    if (dataLiquidity !== null) {
+      liquidity = dataLiquidity;
+    }
+
+    const dataGrid = await getParamGrid();
+    if (dataGrid !== null) {
+      grid = dataGrid;
+    }
+
+    const dataDmn = await getParamDmn();
+    if (dataDmn !== null) {
+      dmn = dataDmn;
     }
 
     const response = {
@@ -989,7 +1068,11 @@ export const getParamNetwork = async (address, node) => {
       bandwidth,
       gov,
       rank,
-      inlfation,
+      mint,
+      resources,
+      liquidity,
+      grid,
+      dmn,
     };
 
     return response;
@@ -1055,7 +1138,7 @@ export const getTxCosmos = async (page = 1) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${COSMOS.ADDR_FUNDING}&limit=1000000000&page=${page}`,
+      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&transfer.recipient=${config.COSMOS.ADDR_FUNDING}&limit=1000000000&page=${page}`,
     });
     return response.data;
   } catch (e) {
@@ -1094,7 +1177,7 @@ export const getFromLink = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectTo=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleTo=${cid}&limit=1000000000`,
     });
     return response.data;
   } catch (e) {
@@ -1107,7 +1190,7 @@ export const getToLink = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectFrom=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=${cid}&limit=1000000000`,
     });
     return response.data;
   } catch (e) {
@@ -1120,7 +1203,7 @@ export const getFollows = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&limit=1000000000`,
     });
     return response.data;
   } catch (e) {
@@ -1133,7 +1216,7 @@ export const getTweet = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -1166,7 +1249,7 @@ export const chekFollow = async (address, addressFollowHash) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressFollowHash}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.particleTo=${addressFollowHash}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -1179,7 +1262,7 @@ export const getAvatar = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cybermeta.subject=${address}&cyberlink.objectFrom=Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.neuron=${address}&cyberlink.particleFrom=Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -1192,7 +1275,7 @@ export const getFollowers = async (addressHash) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.objectTo=${addressHash}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleFrom=QmPLSA5oPqYxgc8F7EwrM8WS9vKrr1zPoDniSRFh8HSrxx&cyberlink.particleTo=${addressHash}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -1205,7 +1288,7 @@ export const getCreator = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.objectTo=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleTo=${cid}&limit=1000000000`,
     });
     return response.data;
   } catch (error) {
@@ -1227,42 +1310,229 @@ export const authAccounts = async (address) => {
   }
 };
 
-export const getAvatarIpfs = async (cid, ipfs) => {
-  const responseDag = await ipfs.dag.get(cid, {
-    localResolve: false,
-  });
+const convertAvatarImg = async (data) => {
+  let img = null;
 
-  if (responseDag.value.size <= 1.5 * 10 ** 7) {
-    const responsePin = ipfs.pin.add(cid);
-    console.log('responsePin', responsePin);
-    let mime;
+  const dataFileType = await FileType.fromBuffer(data);
+  console.log(`dataFileType`, dataFileType);
 
-    const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
+  const base64 = btoa(
+    new Uint8Array(data).reduce(
+      (dataR, byte) => dataR + String.fromCharCode(byte),
+      ''
+    )
+  );
 
-    const data = responseCat;
-    // const buf = someVar;
-    // const bufs = [];
-    // bufs.push(buf);
-    // const data = Buffer.concat(bufs);
-    const dataFileType = await FileType.fromBuffer(data);
-    if (dataFileType !== undefined) {
-      mime = dataFileType.mime;
-      if (mime.indexOf('image') !== -1) {
-        // const dataBase64 = data.toString('base64');
-        const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-        const file = `data:${mime};base64,${dataBase64}`;
-        return file;
-      }
+  const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
+  console.log(`base64`, base64);
+
+  if (dataFileType !== undefined) {
+    const { mime } = dataFileType;
+    if (mime.indexOf('image') !== -1) {
+      // const dataBase64 = data.toString('base64');
+      const file = `data:${mime};base64,${dataBase64}`;
+      return file;
     }
-    const dataBase64 = uint8ArrayToAsciiString(data);
-    // console.log(`dataBase64`, dataBase64);
-    if (isSvg(dataBase64)) {
-      const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-        data,
-        'base64'
-      )}`;
-      return svg;
+  }
+
+  if (isSvg(data)) {
+    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+      dataBase64,
+      'base64'
+    )}`;
+    img = svg;
+  } else {
+    img = data;
+  }
+
+  return img;
+};
+
+export const getAvatarIpfs = async (cid, ipfs) => {
+  if (ipfs !== null) {
+    const responseDag = await ipfs.dag.get(cid, {
+      localResolve: false,
+    });
+
+    if (responseDag.value.size <= 1.5 * 10 ** 7) {
+      const responsePin = ipfs.pin.add(cid);
+      // getPinsCid(cid);
+      console.log('responsePin', responsePin);
+      let mime;
+
+      const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
+
+      const data = responseCat;
+      // const buf = someVar;
+      // const bufs = [];
+      // bufs.push(buf);
+      // const data = Buffer.concat(bufs);
+      const dataFileType = await FileType.fromBuffer(data);
+      if (dataFileType !== undefined) {
+        mime = dataFileType.mime;
+        if (mime.indexOf('image') !== -1) {
+          // const dataBase64 = data.toString('base64');
+          const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
+          const file = `data:${mime};base64,${dataBase64}`;
+          return file;
+        }
+      }
+      const dataBase64 = uint8ArrayToAsciiString(data);
+      // console.log(`dataBase64`, dataBase64);
+      if (isSvg(dataBase64)) {
+        const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+          data,
+          'base64'
+        )}`;
+        return svg;
+      }
     }
   }
   return null;
+};
+
+export const getIpfsGatway = async (cid) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${config.CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getPinsCidPost = async (cid) => {
+  console.log(`getPinsCidPost`);
+  try {
+    const response = await axios({
+      method: 'post',
+      url: `https://io.cybernode.ai/pins/${cid}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const getPinsCidGet = async (cid) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://io.cybernode.ai/pins/${cid}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const addFileToCluster = async (cid, file) => {
+  console.log(`addFileToCluster`);
+  let dataFile = null;
+  if (cid === file) {
+    const responseGetPinsCidPost = await getPinsCidPost(cid);
+    return responseGetPinsCidPost;
+  }
+
+  if (file instanceof Blob) {
+    console.log(`Blob`);
+    dataFile = file;
+  } else if (typeof file === 'string') {
+    dataFile = new File([file], 'file.txt');
+  } else if (file.name && file.size < 8 * 10 ** 6) {
+    dataFile = new File([file], file.name);
+  }
+
+  if (dataFile !== null) {
+    const formData = new FormData();
+    formData.append('file', dataFile);
+    try {
+      const response = await axios({
+        method: 'post',
+        url: 'https://io.cybernode.ai/add',
+        data: formData,
+      });
+      return response;
+    } catch (error) {
+      const responseGetPinsCidPost = await getPinsCidPost(cid);
+      return responseGetPinsCidPost;
+    }
+  } else {
+    const responseGetPinsCidPost = await getPinsCidPost(cid);
+    return responseGetPinsCidPost;
+  }
+};
+
+export const getPinsCid = async (cid, file) => {
+  try {
+    const responseGetPinsCidGet = await getPinsCidGet(cid);
+    console.log(`responseGetPinsCidGet`, responseGetPinsCidGet);
+    if (
+      responseGetPinsCidGet.peer_map &&
+      Object.keys(responseGetPinsCidGet.peer_map).length > 0
+    ) {
+      const { peer_map: peerMap } = responseGetPinsCidGet;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in peerMap) {
+        if (Object.hasOwnProperty.call(peerMap, key)) {
+          const element = peerMap[key];
+          if (element.status !== 'unpinned') {
+            console.log(`!== unpinned`);
+            return null;
+          }
+        }
+      }
+
+      if (file !== undefined) {
+        const responseGetPinsCidPost = await addFileToCluster(cid, file);
+        return responseGetPinsCidPost;
+      }
+      const responseGetPinsCidPost = await getPinsCidPost(cid);
+      return responseGetPinsCidPost;
+    }
+    return null;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export const searchClient = async (client, query, page) => {
+  try {
+    const hash = await getIpfsHash(query.toLowerCase());
+    const responseSearchResults = await client.search(hash, page);
+    console.log(`responseSearchResults`, responseSearchResults);
+    return responseSearchResults.result ? responseSearchResults : [];
+  } catch (error) {
+    return [];
+  }
+};
+// Access-Control-Allow-Origin
+export const getCredit = async (address) => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const fromData = {
+      denom: 'boot',
+      address,
+    };
+    const response = await axios({
+      method: 'post',
+      // url: 'http://localhost:8000/credit',
+      url: 'https://titan.cybernode.ai/credit',
+      headers,
+      data: JSON.stringify(fromData),
+    });
+
+    return response;
+  } catch (error) {
+    return null;
+  }
 };

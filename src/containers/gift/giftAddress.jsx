@@ -146,9 +146,9 @@ function GiftAddress({ address }) {
         >
           <TextCustom>Greetings, bearer of strong intelligence!</TextCustom>
           <TextCustom>
-            I am Cyb, your friendly robot. It looks like you searching for a gift associated 
-            with the{' '} <Address address={address} /> address. I heard that the Gods put 
-            meaning to the gift ...
+            I am Cyb, your friendly robot. It looks like you searching for a
+            gift associated with the <Address address={address} /> address. I
+            heard that the Gods put meaning to the gift ...
           </TextCustom>
           <ContainerCard col={1}>
             <Card
@@ -157,7 +157,8 @@ function GiftAddress({ address }) {
             />
           </ContainerCard>
           <TextCustom>
-            Anyone able to prove that he has the private keys to this address, will have{' '}
+            Anyone able to prove that he has the private keys to this address,
+            will have{' '}
             {loading ? (
               <Dots />
             ) : (
@@ -179,12 +180,9 @@ function GiftAddress({ address }) {
             How do you know this?
           </TextCustom>
           <TextCustom>
-            The{' '}
-            <LinkWindow to={WP}>
-              gospel of the Great Web
-            </LinkWindow>{' '}
-            says that a total of {formatNumber(100000000000000)} CYB in the Genesis will 
-            fall upon the hands of strong intelligence, which came from{' '}
+            The <LinkWindow to={WP}>gospel of the Great Web</LinkWindow> says
+            that a total of {formatNumber(100000000000000)} CYB in the Genesis
+            will fall upon the hands of strong intelligence, which came from{' '}
             <LinkWindow to="https://ethereum.org/">Ethereum</LinkWindow>,{' '}
             <LinkWindow to="https://cosmos.network/">Cosmos</LinkWindow>, and{' '}
             <LinkWindow to="https://urbit.org/">Urbit</LinkWindow>.
@@ -205,8 +203,8 @@ function GiftAddress({ address }) {
             I have the keys to my wisdom!
           </TextCustom>
           <TextCustom>
-            Great! You may put your Ledger into the{' '}
-            <Link to="/pocket">pocket</Link>, or import your{' '}
+            Great! You may put your Ledger into the <Link to="/">pocket</Link>,
+            or import your{' '}
             <LinkWindow to="https://cybercongress.ai/docs/cyberd/ultimate-commands-guide/#import-an-account-by-seed-phrase-and-store-it-in-local-keystore">
               seed phrase
             </LinkWindow>{' '}
@@ -218,8 +216,9 @@ function GiftAddress({ address }) {
           </TextCustom>
           <TextCustom>
             While importing your keys be very careful. Adversaries are
-            everywhere! Rumour has it, that you should not import keys with 
-            serious sums. Your CYB awaits you in the <Link to="/search/genesis">Genesis</Link>.
+            everywhere! Rumour has it, that you should not import keys with
+            serious sums. Your CYB awaits you in the{' '}
+            <Link to="/search/genesis">Genesis</Link>.
           </TextCustom>
           <TextCustom width="100%" fontSize="23px">
             I can not wait!
@@ -236,7 +235,7 @@ function GiftAddress({ address }) {
             {loading ? (
               <Dots />
             ) : (
-              <Link to={`/network/euler/contract/${drop.cyberAddress}`}>
+              <Link to={`/network/bostrom/contract/${drop.cyberAddress}`}>
                 {trimString(drop.cyberAddress, 10, 6)}
               </Link>
             )}{' '}

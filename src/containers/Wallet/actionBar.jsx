@@ -12,6 +12,8 @@ import ActionBarUser from './actionBarUser';
 import ActionBarLedger from './actionBarLedger';
 import ActionBarConnect from './actionBarConnect';
 import ActionBarCyberSigner from './actionBarCyberSigner';
+import waitForWeb3 from '../../components/web3/waitForWeb3';
+import { NETWORKSIDS } from '../../utils/config';
 
 const imgLedger = require('../../image/ledger.svg');
 const imgKeplr = require('../../image/keplr-icon.svg');
@@ -48,7 +50,6 @@ function ActionBar({
   // actionBar keplr props
   keplr,
   // actionBar web3
-  web3,
   accountsETH,
   // actionBar tweet
   refreshTweet,
@@ -62,6 +63,20 @@ function ActionBar({
   const [stage, setStage] = useState(STAGE_INIT);
   const [makeActive, setMakeActive] = useState(false);
   const [connect, setConnect] = useState(false);
+  const [web3, setWeb3] = useState(null);
+
+  useEffect(() => {
+    //
+    const getWeb3 = async () => {
+      const web3response = await waitForWeb3();
+      web3response.eth.net.getId().then((id) => {
+        if (id === NETWORKSIDS.main) {
+          setWeb3(web3response);
+        }
+      });
+    };
+    getWeb3();
+  }, []);
 
   useEffect(() => {
     if (stage === STAGE_INIT) {
@@ -75,10 +90,6 @@ function ActionBar({
         case selectCard.indexOf('pubkey') !== -1 ||
           hoverCard.indexOf('pubkey') !== -1:
           changeActionBar(selectAccount);
-          break;
-
-        case selectCard === 'gol' || hoverCard === 'gol':
-          setTypeActionBar('gol');
           break;
 
         default:
@@ -157,7 +168,7 @@ function ActionBar({
   if (typeActionBar === '' && stage === STAGE_INIT) {
     return (
       <ActionBarGravity>
-        <Pane>
+        <Pane display="flex">
           <Button marginX={10} onClick={() => setStage(STAGE_CONNECT)}>
             Connect
           </Button>
@@ -292,22 +303,6 @@ function ActionBar({
               Activate
             </Button>
           )}
-        </Pane>
-      </ActionBarGravity>
-    );
-  }
-
-  if (typeActionBar === 'gol' && stage === STAGE_INIT) {
-    return (
-      <ActionBarGravity>
-        <Pane>
-          <Link
-            style={{ paddingTop: 10, paddingBottom: 10, display: 'block' }}
-            className="btn"
-            to="/gol"
-          >
-            Play Game of Links
-          </Link>
         </Pane>
       </ActionBarGravity>
     );

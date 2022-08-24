@@ -1,37 +1,14 @@
 import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
-import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
-import { Dots } from '../../components';
-import {
-  Load,
-  Delegation,
-  LifetimeHooks,
-  Rewards,
-  FVS,
-  Relevance,
-  CommunityPool,
-  Takeoff,
-  Total,
-} from './discipline';
+import { Link } from 'react-router-dom';
+import { LinkWindow } from '../../components';
+import RowTable from './components/row';
+import useGetGol from './getGolHooks';
+import { formatNumber } from '../../utils/utils';
 
-const BLOCK_SUBSCRIPTION = gql`
-  query newBlock {
-    block(limit: 1, order_by: { height: desc }) {
-      height
-    }
-  }
-`;
+const TableDiscipline = ({ address }) => {
+  const { resultGol } = useGetGol(address);
 
-const TableDiscipline = ({
-  won = 0,
-  addressLedger,
-  validatorAddress,
-  consensusAddress,
-  takeoffDonations,
-  estimation,
-  mobile,
-}) => {
   try {
     return (
       <Pane marginTop={15} width="100%">
@@ -50,29 +27,15 @@ const TableDiscipline = ({
               </Text>
             </Table.TextHeaderCell>
             <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="16px" color="#fff">
-                Max CYB reward
+              <Text fontSize="18px" color="#fff">
+                TOCYB
               </Text>
             </Table.TextHeaderCell>
             <Table.TextHeaderCell textAlign="center">
-              <Text fontSize="16px" color="#fff">
-                Current CYB reward
+              <Text fontSize="18px" color="#fff">
+                BOOT
               </Text>
             </Table.TextHeaderCell>
-            {!mobile && (
-              <>
-                <Table.TextHeaderCell textAlign="center">
-                  <Text fontSize="18px" color="#fff">
-                    CYB won
-                  </Text>
-                </Table.TextHeaderCell>
-                <Table.TextHeaderCell textAlign="center">
-                  <Text fontSize="18px" color="#fff">
-                    CYB won, %
-                  </Text>
-                </Table.TextHeaderCell>
-              </>
-            )}
           </Table.Head>
           <Table.Body
             style={{
@@ -81,34 +44,14 @@ const TableDiscipline = ({
               padding: 7,
             }}
           >
-            <Takeoff
-              takeoffDonations={takeoffDonations}
-              addressLedger={addressLedger}
-              estimation={estimation}
-            />
-            <Relevance
-              addressLedger={addressLedger}
-              takeoffDonations={takeoffDonations}
-            />
-            <Load
-              addressLedger={addressLedger}
-              takeoffDonations={takeoffDonations}
-            />
-            <Delegation
-              validatorAddress={validatorAddress}
-              takeoffDonations={takeoffDonations}
-            />
-            <LifetimeHooks
-              consensusAddress={consensusAddress}
-              takeoffDonations={takeoffDonations}
-            />
-            <Rewards
-              validatorAddress={validatorAddress}
-              takeoffDonations={takeoffDonations}
-            />
-            <FVS />
-            <CommunityPool address={addressLedger} />
-            <Total />
+            {Object.keys(resultGol).length > 0 &&
+              Object.keys(resultGol).map((key) => (
+                <RowTable
+                  text={key}
+                  key={key}
+                  cybWon={formatNumber(Math.floor(resultGol[key]))}
+                />
+              ))}
           </Table.Body>
         </Table>
       </Pane>

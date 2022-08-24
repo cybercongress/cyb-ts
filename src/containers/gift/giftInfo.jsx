@@ -68,7 +68,7 @@ const GiftInfo = () => {
             standalone tokens: EUL. Rumor has it that an incredible amount of
             tokens are allocated to Ethereans, Cosmonauts and Urbiters: 42.9% of
             EULs. So, go and claim them: simply{' '}
-            <Link to="/pocket">put your ledger</Link> into the pocket.
+            <Link to="/">put your ledger</Link> into the pocket.
           </Text>
           <Text lineHeight="23px" color="#fff" fontSize="18px">
             You can also import your private key (for Ethereum) or seed phrase

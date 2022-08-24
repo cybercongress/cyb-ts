@@ -1,4 +1,5 @@
 import bech32 from 'bech32';
+import { fromUtf8 } from '@cosmjs/encoding';
 import { CYBER } from './config';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
@@ -219,7 +220,7 @@ const exponentialToDecimal = (exponential) => {
       }
       return text;
     };
-    decimal = addCommas(exponentialSplitted[0].replace('.', '') + postfix);
+    decimal = exponentialSplitted[0].replace('.', '') + postfix;
   }
   if (decimal.toLowerCase().includes('e-')) {
     const exponentialSplitted = decimal.split('e-');
@@ -239,7 +240,7 @@ function dhm(t) {
   let h = Math.floor((t - d * cd) / ch);
   let m = Math.round((t - d * cd - h * ch) / 60000);
   const pad = function (n, unit) {
-    return n < 10 ? `0${n}${unit}` : n;
+    return n < 10 ? `0${n}${unit}` : `${n}${unit}`;
   };
   if (m === 60) {
     h++;
@@ -327,6 +328,119 @@ const isMobileTablet = () => {
   return hasTouchScreen;
 };
 
+const coinDecimals = (number) => {
+  return number * 10 ** -18;
+};
+
+const convertResources = (number) => {
+  return Math.floor(number * 10 ** -3);
+};
+
+function timeSince(timeMS) {
+  const seconds = Math.floor(timeMS / 1000);
+
+  if (seconds === 0) {
+    return 'now';
+  }
+
+  let interval = Math.floor(seconds / 31536000);
+
+  if (interval > 1) {
+    return `${interval} years`;
+  }
+  interval = Math.floor(seconds / 2592000);
+  if (interval > 1) {
+    return `${interval} months`;
+  }
+  interval = Math.floor(seconds / 86400);
+  if (interval > 1) {
+    return `${interval} days`;
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {
+    return `${interval} hours`;
+  }
+  interval = Math.floor(seconds / 60);
+  if (interval > 1) {
+    return `${interval} minutes`;
+  }
+  return `${Math.floor(seconds)} seconds`;
+}
+
+const reduceBalances = (data) => {
+  try {
+    let balances = {};
+    if (Object.keys(data).length > 0) {
+      balances = data.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.denom]: parseFloat(item.amount),
+        }),
+        {}
+      );
+    }
+    return balances;
+  } catch (error) {
+    console.log(`error reduceBalances`, error);
+    return {};
+  }
+};
+
+const reduceObj = (data) => {
+  try {
+    let objTemp = {};
+    if (Object.keys(data).length > 0) {
+      objTemp = data.reduce(
+        (obj, item) => ({
+          ...obj,
+          [item.key]: item.value,
+        }),
+        {}
+      );
+    }
+    return objTemp;
+  } catch (error) {
+    return {};
+  }
+};
+
+// example: oneLiner -> message.module=wasm&message.action=/cosmwasm.wasm.v1.MsgStoreCode&store_code.code_id=${codeId}
+function makeTags(oneLiner) {
+  return oneLiner.split('&').map((pair) => {
+    if (pair.indexOf('=') === -1) {
+      throw new Error('Parsing error: Equal sign missing');
+    }
+    const parts = pair.split('=');
+    if (parts.length > 2) {
+      throw new Error(
+        'Parsing error: Multiple equal signs found. If you need escaping support, please create a PR.'
+      );
+    }
+    const [key, value] = parts;
+    if (!key) {
+      throw new Error('Parsing error: Key must not be empty');
+    }
+    return { key, value };
+  });
+}
+
+function parseMsgContract(msg) {
+  const json = fromUtf8(msg);
+
+  return JSON.parse(json);
+}
+const replaceSlash = (text) => text.replace(/\//g, '%2F');
+
+const encodeSlash = (text) => text.replace(/%2F/g, '/');
+
+const groupMsg = (ArrMsg, size = 2) => {
+  const link = [];
+  for (let i = 0; i < Math.ceil(ArrMsg.length / size); i += 1) {
+    link[i] = ArrMsg.slice(i * size, i * size + size);
+  }
+  return link;
+};
+
 export {
   run,
   sort,
@@ -343,4 +457,14 @@ export {
   downloadObjectAsJson,
   getTimeRemaining,
   isMobileTablet,
+  coinDecimals,
+  convertResources,
+  timeSince,
+  reduceBalances,
+  makeTags,
+  reduceObj,
+  parseMsgContract,
+  replaceSlash,
+  encodeSlash,
+  groupMsg,
 };

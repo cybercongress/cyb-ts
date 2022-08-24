@@ -40,7 +40,7 @@ function PathTab({ activeValidatorsCount = 0 }) {
             link
           />
         </Link>
-        <Link to="/heroes">
+        <Link to="/halloffame">
           <CardStatisics
             // title="Homestead"
             styleContainer={{

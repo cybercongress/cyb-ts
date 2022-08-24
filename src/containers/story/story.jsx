@@ -57,23 +57,23 @@ class Story extends React.Component {
       this.setState({
         cyber: true,
       });
-    }, 37000);
+    }, 34000);
 
     setTimeout(() => {
       this.setState({
         cyb: true,
       });
-    }, 59500);
+    }, 54500);
 
     setTimeout(() => {
       this.setState({
         end: true,
       });
-    }, 75000);
+    }, 65000);
 
     setTimeout(() => {
       this.swapStory();
-    }, 80000);
+    }, 70000);
   };
 
   audio = () => {
@@ -101,7 +101,7 @@ class Story extends React.Component {
   swapStory = () => {
     const { history } = this.props;
     localStorage.setItem('story', JSON.stringify(true));
-    history.push('/');
+    history.push('/superintelligence');
   };
 
   render() {

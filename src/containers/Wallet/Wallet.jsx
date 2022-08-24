@@ -14,6 +14,7 @@ import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from './injectKeplr';
+import BanerHelp from '../help/banerHelp';
 
 import { LEDGER, COSMOS, PATTERN_CYBER } from '../../utils/config';
 import {
@@ -36,6 +37,7 @@ import {
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
 import { AppContext } from '../../context';
+import { InfoCard } from '../portal/components';
 
 import db from '../../db';
 
@@ -171,11 +173,8 @@ class Wallet extends React.Component {
 
   checkAddressLocalStorage = async () => {
     const { updateCard } = this.state;
-    const {
-      setBandwidthProps,
-      setDefaultAccountProps,
-      setAccountsProps,
-    } = this.props;
+    const { setBandwidthProps, setDefaultAccountProps, setAccountsProps } =
+      this.props;
     let localStoragePocketAccountData = [];
     let defaultAccounts = null;
     let defaultAccountsKeys = null;
@@ -247,6 +246,7 @@ class Wallet extends React.Component {
         importLinkCli: false,
         linkSelected: null,
         selectCard: '',
+        selectAccount: null,
       });
     }
   };
@@ -258,8 +258,13 @@ class Wallet extends React.Component {
     if (defaultAccounts !== null && defaultAccounts.cyber) {
       const response = await getAccountBandwidth(defaultAccounts.cyber.bech32);
       if (response !== null) {
-        const { remained, max_value: maxValue } = response;
-        setBandwidthProps(remained, maxValue);
+        const { remained_value: remained, max_value: maxValue } =
+          response.neuron_bandwidth;
+        if (remained && maxValue) {
+          setBandwidthProps(remained, maxValue);
+        } else {
+          setBandwidthProps(0, 0);
+        }
       }
     }
   };
@@ -464,6 +469,13 @@ class Wallet extends React.Component {
     }
   };
 
+  routeChange = () => {
+    const { history } = this.props;
+    if (history) {
+      history.push('/help');
+    }
+  };
+
   render() {
     const {
       pocket,
@@ -489,8 +501,8 @@ class Wallet extends React.Component {
       storageManager,
       hoverCard,
     } = this.state;
-    const { web3, keplr, contractToken, ipfsId } = this.props;
-    // const { keplr } = this.context;
+    const { web3, contractToken, ipfsId } = this.props;
+    const { keplr } = this.context;
     let countLink = 0;
     if (link !== null) {
       countLink = [].concat.apply([], link).length;
@@ -514,23 +526,38 @@ class Wallet extends React.Component {
 
     if (addAddress && stage === STAGE_INIT) {
       return (
-        <div>
-          <main className="block-body-home">
-            <Pane
-              boxShadow="0px 0px 5px #36d6ae"
-              paddingX={20}
-              paddingY={20}
-              marginY={20}
-              marginX="auto"
-              width="60%"
+        <>
+          <main className="block-body">
+            <div
+              style={{
+                margin: '0px auto 12px auto',
+                width: '60%',
+              }}
             >
-              <Text fontSize="16px" color="#fff">
-                This is your pocket. If you give me your pubkey I can help
-                cyberlink, track your balances, participate in the{' '}
-                <Link to="/gol">Game of Links</Link> and more.
-              </Text>
-            </Pane>
-            <NotFound text=" " />
+              <Link to="/portal">
+                <InfoCard>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '10px 50px 0px 50px',
+                      gap: 20,
+                      display: 'grid',
+                      color: '#fff',
+                    }}
+                  >
+                    <div style={{ fontSize: '28px' }}>
+                      The portal is open! 🎉
+                    </div>
+                    <div>
+                      <span style={{ color: '#36d6ae' }}>Go to portal</span> to
+                      register your citizenship and <br /> check for your gift
+                    </div>
+                  </div>
+                </InfoCard>
+              </Link>
+            </div>
+            <BanerHelp />
+            {/* <NotFound text=" " /> */}
           </main>
           <ActionBarConnect
             keplr={keplr}
@@ -540,13 +567,13 @@ class Wallet extends React.Component {
             accountsETH={accountsETH}
             selectAccount={selectAccount}
           />
-        </div>
+        </>
       );
     }
 
     if (!addAddress) {
       return (
-        <div>
+        <>
           <main
             style={{ minHeight: 'calc(100vh - 162px)', alignItems: 'center' }}
             className="block-body"
@@ -559,6 +586,41 @@ class Wallet extends React.Component {
               flexDirection="column"
               height="100%"
             >
+              <Link
+                style={{ marginBottom: '20px', width: '100%' }}
+                to="/portal"
+              >
+                <InfoCard>
+                  <div
+                    style={{
+                      textAlign: 'center',
+                      padding: '10px 50px 0px 50px',
+                      gap: 20,
+                      display: 'grid',
+                      color: '#fff',
+                    }}
+                  >
+                    <div style={{ fontSize: '28px' }}>
+                      The portal is open! 🎉
+                    </div>
+                    <div>
+                      <span style={{ color: '#36d6ae' }}>Go to portal</span> to
+                      register your citizenship and <br /> check for your gift
+                    </div>
+                  </div>
+                </InfoCard>
+              </Link>
+              <PocketCard
+                alignItems="flex-start"
+                marginBottom={20}
+                onClick={() => this.routeChange()}
+              >
+                <Text fontSize="16px" color="#fff">
+                  Hi! I am Cyb! Your immortal robot of the Great Web. Click here
+                  for help.
+                </Text>
+              </PocketCard>
+
               {defaultAccounts !== null && defaultAccounts.cyber && (
                 <TweetCard
                   refresh={refreshTweet}
@@ -571,7 +633,6 @@ class Wallet extends React.Component {
                   id="tweet"
                 />
               )}
-
               {storageManager && storageManager !== null && ipfsId !== null && (
                 <IpfsCard
                   storageManager={storageManager}
@@ -582,7 +643,6 @@ class Wallet extends React.Component {
                   id="storageManager"
                 />
               )}
-
               {accounts !== null &&
                 Object.keys(accounts).map((key, i) => (
                   <PubkeyCard
@@ -603,16 +663,6 @@ class Wallet extends React.Component {
                     updateFunc={this.checkAddressLocalStorage}
                   />
                 ))}
-
-              <GolCard
-                id="gol"
-                onClick={(e) => this.onClickSelect(e, 'gol')}
-                onMouseEnter={(e) => this.mouselogEnter(e, 'gol')}
-                onMouseLeave={(e) => this.mouselogLeave()}
-                select={selectCard === 'gol'}
-                marginBottom={20}
-                defaultAccounts={defaultAccounts}
-              />
               {link !== null && (
                 <PocketCard
                   marginBottom={20}
@@ -653,7 +703,7 @@ class Wallet extends React.Component {
             defaultAccounts={defaultAccounts}
             defaultAccountsKeys={defaultAccountsKeys}
           />
-        </div>
+        </>
       );
     }
     return null;
@@ -677,9 +727,6 @@ const mapStateToProps = (store) => {
   };
 };
 
-// Wallet.contextType = AppContext;
+Wallet.contextType = AppContext;
 
-export default connect(
-  mapStateToProps,
-  mapDispatchprops
-)(withWeb3(injectKeplr(Wallet)));
+export default connect(mapStateToProps, mapDispatchprops)(Wallet);

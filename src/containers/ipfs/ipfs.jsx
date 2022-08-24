@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import {
   Pane,
@@ -15,7 +15,6 @@ import { useQuery, useSubscription } from '@apollo/react-hooks';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
 import gql from 'graphql-tag';
 import {
-  search,
   getRankGrade,
   getToLink,
   getCreator,
@@ -23,8 +22,7 @@ import {
 } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
 import CodeBlock from './codeBlock';
-import Noitem from '../account/noItem';
-import { formatNumber, trimString, formatCurrency } from '../../utils/utils';
+import { formatNumber, trimString, coinDecimals } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
   DiscussionTab,
@@ -35,9 +33,10 @@ import {
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import AvatarIpfs from '../account/avatarIpfs';
+import AvatarIpfs from '../account/component/avatarIpfs';
 import ContentItem from './contentItem';
 import useGetIpfsContent from './useGetIpfsContentHook';
+import { AppContext } from '../../context';
 
 const dateFormat = require('dateformat');
 
@@ -62,10 +61,39 @@ const Pill = ({ children, active, ...props }) => (
   </Pane>
 );
 
+const search = async (client, hash, page) => {
+  try {
+    const responseSearchResults = await client.search(hash, page);
+    console.log(`responseSearchResults`, responseSearchResults);
+    return responseSearchResults.result ? responseSearchResults : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const reduceParticleArr = (data, query = '') => {
+  return data.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item.particle]: {
+        particle: item.particle,
+        rank: coinDecimals(item.rank),
+        grade: getRankGrade(coinDecimals(item.rank)),
+        status: 'impossibleLoad',
+        query,
+        text: item.particle,
+        content: false,
+      },
+    }),
+    {}
+  );
+};
+
 function Ipfs({ nodeIpfs, mobile }) {
+  const { jsCyber } = useContext(AppContext);
   const { cid } = useParams();
   const location = useLocation();
-  const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs, 10);
+  const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs);
 
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
@@ -77,6 +105,10 @@ function Ipfs({ nodeIpfs, mobile }) {
   const [dataToLink, setDataToLink] = useState([]);
   const [dataFromLink, setDataFromLink] = useState([]);
   const [dataAnswers, setDataAnswers] = useState([]);
+  const [dataBacklinks, setDataBacklinks] = useState([]);
+  const [page, setPage] = useState(0);
+  const [allPage, setAllPage] = useState(0);
+  const [total, setTotal] = useState(0);
   const [creator, setCreator] = useState({
     address: '',
     timestamp: '',
@@ -92,7 +124,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   let contentTab;
 
   useEffect(() => {
-    console.log(`dataGetIpfsContent`, dataGetIpfsContent)
+    // console.log(`dataGetIpfsContent`, dataGetIpfsContent);
     setContent(dataGetIpfsContent.content);
     setTypeContent(dataGetIpfsContent.typeContent);
     setGateway(dataGetIpfsContent.gateway);
@@ -101,9 +133,29 @@ function Ipfs({ nodeIpfs, mobile }) {
   }, [dataGetIpfsContent]);
 
   useEffect(() => {
-    // setLoading(true);
-    getLinks();
-  }, [cid]);
+    if (jsCyber !== null) {
+      getLinks();
+    }
+  }, [cid, jsCyber]);
+
+  useEffect(() => {
+    const feachBacklinks = async () => {
+      setDataBacklinks([]);
+      if (jsCyber !== null) {
+        const responseBacklinks = await jsCyber.backlinks(cid);
+        // console.log(`responseBacklinks`, responseBacklinks)
+        if (
+          responseBacklinks.result &&
+          Object.keys(responseBacklinks.result).length > 0
+        ) {
+          const { result } = responseBacklinks;
+          const reduceArr = reduceParticleArr(result, cid);
+          setDataBacklinks(reduceArr);
+        }
+      }
+    };
+    feachBacklinks();
+  }, [cid, jsCyber]);
 
   const getLinks = () => {
     feacDataSearch();
@@ -112,12 +164,36 @@ function Ipfs({ nodeIpfs, mobile }) {
   };
 
   const feacDataSearch = async () => {
-    const responseSearch = await search(cid);
-    setDataAnswers(responseSearch);
+    setDataAnswers([]);
+    setAllPage(0);
+    setPage(0);
+    setTotal(0);
+    const responseSearch = await search(jsCyber, cid, 0);
+    if (responseSearch.result && responseSearch.result.length > 0) {
+      setDataAnswers(reduceParticleArr(responseSearch.result, cid));
+      setAllPage(Math.ceil(parseFloat(responseSearch.pagination.total) / 10));
+      setTotal(parseFloat(responseSearch.pagination.total));
+      setPage((item) => item + 1);
+    }
+  };
+
+  const fetchMoreData = async () => {
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    const data = await search(jsCyber, cid, page);
+    // console.log(`data`, data)
+    if (data.result) {
+      const result = reduceParticleArr(data.result, cid);
+      setTimeout(() => {
+        setDataAnswers((itemState) => ({ ...itemState, ...result }));
+        setPage((itemPage) => itemPage + 1);
+      }, 500);
+    }
   };
 
   const feachCidTo = async () => {
     const response = await getToLink(cid);
+    console.log(`response`, response);
     if (response !== null && response.txs && response.txs.length > 0) {
       console.log('response To :>> ', response);
       setDataToLink(response.txs.reverse());
@@ -127,8 +203,8 @@ function Ipfs({ nodeIpfs, mobile }) {
   const feachCidFrom = async () => {
     const response = await getFromLink(cid);
     if (response !== null && response.txs && response.txs.length > 0) {
-      console.log('response From :>> ', response);
-      const addressCreator = response.txs[0].tx.value.msg[0].value.address;
+      // console.log('response From :>> ', response);
+      const addressCreator = response.txs[0].tx.value.msg[0].value.neuron;
       const timeCreate = response.txs[0].timestamp;
       setCreator({
         address: addressCreator,
@@ -136,7 +212,7 @@ function Ipfs({ nodeIpfs, mobile }) {
       });
       const responseDataFromLink = response.txs.slice();
       responseDataFromLink.reverse();
-      console.log('responseDataFromLink :>> ', responseDataFromLink);
+      // console.log('responseDataFromLink :>> ', responseDataFromLink);
       setDataFromLink(responseDataFromLink);
     }
   };
@@ -146,7 +222,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     const tempArr = [...dataToLink, ...dataFromLink];
     if (tempArr.length > 0) {
       tempArr.forEach((item) => {
-        const subject = item.tx.value.msg[0].value.address;
+        const subject = item.tx.value.msg[0].value.neuron;
         if (dataTemp[subject]) {
           dataTemp[subject].amount += 1;
         } else {
@@ -217,7 +293,15 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   if (selected === 'answers') {
     contentTab = (
-      <AnswersTab data={dataAnswers} mobile={mobile} nodeIpfs={nodeIpfs} />
+      <AnswersTab
+        data={dataAnswers}
+        mobile={mobile}
+        nodeIpfs={nodeIpfs}
+        fetchMoreData={fetchMoreData}
+        page={page}
+        allPage={allPage}
+        total={total}
+      />
     );
   }
 
@@ -252,7 +336,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           display="flex"
           flexDirection="column"
         >
-          <Link to={`/network/euler/contract/${creator.address}`}>
+          <Link to={`/network/bostrom/contract/${creator.address}`}>
             <Pane
               alignItems="center"
               marginX="auto"
@@ -277,7 +361,7 @@ function Ipfs({ nodeIpfs, mobile }) {
           Backlinks
         </Pane>
         <OptimisationTab
-          data={dataFromLink}
+          data={dataBacklinks}
           mobile={mobile}
           nodeIpfs={nodeIpfs}
         />
@@ -291,15 +375,7 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   return (
     <>
-      <main
-        className="block-body"
-        style={{
-          minHeight: 'calc(100vh - 70px)',
-          paddingBottom: '5px',
-          height: '1px',
-          width: '100%',
-        }}
-      >
+      <main className="block-body">
         {content.length === 0 ? (
           <div
             style={{
@@ -371,7 +447,15 @@ function Ipfs({ nodeIpfs, mobile }) {
             to={`/ipfs/${cid}/meta`}
           />
         </Tablist>
-        {contentTab}
+        <Pane
+          width="90%"
+          marginX="auto"
+          marginY={0}
+          display="flex"
+          flexDirection="column"
+        >
+          {contentTab}
+        </Pane>
       </main>
       {!mobile && (selected === 'discussion' || selected === 'answers') && (
         <ActionBarContainer

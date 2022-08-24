@@ -9,10 +9,11 @@ import {
   Account,
   TextTable,
   Loading,
+  NoItems,
+  NumberCurrency,
 } from '../../components';
 import { formatNumber, formatCurrency } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
-import Noitem from '../account/noItem';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -40,27 +41,17 @@ const Fans = ({ data }) => {
         borderBottom="none"
         minHeight="48px"
         height="fit-content"
-        key={item.delegator_address}
+        key={item.delegation.delegator_address}
       >
         <Table.TextCell>
           <TextTable>
-            <Account address={item.delegator_address} />
+            <Account address={item.delegation.delegator_address} />
           </TextTable>
         </Table.TextCell>
         <Table.TextCell flex={2} textAlign="end">
-          <Tooltip
-            position="bottom"
-            content={`${formatNumber(
-              parseFloat(item.balance.amount)
-            )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
-          >
-            <TextTable>
-              {formatCurrency(
-                item.balance.amount,
-                CYBER.DENOM_CYBER.toUpperCase()
-              )}
-            </TextTable>
-          </Tooltip>
+          <TextTable>
+            <NumberCurrency amount={item.balance.amount} />
+          </TextTable>
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           <TextTable>
@@ -115,8 +106,8 @@ const Fans = ({ data }) => {
             loadMore={setNextDisplayedPalettes}
             getScrollParent={() => containerReference.current}
           > */}
-            {delegations.length > 0 ? delegations : <Noitem text="No fans" />}
-          {/* </InfiniteScroll>
+        {delegations.length > 0 ? delegations : <NoItems text="No fans" />}
+        {/* </InfiniteScroll>
         </div> */}
       </Table.Body>
     </Table>

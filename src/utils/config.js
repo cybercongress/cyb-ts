@@ -1,4 +1,4 @@
-const TIME_START = 'April 4 2020 18:00:00 GMT +3';
+const TIME_START = '2021-11-05T13:22:42Z';
 const INFINITY = '∞';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
@@ -7,6 +7,7 @@ const AUCTION = {
   ADDR_VESTING: '0xd84469ecd96825c956d7ae8b072209ca89ae37e2',
   ADDR_EVANGELISM: '0xfc3849b9711f69ddb677facff0cd6755a981a1f0',
   TOKEN_NAME: 'GOL',
+  ADDR_TOKEN: '0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64',
   TOPICS_SEND:
     '0x3b599f6217e39be59216b60e543ce0d4c7d534fe64dd9d962334924e7819894e',
   TOPICS_CLAIM:
@@ -52,7 +53,7 @@ const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
   TIME_END: 'November 31 2020 24:00:00 GMT +3',
-  CHAIN_ID: 'cosmoshub-3',
+  CHAIN_ID: 'cosmoshub-4',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',
@@ -65,18 +66,47 @@ const COSMOS = {
 const CYBER = {
   CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
   DIVISOR_CYBER_G: 10 ** 9,
-  DENOM_CYBER: 'eul',
-  DENOM_CYBER_G: `GEUL`,
-  CYBER_WEBSOCKET_URL: 'wss://rpc.euler-6.cybernode.ai/websocket',
-  CYBER_NODE_URL_API: 'https://rpc.euler-6.cybernode.ai',
-  CYBER_NODE_URL_LCD: 'https://lcd.euler-6.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://index.euler-6.cybernode.ai/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://index.euler-6.cybernode.ai/v1/graphql',
-  BECH32_PREFIX_ACC_ADDR_CYBER: 'cyber',
-  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'cybervaloper',
-  CHAIN_ID: 'euler-6',
-  MEMO_KEPLR: 'cyber.page, using keplr',
+  DENOM_CYBER: 'boot',
+  DENOM_CYBER_G: `GBOOT`,
+  HYDROGEN: 'H',
+
+  // CHAIN_ID: 'dev',
+  // CYBER_NODE_URL_API: 'http://localhost:26657',
+  // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
+  // CYBER_NODE_URL_LCD: 'http://localhost:1317',
+
+  CHAIN_ID: 'bostrom',
+  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
+  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
+  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+
+  // CHAIN_ID: 'space-pussy-1',
+  // CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
+  // CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
+  // CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
+  // CYBER_INDEX_HTTPS: 'https://index.space-pussy-1.cybernode.ai/v1/graphql',
+  // CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy-1.cybernode.ai/v1/graphql',
+
+  CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
+
+  BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
+  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
   MEMO_CYBER_SIGNER: 'cyber.page, using cyberSigner',
+};
+
+const DEFAULT_GAS_LIMITS = 200000;
+
+const GAS_LIMITS = {
+  send: 200000,
+  cyberlink: 256000,
+  investmint: 160000,
+  createRoute: 128000,
+  editRoute: 128000,
+  editRouteAlias: 128000,
+  deleteRoute: 128000,
 };
 
 const LEDGER = {
@@ -94,12 +124,12 @@ const LEDGER = {
   HDPATH: [44, 118, 0, 0, 0],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
-  MEMO: 'cyber.page, using Ledger',
+  MEMO: 'cyb.ai, using Ledger',
 };
 
 const TAKEOFF_SUPPLY = 100000000000000;
 const GENESIS_SUPPLY = 1000000000000000;
-const TOTAL_GOL_GENESIS_SUPPLY = 14406844988437;
+const TOTAL_GOL_GENESIS_SUPPLY = 50000000000000;
 
 const DISTRIBUTION = {
   takeoff: 100000000000000,
@@ -114,12 +144,12 @@ const DISTRIBUTION = {
 
 const DISTRIBUTION_PRIZE = {
   takeoff: 100000000000000,
-  relevance: 1100000000000,
+  relevance: 500000000000,
   load: 500000000000,
-  delegation: 250000000000,
+  delegation: 500000000000,
   'full validator set': 250000000000,
   'euler 4 rewards': 5000000000000,
-  lifetime: 150000000000,
+  lifetime: 500000000000,
   'community pool': 2000000000000,
 };
 
@@ -139,11 +169,71 @@ const CYBER_SIGNER = {
   STAGE_RESTORE_PHARSE: 2.3,
 };
 
-const PATTERN = /^0x[a-fA-F0-9]{40}$|^cybervaloper[a-zA-Z0-9]{39}$|^cyber[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
-const PATTERN_CYBER = /^cyber[a-zA-Z0-9]{39}$/g;
+const PROPOSAL_STATUS = {
+  /** PROPOSAL_STATUS_UNSPECIFIED - PROPOSAL_STATUS_UNSPECIFIED defines the default propopsal status. */
+  PROPOSAL_STATUS_UNSPECIFIED: 0,
+  /**
+   * PROPOSAL_STATUS_DEPOSIT_PERIOD - PROPOSAL_STATUS_DEPOSIT_PERIOD defines a proposal status during the deposit
+   * period.
+   */
+  PROPOSAL_STATUS_DEPOSIT_PERIOD: 1,
+  /**
+   * PROPOSAL_STATUS_VOTING_PERIOD - PROPOSAL_STATUS_VOTING_PERIOD defines a proposal status during the voting
+   * period.
+   */
+  PROPOSAL_STATUS_VOTING_PERIOD: 2,
+  /**
+   * PROPOSAL_STATUS_PASSED - PROPOSAL_STATUS_PASSED defines a proposal status of a proposal that has
+   * passed.
+   */
+  PROPOSAL_STATUS_PASSED: 3,
+  /**
+   * PROPOSAL_STATUS_REJECTED - PROPOSAL_STATUS_REJECTED defines a proposal status of a proposal that has
+   * been rejected.
+   */
+  PROPOSAL_STATUS_REJECTED: 4,
+  /**
+   * PROPOSAL_STATUS_FAILED - PROPOSAL_STATUS_FAILED defines a proposal status of a proposal that has
+   * failed.
+   */
+  PROPOSAL_STATUS_FAILED: 5,
+  UNRECOGNIZED: -1,
+};
+
+const VOTE_OPTION = {
+  /** VOTE_OPTION_UNSPECIFIED - VOTE_OPTION_UNSPECIFIED defines a no-op vote option. */
+  VOTE_OPTION_UNSPECIFIED: 0,
+  /** VOTE_OPTION_YES - VOTE_OPTION_YES defines a yes vote option. */
+  VOTE_OPTION_YES: 1,
+  /** VOTE_OPTION_ABSTAIN - VOTE_OPTION_ABSTAIN defines an abstain vote option. */
+  VOTE_OPTION_ABSTAIN: 2,
+  /** VOTE_OPTION_NO - VOTE_OPTION_NO defines a no vote option. */
+  VOTE_OPTION_NO: 3,
+  /** VOTE_OPTION_NO_WITH_VETO - VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option. */
+  VOTE_OPTION_NO_WITH_VETO: 4,
+  UNRECOGNIZED: -1,
+};
+
+const BOND_STATUS = {
+  BOND_STATUS_UNSPECIFIED: 0,
+  /** BOND_STATUS_UNBONDED - UNBONDED defines a validator that is not bonded. */
+  BOND_STATUS_UNBONDED: 1,
+  /** BOND_STATUS_UNBONDING - UNBONDING defines a validator that is unbonding. */
+  BOND_STATUS_UNBONDING: 2,
+  /** BOND_STATUS_BONDED - BONDED defines a validator that is bonded. */
+  BOND_STATUS_BONDED: 3,
+};
+
+const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs'
+
+const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
+const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
+const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
-const PATTERN_CYBER_VALOPER = /^cybervaloper[a-zA-Z0-9]{39}$/g;
+const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
@@ -161,11 +251,14 @@ export {
   TOTAL_GOL_GENESIS_SUPPLY,
   PATTERN,
   PATTERN_CYBER,
+  PATTERN_CYBER_CONTRACT,
   PATTERN_CYBER_VALOPER,
   PATTERN_TX,
   PATTERN_IPFS_HASH,
   PATTERN_COSMOS,
   PATTERN_ETH,
+  PATTERN_TERRA,
+  PATTERN_OSMOS,
   PATTERN_BLOCK,
   TIME_START,
   TAKEOFF_SUPPLY,
@@ -175,5 +268,11 @@ export {
   INFINITY,
   ADD_ARAGON_FINANCE,
   DISTRIBUTION_PRIZE,
+  GAS_LIMITS,
+  DEFAULT_GAS_LIMITS,
+  PROPOSAL_STATUS,
+  VOTE_OPTION,
+  BOND_STATUS,
+  CID_AVATAR,
   CYBER_SIGNER,
 };

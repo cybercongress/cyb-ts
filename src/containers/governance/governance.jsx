@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
@@ -6,34 +6,49 @@ import ActionBarContainer from './actionBarContainer';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
-import { Card, ContainerCard } from '../../components';
-import { CYBER } from '../../utils/config';
-import { formatNumber } from '../../utils/utils';
+import { Card, ContainerCard, CardStatisics } from '../../components';
+import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
+import { formatNumber, coinDecimals } from '../../utils/utils';
 import { getcommunityPool } from '../../utils/search/utils';
+import { AppContext } from '../../context';
 
 const dateFormat = require('dateformat');
 
-const Statistics = ({ communityPoolCyber }) => (
-  <ContainerCard styles={{ alignItems: 'center' }} col="1">
-    <Card
+const Statistics = ({ communityPoolCyber, staked }) => (
+  <Pane
+    marginTop={10}
+    marginBottom={50}
+    display="grid"
+    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+    gridGap="20px"
+  >
+    <CardStatisics
       title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
-      value={formatNumber(communityPoolCyber)}
-      // tooltipValue="The number of the total ETH, currently, raised"
-      positionTooltip="bottom"
+      value={formatNumber(Math.floor(communityPoolCyber))}
     />
-  </ContainerCard>
+    <Link to="/halloffame">
+      <CardStatisics
+        title="% of staked BOOT"
+        value={formatNumber(staked * 100)}
+        link
+      />
+    </Link>
+    <Link to="/network/bostrom/parameters">
+      <CardStatisics title="Network parameters" value={53} link />
+    </Link>
+  </Pane>
 );
 
 function Governance({ defaultAccount }) {
+  const { jsCyber } = useContext(AppContext);
   const [tableData, setTableData] = useState([]);
   const [minDeposit, setMinDeposit] = useState(0);
-  const [communityPoolCyber, steCommunityPoolCyber] = useState(0);
-  const [account, steAccount] = useState(null);
+  const [communityPoolCyber, setCommunityPoolCyber] = useState(0);
+  const [account, setAccount] = useState(null);
+  const [staked, setStaked] = useState(0);
 
   useEffect(() => {
-    feachCommunityPool();
     feachMinDeposit();
-    feachProposals();
   }, []);
 
   useEffect(() => {
@@ -42,11 +57,59 @@ function Governance({ defaultAccount }) {
       defaultAccount.account.cyber &&
       defaultAccount.account.cyber.keys !== 'read-only'
     ) {
-      steAccount(defaultAccount.account.cyber);
+      setAccount(defaultAccount.account.cyber);
     } else {
-      steAccount(null);
+      setAccount(null);
     }
   }, [defaultAccount.name]);
+
+  useEffect(() => {
+    const getStatistics = async () => {
+      if (jsCyber !== null) {
+        let communityPool = 0;
+        const totalCyb = {};
+        let stakedBoot = 0;
+
+        const dataCommunityPool = await jsCyber.communityPool();
+        const { pool } = dataCommunityPool;
+        if (dataCommunityPool !== null) {
+          communityPool = coinDecimals(Math.floor(parseFloat(pool[0].amount)));
+        }
+        setCommunityPoolCyber(communityPool);
+
+        const datagetTotalSupply = await jsCyber.totalSupply();
+        if (Object.keys(datagetTotalSupply).length > 0) {
+          datagetTotalSupply.forEach((item) => {
+            totalCyb[item.denom] = parseFloat(item.amount);
+          });
+        }
+        if (totalCyb.boot && totalCyb.hydrogen) {
+          const { boot, hydrogen } = totalCyb;
+          stakedBoot = hydrogen / boot;
+        }
+        setStaked(stakedBoot);
+      }
+    };
+    getStatistics();
+  }, [jsCyber]);
+
+  useEffect(() => {
+    feachProposals();
+  }, []);
+
+  const feachProposals = async () => {
+    // if (jsCyber !== null) {
+    const responseProposals = await getProposals();
+    // const responseProposals = await jsCyber.proposals(
+    //   PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED,
+    //   '',
+    //   ''
+    // );
+    if (responseProposals !== null) {
+      setTableData(responseProposals);
+    }
+    // }
+  };
 
   const feachMinDeposit = async () => {
     const responseMinDeposit = await getMinDeposit();
@@ -56,33 +119,12 @@ function Governance({ defaultAccount }) {
     }
   };
 
-  const feachCommunityPool = async () => {
-    const responseCommunityPool = await getcommunityPool();
-
-    if (responseCommunityPool !== null) {
-      steCommunityPoolCyber(Math.floor(responseCommunityPool[0].amount));
-    }
-  };
-
-  const feachProposals = async () => {
-    const responseProposals = await getProposals();
-    if (responseProposals !== null) {
-      setTableData(responseProposals);
-    }
-  };
-console.log('tableData', tableData)
+  console.log('tableData', tableData);
   const active = tableData
     .reverse()
-    .filter(
-      (item) =>
-        item.proposal_status !== 'Passed' && item.proposal_status !== 'Rejected'
-    )
+    .filter((item) => item.status < PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
     .map((item) => (
-      <Link
-        key={item.id}
-        style={{ color: 'unset' }}
-        to={`/governance/${item.id}`}
-      >
+      <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
         <ActiveCard
           key={item.id}
           id={item.id}
@@ -90,7 +132,7 @@ console.log('tableData', tableData)
           minDeposit={minDeposit}
           totalDeposit={item.total_deposit}
           type={item.content.type}
-          state={item.proposal_status}
+          state={item.status}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
             'dd/mm/yyyy, HH:MM:ss'
@@ -105,13 +147,9 @@ console.log('tableData', tableData)
     ));
 
   const accepted = tableData
-    .filter((item) => item.proposal_status === 'Passed')
+    .filter((item) => item.status === PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
     .map((item) => (
-      <Link
-        key={item.id}
-        style={{ color: 'unset' }}
-        to={`/governance/${item.id}`}
-      >
+      <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
         <AcceptedCard
           key={item.id}
           id={item.id}
@@ -129,13 +167,9 @@ console.log('tableData', tableData)
 
   const rejected = tableData
     .reverse()
-    .filter((item) => item.proposal_status === 'Rejected')
+    .filter((item) => item.status > PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
     .map((item) => (
-      <Link
-        key={item.id}
-        style={{ color: 'unset' }}
-        to={`/governance/${item.id}`}
-      >
+      <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
         <RejectedCard
           key={item.id}
           id={item.id}
@@ -154,7 +188,7 @@ console.log('tableData', tableData)
   return (
     <div>
       <main className="block-body">
-        <Statistics communityPoolCyber={communityPoolCyber} />
+        <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
         <Pane
           display="grid"
           justifyItems="center"

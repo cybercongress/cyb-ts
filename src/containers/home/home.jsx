@@ -1,218 +1,273 @@
-import React, { PureComponent } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { StartState } from './stateActionBar';
-import { Loading } from '../../components';
+import { Pane } from '@cybercongress/gravity';
+import axios from 'axios';
+import { CardStatisics, Dots, Loading } from '../../components';
+import { AppContext } from '../../context';
+import { CYBER } from '../../utils/config';
+import AccountCount from '../brain/accountCount';
+import Txs from '../brain/tx';
+import { formatCurrency, coinDecimals, formatNumber } from '../../utils/utils';
 import { setQuery } from '../../redux/actions/query';
+import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
+import ActionBarCont from '../market/actionBarContainer';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import SearchTokenInfo from '../market/searchTokensInfo';
 
-const bender = require('../../image/bender.png');
+const PREFIXES = [
+  {
+    prefix: 'T',
+    power: 1024 * 10 ** 9,
+  },
+  {
+    prefix: 'G',
+    power: 1024 * 10 ** 6,
+  },
+  {
+    prefix: 'M',
+    power: 1024 * 10 ** 3,
+  },
+  {
+    prefix: 'K',
+    power: 1024,
+  },
+];
 
-class Home extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      valueSearchInput: '',
-      result: false,
-      searchResults: [],
-      loading: false,
-      targetColor: false,
-      boxShadow: 10,
-      keywordHash: '',
-      resultNull: false,
-      query: '',
-      drop: false,
-    };
-    this.routeChange = this.routeChange.bind(this);
+const search = async (client, hash, page) => {
+  try {
+    const responseSearchResults = await client.search(hash, page);
+    console.log(`responseSearchResults`, responseSearchResults);
+    return responseSearchResults.result ? responseSearchResults : [];
+  } catch (error) {
+    return [];
   }
+};
 
-  routeChange = (newPath) => {
-    const { history } = this.props;
-    const path = newPath;
-    history.push(path);
-  };
+const ContainerGrid = ({ children }) => (
+  <Pane
+    marginTop={10}
+    marginBottom={50}
+    display="grid"
+    gridTemplateColumns="repeat(auto-fit, minmax(210px, 1fr))"
+    gridGap="20px"
+  >
+    {children}
+  </Pane>
+);
 
-  onChangeInput = async (e) => {
-    const { value } = e.target;
-    if (value.length === 0) {
-      await this.setState({
-        result: false,
+const reduceSearchResults = (data, query) => {
+  return data.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item.particle]: {
+        particle: item.particle,
+        rank: coinDecimals(item.rank),
+        grade: getRankGrade(coinDecimals(item.rank)),
+        status: 'impossibleLoad',
+        query,
+        text: item.particle,
+        content: false,
+      },
+    }),
+    {}
+  );
+};
+
+const Home = ({ node, mobile, defaultAccount, block }) => {
+  const { jsCyber } = useContext(AppContext);
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [entropy, setEntropy] = useState(0);
+  const [entropyLoader, setEntropyLoader] = useState(true);
+  const [memory, setMemory] = useState(0);
+  const [memoryLoader, setMemoryLoader] = useState(true);
+  const [resultSearch, setResultSearch] = useState([]);
+  const [loadingSearch, setLoadingSearch] = useState(true);
+  const [keywordHash, setKeywordHash] = useState('');
+  const [rankLink, setRankLink] = useState(null);
+  const [update, setUpdate] = useState(0);
+  const [page, setPage] = useState(0);
+  const [allPage, setAllPage] = useState(0);
+
+  useEffect(() => {
+    getEntropy();
+  }, []);
+
+  const getEntropy = async () => {
+    try {
+      setEntropyLoader(true);
+      const response = await axios({
+        method: 'get',
+        url: `${CYBER.CYBER_NODE_URL_LCD}/rank/negentropy`,
       });
-    }
-    await this.setState({
-      valueSearchInput: value,
-    });
-  };
-
-  handleKeyPress = async (e) => {
-    const { valueSearchInput } = this.state;
-    const { setQueryProps } = this.props;
-
-    if (valueSearchInput.length > 0) {
-      if (e.key === 'Enter') {
-        this.setState({
-          targetColor: true,
-        });
-        this.chengColorButton();
-        this.setState({
-          loading: true,
-        });
-        this.routeChange(`/search/${valueSearchInput}`);
-        setQueryProps(valueSearchInput);
+      if (response.data.result.negentropy) {
+        setEntropy(response.data.result.negentropy);
       }
+      setEntropyLoader(false);
+    } catch (e) {
+      console.log(e);
+      setEntropy(0);
+      setEntropyLoader(false);
     }
   };
 
-  onCklicBtn = () => {
-    const { valueSearchInput } = this.state;
-    const { setQueryProps } = this.props;
-
-    if (valueSearchInput.length > 0) {
-      this.setState({
-        loading: true,
-      });
-      this.routeChange(`/search/${valueSearchInput}`);
-      setQueryProps(valueSearchInput);
+  useEffect(() => {
+    try {
+      const getGraphStats = async () => {
+        setMemoryLoader(true);
+        if (jsCyber !== null) {
+          const responseGraphStats = await jsCyber.graphStats();
+          const { particles, cyberlinks } = responseGraphStats;
+          const bits = 40 * parseFloat(cyberlinks) + 40 * parseFloat(particles);
+          setMemory(bits);
+        }
+        setMemoryLoader(false);
+      };
+      getGraphStats();
+    } catch (e) {
+      console.log(e);
+      setMemory(0);
+      setMemoryLoader(false);
     }
-  };
+  }, [jsCyber]);
 
-  chengColorButton = () => {
-    setTimeout(() => {
-      this.setState({
-        targetColor: false,
-      });
-    }, 200);
-  };
-
-  showCoords = (event) => {
-    let boxShadow = 0;
-
-    const mX = event.pageX;
-    const mY = event.pageY;
-    const from = { x: mX, y: mY };
-
-    const element = document.getElementById('search-input-home');
-    const off = element.getBoundingClientRect();
-    const { width } = off;
-    const { height } = off;
-
-    const nx1 = off.left;
-    const ny1 = off.top;
-    const nx2 = nx1 + width;
-    const ny2 = ny1 + height;
-    const maxX1 = Math.max(mX, nx1);
-    const minX2 = Math.min(mX, nx2);
-    const maxY1 = Math.max(mY, ny1);
-    const minY2 = Math.min(mY, ny2);
-    const intersectX = minX2 >= maxX1;
-    const intersectY = minY2 >= maxY1;
-    const to = {
-      x: intersectX ? mX : nx2 < mX ? nx2 : nx1,
-      y: intersectY ? mY : ny2 < mY ? ny2 : ny1,
+  useEffect(() => {
+    const feachData = async () => {
+      if (jsCyber !== null) {
+        setPage(0);
+        setAllPage(0);
+        setResultSearch([]);
+        setLoadingSearch(true);
+        const hash = await getIpfsHash('bootloader');
+        setKeywordHash(hash);
+        const responseApps = await search(jsCyber, hash);
+        if (Object.keys(responseApps).length > 0) {
+          const dataApps = reduceSearchResults(
+            responseApps.result,
+            'bootloader'
+          );
+          setResultSearch(dataApps);
+          setLoadingSearch(false);
+          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
+          setPage((item) => item + 1);
+        } else {
+          setResultSearch([]);
+          setLoadingSearch(false);
+        }
+      } else {
+        setResultSearch([]);
+        setLoadingSearch(false);
+      }
     };
-    const distX = to.x - from.x;
-    const distY = to.y - from.y;
-    const hypot = Math.sqrt(distX * distX + distY * distY);
-    // consoleelement = document.getElementById('some-id');.log(width, height);
-    // console.log(`X coords: ${x}, Y coords: ${y}`);
-    if (width > hypot) {
-      boxShadow = ((width - hypot) / 100) * 3;
+    feachData();
+  }, [jsCyber, update]);
+
+  const fetchMoreData = async () => {
+    // a fake async api call like which sends
+    // 20 more records in 1.5 secs
+    let links = [];
+    const data = await search(jsCyber, keywordHash, page);
+    if (data.result) {
+      links = reduceSearchResults(data.result, 'bootloader');
     }
 
-    if (boxShadow < 5) {
-      boxShadow = 6;
-    }
-    this.setState({
-      boxShadow,
-    });
+    setTimeout(() => {
+      setResultSearch((itemState) => ({ ...itemState, ...links }));
+      setPage((itemPage) => itemPage + 1);
+    }, 500);
   };
 
-  render() {
-    const {
-      valueSearchInput,
-      result,
-      loading,
-      targetColor,
-      boxShadow,
-    } = this.state;
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
 
-    if (loading) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '50vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <Loading />
-          <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-            Searching
-          </div>
-        </div>
-      );
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
     }
+  };
 
-    return (
-      <div style={{ position: `${!result ? 'relative' : ''}` }}>
-        <main
-          onMouseMove={(e) => this.showCoords(e)}
-          className={!result ? 'block-body-home' : 'block-body'}
-        >
-          <Pane
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            flexDirection="column"
-            flex={result ? 0.3 : 0.9}
-            transition="flex 0.5s"
-            minHeight={100}
-          >
-            <input
-              style={{
-                width: '60%',
-                height: 41,
-                fontSize: 20,
-                boxShadow: `0 0 ${boxShadow}px 1.5px #00ffa387`,
-                textAlign: 'center',
-              }}
-              value={valueSearchInput}
-              onChange={(e) => this.onChangeInput(e)}
-              onKeyPress={this.handleKeyPress}
-              className="search-input"
-              id="search-input-home"
-              autoComplete="off"
-              autoFocus
+  return (
+    <>
+      <main className="block-body">
+        <ContainerGrid>
+          <CardStatisics
+            value={entropyLoader ? <Dots /> : `${entropy} bits`}
+            title="Negentropy"
+            styleContainer={{ minWidth: 'unset' }}
+          />
+          <CardStatisics
+            value={
+              memoryLoader ? <Dots /> : formatCurrency(memory, 'B', 0, PREFIXES)
+            }
+            title="GPU memory"
+            styleContainer={{ minWidth: 'unset' }}
+          />
+          <Link to="/network/bostrom/tx">
+            <CardStatisics
+              title="Transactions"
+              value={<Txs />}
+              styleContainer={{ minWidth: 'unset' }}
             />
-            <Pane marginTop={50}>
-              {/* <Link to="/search/get%20EUL">Get EUL</Link>
-              <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span> */}
-              <Link to="/search/what%20is%20cyber">What is Cyber?</Link>
-              {/* <span style={{ color: '#36d6ae', margin: '0px 5px' }}>|</span>
-              <Link to="/gol">Game of Links</Link> */}
-            </Pane>
-            <Link style={{ position: 'absolute', top: '52%' }} to="/degenbox">
-              <img src={bender} alt="bender" style={{ height: 170 }} />
-            </Link>
-          </Pane>
-        </main>
-        <StartState
-          targetColor={targetColor}
-          valueSearchInput={valueSearchInput}
-          onClickBtn={this.onCklicBtn}
-        />
-      </div>
-    );
-  }
-}
+          </Link>
+          <Link to="/network/bostrom/block">
+            <CardStatisics
+              title="Blocks"
+              value={formatNumber(parseFloat(block))}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
+        </ContainerGrid>
+        <ContainerGrid>
+          {loadingSearch ? (
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+              }}
+            >
+              <Loading />
+              <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
+                Searching
+              </div>
+            </div>
+          ) : (
+            <SearchTokenInfo
+              data={resultSearch}
+              node={node}
+              mobile={mobile}
+              selectedTokens="bootloader"
+              onClickRank={onClickRank}
+              fetchMoreData={fetchMoreData}
+              page={page}
+              allPage={allPage}
+            />
+          )}
+        </ContainerGrid>
+      </main>
+      <ActionBarCont
+        addressActive={addressActive}
+        mobile={mobile}
+        keywordHash={keywordHash}
+        updateFunc={() => setUpdate(update + 1)}
+        rankLink={rankLink}
+      />
+    </>
+  );
+};
 
-const mapDispatchprops = (dispatch) => {
+const mapStateToProps = (store) => {
   return {
-    setQueryProps: (query) => dispatch(setQuery(query)),
+    mobile: store.settings.mobile,
+    node: store.ipfs.ipfs,
+    defaultAccount: store.pocket.defaultAccount,
+    block: store.block.block,
   };
 };
 
-export default connect(null, mapDispatchprops)(Home);
+export default connect(mapStateToProps)(Home);

@@ -11,7 +11,15 @@ import {
   ButtonIcon,
   FormatNumber,
 } from '../components';
-import { Copy, Dots, Tooltip, LinkWindow } from '../../../components';
+import {
+  Copy,
+  Dots,
+  Tooltip,
+  LinkWindow,
+  NumberCurrency,
+  ValueImg,
+  DenomArr,
+} from '../../../components';
 import {
   trimString,
   formatCurrency,
@@ -20,11 +28,13 @@ import {
   formatCurrencyNumber,
   getDecimal,
 } from '../../../utils/utils';
+import { decFnc } from '../../teleport/utils';
 import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
 import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
+import coinDecimalsConfig from '../../../utils/configToken';
 
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -36,6 +46,23 @@ const RowBalance = ({ children, ...props }) => (
     {children}
   </Pane>
 );
+
+export const reduceAmounToken = (amount, token, reverse) => {
+  let amountReduce = amount;
+
+  if (token.includes('ibc')) {
+    if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+      const { coinDecimals } = coinDecimalsConfig[token];
+      if (reverse) {
+        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+      } else {
+        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+      }
+    }
+  }
+
+  return amountReduce;
+};
 
 const DetailsBalance = ({
   total,
@@ -49,37 +76,30 @@ const DetailsBalance = ({
       <RowBalance>
         <div>liquid</div>
         {currency === CYBER.DENOM_CYBER ? (
-          <NumberCurrency amount={total.available} currencyNetwork={currency} />
+          <FormatNumberTokens value={total.available} text={currency} />
         ) : (
-          <FormatNumber
-            number={formatNumber(
-              Math.floor((total.available / divisor) * 1000) / 1000,
-              3
-            )}
-            currency={currency}
+          <FormatNumberTokens
+            value={Math.floor((total.available / divisor) * 1000) / 1000}
+            text={currency}
           />
         )}
       </RowBalance>
       <RowBalance>
         {currency === CYBER.DENOM_CYBER ? (
           <>
-            <Link to="/heroes">
+            <Link to="/halloffame">
               <div>staked</div>
             </Link>
-            <NumberCurrency
-              amount={total.delegation}
-              currencyNetwork={currency}
-            />
+            <FormatNumberTokens value={total.delegation} text={currency} />
           </>
         ) : (
           <>
             <div>staked</div>
-            <FormatNumber
-              number={formatNumber(
-                Math.floor((total.delegation / divisor) * 1000) / 1000,
-                3
+            <FormatNumberTokens
+              value={formatNumber(
+                Math.floor((total.delegation / divisor) * 1000) / 1000
               )}
-              currency={currency}
+              text={currency}
             />
           </>
         )}
@@ -87,23 +107,17 @@ const DetailsBalance = ({
       <RowBalance>
         {currency === CYBER.DENOM_CYBER ? (
           <>
-            <Link to={`network/euler/contract/${address}/heroes`}>
+            <Link to={`network/bostrom/contract/${address}/heroes`}>
               <div>unstaking</div>
             </Link>
-            <NumberCurrency
-              amount={total.unbonding}
-              currencyNetwork={currency}
-            />
+            <FormatNumberTokens value={total.unbonding} text={currency} />
           </>
         ) : (
           <>
             <div>unstaking</div>
-            <FormatNumber
-              number={formatNumber(
-                Math.floor((total.unbonding / divisor) * 1000) / 1000,
-                3
-              )}
-              currency={currency}
+            <FormatNumberTokens
+              value={Math.floor((total.unbonding / divisor) * 1000) / 1000}
+              text={currency}
             />
           </>
         )}
@@ -111,20 +125,17 @@ const DetailsBalance = ({
       <RowBalance>
         {currency === CYBER.DENOM_CYBER ? (
           <>
-            <Link to={`network/euler/contract/${address}/heroes`}>
+            <Link to={`network/bostrom/contract/${address}/heroes`}>
               <div>rewards</div>
             </Link>
-            <NumberCurrency amount={total.rewards} currencyNetwork={currency} />
+            <FormatNumberTokens value={total.rewards} text={currency} />
           </>
         ) : (
           <>
             <div>rewards</div>
-            <FormatNumber
-              number={formatNumber(
-                Math.floor((total.rewards / divisor) * 1000) / 1000,
-                3
-              )}
-              currency={currency}
+            <FormatNumberTokens
+              value={Math.floor((total.rewards / divisor) * 1000) / 1000}
+              text={currency}
             />
           </>
         )}
@@ -133,27 +144,57 @@ const DetailsBalance = ({
   );
 };
 
-const NumberCurrency = ({
-  amount,
-  fontSizeDecimal,
-  currencyNetwork = 'EUL',
-  ...props
-}) => {
-  const number = formatNumber(amount / CYBER.DIVISOR_CYBER_G, 3);
+const FormatNumberTokens = ({ text, value, ...props }) => {
+  // console.log(text, value);
   return (
     <Pane
       display="grid"
-      gridTemplateColumns="1fr 45px"
+      gridTemplateColumns="1fr 55px"
       gridGap="5px"
+      fontSize="15px"
       {...props}
     >
-      <Pane whiteSpace="nowrap" display="flex" alignItems="center">
-        <span>{formatNumber(Math.floor(number))}</span>.
-        <div style={{ width: 30, fontSize: `${fontSizeDecimal || 14}px` }}>
-          {getDecimal(number)}
-        </div>
+      <Pane
+        // paddingRight={5}
+        whiteSpace="nowrap"
+        display="flex"
+        alignItems="center"
+      >
+        <span>{formatNumber(reduceAmounToken(value, text))}</span>
       </Pane>
-      <div>G{currencyNetwork.toUpperCase()}</div>
+      {text && (
+        <DenomArr
+          marginImg="0 3px 0 0"
+          flexDirection="row-reverse"
+          justifyContent="flex-end"
+          denomValue={text}
+          onlyImg
+        />
+      )}
+    </Pane>
+  );
+};
+
+const DetailsBalanceTokens = ({
+  total,
+  currency = CYBER.DENOM_CYBER,
+  address,
+  ...props
+}) => {
+  return (
+    <Pane width="100%" {...props}>
+      <RowBalance marginBottom={3}>
+        <div>liquid</div>
+        <FormatNumberTokens value={total.liquid} text={currency} />
+      </RowBalance>
+      <RowBalance>
+        <>
+          <Link to="/mint">
+            <div>vested</div>
+          </Link>
+          <FormatNumberTokens value={total.vested} text={currency} />
+        </>
+      </RowBalance>
     </Pane>
   );
 };
@@ -182,12 +223,13 @@ const CosmosAddressInfo = ({
       <Pane flexDirection="column" display="flex" alignItems="flex-end">
         {loading ? (
           <span>
-            <Dots /> CYB
+            <Dots /> ATOM
           </span>
         ) : (
           <>
             <RowBalance
               onClick={() => setOpen(!open)}
+              marginBottom={3}
               className="cosmos-address-balance"
             >
               {open ? (
@@ -195,12 +237,11 @@ const CosmosAddressInfo = ({
               ) : (
                 <div className="details-balance">details</div>
               )}
-              <FormatNumber
-                number={formatNumber(
-                  ((totalCosmos.total / COSMOS.DIVISOR_ATOM) * 1000) / 1000,
-                  3
-                )}
-                currency="ATOM"
+              <FormatNumberTokens
+                value={
+                  ((totalCosmos.total / COSMOS.DIVISOR_ATOM) * 1000) / 1000
+                }
+                text="atom"
               />
             </RowBalance>
             {open && (
@@ -208,7 +249,7 @@ const CosmosAddressInfo = ({
                 total={totalCosmos}
                 paddingLeft={15}
                 divisor={COSMOS.DIVISOR_ATOM}
-                currency="ATOM"
+                currency="atom"
               />
             )}
           </>
@@ -236,7 +277,7 @@ const CYBNetworkInfo = ({
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
-          <Link to={`/network/euler/contract/${address.bech32}`}>
+          <Link to={`/network/bostrom/contract/${address.bech32}`}>
             <div>{trimString(address.bech32, 9, 3)}</div>
           </Link>
         }
@@ -298,6 +339,45 @@ const CYBNetworkInfo = ({
   );
 };
 
+const BalanceToken = ({
+  onClickOpen,
+  open,
+  balanceToken,
+  currency,
+  address,
+}) => {
+  return (
+    <>
+      {' '}
+      <RowBalance
+        onClick={onClickOpen}
+        className="cosmos-address-balance"
+        marginBottom={4}
+      >
+        {open ? (
+          <div>total</div>
+        ) : (
+          <div className="details-balance">details</div>
+        )}
+        {/* <NumberCurrency
+                    amount={balanceToken.hydrogen.total}
+                    currencyNetwork="H"
+                  /> */}
+        <FormatNumberTokens value={balanceToken.total} text={currency} />
+        {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
+      </RowBalance>
+      {open && (
+        <DetailsBalanceTokens
+          total={balanceToken}
+          address={address.bech32}
+          paddingLeft={15}
+          currency={currency}
+        />
+      )}
+    </>
+  );
+};
+
 const EULnetworkInfo = ({
   totalCyber,
   address,
@@ -305,6 +385,7 @@ const EULnetworkInfo = ({
   openEul,
   onClickDeleteAddress,
   network,
+  balanceToken,
   ...props
 }) => {
   return (
@@ -314,7 +395,7 @@ const EULnetworkInfo = ({
         address={address}
         onClickDeleteAddress={onClickDeleteAddress}
         addressLink={
-          <Link to={`/network/euler/contract/${address.bech32}`}>
+          <Link to={`/network/bostrom/contract/${address.bech32}`}>
             <div>{trimString(address.bech32, 9, 3)}</div>
           </Link>
         }
@@ -326,13 +407,24 @@ const EULnetworkInfo = ({
           </span>
         ) : (
           <>
-            <RowBalance {...props} className="cosmos-address-balance">
+            <RowBalance
+              {...props}
+              marginBottom={4}
+              className="cosmos-address-balance"
+            >
               {openEul ? (
                 <div>total</div>
               ) : (
                 <div className="details-balance">details</div>
               )}
-              <NumberCurrency amount={totalCyber.total} currencyNetwork="eul" />
+              {/* <NumberCurrency
+                amount={totalCyber.total}
+                currencyNetwork={CYBER.DENOM_CYBER}
+              /> */}
+              <FormatNumberTokens
+                value={totalCyber.total}
+                text={CYBER.DENOM_CYBER}
+              />
               {/* <Pane>{formatCurrency(totalCyber.total, 'eul')}</Pane> */}
             </RowBalance>
             {openEul && (
@@ -342,6 +434,30 @@ const EULnetworkInfo = ({
                 paddingLeft={15}
               />
             )}
+
+            {Object.keys(balanceToken).map((key) => {
+              // console.log('Object', Object.keys(balanceToken[key].length))
+              if (Object.keys(balanceToken[key]).length > 0) {
+                return (
+                  <BalanceToken
+                    key={key}
+                    onClickOpen={props[`onClickOpen${key}`]}
+                    open={props[`open${key}`]}
+                    balanceToken={balanceToken[key]}
+                    currency={key}
+                    address={address}
+                  />
+                );
+              }
+              return (
+                <FormatNumberTokens
+                  key={key}
+                  value={balanceToken[key]}
+                  text={key}
+                  marginBottom={4}
+                />
+              );
+            })}
           </>
         )}
       </Pane>
@@ -357,11 +473,16 @@ const CyberAddressInfo = ({
   gift,
   onClickDeleteAddress,
   network,
+  balanceToken,
 }) => {
-  const [openCyber, setOpenCyber] = useState(false);
+  // const [openCyber, setOpenCyber] = useState(false);
   const [openEul, setOpenEul] = useState(false);
-  const gol = useGetGol(address.bech32);
-
+  const [openmilliampere, setOpenmilliampere] = useState(false);
+  const [openmillivolt, setOpenmillivolt] = useState(false);
+  const [openhydrogen, setOpenhydrogen] = useState(false);
+  const [opentocyb, setOpentocyb] = useState(false);
+  // const { totalGol } = useGetGol(address.bech32);
+  // console.log(`balanceToken`, balanceToken)
   return (
     <>
       <EULnetworkInfo
@@ -370,21 +491,30 @@ const CyberAddressInfo = ({
         totalCyber={totalCyber}
         onClickDeleteAddress={onClickDeleteAddress}
         openEul={openEul}
+        openmilliampere={openmilliampere}
+        openmillivolt={openmillivolt}
+        openhydrogen={openhydrogen}
+        opentocyb={opentocyb}
         onClick={() => setOpenEul(!openEul)}
         network={network}
+        balanceToken={balanceToken}
+        onClickOpenhydrogen={() => setOpenhydrogen(!openhydrogen)}
+        onClickOpentocyb={() => setOpentocyb(!opentocyb)}
+        onClickOpenmilliampere={() => setOpenmilliampere(!openmilliampere)}
+        onClickOpenmillivolt={() => setOpenmillivolt(!openmillivolt)}
       />
-      <CYBNetworkInfo
+      {/* <CYBNetworkInfo
         address={address}
         loading={loading}
         loadingGift={loadingGift}
         totalCyber={totalCyber}
-        gol={gol}
+        gol={totalGol}
         gift={gift}
         openCyber={openCyber}
         onClickDeleteAddress={onClickDeleteAddress}
         onClick={() => setOpenCyber(!openCyber)}
         network={network}
-      />
+      /> */}
     </>
   );
 };
@@ -396,7 +526,7 @@ const EthAddressInfo = ({
   onClickDeleteAddress,
   network,
 }) => {
-  const { eth, gol } = useGetBalanceEth(address, web3, contractToken);
+  const { eth, gol } = useGetBalanceEth(address, contractToken);
 
   return (
     <ContainerAddressInfo>
@@ -411,14 +541,11 @@ const EthAddressInfo = ({
         }
       />
       <Pane flexDirection="column" display="flex" alignItems="flex-end">
-        <FormatNumber
-          number={formatNumber(
-            exponentialToDecimal(parseFloat(eth).toPrecision(6)),
-            3
-          )}
-          currency="ETH"
+        <FormatNumberTokens
+          value={exponentialToDecimal(parseFloat(eth).toPrecision(6))}
+          text="eth"
         />
-        <NumberCurrency amount={parseFloat(gol)} />
+        <FormatNumberTokens value={parseFloat(gol)} text="GOL" />
       </Pane>
     </ContainerAddressInfo>
   );
@@ -438,7 +565,7 @@ function PubkeyCard({
 }) {
   const [gift, setGift] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { totalCyber, totalCosmos, loadingInfo } = useAddressInfo(
+  const { totalCyber, totalCosmos, loadingInfo, balanceToken } = useAddressInfo(
     pocket,
     updateCard
   );
@@ -613,6 +740,7 @@ function PubkeyCard({
           gift={gift}
           onClickDeleteAddress={() => deleteAddress(name, 'cyber', updateFunc)}
           network="cyber"
+          balanceToken={balanceToken}
         />
       )}
 

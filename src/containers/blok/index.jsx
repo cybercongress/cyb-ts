@@ -27,7 +27,6 @@ const GET = gql`
           count
         }
       }
-      pre_commits
       timestamp
     }
   }
@@ -44,13 +43,12 @@ const GET_CHARACTERS = `
           count
         }
       }
-      pre_commits
       timestamp
     }
   }
 `;
 
-const QueryAddress = block =>
+const QueryAddress = (block) =>
   ` query MyQuery {
     block(limit: 20, order_by: {height: desc}, where: {height: {_lte: ${block}}}, offset: 1) {
       hash
@@ -61,7 +59,6 @@ const QueryAddress = block =>
           count
         }
       }
-      pre_commits
       timestamp
     }
   }
@@ -93,6 +90,7 @@ const Block = ({ blockThis }) => {
   useEffect(() => {
     const feachData = async () => {
       const data = await getGraphQLQuery(GET_CHARACTERS);
+      console.log(`data`, data);
       setItems(data.block);
       setlastBlockQuery(data.block[data.block.length - 1].height);
       setAllPage(Math.ceil(parseInt(data.block[0].height, 10) / 20));
@@ -158,70 +156,77 @@ const Block = ({ blockThis }) => {
             padding: 7,
           }}
         >
-          <div id="scrollableDiv" style={{ height: '80vh', overflow: 'auto' }}>
-            <InfiniteScroll
-              dataLength={items.length}
-              next={fetchMoreData}
-              hasMore={page < allPage}
-              loader={
-                <h4>
-                  Loading
-                  <Dots />
-                </h4>
-              }
-              scrollableTarget="scrollableDiv"
-            >
-              {items.map((item, index) => (
-                <Table.Row
-                  // borderBottom="none"
-                  paddingX={0}
-                  paddingY={5}
-                  borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}
-                  borderBottom="none"
-                  display="flex"
-                  minHeight="48px"
-                  height="fit-content"
-                  key={item.txhash}
-                >
-                  <Table.TextCell textAlign="center">
-                    <TextTable>{trimString(item.hash, 5, 5)}</TextTable>
-                  </Table.TextCell>
-                  <Table.TextCell textAlign="end">
-                    <TextTable>
-                      <Link to={`/network/euler/block/${item.height}`}>
-                        {formatNumber(item.height)}
-                      </Link>
-                    </TextTable>
-                  </Table.TextCell>
-                  <Table.TextCell flex={0.5} textAlign="end">
-                    <TextTable>
-                      {formatNumber(
-                        item.transactions_aggregate.aggregate.count
-                      )}
-                    </TextTable>
-                  </Table.TextCell>
-                  <Table.TextCell textAlign="center">
-                    <TextTable>
-                      {trimString(item.proposer_address, 5, 5)}
-                    </TextTable>
-                  </Table.TextCell>
-                  <Table.TextCell textAlign="center">
-                    <TextTable>
-                      {' '}
-                      {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
-                    </TextTable>
-                  </Table.TextCell>
-                </Table.Row>
-              ))}
-            </InfiniteScroll>
-          </div>
+          <InfiniteScroll
+            dataLength={items.length}
+            next={fetchMoreData}
+            refreshFunction={fetchMoreData}
+            hasMore={page < allPage}
+            loader={
+              <h4>
+                Loading
+                <Dots />
+              </h4>
+            }
+            pullDownToRefresh
+            pullDownToRefreshContent={
+              <h3 style={{ textAlign: 'center' }}>
+                &#8595; Pull down to refresh
+              </h3>
+            }
+            releaseToRefreshContent={
+              <h3 style={{ textAlign: 'center' }}>
+                &#8593; Release to refresh
+              </h3>
+            }
+          >
+            {items.map((item, index) => (
+              <Table.Row
+                // borderBottom="none"
+                paddingX={0}
+                paddingY={5}
+                borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}
+                borderBottom="none"
+                display="flex"
+                minHeight="48px"
+                height="fit-content"
+                key={item.txhash}
+              >
+                <Table.TextCell textAlign="center">
+                  <TextTable>{trimString(item.hash, 5, 5)}</TextTable>
+                </Table.TextCell>
+                <Table.TextCell textAlign="end">
+                  <TextTable>
+                    <Link to={`/network/bostrom/block/${item.height}`}>
+                      {formatNumber(item.height)}
+                    </Link>
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell flex={0.5} textAlign="end">
+                  <TextTable>
+                    {formatNumber(item.transactions_aggregate.aggregate.count)}
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell textAlign="center">
+                  <TextTable>
+                    {trimString(item.proposer_address, 5, 5)}
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell textAlign="center">
+                  <TextTable>
+                    {' '}
+                    {dateFormat(item.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
+                  </TextTable>
+                </Table.TextCell>
+              </Table.Row>
+            ))}
+          </InfiniteScroll>
         </Table.Body>
       </Table>
     </main>
   );
 };
 
-const mapStateToProps = store => {
+const mapStateToProps = (store) => {
   return {
     blockThis: store.block.block,
   };

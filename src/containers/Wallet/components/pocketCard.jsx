@@ -12,7 +12,7 @@ const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
 const deleteIcon = require('../../../image/trash-outline.svg');
 const imgEth = require('../../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../../image/blue-circle.png');
+const imgCyber = require('../../../image/large-green.png');
 const imgCosmos = require('../../../image/cosmos-2.svg');
 const imgCyberSigner = require('../../../image/wallet-outline.svg');
 
@@ -36,7 +36,7 @@ export const FormatNumber = ({
   <Pane display="grid" gridTemplateColumns="1fr 45px" gridGap="5px" {...props}>
     <Pane display="flex" alignItems="center">
       <span>{formatNumber(Math.floor(number))}</span>.
-      <div style={{ width: 30, fontSize: `${fontSizeDecimal || 14}px` }}>
+      <div style={{ width: 25, fontSize: `${fontSizeDecimal || 14}px` }}>
         {getDecimal(number)}
       </div>
     </Pane>
@@ -72,7 +72,7 @@ export const ContainerAddressInfo = ({ children, ...props }) => (
   <Pane
     width="100%"
     display="grid"
-    gridTemplateColumns="1fr 1fr"
+    gridTemplateColumns="0.8fr 1fr"
     gridGap="5px"
     alignItems="baseline"
     className="cosmos-address-container"

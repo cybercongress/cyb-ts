@@ -23,10 +23,11 @@ import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString } from '../../utils/utils';
 import ButtonImgText from '../Button/buttonImgText';
+import { IconStatus } from '../governance/governance';
 
 import { i18n } from '../../i18n/en';
 
-import { CYBER } from '../../utils/config';
+import { CYBER, BOND_STATUS } from '../../utils/config';
 
 const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
 
@@ -90,7 +91,7 @@ const imgKeplr = require('../../image/keplr-icon.svg');
 const imgMetaMask = require('../../image/mm-logo.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../image/blue-circle.png');
+const imgCyber = require('../../image/large-green.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
 const imgCyberSigner = require('../../image/wallet-outline.svg');
 
@@ -124,9 +125,17 @@ export const ActionBarContentText = ({ children, ...props }) => (
   </Pane>
 );
 
-export const ButtonIcon = ({ img, active, disabled, text, ...props }) => (
-  <Pane>
-    <Tooltip placement="top" tooltip={<Pane>{text}</Pane>}>
+export const ButtonIcon = ({
+  img,
+  active,
+  disabled,
+  text,
+  placement = 'top',
+  styleContainer,
+  ...props
+}) => (
+  <Pane style={styleContainer}>
+    <Tooltip placement={placement} tooltip={<Pane>{text}</Pane>}>
       <button
         type="button"
         style={{
@@ -180,7 +189,7 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
           {trimString(txHash, 6, 6)}
         </LinkWindow>
       ) : (
-        <Link to={`/network/euler/tx/${txHash}`}>
+        <Link to={`/network/bostrom/tx/${txHash}`}>
           {trimString(txHash, 6, 6)}
         </Link>
       )}{' '}
@@ -197,7 +206,9 @@ export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
 
 export const TransactionError = ({ onClickBtn, errorMessage }) => (
   <ActionBar>
-    <ActionBarContentText>Message Error: {errorMessage}</ActionBarContentText>
+    <ActionBarContentText display="block">
+      Message Error: {errorMessage}
+    </ActionBarContentText>
     <Button marginX={10} onClick={onClickBtn}>
       {T.actionBar.confirmedTX.continue}
     </Button>
@@ -314,6 +325,7 @@ export const StartStageSearchActionBar = ({
           >
             <TextareaAutosize
               value={contentHash}
+              maxRows={20}
               style={{
                 height: 42,
                 width: '100%',
@@ -398,9 +410,9 @@ export const GovernanceStartStageActionBar = ({
         onChange={onChangeSelect}
       >
         <option value="textProposal">Text Proposal</option>
-        <option value="communityPool">Community Pool Spend</option>
+        {/* <option value="communityPool">Community Pool Spend</option>
         <option value="paramChange">Param Change</option>
-        <option value="softwareUpgrade">Software Upgrade</option>
+        <option value="softwareUpgrade">Software Upgrade</option> */}
       </select>
     </ActionBarContentText>
     <Button onClick={onClickBtn}>Propose</Button>
@@ -699,7 +711,7 @@ export const TextProposal = ({
           />
         </Pane>
         <Pane width="100%">
-          <Text color="#fff">deposit, GEUL</Text>
+          <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
           <input
             value={valueDeposit}
             style={{
@@ -707,7 +719,7 @@ export const TextProposal = ({
               width: '100%',
             }}
             onChange={onChangeInputDeposit}
-            placeholder="amount, GEUL"
+            placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
           />
         </Pane>
         <Button marginTop={25} onClick={onClickBtn}>
@@ -926,6 +938,50 @@ export const Cyberlink = ({
   );
 };
 
+const IntupAutoSize = ({ value, onChangeInputAmount, placeholder }) => {
+  function isOverflown(element) {
+    return element.scrollWidth > element.clientWidth;
+  }
+
+  function changefontsize() {
+    const myInput = document.getElementById('myInput');
+    let currentfontsize = 18;
+    if (myInput && myInput !== null) {
+      if (isOverflown(myInput)) {
+        while (isOverflown(myInput)) {
+          currentfontsize -= 1;
+          myInput.style.fontSize = `${currentfontsize}px`;
+        }
+      } else {
+        currentfontsize = 18;
+        myInput.style.fontSize = `${currentfontsize}px`;
+        while (isOverflown(myInput)) {
+          currentfontsize -= 1;
+          myInput.style.fontSize = `${currentfontsize}px`;
+        }
+      }
+    }
+  }
+
+  return (
+    <Input
+      width="125px"
+      value={value}
+      style={{
+        height: 42,
+        width: '125px',
+        marginLeft: 20,
+        textAlign: 'end',
+      }}
+      id="myInput"
+      onkeypress={changefontsize()}
+      autoFocus
+      onChange={onChangeInputAmount}
+      placeholder={placeholder}
+    />
+  );
+};
+
 export const Delegate = ({
   moniker,
   generateTx,
@@ -937,24 +993,17 @@ export const Delegate = ({
   <ActionBar>
     <ActionBarContentText>
       <Text fontSize="16px" color="#fff">
-        {T.actionBar.delegate.enterAmount} {DENOM_CYBER_G.toUpperCase()}{' '}
+        {T.actionBar.delegate.enterAmount} {DENOM_CYBER.toUpperCase()}{' '}
         {delegate
           ? T.actionBar.delegate.delegate
           : T.actionBar.delegate.unDelegateFrom}{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
-          {moniker}
+          {moniker.length > 14 ? `${moniker.substring(0, 14)}...` : moniker}
         </Text>
       </Text>
-      <input
+      <IntupAutoSize
         value={toSend}
-        style={{
-          height: 42,
-          width: '100px',
-          marginLeft: 20,
-          textAlign: 'end',
-        }}
-        autoFocus
-        onChange={onChangeInputAmount}
+        onChangeInputAmount={onChangeInputAmount}
         placeholder="amount"
       />
     </ActionBarContentText>
@@ -982,23 +1031,24 @@ export const ReDelegate = ({
 }) => (
   <ActionBar>
     <ActionBarContentText>
-      <Text fontSize="16px" color="#fff">
-        Enter the amount{' '}
-        <input
-          value={toSend}
-          autoFocus
-          style={{
-            height: 32,
-            width: '70px',
-            margin: '0px 5px',
-            textAlign: 'end',
-          }}
-          onChange={onChangeInputAmount}
-          placeholder="amount"
-        />{' '}
-        {DENOM_CYBER_G.toUpperCase()} restake from{' '}
+      <Text marginRight={5} fontSize="16px" color="#fff">
+        amount{' '}
+      </Text>
+      <Input
+        value={toSend}
+        autoFocus
+        height="32px"
+        width="70px"
+        textAlign="end"
+        onChange={onChangeInputAmount}
+        placeholder="amount"
+      />
+      <Text marginLeft={5} fontSize="16px" color="#fff">
+        {DENOM_CYBER.toUpperCase()} restake from{' '}
         <Text fontSize="20px" color="#fff" fontWeight={600}>
-          {validators.description.moniker}
+          {validators.description.moniker.length > 14
+            ? `${validators.description.moniker.substring(0, 14)}...`
+            : validators.description.moniker}
         </Text>
       </Text>
       <Text marginX={5} fontSize="16px" color="#fff">
@@ -1013,14 +1063,17 @@ export const ReDelegate = ({
       >
         <option value="">pick hero</option>
         {validatorsAll
-          .filter((validator) => validator.status > 0)
+          .filter(
+            (validator) =>
+              BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
+          )
           .map((item) => (
             <option
-              key={item.operator_address}
-              value={item.operator_address}
+              key={item.operatorAddress}
+              value={item.operatorAddress}
               style={{
                 display:
-                  validators.operator_address === item.operator_address
+                  validators.operatorAddress === item.operatorAddress
                     ? 'none'
                     : 'block',
               }}
@@ -1071,7 +1124,7 @@ export const SendLedger = ({
           height={42}
           width="24%"
           onChange={onChangeInputAmount}
-          placeholder="EUL"
+          placeholder={CYBER.DENOM_CYBER}
           isInvalid={amountSendInputValid !== null}
           message={amountSendInputValid}
         />
@@ -1364,19 +1417,29 @@ export const ConnectAddress = ({
         >
           {(cyberNetwork || cosmosNetwork) && (
             <>
-              <ButtonIcon
+              {/* <ButtonIcon
                 onClick={() => selectMethodFunc('ledger')}
                 active={selectMethod === 'ledger'}
                 img={imgLedger}
                 text="ledger"
-              />
-              {keplr && (
+              /> */}
+              {keplr ? (
                 <ButtonIcon
                   onClick={() => selectMethodFunc('keplr')}
                   active={selectMethod === 'keplr'}
                   img={imgKeplr}
                   text="keplr"
                 />
+              ) : (
+                <LinkWindow to="https://www.keplr.app/">
+                  <Pane marginRight={5} width={34} height={30}>
+                    <img
+                      style={{ width: '34px', height: '30px' }}
+                      src={imgKeplr}
+                      alt="icon"
+                    />
+                  </Pane>
+                </LinkWindow>
               )}
               <ButtonIcon
                 onClick={() => selectMethodFunc('cyberSigner')}
@@ -1425,7 +1488,7 @@ export const ConnectAddress = ({
                   onClick={() => selectNetworkFunc('cyber')}
                   active={selectNetwork === 'cyber'}
                   img={imgCyber}
-                  text="cyber"
+                  text="bostrom"
                 />
               )}
               {cosmosNetwork && (

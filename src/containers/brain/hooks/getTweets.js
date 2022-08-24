@@ -86,17 +86,24 @@ const useGetTweets = (defaultAccount, node = null) => {
       let responseFollows = null;
       if (addressActive !== null && addressActive.bech32.match(PATTERN_CYBER)) {
         responseFollows = await getFollows(addressActive.bech32);
-        if (
-          responseFollows !== null &&
-          Object.keys(responseFollows.txs).length > 0
-        ) {
+        if (responseFollows !== null && responseFollows.total_count > 0) {
           getFollow(responseFollows);
         }
       }
-      if (addressActive === null || responseFollows === null) {
+      if (
+        addressActive === null ||
+        responseFollows === null ||
+        responseFollows.total_count === 0
+      ) {
         const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
-        if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
+        if (
+          responseTwit &&
+          responseTwit !== null &&
+          responseTwit.total_count > 0
+        ) {
           setTweetData((item) => [...item, ...responseTwit.txs]);
+        } else {
+          setLoadingTweets(false);
         }
       }
     };
@@ -110,7 +117,7 @@ const useGetTweets = (defaultAccount, node = null) => {
         (obj, item) => ({
           ...obj,
           [item.tx.value.msg[0].value.links[0].to]: {
-            status: node !== null ? 'understandingState' : 'impossibleLoad',
+            status: 'impossibleLoad',
             text: item.tx.value.msg[0].value.links[0].to,
             address: item.tx.value.msg[0].value.address,
             content: false,
@@ -159,7 +166,7 @@ const useGetTweets = (defaultAccount, node = null) => {
     ) {
       setTweets((item) => ({
         [objectTo]: {
-          status: node !== null ? 'understandingState' : 'impossibleLoad',
+          status: 'impossibleLoad',
           text: objectTo,
           address: subject,
           content: false,

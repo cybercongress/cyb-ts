@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Text, Pane, Tablist, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, Route, useLocation } from 'react-router-dom';
@@ -7,10 +7,9 @@ import {
   getBalance,
   getTotalEUL,
   getIpfsHash,
-  search,
   getRankGrade,
 } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
+import { trimString, fromBech32 } from '../../utils/utils';
 import { TabBtn } from '../../components';
 
 import { CYBER, TAKEOFF } from '../../utils/config';
@@ -25,21 +24,36 @@ import {
   HelpTab,
   PathTab,
   HallofFameTab,
+  PowerTab,
 } from './tabs';
 import {
   useGetTweets,
   useGetCybernomics,
   useGetStatisticsCyber,
 } from './hooks';
+import { AppContext } from '../../context';
 
 import Port from '../port';
+import Governance from '../governance/governance';
+import Validators from '../Validators/Validators';
 
 import { chekPathname } from './utils/utils';
 
+const search = async (client, hash) => {
+  try {
+    const responseSearchResults = await client.search(hash);
+    console.log(`responseSearchResults`, responseSearchResults);
+    return responseSearchResults.result ? responseSearchResults.result : [];
+  } catch (error) {
+    return [];
+  }
+};
+
 function Brain({ node, mobile, defaultAccount }) {
   const location = useLocation();
+  const { jsCyber } = useContext(AppContext);
   const { cybernomics } = useGetCybernomics();
-  const { government, knowledge } = useGetStatisticsCyber();
+  const { knowledge } = useGetStatisticsCyber();
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   const [selected, setSelected] = useState('port');
   const [addressActive, setAddressActive] = useState(null);
@@ -71,49 +85,53 @@ function Brain({ node, mobile, defaultAccount }) {
 
   useEffect(() => {
     const feachData = async () => {
-      const keywordHash = await getIpfsHash('apps');
-      const responseApps = await search(keywordHash);
-      if (responseApps.length > 0) {
-        const dataApps = responseApps.reduce(
-          (obj, item) => ({
-            ...obj,
-            [item.cid]: {
-              cid: item.cid,
-              rank: item.rank,
-              grade: getRankGrade(item.rank),
-              status: node !== null ? 'understandingState' : 'impossibleLoad',
-              query: 'apps',
-              text: item.cid,
-              content: false,
-            },
-          }),
-          {}
-        );
-        setApps(dataApps);
+      if (jsCyber !== null) {
+        const keywordHash = await getIpfsHash('apps');
+        const responseApps = await search(jsCyber, keywordHash);
+        if (responseApps.length > 0) {
+          const dataApps = responseApps.reduce(
+            (obj, item) => ({
+              ...obj,
+              [item.cid]: {
+                cid: item.cid,
+                rank: item.rank,
+                grade: getRankGrade(item.rank),
+                status: 'impossibleLoad',
+                query: 'apps',
+                text: item.cid,
+                content: false,
+              },
+            }),
+            {}
+          );
+          setApps(dataApps);
+        }
       }
     };
     feachData();
-  }, []);
+  }, [jsCyber]);
 
   useEffect(() => {
     const feachData = async () => {
       setLoading(true);
-      if (addressActive !== null) {
+      if (jsCyber !== null && addressActive !== null) {
         const { bech32 } = addressActive;
-        let amountEul = 0;
-        const result = await getBalance(bech32);
-        if (result) {
-          const { total } = getTotalEUL(result);
-          amountEul = total;
-        }
-        setAmount(amountEul);
+        let totalAmount = 0;
+        const responseGetBalanceBoot = await jsCyber.getBalance(bech32, 'boot');
+        totalAmount += parseFloat(responseGetBalanceBoot.amount);
+        const responseGetBalanceSboot = await jsCyber.getBalance(
+          bech32,
+          'sboot'
+        );
+        totalAmount += parseFloat(responseGetBalanceSboot.amount);
+        setAmount(totalAmount);
         setLoading(false);
       } else {
         setLoading(false);
       }
     };
     feachData();
-  }, [addressActive]);
+  }, [addressActive, jsCyber]);
 
   let content;
 
@@ -121,7 +139,7 @@ function Brain({ node, mobile, defaultAccount }) {
     content = <Route path="/brain" render={() => <Port />} />;
   }
 
-  if (selected === 'feed') {
+  if (selected === 'taverna') {
     content = (
       <MainTab
         tweets={tweets}
@@ -132,11 +150,11 @@ function Brain({ node, mobile, defaultAccount }) {
     );
   }
 
-  if (selected === 'knowledge') {
+  if (selected === 'oracle') {
     const { linksCount, cidsCount, accountsCount, inlfation } = knowledge;
     content = (
       <Route
-        path="/brain/knowledge"
+        path="/brain/oracle"
         render={() => (
           <KnowledgeTab
             linksCount={parseInt(linksCount, 10)}
@@ -149,25 +167,17 @@ function Brain({ node, mobile, defaultAccount }) {
     );
   }
 
-  if (selected === 'cybernomics') {
+  if (selected === 'market') {
     content = (
       <Route
-        path="/brain/cybernomics"
+        path="/brain/market"
         render={() => <CybernomicsTab data={cybernomics} />}
       />
     );
   }
 
   if (selected === 'government') {
-    const { proposals, communityPool } = government;
-    content = (
-      <Route
-        path="/brain/government"
-        render={() => (
-          <GovernmentTab proposals={proposals} communityPool={communityPool} />
-        )}
-      />
-    );
+    content = <Route path="/brain/government" render={() => <Governance />} />;
   }
 
   if (selected === 'apps') {
@@ -188,18 +198,11 @@ function Brain({ node, mobile, defaultAccount }) {
   }
 
   if (selected === 'halloffame') {
-    const { activeValidatorsCount, stakedCyb } = knowledge;
-    content = (
-      <Route
-        path="/brain/halloffame"
-        render={() => (
-          <HallofFameTab
-            stakedCyb={stakedCyb}
-            activeValidatorsCount={activeValidatorsCount}
-          />
-        )}
-      />
-    );
+    content = <Route path="/brain/halloffame" render={() => <Validators />} />;
+  }
+
+  if (selected === 'power') {
+    content = <Route path="/brain/power" render={() => <PowerTab />} />;
   }
 
   return (
@@ -234,7 +237,7 @@ function Brain({ node, mobile, defaultAccount }) {
             <Text fontSize="16px" color="#fff">
               Subscribe to someone to make your feed work. Until then, we'll
               show you the project feed. Start by adding a ledger to{' '}
-              <Link to="/pocket">your pocket</Link>.
+              <Link to="/">your pocket</Link>.
             </Text>
           </Pane>
         )}
@@ -246,9 +249,9 @@ function Brain({ node, mobile, defaultAccount }) {
           marginTop={25}
         >
           <TabBtn
-            text="Knowledge"
-            isSelected={selected === 'knowledge'}
-            to="/brain/knowledge"
+            text="Oracle"
+            isSelected={selected === 'oracle'}
+            to="/brain/oracle"
           />
           <TabBtn
             text="Arena"
@@ -256,14 +259,14 @@ function Brain({ node, mobile, defaultAccount }) {
             to="/brain/gol"
           />
           <TabBtn
-            text="Cybernomics"
-            isSelected={selected === 'cybernomics'}
-            to="/brain/cybernomics"
+            text="Market"
+            isSelected={selected === 'market'}
+            to="/brain/market"
           />
           <TabBtn
-            text="Feed"
-            isSelected={selected === 'feed'}
-            to="/brain/feed"
+            text="Taverna"
+            isSelected={selected === 'taverna'}
+            to="/brain/taverna"
           />
           <TabBtn text="Port" isSelected={selected === 'port'} to="/brain" />
           <TabBtn
@@ -277,6 +280,11 @@ function Brain({ node, mobile, defaultAccount }) {
             to="/brain/halloffame"
           />
           <TabBtn
+            text="Power plant"
+            isSelected={selected === 'power'}
+            to="/brain/power"
+          />
+          {/* <TabBtn
             text="Apps"
             isSelected={selected === 'apps'}
             to="/brain/apps"
@@ -285,7 +293,7 @@ function Brain({ node, mobile, defaultAccount }) {
             text="Help"
             isSelected={selected === 'help'}
             to="/brain/help"
-          />
+          /> */}
         </Tablist>
         <Pane
           marginTop={30}
@@ -300,6 +308,8 @@ function Brain({ node, mobile, defaultAccount }) {
       {!mobile &&
         addressActive !== null &&
         selected !== 'port' &&
+        selected !== 'government' &&
+        selected !== 'halloffame' &&
         (addressActive.keys !== 'read-only' ? (
           <ActionBarContainer
             placeholder="What's happening?"
@@ -317,7 +327,7 @@ function Brain({ node, mobile, defaultAccount }) {
       {!mobile && selected !== 'port' && addressActive === null && (
         <ActionBar>
           <Pane fontSize="18px">
-            add cyber address in your <Link to="/pocket">pocket</Link>
+            add cyber address in your <Link to="/">pocket</Link>
           </Pane>
         </ActionBar>
       )}
