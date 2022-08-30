@@ -88,11 +88,11 @@ const constValue = {
   100: 1,
 };
 
-function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
-  const [valueSilder, setValueSilder] = useState(0);
-  const [angle, setAngle] = useState(26);
+export function Slider({ tokenA, tokenB, tokenAAmount, accountBalances, setPercentageBalanceHook, coinReverseAction }) {
 
-  // console.log(`test`, valueSilder);
+  const [valueSilder, setValueSilder] = useState(0);
+
+  const [angle, setAngle] = useState(26);
 
   // useEffect(() => {
   //   const getAngle = () => {
@@ -112,14 +112,29 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
   //   getAngle();
   // }, []);
 
+  const onChangeValueEvent=(value)=>{
+    setValueSilder(value);
+    if (typeof setPercentageBalanceHook==='function') {
+      setPercentageBalanceHook(value)
+      }
+  };
+  const onClickReverseButton=()=>{
+    if (typeof coinReverseAction==='function') {
+      coinReverseAction()
+      }
+  };
+
   useEffect(() => {
     if (
       tokenA !== '' &&
+       accountBalances  &&
       accountBalances[tokenA] &&
       parseFloat(tokenAAmount) > 0
     ) {
       const procent = tokenAAmount / accountBalances[tokenA];
       setValueSilder(Math.floor(procent));
+
+      
     }
   }, [tokenAAmount, accountBalances, tokenA]);
 
@@ -141,7 +156,8 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="1"
           value="0"
-          onChange={(e) => setValueSilder(e.target.value)}
+          checked={valueSilder === 0}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={1} lable="0" />
@@ -150,7 +166,8 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="2"
           value="2"
-          onChange={(e) => setValueSilder(e.target.value)}
+          checked={valueSilder === 2}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={2} lable="2" />
@@ -159,7 +176,7 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="3"
           value="5"
-          onChange={(e) => setValueSilder(e.target.value)}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={3} lable="5" />
@@ -168,7 +185,8 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="4"
           value="10"
-          onChange={(e) => setValueSilder(e.target.value)}
+          checked={valueSilder === 10}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={4} lable="10" />
@@ -177,7 +195,8 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="5"
           value="20"
-          onChange={(e) => setValueSilder(e.target.value)}
+          checked={valueSilder === 20}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={5} lable="20" />
@@ -186,7 +205,8 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="6"
           value="50"
-          onChange={(e) => setValueSilder(e.target.value)}
+          checked={valueSilder === 50}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={6} lable="50" />
@@ -195,7 +215,8 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
           name="debt-amount"
           id="7"
           value="100"
-          onChange={(e) => setValueSilder(e.target.value)}
+          checked={valueSilder === 100}
+          onChange={(e) => onChangeValueEvent(e.target.value)}
           required
         />
         <SpetionLabel value={7} lable="Max" />
@@ -205,12 +226,15 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
               className={cx(s.debtAmountPosToken, s.debtAmountPosTokenA)}
               style={{ transform: `rotate(${angle}deg)` }}
             >
+              {/* //@TODO */}
+              {/* <div style={{ transform: `rotate(255deg)` }}>Description element</div> */}
               <div
                 className={s.debtAmountPosTokenObjA}
                 style={{ transform: `rotate(-${angle}deg)` }}
               >
                 <ValueImg text={tokenA} onlyImg />
               </div>
+              
             </div>
           )}
           {tokenB !== '' && (
@@ -227,7 +251,7 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
             </div>
           )}
           <ButtonIcon
-            // onClick={() => tokenChange()}
+            onClick={() => onClickReverseButton()}
             // active={selectMethod === 'ledger'}
             img={imgSwap}
           />

@@ -50,6 +50,8 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
+import Warp from './containers/warp/warp';
+
 
 
 import Ibc from './containers/ibc';
@@ -157,6 +159,7 @@ function AppRouter({
 
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
+        <Route path="/warp" component={Warp} />
       </Switch>
     </Router>
   );

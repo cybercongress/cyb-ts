@@ -1,0 +1,98 @@
+@mixin box-shadow-green {
+  box-shadow: #36d6ae 0px 0px 5px;
+}
+
+@mixin displayFlexGap {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 20px;
+}
+
+@mixin border-card {
+  box-shadow: #36d6ae 0px 0px 5px;
+  border-radius: 5px;
+  padding: 15px;
+  // margin-bottom:20px
+  margin-top:20px
+}
+
+@mixin ItemInfoValue {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+}
+
+@mixin input-style {
+  height: 42px;
+  border: none;
+  background-color: transparent;
+  @include box-shadow-green;
+  color: #fff;
+  font-size: 18px;
+  text-align: end;
+  caret-color: #fff;
+  padding: 2px 15px;
+  border-radius: 5px;
+}
+
+.error{
+
+}
+
+.itemsTable {
+td {
+  border: 1px solid #1b1b1b;
+  padding-left: 9px;
+}
+}
+.containerWarpFields {
+  @include displayFlexGap;
+  &InputContainer {
+    @include border-card;
+    @include displayFlexGap;
+    &Item {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      &Error {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        input {
+          @include input-style;
+          box-shadow: #d50f0f 0px 0px 5px !important;
+        }
+        span {
+          line-height: 42px;
+        }
+
+
+        label {
+          display: block
+        }
+
+      }
+
+      input {
+
+        @include input-style;
+      }
+
+      span {
+        line-height: 42px;
+      }
+
+
+      label {
+        display: block
+      }
+
+
+    }
+  }
+
+  &Result {
+    @include border-card;
+    @include displayFlexGap;
+  }
+}
+
