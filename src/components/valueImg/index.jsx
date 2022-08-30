@@ -1,5 +1,6 @@
 import React from 'react';
 import { trimString } from '../../utils/utils';
+import { getIpfsCidExternalLink } from '../../utils/search/utils';
 
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
@@ -16,6 +17,7 @@ const cosmos = require('../../image/cosmos-2.svg');
 const osmosis = require('../../image/osmosis.svg');
 
 const ValueImg = ({
+  denomData,
   text,
   onlyImg,
   onlyText,
@@ -145,10 +147,10 @@ const ValueImg = ({
             overflow: 'hidden',
           }}
         >
-          {textCurency}
+          {denomData ? denomData.name : textCurency}
         </span>
       )}
-      {!onlyText && img !== null && (
+      {!onlyText && (denomData || img !== null )&& (
         <img
           style={{
             margin: marginImg || 0,
@@ -157,7 +159,7 @@ const ValueImg = ({
             // objectFit: 'cover',
             zIndex: zIndexImg || 0,
           }}
-          src={img}
+          src={denomData && denomData.logo? getIpfsCidExternalLink(denomData.logo) : img}
           alt="text"
         />
       )}

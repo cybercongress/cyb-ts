@@ -14,18 +14,19 @@ const denonFnc = (text) => {
   return denom;
 };
 
-function DenomArr({ denomValue, ...props }) {
+function DenomArr({ denomValue, denomData, ...props }) {
   const useDenomValue = useMemo(() => {
     const resultDenom = denonFnc(denomValue);
+
     if (typeof resultDenom === 'string') {
-      return <Denom {...props} denomValue={resultDenom} />;
+      { return <Denom {...props} denomData={denomData} denomValue={resultDenom} />; }
     }
 
     if (typeof resultDenom === 'object') {
       return (
         <div style={{ display: 'flex' }}>
-          <Denom denomValue={resultDenom[0]} {...props} />
-          <Denom denomValue={resultDenom[1]} {...props} />
+          <Denom denomData={denomData} denomValue={resultDenom[0]} {...props} />
+          <Denom denomData={denomData} denomValue={resultDenom[1]} {...props} />
         </div>
       );
     }

@@ -4,8 +4,9 @@ import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
 import { Denom } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
-import { ButtonIcon } from './components/slider';
-import { getCoinDecimals } from './utils';
+import { ButtonIcon, Slider } from './components/slider';
+import GetTxs from "./components/txHistory/tx";
+//import { getCoinDecimals } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
@@ -54,11 +55,21 @@ function Swap({ stateSwap, swap }) {
     typeTxs,
     balanceIbc,
     denomIbc,
+    setPercentageBalanceHook,
+    networks,
+    tokens,
+    addressActive,
   } = stateSwap;
 
+
+
   const getTokenPrice = useMemo(() => {
-    if (tokenAPoolAmount > 0 && tokenBPoolAmount > 0) {
+    if (tokenAPoolAmount > 0 && tokenBPoolAmount > 0
+        && tokens
+        && Object.prototype.hasOwnProperty.call(tokens, tokenA)
+        && Object.prototype.hasOwnProperty.call(tokens, tokenB)) { // Skip unknown tokens
       const price = swapPrice;
+
       return (
         <div
           style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}
@@ -68,12 +79,12 @@ function Swap({ stateSwap, swap }) {
               ? formatNumber(price)
               : exponentialToDecimal(price.toPrecision(3))}
           </div>
-          <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> /{' '}
-          <Denom denomValue={tokenB} />
+          <Denom marginContainer="0px 0px 0px 3px" denomData={tokens[tokenA]} denomValue={tokenA} /> /{' '}
+          <Denom denomData={tokens[tokenB]} denomValue={tokenB} />
         </div>
       );
     }
-    return <span> </span>;
+    return <span> N/A</span>;
   }, [swapPrice]);
 
   const getTextSellSend = useMemo(() => {
@@ -95,6 +106,7 @@ function Swap({ stateSwap, swap }) {
     }
     return 'add';
   }, [typeTxs, swap]);
+
 
   return (
     <Pane
@@ -124,15 +136,19 @@ function Swap({ stateSwap, swap }) {
         balanceIbc={balanceIbc}
         ibc={typeTxs === 'deposit'}
         swap={swap}
+        networks={networks}
+        tokens={tokens}
       />
-      {/* <Slider
+      <Slider
         id="tokenAAmount"
         tokenA={tokenA}
         tokenB={tokenB}
         tokenAAmount={tokenAAmount}
         accountBalances={accountBalances}
-      /> */}
-      <ButtonIcon
+        setPercentageBalanceHook={setPercentageBalanceHook}
+        coinReverseAction={tokenChange}
+      />
+      {/* <ButtonIcon
         onClick={() => tokenChange()}
         img={imgSwap}
         style={{
@@ -141,7 +157,7 @@ function Swap({ stateSwap, swap }) {
           transform: 'unset',
           left: 0,
         }}
-      />
+      /> */}
       <TokenSetter
         id="tokenBAmount"
         accountBalances={accountBalances}
@@ -158,6 +174,8 @@ function Swap({ stateSwap, swap }) {
         typeTxs={typeTxs}
         ibcTokenB={typeTxs !== 'swap'}
         swap={swap}
+        networks={networks}
+        tokens={tokens}
       />
       {typeTxs === 'swap' && swap && (
         <>
@@ -167,7 +185,7 @@ function Swap({ stateSwap, swap }) {
             width="100%"
             flexDirection="row"
             alignItems="flex-end"
-            marginTop={20}
+            marginTop={30}
           >
             <div>Rate:</div>
             <div>{getTokenPrice}</div>
@@ -182,6 +200,17 @@ function Swap({ stateSwap, swap }) {
           >
             <div>Swap Fees:</div>
             <div>0.3%</div>
+          </Pane>
+
+          <Pane
+              display="flex"
+              justifyContent="space-between"
+              width="100%"
+              flexDirection="row"
+              alignItems="flex-end"
+              marginTop={10}
+          >
+          { addressActive ? <GetTxs accountUser={addressActive.bech32}  /> : ''}
           </Pane>
         </>
       )}

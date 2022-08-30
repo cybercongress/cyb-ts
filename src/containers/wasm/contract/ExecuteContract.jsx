@@ -70,7 +70,6 @@ function ExecuteContract({ contractAddress }) {
 
     try {
       const [{ address }] = await keplr.signer.getAccounts();
-
       const executeResponseResult = await keplr.execute(
         address,
         contractAddress,
@@ -79,8 +78,6 @@ function ExecuteContract({ contractAddress }) {
         memo,
         coinsObject.result
       );
-      
-      console.log(`executeResponseResult`, executeResponseResult);
       setExecuteResponse({ result: executeResponseResult });
     } catch (e) {
       console.log(`e`, e);

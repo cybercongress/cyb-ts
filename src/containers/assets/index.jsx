@@ -9,18 +9,21 @@ import { getCoinDecimals } from '../teleport/utils';
 import { Denom } from '../../components';
 import { getKeplr } from '../ibc/useSetupIbc';
 import ActionBarAssets from './ActionBarAssets';
+import { getNetworks, getTokens } from '../teleport/hooks/useWarp';
 
-const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
+const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns, tokens }) => {
   const [balance, setBalance] = useState(0);
 
+
   useEffect(() => {
+    if (!tokens) return;
     if (
       allBalances !== null &&
       Object.prototype.hasOwnProperty.call(allBalances, denom)
     ) {
-      setBalance(getCoinDecimals(allBalances[denom], denom));
+      setBalance(getCoinDecimals(tokens, allBalances[denom], denom));
     }
-  }, [allBalances]);
+  }, [allBalances, tokens]);
 
   return (
     <div
@@ -94,6 +97,7 @@ function Assets({ defaultAccount }) {
   const [ibcClient, setIbcClient] = useState(null);
   const [selectDenom, setSelectDenom] = useState(null);
   const [typeIbcTxs, setTypeIbcTxs] = useState(null);
+  const { tokens } = getTokens();
 
   useEffect(() => {
     const getAssets = async () => {
@@ -157,6 +161,7 @@ function Assets({ defaultAccount }) {
                   deposit={depositOnClick}
                   withdraw={withdrawOnClick}
                   disabledBtns={keplr === null}
+                  tokens={tokens}
                 />
               );
             }
@@ -173,6 +178,7 @@ function Assets({ defaultAccount }) {
                   deposit={depositOnClick}
                   withdraw={withdrawOnClick}
                   disabledBtns={keplr === null}
+                  tokens={tokens}
                 />
               );
             }
@@ -183,6 +189,7 @@ function Assets({ defaultAccount }) {
         typeIbcTxs={typeIbcTxs}
         client={ibcClient}
         denom={selectDenom}
+        tokens={tokens}
       />
     </>
   );

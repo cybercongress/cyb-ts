@@ -60,6 +60,7 @@ const Select = ({
   imgSelectValue,
   onChangeSelect,
   children,
+  denomData,
 }) => {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -91,6 +92,7 @@ const Select = ({
                   img={
                     <DenomArr
                       justifyContent="center"
+                      denomData={denomData}
                       denomValue="choose"
                       onlyImg
                     />
@@ -105,6 +107,7 @@ const Select = ({
                     imgSelectValue || (
                       <DenomArr
                         justifyContent="center"
+                        denomData={denomData}
                         denomValue={textSelectValue}
                         onlyImg
                       />
