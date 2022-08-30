@@ -7,10 +7,10 @@ import {
 } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import WarpTokens from './WarpTokens';
-import WarpChannels from './WarpChannels';
-import WarpContracts from './WarpContracts';
-import WarpNetworks from './WarpNetworks';
+import WarpTokens from './warpTokens';
+import WarpChannels from './warpChannels';
+import WarpContracts from './warpContracts';
+import WarpNetworks from './warpNetworks';
 
 import { getPin, getTxs } from '../../utils/search/utils';
 import { AppContext } from "../../context";
