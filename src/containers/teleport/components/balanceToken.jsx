@@ -24,7 +24,6 @@ const BalanceToken = ({ token, data }) => {
       width="100%"
       justifyContent="space-between"
       marginBottom={12}
-      marginTop={11}
     >
       <Pane>Available</Pane>
       <Pane>{balance}</Pane>

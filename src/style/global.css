@@ -348,10 +348,6 @@ textarea:active {
   outline: none;
 }
 
-input:invalid {
-  border: red solid 3px;
-}
-
 /* input {
   font-size: 16px;
   height: 30px;
@@ -416,11 +412,7 @@ input:active {
   background: #5c5c5c;
 }
 
-.pull-right {
-  float: right
-}
 .btn {
-  cursor: pointer;
   height: 42px;
   white-space: nowrap;
   background-color: #000;
@@ -436,59 +428,6 @@ input:active {
   color: #36d6ae;
   -webkit-text-stroke: 0.5px #36d6ae67;
 }
-
-.btn-red {
-  box-shadow: 0 0 10px 0px #d63838;
-}
-button--loading .button__text {
-  visibility: hidden;
-  opacity: 0;
-}
-
-.btn-loading{
-  /* background-color: #3ab793 !important; */
-  /* background-image: none !important; */
-  /* color: #fff !important; */
-  /* border: none;
-  outline: none; */
-
-  position: relative;
-  /* //padding: 8px 16px; */
-  /* background: #009579; */
-  /* border: none; */
-  /* outline: none; */
-  /* border-radius: 2px; */
-  /* cursor: pointer; */
-}
-
-.btn-loading::after {
-  content: "";
-  position: absolute;
-  width: 23px;
-  height: 23px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin-left:5px;
-  margin-top:11px;
-  border: 4px solid transparent;
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: btn-loading-spinner 1s ease infinite;
-}
-
-@keyframes btn-loading-spinner {
-  from {
-      transform: rotate(0turn);
-  }
-
-  to {
-      transform: rotate(1turn);
-  }
-}
-
-
 
 .btn:hover {
   box-shadow: 0 0 6px 0px #38d6ae;

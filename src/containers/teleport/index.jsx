@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from 'react';
 import { connect } from 'react-redux';
-import { useLocation, useHistory, Route, useParams } from 'react-router-dom';
+import { useLocation, useHistory, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import useSWR from 'swr';
 import BigNumber from 'bignumber.js';
@@ -14,8 +14,6 @@ import queryString from 'query-string';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { getNetworks, getTokens } from './hooks/useWarp';
-
 import {
   reduceBalances,
   formatNumber,
@@ -25,14 +23,14 @@ import {
 } from '../../utils/utils';
 import { Dots, ValueImg, ButtonIcon } from '../../components';
 import {
-  // calculateCounterPairAmount,
+  calculateCounterPairAmount,
   calculateSlippage,
   sortReserveCoinDenoms,
   getMyTokenBalance,
   reduceAmounToken,
   getPoolToken,
   getCoinDecimals,
-  // networkList,
+  networkList,
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
@@ -42,16 +40,13 @@ import getBalances from './hooks/getBalances';
 import Swap from './swap';
 import Withdraw from './withdraw';
 import PoolData from './poolData';
-// import coinDecimalsConfig from '../../utils/configToken';
+import coinDecimalsConfig from '../../utils/configToken';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
-// import { networkList as networks } from './hooks/useGetBalancesIbc';
-
+import { networkList as networks } from './hooks/useGetBalancesIbc';
 // import TracerTx from './tx/TracerTx';
 // import TraceTxTable from './components/ibc-history/traceTxTable';
 // import HistoryContextProvider from './components/ibc-history/historyContext';
-import GetTxs from './components/txHistory/tx';
 
-//Pool default params
 const tokenADefaultValue = 'boot';
 const tokenBDefaultValue = 'hydrogen';
 
@@ -84,7 +79,6 @@ function Teleport({ defaultAccount }) {
   const { jsCyber, keplr } = useContext(AppContext);
   const location = useLocation();
   const history = useHistory();
-  const { address } = useParams();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
   const { liquidBalances: accountBalances } = getBalances(
@@ -93,8 +87,6 @@ function Teleport({ defaultAccount }) {
   );
   const { params } = useGetParams();
   const { poolsData } = usePoolListInterval();
-  const { networks } = getNetworks();
-  const { tokens } = getTokens();
   // const [accountBalances, setAccountBalances] = useState(null);
   const [tokenA, setTokenA] = useState(tokenADefaultValue);
   const [tokenB, setTokenB] = useState(tokenBDefaultValue);
@@ -121,9 +113,7 @@ function Teleport({ defaultAccount }) {
   );
   const [sourceChannel, setSourceChannel] = useState(null);
 
-
   let { search } = useLocation();
-  // const [{ address }] = await keplr.signer.getAccounts();
   // console.log('search', search);
 
   // useEffect(() => {
@@ -158,14 +148,6 @@ function Teleport({ defaultAccount }) {
 
   let query = queryString.parse(search);
   const firstEffectOccured = useRef(false);
-
-  const setPercentageBalanceHook = (value) =>
-  {
-    if (accountBalances && Object.prototype.hasOwnProperty.call(accountBalances, tokenA)) {
-      setTokenAAmount((accountBalances[tokenA] * value).toString());
-    }
-
-  };
 
   useEffect(() => {
     // Update current in and out currency to query string.
@@ -207,14 +189,13 @@ function Teleport({ defaultAccount }) {
 
     if (networkA !== CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
       setTypeTxs('deposit');
-      // console.log(networks[networkList[networkA]);
-      const { sourceChannelId } = networks[networkA];
+      const { sourceChannelId } = networks[networkList[networkA]];
       setSourceChannel(sourceChannelId);
     }
 
     if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
       setTypeTxs('withdraw');
-      const { destChannelId } = networks[networkB];
+      const { destChannelId } = networks[networkList[networkB]];
       setSourceChannel(destChannelId);
     }
   }, [networkB, networkA]);
@@ -272,13 +253,11 @@ function Teleport({ defaultAccount }) {
     let orderPrice = 0;
     setSwapPrice(0);
 
-    if (!tokens) return;
     const poolAmountA = new BigNumber(
-
-      getCoinDecimals(tokens, Number(tokenAPoolAmount), tokenA)
+      getCoinDecimals(Number(tokenAPoolAmount), tokenA)
     );
     const poolAmountB = new BigNumber(
-      getCoinDecimals(tokens, Number(tokenBPoolAmount), tokenB)
+      getCoinDecimals(Number(tokenBPoolAmount), tokenB)
     );
 
     if ([tokenA, tokenB].sort()[0] !== tokenA) {
@@ -311,7 +290,7 @@ function Teleport({ defaultAccount }) {
       // console.log('orderPrice', orderPrice);
       setSwapPrice(orderPrice);
     }
-  }, [tokens, tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
+  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
   // useEffect(() => {
   //   const poolAmountA = new BigNumber(
@@ -385,8 +364,6 @@ function Teleport({ defaultAccount }) {
       const poolTokenData = getPoolToken(poolsData, accountBalances);
       let poolTokenDataIndexer = {};
 
-      console.log('dddddddddpoolTokenData',poolTokenData);
-
       poolTokenDataIndexer = poolTokenData.reduce(
         (obj, item) => ({
           ...obj,
@@ -400,10 +377,9 @@ function Teleport({ defaultAccount }) {
 
   const checkInactiveFunc = (token) => {
     if (token.includes('ibc')) {
-      //@TODO
-      // if (!Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
-      //   return false;
-      // }
+      if (!Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+        return false;
+      }
     }
     return true;
   };
@@ -467,26 +443,19 @@ function Teleport({ defaultAccount }) {
 
   const getDecimals = (denom) => {
     let decimals = 0;
-    if (tokens[denom] && tokens[denom]) {
-      decimals = parseInt(tokens[denom].denom);
+    if (Object.hasOwnProperty.call(coinDecimalsConfig, denom)) {
+      decimals = 3;
     }
-
     return decimals;
   };
 
   useEffect(() => {
-
-    // tokens
     let counterPairAmount = '';
     let decimals = 0;
-    if (tokens && tokenB.length > 0 && typeof tokens[tokenB] !=='undefined') {
-
-      decimals = parseInt(tokens[tokenB].denom)
+    if (tokenB.length > 0) {
+      decimals = getDecimals(tokenB);
     }
-
-
     if (swapPrice && swapPrice !== Infinity && tokenAAmount.length > 0) {
-
       if ([tokenA, tokenB].sort()[0] === tokenA) {
         const x1 = new BigNumber(1);
         const price = x1.dividedBy(swapPrice);
@@ -531,8 +500,6 @@ function Teleport({ defaultAccount }) {
     setIsExceeded(exceeded);
     setAmountPoolCoin(inputAmount);
   };
-
-
 
   function tokenChange() {
     const A = tokenB;
@@ -596,10 +563,6 @@ function Teleport({ defaultAccount }) {
     typeTxs,
     denomIbc,
     balanceIbc,
-    setPercentageBalanceHook,
-    networks,
-    tokens,
-    addressActive,
   };
 
   const stateWithdraw = {
@@ -609,8 +572,6 @@ function Teleport({ defaultAccount }) {
     setSelectMyPool,
     amountPoolCoin,
     onChangeInputWithdraw,
-    networks,
-    tokens,
   };
 
   let content;
@@ -621,7 +582,6 @@ function Teleport({ defaultAccount }) {
         path="/teleport"
         render={() => <Swap swap stateSwap={stateSwap} />}
       />
-
     );
   }
 
@@ -671,20 +631,16 @@ function Teleport({ defaultAccount }) {
           // height="84vh"
         >
           {content}
-
-
-
-
         </Pane>
 
+        {/* <TraceTxTable /> */}
 
-
-        {/* { <PoolsList */}
-        {/*   poolsData={poolsData} */}
-        {/*   accountBalances={accountBalances} */}
-        {/*   totalSupply={totalSupply} */}
-        {/*   selectedTab={selectedTab} */}
-        {/* />} */}
+        {/* <PoolsList
+          poolsData={poolsData}
+          accountBalances={accountBalances}
+          totalSupply={totalSupply}
+          selectedTab={selectedTab}
+        /> */}
       </main>
       <ActionBar
         addressActive={addressActive}

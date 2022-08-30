@@ -28,8 +28,6 @@ $col-width: 100% / $number-of-options;
 }
 
 .formWrapper {
-  margin-bottom:50px;
-  margin-top:50px;
   width: 100%;
   height: 120px;
   display: flex;
@@ -38,7 +36,6 @@ $col-width: 100% / $number-of-options;
   justify-content: center;
 
   .debtAmountSlider {
-
     display: flex;
     flex-direction: row;
     align-content: stretch;

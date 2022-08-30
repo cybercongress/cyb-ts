@@ -38,19 +38,7 @@ const itemsMenu = (address) => {
     {
       name: 'Teleport',
       to: '/teleport',
-      subItems: [
-        { name: 'Pools', to: '/teleport/pools' }
-      ],
-    },
-    {
-      name: 'Warp',
-      to: '/warp',
-      subItems: [
-        { name: 'Tokens', to: '/warp/tokens' },
-        { name: 'Networks', to: '/warp/networks' },
-        { name: 'Channels', to: '/warp/chhanels' },
-        { name: 'Contracts', to: '/warp/contracts' },
-      ],
+      subItems: [{ name: 'Pools', to: '/teleport/pools' }],
     },
     {
       name: 'Dyson Sphere',

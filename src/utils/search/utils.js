@@ -1405,10 +1405,6 @@ export const getIpfsGatway = async (cid) => {
   }
 };
 
-export const getIpfsCidExternalLink =  (cid) => {
-  return `${config.CYBER.CYBER_GATEWAY}/ipfs/${cid}`;
-};
-
 export const getPinsCidPost = async (cid) => {
   console.log(`getPinsCidPost`);
   try {

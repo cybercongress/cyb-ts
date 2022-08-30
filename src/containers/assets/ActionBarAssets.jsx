@@ -12,7 +12,7 @@ const fee = {
   gas: DEFAULT_GAS_LIMITS.toString(),
 };
 
-function ActionBarAssets({ typeIbcTxs, client, denom, tokens }) {
+function ActionBarAssets({ typeIbcTxs, client, denom }) {
   const [amount, setAmount] = useState('');
   const [bal, setBal] = useState({ amount: 0, denom: '' });
   const [accounts, setAccounts] = useState({
@@ -55,7 +55,7 @@ function ActionBarAssets({ typeIbcTxs, client, denom, tokens }) {
           coinMinimalDenom
         );
         setBal({
-          amount: getCoinDecimals(tokens, response.amount, denom),
+          amount: getCoinDecimals(response.amount, denom),
           denom: coinDenom,
         });
         setAccounts({ from: address, to: counterpartyAccount });

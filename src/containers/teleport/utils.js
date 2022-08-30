@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { formatNumber, convertResources } from '../../utils/utils';
-// import coinDecimalsConfig from '../../utils/configToken';
-import { getNetworks, getTokens } from './hooks/useWarp';
+import coinDecimalsConfig from '../../utils/configToken';
+
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
 }
@@ -13,7 +13,6 @@ function pow(a) {
   }
   return result;
 }
-
 
 export function getDepositCoins(denoms, amounts) {
   return {
@@ -33,59 +32,58 @@ export function getMyTokenBalance(token, indexer) {
   return `My Balance: 0`;
 }
 
-export const getCoinDecimals = (tokens, amount, token) => {
-  // let tokens=getTokens();
+export const getCoinDecimals = (amount, token) => {
   let amountReduce = amount;
-  if (tokens && Object.prototype.hasOwnProperty.call(tokens, token)) {
-    const { coinDecimals } = tokens[token].denom;
+
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+    const { coinDecimals } = coinDecimalsConfig[token];
     amountReduce = parseFloat(amount) / pow(coinDecimals);
   }
   return amountReduce;
 };
 
-// Deprecated method?
-// export function calculateCounterPairAmount(e, state, type) {
-//   const inputAmount = e.target.value;
-//
-//   const price = null;
-//   let counterPairAmount = 0;
-//   const counterPair = '';
-//
-//   if (state.tokenAPoolAmount > 0 && state.tokenBPoolAmount > 0) {
-//     const { tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount } = state;
-//     const poolAmountA = new BigNumber(
-//       getCoinDecimals(Number(tokenAPoolAmount), tokenA)
-//     );
-//     const poolAmountB = new BigNumber(
-//       getCoinDecimals(Number(tokenBPoolAmount), tokenB)
-//     );
-//     let swapPrice = null;
-//     if ([tokenA, tokenB].sort()[0] === tokenA) {
-//       swapPrice = poolAmountB
-//         .dividedBy(poolAmountA)
-//         .multipliedBy(0.97)
-//         .toNumber();
-//     } else {
-//       swapPrice = poolAmountB
-//         .dividedBy(poolAmountA)
-//         .multipliedBy(1.03)
-//         .toNumber();
-//     }
-//     counterPairAmount = Math.floor(inputAmount * swapPrice);
-//
-//     // const swapFeeRatio = 0.9985; // ultimaetly get params
-//
-//     // swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
-//
-//     // counterPairAmount = Math.floor((inputAmount / swapPrice) * swapFeeRatio);
-//   }
-//
-//   return {
-//     price,
-//     counterPair,
-//     counterPairAmount,
-//   };
-// }
+export function calculateCounterPairAmount(e, state, type) {
+  const inputAmount = e.target.value;
+
+  const price = null;
+  let counterPairAmount = 0;
+  const counterPair = '';
+
+  if (state.tokenAPoolAmount > 0 && state.tokenBPoolAmount > 0) {
+    const { tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount } = state;
+    const poolAmountA = new BigNumber(
+      getCoinDecimals(Number(tokenAPoolAmount), tokenA)
+    );
+    const poolAmountB = new BigNumber(
+      getCoinDecimals(Number(tokenBPoolAmount), tokenB)
+    );
+    let swapPrice = null;
+    if ([tokenA, tokenB].sort()[0] === tokenA) {
+      swapPrice = poolAmountB
+        .dividedBy(poolAmountA)
+        .multipliedBy(0.97)
+        .toNumber();
+    } else {
+      swapPrice = poolAmountB
+        .dividedBy(poolAmountA)
+        .multipliedBy(1.03)
+        .toNumber();
+    }
+    counterPairAmount = Math.floor(inputAmount * swapPrice);
+
+    // const swapFeeRatio = 0.9985; // ultimaetly get params
+
+    // swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
+
+    // counterPairAmount = Math.floor((inputAmount / swapPrice) * swapFeeRatio);
+  }
+
+  return {
+    price,
+    counterPair,
+    counterPairAmount,
+  };
+}
 
 export const decFnc = (number, dec, reverse) => {
   let amount = number;
@@ -112,8 +110,6 @@ export function calculateSlippage(swapAmount, poolReserve) {
 
 export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
-  let tokens= { }
-  // let tokens=getTokens();
 
   // if (token === 'millivolt' || token === 'milliampere') {
   //   if (reverse) {
@@ -123,9 +119,8 @@ export const reduceAmounToken = (amount, token, reverse) => {
   //   }
   // }
 
-  if (tokens && Object.prototype.hasOwnProperty.call(tokens, token)) {
-
-    const { coinDecimals } = tokens[token].denom;
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+    const { coinDecimals } = coinDecimalsConfig[token];
     if (reverse) {
       amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
     } else {
@@ -158,7 +153,6 @@ export const reduceTextCoin = (text) => {
 export function getPoolToken(pool, myPoolTokens) {
   const myPools = [];
   pool.forEach((item) => {
-
     if (
       Object.prototype.hasOwnProperty.call(myPoolTokens, item.pool_coin_denom)
     ) {

@@ -30,12 +30,11 @@ function useGetDenom(denomValue) {
   return { denom, type };
 }
 
-function Denom({ denomValue, denomData, ...props }) {
+function Denom({ denomValue, ...props }) {
   try {
     const { denom, type } = useGetDenom(denomValue);
 
-
-    return <ValueImg denomData={denomData} text={denom} type={type} {...props} />;
+    return <ValueImg text={denom} type={type} {...props} />;
   } catch (error) {
     return <div>{denomValue}</div>;
   }
