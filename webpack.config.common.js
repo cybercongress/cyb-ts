@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+const Dotenv = require("dotenv-webpack");
 
 // const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
 //   template: path.join(__dirname, 'src', 'index.html'),
@@ -69,6 +70,8 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
+    new Dotenv({
+      systemvars: true,}),
   ],
   module: {
     rules: [

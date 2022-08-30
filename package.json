@@ -6,6 +6,8 @@
   "scripts": {
     "start": "webpack serve --config=webpack.config.dev.js ",
     "build": "webpack --config=webpack.config.prod.js --mode production &&  echo 'rebyc.cyber.page' > build/CNAME",
+    "build-bostrom": "webpack --config=webpack.config.prod.js --mode production &&  echo 'rebyc.cyber.page' > build/CNAME",
+    "build-space": "webpack --config=webpack.config.prod.js --mode production &&  echo 'rebyc.cyber.page' > build/CNAME",
     "devserver": "parcel serve src/index.html -p 8001 --no-cache",
     "upgradeDep": "yarn upgrade-interactive --latest",
     "build-report": "webpack --config=webpack.config.prod.js --profile --json > stats.json",
@@ -36,6 +38,7 @@
     "cross-env": "^6.0.3",
     "css-loader": "^5.0.1",
     "css-minimizer-webpack-plugin": "^4.0.0",
+    "dotenv-webpack": "^8.0.1",
     "esbuild-loader": "2.18.0",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",
