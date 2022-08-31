@@ -82,6 +82,15 @@ const AddItemForm = props => {
             }));
         }
 
+        if (!rpc.match(/[a-z0-9:\/\{\}]/)) {
+            blockingError=true;
+            setError(prevState => ({
+                ...prevState,
+                'rpc': true,
+                'hasError': true
+            }));
+        }
+
 
         if (blockingError) {
             setLoading(false);
@@ -89,7 +98,7 @@ const AddItemForm = props => {
         }
 
         try {
-            await props.addRow(sourceChannelId, destChannelId, sourceChainId, destinationChainId, rpc, token);
+            await props.addRow(destinationChainId,destChannelId,sourceChainId,sourceChannelId,rpc, token);
         } catch (e) {
             setError({'total': e.message, 'hasError': true});
 
@@ -107,35 +116,53 @@ const AddItemForm = props => {
 
             <div className={error.sourceChainId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Source chain id</span>
-                <input type="text" placeholder="" value={sourceChannelId}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input type="text" placeholder="" value={sourceChainId}
                        onChange={(e) => setSourceChainId(e.target.value)}/>
+                </div>
             </div>
             <div className={error.sourceChannelId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Source channel-id</span>
-                <input className="form-control" type="text" placeholder="" value={sourceChannelId}
+                <span>Destination channel-id</span>
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input className="form-control" type="text" placeholder="" value={sourceChannelId}
                        onChange={(e) => setSourceChannelId(e.target.value)}/>
+                </div>
             </div>
 
             <div className={error.destinationChainId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Destination chain id</span>
-                <input type="text" placeholder="" value={sourceChannelId}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input type="text" placeholder="" value={destinationChainId}
                        onChange={(e) => setDestinationChainId(e.target.value)}/>
+                </div>
             </div>
             <div className={error.destChannelId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Destination channel-id</span>
-                <input className="form-control" type="text" placeholder="" value={destChannelId}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input className="form-control" type="text" placeholder="" value={destChannelId}
                        onChange={(e) => setDestChannelId(e.target.value)}/>
+                </div>
             </div>
 
             <div className={error.rpc ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Rpc addr</span>
-                <input className="form-control" type="text" placeholder="" value={rpc}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: https://domain.com/{'{ addr }'},http://1.1.1.1/query/{'{ addr }'}</div>
+                    <input className="form-control" type="text" placeholder="" value={rpc}
                        onChange={(e) => setRpc(e.target.value)}/>
+                </div>
             </div>
             <div className={error.token ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Token</span>
-                <input className="form-control" type="text" placeholder="" value={token}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: A-Z,0-9</div>
+                    <input className="form-control" type="text" placeholder="" value={token}
                        onChange={(e) => setToken(e.target.value)}/>
+                </div>
             </div>
 
 

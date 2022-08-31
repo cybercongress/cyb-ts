@@ -131,28 +131,43 @@ const AddItemForm = props => {
 
             <div className={error.name ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Network name</span>
-                <input type="text" placeholder="example: cyber" value={name}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input type="text" placeholder="example: cyber" value={name}
                        onChange={(e) => setName(e.target.value)}/>
+                </div>
             </div>
             <div className={error.chain_id ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Chain id</span>
-                <input className="form-control" type="text" placeholder="example: bostrom" value={chain_id}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input className="form-control" type="text" placeholder="example: bostrom" value={chain_id}
                        onChange={(e) => setChainId(e.target.value)}/>
+                </div>
             </div>
             <div className={error.genesis_hash ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Genesis hash</span>
-                <input className="form-control" type="text" placeholder="" value={genesis_hash}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9</div>
+                    <input className="form-control" type="text" placeholder="" value={genesis_hash}
                        onChange={(e) => setGenesisHash(e.target.value)}/>
+                </div>
             </div>
             <div className={error.github ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Github</span>
-                <input className="form-control" type="text" placeholder="example: https://github.com/myteam/product.git" value={github}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: https://github.com/*/*.git</div>
+                    <input className="form-control" type="text" placeholder="example: https://github.com/myteam/product.git" value={github}
                        onChange={(e) => setGithub(e.target.value)}/>
+                </div>
             </div>
             <div className={error.unbonding_period ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Unbonding Period</span>
-                <input className="form-control" type="number" placeholder="" value={unbonding_period}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: 0-9</div>
+                    <input className="form-control" type="number" placeholder="" value={unbonding_period}
                        onChange={(e) => setUnbondingPeriod(e.target.value)}/>
+                </div>
             </div>
 
 

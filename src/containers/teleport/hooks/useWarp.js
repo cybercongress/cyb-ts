@@ -17,7 +17,7 @@ export function getNetworks() {
         (
             WARP_CONTRACTS.NETWORKS,
           {
-              "get_tokens": {}
+              "get_items": {}
             }
         );
         let objectMappedResult={};
@@ -47,7 +47,7 @@ export function getTokens() {
         (
             WARP_CONTRACTS.TOKENS,
             {
-              "get_tokens": {}
+              "get_items": {}
             }
         );
         let objectMappedResult= { };

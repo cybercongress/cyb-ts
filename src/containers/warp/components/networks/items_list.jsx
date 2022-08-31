@@ -44,7 +44,7 @@ const ItemsList = props => {
           ))
         ) : (
           <tr>
-            <td colSpan={3}>No items</td>
+            <td colSpan={5}>No items</td>
           </tr>
         )}
       </tbody>

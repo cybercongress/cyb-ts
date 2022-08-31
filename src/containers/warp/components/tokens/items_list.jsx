@@ -26,7 +26,7 @@ const ItemsList = props => {
         {props.items.length > 0 ? (
           props.items.map(item => (
             <tr key={item.id}>
-              <td>{item.chain_id}</td>
+                <td>{item.chain_id}</td>
                 <td>{item.name}</td>
                 <td>{item.ticker}</td>
               <td><img src={getIpfsCidExternalLink(item.logo)} width="32" height="32" /></td>
@@ -44,7 +44,7 @@ const ItemsList = props => {
           ))
         ) : (
           <tr>
-            <td colSpan={3}>No items</td>
+            <td colSpan={5}>No items</td>
           </tr>
         )}
       </tbody>

@@ -14,6 +14,7 @@ const ItemsList = props => {
   >
       <thead>
         <tr>
+        <th scope="col">Token</th>
         <th scope="col">Chain source</th>
         <th scope="col">Chain dest</th>
         <th scope="col">Channel source</th>
@@ -25,10 +26,11 @@ const ItemsList = props => {
         {props.items.length > 0 ? (
           props.items.map(item => (
             <tr key={item.id}>
-              <td>{item.sourceChainId}</td>
-                <td>{item.destinationChainId}</td>
-                <td>{item.sourceChannelId}</td>
-                <td>{item.destChannelId}</td>
+                <td>{item.token}</td>
+                <td>{item.source_chain_id}</td>
+                <td>{item.destination_chain_id}</td>
+                <td>{item.source_channel_id}</td>
+                <td>{item.destination_channel_id}</td>
               <td>
                   <button
                       onClick={() => {
@@ -43,7 +45,7 @@ const ItemsList = props => {
           ))
         ) : (
           <tr>
-            <td colSpan={3}>No items</td>
+            <td colSpan={6}>No items</td>
           </tr>
         )}
       </tbody>

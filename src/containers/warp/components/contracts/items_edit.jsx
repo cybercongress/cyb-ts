@@ -20,7 +20,7 @@ const EdittemForm = props => {
     const [query_hash, setQueryHash] = useState(props.data.query_hash);
     const [execute_hash, setExecuteHash] = useState(props.data.execute_hash);
     const [version, setVersion] = useState(props.data.version);
-    const [github, setGithub] = useState(props.data.setGithub || "");
+    const [github, setGithub] = useState(props.data.github || "");
 
 
     const onDelete = async()=>{
@@ -65,7 +65,7 @@ const EdittemForm = props => {
             }));
         }
 
-        if (!query_hash.match(/[A-Z0-9]{20,70}/)) {
+        if (!query_hash.match(/[a-z0-9]{20,70}/)) {
             blockingError=true;
             setError(prevState => ({
                 ...prevState,
@@ -73,7 +73,7 @@ const EdittemForm = props => {
                 'hasError': true
             }));
         }
-        if (!execute_hash.match(/[A-Z0-9]{20,70}/)) {
+        if (!execute_hash.match(/[a-z0-9]{20,70}/)) {
             blockingError=true;
             setError(prevState => ({
                 ...prevState,
@@ -123,30 +123,45 @@ const EdittemForm = props => {
 
             <div className={error.address ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Contract address</span>
-                <input type="text" placeholder="" value={address}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9 {'{60:90}'}</div>
+                    <input type="text" placeholder="" value={address}
                        onChange={(e) => setAddress(e.target.value)}/>
+                </div>
             </div>
             <div className={error.query_hash ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Query hash</span>
-                <input className="form-control" type="text" placeholder="" value={query_hash}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9</div>
+                    <input className="form-control" type="text" placeholder="" value={query_hash}
                        onChange={(e) => setQueryHash(e.target.value)}/>
+                </div>
             </div>
             <div className={error.execute_hash ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Execute hash</span>
-                <input className="form-control" type="text" placeholder="" value={execute_hash}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9</div>
+                    <input className="form-control" type="text" placeholder="" value={execute_hash}
                        onChange={(e) => setExecuteHash(e.target.value)}/>
+                </div>
             </div>
 
             <div className={error.version ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Version</span>
-                <input className="form-control" type="text" placeholder="" value={version}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,=,&</div>
+                    <input className="form-control" type="text" placeholder="" value={version}
                        onChange={(e) => setVersion(e.target.value)}/>
+                </div>
             </div>
 
             <div className={error.github ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Github</span>
-                <input className="form-control" type="text" placeholder="" value={github}
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: https://github.com/*/*.git</div>
+                    <input className="form-control" type="text" placeholder="" value={github}
                        onChange={(e) => setGithub(e.target.value)}/>
+                </div>
             </div>
 
 

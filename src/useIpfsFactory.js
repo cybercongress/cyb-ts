@@ -44,6 +44,7 @@ const startIpfs = async () => {
       ipfs = await IPFS.create(configIpfs());
       console.timeEnd('IPFS Started');
     } catch (error) {
+      console.error('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww!!!',error);
       ipfs = await IPFS.create(configIpfs(false));
     }
   }

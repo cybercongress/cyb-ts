@@ -40,6 +40,7 @@
 
 }
 
+
 .itemsTable {
 td {
   border: 1px solid #1b1b1b;
@@ -53,16 +54,18 @@ td {
     @include displayFlexGap;
     &Item {
       display: grid;
-      grid-template-columns: 140px 1fr;
+      grid-template-columns: 170px 1fr;
       &Error {
         display: grid;
-        grid-template-columns: 140px 1fr;
+        grid-template-columns: 170px 1fr;
         input {
           @include input-style;
+          width: 100%;
           box-shadow: #d50f0f 0px 0px 5px !important;
         }
         span {
-          line-height: 42px;
+          margin-top:30px;
+          line-height: 20px;
         }
 
 
@@ -71,14 +74,32 @@ td {
         }
 
       }
+      &Editable {
+        div {
+          color:rgb(119, 119, 119);
+          float: right;
+          box-shadow: #36d6ae 0px 0px 5px !important;
+          padding: 3px 10px 3px 10px
+        }
+      }
+
+
 
       input {
-
+        width: 100%;
         @include input-style;
       }
 
+
+      select {
+        width: 100%;
+        @include input-style;
+        margin-left:0px;
+      }
+
       span {
-        line-height: 42px;
+        margin-top:30px;
+        line-height: 20px;
       }
 
 

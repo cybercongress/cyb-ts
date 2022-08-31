@@ -48,7 +48,7 @@ const itemsMenu = (address) => {
       subItems: [
         { name: 'Tokens', to: '/warp/tokens' },
         { name: 'Networks', to: '/warp/networks' },
-        { name: 'Channels', to: '/warp/chhanels' },
+        { name: 'Channels', to: '/warp/channels' },
         { name: 'Contracts', to: '/warp/contracts' },
       ],
     },

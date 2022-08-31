@@ -23,8 +23,8 @@ const AUCTION = {
 
 //@FIXME
 let WARP_CONTRACTS = {
-  TOKENS: 'bostrom147vqvje5088zpuryr0sqqheqv358p8mgx6z8n6vn9a5fxt43lmpqpvefkk',
-  NETWORKS: 'bostrom1nt0kgehua6w26xm6ncu27mjeujt5je5dqx45s7ac5eptmc6z0haqs0vxme',
+  TOKENS: '',
+  NETWORKS: '',
   CHANNELS: '',
   CONTRACTS: ''
 };
@@ -83,10 +83,10 @@ let CHAIN_PARAMS={
 
 if (process.env.CHAIN_ID === 'space-pussy-1') {
   WARP_CONTRACTS = {
-    TOKENS: 'bostrom147vqvje5088zpuryr0sqqheqv358p8mgx6z8n6vn9a5fxt43lmpqpvefkk',
-    NETWORKS: 'bostrom1nt0kgehua6w26xm6ncu27mjeujt5je5dqx45s7ac5eptmc6z0haqs0vxme',
-    CHANNELS: '',
-    CONTRACTS: ''
+    TOKENS: 'bostrom1v9rnrjarkte5f0xqcqyzxu0lrn6v4s75pleu5uhnj3gpd9yxuksqnhwth4',
+    NETWORKS: 'bostrom1s2vytwrtwa89rq7mmvp48xqet8n8hhqe4zs82r3smdsh32njz0hqs806xc',
+    CHANNELS: 'bostrom1k7rg9vscg2uldw6868mecryxhlze5e3f4z0f00295ddu7cz3l4wsykf348',
+    CONTRACTS: 'bostrom18ds9kmt6lyxzrtrud8val53c86d66ku8yek4damvzj64deguldwsh04zmn'
   };
 
   CHAIN_PARAMS={

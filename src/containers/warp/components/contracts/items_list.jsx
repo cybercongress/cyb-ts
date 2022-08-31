@@ -15,7 +15,6 @@ const ItemsList = props => {
       <thead>
         <tr>
         <th scope="col">Address</th>
-        <th scope="col">Query hash</th>
         <th scope="col">Version</th>
         <th scope="col" style={{width: '1%'}}></th>
         </tr>
@@ -25,7 +24,6 @@ const ItemsList = props => {
           props.items.map(item => (
             <tr key={item.id}>
               <td>{item.address}</td>
-                <td>{item.query_hash}</td>
                 <td>{item.version}</td>
               <td>
                   <button
