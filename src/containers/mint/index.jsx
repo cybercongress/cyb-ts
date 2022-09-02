@@ -78,12 +78,8 @@ function Mint({ defaultAccount }) {
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
-  const {
-    slotsData,
-    vested,
-    loadingAuthAccounts,
-    originalVesting,
-  } = useGetSlots(addressActive, updateAddress);
+  const { slotsData, vested, loadingAuthAccounts, originalVesting } =
+    useGetSlots(addressActive, updateAddress);
   const [selected, setSelected] = useState('millivolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
@@ -140,7 +136,7 @@ function Mint({ defaultAccount }) {
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
       const { keys, bech32 } = account.cyber;
-      if (keys === 'keplr') {
+      if (keys === 'keplr' || keys === 'cyberSigner') {
         addressPocket = bech32;
       }
     }
@@ -394,10 +390,10 @@ function Mint({ defaultAccount }) {
               }}
             >
               You’re freezing {formatNumber(value)} H for {valueDays} days. It
-              will release {resourceToken} {<ValueImg text={selected} />} for
-              you. At the end of the period, {selected} becomes liquid
-              automatically, but you can use it to boost ranking during the
-              freeze. You can have only 8 slots for investmint at a time.
+              will release {resourceToken} <ValueImg text={selected} /> for you.
+              At the end of the period, {selected} becomes liquid automatically,
+              but you can use it to boost ranking during the freeze. You can
+              have only 8 slots for investmint at a time.
             </div>
           )}
         </div>

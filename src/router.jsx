@@ -60,6 +60,7 @@ import {
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
+import WalletTxs from './containers/txs/wallet';
 
 import useIpfsFactory from './useIpfsFactory';
 
@@ -155,6 +156,7 @@ function AppRouter({
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
 
+        <Route path="/wallet/:dataMsg" component={WalletTxs} />
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
       </Switch>

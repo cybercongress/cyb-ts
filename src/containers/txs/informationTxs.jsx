@@ -6,20 +6,52 @@ import { Link } from 'react-router-dom';
 const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
+const statusUnsignedImg = require('../../image/ionicons_svg_ios-warning.svg');
+
+const checkStatus = (status) => {
+  if (status === true) {
+    return 'Success';
+  }
+
+  if (status === false) {
+    return 'Fail';
+  }
+
+  if (status === 'Unsigned') {
+    return 'Unsigned';
+  }
+
+  return '';
+};
+
+const checkStatusImg = (status) => {
+  if (status === true) {
+    return statusTrueImg;
+  }
+
+  if (status === false) {
+    return statusFalseImg;
+  }
+
+  return statusUnsignedImg;
+};
 
 const InformationTxs = ({ data, messageError, ...props }) => {
   console.log(data);
-  const value = Object.keys(data).map(key => {
+  const value = Object.keys(data).map((key) => {
     let item = '';
     switch (key) {
       case 'height':
-        item = formatNumber(data[key]);
+        item = data[key] > 0 ? formatNumber(data[key]) : '';
         break;
       case 'status':
-        item = data[key] ? 'Success' : 'Fail';
+        item = checkStatus(data[key]);
         break;
       case 'timestamp':
-        item = dateFormat(data[key], 'UTC: dd/mm/yyyy, hh:MM:ss tt "UTC"');
+        item =
+          data[key].length > 0
+            ? dateFormat(data[key], 'UTC: dd/mm/yyyy, hh:MM:ss tt "UTC"')
+            : '';
         break;
       default:
         item = data[key];
@@ -58,7 +90,7 @@ const InformationTxs = ({ data, messageError, ...props }) => {
           {key === 'status' && (
             <img
               style={{ width: '20px', height: '20px', marginRight: '5px' }}
-              src={data[key] ? statusTrueImg : statusFalseImg}
+              src={checkStatusImg(data[key])}
               alt="statusImg"
             />
           )}

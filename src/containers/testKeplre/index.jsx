@@ -1,13 +1,24 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { coins } from '@cosmjs/launchpad';
+import { fromAscii, fromBase64 } from '@cosmjs/encoding';
 import { AppContext, AppContextSigner } from '../../context';
 import { CYBER, CYBER_SIGNER } from '../../utils/config';
 const uint8ArrayConcat = require('uint8arrays/concat');
 
+// import Signer from '../signer';
 
-import Signer from '../signer';
+const testData =
+  'eyJ0eXBlVXJsIjoiL2Nvc21vcy5iYW5rLnYxYmV0YTEuTXNnU2VuZCIsInZhbHVlIjp7ImZyb21BZGRyZXNzIjoiYm9zdHJvbTFmcms5azM4cHZwNzB2aGVlemhkZmQ0bnZxbmxzbTlkdzNqOGhscSIsInRvQWRkcmVzcyI6ImJvc3Ryb20xZnJrOWszOHB2cDcwdmhlZXpoZGZkNG52cW5sc205ZHczajhobHEiLCJhbW91bnQiOlt7ImRlbm9tIjoiYm9vdCIsImFtb3VudCI6IjQyIn1dfX0=';
 
 // dune pottery shield bracket shuffle orchard frown mail exercise destroy enroll nothing scheme allow pudding match mass world glow razor that attend blame follow
+
+
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 function TestKeplr() {
   const { keplr } = useContext(AppContext);
@@ -20,61 +31,28 @@ function TestKeplr() {
   } = useContext(AppContextSigner);
 
   const [hashTx, setHashTx] = useState('');
+  const [msgsData, setMsgsData] = useState([]);
+  const search = useQuery();
 
-  // useEffect(() => {
-  //   const seed =
-  //     'dune pottery shield bracket shuffle orchard frown mail exercise destroy enroll nothing scheme allow pudding match mass world glow razor that attend blame follow';
-  //   const seedBase64 = btoa(seed);
-  //   console.log(`seedBase64`, seedBase64);
+  console.log('params', search);
 
-  //   const string = atob(seedBase64);
-  //   console.log(`string`, string)
-  // }, []);
-
-  // console.log('keplr', keplr);
-  //   cybervaloper15zs0cjct43xs4z4sesxcrynar5mxm82ftahux2;
-
-  const signerTest = async () => {
-    const signer = new Signer();
-    const addT = await signer.generationAccount();
-    console.log(`addT`, addT);
-  };
-
-  const changeValue = () => {
-    updateValueIsVisible(true);
-  };
-
-  const sendTxSigner = async () => {
-    if (cyberSigner !== null) {
-      const [{ address }] = await cyberSigner.getAccounts();
+  useEffect(() => {
+    try {
       const msgs = [];
-      msgs.push({
-        type: 'cosmos-sdk/MsgSend',
-        value: {
-          amount: coins(10, 'eul'),
-          from_address: address,
-          to_address: 'cyber1ak2zkkde8zaq3fv8dh8d5hclhm80e9q587wmnz',
-        },
-      });
-
-      updateValueTxs(msgs);
+      const fromBase64Data = fromAscii(fromBase64(testData));
+      msgs.push(JSON.parse(fromBase64Data));
+      setMsgsData(msgs);
+    } catch (error) {
+      console.log('error', error);
     }
-  };
+  }, []);
 
-  const callbackSigner = async (signerCyber) => {
-    console.log(`callbackSigner`, signerCyber);
-    const [{ address, pubkey }] = await signerCyber.getAccounts();
-    const pk = Buffer.from(pubkey).toString('hex');
-    console.log(`callbackSigner address`, address);
-    console.log(`callbackSigner pk`, pk);
-    updateCallbackSigner(null);
-  };
-
-  const restore = () => {
-    updateCallbackSigner(callbackSigner);
-    updateValueIsVisible(true);
-    updateStageSigner(CYBER_SIGNER.STAGE_INIT_ACC);
-  };
+  const sendTxSigner = useCallback(async () => {
+    if (cyberSigner !== null) {
+      console.log('msgsData', msgsData);
+      updateValueTxs(msgsData);
+    }
+  }, [msgsData, cyberSigner]);
 
   return (
     <main className="block-body">
@@ -87,31 +65,6 @@ function TestKeplr() {
         sendTxSigner
       </button>
 
-      <button
-        className="btn"
-        style={{ maxWidth: 200, marginTop: 50 }}
-        onClick={changeValue}
-        type="button"
-      >
-        inViseble
-      </button>
-      <button
-        className="btn"
-        style={{ maxWidth: 200, marginTop: 50 }}
-        onClick={signerTest}
-        type="button"
-      >
-        signerTest
-      </button>
-
-      <button
-        className="btn"
-        style={{ maxWidth: 200, marginTop: 50 }}
-        onClick={restore}
-        type="button"
-      >
-        StateRestore
-      </button>
       <span>{hashTx}</span>
     </main>
   );

@@ -9,11 +9,11 @@ const CT = ({ children }) => (
 );
 
 function MsgsSigner({ msgData }) {
-  if (msgData.type === 'cosmos-sdk/MsgSend') {
+  if (msgData.typeUrl === '/cosmos.bank.v1beta1.MsgSend') {
     let recipient;
     let amount;
-    if (msgData.value.to_address && msgData.value.amount) {
-      recipient = trimString(msgData.value.to_address, 8, 4);
+    if (msgData.value.toAddress && msgData.value.amount) {
+      recipient = trimString(msgData.value.toAddress, 8, 4);
       amount = msgData.value.amount.map((coin, j) => {
         return (
           <span key={j}>

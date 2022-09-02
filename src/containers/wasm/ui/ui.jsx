@@ -12,6 +12,7 @@ function JsonView({ src, strLength }) {
       displayObjectSize={false}
       collapseStringsAfterLength={strLength ?? 24}
       theme="twilight"
+      style={{ overflow: 'auto' }}
     />
   );
 }
@@ -29,7 +30,9 @@ const FlexWrapCantainer = ({ children, ...props }) => (
 );
 
 const CardCantainer = ({ children, ...props }) => (
-  <div {...props} className={styles.containerCardCantainer}>{children}</div>
+  <div {...props} className={styles.containerCardCantainer}>
+    {children}
+  </div>
 );
 
 const LinkTx = ({ children, txs }) => (

@@ -607,6 +607,19 @@ export const getTxs = async (txs) => {
   }
 };
 
+export const getTxsV1beta1 = async (txs) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs/${txs}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 export const getValidatorsInfo = async (address) => {
   try {
     const response = await axios({

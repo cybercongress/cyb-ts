@@ -35,6 +35,7 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
+import Msgs from '../../utils/msgs';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -544,38 +545,40 @@ class InnerActionBarContainer extends Component {
     const { valueAppContextSigner } = this.props;
     const { updateCallbackSigner } = valueAppContextSigner;
 
-    const hash = result.transactionHash;
-    updateCallbackSigner(null);
-    console.log('hash :>> ', hash);
-    this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
-    this.timeOut = setTimeout(this.confirmTx, 1500);
+    if (result.code === 0) {
+      const hash = result.transactionHash;
+      updateCallbackSigner(null);
+      console.log('hash :>> ', hash);
+      this.setState({ stage: STAGE_SUBMITTED, txHash: hash });
+      this.timeOut = setTimeout(this.confirmTx, 1500);
+    } else {
+      this.setState({
+        txHash: null,
+        stage: STAGE_ERROR,
+        errorMessage: result.rawLog.toString(),
+      });
+    }
   };
 
   sendTxSigner = async () => {
     const { valueAppContextSigner } = this.props;
     const { fromCid, toCid, addressLocalStor } = this.state;
-    const {
-      cyberSigner,
-      updateValueTxs,
-      updateCallbackSigner,
-    } = valueAppContextSigner;
+    const { cyberSigner, updateValueTxs, updateCallbackSigner } =
+      valueAppContextSigner;
     if (cyberSigner !== null) {
-      const [{ address }] = await cyberSigner.getAccounts();
-      const msgs = [];
-      msgs.push({
-        type: 'cyber/Link',
-        value: {
-          address,
-          links: [
-            {
-              from: fromCid,
-              to: toCid,
-            },
-          ],
-        },
-      });
+      const [{ address }] = await cyberSigner.signer.getAccounts();
+      // const fee = {
+      //   amount: [],
+      //   gas: DEFAULT_GAS_LIMITS.toString(),
+      // };
+      // const result = await cyberSigner.cyberlink(address, fromCid, toCid, fee);
+      // console.log('result', result);
+
+      const objMsgs = new Msgs();
+      const msgs = objMsgs.cyberlink(address, fromCid, toCid);
+
       updateCallbackSigner(this.updateCallbackFnc);
-      updateValueTxs(msgs);
+      updateValueTxs([msgs]);
       this.setState({
         stage: STAGE_KEPLR_APPROVE,
       });

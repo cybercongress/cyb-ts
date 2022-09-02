@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
+} from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { coins, coin } from '@cosmjs/launchpad';
 import { useHistory } from 'react-router-dom';
@@ -18,9 +24,10 @@ import {
 } from '../../components';
 
 import { trimString, formatNumber } from '../../utils/utils';
+import Msgs from '../../utils/msgs';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
-import { AppContext } from '../../context';
+import { AppContext, AppContextSigner } from '../../context';
 
 const {
   MEMO,
@@ -190,6 +197,13 @@ function ActionBarContainer({
   updateFnc,
 }) {
   const { keplr, jsCyber } = useContext(AppContext);
+  const {
+    cyberSigner,
+    updateValueTxs,
+    updateValueIsVisible,
+    updateCallbackSigner,
+    updateStageSigner,
+  } = useContext(AppContextSigner);
   const history = useHistory();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
@@ -218,6 +232,97 @@ function ActionBarContainer({
     setTxType(null);
     setStage(STAGE_INIT);
   };
+
+  const getTxsMsgs = useCallback(
+    async (address) => {
+      const validatorAddres = getValidatorAddres(validators);
+      const msgs = [];
+      const dataMsgs = new Msgs();
+      if (txType === TXTYPE_DELEGATE) {
+        const tempMsg = await dataMsgs.delegateTokens(
+          address,
+          validatorAddres,
+          coin(parseFloat(amount), CYBER.DENOM_CYBER)
+        );
+        msgs.push(tempMsg);
+      }
+      if (txType === TXTYPE_UNDELEGATE) {
+        const tempMsg = await dataMsgs.undelegateTokens(
+          address,
+          validatorAddres,
+          coin(parseFloat(amount), CYBER.DENOM_CYBER)
+        );
+        msgs.push(tempMsg);
+      }
+      if (txType === TXTYPE_REDELEGATE) {
+        const tempMsg = await dataMsgs.redelegateTokens(
+          address,
+          validatorAddres,
+          valueSelect,
+          coin(parseFloat(amount), CYBER.DENOM_CYBER)
+        );
+        msgs.push(tempMsg);
+      }
+
+      return msgs;
+    },
+    [txType, valueSelect, amount]
+  );
+
+  const updateCallbackFnc = (response) => {
+    checkTxs(response, { setTxHash, setErrorMessage, setStage });
+  };
+
+  const generateTxCyberSigner = useCallback(async () => {
+    if (cyberSigner !== null) {
+      const [{ address }] = await cyberSigner.signer.getAccounts();
+      if (addressPocket !== null && addressPocket.bech32 === address) {
+        const msgs = await getTxsMsgs(address);
+        console.log('msgs', msgs);
+        updateCallbackSigner(updateCallbackFnc);
+        updateValueTxs(msgs);
+        setStage(LEDGER_GENERATION);
+      } else {
+        setStage(STAGE_ERROR);
+        setErrorMessage(
+          `Add address ${trimString(
+            address,
+            9,
+            5
+          )} to your pocket or make active `
+        );
+      }
+    }
+  }, [cyberSigner, amount, valueSelect]);
+
+  const generateTxKeplr = useCallback(async () => {
+    if (keplr !== null) {
+      const [{ address }] = await keplr.signer.getAccounts();
+      if (addressPocket !== null && addressPocket.bech32 === address) {
+        const msgs = await getTxsMsgs(address);
+
+        console.log('msgs', msgs);
+
+        const result = await keplr.signAndBroadcast(
+          address,
+          msgs,
+          fee,
+          CYBER.MEMO_KEPLR
+        );
+        console.log('result: ', result);
+        checkTxs(result, { setTxHash, setErrorMessage, setStage });
+      } else {
+        setStage(STAGE_ERROR);
+        setErrorMessage(
+          `Add address ${trimString(
+            address,
+            9,
+            5
+          )} to your pocket or make active `
+        );
+      }
+    }
+  }, [keplr, addressPocket, amount, valueSelect]);
 
   const delegateTokens = async () => {
     console.log('delegateTokens', delegateTokens);
@@ -343,6 +448,16 @@ function ActionBarContainer({
     setStage(STAGE_READY);
   };
 
+  const initDevice = () => {
+    if (addressPocket !== null && addressPocket.keys === 'keplr') {
+      generateTxKeplr();
+    }
+
+    if (addressPocket !== null && addressPocket.keys === 'cyberSigner') {
+      generateTxCyberSigner();
+    }
+  };
+
   // console.log('addressPocket', addressPocket);
   // console.log('loadingBalanceInfo', loadingBalanceInfo);
   // console.log('balance', balance);
@@ -412,7 +527,7 @@ function ActionBarContainer({
   if (
     Object.keys(validators).length === 0 &&
     stage === STAGE_INIT &&
-    balance.delegation  &&
+    balance.delegation &&
     balance.delegation === 0
   ) {
     return (
@@ -532,9 +647,10 @@ function ActionBarContainer({
         onChangeInputAmount={(e) => setAmount(e.target.value)}
         toSend={amount}
         disabledBtn={amount.length === 0}
-        generateTx={
-          txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
-        }
+        generateTx={() => initDevice()}
+        // generateTx={
+        //   txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
+        // }
         delegate={txType === TXTYPE_DELEGATE}
       />
     );
@@ -543,7 +659,8 @@ function ActionBarContainer({
   if (stage === STAGE_READY && txType === TXTYPE_REDELEGATE) {
     return (
       <ReDelegate
-        generateTx={() => redelegateTokens()}
+        generateTx={() => initDevice()}
+        // generateTx={() => redelegateTokens()}
         onChangeInputAmount={(e) => setAmount(e.target.value)}
         toSend={amount}
         disabledBtn={!validRestakeBtn}

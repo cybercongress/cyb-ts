@@ -5,6 +5,7 @@ import MsgType from '../../txs/msgType';
 import { PillNumber, TabBtn, Dots } from '../../../components';
 import { trimString } from '../../../utils/utils';
 import MsgsSigner from './MsgsSigner';
+import { JsonView } from '../../wasm/ui/ui';
 
 const HeaderSigner = ({ children }) => (
   <Pane
@@ -43,14 +44,14 @@ function StateSign({ msgData, onClick, onClickReject }) {
             {Object.keys(msgData).length}
           </PillNumber>{' '}
         </Pane>
-        <Pane width="100%" paddingLeft={20}>
-          {Object.keys(msgData).map((key) => (
+        <Pane width="100%" paddingLeft={0}>
+          <JsonView src={msgData} />
+          {/* {Object.keys(msgData).map((key) => (
             <Pane paddingY={5} width="100%">
               <MsgsSigner msgData={msgData[key]} />
-              {/* {msgData[key].type} */}
               <Pane paddingTop={5} borderBottom="1px solid #ffffff52" />
             </Pane>
-          ))}
+          ))} */}
         </Pane>
       </Pane>
     );

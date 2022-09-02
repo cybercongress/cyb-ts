@@ -21,6 +21,8 @@ const {
   STAGE_RESTORE_PHARSE,
 } = CYBER_SIGNER;
 
+const signerObj = new Signer();
+
 function AppSign({ defaultAccount }) {
   const {
     tx,
@@ -44,8 +46,8 @@ function AppSign({ defaultAccount }) {
 
   useEffect(() => {
     const getSigner = async () => {
-      const signerObj = new Signer();
       const signerCyber = await signerObj.initSigner(defaultAccount);
+      console.log('clientCyber', signerCyber);
 
       console.log(`signerCyber`, signerCyber);
       updateCyberSigner(signerCyber);
@@ -62,8 +64,8 @@ function AppSign({ defaultAccount }) {
   }, [tx]);
 
   const restorePhrase = async () => {
-    const signerObj = new Signer();
     const signerCyber = await signerObj.restorePhrase(valuePhrase, callbackFnc);
+    console.log('signerCyber', signerCyber)
     updateCyberSigner(signerCyber);
     setValuePhrase('');
     updateStageSigner(STAGE_INIT);
@@ -71,23 +73,17 @@ function AppSign({ defaultAccount }) {
 
   const createNewAcc = async () => {
     updateStageSigner(CYBER_SIGNER.STAGE_CREATE_NEW_ACCOUNT);
-    const signerObj = new Signer();
     const signerCyber = await signerObj.getVanityAccount();
     // updateCyberSigner(signerCyber);
     SetCyberSignerTemp(signerCyber);
-    setValuePhrase(signerCyber.secret.data);
+    setValuePhrase(signerCyber.signer.secret.data);
   };
 
   const signTx = async () => {
     console.log(`signer`, cyberSigner);
     console.log(`msgData`, msgData);
     if (cyberSigner !== null && msgData !== null) {
-      const signerObj = new Signer();
-      const response = await signerObj.sendTxs(
-        cyberSigner,
-        msgData,
-        callbackFnc
-      );
+      const response = await signerObj.sendTxs(msgData, callbackFnc);
       console.log(`response Txs`, response);
       updateValueTxs(null);
       setMsgData(null);

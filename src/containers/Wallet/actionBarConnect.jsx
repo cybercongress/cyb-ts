@@ -491,7 +491,7 @@ function ActionBarConnect({
 
   const callbackSigner = async (signerCyber) => {
     console.log(`callbackSigner`, signerCyber);
-    const [{ address, pubkey }] = await signerCyber.getAccounts();
+    const [{ address, pubkey }] = await signerCyber.signer.getAccounts();
     const pk = Buffer.from(pubkey).toString('hex');
     console.log(`callbackSigner address`, address);
     console.log(`callbackSigner pk`, pk);
@@ -525,7 +525,7 @@ function ActionBarConnect({
         selectAccount !== null ||
         !checkAddress(valueObj, 'cyber', cyberBech32)
       ) {
-        const seedBase64 = btoa(signerCyber.secret.data);
+        const seedBase64 = btoa(signerCyber.signer.secret.data);
         accounts.cyber = {
           bech32: cyberBech32,
           keys: 'cyberSigner',

@@ -30,6 +30,7 @@ export const getKeplr = async () => {
 
 const valueContext = {
   keplr: null,
+  jsCyber: null,
   ws: null,
 };
 

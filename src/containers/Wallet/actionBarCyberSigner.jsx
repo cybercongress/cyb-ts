@@ -22,6 +22,7 @@ import {
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 import { deletPubkey } from './utils';
+import Msgs from '../../utils/msgs';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 
@@ -53,19 +54,16 @@ function ActionBarCyberSigner({ updateAddress, updateBalance, selectAccount }) {
     const amount = parseFloat(amountSend);
     if (cyberSigner !== null) {
       setStage(STAGE_SUBMITTED);
-      const [{ address }] = await cyberSigner.getAccounts();
-      const msgs = [];
-      msgs.push({
-        type: 'cosmos-sdk/MsgSend',
-        value: {
-          amount: coins(amount, CYBER.DENOM_CYBER),
-          from_address: address,
-          to_address: recipient,
-        },
-      });
+      const [{ address }] = await cyberSigner.signer.getAccounts();
+      const dataMsgs = new Msgs();
+      const msgs = dataMsgs.sendTokens(
+        address,
+        recipient,
+        coins(amount, CYBER.DENOM_CYBER)
+      );
 
       updateCallbackSigner(updateCallbackFnc);
-      updateValueTxs(msgs);
+      updateValueTxs([msgs]);
     }
   };
 

@@ -13,10 +13,11 @@ import {
   TransactionError,
   Account,
 } from '../../components';
-import { AppContext } from '../../context';
+import { AppContext, AppContextSigner } from '../../context';
 import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
+import Msgs from '../../utils/msgs';
 
 const {
   STAGE_INIT,
@@ -29,6 +30,21 @@ const {
 const VESTING_TIME_HOURS = 3601;
 const BASE_VESTING_TIME = 86401;
 
+const checkTxs = (response, updateState) => {
+  console.log('response', response);
+  const { setStage, setTxHash, setErrorMessage } = updateState;
+  if (response.code === 0) {
+    const hash = response.transactionHash;
+    console.log('hash :>> ', hash);
+    setStage(STAGE_SUBMITTED);
+    setTxHash(hash);
+  } else {
+    setStage(STAGE_ERROR);
+    setTxHash(null);
+    setErrorMessage(response.rawLog.toString());
+  }
+};
+
 function ActionBar({
   value,
   selected,
@@ -38,6 +54,13 @@ function ActionBar({
   addressActive,
 }) {
   const { keplr, jsCyber } = useContext(AppContext);
+  const {
+    cyberSigner,
+    updateValueTxs,
+    updateValueIsVisible,
+    updateCallbackSigner,
+    updateStageSigner,
+  } = useContext(AppContextSigner);
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
@@ -73,7 +96,6 @@ function ActionBar({
 
   const investmint = async () => {
     if (keplr !== null) {
-      setStage(STAGE_SUBMITTED);
       const [{ address }] = await keplr.signer.getAccounts();
       const fee = {
         amount: [],
@@ -88,19 +110,7 @@ function ActionBar({
           fee
         );
         console.log(`response`, response);
-        if (response.code === 0) {
-          setTxHash(response.transactionHash);
-        } else if (response.code === 4) {
-          setTxHash(null);
-          setErrorMessage(
-            'Cyberlinking and investmint is not working. Wait for updates.'
-          );
-          setStage(STAGE_ERROR);
-        } else {
-          setTxHash(null);
-          setErrorMessage(response.rawLog.toString());
-          setStage(STAGE_ERROR);
-        }
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       } else {
         setErrorMessage(
           <span>
@@ -109,6 +119,38 @@ function ActionBar({
           </span>
         );
         setStage(STAGE_ERROR);
+      }
+    }
+  };
+
+  const updateCallbackFnc = (response) => {
+    checkTxs(response, { setTxHash, setErrorMessage, setStage });
+  };
+
+  const investmintCyberCigner = async () => {
+    if (cyberSigner !== null) {
+      const dataMsgs = new Msgs();
+      const [{ address }] = await cyberSigner.signer.getAccounts();
+
+      const msgs = dataMsgs.investmint(
+        address,
+        coin(parseFloat(value), 'hydrogen'),
+        selected,
+        parseFloat(BASE_VESTING_TIME * valueDays)
+      );
+      updateValueTxs([msgs]);
+      updateCallbackSigner(updateCallbackFnc);
+    }
+  };
+
+  const chooseSigner = () => {
+    if (addressActive !== null) {
+      if (addressActive.keys === 'keplr') {
+        investmint();
+      }
+
+      if (addressActive.keys === 'cyberSigner') {
+        investmintCyberCigner();
       }
     }
   };
@@ -145,7 +187,7 @@ function ActionBar({
   if (stage === STAGE_INIT) {
     return (
       <ActionBarContainer>
-        <Button disabled={resourceToken === 0} onClick={investmint}>
+        <Button disabled={resourceToken === 0} onClick={chooseSigner}>
           Investmint
         </Button>
       </ActionBarContainer>
