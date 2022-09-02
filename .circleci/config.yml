@@ -26,6 +26,7 @@ jobs:
           command: |
             rm -rf build/
             yarn install
+            export CHAIN_ID="bostrom" 
             yarn build
             cd build
             git init
