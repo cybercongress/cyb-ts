@@ -33,26 +33,34 @@ function Oracle({ block }) {
           gridTemplateColumns="repeat(auto-fit, minmax(210px, 1fr))"
           gridGap="20px"
         >
-          <CardStatisics
-            title="Cyberlinks"
-            value={formatNumber(linksCount)}
-            styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            title="Particles"
-            value={formatNumber(cidsCount)}
-            styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            title="Transactions"
-            value={<Txs />}
-            styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            title="Blocks"
-            value={formatNumber(parseFloat(block))}
-            styleContainer={{ minWidth: 'unset' }}
-          />
+          <Link to="/graph">
+            <CardStatisics
+              title="Cyberlinks"
+              value={formatNumber(linksCount)}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
+          <Link to="/particles">
+            <CardStatisics
+              title="Particles"
+              value={formatNumber(cidsCount)}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
+          <Link to="/network/bostrom/tx">
+            <CardStatisics
+              title="Transactions"
+              value={<Txs />}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
+          <Link to="/network/bostrom/block">
+            <CardStatisics
+              title="Blocks"
+              value={formatNumber(parseFloat(block))}
+              styleContainer={{ minWidth: 'unset' }}
+            />
+          </Link>
         </Pane>
       </main>
       <ForceGraph />

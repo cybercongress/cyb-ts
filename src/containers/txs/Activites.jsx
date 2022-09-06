@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
-import { Account, MsgType } from '../../components';
+import { Account, MsgType, LinkWindow } from '../../components';
 import { CYBER } from '../../utils/config';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
 
-const Link = ({ to, children }) => (
-  <a target="_blank" href={to}>
-    {children}
-  </a>
-);
-const Cid = ({ cid }) => (
-  <a target="_blank" href={`https://ipfs.io/ipfs/${cid}`}>
-    {cid}
-  </a>
-);
+const Cid = ({ cid }) => <Link to={`/ipfs/${cid}`}>{cid}</Link>;
 
 export const ContainerMsgsType = ({ type, children }) => (
   <Pane

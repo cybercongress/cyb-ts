@@ -5,6 +5,7 @@ import { Decimal } from '@cosmjs/math';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
 import { CYBER } from './utils/config';
+import { configKeplr } from './utils/keplrUtils';
 
 const valueContext = {
   keplr: null,
@@ -16,63 +17,6 @@ const valueContext = {
 export const AppContext = React.createContext(valueContext);
 
 export const useContextProvider = () => useContext(AppContext);
-
-const configKeplr = () => {
-  return {
-    // Chain-id of the Cosmos SDK chain.
-    chainId: CYBER.CHAIN_ID,
-    // The name of the chain to be displayed to the user.
-    chainName: CYBER.CHAIN_ID,
-    // RPC endpoint of the chain.
-    rpc: CYBER.CYBER_NODE_URL_API,
-    rest: CYBER.CYBER_NODE_URL_LCD,
-    stakeCurrency: {
-      coinDenom: 'BOOT',
-      coinMinimalDenom: 'boot',
-      coinDecimals: 0,
-    },
-    bip44: {
-      // You can only set the coin type of BIP44.
-      // 'Purpose' is fixed to 44.
-      coinType: 118,
-    },
-    bech32Config: {
-      bech32PrefixAccAddr: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER,
-      bech32PrefixAccPub: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}pub`,
-      bech32PrefixValAddr: CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
-      bech32PrefixValPub: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER}pub`,
-      bech32PrefixConsAddr: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valcons`,
-      bech32PrefixConsPub: `${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valconspub`,
-    },
-    currencies: [
-      {
-        // Coin denomination to be displayed to the user.
-        coinDenom: 'BOOT',
-        // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'boot',
-        // # of decimal points to convert minimal denomination to user-facing denomination.
-        coinDecimals: 0,
-      },
-    ],
-    // List of coin/tokens used as a fee token in this chain.
-    feeCurrencies: [
-      {
-        // Coin denomination to be displayed to the user.
-        coinDenom: 'BOOT',
-        // Actual denom (i.e. uatom, uscrt) used by the blockchain.
-        coinMinimalDenom: 'boot',
-        // # of decimal points to convert minimal denomination to user-facing denomination.
-        coinDecimals: 0,
-      },
-    ],
-    coinType: 118,
-    gasPriceStep: {
-      low: 0.001,
-      average: 0.01,
-      high: 0.025,
-    },
-  };
-};
 
 export async function createClient(signer) {
   if (signer) {

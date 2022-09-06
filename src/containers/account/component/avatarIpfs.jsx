@@ -27,18 +27,14 @@ function AvatarIpfs({
     }
   }, [addressCyber, node]);
 
-  const feachAvatar = async address => {
+  const feachAvatar = async (address) => {
     const response = await getAvatar(address);
-
-    if (response !== null && response.total_count === 0) {
-      if (node !== null) {
-        const cidTo =
-          response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0]
-            .to;
-        const responseImg = await getAvatarIpfs(cidTo, node);
-        if (responseImg && responseImg !== null) {
-          setAvatar(responseImg);
-        }
+    if (response !== null && response.total_count > 0) {
+      const cidTo =
+        response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0].to;
+      const responseImg = await getAvatarIpfs(cidTo, node);
+      if (responseImg && responseImg !== null) {
+        setAvatar(responseImg);
       }
     }
   };

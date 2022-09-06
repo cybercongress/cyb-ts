@@ -87,6 +87,7 @@ function Market({ node, mobile, defaultAccount }) {
   const [loadingSearch, setLoadingSearch] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(0);
+  const [rankLink, setRankLink] = useState(null);
   const [accountBalances, setAccountBalances] = useState(null);
 
   useEffect(() => {
@@ -147,6 +148,18 @@ function Market({ node, mobile, defaultAccount }) {
     };
     feachData();
   }, [jsCyber, selectedTokens, update]);
+
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
 
   let content;
 
@@ -281,18 +294,18 @@ function Market({ node, mobile, defaultAccount }) {
               node={node}
               mobile={mobile}
               selectedTokens={selectedTokens}
+              onClickRank={onClickRank}
             />
           )}
         </ContainerGrid>
       </main>
-      {!mobile && (
-        <ActionBarCont
-          addressActive={addressActive}
-          mobile={mobile}
-          keywordHash={keywordHash}
-          updateFunc={() => setUpdate(update + 1)}
-        />
-      )}
+      <ActionBarCont
+        addressActive={addressActive}
+        mobile={mobile}
+        keywordHash={keywordHash}
+        updateFunc={() => setUpdate(update + 1)}
+        rankLink={rankLink}
+      />
     </>
   );
 }

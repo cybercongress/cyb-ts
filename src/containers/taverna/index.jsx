@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
-import { NoItems, Dots, Rank } from '../../components';
+import { NoItems, Dots, Rank, SearchSnippet } from '../../components';
 import ContentItem from '../ipfs/contentItem';
 import useGetTweets from './useGetTweets';
+import ActionBarCont from '../market/actionBarContainer';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
@@ -36,9 +38,26 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
+const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
+
 function Taverna({ node, mobile, defaultAccount }) {
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   console.log(`tweets`, tweets)
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [rankLink, setRankLink] = useState(null);
+  const [update, setUpdate] = useState(1);
+
+  useEffect(() => {
+    setRankLink(null);
+  }, [update]);
+
+  const onClickRank = async (key) => {
+    if (rankLink === key) {
+      setRankLink(null);
+    } else {
+      setRankLink(key);
+    }
+  };
 
   try {
     const searchItems = [];
@@ -62,65 +81,83 @@ function Taverna({ node, mobile, defaultAccount }) {
             timeAgoInMS = time;
           }
           return (
-            <Pane
-              position="relative"
-              className="hover-rank"
-              display="flex"
-              alignItems="center"
-              marginBottom="10px"
-              key={`${key}_${i}`}
-            >
-              {!mobile && (
-                <Pane
-                  className="time-discussion rank-contentItem"
-                  position="absolute"
-                >
-                  <Rank
-                    hash={key}
-                    rank="n/a"
-                    grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
-                  />
-                </Pane>
-              )}
-              <ContentItem
-                nodeIpfs={node}
-                cid={key}
-                item={tweets[key]}
-                className="contentItem"
-              />
-              <Pane
-                className="time-discussion rank-contentItem"
-                position="absolute"
-                right="0"
-                fontSize={12}
-                whiteSpace="nowrap"
-                top="5px"
-              >
-                {timeSince(timeAgoInMS)} ago
-              </Pane>
-            </Pane>
+            <SearchSnippet
+              cid={key}
+              data={tweets[key]}
+              mobile={mobile}
+              node={node}
+              onClickRank={onClickRank}
+            />
+            // <Pane
+            //   position="relative"
+            //   className="hover-rank"
+            //   display="flex"
+            //   alignItems="center"
+            //   marginBottom="10px"
+            //   key={`${key}_${i}`}
+            // >
+            //   {!mobile && (
+            //     <Pane
+            //       className="time-discussion rank-contentItem"
+            //       position="absolute"
+            //     >
+            //       <Rank
+            //         hash={key}
+            //         rank="n/a"
+            //         grade={{ from: 'n/a', to: 'n/a', value: 'n/a' }}
+            //         onClick={() => onClickRank(key)}
+            //       />
+            //     </Pane>
+            //   )}
+            //   <ContentItem
+            //     nodeIpfs={node}
+            //     cid={key}
+            //     item={tweets[key]}
+            //     className="contentItem"
+            //   />
+            //   <Pane
+            //     className="time-discussion rank-contentItem"
+            //     position="absolute"
+            //     right="0"
+            //     fontSize={12}
+            //     whiteSpace="nowrap"
+            //     top="5px"
+            //   >
+            //     {timeSince(timeAgoInMS)} ago
+            //   </Pane>
+            // </Pane>
           );
         })
     );
 
     return (
-      <main className="block-body">
-        <Pane
-          width="90%"
-          marginX="auto"
-          marginY={0}
-          display="flex"
-          flexDirection="column"
-        >
-          <div className="container-contentItem" style={{ width: '100%' }}>
-            {Object.keys(tweets).length > 0 ? (
-              searchItems
-            ) : (
-              <NoItems text="No feeds" />
-            )}
-          </div>
-        </Pane>
-      </main>
+      <>
+        <main className="block-body">
+          <Pane
+            width="90%"
+            marginX="auto"
+            marginY={0}
+            display="flex"
+            flexDirection="column"
+          >
+            <div className="container-contentItem" style={{ width: '100%' }}>
+              {Object.keys(tweets).length > 0 ? (
+                searchItems
+              ) : (
+                <NoItems text="No feeds" />
+              )}
+            </div>
+          </Pane>
+        </main>
+        <ActionBarCont
+          addressActive={addressActive}
+          mobile={mobile}
+          keywordHash={keywordHash}
+          updateFunc={() => setUpdate(update + 1)}
+          rankLink={rankLink}
+          textBtn="Tweet"
+        />
+      </>
     );
   } catch (error) {
     console.log(error);

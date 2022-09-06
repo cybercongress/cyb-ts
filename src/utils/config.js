@@ -52,7 +52,7 @@ const COSMOS = {
   ADDR_FUNDING: 'cosmos1latzme6xf6s8tsrymuu6laf2ks2humqv2tkd9a',
   TIME_START: 'April 27 2020 21:50:00 GMT +3',
   TIME_END: 'November 31 2020 24:00:00 GMT +3',
-  CHAIN_ID: 'cosmoshub-3',
+  CHAIN_ID: 'cosmoshub-4',
   DEFAULT_GAS: 200000,
   DEFAULT_GAS_PRICE: 0.01,
   GAIA_NODE_URL_LSD: 'https://lcd.cosmoshub-4.cybernode.ai',
@@ -77,9 +77,10 @@ const CYBER = {
   CYBER_NODE_URL_LCD: 'https://lcd.bostromdev.cybernode.ai',
   CYBER_INDEX_HTTPS: 'https://index.bostromdev.cybernode.ai/v1/graphql',
   CYBER_INDEX_WEBSOCKET: 'wss://index.bostromdev.cybernode.ai/v1/graphql',
+  CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
   BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
-  MEMO_KEPLR: '[bostrom] cyber.page, using keplr',
+  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;
@@ -109,7 +110,7 @@ const LEDGER = {
   HDPATH: [44, 118, 0, 0, 0],
   LEDGER_OK: 36864,
   LEDGER_NOAPP: 28160,
-  MEMO: 'cyber.page, using Ledger',
+  MEMO: 'cyb.ai, using Ledger',
 };
 
 const TAKEOFF_SUPPLY = 100000000000000;

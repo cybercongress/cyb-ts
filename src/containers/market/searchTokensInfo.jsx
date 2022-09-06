@@ -5,7 +5,7 @@ import { Rank, NoItems } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import ContentItem from '../ipfs/contentItem';
 
-function SearchTokenInfo({ data, node, mobile, selectedTokens }) {
+function SearchTokenInfo({ data, node, mobile, selectedTokens, onClickRank }) {
   try {
     const apps = [];
     if (Object.keys(data).length > 0) {
@@ -31,7 +31,7 @@ function SearchTokenInfo({ data, node, mobile, selectedTokens }) {
                       parseFloat(data[key].rank).toPrecision(3)
                     )}
                     grade={data[key].grade}
-                    // onClick={() => onClickRank(key)}
+                    onClick={() => onClickRank(key)}
                   />
                 </Pane>
               )}

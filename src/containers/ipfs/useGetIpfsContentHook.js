@@ -180,7 +180,7 @@ const useGetIpfsContent = (cid, nodeIpfs, size = 1.5) => {
             text: textContent,
             type,
             content: contentCid,
-            linkContent,
+            link: linkContent,
           } = dataTypeContent;
           setText(textContent);
           setTypeContent(type);

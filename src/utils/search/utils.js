@@ -967,39 +967,39 @@ export const getParamNetwork = async (address, node) => {
     let energy = null;
 
     const dataStaking = await getParamStaking();
-    console.log(`dataStaking`, dataStaking)
+    console.log(`dataStaking`, dataStaking);
     if (dataStaking !== null) {
       staking = dataStaking;
     }
     const dataSlashing = await getParamSlashing();
-    console.log(`dataSlashing`, dataSlashing)
+    console.log(`dataSlashing`, dataSlashing);
     if (dataSlashing !== null) {
       slashing = dataSlashing;
     }
     const dataDistribution = await getParamDistribution();
-    console.log(`dataDistribution`, dataDistribution)
+    console.log(`dataDistribution`, dataDistribution);
     if (dataDistribution !== null) {
       distribution = dataDistribution;
     }
     const dataGov = await getParamGov();
-    console.log(`dataGov`, dataGov)
+    console.log(`dataGov`, dataGov);
     if (dataGov !== null) {
       gov = dataGov;
     }
     const dataBandwidth = await getParamBandwidth();
-    console.log(`dataBandwidth`, dataBandwidth)
+    console.log(`dataBandwidth`, dataBandwidth);
     if (dataBandwidth !== null) {
       bandwidth = dataBandwidth;
     }
 
     const dataRank = await getParamRank();
-    console.log(`dataRank`, dataRank)
+    console.log(`dataRank`, dataRank);
     if (dataRank !== null) {
       rank = dataRank;
     }
 
     const dataInlfation = await getParamInlfation();
-    console.log(`dataInlfation`, dataInlfation)
+    console.log(`dataInlfation`, dataInlfation);
     if (dataInlfation !== null) {
       mint = dataInlfation;
     }
@@ -1255,6 +1255,44 @@ export const authAccounts = async (address) => {
   }
 };
 
+const convertAvatarImg = async (data) => {
+  let img = null;
+
+  const dataFileType = await FileType.fromBuffer(data);
+  console.log(`dataFileType`, dataFileType);
+
+  const base64 = btoa(
+    new Uint8Array(data).reduce(
+      (dataR, byte) => dataR + String.fromCharCode(byte),
+      ''
+    )
+  );
+
+  const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
+  console.log(`base64`, base64);
+
+  if (dataFileType !== undefined) {
+    const { mime } = dataFileType;
+    if (mime.indexOf('image') !== -1) {
+      // const dataBase64 = data.toString('base64');
+      const file = `data:${mime};base64,${dataBase64}`;
+      return file;
+    }
+  }
+
+  if (isSvg(data)) {
+    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+      dataBase64,
+      'base64'
+    )}`;
+    img = svg;
+  } else {
+    img = data;
+  }
+
+  return img;
+};
+
 export const getAvatarIpfs = async (cid, ipfs) => {
   if (ipfs !== null) {
     const responseDag = await ipfs.dag.get(cid, {
@@ -1293,18 +1331,20 @@ export const getAvatarIpfs = async (cid, ipfs) => {
         return svg;
       }
     }
-  } else {
-    const ipfsGetPromise = () =>
-      new Promise((resolve, reject) => {
-        axios({
-          method: 'get',
-          url: `https://ipfs.io/ipfs/${cid}`,
-        }).then((response) => {
-          // clearTimeout(timerId);
-          resolve(response.data);
-        });
-      });
-    return Promise.race([ipfsGetPromise()]);
   }
   return null;
+};
+
+export const getIpfsGatway = async (cid) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
 };
