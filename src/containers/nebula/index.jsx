@@ -9,13 +9,15 @@ import {
   MainContainer,
   ContainerGradientText,
   InfoCard,
+  ContainerGradient,
 } from '../portal/components';
 import { DenomArr } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { reduceAmounToken } from '../teleport/utils';
 // import { getMarketData } from './getMarketData';
 import useGetMarketData from './useGetMarketData';
-import { ColItem, RowItem, FormatNumberTokens } from './components';
+import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
+import coinDecimalsConfig from '../../utils/configToken';
 
 const getTypeDenom = (denom) => {
   if (denom.includes('ibc')) {
@@ -27,6 +29,18 @@ const getTypeDenom = (denom) => {
   }
 
   return 'green';
+};
+
+const getTypeDenomKey = (denom) => {
+  if (denom.includes('ibc') || denom.includes('pool')) {
+    return denom;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, denom)) {
+    return coinDecimalsConfig[denom].denom;
+  }
+
+  return denom;
 };
 
 function getMarketData() {
@@ -160,7 +174,7 @@ function Nebula({ node, mobile, defaultAccount }) {
       return (
         <RowItem key={keyItem}>
           <ColItem>
-            <Link to={`/search/${key}`}>
+            <Link to={`/search/${getTypeDenomKey(key)}`}>
               <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
             </Link>
           </ColItem>
@@ -187,34 +201,53 @@ function Nebula({ node, mobile, defaultAccount }) {
     });
   }, [dataRenderItems]);
 
-  return (
-    <MainContainer width="83%">
-      <InfoCard>This is Nebula</InfoCard>
-      <ContainerGradientText>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: '40px 0px',
-          }}
-        >
-          <div style={{ fontSize: '22px' }}>Nebula</div>
-          {capData.currentCap !== 0 && (
-            <div style={{ display: 'flex', gap: '40px' }}>
-              {capData.change !== 0 && (
-                <div
-                  style={{ color: capData.change > 0 ? '#7AFAA1' : '#FF0000' }}
-                >
-                  {capData.change > 0 ? '+' : ''}
-                  {formatNumber(capData.change)}
-                </div>
-              )}
-              <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
+  const Title = () => (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        // paddingBottom: '20px',
+      }}
+    >
+      <div style={{ fontSize: '22px', width: '112px', height: '112px' }}>
+        <NebulaImg />
+      </div>
+      {capData.currentCap !== 0 && (
+        <div style={{ display: 'flex', gap: '40px' }}>
+          {capData.change !== 0 && (
+            <div
+              style={{
+                color: capData.change > 0 ? '#7AFAA1' : '#FF0000',
+              }}
+            >
+              {capData.change > 0 ? '+' : ''}
+              {formatNumber(capData.change)}
             </div>
           )}
+          <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
         </div>
+      )}
+    </div>
+  );
+
+  return (
+    <MainContainer width="83%">
+      <InfoCard>
+        <div style={{ textAlign: 'center' }}>
+          This is nebula. <br /> You can see the token emission on the left,
+          <br /> price in the middle and total capitalization in hydrogene on
+          the right.
+        </div>
+      </InfoCard>
+      <ContainerGradient
+        userStyleContent={{ minHeight: 'auto', height: 'unset' }}
+        title={<Title />}
+        togglingDisable
+      >
         <div>{itemRowMarketData}</div>
-      </ContainerGradientText>
+      </ContainerGradient>
     </MainContainer>
   );
 }
