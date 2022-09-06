@@ -47,13 +47,24 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function useGetSlots(addressActive, updateAddress) {
+function useGetSlots(address, updateAddress) {
   const { jsCyber } = useContext(AppContext);
+  const [addressActive, setAddressActive] = useState(null);
   const [slotsData, setSlotsData] = useState([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
   const [originalVesting, setOriginalVesting] = useState(initStateVested);
   const [balacesResource, setBalacesResource] = useState(initBalacesResource);
   const [vested, setVested] = useState(initStateVested);
+
+  useEffect(() => {
+    if (address !== null) {
+      if (address.bech32) {
+        setAddressActive(address.bech32);
+      } else {
+        setAddressActive(address);
+      }
+    }
+  }, [address]);
 
   useEffect(() => {
     const getAuth = async () => {
@@ -71,9 +82,8 @@ function useGetSlots(addressActive, updateAddress) {
         const getAccount = await authAccounts(addressActive);
         if (getAccount !== null && getAccount.result.value.vesting_periods) {
           const { vesting_periods: vestingPeriods } = getAccount.result.value;
-          const {
-            original_vesting: originalVestingAmount,
-          } = getAccount.result.value.base_vesting_account;
+          const { original_vesting: originalVestingAmount } =
+            getAccount.result.value.base_vesting_account;
           const { start_time: startTime } = getAccount.result.value;
 
           const balances = getCalculationBalance(originalVestingAmount);

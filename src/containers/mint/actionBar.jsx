@@ -95,13 +95,13 @@ function ActionBar({
   }, [jsCyber, txHash]);
 
   const investmint = async () => {
-    if (keplr !== null) {
+    if (keplr !== null && addressActive !== null) {
       const [{ address }] = await keplr.signer.getAccounts();
       const fee = {
         amount: [],
         gas: DEFAULT_GAS_LIMITS.toString(),
       };
-      if (addressActive === address) {
+      if (addressActive.bech32 === address) {
         const response = await keplr.investmint(
           address,
           coin(parseFloat(value), 'hydrogen'),
@@ -131,13 +131,13 @@ function ActionBar({
     if (cyberSigner !== null) {
       const dataMsgs = new Msgs();
       const [{ address }] = await cyberSigner.signer.getAccounts();
-
-      const msgs = dataMsgs.investmint(
+      const msgs = await dataMsgs.investmint(
         address,
         coin(parseFloat(value), 'hydrogen'),
         selected,
         parseFloat(BASE_VESTING_TIME * valueDays)
       );
+      console.log('msgs', msgs)
       updateValueTxs([msgs]);
       updateCallbackSigner(updateCallbackFnc);
     }
@@ -176,7 +176,7 @@ function ActionBar({
     );
   }
 
-  if (jsCyber === null || keplr === null) {
+  if (jsCyber === null) {
     return (
       <ActionBarContainer>
         <Dots big />

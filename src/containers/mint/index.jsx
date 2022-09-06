@@ -24,6 +24,7 @@ import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import TabBtnList from './tabLinsBtn';
 import ActionBar from './actionBar';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 const INIT_STAGE = 0;
 const TSX_SEND = 1;
@@ -75,7 +76,8 @@ const returnColorDot = (marks) => {
 
 function Mint({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
-  const [addressActive, setAddressActive] = useState(null);
+  const { addressActive } = useSetActiveAddress(defaultAccount);
+  // const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
   const { slotsData, vested, loadingAuthAccounts, originalVesting } =
@@ -96,7 +98,7 @@ function Mint({ defaultAccount }) {
       let amountHydrogen = 0;
       if (jsCyber !== null && addressActive !== null) {
         const responseBalance = await jsCyber.getBalance(
-          addressActive,
+          addressActive.bech32,
           'hydrogen'
         );
         if (responseBalance.amount) {
@@ -110,38 +112,25 @@ function Mint({ defaultAccount }) {
 
   useEffect(() => {
     const getParam = async () => {
-      const responseResourcesParams = await jsCyber.resourcesParams();
-      if (
-        responseResourcesParams.params &&
-        Object.keys(responseResourcesParams.params).length > 0
-      ) {
-        console.log(`responseResourcesParams`, responseResourcesParams);
-        const { params } = responseResourcesParams;
-        setResourcesParams((item) => ({ ...item, ...params }));
-      }
+      if (jsCyber !== null) {
+        const responseResourcesParams = await jsCyber.resourcesParams();
+        if (
+          responseResourcesParams.params &&
+          Object.keys(responseResourcesParams.params).length > 0
+        ) {
+          console.log(`responseResourcesParams`, responseResourcesParams);
+          const { params } = responseResourcesParams;
+          setResourcesParams((item) => ({ ...item, ...params }));
+        }
 
-      const responseGetHeight = await jsCyber.getHeight();
-      if (responseGetHeight > 0) {
-        setHeight(responseGetHeight);
+        const responseGetHeight = await jsCyber.getHeight();
+        if (responseGetHeight > 0) {
+          setHeight(responseGetHeight);
+        }
       }
     };
     getParam();
   }, [jsCyber]);
-
-  useEffect(() => {
-    const { account } = defaultAccount;
-    let addressPocket = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
-      const { keys, bech32 } = account.cyber;
-      if (keys === 'keplr' || keys === 'cyberSigner') {
-        addressPocket = bech32;
-      }
-    }
-    setAddressActive(addressPocket);
-  }, [defaultAccount.name]);
 
   useEffect(() => {
     let vestedTokens = 0;
