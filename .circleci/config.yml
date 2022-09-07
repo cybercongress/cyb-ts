@@ -7,37 +7,9 @@ workflows:
       - build_cyb:
           filters:
             branches:
-              only: bostrom-rc
+              only: master
       
 jobs:
-
-#   update_distribution_app:
-#     working_directory: ~/workdir
-#     docker:
-#       - image: circleci/node:14.15.4-browsers
-
-#     steps:
-#       - checkout
-#       - run:
-#           name: Update app
-#           command: |
-#             git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
-#       - deploy:
-#           name: Update app from dot-cyber repo
-#           working_directory: ~/workdir
-#           command: |
-#             rm -rf build/
-#             yarn install
-#             yarn build
-#             cd build
-#             git init
-#             echo "cyber.page" > CNAME
-#             git config user.email "cybercongress42@gmail.com"
-#             git config user.name "Cyber Admin"
-#             git add --all
-#             git commit -m "Circle CI: Update Site [skip ci]"
-#             git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git master:gh-pages
-
   build_cyb:
     working_directory: ~/workdir
     docker:
@@ -47,13 +19,14 @@ jobs:
       - run:
           name: Update app
           command: |
-            git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git
+            git clone -q --depth 1 https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/cyb.git
       - deploy:
           name: Build app from production branch
           working_directory: ~/workdir
           command: |
             rm -rf build/
             yarn install
+            export CHAIN_ID="bostrom" 
             yarn build
             cd build
             git init
@@ -61,5 +34,5 @@ jobs:
             git config user.email "cybercongress42@gmail.com"
             git config user.name "Cyber Admin"
             git add --all
-            git commit -m "Circle CI: update rebyc build [skip ci]"
-            git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git master:rebyc-build
+            git commit -m "Circle CI: update cyb build [skip ci]"
+            git push -q -f https://${DOCS_GITHUB_TOKEN}@github.com/cybercongress/dot-cyber.git master:build
