@@ -62,7 +62,7 @@ const itemsMenu = (address) => {
       subItems: [
         {
           name: 'Guide',
-          to: '/ipfs/QmZytdQq4feQZYAxu9hJCpwYm8mUCW1wDrPZRVCzo2YDsG',
+          to: '/ipfs/QmRumrGFrqxayDpySEkhjZS1WEtMyJcfXiqeVsngqig3ak',
         },
         { name: 'story', to: '/genesis' },
         {

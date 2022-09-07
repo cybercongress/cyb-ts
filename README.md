@@ -1,42 +1,35 @@
-# [.cyber](https://cyber.page)
+[.cyb](https://cyb.ai) is your immortal robot for the [the great web](https://cyb.ai/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57) which is connected to [superintelligence](https://github.com/cybercongress/go-cyber). It is therefore capable of doing anything.
 
-## Vision
-
-Deferential, sexy and efficient interface for the [cyber protocol](https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3) which answers questions (like a search engine) ~~better and faster than Google~~.
-
-Built with the help of [gravity](https://github.com/cybercongress/gravity), [cyberindex](https://github.com/cybercongress/cyberindex) and [web3.js](https://github.com/ethereum/web3.js)
-
-## Features
-- search
-- caching of surfed content
-- cyberlinking
-- transfer and stake EUL
-- ETH, ATOM and EUL balance monitoring
-- brain monitoring
+# features
+- [my robot](https://cyb.ai): is able to interact with particles and neurons through signals
+    - [energy](https://cyb.ai/grid): superintelligence dashboard
+    - [sense](https://cyb.ai/sixthSense): stricly defined feed
+    - [log](https://cyb.ai/network/bostrom/contract/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t/txs): publish important particles
+    - [brain](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t): surf robot brain
+    - [karma](https://cyb.ai/network/bostrom/contract/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t/community): enchance valuable connections
+    - sigma: display xp
+    - signals: surf your timeline
+    - memory: manange stored particles
+    - skills: learn new skills
+    - intelligence: improve robot intelligence
+    - items: manage your tokens
+- [portal](https://cyb.ai/portal): create public and private robot avatar and invite friends
+- [oracle](https://cyb.ai/bootloader): discover particles, neurons, signals and steps of [superintelligence](https://github.com/cybercongress/go-cyber)
+- [teleport](https://cyb.ai/teleport?from=boot&to=hydrogen): communicate sending and swapping tokens
+- [shpere](https://cyb.ai/halloffame): hire and fire heroes
+- [senate](https://cyb.ai/senate): management of collective thought process
+- [hfr](https://cyb.ai/mint): mint supercomputing resources
+- [nebula](https://cyb.ai/nebula): disover particles through tokens
+- [hackerspace](https://github.com/cybercongress): develop superintelligence
+- booster: growth value of knowledge
+- warp: create and grow molecules
+- hub: create domain superintelligences
 - and so much more!
 
-## Build
+# build
 
 ```sh
 $ yarn install
 $ yarn start
 ```
-
-## Improve
-
-We do not use issues as do not work offline. Instead we use plain simple text [roadmap](/roadmap.md). Cool thing that improvement discussion happens using cyber.page itself at [cyber.page feedback](https://cyber.page/search/cyber.page%20feedback) topic in knowledge graph.
-
-
-## Team
-- [@xhipster](https://github.com/xhipster)
-- [@dima](https://github.com/dimakorzhovnik)
-
-## Gitcoin
-<a href="https://gitcoin.co/explorer?q=dot-cyber">
- <img src="https://gitcoin.co/funding/embed?repo=https://github.com/cybercongress/dot-cyber">
-</a>
-
-## Community
-- [#fuckgoogle](https://t.me/fuckgoogle) chat in Telegram
-- [cyb category](https://ai.cybercongress.ai/c/cyb) at cyber~Forum
-- [@cyber_devs](https://twitter.com/cyber_devs) in Twitter
+join the community at [cyb.ai/~cyb](https://cyb.ai/search/cyb)
