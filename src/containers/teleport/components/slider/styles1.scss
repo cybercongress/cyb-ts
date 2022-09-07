@@ -39,7 +39,7 @@ $col-width: 100% / $number-of-options;
 
   .debtAmountSlider {
 
-    display: flex;
+    //display: flex;
     flex-direction: row;
     align-content: stretch;
     position: relative;
@@ -47,18 +47,18 @@ $col-width: 100% / $number-of-options;
     height: 50px;
     user-select: none;
     &::before {
-      content: ' ';
-      position: absolute;
-      height: 3px;
-      width: 100%;
-      // width: calc(100% * (#{$number-of-options - 1} / #{$number-of-options}));
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #ffffff;
-      border: 1px solid rgba(0, 0, 0, 0.25);
-      box-sizing: border-box;
-      box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.5);
+      //content: ' ';
+      //position: absolute;
+      //height: 3px;
+      //width: 100%;
+      //// width: calc(100% * (#{$number-of-options - 1} / #{$number-of-options}));
+      //top: 50%;
+      //left: 50%;
+      //transform: translate(-50%, -50%);
+      //background: #ffffff;
+      //border: 1px solid rgba(0, 0, 0, 0.25);
+      //box-sizing: border-box;
+      //box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.5);
     }
     input,
     label {
@@ -67,6 +67,7 @@ $col-width: 100% / $number-of-options;
       user-select: none;
       cursor: pointer;
     }
+
     label {
       display: inline-block;
       position: relative;
@@ -106,20 +107,68 @@ $col-width: 100% / $number-of-options;
       }
     }
     input {
-      display: none;
-      &:checked {
-        @for $i from 1 through $number-of-options {
-          &:nth-child(#{$i * 2 - 1}) ~ .debtAmountPos {
-            left: #{($i * $col-width) - ($col-width / 2)};
-          }
-        }
+      //display: none;
+      position:absolute;
+      height: 2px;
+      background: #C5C5C5;
+      margin-top:-4px;
+      //top:-2%;
+      appearance: none;
+      z-index: 100000;
+      -webkit-appearance: none;
+
+
+
+      &::-moz-range-thumb {
+        width: 23px;
+        height: 25px;
+        border: 0;
+        //background: red;
+        //z-index: 200000;
+
+        cursor: pointer;
+        z-index:100000;
+        //display: none
       }
+      &::-webkit-slider-thumb {
+
+        //background: transparent;
+        -webkit-appearance: none;
+        appearance: none;
+        //width: 23px;
+        //height: 25px;
+        width: 25px;
+        height: 65px;
+        z-index:100000;
+        margin-top:15px;
+
+        //background: transparent;
+        //background:  ;;
+        //https://localhost:3001/exchange-arrows.2cba7bc0f9.svg
+        background-image: url(../../../../image/exchange-arrows.svg);
+      //radial-gradient(50% 50% at 50% 50%, #ffffff 0%, rgba(255, 255, 255, 0) 60.42%)
+        //background: url('https://localhost:3001/exchange-arrows.2cba7bc0f9.svg');
+        background-repeat: no-repeat;
+        //border-radius: 50%;
+        cursor: pointer;
+        //display: none
+
+      }
+      //&::-webkit-slider-thumb {
+      //  @for $i from 1 through $number-of-options {
+      //    &:nth-child(#{$i * 2 - 1}) ~ .debtAmountPos {
+      //      left: #{($i * $col-width) - ($col-width / 2)};
+      //    }
+      //  }
+      //}
     }
+
     .debtAmountPos {
       display: block;
       position: absolute;
-      left: #{(1 * $col-width) - ($col-width / 2)};
-      top: 50%;
+      //left: #{(1 * $col-width) - ($col-width / 2)};
+      //top: 50%;
+      top:16px;
       transition: all 0.15s ease-in-out;
       transform: translate(-50%, -50%);
       opacity: 1;

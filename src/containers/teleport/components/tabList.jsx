@@ -33,27 +33,27 @@ function TabList({ selected }) {
         isSelected={selected === 'sub-liquidity'}
         to="/teleport/sub-liquidity"
       /> */}
-      <ButtonTeleport
-        status="left"
-        isSelected={selected === 'add-liquidity'}
-        onClick={() => handleHistory('/teleport/add-liquidity')}
-      >
-        Add liquidity
-      </ButtonTeleport>
-      <ButtonTeleport
-        status="center"
-        isSelected={selected === 'swap'}
-        onClick={() => handleHistory('/teleport')}
-      >
-        Swap
-      </ButtonTeleport>
-      <ButtonTeleport
-        status="right"
-        isSelected={selected === 'sub-liquidity'}
-        onClick={() => handleHistory('/teleport/sub-liquidity')}
-      >
-        Sub liquidity
-      </ButtonTeleport>
+      {/* <ButtonTeleport */}
+      {/*   status="left" */}
+      {/*   isSelected={selected === 'add-liquidity'} */}
+      {/*   onClick={() => handleHistory('/teleport/add-liquidity')} */}
+      {/* > */}
+      {/*   Add liquidity */}
+      {/* </ButtonTeleport> */}
+      {/* <ButtonTeleport */}
+      {/*   status="center" */}
+      {/*   isSelected={selected === 'swap'} */}
+      {/*   onClick={() => handleHistory('/teleport')} */}
+      {/* > */}
+      {/*   Swap */}
+      {/* </ButtonTeleport> */}
+      {/* <ButtonTeleport */}
+      {/*   status="right" */}
+      {/*   isSelected={selected === 'sub-liquidity'} */}
+      {/*   onClick={() => handleHistory('/teleport/sub-liquidity')} */}
+      {/* > */}
+      {/*   Sub liquidity */}
+      {/* </ButtonTeleport> */}
     </Tablist>
   );
 }

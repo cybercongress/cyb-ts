@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
@@ -59,6 +59,8 @@ function Swap({ stateSwap, swap }) {
     networks,
     tokens,
     addressActive,
+    selectedPool,
+    calculateSlippage,
   } = stateSwap;
 
 
@@ -66,26 +68,55 @@ function Swap({ stateSwap, swap }) {
   const getTokenPrice = useMemo(() => {
     if (tokenAPoolAmount > 0 && tokenBPoolAmount > 0
         && tokens
-        && Object.prototype.hasOwnProperty.call(tokens, tokenA)
-        && Object.prototype.hasOwnProperty.call(tokens, tokenB)) { // Skip unknown tokens
+        && Object.prototype.hasOwnProperty.call(tokens, tokenA.toUpperCase())
+        && Object.prototype.hasOwnProperty.call(tokens, tokenB.toUpperCase())) { // Skip unknown tokens
       const price = swapPrice;
-
       return (
-        <div
-          style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}
-        >
-          <div style={{ whiteSpace: 'nowrap' }}>
-            {price >= 1
-              ? formatNumber(price)
-              : exponentialToDecimal(price.toPrecision(3))}
+          <div
+              style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}
+          >
+            <div style={{ whiteSpace: 'nowrap' }}>
+              {price >= 1
+                  ? formatNumber(price)
+                  : exponentialToDecimal(price.toPrecision(3))}
+            </div>
+            <Denom marginContainer="0px 0px 0px 3px" denomData={tokens[tokenA]} denomValue={tokenA} /> /{' '}
+            <Denom denomData={tokens[tokenB]} denomValue={tokenB} />
           </div>
-          <Denom marginContainer="0px 0px 0px 3px" denomData={tokens[tokenA]} denomValue={tokenA} /> /{' '}
-          <Denom denomData={tokens[tokenB]} denomValue={tokenB} />
-        </div>
       );
     }
     return <span> N/A</span>;
   }, [swapPrice]);
+
+
+  const calculateSlippageAction = useMemo(() => {
+
+    if (tokenAPoolAmount > 0 && tokenBPoolAmount > 0 && tokenAAmount
+        && tokens
+        && Object.prototype.hasOwnProperty.call(tokens, tokenA.toUpperCase())
+        && Object.prototype.hasOwnProperty.call(tokens, tokenB.toUpperCase())
+    ) { // Skip unknown tokens
+      // const price = swapPrice;
+
+      return (
+          <div
+              style={{ display: 'flex', alignItems: 'center', fontSize: '14px' }}
+          >
+            {tokenAAmount}
+            ---
+            {tokenAPoolAmount}
+            ---
+            { calculateSlippage(
+                tokenAAmount,
+                0.1,
+            )}
+          </div>
+      );
+    }
+    return <span> 0</span>;
+  }, [swapPrice,tokenAPoolAmount, tokenAAmount]);
+
+
 
   const getTextSellSend = useMemo(() => {
     if (swap) {
@@ -191,15 +222,26 @@ function Swap({ stateSwap, swap }) {
             <div>{getTokenPrice}</div>
           </Pane>
           <Pane
-            display="flex"
-            justifyContent="space-between"
-            width="100%"
-            flexDirection="row"
-            alignItems="flex-end"
-            marginTop={10}
+              display="flex"
+              justifyContent="space-between"
+              width="100%"
+              flexDirection="row"
+              alignItems="flex-end"
+              marginTop={10}
           >
             <div>Swap Fees:</div>
             <div>0.3%</div>
+          </Pane>
+          <Pane
+              display="flex"
+              justifyContent="space-between"
+              width="100%"
+              flexDirection="row"
+              alignItems="flex-end"
+              marginTop={10}
+          >
+            <div>Slippage:</div>
+            <div>{calculateSlippageAction}</div>
           </Pane>
 
           <Pane

@@ -17,15 +17,15 @@ const renderOptions = (data, selected, valueSelect, tokens) => {
         {Object.keys(data)
             // .filter((item) => item !== selected && item !== valueSelect)
             .filter((item) =>
-                !!Object.prototype.hasOwnProperty.call(tokens, item.toLowerCase()))
+                !!Object.prototype.hasOwnProperty.call(tokens, item.toUpperCase()))
           .map((key) => (
             <OptionSelect
               key={key}
               value={key}
               bgrImg={key.includes('pool')}
-              text={<DenomArr denomData={tokens[key.toLowerCase()]} denomValue={key} onlyText />}
+              text={<DenomArr denomData={tokens[key.toUpperCase()]} denomValue={key} onlyText />}
               img={
-                <DenomArr justifyContent="center" denomData={tokens[key.toLowerCase()]} denomValue={key} onlyImg />
+                <DenomArr justifyContent="center" denomData={tokens[key.toUpperCase()]} denomValue={key} onlyImg />
               }
             />
           ))}
@@ -114,7 +114,7 @@ function TokenSetter({
         {!ibcTokenB && tokens && (
           <Select
             valueSelect={token}
-            denomData={(tokens && token !== '') ? tokens[token.toLowerCase()] : { }}
+            denomData={(tokens && token !== '') ? tokens[token.toUpperCase()] : { }}
             textSelectValue={token !== '' ? token : ''}
             onChangeSelect={(item) => onChangeSelect(item)}
           >

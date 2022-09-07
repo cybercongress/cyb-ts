@@ -46,6 +46,8 @@ const itemsMenu = (address) => {
       name: 'Warp',
       to: '/warp',
       subItems: [
+        { name: 'Add Liquidity', to: '/teleport/add-liquidity' },
+        { name: 'Sub Liquidity', to: '/teleport/sub-liquidity' },
         { name: 'Tokens', to: '/warp/tokens' },
         { name: 'Networks', to: '/warp/networks' },
         { name: 'Channels', to: '/warp/channels' },

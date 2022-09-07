@@ -162,7 +162,8 @@ function Teleport({ defaultAccount }) {
   const setPercentageBalanceHook = (value) =>
   {
     if (accountBalances && Object.prototype.hasOwnProperty.call(accountBalances, tokenA)) {
-      setTokenAAmount((accountBalances[tokenA] * value).toString());
+      // alert(accountBalances[tokenA] * value / 100);
+      setTokenAAmount((accountBalances[tokenA] * value / 100).toString());
     }
 
   };
@@ -209,12 +210,16 @@ function Teleport({ defaultAccount }) {
       setTypeTxs('deposit');
       // console.log(networks[networkList[networkA]);
       const { sourceChannelId } = networks[networkA];
+      console.log('svvv',networks,networkA)
+      alert(sourceChannelId)
       setSourceChannel(sourceChannelId);
     }
 
     if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
       setTypeTxs('withdraw');
       const { destChannelId } = networks[networkB];
+      alert(destChannelId);
+      console.log('svvv',networks,networkB)
       setSourceChannel(destChannelId);
     }
   }, [networkB, networkA]);
@@ -349,6 +354,7 @@ function Teleport({ defaultAccount }) {
       setTokenAPoolAmount(0);
       setTokenBPoolAmount(0);
       if (jsCyber !== null && Object.keys(selectedPool).length > 0) {
+
         const getAllBalancesPromise = await jsCyber.getAllBalances(
           selectedPool.reserve_account_address
         );
@@ -366,13 +372,14 @@ function Teleport({ defaultAccount }) {
     setSelectedPool([]);
     if (poolsData && poolsData.length > 0) {
       if (tokenA.length > 0 && tokenB.length > 0) {
-        console.log(`setSelectedPool`);
         const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
+
         poolsData.forEach((item) => {
           if (
             JSON.stringify(item.reserve_coin_denoms) ===
             JSON.stringify(arrangedReserveCoinDenoms)
           ) {
+            // console.log('ggggggggggggggggggggggggg',item);
             setSelectedPool(item);
           }
         });
@@ -467,7 +474,7 @@ function Teleport({ defaultAccount }) {
 
   const getDecimals = (denom) => {
     let decimals = 0;
-    if (tokens[denom] && tokens[denom]) {
+    if (tokens[denom.toUpperCase()] && tokens[denom]) {
       decimals = parseInt(tokens[denom].denom);
     }
 
@@ -548,6 +555,13 @@ function Teleport({ defaultAccount }) {
     setTokenBPoolAmount(BP);
   }
 
+  const calculateSlippage = (amount, maxSlippage, options = {}) => {
+    const value = new BigNumber(amount);
+    const slippage = 1 - maxSlippage / 100;
+    const result = value.multipliedBy(Math.pow(slippage, options.factor ?? 1)).toFixed(0, BigNumber.ROUND_CEIL);
+    return result;
+  };
+
   const updateFunc = () => {
     setUpdate((item) => item + 1);
   };
@@ -600,6 +614,8 @@ function Teleport({ defaultAccount }) {
     networks,
     tokens,
     addressActive,
+    calculateSlippage,
+    selectedPool,
   };
 
   const stateWithdraw = {
@@ -678,6 +694,8 @@ function Teleport({ defaultAccount }) {
         </Pane>
 
 
+        {/* <div>{JSON.stringify(poolsData)}</div> */}
+        {/* <div>{JSON.stringify(totalSupply)}</div> */}
 
         {/* { <PoolsList */}
         {/*   poolsData={poolsData} */}

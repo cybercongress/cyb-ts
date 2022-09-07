@@ -61,11 +61,11 @@ const SpetionLabel = ({ value, lable }) => {
     position = 'right';
   }
   return (
-    <label htmlFor={value} className={s.trackMark}>
-      {/* <div className={s.trackMarkBgBlur} /> */}
-      <div
-        className={cx(s.trackMarkGradient, s[`trackMarkGradient${position}`])}
-      />
+    <label >
+      <div className={s.trackMarkBgBlur} />
+      {/* <div */}
+      {/*   className={cx(s.trackMarkGradient, s[`trackMarkGradient${position}`])} */}
+      {/* /> */}
 
       <div
         className={cx(s.trackMarkLabel, {
@@ -113,10 +113,14 @@ export function Slider({ tokenA, tokenB, tokenAAmount, accountBalances, setPerce
   // }, []);
 
   const onChangeValueEvent=(value)=>{
-    setValueSilder(value);
+
+    console.log('changed value',value)
+
     if (typeof setPercentageBalanceHook==='function') {
       setPercentageBalanceHook(value)
-      }
+      } else {
+      setValueSilder(value);
+    }
   };
   const onClickReverseButton=()=>{
     if (typeof coinReverseAction==='function') {
@@ -128,18 +132,24 @@ export function Slider({ tokenA, tokenB, tokenAAmount, accountBalances, setPerce
     if (
       tokenA !== '' &&
        accountBalances  &&
-      accountBalances[tokenA] &&
+      accountBalances[tokenA.toLowerCase()] &&
       parseFloat(tokenAAmount) > 0
     ) {
-      const procent = tokenAAmount / accountBalances[tokenA];
-      setValueSilder(Math.floor(procent));
+      const procent = tokenAAmount / accountBalances[tokenA.toLowerCase()];
+      // console.log('procent',tokenAAmount,'eeee',procent);
+      setValueSilder((procent*100));
+      // Math.floor
 
       
     }
   }, [tokenAAmount, accountBalances, tokenA]);
 
   useEffect(() => {
-    const cof = constValue[valueSilder];
+    // debtAmountPos
+    // console.log('valueSilder',valueSilder);
+    // const cof = constValue[valueSilder];
+    const cof = (valueSilder)*0.011
+    console.log('df',valueSilder,'d',(100/valueSilder),cof)
     const angleDeg = cof * 155;
     if (angleDeg > 0) {
       setAngle(angleDeg);
@@ -151,76 +161,35 @@ export function Slider({ tokenA, tokenB, tokenAAmount, accountBalances, setPerce
   return (
     <div className={s.formWrapper}>
       <div className={s.debtAmountSlider}>
-        <input
-          type="radio"
-          name="debt-amount"
-          id="1"
-          value="0"
-          checked={valueSilder === 0}
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={1} lable="0" />
-        <input
-          type="radio"
-          name="debt-amount"
-          id="2"
-          value="2"
-          checked={valueSilder === 2}
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={2} lable="2" />
-        <input
-          type="radio"
-          name="debt-amount"
-          id="3"
-          value="5"
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={3} lable="5" />
-        <input
-          type="radio"
-          name="debt-amount"
-          id="4"
-          value="10"
-          checked={valueSilder === 10}
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={4} lable="10" />
-        <input
-          type="radio"
-          name="debt-amount"
-          id="5"
-          value="20"
-          checked={valueSilder === 20}
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={5} lable="20" />
-        <input
-          type="radio"
-          name="debt-amount"
-          id="6"
-          value="50"
-          checked={valueSilder === 50}
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={6} lable="50" />
-        <input
-          type="radio"
-          name="debt-amount"
-          id="7"
-          value="100"
-          checked={valueSilder === 100}
-          onChange={(e) => onChangeValueEvent(e.target.value)}
-          required
-        />
-        <SpetionLabel value={7} lable="Max" />
-        <div className={s.debtAmountPos}>
+        <div style={{"width":"100%"}}>
+          <SpetionLabel value={1} lable="0" />
+
+          <SpetionLabel value={3} lable="10" />
+
+          <SpetionLabel value={3} lable="20" />
+
+
+
+
+          <SpetionLabel value={5} lable="40" />
+
+          <SpetionLabel value={6} lable="60" />
+          {/* <SpetionLabel value={6} lable="70" /> */}
+          <SpetionLabel value={6} lable="80" />
+          {/* <SpetionLabel value={6} lable="90" /> */}
+
+          <SpetionLabel value={7} lable="Max" />
+        </div>
+
+        <div style={{"width":"100%"}}>
+          <input style={{"width":"100%"}} type="range" min="1" max="100"  value={valueSilder} onChange={(e) => onChangeValueEvent(e.target.value)} />
+        </div>
+
+
+
+
+
+        <div className={s.debtAmountPos} style={{"left": ((valueSilder<60) ? valueSilder+2 : valueSilder-2)+"%"}}>
           {tokenA !== '' && (
             <div
               className={cx(s.debtAmountPosToken, s.debtAmountPosTokenA)}
@@ -250,11 +219,11 @@ export function Slider({ tokenA, tokenB, tokenAAmount, accountBalances, setPerce
               </div>
             </div>
           )}
-          <ButtonIcon
-            onClick={() => onClickReverseButton()}
-            // active={selectMethod === 'ledger'}
-            img={imgSwap}
-          />
+          {/* <ButtonIcon */}
+          {/*   // onClick={() => onClickReverseButton()} */}
+          {/*   // active={selectMethod === 'ledger'} */}
+          {/*   img={imgSwap} */}
+          {/* /> */}
         </div>
       </div>
     </div>
