@@ -7,7 +7,6 @@ import {
   Pane,
 } from '@cybercongress/gravity';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import queryString from 'query-string';
 // import usePopperTooltip from 'react-popper-tooltip';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';

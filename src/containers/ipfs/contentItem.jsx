@@ -6,7 +6,6 @@ import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { getRankGrade, getPinsCid } from '../../utils/search/utils';
-import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
 import db from '../../db';
 
@@ -128,7 +127,6 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
               // escapeHtml
               // skipHtml={false}
               // astPlugins={[parseHtml]}
-              // renderers={{ code: CodeBlock }}
               remarkPlugins={[remarkGfm]}
 
               // escapeHtml={false}

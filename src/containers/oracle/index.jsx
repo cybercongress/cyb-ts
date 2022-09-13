@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Pane, Icon } from '@cybercongress/gravity';
 import { CardStatisics } from '../../components';
 import { formatNumber } from '../../utils/utils';
-import Txs from '../brain/tx';
 import AccountCount from '../brain/accountCount';
 import useGetStatisticsCyber from './useGetStatisticsCyber';
 import ForceGraph from '../forceGraph/forceGraph';

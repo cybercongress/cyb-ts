@@ -55,12 +55,7 @@ class ActionBar extends Component {
     super(props);
     this.state = {
       stage: STAGE_INIT,
-      address: null,
-      addressInfo: null,
       valueSelect: 'textProposal',
-      txMsg: null,
-      txContext: null,
-      txBody: null,
       txHeight: null,
       txHash: null,
       valueDescription: '',
@@ -69,7 +64,6 @@ class ActionBar extends Component {
       valueAmountRecipient: '',
       valueAddressRecipient: '',
       errorMessage: null,
-      connectLedger: null,
       valueSelectChangeParam: '',
       selectedParam: {},
       changeParam: [],
@@ -84,63 +78,6 @@ class ActionBar extends Component {
   componentDidMount() {
     this.ledger = new CosmosDelegateTool();
   }
-
-  componentDidUpdate() {
-    const { stage, addressInfo, address } = this.state;
-
-    if (stage === STAGE_READY && addressInfo !== null && address !== null) {
-      this.generateTx();
-    }
-  }
-
-  getLedgerAddress = async () => {
-    this.transport = await TransportWebUSB.create(120 * 1000);
-    this.ledger = new CosmosDelegateTool(this.transport);
-
-    const connect = await this.ledger.connect();
-    if (connect.return_code === LEDGER_OK) {
-      this.setState({
-        connectLedger: true,
-      });
-
-      const address = await this.ledger.retrieveAddressCyber(HDPATH);
-      console.log('address', address);
-      this.setState({
-        address,
-      });
-      this.getAddressInfo();
-    } else {
-      this.setState({
-        connectLedger: false,
-      });
-    }
-  };
-
-  getAddressInfo = async () => {
-    try {
-      const { address } = this.state;
-      this.setState({
-        stage: LEDGER_TX_ACOUNT_INFO,
-      });
-
-      const addressInfo = await this.ledger.getAccountInfoCyber(address);
-
-      addressInfo.chainId = CYBER.CHAIN_ID;
-
-      this.setState({
-        addressInfo,
-        stage: STAGE_READY,
-      });
-    } catch (error) {
-      const { message, statusCode } = error;
-      if (message !== "Cannot read property 'length' of undefined") {
-        // this just means we haven't found the device yet...
-        // eslint-disable-next-line
-        console.error('Problem reading address data', message, statusCode);
-      }
-      this.setState({ time: Date.now() }); // cause componentWillUpdate to call again.
-    }
-  };
 
   generateTxKeplr = async () => {
     const {
@@ -232,172 +169,6 @@ class ActionBar extends Component {
     }
   };
 
-  generateTx = async () => {
-    const {
-      address,
-      addressInfo,
-      valueSelect,
-      valueDescription,
-      valueTitle,
-      valueDeposit,
-      valueAmountRecipient,
-      valueAddressRecipient,
-      changeParam,
-      nameUpgrade,
-      heightUpgrade,
-    } = this.state;
-
-    let deposit = [];
-    let title = '';
-    let description = '';
-    const recipient = valueAddressRecipient;
-    let amount = [];
-
-    let tx;
-
-    const txContext = {
-      accountNumber: addressInfo.accountNumber,
-      chainId: addressInfo.chainId,
-      sequence: addressInfo.sequence,
-      bech32: address.bech32,
-      pk: address.pk,
-      path: address.path,
-    };
-
-    if (valueDeposit > 0) {
-      deposit = [
-        {
-          amount: `${valueDeposit * CYBER.DIVISOR_CYBER_G}`,
-          denom: 'eul',
-        },
-      ];
-    }
-
-    if (valueAmountRecipient > 0) {
-      amount = [
-        {
-          amount: `${valueAmountRecipient * CYBER.DIVISOR_CYBER_G}`,
-          denom: 'eul',
-        },
-      ];
-    }
-
-    description = valueDescription;
-    title = valueTitle;
-
-    switch (valueSelect) {
-      case 'textProposal': {
-        tx = await this.ledger.textProposal(
-          txContext,
-          address.bech32,
-          title,
-          description,
-          deposit,
-          MEMO
-        );
-        break;
-      }
-      case 'communityPool': {
-        tx = await this.ledger.communityPool(
-          txContext,
-          address.bech32,
-          title,
-          description,
-          recipient,
-          deposit,
-          amount,
-          MEMO
-        );
-        break;
-      }
-      case 'paramChange': {
-        tx = await this.ledger.paramChange(
-          txContext,
-          address.bech32,
-          title,
-          description,
-          changeParam,
-          deposit,
-          MEMO
-        );
-        break;
-      }
-
-      case 'softwareUpgrade': {
-        tx = await this.ledger.softwareUpgrade(
-          txContext,
-          address.bech32,
-          title,
-          description,
-          nameUpgrade,
-          heightUpgrade,
-          deposit,
-          MEMO
-        );
-        break;
-      }
-      default: {
-        tx = [];
-      }
-    }
-
-    console.log('tx', tx);
-
-    await this.setState({
-      txMsg: tx,
-      txContext,
-      txBody: null,
-      error: null,
-    });
-    // debugger;
-    this.signTx();
-  };
-
-  signTx = async () => {
-    const { txMsg, txContext } = this.state;
-    // console.log('txContext', txContext);
-    this.setState({ stage: STAGE_WAIT });
-    const sing = await this.ledger.sign(txMsg, txContext);
-    console.log('sing', sing);
-    if (sing.return_code === LEDGER.LEDGER_OK) {
-      const applySignature = await this.ledger.applySignature(
-        sing,
-        txMsg,
-        txContext
-      );
-      if (applySignature !== null) {
-        this.setState({
-          txMsg: null,
-          txBody: applySignature,
-          stage: STAGE_SUBMITTED,
-        });
-        await this.injectTx();
-      }
-    } else {
-      this.setState({
-        stage: STAGE_ERROR,
-        txBody: null,
-        errorMessage: sing.error_message,
-      });
-    }
-  };
-
-  injectTx = async () => {
-    const { txBody } = this.state;
-    const txSubmit = await this.ledger.txSubmitCyber(txBody);
-    const data = txSubmit;
-    console.log('data', data);
-    if (data.error) {
-      // if timeout...
-      // this.setState({stage: STAGE_CONFIRMING})
-      // else
-      this.setState({ stage: STAGE_ERROR, errorMessage: data.error });
-    } else {
-      this.setState({ stage: STAGE_SUBMITTED, txHash: data.data.txhash });
-      this.timeOut = setTimeout(this.confirmTx, 1500);
-    }
-  };
-
   confirmTx = async () => {
     const { update } = this.props;
     if (this.state.txHash !== null) {
@@ -436,12 +207,6 @@ class ActionBar extends Component {
     const { account } = this.props;
     console.log('account', account);
     if (account !== null) {
-      if (account.keys === 'ledger') {
-        await this.setState({
-          stage: STAGE_LEDGER_INIT,
-        });
-        this.getLedgerAddress();
-      }
       if (account.keys === 'keplr') {
         this.generateTxKeplr();
       }
@@ -493,12 +258,7 @@ class ActionBar extends Component {
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
-      address: null,
-      addressInfo: null,
       valueSelect: 'textProposal',
-      txMsg: null,
-      txContext: null,
-      txBody: null,
       txHeight: null,
       txHash: null,
       valueDescription: '',
@@ -604,9 +364,7 @@ class ActionBar extends Component {
 
   render() {
     const {
-      address,
       stage,
-      txMsg,
       txHeight,
       txHash,
       valueSelect,
@@ -616,7 +374,6 @@ class ActionBar extends Component {
       valueAmountRecipient,
       valueAddressRecipient,
       errorMessage,
-      connectLedger,
       valueSelectChangeParam,
       valueParam,
       changeParam,
@@ -632,19 +389,6 @@ class ActionBar extends Component {
           onChangeSelect={this.onChangeSelect}
         />
       );
-    }
-
-    if (stage === STAGE_LEDGER_INIT) {
-      return (
-        <ConnectLadger
-          onClickConnect={() => this.getLedgerAddress()}
-          connectLedger={connectLedger}
-        />
-      );
-    }
-
-    if (stage === LEDGER_TX_ACOUNT_INFO) {
-      return <CheckAddressInfo />;
     }
 
     if (valueSelect === 'textProposal' && stage === STAGE_TYPE_GOV) {
@@ -728,14 +472,6 @@ class ActionBar extends Component {
       );
     }
 
-    if (stage === STAGE_WAIT) {
-      return (
-        <JsonTransaction
-          txMsg={txMsg}
-          onClickBtnCloce={this.onClickInitStage}
-        />
-      );
-    }
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
       return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;

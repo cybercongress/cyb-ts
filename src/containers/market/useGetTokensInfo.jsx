@@ -12,7 +12,6 @@ import {
   TAKEOFF,
   GENESIS_SUPPLY,
 } from '../../utils/config';
-import { useGetMarketData } from '../port/hooks';
 import { AppContext } from '../../context';
 import { convertResources } from '../../utils/utils';
 
@@ -49,7 +48,6 @@ const initState = {
 
 function useGetCybernomics() {
   const { jsCyber } = useContext(AppContext);
-  const marketData = useGetMarketData();
   const [cybernomics, setCybernomics] = useState(initState);
   const [poolsData, setPoolsData] = useState([]);
   const [totalSupplyData, setTotalSupplyData] = useState({});
@@ -80,27 +78,27 @@ function useGetCybernomics() {
     }));
   };
 
-  useEffect(() => {
-    if (!marketData.loading) {
-      console.log('marketData', marketData);
-      const { currentPrice } = marketData;
+  // useEffect(() => {
+  //   if (!marketData.loading) {
+  //     console.log('marketData', marketData);
+  //     const { currentPrice } = marketData;
 
-      const supplyEUL = parseFloat(GENESIS_SUPPLY);
-      const capETH = (supplyEUL / CYBER.DIVISOR_CYBER_G) * currentPrice;
+  //     const supplyEUL = parseFloat(GENESIS_SUPPLY);
+  //     const capETH = (supplyEUL / CYBER.DIVISOR_CYBER_G) * currentPrice;
 
-      const cyb = {
-        cap: capETH,
-        price: currentPrice,
-        supply: GENESIS_SUPPLY,
-        loading: false,
-      };
+  //     const cyb = {
+  //       cap: capETH,
+  //       price: currentPrice,
+  //       supply: GENESIS_SUPPLY,
+  //       loading: false,
+  //     };
 
-      setCybernomics((item) => ({
-        ...item,
-        cyb,
-      }));
-    }
-  }, [marketData]);
+  //     setCybernomics((item) => ({
+  //       ...item,
+  //       cyb,
+  //     }));
+  //   }
+  // }, [marketData]);
 
   useEffect(() => {
     const feachTotal = async () => {
