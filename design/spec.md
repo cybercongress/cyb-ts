@@ -1,77 +1,81 @@
-# Cyb: Love and Robots
-@mastercyb @natgirl
-
-@natgirl role:
-- force development of the architecture (time spent by @mastercyb and strcuture of thoughts)
-- verbal becomes text
-- knowledge acquired epower future improvements
-- help finalize
-
-Cyb mission is to link and persist knowledge that allows everyone prosper.
-
-Technically Cyb is a browser based on the idea of state transition function defined by cyberlink (signed transition from one state to another).
+# cyb: dream of a robot
+@mastercyb
 
 Immortal Robot for the Great Web
 
+Cyb mission is to link and persist knowledge that allows everyone prosper.
+
+Technically Cyb is a browser based on the idea of state transition function defined by cyberlink: signed transition from one state to another.
+
 ## Principles
 
-- Ownership: No keys - no pussy
-- Allegality: Because cyb can not care
-- Nonviolence: Golden principle
-- Consent: Respect to agent
-- Privacy: Because 
-- Energy efficiency: If something can be done faster by the cost of energy efficiency it has not to be done
+- Ownership: No keys - No pussy
+- Allegality: Because I can not care
+- Nonviolence: Follow golden principle
+- Consent: I respect you
+- Privacy: Because we can
+- Efficiency: If something can be done faster by the cost of energy efficiency it has not to be done
 - Speed: Faster is always better than slow
-- Offline: Travel in space can not be imagine without offline first experience
-- Modularity: 
-- Minimalizm:
-- Wisdom: Educative approach
+- Offline: Travel in spacetime can not be imagined without offline first experience
+- Modularity: I am limited set of concise interfaces
+- Minimalizm: If you dont know why to add, do not add
+- Wisdom: You educate me, I educate you
+- Fun: Everyone loves games and tits
+- Universal: I can work for humans, robots, animals, progs and other living forms
 
-## Проблематика
+## Problems
 
-## Объектная модель 
+...
 
-  avatars can create neurons. Neurons creates cyberlinks. Cyberlinks are Data behond cyberlinks are deliver by providers. 
-  - providers
-  - particles
-!!!!
+## Object Model
 
-## Рантайм Васм
+- avatars can create neurons
+- neurons sign messeges
+- content identifiers of messeges are particles
+- raw data behind particles are files
+- files are exchanged by neurons
+- neurons connect particles with cyberlinks
+- cyberlinks form superintelligence
+- avatars love superintelligence
 
+## Sequentual Computations
+
+wasm runtime based on [Lunatic](https://github.com/lunatic-solutions/lunatic) and [CosmWasm](https://github.com/CosmWasm/cosmwasm)
+
+## Parallel Computations
+
+soft3 runtime based on [go-cyber](https://github.com/cybercongress/go-cyber) and [WebGPU](https://github.com/gfx-rs/wgpu)
 
 ### Resources
 
-In the core is the robust resource permissions signed by agent for every particle. Personal robots can be generated from the avatar's key for signing permissions for particles (local contracts).
+In the core is the robust resource permissions signed by agent for every particle.
+Personal robots can be generated from the avatar's key for signing permissions for particles (local contracts).
 
 - CPU time
 - GPU time
 - volatile memory
 - persistent memory
-
 - other websys resources
 
-## Раст как язык 
+## Protocol and Implementation
 
-## Рантайм
+Several implementations in Rust, Go, Python and JS
 
-## ipfs и waku
+## Data and Messeging
 
-## Ноды: bitcoin, ethereum, cosmos
+ipfs & waku
 
-## Терминальный интерфейс
+## SPV nodes
 
-## Графический интерфейс
+bitcoin, ethereum, cosmos
 
-## Сайгнер
+## Rendering
 
-## Пакетный менеджер
+[Bevy](https://github.com/bevyengine/bevy)
 
-## .cyb файл в репе
-- Адрес для верификации подписей
-- кельвин версионирование
-- билды под разные архитектуры 
-- Язык разметки вместо html
-- .w расширение
+## Package manager
+
+Using soft3
 
 ## Components
 
@@ -79,7 +83,7 @@ Components can be overlaid over the space and can be toggles with hotkeys. Any a
 
 - space. A place for exploration. Anything can be put here
 - avatar. Image of a character identified by pubkeys.
-- commander. A bar for search and command. Have past and future buttons.
+- commander. A bar for search and command. Have past and future buttons. Favorite button.
 - robot. Subordinate character of avatar which have its own pubkey derived from the avatar's pubkey. Avatar can cyberlink a program with robots. 
 - assistant. Tool to optimizse call to actions. Actions either preprogrammed or suggest automagically.
 - navigator. Tool to navigate across apps and within the apps. Collapsible tree with favicons can either auto suggest the structure or build it using some convention.
@@ -88,61 +92,29 @@ Components can be overlaid over the space and can be toggles with hotkeys. Any a
 - signer. Conformation screen for signing messages. Background is secretly and deterministically generated based on the avatar for security.
 - transformer. The tool for migration of content from web2.
 
-## Distribution
+## Distribution and Interfaces
 
-- CLI
-- Web
-- Metamask
-- Ledger
-- OSX
-- Linux
-- Windows
-- Chrome
-- Android
-- Vive
-- Daydream
-
-## Interfaces
-
+- cli + tui
+- web
+- metamask
+- ledger
+- osx
+- linux
+- windows
+- chrome
+- android
+- vive
+- daydream
 - keyboard
 - voice
+- hears
+- eye
 - touch
 - thought
 
-## Dependencies   
-
-- react-native
-- go-ipfs
-- tzdybal / cidtrack
-- docker
-- go-libp2p
-- go-ethereum
-- go-cyber
-- threads-db
-- go-pass
-- web-sys 
-- some storage (still investigation). Not filecoin.
-
-## Execution engine
-
-Docker images by CIDs
-
 ## Buildings
 
-Cyb helps to get familiar with the new universe using the concept of buildings. There are some basic buildings which are maintened by the cyb core with the simple idea: "One app to rule them all"
-
-- Port - как стать гражданином?
-- Robot: Next step (+ Claim Rewards), Labeling with links, Activity, Values, Permissions
-- Taverna: all activity or grouped by follower and or grouped by content type
-- Hall of Fame - Heroes first, than citizens and other pros
-- Arena - Currently game of Links
-- Gov - Пропоузалы
-- Oracle - Топ контента
-- University - Квесты
-- Bazaar - Для инвесторов. Cybernomics + как торговать токенами
-- Tower - Для мастеров
-- Temple - Для лидеров
-- Laboratory - Для хакеров
+Cyb helps to get familiar with the new universe using the concept of buildings. There are some basic buildings which are maintened by the cyb core with the simple idea: One app to rule them all.
 
 ## Lifetime of transaction
 
@@ -160,30 +132,30 @@ Cyb helps to get familiar with the new universe using the concept of buildings. 
 
 ### Core sparks
 
+- uri
 - video
 - audio
 - image
-- uri
 - text
-- code
-- doc
-- tx
-- block
-- em
+- pdf
+- signal
+- step
+- prog
 - citizen
 
-## Sound
+## Sound and Art
 
-## Art
+...
 
 ## Gamification
+
+...
 
 ## Feedback
 
 Feedback happens thanks to cyberlinks
 
 ### Transformer
-- euler-6
 - custom knowledge graph
 - gbm: genesis bootstrap module
 - site: url and depth
@@ -199,8 +171,6 @@ Feedback happens thanks to cyberlinks
 - telegram: group, channel
 
 ## Roadmap
-
-...
 
 
 
