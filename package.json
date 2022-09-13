@@ -142,6 +142,7 @@
     "regenerator-runtime": "^0.13.7",
     "ripemd160": "^2.0.2",
     "secp256k1": "^3.7.1",
+    "subscriptions-transport-ws": "^0.9.18",
     "tone": "^14.7.77",
     "web3": "1.2.4",
     "web3-utils": "^1.2.4"
