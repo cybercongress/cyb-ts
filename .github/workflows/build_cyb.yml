@@ -42,13 +42,12 @@ jobs:
         git add --all
         git commit -m "build cyb"
         echo "Commited"
-        git push -q -f https://$github_token@github.com/$repository.git origin build
+        git push -q -f https://$github_token@github.com/$repository.git origin:build
         echo "Pushed"
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
         commit_files: build
-        branch: refs/remotes/origin/build
         CHAIN_ID: "bostrom"
         
