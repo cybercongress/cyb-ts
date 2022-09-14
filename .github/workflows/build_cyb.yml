@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -34,16 +34,20 @@ jobs:
         export CHAIN_ID="bostrom" 
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
-
-    - name: Deploy
+        
+    - name: Commit changes
       run: |
         cd build
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git init
         echo "cyb.ai" > CNAME
-        git config --global user.name cyberadmin
-        git config --global user.email cybercongress42@gmail.com
         git add --all
         git commit -m "build cyb"
+
+
+    - name: Push
+      run: |
         git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
       env:
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
