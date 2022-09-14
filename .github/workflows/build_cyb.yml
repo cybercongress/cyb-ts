@@ -35,7 +35,7 @@ jobs:
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
         
-    - name: Commit changes
+    - name: Commit & Push changes
       run: |
         cd build
         git config --global user.name "github-actions[bot]"
@@ -44,11 +44,7 @@ jobs:
         echo "cyb.ai" > CNAME
         git add --all
         git commit -m "build cyb"
-
-
-    - name: Push
-      run: |
-        git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
+        git push -q -f https://${github_token}@github.com/cybercongress/cyb.git build
       env:
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
