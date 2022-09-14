@@ -108,7 +108,6 @@
     "@cosmjs/tendermint-rpc": "^0.28.4",
     "@cybercongress/cyber-js": "0.3.1",
     "@cybercongress/gravity": "0.0.15",
-    "@koale/useworker": "^4.0.2",
     "@ledgerhq/hw-transport-u2f": "^4.72.1",
     "@ledgerhq/hw-transport-webusb": "5.53.0",
     "@tableflip/react-inspector": "^2.3.0",
