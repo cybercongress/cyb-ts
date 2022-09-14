@@ -121,15 +121,12 @@ const AppContextProvider = ({ children }) => {
   }, [signer]);
 
   useEffect(() => {
-    // window.onload = async () => {
-    const checkKeplr = async () => {
+    window.onload = async () => {
       const windowKeplr = await getKeplr();
       if (windowKeplr) {
         initSigner();
       }
     };
-    checkKeplr();
-    // };
   }, []);
 
   useEffect(() => {
