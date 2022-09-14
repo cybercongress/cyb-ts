@@ -21,34 +21,23 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
       run: yarn install
-
-    - name: Build
-      run: |
-        yarn build
-        export CHAIN_ID="bostrom" 
+      
+    - name: Build cyb
+      run: yarn build
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
-        
-    - name: Commit changes
-      run: |
-        cd build
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git init
-        echo "cyb.ai" > CNAME
-        git add --all
-        git commit -m "build cyb"
-
-
-    - name: Push
-      run: |
-        git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
-      env:
-        github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-        repository: ${{ github.repository }}
+        CHAIN_ID: "bostrom"
+      
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+          BRANCH: build
+          FOLDER: build
+          CLEAN: true
