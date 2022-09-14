@@ -44,7 +44,7 @@ jobs:
         echo "cyb.ai" > CNAME
         git add --all
         git commit -m "build cyb"
-        git push -q -f https://${github_token}@github.com/cybercongress/cyb.git build
+        git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
       env:
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
