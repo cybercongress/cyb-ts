@@ -35,18 +35,20 @@ jobs:
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
         
-    - name: Commit files
+    - name: Publish
       run: |
-        cd build
+        git clone --depth 1 https://x-access-token:$github_token@github.com/$repository.git /$repository
+        rm -rf /$repository/*
+        cp -r ./$commit_files /$repository
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git init
-        echo "cyb.ai" > CNAME
+        echo "cyb.ai" > ./$commit_files/CNAME
         git add --all
         git commit -m "build cyb"
-
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
+        git push origin $branch
+        rm -rf /$repository
+      env:
+        github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+        repository: ${{ github.repository }}
+        commit_files: build
         branch: build
-        force_with_lease: true
