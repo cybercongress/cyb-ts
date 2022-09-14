@@ -49,6 +49,6 @@ jobs:
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
         commit_files: build
-        branch: build
+        branch: refs/remotes/origin/build
         CHAIN_ID: "bostrom"
         
