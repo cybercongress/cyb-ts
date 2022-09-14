@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
 
@@ -42,7 +42,7 @@ jobs:
         git add --all
         git commit -m "build cyb"
         echo "Commited"
-        git push -q -f https://${github_token}@github.com/$repository.git master:build
+        git push -q -f https://$github_token@github.com/$repository.git $branch
         echo "Pushed"
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
