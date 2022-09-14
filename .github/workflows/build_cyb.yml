@@ -27,24 +27,14 @@ jobs:
 
     - name: Install dependencies
       run: yarn install
-
-    - name: Build
-      run: |
-        yarn build
-      env:
-        NODE_OPTIONS: "--max-old-space-size=8192"
-        github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-        repository: ${{ github.repository }}
-        commit_files: build
-        CHAIN_ID: "bostrom"
-        
-    - name: Commit & Publish
-      run: |
-        cd build
-        git init
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        echo "cyb.ai" > CNAME
-        git add --all
-        git commit -m "build cyb"
-        git push -q -f build
+      
+    - name: Build cyb
+      run: yarn build
+      
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+          BRANCH: build
+          FOLDER: build
+          CLEAN: true
