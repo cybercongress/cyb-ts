@@ -32,6 +32,8 @@ jobs:
       run: |
         yarn build
         export CHAIN_ID="bostrom" 
+      env:
+        NODE_OPTIONS: "--max-old-space-size=8192"
 
     - name: Deploy
       run: |
@@ -44,7 +46,6 @@ jobs:
         git commit -m "Circle CI: update cyb build [skip ci]"
         git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
       env:
-        NODE_OPTIONS: "--max-old-space-size=8192"
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
