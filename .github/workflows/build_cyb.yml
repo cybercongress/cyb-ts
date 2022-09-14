@@ -40,13 +40,11 @@ jobs:
         cd build
         git init
         echo "cyb.ai" > CNAME
-        git config user.email "cybercongress42@gmail.com"
-        git config user.name "Cyber Admin"
+        git config --global user.name "Cyber Admin"
+        git config --global user.email "cybercongress42@gmail.com"
         git add --all
         git commit -m "Circle CI: update cyb build [skip ci]"
         git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
       env:
-        user_name: 'github-actions[bot]'
-        user_email: 'github-actions[bot]@users.noreply.github.com'
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
