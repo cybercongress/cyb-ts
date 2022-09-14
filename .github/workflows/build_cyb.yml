@@ -30,6 +30,9 @@ jobs:
       
     - name: Build cyb
       run: yarn build
+      env:
+        NODE_OPTIONS: "--max-old-space-size=8192"
+        CHAIN_ID: "bostrom"
       
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@3.7.1
