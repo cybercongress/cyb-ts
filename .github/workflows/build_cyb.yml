@@ -36,13 +36,13 @@ jobs:
         echo "In build repo"
         git init
         echo "Initiated"
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.email "cybercongress42@gmail.com"
+        git config user.name "Cyber Admin"
         echo "cyb.ai" > CNAME
         git add --all
         git commit -m "build cyb"
         echo "Commited"
-        git push -q -f https://$github_token@github.com/cybercongress/dot-cyber.git master:build
+        git push -q -f https://${github_token}@github.com/repository.git master:build
         echo "Pushed"
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
