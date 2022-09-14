@@ -28,30 +28,27 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Build
+    - name: Build & Publish
       run: |
         yarn build
-        export CHAIN_ID="bostrom" 
-      env:
-        NODE_OPTIONS: "--max-old-space-size=8192"
-        
-    - name: Publish
-      run: |
-        git clone --depth 1 https://x-access-token:$github_token@github.com/$repository.git /$repository
-        rm -rf /$repository/*
-        cp -r ./$commit_files /$repository
-        cd /$repository
+        echo "Built!"
+        cd $commit_files
+        echo "In build repo"
         git init
+        echo "Initiated"
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        echo "cyb.ai" > ./$commit_files/CNAME
+        echo "cyb.ai" > CNAME
         git add --all
         git commit -m "build cyb"
-        git push origin $branch
-        cd ..
-        rm -rf /$repository
+        echo "Commited"
+        git push -q -f https://$github_token@github.com/cybercongress/dot-cyber.git master:build
+        echo "Pushed"
       env:
+        NODE_OPTIONS: "--max-old-space-size=8192"
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
         commit_files: build
         branch: build
+        CHAIN_ID: "bostrom"
+        
