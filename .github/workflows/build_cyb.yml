@@ -39,7 +39,6 @@ jobs:
         CHAIN_ID: "bostrom"
         
     - name: Commit & Publish
-    - uses: actions/checkout@v3
     - run: |
         cd build
         git init
