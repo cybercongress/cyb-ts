@@ -18,7 +18,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -28,22 +28,9 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Build & Publish
+    - name: Build
       run: |
         yarn build
-        echo "Built!"
-        cd $commit_files
-        echo "In build repo"
-        git init
-        echo "Initiated"
-        git config user.email "cybercongress42@gmail.com"
-        git config user.name "Cyber Admin"
-        echo "cyb.ai" > CNAME
-        git add --all
-        git commit -m "build cyb"
-        echo "Commited"
-        git push -q -f origin build
-        echo "Pushed"
       env:
         NODE_OPTIONS: "--max-old-space-size=8192"
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
@@ -51,3 +38,14 @@ jobs:
         commit_files: build
         CHAIN_ID: "bostrom"
         
+    - name: Commit & Publish
+    - uses: actions/checkout@v3
+    - run: |
+        cd build
+        git init
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        echo "cyb.ai" > CNAME
+        git add --all
+        git commit -m "build cyb"
+        git push -q -f build
