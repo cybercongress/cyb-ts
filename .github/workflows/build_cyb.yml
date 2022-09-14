@@ -1,0 +1,50 @@
+
+
+name: build_cyb
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build_cyb:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.20.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Build
+      run: |
+        yarn build
+        export CHAIN_ID="bostrom" 
+
+    - name: Deploy
+      run: |
+        cd build
+        git init
+        echo "cyb.ai" > CNAME
+        git config user.email "cybercongress42@gmail.com"
+        git config user.name "Cyber Admin"
+        git add --all
+        git commit -m "Circle CI: update cyb build [skip ci]"
+        git push -q -f https://${github_token}@github.com/cybercongress/cyb.git master:build
+      env:
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+        repository: ${{ github.repository }}
