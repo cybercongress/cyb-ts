@@ -39,7 +39,7 @@ jobs:
         CHAIN_ID: "bostrom"
         
     - name: Commit & Publish
-    - run: |
+      run: |
         cd build
         git init
         git config user.name github-actions
