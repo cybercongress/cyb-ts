@@ -61,6 +61,7 @@ const Select = ({
   onChangeSelect,
   children,
   denomData,
+  ...props
 }) => {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -134,6 +135,11 @@ const Select = ({
             </div>
           )}
         </div>
+        {props.description &&
+            <div className={styles.dropDownDescription}>
+              {props.description}
+            </div>
+        }
       </div>
     </SelectContext.Provider>
   );

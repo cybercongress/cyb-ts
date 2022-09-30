@@ -92,57 +92,96 @@ function TokenSetter({
 
       <Pane
         display="grid"
-        gridTemplateColumns="40px 1fr 1fr"
-        gridGap="27px"
+        gridTemplateColumns="220px 220px"
+        gridGap="57px"
         alignItems="center"
         marginBottom={20}
       >
-        <Pane width="33px" fontSize="20px" paddingBottom={10}>
-          {textLeft}
-        </Pane>
+
+        {/* <Pane> */}
+        {!ibcTokenB && totalSupply && (
+            <Input
+                id={id}
+                value={valueInput}
+                maxValue={totalSupply[token]}
+                token={token}
+                onChange={(e) => onChangeInput(e)}
+                placeholder="amount"
+                datatype="amount"
+                width="200px"
+                height={42}
+                fontSize="20px"
+                autoComplete="off"
+                textAlign="end"
+                description="choose amount to send"
+                readonly={readonly || false}
+            />
+        )}
+        {/* {!ibcTokenB && !readonly && ( */}
+        {/*     <BalanceToken */}
+        {/*         data={ibc ? balanceIbc : accountBalances} */}
+        {/*         token={ibc ? denomIbc : token} */}
+        {/*     /> */}
+        {/* )} */}
+
+
+        {!ibcTokenB && tokens && (
+            <Select
+                valueSelect={token}
+                denomData={(tokens && token !== '') ? tokens[token.toUpperCase()] : { }}
+                textSelectValue={token !== '' ? token : ''}
+                onChangeSelect={(item) => onChangeSelect(item)}
+                description="choose token to send"
+            >
+              {renderOptions(totalSupply, selected, token, tokens)}
+            </Select>
+        )}
+          {/* </Pane> */}
+
+        {!ibcTokenB && totalSupply && (
+            <Input
+                id={id}
+                value={ibc ? balanceIbc[ibc ? denomIbc : token] : accountBalances[ibc ? denomIbc : token]}
+                datatype="amount"
+                // maxValue={totalSupply[token]}
+                // onChange={(e) => onChangeInput(e)}
+                placeholder="amount"
+                width="250px"
+                height={42}
+                fontSize="20px"
+                autoComplete="off"
+                textAlign="end"
+                description="choose amount to send"
+                readonly="true"
+            />
+        )}
+
+        {/* <Pane> */}
         {swap && (
           <Select
             valueSelect={selectedNetwork}
             denomData={(networks && selectedNetwork !== '') ? networks[selectedNetwork] : { }}
             textSelectValue={networks && selectedNetwork !== '' ? networks[selectedNetwork].name : ''}
             onChangeSelect={(item) => onChangeSelectNetwork(item)}
+            description="choose source network"
           >
             {renderNetwork(networks, selectedNetwork)}
           </Select>
         )}
+        {/*   </Pane> */}
 
-        {!ibcTokenB && tokens && (
-          <Select
-            valueSelect={token}
-            denomData={(tokens && token !== '') ? tokens[token.toUpperCase()] : { }}
-            textSelectValue={token !== '' ? token : ''}
-            onChangeSelect={(item) => onChangeSelect(item)}
-          >
-            {renderOptions(totalSupply, selected, token, tokens)}
-          </Select>
-        )}
+
+        <Pane width="33px" fontSize="20px" paddingBottom={10}>
+          {/* {textLeft} */}
+        </Pane>
+
+
+
+
+
+
       </Pane>
-      {!ibcTokenB && totalSupply && (
-          <Input
-              id={id}
-              value={valueInput}
-              maxValue={totalSupply[token]}
-              onChange={(e) => onChangeInput(e)}
-              placeholder="amount"
-              width="200px"
-              height={42}
-              fontSize="20px"
-              autoComplete="off"
-              textAlign="end"
-              readonly={readonly || false}
-          />
-      )}
-      {!ibcTokenB && !readonly && (
-          <BalanceToken
-              data={ibc ? balanceIbc : accountBalances}
-              token={ibc ? denomIbc : token}
-          />
-      )}
+
     </Pane>
   );
 }

@@ -37,6 +37,15 @@ $color-border-botton-blue: #00edeb;
     align-self: stretch;
     width: 100%;
   }
+  &Description {
+    //margin-top: 43px;
+    color: rgb(119, 119, 119);
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0px;
+    align-self: stretch;
+    width: 100%;
+  }
 
 
   &Text {

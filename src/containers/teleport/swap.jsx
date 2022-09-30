@@ -183,7 +183,7 @@ function Swap({ stateSwap, swap }) {
         onClick={() => tokenChange()}
         img={imgSwap}
         style={{
-          position: 'relative',
+          position: 'relativesell',
           top: 0,
           transform: 'unset',
           left: 0,

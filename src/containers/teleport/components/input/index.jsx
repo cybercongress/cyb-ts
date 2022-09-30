@@ -2,7 +2,8 @@ import React from 'react';
 // import classnames from 'classnames';
 import styles from './styles.scss';
 import stylesLinear from './stylesLinear.scss';
-
+import { formatNumber } from '../../../../utils/utils';
+import { reduceAmounToken } from "../../utils";
 const classNames = require('classnames');
 
 export const LinearGradientContainer = ({ children, ...props }) => {
@@ -51,11 +52,22 @@ function Input({ ...props }) {
         <div
           className={classNames(styles.textboxFace, styles.textboxBottomLine)}
         />
+
         <div className={styles.textboxField}>
-          <input className={styles.textboxText} type="text" {...props} />
+          {props.datatype && props.datatype === 'amount' ?
+              <input className={styles.textboxText} type="text" onChange={(e) => {console.log(e);e.target.value=parseInt(e.target.value.replaceAll(" ","")||0);props.onChange(e)}}  value={formatNumber(parseInt(props.value||0))}  />
+              :
+              <input className={styles.textboxText} type="text" {...props} />
+          }
 
         </div>
+
       </div>
+      {props.description &&
+          <div className={styles.textboxDescription}>
+            {props.description}
+          </div>
+      }
     </div>
   );
 }
