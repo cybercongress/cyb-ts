@@ -52,6 +52,8 @@ const itemsMenu = (address) => {
         { name: 'Networks', to: '/warp/networks' },
         { name: 'Channels', to: '/warp/channels' },
         { name: 'Contracts', to: '/warp/contracts' },
+        { name: 'Protocols', to: '/warp/protocols' },
+        { name: 'Endpoints', to: '/warp/endpoints' },
       ],
     },
     {

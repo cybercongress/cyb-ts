@@ -5,29 +5,28 @@ import styles from '../../warp.scss';
 const AddItemForm = props => {
     let errorsInitiialParams={
         'hasError': false,
-        'name': null,
         'ticker': null,
         'denom': null,
-        'display': null,
-        'metadata': null,
+        // 'display': null,
+        'particle': null,
         'chain_id': null,
         'logo': null,
     };
     const [error, setError] = useState(errorsInitiialParams);
 
     const [loading, setLoading] = useState(false);
-    const [name, setName] = useState('');
+    // const [name, setName] = useState('');
     let [chain_id, setChainId] = useState('');
     const [ticker, setTicker] = useState('');
     const [denom, setDenom] = useState('');
-    const [display, setDisplay] = useState('');
-    const [metadata, setMetadata] = useState('');
+    // const [display, setDisplay] = useState('');
+    const [particle, setParticle] = useState('');
     const [logo, setLogo] = useState({ src: null, binary: null });
 
     const inputFileReference = useRef(null);
 
     const onSelectLogo = async (el) => {
-        let result = await props.onSelectLogo(el);
+        let result = await props.onSelectInputFile(el);
         if (result) {
             setLogo(result);
         }
@@ -48,14 +47,14 @@ const AddItemForm = props => {
         setLoading(true);
         let blockingError=false;
 
-        if (!name.match(/[a-z0-9-]{2,40}/)) {
-            blockingError=true;
-            setError(prevState => ({
-                ...prevState,
-                'name': true,
-                'hasError': true
-            }));
-        }
+        // if (!name.match(/[a-z0-9-]{2,40}/)) {
+        //     blockingError=true;
+        //     setError(prevState => ({
+        //         ...prevState,
+        //         'name': true,
+        //         'hasError': true
+        //     }));
+        // }
 
         if (!ticker.match(/[A-Z0-9]{2,40}/)) {
             blockingError=true;
@@ -74,14 +73,14 @@ const AddItemForm = props => {
             }));
         }
 
-        if (!display.match(/[0-9]/)) {
-            blockingError=true;
-            setError(prevState => ({
-                ...prevState,
-                'display': true,
-                'hasError': true
-            }));
-        }
+        // if (!display.match(/[0-9]/)) {
+        //     blockingError=true;
+        //     setError(prevState => ({
+        //         ...prevState,
+        //         'display': true,
+        //         'hasError': true
+        //     }));
+        // }
 
 
         // if (!metadata.match(/[a-zA-Z0-9,-=&]/)) {
@@ -114,10 +113,11 @@ const AddItemForm = props => {
             return;
         }
 
-        let preparedMetadata=`display=${display}`;
-        setMetadata(preparedMetadata);
+        // let preparedMetadata=`display=${display}`;
+        // setMetadata(preparedMetadata);
+
         try {
-            await props.addRow(name, ticker, denom, preparedMetadata, chain_id, logo.binary);
+            await props.addRow(ticker, denom, particle, chain_id, logo.binary);
         } catch (e) {
             setError({'total': e.message, 'hasError': true});
 
@@ -141,15 +141,15 @@ const AddItemForm = props => {
         <form className={styles.containerWarpFieldsInputContainer} onSubmit={onSubmit}>
             <h1>Add new token</h1>
 
-            <div className={error.name ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Token name</span>
-                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
-                    <div className="field-mask">mask: a-z,0-9,-</div>
-                    <input type="text" placeholder="example: ethereum" value={name}
-                           onChange={(e) => setName(e.target.value)}/>
+            {/* <div className={error.name ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}> */}
+            {/*     <span>Token name</span> */}
+            {/*     <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+            {/*         <div className="field-mask">mask: a-z,0-9,-</div> */}
+            {/*         <input type="text" placeholder="example: ethereum" value={name} */}
+            {/*                onChange={(e) => setName(e.target.value)}/> */}
 
-                </div>
-            </div>
+            {/*     </div> */}
+            {/* </div> */}
             <div className={error.ticker ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Ticker</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
@@ -165,7 +165,7 @@ const AddItemForm = props => {
                     <div className="field-mask">mask: a-z,0-9,-</div>
                     <select defaultValue={chain_id} onChange={(e) => setChainId(e.target.value)}>
                         {props.networks.map(function(network, i){
-                            return <option key={network.chain_id} value={network.chain_id}>{network.name}</option>;
+                            return <option key={network.chain_id} value={network.chain_id}>{network.chain_id}</option>;
                         })}
                     </select>
                 </div>
@@ -176,23 +176,27 @@ const AddItemForm = props => {
                     <div className="field-mask">mask: 0-9</div>
                     <input className="form-control" type="number" placeholder="example: 6" value={denom}
                            onChange={(e) => {
-                               setDenom(e.target.value);setDisplay(e.target.value)
+                               setDenom(e.target.value);
                            }}/>
                 </div>
             </div>
-            <div className={error.display ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Display denomination</span>
-                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
-                    <div className="field-mask">mask: 0-9</div>
-                    <input className="form-control" type="number" placeholder="example: 6" value={denom}
-                           onChange={(e) => setDisplay(e.target.value)}/>
-                </div>
-            </div>
-            {/* <div className={error.metadata ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}> */}
-            {/*     <span>Metadata</span> */}
-            {/*     <input className="form-control" type="text" placeholder="" value={metadata} */}
-            {/*            onChange={(e) => setMetadata(e.target.value)}/> */}
+            {/* <div className={error.display ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}> */}
+            {/*     <span>Display denomination</span> */}
+            {/*     <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+            {/*         <div className="field-mask">mask: 0-9</div> */}
+            {/*         <input className="form-control" type="number" placeholder="example: 6" value={denom} */}
+            {/*                onChange={(e) => setDisplay(e.target.value)}/> */}
+            {/*     </div> */}
             {/* </div> */}
+            <div className={error.particle ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
+                <span>Particle</span>
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z0-9</div>
+                    <input className="form-control" type="text" placeholder="" value={particle}
+                           onChange={(e) => setParticle(e.target.value)}/>
+                </div>
+
+            </div>
 
 
             <div className={styles.containerWarpFieldsInputContainerItem}>

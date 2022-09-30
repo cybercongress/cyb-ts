@@ -15,9 +15,7 @@ const ItemsList = props => {
   >
       <thead>
         <tr>
-        <th scope="col">Chain-id</th>
-        <th scope="col">Ticker</th>
-        <th scope="col" style={{width: '1%'}}>logo</th>
+        <th scope="col">Type</th>
         <th scope="col" style={{width: '1%'}}></th>
         </tr>
       </thead>
@@ -25,9 +23,7 @@ const ItemsList = props => {
         {props.items.length > 0 ? (
           props.items.map(item => (
             <tr key={item.id}>
-                <td>{item.chain_id}</td>
-                <td>{item.ticker}</td>
-              <td><img src={getIpfsCidExternalLink(item.logo)} width="32" height="32" /></td>
+                <td>{item.data_type}</td>
               <td>
                   <button
                       onClick={() => {

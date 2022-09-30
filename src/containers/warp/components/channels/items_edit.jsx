@@ -21,7 +21,7 @@ const EdittemForm = props => {
     const [destChannelId, setDestChannelId] = useState(props.data.destination_channel_id);
     const [sourceChainId, setSourceChainId] = useState(props.data.source_chain_id);
     const [destinationChainId, setDestinationChainId] = useState(props.data.destination_chain_id);
-    const [rpc, setRpc] = useState(props.data.rpc);
+    const [rpc, setRpc] = useState(props.data.explorer_url);
     const [token, setToken] = useState(props.data.token);
 
 
@@ -134,10 +134,18 @@ const EdittemForm = props => {
             <div className={error.sourceChainId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Source chain id</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
-                    <div className="field-mask">mask: a-z,0-9,-</div>
-                    <input type="text" placeholder="" value={sourceChainId}
-                           onChange={(e) => setSourceChainId(e.target.value)}/>
+                    <select defaultValue={sourceChainId} onChange={(e) => setSourceChainId(e.target.value)}>
+                        {props.networks.map(function(network, i){
+                            return <option key={network.chain_id} value={network.chain_id}>{network.chain_id}</option>;
+                        })}
+                    </select>
                 </div>
+
+                {/* <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+                {/*     <div className="field-mask">mask: a-z,0-9,-</div> */}
+                {/*     <input type="text" placeholder="" value={sourceChainId} */}
+                {/*            onChange={(e) => setSourceChainId(e.target.value)}/> */}
+                {/* </div> */}
             </div>
             <div className={error.sourceChannelId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Destination channel-id</span>
@@ -150,11 +158,21 @@ const EdittemForm = props => {
 
             <div className={error.destinationChainId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Destination chain id</span>
+
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: a-z,0-9,-</div>
-                    <input type="text" placeholder="" value={destinationChainId}
-                           onChange={(e) => setDestinationChainId(e.target.value)}/>
+                    <select defaultValue={destinationChainId} onChange={(e) => setDestinationChainId(e.target.value)}>
+                        {props.networks.map(function(network, i){
+                            return <option key={network.chain_id} value={network.chain_id}>{network.chain_id}</option>;
+                        })}
+                    </select>
                 </div>
+
+                {/* <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+                {/*     <div className="field-mask">mask: a-z,0-9,-</div> */}
+                {/*     <input type="text" placeholder="" value={destinationChainId} */}
+                {/*            onChange={(e) => setDestinationChainId(e.target.value)}/> */}
+                {/* </div> */}
             </div>
             <div className={error.destChannelId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Destination channel-id</span>
@@ -166,7 +184,7 @@ const EdittemForm = props => {
             </div>
 
             <div className={error.rpc ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Rpc addr</span>
+                <span>Explorer url</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: https://domain.com/{'{ addr }'},http://1.1.1.1/query/{'{ addr }'}</div>
                     <input className="form-control" type="text" placeholder="" value={rpc}
@@ -177,9 +195,18 @@ const EdittemForm = props => {
                 <span>Token</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: A-Z,0-9</div>
-                    <input className="form-control" type="text" placeholder="" value={token}
-                           onChange={(e) => setToken(e.target.value)}/>
+                    <select defaultValue={token} onChange={(e) => setToken(e.target.value)}>
+                        {props.tokens.map(function(network, i){
+                            return <option key={network.ticker} value={network.ticker}>{network.ticker}</option>;
+                        })}
+                    </select>
                 </div>
+
+                {/* <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+                {/*     <div className="field-mask">mask: A-Z,0-9</div> */}
+                {/*     <input className="form-control" type="text" placeholder="" value={token} */}
+                {/*            onChange={(e) => setToken(e.target.value)}/> */}
+                {/* </div> */}
             </div>
 
 

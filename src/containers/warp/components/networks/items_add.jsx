@@ -9,7 +9,8 @@ const AddItemForm = props => {
         'github': null,
         'genesis_hash': null,
         'chain_id': null,
-        'unbonding_period': null,
+        'protocol': null,
+        'particle': null,
         'logo': null,
     };
     const [error, setError] = useState(errorsInitiialParams);
@@ -19,13 +20,15 @@ const AddItemForm = props => {
     const [github, setGithub] = useState('');
     const [genesis_hash, setGenesisHash] = useState('');
     const [chain_id, setChainId] = useState('');
-    const [unbonding_period, setUnbondingPeriod] = useState('');
+    const [protocol, setProtocol] = useState('');
+    const [particle, setParticle] = useState('');
+    // const [unbonding_period, setUnbondingPeriod] = useState('');
     const [logo, setLogo] = useState({ src: null, binary: null });
 
     const inputFileReference = useRef(null);
 
     const onSelectLogo = async (el) => {
-        let result = await props.onSelectLogo(el);
+        let result = await props.onSelectInputFile(el);
         if (result) {
             setLogo(result);
         }
@@ -71,22 +74,22 @@ const AddItemForm = props => {
                 'hasError': true
             }));
         }
-        if (!unbonding_period.match(/[0-9]/)) {
-            blockingError=true;
-            setError(prevState => ({
-                ...prevState,
-                'unbonding_period': true,
-                'hasError': true
-            }));
-        }
-        if (!github.match(/(?:git@|https:\/\/)github.com[:\/](.*).git/g)) {
-            blockingError=true;
-            setError(prevState => ({
-                ...prevState,
-                'github': true,
-                'hasError': true
-            }));
-        }
+        // if (!unbonding_period.match(/[0-9]/)) {
+        //     blockingError=true;
+        //     setError(prevState => ({
+        //         ...prevState,
+        //         'unbonding_period': true,
+        //         'hasError': true
+        //     }));
+        // }
+        // if (!github.match(/(?:git@|https:\/\/)github.com[:\/](.*).git/g)) {
+        //     blockingError=true;
+        //     setError(prevState => ({
+        //         ...prevState,
+        //         'github': true,
+        //         'hasError': true
+        //     }));
+        // }
 
 
         if (!logo.binary) {
@@ -105,7 +108,7 @@ const AddItemForm = props => {
         }
 
         try {
-            await props.addRow(name, chain_id, github, genesis_hash, unbonding_period, logo.binary);
+            await props.addRow(name, chain_id, genesis_hash, protocol, particle, logo.binary);
         } catch (e) {
             setError({'total': e.message, 'hasError': true});
 
@@ -134,7 +137,15 @@ const AddItemForm = props => {
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: a-z,0-9,-</div>
                     <input type="text" placeholder="example: cyber" value={name}
-                       onChange={(e) => setName(e.target.value)}/>
+                           onChange={(e) => setName(e.target.value)}/>
+                </div>
+            </div>
+            <div className={error.name ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
+                <span>Protocol</span>
+                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
+                    <div className="field-mask">mask: a-z,0-9,-</div>
+                    <input type="text" placeholder="" value={protocol}
+                           onChange={(e) => setProtocol(e.target.value)}/>
                 </div>
             </div>
             <div className={error.chain_id ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
@@ -153,22 +164,19 @@ const AddItemForm = props => {
                        onChange={(e) => setGenesisHash(e.target.value)}/>
                 </div>
             </div>
-            <div className={error.github ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Github</span>
+
+
+            <div className={error.particle ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
+                <span>Particle</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
-                    <div className="field-mask">mask: https://github.com/*/*.git</div>
-                    <input className="form-control" type="text" placeholder="example: https://github.com/myteam/product.git" value={github}
-                       onChange={(e) => setGithub(e.target.value)}/>
+                    <div className="field-mask">mask: a-z0-9</div>
+                    <input className="form-control" type="text" placeholder="" value={particle}
+                           onChange={(e) => setParticle(e.target.value)}/>
                 </div>
+
             </div>
-            <div className={error.unbonding_period ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Unbonding Period</span>
-                <div className={styles.containerWarpFieldsInputContainerItemEditable}>
-                    <div className="field-mask">mask: 0-9</div>
-                    <input className="form-control" type="number" placeholder="" value={unbonding_period}
-                       onChange={(e) => setUnbondingPeriod(e.target.value)}/>
-                </div>
-            </div>
+
+
 
 
             <div className={styles.containerWarpFieldsInputContainerItem}>

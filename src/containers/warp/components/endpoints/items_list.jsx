@@ -1,5 +1,4 @@
 import React from 'react'
-import { getPin, getPinsCid,getIpfsCidExternalLink } from '../../../../utils/search/utils';
 import { Pane } from '@cybercongress/gravity';
 import styles from '../../warp.scss';
 
@@ -15,9 +14,10 @@ const ItemsList = props => {
   >
       <thead>
         <tr>
-        <th scope="col">Chain-id</th>
-        <th scope="col">Ticker</th>
-        <th scope="col" style={{width: '1%'}}>logo</th>
+        <th scope="col">Network</th>
+        <th scope="col">Data-type</th>
+        <th scope="col">Protocol</th>
+        <th scope="col">Url</th>
         <th scope="col" style={{width: '1%'}}></th>
         </tr>
       </thead>
@@ -26,8 +26,10 @@ const ItemsList = props => {
           props.items.map(item => (
             <tr key={item.id}>
                 <td>{item.chain_id}</td>
-                <td>{item.ticker}</td>
-              <td><img src={getIpfsCidExternalLink(item.logo)} width="32" height="32" /></td>
+              <td>{item.data_type}</td>
+              <td>{item.protocol}</td>
+              <td>{item.url.slice(-20)}</td>
+
               <td>
                   <button
                       onClick={() => {
@@ -42,7 +44,7 @@ const ItemsList = props => {
           ))
         ) : (
           <tr>
-            <td colSpan={5}>No items</td>
+            <td colSpan={3}>No items</td>
           </tr>
         )}
       </tbody>

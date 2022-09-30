@@ -12,6 +12,7 @@ const AddItemForm = props => {
         'destinationChainId': null,
         'rpc': null,
         'token': null,
+        'particle': null,
     };
     const [error, setError] = useState(errorsInitiialParams);
 
@@ -19,10 +20,11 @@ const AddItemForm = props => {
     // const [address, setAddress] = useState('');
     const [sourceChannelId, setSourceChannelId] = useState('');
     const [destChannelId, setDestChannelId] = useState('');
-    const [sourceChainId, setSourceChainId] = useState('');
-    const [destinationChainId, setDestinationChainId] = useState('');
+    let [sourceChainId, setSourceChainId] = useState('');
+    let [destinationChainId, setDestinationChainId] = useState('');
     const [rpc, setRpc] = useState('');
-    const [token, setToken] = useState('');
+    let [token, setToken] = useState('');
+    const [particle, setParticle] = useState('');
 
 
     const onSubmit = async (el) => {
@@ -38,6 +40,17 @@ const AddItemForm = props => {
         }
         setLoading(true);
         let blockingError=false;
+
+        if (!sourceChainId) {
+            sourceChainId=sourceChainId || props.networks[0].chain_id;
+        }
+        if (!destinationChainId) {
+            destinationChainId=destinationChainId || props.networks[0].chain_id;
+        }
+
+        if (!token) {
+            token=token || props.tokens[0].ticker;
+        }
 
         if (!sourceChannelId.match(/[a-z0-9-]{2,70}/)) {
             blockingError=true;
@@ -56,7 +69,7 @@ const AddItemForm = props => {
                 'hasError': true
             }));
         }
-        if (!sourceChainId.match(/[a-z0-9]{2,70}/)) {
+        if (!sourceChainId.match(/[a-z0-9-]{2,70}/)) {
             blockingError=true;
             setError(prevState => ({
                 ...prevState,
@@ -64,7 +77,7 @@ const AddItemForm = props => {
                 'hasError': true
             }));
         }
-        if (!destinationChainId.match(/[a-z0-9]{2,70}/)) {
+        if (!destinationChainId.match(/[a-z0-9-]{2,70}/)) {
             blockingError=true;
             setError(prevState => ({
                 ...prevState,
@@ -117,9 +130,11 @@ const AddItemForm = props => {
             <div className={error.sourceChainId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Source chain id</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
-                    <div className="field-mask">mask: a-z,0-9,-</div>
-                    <input type="text" placeholder="" value={sourceChainId}
-                       onChange={(e) => setSourceChainId(e.target.value)}/>
+                    <select defaultValue={sourceChainId} onChange={(e) => setSourceChainId(e.target.value)}>
+                        {props.networks.map(function(network, i){
+                            return <option key={network.chain_id} value={network.chain_id}>{network.chain_id}</option>;
+                        })}
+                    </select>
                 </div>
             </div>
             <div className={error.sourceChannelId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
@@ -135,9 +150,20 @@ const AddItemForm = props => {
                 <span>Destination chain id</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: a-z,0-9,-</div>
-                    <input type="text" placeholder="" value={destinationChainId}
-                       onChange={(e) => setDestinationChainId(e.target.value)}/>
+                    <select defaultValue={destinationChainId} onChange={(e) => setDestinationChainId(e.target.value)}>
+                        {props.networks.map(function(network, i){
+                            return <option key={network.chain_id} value={network.chain_id}>{network.chain_id}</option>;
+                        })}
+                    </select>
                 </div>
+
+
+
+                {/* <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+                {/*     <div className="field-mask">mask: a-z,0-9,-</div> */}
+                {/*     <input type="text" placeholder="" value={destinationChainId} */}
+                {/*        onChange={(e) => setDestinationChainId(e.target.value)}/> */}
+                {/* </div> */}
             </div>
             <div className={error.destChannelId ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Destination channel-id</span>
@@ -149,7 +175,7 @@ const AddItemForm = props => {
             </div>
 
             <div className={error.rpc ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
-                <span>Rpc addr</span>
+                <span>Explorer url</span>
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: https://domain.com/{'{ addr }'},http://1.1.1.1/query/{'{ addr }'}</div>
                     <input className="form-control" type="text" placeholder="" value={rpc}
@@ -158,11 +184,21 @@ const AddItemForm = props => {
             </div>
             <div className={error.token ? styles.containerWarpFieldsInputContainerItemError : styles.containerWarpFieldsInputContainerItem}>
                 <span>Token</span>
+
                 <div className={styles.containerWarpFieldsInputContainerItemEditable}>
                     <div className="field-mask">mask: A-Z,0-9</div>
-                    <input className="form-control" type="text" placeholder="" value={token}
-                       onChange={(e) => setToken(e.target.value)}/>
+                    <select defaultValue={token} onChange={(e) => setToken(e.target.value)}>
+                        {props.tokens.map(function(network, i){
+                            return <option key={network.ticker} value={network.ticker}>{network.ticker}</option>;
+                        })}
+                    </select>
                 </div>
+
+                {/* <div className={styles.containerWarpFieldsInputContainerItemEditable}> */}
+                {/*     <div className="field-mask">mask: A-Z,0-9</div> */}
+                {/*     <input className="form-control" type="text" placeholder="" value={token} */}
+                {/*        onChange={(e) => setToken(e.target.value)}/> */}
+                {/* </div> */}
             </div>
 
 

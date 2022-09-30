@@ -15,6 +15,8 @@ import WarpNetworks from './warpNetworks';
 import { getPin, getTxs } from '../../utils/search/utils';
 import { AppContext } from "../../context";
 import useSetActiveAddress from "../../hooks/useSetActiveAddress";
+import WarpProtocols from "./warpProtocols";
+import WarpEndpoints from "./warpEndpoints";
 
 const all = require('it-all');
 const uint8ArrayConcat = require('uint8arrays/concat');
@@ -41,10 +43,26 @@ function Warp({ defaultAccount, ipfs }) {
     ) {
       setSelectedTab('channels');
     } else if (
-      pathname.match(/contracts/gm) &&
-      pathname.match(/contracts/gm).length > 0
-    ) {
+        pathname.match(/contracts/gm) &&
+        pathname.match(/contracts/gm).length > 0
+    )  {
       setSelectedTab('contracts');
+    }
+    else if (
+        pathname.match(/protocols/gm) &&
+        pathname.match(/protocols/gm).length > 0
+    )  {
+      setSelectedTab('protocols');
+    }
+    else if (
+        pathname.match(/endpoints/gm) &&
+        pathname.match(/endpoints/gm).length > 0
+    )  {
+      setSelectedTab('endpoints');
+    }
+
+    else {
+      setSelectedTab('tokens');
     }
   }, [location.pathname]);
 
@@ -67,7 +85,7 @@ function Warp({ defaultAccount, ipfs }) {
     })
   }
 
-  const onSelectLogo = async(e) => {
+  const onSelectInputFile = async(e) => {
     return new Promise((accept,reject)=>{
       try {
       let file = e.target.files[0];
@@ -92,16 +110,20 @@ function Warp({ defaultAccount, ipfs }) {
 
   }
 
-  const pushIpfsImage = async (image) => {
-    console.log('wadawdwadwad',ipfs)
+  const pushIpfsFile = async (image) => {
     const toCid = await getPin(ipfs, image);
     await ipfs.pin.add(toCid);
-    let mime;
-    let file;
 
     const data = uint8ArrayConcat(await all(ipfs.cat(toCid)));
 
     const dataFileType = await FileType.fromBuffer(data);
+    return {data: data, dataFileType: dataFileType, toCid: toCid};
+
+  };
+  const pushIpfsImage = async (image) => {
+    let { data,  dataFileType, toCid} = await pushIpfsFile(image);
+    let mime;
+    let file;
     if (dataFileType !== undefined) {
       mime = dataFileType.mime;
       if (mime.indexOf('image') !== -1) {
@@ -115,7 +137,7 @@ function Warp({ defaultAccount, ipfs }) {
       file,
       cid: toCid,
     };
-  };
+  }
 
   let content;
 
@@ -123,21 +145,29 @@ function Warp({ defaultAccount, ipfs }) {
     content = (
       <Route
         path="/warp/networks"
-        render={() => <WarpNetworks pushIpfsImage={pushIpfsImage} statusChecker={statusChecker} onSelectLogo={onSelectLogo} />}
+        render={() => <WarpNetworks pushIpfsImage={pushIpfsImage} statusChecker={statusChecker} onSelectInputFile={onSelectInputFile} />}
       />
     );
   }
 
   if (selectedTab === 'tokens') {
-    content = <Route path="/warp/tokens" render={() => <WarpTokens pushIpfsImage={pushIpfsImage} statusChecker={statusChecker} onSelectLogo={onSelectLogo} />} />;
+    content = <Route path="/warp/tokens" render={() => <WarpTokens pushIpfsImage={pushIpfsImage} statusChecker={statusChecker} onSelectInputFile={onSelectInputFile} />} />;
   }
 
   if (selectedTab === 'channels') {
-    content = <Route path="/warp/channels" render={() => <WarpChannels statusChecker={statusChecker}  />} />;
+    content = <Route path="/warp/channels" render={() => <WarpChannels statusChecker={statusChecker} onSelectInputFile={onSelectInputFile} />} />;
   }
   //
   if (selectedTab === 'contracts') {
-    content = <Route path="/warp/contracts" render={() => <WarpContracts  statusChecker={statusChecker}  />} />;
+    content = <Route path="/warp/contracts" render={() => <WarpContracts  statusChecker={statusChecker}  pushIpfsFile={pushIpfsFile} onSelectInputFile={onSelectInputFile} />} />;
+  }
+
+  if (selectedTab === 'protocols') {
+    content = <Route path="/warp/protocols" render={() => <WarpProtocols  statusChecker={statusChecker}  pushIpfsFile={pushIpfsFile} onSelectInputFile={onSelectInputFile} />} />;
+  }
+
+  if (selectedTab === 'endpoints') {
+    content = <Route path="/warp/endpoints" render={() => <WarpEndpoints  statusChecker={statusChecker}  pushIpfsFile={pushIpfsFile} onSelectInputFile={onSelectInputFile} />} />;
   }
 
   return (

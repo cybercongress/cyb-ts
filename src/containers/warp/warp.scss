@@ -63,6 +63,7 @@ td {
           width: 100%;
           box-shadow: #d50f0f 0px 0px 5px !important;
         }
+
         span {
           margin-top:30px;
           line-height: 20px;
@@ -71,6 +72,15 @@ td {
 
         label {
           display: block
+        }
+
+        select {
+
+          width: 100%;
+          @include input-style;
+          background: #000;
+          box-shadow: #d50f0f 0px 0px 5px !important;
+          margin-left:0px;
         }
 
       }
@@ -90,10 +100,11 @@ td {
         @include input-style;
       }
 
-
       select {
+
         width: 100%;
         @include input-style;
+        background: #000;
         margin-left:0px;
       }
 

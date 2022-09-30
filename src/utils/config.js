@@ -26,7 +26,8 @@ let WARP_CONTRACTS = {
   TOKENS: '',
   NETWORKS: '',
   CHANNELS: '',
-  CONTRACTS: ''
+  CONTRACTS: '',
+  PROTOCOLS: '',
 };
 // WARP_CONTRACTS.CONTRACTS
 const ADD_ARAGON_FINANCE = '0xa0a55e68dc52b47f8a9d5d05329fab5bdabffb14';
@@ -83,10 +84,12 @@ let CHAIN_PARAMS={
 
 if (process.env.CHAIN_ID === 'space-pussy-1') {
   WARP_CONTRACTS = {
-    TOKENS: 'bostrom1v9rnrjarkte5f0xqcqyzxu0lrn6v4s75pleu5uhnj3gpd9yxuksqnhwth4',
-    NETWORKS: 'bostrom1s2vytwrtwa89rq7mmvp48xqet8n8hhqe4zs82r3smdsh32njz0hqs806xc',
-    CHANNELS: 'bostrom1k7rg9vscg2uldw6868mecryxhlze5e3f4z0f00295ddu7cz3l4wsykf348',
-    CONTRACTS: 'bostrom18ds9kmt6lyxzrtrud8val53c86d66ku8yek4damvzj64deguldwsh04zmn'
+    TOKENS: 'bostrom1z08f52ec2uv0l6mdq992xvrjz0cvzd5paxgudya47w86rq23k6nsmj7pkc',
+    NETWORKS: 'bostrom1t43xfejres9uun8yuy5p5jrppdvhtnx8cartkv099rpq5xs2n7xqlx0c8j',
+    CHANNELS: 'bostrom1ca2qzw2hun4hzyra3an2wjfghgr7vp4hduluk88dnq9nwxj0ktrs9e8ry4',
+    CONTRACTS: 'bostrom1qaq4qe2edzhugntlnx69anaz0h6lmtd4dd0s4at7tgakytyqt5rqdrvd8x',
+    PROTOCOLS: 'bostrom12k7wefhf3snvfc5wezpytscxuxhyaxjw9ta4ryj4q0mtvh79062s055z69',
+    ENDPOINTS: 'bostrom1gfk0pudg2qcj9xuuwef785zlrxkdk4ggnvr5enr82ljwtgfv0frq43ff3e',
   };
 
   CHAIN_PARAMS={
