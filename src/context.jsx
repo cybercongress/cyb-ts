@@ -83,6 +83,8 @@ const AppContextProvider = ({ children }) => {
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
 
+  console.log('CYBER', CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+
   const updatejsCyber = (rpc) => {
     const createQueryCliet = async () => {
       const tendermintClient = await Tendermint34Client.connect(rpc);

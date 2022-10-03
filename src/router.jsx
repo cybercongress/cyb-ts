@@ -51,7 +51,6 @@ import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
 
-
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -92,9 +91,42 @@ function AppRouter({
     // tryConnectToPeer(dataIpfsStart.node);
   }, [dataIpfsStart]);
 
+  useEffect(() => {
+    let timeinterval;
+    const genesisDate = TIME_START;
+    const countDown = new Date(genesisDate).getTime();
+    const changeTime = () => {
+      const now = Date.parse(new Date().toUTCString());
+      const distance = countDown - now;
+
+      if (distance <= 0) {
+        clearInterval(timeinterval);
+        setTime(false);
+      } else {
+        setTime(true);
+      }
+    };
+    changeTime();
+    timeinterval = setInterval(changeTime, 1000);
+    return () => {
+      clearInterval(timeinterval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (time) {
+      history.push('/genesis');
+    }
+    setLoader(false);
+  }, [time]);
+
+  if (loader) {
+    return <div>...</div>;
+  }
+
   return (
     <Router history={history}>
-      <Route path="/" component={App} />
+      <Route path="/" component={() => <App time={time} />} />
       <Switch>
         <Route path="/" exact component={Wallet} />
         <Route path="/bootloader" component={Home} />

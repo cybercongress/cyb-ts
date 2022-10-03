@@ -91,7 +91,7 @@ const imgKeplr = require('../../image/keplr-icon.svg');
 const imgMetaMask = require('../../image/mm-logo.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../image/large-green.png');
+const imgCyber = require('../../image/large-purple-circle.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
 
 const T = new LocalizedStrings(i18n);

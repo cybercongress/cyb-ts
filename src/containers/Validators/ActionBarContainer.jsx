@@ -234,7 +234,7 @@ function ActionBarContainer({
         const response = await keplr.delegateTokens(
           addressKeplr,
           validatorAddres,
-          coin(parseFloat(amount), 'boot'),
+          coin(parseFloat(amount), CYBER.DENOM_CYBER),
           fee,
           CYBER.MEMO_KEPLR
         );
@@ -260,7 +260,7 @@ function ActionBarContainer({
         const response = await keplr.undelegateTokens(
           addressKeplr,
           validatorAddres,
-          coin(parseFloat(amount), 'boot'),
+          coin(parseFloat(amount), CYBER.DENOM_CYBER),
           fee,
           CYBER.MEMO_KEPLR
         );
@@ -286,7 +286,7 @@ function ActionBarContainer({
           addressKeplr,
           validatorAddres,
           valueSelect,
-          coin(parseFloat(amount), 'boot'),
+          coin(parseFloat(amount), CYBER.DENOM_CYBER),
           fee,
           CYBER.MEMO_KEPLR
         );
@@ -412,7 +412,7 @@ function ActionBarContainer({
   if (
     Object.keys(validators).length === 0 &&
     stage === STAGE_INIT &&
-    balance.delegation  &&
+    balance.delegation &&
     balance.delegation === 0
   ) {
     return (
@@ -430,25 +430,26 @@ function ActionBarContainer({
       <ActionBar>
         <ActionBarContentText>
           <Pane fontSize="18px" display="flex" alignItems="center">
-            {balanceToken.hydrogen && balanceToken.hydrogen.liquid !== 0 && (
-              <Pane>
-                <button
-                  type="button"
-                  className="btn-disabled"
-                  onClick={() => history.push('/mint')}
-                  style={{
-                    height: 42,
-                    maxWidth: '200px',
-                    padding: '0 20px',
-                    marginRight: '15px',
-                  }}
-                >
-                  Investmint
-                </button>
-                yor free H to get A and V
-              </Pane>
-            )}
-            {balanceToken.hydrogen.liquid === 0 &&
+            {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
+              balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
+                <Pane>
+                  <button
+                    type="button"
+                    className="btn-disabled"
+                    onClick={() => history.push('/mint')}
+                    style={{
+                      height: 42,
+                      maxWidth: '200px',
+                      padding: '0 20px',
+                      marginRight: '15px',
+                    }}
+                  >
+                    Investmint
+                  </button>
+                  yor free H to get A and V
+                </Pane>
+              )}
+            {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
               balance.available !== 0 &&
               'Choose hero to get H'}
             {validRewards && (

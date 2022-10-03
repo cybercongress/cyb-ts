@@ -58,7 +58,9 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
               <Dots />
             ) : (
               formatNumber(
-                balanceToken.hydrogen ? balanceToken.hydrogen.liquid : 0
+                balanceToken[CYBER.DENOM_LIQUID_TOKEN]
+                  ? balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid
+                  : 0
               )
             )
           }

@@ -479,7 +479,7 @@ const CyberAddressInfo = ({
   const [openEul, setOpenEul] = useState(false);
   const [openmilliampere, setOpenmilliampere] = useState(false);
   const [openmillivolt, setOpenmillivolt] = useState(false);
-  const [openhydrogen, setOpenhydrogen] = useState(false);
+  const [openliquidpussy, setOpenliquidpussy] = useState(false);
   const [opentocyb, setOpentocyb] = useState(false);
   // const { totalGol } = useGetGol(address.bech32);
   // console.log(`balanceToken`, balanceToken)
@@ -493,12 +493,12 @@ const CyberAddressInfo = ({
         openEul={openEul}
         openmilliampere={openmilliampere}
         openmillivolt={openmillivolt}
-        openhydrogen={openhydrogen}
+        openliquidpussy={openliquidpussy}
         opentocyb={opentocyb}
         onClick={() => setOpenEul(!openEul)}
         network={network}
         balanceToken={balanceToken}
-        onClickOpenhydrogen={() => setOpenhydrogen(!openhydrogen)}
+        onClickOpenliquidpussy={() => setOpenliquidpussy(!openliquidpussy)}
         onClickOpentocyb={() => setOpentocyb(!opentocyb)}
         onClickOpenmilliampere={() => setOpenmilliampere(!openmilliampere)}
         onClickOpenmillivolt={() => setOpenmillivolt(!openmillivolt)}

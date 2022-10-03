@@ -82,7 +82,7 @@ function ActionBar({
       if (addressActive === address) {
         const response = await keplr.investmint(
           address,
-          coin(parseFloat(value), 'hydrogen'),
+          coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
           selected,
           parseFloat(BASE_VESTING_TIME * valueDays),
           fee

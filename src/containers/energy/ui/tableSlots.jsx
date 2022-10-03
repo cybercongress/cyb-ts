@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { convertResources, formatNumber } from '../../../utils/utils';
 import { NoItems, Dots, TextTable, ValueImg } from '../../../components';
+import { CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
 
@@ -56,10 +57,10 @@ const TableSlots = ({ data, mobile }) => {
           {item.time && <TextTable>{item.time}</TextTable>}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          {item.amount.hydrogen && (
+          {item.amount[CYBER.DENOM_LIQUID_TOKEN] && (
             <TextTable>
-              {formatNumber(item.amount.hydrogen)}
-              <ValueImg text="hydrogen" onlyImg />
+              {formatNumber(item.amount[CYBER.DENOM_LIQUID_TOKEN])}
+              <ValueImg text={CYBER.DENOM_LIQUID_TOKEN} onlyImg />
             </TextTable>
           )}
         </Table.TextCell>

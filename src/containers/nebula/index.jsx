@@ -17,6 +17,7 @@ import { reduceAmounToken } from '../teleport/utils';
 import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
+import { CYBER } from '../../utils/config';
 
 const getTypeDenom = (denom) => {
   if (denom.includes('ibc')) {
@@ -84,16 +85,16 @@ function Nebula({ node, mobile, defaultAccount }) {
 
   const dataRenderItems = useMemo(() => {
     let dataObj = {};
-    if (
-      Object.keys(dataTotal).length > 0 &&
-      Object.keys(marketData).length > 0
-    ) {
+    if (Object.keys(dataTotal).length > 0) {
       Object.keys(dataTotal).forEach((key) => {
         const amount = dataTotal[key];
         let price = 0;
         let cap = 0;
         const reduceAmount = reduceAmounToken(parseFloat(amount), key);
-        if (Object.prototype.hasOwnProperty.call(marketData, key)) {
+        if (
+          Object.keys(marketData).length > 0 &&
+          Object.prototype.hasOwnProperty.call(marketData, key)
+        ) {
           const poolPrice = new BigNumber(marketData[key]);
           cap = poolPrice
             .multipliedBy(Number(reduceAmount))
@@ -135,14 +136,14 @@ function Nebula({ node, mobile, defaultAccount }) {
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
-              text="hydrogen"
+              text={CYBER.DENOM_LIQUID_TOKEN}
               value={dataRenderItems[key].price}
             />
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
               value={dataRenderItems[key].cap}
-              text="hydrogen"
+              text={CYBER.DENOM_LIQUID_TOKEN}
             />
           </ColItem>
         </RowItem>
@@ -175,7 +176,10 @@ function Nebula({ node, mobile, defaultAccount }) {
               {formatNumber(capData.change)}
             </div>
           )}
-          <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
+          <FormatNumberTokens
+            text={CYBER.DENOM_LIQUID_TOKEN}
+            value={capData.currentCap}
+          />
         </div>
       )}
     </div>
