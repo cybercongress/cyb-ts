@@ -3,21 +3,21 @@
 
 Immortal Robot for the Great Web
 
-Cyb mission is to link and persist knowledge that allows everyone prosper.
+Cyb's mission is to link and persist knowledge that allows everyone prosper.
 
-Technically Cyb is a browser based on the idea of state transition function defined by cyberlink: signed transition from one state to another.
+Technically Cyb is a browser based on the idea of state transition function defined by cyberlinks: signed transition from one state to another.
 
 ## Principles
 
 - Ownership: No keys - No pussy
-- Allegality: Because I can not care
-- Nonviolence: Follow golden principle
+- Allegality: Because it cannot care
+- Nonviolence: Follow the golden principle
 - Consent: I respect you
 - Privacy: Because we can
-- Efficiency: If something can be done faster by the cost of energy efficiency it has not to be done
+- Efficiency: If something can be done faster at the cost of energy efficiency it must not be done
 - Speed: Faster is always better than slow
-- Offline: Travel in spacetime can not be imagined without offline first experience
-- Modularity: I am limited set of concise interfaces
+- Offline: Travel in spacetime cannot be imagined without offline first experience
+- Modularity: I am a limited set of concise interfaces
 - Minimalizm: If you dont know why to add, do not add
 - Wisdom: You educate me, I educate you
 - Fun: Everyone loves games and tits
@@ -30,8 +30,8 @@ Technically Cyb is a browser based on the idea of state transition function defi
 ## Object Model
 
 - avatars can create neurons
-- neurons sign messeges
-- content identifiers of messeges are particles
+- neurons sign messages
+- content identifiers of messages are particles
 - raw data behind particles are files
 - files are exchanged by neurons
 - neurons connect particles with cyberlinks
@@ -40,15 +40,15 @@ Technically Cyb is a browser based on the idea of state transition function defi
 
 ## Sequentual Computations
 
-wasm runtime based on [Lunatic](https://github.com/lunatic-solutions/lunatic) and [CosmWasm](https://github.com/CosmWasm/cosmwasm)
+wasm runtime is based on [Lunatic](https://github.com/lunatic-solutions/lunatic) and [CosmWasm](https://github.com/CosmWasm/cosmwasm)
 
 ## Parallel Computations
 
-soft3 runtime based on [go-cyber](https://github.com/cybercongress/go-cyber) and [WebGPU](https://github.com/gfx-rs/wgpu)
+soft3 runtime is based on [go-cyber](https://github.com/cybercongress/go-cyber) and [WebGPU](https://github.com/gfx-rs/wgpu)
 
 ### Resources
 
-In the core is the robust resource permissions signed by agent for every particle.
+At the core are the robust resource permissions signed by an agent for every particle.
 Personal robots can be generated from the avatar's key for signing permissions for particles (local contracts).
 
 - CPU time
@@ -61,7 +61,7 @@ Personal robots can be generated from the avatar's key for signing permissions f
 
 Several implementations in Rust, Go, Python and JS
 
-## Data and Messeging
+## Data and Messaging
 
 ipfs & waku
 
@@ -79,17 +79,17 @@ Using soft3
 
 ## Components
 
-Components can be overlaid over the space and can be toggles with hotkeys. Any app developer can reuse this components for apps.
+Components can be overlaid over the space and can be toggled with hotkeys. Any app developer can reuse this components for apps.
 
-- space. A place for exploration. Anything can be put here
+- space. A place for exploration. Anything goes here.
 - avatar. Image of a character identified by pubkeys.
-- commander. A bar for search and command. Have past and future buttons. Favorite button.
-- robot. Subordinate character of avatar which have its own pubkey derived from the avatar's pubkey. Avatar can cyberlink a program with robots. 
-- assistant. Tool to optimizse call to actions. Actions either preprogrammed or suggest automagically.
+- commander. A bar for search and command. Has past and future buttons. Favorite button.
+- robot. Subordinate character of avatar which has its own pubkey derived from the avatar's pubkey. Avatar can cyberlink a program with robots. 
+- assistant. Tool to optimize call to actions. Actions either preprogrammed or suggested automagically.
 - navigator. Tool to navigate across apps and within the apps. Collapsible tree with favicons can either auto suggest the structure or build it using some convention.
-- timeline. A panel which display users actions both in past and looking into the future.
-- particle: Auto show best answer + unraveled by xxx some days ago + answers / chat / backlinks
-- signer. Conformation screen for signing messages. Background is secretly and deterministically generated based on the avatar for security.
+- timeline. A panel which display users actions both in the past and looking into the future.
+- particle: Auto show best answer + unraveled by xxx some days ago + answers / chat / backlinks.
+- signer. Confirmation screen for signing messages. Background is secretly and deterministically generated based on the avatar for security.
 - transformer. The tool for migration of content from web2.
 
 ## Distribution and Interfaces
