@@ -50,7 +50,7 @@ const ValueImg = ({
 
     case 'liquidpussy':
       img = hydrogen;
-      textCurency = 'L';
+      textCurency = 'LP';
       break;
 
     case 'boot':

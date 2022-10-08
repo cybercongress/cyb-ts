@@ -63,38 +63,54 @@ const COSMOS = {
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
+const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+
+let CHAIN_PARAMS = {
+  CHAIN_ID: 'bostrom',
+  DENOM_CYBER: 'boot',
+  DENOM_LIQUID_TOKEN: 'hydrogen',
+  DENOM_CYBER_G: `GBOOT`,
+  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
+  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
+  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+  BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
+  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
+};
+
+if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
+  CHAIN_PARAMS = {
+    CHAIN_ID: 'space-pussy',
+    DENOM_CYBER: 'pussy',
+    DENOM_LIQUID_TOKEN: 'liquidpussy',
+    DENOM_CYBER_G: `GPUSSY`,
+    CYBER_NODE_URL_API: 'https://rpc.space-pussy.cybernode.ai/',
+    CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy.cybernode.ai/websocket',
+    CYBER_NODE_URL_LCD: 'https://lcd.space-pussy.cybernode.ai',
+    CYBER_INDEX_HTTPS: 'https://index.space-pussy.cybernode.ai/v1/graphql',
+    CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy.cybernode.ai/v1/graphql',
+
+    BECH32_PREFIX_ACC_ADDR_CYBER: 'pussy',
+    BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `pussyvaloper`,
+    MEMO_KEPLR: '[space-pussy] cyb.ai, using keplr',
+  };
+}
+
 const CYBER = {
   CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
   DIVISOR_CYBER_G: 10 ** 9,
-  DENOM_CYBER: 'pussy',
-  DENOM_LIQUID_TOKEN: 'liquidpussy',
-  DENOM_CYBER_G: `GPUSSY`,
   HYDROGEN: 'H',
+
+  ...CHAIN_PARAMS,
 
   // CHAIN_ID: 'dev',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
 
-  // CHAIN_ID: 'bostrom',
-  // CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
-  // CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
-  // CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
-  // CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
-  // CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
-
-  CHAIN_ID: 'space-pussy',
-  CYBER_NODE_URL_API: 'https://rpc.test-pussy.cybernode.ai/',
-  CYBER_WEBSOCKET_URL: 'wss://rpc.test-pussy.cybernode.ai/websocket',
-  CYBER_NODE_URL_LCD: 'https://lcd.test-pussy.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://index.test-pussy.cybernode.ai/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://index.test-pussy.cybernode.ai/v1/graphql',
-
   CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
-
-  BECH32_PREFIX_ACC_ADDR_CYBER: 'pussy',
-  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'pussyvaloper',
-  MEMO_KEPLR: '[pussy] cyb.ai, using keplr',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;

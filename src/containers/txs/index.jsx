@@ -1,5 +1,6 @@
 import React, { useEffect, useStatea } from 'react';
 import gql from 'graphql-tag';
+import { v4 as uuidv4 } from 'uuid';
 import { useSubscription } from '@apollo/react-hooks';
 import {
   Pane,
@@ -22,10 +23,7 @@ const GET_CHARACTERS = gql`
   subscription Query {
     transaction(offset: 0, limit: 200, order_by: { height: desc }) {
       success
-      messagesByTransactionHash {
-        type
-        transaction_hash
-      }
+      messages
       height
       hash
     }
@@ -79,24 +77,17 @@ const Txs = () => {
       </Table.TextCell>
       <Table.TextCell textAlign="start">
         <TextTable display="flex" alignItems="start" flexDirection="column">
-          {item.messagesByTransactionHash.length > 4 ? (
+          {item.messages.length > 4 ? (
             <Pane display="flex" alignItems="center">
-              <MsgType
-                key={item.messagesByTransactionHash[0].transaction_hash}
-                type={item.messagesByTransactionHash[0].type}
-              />
+              <MsgType key={uuidv4()} type={item.messages[0]['@type']} />
               <div style={{ marginLeft: '5px' }}>
-                ({item.messagesByTransactionHash.length} messages)
+                ({item.messages.length} messages)
               </div>
             </Pane>
           ) : (
-            item.messagesByTransactionHash.map((items, i) => {
-              return (
-                <MsgType
-                  key={`${item.transaction_hash}_${i}`}
-                  type={items.type}
-                />
-              );
+            item.messages.map((items, i) => {
+              const key = uuidv4();
+              return <MsgType key={key} type={items['@type']} />;
             })
           )}
         </TextTable>

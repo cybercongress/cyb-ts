@@ -79,7 +79,7 @@ const coinDecimalsConfig = {
   },
   liquidpussy: {
     coinDecimals: 0,
-    denom: 'L',
+    denom: 'LP',
     coinMinimalDenom: 'liquidpussy',
   },
   millivolt: {

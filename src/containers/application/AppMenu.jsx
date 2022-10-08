@@ -26,15 +26,15 @@ const itemsMenu = (address) => {
       to: '/contracts',
       subItems: [],
     },
-    {
-      name: 'Portal',
-      to: '/portal',
-      subItems: [
-        { name: 'Citizenship', to: '/citizenship' },
-        { name: 'Gift', to: '/gift' },
-        // { name: 'Release', to: '/release' },
-      ],
-    },
+    // {
+    //   name: 'Portal',
+    //   to: '/portal',
+    //   subItems: [
+    //     { name: 'Citizenship', to: '/citizenship' },
+    //     { name: 'Gift', to: '/gift' },
+    //     // { name: 'Release', to: '/release' },
+    //   ],
+    // },
     {
       name: 'Teleport',
       to: '/teleport',

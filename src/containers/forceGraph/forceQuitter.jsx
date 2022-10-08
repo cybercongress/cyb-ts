@@ -87,7 +87,7 @@ const ForceQuitter = ({ nodeIpfs }) => {
   const handleNodeRightClick = useCallback(
     (node) => {
       window.open(
-        `https://cyb.ai/network/bostrom/contract/${node.id}`,
+        `${window.location.origin}/network/bostrom/contract/${node.id}`,
         '_blank'
       );
     },
@@ -96,7 +96,10 @@ const ForceQuitter = ({ nodeIpfs }) => {
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(`https://cyb.ai/network/bostrom/tx/${link.name}`, '_blank');
+      window.open(
+        `${window.location.origin}/network/bostrom/tx/${link.name}`,
+        '_blank'
+      );
     },
     [fgRef]
   );

@@ -37,7 +37,12 @@ const ForceGraph = () => {
 
   // console.log(`location`, location);
   // console.log(`params`, params);
-  // console.log(`history`, history);
+  // console.log(
+  //   `history`,
+  //   window.location.href.toString().split(window.location.host)
+  // );
+  // console.log('window.location.host', window.location.host)
+  // console.log('window.location', window.location.origin);
   // console.log(`window.location.href`, window.location.href);
 
   useEffect(() => {
@@ -118,14 +123,17 @@ const ForceGraph = () => {
 
   const handleNodeRightClick = useCallback(
     (node) => {
-      window.open(`https://cyb.ai/ipfs/${node.id}`, '_blank');
+      window.open(`${window.location.origin}/ipfs/${node.id}`, '_blank');
     },
     [fgRef]
   );
 
   const handleLinkRightClick = useCallback(
     (link) => {
-      window.open(`https://cyb.ai/network/bostrom/tx/${link.name}`, '_blank');
+      window.open(
+        `${window.location.origin}/network/bostrom/tx/${link.name}`,
+        '_blank'
+      );
     },
     [fgRef]
   );
