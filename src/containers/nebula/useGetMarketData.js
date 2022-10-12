@@ -23,7 +23,9 @@ const calculatePrice = (coinsPair, balances) => {
     getCoinDecimals(Number(balances[tokenB]), tokenB)
   );
 
-  price = amountA.dividedBy(amountB).toNumber();
+  if (amountA.comparedTo(0) && amountB.comparedTo(0)) {
+    price = amountA.dividedBy(amountB).toNumber();
+  }
 
   return price;
 };
