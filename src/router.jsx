@@ -61,6 +61,8 @@ import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
 
+import Sigma from './containers/sigma';
+
 import useIpfsFactory from './useIpfsFactory';
 
 import { TIME_START, CYBER } from './utils/config';
@@ -152,9 +154,10 @@ function AppRouter({
         <Route path="/codes/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
-
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
+        {/* Sigma */}
+        <Route path="/sigma" component={Sigma} />
       </Switch>
     </Router>
   );
