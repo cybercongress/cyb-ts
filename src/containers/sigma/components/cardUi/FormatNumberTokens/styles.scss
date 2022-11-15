@@ -1,0 +1,13 @@
+.containerFormatNumberTokens {
+  display: grid;
+  grid-template-columns: 1fr 55px;
+  gap: 5px;
+  font-size: 15px;
+
+  &Value {
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}

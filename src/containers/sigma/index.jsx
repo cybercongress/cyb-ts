@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useGetLocalStoge, useGetPassportByAddress } from './hooks';
+import {
+  useGetLocalStoge,
+  useGetPassportByAddress,
+  useGetBalanceBostrom,
+} from './hooks';
 import {
   ActionBarSteps,
   BtnGrd,
@@ -8,13 +12,7 @@ import {
 } from '../portal/components';
 import ActionBar from './ActionBar';
 
-const SigmaCardPassport = ({ passport, accounts }) => {
-  // SigmaCardPassport ({dataPassport})
-
-  // get info address
-
-  return <div>SigmaCardPassport</div>;
-};
+import { CardPassport } from './components';
 
 function Sigma() {
   const [updateState, setUpdateState] = useState(0);
@@ -37,7 +35,7 @@ function Sigma() {
   return (
     <>
       <MainContainer>
-        <div>Sigma</div>
+        <CardPassport accounts={accounts} />
       </MainContainer>
       <ActionBar updateFunc={updateStateFunc} />
     </>

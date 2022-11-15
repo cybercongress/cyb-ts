@@ -12,7 +12,7 @@ function useGetPassportByAddress(accounts) {
         if (jsCyber !== null && accounts !== null) {
           const { bech32 } = accounts;
           const response = await activePassport(jsCyber, bech32);
-          console.log('response', response);
+          // console.log('response', response);
           if (response !== null) {
             setPassport(response);
           }
