@@ -92,6 +92,8 @@ const imgMetaMask = require('../../image/mm-logo.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
 const imgCyber = require('../../image/large-purple-circle.png');
+const imgBostrom = require('../../image/large-green.png');
+const imgSpace = require('../../image/large-purple-circle.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
 
 const T = new LocalizedStrings(i18n);
@@ -1472,8 +1474,8 @@ export const ConnectAddress = ({
                 <ButtonIcon
                   onClick={() => selectNetworkFunc('cyber')}
                   active={selectNetwork === 'cyber'}
-                  img={imgCyber}
-                  text="bostrom"
+                  img={CYBER.CHAIN_ID === 'bostrom' ? imgBostrom : imgSpace}
+                  text={CYBER.CHAIN_ID}
                 />
               )}
               {cosmosNetwork && (

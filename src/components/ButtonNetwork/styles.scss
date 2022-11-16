@@ -1,0 +1,26 @@
+.buttonNetwork {
+  background: transparent;
+  color: #fff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0 5px;
+  font-size: 16px;
+
+  &:disabled {
+    color: #C4C4C4;
+    cursor: none;
+  }
+
+  &Bostrom {
+    color: #36D6AE;
+  }
+
+  &SpacePussy {
+    color: #F62BFD;
+  }
+
+  &Span {
+    color: #fff;
+  }
+}

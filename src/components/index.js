@@ -48,6 +48,7 @@ import NumberCurrency from './numberCurrency';
 import SearchSnippet from './searchSnippet';
 import Denom from './denom';
 import DenomArr from './denom/denomArr';
+import ButtonNetwork from './ButtonNetwork';
 
 export {
   GovernanceChangeParam,
@@ -98,6 +99,7 @@ export {
   SearchSnippet,
   Denom,
   DenomArr,
+  ButtonNetwork,
 };
 
 export { Nums } from './ui/Numbers';

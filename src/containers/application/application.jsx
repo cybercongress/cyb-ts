@@ -30,7 +30,8 @@ import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
-const cyber = require('../../image/large-purple-circle.png');
+const cyberSpace = require('../../image/large-purple-circle.png');
+const cyberBostrom = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const info = require('../../image/info-circle-outline.svg');
@@ -360,7 +361,7 @@ function App({
             </AppSideBar>
             <MenuButton
               onClick={() => setOpenMenu(!openMenu)}
-              imgLogo={cyber}
+              imgLogo={CYBER.CHAIN_ID === 'bostrom' ? cyberBostrom : cyberSpace}
             />
             <Pane bottom="-10px" right="-20%" position="absolute">
               <LeftTooltip />
