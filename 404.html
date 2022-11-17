@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en_US">
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+    <title>cyb</title>
+    <style>
+      .loader-grid-container {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          flex-direction: column;
+      }
+      .loader {
+        width: 250px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: helvetica, arial, sans-serif;
+        text-transform: uppercase;
+        font-weight: 900;
+        color: #3ab793;
+        letter-spacing: 0.2em;
+      }
+      .loader::before, .loader::after {
+        content: "";
+        display: block;
+        width: 15px;
+        height: 15px;
+        background: #3ab793;
+        position: absolute;
+        animation: load 0.7s infinite alternate ease-in-out forwards;
+      }
+      .loader::before {
+        top: 0;
+      }
+      .loader::after {
+        bottom: 0;
+      }
+      @keyframes load {
+        0% {
+          left: 0;
+          height: 30px;
+          width: 15px;
+        }
+        50% {
+          height: 8px;
+          width: 40px;
+        }
+        100% {
+          left: 235px;
+          height: 30px;
+          width: 15px;
+        }
+      }
+    </style>
+  <link rel="shortcut icon" href="/favicon.ico"><link href="/main.css" rel="stylesheet"></head>
+  <body>
+    <div id="root">
+      <div class="loader-grid-container">
+       <div class="loader">Loading...</div>
+      </div>
+    </div>
+  <script type="text/javascript" src="/index.js"></script></body>
+</html>
