@@ -6,7 +6,7 @@ import React, {
   useContext,
 } from 'react';
 import { connect } from 'react-redux';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import { ActionBarSteps, BtnGrd, ActionBarContainer } from './components';
 import { Dots } from '../../components';
@@ -69,7 +69,7 @@ function ActionBarAddAvatar({
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
-            calculateFee(500000, gasPrice),
+            txs.calculateFee(500000, gasPrice),
             'cyber'
           );
           if (executeResponseResult.code === 0) {

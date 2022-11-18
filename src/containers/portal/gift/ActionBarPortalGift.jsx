@@ -15,7 +15,7 @@ import {
 } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 import Web3 from 'web3';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../../utils/txs';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
 import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
@@ -289,7 +289,7 @@ function ActionBarPortalGift({
           address,
           CONTRACT_ADDRESS_PASSPORT,
           msgObject,
-          calculateFee(400000, gasPrice),
+          txs.calculateFee(400000, gasPrice),
           'cyber'
         );
         console.log('executeResponseResult', executeResponseResult);
@@ -358,7 +358,7 @@ function ActionBarPortalGift({
                 bech32Address,
                 CONTRACT_ADDRESS_GIFT,
                 elementMsg,
-                calculateFee(gasLimits, gasPrice),
+                txs.calculateFee(gasLimits, gasPrice),
                 'cyber'
               );
             } else {
@@ -366,7 +366,7 @@ function ActionBarPortalGift({
                 bech32Address,
                 CONTRACT_ADDRESS_GIFT,
                 msgs,
-                calculateFee(gasLimits, gasPrice),
+                txs.calculateFee(gasLimits, gasPrice),
                 'cyber'
               );
             }
@@ -436,7 +436,7 @@ function ActionBarPortalGift({
             address,
             CONTRACT_ADDRESS_PASSPORT,
             msgObject,
-            calculateFee(400000, gasPrice),
+            txs.calculateFee(400000, gasPrice),
             'cyber'
           );
           console.log('executeResponseResult', executeResponseResult);

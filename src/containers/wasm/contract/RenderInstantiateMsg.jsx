@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
@@ -77,7 +77,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
         parseFloat(codeId),
         formData,
         label,
-        calculateFee(600000, gasPrice),
+        txs.calculateFee(600000, gasPrice),
         {
           memo,
         }
