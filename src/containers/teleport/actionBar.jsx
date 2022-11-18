@@ -166,7 +166,7 @@ function ActionBar({ stateActionBar }) {
   useEffect(() => {
     console.log('first', logs.parseRawLog(testVar));
     const logsValue = parseLog(logs.parseRawLog(testVar));
-    console.log('logsValue', logsValue)
+    console.log('logsValue', logsValue);
   }, []);
 
   const parseLog = (log) => {

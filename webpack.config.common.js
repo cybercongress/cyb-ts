@@ -4,6 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+
 const Dotenv = require("dotenv-webpack");
 
 // const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
@@ -37,6 +38,7 @@ module.exports = {
       "http": require.resolve("stream-http") ,
       "assert": require.resolve("assert/"),
       "stream": require.resolve("stream-browserify"),
+       "buffer": require.resolve("buffer/"),
       // "path": require.resolve("path-browserify"),
       // "zlib": require.resolve("browserify-zlib"),
       "constants": require.resolve("constants-browserify")
@@ -86,6 +88,10 @@ module.exports = {
             target: 'es2015', // Syntax to compile to (see options below for possible values)
           },
         },
+      },
+      {
+        test: /\.worker\.js$/,
+        use: { loader: 'worker-loader' },
       },
       {
         include: /node_modules/,

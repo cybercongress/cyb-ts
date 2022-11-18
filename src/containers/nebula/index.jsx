@@ -1,186 +1,203 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useContext } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import React, { useEffect, useState, useMemo } from 'react';
+import BigNumber from 'bignumber.js';
+import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
-import { Route, Link, useLocation } from 'react-router-dom';
-import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
-import { Loading } from '../../components';
-import { AppContext } from '../../context';
-import SearchTokenInfo from '../market/searchTokensInfo';
-import ActionBarCont from '../market/actionBarContainer';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { coinDecimals } from '../../utils/utils';
+import { Link } from 'react-router-dom';
+import {
+  MainContainer,
+  ContainerGradientText,
+  InfoCard,
+  ContainerGradient,
+} from '../portal/components';
+import { DenomArr } from '../../components';
+import { formatNumber } from '../../utils/utils';
+import { reduceAmounToken } from '../teleport/utils';
+// import { getMarketData } from './getMarketData';
+import useGetMarketData from './useGetMarketData';
+import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
+import coinDecimalsConfig from '../../utils/configToken';
 
-const ContainerGrid = ({ children }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-    gridGap="20px"
-  >
-    {children}
-  </Pane>
-);
-
-const search = async (client, hash, page) => {
-  try {
-    const responseSearchResults = await client.search(hash, page);
-    console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults : [];
-  } catch (error) {
-    return [];
+const getTypeDenom = (denom) => {
+  if (denom.includes('ibc')) {
+    return 'blue';
   }
+
+  if (denom.includes('pool')) {
+    return 'pink';
+  }
+
+  return 'green';
 };
 
-const reduceSearchResults = (data, query) => {
-  return data.reduce(
-    (obj, item) => ({
-      ...obj,
-      [item.particle]: {
-        particle: item.particle,
-        rank: coinDecimals(item.rank),
-        grade: getRankGrade(coinDecimals(item.rank)),
-        status: 'impossibleLoad',
-        query,
-        text: item.particle,
-        content: false,
-      },
-    }),
-    {}
-  );
-};
-
-const chekPathname = (pathname) => {
-  if (pathname === '/nebula') {
-    return 'app';
+const getTypeDenomKey = (denom) => {
+  if (denom.includes('ibc') || denom.includes('pool')) {
+    return denom;
   }
 
-  if (pathname === '/nebula/Create app') {
-    return 'create app';
+  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, denom)) {
+    return coinDecimalsConfig[denom].denom;
   }
 
-  return 'app';
+  return denom;
 };
 
 function Nebula({ node, mobile, defaultAccount }) {
-  const location = useLocation();
-  const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { jsCyber } = useContext(AppContext);
-  const [querySearch, setQuerySearch] = useState('app');
-  const [resultSearch, setResultSearch] = useState([]);
-  const [loadingSearch, setLoadingSearch] = useState(true);
-  const [keywordHash, setKeywordHash] = useState('');
-  const [update, setUpdate] = useState(0);
-  const [rankLink, setRankLink] = useState(null);
-  const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(0);
+  const { dataTotal, marketData } = useGetMarketData();
+  const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
   useEffect(() => {
-    const { pathname } = location;
-    const requere = chekPathname(pathname);
-    setQuerySearch(requere);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const feachData = async () => {
-      if (jsCyber !== null) {
-        setPage(0);
-        setAllPage(0);
-        setResultSearch([]);
-        setLoadingSearch(true);
-        const hash = await getIpfsHash(querySearch);
-        setKeywordHash(hash);
-        const responseApps = await search(jsCyber, hash);
-        if (responseApps.result && responseApps.result.length > 0) {
-          const dataApps = reduceSearchResults(
-            responseApps.result,
-            querySearch
-          );
-          setResultSearch(dataApps);
-          setLoadingSearch(false);
-          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
-          setPage((item) => item + 1);
-        } else {
-          setResultSearch([]);
-          setLoadingSearch(false);
+    if (
+      Object.keys(marketData).length > 0 &&
+      Object.keys(dataTotal).length > 0
+    ) {
+      let cap = 0;
+      Object.keys(dataTotal).forEach((key) => {
+        const amount = dataTotal[key];
+        const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+        if (Object.prototype.hasOwnProperty.call(marketData, key)) {
+          const poolPrice = new BigNumber(marketData[key]);
+          const tempCap = poolPrice
+            .multipliedBy(Number(reduceAmount))
+            .dp(0, BigNumber.ROUND_FLOOR)
+            .toNumber();
+          cap += tempCap;
         }
-      } else {
-        setResultSearch([]);
-        setLoadingSearch(false);
+      });
+
+      if (cap > 0) {
+        const localStorageDataCap = localStorage.getItem('lastCap');
+        if (localStorageDataCap !== null) {
+          let change = 0;
+          change = cap - localStorageDataCap;
+
+          setCapData({ currentCap: cap, change });
+
+          localStorage.setItem('lastCap', cap);
+        } else {
+          localStorage.setItem('lastCap', cap);
+          setCapData({ currentCap: cap, change: 0 });
+        }
       }
-    };
-    feachData();
-  }, [jsCyber, querySearch, update]);
-
-  const fetchMoreData = async () => {
-    // a fake async api call like which sends
-    // 20 more records in 1.5 secs
-    let links = [];
-    const data = await search(jsCyber, keywordHash, page);
-    if (data.result) {
-      links = reduceSearchResults(data.result, querySearch);
     }
+  }, [dataTotal, marketData]);
 
-    setTimeout(() => {
-      setResultSearch((itemState) => ({ ...itemState, ...links }));
-      setPage((itemPage) => itemPage + 1);
-    }, 500);
-  };
-
-  useEffect(() => {
-    setRankLink(null);
-  }, [update]);
-
-  const onClickRank = async (key) => {
-    if (rankLink === key) {
-      setRankLink(null);
-    } else {
-      setRankLink(key);
+  const dataRenderItems = useMemo(() => {
+    let dataObj = {};
+    if (
+      Object.keys(dataTotal).length > 0 &&
+      Object.keys(marketData).length > 0
+    ) {
+      Object.keys(dataTotal).forEach((key) => {
+        const amount = dataTotal[key];
+        let price = 0;
+        let cap = 0;
+        const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+        if (Object.prototype.hasOwnProperty.call(marketData, key)) {
+          const poolPrice = new BigNumber(marketData[key]);
+          cap = poolPrice
+            .multipliedBy(Number(reduceAmount))
+            .dp(0, BigNumber.ROUND_FLOOR)
+            .toNumber();
+          price = poolPrice.toNumber();
+        }
+        dataObj[key] = {
+          supply: reduceAmount,
+          price,
+          cap,
+        };
+      });
     }
-  };
+    if (Object.keys(dataObj).length > 0) {
+      const sortable = Object.fromEntries(
+        Object.entries(dataObj).sort(([, a], [, b]) => b.cap - a.cap)
+      );
+      dataObj = sortable;
+    }
+    return dataObj;
+  }, [dataTotal, marketData]);
 
-  return (
-    <>
-      <main className="block-body">
-        <ContainerGrid>
-          {loadingSearch ? (
+  const itemRowMarketData = useMemo(() => {
+    return Object.keys(dataRenderItems).map((key) => {
+      const keyItem = uuidv4();
+      return (
+        <RowItem key={keyItem}>
+          <ColItem>
+            <Link to={`/search/${getTypeDenomKey(key)}`}>
+              <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
+            </Link>
+          </ColItem>
+          <ColItem justifyContent="flex-end">
+            <FormatNumberTokens
+              text={key}
+              value={dataRenderItems[key].supply}
+            />
+          </ColItem>
+          <ColItem justifyContent="flex-end">
+            <FormatNumberTokens
+              text="hydrogen"
+              value={dataRenderItems[key].price}
+            />
+          </ColItem>
+          <ColItem justifyContent="flex-end">
+            <FormatNumberTokens
+              value={dataRenderItems[key].cap}
+              text="hydrogen"
+            />
+          </ColItem>
+        </RowItem>
+      );
+    });
+  }, [dataRenderItems]);
+
+  const Title = () => (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        // paddingBottom: '20px',
+      }}
+    >
+      <div style={{ fontSize: '22px', width: '112px', height: '112px' }}>
+        <NebulaImg />
+      </div>
+      {capData.currentCap !== 0 && (
+        <div style={{ display: 'flex', gap: '40px' }}>
+          {capData.change !== 0 && (
             <div
               style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
+                color: capData.change > 0 ? '#7AFAA1' : '#FF0000',
               }}
             >
-              <Loading />
-              <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-                Searching
-              </div>
+              {capData.change > 0 ? '+' : ''}
+              {formatNumber(capData.change)}
             </div>
-          ) : (
-            <SearchTokenInfo
-              data={resultSearch}
-              node={node}
-              mobile={mobile}
-              selectedTokens={querySearch}
-              onClickRank={onClickRank}
-              fetchMoreData={fetchMoreData}
-              page={page}
-              allPage={allPage}
-            />
           )}
-        </ContainerGrid>
-      </main>
-      <ActionBarCont
-        addressActive={addressActive}
-        mobile={mobile}
-        keywordHash={keywordHash}
-        updateFunc={() => setUpdate(update + 1)}
-        rankLink={rankLink}
-      />
-    </>
+          <FormatNumberTokens text="hydrogen" value={capData.currentCap} />
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <MainContainer width="83%">
+      <InfoCard>
+        <div style={{ textAlign: 'center' }}>
+          This is nebula. <br /> You can see the token emission on the left,
+          <br /> price in the middle and total capitalization in hydrogene on
+          the right.
+        </div>
+      </InfoCard>
+      <ContainerGradient
+        userStyleContent={{ minHeight: 'auto', height: 'unset' }}
+        title={<Title />}
+        togglingDisable
+      >
+        <div>{itemRowMarketData}</div>
+      </ContainerGradient>
+    </MainContainer>
   );
 }
 

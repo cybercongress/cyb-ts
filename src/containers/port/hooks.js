@@ -112,37 +112,37 @@ const useGetMarketData = () => {
     loading: true,
   });
 
-  useEffect(() => {
-    if (!loading) {
-      if (data !== null && data.market_data) {
-        const market = data.market_data[0];
-        setMarketData({
-          currentPrice: market.current_price,
-          ethDonated: market.eth_donated,
-          eulsWon: market.euls_won,
-          lastPrice: market.last_price,
-          marketCapEth: market.market_cap_eth,
-          loading: false,
-        });
-      } else {
-        setMarketData((items) => ({
-          ...items,
-          loading: false,
-        }));
-      }
-    }
+  // useEffect(() => {
+  //   if (!loading) {
+  //     if (data !== null && data.market_data) {
+  //       const market = data.market_data[0];
+  //       setMarketData({
+  //         currentPrice: market.current_price,
+  //         ethDonated: market.eth_donated,
+  //         eulsWon: market.euls_won,
+  //         lastPrice: market.last_price,
+  //         marketCapEth: market.market_cap_eth,
+  //         loading: false,
+  //       });
+  //     } else {
+  //       setMarketData((items) => ({
+  //         ...items,
+  //         loading: false,
+  //       }));
+  //     }
+  //   }
 
-    return () => {
-      setMarketData({
-        currentPrice: 0,
-        ethDonated: 0,
-        eulsWon: 0,
-        lastPrice: 0,
-        marketCapEth: 0,
-        loading: true,
-      });
-    };
-  }, [loading, data]);
+  //   return () => {
+  //     setMarketData({
+  //       currentPrice: 0,
+  //       ethDonated: 0,
+  //       eulsWon: 0,
+  //       lastPrice: 0,
+  //       marketCapEth: 0,
+  //       loading: true,
+  //     });
+  //   };
+  // }, [loading, data]);
 
   return marketData;
 };
