@@ -19,6 +19,16 @@ const coinDecimalsConfig = {
     sourceChannelId: 'channel-341',
     destChannelId: 'channel-8',
   },
+  'ibc/43DB7553C43D81CB01E9A2644B49A241314B482C2E56F86E85A6539C60383151': {
+    chainId: 'space-pussy',
+    coinDecimals: 0,
+    denom: 'PUSSY',
+    coinMinimalDenom: 'pussy',
+    rpc: 'https://rpc.space-pussy.cybernode.ai/',
+    prefix: 'pussy',
+    sourceChannelId: 'channel-0',
+    destChannelId: 'channel-11',
+  },
   pool70D7610CBA8E94B27BAD7806EBD826F5626C486BBF5C490D1463D72314353C66: {
     denom: ['boot', 'hydrogen'],
   },

@@ -31,6 +31,17 @@ export const networkList = {
     prefix: 'cosmos',
     explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
   },
+  'space-pussy': {
+    chainId: 'space-pussy',
+    coinDecimals: 0,
+    denom: 'PUSSY',
+    coinMinimalDenom: 'pussy',
+    rpc: 'https://rpc.space-pussy.cybernode.ai/',
+    prefix: 'pussy',
+    sourceChannelId: 'channel-0',
+    destChannelId: 'channel-11',
+    explorerUrlToTx: 'https://space-pussy.cyb.ai/network/bostrom/tx/{txHash}',
+  },
 };
 
 const sha256 = (data) => {

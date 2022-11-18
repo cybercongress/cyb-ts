@@ -14,6 +14,7 @@ const pool = require('../../image/gravitydexPool.png');
 const ibc = require('../../image/ibc-unauth.png');
 const cosmos = require('../../image/cosmos-2.svg');
 const osmosis = require('../../image/osmosis.svg');
+const pussy = require('../../image/large-purple-circle.png');
 
 const ValueImg = ({
   text,
@@ -97,6 +98,17 @@ const ValueImg = ({
     case 'osmosis':
       img = osmosis;
       textCurency = 'osmosis';
+      break;
+
+    case 'pussy':
+    case 'PUSSY':
+      img = pussy;
+      textCurency = 'PUSSY';
+      break;
+
+    case 'space-pussy':
+      img = pussy;
+      textCurency = 'space-pussy';
       break;
 
     default:

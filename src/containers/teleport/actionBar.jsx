@@ -413,7 +413,7 @@ function ActionBar({ stateActionBar }) {
           offerCoin,
           demandCoinDenom,
           offerCoinFee,
-          exponentialToDecimal(swapPrice * 10 ** 18),
+          Math.floor(exponentialToDecimal(swapPrice * 10 ** 18)).toString(),
           fee
         );
 
