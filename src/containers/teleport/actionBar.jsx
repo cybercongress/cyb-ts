@@ -360,6 +360,10 @@ function ActionBar({ stateActionBar }) {
       console.log(`response`, response);
       if (response.code === 0) {
         setTxHash(response.transactionHash);
+      } else if (response.code === 4) {
+        setTxHash(null);
+        setErrorMessage('Swap is not working. Wait for updates.');
+        setStage(STAGE_ERROR);
       } else {
         setTxHash(null);
         setErrorMessage(response.rawLog.toString());
@@ -421,6 +425,10 @@ function ActionBar({ stateActionBar }) {
 
         if (response.code === 0) {
           setTxHash(response.transactionHash);
+        } else if (response.code === 4) {
+          setTxHash(null);
+          setErrorMessage('Swap is not working. Wait for updates.');
+          setStage(STAGE_ERROR);
         } else {
           setTxHash(null);
           setErrorMessage(response.rawLog.toString());
