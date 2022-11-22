@@ -85,16 +85,17 @@ function Nebula({ node, mobile, defaultAccount }) {
 
   const dataRenderItems = useMemo(() => {
     let dataObj = {};
-    if (Object.keys(dataTotal).length > 0) {
+    if (
+      Object.keys(dataTotal).length > 0 &&
+      Object.keys(marketData).length > 0
+    ) {
       Object.keys(dataTotal).forEach((key) => {
         const amount = dataTotal[key];
         let price = 0;
         let cap = 0;
         const reduceAmount = reduceAmounToken(parseFloat(amount), key);
-        if (
-          Object.keys(marketData).length > 0 &&
-          Object.prototype.hasOwnProperty.call(marketData, key)
-        ) {
+
+        if (Object.prototype.hasOwnProperty.call(marketData, key)) {
           const poolPrice = new BigNumber(marketData[key]);
           cap = poolPrice
             .multipliedBy(Number(reduceAmount))

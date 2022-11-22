@@ -17,6 +17,7 @@ const osmosis = require('../../image/osmosis.svg');
 const pussy = require('../../image/large-purple-circle.png');
 const customNetwork = require('../../image/large-orange-circle.png');
 
+
 const ValueImg = ({
   text,
   onlyImg,
@@ -109,6 +110,17 @@ const ValueImg = ({
     case 'osmosis':
       img = osmosis;
       textCurency = 'osmosis';
+      break;
+
+    case 'pussy':
+    case 'PUSSY':
+      img = pussy;
+      textCurency = 'PUSSY';
+      break;
+
+    case 'space-pussy':
+      img = pussy;
+      textCurency = 'space-pussy';
       break;
 
     default:

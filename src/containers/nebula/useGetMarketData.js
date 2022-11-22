@@ -9,26 +9,13 @@ import { CYBER } from '../../utils/config';
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
   [CYBER.DENOM_LIQUID_TOKEN]: 0,
+
+const defaultTokenList = {
+  boot: 0,
+  hydrogen: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,
-};
-
-const getPoolfromApi = async () => {
-  try {
-    const response = await axios({
-      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/liquidity/v1beta1/pools`,
-      method: 'GET',
-      headers: {
-        accept: 'Application/json',
-        'Content-Type': 'Application/json',
-      },
-    });
-    return response.data.pools;
-  } catch (error) {
-    console.log('error', error)
-    return [];
-  }
 };
 
 const calculatePrice = (coinsPair, balances) => {
@@ -42,7 +29,9 @@ const calculatePrice = (coinsPair, balances) => {
     getCoinDecimals(Number(balances[tokenB]), tokenB)
   );
 
-  price = amountA.dividedBy(amountB).toNumber();
+  if (amountA.comparedTo(0) && amountB.comparedTo(0)) {
+    price = amountA.dividedBy(amountB).toNumber();
+  }
 
   return price;
 };
