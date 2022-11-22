@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
@@ -6,6 +6,8 @@ import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
 import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
+import useGetNetworks from './hooks/useGetNetworks';
+import defaultNetworks from './utils/defaultNetworks';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -32,6 +34,8 @@ const valueContext = {
   keplr: null,
   ws: null,
   jsCyber: null,
+  networks: {},
+  updateNetworks: () => {},
   updatejsCyber: () => {},
   initSigner: () => {},
 };
@@ -83,8 +87,6 @@ const AppContextProvider = ({ children }) => {
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
 
-  console.log('CYBER', CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
-
   const updatejsCyber = (rpc) => {
     const createQueryCliet = async () => {
       const tendermintClient = await Tendermint34Client.connect(rpc);
@@ -97,6 +99,22 @@ const AppContextProvider = ({ children }) => {
     };
     createQueryCliet();
   };
+
+  useEffect(() => {
+    let networks = {};
+    const response = localStorage.getItem('CHAIN_PARAMS');
+    if (response !== null) {
+      const networksData = JSON.parse(response);
+      networks = { ...networksData };
+    } else {
+      networks = { ...defaultNetworks };
+      localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
+    }
+    setValue((item) => ({
+      ...item,
+      networks,
+    }));
+  }, []);
 
   useEffect(() => {
     const createQueryCliet = async () => {
@@ -162,6 +180,21 @@ const AppContextProvider = ({ children }) => {
     }
   }, [client]);
 
+  const updateNetworks = useCallback(
+    (valueNetwork) => {
+      if (Object.keys(value.networks).length > 0) {
+        const newList = { ...value.networks };
+        newList[valueNetwork.CHAIN_ID] = { ...valueNetwork };
+        localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
+        setValue((item) => ({
+          ...item,
+          networks: { ...newList },
+        }));
+      }
+    },
+    [value.networks]
+  );
+
   console.log('value', value);
 
   if (value.jsCyber && value.jsCyber === null) {
@@ -169,7 +202,9 @@ const AppContextProvider = ({ children }) => {
   }
 
   return (
-    <AppContext.Provider value={{ ...value, updatejsCyber, initSigner }}>
+    <AppContext.Provider
+      value={{ ...value, updatejsCyber, initSigner, updateNetworks }}
+    >
       {children}
     </AppContext.Provider>
   );

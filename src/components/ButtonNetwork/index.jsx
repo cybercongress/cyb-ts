@@ -14,7 +14,6 @@ function ButtonNetwork({ children, onClick, disabled, network }) {
         [styles.buttonNetworkSpacePussy]: network === 'space-pussy',
       })}
     >
-      <span className={styles.buttonNetworkSpan}>Switch to </span>
       {network}
     </button>
   );

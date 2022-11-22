@@ -15,7 +15,7 @@ import {
   IconButton,
 } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
-import { Tooltip } from '../tooltip/tooltip';
+import Tooltip from '../tooltip/tooltip';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';

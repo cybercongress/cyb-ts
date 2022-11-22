@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Copy } from '../ui/copy';
-import { Tooltip } from '../tooltip/tooltip';
+import Tooltip from '../tooltip/tooltip';
 import { LinkWindow } from '../link/link';
 import { trimString, exponentialToDecimal } from '../../utils/utils';
 

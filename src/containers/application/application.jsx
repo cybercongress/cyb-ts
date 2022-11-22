@@ -29,6 +29,7 @@ import {
 import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import SwichNetwork from './swichNetwork';
 
 const cyberSpace = require('../../image/large-purple-circle.png');
 const cyberBostrom = require('../../image/large-green.png');
@@ -111,6 +112,11 @@ function App({
   const [amounPower, setAmounPower] = useState(0);
   const [keywordHash, setKeywordHash] = useState(null);
   const [story, setStory] = useState(false);
+
+  // useEffect(() => {
+  //   const response = localStorage.getItem('CHAIN_PARAMS');
+  //   console.log('getItem CHAIN_PARAMS', JSON.parse(response));
+  // }, []);
 
   // const data = usePopperTooltip({
   //   trigger: 'click',
@@ -359,10 +365,14 @@ function App({
             >
               <AppMenu addressActive={addressActive} />
             </AppSideBar>
-            <MenuButton
-              onClick={() => setOpenMenu(!openMenu)}
-              imgLogo={CYBER.CHAIN_ID === 'bostrom' ? cyberBostrom : cyberSpace}
-            />
+            <SwichNetwork>
+              <MenuButton
+                onClick={() => setOpenMenu(!openMenu)}
+                imgLogo={
+                  CYBER.CHAIN_ID === 'bostrom' ? cyberBostrom : cyberSpace
+                }
+              />
+            </SwichNetwork>
             <Pane bottom="-10px" right="-20%" position="absolute">
               <LeftTooltip />
             </Pane>
@@ -482,7 +492,7 @@ function App({
               <Tooltip
                 placement="bottom"
                 tooltip={
-                  <span>
+                  <span style={{ width: '250px' }}>
                     <a href="/search/cyb">Cyb app</a> has not been audited yet.
                     Be especially careful when interracting with apps from
                     search results! They can trick you with what you actually

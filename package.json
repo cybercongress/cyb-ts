@@ -67,7 +67,7 @@
     "react-json-editor-ajrm": "^2.5.13",
     "react-json-view": "^1.21.3",
     "react-plotly.js": "^2.3.0",
-    "react-popper-tooltip": "^2.8.3",
+    "react-popper-tooltip": "^4.4.2",
     "react-redux": "^7.2.0",
     "react-router": "^5.0.1",
     "redux": "^4.0.5",

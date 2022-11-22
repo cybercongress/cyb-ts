@@ -61,8 +61,10 @@ import {
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
+import { ListNetwork, CustomNetwork } from './containers/network';
 
 import useIpfsFactory from './useIpfsFactory';
+import defaultNetworks from './utils/defaultNetworks';
 
 import { TIME_START, CYBER } from './utils/config';
 
@@ -91,38 +93,17 @@ function AppRouter({
     // tryConnectToPeer(dataIpfsStart.node);
   }, [dataIpfsStart]);
 
-  useEffect(() => {
-    let timeinterval;
-    const genesisDate = TIME_START;
-    const countDown = new Date(genesisDate).getTime();
-    const changeTime = () => {
-      const now = Date.parse(new Date().toUTCString());
-      const distance = countDown - now;
+  // useEffect(() => {
+  //   const response = localStorage.getItem('CHAIN_PARAMS');
+  //   if (response === null) {
+  //     localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
+  //   }
+  //   setLoader(false);
+  // }, []);
 
-      if (distance <= 0) {
-        clearInterval(timeinterval);
-        setTime(false);
-      } else {
-        setTime(true);
-      }
-    };
-    changeTime();
-    timeinterval = setInterval(changeTime, 1000);
-    return () => {
-      clearInterval(timeinterval);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (time) {
-      history.push('/genesis');
-    }
-    setLoader(false);
-  }, [time]);
-
-  if (loader) {
-    return <div>...</div>;
-  }
+  // if (loader) {
+  //   return <div>...</div>;
+  // }
 
   return (
     <Router history={history}>
@@ -186,7 +167,9 @@ function AppRouter({
         <Route path="/codes/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
-
+        {/* network */}
+        <Route path="/network" exact component={ListNetwork} />
+        <Route path="/network/custom" component={CustomNetwork} />
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
       </Switch>

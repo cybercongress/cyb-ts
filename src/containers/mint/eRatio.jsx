@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Pane } from '@cybercongress/gravity';
-import { Tooltip } from '../../components/tooltip/tooltip';
+import { Tooltip } from '../../components';
 
 function ERatio({ eRatio }) {
   return (

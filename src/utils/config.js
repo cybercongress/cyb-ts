@@ -65,6 +65,8 @@ const COSMOS = {
 
 const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
 
+const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
+
 let CHAIN_PARAMS = {
   CHAIN_ID: 'bostrom',
   DENOM_CYBER: 'boot',
@@ -96,6 +98,13 @@ if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
     BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `pussyvaloper`,
     MEMO_KEPLR: '[space-pussy] cyb.ai, using keplr',
   };
+}
+
+if (CHAIN_PARAMS_LOCALSTORAGE !== null && LOCALSTORAGE_CHAIN_ID !== null) {
+  const CHAIN_PARAMS_LOCALSTORAGE_DATA = JSON.parse(CHAIN_PARAMS_LOCALSTORAGE);
+  if (CHAIN_PARAMS_LOCALSTORAGE_DATA[LOCALSTORAGE_CHAIN_ID]) {
+    CHAIN_PARAMS = { ...CHAIN_PARAMS_LOCALSTORAGE_DATA[LOCALSTORAGE_CHAIN_ID] };
+  }
 }
 
 const CYBER = {

@@ -1,17 +1,8 @@
 import React, { Component } from 'react';
 
-import {
-  MenuContainer,
-  AddMenuItem,
-  AddMenuItemReject,
-  ReportLinkContainer,
-  AddMenuItemContainer,
-} from '@cybercongress/gravity';
+import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
 
 import { Bookmarks } from '../../components/appMenu/AppMenu';
-import { fromBech32 } from '../../utils/utils';
-import { ButtonNetwork } from '../../components';
-import { CYBER } from '../../utils/config';
 
 const itemsMenu = (address) => {
   let linkAvatar = '/';
@@ -105,76 +96,11 @@ const itemsMenu = (address) => {
   ];
 };
 
-const forEachObjbech32 = (data, prefix) => {
-  const newObj = {};
-  Object.keys(data).forEach((key) => {
-    const valueObj = data[key];
-    if (Object.prototype.hasOwnProperty.call(valueObj, 'cyber')) {
-      const { bech32 } = valueObj.cyber;
-      const bech32NewPrefix = fromBech32(bech32, prefix);
-      newObj[key] = {
-        ...valueObj,
-        cyber: {
-          ...valueObj.cyber,
-          bech32: bech32NewPrefix,
-        },
-      };
-    }
-  });
-  return newObj;
-};
-
-const updateAddress = async (prefix) => {
-  const localStoragePocketAccount = await localStorage.getItem('pocketAccount');
-  const localStoragePocket = await localStorage.getItem('pocket');
-
-  if (localStoragePocket !== null) {
-    const localStoragePocketData = JSON.parse(localStoragePocket);
-    const newObjPocketData = forEachObjbech32(localStoragePocketData, prefix);
-    localStorage.setItem('pocket', JSON.stringify(newObjPocketData));
-  }
-  if (localStoragePocketAccount !== null) {
-    const localStoragePocketAccountData = JSON.parse(localStoragePocket);
-    const newObjAccountData = forEachObjbech32(
-      localStoragePocketAccountData,
-      prefix
-    );
-    localStorage.setItem('pocketAccount', JSON.stringify(newObjAccountData));
-  }
-};
-
 const AppMenu = ({ addressActive }) => {
-  const onClickToBostrom = async () => {
-    localStorage.setItem('chainId', 'bostrom');
-    await updateAddress('bostrom');
-    window.location.reload();
-  };
-
-  const onClickToSpacePussy = async () => {
-    localStorage.setItem('chainId', 'space-pussy');
-    await updateAddress('pussy');
-    window.location.reload();
-  };
-
   return (
     <MenuContainer>
       <Bookmarks items={itemsMenu(addressActive)} />
-      <ReportLinkContainer>
-        {CYBER.CHAIN_ID !== 'bostrom' && (
-          <ButtonNetwork
-            disabled={CYBER.CHAIN_ID === 'bostrom'}
-            onClick={onClickToBostrom}
-            network="bostrom"
-          />
-        )}
-        {CYBER.CHAIN_ID !== 'space-pussy' && (
-          <ButtonNetwork
-            disabled={CYBER.CHAIN_ID === 'space-pussy'}
-            onClick={onClickToSpacePussy}
-            network="space-pussy"
-          />
-        )}
-      </ReportLinkContainer>
+      <ReportLinkContainer />
     </MenuContainer>
   );
 };
