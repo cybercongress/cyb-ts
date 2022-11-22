@@ -9,10 +9,6 @@ import { CYBER } from '../../utils/config';
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
   [CYBER.DENOM_LIQUID_TOKEN]: 0,
-
-const defaultTokenList = {
-  boot: 0,
-  hydrogen: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,
