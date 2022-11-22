@@ -21,7 +21,7 @@ import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
-import { formatNumber, trimString } from '../../utils/utils';
+import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
 import ButtonImgText from '../Button/buttonImgText';
 import { IconStatus } from '../governance/governance';
 
@@ -1474,7 +1474,7 @@ export const ConnectAddress = ({
                 <ButtonIcon
                   onClick={() => selectNetworkFunc('cyber')}
                   active={selectNetwork === 'cyber'}
-                  img={CYBER.CHAIN_ID === 'bostrom' ? imgBostrom : imgSpace}
+                  img={selectNetworkImg(CYBER.CHAIN_ID)}
                   text={CYBER.CHAIN_ID}
                 />
               )}

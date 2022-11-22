@@ -15,6 +15,7 @@ const ibc = require('../../image/ibc-unauth.png');
 const cosmos = require('../../image/cosmos-2.svg');
 const osmosis = require('../../image/osmosis.svg');
 const pussy = require('../../image/large-purple-circle.png');
+const customNetwork = require('../../image/large-orange-circle.png');
 
 const ValueImg = ({
   text,
@@ -121,11 +122,11 @@ const ValueImg = ({
         break;
       } else if (text.length > 32) {
         textCurency = text.slice(0, 32);
-        img = null;
+        img = customNetwork;
         break;
       } else {
         textCurency = text;
-        img = null;
+        img = customNetwork;
         break;
       }
   }

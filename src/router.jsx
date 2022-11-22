@@ -61,7 +61,11 @@ import {
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
-import { ListNetwork, CustomNetwork } from './containers/network';
+import {
+  ListNetwork,
+  CustomNetwork,
+  DetailsNetwork,
+} from './containers/network';
 
 import useIpfsFactory from './useIpfsFactory';
 import defaultNetworks from './utils/defaultNetworks';
@@ -170,6 +174,8 @@ function AppRouter({
         {/* network */}
         <Route path="/network" exact component={ListNetwork} />
         <Route path="/network/custom" component={CustomNetwork} />
+        <Route path="/network/:networkId" component={DetailsNetwork} />
+
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
       </Switch>

@@ -25,14 +25,13 @@ import {
   reduceBalances,
   replaceSlash,
   encodeSlash,
+  selectNetworkImg,
 } from '../../utils/utils';
 import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 
-const cyberSpace = require('../../image/large-purple-circle.png');
-const cyberBostrom = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const info = require('../../image/info-circle-outline.svg');
@@ -61,6 +60,7 @@ const ListAccounts = ({
           key={`${key}_${i}`}
           paddingX={10}
           paddingY={5}
+          whiteSpace="nowrap"
           color={active ? '#ff9100' : '#fff'}
           onClick={() =>
             active ? '' : onClickChangeActiveAcc(key, accounts[key])
@@ -368,9 +368,7 @@ function App({
             <SwichNetwork>
               <MenuButton
                 onClick={() => setOpenMenu(!openMenu)}
-                imgLogo={
-                  CYBER.CHAIN_ID === 'bostrom' ? cyberBostrom : cyberSpace
-                }
+                imgLogo={selectNetworkImg(CYBER.CHAIN_ID)}
               />
             </SwichNetwork>
             <Pane bottom="-10px" right="-20%" position="absolute">

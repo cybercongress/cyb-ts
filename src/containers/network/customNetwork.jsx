@@ -1,12 +1,24 @@
 import React, { useState, useCallback, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { MainContainer, ActionBarSteps, BtnGrd } from '../portal/components';
-import useGetNetworks from '../../hooks/useGetNetworks';
+import {
+  MainContainer,
+  ContainerGradientText,
+  ActionBarSteps,
+  BtnGrd,
+} from '../portal/components';
+import Input from '../teleport/components/input';
 import { AppContext } from '../../context';
 
-const ValueItem = ({ children }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr' }}>
-    {children}
+const ValueItem = ({ text, value, onChange }) => (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: '120px 1fr',
+      alignItems: 'center',
+    }}
+  >
+    <div>{text}</div>
+    <Input type="text" autoComplete="off" value={value} onChange={onChange} />
   </div>
 );
 
@@ -67,7 +79,9 @@ function CustomNetwork() {
       if (
         !Object.prototype.hasOwnProperty.call(networks, customConfig.CHAIN_ID)
       ) {
-        updateNetworks(customConfig);
+        const newList = { ...networks };
+        newList[customConfig.CHAIN_ID] = { ...customConfig };
+        updateNetworks(newList);
         setTimeout(() => {
           history.push('/network');
         }, 2000);
@@ -78,80 +92,55 @@ function CustomNetwork() {
   return (
     <>
       <MainContainer>
-        <div style={{ gap: '5px', display: 'grid' }}>
-          <ValueItem>
-            <div>chainId</div>
-            <input
-              type="text"
+        <ContainerGradientText>
+          <div style={{ gap: '10px', display: 'grid' }}>
+            <ValueItem
+              text="chainId"
               value={customConfig.CHAIN_ID}
               onChange={(e) => onChangeValue(e, 'CHAIN_ID')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>prefix</div>
-            <input
-              type="text"
+            <ValueItem
+              text="prefix"
               value={customConfig.BECH32_PREFIX_ACC_ADDR_CYBER}
               onChange={(e) => onChangeValue(e, 'BECH32_PREFIX_ACC_ADDR_CYBER')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>denom</div>
-            <input
-              type="text"
+            <ValueItem
+              text="denom"
               value={customConfig.DENOM_CYBER}
               onChange={(e) => onChangeValue(e, 'DENOM_CYBER')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>liquid denom</div>
-            <input
-              type="text"
+            <ValueItem
+              text="iquid denom"
               value={customConfig.DENOM_LIQUID_TOKEN}
               onChange={(e) => onChangeValue(e, 'DENOM_LIQUID_TOKEN')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>rpc</div>
-            <input
-              type="text"
+            <ValueItem
+              text="rpc"
               value={customConfig.CYBER_NODE_URL_API}
               onChange={(e) => onChangeValue(e, 'CYBER_NODE_URL_API')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>wss</div>
-            <input
-              type="text"
+            <ValueItem
+              text="wss"
               value={customConfig.CYBER_WEBSOCKET_URL}
               onChange={(e) => onChangeValue(e, 'CYBER_WEBSOCKET_URL')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>lcd</div>
-            <input
-              type="text"
+            <ValueItem
+              text="lcd"
               value={customConfig.CYBER_NODE_URL_LCD}
               onChange={(e) => onChangeValue(e, 'CYBER_NODE_URL_LCD')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>index</div>
-            <input
-              type="text"
+            <ValueItem
+              text="index"
               value={customConfig.CYBER_INDEX_HTTPS}
               onChange={(e) => onChangeValue(e, 'CYBER_INDEX_HTTPS')}
             />
-          </ValueItem>
-          <ValueItem>
-            <div>index wss</div>
-            <input
-              type="text"
+            <ValueItem
+              text="ndex wss"
               value={customConfig.CYBER_INDEX_WEBSOCKET}
               onChange={(e) => onChangeValue(e, 'CYBER_INDEX_WEBSOCKET')}
             />
-          </ValueItem>
-        </div>
+          </div>
+        </ContainerGradientText>
       </MainContainer>
       <ActionBarSteps>
         <BtnGrd text="add network" onClick={() => onClickAddNetwork()} />

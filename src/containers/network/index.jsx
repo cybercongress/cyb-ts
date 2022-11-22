@@ -1,4 +1,5 @@
 import ListNetwork from './listNetwork';
 import CustomNetwork from './customNetwork';
+import DetailsNetwork from './detailsNetwork';
 
-export { ListNetwork, CustomNetwork };
+export { ListNetwork, CustomNetwork, DetailsNetwork };

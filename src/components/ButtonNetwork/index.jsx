@@ -1,18 +1,13 @@
 import React from 'react';
 import styles from './styles.scss';
 
-const cx = require('classnames');
-
-function ButtonNetwork({ children, onClick, disabled, network }) {
+function ButtonNetwork({ onClick, disabled, network }) {
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={cx(styles.buttonNetwork, {
-        [styles.buttonNetworkBostrom]: network === 'bostrom',
-        [styles.buttonNetworkSpacePussy]: network === 'space-pussy',
-      })}
+      className={styles.buttonNetwork}
     >
       {network}
     </button>

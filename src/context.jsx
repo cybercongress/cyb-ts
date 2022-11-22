@@ -180,20 +180,13 @@ const AppContextProvider = ({ children }) => {
     }
   }, [client]);
 
-  const updateNetworks = useCallback(
-    (valueNetwork) => {
-      if (Object.keys(value.networks).length > 0) {
-        const newList = { ...value.networks };
-        newList[valueNetwork.CHAIN_ID] = { ...valueNetwork };
-        localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
-        setValue((item) => ({
-          ...item,
-          networks: { ...newList },
-        }));
-      }
-    },
-    [value.networks]
-  );
+  const updateNetworks = (newList) => {
+    localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
+    setValue((item) => ({
+      ...item,
+      networks: { ...newList },
+    }));
+  };
 
   console.log('value', value);
 

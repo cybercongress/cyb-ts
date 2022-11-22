@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
 
 import { Bookmarks } from '../../components/appMenu/AppMenu';
+import { CYBER } from '../../utils/config';
 
 const itemsMenu = (address) => {
   let linkAvatar = '/';
@@ -13,7 +14,8 @@ const itemsMenu = (address) => {
     linkCommunity = `/network/bostrom/contract/${address.bech32}/community`;
     linkBrain = `/pgraph/${address.bech32}`;
   }
-  return [
+
+  const listItemMenu = [
     { name: 'My robot', to: '/', subItems: [] },
     {
       name: 'Networks',
@@ -25,15 +27,6 @@ const itemsMenu = (address) => {
       to: '/contracts',
       subItems: [],
     },
-    // {
-    //   name: 'Portal',
-    //   to: '/portal',
-    //   subItems: [
-    //     { name: 'Citizenship', to: '/citizenship' },
-    //     { name: 'Gift', to: '/gift' },
-    //     // { name: 'Release', to: '/release' },
-    //   ],
-    // },
     {
       name: 'Teleport',
       to: '/teleport',
@@ -99,6 +92,19 @@ const itemsMenu = (address) => {
       ],
     },
   ];
+
+  if (CYBER.CHAIN_ID === 'bostrom') {
+    listItemMenu.splice(2, 0, {
+      name: 'Portal',
+      to: '/portal',
+      subItems: [
+        { name: 'Citizenship', to: '/citizenship' },
+        { name: 'Gift', to: '/gift' },
+        // { name: 'Release', to: '/release' },
+      ],
+    });
+  }
+  return listItemMenu;
 };
 
 const AppMenu = ({ addressActive }) => {

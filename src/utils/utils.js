@@ -2,6 +2,10 @@ import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
 import { CYBER } from './config';
 
+const cyberSpace = require('../image/large-purple-circle.png');
+const customNetwork = require('../image/large-orange-circle.png');
+const cyberBostrom = require('../image/large-green.png');
+
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
 
@@ -441,6 +445,18 @@ const groupMsg = (ArrMsg, size = 2) => {
   return link;
 };
 
+const selectNetworkImg = (network) => {
+  switch (network) {
+    case 'bostrom':
+      return cyberBostrom;
+    case 'space-pussy':
+      return cyberSpace;
+
+    default:
+      return customNetwork;
+  }
+};
+
 export {
   run,
   sort,
@@ -467,4 +483,5 @@ export {
   replaceSlash,
   encodeSlash,
   groupMsg,
+  selectNetworkImg,
 };
