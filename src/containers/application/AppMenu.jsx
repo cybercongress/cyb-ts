@@ -16,6 +16,11 @@ const itemsMenu = (address) => {
   return [
     { name: 'My robot', to: '/', subItems: [] },
     {
+      name: 'Networks',
+      to: '/network',
+      subItems: [{ name: 'Custom', to: '/network/custom' }],
+    },
+    {
       name: 'Contracts',
       to: '/contracts',
       subItems: [],
