@@ -115,7 +115,7 @@ function DetailsNetwork() {
                 onChange={(e) => onChangeValue(e, 'DENOM_CYBER')}
               />
               <ValueItem
-                text="iquid denom"
+                text="liquid denom"
                 value={customConfig.DENOM_LIQUID_TOKEN}
                 onChange={(e) => onChangeValue(e, 'DENOM_LIQUID_TOKEN')}
               />
@@ -140,7 +140,7 @@ function DetailsNetwork() {
                 onChange={(e) => onChangeValue(e, 'CYBER_INDEX_HTTPS')}
               />
               <ValueItem
-                text="ndex wss"
+                text="index wss"
                 value={customConfig.CYBER_INDEX_WEBSOCKET}
                 onChange={(e) => onChangeValue(e, 'CYBER_INDEX_WEBSOCKET')}
               />
