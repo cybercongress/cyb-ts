@@ -166,7 +166,7 @@ function ActionBar({ stateActionBar }) {
   useEffect(() => {
     console.log('first', logs.parseRawLog(testVar));
     const logsValue = parseLog(logs.parseRawLog(testVar));
-    console.log('logsValue', logsValue)
+    console.log('logsValue', logsValue);
   }, []);
 
   const parseLog = (log) => {
@@ -360,6 +360,10 @@ function ActionBar({ stateActionBar }) {
       console.log(`response`, response);
       if (response.code === 0) {
         setTxHash(response.transactionHash);
+      } else if (response.code === 4) {
+        setTxHash(null);
+        setErrorMessage('Swap is not working. Wait for updates.');
+        setStage(STAGE_ERROR);
       } else {
         setTxHash(null);
         setErrorMessage(response.rawLog.toString());
@@ -413,7 +417,7 @@ function ActionBar({ stateActionBar }) {
           offerCoin,
           demandCoinDenom,
           offerCoinFee,
-          exponentialToDecimal(swapPrice * 10 ** 18),
+          Math.floor(exponentialToDecimal(swapPrice * 10 ** 18)).toString(),
           fee
         );
 
@@ -421,6 +425,10 @@ function ActionBar({ stateActionBar }) {
 
         if (response.code === 0) {
           setTxHash(response.transactionHash);
+        } else if (response.code === 4) {
+          setTxHash(null);
+          setErrorMessage('Swap is not working. Wait for updates.');
+          setStage(STAGE_ERROR);
         } else {
           setTxHash(null);
           setErrorMessage(response.rawLog.toString());

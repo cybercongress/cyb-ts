@@ -1,5 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+// import React, { useEffect, useState, useContext, useMemo } from 'react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
@@ -20,6 +21,7 @@ import AppContextProvider from './context';
 import './style/main.css';
 // import './style/index.scss';
 import './image/favicon.ico';
+import './image/logo-bulb.svg';
 
 const getHeaders = (token) => {
   const headers = {
@@ -67,8 +69,12 @@ const client = new ApolloClient({
   cache,
 });
 
+
+
 const container = document.getElementById('root');
 const root = createRoot(container);
+
+
 
 const render = () => {
   root.render(
@@ -93,3 +99,4 @@ if (module.hot) {
     render(AppRouter);
   });
 }
+

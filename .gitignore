@@ -18,6 +18,7 @@ yarn.lock
 
 .idea
 .vscode
+.circleci
 .DS_Store
 
 yarn-debug.log*

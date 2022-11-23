@@ -37,7 +37,9 @@ export const getCoinDecimals = (amount, token) => {
 
   if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
     const { coinDecimals } = coinDecimalsConfig[token];
-    amountReduce = parseFloat(amount) / pow(coinDecimals);
+    if (coinDecimals) {
+      amountReduce = parseFloat(amount) / pow(coinDecimals);
+    }
   }
   return amountReduce;
 };
@@ -179,4 +181,5 @@ export const networkList = {
   bostrom: 'bostrom',
   osmosis: 'osmosis-1',
   cosmos: 'cosmoshub-4',
+  'space-pussy': 'space-pussy',
 };

@@ -121,6 +121,7 @@ function ContainerGradient({
   initState = true,
   styleLampContent = 'blue',
   styleLampTitle,
+  togglingDisable,
 }) {
   const [isOpen, setIsOpen] = useState(initState);
 
@@ -130,7 +131,11 @@ function ContainerGradient({
     }
   }, [stateOpen]);
 
-  const toggling = () => setIsOpen(!isOpen);
+  const toggling = () => {
+    if (togglingDisable === undefined || togglingDisable === false) {
+      return setIsOpen(!isOpen);
+    }
+  };
 
   const useTitle = useCallback(
     (state) => {

@@ -94,6 +94,12 @@ module.exports = {
           },
         },
       },
+      {
+	    test: /\.html$/i,
+	    use: {
+	    	loader: 'html-loader',
+	    }
+	  }
     ],
   },
   resolve: {

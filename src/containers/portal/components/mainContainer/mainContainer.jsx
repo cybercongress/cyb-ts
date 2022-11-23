@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles.scss';
 
-function MainContainer({ children, minHeight }) {
+function MainContainer({ children, minHeight, width = '62%' }) {
   return (
     <main
       style={{
@@ -10,7 +10,9 @@ function MainContainer({ children, minHeight }) {
       }}
       className="block-body"
     >
-      <div className={styles.containerContent}>{children}</div>
+      <div style={{ width }} className={styles.containerContent}>
+        {children}
+      </div>
     </main>
   );
 }
