@@ -408,6 +408,12 @@ function ActionBar({ stateActionBar }) {
     console.log('offerCoin', offerCoin);
     const demandCoinDenom = tokenB;
     console.log(`swapPrice`, swapPrice);
+    
+    const exp = new BigNumber(10).pow(18).toString();
+    const convertSwapPrice = new BigNumber(swapPrice)
+      .multipliedBy(exp)
+      .dp(0, BigNumber.ROUND_FLOOR)
+      .toString(10);
     if (addressActive !== null && addressActive.bech32 === address) {
       try {
         const response = await keplr.swapWithinBatch(
@@ -417,7 +423,7 @@ function ActionBar({ stateActionBar }) {
           offerCoin,
           demandCoinDenom,
           offerCoinFee,
-          Math.floor(exponentialToDecimal(swapPrice * 10 ** 18)).toString(),
+          convertSwapPrice,
           fee
         );
 
@@ -493,11 +499,16 @@ function ActionBar({ stateActionBar }) {
       },
     };
     console.log('msg', msg);
+    const gasEstimation = await ibcClient.simulate(address, [msg], '');
+    const feeIbc = {
+      amount: [],
+      gas: Math.round(gasEstimation * 1.5).toString(),
+    };
     try {
       const response = await ibcClient.signAndBroadcast(
         address,
         [msg],
-        fee,
+        feeIbc,
         ''
       );
       console.log(`response`, response);
