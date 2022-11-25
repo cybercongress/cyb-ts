@@ -34,8 +34,8 @@ const configKeplr = (prefix) => {
         coinDecimals: 0,
       },
       {
-        coinDenom: 'H',
-        coinMinimalDenom: 'hydrogen',
+        coinDenom: 'L',
+        coinMinimalDenom: 'liquidpussy',
         coinDecimals: 0,
       },
       {

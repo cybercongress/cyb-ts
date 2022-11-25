@@ -1,12 +1,14 @@
 import { useState, useEffect, useContext, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
+import axios from 'axios';
 import { AppContext } from '../../context';
 import { reduceBalances } from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
+import { CYBER } from '../../utils/config';
 
 const defaultTokenList = {
-  boot: 0,
-  hydrogen: 0,
+  [CYBER.DENOM_CYBER]: 0,
+  [CYBER.DENOM_LIQUID_TOKEN]: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,
@@ -38,8 +40,11 @@ const getPoolPrice = (data) => {
       const coinsPair = element.reserveCoinDenoms;
       const { balances } = element;
       let price = 0;
-      if (coinsPair[0] === 'hydrogen' || coinsPair[1] === 'hydrogen') {
-        if (coinsPair[0] === 'hydrogen') {
+      if (
+        coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN ||
+        coinsPair[1] === CYBER.DENOM_LIQUID_TOKEN
+      ) {
+        if (coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN) {
           price = calculatePrice(coinsPair, balances);
         } else {
           price = calculatePrice(coinsPair.reverse(), balances);
@@ -129,13 +134,13 @@ function useGetMarketData() {
         Object.keys(poolsTotal).length > 0
       ) {
         const marketDataObj = {};
-        marketDataObj.hydrogen = 1;
+        marketDataObj[CYBER.DENOM_LIQUID_TOKEN] = 1;
         Object.keys(dataTotal).forEach((keyI) => {
           Object.keys(poolsTotal).forEach((keyJ) => {
             const itemJ = poolsTotal[keyJ];
             const { reserveCoinDenoms } = itemJ;
             if (
-              reserveCoinDenoms[0] === 'hydrogen' &&
+              reserveCoinDenoms[0] === CYBER.DENOM_LIQUID_TOKEN &&
               reserveCoinDenoms[1] === keyI
             ) {
               marketDataObj[keyI] = itemJ.price;

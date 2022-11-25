@@ -2,11 +2,12 @@ import { useEffect, useState, useContext } from 'react';
 import { authAccounts } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 import { convertResources } from '../../utils/utils';
+import { CYBER } from '../../utils/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
 const initStateVested = {
-  hydrogen: 0,
+  [CYBER.DENOM_LIQUID_TOKEN]: 0,
   millivolt: 0,
   milliampere: 0,
 };
@@ -63,7 +64,7 @@ function useGetSlots(addressActive, updateAddress) {
       setVested(initStateVested);
       if (addressActive !== null) {
         const originalVestingInitAmount = {
-          hydrogen: 0,
+          [CYBER.DENOM_LIQUID_TOKEN]: 0,
           millivolt: 0,
           milliampere: 0,
         };
@@ -77,8 +78,9 @@ function useGetSlots(addressActive, updateAddress) {
           const { start_time: startTime } = getAccount.result.value;
 
           const balances = getCalculationBalance(originalVestingAmount);
-          if (balances.hydrogen) {
-            originalVestingInitAmount.hydrogen = balances.hydrogen;
+          if (balances[CYBER.DENOM_LIQUID_TOKEN]) {
+            originalVestingInitAmount[CYBER.DENOM_LIQUID_TOKEN] =
+              balances[CYBER.DENOM_LIQUID_TOKEN];
           }
           if (balances.millivolt) {
             originalVestingInitAmount.millivolt = convertResources(
@@ -198,8 +200,9 @@ function useGetSlots(addressActive, updateAddress) {
           }
         });
         if (obj.status !== 'Unfreezing') {
-          if (obj.amount.hydrogen) {
-            vestedAmount.hydrogen += obj.amount.hydrogen;
+          if (obj.amount[CYBER.DENOM_LIQUID_TOKEN]) {
+            vestedAmount[CYBER.DENOM_LIQUID_TOKEN] +=
+              obj.amount[CYBER.DENOM_LIQUID_TOKEN];
           }
           if (obj.amount.milliampere) {
             vestedAmount.milliampere += obj.amount.milliampere;

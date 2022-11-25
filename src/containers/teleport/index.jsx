@@ -47,15 +47,15 @@ import { networkList as networks } from './hooks/useGetBalancesIbc';
 // import TraceTxTable from './components/ibc-history/traceTxTable';
 // import HistoryContextProvider from './components/ibc-history/historyContext';
 
-const tokenADefaultValue = 'boot';
-const tokenBDefaultValue = 'hydrogen';
+const tokenADefaultValue = CYBER.DENOM_CYBER;
+const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 // const txHash =
 //   'E15BC5F5B62696F5D08C0860CDA13D39E385BD6245595EB07899954336760C8C';
 
 const defaultTokenList = {
-  boot: 0,
-  hydrogen: 0,
+  [CYBER.DENOM_CYBER]: 0,
+  [CYBER.DENOM_LIQUID_TOKEN]: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,

@@ -8,9 +8,9 @@ import { CYBER } from '../../../utils/config';
 const { DENOM_CYBER, HYDROGEN } = CYBER;
 
 const TootipContent = () => (
-  <div style={{ padding: '5px' }}>
+  <span style={{ padding: '5px' }}>
     you receive H form staked BOOT, you can use H for investmint A and V
-  </div>
+  </span>
 );
 
 const ContainerGrid = ({ children }) => (
@@ -58,7 +58,9 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
               <Dots />
             ) : (
               formatNumber(
-                balanceToken.hydrogen ? balanceToken.hydrogen.liquid : 0
+                balanceToken[CYBER.DENOM_LIQUID_TOKEN]
+                  ? balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid
+                  : 0
               )
             )
           }

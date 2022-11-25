@@ -23,7 +23,7 @@ const initValueTokens = {
 };
 
 const initValueToken = {
-  hydrogen: { ...initValueTokens },
+  [CYBER.DENOM_LIQUID_TOKEN]: { ...initValueTokens },
   milliampere: { ...initValueTokens },
   millivolt: { ...initValueTokens },
 };
@@ -58,7 +58,7 @@ function useGetBalance(address, updateAddress) {
           setLoadingBalanceInfo(true);
           const availablePromise = await jsCyber.getBalance(
             addressActive,
-            'boot'
+            CYBER.DENOM_CYBER
           );
           setBalance((item) => ({
             ...item,
@@ -159,7 +159,7 @@ function useGetBalance(address, updateAddress) {
   useEffect(() => {
     const getBalance = async () => {
       const initValueTokenAmount = {
-        hydrogen: {
+        [CYBER.DENOM_LIQUID_TOKEN]: {
           ...initValueTokens,
         },
         milliampere: {
@@ -182,7 +182,7 @@ function useGetBalance(address, updateAddress) {
           Object.keys(balancesToken).forEach((key) => {
             if (
               Object.hasOwnProperty.call(balancesToken, key) &&
-              key !== 'boot'
+              key !== CYBER.DENOM_CYBER
             ) {
               let elementBalancesToken = balancesToken[key];
               if (key === 'millivolt' || key === 'milliampere') {

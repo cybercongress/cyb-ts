@@ -469,68 +469,46 @@ select {
   margin: 0 15px;
 }
 
-/* .tooltipContainer {
-    padding: 4px 8px !important;
-    max-width: 250px !important;
-    background-color: rgba(0, 0, 0, 0.95) !important;
-    border-radius: 3px !important;
-    box-shadow: 0px 0px 4px 1px #38d6ae !important;
-    margin-top: 5px !important;
-} */
-
 .tooltip-container {
   background-color: #000000;
   box-shadow: 0px 0px 4px 1px #38d6ae;
   border: none;
   max-width: 256px;
+  color: #fff;
+  white-space: normal;
 }
 
 .tooltip-arrow[data-placement*='bottom']::before {
-    border-color: transparent transparent #38d6aea6 transparent;
-    border-width: 0 0.5rem 0.4rem 0.5rem;
-    position: absolute;
-    top: -1px;
+  border-color: transparent transparent #38d6aea6 transparent !important;
 }
 
 .tooltip-arrow[data-placement*='bottom']::after {
-    border-color: transparent transparent #000000 transparent;
-    border-width: 0 0.5rem 0.4rem 0.5rem;
+  border-color: transparent transparent #000000 transparent !important;
+  border-width: 0 0.5rem 0.4rem 0.5rem;
 }
 
 .tooltip-arrow[data-placement*='top']::before {
-  border-color: #38d6aea6 transparent transparent transparent;
-  border-width: 0.4rem 0.5rem 0 0.5rem;
-  position: absolute;
-  top: 1px;
+  border-color: #38d6aea6 transparent transparent transparent !important;
 }
 
 .tooltip-arrow[data-placement*='top']::after {
-  border-color: #000000 transparent transparent transparent;
-  border-width: 0.4rem 0.5rem 0 0.5rem;
+  border-color: #000000 transparent transparent transparent !important;
 }
 
 .tooltip-arrow[data-placement*='left']::before {
-  border-color: transparent transparent transparent #38d6aea6;
-  border-width: 0.5rem 0 0.5rem 0.4em;
+  border-color: transparent transparent transparent #38d6aea6 !important;
 }
 
 .tooltip-arrow[data-placement*='left']::after {
-  border-color: transparent transparent transparent #000000;
-  border-width: 0.5rem 0 0.5rem 0.4em;
-  left: 3px;
-  top: 0;
+  border-color: transparent transparent transparent #000000 !important;
 }
 
 .tooltip-arrow[data-placement*='right']::before {
-  border-color: transparent #38d6aea6 transparent transparent;
-  border-width: 0.5rem 0.4rem 0.5rem 0;
+  border-color: transparent #38d6aea6 transparent transparent !important;
 }
 
 .tooltip-arrow[data-placement*='right']::after {
-  border-color: transparent #000000 transparent transparent;
-  border-width: 0.5rem 0.4rem 0.5rem 0;
-  left: 6px;
-  top: 0;
+  border-color: transparent #000000 transparent transparent !important;
 }
 
 .close {

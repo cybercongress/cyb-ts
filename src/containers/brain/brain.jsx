@@ -117,7 +117,10 @@ function Brain({ node, mobile, defaultAccount }) {
       if (jsCyber !== null && addressActive !== null) {
         const { bech32 } = addressActive;
         let totalAmount = 0;
-        const responseGetBalanceBoot = await jsCyber.getBalance(bech32, 'boot');
+        const responseGetBalanceBoot = await jsCyber.getBalance(
+          bech32,
+          CYBER.DENOM_CYBER
+        );
         totalAmount += parseFloat(responseGetBalanceBoot.amount);
         const responseGetBalanceSboot = await jsCyber.getBalance(
           bech32,

@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
+import queryString from 'query-string';
 import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
+import useGetNetworks from './hooks/useGetNetworks';
+import defaultNetworks from './utils/defaultNetworks';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -32,6 +35,8 @@ const valueContext = {
   keplr: null,
   ws: null,
   jsCyber: null,
+  networks: {},
+  updateNetworks: () => {},
   updatejsCyber: () => {},
   initSigner: () => {},
 };
@@ -82,6 +87,7 @@ const AppContextProvider = ({ children }) => {
   const [value, setValue] = useState(valueContext);
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
+  const [loadUrl, setLoadUrl] = useState(true);
 
   const updatejsCyber = (rpc) => {
     const createQueryCliet = async () => {
@@ -95,6 +101,44 @@ const AppContextProvider = ({ children }) => {
     };
     createQueryCliet();
   };
+
+  useEffect(() => {
+    let networks = {};
+    const response = localStorage.getItem('CHAIN_PARAMS');
+    if (response !== null) {
+      const networksData = JSON.parse(response);
+      networks = { ...networksData };
+    } else {
+      networks = { ...defaultNetworks };
+      localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
+    }
+    // getUplParam(networks);
+    setValue((item) => ({
+      ...item,
+      networks,
+    }));
+  }, []);
+
+  // const getUplParam = (dataNetworks) => {
+  //   const urlOptions = queryString.parse(window.location.href.split('?')[1]);
+  //   const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+  //   if (urlOptions.network) {
+  //     const { network } = urlOptions;
+  //     if (Object.prototype.hasOwnProperty.call(dataNetworks, network)) {
+  //       console.log('LOCALSTORAGE_CHAIN_ID', LOCALSTORAGE_CHAIN_ID);
+  //       console.log('network', network);
+  //       if (
+  //         LOCALSTORAGE_CHAIN_ID === null ||
+  //         LOCALSTORAGE_CHAIN_ID !== network
+  //       ) {
+  //         localStorage.setItem('chainId', network);
+  //       } else {
+  //         localStorage.setItem('chainId', 'bostrom');
+  //       }
+  //     }
+  //   }
+  //   setLoadUrl(false);
+  // };
 
   useEffect(() => {
     const createQueryCliet = async () => {
@@ -160,14 +204,28 @@ const AppContextProvider = ({ children }) => {
     }
   }, [client]);
 
+  const updateNetworks = (newList) => {
+    localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
+    setValue((item) => ({
+      ...item,
+      networks: { ...newList },
+    }));
+  };
+
   console.log('value', value);
 
   if (value.jsCyber && value.jsCyber === null) {
     return <div>...</div>;
   }
 
+  // if (loadUrl) {
+  //   return <div>...</div>;
+  // }
+
   return (
-    <AppContext.Provider value={{ ...value, updatejsCyber, initSigner }}>
+    <AppContext.Provider
+      value={{ ...value, updatejsCyber, initSigner, updateNetworks }}
+    >
       {children}
     </AppContext.Provider>
   );

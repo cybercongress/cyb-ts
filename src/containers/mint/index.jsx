@@ -78,12 +78,8 @@ function Mint({ defaultAccount }) {
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
-  const {
-    slotsData,
-    vested,
-    loadingAuthAccounts,
-    originalVesting,
-  } = useGetSlots(addressActive, updateAddress);
+  const { slotsData, vested, loadingAuthAccounts, originalVesting } =
+    useGetSlots(addressActive, updateAddress);
   const [selected, setSelected] = useState('millivolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
@@ -101,7 +97,7 @@ function Mint({ defaultAccount }) {
       if (jsCyber !== null && addressActive !== null) {
         const responseBalance = await jsCyber.getBalance(
           addressActive,
-          'hydrogen'
+          CYBER.DENOM_LIQUID_TOKEN
         );
         if (responseBalance.amount) {
           amountHydrogen = parseFloat(responseBalance.amount);
@@ -150,9 +146,10 @@ function Mint({ defaultAccount }) {
   useEffect(() => {
     let vestedTokens = 0;
     let maxValue = 0;
-    if (originalVesting.hydrogen > 0) {
+    if (originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0) {
       vestedTokens =
-        parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
+        parseFloat(originalVesting[CYBER.DENOM_LIQUID_TOKEN]) -
+        parseFloat(vested[CYBER.DENOM_LIQUID_TOKEN]);
     }
     if (balanceHydrogen > 0) {
       maxValue = Math.floor(balanceHydrogen) - vestedTokens;
@@ -165,9 +162,10 @@ function Mint({ defaultAccount }) {
 
   useEffect(() => {
     let vestedTokens = 0;
-    if (originalVesting.hydrogen > 0) {
+    if (originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0) {
       vestedTokens =
-        parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
+        parseFloat(originalVesting[CYBER.DENOM_LIQUID_TOKEN]) -
+        parseFloat(vested[CYBER.DENOM_LIQUID_TOKEN]);
     }
     if (vestedTokens > 0 && balanceHydrogen > 0) {
       const procent = (vestedTokens / balanceHydrogen) * 100;
@@ -308,16 +306,17 @@ function Mint({ defaultAccount }) {
             <ItemBalance
               text="Liquid"
               amount={max}
-              currency={<ValueImg text="hydrogen" />}
+              currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
             />
             <ItemBalance
               text="Frozen"
               amount={
                 loadingAuthAccounts
                   ? null
-                  : originalVesting.hydrogen - vested.hydrogen
+                  : originalVesting[CYBER.DENOM_LIQUID_TOKEN] -
+                    vested[CYBER.DENOM_LIQUID_TOKEN]
               }
-              currency={<ValueImg text="hydrogen" />}
+              currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
             />
           </div>
           <div
@@ -394,10 +393,10 @@ function Mint({ defaultAccount }) {
               }}
             >
               You’re freezing {formatNumber(value)} H for {valueDays} days. It
-              will release {resourceToken} {<ValueImg text={selected} />} for
-              you. At the end of the period, {selected} becomes liquid
-              automatically, but you can use it to boost ranking during the
-              freeze. You can have only 8 slots for investmint at a time.
+              will release {resourceToken} <ValueImg text={selected} /> for you.
+              At the end of the period, {selected} becomes liquid automatically,
+              but you can use it to boost ranking during the freeze. You can
+              have only 8 slots for investmint at a time.
             </div>
           )}
         </div>
