@@ -4,6 +4,7 @@ import db from '../../db';
 import { getFollows, getTweet, getContent } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { fromBech32 } from '../../utils/utils';
 
 const getIndexdDb = async (cid) => {
   let addressResolve = null;
@@ -11,9 +12,9 @@ const getIndexdDb = async (cid) => {
   if (dataIndexdDb !== undefined) {
     addressResolve = dataIndexdDb.content;
   } else {
-    console.log(`cid`, cid)
+    console.log(`cid`, cid);
     const responseGetContent = await getContent(cid);
-    console.log(`responseGetContent`, responseGetContent)
+    console.log(`responseGetContent`, responseGetContent);
     addressResolve = responseGetContent;
     const ipfsContentAddtToInddexdDB = {
       cid,
@@ -98,7 +99,11 @@ const useGetTweets = (defaultAccount, node = null) => {
         responseFollows === null ||
         responseFollows.total_count === 0
       ) {
-        const responseTwit = await getTweet(CYBER.CYBER_CONGRESS_ADDRESS);
+        const cyberCongressAdsress = fromBech32(
+          CYBER.CYBER_CONGRESS_ADDRESS,
+          CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
+        );
+        const responseTwit = await getTweet(cyberCongressAdsress);
         if (
           responseTwit &&
           responseTwit !== null &&
@@ -140,7 +145,7 @@ const useGetTweets = (defaultAccount, node = null) => {
       let addressResolve = null;
       const cid = item.tx.value.msg[0].value.links[0].to;
       const response = await getIndexdDb(cid);
-      console.log(`response`, response)
+      console.log(`response`, response);
       addressResolve = response;
       if (addressResolve && addressResolve !== null) {
         let addressFollow = null;
