@@ -243,15 +243,26 @@ const BOND_STATUS = {
 
 const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs';
 
-const PATTERN =
-  /^0x[a-fA-F0-9]{40}$|^pussyvaloper[a-zA-Z0-9]{39}$|^pussy[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
-const PATTERN_CYBER = /^pussy[a-zA-Z0-9]{39}$/g;
-const PATTERN_CYBER_CONTRACT = /^pussy[a-zA-Z0-9]{59}$/g;
+const PATTERN = new RegExp(
+  `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
+  'g'
+);
+const PATTERN_CYBER = new RegExp(
+  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$`,
+  'g'
+);
+const PATTERN_CYBER_CONTRACT = new RegExp(
+  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{59}$`,
+  'g'
+);
+const PATTERN_CYBER_VALOPER = new RegExp(
+  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$`,
+  'g'
+);
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
 const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
-const PATTERN_CYBER_VALOPER = /^pussyvaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;
