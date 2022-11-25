@@ -108,7 +108,7 @@ if (CHAIN_PARAMS_LOCALSTORAGE !== null && LOCALSTORAGE_CHAIN_ID !== null) {
 }
 
 const CYBER = {
-  CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
+  CYBER_CONGRESS_ADDRESS: 'bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw',
   DIVISOR_CYBER_G: 10 ** 9,
   HYDROGEN: 'H',
 
