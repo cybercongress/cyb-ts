@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
+import queryString from 'query-string';
 import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
 import useGetNetworks from './hooks/useGetNetworks';
@@ -86,6 +87,7 @@ const AppContextProvider = ({ children }) => {
   const [value, setValue] = useState(valueContext);
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
+  const [loadUrl, setLoadUrl] = useState(true);
 
   const updatejsCyber = (rpc) => {
     const createQueryCliet = async () => {
@@ -110,11 +112,33 @@ const AppContextProvider = ({ children }) => {
       networks = { ...defaultNetworks };
       localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
     }
+    // getUplParam(networks);
     setValue((item) => ({
       ...item,
       networks,
     }));
   }, []);
+
+  // const getUplParam = (dataNetworks) => {
+  //   const urlOptions = queryString.parse(window.location.href.split('?')[1]);
+  //   const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+  //   if (urlOptions.network) {
+  //     const { network } = urlOptions;
+  //     if (Object.prototype.hasOwnProperty.call(dataNetworks, network)) {
+  //       console.log('LOCALSTORAGE_CHAIN_ID', LOCALSTORAGE_CHAIN_ID);
+  //       console.log('network', network);
+  //       if (
+  //         LOCALSTORAGE_CHAIN_ID === null ||
+  //         LOCALSTORAGE_CHAIN_ID !== network
+  //       ) {
+  //         localStorage.setItem('chainId', network);
+  //       } else {
+  //         localStorage.setItem('chainId', 'bostrom');
+  //       }
+  //     }
+  //   }
+  //   setLoadUrl(false);
+  // };
 
   useEffect(() => {
     const createQueryCliet = async () => {
@@ -193,6 +217,10 @@ const AppContextProvider = ({ children }) => {
   if (value.jsCyber && value.jsCyber === null) {
     return <div>...</div>;
   }
+
+  // if (loadUrl) {
+  //   return <div>...</div>;
+  // }
 
   return (
     <AppContext.Provider

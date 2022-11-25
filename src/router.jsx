@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Route, Router, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';

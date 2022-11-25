@@ -114,6 +114,18 @@ function App({
   const [story, setStory] = useState(false);
 
   // useEffect(() => {
+  //   const queryParam = {
+  //     network: CYBER.CHAIN_ID,
+  //   };
+
+  //   const searchQuery = queryString.stringify(queryParam);
+
+  //   history.replace({
+  //     search: searchQuery,
+  //   });
+  // }, []);
+
+  // useEffect(() => {
   //   const response = localStorage.getItem('CHAIN_PARAMS');
   //   console.log('getItem CHAIN_PARAMS', JSON.parse(response));
   // }, []);
