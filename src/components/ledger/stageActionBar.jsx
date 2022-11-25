@@ -368,7 +368,7 @@ export const StartStageSearchActionBar = ({
             <Pane alignItems="center" display="flex">
               {textBtn}{' '}
               <img
-                src={imgCyber}
+                src={selectNetworkImg(CYBER.CHAIN_ID)}
                 alt="cyber"
                 style={{
                   width: 20,
