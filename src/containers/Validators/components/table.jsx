@@ -1,7 +1,8 @@
 import React from 'react';
-import { TableEv as Table, Tooltip, Icon } from '@cybercongress/gravity';
+import { TableEv as Table, Icon } from '@cybercongress/gravity';
+import { Tooltip } from '../../../components';
 import { TextTable } from './ui';
-import { CYBER } from '../../../utils/config'
+import { CYBER } from '../../../utils/config';
 
 function TableHeroes({ mobile, showJailed, children }) {
   return (
@@ -46,8 +47,13 @@ function TableHeroes({ mobile, showJailed, children }) {
               <TextTable fontSize={14}>
                 Your bond
                 <Tooltip
-                  position="bottom"
-                  content={`Amount of ${CYBER.DENOM_CYBER.toUpperCase()} (tokens you bonded to validator in)`}
+                  placement="bottom"
+                  tooltip={
+                    <span>
+                      Amount of {CYBER.DENOM_CYBER.toUpperCase()} (tokens you
+                      bonded to validator in)
+                    </span>
+                  }
                 >
                   <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
                 </Tooltip>

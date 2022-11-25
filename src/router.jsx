@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Route, Router, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -51,7 +50,6 @@ import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
 
-
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -62,8 +60,14 @@ import {
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
+import {
+  ListNetwork,
+  CustomNetwork,
+  DetailsNetwork,
+} from './containers/network';
 
 import useIpfsFactory from './useIpfsFactory';
+import defaultNetworks from './utils/defaultNetworks';
 
 import { TIME_START, CYBER } from './utils/config';
 
@@ -92,9 +96,21 @@ function AppRouter({
     // tryConnectToPeer(dataIpfsStart.node);
   }, [dataIpfsStart]);
 
+  // useEffect(() => {
+  //   const response = localStorage.getItem('CHAIN_PARAMS');
+  //   if (response === null) {
+  //     localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
+  //   }
+  //   setLoader(false);
+  // }, []);
+
+  // if (loader) {
+  //   return <div>...</div>;
+  // }
+
   return (
     <Router history={history}>
-      <Route path="/" component={App} />
+      <Route path="/" component={() => <App time={time} />} />
       <Switch>
         <Route path="/" exact component={Wallet} />
         <Route path="/bootloader" component={Home} />
@@ -154,6 +170,10 @@ function AppRouter({
         <Route path="/codes/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
+        {/* network */}
+        <Route path="/network" exact component={ListNetwork} />
+        <Route path="/network/custom" component={CustomNetwork} />
+        <Route path="/network/:networkId" component={DetailsNetwork} />
 
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />

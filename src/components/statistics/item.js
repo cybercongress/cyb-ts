@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Pane, Icon } from '@cybercongress/gravity';
-import { Tooltip } from '../tooltip/tooltip';
+import Tooltip from '../tooltip/tooltip';
 
 // const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 

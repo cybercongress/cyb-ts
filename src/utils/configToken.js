@@ -87,6 +87,11 @@ const coinDecimalsConfig = {
     denom: 'H',
     coinMinimalDenom: 'hydrogen',
   },
+  liquidpussy: {
+    coinDecimals: 0,
+    denom: 'LP',
+    coinMinimalDenom: 'liquidpussy',
+  },
   millivolt: {
     coinDecimals: 3,
     denom: 'V',
