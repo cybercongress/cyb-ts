@@ -33,7 +33,7 @@ const updateAddress = async (prefix) => {
     localStorage.setItem('pocket', JSON.stringify(newObjPocketData));
   }
   if (localStoragePocketAccount !== null) {
-    const localStoragePocketAccountData = JSON.parse(localStoragePocket);
+    const localStoragePocketAccountData = JSON.parse(localStoragePocketAccount);
     const newObjAccountData = forEachObjbech32(
       localStoragePocketAccountData,
       prefix
