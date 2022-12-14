@@ -66,7 +66,6 @@ function TokenSetter({
   valueInput,
   id,
   textLeft,
-  readonly,
   selectedNetwork,
   onChangeSelectNetwork,
   ibc,
@@ -89,32 +88,36 @@ function TokenSetter({
 
       <Pane
         display="grid"
-        gridTemplateColumns="40px 1fr 1fr"
+        gridTemplateColumns="40px 1fr"
         gridGap="27px"
-        alignItems="center"
+        alignItems="flex-start"
         marginBottom={20}
       >
         <Pane width="33px" fontSize="20px" paddingBottom={10}>
           {textLeft}
         </Pane>
-        {swap && (
-          <Select
-            valueSelect={selectedNetwork}
-            textSelectValue={selectedNetwork !== '' ? selectedNetwork : ''}
-            onChangeSelect={(item) => onChangeSelectNetwork(item)}
-          >
-            {renderNetwork(networkList, selectedNetwork)}
-          </Select>
-        )}
-        {!ibcTokenB && (
-          <Select
-            valueSelect={token}
-            textSelectValue={token !== '' ? token : ''}
-            onChangeSelect={(item) => onChangeSelect(item)}
-          >
-            {renderOptions(totalSupply, selected, token)}
-          </Select>
-        )}
+        <Pane width="100%" display="flex" flexDirection="column" gap="20px">
+          {!ibcTokenB && (
+            <Select
+              width="100%"
+              valueSelect={token}
+              textSelectValue={token !== '' ? token : ''}
+              onChangeSelect={(item) => onChangeSelect(item)}
+            >
+              {renderOptions(totalSupply, selected, token)}
+            </Select>
+          )}
+          {swap && (
+            <Select
+              width="100%"
+              valueSelect={selectedNetwork}
+              textSelectValue={selectedNetwork !== '' ? selectedNetwork : ''}
+              onChangeSelect={(item) => onChangeSelectNetwork(item)}
+            >
+              {renderNetwork(networkList, selectedNetwork)}
+            </Select>
+          )}
+        </Pane>
       </Pane>
       {!ibcTokenB && (
         <Input
@@ -127,7 +130,6 @@ function TokenSetter({
           fontSize="20px"
           autoComplete="off"
           textAlign="end"
-          readonly={readonly || false}
         />
       )}
     </Pane>

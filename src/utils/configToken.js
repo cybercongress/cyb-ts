@@ -29,6 +29,42 @@ const coinDecimalsConfig = {
     sourceChannelId: 'channel-0',
     destChannelId: 'channel-11',
   },
+  'ibc/32C4CC556FB73E889DF1A7836A29951F1087525240FF9EEF6AEB616A83C6C9AC': {
+    chainId: 'chihuahua-1',
+    coinDecimals: 6,
+    denom: 'HUAHUA',
+    coinMinimalDenom: 'uhuahua',
+    rpc: 'https://rpc.chihuahua.wtf',
+    sourceChannelId: 'channel-0',
+    destChannelId: 'channel-11',
+  },
+  'ibc/8D9262E35CAE362FA74AE05E430550757CF8D842EC1B241F645D3CB7179AFD10': {
+    chainId: 'juno-1',
+    coinDecimals: 6,
+    denom: 'JUNO',
+    coinMinimalDenom: 'ujuno',
+    rpc: 'https://rpc-juno.itastakers.com',
+    sourceChannelId: 'channel-93',
+    destChannelId: 'channel-10',
+  },
+  'ibc/C23D820C5B6009E544AFC8AF5A2FEC288108AEDBFAEFDBBDD6BE54CC23069559': {
+    chainId: 'gravity-bridge-3',
+    coinDecimals: 6,
+    denom: 'GRAV',
+    coinMinimalDenom: 'ugraviton',
+    rpc: 'https://gravitychain.io:26657',
+    sourceChannelId: 'channel-103',
+    destChannelId: 'channel-12',
+  },
+  'ibc/4B322204B4F59D770680FE4D7A565DDC3F37BFF035474B717476C66A4F83DD72': {
+    chainId: 'evmos_9001-2',
+    coinDecimals: 18,
+    denom: 'EVMOS',
+    coinMinimalDenom: 'aevmos',
+    rpc: 'https://tendermint.bd.evmos.org:26657',
+    sourceChannelId: 'channel-19',
+    destChannelId: 'channel-9',
+  },
   pool70D7610CBA8E94B27BAD7806EBD826F5626C486BBF5C490D1463D72314353C66: {
     denom: ['boot', 'hydrogen'],
   },
@@ -102,6 +138,18 @@ const coinDecimalsConfig = {
   },
   uatom: {
     coinDecimals: 6,
+  },
+  ugraviton: {
+    coinDecimals: 6,
+  },
+  ujuno: {
+    coinDecimals: 6,
+  },
+  uhuahua: {
+    coinDecimals: 6,
+  },
+  aevmos: {
+    coinDecimals: 18,
   },
 };
 

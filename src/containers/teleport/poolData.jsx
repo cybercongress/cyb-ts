@@ -196,7 +196,7 @@ const stylePoolDataContainer = {
   // gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,320px), 1fr))',
   gridGap: '25px',
   margin: '0 auto',
-  width: '60%',
+  width: '100%',
 };
 
 function PoolData({ data, totalSupplyData, accountBalances }) {

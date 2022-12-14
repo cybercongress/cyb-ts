@@ -60,6 +60,7 @@ const Select = ({
   imgSelectValue,
   onChangeSelect,
   children,
+  width,
 }) => {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +82,11 @@ const Select = ({
         changeSelectedOption: updateSelectedOption,
       }}
     >
-      <div className={styles.dropDown} ref={selectContainerRef}>
+      <div
+        style={{ width: width || '120px' }}
+        className={styles.dropDown}
+        ref={selectContainerRef}
+      >
         <div className={styles.dropDownContainer}>
           <div onClick={toggling} className={styles.dropDownContainerHeader}>
             <div className={styles.dropDownHeader}>

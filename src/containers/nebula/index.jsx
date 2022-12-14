@@ -11,7 +11,7 @@ import {
   ContainerGradient,
 } from '../portal/components';
 import { DenomArr } from '../../components';
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, replaceSlash, denonFnc } from '../../utils/utils';
 import { reduceAmounToken } from '../teleport/utils';
 // import { getMarketData } from './getMarketData';
 import useGetMarketData from './useGetMarketData';
@@ -32,8 +32,21 @@ const getTypeDenom = (denom) => {
 };
 
 const getTypeDenomKey = (denom) => {
-  if (denom.includes('ibc') || denom.includes('pool')) {
-    return denom;
+  if (denom.includes('ibc')) {
+    const resultDenom = denonFnc(denom);
+
+    if (resultDenom.includes('ibc')) {
+      return replaceSlash(denom);
+    }
+
+    return resultDenom;
+  }
+
+  if (denom.includes('pool')) {
+    const resultDenom = denonFnc(denom);
+    return `${getTypeDenomKey(resultDenom[0])}-${getTypeDenomKey(
+      resultDenom[1]
+    )}`;
   }
 
   if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, denom)) {

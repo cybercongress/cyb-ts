@@ -1,5 +1,6 @@
 import React from 'react';
 import { trimString } from '../../utils/utils';
+import Tooltip from '../tooltip/tooltip';
 
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
@@ -16,7 +17,6 @@ const cosmos = require('../../image/cosmos-2.svg');
 const osmosis = require('../../image/osmosis.svg');
 const pussy = require('../../image/large-purple-circle.png');
 const customNetwork = require('../../image/large-orange-circle.png');
-
 
 const ValueImg = ({
   text,
@@ -173,6 +173,7 @@ const ValueImg = ({
         </span>
       )}
       {!onlyText && img !== null && (
+        // <Tooltip placement="top" tooltip={<div>{textCurency}</div>}>
         <img
           style={{
             margin: marginImg || 0,
@@ -184,6 +185,7 @@ const ValueImg = ({
           src={img}
           alt="text"
         />
+        // </Tooltip>
       )}
     </div>
   );

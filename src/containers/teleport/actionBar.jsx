@@ -17,11 +17,17 @@ import {
   coinDecimals,
   fromBech32,
   trimString,
+  selectNetworkImg,
 } from '../../utils/utils';
 import { getTxs } from '../../utils/search/utils';
-import { sortReserveCoinDenoms, reduceAmounToken, networkList } from './utils';
-import coinDecimalsConfig from '../../utils/configToken';
-import { networkList as networks } from './hooks/useGetBalancesIbc';
+import {
+  sortReserveCoinDenoms,
+  reduceAmounToken,
+  networkList,
+  getCoinDecimals,
+} from './utils';
+import networks from '../../utils/networkListIbc';
+import { BtnGrd, ActionBarSteps } from '../portal/components';
 
 import ActionBarStaps from './actionBarSteps';
 
@@ -83,15 +89,17 @@ function ActionBar({ stateActionBar }) {
     const poolAmountA = new BigNumber(Number(tokenAPoolAmount));
     const poolAmountB = new BigNumber(Number(tokenBPoolAmount));
 
-    if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = poolAmountB.dividedBy(poolAmountA);
-      orderPrice = orderPrice.multipliedBy(0.97).toNumber();
-    } else {
-      orderPrice = poolAmountA.dividedBy(poolAmountB);
-      orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+    if (poolAmountA.comparedTo(0) > 0 && poolAmountB.comparedTo(0) > 0) {
+      if ([tokenA, tokenB].sort()[0] !== tokenA) {
+        orderPrice = poolAmountB.dividedBy(poolAmountA);
+        orderPrice = orderPrice.multipliedBy(0.97).toNumber();
+      } else {
+        orderPrice = poolAmountA.dividedBy(poolAmountB);
+        orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+      }
     }
 
-    console.log('orderPrice useEffect', orderPrice);
+    // console.log('orderPrice useEffect', orderPrice);
     if (orderPrice && orderPrice !== Infinity) {
       setSwapPrice(orderPrice);
     }
@@ -258,9 +266,12 @@ function ActionBar({ stateActionBar }) {
   const createPool = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
 
+    const reduceAmountA = reduceAmounToken(tokenAAmount, tokenA, true);
+    const reduceAmountB = reduceAmounToken(tokenBAmount, tokenB, true);
+
     const depositCoins = [
-      coin(1000000, CYBER.DENOM_CYBER),
-      coin(1500000, 'hydrogen'),
+      coin(reduceAmountA, tokenA),
+      coin(reduceAmountB, tokenB),
     ];
     console.log(`depositCoins`, depositCoins);
 
@@ -404,7 +415,7 @@ function ActionBar({ stateActionBar }) {
     console.log('offerCoin', offerCoin);
     const demandCoinDenom = tokenB;
     console.log(`swapPrice`, swapPrice);
-    
+
     const exp = new BigNumber(10).pow(18).toString();
     const convertSwapPrice = new BigNumber(swapPrice)
       .multipliedBy(exp)
@@ -604,53 +615,70 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'pools' && stage === STAGE_INIT) {
+  if (selectedTab === 'createPool' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled onClick={() => createPool()}>
-          create Pool
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps
+        disabled={isExceeded}
+        btnText="create pool"
+        onClickFnc={() => createPool()}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          fee commission 1 G
+          <img
+            style={{ width: '20px' }}
+            src={selectNetworkImg(CYBER.CHAIN_ID)}
+            alt="img"
+          />
+        </div>
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'sub-liquidity' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isExceeded} onClick={() => withdwawWithinBatch()}>
-          Withdrawal
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isExceeded}
+          onClick={() => withdwawWithinBatch()}
+          text="withdrawal"
+        />
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'add-liquidity' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isExceeded} onClick={() => depositWithinBatch()}>
-          Deposit
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isExceeded}
+          onClick={() => depositWithinBatch()}
+          text="deposit"
+        />
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'swap' && typeTxs === 'swap' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isExceeded} onClick={() => swapWithinBatch()}>
-          swap
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isExceeded}
+          onClick={() => swapWithinBatch()}
+          text="swap"
+        />
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'swap' && typeTxs === 'deposit' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={ibcClient === null} onClick={() => depositOnClick()}>
-          deposit
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={ibcClient === null}
+          onClick={() => depositOnClick()}
+          text="deposit"
+        />
+      </ActionBarSteps>
     );
   }
 
@@ -660,11 +688,13 @@ function ActionBar({ stateActionBar }) {
     stage === STAGE_INIT
   ) {
     return (
-      <ActionBarContainer>
-        <Button disabled={keplr === null} onClick={() => withdrawOnClick()}>
-          withdraw
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={keplr === null}
+          onClick={() => withdrawOnClick()}
+          text="withdraw"
+        />
+      </ActionBarSteps>
     );
   }
 

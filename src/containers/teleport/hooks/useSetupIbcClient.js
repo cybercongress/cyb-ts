@@ -5,9 +5,9 @@ import { networkList } from '../utils';
 import coinDecimalsConfig from '../../../utils/configToken';
 import { getKeplr } from '../../ibc/useSetupIbc';
 import { CYBER } from '../../../utils/config';
-import useGetBalancesIbc, {
-  networkList as networks,
-} from './useGetBalancesIbc';
+import useGetBalancesIbc from './useGetBalancesIbc';
+
+import networks from '../../../utils/networkListIbc';
 
 function useSetupIbcClient(denom, network, keplrCybre) {
   const [ibcClient, setIbcClient] = useState(null);

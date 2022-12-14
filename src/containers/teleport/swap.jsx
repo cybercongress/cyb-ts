@@ -32,7 +32,7 @@ const imgSwap = require('../../image/exchange-arrows.svg');
 //   </>
 // );
 
-function Swap({ stateSwap, swap }) {
+function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
   const {
     accountBalances,
     totalSupply,
@@ -42,7 +42,6 @@ function Swap({ stateSwap, swap }) {
     tokenA,
     setTokenA,
     tokenAAmount,
-    amountChangeHandler,
     tokenChange,
     tokenAPoolAmount,
     tokenBPoolAmount,
@@ -105,6 +104,7 @@ function Swap({ stateSwap, swap }) {
       alignItems="center"
       flexDirection="column"
       gridGap="10px"
+      {...props}
     >
       <TokenSetter
         id="tokenAAmount"
@@ -152,7 +152,6 @@ function Swap({ stateSwap, swap }) {
         onChangeInput={amountChangeHandler}
         valueInput={tokenBAmount}
         textLeft={getTextToBuy}
-        readonly="readonly"
         selectedNetwork={networkB}
         onChangeSelectNetwork={setNetworkB}
         typeTxs={typeTxs}
