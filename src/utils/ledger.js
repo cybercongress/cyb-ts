@@ -1,7 +1,6 @@
 import CosmosApp from 'ledger-cosmos-js';
 import axios from 'axios';
 import Big from 'big.js';
-import secp256k1 from 'secp256k1';
 import * as Ripemd160 from 'ripemd160';
 import * as bech32 from 'bech32';
 import * as crypto from 'crypto';
@@ -137,14 +136,6 @@ class CosmosDelegateTool {
     return response;
   }
 
-  async applySignature(signature, unsignedTx, txContext) {
-    if (signature.return_code !== LEDGER.LEDGER_OK) {
-      this.lastError = signature.error_message;
-      throw new Error(signature.return_code, signature.error_message);
-    }
-    const sig = secp256k1.signatureImport(signature.signature);
-    return txs.applySignature(unsignedTx, txContext, sig);
-  }
 
   // Retrieve public key and bech32 address
   async retrieveAddress(path) {
