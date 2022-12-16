@@ -46,6 +46,7 @@ import networks from '../../utils/networkListIbc';
 import Carousel from '../portal/gift/carousel1/Carousel';
 import { MainContainer } from '../portal/components';
 import useGetSelectTab from './hooks/useGetSelectTab';
+import { findDenomInTokenList, isNative } from '../../hooks/useTraseDenom';
 // import TracerTx from './tx/TracerTx';
 // import TraceTxTable from './components/ibc-history/traceTxTable';
 // import HistoryContextProvider from './components/ibc-history/historyContext';
@@ -108,7 +109,7 @@ function addPunctuationToNumbers(number) {
 }
 
 function Teleport({ defaultAccount }) {
-  const { jsCyber, keplr } = useContext(AppContext);
+  const { jsCyber, keplr, ibcDataDenom } = useContext(AppContext);
   const history = useHistory();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
@@ -235,11 +236,46 @@ function Teleport({ defaultAccount }) {
         const responseTotalSupply = await jsCyber.totalSupply();
 
         const datareduceTotalSupply = reduceBalances(responseTotalSupply);
-        setTotalSupply({ ...defaultTokenList, ...datareduceTotalSupply });
+
+        const reduceData = {};
+
+        if (Object.keys(ibcDataDenom).length > 0) {
+          Object.keys(datareduceTotalSupply).forEach((key) => {
+            const value = datareduceTotalSupply[key];
+            if (!isNative(key)) {
+              if (Object.prototype.hasOwnProperty.call(ibcDataDenom, key)) {
+                const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
+                  ibcDataDenom[key];
+                const denomInfoFromList = findDenomInTokenList(baseDenom);
+                if (denomInfoFromList !== null) {
+                  if (
+                    Object.prototype.hasOwnProperty.call(
+                      denomInfoFromList,
+                      'destChannelId'
+                    )
+                  ) {
+                    const { destChannelId } = denomInfoFromList;
+                    if (destChannelId === sourceChannelIFromPath) {
+                      reduceData[key] = value;
+                    }
+                  }
+                }
+              }
+            } else if (key.indexOf('pool') !== 0) {
+              reduceData[key] = value;
+            }
+          });
+        }
+
+        if (Object.keys(reduceData).length > 0) {
+          setTotalSupply({ ...defaultTokenList, ...reduceData });
+        } else {
+          setTotalSupply({ ...defaultTokenList, ...datareduceTotalSupply });
+        }
       }
     };
     getTotalSupply();
-  }, [jsCyber]);
+  }, [jsCyber, ibcDataDenom]);
 
   useEffect(() => {
     let orderPrice = 0;

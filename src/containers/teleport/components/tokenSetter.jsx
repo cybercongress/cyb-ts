@@ -18,9 +18,16 @@ const renderOptions = (data, selected, valueSelect) => {
               key={key}
               value={key}
               bgrImg={key.includes('pool')}
-              text={<DenomArr denomValue={key} onlyText />}
+              text={
+                <DenomArr denomValue={key} onlyText tooltipStatusText={false} />
+              }
               img={
-                <DenomArr justifyContent="center" denomValue={key} onlyImg />
+                <DenomArr
+                  justifyContent="center"
+                  denomValue={key}
+                  onlyImg
+                  tooltipStatusImg={false}
+                />
               }
             />
           ))}

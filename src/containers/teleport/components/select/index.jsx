@@ -104,7 +104,13 @@ const Select = ({
                 />
               ) : (
                 <OptionSelect
-                  text={<DenomArr denomValue={textSelectValue} onlyText />}
+                  text={
+                    <DenomArr
+                      denomValue={textSelectValue}
+                      onlyText
+                      tooltipStatusText={false}
+                    />
+                  }
                   bgrImg={textSelectValue.includes('pool')}
                   img={
                     imgSelectValue || (
@@ -112,6 +118,7 @@ const Select = ({
                         justifyContent="center"
                         denomValue={textSelectValue}
                         onlyImg
+                        tooltipStatusImg={false}
                       />
                     )
                   }

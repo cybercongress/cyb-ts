@@ -1,52 +1,44 @@
-import React, { useContext, useEffect, useState } from 'react';
-import ValueImg from '../valueImg';
-import coinDecimalsConfig from '../../utils/configToken';
+import React from 'react';
+import CoinDenom from '../valueImg/textDenom';
+import ImgDenom from '../valueImg/imgDenom';
 
-function useGetDenom(denomValue) {
-  const [denom, setDenom] = useState('');
-  const [type, setType] = useState('');
-
-  useEffect(() => {
-    if (denomValue.includes('ibc')) {
-      setType('ibc');
-    } else if (denomValue.includes('pool')) {
-      setType('pool');
-    } else {
-      setType('');
-    }
-  }, [denomValue]);
-
-  useEffect(() => {
-    if (
-      denomValue.includes('ibc') &&
-      Object.hasOwnProperty.call(coinDecimalsConfig, denomValue)
-    ) {
-      setDenom(coinDecimalsConfig[denomValue].denom);
-    } else {
-      setDenom(denomValue);
-    }
-  }, [denomValue]);
-
-  return { denom, type };
-}
-
-function Denom({ denomValue, onlyText, onlyImg, marginContainer, ...props }) {
-  try {
-    const { denom, type } = useGetDenom(denomValue);
-
-    return (
-      <ValueImg
-        onlyText={onlyText}
-        onlyImg={onlyImg}
-        marginContainer={marginContainer}
-        text={denom}
-        type={type}
-        {...props}
-      />
-    );
-  } catch (error) {
-    return <div>{denomValue}</div>;
-  }
+function Denom({
+  denomValue,
+  onlyText,
+  onlyImg,
+  marginContainer,
+  justifyContent,
+  flexDirection,
+  gap,
+  tooltipStatusImg = true,
+  tooltipStatusText = true,
+  ...props
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: justifyContent || 'flex-start',
+        margin: marginContainer || 0,
+        flexDirection: flexDirection || 'unset',
+        gap: gap || 5,
+      }}
+    >
+      {!onlyImg && (
+        <CoinDenom
+          coinDenom={denomValue}
+          tooltipStatus={onlyText && tooltipStatusText}
+        />
+      )}
+      {!onlyText && (
+        <ImgDenom
+          coinDenom={denomValue}
+          tooltipStatus={onlyImg && tooltipStatusImg}
+        />
+      )}
+    </div>
+  );
 }
 
 export default Denom;

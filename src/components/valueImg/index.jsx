@@ -1,6 +1,7 @@
 import React from 'react';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
+import { traseDenom } from './imgDenom';
 
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');

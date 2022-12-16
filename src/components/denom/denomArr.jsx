@@ -7,13 +7,6 @@ const denonFnc = (text) => {
 
   if (
     Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
-    text.includes('ibc')
-  ) {
-    denom = coinDecimalsConfig[text].denom;
-  }
-
-  if (
-    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
     text.includes('pool')
   ) {
     const poolDenoms = coinDecimalsConfig[text].denom;
@@ -22,7 +15,14 @@ const denonFnc = (text) => {
   return denom;
 };
 
-function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
+function DenomArr({
+  denomValue,
+  onlyText,
+  onlyImg,
+  tooltipStatusImg,
+  tooltipStatusText,
+  ...props
+}) {
   const useDenomValue = useMemo(() => {
     const resultDenom = denonFnc(denomValue);
     if (typeof resultDenom === 'string') {
@@ -32,6 +32,8 @@ function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
           onlyImg={onlyImg}
           onlyText={onlyText}
           denomValue={resultDenom}
+          tooltipStatusImg={tooltipStatusImg}
+          tooltipStatusText={tooltipStatusText}
         />
       );
     }
@@ -43,6 +45,7 @@ function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
             denomValue={resultDenom[0]}
             onlyImg={onlyImg}
             onlyText={onlyText}
+            tooltipStatusImg={tooltipStatusImg}
             {...props}
           />
           {onlyText ? '-' : ''}
@@ -51,6 +54,7 @@ function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
             marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
             onlyImg={onlyImg}
             onlyText={onlyText}
+            tooltipStatusImg={tooltipStatusImg}
             {...props}
           />
         </div>

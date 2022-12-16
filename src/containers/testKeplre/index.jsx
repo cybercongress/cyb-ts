@@ -21,6 +21,8 @@ import DenomTest from './testDenom';
 import AddTest from './testAdd';
 import { Signatures } from '../portal/components';
 import Carousel from '../portal/gift/carousel1/Carousel';
+import ImgDenom from '../../components/valueImg/imgDenom';
+import CoinDenom from '../../components/valueImg/textDenom';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -40,7 +42,7 @@ const bootTocyb =
 const milliampere = 'milliampere';
 
 const testDenom =
-  'ibc/13B2C536BB057AC79D5696B8EA1B6720EC1F2170708CAFF6F0183C963FFFED0B';
+  'ibc/8D9262E35CAE362FA74AE05E430550757CF8D842EC1B241F645D3CB7179AFD10';
 
 const slidesTest = [
   {
@@ -56,50 +58,12 @@ const slidesTest = [
 
 function TestKeplr() {
   const { keplr, jsCyber } = useContext(AppContext);
-  // return <Denom denomValue={testDenom} />;
-  // return <DenomTest />;
-
-  const checkGift = async () => {
-    const response = await axios({
-      method: 'GET',
-      url: 'https://titan.cybernode.ai/graphql/api/rest/get-cybergift/0x0000000c01915e253a7f1017c975812edd5e8ec3',
-    });
-
-    console.log('response', response.data);
-  };
-  const getCredit = useCallback(async () => {
-    try {
-      const fromData = {
-        denom: 'boot',
-        address: addressTest,
-      };
-      const response = await axios({
-        method: 'post',
-        url: 'http://localhost:8000/credit',
-        headers,
-        data: JSON.stringify(fromData),
-      });
-      console.log('response', response);
-      getAccount(addressTest);
-    } catch (error) {
-      console.log('getCredit', error);
-    }
-  }, []);
-
-  const getAccount = useCallback(
-    async (address) => {
-      if (jsCyber !== null) {
-        // const response = await jsCyber.getAccount(address);
-        const response = await jsCyber.getBalance(address, 'boot');
-        console.log('response', response);
-      }
-    },
-    [jsCyber]
-  );
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      <Carousel slides={slidesTest} />
+      <CoinDenom coinDenom={testDenom} tooltipStatus />
+      {/* <ImgDenom coinDenom={testDenom} /> */}
+      {/* <Carousel slides={slidesTest} /> */}
       {/* <Signatures addressActive={{ bech32: addressTest }} /> */}
       {/* <button type="button" onClick={checkGift}>
           getCredit
