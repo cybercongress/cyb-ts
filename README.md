@@ -9,7 +9,7 @@ example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8e
 
 
 # features
-- [my robot](https://cyb.ai): is able to interact with particles and neurons through signals
+- [my robot](https://cyb.ai): your robot
     - [energy](https://cyb.ai/grid): superintelligence dashboard
     - [sense](https://cyb.ai/sixthSense): stricly defined feed
     - [log](https://cyb.ai/network/bostrom/contract/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t/txs): publish important particles
@@ -30,4 +30,7 @@ example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8e
 $ yarn install
 $ yarn start
 ```
-join the community at [cyb.ai/~cyb](https://cyb.ai/search/cyb)
+
+# join
+
+the community at [cyb.ai/~cyb](https://cyb.ai/search/cyb)
