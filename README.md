@@ -30,6 +30,7 @@ example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8e
 $ yarn install
 $ yarn start
 ```
+then pray that node.js will build something
 
 # join
 
