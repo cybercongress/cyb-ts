@@ -204,12 +204,12 @@ export function getPoolToken(pool, myPoolTokens) {
 
 export const networkList = {
   bostrom: 'bostrom',
-  osmosis: 'osmosis-1',
-  cosmos: 'cosmoshub-4',
+  'osmosis-1': 'osmosis-1',
+  'cosmoshub-4': 'cosmoshub-4',
   'space-pussy': 'space-pussy',
-  juno: 'juno-1',
-  'gravity-bridge': 'gravity-bridge-3',
-  desmos: 'desmos-mainnet',
+  'juno-1': 'juno-1',
+  'gravity-bridge-3': 'gravity-bridge-3',
+  'desmos-mainnet': 'desmos-mainnet',
   // evmos: 'evmos_9001-2',
   // chihuahua: 'chihuahua-1',
 };

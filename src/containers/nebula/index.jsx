@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
@@ -12,24 +12,15 @@ import {
 } from '../portal/components';
 import { DenomArr } from '../../components';
 import { formatNumber, replaceSlash, denonFnc } from '../../utils/utils';
-import { reduceAmounToken } from '../teleport/utils';
 // import { getMarketData } from './getMarketData';
-import useGetMarketData from './useGetMarketData';
+import useGetMarketData, {
+  fncTraseDenom,
+  getDisplayAmount,
+} from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
 import { CYBER } from '../../utils/config';
-
-const getTypeDenom = (denom) => {
-  if (denom.includes('ibc')) {
-    return 'blue';
-  }
-
-  if (denom.includes('pool')) {
-    return 'pink';
-  }
-
-  return 'green';
-};
+import { AppContext } from '../../context';
 
 const getTypeDenomKey = (denom) => {
   if (denom.includes('ibc')) {
@@ -56,7 +47,8 @@ const getTypeDenomKey = (denom) => {
   return denom;
 };
 
-function Nebula({ node, mobile, defaultAccount }) {
+function Nebula({ mobile }) {
+  const { ibcDataDenom } = useContext(AppContext);
   const { dataTotal, marketData } = useGetMarketData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
@@ -65,7 +57,8 @@ function Nebula({ node, mobile, defaultAccount }) {
       let cap = 0;
       Object.keys(dataTotal).forEach((key) => {
         const amount = dataTotal[key];
-        const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+        const { coinDecimals } = fncTraseDenom(key, ibcDataDenom);
+        const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (
           Object.keys(marketData).length > 0 &&
           Object.prototype.hasOwnProperty.call(marketData, key)
@@ -94,7 +87,7 @@ function Nebula({ node, mobile, defaultAccount }) {
         }
       }
     }
-  }, [dataTotal, marketData]);
+  }, [dataTotal, marketData, ibcDataDenom]);
 
   const dataRenderItems = useMemo(() => {
     let dataObj = {};
@@ -103,7 +96,8 @@ function Nebula({ node, mobile, defaultAccount }) {
         const amount = dataTotal[key];
         let price = 0;
         let cap = 0;
-        const reduceAmount = reduceAmounToken(parseFloat(amount), key);
+        const { coinDecimals } = fncTraseDenom(key, ibcDataDenom);
+        const reduceAmount = getDisplayAmount(amount, coinDecimals);
 
         if (
           Object.keys(marketData).length > 0 &&
@@ -130,7 +124,7 @@ function Nebula({ node, mobile, defaultAccount }) {
       dataObj = sortable;
     }
     return dataObj;
-  }, [dataTotal, marketData]);
+  }, [dataTotal, marketData, ibcDataDenom]);
 
   const itemRowMarketData = useMemo(() => {
     return Object.keys(dataRenderItems).map((key) => {
@@ -222,8 +216,6 @@ function Nebula({ node, mobile, defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
-    defaultAccount: store.pocket.defaultAccount,
   };
 };
 

@@ -213,19 +213,30 @@ function Teleport({ defaultAccount }) {
   }, [query]);
 
   useEffect(() => {
+    const dataLocalStorageNetworkA = localStorage.getItem('networkA');
+    const dataLocalStorageNetworkB = localStorage.getItem('networkB');
+    if (dataLocalStorageNetworkA !== null) {
+      setNetworkA(dataLocalStorageNetworkA);
+    }
+    if (dataLocalStorageNetworkB !== null) {
+      setNetworkB(dataLocalStorageNetworkB);
+    }
+  }, []);
+
+  useEffect(() => {
     if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
       setTypeTxs('swap');
     }
 
     if (networkA !== CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
       setTypeTxs('deposit');
-      const { sourceChannelId } = networks[networkList[networkA]];
+      const { sourceChannelId } = networks[networkA];
       setSourceChannel(sourceChannelId);
     }
 
     if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
       setTypeTxs('withdraw');
-      const { destChannelId } = networks[networkList[networkB]];
+      const { destChannelId } = networks[networkB];
       setSourceChannel(destChannelId);
     }
   }, [networkB, networkA]);
@@ -489,6 +500,16 @@ function Teleport({ defaultAccount }) {
     setUpdate((item) => item + 1);
   };
 
+  const onChangeSelectNetworksA = (item) => {
+    localStorage.setItem('networkA', item);
+    setNetworkA(item);
+  };
+
+  const onChangeSelectNetworksB = (item) => {
+    localStorage.setItem('networkB', item);
+    setNetworkA(item);
+  };
+
   const stateActionBar = {
     addressActive,
     tokenAAmount,
@@ -527,7 +548,8 @@ function Teleport({ defaultAccount }) {
     tokenChange,
     swapPrice,
     networkA,
-    setNetworkA,
+    onChangeSelectNetworksA,
+    onChangeSelectNetworksB,
     networkB,
     setNetworkB,
     typeTxs,

@@ -136,9 +136,8 @@ function Mint({ defaultAccount }) {
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
       const { keys, bech32 } = account.cyber;
-      if (keys === 'keplr') {
-        addressPocket = bech32;
-      }
+
+      addressPocket = bech32;
     }
     setAddressActive(addressPocket);
   }, [defaultAccount.name]);

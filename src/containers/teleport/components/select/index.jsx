@@ -55,6 +55,7 @@ export const OptionSelect = ({ text, img, bgrImg, value, ...props }) => {
 };
 
 const Select = ({
+  type,
   valueSelect,
   textSelectValue,
   imgSelectValue,
@@ -106,6 +107,7 @@ const Select = ({
                 <OptionSelect
                   text={
                     <DenomArr
+                      type={type}
                       denomValue={textSelectValue}
                       onlyText
                       tooltipStatusText={false}
@@ -115,6 +117,7 @@ const Select = ({
                   img={
                     imgSelectValue || (
                       <DenomArr
+                        type={type}
                         justifyContent="center"
                         denomValue={textSelectValue}
                         onlyImg

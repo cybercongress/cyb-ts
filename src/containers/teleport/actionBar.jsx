@@ -544,8 +544,8 @@ function ActionBar({ stateActionBar }) {
   const withdrawOnClick = useCallback(async () => {
     let prefix;
     setStage(STAGE_SUBMITTED);
-    if (Object.prototype.hasOwnProperty.call(networks, networkList[networkB])) {
-      prefix = networks[networkList[networkB]].prefix;
+    if (Object.prototype.hasOwnProperty.call(networks, networkB)) {
+      prefix = networks[networkB].prefix;
     }
     const [{ address }] = await keplr.signer.getAccounts();
     const sourcePort = 'transfer';

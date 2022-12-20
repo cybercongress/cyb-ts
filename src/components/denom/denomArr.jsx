@@ -21,6 +21,7 @@ function DenomArr({
   onlyImg,
   tooltipStatusImg,
   tooltipStatusText,
+  type,
   ...props
 }) {
   const useDenomValue = useMemo(() => {
@@ -34,6 +35,7 @@ function DenomArr({
           denomValue={resultDenom}
           tooltipStatusImg={tooltipStatusImg}
           tooltipStatusText={tooltipStatusText}
+          type={type}
         />
       );
     }
@@ -42,6 +44,7 @@ function DenomArr({
       return (
         <div style={{ display: 'flex' }}>
           <Denom
+            type={type}
             denomValue={resultDenom[0]}
             onlyImg={onlyImg}
             onlyText={onlyText}
@@ -50,6 +53,7 @@ function DenomArr({
           />
           {onlyText ? '-' : ''}
           <Denom
+            type={type}
             denomValue={resultDenom[1]}
             marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
             onlyImg={onlyImg}

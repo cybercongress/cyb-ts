@@ -5,7 +5,7 @@ import { TokenSetter } from './components';
 import { Denom } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
-import { getCoinDecimals } from './utils';
+import { getCoinDecimals, networkList } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
@@ -47,7 +47,8 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
     tokenBPoolAmount,
     swapPrice,
     networkA,
-    setNetworkA,
+    onChangeSelectNetworksA,
+    onChangeSelectNetworksB,
     networkB,
     setNetworkB,
     typeTxs,
@@ -95,6 +96,26 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
     return 'add';
   }, [typeTxs, swap]);
 
+  const ListNetworkB = useMemo(() => {
+    if (networkA === 'bostrom') {
+      const reduceData = { ...networkList };
+
+      delete reduceData[networkB];
+      return reduceData;
+    }
+    return { bostrom: 'bostrom' };
+  }, [networkA, networkB]);
+
+  const ListNetworkA = useMemo(() => {
+    if (networkB === 'bostrom') {
+      const reduceData = { ...networkList };
+
+      delete reduceData[networkA];
+      return reduceData;
+    }
+    return { bostrom: 'bostrom' };
+  }, [networkB, networkA]);
+
   return (
     <Pane
       maxWidth="390px"
@@ -117,13 +138,14 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
         valueInput={tokenAAmount}
         textLeft={getTextSellSend}
         selectedNetwork={networkA}
-        onChangeSelectNetwork={setNetworkA}
+        onChangeSelectNetwork={onChangeSelectNetworksA}
         typeTxs={typeTxs}
         denomIbc={denomIbc}
         // ibc={typeTxs !== 'swap'}
         balanceIbc={balanceIbc}
         ibc={typeTxs === 'deposit'}
         swap={swap}
+        network={ListNetworkA}
       />
       {/* <Slider
         id="tokenAAmount"
@@ -153,10 +175,11 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
         valueInput={tokenBAmount}
         textLeft={getTextToBuy}
         selectedNetwork={networkB}
-        onChangeSelectNetwork={setNetworkB}
+        onChangeSelectNetwork={onChangeSelectNetworksB}
         typeTxs={typeTxs}
         ibcTokenB={typeTxs !== 'swap'}
         swap={swap}
+        network={ListNetworkB}
       />
       {typeTxs === 'swap' && swap && (
         <>

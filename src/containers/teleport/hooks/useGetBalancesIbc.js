@@ -1,10 +1,11 @@
 /* eslint-disable no-restricted-syntax */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Sha256 } from '@cosmjs/crypto';
 import { CYBER } from '../../../utils/config';
 import coinDecimalsConfig from '../../../utils/configToken';
 import { reduceBalances } from '../../../utils/utils';
 import networkList from '../../../utils/networkListIbc';
+import { AppContext } from '../../../context';
 
 const initValueBalance = { amount: 0, denom: '' };
 
@@ -28,6 +29,7 @@ const ibcDenom = (paths, coinMinimalDenom) => {
 // const de = ibcDenom([{ portId: 'transfer', channelId: 'channel-2' }], 'uosmo');
 
 function useGetBalancesIbc(client, denom) {
+  const { ibcDataDenom } = useContext(AppContext);
   const [balanceIbc, setBalanceIbc] = useState(null);
   const [denomIbc, setDenomIbc] = useState(null);
 
@@ -61,7 +63,7 @@ function useGetBalancesIbc(client, denom) {
         if (responseChainId !== CYBER.CHAIN_ID) {
           let coinMinimalDenom = null;
           if (denom.includes('ibc')) {
-            coinMinimalDenom = coinDecimalsConfig[denom].coinMinimalDenom;
+            coinMinimalDenom = ibcDataDenom[denom].baseDenom;
           } else {
             coinMinimalDenom = ibcDenom(
               [
@@ -85,7 +87,7 @@ function useGetBalancesIbc(client, denom) {
       }
     };
     getBalance();
-  }, [client, denom]);
+  }, [client, denom, ibcDataDenom]);
 
   return { balanceIbc, denomIbc };
 }
