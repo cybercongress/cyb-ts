@@ -9,6 +9,7 @@ const cyberBostrom = require('../image/large-green.png');
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
 
+
 const ORDER = {
   NONE: 'NONE',
   ASC: 'ASC',
