@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Pane, Input, Button } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Web3Utils from 'web3-utils';
@@ -27,6 +27,7 @@ import {
   exponentialToDecimal,
   formatCurrencyNumber,
   getDecimal,
+  getDisplayAmount,
 } from '../../../utils/utils';
 import { decFnc } from '../../teleport/utils';
 import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
@@ -35,6 +36,7 @@ import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
 import coinDecimalsConfig from '../../../utils/configToken';
+import { AppContext } from '../../../context';
 
 const editOutline = require('../../../image/create-outline.svg');
 const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -145,6 +147,8 @@ const DetailsBalance = ({
 };
 
 const FormatNumberTokens = ({ text, value, ...props }) => {
+  const { traseDenom } = useContext(AppContext);
+  const { coinDecimals } = traseDenom(text);
   // console.log(text, value);
   return (
     <Pane
@@ -160,7 +164,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
         display="flex"
         alignItems="center"
       >
-        <span>{formatNumber(reduceAmounToken(value, text))}</span>
+        <span>{formatNumber(getDisplayAmount(value, coinDecimals))}</span>
       </Pane>
       {text && (
         <DenomArr

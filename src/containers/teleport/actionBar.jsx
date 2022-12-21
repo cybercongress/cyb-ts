@@ -14,10 +14,11 @@ import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
   exponentialToDecimal,
-  coinDecimals,
   fromBech32,
   trimString,
   selectNetworkImg,
+  getDisplayAmountReverce,
+  getDisplayAmount,
 } from '../../utils/utils';
 import { getTxs } from '../../utils/search/utils';
 import {
@@ -51,7 +52,7 @@ const fee = {
 };
 
 function ActionBar({ stateActionBar }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { keplr, jsCyber, traseDenom } = useContext(AppContext);
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -266,8 +267,11 @@ function ActionBar({ stateActionBar }) {
   const createPool = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
 
-    const reduceAmountA = reduceAmounToken(tokenAAmount, tokenA, true);
-    const reduceAmountB = reduceAmounToken(tokenBAmount, tokenB, true);
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+    const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+
+    const reduceAmountA = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
+    const reduceAmountB = getDisplayAmountReverce(tokenBAmount, coinDecimalsB);
 
     const depositCoins = [
       coin(reduceAmountA, tokenA),
@@ -342,16 +346,21 @@ function ActionBar({ stateActionBar }) {
       [tokenB]: amountY,
     };
 
-    deposit[arrangedReserveCoinDenoms[0]] = reduceAmounToken(
-      deposit[arrangedReserveCoinDenoms[0]],
-      arrangedReserveCoinDenoms[0],
-      true
+    const { coinDecimals: coinDecimalsA } = traseDenom(
+      arrangedReserveCoinDenoms[0]
+    );
+    const { coinDecimals: coinDecimalsB } = traseDenom(
+      arrangedReserveCoinDenoms[1]
     );
 
-    deposit[arrangedReserveCoinDenoms[1]] = reduceAmounToken(
+    deposit[arrangedReserveCoinDenoms[0]] = getDisplayAmountReverce(
+      deposit[arrangedReserveCoinDenoms[0]],
+      coinDecimalsA
+    );
+
+    deposit[arrangedReserveCoinDenoms[1]] = getDisplayAmountReverce(
       deposit[arrangedReserveCoinDenoms[1]],
-      arrangedReserveCoinDenoms[1],
-      true
+      coinDecimalsB
     );
 
     const depositCoins = [
@@ -398,14 +407,16 @@ function ActionBar({ stateActionBar }) {
     }
 
     if (tokenA.includes('ibc')) {
-      amountTokenA = reduceAmounToken(amountTokenA, tokenA, true);
+      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+
+      amountTokenA = getDisplayAmountReverce(amountTokenA, coinDecimalsA);
     }
 
     setStage(STAGE_SUBMITTED);
     const offerCoinFee = coin(
       Math.ceil(
         parseFloat(amountTokenA) *
-          coinDecimals(parseFloat(params.swapFeeRate)) *
+          getDisplayAmount(parseFloat(params.swapFeeRate), 18) *
           0.5
       ),
       tokenA
@@ -476,20 +487,19 @@ function ActionBar({ stateActionBar }) {
   const depositOnClick = useCallback(async () => {
     console.log('tokenAAmount', tokenAAmount);
     const [{ address }] = await ibcClient.signer.getAccounts();
+    const [{ address: counterpartyAccount }] = await keplr.signer.getAccounts();
+
     setStage(STAGE_SUBMITTED);
 
     const sourcePort = 'transfer';
-    const counterpartyAccount = fromBech32(
-      address,
-      CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-    );
+
     const timeoutTimestamp = Long.fromString(
       `${new Date().getTime() + 60000}000000`
     );
-    const transferAmount = coin(
-      reduceAmounToken(parseFloat(tokenAAmount), tokenA, true),
-      denomIbc
-    );
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+    const amount = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
+
+    const transferAmount = coin(amount, denomIbc);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {
@@ -539,7 +549,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
-  }, [tokenA, ibcClient, tokenAAmount, denomIbc]);
+  }, [tokenA, ibcClient, tokenAAmount, denomIbc, keplr]);
 
   const withdrawOnClick = useCallback(async () => {
     let prefix;
@@ -553,10 +563,9 @@ function ActionBar({ stateActionBar }) {
     const timeoutTimestamp = Long.fromString(
       `${new Date().getTime() + 60000}000000`
     );
-    const transferAmount = coin(
-      reduceAmounToken(parseFloat(tokenAAmount), tokenA, true),
-      tokenA
-    );
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+    const amount = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
+    const transferAmount = coin(amount, tokenA);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {

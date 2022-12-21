@@ -17,9 +17,9 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import {
   reduceBalances,
   formatNumber,
-  coinDecimals,
   roundNumber,
   exponentialToDecimal,
+  getDisplayAmountReverce,
 } from '../../utils/utils';
 import { Dots, ValueImg, ButtonIcon } from '../../components';
 import {
@@ -109,7 +109,7 @@ function addPunctuationToNumbers(number) {
 }
 
 function Teleport({ defaultAccount }) {
-  const { jsCyber, keplr, ibcDataDenom } = useContext(AppContext);
+  const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
   const history = useHistory();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
@@ -378,8 +378,11 @@ function Teleport({ defaultAccount }) {
           accountBalances,
           tokenA
         );
+        const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+        const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+
         const validTokenAmountA =
-          reduceAmounToken(Number(tokenAAmount), tokenA, true) <=
+          getDisplayAmountReverce(tokenAAmount, coinDecimalsA) <=
             myATokenBalance && Number(tokenAAmount) > 0;
 
         const resultValidTokenA = validTokenAmountA && validTokenA;
@@ -391,10 +394,10 @@ function Teleport({ defaultAccount }) {
           accountBalances[tokenB] > 0;
 
         const validTokenAmountAB =
-          reduceAmounToken(Number(tokenAAmount), tokenA, true) <=
+          getDisplayAmountReverce(tokenAAmount, coinDecimalsA) <=
             myATokenBalance &&
           Number(tokenAAmount) > 0 &&
-          reduceAmounToken(Number(tokenBAmount), tokenB, true) <=
+          getDisplayAmountReverce(tokenBAmount, coinDecimalsB) <=
             myATokenBalanceB &&
           Number(tokenBAmount) > 0;
 

@@ -11,12 +11,14 @@ import {
   ContainerGradient,
 } from '../portal/components';
 import { DenomArr } from '../../components';
-import { formatNumber, replaceSlash, denonFnc } from '../../utils/utils';
-// import { getMarketData } from './getMarketData';
-import useGetMarketData, {
-  fncTraseDenom,
+import {
+  formatNumber,
+  replaceSlash,
+  denonFnc,
   getDisplayAmount,
-} from './useGetMarketData';
+} from '../../utils/utils';
+// import { getMarketData } from './getMarketData';
+import useGetMarketData, { fncTraseDenom } from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
 import { CYBER } from '../../utils/config';

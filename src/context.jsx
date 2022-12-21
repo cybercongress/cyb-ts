@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
@@ -11,6 +17,7 @@ import useGetNetworks from './hooks/useGetNetworks';
 import defaultNetworks from './utils/defaultNetworks';
 import { getDenomHash } from './utils/utils';
 import { getDenomTraces } from './utils/search/utils';
+import { findDenomInTokenList, isNative } from './hooks/useTraseDenom';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -42,6 +49,7 @@ const valueContext = {
   updateNetworks: () => {},
   updatejsCyber: () => {},
   initSigner: () => {},
+  traseDenom: () => {},
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -284,7 +292,44 @@ const AppContextProvider = ({ children }) => {
     }));
   };
 
-  console.log('value', value);
+  const traseDenom = useCallback(
+    (denomTrase) => {
+      const infoDenomTemp = {
+        denom: denomTrase,
+        coinDecimals: 0,
+      };
+      let findDenom = null;
+
+      const { ibcDataDenom } = value;
+
+      if (!denomTrase.includes('pool')) {
+        if (!isNative(denomTrase)) {
+          if (
+            ibcDataDenom !== null &&
+            Object.keys(ibcDataDenom).length > 0 &&
+            Object.prototype.hasOwnProperty.call(ibcDataDenom, denomTrase)
+          ) {
+            const { baseDenom } = ibcDataDenom[denomTrase];
+            findDenom = baseDenom;
+          }
+        } else {
+          findDenom = denomTrase;
+        }
+
+        if (findDenom !== null) {
+          const denomInfoFromList = findDenomInTokenList(findDenom);
+          if (denomInfoFromList !== null) {
+            const { denom, coinDecimals } = denomInfoFromList;
+            infoDenomTemp.denom = denom;
+            infoDenomTemp.coinDecimals = coinDecimals;
+          }
+        }
+      }
+
+      return { ...infoDenomTemp };
+    },
+    [value]
+  );
 
   if (value.jsCyber && value.jsCyber === null) {
     return <div>...</div>;
@@ -296,7 +341,13 @@ const AppContextProvider = ({ children }) => {
 
   return (
     <AppContext.Provider
-      value={{ ...value, updatejsCyber, initSigner, updateNetworks }}
+      value={{
+        ...value,
+        updatejsCyber,
+        initSigner,
+        updateNetworks,
+        traseDenom,
+      }}
     >
       {children}
     </AppContext.Provider>
