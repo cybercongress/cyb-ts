@@ -34,13 +34,11 @@ const itemsMenu = (address) => {
     },
     {
       name: 'Warp',
-      to: '/warp/add-liquidity',
-      active: false,
+      to: '/warp/pools',
       subItems: [
         { name: 'Add liquidity', to: '/warp/add-liquidity' },
         { name: 'Create pool', to: '/warp/create-pool' },
         { name: 'Sub liquidity', to: '/warp/sub-liquidity' },
-        { name: 'Pools', to: '/warp/pools' },
       ],
     },
     {
