@@ -429,44 +429,49 @@ function Teleport({ defaultAccount }) {
   ]);
 
   const amountChangeHandler = useCallback(
-    (e) => {
-      const inputAmount = e.target.value;
+    (values, e) => {
+      const inputAmount = values;
 
       const isReverse = e.target.id !== 'tokenAAmount';
 
-      if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
-        const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
+      // if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
+      const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
 
-        let { counterPairAmount } = calculateCounterPairAmount(e, state);
-        counterPairAmount = Math.abs(Number(counterPairAmount).toFixed(4));
-
-        if (isReverse) {
-          setTokenBAmount(inputAmount);
-          setTokenAAmount(counterPairAmount);
-        } else {
-          setTokenAAmount(inputAmount);
-          setTokenBAmount(counterPairAmount);
-        }
+      let { counterPairAmount } = calculateCounterPairAmount(
+        inputAmount,
+        e,
+        state
+      );
+      counterPairAmount = Math.abs(Number(counterPairAmount).toFixed(4));
+      if (isReverse) {
+        setTokenBAmount(new BigNumber(inputAmount).toNumber());
+        setTokenAAmount(counterPairAmount);
+      } else {
+        setTokenAAmount(new BigNumber(inputAmount).toNumber());
+        setTokenBAmount(counterPairAmount);
       }
+      // }
     },
     [tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA]
   );
 
-  const amountChangeHandlerCreatePool = useCallback((e) => {
-    const inputAmount = e.target.value;
+  const amountChangeHandlerCreatePool = useCallback((values, e) => {
+    const inputAmount = values;
+
     const isReverse = e.target.id !== 'tokenAAmount';
 
-    if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
-      if (isReverse) {
-        setTokenBAmount(inputAmount);
-      } else {
-        setTokenAAmount(inputAmount);
-      }
+    // if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
+    if (isReverse) {
+      setTokenBAmount(new BigNumber(inputAmount).toNumber());
+    } else {
+      setTokenAAmount(new BigNumber(inputAmount).toNumber());
     }
+    // }
   }, []);
 
-  const onChangeInputWithdraw = (e) => {
-    const inputAmount = e.target.value;
+  const onChangeInputWithdraw = (values, e) => {
+    const inputAmount = values;
+
     const myATokenBalance = getMyTokenBalanceNumber(
       selectMyPool,
       accountBalances
@@ -479,7 +484,7 @@ function Teleport({ defaultAccount }) {
       exceeded = false;
     }
     setIsExceeded(exceeded);
-    setAmountPoolCoin(inputAmount);
+    setAmountPoolCoin(new BigNumber(inputAmount).toNumber());
   };
 
   function tokenChange() {
@@ -507,7 +512,7 @@ function Teleport({ defaultAccount }) {
 
   const onChangeSelectNetworksB = (item) => {
     localStorage.setItem('networkB', item);
-    setNetworkA(item);
+    setNetworkB(item);
   };
 
   const stateActionBar = {

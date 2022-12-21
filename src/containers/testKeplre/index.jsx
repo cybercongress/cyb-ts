@@ -9,6 +9,7 @@ import {
   SigningCyberClientOptions,
 } from '@cybercongress/cyber-js';
 import { Tablist, Pane } from '@cybercongress/gravity';
+import { NumericFormat } from 'react-number-format';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { trimString, formatNumber, reduceBalances } from '../../utils/utils';
@@ -23,6 +24,7 @@ import { Signatures } from '../portal/components';
 import Carousel from '../portal/gift/carousel1/Carousel';
 import ImgDenom from '../../components/valueImg/imgDenom';
 import CoinDenom from '../../components/valueImg/textDenom';
+import { Input } from '../teleport/components';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -62,6 +64,18 @@ function TestKeplr() {
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
       <CoinDenom coinDenom={testDenom} tooltipStatus />
+      <NumericFormat
+        type="text"
+        id="a"
+        value={1231231}
+        onValueChange={(values, sourceInfo) =>
+          console.log('e onChangeValue', values, sourceInfo.event.target.id)
+        }
+        customInput={Input}
+        thousandsGroupStyle="thousand"
+        thousandSeparator=","
+        decimalScale={3}
+      />
       {/* <ImgDenom coinDenom={testDenom} /> */}
       {/* <Carousel slides={slidesTest} /> */}
       {/* <Signatures addressActive={{ bech32: addressTest }} /> */}

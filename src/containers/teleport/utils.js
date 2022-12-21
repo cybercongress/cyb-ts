@@ -60,8 +60,8 @@ const getCounterPairAmount = (amaunt, decimals, swapPrice) => {
     .toString();
 };
 
-export function calculateCounterPairAmount(e, state, type) {
-  const inputAmount = e.target.value;
+export function calculateCounterPairAmount(values, e, state) {
+  const inputAmount = values;
 
   let counterPairAmount = 0;
 
