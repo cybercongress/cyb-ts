@@ -111,6 +111,7 @@ function addPunctuationToNumbers(number) {
 function Teleport({ defaultAccount }) {
   const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
   const history = useHistory();
+  const { selectedTab } = useGetSelectTab(history);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
   const { liquidBalances: accountBalances } = getBalances(
@@ -140,7 +141,6 @@ function Teleport({ defaultAccount }) {
     networkA,
     keplr
   );
-  const { selectedTab } = useGetSelectTab(history, setNetworkA, setNetworkB);
   const [sourceChannel, setSourceChannel] = useState(null);
 
   let { search } = useLocation();
@@ -213,15 +213,20 @@ function Teleport({ defaultAccount }) {
   }, [query]);
 
   useEffect(() => {
-    const dataLocalStorageNetworkA = localStorage.getItem('networkA');
-    const dataLocalStorageNetworkB = localStorage.getItem('networkB');
-    if (dataLocalStorageNetworkA !== null) {
-      setNetworkA(dataLocalStorageNetworkA);
+    if (selectedTab === 'swap') {
+      const dataLocalStorageNetworkA = localStorage.getItem('networkA');
+      const dataLocalStorageNetworkB = localStorage.getItem('networkB');
+      if (dataLocalStorageNetworkA !== null) {
+        setNetworkA(dataLocalStorageNetworkA);
+      }
+      if (dataLocalStorageNetworkB !== null) {
+        setNetworkB(dataLocalStorageNetworkB);
+      }
+    } else {
+      setNetworkA(CYBER.CHAIN_ID);
+      setNetworkB(CYBER.CHAIN_ID);
     }
-    if (dataLocalStorageNetworkB !== null) {
-      setNetworkB(dataLocalStorageNetworkB);
-    }
-  }, []);
+  }, [selectedTab]);
 
   useEffect(() => {
     if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {

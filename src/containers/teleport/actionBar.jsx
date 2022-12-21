@@ -172,69 +172,69 @@ function ActionBar({ stateActionBar }) {
   //   // }
   // }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
-  useEffect(() => {
-    console.log('first', logs.parseRawLog(testVar));
-    const logsValue = parseLog(logs.parseRawLog(testVar));
-    console.log('logsValue', logsValue);
-  }, []);
+  // useEffect(() => {
+  //   console.log('first', logs.parseRawLog(testVar));
+  //   const logsValue = parseLog(logs.parseRawLog(testVar));
+  //   console.log('logsValue', logsValue);
+  // }, []);
 
-  const parseLog = (log) => {
-    try {
-      if (log && Object.keys(log).length > 0) {
-        const { events } = log[0];
-        if (events) {
-          // eslint-disable-next-line no-restricted-syntax
-          for (const event of events) {
-            if (event.type === 'send_packet') {
-              const { attributes } = event;
-              const sourceChannelAttr = attributes.find(
-                (attr) => attr.key === 'packet_src_channel'
-              );
-              const sourceChannelValue = sourceChannelAttr
-                ? sourceChannelAttr.value
-                : undefined;
-              const destChannelAttr = attributes.find(
-                (attr) => attr.key === 'packet_dst_channel'
-              );
-              const destChannelValue = destChannelAttr
-                ? destChannelAttr.value
-                : undefined;
-              const sequenceAttr = attributes.find(
-                (attr) => attr.key === 'packet_sequence'
-              );
-              const sequence = sequenceAttr ? sequenceAttr.value : undefined;
-              const timeoutHeightAttr = attributes.find(
-                (attr) => attr.key === 'packet_timeout_height'
-              );
-              const timeoutHeight = timeoutHeightAttr
-                ? timeoutHeightAttr.value
-                : undefined;
-              const timeoutTimestampAttr = attributes.find(
-                (attr) => attr.key === 'packet_timeout_timestamp'
-              );
-              const timeoutTimestamp = timeoutTimestampAttr
-                ? timeoutTimestampAttr.value
-                : undefined;
+  // const parseLog = (log) => {
+  //   try {
+  //     if (log && Object.keys(log).length > 0) {
+  //       const { events } = log[0];
+  //       if (events) {
+  //         // eslint-disable-next-line no-restricted-syntax
+  //         for (const event of events) {
+  //           if (event.type === 'send_packet') {
+  //             const { attributes } = event;
+  //             const sourceChannelAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_src_channel'
+  //             );
+  //             const sourceChannelValue = sourceChannelAttr
+  //               ? sourceChannelAttr.value
+  //               : undefined;
+  //             const destChannelAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_dst_channel'
+  //             );
+  //             const destChannelValue = destChannelAttr
+  //               ? destChannelAttr.value
+  //               : undefined;
+  //             const sequenceAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_sequence'
+  //             );
+  //             const sequence = sequenceAttr ? sequenceAttr.value : undefined;
+  //             const timeoutHeightAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_timeout_height'
+  //             );
+  //             const timeoutHeight = timeoutHeightAttr
+  //               ? timeoutHeightAttr.value
+  //               : undefined;
+  //             const timeoutTimestampAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_timeout_timestamp'
+  //             );
+  //             const timeoutTimestamp = timeoutTimestampAttr
+  //               ? timeoutTimestampAttr.value
+  //               : undefined;
 
-              if (sequence && destChannelValue && sourceChannelValue) {
-                return {
-                  destChannel: destChannelValue,
-                  sourceChannel: sourceChannelValue,
-                  sequence,
-                  timeoutHeight,
-                  timeoutTimestamp,
-                };
-              }
-            }
-          }
-        }
-      }
-      return null;
-    } catch (e) {
-      console.log('error parseLog', e);
-      return null;
-    }
-  };
+  //             if (sequence && destChannelValue && sourceChannelValue) {
+  //               return {
+  //                 destChannel: destChannelValue,
+  //                 sourceChannel: sourceChannelValue,
+  //                 sequence,
+  //                 timeoutHeight,
+  //                 timeoutTimestamp,
+  //               };
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     console.log('error parseLog', e);
+  //     return null;
+  //   }
+  // };
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -272,11 +272,13 @@ function ActionBar({ stateActionBar }) {
 
     const reduceAmountA = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
     const reduceAmountB = getDisplayAmountReverce(tokenBAmount, coinDecimalsB);
+    let depositCoins = [];
 
-    const depositCoins = [
-      coin(reduceAmountA, tokenA),
-      coin(reduceAmountB, tokenB),
-    ];
+    if ([tokenA, tokenB].sort()[0] === tokenA) {
+      depositCoins = [coin(reduceAmountA, tokenA), coin(reduceAmountB, tokenB)];
+    } else {
+      depositCoins = [coin(reduceAmountB, tokenB), coin(reduceAmountA, tokenA)];
+    }
     console.log(`depositCoins`, depositCoins);
 
     const response = await keplr.createPool(
@@ -399,18 +401,11 @@ function ActionBar({ stateActionBar }) {
   const swapWithinBatch = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
 
-    console.log('tokenAAmount', tokenAAmount);
     let amountTokenA = tokenAAmount;
 
-    if (tokenA === 'millivolt' || tokenA === 'milliampere') {
-      amountTokenA *= 1000;
-    }
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
 
-    if (tokenA.includes('ibc')) {
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-
-      amountTokenA = getDisplayAmountReverce(amountTokenA, coinDecimalsA);
-    }
+    amountTokenA = getDisplayAmountReverce(amountTokenA, coinDecimalsA);
 
     setStage(STAGE_SUBMITTED);
     const offerCoinFee = coin(
