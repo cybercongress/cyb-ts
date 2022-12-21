@@ -2,6 +2,8 @@ import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import * as config from '../config';
 
+import db from '../../db';
+
 const all = require('it-all');
 const uint8ArrayConcat = require('uint8arrays/concat');
 const uint8ArrayToAsciiString = require('uint8arrays/to-string');
@@ -1348,44 +1350,86 @@ const convertAvatarImg = async (data) => {
   return img;
 };
 
+const resolveContentIpfs = async (data) => {
+  let mime;
+  const dataFileType = await FileType.fromBuffer(data);
+  if (dataFileType !== undefined) {
+    mime = dataFileType.mime;
+    if (mime.indexOf('image') !== -1) {
+      // const dataBase64 = data.toString('base64');
+      const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
+      const file = `data:${mime};base64,${dataBase64}`;
+      return file;
+    }
+  }
+  const dataBase64 = uint8ArrayToAsciiString(data);
+  // console.log(`dataBase64`, dataBase64);
+  if (isSvg(dataBase64)) {
+    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
+      data,
+      'base64'
+    )}`;
+    return svg;
+  }
+  return null;
+};
+
+const generateMeta = (responseDag) => {
+  const meta = {
+    type: 'file',
+    size: 0,
+    blockSizes: [],
+    data: '',
+  };
+
+  const linksCid = [];
+  if (responseDag.value.Links && responseDag.value.Links.length > 0) {
+    responseDag.value.Links.forEach((item, index) => {
+      if (item.Name.length > 0) {
+        linksCid.push({ name: item.Name, size: item.Tsize });
+      } else {
+        linksCid.push(item.Tsize);
+      }
+    });
+  }
+  meta.size = responseDag.value.size;
+  meta.blockSizes = linksCid;
+
+  return meta;
+};
+
 export const getAvatarIpfs = async (cid, ipfs) => {
+  const dataIndexdDb = await db.table('cid').get({ cid });
+  if (dataIndexdDb !== undefined && dataIndexdDb.content) {
+    const contentCidDB = Buffer.from(dataIndexdDb.content);
+    const response = await resolveContentIpfs(contentCidDB);
+    return response;
+  }
   if (ipfs !== null) {
     const responseDag = await ipfs.dag.get(cid, {
       localResolve: false,
     });
 
     if (responseDag.value.size <= 1.5 * 10 ** 7) {
-      const responsePin = ipfs.pin.add(cid);
-      // getPinsCid(cid);
-      console.log('responsePin', responsePin);
-      let mime;
-
+      ipfs.pin.add(cid);
       const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
 
+      const meta = generateMeta(responseDag);
+
+      meta.data = responseCat;
+      const ipfsContentAddtToInddexdDB = {
+        cid,
+        content: responseCat,
+        meta,
+      };
+      db.table('cid')
+        .add(ipfsContentAddtToInddexdDB)
+        .then((id) => {
+          console.log('item :>> ', id);
+        });
       const data = responseCat;
-      // const buf = someVar;
-      // const bufs = [];
-      // bufs.push(buf);
-      // const data = Buffer.concat(bufs);
-      const dataFileType = await FileType.fromBuffer(data);
-      if (dataFileType !== undefined) {
-        mime = dataFileType.mime;
-        if (mime.indexOf('image') !== -1) {
-          // const dataBase64 = data.toString('base64');
-          const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-          const file = `data:${mime};base64,${dataBase64}`;
-          return file;
-        }
-      }
-      const dataBase64 = uint8ArrayToAsciiString(data);
-      // console.log(`dataBase64`, dataBase64);
-      if (isSvg(dataBase64)) {
-        const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-          data,
-          'base64'
-        )}`;
-        return svg;
-      }
+      const response = await resolveContentIpfs(data);
+      return response;
     }
   }
   return null;

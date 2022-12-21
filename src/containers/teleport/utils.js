@@ -44,45 +44,70 @@ export const getCoinDecimals = (amount, token) => {
   return amountReduce;
 };
 
-export function calculateCounterPairAmount(e, state, type) {
-  const inputAmount = e.target.value;
-
-  const price = null;
-  let counterPairAmount = 0;
-  const counterPair = '';
-
-  if (state.tokenAPoolAmount > 0 && state.tokenBPoolAmount > 0) {
-    const { tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount } = state;
-    const poolAmountA = new BigNumber(
-      getCoinDecimals(Number(tokenAPoolAmount), tokenA)
-    );
-    const poolAmountB = new BigNumber(
-      getCoinDecimals(Number(tokenBPoolAmount), tokenB)
-    );
-    let swapPrice = null;
-    if ([tokenA, tokenB].sort()[0] === tokenA) {
-      swapPrice = poolAmountB
-        .dividedBy(poolAmountA)
-        .multipliedBy(0.97)
-        .toNumber();
-    } else {
-      swapPrice = poolAmountB
-        .dividedBy(poolAmountA)
-        .multipliedBy(1.03)
-        .toNumber();
-    }
-    counterPairAmount = Math.floor(inputAmount * swapPrice);
-
-    // const swapFeeRatio = 0.9985; // ultimaetly get params
-
-    // swapPrice = state.tokenAPoolAmount / state.tokenBPoolAmount;
-
-    // counterPairAmount = Math.floor((inputAmount / swapPrice) * swapFeeRatio);
+const getDecimals = (denom) => {
+  let decimals = 0;
+  if (Object.hasOwnProperty.call(coinDecimalsConfig, denom)) {
+    decimals = coinDecimalsConfig[denom].coinDecimals;
   }
+  return decimals;
+};
 
+const getCounterPairAmount = (amaunt, decimals, swapPrice) => {
+  const inputAmountBN = new BigNumber(amaunt);
+  return inputAmountBN
+    .dividedBy(swapPrice)
+    .dp(decimals, BigNumber.ROUND_FLOOR)
+    .toString();
+};
+
+export function calculateCounterPairAmount(values, e, state) {
+  const inputAmount = values;
+
+  let counterPairAmount = 0;
+
+  const { tokenAPoolAmount, tokenA, tokenBPoolAmount, tokenB } = state;
+
+  const poolAmountA = new BigNumber(
+    getCoinDecimals(Number(tokenAPoolAmount), tokenA)
+  );
+  const poolAmountB = new BigNumber(
+    getCoinDecimals(Number(tokenBPoolAmount), tokenB)
+  );
+
+  if (
+    inputAmount.length > 0 &&
+    poolAmountA.comparedTo(0) > 0 &&
+    poolAmountB.comparedTo(0) > 0
+  ) {
+    let swapPrice = null;
+    let decimals = 0;
+
+    if (e.target.id === 'tokenAAmount') {
+      swapPrice = poolAmountA.dividedBy(poolAmountB);
+      swapPrice = swapPrice.multipliedBy(1.03).toNumber();
+      if (tokenB.length > 0) {
+        decimals = getDecimals(tokenB);
+      }
+      counterPairAmount = getCounterPairAmount(
+        inputAmount,
+        decimals,
+        swapPrice
+      );
+    } else {
+      swapPrice = poolAmountB.dividedBy(poolAmountA);
+      swapPrice = swapPrice.multipliedBy(0.97).toNumber();
+
+      if (tokenA.length > 0) {
+        decimals = getDecimals(tokenA);
+      }
+      counterPairAmount = getCounterPairAmount(
+        inputAmount,
+        decimals,
+        swapPrice
+      );
+    }
+  }
   return {
-    price,
-    counterPair,
     counterPairAmount,
   };
 }
@@ -179,7 +204,12 @@ export function getPoolToken(pool, myPoolTokens) {
 
 export const networkList = {
   bostrom: 'bostrom',
-  osmosis: 'osmosis-1',
-  cosmos: 'cosmoshub-4',
+  'osmosis-1': 'osmosis-1',
+  'cosmoshub-4': 'cosmoshub-4',
   'space-pussy': 'space-pussy',
+  'juno-1': 'juno-1',
+  'gravity-bridge-3': 'gravity-bridge-3',
+  'desmos-mainnet': 'desmos-mainnet',
+  // evmos: 'evmos_9001-2',
+  // chihuahua: 'chihuahua-1',
 };

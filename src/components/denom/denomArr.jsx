@@ -7,13 +7,6 @@ const denonFnc = (text) => {
 
   if (
     Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
-    text.includes('ibc')
-  ) {
-    denom = coinDecimalsConfig[text].denom;
-  }
-
-  if (
-    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
     text.includes('pool')
   ) {
     const poolDenoms = coinDecimalsConfig[text].denom;
@@ -22,7 +15,15 @@ const denonFnc = (text) => {
   return denom;
 };
 
-function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
+function DenomArr({
+  denomValue,
+  onlyText,
+  onlyImg,
+  tooltipStatusImg,
+  tooltipStatusText,
+  type,
+  ...props
+}) {
   const useDenomValue = useMemo(() => {
     const resultDenom = denonFnc(denomValue);
     if (typeof resultDenom === 'string') {
@@ -32,6 +33,9 @@ function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
           onlyImg={onlyImg}
           onlyText={onlyText}
           denomValue={resultDenom}
+          tooltipStatusImg={tooltipStatusImg}
+          tooltipStatusText={tooltipStatusText}
+          type={type}
         />
       );
     }
@@ -40,17 +44,21 @@ function DenomArr({ denomValue, onlyText, onlyImg, ...props }) {
       return (
         <div style={{ display: 'flex' }}>
           <Denom
+            type={type}
             denomValue={resultDenom[0]}
             onlyImg={onlyImg}
             onlyText={onlyText}
+            tooltipStatusImg={tooltipStatusImg}
             {...props}
           />
           {onlyText ? '-' : ''}
           <Denom
+            type={type}
             denomValue={resultDenom[1]}
             marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
             onlyImg={onlyImg}
             onlyText={onlyText}
+            tooltipStatusImg={tooltipStatusImg}
             {...props}
           />
         </div>

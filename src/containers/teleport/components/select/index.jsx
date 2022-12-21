@@ -55,11 +55,13 @@ export const OptionSelect = ({ text, img, bgrImg, value, ...props }) => {
 };
 
 const Select = ({
+  type,
   valueSelect,
   textSelectValue,
   imgSelectValue,
   onChangeSelect,
   children,
+  width,
 }) => {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +83,11 @@ const Select = ({
         changeSelectedOption: updateSelectedOption,
       }}
     >
-      <div className={styles.dropDown} ref={selectContainerRef}>
+      <div
+        style={{ width: width || '120px' }}
+        className={styles.dropDown}
+        ref={selectContainerRef}
+      >
         <div className={styles.dropDownContainer}>
           <div onClick={toggling} className={styles.dropDownContainerHeader}>
             <div className={styles.dropDownHeader}>
@@ -99,14 +105,23 @@ const Select = ({
                 />
               ) : (
                 <OptionSelect
-                  text={<DenomArr denomValue={textSelectValue} onlyText />}
+                  text={
+                    <DenomArr
+                      type={type}
+                      denomValue={textSelectValue}
+                      onlyText
+                      tooltipStatusText={false}
+                    />
+                  }
                   bgrImg={textSelectValue.includes('pool')}
                   img={
                     imgSelectValue || (
                       <DenomArr
+                        type={type}
                         justifyContent="center"
                         denomValue={textSelectValue}
                         onlyImg
+                        tooltipStatusImg={false}
                       />
                     )
                   }

@@ -1,10 +1,24 @@
 import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
+import { Sha256 } from '@cosmjs/crypto';
 import { CYBER } from './config';
+import coinDecimalsConfig from './configToken';
 
 const cyberSpace = require('../image/large-purple-circle.png');
 const customNetwork = require('../image/large-orange-circle.png');
 const cyberBostrom = require('../image/large-green.png');
+const voltImg = require('../image/lightning2.png');
+const amperImg = require('../image/light.png');
+const hydrogen = require('../image/hydrogen.svg');
+const tocyb = require('../image/boot.png');
+const downOutline = require('../image/chevronDownOutline.svg');
+const gol = require('../image/seedling.png');
+const atom = require('../image/cosmos-2.svg');
+const eth = require('../image/Ethereum_logo_2014.svg');
+const pool = require('../image/gravitydexPool.png');
+const ibc = require('../image/ibc-unauth.png');
+const cosmos = require('../image/cosmos-2.svg');
+const osmosis = require('../image/osmosis.svg');
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
@@ -457,6 +471,39 @@ const selectNetworkImg = (network) => {
   }
 };
 
+const denonFnc = (text) => {
+  let denom = text;
+
+  if (
+    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
+    text.includes('ibc')
+  ) {
+    denom = coinDecimalsConfig[text].denom;
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
+    text.includes('pool')
+  ) {
+    const poolDenoms = coinDecimalsConfig[text].denom;
+    denom = [denonFnc(poolDenoms[0]), denonFnc(poolDenoms[1])];
+  }
+  return denom;
+};
+
+const sha256 = (data) => {
+  return new Uint8Array(new Sha256().update(data).digest());
+};
+
+function getDenomHash(path, baseDenom) {
+  const parts = path.split('/');
+  parts.push(baseDenom);
+  const newPath = parts.slice().join('/');
+  return `ibc/${Buffer.from(sha256(Buffer.from(newPath)))
+    .toString('hex')
+    .toUpperCase()}`;
+}
+
 export {
   run,
   sort,
@@ -484,4 +531,6 @@ export {
   encodeSlash,
   groupMsg,
   selectNetworkImg,
+  denonFnc,
+  getDenomHash,
 };

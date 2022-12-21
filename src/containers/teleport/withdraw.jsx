@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
+import { NumericFormat } from 'react-number-format';
 import { ButtonIcon, ValueImg, Dots } from '../../components';
 import BalanceToken from './components/balanceToken';
 import Input from './components/input';
@@ -81,7 +82,18 @@ function Withdraw({ stateSwap }) {
               {renderOptions(myPools)}
             </Select>
           </Pane>
-          <Input
+          <NumericFormat
+            value={amountPoolCoin}
+            onValueChange={(values, sourceInfo) =>
+              onChangeInputWithdraw(values.value, sourceInfo.event)
+            }
+            customInput={Input}
+            thousandsGroupStyle="thousand"
+            thousandSeparator=" "
+            decimalScale={3}
+            autoComplete="off"
+          />
+          {/* <Input
             // id={id}
             value={amountPoolCoin}
             onChange={(e) => onChangeInputWithdraw(e)}
@@ -90,7 +102,7 @@ function Withdraw({ stateSwap }) {
             height={42}
             fontSize="20px"
             textAlign="end"
-          />
+          /> */}
         </Pane>
       </Pane>
     </Pane>

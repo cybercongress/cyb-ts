@@ -22,6 +22,7 @@ const Tooltip = ({ children, tooltip, hideArrow, placement, ...props }) => {
     delayHide: 100,
     interactive: true,
     onVisibleChange: setMountedOnceVisible,
+    placement,
   });
 
   return (

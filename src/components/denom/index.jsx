@@ -1,52 +1,89 @@
-import React, { useContext, useEffect, useState } from 'react';
-import ValueImg from '../valueImg';
-import coinDecimalsConfig from '../../utils/configToken';
+import React from 'react';
+import CoinDenom from '../valueImg/textDenom';
+import ImgDenom from '../valueImg/imgDenom';
+import ImgNetwork from '../networksImg/imgNetwork';
+import TextNetwork from '../networksImg/textNetwork';
 
-function useGetDenom(denomValue) {
-  const [denom, setDenom] = useState('');
-  const [type, setType] = useState('');
+const ContainerDenom = ({
+  justifyContent,
+  marginContainer,
+  flexDirection,
+  gap,
+  children,
+}) => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: justifyContent || 'flex-start',
+      margin: marginContainer || 0,
+      flexDirection: flexDirection || 'unset',
+      gap: gap || 5,
+    }}
+  >
+    {children}
+  </div>
+);
 
-  useEffect(() => {
-    if (denomValue.includes('ibc')) {
-      setType('ibc');
-    } else if (denomValue.includes('pool')) {
-      setType('pool');
-    } else {
-      setType('');
-    }
-  }, [denomValue]);
-
-  useEffect(() => {
-    if (
-      denomValue.includes('ibc') &&
-      Object.hasOwnProperty.call(coinDecimalsConfig, denomValue)
-    ) {
-      setDenom(coinDecimalsConfig[denomValue].denom);
-    } else {
-      setDenom(denomValue);
-    }
-  }, [denomValue]);
-
-  return { denom, type };
-}
-
-function Denom({ denomValue, onlyText, onlyImg, marginContainer, ...props }) {
-  try {
-    const { denom, type } = useGetDenom(denomValue);
-
+function Denom({
+  denomValue,
+  onlyText,
+  onlyImg,
+  marginContainer,
+  justifyContent,
+  flexDirection,
+  gap,
+  tooltipStatusImg = true,
+  tooltipStatusText = true,
+  type,
+  ...props
+}) {
+  if (type && type === 'network') {
     return (
-      <ValueImg
-        onlyText={onlyText}
-        onlyImg={onlyImg}
+      <ContainerDenom
+        justifyContent={justifyContent}
         marginContainer={marginContainer}
-        text={denom}
-        type={type}
+        flexDirection={flexDirection}
+        gap={gap}
         {...props}
-      />
+      >
+        {!onlyImg && (
+          <TextNetwork
+            network={denomValue}
+            tooltipStatus={onlyText && tooltipStatusText}
+          />
+        )}
+        {!onlyText && (
+          <ImgNetwork
+            network={denomValue}
+            tooltipStatus={onlyImg && tooltipStatusImg}
+          />
+        )}
+      </ContainerDenom>
     );
-  } catch (error) {
-    return <div>{denomValue}</div>;
   }
+  return (
+    <ContainerDenom
+      justifyContent={justifyContent}
+      marginContainer={marginContainer}
+      flexDirection={flexDirection}
+      gap={gap}
+      {...props}
+    >
+      {!onlyImg && (
+        <CoinDenom
+          coinDenom={denomValue}
+          tooltipStatus={onlyText && tooltipStatusText}
+        />
+      )}
+      {!onlyText && (
+        <ImgDenom
+          coinDenom={denomValue}
+          tooltipStatus={onlyImg && tooltipStatusImg}
+        />
+      )}
+    </ContainerDenom>
+  );
 }
 
 export default Denom;

@@ -50,6 +50,7 @@ import Denom from './denom';
 import DenomArr from './denom/denomArr';
 import ButtonNetwork from './ButtonNetwork';
 import Tooltip from './tooltip/tooltip';
+import ImgNetwork from './networksImg/imgNetwork';
 
 export {
   GovernanceChangeParam,
@@ -102,6 +103,7 @@ export {
   DenomArr,
   ButtonNetwork,
   Tooltip,
+  ImgNetwork,
 };
 
 export { Nums } from './ui/Numbers';

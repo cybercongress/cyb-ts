@@ -9,6 +9,7 @@ import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
 import useGetNetworks from './hooks/useGetNetworks';
 import defaultNetworks from './utils/defaultNetworks';
+import { getDenomHash } from './utils/utils';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -35,6 +36,7 @@ const valueContext = {
   keplr: null,
   ws: null,
   jsCyber: null,
+  ibcDataDenom: {},
   networks: {},
   updateNetworks: () => {},
   updatejsCyber: () => {},
@@ -150,9 +152,41 @@ const AppContextProvider = ({ children }) => {
         ...item,
         jsCyber: queryClient,
       }));
+      getIBCDenomData(queryClient);
     };
     createQueryCliet();
   }, []);
+
+  const getIBCDenomData = async (queryClient) => {
+    const responce = await queryClient.allDenomTraces();
+    const { denomTraces } = responce;
+    const ibcData = {};
+
+    if (denomTraces && denomTraces.length > 0) {
+      denomTraces.forEach((item) => {
+        const { path, baseDenom } = item;
+        const ibcDenom = getDenomHash(path, baseDenom);
+
+        // sourceChannelId
+        const parts = path.split('/');
+        const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
+        const sourceChannelId = removetr.join('/');
+
+        ibcData[ibcDenom] = {
+          sourceChannelId,
+          baseDenom,
+          ibcDenom,
+        };
+      });
+    }
+
+    if (Object.keys(ibcData).length > 0) {
+      setValue((item) => ({
+        ...item,
+        ibcDataDenom: { ...ibcData },
+      }));
+    }
+  };
 
   useEffect(() => {
     if (signer !== null) {

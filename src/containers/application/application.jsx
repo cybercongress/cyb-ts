@@ -156,13 +156,6 @@ function App({
     if (pathname.indexOf(query) === -1) {
       setQueryProps('');
     }
-
-    const strIndexOf = '/search/ibc';
-    if (pathname.indexOf(strIndexOf) === 0) {
-      const querySubstr = pathname.substr(8, pathname.length);
-      history.push(`/search/${replaceSlash(querySubstr)}`);
-      setQueryProps(replaceSlash(querySubstr));
-    }
   }, [location.pathname]);
 
   useEffect(() => {

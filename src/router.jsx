@@ -157,6 +157,7 @@ function AppRouter({
         <Route path="/particles" component={Objects} />
         <Route path="/sixthSense" component={Taverna} />
         <Route path="/teleport" component={Teleport} />
+        <Route path="/warp" component={Teleport} />
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />

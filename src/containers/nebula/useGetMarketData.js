@@ -5,6 +5,7 @@ import { AppContext } from '../../context';
 import { reduceBalances } from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
 import { CYBER } from '../../utils/config';
+import { findDenomInTokenList, isNative } from '../../hooks/useTraseDenom';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -14,15 +15,56 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-const calculatePrice = (coinsPair, balances) => {
+export const fncTraseDenom = (denomTrase, listIbcAccet) => {
+  const infoDenomTemp = {
+    denom: denomTrase,
+    coinDecimals: 0,
+  };
+  let findDenom = null;
+
+  if (!denomTrase.includes('pool')) {
+    if (!isNative(denomTrase)) {
+      if (
+        listIbcAccet !== null &&
+        Object.keys(listIbcAccet).length > 0 &&
+        Object.prototype.hasOwnProperty.call(listIbcAccet, denomTrase)
+      ) {
+        const { baseDenom } = listIbcAccet[denomTrase];
+        findDenom = baseDenom;
+      }
+    } else {
+      findDenom = denomTrase;
+    }
+
+    if (findDenom !== null) {
+      const denomInfoFromList = findDenomInTokenList(findDenom);
+      if (denomInfoFromList !== null) {
+        const { denom, coinDecimals } = denomInfoFromList;
+        infoDenomTemp.denom = denom;
+        infoDenomTemp.coinDecimals = coinDecimals;
+      }
+    }
+  }
+
+  return { ...infoDenomTemp };
+};
+
+export function getDisplayAmount(rawAmount, precision) {
+  return new BigNumber(rawAmount).shiftedBy(-precision).toFixed(precision);
+}
+
+const calculatePrice = (coinsPair, balances, ibcDataDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
   const tokenB = coinsPair[1];
+  const { coinDecimals: coinDecimalsA } = fncTraseDenom(tokenA, ibcDataDenom);
+  const { coinDecimals: coinDecimalsB } = fncTraseDenom(tokenB, ibcDataDenom);
+
   const amountA = new BigNumber(
-    getCoinDecimals(Number(balances[tokenA]), tokenA)
+    getDisplayAmount(balances[tokenA], coinDecimalsA)
   );
   const amountB = new BigNumber(
-    getCoinDecimals(Number(balances[tokenB]), tokenB)
+    getDisplayAmount(balances[tokenB], coinDecimalsB)
   );
 
   if (amountA.comparedTo(0) && amountB.comparedTo(0)) {
@@ -32,7 +74,7 @@ const calculatePrice = (coinsPair, balances) => {
   return price;
 };
 
-const getPoolPrice = (data) => {
+const getPoolPrice = (data, ibcDataDenom) => {
   const copyObj = { ...data };
   Object.keys(copyObj).forEach((key) => {
     const element = copyObj[key];
@@ -45,17 +87,34 @@ const getPoolPrice = (data) => {
         coinsPair[1] === CYBER.DENOM_LIQUID_TOKEN
       ) {
         if (coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN) {
-          price = calculatePrice(coinsPair, balances);
+          price = calculatePrice(coinsPair, balances, ibcDataDenom);
         } else {
-          price = calculatePrice(coinsPair.reverse(), balances);
+          price = calculatePrice(coinsPair.reverse(), balances, ibcDataDenom);
         }
       } else {
-        price = calculatePrice(coinsPair, balances);
+        price = calculatePrice(coinsPair, balances, ibcDataDenom);
       }
       element.price = price;
     }
   });
   return copyObj;
+};
+
+const reduceAmountFunc = (data, ibcDataDenom) => {
+  let balances = {};
+  if (Object.keys(data).length > 0) {
+    balances = Object.keys(data).reduce((obj, item) => {
+      const amount = data[item];
+      const { coinDecimals } = fncTraseDenom(item, ibcDataDenom);
+      const reduceAmount = getDisplayAmount(amount, coinDecimals);
+      return {
+        ...obj,
+        [item]: reduceAmount,
+      };
+    }, {});
+  }
+
+  return balances;
 };
 
 const getPoolsBalance = async (data, client) => {
@@ -67,14 +126,15 @@ const getPoolsBalance = async (data, client) => {
       const { reserveAccountAddress } = element;
       // eslint-disable-next-line no-await-in-loop
       const dataBalsnce = await client.getAllBalances(reserveAccountAddress);
-      element.balances = reduceBalances(dataBalsnce);
+      const reduceDataBalances = reduceBalances(dataBalsnce);
+      element.balances = reduceDataBalances;
     }
   }
   return copyObj;
 };
 
 function useGetMarketData() {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, ibcDataDenom } = useContext(AppContext);
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
@@ -114,8 +174,12 @@ function useGetMarketData() {
               }),
               {}
             );
-            const poolsBalance = await getPoolsBalance(reduceObj, jsCyber);
-            const poolPriceObj = getPoolPrice(poolsBalance);
+            const poolsBalance = await getPoolsBalance(
+              reduceObj,
+              jsCyber,
+              ibcDataDenom
+            );
+            const poolPriceObj = getPoolPrice(poolsBalance, ibcDataDenom);
             setPoolsTotal(poolPriceObj);
           }
         } catch (error) {
@@ -125,7 +189,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
-  }, [jsCyber]);
+  }, [jsCyber, ibcDataDenom]);
 
   useEffect(() => {
     try {
