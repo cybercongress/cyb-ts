@@ -1580,3 +1580,16 @@ export const getCredit = async (address) => {
     return null;
   }
 };
+
+export const getDenomTraces = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/ibc/apps/transfer/v1/denom_traces`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
