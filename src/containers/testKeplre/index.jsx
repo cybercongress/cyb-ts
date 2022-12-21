@@ -82,11 +82,14 @@ function TestKeplr() {
         coins(amount, CYBER.DENOM_CYBER),
         fee
       );
+
+      console.log('result', result);
+
       setResultTxs(JSON.stringify(result));
 
-      // setTimeout(() => {
-      //   setResultTxs('');
-      // }, 5000);
+      setTimeout(() => {
+        setResultTxs('');
+      }, 5000);
     }
   }, [keplr]);
 
