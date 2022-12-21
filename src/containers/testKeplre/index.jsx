@@ -58,12 +58,41 @@ const slidesTest = [
   },
 ];
 
+const DEFAULT_GAS_LIMITS = 200000;
+
+const fee = {
+  amount: [],
+  gas: (DEFAULT_GAS_LIMITS * 2).toString(),
+};
+
 function TestKeplr() {
   const { keplr, jsCyber } = useContext(AppContext);
+  const [resultTxs, setResultTxs] = useState('');
+
+  const onClickKeplr = useCallback(async () => {
+    if (keplr !== null) {
+      const [{ address }] = await keplr.signer.getAccounts();
+
+      const recipient = address;
+      const amount = 1;
+
+      const result = await keplr.sendTokens(
+        address,
+        recipient,
+        coins(amount, CYBER.DENOM_CYBER),
+        fee
+      );
+      setResultTxs(JSON.stringify(result));
+
+      // setTimeout(() => {
+      //   setResultTxs('');
+      // }, 5000);
+    }
+  }, [keplr]);
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      <CoinDenom coinDenom={testDenom} tooltipStatus />
+      {/* <CoinDenom coinDenom={testDenom} tooltipStatus />
       <NumericFormat
         type="text"
         id="a"
@@ -75,13 +104,24 @@ function TestKeplr() {
         thousandsGroupStyle="thousand"
         thousandSeparator=","
         decimalScale={3}
-      />
+      /> */}
       {/* <ImgDenom coinDenom={testDenom} /> */}
       {/* <Carousel slides={slidesTest} /> */}
       {/* <Signatures addressActive={{ bech32: addressTest }} /> */}
-      {/* <button type="button" onClick={checkGift}>
-          getCredit
-        </button> */}
+      <button type="button" onClick={onClickKeplr}>
+        test keplr
+      </button>
+
+      <div
+        style={{
+          marginTop: '50px',
+          textOverflow: 'ellipsis',
+          maxWidth: '600px',
+          overflowX: 'hidden',
+        }}
+      >
+        {resultTxs}
+      </div>
     </main>
   );
 }
