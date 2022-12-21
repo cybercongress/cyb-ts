@@ -184,10 +184,8 @@ function useGetBalance(address, updateAddress) {
               Object.hasOwnProperty.call(balancesToken, key) &&
               key !== CYBER.DENOM_CYBER
             ) {
-              let elementBalancesToken = balancesToken[key];
-              if (key === 'millivolt' || key === 'milliampere') {
-                elementBalancesToken = convertResources(elementBalancesToken);
-              }
+              const elementBalancesToken = balancesToken[key];
+
               if (
                 Object.hasOwnProperty.call(initValueTokenAmount, key) &&
                 Object.hasOwnProperty.call(initValueTokenAmount[key], 'total')
