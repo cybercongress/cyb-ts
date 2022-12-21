@@ -10,6 +10,7 @@ import { configKeplr } from './utils/keplrUtils';
 import useGetNetworks from './hooks/useGetNetworks';
 import defaultNetworks from './utils/defaultNetworks';
 import { getDenomHash } from './utils/utils';
+import { getDenomTraces } from './utils/search/utils';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -152,41 +153,78 @@ const AppContextProvider = ({ children }) => {
         ...item,
         jsCyber: queryClient,
       }));
-      getIBCDenomData(queryClient);
+      // getIBCDenomData(queryClient);
     };
     createQueryCliet();
   }, []);
 
-  const getIBCDenomData = async (queryClient) => {
-    const responce = await queryClient.allDenomTraces();
-    const { denomTraces } = responce;
-    const ibcData = {};
+  useEffect(() => {
+    const getIBCDenomData = async (queryClient) => {
+      // const responce = await queryClient.allDenomTraces();
+      const responce = await getDenomTraces();
+      // const { denomTraces } = responce;
+      const { denom_traces: denomTraces } = responce;
+      const ibcData = {};
 
-    if (denomTraces && denomTraces.length > 0) {
-      denomTraces.forEach((item) => {
-        const { path, baseDenom } = item;
-        const ibcDenom = getDenomHash(path, baseDenom);
+      if (denomTraces && denomTraces.length > 0) {
+        denomTraces.forEach((item) => {
+          // const { path, baseDenom } = item;
+          const { path, base_denom: baseDenom } = item;
+          const ibcDenom = getDenomHash(path, baseDenom);
 
-        // sourceChannelId
-        const parts = path.split('/');
-        const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
-        const sourceChannelId = removetr.join('/');
+          // sourceChannelId
+          const parts = path.split('/');
+          const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
+          const sourceChannelId = removetr.join('/');
 
-        ibcData[ibcDenom] = {
-          sourceChannelId,
-          baseDenom,
-          ibcDenom,
-        };
-      });
-    }
+          ibcData[ibcDenom] = {
+            sourceChannelId,
+            baseDenom,
+            ibcDenom,
+          };
+        });
+      }
 
-    if (Object.keys(ibcData).length > 0) {
-      setValue((item) => ({
-        ...item,
-        ibcDataDenom: { ...ibcData },
-      }));
-    }
-  };
+      if (Object.keys(ibcData).length > 0) {
+        setValue((item) => ({
+          ...item,
+          ibcDataDenom: { ...ibcData },
+        }));
+      }
+    };
+    getIBCDenomData();
+  }, []);
+
+  // const getIBCDenomData = async (queryClient) => {
+  //   const responce = await queryClient.allDenomTraces();
+  //   const { denomTraces } = responce;
+  //   const ibcData = {};
+
+  //   if (denomTraces && denomTraces.length > 0) {
+  //     denomTraces.forEach((item) => {
+  //       const { path, baseDenom } = item;
+  //       const ibcDenom = getDenomHash(path, baseDenom);
+
+  //       // sourceChannelId
+  //       const parts = path.split('/');
+  //       const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
+  //       const sourceChannelId = removetr.join('/');
+
+  //       ibcData[ibcDenom] = {
+  //         sourceChannelId,
+  //         baseDenom,
+  //         ibcDenom,
+  //       };
+  //     });
+  //   }
+
+  //   if (Object.keys(ibcData).length > 0) {
+  //     setValue((item) => ({
+  //       ...item,
+  //       ibcDataDenom: { ...ibcData },
+  //     }));
+  //   }
+  // };
 
   useEffect(() => {
     if (signer !== null) {
