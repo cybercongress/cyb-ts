@@ -91,9 +91,9 @@ const itemsStep = [
   },
 ];
 
-const checkInactiveFunc = (token) => {
+const checkInactiveFunc = (token, ibcDataDenom) => {
   if (token.includes('ibc')) {
-    if (!Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+    if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {
       return false;
     }
   }
@@ -372,8 +372,8 @@ function Teleport({ defaultAccount }) {
 
   useEffect(() => {
     let exceeded = true;
-    const checkTokenA = checkInactiveFunc(tokenA);
-    const checkTokenB = checkInactiveFunc(tokenB);
+    const checkTokenA = checkInactiveFunc(tokenA, ibcDataDenom);
+    const checkTokenB = checkInactiveFunc(tokenB, ibcDataDenom);
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
     const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
@@ -434,6 +434,7 @@ function Teleport({ defaultAccount }) {
     tokenAAmount,
     tokenBAmount,
     swapPrice,
+    ibcDataDenom,
   ]);
 
   const amountChangeHandler = useCallback(
