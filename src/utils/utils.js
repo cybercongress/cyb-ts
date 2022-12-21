@@ -1,6 +1,7 @@
 import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
 import { Sha256 } from '@cosmjs/crypto';
+import BigNumber from 'bignumber.js';
 import { CYBER } from './config';
 import coinDecimalsConfig from './configToken';
 
@@ -504,6 +505,20 @@ function getDenomHash(path, baseDenom) {
     .toUpperCase()}`;
 }
 
+function getDisplayAmount(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(-precision)
+    .dp(3, BigNumber.ROUND_FLOOR)
+    .toNumber();
+}
+
+function getDisplayAmountReverce(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(precision)
+    .dp(3, BigNumber.ROUND_FLOOR)
+    .toNumber();
+}
+
 export {
   run,
   sort,
@@ -533,4 +548,6 @@ export {
   selectNetworkImg,
   denonFnc,
   getDenomHash,
+  getDisplayAmount,
+  getDisplayAmountReverce,
 };

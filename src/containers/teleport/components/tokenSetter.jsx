@@ -152,6 +152,7 @@ function TokenSetter({
           thousandSeparator=" "
           decimalScale={3}
           autoComplete="off"
+          allowLeadingZeros
         />
         // <Input
         //   id={id}

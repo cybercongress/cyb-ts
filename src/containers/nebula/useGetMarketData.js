@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import axios from 'axios';
 import { AppContext } from '../../context';
-import { reduceBalances } from '../../utils/utils';
+import { reduceBalances, getDisplayAmount } from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
 import { CYBER } from '../../utils/config';
 import { findDenomInTokenList, isNative } from '../../hooks/useTraseDenom';
@@ -49,16 +48,12 @@ export const fncTraseDenom = (denomTrase, listIbcAccet) => {
   return { ...infoDenomTemp };
 };
 
-export function getDisplayAmount(rawAmount, precision) {
-  return new BigNumber(rawAmount).shiftedBy(-precision).toFixed(precision);
-}
-
-const calculatePrice = (coinsPair, balances, ibcDataDenom) => {
+const calculatePrice = (coinsPair, balances, traseDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
   const tokenB = coinsPair[1];
-  const { coinDecimals: coinDecimalsA } = fncTraseDenom(tokenA, ibcDataDenom);
-  const { coinDecimals: coinDecimalsB } = fncTraseDenom(tokenB, ibcDataDenom);
+  const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+  const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
 
   const amountA = new BigNumber(
     getDisplayAmount(balances[tokenA], coinDecimalsA)
@@ -74,7 +69,7 @@ const calculatePrice = (coinsPair, balances, ibcDataDenom) => {
   return price;
 };
 
-const getPoolPrice = (data, ibcDataDenom) => {
+const getPoolPrice = (data, traseDenom) => {
   const copyObj = { ...data };
   Object.keys(copyObj).forEach((key) => {
     const element = copyObj[key];
@@ -87,12 +82,12 @@ const getPoolPrice = (data, ibcDataDenom) => {
         coinsPair[1] === CYBER.DENOM_LIQUID_TOKEN
       ) {
         if (coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN) {
-          price = calculatePrice(coinsPair, balances, ibcDataDenom);
+          price = calculatePrice(coinsPair, balances, traseDenom);
         } else {
-          price = calculatePrice(coinsPair.reverse(), balances, ibcDataDenom);
+          price = calculatePrice(coinsPair.reverse(), balances, traseDenom);
         }
       } else {
-        price = calculatePrice(coinsPair, balances, ibcDataDenom);
+        price = calculatePrice(coinsPair, balances, traseDenom);
       }
       element.price = price;
     }
@@ -100,22 +95,22 @@ const getPoolPrice = (data, ibcDataDenom) => {
   return copyObj;
 };
 
-const reduceAmountFunc = (data, ibcDataDenom) => {
-  let balances = {};
-  if (Object.keys(data).length > 0) {
-    balances = Object.keys(data).reduce((obj, item) => {
-      const amount = data[item];
-      const { coinDecimals } = fncTraseDenom(item, ibcDataDenom);
-      const reduceAmount = getDisplayAmount(amount, coinDecimals);
-      return {
-        ...obj,
-        [item]: reduceAmount,
-      };
-    }, {});
-  }
+// const reduceAmountFunc = (data, ibcDataDenom) => {
+//   let balances = {};
+//   if (Object.keys(data).length > 0) {
+//     balances = Object.keys(data).reduce((obj, item) => {
+//       const amount = data[item];
+//       const { coinDecimals } = fncTraseDenom(item, ibcDataDenom);
+//       const reduceAmount = getDisplayAmount(amount, coinDecimals);
+//       return {
+//         ...obj,
+//         [item]: reduceAmount,
+//       };
+//     }, {});
+//   }
 
-  return balances;
-};
+//   return balances;
+// };
 
 const getPoolsBalance = async (data, client) => {
   const copyObj = { ...data };
@@ -134,7 +129,7 @@ const getPoolsBalance = async (data, client) => {
 };
 
 function useGetMarketData() {
-  const { jsCyber, ibcDataDenom } = useContext(AppContext);
+  const { jsCyber, traseDenom } = useContext(AppContext);
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
@@ -174,12 +169,8 @@ function useGetMarketData() {
               }),
               {}
             );
-            const poolsBalance = await getPoolsBalance(
-              reduceObj,
-              jsCyber,
-              ibcDataDenom
-            );
-            const poolPriceObj = getPoolPrice(poolsBalance, ibcDataDenom);
+            const poolsBalance = await getPoolsBalance(reduceObj, jsCyber);
+            const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
             setPoolsTotal(poolPriceObj);
           }
         } catch (error) {
@@ -189,7 +180,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
-  }, [jsCyber, ibcDataDenom]);
+  }, [jsCyber, traseDenom]);
 
   useEffect(() => {
     try {
