@@ -270,8 +270,10 @@ function ActionBar({ stateActionBar }) {
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
     const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
 
+
     const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
     const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
+
     let depositCoins = [];
 
     if ([tokenA, tokenB].sort()[0] === tokenA) {
