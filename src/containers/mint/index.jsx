@@ -1,9 +1,10 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { Tablist, Pane, Button, Text } from '@cybercongress/gravity';
 import { Link, useLocation } from 'react-router-dom';
 import Slider from 'rc-slider';
 import { coin } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
 import {
@@ -13,6 +14,7 @@ import {
   formatCurrencyNumber,
   formatCurrency,
   convertResources,
+  getDisplayAmount,
 } from '../../utils/utils';
 import { authAccounts } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
@@ -74,7 +76,7 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, traseDenom } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
@@ -237,6 +239,30 @@ function Mint({ defaultAccount }) {
     setUpdateAddress(updateAddress + 1);
   };
 
+  const vestedA = useMemo(() => {
+    let amountA = 0;
+    if (originalVesting.milliampere > 0) {
+      const { coinDecimals } = traseDenom('milliampere');
+      const vestedTokensA = new BigNumber(originalVesting.milliampere)
+        .minus(vested.milliampere)
+        .toNumber();
+      amountA = getDisplayAmount(vestedTokensA, coinDecimals);
+    }
+    return amountA;
+  }, [vested, originalVesting]);
+
+  const vestedV = useMemo(() => {
+    let amountV = 0;
+    if (originalVesting.millivolt > 0) {
+      const { coinDecimals } = traseDenom('millivolt');
+      const vestedTokensA = new BigNumber(originalVesting.millivolt)
+        .minus(vested.millivolt)
+        .toNumber();
+      amountV = getDisplayAmount(vestedTokensA, coinDecimals);
+    }
+    return amountV;
+  }, [vested, originalVesting]);
+
   return (
     <>
       <main className="block-body">
@@ -250,17 +276,15 @@ function Mint({ defaultAccount }) {
         >
           <CardStatisics
             title={<ValueImg text="millivolt" />}
-            value={formatNumber(originalVesting.millivolt)}
+            value={formatNumber(vestedA)}
           />
           <CardStatisics
             title={<ValueImg text="milliampere" />}
-            value={formatNumber(originalVesting.milliampere)}
+            value={formatNumber(vestedV)}
           />
           <CardStatisics
             title="My Energy"
-            value={`${formatNumber(
-              originalVesting.milliampere * originalVesting.millivolt
-            )} W`}
+            value={`${formatNumber(vestedA * vestedV)} W`}
           />
         </Pane>
         <div
@@ -400,7 +424,11 @@ function Mint({ defaultAccount }) {
           )}
         </div>
 
-        {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
+        {loadingAuthAccounts ? (
+          <Dots big />
+        ) : (
+          <TableSlots data={slotsData} traseDenom={traseDenom} />
+        )}
       </main>
       <ActionBar
         value={value}

@@ -8,7 +8,11 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { convertResources, formatNumber } from '../../../utils/utils';
+import {
+  convertResources,
+  formatNumber,
+  getDisplayAmount,
+} from '../../../utils/utils';
 import { NoItems, Dots, TextTable, ValueImg } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
@@ -35,7 +39,10 @@ const NumberCurrency = ({
   );
 };
 
-const TableSlots = ({ data, mobile }) => {
+const TableSlots = ({ data, traseDenom }) => {
+  const { coinDecimals: coinDecimalsA } = traseDenom('milliampere');
+  const { coinDecimals: coinDecimalsV } = traseDenom('millivolt');
+
   let slotRows = [];
 
   if (data.length > 0) {
@@ -67,13 +74,13 @@ const TableSlots = ({ data, mobile }) => {
         <Table.TextCell textAlign="end">
           {item.amount.millivolt && (
             <TextTable>
-              {item.amount.millivolt}
+              {getDisplayAmount(item.amount.millivolt, coinDecimalsV)}
               <ValueImg text="millivolt" onlyImg />
             </TextTable>
           )}
           {item.amount.milliampere && (
             <TextTable>
-              {item.amount.milliampere}
+              {getDisplayAmount(item.amount.milliampere, coinDecimalsA)}
               <ValueImg text="milliampere" onlyImg />
             </TextTable>
           )}

@@ -17,8 +17,8 @@ import {
   fromBech32,
   trimString,
   selectNetworkImg,
-  getDisplayAmountReverce,
-  getDisplayAmount,
+  convertAmountReverce,
+  convertAmount,
 } from '../../utils/utils';
 import { getTxs } from '../../utils/search/utils';
 import {
@@ -270,8 +270,8 @@ function ActionBar({ stateActionBar }) {
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
     const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
 
-    const reduceAmountA = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
-    const reduceAmountB = getDisplayAmountReverce(tokenBAmount, coinDecimalsB);
+    const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
+    const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
     let depositCoins = [];
 
     if ([tokenA, tokenB].sort()[0] === tokenA) {
@@ -355,12 +355,12 @@ function ActionBar({ stateActionBar }) {
       arrangedReserveCoinDenoms[1]
     );
 
-    deposit[arrangedReserveCoinDenoms[0]] = getDisplayAmountReverce(
+    deposit[arrangedReserveCoinDenoms[0]] = convertAmountReverce(
       deposit[arrangedReserveCoinDenoms[0]],
       coinDecimalsA
     );
 
-    deposit[arrangedReserveCoinDenoms[1]] = getDisplayAmountReverce(
+    deposit[arrangedReserveCoinDenoms[1]] = convertAmountReverce(
       deposit[arrangedReserveCoinDenoms[1]],
       coinDecimalsB
     );
@@ -405,13 +405,13 @@ function ActionBar({ stateActionBar }) {
 
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
 
-    amountTokenA = getDisplayAmountReverce(amountTokenA, coinDecimalsA);
+    amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
 
     setStage(STAGE_SUBMITTED);
     const offerCoinFee = coin(
       Math.ceil(
         parseFloat(amountTokenA) *
-          getDisplayAmount(parseFloat(params.swapFeeRate), 18) *
+          convertAmount(parseFloat(params.swapFeeRate), 18) *
           0.5
       ),
       tokenA
@@ -492,7 +492,7 @@ function ActionBar({ stateActionBar }) {
       `${new Date().getTime() + 60000}000000`
     );
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-    const amount = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
+    const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
 
     const transferAmount = coin(amount, denomIbc);
     const msg = {
@@ -559,7 +559,7 @@ function ActionBar({ stateActionBar }) {
       `${new Date().getTime() + 60000}000000`
     );
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-    const amount = getDisplayAmountReverce(tokenAAmount, coinDecimalsA);
+    const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
     const transferAmount = coin(amount, tokenA);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',

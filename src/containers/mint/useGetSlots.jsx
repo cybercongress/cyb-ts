@@ -72,9 +72,8 @@ function useGetSlots(addressActive, updateAddress) {
         const getAccount = await authAccounts(addressActive);
         if (getAccount !== null && getAccount.result.value.vesting_periods) {
           const { vesting_periods: vestingPeriods } = getAccount.result.value;
-          const {
-            original_vesting: originalVestingAmount,
-          } = getAccount.result.value.base_vesting_account;
+          const { original_vesting: originalVestingAmount } =
+            getAccount.result.value.base_vesting_account;
           const { start_time: startTime } = getAccount.result.value;
 
           const balances = getCalculationBalance(originalVestingAmount);
@@ -83,14 +82,10 @@ function useGetSlots(addressActive, updateAddress) {
               balances[CYBER.DENOM_LIQUID_TOKEN];
           }
           if (balances.millivolt) {
-            originalVestingInitAmount.millivolt = convertResources(
-              balances.millivolt
-            );
+            originalVestingInitAmount.millivolt = balances.millivolt;
           }
           if (balances.milliampere) {
-            originalVestingInitAmount.milliampere = convertResources(
-              balances.milliampere
-            );
+            originalVestingInitAmount.milliampere = balances.milliampere;
           }
           setOriginalVesting(originalVestingInitAmount);
 
@@ -187,9 +182,7 @@ function useGetSlots(addressActive, updateAddress) {
             itemAmount.denom === 'millivolt' ||
             itemAmount.denom === 'milliampere'
           ) {
-            amount[itemAmount.denom] = convertResources(
-              parseFloat(itemAmount.amount)
-            );
+            amount[itemAmount.denom] = parseFloat(itemAmount.amount);
           } else {
             amount[itemAmount.denom] = parseFloat(itemAmount.amount);
           }
