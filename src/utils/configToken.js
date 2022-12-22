@@ -56,6 +56,15 @@ const coinDecimalsConfig = {
     sourceChannelId: 'channel-103',
     destChannelId: 'channel-12',
   },
+  'ibc/B6CAD3F7469F3FAD18ED2230A6C7B15E654AB2E1B66E1C70879C04FEF874A863': {
+    chainId: 'gravity-bridge-3',
+    coinDecimals: 18,
+    denom: 'gravETH',
+    coinMinimalDenom: 'gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    rpc: 'https://gravitychain.io:26657',
+    sourceChannelId: 'channel-103',
+    destChannelId: 'channel-12',
+  },
   'ibc/4B322204B4F59D770680FE4D7A565DDC3F37BFF035474B717476C66A4F83DD72': {
     chainId: 'evmos_9001-2',
     coinDecimals: 18,

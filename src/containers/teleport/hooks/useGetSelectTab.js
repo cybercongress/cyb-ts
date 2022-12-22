@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CYBER } from '../../../utils/config';
 
-function useGetSelectTab(history, setNetworkA, setNetworkB) {
+function useGetSelectTab(history) {
   const location = useLocation();
   const [selectedTab, setSelectedTab] = useState('swap');
 
@@ -13,8 +12,6 @@ function useGetSelectTab(history, setNetworkA, setNetworkB) {
       pathname.match(/add-liquidity/gm).length > 0
     ) {
       setSelectedTab('add-liquidity');
-      setNetworkA(CYBER.CHAIN_ID);
-      setNetworkB(CYBER.CHAIN_ID);
     } else if (
       pathname.match(/sub-liquidity/gm) &&
       pathname.match(/sub-liquidity/gm).length > 0

@@ -505,10 +505,10 @@ function getDenomHash(path, baseDenom) {
     .toUpperCase()}`;
 }
 
-function getDisplayAmount(rawAmount, precision) {
+function getDisplayAmount(rawAmount, precision, custom) {
   return new BigNumber(rawAmount)
     .shiftedBy(-precision)
-    .dp(3, BigNumber.ROUND_FLOOR)
+    .dp(custom ? precision : 3, BigNumber.ROUND_FLOOR)
     .toNumber();
 }
 

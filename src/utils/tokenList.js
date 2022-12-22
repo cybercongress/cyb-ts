@@ -32,7 +32,7 @@ const tokenList = [
     sourceChannelId: 'channel-103',
     destChannelId: 'channel-12',
     coinDecimals: 18,
-    denom: 'gWETH',
+    denom: 'gravETH',
     coinImageCid: 'Qmf4ByG3Z6ptN7EMDEVNukzXNAEZLwzyo4FM6WNJ1rciYA',
   },
   {
