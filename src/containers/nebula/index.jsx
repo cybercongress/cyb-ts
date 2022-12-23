@@ -18,7 +18,7 @@ import {
   getDisplayAmount,
 } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
-import useGetMarketData, { fncTraseDenom } from './useGetMarketData';
+import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
 import { CYBER } from '../../utils/config';
@@ -50,7 +50,7 @@ const getTypeDenomKey = (denom) => {
 };
 
 function Nebula({ mobile }) {
-  const { ibcDataDenom } = useContext(AppContext);
+  const { traseDenom } = useContext(AppContext);
   const { dataTotal, marketData } = useGetMarketData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
@@ -59,7 +59,7 @@ function Nebula({ mobile }) {
       let cap = 0;
       Object.keys(dataTotal).forEach((key) => {
         const amount = dataTotal[key];
-        const { coinDecimals } = fncTraseDenom(key, ibcDataDenom);
+        const { coinDecimals } = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (
           Object.keys(marketData).length > 0 &&
@@ -89,7 +89,7 @@ function Nebula({ mobile }) {
         }
       }
     }
-  }, [dataTotal, marketData, ibcDataDenom]);
+  }, [dataTotal, marketData]);
 
   const dataRenderItems = useMemo(() => {
     let dataObj = {};
@@ -98,7 +98,7 @@ function Nebula({ mobile }) {
         const amount = dataTotal[key];
         let price = 0;
         let cap = 0;
-        const { coinDecimals } = fncTraseDenom(key, ibcDataDenom);
+        const { coinDecimals } = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
 
         if (
@@ -126,7 +126,7 @@ function Nebula({ mobile }) {
       dataObj = sortable;
     }
     return dataObj;
-  }, [dataTotal, marketData, ibcDataDenom]);
+  }, [dataTotal, marketData]);
 
   const itemRowMarketData = useMemo(() => {
     return Object.keys(dataRenderItems).map((key) => {

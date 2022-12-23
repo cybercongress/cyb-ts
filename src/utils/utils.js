@@ -515,14 +515,14 @@ function getDenomHash(path, baseDenom) {
     .toUpperCase()}`;
 }
 
-function convertAmount(rawAmount, precision, custom) {
+function convertAmount(rawAmount, precision) {
   return new BigNumber(rawAmount)
     .shiftedBy(-precision)
     .dp(precision, BigNumber.ROUND_FLOOR)
     .toNumber();
 }
 
-function convertAmountReverce(rawAmount, precision, custom) {
+function convertAmountReverce(rawAmount, precision) {
   return new BigNumber(rawAmount)
     .shiftedBy(precision)
     .dp(precision, BigNumber.ROUND_FLOOR)
@@ -533,14 +533,14 @@ function getDisplayAmount(rawAmount, precision, custom) {
   return new BigNumber(rawAmount)
     .shiftedBy(-precision)
     .dp(precision, BigNumber.ROUND_FLOOR)
-    .toFixed(precision > 0 ? 3 : 0);
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
 }
 
 function getDisplayAmountReverce(rawAmount, precision) {
   return new BigNumber(rawAmount)
     .shiftedBy(precision)
     .dp(precision, BigNumber.ROUND_FLOOR)
-    .toFixed(precision > 0 ? 3 : 0);
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
 }
 
 export {

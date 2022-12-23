@@ -51,6 +51,10 @@ const fee = {
   gas: DEFAULT_GAS_LIMITS.toString(),
 };
 
+const coinFunc = (amount, denom) => {
+  return { denom, amount: new BigNumber(amount).toString(10) };
+};
+
 function ActionBar({ stateActionBar }) {
   const { keplr, jsCyber, traseDenom } = useContext(AppContext);
   const [stage, setStage] = useState(STAGE_INIT);
@@ -270,16 +274,21 @@ function ActionBar({ stateActionBar }) {
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
     const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
 
-
     const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
     const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
 
     let depositCoins = [];
 
     if ([tokenA, tokenB].sort()[0] === tokenA) {
-      depositCoins = [coin(reduceAmountA, tokenA), coin(reduceAmountB, tokenB)];
+      depositCoins = [
+        coinFunc(reduceAmountA, tokenA),
+        coinFunc(reduceAmountB, tokenB),
+      ];
     } else {
-      depositCoins = [coin(reduceAmountB, tokenB), coin(reduceAmountA, tokenA)];
+      depositCoins = [
+        coinFunc(reduceAmountB, tokenB),
+        coinFunc(reduceAmountA, tokenA),
+      ];
     }
     console.log(`depositCoins`, depositCoins);
 
@@ -308,7 +317,7 @@ function ActionBar({ stateActionBar }) {
     if (Object.prototype.hasOwnProperty.call(myPools, selectMyPool)) {
       poolId = myPools[selectMyPool].id;
     }
-    const depositCoins = coin(Number(amountPoolCoin), selectMyPool);
+    const depositCoins = coinFunc(Number(amountPoolCoin), selectMyPool);
 
     if (addressActive !== null && addressActive.bech32 === address) {
       const response = await keplr.withdwawWithinBatch(
@@ -368,8 +377,14 @@ function ActionBar({ stateActionBar }) {
     );
 
     const depositCoins = [
-      coin(deposit[arrangedReserveCoinDenoms[0]], arrangedReserveCoinDenoms[0]),
-      coin(deposit[arrangedReserveCoinDenoms[1]], arrangedReserveCoinDenoms[1]),
+      coinFunc(
+        deposit[arrangedReserveCoinDenoms[0]],
+        arrangedReserveCoinDenoms[0]
+      ),
+      coinFunc(
+        deposit[arrangedReserveCoinDenoms[1]],
+        arrangedReserveCoinDenoms[1]
+      ),
     ];
 
     console.log(`depositCoins`, depositCoins);
@@ -410,7 +425,7 @@ function ActionBar({ stateActionBar }) {
     amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
 
     setStage(STAGE_SUBMITTED);
-    const offerCoinFee = coin(
+    const offerCoinFee = coinFunc(
       Math.ceil(
         parseFloat(amountTokenA) *
           convertAmount(parseFloat(params.swapFeeRate), 18) *
@@ -419,7 +434,7 @@ function ActionBar({ stateActionBar }) {
       tokenA
     );
 
-    const offerCoin = coin(parseFloat(amountTokenA), tokenA);
+    const offerCoin = coinFunc(parseFloat(amountTokenA), tokenA);
     console.log('offerCoin', offerCoin);
     const demandCoinDenom = tokenB;
     console.log(`swapPrice`, swapPrice);
@@ -496,7 +511,7 @@ function ActionBar({ stateActionBar }) {
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
     const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
 
-    const transferAmount = coin(amount, denomIbc);
+    const transferAmount = coinFunc(amount, denomIbc);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {
@@ -562,7 +577,7 @@ function ActionBar({ stateActionBar }) {
     );
     const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
     const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
-    const transferAmount = coin(amount, tokenA);
+    const transferAmount = coinFunc(amount, tokenA);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {

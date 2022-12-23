@@ -1,7 +1,12 @@
 import { useState, useEffect, useContext, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { AppContext } from '../../context';
-import { reduceBalances, getDisplayAmount } from '../../utils/utils';
+import {
+  reduceBalances,
+  getDisplayAmount,
+  convertAmountReverce,
+  convertAmount,
+} from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
 import { CYBER } from '../../utils/config';
 import { findDenomInTokenList, isNative } from '../../hooks/useTraseDenom';
@@ -14,40 +19,6 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-export const fncTraseDenom = (denomTrase, listIbcAccet) => {
-  const infoDenomTemp = {
-    denom: denomTrase,
-    coinDecimals: 0,
-  };
-  let findDenom = null;
-
-  if (!denomTrase.includes('pool')) {
-    if (!isNative(denomTrase)) {
-      if (
-        listIbcAccet !== null &&
-        Object.keys(listIbcAccet).length > 0 &&
-        Object.prototype.hasOwnProperty.call(listIbcAccet, denomTrase)
-      ) {
-        const { baseDenom } = listIbcAccet[denomTrase];
-        findDenom = baseDenom;
-      }
-    } else {
-      findDenom = denomTrase;
-    }
-
-    if (findDenom !== null) {
-      const denomInfoFromList = findDenomInTokenList(findDenom);
-      if (denomInfoFromList !== null) {
-        const { denom, coinDecimals } = denomInfoFromList;
-        infoDenomTemp.denom = denom;
-        infoDenomTemp.coinDecimals = coinDecimals;
-      }
-    }
-  }
-
-  return { ...infoDenomTemp };
-};
-
 const calculatePrice = (coinsPair, balances, traseDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
@@ -55,12 +26,8 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
   const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
   const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
 
-  const amountA = new BigNumber(
-    getDisplayAmount(balances[tokenA], coinDecimalsA)
-  );
-  const amountB = new BigNumber(
-    getDisplayAmount(balances[tokenB], coinDecimalsB)
-  );
+  const amountA = new BigNumber(convertAmount(balances[tokenA], coinDecimalsA));
+  const amountB = new BigNumber(convertAmount(balances[tokenB], coinDecimalsB));
 
   if (amountA.comparedTo(0) && amountB.comparedTo(0)) {
     price = amountA.dividedBy(amountB).toNumber();
@@ -70,6 +37,7 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
 };
 
 const getPoolPrice = (data, traseDenom) => {
+  console.log('data', data)
   const copyObj = { ...data };
   Object.keys(copyObj).forEach((key) => {
     const element = copyObj[key];
@@ -94,23 +62,6 @@ const getPoolPrice = (data, traseDenom) => {
   });
   return copyObj;
 };
-
-// const reduceAmountFunc = (data, ibcDataDenom) => {
-//   let balances = {};
-//   if (Object.keys(data).length > 0) {
-//     balances = Object.keys(data).reduce((obj, item) => {
-//       const amount = data[item];
-//       const { coinDecimals } = fncTraseDenom(item, ibcDataDenom);
-//       const reduceAmount = getDisplayAmount(amount, coinDecimals);
-//       return {
-//         ...obj,
-//         [item]: reduceAmount,
-//       };
-//     }, {});
-//   }
-
-//   return balances;
-// };
 
 const getPoolsBalance = async (data, client) => {
   const copyObj = { ...data };
@@ -214,7 +165,6 @@ function useGetMarketData() {
     (data) => {
       try {
         const tempMarketData = {};
-
         if (Object.keys(dataTotal).length > 0) {
           const filteredDataTotalSupply = Object.keys(dataTotal).filter(
             (item) => item.includes('pool')
@@ -231,7 +181,11 @@ function useGetMarketData() {
                 reserveCoinDenoms.forEach((itemJ) => {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
-                    const balancesA = getCoinDecimals(balances[itemJ], itemJ);
+                    const { coinDecimals } = traseDenom(itemJ);
+                    const balancesA = convertAmount(
+                      balances[itemJ],
+                      coinDecimals
+                    );
                     const marketCapaTemp = marketDataPrice * balancesA;
                     marketCapTemp += marketCapaTemp;
                   }
