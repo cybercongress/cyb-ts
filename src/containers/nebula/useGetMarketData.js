@@ -37,7 +37,6 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
 };
 
 const getPoolPrice = (data, traseDenom) => {
-  console.log('data', data)
   const copyObj = { ...data };
   Object.keys(copyObj).forEach((key) => {
     const element = copyObj[key];
@@ -182,11 +181,11 @@ function useGetMarketData() {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
                     const { coinDecimals } = traseDenom(itemJ);
-                    const balancesA = convertAmount(
+                    const balancesConvert = convertAmount(
                       balances[itemJ],
                       coinDecimals
                     );
-                    const marketCapaTemp = marketDataPrice * balancesA;
+                    const marketCapaTemp = marketDataPrice * balancesConvert;
                     marketCapTemp += marketCapaTemp;
                   }
                 });

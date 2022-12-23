@@ -142,18 +142,21 @@ function Nebula({ mobile }) {
             <FormatNumberTokens
               text={key}
               value={dataRenderItems[key].supply}
+              tooltipStatusImg={false}
             />
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
               text={CYBER.DENOM_LIQUID_TOKEN}
               value={dataRenderItems[key].price}
+              tooltipStatusImg={false}
             />
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
               value={dataRenderItems[key].cap}
               text={CYBER.DENOM_LIQUID_TOKEN}
+              tooltipStatusImg={false}
             />
           </ColItem>
         </RowItem>
@@ -175,7 +178,7 @@ function Nebula({ mobile }) {
         <NebulaImg />
       </div>
       {capData.currentCap !== 0 && (
-        <div style={{ display: 'flex', gap: '40px' }}>
+        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
           {capData.change !== 0 && (
             <div
               style={{
@@ -189,6 +192,7 @@ function Nebula({ mobile }) {
           <FormatNumberTokens
             text={CYBER.DENOM_LIQUID_TOKEN}
             value={capData.currentCap}
+            tooltipStatusImg={false}
           />
         </div>
       )}
