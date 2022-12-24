@@ -129,6 +129,7 @@ function Teleport({ defaultAccount }) {
   const [selectedPool, setSelectedPool] = useState([]);
   const [swapPrice, setSwapPrice] = useState(0);
   const [totalSupply, setTotalSupply] = useState(null);
+  const [totalSupplyFull, setTotalSupplyFull] = useState(null);
   const [myPools, setMyPools] = useState({});
   const [selectMyPool, setSelectMyPool] = useState('');
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
@@ -252,6 +253,10 @@ function Teleport({ defaultAccount }) {
         const responseTotalSupply = await jsCyber.totalSupply();
 
         const datareduceTotalSupply = reduceBalances(responseTotalSupply);
+
+        if (Object.keys(datareduceTotalSupply).length > 0) {
+          setTotalSupplyFull(datareduceTotalSupply);
+        }
 
         const reduceData = {};
 
@@ -642,7 +647,7 @@ function Teleport({ defaultAccount }) {
         render={() => (
           <PoolData
             data={poolsData}
-            totalSupplyData={totalSupply}
+            totalSupplyData={totalSupplyFull}
             accountBalances={accountBalances}
           />
         )}

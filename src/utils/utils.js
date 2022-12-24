@@ -47,12 +47,22 @@ const roundNumber = (num, scale) => {
   return k;
 };
 
+function numberWithCommas(x) {
+  const parts = x.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return parts.join('.');
+}
+
 const formatNumber = (number, toFixed) => {
   let formatted = number;
 
   if (toFixed) {
     formatted = roundNumber(formatted, toFixed);
     formatted = formatted.toFixed(toFixed + 1);
+  }
+
+  if (typeof number === 'string') {
+    return numberWithCommas(formatted);
   }
   // debugger;
   return formatted
@@ -505,18 +515,32 @@ function getDenomHash(path, baseDenom) {
     .toUpperCase()}`;
 }
 
+function convertAmount(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(-precision)
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toNumber();
+}
+
+function convertAmountReverce(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(precision)
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toNumber();
+}
+
 function getDisplayAmount(rawAmount, precision, custom) {
   return new BigNumber(rawAmount)
     .shiftedBy(-precision)
-    .dp(custom ? precision : 3, BigNumber.ROUND_FLOOR)
-    .toNumber();
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
 }
 
 function getDisplayAmountReverce(rawAmount, precision) {
   return new BigNumber(rawAmount)
     .shiftedBy(precision)
-    .dp(3, BigNumber.ROUND_FLOOR)
-    .toNumber();
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
 }
 
 export {
@@ -550,4 +574,6 @@ export {
   getDenomHash,
   getDisplayAmount,
   getDisplayAmountReverce,
+  convertAmount,
+  convertAmountReverce,
 };

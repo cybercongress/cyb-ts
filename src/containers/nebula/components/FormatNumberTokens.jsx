@@ -10,15 +10,11 @@ const getDecimal = (number) => {
   return result;
 };
 
-const FormatNumberTokens = ({ text, value, ...props }) => {
-  let isPool = false;
-  if (text && text.includes('pool')) {
-    isPool = true;
-  }
+const FormatNumberTokens = ({ text, value, tooltipStatusImg, ...props }) => {
   const decimal = getDecimal(value);
   return (
     <div
-      style={{ gridTemplateColumns: isPool ? '1fr 30px' : '1fr 20px' }}
+      style={{ gridTemplateColumns: '1fr 30px' }}
       className={styles.containerFormatNumberTokens}
       {...props}
     >
@@ -36,6 +32,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
             justifyContent="flex-end"
             denomValue={text}
             onlyImg
+            tooltipStatusImg={tooltipStatusImg}
           />
         </div>
       )}
