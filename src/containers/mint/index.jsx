@@ -276,11 +276,11 @@ function Mint({ defaultAccount }) {
         >
           <CardStatisics
             title={<ValueImg text="millivolt" />}
-            value={formatNumber(vestedA)}
+            value={formatNumber(vestedV)}
           />
           <CardStatisics
             title={<ValueImg text="milliampere" />}
-            value={formatNumber(vestedV)}
+            value={formatNumber(vestedA)}
           />
           <CardStatisics
             title="My Energy"
