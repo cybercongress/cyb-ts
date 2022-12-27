@@ -9,7 +9,6 @@ import {
 } from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
 import { CYBER } from '../../utils/config';
-import { findDenomInTokenList, isNative } from '../../hooks/useTraseDenom';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,

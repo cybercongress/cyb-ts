@@ -25,6 +25,7 @@ import Carousel from '../portal/gift/carousel1/Carousel';
 import ImgDenom from '../../components/valueImg/imgDenom';
 import CoinDenom from '../../components/valueImg/textDenom';
 import { Input } from '../teleport/components';
+import { DenomArr } from '../../components';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -40,7 +41,7 @@ const headers = {
 };
 
 const bootTocyb =
-  'pool5D83035BE0E7AB904379161D3C52FB4C1C392265AC19CE39A864146198610628';
+  'poolBE0F1D1C7FE3E72D18DF1996AB8E76676852A34313D2772E7ED36B041DCAB182';
 const milliampere = 'milliampere';
 
 const testDenom =
@@ -63,7 +64,8 @@ function TestKeplr() {
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      <CoinDenom coinDenom={testDenom} tooltipStatus />
+      <DenomArr denomValue={bootTocyb} />
+      {/* <CoinDenom coinDenom={testDenom} tooltipStatus />
       <NumericFormat
         type="text"
         id="a"
@@ -75,7 +77,7 @@ function TestKeplr() {
         thousandsGroupStyle="thousand"
         thousandSeparator=","
         decimalScale={3}
-      />
+      /> */}
       {/* <ImgDenom coinDenom={testDenom} /> */}
       {/* <Carousel slides={slidesTest} /> */}
       {/* <Signatures addressActive={{ bech32: addressTest }} /> */}

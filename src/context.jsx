@@ -15,9 +15,13 @@ import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
 import useGetNetworks from './hooks/useGetNetworks';
 import defaultNetworks from './utils/defaultNetworks';
-import { getDenomHash } from './utils/utils';
+import {
+  getDenomHash,
+  isNative,
+  findDenomInTokenList,
+  findPoolDenomInArr,
+} from './utils/utils';
 import { getDenomTraces } from './utils/search/utils';
-import { findDenomInTokenList, isNative } from './hooks/useTraseDenom';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -45,6 +49,7 @@ const valueContext = {
   ws: null,
   jsCyber: null,
   ibcDataDenom: {},
+  poolsData: [],
   networks: {},
   updateNetworks: () => {},
   updatejsCyber: () => {},
@@ -161,10 +166,23 @@ const AppContextProvider = ({ children }) => {
         ...item,
         jsCyber: queryClient,
       }));
-      // getIBCDenomData(queryClient);
+      getPools(queryClient);
     };
     createQueryCliet();
   }, []);
+
+  const getPools = async (queryClient) => {
+    if (queryClient) {
+      try {
+        const response = await queryClient.pools();
+        if (response && response !== null && response.pools) {
+          setValue((item) => ({ ...item, poolsData: response.pools }));
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
 
   useEffect(() => {
     const getIBCDenomData = async (queryClient) => {
@@ -297,38 +315,57 @@ const AppContextProvider = ({ children }) => {
       const infoDenomTemp = {
         denom: denomTrase,
         coinDecimals: 0,
+        path: '',
+        coinImageCid: '',
       };
       let findDenom = null;
 
-      const { ibcDataDenom } = value;
+      const { ibcDataDenom, poolsData } = value;
 
-      if (!denomTrase.includes('pool')) {
-        if (!isNative(denomTrase)) {
-          if (
-            ibcDataDenom !== null &&
-            Object.keys(ibcDataDenom).length > 0 &&
-            Object.prototype.hasOwnProperty.call(ibcDataDenom, denomTrase)
-          ) {
-            const { baseDenom } = ibcDataDenom[denomTrase];
-            findDenom = baseDenom;
-          }
-        } else {
-          findDenom = denomTrase;
+      if (denomTrase.includes('pool') && poolsData.length > 0) {
+        const findPool = findPoolDenomInArr(denomTrase, poolsData);
+        if (findPool !== null) {
+          const { reserveCoinDenoms } = findPool;
+          infoDenomTemp.denom = [reserveCoinDenoms[0], reserveCoinDenoms[1]];
         }
+      } else if (!isNative(denomTrase)) {
+        if (
+          ibcDataDenom !== null &&
+          Object.keys(ibcDataDenom).length > 0 &&
+          Object.prototype.hasOwnProperty.call(ibcDataDenom, denomTrase)
+        ) {
+          const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
+            ibcDataDenom[denomTrase];
+          findDenom = baseDenom;
 
-        if (findDenom !== null) {
           const denomInfoFromList = findDenomInTokenList(findDenom);
           if (denomInfoFromList !== null) {
-            const { denom, coinDecimals } = denomInfoFromList;
+            const { denom, coinDecimals, coinImageCid, counterpartyChainId } =
+              denomInfoFromList;
             infoDenomTemp.denom = denom;
             infoDenomTemp.coinDecimals = coinDecimals;
+            infoDenomTemp.coinImageCid = coinImageCid || '';
+            infoDenomTemp.path = `${counterpartyChainId}/${sourceChannelIFromPath}`;
+          } else {
+            infoDenomTemp.denom = baseDenom;
+            infoDenomTemp.path = sourceChannelIFromPath;
           }
+        }
+      } else {
+        findDenom = denomTrase;
+        const denomInfoFromList = findDenomInTokenList(denomTrase);
+        if (denomInfoFromList !== null) {
+          const { denom, coinDecimals } = denomInfoFromList;
+          infoDenomTemp.denom = denom;
+          infoDenomTemp.coinDecimals = coinDecimals;
+        } else {
+          infoDenomTemp.denom = denomTrase.toUpperCase();
         }
       }
 
       return { ...infoDenomTemp };
     },
-    [value]
+    [value.ibcDataDenom, value.poolsData]
   );
 
   if (value.jsCyber && value.jsCyber === null) {

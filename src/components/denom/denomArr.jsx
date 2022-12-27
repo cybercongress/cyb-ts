@@ -1,19 +1,6 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
 import Denom from './index';
-import coinDecimalsConfig from '../../utils/configToken';
-
-const denonFnc = (text) => {
-  let denom = text;
-
-  if (
-    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
-    text.includes('pool')
-  ) {
-    const poolDenoms = coinDecimalsConfig[text].denom;
-    denom = [denonFnc(poolDenoms[0]), denonFnc(poolDenoms[1])];
-  }
-  return denom;
-};
+import { AppContext } from '../../context';
 
 function DenomArr({
   denomValue,
@@ -24,15 +11,23 @@ function DenomArr({
   type,
   ...props
 }) {
+  const { traseDenom } = useContext(AppContext);
+
   const useDenomValue = useMemo(() => {
-    const resultDenom = denonFnc(denomValue);
-    if (typeof resultDenom === 'string') {
+    let denom = denomValue;
+
+    if (denomValue.includes('pool')) {
+      const { denom: denomTrase } = traseDenom(denomValue);
+      denom = denomTrase;
+    }
+
+    if (typeof denom === 'string') {
       return (
         <Denom
           {...props}
           onlyImg={onlyImg}
           onlyText={onlyText}
-          denomValue={resultDenom}
+          denomValue={denom}
           tooltipStatusImg={tooltipStatusImg}
           tooltipStatusText={tooltipStatusText}
           type={type}
@@ -40,25 +35,27 @@ function DenomArr({
       );
     }
 
-    if (typeof resultDenom === 'object') {
+    if (typeof denom === 'object') {
       return (
         <div style={{ display: 'flex' }}>
           <Denom
             type={type}
-            denomValue={resultDenom[0]}
+            denomValue={denom[0]}
             onlyImg={onlyImg}
             onlyText={onlyText}
             tooltipStatusImg={tooltipStatusImg}
+            tooltipStatusText={tooltipStatusText}
             {...props}
           />
           {onlyText ? '-' : ''}
           <Denom
             type={type}
-            denomValue={resultDenom[1]}
+            denomValue={denom[1]}
             marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
             onlyImg={onlyImg}
             onlyText={onlyText}
             tooltipStatusImg={tooltipStatusImg}
+            tooltipStatusText={tooltipStatusText}
             {...props}
           />
         </div>

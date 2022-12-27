@@ -115,15 +115,13 @@ const Select = ({
                   }
                   bgrImg={textSelectValue.includes('pool')}
                   img={
-                    imgSelectValue || (
-                      <DenomArr
-                        type={type}
-                        justifyContent="center"
-                        denomValue={textSelectValue}
-                        onlyImg
-                        tooltipStatusImg={false}
-                      />
-                    )
+                    <DenomArr
+                      type={type}
+                      justifyContent="center"
+                      denomValue={textSelectValue}
+                      onlyImg
+                      tooltipStatusImg={false}
+                    />
                   }
                   value={valueSelect}
                 />
