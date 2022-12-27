@@ -29,7 +29,10 @@ function CoinDenom({ coinDenom, tooltipStatus, infoDenom }) {
     }
   }, [coinDenom, infoDenom]);
 
-  const validInfo = infoDenom && infoDenom.native && infoDenom.native === false;
+  const validInfo =
+    infoDenom &&
+    Object.prototype.hasOwnProperty.call(infoDenom, 'native') &&
+    infoDenom.native === false;
 
   const validTootipStatusByDenom = validInfo || coinDenom.includes('pool');
 
