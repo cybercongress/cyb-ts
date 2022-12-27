@@ -15,9 +15,11 @@ function DenomArr({
 
   const useDenomValue = useMemo(() => {
     let denom = denomValue;
+    let infoDenom = {};
 
-    if (denomValue.includes('pool')) {
-      const { denom: denomTrase } = traseDenom(denomValue);
+    if (type === undefined) {
+      infoDenom = traseDenom(denomValue);
+      const { denom: denomTrase } = infoDenom;
       denom = denomTrase;
     }
 
@@ -31,6 +33,7 @@ function DenomArr({
           tooltipStatusImg={tooltipStatusImg}
           tooltipStatusText={tooltipStatusText}
           type={type}
+          infoDenom={infoDenom}
         />
       );
     }
@@ -40,22 +43,24 @@ function DenomArr({
         <div style={{ display: 'flex' }}>
           <Denom
             type={type}
-            denomValue={denom[0]}
+            denomValue={denom[0].denom}
             onlyImg={onlyImg}
             onlyText={onlyText}
             tooltipStatusImg={tooltipStatusImg}
             tooltipStatusText={tooltipStatusText}
+            infoDenom={infoDenom.denom[0]}
             {...props}
           />
           {onlyText ? '-' : ''}
           <Denom
             type={type}
-            denomValue={denom[1]}
+            denomValue={denom[1].denom}
             marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
             onlyImg={onlyImg}
             onlyText={onlyText}
             tooltipStatusImg={tooltipStatusImg}
             tooltipStatusText={tooltipStatusText}
+            infoDenom={infoDenom.denom[1]}
             {...props}
           />
         </div>

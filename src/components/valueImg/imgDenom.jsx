@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
 import { AppContext } from '../../context';
 import { getAvatarIpfs } from '../../utils/search/utils';
-import { trimString, isNative } from '../../utils/utils';
+import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
 
 const eth = require('../../image/Ethereum_logo_2014.svg');
@@ -20,31 +20,38 @@ const getNativeImg = (text) => {
 
   switch (text) {
     case 'millivolt':
+    case 'V':
       img = voltImg;
       break;
 
     case 'milliampere':
+    case 'A':
       img = amperImg;
       break;
 
     case 'hydrogen':
+    case 'H':
       img = hydrogen;
       break;
 
     case 'liquidpussy':
+    case 'LP':
       img = hydrogen;
       break;
 
     case 'boot':
+    case 'BOOT':
       img = boot;
 
       break;
 
     case 'tocyb':
+    case 'TOCYB':
       img = tocyb;
       break;
 
     case 'eth':
+    case 'ETH':
       img = eth;
       break;
 
@@ -61,35 +68,39 @@ function ImgDenom({
   size,
   zIndexImg,
   tooltipStatus,
+  infoDenom,
 }) {
-  const { traseDenom } = useContext(AppContext);
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(coinDenom);
 
   useEffect(() => {
-    if (coinDenom.includes('pool')) {
-      setImgDenom(pool);
-      setTooltipText(trimString(coinDenom, 9, 9));
-    } else {
-      const infoDenom = traseDenom(coinDenom);
-
-      if (!isNative(coinDenom)) {
-        if (Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')) {
-          const { coinImageCid, path } = infoDenom;
-          if (coinImageCid && coinImageCid.length > 0) {
-            getImgFromIpfsByCid(coinImageCid);
-          } else {
-            setImgDenom(ibc);
-          }
-          setTooltipText(path);
+    if (
+      infoDenom &&
+      Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')
+    ) {
+      const { coinImageCid, path, native } = infoDenom;
+      if (coinImageCid && coinImageCid.length > 0) {
+        getImgFromIpfsByCid(coinImageCid);
+      } else if (native) {
+        if (coinDenom.includes('pool')) {
+          setImgDenom(pool);
+          setTooltipText(trimString(coinDenom, 9, 9));
+        } else {
+          setTooltipText(infoDenom.denom);
+          const nativeImg = getNativeImg(coinDenom);
+          setImgDenom(nativeImg);
         }
       } else {
-        setTooltipText(infoDenom.denom);
-        const nativeImg = getNativeImg(coinDenom);
-        setImgDenom(nativeImg);
+        setImgDenom(ibc);
       }
+
+      if (path && path.length > 0) {
+        setTooltipText(path);
+      }
+    } else {
+      setImgDenom(defaultImg);
     }
-  }, [node, coinDenom]);
+  }, [node, coinDenom, infoDenom]);
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {

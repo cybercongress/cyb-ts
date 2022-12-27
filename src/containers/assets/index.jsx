@@ -6,7 +6,7 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, formatNumber } from '../../utils/utils';
 import coinDecimalsConfig from '../../utils/configToken';
 import { getCoinDecimals } from '../teleport/utils';
-import { Denom } from '../../components';
+import { DenomArr } from '../../components';
 import { getKeplr } from '../ibc/useSetupIbc';
 import ActionBarAssets from './ActionBarAssets';
 
@@ -32,7 +32,7 @@ const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
       }}
     >
       <div>
-        <Denom
+        <DenomArr
           marginImg="0px 5px 0px 0px"
           flexDirection="row-reverse"
           denomValue={denom}

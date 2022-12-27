@@ -35,6 +35,7 @@ function Denom({
   gap,
   tooltipStatusImg = true,
   tooltipStatusText = true,
+  infoDenom,
   type,
   ...props
 }) {
@@ -74,11 +75,13 @@ function Denom({
         <CoinDenom
           coinDenom={denomValue}
           tooltipStatus={onlyText && tooltipStatusText}
+          infoDenom={infoDenom}
         />
       )}
       {!onlyText && (
         <ImgDenom
           coinDenom={denomValue}
+          infoDenom={infoDenom}
           tooltipStatus={onlyImg && tooltipStatusImg}
         />
       )}

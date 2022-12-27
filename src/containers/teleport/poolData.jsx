@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import React, { useEffect, useState, useMemo } from 'react';
-import { CardStatisics, LinkWindow, NoItems, Denom } from '../../components';
+import { CardStatisics, LinkWindow, NoItems, Denom, DenomArr } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import { PoolItemsList } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
@@ -147,13 +147,13 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
       {useInactive && <div style={inactiveStyle}>inactive</div>}
       <div style={styleTitleContainer}>
         <div style={styleContainerImg}>
-          <Denom
+          <DenomArr
             size={30}
             denomValue={pool.reserve_coin_denoms[0]}
             onlyImg
             zIndexImg={1}
           />
-          <Denom
+          <DenomArr
             size={30}
             denomValue={pool.reserve_coin_denoms[1]}
             onlyImg
@@ -165,8 +165,8 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
             Pool #{pool.id}
           </div>
           <div style={styleTitleDenomContainer}>
-            <Denom denomValue={pool.reserve_coin_denoms[0]} onlyText />/
-            <Denom denomValue={pool.reserve_coin_denoms[1]} onlyText />
+            <DenomArr denomValue={pool.reserve_coin_denoms[0]} onlyText />/
+            <DenomArr denomValue={pool.reserve_coin_denoms[1]} onlyText />
           </div>
         </div>
       </div>

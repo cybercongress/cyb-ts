@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
-import { Denom } from '../../components';
+import { Denom, DenomArr } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
 import { getCoinDecimals, networkList } from './utils';
@@ -68,8 +68,8 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
               ? formatNumber(price)
               : exponentialToDecimal(price.toPrecision(3))}
           </div>
-          <Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> /{' '}
-          <Denom denomValue={tokenB} />
+          <DenomArr marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> /{' '}
+          <DenomArr denomValue={tokenB} />
         </div>
       );
     }

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { Dots, Denom } from '../../../components';
+import { Dots, DenomArr } from '../../../components';
 import { AppContext } from '../../../context';
 import { reduceAmounToken } from '../utils';
 import { formatNumber } from '../../../utils/utils';
@@ -38,7 +38,7 @@ const PoolItemsList = ({ addressPool, token, ...props }) => (
     marginBottom={10}
     {...props}
   >
-    <Denom
+    <DenomArr
       style={{
         flexDirection: 'row-reverse',
         display: 'inline-flex',

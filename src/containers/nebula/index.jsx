@@ -110,7 +110,9 @@ function Nebula({ mobile }) {
     }
 
     if (key.includes('pool')) {
-      return `${getTypeDenomKey(denom[0])}-${getTypeDenomKey(denom[1])}`;
+      return `${getTypeDenomKey(denom[0].denom)}-${getTypeDenomKey(
+        denom[1].denom
+      )}`;
     }
 
     return denom;
