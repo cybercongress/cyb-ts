@@ -20,6 +20,8 @@ import {
   roundNumber,
   exponentialToDecimal,
   getDisplayAmountReverce,
+  findDenomInTokenList,
+  isNative,
 } from '../../utils/utils';
 import { Dots, ValueImg, ButtonIcon } from '../../components';
 import {
@@ -46,7 +48,6 @@ import networks from '../../utils/networkListIbc';
 import Carousel from '../portal/gift/carousel1/Carousel';
 import { MainContainer } from '../portal/components';
 import useGetSelectTab from './hooks/useGetSelectTab';
-import { findDenomInTokenList, isNative } from '../../hooks/useTraseDenom';
 // import TracerTx from './tx/TracerTx';
 // import TraceTxTable from './components/ibc-history/traceTxTable';
 // import HistoryContextProvider from './components/ibc-history/historyContext';

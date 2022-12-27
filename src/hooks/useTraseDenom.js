@@ -1,25 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context';
-import tokenList from '../utils/tokenList';
-
-export function isNative(denom) {
-  if (denom) {
-    return denom.indexOf('ibc/') !== 0;
-  }
-  return false;
-}
-
-export const findDenomInTokenList = (baseDenom) => {
-  let demonInfo = null;
-
-  const findObj = tokenList.find((item) => item.coinMinimalDenom === baseDenom);
-
-  if (findObj) {
-    demonInfo = { ...findObj };
-  }
-
-  return demonInfo;
-};
+import { isNative, findDenomInTokenList } from '../utils/utils';
 
 export const useTraseDenom = (denomTrase) => {
   const { ibcDataDenom } = useContext(AppContext);

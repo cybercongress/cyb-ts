@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
-import { useTraseDenom, isNative } from '../../hooks/useTraseDenom';
+import { AppContext } from '../../context';
 import { getAvatarIpfs } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
+import { trimString, isNative } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
 
 const eth = require('../../image/Ethereum_logo_2014.svg');
@@ -62,30 +62,34 @@ function ImgDenom({
   zIndexImg,
   tooltipStatus,
 }) {
-  const { infoDenom } = useTraseDenom(coinDenom);
+  const { traseDenom } = useContext(AppContext);
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(coinDenom);
 
   useEffect(() => {
-    if (!isNative(coinDenom)) {
-      if (Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')) {
-        const { coinImageCid, path } = infoDenom;
-        if (coinImageCid && coinImageCid.length > 0) {
-          getImgFromIpfsByCid(coinImageCid);
-        } else {
-          setImgDenom(ibc);
-        }
-        setTooltipText(path);
-      }
-    } else if (coinDenom.includes('pool')) {
+    if (coinDenom.includes('pool')) {
       setImgDenom(pool);
       setTooltipText(trimString(coinDenom, 9, 9));
     } else {
-      setTooltipText(infoDenom.denom);
-      const nativeImg = getNativeImg(coinDenom);
-      setImgDenom(nativeImg);
+      const infoDenom = traseDenom(coinDenom);
+
+      if (!isNative(coinDenom)) {
+        if (Object.prototype.hasOwnProperty.call(infoDenom, 'coinImageCid')) {
+          const { coinImageCid, path } = infoDenom;
+          if (coinImageCid && coinImageCid.length > 0) {
+            getImgFromIpfsByCid(coinImageCid);
+          } else {
+            setImgDenom(ibc);
+          }
+          setTooltipText(path);
+        }
+      } else {
+        setTooltipText(infoDenom.denom);
+        const nativeImg = getNativeImg(coinDenom);
+        setImgDenom(nativeImg);
+      }
     }
-  }, [infoDenom, node, coinDenom]);
+  }, [node, coinDenom]);
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {

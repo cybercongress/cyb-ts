@@ -4,6 +4,7 @@ import { Sha256 } from '@cosmjs/crypto';
 import BigNumber from 'bignumber.js';
 import { CYBER } from './config';
 import coinDecimalsConfig from './configToken';
+import tokenList from './tokenList';
 
 const cyberSpace = require('../image/large-purple-circle.png');
 const customNetwork = require('../image/large-orange-circle.png');
@@ -543,6 +544,37 @@ function getDisplayAmountReverce(rawAmount, precision) {
     .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
 }
 
+function isNative(denom) {
+  if (denom && denom.includes('ibc')) {
+    return false;
+  }
+  return true;
+}
+
+const findDenomInTokenList = (baseDenom) => {
+  let demonInfo = null;
+
+  const findObj = tokenList.find((item) => item.coinMinimalDenom === baseDenom);
+
+  if (findObj) {
+    demonInfo = { ...findObj };
+  }
+
+  return demonInfo;
+};
+
+const findPoolDenomInArr = (baseDenom, dataPools) => {
+  let demonInfo = null;
+
+  const findObj = dataPools.find((item) => item.poolCoinDenom === baseDenom);
+
+  if (findObj) {
+    demonInfo = { ...findObj };
+  }
+
+  return demonInfo;
+};
+
 export {
   run,
   sort,
@@ -576,4 +608,7 @@ export {
   getDisplayAmountReverce,
   convertAmount,
   convertAmountReverce,
+  findDenomInTokenList,
+  isNative,
+  findPoolDenomInArr,
 };
