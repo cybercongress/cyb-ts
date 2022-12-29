@@ -20,34 +20,8 @@ import {
 // import { getMarketData } from './getMarketData';
 import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
-import coinDecimalsConfig from '../../utils/configToken';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
-
-const getTypeDenomKey = (denom) => {
-  if (denom.includes('ibc')) {
-    const resultDenom = denonFnc(denom);
-
-    if (resultDenom.includes('ibc')) {
-      return replaceSlash(denom);
-    }
-
-    return resultDenom;
-  }
-
-  if (denom.includes('pool')) {
-    const resultDenom = denonFnc(denom);
-    return `${getTypeDenomKey(resultDenom[0])}-${getTypeDenomKey(
-      resultDenom[1]
-    )}`;
-  }
-
-  if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, denom)) {
-    return coinDecimalsConfig[denom].denom;
-  }
-
-  return denom;
-};
 
 function Nebula({ mobile }) {
   const { traseDenom } = useContext(AppContext);
@@ -128,13 +102,33 @@ function Nebula({ mobile }) {
     return dataObj;
   }, [dataTotal, marketData]);
 
+  const getTypeDenomKey = (key) => {
+    const { denom } = traseDenom(key);
+
+    if (denom.includes('ibc')) {
+      return replaceSlash(denom);
+    }
+
+    if (key.includes('pool')) {
+      return `${getTypeDenomKey(denom[0].denom)}-${getTypeDenomKey(
+        denom[1].denom
+      )}`;
+    }
+
+    return denom;
+  };
+
+  const getLinktoSearch = (key) => {
+    return `/search/${getTypeDenomKey(key)}`;
+  };
+
   const itemRowMarketData = useMemo(() => {
     return Object.keys(dataRenderItems).map((key) => {
       const keyItem = uuidv4();
       return (
         <RowItem key={keyItem}>
           <ColItem>
-            <Link to={`/search/${getTypeDenomKey(key)}`}>
+            <Link to={getLinktoSearch(key)}>
               <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
             </Link>
           </ColItem>

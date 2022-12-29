@@ -158,15 +158,17 @@ const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     const createQueryCliet = async () => {
+      setLoadUrl(true);
       const tendermintClient = await Tendermint34Client.connect(
         CYBER.CYBER_NODE_URL_API
       );
       const queryClient = new CyberClient(tendermintClient);
+      await getPools(queryClient);
       setValue((item) => ({
         ...item,
         jsCyber: queryClient,
       }));
-      getPools(queryClient);
+      setLoadUrl(false);
     };
     createQueryCliet();
   }, []);
@@ -178,6 +180,7 @@ const AppContextProvider = ({ children }) => {
         if (response && response !== null && response.pools) {
           setValue((item) => ({ ...item, poolsData: response.pools }));
         }
+        return;
       } catch (error) {
         console.log('error', error);
       }
@@ -317,6 +320,7 @@ const AppContextProvider = ({ children }) => {
         coinDecimals: 0,
         path: '',
         coinImageCid: '',
+        native: true,
       };
       let findDenom = null;
 
@@ -326,7 +330,10 @@ const AppContextProvider = ({ children }) => {
         const findPool = findPoolDenomInArr(denomTrase, poolsData);
         if (findPool !== null) {
           const { reserveCoinDenoms } = findPool;
-          infoDenomTemp.denom = [reserveCoinDenoms[0], reserveCoinDenoms[1]];
+          infoDenomTemp.denom = [
+            traseDenom(reserveCoinDenoms[0]),
+            traseDenom(reserveCoinDenoms[1]),
+          ];
         }
       } else if (!isNative(denomTrase)) {
         if (
@@ -337,6 +344,8 @@ const AppContextProvider = ({ children }) => {
           const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
             ibcDataDenom[denomTrase];
           findDenom = baseDenom;
+
+          infoDenomTemp.native = false;
 
           const denomInfoFromList = findDenomInTokenList(findDenom);
           if (denomInfoFromList !== null) {
@@ -372,9 +381,9 @@ const AppContextProvider = ({ children }) => {
     return <div>...</div>;
   }
 
-  // if (loadUrl) {
-  //   return <div>...</div>;
-  // }
+  if (loadUrl) {
+    return <div>...</div>;
+  }
 
   return (
     <AppContext.Provider

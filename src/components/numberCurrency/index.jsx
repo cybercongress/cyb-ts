@@ -2,7 +2,7 @@ import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
-import Denom from '../denom';
+import DenomArr from '../denom';
 
 const NumberCurrency = ({
   amount,
@@ -26,7 +26,7 @@ const NumberCurrency = ({
       <div
         style={{ textAlign: 'start', alignItems: 'center', display: 'flex' }}
       >
-        <Denom
+        <DenomArr
           denomValue={currencyNetwork}
           onlyText={onlyText}
           onlyImg={onlyImg}

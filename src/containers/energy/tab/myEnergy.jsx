@@ -13,7 +13,12 @@ const ValueImg = ({ text, img }) => (
   </div>
 );
 
-function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
+function MyEnergy({
+  slotsData,
+  balacesResource,
+  loadingAuthAccounts,
+  traseDenom,
+}) {
   return (
     <div>
       <Pane marginY={30} textAlign="center">
@@ -33,7 +38,9 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
         <Card
           title={<ValueImg text="A" img={amperImg} />}
           value={
-            balacesResource.milliampere ? formatNumber(balacesResource.milliampere) : 0
+            balacesResource.milliampere
+              ? formatNumber(balacesResource.milliampere)
+              : 0
           }
           stylesContainer={{ maxWidth: '200px' }}
         />
@@ -43,7 +50,9 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
         <Card
           title={<ValueImg text="V" img={voltImg} />}
           value={
-            balacesResource.millivolt ? formatNumber(balacesResource.millivolt) : 0
+            balacesResource.millivolt
+              ? formatNumber(balacesResource.millivolt)
+              : 0
           }
           stylesContainer={{ maxWidth: '200px' }}
         />
@@ -54,14 +63,20 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }) {
           title="W"
           value={
             balacesResource.millivolt && balacesResource.milliampere
-              ? formatNumber(balacesResource.millivolt * balacesResource.milliampere)
+              ? formatNumber(
+                  balacesResource.millivolt * balacesResource.milliampere
+                )
               : 0
           }
           stylesContainer={{ maxWidth: '200px' }}
         />
       </Pane>
 
-      {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
+      {loadingAuthAccounts ? (
+        <Dots big />
+      ) : (
+        <TableSlots data={slotsData} traseDenom={traseDenom} />
+      )}
     </div>
   );
 }
