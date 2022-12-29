@@ -162,6 +162,7 @@ function useGetMarketData() {
   const getMarketDataPool = useCallback(
     (data) => {
       try {
+        console.log('data', data)
         const tempMarketData = {};
         if (Object.keys(dataTotal).length > 0) {
           const filteredDataTotalSupply = Object.keys(dataTotal).filter(

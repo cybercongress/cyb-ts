@@ -4,33 +4,7 @@ import { CardStatisics, LinkWindow, NoItems, Denom } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
 import { PoolItemsList } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
-
-// const test = [
-//   {
-//     id: '1',
-//     typeId: 1,
-//     reserveCoinDenoms: ['boot', 'hydrogen'],
-//     reserveAccountAddress: 'bostrom1wrtkzr96362ty7ad0qrwhkpx743xcjrtv7j2cw',
-//     poolCoinDenom:
-//       'pool70D7610CBA8E94B27BAD7806EBD826F5626C486BBF5C490D1463D72314353C66',
-//   },
-//   // {
-//   //   id: '2',
-//   //   typeId: 1,
-//   //   reserveCoinDenoms: ['boot', 'milliampere'],
-//   //   reserveAccountAddress: 'bostrom1wrtkzr96362ty7ad0qrwhkpx743xcjrtv7j2cw',
-//   //   poolCoinDenom:
-//   //     'pool70D7610CBA8E94B27BAD7806EBD826F5626C486BBF5C490D1463D72314353C66',
-//   // },
-//   // {
-//   //   id: '3',
-//   //   typeId: 1,
-//   //   reserveCoinDenoms: ['hydrogen', 'millivolt'],
-//   //   reserveAccountAddress: 'bostrom1wrtkzr96362ty7ad0qrwhkpx743xcjrtv7j2cw',
-//   //   poolCoinDenom:
-//   //     'pool70D7610CBA8E94B27BAD7806EBD826F5626C486BBF5C490D1463D72314353C66',
-//   // },
-// ];
+import { ContainerGradient } from '../portal/components';
 
 const styleContainer = {
   display: 'flex',
@@ -53,14 +27,14 @@ const styleTitleContainer = {
 
 const styleContainerImg = {
   display: 'flex',
-  padding: '5px',
-  marginRight: '20px',
+  justifyContent: 'center',
 };
 
 const styleTitleDenomContainer = {
   display: 'flex',
   fontWeight: '600',
-  color: '#ffffffb3',
+  fontSize: '18px',
+  color: '#fff',
 };
 
 const styleAmountPoolContainer = {
@@ -83,12 +57,50 @@ const styleMySharesContainer = {
 
 const inactiveStyle = {
   position: 'absolute',
-  right: '0',
+  right: '0px',
   marginRight: '10px',
-  padding: '5px',
-  color: '#ff9100',
+  color: 'rgb(255, 145, 0)',
   fontSize: '18px',
+  top: '0',
+  marginTop: '10px',
 };
+
+const TitlePool = ({ pool, useInactive }) => (
+  <>
+    <div style={{ display: 'flex', gap: '10px' }}>
+      <div style={styleContainerImg}>
+        <Denom
+          size={30}
+          denomValue={pool.reserve_coin_denoms[0]}
+          onlyImg
+          zIndexImg={1}
+        />
+        <Denom
+          size={30}
+          denomValue={pool.reserve_coin_denoms[1]}
+          onlyImg
+          marginContainer="0px 0px 0px -8px"
+        />
+      </div>
+      <div>
+        <div
+          style={{
+            fontSize: '16px',
+            color: '#ffffffb3',
+            fontWeight: 600,
+          }}
+        >
+          Pool #{pool.id}
+        </div>
+        <div style={styleTitleDenomContainer}>
+          <Denom denomValue={pool.reserve_coin_denoms[0]} onlyText />/
+          <Denom denomValue={pool.reserve_coin_denoms[1]} onlyText />
+        </div>
+      </div>
+      {useInactive && <div style={inactiveStyle}>inactive</div>}
+    </div>
+  </>
+);
 
 const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
   const [sharesToken, setSharesToken] = useState(null);
@@ -143,35 +155,12 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
   // console.log('useInactive', useInactive)
 
   return (
-    <div style={styleContainer}>
-      {useInactive && <div style={inactiveStyle}>inactive</div>}
-      <div style={styleTitleContainer}>
-        <div style={styleContainerImg}>
-          <Denom
-            size={30}
-            denomValue={pool.reserve_coin_denoms[0]}
-            onlyImg
-            zIndexImg={1}
-          />
-          <Denom
-            size={30}
-            denomValue={pool.reserve_coin_denoms[1]}
-            onlyImg
-            marginContainer="0px 0px 0px -8px"
-          />
-        </div>
-        <div>
-          <div style={{ fontSize: '24px', fontWeight: 600, marginBottom: 5 }}>
-            Pool #{pool.id}
-          </div>
-          <div style={styleTitleDenomContainer}>
-            <Denom denomValue={pool.reserve_coin_denoms[0]} onlyText />/
-            <Denom denomValue={pool.reserve_coin_denoms[1]} onlyText />
-          </div>
-        </div>
-      </div>
-      <div style={sharesToken !== null ? styleAmountPoolContainer : {}}>
-        <span style={styleTitleAmountPoolContainer}>Total amount</span>
+    <ContainerGradient
+      togglingDisable
+      userStyleContent={{ minHeight: '150px' }}
+      title={<TitlePool useInactive={useInactive} pool={pool} />}
+    >
+      <div>
         {pool.reserve_coin_denoms.map((items) => (
           <>
             <PoolItemsList
@@ -187,14 +176,14 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
           <div>{sharesToken} %</div>
         </div>
       )}
-    </div>
+    </ContainerGradient>
   );
 };
 
 const stylePoolDataContainer = {
   display: 'grid',
-  // gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,320px), 1fr))',
-  gridGap: '25px',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,270px), 1fr))',
+  gridGap: '50px',
   margin: '0 auto',
   width: '100%',
 };

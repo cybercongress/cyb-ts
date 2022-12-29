@@ -36,6 +36,7 @@ function Denom({
   tooltipStatusImg = true,
   tooltipStatusText = true,
   type,
+  size,
   ...props
 }) {
   if (type && type === 'network') {
@@ -57,6 +58,7 @@ function Denom({
           <ImgNetwork
             network={denomValue}
             tooltipStatus={onlyImg && tooltipStatusImg}
+            size={size}
           />
         )}
       </ContainerDenom>
@@ -80,6 +82,7 @@ function Denom({
         <ImgDenom
           coinDenom={denomValue}
           tooltipStatus={onlyImg && tooltipStatusImg}
+          size={size}
         />
       )}
     </ContainerDenom>

@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Dots, Denom } from '../../../components';
 import { AppContext } from '../../../context';
-import { reduceAmounToken } from '../utils';
-import { formatNumber } from '../../../utils/utils';
+import { formatNumber, convertAmount } from '../../../utils/utils';
+import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
 
 export const PoolTokenAmount = ({ addressPool, token }) => {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, traseDenom } = useContext(AppContext);
   const [amounToken, setAmounToken] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -16,24 +16,21 @@ export const PoolTokenAmount = ({ addressPool, token }) => {
       if (jsCyber !== null) {
         const getBalancePromise = await jsCyber.getBalance(addressPool, token);
         const amount = parseFloat(getBalancePromise.amount);
-        setAmounToken(parseFloat(amount));
+        const { coinDecimals } = traseDenom(token);
+        setAmounToken(convertAmount(amount, coinDecimals));
         setLoading(false);
       }
     };
     getBalances();
   }, [jsCyber, addressPool, token]);
 
-  return (
-    <Pane>
-      {loading ? <Dots /> : formatNumber(reduceAmounToken(amounToken, token))}
-    </Pane>
-  );
+  return <>{loading ? <Dots /> : <FormatNumberTokens value={amounToken} />}</>;
 };
 
 const PoolItemsList = ({ addressPool, token, ...props }) => (
   <Pane
     display="flex"
-    alignItems="center"
+    alignItems="baseline"
     justifyContent="space-between"
     marginBottom={10}
     {...props}

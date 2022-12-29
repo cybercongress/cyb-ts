@@ -36,7 +36,6 @@ import {
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
-import PoolsList from './poolsList';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
 import getBalances from './hooks/getBalances';
 import Swap from './swap';
