@@ -111,7 +111,7 @@ function App({
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
   const [keywordHash, setKeywordHash] = useState(null);
-  const [story, setStory] = useState(false);
+  const [story, setStory] = useState(true);
 
   // useEffect(() => {
   //   const queryParam = {
@@ -144,12 +144,12 @@ function App({
 
   //  console.log('data', data);
 
-  useEffect(() => {
-    if (!time) {
-      setStory(true);
-      // setOpenMenu(false);
-    }
-  }, [time]);
+  // useEffect(() => {
+  //   if (!time) {
+  //     setStory(true);
+  //     // setOpenMenu(false);
+  //   }
+  // }, [time]);
 
   useEffect(() => {
     const { pathname } = location;

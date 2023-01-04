@@ -1,10 +1,25 @@
 /* eslint-disable no-restricted-syntax */
-import React, { useEffect, useState, useMemo } from 'react';
-import { CardStatisics, LinkWindow, NoItems, Denom } from '../../components';
-import { exponentialToDecimal } from '../../utils/utils';
+import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import BigNumber from 'bignumber.js';
+import {
+  CardStatisics,
+  LinkWindow,
+  NoItems,
+  Denom,
+  DenomArr,
+} from '../../components';
+import {
+  convertAmount,
+  exponentialToDecimal,
+  reduceBalances,
+} from '../../utils/utils';
 import { PoolItemsList } from './components';
 import coinDecimalsConfig from '../../utils/configToken';
 import { ContainerGradient } from '../portal/components';
+import { AppContext } from '../../context';
+import { FormatNumberTokens } from '../nebula/components';
+import { CYBER } from '../../utils/config';
 
 const styleContainer = {
   display: 'flex',
@@ -45,7 +60,7 @@ const styleTitleAmountPoolContainer = {
   fontWeight: '600',
   color: '#ffffffb3',
   marginBottom: '6px',
-  display: 'inline-block',
+  display: 'flex',
 };
 
 const styleMySharesContainer = {
@@ -102,7 +117,35 @@ const TitlePool = ({ pool, useInactive }) => (
   </>
 );
 
+const usePoolAssetAmount = (pool) => {
+  const [assets, setAssets] = useState({});
+  const { jsCyber, traseDenom } = useContext(AppContext);
+
+  useEffect(() => {
+    const getBalances = async () => {
+      if (jsCyber !== null) {
+        const assetsData = {};
+        const { reserve_account_address: addressPool } = pool;
+        const getBalancePromise = await jsCyber.getAllBalances(addressPool);
+        const dataReduceBalances = reduceBalances(getBalancePromise);
+        Object.keys(dataReduceBalances).forEach((key) => {
+          const amount = new BigNumber(dataReduceBalances[key]).toNumber();
+          const { coinDecimals } = traseDenom(key);
+          const reduceAmoun = convertAmount(amount, coinDecimals);
+          assetsData[key] = reduceAmoun;
+        });
+        setAssets(assetsData);
+      }
+    };
+    getBalances();
+  }, [jsCyber, pool]);
+
+  return { assets };
+};
+
 const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
+  const { marketData } = useContext(AppContext);
+  const { assets } = usePoolAssetAmount(pool);
   const [sharesToken, setSharesToken] = useState(null);
 
   useEffect(() => {
@@ -152,24 +195,62 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
     }
   }, [pool]);
 
+  const useCapPool = useMemo(() => {
+    if (Object.keys(assets).length > 0 && Object.keys(marketData).length > 0) {
+      const { reserve_coin_denoms: coinDenoms } = pool;
+      let cap = new BigNumber(0);
+      coinDenoms.forEach((item) => {
+        if (
+          Object.prototype.hasOwnProperty.call(assets, item) &&
+          Object.prototype.hasOwnProperty.call(marketData, item)
+        ) {
+          const amountA = new BigNumber(assets[item]);
+          const priceA = marketData[item];
+          const capItem = amountA.multipliedBy(priceA);
+          cap = cap.plus(capItem);
+        }
+      });
+
+      if (cap.comparedTo(0)) {
+        const reduceAmoun = cap.dp(0, BigNumber.ROUND_FLOOR).toNumber();
+        return reduceAmoun;
+      }
+    }
+    return 0;
+  }, [assets, marketData, pool]);
+
   // console.log('useInactive', useInactive)
 
   return (
     <ContainerGradient
       togglingDisable
-      userStyleContent={{ minHeight: '150px' }}
+      userStyleContent={{ minHeight: '180px' }}
       title={<TitlePool useInactive={useInactive} pool={pool} />}
     >
       <div>
-        {pool.reserve_coin_denoms.map((items) => (
-          <>
-            <PoolItemsList
-              addressPool={pool.reserve_account_address}
-              token={items}
-            />
-          </>
-        ))}
+        {pool.reserve_coin_denoms.map((items) => {
+          const keyItem = uuidv4();
+
+          return (
+            <>
+              <PoolItemsList key={keyItem} assets={assets} token={items} />
+            </>
+          );
+        })}
       </div>
+      {useCapPool > 0 && (
+        <div style={styleMySharesContainer}>
+          <div style={styleTitleAmountPoolContainer}>
+            Cap,
+            <DenomArr
+              marginContainer="0px 0px 0px 5px"
+              denomValue={CYBER.DENOM_LIQUID_TOKEN}
+              onlyImg
+            />
+          </div>
+          <FormatNumberTokens value={useCapPool} />
+        </div>
+      )}
       {sharesToken !== null && (
         <div style={styleMySharesContainer}>
           <div style={styleTitleAmountPoolContainer}>My shares</div>
@@ -192,14 +273,18 @@ function PoolData({ data, totalSupplyData, accountBalances }) {
   let itemsPools = [];
 
   if (data && Object.keys(data).length > 0) {
-    itemsPools = data.map((item) => (
-      <PoolCard
-        key={item.id}
-        pool={item}
-        totalSupplyData={totalSupplyData}
-        accountBalances={accountBalances}
-      />
-    ));
+    itemsPools = data.map((item) => {
+      const keyItem = uuidv4();
+
+      return (
+        <PoolCard
+          key={keyItem}
+          pool={item}
+          totalSupplyData={totalSupplyData}
+          accountBalances={accountBalances}
+        />
+      );
+    });
   }
 
   return (

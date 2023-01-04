@@ -73,44 +73,10 @@ import { TIME_START, CYBER } from './utils/config';
 
 export const history = createBrowserHistory({});
 
-function AppRouter({
-  initIpfsProps,
-  setIpfsStatusProps,
-  setTypeDeviceProps,
-  setIpfsIDProps,
-}) {
-  const dataIpfsStart = useIpfsStart();
-  const [loader, setLoader] = useState(true);
-  const [time, setTime] = useState(false);
-  const [genesis, setGenesis] = useState(false);
-  const [baseUrl, setBaseUrl] = useState(true);
-  const [wsClient, setWsClient] = useState(null);
-
-  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
-
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    // tryConnectToPeer(dataIpfsStart.node);
-  }, [dataIpfsStart]);
-
-  // useEffect(() => {
-  //   const response = localStorage.getItem('CHAIN_PARAMS');
-  //   if (response === null) {
-  //     localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
-  //   }
-  //   setLoader(false);
-  // }, []);
-
-  // if (loader) {
-  //   return <div>...</div>;
-  // }
-
+function AppRouter() {
   return (
     <Router history={history}>
-      <Route path="/" component={() => <App time={time} />} />
+      <Route path="/" component={() => <App />} />
       <Switch>
         <Route path="/" exact component={Wallet} />
         <Route path="/bootloader" component={Home} />
@@ -183,13 +149,4 @@ function AppRouter({
   );
 }
 
-const mapDispatchprops = (dispatch) => {
-  return {
-    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
-    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
-    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
-    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
-  };
-};
-
-export default connect(null, mapDispatchprops)(AppRouter);
+export default AppRouter;

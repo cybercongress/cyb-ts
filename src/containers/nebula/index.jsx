@@ -77,16 +77,17 @@ function Nebula({ mobile }) {
       if (cap > 0) {
         const localStorageDataCap = localStorage.getItem('lastCap');
         if (localStorageDataCap !== null) {
+          const lastCap = new BigNumber(localStorageDataCap);
           let change = 0;
-          change = cap - localStorageDataCap;
-
-          setCapData({ currentCap: cap, change });
-
-          localStorage.setItem('lastCap', cap);
+          change = new BigNumber(cap).minus(lastCap).toNumber();
+          setCapData((item) => ({ ...item, currentCap: cap }));
+          if (new BigNumber(cap).comparedTo(lastCap) !== 0) {
+            setCapData((item) => ({ ...item, change }));
+          }
         } else {
-          localStorage.setItem('lastCap', cap);
           setCapData({ currentCap: cap, change: 0 });
         }
+        localStorage.setItem('lastCap', cap);
       }
     }
   }, [dataTotal, marketData]);
