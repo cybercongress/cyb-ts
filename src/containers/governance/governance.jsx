@@ -26,7 +26,7 @@ const Statistics = ({ communityPoolCyber, staked }) => (
       title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
       value={formatNumber(Math.floor(communityPoolCyber))}
     />
-    <Link to="/halloffame">
+    <Link to="/sphere">
       <CardStatisics
         title="% of staked BOOT"
         value={formatNumber(staked * 100)}

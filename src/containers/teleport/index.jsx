@@ -644,7 +644,7 @@ function Teleport({ defaultAccount }) {
   if (selectedTab === 'pools') {
     content = (
       <Route
-        path="/warp/pools"
+        path="/warp"
         render={() => (
           <PoolData
             data={poolsData}
