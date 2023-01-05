@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 import { CardStatisics, Dots, Loading } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
@@ -14,6 +16,10 @@ import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SearchTokenInfo from '../market/searchTokensInfo';
+import { useGetStatisticsCyber } from '../brain/hooks';
+import { KnowledgeTab } from '../brain/tabs';
+import { getNumTokens, getStateGift } from '../portal/utils';
+import BigNumber from 'bignumber.js';
 
 const PREFIXES = [
   {
@@ -34,16 +40,6 @@ const PREFIXES = [
   },
 ];
 
-const search = async (client, hash, page) => {
-  try {
-    const responseSearchResults = await client.search(hash, page);
-    console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults : [];
-  } catch (error) {
-    return [];
-  }
-};
-
 const ContainerGrid = ({ children }) => (
   <Pane
     marginTop={10}
@@ -56,38 +52,61 @@ const ContainerGrid = ({ children }) => (
   </Pane>
 );
 
-const reduceSearchResults = (data, query) => {
-  return data.reduce(
-    (obj, item) => ({
-      ...obj,
-      [item.particle]: {
-        particle: item.particle,
-        rank: coinDecimals(item.rank),
-        grade: getRankGrade(coinDecimals(item.rank)),
-        status: 'impossibleLoad',
-        query,
-        text: item.particle,
-        content: false,
-      },
-    }),
-    {}
-  );
-};
+const GET_CHARACTERS = gql`
+  query MyQuery {
+    contracts_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
 
-const Home = ({ node, mobile, defaultAccount, block }) => {
+const Home = ({ block }) => {
   const { jsCyber } = useContext(AppContext);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
   const [entropy, setEntropy] = useState(0);
   const [entropyLoader, setEntropyLoader] = useState(true);
   const [memory, setMemory] = useState(0);
   const [memoryLoader, setMemoryLoader] = useState(true);
-  const [resultSearch, setResultSearch] = useState([]);
-  const [loadingSearch, setLoadingSearch] = useState(true);
-  const [keywordHash, setKeywordHash] = useState('');
-  const [rankLink, setRankLink] = useState(null);
-  const [update, setUpdate] = useState(0);
-  const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(0);
+  const [counCitizenshipst, setCounCitizenshipst] = useState(0);
+  const [citizensClaim, setCitizensClaim] = useState(0);
+  const { loading, data } = useQuery(GET_CHARACTERS);
+  const {
+    linksCount,
+    cidsCount,
+    accountsCount,
+    inlfation,
+    staked,
+    activeValidatorsCount,
+    communityPool,
+    proposals,
+  } = useGetStatisticsCyber();
+
+  useEffect(() => {
+    const cheeckStateRelease = async () => {
+      // setLoading(true);
+      if (jsCyber !== null) {
+        try {
+          const queryResponseResultState = await getStateGift(jsCyber);
+          const respnseNumTokens = await getNumTokens(jsCyber);
+          if (respnseNumTokens !== null && respnseNumTokens.count) {
+            setCounCitizenshipst(parseFloat(respnseNumTokens.count));
+          }
+
+          if (
+            queryResponseResultState !== null &&
+            queryResponseResultState.claims
+          ) {
+            const { claims } = queryResponseResultState;
+            setCitizensClaim(claims);
+          }
+        } catch (error) {
+          console.log('error', error);
+        }
+      }
+    };
+    cheeckStateRelease();
+  }, [jsCyber]);
 
   useEffect(() => {
     getEntropy();
@@ -131,63 +150,27 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
     }
   }, [jsCyber]);
 
-  useEffect(() => {
-    const feachData = async () => {
-      if (jsCyber !== null) {
-        setPage(0);
-        setAllPage(0);
-        setResultSearch([]);
-        setLoadingSearch(true);
-        const hash = await getIpfsHash('bootloader');
-        setKeywordHash(hash);
-        const responseApps = await search(jsCyber, hash);
-        if (Object.keys(responseApps).length > 0) {
-          const dataApps = reduceSearchResults(
-            responseApps.result,
-            'bootloader'
-          );
-          setResultSearch(dataApps);
-          setLoadingSearch(false);
-          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
-          setPage((item) => item + 1);
-        } else {
-          setResultSearch([]);
-          setLoadingSearch(false);
-        }
-      } else {
-        setResultSearch([]);
-        setLoadingSearch(false);
-      }
-    };
-    feachData();
-  }, [jsCyber, update]);
+  const useCountContracts = useMemo(() => {
+    if (data && data !== null && data.contracts_aggregate.aggregate) {
+      return data.contracts_aggregate.aggregate.count;
+    }
+    return 0;
+  }, [data]);
 
-  const fetchMoreData = async () => {
-    // a fake async api call like which sends
-    // 20 more records in 1.5 secs
-    let links = [];
-    const data = await search(jsCyber, keywordHash, page);
-    if (data.result) {
-      links = reduceSearchResults(data.result, 'bootloader');
+  const useGetBeta = useMemo(() => {
+    const link = new BigNumber(linksCount);
+    const particles = new BigNumber(cidsCount);
+
+    if (link.comparedTo(0) && particles.comparedTo(0)) {
+      const beta = link
+        .dividedBy(particles)
+        .dp(3, BigNumber.ROUND_FLOOR)
+        .toNumber();
+      return beta;
     }
 
-    setTimeout(() => {
-      setResultSearch((itemState) => ({ ...itemState, ...links }));
-      setPage((itemPage) => itemPage + 1);
-    }, 500);
-  };
-
-  useEffect(() => {
-    setRankLink(null);
-  }, [update]);
-
-  const onClickRank = async (key) => {
-    if (rankLink === key) {
-      setRankLink(null);
-    } else {
-      setRankLink(key);
-    }
-  };
+    return 0;
+  }, [linksCount, cidsCount]);
 
   return (
     <>
@@ -210,6 +193,7 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
               title="Transactions"
               value={<Txs />}
               styleContainer={{ minWidth: 'unset' }}
+              link
             />
           </Link>
           <Link to="/network/bostrom/block">
@@ -217,55 +201,69 @@ const Home = ({ node, mobile, defaultAccount, block }) => {
               title="Blocks"
               value={formatNumber(parseFloat(block))}
               styleContainer={{ minWidth: 'unset' }}
+              link
             />
           </Link>
         </ContainerGrid>
         <ContainerGrid>
-          {loadingSearch ? (
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-              }}
-            >
-              <Loading />
-              <div style={{ color: '#fff', marginTop: 20, fontSize: 20 }}>
-                Searching
-              </div>
-            </div>
-          ) : (
-            <SearchTokenInfo
-              data={resultSearch}
-              node={node}
-              mobile={mobile}
-              selectedTokens="bootloader"
-              onClickRank={onClickRank}
-              fetchMoreData={fetchMoreData}
-              page={page}
-              allPage={allPage}
-            />
-          )}
+          <KnowledgeTab
+            linksCount={parseInt(linksCount, 10)}
+            cidsCount={parseInt(cidsCount, 10)}
+            accountsCount={parseInt(accountsCount, 10)}
+            inlfation={parseFloat(inlfation)}
+          />
+        </ContainerGrid>
+        <ContainerGrid>
+          <CardStatisics
+            value={`${formatNumber(staked * 100, 2)} %`}
+            title={`Staked ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            // styleContainer={{ minWidth: 'unset' }}
+          />
+          <CardStatisics
+            value={formatNumber(activeValidatorsCount)}
+            title="Active heroes"
+            // styleContainer={{ minWidth: 'unset' }}
+          />
+          <CardStatisics
+            value={formatNumber(communityPool)}
+            styleValue={{ fontSize: '24px' }}
+            title="Community pool"
+            // styleContainer={{ minWidth: 'unset' }}
+          />
+          <CardStatisics
+            value={formatNumber(proposals)}
+            title="Proposals"
+            // styleContainer={{ minWidth: 'unset' }}
+          />
+        </ContainerGrid>
+        <ContainerGrid>
+          <CardStatisics
+            value={formatNumber(counCitizenshipst)}
+            title="Citizens"
+            // styleContainer={{ minWidth: 'unset' }}
+          />
+          <CardStatisics
+            value={formatNumber(citizensClaim)}
+            title="Gift claims"
+            // styleContainer={{ minWidth: 'unset' }}
+          />
+          <CardStatisics
+            title="Contracts"
+            value={loading ? <Dots /> : formatNumber(useCountContracts)}
+          />
+          <CardStatisics
+            value={formatNumber(useGetBeta)}
+            title="Beta"
+            // styleContainer={{ minWidth: 'unset' }}
+          />
         </ContainerGrid>
       </main>
-      <ActionBarCont
-        addressActive={addressActive}
-        mobile={mobile}
-        keywordHash={keywordHash}
-        updateFunc={() => setUpdate(update + 1)}
-        rankLink={rankLink}
-      />
     </>
   );
 };
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
-    defaultAccount: store.pocket.defaultAccount,
     block: store.block.block,
   };
 };

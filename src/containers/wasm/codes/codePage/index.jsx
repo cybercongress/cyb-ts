@@ -79,7 +79,7 @@ function CodePage() {
       >
         <div className={styles.containerCodeDetailsHeader}>
           <div className={styles.containerCodeDetailsHeaderTitle}>
-            Code #{codeId}
+            Lib #{codeId}
           </div>
           <div className={styles.containerCodeDetailsHeaderFileInfo}>
             <div className={styles.containerCodeDetailsHeaderFileInfoType}>

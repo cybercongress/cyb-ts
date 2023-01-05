@@ -195,13 +195,6 @@ function Nebula({ mobile }) {
 
   return (
     <MainContainer width="83%">
-      <InfoCard>
-        <div style={{ textAlign: 'center' }}>
-          This is nebula. <br /> You can see the token emission on the left,
-          <br /> price in the middle and total capitalization in hydrogene on
-          the right.
-        </div>
-      </InfoCard>
       <ContainerGradient
         userStyleContent={{ minHeight: 'auto', height: 'unset' }}
         title={<Title />}

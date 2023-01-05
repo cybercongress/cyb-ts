@@ -46,7 +46,7 @@ function ListNetwork() {
             X
           </BtnPasport>
         )}
-        <Link to={`/network/${key}`}>
+        <Link to={`/networks/${key}`}>
           <div style={{ gap: '5px', display: 'grid' }}>
             <ValueItem>
               <div>chainId</div>

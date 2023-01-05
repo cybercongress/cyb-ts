@@ -10,24 +10,21 @@ function KnowledgeTab({ linksCount, cidsCount, accountsCount, inlfation }) {
   try {
     return (
       <>
-        <Link to="/graph">
+        <CardStatisics title="Cyberlinks" value={formatNumber(linksCount)} />
+
+        <Link to="/particles">
           <CardStatisics
-            title="Cyberlinks"
+            title="Particles"
+            value={formatNumber(cidsCount)}
             link
-            value={formatNumber(linksCount)}
           />
         </Link>
-        <CardStatisics title="Objects" value={formatNumber(cidsCount)} link />
+        <CardStatisics title="Neurons" value={<AccountCount />} />
 
-        <CardStatisics title="Subjects" value={<AccountCount />} />
-
-        <Link to="/network/bostrom/tx">
-          <CardStatisics title="Transactions" value={<Txs />} link />
-        </Link>
-        {/* <CardStatisics
+        <CardStatisics
           title="Inflation"
           value={`${formatNumber(inlfation * 100, 2)} %`}
-        /> */}
+        />
       </>
     );
   } catch (error) {

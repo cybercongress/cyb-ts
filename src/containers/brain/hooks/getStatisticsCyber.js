@@ -1,8 +1,10 @@
 import { useEffect, useState, useContext } from 'react';
+import BigNumber from 'bignumber.js';
 import { getInlfation } from '../../../utils/search/utils';
 import { getProposals } from '../../../utils/governance';
 import { AppContext } from '../../../context';
 import { coinDecimals } from '../../../utils/utils';
+import { CYBER } from '../../../utils/config';
 
 function useGetStatisticsCyber() {
   const { jsCyber } = useContext(AppContext);
@@ -11,7 +13,7 @@ function useGetStatisticsCyber() {
     cidsCount: 0,
     accountsCount: 0,
     inlfation: 0,
-    stakedCyb: 0,
+    staked: 0,
     activeValidatorsCount: 0,
   });
   const [government, setGovernment] = useState({
@@ -28,7 +30,7 @@ function useGetStatisticsCyber() {
         const dataCommunityPool = await jsCyber.communityPool();
         const { pool } = dataCommunityPool;
         if (dataCommunityPool !== null) {
-          communityPool = coinDecimals(Math.floor(parseFloat(pool[0].amount)));
+          communityPool = Math.floor(coinDecimals(parseFloat(pool[0].amount)));
         }
 
         const dataProposals = await getProposals();
@@ -46,15 +48,15 @@ function useGetStatisticsCyber() {
     const getStatisticsBrain = async () => {
       if (jsCyber !== null) {
         const totalCyb = {};
-        let stakedCyb = 0;
+        let staked = 0;
         let inlfation = 0;
 
         const responseGraphStats = await jsCyber.graphStats();
-        const { cids, links } = responseGraphStats;
+        const { cyberlinks, particles } = responseGraphStats;
         setKnowledge((item) => ({
           ...item,
-          linksCount: links,
-          cidsCount: cids,
+          linksCount: cyberlinks,
+          cidsCount: particles,
         }));
 
         const responseHeroesActive = await jsCyber.validators(
@@ -73,13 +75,14 @@ function useGetStatisticsCyber() {
           });
         }
 
-        if (totalCyb.boot && totalCyb.sboot) {
-          const { boot, sboot } = totalCyb;
-          stakedCyb = sboot / boot;
+        if (totalCyb[CYBER.DENOM_CYBER] && totalCyb[CYBER.DENOM_LIQUID_TOKEN]) {
+          staked = new BigNumber(totalCyb[CYBER.DENOM_LIQUID_TOKEN])
+            .dividedBy(totalCyb[CYBER.DENOM_CYBER])
+            .toString(10);
         }
         setKnowledge((item) => ({
           ...item,
-          stakedCyb,
+          staked,
         }));
 
         const dataInlfation = await getInlfation();
@@ -96,8 +99,8 @@ function useGetStatisticsCyber() {
   }, [jsCyber]);
 
   return {
-    government,
-    knowledge,
+    ...government,
+    ...knowledge,
   };
 }
 
