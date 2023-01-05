@@ -25,23 +25,29 @@ const itemsMenu = (address) => {
     linkBrain = `/pgraph/${address.bech32}`;
   }
 
+  let myRobotLinks = [];
+
+  if (address !== null) {
+    myRobotLinks = [
+      { name: 'Sigma', to: linkSigma },
+      { name: 'Log', to: linkLog },
+      { name: 'Swarm', to: linkSwarm },
+      { name: 'Security', to: linkSecurity },
+      { name: 'Cyberlinks', to: linkCyberlinks },
+      { name: 'Timeline', to: linkTimeline },
+      { name: 'Sense', to: '/sixthSense' },
+      { name: 'Brain', to: linkBrain },
+      { name: 'Energy', to: '/grid' },
+      { name: 'Badges', to: linkBadges },
+    ];
+  }
+
   const listItemMenu = [
     { name: 'Nebula', to: '/', subItems: [] },
     {
       name: 'My robot',
       to: '/robot',
-      subItems: [
-        { name: 'Sigma', to: linkSigma },
-        { name: 'Log', to: linkLog },
-        { name: 'Swarm', to: linkSwarm },
-        { name: 'Security', to: linkSecurity },
-        { name: 'Cyberlinks', to: linkCyberlinks },
-        { name: 'Timeline', to: linkTimeline },
-        { name: 'Sense', to: '/sixthSense' },
-        { name: 'Brain', to: linkBrain },
-        { name: 'Energy', to: '/grid' },
-        { name: 'Badges', to: linkBadges },
-      ],
+      subItems: myRobotLinks,
     },
     {
       name: 'Teleport',
