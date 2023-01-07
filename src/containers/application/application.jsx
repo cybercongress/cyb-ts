@@ -31,6 +31,7 @@ import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
+import useGetMarketData from '../nebula/useGetMarketData';
 
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
@@ -100,7 +101,8 @@ function App({
   time,
   children,
 }) {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, updatetMarketData } = useContext(AppContext);
+  const { marketData } = useGetMarketData();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
@@ -113,43 +115,11 @@ function App({
   const [keywordHash, setKeywordHash] = useState(null);
   const [story, setStory] = useState(true);
 
-  // useEffect(() => {
-  //   const queryParam = {
-  //     network: CYBER.CHAIN_ID,
-  //   };
-
-  //   const searchQuery = queryString.stringify(queryParam);
-
-  //   history.replace({
-  //     search: searchQuery,
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   const response = localStorage.getItem('CHAIN_PARAMS');
-  //   console.log('getItem CHAIN_PARAMS', JSON.parse(response));
-  // }, []);
-
-  // const data = usePopperTooltip({
-  //   trigger: 'click',
-  //   interactive: true,
-  //   // onVisibleChange: setMountedOnceVisible(),
-  // });
-
-  //  function setMountedOnceVisible(visible) {
-  //    if (!mounted && visible) {
-  //      setMounted(true);
-  //    }
-  //  }
-
-  //  console.log('data', data);
-
-  // useEffect(() => {
-  //   if (!time) {
-  //     setStory(true);
-  //     // setOpenMenu(false);
-  //   }
-  // }, [time]);
+  useEffect(() => {
+    if (Object.keys(marketData).length > 0) {
+      updatetMarketData(marketData);
+    }
+  }, [marketData]);
 
   useEffect(() => {
     const { pathname } = location;

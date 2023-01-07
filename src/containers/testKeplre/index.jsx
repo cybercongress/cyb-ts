@@ -188,7 +188,8 @@ function TestKeplr() {
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      {/* <DenomArr denomValue={bootTocyb} /> */}
+      <DenomArr denomValue={bootTocyb} />
+      {/* <div>div sdjdsksd</div> */}
       {/* <CoinDenom coinDenom={testDenom} tooltipStatus />
       <NumericFormat
         type="text"

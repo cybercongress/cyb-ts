@@ -2,7 +2,6 @@ import React from 'react';
 import { Text, Pane, Button, ActionBar } from '@cybercongress/gravity';
 import { withRouter, Redirect } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
 
 import { i18n } from '../../i18n/en';
@@ -79,8 +78,8 @@ class ActionBarContainer extends React.Component {
   };
 
   pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
+    // const transport = await TransportU2F.create();
+    // this.setState({ ledger: new CosmosDelegateTool(transport) });
   };
 
   getVersion = async () => {

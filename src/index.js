@@ -17,7 +17,6 @@ import AppRouter from './router';
 import { CYBER } from './utils/config';
 import store from './redux/store';
 import AppContextProvider from './context';
-import App from './app';
 
 import './style/main.css';
 // import './style/index.scss';
@@ -84,7 +83,7 @@ const render = () => {
         <ApolloProvider client={client}>
           <AppContextProvider>
             <AppContainer>
-              <App />
+              <AppRouter />
             </AppContainer>
           </AppContextProvider>
         </ApolloProvider>
@@ -93,11 +92,10 @@ const render = () => {
   );
 };
 
-render(App);
+render(AppRouter);
 
 if (module.hot) {
-  module.hot.accept('./app', () => {
-    render(App);
+  module.hot.accept('./router', () => {
+    render(AppRouter);
   });
 }
-

@@ -3,22 +3,31 @@ import { DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import styles from '../styles.scss';
 
-const getDecimal = (number) => {
+const getDecimal = (number, test) => {
   const nstring = number.toString();
   const narray = nstring.split('.');
   const result = narray.length > 1 ? `.${narray[1].slice(0, 3)}` : '';
   return result;
 };
 
-const FormatNumberTokens = ({ text, value, tooltipStatusImg, ...props }) => {
+const FormatNumberTokens = ({
+  text,
+  value,
+  tooltipStatusImg,
+  styleValue,
+  ...props
+}) => {
   const decimal = getDecimal(value);
   return (
     <div
-      style={{ gridTemplateColumns: text ? '1fr 30px' : '1fr' }}
+      style={{ gridTemplateColumns: text ? '1fr 20px' : '1fr' }}
       className={styles.containerFormatNumberTokens}
       {...props}
     >
-      <div className={styles.containerFormatNumberTokensNumber}>
+      <div
+        style={styleValue}
+        className={styles.containerFormatNumberTokensNumber}
+      >
         <span>{formatNumber(Math.floor(value))}</span>
         <span className={styles.containerFormatNumberTokensNumberDecimal}>
           {decimal}
