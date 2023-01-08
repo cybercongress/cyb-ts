@@ -86,10 +86,10 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     ) {
       setSelected('badges');
     } else if (
-      pathname.match(/cyberlink/gm) &&
-      pathname.match(/cyberlink/gm).length > 0
+      pathname.match(/cyberlinks/gm) &&
+      pathname.match(/cyberlinks/gm).length > 0
     ) {
-      setSelected('cyberlink');
+      setSelected('cyberlinks');
     } else if (
       pathname.match(/swarm/gm) &&
       pathname.match(/swarm/gm).length > 0
@@ -201,7 +201,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     }
   }
 
-  if (selected === 'cyberlink') {
+  if (selected === 'cyberlinks') {
     content = <GetLink accountUser={address} />;
   }
 
@@ -298,8 +298,8 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           />
           <TabBtn
             text="Cyberlinks"
-            isSelected={selected === 'cyberlink'}
-            to={`/network/bostrom/contract/${address}/cyberlink`}
+            isSelected={selected === 'cyberlinks'}
+            to={`/network/bostrom/contract/${address}/cyberlinks`}
           />
           <TabBtn
             text="Log"

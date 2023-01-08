@@ -117,7 +117,7 @@ export const Bookmarks = ({ items, ...props }) => {
           <div key={key}>
             <Items
               selected={
-                item.name === selectedItem &&
+                item.to === location.pathname &&
                 selectedItemSub === '' &&
                 item.active === undefined
               }

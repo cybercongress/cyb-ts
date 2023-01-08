@@ -614,9 +614,9 @@ function ActionBar({ stateActionBar }) {
     }
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
 
-  const onClickCreatePoolLink = useCallback(() => {
-    history.push('/warp/create-pool');
-  }, [history]);
+  const handleHistory = (to) => {
+    history.push(to);
+  };
 
   if (addressActive === null) {
     return (
@@ -649,7 +649,10 @@ function ActionBar({ stateActionBar }) {
   if (selectedTab === 'pools' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => onClickCreatePoolLink()} text="Create pool" />
+        <BtnGrd
+          onClick={() => handleHistory('/warp/create-pool')}
+          text="Create pool"
+        />
       </ActionBarSteps>
     );
   }
