@@ -2,7 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import Web3Utils from 'web3-utils';
 import { Link } from 'react-router-dom';
 

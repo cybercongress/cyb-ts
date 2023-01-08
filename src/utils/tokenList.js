@@ -96,6 +96,9 @@ const tokenList = [
     coinDecimals: 0,
     denom: 'LP',
     coinMinimalDenom: 'liquidpussy',
+    counterpartyChainId: 'space-pussy',
+    sourceChannelId: 'channel-0',
+    destChannelId: 'channel-11',
   },
   {
     coinDecimals: 3,

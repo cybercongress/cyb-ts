@@ -15,6 +15,8 @@ import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { initIpfs, setIpfsStatus, setIpfsID } from '../../redux/actions/ipfs';
+import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { CYBER, WP } from '../../utils/config';
@@ -31,6 +33,8 @@ import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
+import useGetMarketData from '../nebula/useGetMarketData';
+import useIpfsStart from '../../ipfsHook';
 
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
@@ -99,8 +103,14 @@ function App({
   setBandwidthProps,
   time,
   children,
+  initIpfsProps,
+  setIpfsStatusProps,
+  setTypeDeviceProps,
+  setIpfsIDProps,
 }) {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, updatetMarketData } = useContext(AppContext);
+  const { marketData } = useGetMarketData();
+  const dataIpfsStart = useIpfsStart();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
@@ -111,45 +121,21 @@ function App({
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
   const [keywordHash, setKeywordHash] = useState(null);
-  const [story, setStory] = useState(false);
-
-  // useEffect(() => {
-  //   const queryParam = {
-  //     network: CYBER.CHAIN_ID,
-  //   };
-
-  //   const searchQuery = queryString.stringify(queryParam);
-
-  //   history.replace({
-  //     search: searchQuery,
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   const response = localStorage.getItem('CHAIN_PARAMS');
-  //   console.log('getItem CHAIN_PARAMS', JSON.parse(response));
-  // }, []);
-
-  // const data = usePopperTooltip({
-  //   trigger: 'click',
-  //   interactive: true,
-  //   // onVisibleChange: setMountedOnceVisible(),
-  // });
-
-  //  function setMountedOnceVisible(visible) {
-  //    if (!mounted && visible) {
-  //      setMounted(true);
-  //    }
-  //  }
-
-  //  console.log('data', data);
+  const [story, setStory] = useState(true);
 
   useEffect(() => {
-    if (!time) {
-      setStory(true);
-      // setOpenMenu(false);
+    if (Object.keys(marketData).length > 0) {
+      updatetMarketData(marketData);
     }
-  }, [time]);
+  }, [marketData]);
+
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    // tryConnectToPeer(dataIpfsStart.node);
+  }, [dataIpfsStart]);
 
   useEffect(() => {
     const { pathname } = location;
@@ -540,6 +526,10 @@ const mapDispatchprops = (dispatch) => {
     setDefaultAccountProps: (name, account) =>
       dispatch(setDefaultAccount(name, account)),
     setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
+    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
+    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
+    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
   };
 };
 

@@ -85,6 +85,14 @@ function useGetMarketData() {
   const [marketData, setMarketData] = useState({});
 
   useEffect(() => {
+    const marketDataLS = localStorage.getItem('marketData');
+    if (marketDataLS !== null) {
+      const marketDataLSPObj = JSON.parse(marketDataLS);
+      setMarketData({ ...marketDataLSPObj });
+    }
+  }, []);
+
+  useEffect(() => {
     const getBankTotal = async () => {
       if (jsCyber !== null) {
         const dataTotalSupply = await jsCyber.totalSupply();
@@ -152,12 +160,20 @@ function useGetMarketData() {
           });
         });
         const tempdataPool = getMarketDataPool(marketDataObj);
-        setMarketData({ ...marketDataObj, ...tempdataPool });
+        const resultMarketDataObj = { ...marketDataObj, ...tempdataPool };
+        setMarketData(resultMarketDataObj);
+        saveToLocalStorage(resultMarketDataObj);
       }
     } catch (error) {
       console.log('error', error);
     }
   }, [dataTotal, poolsTotal]);
+
+  const saveToLocalStorage = (obj) => {
+    if (Object.keys(obj).length > 0) {
+      localStorage.setItem('marketData', JSON.stringify(obj));
+    }
+  };
 
   const getMarketDataPool = useCallback(
     (data) => {

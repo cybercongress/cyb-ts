@@ -6,10 +6,15 @@ import {
 } from '@cybercongress/gravity';
 import Long from 'long';
 import { logs } from '@cosmjs/stargate';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { coin, coins } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
-import { ActionBarContentText, Account, LinkWindow } from '../../components';
+import {
+  ActionBarContentText,
+  Account,
+  LinkWindow,
+  ActionBar as ActionBarCenter,
+} from '../../components';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
@@ -57,6 +62,7 @@ const coinFunc = (amount, denom) => {
 
 function ActionBar({ stateActionBar }) {
   const { keplr, jsCyber, traseDenom } = useContext(AppContext);
+  const history = useHistory();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -608,6 +614,10 @@ function ActionBar({ stateActionBar }) {
     }
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
 
+  const handleHistory = (to) => {
+    history.push(to);
+  };
+
   if (addressActive === null) {
     return (
       <ActionBarContainer>
@@ -636,22 +646,33 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
+  if (selectedTab === 'pools' && stage === STAGE_INIT) {
+    return (
+      <ActionBarSteps>
+        <BtnGrd
+          onClick={() => handleHistory('/warp/create-pool')}
+          text="Create pool"
+        />
+      </ActionBarSteps>
+    );
+  }
+
   if (selectedTab === 'createPool' && stage === STAGE_INIT) {
     return (
-      <ActionBarSteps
+      <ActionBarCenter
         disabled={isExceeded}
         btnText="create pool"
         onClickFnc={() => createPool()}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          fee commission 1 G
+          price 1 000 000 000
           <img
             style={{ width: '20px' }}
             src={selectNetworkImg(CYBER.CHAIN_ID)}
             alt="img"
           />
         </div>
-      </ActionBarSteps>
+      </ActionBarCenter>
     );
   }
 

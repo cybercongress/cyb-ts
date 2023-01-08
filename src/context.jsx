@@ -51,8 +51,10 @@ const valueContext = {
   ibcDataDenom: {},
   poolsData: [],
   networks: {},
+  marketData: {},
   updateNetworks: () => {},
   updatejsCyber: () => {},
+  updatetMarketData: () => {},
   initSigner: () => {},
   traseDenom: () => {},
 };
@@ -104,6 +106,9 @@ const AppContextProvider = ({ children }) => {
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
   const [loadUrl, setLoadUrl] = useState(true);
+  // const dataMarket = useGetMarketData(value.jsCyber, value.traseDenom);
+
+  // console.log('dataMarket', dataMarket);
 
   const updatejsCyber = (rpc) => {
     const createQueryCliet = async () => {
@@ -313,6 +318,13 @@ const AppContextProvider = ({ children }) => {
     }));
   };
 
+  const updatetMarketData = (newData) => {
+    setValue((item) => ({
+      ...item,
+      marketData: { ...newData },
+    }));
+  };
+
   const traseDenom = useCallback(
     (denomTrase) => {
       const infoDenomTemp = {
@@ -392,6 +404,7 @@ const AppContextProvider = ({ children }) => {
         updatejsCyber,
         initSigner,
         updateNetworks,
+        updatetMarketData,
         traseDenom,
       }}
     >

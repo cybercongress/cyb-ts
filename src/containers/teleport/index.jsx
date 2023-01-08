@@ -36,7 +36,6 @@ import {
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
-import PoolsList from './poolsList';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
 import getBalances from './hooks/getBalances';
 import Swap from './swap';
@@ -658,7 +657,7 @@ function Teleport({ defaultAccount }) {
 
   return (
     <>
-      <MainContainer>
+      <MainContainer width={selectedTab === 'pools' ? '83%' : '62%'}>
         {selectedTab !== 'pools' && selectedTab !== 'swap' && (
           // <Carousel
           //   slides={itemsStep}
