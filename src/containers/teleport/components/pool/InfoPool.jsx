@@ -31,7 +31,7 @@ const PoolsInfo = ({ totalCap, myCap, useMyProcent }) => {
       </ContainerGradientText>
       <ContainerGradientText>
         <div className={styles.PoolsInfoContainerValue}>{useMyProcent}%</div>
-        <div className={styles.PoolsInfoContainerText}>my procent</div>
+        <div className={styles.PoolsInfoContainerText}>my Shares</div>
       </ContainerGradientText>
     </div>
   );
