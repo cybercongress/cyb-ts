@@ -14,7 +14,7 @@ import { FlexWrapCantainer, CardCantainer } from '../ui/ui';
 import styles from './stylesContractPage.scss';
 import RenderAbi from './renderAbi';
 import ExecuteTable from './ExecuteTable';
-import { Denom } from '../../../components';
+import { DenomArr } from '../../../components';
 
 function isStargateMsgExecuteContract(msg) {
   return msg.typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract' && !!msg.value;
@@ -182,7 +182,7 @@ function ContractPage() {
           <div className={styles.containerContractPageContainerTitleBalance}>
             Balance: {formatNumber(parseFloat(balance.amount))}
             {balance.denom && (
-              <Denom
+              <DenomArr
                 onlyImg
                 marginContainer="0px 0px 0px 3px"
                 denomValue={balance.denom}

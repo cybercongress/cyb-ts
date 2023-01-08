@@ -75,9 +75,10 @@ function ActionBar({
     if (keplr !== null) {
       setStage(STAGE_SUBMITTED);
       const [{ address }] = await keplr.signer.getAccounts();
+      const gas = DEFAULT_GAS_LIMITS * 2;
       const fee = {
         amount: [],
-        gas: DEFAULT_GAS_LIMITS.toString(),
+        gas: gas.toString(),
       };
       if (addressActive === address) {
         const response = await keplr.investmint(

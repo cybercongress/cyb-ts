@@ -473,7 +473,7 @@ function App({
           )}
           <Pane position="relative">
             <MenuButton
-              to="/"
+              to="/robot"
               imgLogo={ipfsStatus ? cybTrue : cybFalse}
               positionBugLeft
             />

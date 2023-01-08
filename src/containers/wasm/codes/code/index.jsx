@@ -34,7 +34,7 @@ function Code({ data }) {
   const { id, creator, checksum } = data;
 
   return (
-    <Link to={`/codes/${data.id}`}>
+    <Link to={`/libs/${data.id}`}>
       <div className={styles.containetCodesCard}>
         <div className={styles.containetCodesCardId}>#{id}</div>
         <div className={styles.containetCodesCardFills}>

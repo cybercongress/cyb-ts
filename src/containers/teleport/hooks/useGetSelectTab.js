@@ -21,17 +21,17 @@ function useGetSelectTab(history) {
         search: '',
       });
     } else if (
-      pathname.match(/pools/gm) &&
-      pathname.match(/pools/gm).length > 0
-    ) {
-      setSelectedTab('pools');
-    } else if (
       pathname.match(/create-pool/gm) &&
       pathname.match(/create-pool/gm).length > 0
     ) {
       setSelectedTab('createPool');
-    } else {
+    } else if (
+      pathname.match(/teleport/gm) &&
+      pathname.match(/teleport/gm).length > 0
+    ) {
       setSelectedTab('swap');
+    } else {
+      setSelectedTab('pools');
     }
   }, [location.pathname]);
 

@@ -6,26 +6,48 @@ import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
 const itemsMenu = (address) => {
-  let linkAvatar = '/';
+  let linkLog = '/robot';
   let linkBrain = '/graph';
-  let linkCommunity = '/';
+  let linkSwarm = '/robot';
+  let linkSigma = '/robot';
+  let linkSecurity = '/robot';
+  let linkCyberlinks = '/robot';
+  let linkTimeline = '/robot';
+  let linkBadges = '/robot';
   if (address !== null) {
-    linkAvatar = `/network/bostrom/contract/${address.bech32}`;
-    linkCommunity = `/network/bostrom/contract/${address.bech32}/community`;
+    linkLog = `/network/bostrom/contract/${address.bech32}`;
+    linkSwarm = `/network/bostrom/contract/${address.bech32}/swarm`;
+    linkSigma = `/network/bostrom/contract/${address.bech32}/sigma`;
+    linkSecurity = `/network/bostrom/contract/${address.bech32}/security`;
+    linkCyberlinks = `/network/bostrom/contract/${address.bech32}/cyberlinks`;
+    linkTimeline = `/network/bostrom/contract/${address.bech32}/timeline`;
+    linkBadges = `/network/bostrom/contract/${address.bech32}/badges`;
     linkBrain = `/pgraph/${address.bech32}`;
   }
 
+  let myRobotLinks = [];
+
+  if (address !== null) {
+    myRobotLinks = [
+      { name: 'Sigma', to: linkSigma },
+      { name: 'Log', to: linkLog },
+      { name: 'Swarm', to: linkSwarm },
+      { name: 'Security', to: linkSecurity },
+      { name: 'Cyberlinks', to: linkCyberlinks },
+      { name: 'Timeline', to: linkTimeline },
+      { name: 'Sense', to: '/sixthSense' },
+      { name: 'Brain', to: linkBrain },
+      { name: 'Energy', to: '/grid' },
+      { name: 'Badges', to: linkBadges },
+    ];
+  }
+
   const listItemMenu = [
-    { name: 'My robot', to: '/', subItems: [] },
+    { name: 'Nebula', to: '/', subItems: [] },
     {
-      name: 'Networks',
-      to: '/network',
-      subItems: [{ name: 'Custom', to: '/network/custom' }],
-    },
-    {
-      name: 'Contracts',
-      to: '/contracts',
-      subItems: [],
+      name: 'My robot',
+      to: '/robot',
+      subItems: myRobotLinks,
     },
     {
       name: 'Teleport',
@@ -34,7 +56,7 @@ const itemsMenu = (address) => {
     },
     {
       name: 'Warp',
-      to: '/warp/pools',
+      to: '/warp',
       subItems: [
         { name: 'Add liquidity', to: '/warp/add-liquidity' },
         { name: 'Create pool', to: '/warp/create-pool' },
@@ -42,20 +64,31 @@ const itemsMenu = (address) => {
       ],
     },
     {
-      name: 'Dyson Sphere',
-      to: '/halloffame',
-      subItems: [{ name: 'Heroes at rest', to: '/halloffame/jailed' }],
+      name: 'Sphere',
+      to: '/sphere',
+      subItems: [{ name: 'Heroes at rest', to: '/sphere/jailed' }],
     },
-    { name: 'HFR', to: '/mint', subItems: [] },
-    { name: 'My Avatar', to: linkAvatar, subItems: [] },
-    { name: 'My Community', to: linkCommunity, subItems: [] },
-    { name: 'My Sense', to: '/sixthSense', subItems: [] },
-    { name: 'My Brain', to: linkBrain, subItems: [] },
-    { name: 'My Energy', to: '/grid', subItems: [] },
+    { name: 'HFR', to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
-    { name: 'Oracle', to: '/bootloader', subItems: [] },
-
-    { name: 'Nebula', to: '/nebula', subItems: [] },
+    {
+      name: 'Oracle',
+      to: '/oracle',
+      subItems: [
+        { name: 'Particles', to: '/particles' },
+        { name: 'Blocks', to: '/network/bostrom/blocks' },
+        { name: 'Txs', to: '/network/bostrom/tx' },
+        { name: 'Contracts', to: '/contracts' },
+        { name: 'Libs', to: '/libs' },
+      ],
+    },
+    {
+      name: 'Hub',
+      to: '/search/hub',
+      subItems: [
+        { name: 'Networks', to: '/networks' },
+        { name: 'Add network', to: '/networks/add' },
+      ],
+    },
     { name: 'Senate', to: '/senate', subItems: [] },
     {
       name: 'Help',

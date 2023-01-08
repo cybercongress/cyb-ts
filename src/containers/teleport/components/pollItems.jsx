@@ -1,7 +1,6 @@
 import React, { useMemo, useContext } from 'react';
-import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
-import { Denom } from '../../../components';
+import { DenomArr } from '../../../components';
 import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
 import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
@@ -48,7 +47,7 @@ const PoolItemsList = ({ assets, token, ...props }) => {
         height: '40px',
       }}
     >
-      <Denom
+      <DenomArr
         style={{
           flexDirection: 'row-reverse',
           display: 'inline-flex',

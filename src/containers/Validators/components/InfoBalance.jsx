@@ -50,7 +50,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
         }
       />
 
-      <Link to="/mint">
+      <Link to="/hfr">
         <CardStatisics
           title={`${HYDROGEN} available`}
           value={

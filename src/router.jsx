@@ -78,16 +78,15 @@ function AppRouter() {
     <Router history={history}>
       <Route path="/" component={() => <App />} />
       <Switch>
-        <Route path="/" exact component={Wallet} />
-        <Route path="/bootloader" component={Home} />
+        <Route path="/" exact component={Nebula} />
+        <Route path="/robot" component={Wallet} />
+        <Route path="/oracle" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
         {/* <Route path="/gift/:address?" component={Gift} /> */}
-        <Route path="/gol/takeoff" component={Funding} />
-        <Route path="/tot" component={Got} />
         {/* <Route path="/brain" component={Brain} /> */}
         <Route exact path="/senate" component={Governance} />
         <Route path="/senate/:proposalId" component={ProposalsDetail} />
-        <Route path="/halloffame" component={Validators} />
+        <Route path="/sphere" component={Validators} />
         <Route path="/episode-1" component={Story} />
         <Route exact path="/network/bostrom/tx" component={Txs} />
         <Route path="/gol" component={GOL} />
@@ -103,28 +102,26 @@ function AppRouter() {
         <Route path="/quitter" component={ForceQuitter} />
         <Route path="/graph" component={ForceGraph} />
         <Route path="/pgraph/:agent" component={ForceGraph} />
-        <Route path="/gol/vesting" component={Vesting} />
         <Route path="/ipfs/:cid" component={Ipfs} />
-        <Route exact path="/network/bostrom/block" component={Block} />
+        <Route exact path="/network/bostrom/blocks" component={Block} />
         <Route
-          path="/network/bostrom/block/:idBlock"
+          path="/network/bostrom/blocks/:idBlock"
           component={BlockDetails}
         />
         <Route path="/network/bostrom/parameters" component={ParamNetwork} />
-        <Route path="/evangelism" component={Evangelism} />
         <Route path="/degenbox" component={TrollBoxx} />
         {/* <Route path="/portal" component={PortPages} /> */}
         <Route path="/test" component={TestKeplr} />
-        <Route path="/mint" component={Mint} />
+        <Route path="/hfr" component={Mint} />
         <Route path="/grid" component={RoutedEnergy} />
         {/* <Route path="/bootcycle" component={Bootcycle} /> */}
         <Route path="/token" component={Market} />
         <Route path="/oracle" component={Oracle} />
         <Route path="/particles" component={Objects} />
         <Route path="/sixthSense" component={Taverna} />
+
         <Route path="/teleport" component={Teleport} />
         <Route path="/warp" component={Teleport} />
-        <Route path="/nebula" component={Nebula} />
         {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
         <Route path="/citizenship" component={PortalCitizenship} />
@@ -133,14 +130,14 @@ function AppRouter() {
         <Route path="/portal" component={MainPartal} />
         <Route path="/ibc" component={Ibc} />
         {/* wasm */}
-        <Route path="/codes" exact component={Codes} />
-        <Route path="/codes/:codeId" component={CodePage} />
+        <Route path="/libs" exact component={Codes} />
+        <Route path="/libs/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
         {/* network */}
-        <Route path="/network" exact component={ListNetwork} />
-        <Route path="/network/custom" component={CustomNetwork} />
-        <Route path="/network/:networkId" component={DetailsNetwork} />
+        <Route path="/networks" exact component={ListNetwork} />
+        <Route path="/networks/add" component={CustomNetwork} />
+        <Route path="/networks/:networkId" component={DetailsNetwork} />
 
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />

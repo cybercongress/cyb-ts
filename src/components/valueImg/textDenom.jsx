@@ -3,9 +3,7 @@ import Tooltip from '../tooltip/tooltip';
 import { isNative, trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
 
-function CoinDenom({ coinDenom, tooltipStatus }) {
-  const { traseDenom } = useContext(AppContext);
-
+function CoinDenom({ coinDenom, tooltipStatus, infoDenom }) {
   const [textDenom, setTextDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(coinDenom);
 
@@ -13,26 +11,30 @@ function CoinDenom({ coinDenom, tooltipStatus }) {
     if (coinDenom.includes('pool')) {
       setTextDenom(trimString(coinDenom, 3, 3));
       setTooltipText(trimString(coinDenom, 9, 9));
-    } else {
-      const infoDenom = traseDenom(coinDenom);
-      if (Object.prototype.hasOwnProperty.call(infoDenom, 'denom')) {
-        const { denom, path } = infoDenom;
-        if (denom.length < 20) {
-          setTextDenom(denom);
-        } else {
-          setTextDenom(trimString(denom, 12, 4));
-        }
-        if (path.length > 0) {
-          setTooltipText(path);
-        }
+    } else if (
+      infoDenom &&
+      Object.prototype.hasOwnProperty.call(infoDenom, 'denom')
+    ) {
+      const { denom, path } = infoDenom;
+      if (denom.length < 20) {
+        setTextDenom(denom);
       } else {
-        setTextDenom(coinDenom.toUpperCase());
+        setTextDenom(trimString(denom, 12, 4));
       }
+      if (path.length > 0) {
+        setTooltipText(path);
+      }
+    } else {
+      setTextDenom(coinDenom.toUpperCase());
     }
-  }, [coinDenom]);
+  }, [coinDenom, infoDenom]);
 
-  const validTootipStatusByDenom =
-    !isNative(coinDenom) || coinDenom.includes('pool');
+  const validInfo =
+    infoDenom &&
+    Object.prototype.hasOwnProperty.call(infoDenom, 'native') &&
+    infoDenom.native === false;
+
+  const validTootipStatusByDenom = validInfo || coinDenom.includes('pool');
 
   if (tooltipStatus && validTootipStatusByDenom) {
     return (

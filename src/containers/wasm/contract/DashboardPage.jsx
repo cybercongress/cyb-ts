@@ -136,9 +136,9 @@ function DashboardPage() {
               )
             }
           />
-          <Link to="/codes">
+          <Link to="/libs">
             <CardStatisics
-              title="Codes"
+              title="Libs"
               value={codes !== null ? formatNumber(codes) : <Dots />}
               link
             />
