@@ -15,6 +15,8 @@ import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { initIpfs, setIpfsStatus, setIpfsID } from '../../redux/actions/ipfs';
+import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { CYBER, WP } from '../../utils/config';
@@ -32,6 +34,7 @@ import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
+import useIpfsStart from '../../ipfsHook';
 
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
@@ -100,9 +103,14 @@ function App({
   setBandwidthProps,
   time,
   children,
+  initIpfsProps,
+  setIpfsStatusProps,
+  setTypeDeviceProps,
+  setIpfsIDProps,
 }) {
   const { jsCyber, updatetMarketData } = useContext(AppContext);
   const { marketData } = useGetMarketData();
+  const dataIpfsStart = useIpfsStart();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
@@ -120,6 +128,14 @@ function App({
       updatetMarketData(marketData);
     }
   }, [marketData]);
+
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    // tryConnectToPeer(dataIpfsStart.node);
+  }, [dataIpfsStart]);
 
   useEffect(() => {
     const { pathname } = location;
@@ -510,6 +526,10 @@ const mapDispatchprops = (dispatch) => {
     setDefaultAccountProps: (name, account) =>
       dispatch(setDefaultAccount(name, account)),
     setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
+    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
+    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
+    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
   };
 };
 
