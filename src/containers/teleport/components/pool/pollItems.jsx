@@ -1,9 +1,9 @@
 import React, { useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
-import { DenomArr } from '../../../components';
-import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
-import { AppContext } from '../../../context';
-import { CYBER } from '../../../utils/config';
+import { DenomArr } from '../../../../components';
+import FormatNumberTokens from '../../../nebula/components/FormatNumberTokens';
+import { AppContext } from '../../../../context';
+import { CYBER } from '../../../../utils/config';
 
 const PoolItemsList = ({ assets, token, ...props }) => {
   const { marketData } = useContext(AppContext);
