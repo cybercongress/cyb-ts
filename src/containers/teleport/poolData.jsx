@@ -81,15 +81,21 @@ const styleMySharesContainer = {
 const inactiveStyle = {
   position: 'absolute',
   right: '0px',
-  marginRight: '10px',
+  marginRight: '15px',
   color: 'rgb(255, 145, 0)',
   fontSize: '18px',
   top: '0',
-  marginTop: '10px',
 };
 
-const TitlePool = ({ pool, useInactive }) => (
-  <>
+const TitlePool = ({ pool, totalCap, useInactive }) => (
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      width: '100%',
+      alignItems: 'center',
+    }}
+  >
     <div style={{ display: 'flex', gap: '10px' }}>
       <div style={styleContainerImg}>
         <Denom
@@ -120,9 +126,16 @@ const TitlePool = ({ pool, useInactive }) => (
           <Denom denomValue={pool.reserve_coin_denoms[1]} onlyText />
         </div>
       </div>
-      {useInactive && <div style={inactiveStyle}>inactive</div>}
     </div>
-  </>
+    {totalCap && (
+      <FormatNumberTokens
+        value={totalCap}
+        text={CYBER.DENOM_LIQUID_TOKEN}
+        marginContainer="0px"
+      />
+    )}
+    {useInactive && <div style={inactiveStyle}>inactive</div>}
+  </div>
 );
 
 const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
@@ -184,8 +197,10 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
   return (
     <ContainerGradient
       togglingDisable
-      userStyleContent={{ minHeight: '210px' }}
-      title={<TitlePool useInactive={useInactive} pool={pool} />}
+      userStyleContent={{ minHeight: '150px' }}
+      title={
+        <TitlePool useInactive={useInactive} pool={pool} totalCap={pool.cap} />
+      }
     >
       <div>
         {pool.reserve_coin_denoms.map((items) => {
@@ -199,14 +214,14 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
         })}
       </div>
 
-      <div style={styleMySharesContainer}>
+      {/* <div style={styleMySharesContainer}>
         <div style={styleTitleAmountPoolContainer}>Cap</div>
         <FormatNumberTokens
           value={pool.cap}
           text={CYBER.DENOM_LIQUID_TOKEN}
           marginContainer="0px"
         />
-      </div>
+      </div> */}
 
       {sharesToken !== null && (
         <div style={styleMySharesContainer}>
@@ -288,7 +303,10 @@ const usePoolsAssetAmount = (pools) => {
           }
         });
         totalCapTemp = totalCapTemp.plus(cap);
-        newArrPools.push({ ...pool, cap: cap.toNumber() });
+        newArrPools.push({
+          ...pool,
+          cap: cap.dp(0, BigNumber.ROUND_FLOOR).toNumber(),
+        });
       });
 
       setTotalCap(totalCapTemp.dp(0, BigNumber.ROUND_FLOOR).toNumber());
