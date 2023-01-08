@@ -30,7 +30,10 @@ const PoolItemsList = ({ assets, token, ...props }) => {
 
   const useCap = useMemo(() => {
     if (usePrice > 0) {
-      return new BigNumber(amounToken).multipliedBy(usePrice).toNumber();
+      return new BigNumber(amounToken)
+        .multipliedBy(usePrice)
+        .dp(0, BigNumber.ROUND_FLOOR)
+        .toNumber();
     }
     return 0;
   }, [amounToken, usePrice]);

@@ -3,10 +3,14 @@ import { DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import styles from '../styles.scss';
 
-const getDecimal = (number, test) => {
+const getDecimal = (number, float) => {
   const nstring = number.toString();
   const narray = nstring.split('.');
-  const result = narray.length > 1 ? `.${narray[1].slice(0, 3)}` : '';
+  let position = 3;
+  if (float && number < 1) {
+    position = Math.floor(Math.abs(Math.log10(number))) + 2;
+  }
+  const result = narray.length > 1 ? `.${narray[1].slice(0, position)}` : '';
   return result;
 };
 
@@ -15,12 +19,14 @@ const FormatNumberTokens = ({
   value,
   tooltipStatusImg,
   styleValue,
+  float,
+  customText,
   ...props
 }) => {
-  const decimal = getDecimal(value);
+  const decimal = getDecimal(value, float);
   return (
     <div
-      style={{ gridTemplateColumns: text ? '1fr 20px' : '1fr' }}
+      style={{ gridTemplateColumns: text || customText ? '1fr 20px' : '1fr' }}
       className={styles.containerFormatNumberTokens}
       {...props}
     >
@@ -43,6 +49,11 @@ const FormatNumberTokens = ({
             onlyImg
             tooltipStatusImg={tooltipStatusImg}
           />
+        </div>
+      )}
+      {customText && !text && (
+        <div className={styles.containerFormatNumberTokensDenomImg}>
+          {customText}
         </div>
       )}
     </div>

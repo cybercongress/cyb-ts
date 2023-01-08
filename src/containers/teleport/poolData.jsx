@@ -127,7 +127,7 @@ const TitlePool = ({ pool, totalCap, useInactive }) => (
         </div>
       </div>
     </div>
-    {totalCap && (
+    {totalCap !== undefined && (
       <FormatNumberTokens
         value={totalCap}
         text={CYBER.DENOM_LIQUID_TOKEN}
@@ -197,7 +197,7 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
   return (
     <ContainerGradient
       togglingDisable
-      userStyleContent={{ minHeight: '150px' }}
+      userStyleContent={{ minHeight: '160px' }}
       title={
         <TitlePool useInactive={useInactive} pool={pool} totalCap={pool.cap} />
       }
@@ -214,21 +214,11 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
         })}
       </div>
 
-      {/* <div style={styleMySharesContainer}>
-        <div style={styleTitleAmountPoolContainer}>Cap</div>
-        <FormatNumberTokens
-          value={pool.cap}
-          text={CYBER.DENOM_LIQUID_TOKEN}
-          marginContainer="0px"
-        />
-      </div> */}
-
       {sharesToken !== null && (
         <div style={styleMySharesContainer}>
           <div style={styleTitleAmountPoolContainer}>My shares</div>
           <div>
-            {/* <FormatNumberTokens value={sharesToken} /> */}
-            {sharesToken}%
+            <FormatNumberTokens value={sharesToken} float customText="%" />
           </div>
         </div>
       )}
