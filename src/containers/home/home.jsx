@@ -196,7 +196,7 @@ const Home = ({ block }) => {
               link
             />
           </Link>
-          <Link to="/network/bostrom/block">
+          <Link to="/network/bostrom/blocks">
             <CardStatisics
               title="Blocks"
               value={formatNumber(parseFloat(block))}
