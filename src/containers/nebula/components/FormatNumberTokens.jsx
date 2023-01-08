@@ -7,8 +7,9 @@ const getDecimal = (number, float) => {
   const nstring = number.toString();
   const narray = nstring.split('.');
   let position = 3;
-  if (float && number < 1) {
-    position = Math.floor(Math.abs(Math.log10(number))) + 2;
+  if (number < 0.001) {
+    // position = Math.floor(Math.abs(Math.log10(number))) + 2;
+    position = 6;
   }
   const result = narray.length > 1 ? `.${narray[1].slice(0, position)}` : '';
   return result;

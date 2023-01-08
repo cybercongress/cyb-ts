@@ -68,7 +68,7 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
   return (
     <ContainerGradient
       togglingDisable
-      userStyleContent={{ minHeight: '160px' }}
+      userStyleContent={{ minHeight: '120px', height: 'auto' }}
       title={
         <TitlePool useInactive={useInactive} pool={pool} totalCap={pool.cap} />
       }
@@ -87,7 +87,7 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
 
       {sharesToken !== null && (
         <div className={styles.PoolCardContainerMyShares}>
-          <div className={styles.PoolCardContainerMySharesTitle}>My shares</div>
+          <div className={styles.PoolCardContainerMySharesTitle}>My share</div>
           <div>
             <FormatNumberTokens value={sharesToken} float customText="%" />
           </div>

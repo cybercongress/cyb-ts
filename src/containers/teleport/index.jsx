@@ -657,7 +657,7 @@ function Teleport({ defaultAccount }) {
 
   return (
     <>
-      <MainContainer width={selectedTab === 'pools' ? '70%' : '62%'}>
+      <MainContainer width={selectedTab === 'pools' ? '83%' : '62%'}>
         {selectedTab !== 'pools' && selectedTab !== 'swap' && (
           // <Carousel
           //   slides={itemsStep}

@@ -1,12 +1,14 @@
 import React, { useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
+import { Link } from 'react-router-dom';
 import { DenomArr } from '../../../../components';
 import FormatNumberTokens from '../../../nebula/components/FormatNumberTokens';
 import { AppContext } from '../../../../context';
 import { CYBER } from '../../../../utils/config';
+import { replaceSlash } from '../../../../utils/utils';
 
 const PoolItemsList = ({ assets, token, ...props }) => {
-  const { marketData } = useContext(AppContext);
+  const { marketData, traseDenom } = useContext(AppContext);
 
   const amounToken = useMemo(() => {
     if (assets && Object.prototype.hasOwnProperty.call(assets, token)) {
@@ -37,6 +39,20 @@ const PoolItemsList = ({ assets, token, ...props }) => {
     return 0;
   }, [amounToken, usePrice]);
 
+  const getTypeDenomKey = (key) => {
+    const { denom } = traseDenom(key);
+
+    if (denom.includes('ibc')) {
+      return replaceSlash(denom);
+    }
+
+    return denom;
+  };
+
+  const getLinktoSearch = (key) => {
+    return `/search/${getTypeDenomKey(key)}`;
+  };
+
   return (
     <div
       style={{
@@ -47,17 +63,19 @@ const PoolItemsList = ({ assets, token, ...props }) => {
         height: '40px',
       }}
     >
-      <DenomArr
-        style={{
-          flexDirection: 'row-reverse',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        denomValue={token}
-        onlyText
-        marginImg="0 5px"
-      />
+      <Link to={getLinktoSearch(token)}>
+        <DenomArr
+          style={{
+            flexDirection: 'row-reverse',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          denomValue={token}
+          onlyText
+          marginImg="0 5px"
+        />
+      </Link>
       <FormatNumberTokens
         marginContainer="0px"
         value={amounToken}

@@ -16,7 +16,7 @@ function PoolData({ data, totalSupplyData, accountBalances }) {
       return new BigNumber(myCap)
         .dividedBy(totalCap)
         .multipliedBy(100)
-        .dp(5, BigNumber.ROUND_FLOOR)
+        .dp(3, BigNumber.ROUND_FLOOR)
         .toNumber();
     }
 
