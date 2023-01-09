@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
-import { formatNumber } from '../../../utils/utils';
+import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
 import { reduceAmounToken } from '../../Wallet/card/PubkeyCard';
+import { AppContext } from '../../../context';
 
 const Row = ({ text, number, procent, color }) => (
   <Pane display="flex" alignItems="center" paddingY={7}>
@@ -75,6 +76,8 @@ const DetailsMainToken = ({ balance }) => {
 };
 
 const RowToken = ({ denom, amount }) => {
+  const { traseDenom } = useContext(AppContext);
+  const { coinDecimals } = traseDenom(denom);
   return (
     <Pane
       display="flex"
@@ -89,7 +92,7 @@ const RowToken = ({ denom, amount }) => {
         denomValue={denom}
       />
       <Pane whiteSpace="nowrap" textAlign="right">
-        {formatNumber(reduceAmounToken(parseFloat(amount), denom))}
+        {formatNumber(getDisplayAmount(amount, coinDecimals))}
       </Pane>
     </Pane>
   );

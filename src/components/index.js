@@ -48,6 +48,10 @@ import NumberCurrency from './numberCurrency';
 import SearchSnippet from './searchSnippet';
 import Denom from './denom';
 import DenomArr from './denom/denomArr';
+import ButtonNetwork from './ButtonNetwork';
+import Tooltip from './tooltip/tooltip';
+import ImgNetwork from './networksImg/imgNetwork';
+import ActionBar from './actionBar';
 
 export {
   GovernanceChangeParam,
@@ -98,6 +102,10 @@ export {
   SearchSnippet,
   Denom,
   DenomArr,
+  ButtonNetwork,
+  Tooltip,
+  ImgNetwork,
+  ActionBar,
 };
 
 export { Nums } from './ui/Numbers';
@@ -110,7 +118,6 @@ export {
   CardArrow,
   CardStatisics,
 } from './statistics/item';
-export { Tooltip } from './tooltip/tooltip';
 export { Loading } from './ui/loading';
 export { Popup } from './popups/popups';
 export { ContainetLedger } from './ledger/container';

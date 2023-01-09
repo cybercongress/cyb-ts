@@ -5,9 +5,9 @@ import { networkList } from '../utils';
 import coinDecimalsConfig from '../../../utils/configToken';
 import { getKeplr } from '../../ibc/useSetupIbc';
 import { CYBER } from '../../../utils/config';
-import useGetBalancesIbc, {
-  networkList as networks,
-} from './useGetBalancesIbc';
+import useGetBalancesIbc from './useGetBalancesIbc';
+
+import networks from '../../../utils/networkListIbc';
 
 function useSetupIbcClient(denom, network, keplrCybre) {
   const [ibcClient, setIbcClient] = useState(null);
@@ -18,9 +18,9 @@ function useSetupIbcClient(denom, network, keplrCybre) {
       setIbcClient(null);
 
       let client = null;
-      if (networkList[network] && networkList[network] !== CYBER.CHAIN_ID) {
+      if (network && network !== CYBER.CHAIN_ID) {
         const keplr = await getKeplr();
-        const { rpc, prefix, chainId } = networks[networkList[network]];
+        const { rpc, prefix, chainId } = networks[network];
         await keplr.enable(chainId);
         const offlineSigner = await keplr.getOfflineSignerAuto(chainId);
         const options = { prefix };

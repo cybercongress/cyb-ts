@@ -1,31 +1,68 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
 import Denom from './index';
-import coinDecimalsConfig from '../../utils/configToken';
+import { AppContext } from '../../context';
 
-const denonFnc = (text) => {
-  let denom = text;
-  const validDenom = text.includes('ibc') || text.includes('pool');
-  if (
-    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
-    validDenom
-  ) {
-    denom = coinDecimalsConfig[text].denom;
-  }
-  return denom;
-};
+function DenomArr({
+  denomValue,
+  onlyText,
+  onlyImg,
+  tooltipStatusImg,
+  tooltipStatusText,
+  type,
+  ...props
+}) {
+  const { traseDenom } = useContext(AppContext);
 
-function DenomArr({ denomValue, ...props }) {
   const useDenomValue = useMemo(() => {
-    const resultDenom = denonFnc(denomValue);
-    if (typeof resultDenom === 'string') {
-      return <Denom {...props} denomValue={resultDenom} />;
+    let denom = denomValue;
+    let infoDenom = {};
+
+    if (type === undefined) {
+      infoDenom = traseDenom(denomValue);
+      const { denom: denomTrase } = infoDenom;
+      denom = denomTrase;
     }
 
-    if (typeof resultDenom === 'object') {
+    if (typeof denom === 'string') {
+      return (
+        <Denom
+          {...props}
+          onlyImg={onlyImg}
+          onlyText={onlyText}
+          denomValue={denom}
+          tooltipStatusImg={tooltipStatusImg}
+          tooltipStatusText={tooltipStatusText}
+          type={type}
+          infoDenom={infoDenom}
+        />
+      );
+    }
+
+    if (typeof denom === 'object') {
       return (
         <div style={{ display: 'flex' }}>
-          <Denom denomValue={resultDenom[0]} {...props} />
-          <Denom denomValue={resultDenom[1]} {...props} />
+          <Denom
+            type={type}
+            denomValue={denom[0].denom}
+            onlyImg={onlyImg}
+            onlyText={onlyText}
+            tooltipStatusImg={tooltipStatusImg}
+            tooltipStatusText={tooltipStatusText}
+            infoDenom={infoDenom.denom[0]}
+            {...props}
+          />
+          {onlyText ? '-' : ''}
+          <Denom
+            type={type}
+            denomValue={denom[1].denom}
+            marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
+            onlyImg={onlyImg}
+            onlyText={onlyText}
+            tooltipStatusImg={tooltipStatusImg}
+            tooltipStatusText={tooltipStatusText}
+            infoDenom={infoDenom.denom[1]}
+            {...props}
+          />
         </div>
       );
     }

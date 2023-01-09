@@ -2,7 +2,7 @@ import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
-import { Tooltip } from '../tooltip/tooltip';
+import Tooltip from '../tooltip/tooltip';
 
 const submitted = require('../../image/ionicons_svg_ios-battery-full.svg');
 const voting = require('../../image/ionicons_svg_ios-people.svg');

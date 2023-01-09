@@ -1,6 +1,26 @@
 import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
+import { Sha256 } from '@cosmjs/crypto';
+import BigNumber from 'bignumber.js';
 import { CYBER } from './config';
+import coinDecimalsConfig from './configToken';
+import tokenList from './tokenList';
+
+const cyberSpace = require('../image/large-purple-circle.png');
+const customNetwork = require('../image/large-orange-circle.png');
+const cyberBostrom = require('../image/large-green.png');
+const voltImg = require('../image/lightning2.png');
+const amperImg = require('../image/light.png');
+const hydrogen = require('../image/hydrogen.svg');
+const tocyb = require('../image/boot.png');
+const downOutline = require('../image/chevronDownOutline.svg');
+const gol = require('../image/seedling.png');
+const atom = require('../image/cosmos-2.svg');
+const eth = require('../image/Ethereum_logo_2014.svg');
+const pool = require('../image/gravitydexPool.png');
+const ibc = require('../image/ibc-unauth.png');
+const cosmos = require('../image/cosmos-2.svg');
+const osmosis = require('../image/osmosis.svg');
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
@@ -28,12 +48,22 @@ const roundNumber = (num, scale) => {
   return k;
 };
 
+function numberWithCommas(x) {
+  const parts = x.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return parts.join('.');
+}
+
 const formatNumber = (number, toFixed) => {
   let formatted = number;
 
   if (toFixed) {
     formatted = roundNumber(formatted, toFixed);
     formatted = formatted.toFixed(toFixed + 1);
+  }
+
+  if (typeof number === 'string') {
+    return numberWithCommas(formatted);
   }
   // debugger;
   return formatted
@@ -441,6 +471,110 @@ const groupMsg = (ArrMsg, size = 2) => {
   return link;
 };
 
+const selectNetworkImg = (network) => {
+  switch (network) {
+    case 'bostrom':
+      return cyberBostrom;
+    case 'space-pussy':
+      return cyberSpace;
+
+    default:
+      return customNetwork;
+  }
+};
+
+const denonFnc = (text) => {
+  let denom = text;
+
+  if (
+    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
+    text.includes('ibc')
+  ) {
+    denom = coinDecimalsConfig[text].denom;
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
+    text.includes('pool')
+  ) {
+    const poolDenoms = coinDecimalsConfig[text].denom;
+    denom = [denonFnc(poolDenoms[0]), denonFnc(poolDenoms[1])];
+  }
+  return denom;
+};
+
+const sha256 = (data) => {
+  return new Uint8Array(new Sha256().update(data).digest());
+};
+
+function getDenomHash(path, baseDenom) {
+  const parts = path.split('/');
+  parts.push(baseDenom);
+  const newPath = parts.slice().join('/');
+  return `ibc/${Buffer.from(sha256(Buffer.from(newPath)))
+    .toString('hex')
+    .toUpperCase()}`;
+}
+
+function convertAmount(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(-precision)
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toNumber();
+}
+
+function convertAmountReverce(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(precision)
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toNumber();
+}
+
+function getDisplayAmount(rawAmount, precision, custom) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(-precision)
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
+}
+
+function getDisplayAmountReverce(rawAmount, precision) {
+  return new BigNumber(rawAmount)
+    .shiftedBy(precision)
+    .dp(precision, BigNumber.ROUND_FLOOR)
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
+}
+
+function isNative(denom) {
+  if (denom && denom.includes('ibc')) {
+    return false;
+  }
+  return true;
+}
+
+const findDenomInTokenList = (baseDenom) => {
+  let demonInfo = null;
+
+  const findObj = tokenList.find((item) => item.coinMinimalDenom === baseDenom);
+
+  if (findObj) {
+    demonInfo = { ...findObj };
+  }
+
+  return demonInfo;
+};
+
+const findPoolDenomInArr = (baseDenom, dataPools) => {
+  let demonInfo = null;
+
+  const findObj = dataPools.find((item) => item.poolCoinDenom === baseDenom);
+
+  if (findObj) {
+    demonInfo = { ...findObj };
+  }
+
+  return demonInfo;
+};
+
 export {
   run,
   sort,
@@ -467,4 +601,14 @@ export {
   replaceSlash,
   encodeSlash,
   groupMsg,
+  selectNetworkImg,
+  denonFnc,
+  getDenomHash,
+  getDisplayAmount,
+  getDisplayAmountReverce,
+  convertAmount,
+  convertAmountReverce,
+  findDenomInTokenList,
+  isNative,
+  findPoolDenomInArr,
 };

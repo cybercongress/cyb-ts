@@ -6,22 +6,34 @@ import {
 } from '@cybercongress/gravity';
 import Long from 'long';
 import { logs } from '@cosmjs/stargate';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { coin, coins } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
-import { ActionBarContentText, Account, LinkWindow } from '../../components';
+import {
+  ActionBarContentText,
+  Account,
+  LinkWindow,
+  ActionBar as ActionBarCenter,
+} from '../../components';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
   exponentialToDecimal,
-  coinDecimals,
   fromBech32,
   trimString,
+  selectNetworkImg,
+  convertAmountReverce,
+  convertAmount,
 } from '../../utils/utils';
 import { getTxs } from '../../utils/search/utils';
-import { sortReserveCoinDenoms, reduceAmounToken, networkList } from './utils';
-import coinDecimalsConfig from '../../utils/configToken';
-import { networkList as networks } from './hooks/useGetBalancesIbc';
+import {
+  sortReserveCoinDenoms,
+  reduceAmounToken,
+  networkList,
+  getCoinDecimals,
+} from './utils';
+import networks from '../../utils/networkListIbc';
+import { BtnGrd, ActionBarSteps } from '../portal/components';
 
 import ActionBarStaps from './actionBarSteps';
 
@@ -44,8 +56,13 @@ const fee = {
   gas: DEFAULT_GAS_LIMITS.toString(),
 };
 
+const coinFunc = (amount, denom) => {
+  return { denom, amount: new BigNumber(amount).toString(10) };
+};
+
 function ActionBar({ stateActionBar }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { keplr, jsCyber, traseDenom } = useContext(AppContext);
+  const history = useHistory();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -83,15 +100,17 @@ function ActionBar({ stateActionBar }) {
     const poolAmountA = new BigNumber(Number(tokenAPoolAmount));
     const poolAmountB = new BigNumber(Number(tokenBPoolAmount));
 
-    if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      orderPrice = poolAmountB.dividedBy(poolAmountA);
-      orderPrice = orderPrice.multipliedBy(0.97).toNumber();
-    } else {
-      orderPrice = poolAmountA.dividedBy(poolAmountB);
-      orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+    if (poolAmountA.comparedTo(0) > 0 && poolAmountB.comparedTo(0) > 0) {
+      if ([tokenA, tokenB].sort()[0] !== tokenA) {
+        orderPrice = poolAmountB.dividedBy(poolAmountA);
+        orderPrice = orderPrice.multipliedBy(0.97).toNumber();
+      } else {
+        orderPrice = poolAmountA.dividedBy(poolAmountB);
+        orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+      }
     }
 
-    console.log('orderPrice useEffect', orderPrice);
+    // console.log('orderPrice useEffect', orderPrice);
     if (orderPrice && orderPrice !== Infinity) {
       setSwapPrice(orderPrice);
     }
@@ -163,69 +182,69 @@ function ActionBar({ stateActionBar }) {
   //   // }
   // }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
-  useEffect(() => {
-    console.log('first', logs.parseRawLog(testVar));
-    const logsValue = parseLog(logs.parseRawLog(testVar));
-    console.log('logsValue', logsValue)
-  }, []);
+  // useEffect(() => {
+  //   console.log('first', logs.parseRawLog(testVar));
+  //   const logsValue = parseLog(logs.parseRawLog(testVar));
+  //   console.log('logsValue', logsValue);
+  // }, []);
 
-  const parseLog = (log) => {
-    try {
-      if (log && Object.keys(log).length > 0) {
-        const { events } = log[0];
-        if (events) {
-          // eslint-disable-next-line no-restricted-syntax
-          for (const event of events) {
-            if (event.type === 'send_packet') {
-              const { attributes } = event;
-              const sourceChannelAttr = attributes.find(
-                (attr) => attr.key === 'packet_src_channel'
-              );
-              const sourceChannelValue = sourceChannelAttr
-                ? sourceChannelAttr.value
-                : undefined;
-              const destChannelAttr = attributes.find(
-                (attr) => attr.key === 'packet_dst_channel'
-              );
-              const destChannelValue = destChannelAttr
-                ? destChannelAttr.value
-                : undefined;
-              const sequenceAttr = attributes.find(
-                (attr) => attr.key === 'packet_sequence'
-              );
-              const sequence = sequenceAttr ? sequenceAttr.value : undefined;
-              const timeoutHeightAttr = attributes.find(
-                (attr) => attr.key === 'packet_timeout_height'
-              );
-              const timeoutHeight = timeoutHeightAttr
-                ? timeoutHeightAttr.value
-                : undefined;
-              const timeoutTimestampAttr = attributes.find(
-                (attr) => attr.key === 'packet_timeout_timestamp'
-              );
-              const timeoutTimestamp = timeoutTimestampAttr
-                ? timeoutTimestampAttr.value
-                : undefined;
+  // const parseLog = (log) => {
+  //   try {
+  //     if (log && Object.keys(log).length > 0) {
+  //       const { events } = log[0];
+  //       if (events) {
+  //         // eslint-disable-next-line no-restricted-syntax
+  //         for (const event of events) {
+  //           if (event.type === 'send_packet') {
+  //             const { attributes } = event;
+  //             const sourceChannelAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_src_channel'
+  //             );
+  //             const sourceChannelValue = sourceChannelAttr
+  //               ? sourceChannelAttr.value
+  //               : undefined;
+  //             const destChannelAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_dst_channel'
+  //             );
+  //             const destChannelValue = destChannelAttr
+  //               ? destChannelAttr.value
+  //               : undefined;
+  //             const sequenceAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_sequence'
+  //             );
+  //             const sequence = sequenceAttr ? sequenceAttr.value : undefined;
+  //             const timeoutHeightAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_timeout_height'
+  //             );
+  //             const timeoutHeight = timeoutHeightAttr
+  //               ? timeoutHeightAttr.value
+  //               : undefined;
+  //             const timeoutTimestampAttr = attributes.find(
+  //               (attr) => attr.key === 'packet_timeout_timestamp'
+  //             );
+  //             const timeoutTimestamp = timeoutTimestampAttr
+  //               ? timeoutTimestampAttr.value
+  //               : undefined;
 
-              if (sequence && destChannelValue && sourceChannelValue) {
-                return {
-                  destChannel: destChannelValue,
-                  sourceChannel: sourceChannelValue,
-                  sequence,
-                  timeoutHeight,
-                  timeoutTimestamp,
-                };
-              }
-            }
-          }
-        }
-      }
-      return null;
-    } catch (e) {
-      console.log('error parseLog', e);
-      return null;
-    }
-  };
+  //             if (sequence && destChannelValue && sourceChannelValue) {
+  //               return {
+  //                 destChannel: destChannelValue,
+  //                 sourceChannel: sourceChannelValue,
+  //                 sequence,
+  //                 timeoutHeight,
+  //                 timeoutTimestamp,
+  //               };
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     console.log('error parseLog', e);
+  //     return null;
+  //   }
+  // };
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -258,10 +277,25 @@ function ActionBar({ stateActionBar }) {
   const createPool = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
 
-    const depositCoins = [
-      coin(1000000, CYBER.DENOM_CYBER),
-      coin(1500000, 'hydrogen'),
-    ];
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+    const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+
+    const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
+    const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
+
+    let depositCoins = [];
+
+    if ([tokenA, tokenB].sort()[0] === tokenA) {
+      depositCoins = [
+        coinFunc(reduceAmountA, tokenA),
+        coinFunc(reduceAmountB, tokenB),
+      ];
+    } else {
+      depositCoins = [
+        coinFunc(reduceAmountB, tokenB),
+        coinFunc(reduceAmountA, tokenA),
+      ];
+    }
     console.log(`depositCoins`, depositCoins);
 
     const response = await keplr.createPool(
@@ -289,7 +323,7 @@ function ActionBar({ stateActionBar }) {
     if (Object.prototype.hasOwnProperty.call(myPools, selectMyPool)) {
       poolId = myPools[selectMyPool].id;
     }
-    const depositCoins = coin(Number(amountPoolCoin), selectMyPool);
+    const depositCoins = coinFunc(Number(amountPoolCoin), selectMyPool);
 
     if (addressActive !== null && addressActive.bech32 === address) {
       const response = await keplr.withdwawWithinBatch(
@@ -331,21 +365,32 @@ function ActionBar({ stateActionBar }) {
       [tokenB]: amountY,
     };
 
-    deposit[arrangedReserveCoinDenoms[0]] = reduceAmounToken(
-      deposit[arrangedReserveCoinDenoms[0]],
-      arrangedReserveCoinDenoms[0],
-      true
+    const { coinDecimals: coinDecimalsA } = traseDenom(
+      arrangedReserveCoinDenoms[0]
+    );
+    const { coinDecimals: coinDecimalsB } = traseDenom(
+      arrangedReserveCoinDenoms[1]
     );
 
-    deposit[arrangedReserveCoinDenoms[1]] = reduceAmounToken(
+    deposit[arrangedReserveCoinDenoms[0]] = convertAmountReverce(
+      deposit[arrangedReserveCoinDenoms[0]],
+      coinDecimalsA
+    );
+
+    deposit[arrangedReserveCoinDenoms[1]] = convertAmountReverce(
       deposit[arrangedReserveCoinDenoms[1]],
-      arrangedReserveCoinDenoms[1],
-      true
+      coinDecimalsB
     );
 
     const depositCoins = [
-      coin(deposit[arrangedReserveCoinDenoms[0]], arrangedReserveCoinDenoms[0]),
-      coin(deposit[arrangedReserveCoinDenoms[1]], arrangedReserveCoinDenoms[1]),
+      coinFunc(
+        deposit[arrangedReserveCoinDenoms[0]],
+        arrangedReserveCoinDenoms[0]
+      ),
+      coinFunc(
+        deposit[arrangedReserveCoinDenoms[1]],
+        arrangedReserveCoinDenoms[1]
+      ),
     ];
 
     console.log(`depositCoins`, depositCoins);
@@ -379,31 +424,32 @@ function ActionBar({ stateActionBar }) {
   const swapWithinBatch = async () => {
     const [{ address }] = await keplr.signer.getAccounts();
 
-    console.log('tokenAAmount', tokenAAmount);
     let amountTokenA = tokenAAmount;
 
-    if (tokenA === 'millivolt' || tokenA === 'milliampere') {
-      amountTokenA *= 1000;
-    }
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
 
-    if (tokenA.includes('ibc')) {
-      amountTokenA = reduceAmounToken(amountTokenA, tokenA, true);
-    }
+    amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
 
     setStage(STAGE_SUBMITTED);
-    const offerCoinFee = coin(
+    const offerCoinFee = coinFunc(
       Math.ceil(
         parseFloat(amountTokenA) *
-          coinDecimals(parseFloat(params.swapFeeRate)) *
+          convertAmount(parseFloat(params.swapFeeRate), 18) *
           0.5
       ),
       tokenA
     );
 
-    const offerCoin = coin(parseFloat(amountTokenA), tokenA);
+    const offerCoin = coinFunc(parseFloat(amountTokenA), tokenA);
     console.log('offerCoin', offerCoin);
     const demandCoinDenom = tokenB;
     console.log(`swapPrice`, swapPrice);
+
+    const exp = new BigNumber(10).pow(18).toString();
+    const convertSwapPrice = new BigNumber(swapPrice)
+      .multipliedBy(exp)
+      .dp(0, BigNumber.ROUND_FLOOR)
+      .toString(10);
     if (addressActive !== null && addressActive.bech32 === address) {
       try {
         const response = await keplr.swapWithinBatch(
@@ -413,7 +459,7 @@ function ActionBar({ stateActionBar }) {
           offerCoin,
           demandCoinDenom,
           offerCoinFee,
-          exponentialToDecimal(swapPrice * 10 ** 18),
+          convertSwapPrice,
           fee
         );
 
@@ -459,20 +505,19 @@ function ActionBar({ stateActionBar }) {
   const depositOnClick = useCallback(async () => {
     console.log('tokenAAmount', tokenAAmount);
     const [{ address }] = await ibcClient.signer.getAccounts();
+    const [{ address: counterpartyAccount }] = await keplr.signer.getAccounts();
+
     setStage(STAGE_SUBMITTED);
 
     const sourcePort = 'transfer';
-    const counterpartyAccount = fromBech32(
-      address,
-      CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
-    );
+
     const timeoutTimestamp = Long.fromString(
       `${new Date().getTime() + 60000}000000`
     );
-    const transferAmount = coin(
-      reduceAmounToken(parseFloat(tokenAAmount), tokenA, true),
-      denomIbc
-    );
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+    const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
+
+    const transferAmount = coinFunc(amount, denomIbc);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {
@@ -485,11 +530,16 @@ function ActionBar({ stateActionBar }) {
       },
     };
     console.log('msg', msg);
+    const gasEstimation = await ibcClient.simulate(address, [msg], '');
+    const feeIbc = {
+      amount: [],
+      gas: Math.round(gasEstimation * 1.5).toString(),
+    };
     try {
       const response = await ibcClient.signAndBroadcast(
         address,
         [msg],
-        fee,
+        feeIbc,
         ''
       );
       console.log(`response`, response);
@@ -517,13 +567,13 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
-  }, [tokenA, ibcClient, tokenAAmount, denomIbc]);
+  }, [tokenA, ibcClient, tokenAAmount, denomIbc, keplr]);
 
   const withdrawOnClick = useCallback(async () => {
     let prefix;
     setStage(STAGE_SUBMITTED);
-    if (Object.prototype.hasOwnProperty.call(networks, networkList[networkB])) {
-      prefix = networks[networkList[networkB]].prefix;
+    if (Object.prototype.hasOwnProperty.call(networks, networkB)) {
+      prefix = networks[networkB].prefix;
     }
     const [{ address }] = await keplr.signer.getAccounts();
     const sourcePort = 'transfer';
@@ -531,10 +581,9 @@ function ActionBar({ stateActionBar }) {
     const timeoutTimestamp = Long.fromString(
       `${new Date().getTime() + 60000}000000`
     );
-    const transferAmount = coin(
-      reduceAmounToken(parseFloat(tokenAAmount), tokenA, true),
-      tokenA
-    );
+    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+    const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
+    const transferAmount = coinFunc(amount, tokenA);
     const msg = {
       typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
       value: {
@@ -564,6 +613,10 @@ function ActionBar({ stateActionBar }) {
       setStage(STAGE_ERROR);
     }
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
+
+  const handleHistory = (to) => {
+    history.push(to);
+  };
 
   if (addressActive === null) {
     return (
@@ -595,51 +648,79 @@ function ActionBar({ stateActionBar }) {
 
   if (selectedTab === 'pools' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled onClick={() => createPool()}>
-          create Pool
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          onClick={() => handleHistory('/warp/create-pool')}
+          text="Create pool"
+        />
+      </ActionBarSteps>
+    );
+  }
+
+  if (selectedTab === 'createPool' && stage === STAGE_INIT) {
+    return (
+      <ActionBarCenter
+        disabled={isExceeded}
+        btnText="create pool"
+        onClickFnc={() => createPool()}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          price 1 000 000 000
+          <img
+            style={{ width: '20px' }}
+            src={selectNetworkImg(CYBER.CHAIN_ID)}
+            alt="img"
+          />
+        </div>
+      </ActionBarCenter>
     );
   }
 
   if (selectedTab === 'sub-liquidity' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isExceeded} onClick={() => withdwawWithinBatch()}>
-          Withdrawal
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isExceeded}
+          onClick={() => withdwawWithinBatch()}
+          text="withdrawal"
+        />
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'add-liquidity' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isExceeded} onClick={() => depositWithinBatch()}>
-          Deposit
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isExceeded}
+          onClick={() => depositWithinBatch()}
+          text="deposit"
+        />
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'swap' && typeTxs === 'swap' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={isExceeded} onClick={() => swapWithinBatch()}>
-          swap
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={isExceeded}
+          onClick={() => swapWithinBatch()}
+          text="swap"
+        />
+      </ActionBarSteps>
     );
   }
 
   if (selectedTab === 'swap' && typeTxs === 'deposit' && stage === STAGE_INIT) {
     return (
-      <ActionBarContainer>
-        <Button disabled={ibcClient === null} onClick={() => depositOnClick()}>
-          deposit
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={ibcClient === null}
+          onClick={() => depositOnClick()}
+          text="deposit"
+        />
+      </ActionBarSteps>
     );
   }
 
@@ -649,11 +730,13 @@ function ActionBar({ stateActionBar }) {
     stage === STAGE_INIT
   ) {
     return (
-      <ActionBarContainer>
-        <Button disabled={keplr === null} onClick={() => withdrawOnClick()}>
-          withdraw
-        </Button>
-      </ActionBarContainer>
+      <ActionBarSteps>
+        <BtnGrd
+          disabled={keplr === null}
+          onClick={() => withdrawOnClick()}
+          text="withdraw"
+        />
+      </ActionBarSteps>
     );
   }
 

@@ -2,13 +2,14 @@ import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
 import { reduceBalances, convertResources } from '../../../utils/utils';
 import { authAccounts } from '../../../utils/search/utils';
+import { CYBER } from '../../../utils/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
 const getVestingPeriodsData = (data, startTime) => {
   let length = parseFloat(startTime);
   const vestedAmount = {
-    hydrogen: 0,
+    [CYBER.DENOM_LIQUID_TOKEN]: 0,
     millivolt: 0,
     milliampere: 0,
   };
@@ -62,7 +63,7 @@ function getBalances(addressActive, updateAddress) {
     const getAuth = async () => {
       if (addressActive !== null) {
         const vested = {
-          hydrogen: 0,
+          [CYBER.DENOM_LIQUID_TOKEN]: 0,
           millivolt: 0,
           milliampere: 0,
         };

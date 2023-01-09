@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { MyEnergy, Income, Outcome } from './tab';
@@ -6,9 +6,11 @@ import { Statistics, ActionBar } from './component';
 import useGetSlots from '../mint/useGetSlots';
 import useGetSourceRoutes from './hooks/useSourceRouted';
 import { convertResources } from '../../utils/utils';
+import { AppContext } from '../../context';
 
 function RoutedEnergy({ defaultAccount }) {
   const location = useLocation();
+  const { traseDenom } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddressFunc, setUpdateAddressFunc] = useState(0);
   const [selected, setSelected] = useState('myEnegy');
@@ -81,6 +83,7 @@ function RoutedEnergy({ defaultAccount }) {
         slotsData={slotsData}
         balacesResource={balacesResource}
         loadingAuthAccounts={loadingAuthAccounts}
+        traseDenom={traseDenom}
       />
     );
   }

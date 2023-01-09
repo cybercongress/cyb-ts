@@ -55,7 +55,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     address,
     updateAddress
   );
-  const [selected, setSelected] = useState('tweets');
+  const [selected, setSelected] = useState('log');
   const [dataTweet, setDataTweet] = useState([]);
   const [tweets, setTweets] = useState(false);
   const [loaderTweets, setLoaderTweets] = useState(true);
@@ -65,35 +65,38 @@ function AccountDetails({ node, mobile, defaultAccount }) {
 
   useEffect(() => {
     const { pathname } = location;
-    if (pathname.match(/txs/gm) && pathname.match(/txs/gm).length > 0) {
-      setSelected('txs');
-    } else if (
-      pathname.match(/wallet/gm) &&
-      pathname.match(/wallet/gm).length > 0
+    if (
+      pathname.match(/timeline/gm) &&
+      pathname.match(/timeline/gm).length > 0
     ) {
-      setSelected('wallet');
+      setSelected('timeline');
     } else if (
-      pathname.match(/heroes/gm) &&
-      pathname.match(/heroes/gm).length > 0
+      pathname.match(/sigma/gm) &&
+      pathname.match(/sigma/gm).length > 0
     ) {
-      setSelected('heroes');
+      setSelected('sigma');
     } else if (
-      pathname.match(/genesis/gm) &&
-      pathname.match(/genesis/gm).length > 0
+      pathname.match(/security/gm) &&
+      pathname.match(/security/gm).length > 0
     ) {
-      setSelected('genesis');
+      setSelected('security');
     } else if (
-      pathname.match(/cyberlink/gm) &&
-      pathname.match(/cyberlink/gm).length > 0
+      pathname.match(/badges/gm) &&
+      pathname.match(/badges/gm).length > 0
     ) {
-      setSelected('cyberlink');
+      setSelected('badges');
     } else if (
-      pathname.match(/community/gm) &&
-      pathname.match(/community/gm).length > 0
+      pathname.match(/cyberlinks/gm) &&
+      pathname.match(/cyberlinks/gm).length > 0
     ) {
-      setSelected('community');
+      setSelected('cyberlinks');
+    } else if (
+      pathname.match(/swarm/gm) &&
+      pathname.match(/swarm/gm).length > 0
+    ) {
+      setSelected('swarm');
     } else {
-      setSelected('tweets');
+      setSelected('log');
     }
   }, [location.pathname]);
 
@@ -177,20 +180,20 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   }, [defaultAccount.name, address]);
 
   let content;
-  if (selected === 'heroes') {
+  if (selected === 'security') {
     if (loadingHeroesInfo) {
       content = <Dots />;
     } else {
       content = (
         <Route
-          path="/network/bostrom/contract/:address/heroes"
+          path="/network/bostrom/contract/:address/security"
           render={() => <Heroes data={staking} />}
         />
       );
     }
   }
   // console.log('balance', balance);
-  if (selected === 'wallet') {
+  if (selected === 'sigma') {
     if (loadingBalanceInfo) {
       content = <Dots />;
     } else {
@@ -198,29 +201,29 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     }
   }
 
-  if (selected === 'cyberlink') {
+  if (selected === 'cyberlinks') {
     content = <GetLink accountUser={address} />;
   }
 
-  if (selected === 'txs') {
+  if (selected === 'timeline') {
     content = (
       <Route
-        path="/network/bostrom/contract/:address/txs"
+        path="/network/bostrom/contract/:address/timeline"
         render={() => <GetTxs accountUser={address} />}
       />
     );
   }
 
-  if (selected === 'genesis') {
+  if (selected === 'badges') {
     content = (
       <Route
-        path="/network/bostrom/contract/:address/genesis"
+        path="/network/bostrom/contract/:address/badges"
         render={() => <TableDiscipline address={address} />}
       />
     );
   }
 
-  if (selected === 'tweets') {
+  if (selected === 'log') {
     if (loaderTweets) {
       content = <Dots />;
     } else {
@@ -234,10 +237,10 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
   }
 
-  if (selected === 'community') {
+  if (selected === 'swarm') {
     content = (
       <Route
-        path="/network/bostrom/contract/:address/community"
+        path="/network/bostrom/contract/:address/swarm"
         render={() => <FollowsTab node={node} community={community} />}
       />
     );
@@ -284,39 +287,39 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           gridGap="10px"
         >
           <TabBtn
-            text="Heroes"
-            isSelected={selected === 'heroes'}
-            to={`/network/bostrom/contract/${address}/heroes`}
+            text="Security"
+            isSelected={selected === 'security'}
+            to={`/network/bostrom/contract/${address}/security`}
           />
           <TabBtn
-            text="Wallet"
-            isSelected={selected === 'wallet'}
-            to={`/network/bostrom/contract/${address}/wallet`}
+            text="Sigma"
+            isSelected={selected === 'sigma'}
+            to={`/network/bostrom/contract/${address}/sigma`}
           />
           <TabBtn
             text="Cyberlinks"
-            isSelected={selected === 'cyberlink'}
-            to={`/network/bostrom/contract/${address}/cyberlink`}
+            isSelected={selected === 'cyberlinks'}
+            to={`/network/bostrom/contract/${address}/cyberlinks`}
           />
           <TabBtn
-            text="Tweets"
-            isSelected={selected === 'tweets'}
+            text="Log"
+            isSelected={selected === 'log'}
             to={`/network/bostrom/contract/${address}`}
           />
           <TabBtn
-            text="Community"
-            isSelected={selected === 'community'}
-            to={`/network/bostrom/contract/${address}/community`}
+            text="Swarm"
+            isSelected={selected === 'swarm'}
+            to={`/network/bostrom/contract/${address}/swarm`}
           />
           <TabBtn
-            text="Txs"
-            isSelected={selected === 'txs'}
-            to={`/network/bostrom/contract/${address}/txs`}
+            text="Timeline"
+            isSelected={selected === 'timeline'}
+            to={`/network/bostrom/contract/${address}/timeline`}
           />
           <TabBtn
-            text="Genesis"
-            isSelected={selected === 'genesis'}
-            to={`/network/bostrom/contract/${address}/genesis`}
+            text="Badges"
+            isSelected={selected === 'badges'}
+            to={`/network/bostrom/contract/${address}/badges`}
           />
         </Tablist>
         <Pane

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import { COSMOS, LEDGER } from '../../utils/config';
 import {
@@ -105,8 +104,6 @@ class ActionBarAtom extends Component {
   };
 
   pollLedger = async () => {
-    const transport = await TransportU2F.create();
-    this.setState({ ledger: new CosmosDelegateTool(transport) });
   };
 
   getVersion = async () => {

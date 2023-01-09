@@ -1,11 +1,27 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
+import queryString from 'query-string';
 import { CYBER } from './utils/config';
 import { configKeplr } from './utils/keplrUtils';
+import useGetNetworks from './hooks/useGetNetworks';
+import defaultNetworks from './utils/defaultNetworks';
+import {
+  getDenomHash,
+  isNative,
+  findDenomInTokenList,
+  findPoolDenomInArr,
+} from './utils/utils';
+import { getDenomTraces } from './utils/search/utils';
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -32,8 +48,15 @@ const valueContext = {
   keplr: null,
   ws: null,
   jsCyber: null,
+  ibcDataDenom: {},
+  poolsData: [],
+  networks: {},
+  marketData: {},
+  updateNetworks: () => {},
   updatejsCyber: () => {},
+  updatetMarketData: () => {},
   initSigner: () => {},
+  traseDenom: () => {},
 };
 
 export const AppContext = React.createContext(valueContext);
@@ -82,6 +105,10 @@ const AppContextProvider = ({ children }) => {
   const [value, setValue] = useState(valueContext);
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
+  const [loadUrl, setLoadUrl] = useState(true);
+  // const dataMarket = useGetMarketData(value.jsCyber, value.traseDenom);
+
+  // console.log('dataMarket', dataMarket);
 
   const updatejsCyber = (rpc) => {
     const createQueryCliet = async () => {
@@ -97,18 +124,141 @@ const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    let networks = {};
+    const response = localStorage.getItem('CHAIN_PARAMS');
+    if (response !== null) {
+      const networksData = JSON.parse(response);
+      networks = { ...networksData };
+    } else {
+      networks = { ...defaultNetworks };
+      localStorage.setItem('CHAIN_PARAMS', JSON.stringify(defaultNetworks));
+    }
+    // getUplParam(networks);
+    setValue((item) => ({
+      ...item,
+      networks,
+    }));
+  }, []);
+
+  // const getUplParam = (dataNetworks) => {
+  //   const urlOptions = queryString.parse(window.location.href.split('?')[1]);
+  //   const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+  //   if (urlOptions.network) {
+  //     const { network } = urlOptions;
+  //     if (Object.prototype.hasOwnProperty.call(dataNetworks, network)) {
+  //       console.log('LOCALSTORAGE_CHAIN_ID', LOCALSTORAGE_CHAIN_ID);
+  //       console.log('network', network);
+  //       if (
+  //         LOCALSTORAGE_CHAIN_ID === null ||
+  //         LOCALSTORAGE_CHAIN_ID !== network
+  //       ) {
+  //         localStorage.setItem('chainId', network);
+  //       } else {
+  //         localStorage.setItem('chainId', 'bostrom');
+  //       }
+  //     }
+  //   }
+  //   setLoadUrl(false);
+  // };
+
+  useEffect(() => {
     const createQueryCliet = async () => {
+      setLoadUrl(true);
       const tendermintClient = await Tendermint34Client.connect(
         CYBER.CYBER_NODE_URL_API
       );
       const queryClient = new CyberClient(tendermintClient);
+      await getPools(queryClient);
       setValue((item) => ({
         ...item,
         jsCyber: queryClient,
       }));
+      setLoadUrl(false);
     };
     createQueryCliet();
   }, []);
+
+  const getPools = async (queryClient) => {
+    if (queryClient) {
+      try {
+        const response = await queryClient.pools();
+        if (response && response !== null && response.pools) {
+          setValue((item) => ({ ...item, poolsData: response.pools }));
+        }
+        return;
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const getIBCDenomData = async (queryClient) => {
+      // const responce = await queryClient.allDenomTraces();
+      const responce = await getDenomTraces();
+      // const { denomTraces } = responce;
+      const { denom_traces: denomTraces } = responce;
+      const ibcData = {};
+
+      if (denomTraces && denomTraces.length > 0) {
+        denomTraces.forEach((item) => {
+          // const { path, baseDenom } = item;
+          const { path, base_denom: baseDenom } = item;
+          const ibcDenom = getDenomHash(path, baseDenom);
+
+          // sourceChannelId
+          const parts = path.split('/');
+          const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
+          const sourceChannelId = removetr.join('/');
+
+          ibcData[ibcDenom] = {
+            sourceChannelId,
+            baseDenom,
+            ibcDenom,
+          };
+        });
+      }
+
+      if (Object.keys(ibcData).length > 0) {
+        setValue((item) => ({
+          ...item,
+          ibcDataDenom: { ...ibcData },
+        }));
+      }
+    };
+    getIBCDenomData();
+  }, []);
+
+  // const getIBCDenomData = async (queryClient) => {
+  //   const responce = await queryClient.allDenomTraces();
+  //   const { denomTraces } = responce;
+  //   const ibcData = {};
+
+  //   if (denomTraces && denomTraces.length > 0) {
+  //     denomTraces.forEach((item) => {
+  //       const { path, baseDenom } = item;
+  //       const ibcDenom = getDenomHash(path, baseDenom);
+
+  //       // sourceChannelId
+  //       const parts = path.split('/');
+  //       const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
+  //       const sourceChannelId = removetr.join('/');
+
+  //       ibcData[ibcDenom] = {
+  //         sourceChannelId,
+  //         baseDenom,
+  //         ibcDenom,
+  //       };
+  //     });
+  //   }
+
+  //   if (Object.keys(ibcData).length > 0) {
+  //     setValue((item) => ({
+  //       ...item,
+  //       ibcDataDenom: { ...ibcData },
+  //     }));
+  //   }
+  // };
 
   useEffect(() => {
     if (signer !== null) {
@@ -160,14 +310,104 @@ const AppContextProvider = ({ children }) => {
     }
   }, [client]);
 
-  console.log('value', value);
+  const updateNetworks = (newList) => {
+    localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
+    setValue((item) => ({
+      ...item,
+      networks: { ...newList },
+    }));
+  };
+
+  const updatetMarketData = (newData) => {
+    setValue((item) => ({
+      ...item,
+      marketData: { ...newData },
+    }));
+  };
+
+  const traseDenom = useCallback(
+    (denomTrase) => {
+      const infoDenomTemp = {
+        denom: denomTrase,
+        coinDecimals: 0,
+        path: '',
+        coinImageCid: '',
+        native: true,
+      };
+      let findDenom = null;
+
+      const { ibcDataDenom, poolsData } = value;
+
+      if (denomTrase.includes('pool') && poolsData.length > 0) {
+        const findPool = findPoolDenomInArr(denomTrase, poolsData);
+        if (findPool !== null) {
+          const { reserveCoinDenoms } = findPool;
+          infoDenomTemp.denom = [
+            traseDenom(reserveCoinDenoms[0]),
+            traseDenom(reserveCoinDenoms[1]),
+          ];
+        }
+      } else if (!isNative(denomTrase)) {
+        if (
+          ibcDataDenom !== null &&
+          Object.keys(ibcDataDenom).length > 0 &&
+          Object.prototype.hasOwnProperty.call(ibcDataDenom, denomTrase)
+        ) {
+          const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
+            ibcDataDenom[denomTrase];
+          findDenom = baseDenom;
+
+          infoDenomTemp.native = false;
+
+          const denomInfoFromList = findDenomInTokenList(findDenom);
+          if (denomInfoFromList !== null) {
+            const { denom, coinDecimals, coinImageCid, counterpartyChainId } =
+              denomInfoFromList;
+            infoDenomTemp.denom = denom;
+            infoDenomTemp.coinDecimals = coinDecimals;
+            infoDenomTemp.coinImageCid = coinImageCid || '';
+            infoDenomTemp.path = `${counterpartyChainId}/${sourceChannelIFromPath}`;
+          } else {
+            infoDenomTemp.denom = baseDenom;
+            infoDenomTemp.path = sourceChannelIFromPath;
+          }
+        }
+      } else {
+        findDenom = denomTrase;
+        const denomInfoFromList = findDenomInTokenList(denomTrase);
+        if (denomInfoFromList !== null) {
+          const { denom, coinDecimals } = denomInfoFromList;
+          infoDenomTemp.denom = denom;
+          infoDenomTemp.coinDecimals = coinDecimals;
+        } else {
+          infoDenomTemp.denom = denomTrase.toUpperCase();
+        }
+      }
+
+      return { ...infoDenomTemp };
+    },
+    [value.ibcDataDenom, value.poolsData]
+  );
 
   if (value.jsCyber && value.jsCyber === null) {
     return <div>...</div>;
   }
 
+  if (loadUrl) {
+    return <div>...</div>;
+  }
+
   return (
-    <AppContext.Provider value={{ ...value, updatejsCyber, initSigner }}>
+    <AppContext.Provider
+      value={{
+        ...value,
+        updatejsCyber,
+        initSigner,
+        updateNetworks,
+        updatetMarketData,
+        traseDenom,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

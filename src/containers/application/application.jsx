@@ -15,6 +15,8 @@ import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
+import { initIpfs, setIpfsStatus, setIpfsID } from '../../redux/actions/ipfs';
+import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
 import { CYBER, WP } from '../../utils/config';
@@ -25,12 +27,15 @@ import {
   reduceBalances,
   replaceSlash,
   encodeSlash,
+  selectNetworkImg,
 } from '../../utils/utils';
 import { AppContext } from '../../context';
 import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import SwichNetwork from './swichNetwork';
+import useGetMarketData from '../nebula/useGetMarketData';
+import useIpfsStart from '../../ipfsHook';
 
-const cyber = require('../../image/large-green.png');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const info = require('../../image/info-circle-outline.svg');
@@ -59,6 +64,7 @@ const ListAccounts = ({
           key={`${key}_${i}`}
           paddingX={10}
           paddingY={5}
+          whiteSpace="nowrap"
           color={active ? '#ff9100' : '#fff'}
           onClick={() =>
             active ? '' : onClickChangeActiveAcc(key, accounts[key])
@@ -97,8 +103,14 @@ function App({
   setBandwidthProps,
   time,
   children,
+  initIpfsProps,
+  setIpfsStatusProps,
+  setTypeDeviceProps,
+  setIpfsIDProps,
 }) {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, updatetMarketData } = useContext(AppContext);
+  const { marketData } = useGetMarketData();
+  const dataIpfsStart = useIpfsStart();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
@@ -108,34 +120,27 @@ function App({
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const [keywordHash, setKeywordHash] = useState(null);
+  const [story, setStory] = useState(true);
 
-  // const data = usePopperTooltip({
-  //   trigger: 'click',
-  //   interactive: true,
-  //   // onVisibleChange: setMountedOnceVisible(),
-  // });
+  useEffect(() => {
+    if (Object.keys(marketData).length > 0) {
+      updatetMarketData(marketData);
+    }
+  }, [marketData]);
 
-  //  function setMountedOnceVisible(visible) {
-  //    if (!mounted && visible) {
-  //      setMounted(true);
-  //    }
-  //  }
-
-  //  console.log('data', data);
+  useEffect(() => {
+    initIpfsProps(dataIpfsStart.node);
+    setIpfsStatusProps(dataIpfsStart.status);
+    setTypeDeviceProps(dataIpfsStart.mobile);
+    setIpfsIDProps(dataIpfsStart.id);
+    // tryConnectToPeer(dataIpfsStart.node);
+  }, [dataIpfsStart]);
 
   useEffect(() => {
     const { pathname } = location;
     if (pathname.indexOf(query) === -1) {
       setQueryProps('');
-    }
-
-    const strIndexOf = '/search/ibc';
-    if (pathname.indexOf(strIndexOf) === 0) {
-      const querySubstr = pathname.substr(8, pathname.length);
-      history.push(`/search/${replaceSlash(querySubstr)}`);
-      setQueryProps(replaceSlash(querySubstr));
     }
   }, [location.pathname]);
 
@@ -233,10 +238,8 @@ function App({
             responseAccountBandwidth !== null &&
             responseAccountBandwidth.neuronBandwidth
           ) {
-            const {
-              maxValue,
-              remainedValue,
-            } = responseAccountBandwidth.neuronBandwidth;
+            const { maxValue, remainedValue } =
+              responseAccountBandwidth.neuronBandwidth;
             setBandwidthProps(remainedValue, maxValue);
             setCountLink(remainedValue / (priceLink * 1000));
           } else {
@@ -329,167 +332,174 @@ function App({
     }
   };
 
-  // if (!story) {
+  // if (story) {
   //   return <div>{children}</div>;
   // }
 
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          position: 'relative',
-          padding: 0,
-          zIndex: 3,
-        }}
-        className="container-distribution"
-      >
-        <Pane position="relative">
-          <AppSideBar
-            onCloseSidebar={() => setOpenMenu(false)}
-            openMenu={openMenu}
-          >
-            <AppMenu addressActive={addressActive} />
-          </AppSideBar>
-          <MenuButton onClick={() => setOpenMenu(!openMenu)} imgLogo={cyber} />
-          <Pane bottom="-10px" right="-20%" position="absolute">
-            <LeftTooltip />
-          </Pane>
-        </Pane>
-        <Pane
-          className="battery-container"
-          width="65px"
-          position="absolute"
-          left="60px"
+      {story && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            position: 'relative',
+            padding: 0,
+            zIndex: 3,
+          }}
+          className="container-distribution"
         >
-          <BandwidthBar
-            height="15px"
-            styleText={{ whiteSpace: 'nowrap' }}
-            fontSize={12}
-            colorText="#000"
-            bwRemained={bandwidth.remained}
-            bwMaxValue={bandwidth.maxValue}
-            countLink={countLink}
-            amounPower={amounPower}
-          />
-        </Pane>
-        {!home && (
-          <Pane
-            position="absolute"
-            left="50%"
-            transform="translate(-50%, 0)"
-            marginRight="-50%"
-            zIndex={1}
-            backgroundColor="#000"
-            borderRadius={20}
-            width="60%"
-            // className="box-shadow-input"
-            height="100%"
-          >
-            <input
-              onChange={(e) => onChangeInput(e)}
-              onKeyPress={handleKeyPress}
-              className="search-input"
-              ref={textInput}
-              value={encodeSlash(query)}
-              autoComplete="off"
-              id="search-input-searchBar"
-              style={{
-                width: '100%',
-                height: 41,
-                fontSize: 20,
-                textAlign: 'center',
-                position: 'absolute',
-                top: '50%',
-                transform: 'translate(0, -50%)',
-                zIndex: 1,
-                paddingLeft: '35px',
-                backgroundColor: '#000',
-              }}
-            />
-            <img
-              src={lensIcon}
-              alt="lensIcon"
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '14px',
-                transform: 'translate(0, -50%)',
-                width: '15px',
-                zIndex: 1,
-              }}
-            />
-            {keywordHash !== null && (
-              <Link to={`/ipfs/${keywordHash}`}>
-                <div>
-                  <img
-                    src={info}
-                    alt="lensIcon"
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '35px',
-                      transform: 'translate(0, -50%)',
-                      width: '15px',
-                      zIndex: 1,
-                      cursor: 'pointer',
-                    }}
-                  />
-                </div>
-              </Link>
-            )}
+          <Pane position="relative">
+            <AppSideBar
+              onCloseSidebar={() => setOpenMenu(false)}
+              openMenu={openMenu}
+            >
+              <AppMenu addressActive={addressActive} />
+            </AppSideBar>
+            <SwichNetwork>
+              <MenuButton
+                onClick={() => setOpenMenu(!openMenu)}
+                imgLogo={selectNetworkImg(CYBER.CHAIN_ID)}
+              />
+            </SwichNetwork>
+            <Pane bottom="-10px" right="-20%" position="absolute">
+              <LeftTooltip />
+            </Pane>
           </Pane>
-        )}
-        <Electricity />
-        {defaultAccount.name !== null && (
           <Pane
             className="battery-container"
-            width="fit-content"
+            width="65px"
             position="absolute"
-            right="60px"
-            whiteSpace="nowrap"
-            fontSize="14px"
-            backgroundColor="#000"
-            boxShadow="0 0 5px 5px #000"
+            left="60px"
           >
-            <ListAccounts
-              accounts={accounts}
-              onClickChangeActiveAcc={onClickChangeActiveAcc}
-              defaultAccount={defaultAccount}
-            >
-              {defaultAccount.name}
-            </ListAccounts>
+            <BandwidthBar
+              height="15px"
+              styleText={{ whiteSpace: 'nowrap' }}
+              fontSize={12}
+              colorText="#000"
+              bwRemained={bandwidth.remained}
+              bwMaxValue={bandwidth.maxValue}
+              countLink={countLink}
+              amounPower={amounPower}
+            />
           </Pane>
-        )}
-        <Pane position="relative">
-          <MenuButton
-            to="/"
-            imgLogo={ipfsStatus ? cybTrue : cybFalse}
-            positionBugLeft
-          />
-          <Pane bottom="-10px" left="-20%" position="absolute">
-            <Tooltip
-              placement="bottom"
-              tooltip={
-                <span>
-                  <a href="/search/cyb">Cyb app</a> has not been audited yet. Be
-                  especially careful when interracting with apps from search
-                  results! They can trick you with what you actually sign!{' '}
-                  <a href="/search/secure cyb">Join the discussion </a>
-                  on how to make apps in search results secure
-                </span>
-              }
+          {!home && (
+            <Pane
+              position="absolute"
+              left="50%"
+              transform="translate(-50%, 0)"
+              marginRight="-50%"
+              zIndex={1}
+              backgroundColor="#000"
+              borderRadius={20}
+              width="60%"
+              // className="box-shadow-input"
+              height="100%"
             >
-              <img
-                alt="bugs"
-                style={{ width: '15px', height: '15px' }}
-                src={circleYellow}
+              <input
+                onChange={(e) => onChangeInput(e)}
+                onKeyPress={handleKeyPress}
+                className="search-input"
+                ref={textInput}
+                value={encodeSlash(query)}
+                autoComplete="off"
+                id="search-input-searchBar"
+                style={{
+                  width: '100%',
+                  height: 41,
+                  fontSize: 20,
+                  textAlign: 'center',
+                  position: 'absolute',
+                  top: '50%',
+                  transform: 'translate(0, -50%)',
+                  zIndex: 1,
+                  paddingLeft: '35px',
+                  backgroundColor: '#000',
+                }}
               />
-            </Tooltip>
+              <img
+                src={lensIcon}
+                alt="lensIcon"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '14px',
+                  transform: 'translate(0, -50%)',
+                  width: '15px',
+                  zIndex: 1,
+                }}
+              />
+              {keywordHash !== null && (
+                <Link to={`/ipfs/${keywordHash}`}>
+                  <div>
+                    <img
+                      src={info}
+                      alt="lensIcon"
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '35px',
+                        transform: 'translate(0, -50%)',
+                        width: '15px',
+                        zIndex: 1,
+                        cursor: 'pointer',
+                      }}
+                    />
+                  </div>
+                </Link>
+              )}
+            </Pane>
+          )}
+          <Electricity />
+          {defaultAccount.name !== null && (
+            <Pane
+              className="battery-container"
+              width="fit-content"
+              position="absolute"
+              right="60px"
+              whiteSpace="nowrap"
+              fontSize="14px"
+              backgroundColor="#000"
+              boxShadow="0 0 5px 5px #000"
+            >
+              <ListAccounts
+                accounts={accounts}
+                onClickChangeActiveAcc={onClickChangeActiveAcc}
+                defaultAccount={defaultAccount}
+              >
+                {defaultAccount.name}
+              </ListAccounts>
+            </Pane>
+          )}
+          <Pane position="relative">
+            <MenuButton
+              to="/robot"
+              imgLogo={ipfsStatus ? cybTrue : cybFalse}
+              positionBugLeft
+            />
+            <Pane bottom="-10px" left="-20%" position="absolute">
+              <Tooltip
+                placement="bottom"
+                tooltip={
+                  <span style={{ width: '250px' }}>
+                    <a href="/search/cyb">Cyb app</a> has not been audited yet.
+                    Be especially careful when interracting with apps from
+                    search results! They can trick you with what you actually
+                    sign! <a href="/search/secure cyb">Join the discussion </a>
+                    on how to make apps in search results secure
+                  </span>
+                }
+              >
+                <img
+                  alt="bugs"
+                  style={{ width: '15px', height: '15px' }}
+                  src={circleYellow}
+                />
+              </Tooltip>
+            </Pane>
           </Pane>
-        </Pane>
-      </div>
+        </div>
+      )}
 
       {/* </Navigation> */}
       {children}
@@ -516,6 +526,10 @@ const mapDispatchprops = (dispatch) => {
     setDefaultAccountProps: (name, account) =>
       dispatch(setDefaultAccount(name, account)),
     setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
+    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
+    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
+    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
+    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
   };
 };
 

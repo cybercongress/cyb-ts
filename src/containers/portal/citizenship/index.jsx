@@ -7,10 +7,11 @@ import React, {
   useRef,
 } from 'react';
 import { connect } from 'react-redux';
-import { calculateFee } from '@cosmjs/stargate';
+import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import BigNumber from 'bignumber.js';
+import txs from '../../../utils/txs';
+
 import {
   ContainerGradient,
   Signatures,
@@ -458,7 +459,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         address,
         CONTRACT_ADDRESS_PASSPORT,
         msgObject,
-        calculateFee(500000, gasPrice),
+        txs.calculateFee(500000, gasPrice),
         'cyber',
         funds
       );

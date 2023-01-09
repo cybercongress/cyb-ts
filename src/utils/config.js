@@ -1,4 +1,4 @@
-const TIME_START = '2021-11-05T13:22:42Z';
+const TIME_START = '2022-10-03T19:32:28Z';
 const INFINITY = '∞';
 const WP =
   'https://ipfs.io/ipfs/QmQ1Vong13MDNxixDyUdjniqqEj8sjuNEBYMyhQU4gQgq3';
@@ -63,38 +63,63 @@ const COSMOS = {
   BECH32_PREFIX_ACC_ADDR_COSMOS: 'cosmos',
 };
 
-const CYBER = {
-  CYBER_CONGRESS_ADDRESS: 'cyber1latzme6xf6s8tsrymuu6laf2ks2humqvdq39v8',
-  DIVISOR_CYBER_G: 10 ** 9,
+const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
+
+const CHAIN_PARAMS_LOCALSTORAGE = localStorage.getItem('CHAIN_PARAMS');
+
+let CHAIN_PARAMS = {
+  CHAIN_ID: 'bostrom',
   DENOM_CYBER: 'boot',
   DENOM_LIQUID_TOKEN: 'hydrogen',
   DENOM_CYBER_G: `GBOOT`,
+  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
+  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
+  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
+  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
+  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+  BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
+  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
+  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
+};
+
+if (LOCALSTORAGE_CHAIN_ID === 'space-pussy') {
+  CHAIN_PARAMS = {
+    CHAIN_ID: 'space-pussy',
+    DENOM_CYBER: 'pussy',
+    DENOM_LIQUID_TOKEN: 'liquidpussy',
+    DENOM_CYBER_G: `GPUSSY`,
+    CYBER_NODE_URL_API: 'https://rpc.space-pussy.cybernode.ai/',
+    CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy.cybernode.ai/websocket',
+    CYBER_NODE_URL_LCD: 'https://lcd.space-pussy.cybernode.ai',
+    CYBER_INDEX_HTTPS: 'https://index.space-pussy.cybernode.ai/v1/graphql',
+    CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy.cybernode.ai/v1/graphql',
+
+    BECH32_PREFIX_ACC_ADDR_CYBER: 'pussy',
+    BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: `pussyvaloper`,
+    MEMO_KEPLR: '[space-pussy] cyb.ai, using keplr',
+  };
+}
+
+if (CHAIN_PARAMS_LOCALSTORAGE !== null && LOCALSTORAGE_CHAIN_ID !== null) {
+  const CHAIN_PARAMS_LOCALSTORAGE_DATA = JSON.parse(CHAIN_PARAMS_LOCALSTORAGE);
+  if (CHAIN_PARAMS_LOCALSTORAGE_DATA[LOCALSTORAGE_CHAIN_ID]) {
+    CHAIN_PARAMS = { ...CHAIN_PARAMS_LOCALSTORAGE_DATA[LOCALSTORAGE_CHAIN_ID] };
+  }
+}
+
+const CYBER = {
+  CYBER_CONGRESS_ADDRESS: 'bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw',
+  DIVISOR_CYBER_G: 10 ** 9,
   HYDROGEN: 'H',
+
+  ...CHAIN_PARAMS,
 
   // CHAIN_ID: 'dev',
   // CYBER_NODE_URL_API: 'http://localhost:26657',
   // CYBER_WEBSOCKET_URL: 'ws://localhost:26657/websocket',
   // CYBER_NODE_URL_LCD: 'http://localhost:1317',
 
-  CHAIN_ID: 'bostrom',
-  CYBER_NODE_URL_API: 'https://rpc.bostrom.cybernode.ai',
-  CYBER_WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
-  CYBER_NODE_URL_LCD: 'https://lcd.bostrom.cybernode.ai',
-  CYBER_INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
-  CYBER_INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
-
-  // CHAIN_ID: 'space-pussy-1',
-  // CYBER_NODE_URL_API: 'https://rpc.space-pussy-1.cybernode.ai',
-  // CYBER_WEBSOCKET_URL: 'wss://rpc.space-pussy-1.cybernode.ai/websocket',
-  // CYBER_NODE_URL_LCD: 'https://lcd.space-pussy-1.cybernode.ai',
-  // CYBER_INDEX_HTTPS: 'https://index.space-pussy-1.cybernode.ai/v1/graphql',
-  // CYBER_INDEX_WEBSOCKET: 'wss://index.space-pussy-1.cybernode.ai/v1/graphql',
-
   CYBER_GATEWAY: 'https://gateway.ipfs.cybernode.ai',
-
-  BECH32_PREFIX_ACC_ADDR_CYBER: 'bostrom',
-  BECH32_PREFIX_ACC_ADDR_CYBERVALOPER: 'bostromvaloper',
-  MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
 };
 
 const DEFAULT_GAS_LIMITS = 200000;
@@ -216,16 +241,28 @@ const BOND_STATUS = {
   BOND_STATUS_BONDED: 3,
 };
 
-const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs'
+const CID_AVATAR = 'Qmf89bXkJH9jw4uaLkHmZkxQ51qGKfUPtAMxA8rTwBrmTs';
 
-const PATTERN = /^0x[a-fA-F0-9]{40}$|^bostromvaloper[a-zA-Z0-9]{39}$|^bostrom[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$/g;
-const PATTERN_CYBER = /^bostrom[a-zA-Z0-9]{39}$/g;
-const PATTERN_CYBER_CONTRACT = /^bostrom[a-zA-Z0-9]{59}$/g;
+const PATTERN = new RegExp(
+  `^0x[a-fA-F0-9]{40}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$|^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$|^cosmos[a-zA-Z0-9]{39}$`,
+  'g'
+);
+const PATTERN_CYBER = new RegExp(
+  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{39}$`,
+  'g'
+);
+const PATTERN_CYBER_CONTRACT = new RegExp(
+  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}[a-zA-Z0-9]{59}$`,
+  'g'
+);
+const PATTERN_CYBER_VALOPER = new RegExp(
+  `^${CYBER.BECH32_PREFIX_ACC_ADDR_CYBER}valoper[a-zA-Z0-9]{39}$`,
+  'g'
+);
 const PATTERN_COSMOS = /^cosmos[a-zA-Z0-9]{39}$/g;
 const PATTERN_OSMOS = /^osmo[a-zA-Z0-9]{39}$/g;
 const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 const PATTERN_ETH = /^0x[a-fA-F0-9]{40}$/g;
-const PATTERN_CYBER_VALOPER = /^bostromvaloper[a-zA-Z0-9]{39}$/g;
 const PATTERN_TX = /[0-9a-fA-F]{64}$/g;
 const PATTERN_IPFS_HASH = /^Qm[a-zA-Z0-9]{44}$/g;
 const PATTERN_BLOCK = /^[0-9]+$/g;

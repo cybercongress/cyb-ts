@@ -1,5 +1,7 @@
 import React from 'react';
 import { trimString } from '../../utils/utils';
+import Tooltip from '../tooltip/tooltip';
+import { traseDenom } from './imgDenom';
 
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
@@ -14,6 +16,8 @@ const pool = require('../../image/gravitydexPool.png');
 const ibc = require('../../image/ibc-unauth.png');
 const cosmos = require('../../image/cosmos-2.svg');
 const osmosis = require('../../image/osmosis.svg');
+const pussy = require('../../image/large-purple-circle.png');
+const customNetwork = require('../../image/large-orange-circle.png');
 
 const ValueImg = ({
   text,
@@ -47,9 +51,19 @@ const ValueImg = ({
       textCurency = 'H';
       break;
 
+    case 'liquidpussy':
+      img = hydrogen;
+      textCurency = 'LP';
+      break;
+
     case 'boot':
       img = boot;
       textCurency = 'BOOT';
+      break;
+
+    case 'pussy':
+      img = pussy;
+      textCurency = 'PUSSY';
       break;
 
     case 'tocyb':
@@ -99,6 +113,17 @@ const ValueImg = ({
       textCurency = 'osmosis';
       break;
 
+    case 'pussy':
+    case 'PUSSY':
+      img = pussy;
+      textCurency = 'PUSSY';
+      break;
+
+    case 'space-pussy':
+      img = pussy;
+      textCurency = 'space-pussy';
+      break;
+
     default:
       if (text.includes('pool')) {
         textCurency = trimString(text, 3, 3);
@@ -110,11 +135,11 @@ const ValueImg = ({
         break;
       } else if (text.length > 32) {
         textCurency = text.slice(0, 32);
-        img = null;
+        img = customNetwork;
         break;
       } else {
         textCurency = text;
-        img = null;
+        img = customNetwork;
         break;
       }
   }
@@ -149,6 +174,7 @@ const ValueImg = ({
         </span>
       )}
       {!onlyText && img !== null && (
+        // <Tooltip placement="top" tooltip={<div>{textCurency}</div>}>
         <img
           style={{
             margin: marginImg || 0,
@@ -160,6 +186,7 @@ const ValueImg = ({
           src={img}
           alt="text"
         />
+        // </Tooltip>
       )}
     </div>
   );

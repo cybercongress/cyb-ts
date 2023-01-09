@@ -45,7 +45,10 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
           if (time > 0) {
             timeAgoInMS = time;
           }
-          const cid = item.tx.value.msg[0].value.links[0].to;
+          let cid = '';
+          if (item.tx.value.msg[0].type === 'cyber/MsgCyberlink') {
+            cid = item.tx.value.msg[0].value.links[0].to;
+          }
 
           return (
             <Pane

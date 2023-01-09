@@ -39,7 +39,7 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Pane alignItems="center" flexGrow={1} display="flex">
+            <Pane alignItems="center" flexGrow={1} fontSize={18} display="flex">
               {item.name}
             </Pane>
           </Pane>
@@ -64,7 +64,7 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Pane alignItems="center" flexGrow={1} display="flex">
+        <Pane alignItems="center" fontSize={18} flexGrow={1} display="flex">
           {item.name}
         </Pane>
       </Pane>
@@ -117,7 +117,7 @@ export const Bookmarks = ({ items, ...props }) => {
           <div key={key}>
             <Items
               selected={
-                item.name === selectedItem &&
+                item.to === location.pathname &&
                 selectedItemSub === '' &&
                 item.active === undefined
               }
