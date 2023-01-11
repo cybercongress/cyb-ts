@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { connect } from 'react-redux';
 import { CYBER } from '../../../../../utils/config';
 import { formatNumber } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
@@ -51,4 +52,10 @@ function TitleCard({ accounts, passport, totalLiquid, node }) {
   );
 }
 
-export default TitleCard;
+const mapStateToProps = (store) => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(TitleCard);
