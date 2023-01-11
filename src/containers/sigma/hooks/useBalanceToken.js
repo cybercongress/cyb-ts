@@ -27,6 +27,7 @@ const initValueToken = {
 function useBalanceToken(address, updateAddress) {
   const { jsCyber } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const { vested, originalVesting, loadingAuthAccounts } = useGetSlots(
     addressActive,
@@ -46,6 +47,7 @@ function useBalanceToken(address, updateAddress) {
 
   useEffect(() => {
     const getBalance = async () => {
+      setLoading(true);
       const initValueTokenAmount = {
         [DENOM_LIQUID_TOKEN]: {
           ...initValueTokens,
@@ -56,7 +58,7 @@ function useBalanceToken(address, updateAddress) {
         millivolt: {
           ...initValueTokens,
         },
-        tocyb: 0,
+        tocyb: { total: { ...initValue } },
       };
 
       if (jsCyber !== null && address !== null && !loadingAuthAccounts) {
@@ -67,7 +69,7 @@ function useBalanceToken(address, updateAddress) {
           getAllBalancesPromise.forEach((item) => {
             const { amount, denom } = item;
             if (denom !== DENOM_CYBER) {
-              const elementBalancesToken = reduceAmount(amount, denom);
+              const elementBalancesToken = amount;
 
               if (
                 Object.hasOwnProperty.call(initValueTokenAmount, denom) &&
@@ -83,8 +85,7 @@ function useBalanceToken(address, updateAddress) {
                 };
               } else {
                 initValueTokenAmount[denom] = {
-                  denom,
-                  amount: elementBalancesToken,
+                  total: { denom, amount: elementBalancesToken },
                 };
               }
               if (
@@ -110,12 +111,13 @@ function useBalanceToken(address, updateAddress) {
           });
         }
       }
+      setLoading(false);
       setBalanceToken(initValueTokenAmount);
     };
     getBalance();
   }, [jsCyber, address, vested, originalVesting, loadingAuthAccounts]);
 
-  return { balanceToken };
+  return { balanceToken, loading };
 }
 
 export default useBalanceToken;

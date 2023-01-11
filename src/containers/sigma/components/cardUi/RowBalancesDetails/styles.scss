@@ -2,7 +2,7 @@
   position: relative;
   min-height: 0px;
   height: 0px;
-  transition: 1s ease-in-out;
+  transition: 0.5s ease-in-out;
   opacity: 0;
 
   &entering {
@@ -12,8 +12,36 @@
 
   &entered {
     opacity: 1;
-    min-height: 80px;
+    min-height: 110px;
     height: 1px;
+    margin-top: 30px;
+
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.3s ease-in-out;
+  }
+
+  &exited {
+    opacity: 0;
+    height: 0px;
+    min-height: 0px;
+    visibility: hidden;
+  }
+}
+
+.containerDetailsBalanceMain {
+  &entering {
+    opacity: 0;
+    transition: 1ms ease-in-out;
+  }
+
+  &entered {
+    opacity: 1;
+    min-height: 250px;
+    height: 1px;
+    margin-top: 30px;
   }
 
   &exiting {

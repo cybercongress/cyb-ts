@@ -1,25 +1,35 @@
 .container {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 120px 1fr 1fr;
   grid-template-rows: repeat(2, 1fr);
-  gap: 0px 0px;
+  gap: 0px 20px;
   grid-auto-flow: row;
   grid-template-areas:
     'avatar name total'
     'avatar address address';
+  align-items: center;
+  font-size: 20px;
 }
 
 .avatar {
   grid-area: avatar;
+  width: 120px;
 }
 
 .name {
   grid-area: name;
+  color: #1fcbff;
 }
 
 .total {
   grid-area: total;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  gap: 30px;
   justify-self: flex-end;
+  white-space: nowrap;
 }
 
 .address {

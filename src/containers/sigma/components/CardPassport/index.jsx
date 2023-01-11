@@ -1,16 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { CYBER } from '../../../../utils/config';
-import { useGetBalanceBostrom } from '../../hooks';
+import { ContainerGradient } from '../../../portal/components';
+import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
 
-const CardPassport = ({ passport, accounts }) => {
+const CardPassport = ({ accounts }) => {
+  const { passport } = useGetPassportByAddress(accounts);
   const { totalAmountInLiquid, balanceMainToken, balanceToken } =
     useGetBalanceBostrom(accounts);
   // console.log('accounts', accounts)
   // SigmaCardPassport ({dataPassport})
   // get info address
 
-  console.log('balanceToken', balanceToken);
+  // console.log('passport', passport)
+
+  // useEffect(() => {
+  //   console.log('totalAmountInLiquid', totalAmountInLiquid);
+  // }, [totalAmountInLiquid]);
 
   const renderbalanceTokenRow = useMemo(() => {
     return Object.keys(balanceToken).map((key) => {
@@ -19,16 +25,26 @@ const CardPassport = ({ passport, accounts }) => {
   }, [balanceToken]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <TitleCard />
+    <ContainerGradient
+      userStyleContent={{ height: 'auto' }}
+      togglingDisable
+      title={
+        <TitleCard
+          accounts={accounts}
+          passport={passport}
+          totalLiquid={totalAmountInLiquid}
+        />
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <RowBalancesDetails balance={balanceMainToken} />
 
-      <RowBalancesDetails balance={balanceMainToken} />
-
-      {renderbalanceTokenRow}
-      {/* <div>balance main token</div>
+        {renderbalanceTokenRow}
+        {/* <div>balance main token</div>
 
       <div>balance tokens </div> */}
-    </div>
+      </div>
+    </ContainerGradient>
   );
 };
 

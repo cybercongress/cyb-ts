@@ -7,7 +7,7 @@ import coinDecimalsConfig from '../../../utils/configToken';
 const { DENOM_CYBER } = CYBER;
 
 const initValue = {
-  denom: '',
+  denom: DENOM_CYBER,
   amount: '0',
 };
 

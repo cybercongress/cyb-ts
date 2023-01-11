@@ -1,6 +1,7 @@
 import React from 'react';
+import { CYBER } from '../../../../../utils/config';
+import { FormatNumberTokens } from '../../../../nebula/components';
 import styles from './styles.scss';
-import FormatNumberTokens from '../FormatNumberTokens';
 
 const iconObj = {
   liquid: '💧',
@@ -10,7 +11,7 @@ const iconObj = {
   commission: '💫',
 };
 
-function RowItem({ text, value }) {
+function RowItem({ text, value, cap }) {
   return (
     <div className={styles.containerRowItem}>
       <div className={styles.containerRowItemValueBalance}>
@@ -21,7 +22,9 @@ function RowItem({ text, value }) {
           <FormatNumberTokens value={value.amount} text={value.denom} />
         </div>
       </div>
-      <div className={styles.containerRowItemMarket}>0</div>
+      <div className={styles.containerRowItemMarket}>
+        <FormatNumberTokens value={cap} text={CYBER.DENOM_LIQUID_TOKEN} />
+      </div>
     </div>
   );
 }

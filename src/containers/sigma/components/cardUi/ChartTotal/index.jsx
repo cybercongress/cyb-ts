@@ -23,7 +23,7 @@ const getProcent = (curent, total) => {
 function ChartTotal({ balance }) {
   const { total } = balance;
 
-  if (total !== undefined) {
+  if (Object.keys(balance).length > 3) {
     return (
       <div className={styles.containerChartTotal}>
         {balance.liquid && (
