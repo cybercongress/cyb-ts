@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useContext } from 'react';
+import { connect } from 'react-redux';
 import { CYBER } from '../../../../utils/config';
 import { ContainerGradient } from '../../../portal/components';
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
@@ -58,4 +59,10 @@ const CardPassport = ({ accounts }) => {
   );
 };
 
-export default CardPassport;
+const mapStateToProps = (store) => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(CardPassport);
