@@ -75,23 +75,25 @@ function Sigma({ defaultAccount }) {
   // check or set active
 
   const updateTotalCap = (cap) => {
-    setValue((item) => ({
-      ...item,
-      totalCap: new BigNumber(item.totalCap)
-        .plus(cap)
-        .dp(0, BigNumber.ROUND_FLOOR)
-        .toNumber(),
-    }));
+    console.log('cap', cap)
+    // setValue((item) => ({
+    //   ...item,
+    //   totalCap: new BigNumber(item.totalCap)
+    //     .plus(cap)
+    //     .dp(0, BigNumber.ROUND_FLOOR)
+    //     .toNumber(),
+    // }));
   };
 
   const updateChangeCap = (cap) => {
-    setValue((item) => ({
-      ...item,
-      changeCap: new BigNumber(item.changeCap)
-        .plus(cap)
-        .dp(0, BigNumber.ROUND_FLOOR)
-        .toNumber(),
-    }));
+    console.log('cap', cap)
+    // setValue((item) => ({
+    //   ...item,
+    //   changeCap: new BigNumber(item.changeCap)
+    //     .plus(cap)
+    //     .dp(0, BigNumber.ROUND_FLOOR)
+    //     .toNumber(),
+    // }));
   };
 
   const updateStateFunc = () => {

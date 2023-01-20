@@ -71,6 +71,7 @@ function RowBalancesDetails({ balance }) {
           display: 'grid',
           gridTemplateColumns: '300px 1fr 1fr',
           height: '40px',
+          alignItems: 'flex-start',
         }}
       >
         <div
@@ -81,21 +82,23 @@ function RowBalancesDetails({ balance }) {
             gap: '10px',
           }}
         >
-          <div
+          <button
+            type="button"
+            onClick={onClickBtnArrow}
             style={{
               display: 'grid',
               gridTemplateColumns: '8px 1fr',
               alignItems: 'center',
               gap: '10px',
+              outline: 'none',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
             }}
           >
-            <BtnArrow
-              open={isOpen}
-              disabled={!checkDetailsToken}
-              onClick={onClickBtnArrow}
-            />
+            <BtnArrow open={isOpen} disabled={!checkDetailsToken} />
             <ChartTotal balance={balance} />
-          </div>
+          </button>
           <FormatNumberTokens
             text={balance.total.denom}
             value={useAmountTotal}

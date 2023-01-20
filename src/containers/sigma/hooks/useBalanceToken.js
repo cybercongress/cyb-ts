@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
 import { reduceBalances } from '../../../utils/utils';
@@ -24,9 +25,44 @@ const initValueToken = {
   millivolt: { ...initValueTokens },
 };
 
-function useBalanceToken(address, updateAddress) {
+const balanceFetcher = (options, client) => {
+  const { address } = options;
+
+  if (client === null || address === null) {
+    return null;
+  }
+
+  return client.getAllBalances(address);
+};
+
+const useQueryGetAllBalances = (options) => {
   const { jsCyber } = useContext(AppContext);
+  // const queryClient = useQueryClient();
+  const { address } = options;
+
+  const { data } = useQuery(
+    ['getAllBalances', address],
+    () => balanceFetcher(options, jsCyber),
+    {
+      enabled: Boolean(jsCyber && address),
+      retry: 1,
+      refetchOnWindowFocus: false,
+      // initialData: () => {
+      //   return queryClient
+      //     .getQueryData('getAllBalance')
+      //     ?.find((d) => d.id === address);
+      // },
+      // initialDataUpdatedAt: () =>
+      //   queryClient.getQueryState('getAllBalance')?.dataUpdatedAt,
+    }
+  );
+
+  return data;
+};
+
+function useBalanceToken(address, updateAddress) {
   const [addressActive, setAddressActive] = useState(null);
+  const data = useQueryGetAllBalances({ address: addressActive });
   const [loading, setLoading] = useState(true);
 
   const { vested, originalVesting, loadingAuthAccounts } = useGetSlots(
@@ -61,9 +97,8 @@ function useBalanceToken(address, updateAddress) {
         tocyb: { total: { ...initValue } },
       };
 
-      if (jsCyber !== null && address !== null && !loadingAuthAccounts) {
-        const { bech32 } = address;
-        const getAllBalancesPromise = await jsCyber.getAllBalances(bech32);
+      if (data && data !== null && !loadingAuthAccounts) {
+        const getAllBalancesPromise = data;
 
         if (getAllBalancesPromise.length > 0) {
           getAllBalancesPromise.forEach((item) => {
@@ -115,7 +150,7 @@ function useBalanceToken(address, updateAddress) {
       setBalanceToken(initValueTokenAmount);
     };
     getBalance();
-  }, [jsCyber, address, vested, originalVesting, loadingAuthAccounts]);
+  }, [data, address, vested, originalVesting, loadingAuthAccounts]);
 
   return { balanceToken, loading };
 }

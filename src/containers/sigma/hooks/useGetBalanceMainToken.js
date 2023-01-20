@@ -1,31 +1,46 @@
+import BigNumber from 'bignumber.js';
 import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
-import { getBalanceInfo, initValueMainToken } from './utils';
+import { useGetBalance, initValueMainToken } from './utils';
 
 function useGetBalanceMainToken(address) {
   const { jsCyber } = useContext(AppContext);
-  const [loading, setLoading] = useState(true);
+  const [addressActive, setAddressActive] = useState(null);
   const [balance, setBalance] = useState({ ...initValueMainToken });
+  const data = useGetBalance(jsCyber, addressActive);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getMainBalance = async () => {
-      try {
-        setLoading(true);
-        if (address !== null && jsCyber !== null) {
-          const { bech32 } = address;
-          const response = await getBalanceInfo(jsCyber, bech32);
-          if (response) {
-            setBalance(response);
-          }
-          setLoading(false);
-        }
-      } catch (error) {
-        console.log('error', error);
-        setBalance({ ...initValueMainToken });
+    if (address !== null) {
+      if (address.bech32) {
+        setAddressActive(address.bech32);
+      } else {
+        setAddressActive(address);
       }
-    };
-    getMainBalance();
-  }, [address, jsCyber]);
+    }
+  }, [address]);
+
+  useEffect(() => {
+    setLoading(true);
+    if (data !== undefined) {
+      setBalance({ ...initValueMainToken });
+      Object.keys(data).forEach((key) => {
+        if (data[key] && data[key].amount > 0) {
+          setBalance((item) => ({
+            ...item,
+            [key]: { ...data[key] },
+            total: {
+              ...item.total,
+              amount: new BigNumber(item.total.amount)
+                .plus(data[key].amount)
+                .toNumber(),
+            },
+          }));
+        }
+      });
+      setLoading(false);
+    }
+  }, [data]);
 
   return { balance, loading };
 }
