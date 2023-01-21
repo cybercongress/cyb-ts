@@ -9,11 +9,12 @@ import { AppContext } from '../../../../../context';
 import { convertAmount } from '../../../../../utils/utils';
 import { CYBER } from '../../../../../utils/config';
 import { FormatNumberTokens } from '../../../../nebula/components';
+import { DenomArr } from '../../../../../components';
 
 const cx = require('classnames');
 
 function RowBalancesDetails({ balance }) {
-  const { traseDenom, marketData } = useContext(AppContext);
+  const { traseDenom } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const onClickBtnArrow = () => {
@@ -23,7 +24,7 @@ function RowBalancesDetails({ balance }) {
   const checkDetailsToken = useMemo(() => {
     if (
       Object.prototype.hasOwnProperty.call(balance, 'total') &&
-      Object.keys(balance).length >= 3
+      Object.keys(balance).length >= 5
     ) {
       return true;
     }
@@ -45,46 +46,30 @@ function RowBalancesDetails({ balance }) {
     return 0;
   }, [balance]);
 
-  const usePriceTotal = useMemo(() => {
-    if (balance.total) {
-      const { denom } = balance.total;
-
-      if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
-        return marketData[denom];
-      }
-    }
-
-    return 0;
-  }, [balance, marketData]);
-
-  const useCapTotal = useMemo(() => {
-    return new BigNumber(useAmountTotal)
-      .multipliedBy(usePriceTotal)
-      .dp(0, BigNumber.ROUND_FLOOR)
-      .toNumber();
-  }, [useAmountTotal, usePriceTotal]);
-
   return (
     <div style={{ display: 'grid' }}>
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '300px 1fr 1fr',
+          gridTemplateColumns: '140px 270px 0.9fr 1fr',
           height: '40px',
+          gap: '10px',
           alignItems: 'flex-start',
         }}
       >
+        <DenomArr denomValue={balance.total.denom} />
+
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: '90px 1fr',
-            alignItems: 'center',
+            alignItems: 'baseline',
             gap: '10px',
           }}
         >
           <button
             type="button"
-            onClick={onClickBtnArrow}
+            onClick={checkDetailsToken ? onClickBtnArrow : null}
             style={{
               display: 'grid',
               gridTemplateColumns: '8px 1fr',
@@ -93,24 +78,26 @@ function RowBalancesDetails({ balance }) {
               outline: 'none',
               background: 'transparent',
               border: 'none',
-              cursor: 'pointer',
+              cursor: checkDetailsToken ? 'pointer' : 'default',
             }}
           >
             <BtnArrow open={isOpen} disabled={!checkDetailsToken} />
             <ChartTotal balance={balance} />
           </button>
           <FormatNumberTokens
-            text={balance.total.denom}
+            styleValue={{ fontSize: '14px' }}
             value={useAmountTotal}
           />
         </div>
         <FormatNumberTokens
-          text={CYBER.DENOM_LIQUID_TOKEN}
-          value={usePriceTotal}
+          styleValue={{ fontSize: '14px' }}
+          text={balance.price.denom}
+          value={balance.price.amount}
         />
         <FormatNumberTokens
-          text={CYBER.DENOM_LIQUID_TOKEN}
-          value={useCapTotal}
+          styleValue={{ fontSize: '14px' }}
+          text={balance.cap.denom}
+          value={balance.cap.amount}
         />
       </div>
       {checkDetailsToken && (
@@ -120,12 +107,12 @@ function RowBalancesDetails({ balance }) {
               <div
                 className={cx(styles.containerDetailsBalance, {
                   [styles[`containerDetailsBalance${state}`]]:
-                    Object.keys(balance).length === 3,
-                  [styles[`containerDetailsBalanceMain${state}`]]:
                     Object.keys(balance).length === 5,
+                  [styles[`containerDetailsBalanceMain${state}`]]:
+                    Object.keys(balance).length === 7,
                 })}
               >
-                <DetailsBalance data={balance} usePriceTotal={usePriceTotal} />
+                <DetailsBalance data={balance} />
               </div>
             );
           }}

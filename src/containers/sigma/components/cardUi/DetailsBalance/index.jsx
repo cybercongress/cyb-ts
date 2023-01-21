@@ -13,26 +13,18 @@ import styles from './styles.scss';
 //   total: 100231,
 // };
 
-function DetailsBalance({ data, usePriceTotal }) {
-  const { traseDenom } = useContext(AppContext);
-
+function DetailsBalance({ data }) {
   return (
     <div className={styles.containerDetailsBalance}>
       {Object.keys(data)
-        .filter((valueKey) => valueKey !== 'total')
+        .filter(
+          (valueKey) =>
+            valueKey !== 'total' && valueKey !== 'cap' && valueKey !== 'price'
+        )
         .map((key) => {
-          const { amount, denom } = data[key];
-
-          const value = { amount, denom };
-          const { coinDecimals } = traseDenom(denom);
-          value.amount = convertAmount(amount, coinDecimals);
-
-          const cap = new BigNumber(value.amount)
-            .multipliedBy(usePriceTotal)
-            .dp(0, BigNumber.ROUND_FLOOR)
-            .toNumber();
-
-          return <RowItem key={key} value={value} text={key} cap={cap} />;
+          return (
+            <RowItem key={key} value={data[key]} text={key} cap={data.cap} />
+          );
         })}
     </div>
   );

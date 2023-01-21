@@ -28,12 +28,12 @@ const valueContext = {
 };
 
 function Sigma({ defaultAccount }) {
+  const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
   const [updateState, setUpdateState] = useState(0);
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
 
   // const { accounts } = useGetLocalStoge(updateState);
-  const [accountsData, setAccountsData] = useState([]);
 
   useEffect(() => {
     const pocketAccountLs = localStorage.getItem('pocketAccount');
@@ -75,25 +75,23 @@ function Sigma({ defaultAccount }) {
   // check or set active
 
   const updateTotalCap = (cap) => {
-    console.log('cap', cap)
-    // setValue((item) => ({
-    //   ...item,
-    //   totalCap: new BigNumber(item.totalCap)
-    //     .plus(cap)
-    //     .dp(0, BigNumber.ROUND_FLOOR)
-    //     .toNumber(),
-    // }));
+    setValue((item) => ({
+      ...item,
+      totalCap: new BigNumber(item.totalCap)
+        .plus(cap)
+        .dp(0, BigNumber.ROUND_FLOOR)
+        .toNumber(),
+    }));
   };
 
   const updateChangeCap = (cap) => {
-    console.log('cap', cap)
-    // setValue((item) => ({
-    //   ...item,
-    //   changeCap: new BigNumber(item.changeCap)
-    //     .plus(cap)
-    //     .dp(0, BigNumber.ROUND_FLOOR)
-    //     .toNumber(),
-    // }));
+    setValue((item) => ({
+      ...item,
+      changeCap: new BigNumber(item.changeCap)
+        .plus(cap)
+        .dp(0, BigNumber.ROUND_FLOOR)
+        .toNumber(),
+    }));
   };
 
   const updateStateFunc = () => {
@@ -101,6 +99,7 @@ function Sigma({ defaultAccount }) {
   };
 
   const renderItem = useMemo(() => {
+    console.log('renderItem');
     if (accountsData.length > 0) {
       return accountsData.map((item) => {
         return <CardPassport accounts={item} />;
@@ -114,7 +113,7 @@ function Sigma({ defaultAccount }) {
     <SigmaContext.Provider
       value={{ ...value, updateTotalCap, updateChangeCap }}
     >
-      <MainContainer width="82%">
+      <MainContainer width="85%">
         <div style={{ marginBottom: 40 }}>
           <ContainerGradientText>
             <div

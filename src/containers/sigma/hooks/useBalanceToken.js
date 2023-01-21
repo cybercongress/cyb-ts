@@ -112,15 +112,15 @@ function useBalanceToken(address, updateAddress) {
               ) {
                 initValueTokenAmount[denom].total = {
                   denom,
-                  amount: elementBalancesToken,
+                  amount: parseFloat(elementBalancesToken),
                 };
                 initValueTokenAmount[denom].liquid = {
                   denom,
-                  amount: elementBalancesToken,
+                  amount: parseFloat(elementBalancesToken),
                 };
               } else {
                 initValueTokenAmount[denom] = {
-                  total: { denom, amount: elementBalancesToken },
+                  total: { denom, amount: parseFloat(elementBalancesToken) },
                 };
               }
               if (

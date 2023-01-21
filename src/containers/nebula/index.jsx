@@ -195,7 +195,7 @@ function Nebula({ mobile }) {
   );
 
   return (
-    <MainContainer width="83%">
+    <MainContainer width="85%">
       <ContainerGradient
         userStyleContent={{ minHeight: 'auto', height: 'unset' }}
         title={<Title />}

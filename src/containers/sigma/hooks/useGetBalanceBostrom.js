@@ -1,9 +1,15 @@
-import { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext, useMemo, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { AppContext } from '../../../context';
 import useGetBalanceMainToken from './useGetBalanceMainToken';
 import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
+import { CYBER } from '../../../utils/config';
+
+const initValueCap = {
+  currentCap: 0,
+  change: 0,
+};
 
 function useGetBalanceBostrom(address) {
   const { traseDenom, marketData } = useContext(AppContext);
@@ -11,52 +17,94 @@ function useGetBalanceBostrom(address) {
     useGetBalanceMainToken(address);
   const { balanceToken, loading: loadingToken } = useBalanceToken(address);
   const [totalAmountInLiquid, setTotalAmountInLiquid] = useState({
-    currentCap: 0,
-    change: 0,
+    ...initValueCap,
   });
+  const [totalAmountInLiquidOld, setTotalAmountInLiquidOld] = useState({
+    ...initValueCap,
+  });
+  const [balances, setBalances] = useState({});
 
-  const useGetCapMain = useMemo(() => {
-    if (balanceMainToken.total.amount > 0) {
-      const { amount, denom } = balanceMainToken.total;
-      const { coinDecimals } = traseDenom(denom);
-      const amountReduce = convertAmount(amount, coinDecimals);
+  useEffect(() => {
+    if (address !== null) {
+      const { bech32 } = address;
+      const keyLs = `lastBalances-${bech32}`;
+      const lastBalancesLs = localStorage.getItem(keyLs);
 
-      if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
-        const price = new BigNumber(marketData[denom]);
-        return new BigNumber(amountReduce)
-          .multipliedBy(price)
-          .dp(0, BigNumber.ROUND_FLOOR)
-          .toNumber();
+      if (!loadingToken && !loadingMalin) {
+        let dataResult = {};
+        const mainToken = { [CYBER.DENOM_CYBER]: { ...balanceMainToken } };
+        const dataResultTemp = { ...mainToken, ...balanceToken };
+        const tempData = useGetBalanceMarket(dataResultTemp);
+        dataResult = { ...tempData };
+        setBalances(dataResult);
+        if (Object.keys(dataResult).length > 0) {
+          localStorage.setItem(keyLs, JSON.stringify(dataResult));
+        }
+      } else if (lastBalancesLs !== null) {
+        const dataLs = JSON.parse(lastBalancesLs);
+        setBalances(dataLs);
       }
     }
-    return 0;
-  }, [balanceMainToken, marketData]);
+  }, [loadingMalin, loadingToken, balanceMainToken, balanceToken, address]);
+
+  const useGetBalanceMarket = useCallback(
+    (data) => {
+      if (Object.keys(data).length > 0) {
+        return Object.keys(data).reduce((obj, key) => {
+          let tempCap = new BigNumber(0);
+          let price = new BigNumber(0);
+
+          const { total } = data[key];
+          if (total.amount > 0) {
+            const { amount, denom } = total;
+            const { coinDecimals } = traseDenom(denom);
+            const amountReduce = convertAmount(amount, coinDecimals);
+
+            if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
+              price = new BigNumber(marketData[denom]);
+              tempCap = tempCap.plus(
+                new BigNumber(amountReduce).multipliedBy(price)
+              );
+            }
+          }
+          tempCap = tempCap.dp(0, BigNumber.ROUND_FLOOR).toNumber();
+          return {
+            ...obj,
+            [key]: {
+              ...data[key],
+              price: {
+                denom: CYBER.DENOM_LIQUID_TOKEN,
+                amount: price.toNumber(),
+              },
+              cap: { denom: CYBER.DENOM_LIQUID_TOKEN, amount: tempCap },
+            },
+          };
+        }, {});
+      }
+      return {};
+    },
+    [marketData]
+  );
 
   const useGetCapTokens = useMemo(() => {
-    if (Object.keys(balanceToken).length > 0) {
-      let tempCap = new BigNumber(0);
-      Object.keys(balanceToken).forEach((key) => {
-        const { total } = balanceToken[key];
-        if (total.amount > 0) {
-          const { amount, denom } = total;
-          const { coinDecimals } = traseDenom(denom);
-          const amountReduce = convertAmount(amount, coinDecimals);
-
-          if (Object.prototype.hasOwnProperty.call(marketData, denom)) {
-            const price = new BigNumber(marketData[denom]);
-            tempCap = tempCap.plus(
-              new BigNumber(amountReduce).multipliedBy(price)
-            );
+    let tempCap = new BigNumber(0);
+    if (Object.keys(balances).length > 0) {
+      Object.keys(balances).forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(balances[key], 'cap')) {
+          const { cap } = balances[key];
+          if (cap.amount > 0) {
+            const { amount } = cap;
+            tempCap = tempCap.plus(new BigNumber(amount));
           }
         }
       });
       return tempCap.dp(0, BigNumber.ROUND_FLOOR).toNumber();
     }
-    return 0;
-  }, [balanceToken, marketData]);
+    return tempCap.toNumber();
+  }, [balances]);
 
   useEffect(() => {
-    if (loadingToken === false && loadingMalin === false && address !== null) {
+    if (address !== null) {
       const { bech32 } = address;
       const keyLs = `lastCap-${bech32}`;
       const lastCapLs = localStorage.getItem(keyLs);
@@ -64,26 +112,37 @@ function useGetBalanceBostrom(address) {
       if (lastCapLs !== null) {
         lastCap = lastCap.plus(JSON.parse(lastCapLs));
       }
-      const currentCap = new BigNumber(useGetCapTokens).plus(useGetCapMain);
-      const changeCap = currentCap.minus(lastCap).dp(0, BigNumber.ROUND_FLOOR);
 
-      if (currentCap.comparedTo(changeCap)) {
+      if (useGetCapTokens > 0) {
+        const currentCap = new BigNumber(useGetCapTokens);
+        let changeCap = currentCap.minus(lastCap).dp(0, BigNumber.ROUND_FLOOR);
+
+        if (currentCap.comparedTo(changeCap) <= 0) {
+          changeCap = new BigNumber(0);
+        }
+
         setTotalAmountInLiquid({
           change: changeCap.toNumber(),
           currentCap: currentCap.toNumber(),
         });
+
+        localStorage.setItem(keyLs, currentCap.toString());
       } else {
-        setTotalAmountInLiquid({
+        setTotalAmountInLiquidOld({
           change: 0,
-          currentCap: currentCap.toNumber(),
+          currentCap: lastCap.toNumber(),
         });
       }
-
-      localStorage.setItem(keyLs, currentCap.toString());
     }
-  }, [loadingToken, loadingMalin, useGetCapMain, useGetCapTokens]);
+  }, [useGetCapTokens]);
 
-  return { totalAmountInLiquid, balanceMainToken, balanceToken };
+  return {
+    totalAmountInLiquid,
+    balanceMainToken,
+    balanceToken,
+    balances,
+    totalAmountInLiquidOld,
+  };
 }
 
 export default useGetBalanceBostrom;

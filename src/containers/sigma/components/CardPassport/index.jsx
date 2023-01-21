@@ -1,4 +1,6 @@
 import React, { useMemo, useEffect, useContext } from 'react';
+import { Dots } from '../../../../components';
+import { AppContext } from '../../../../context';
 import { CYBER } from '../../../../utils/config';
 import { ContainerGradient } from '../../../portal/components';
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
@@ -8,13 +10,11 @@ import { TitleCard, RowBalancesDetails } from '../cardUi';
 const CardPassport = ({ accounts }) => {
   const { updateTotalCap, updateChangeCap } = useContext(SigmaContext);
   const { passport } = useGetPassportByAddress(accounts);
-  const { totalAmountInLiquid, balanceMainToken, balanceToken } =
+  const { totalAmountInLiquid, balances, totalAmountInLiquidOld } =
     useGetBalanceBostrom(accounts);
   // console.log('accounts', accounts)
   // SigmaCardPassport ({dataPassport})
   // get info address
-
-  // console.log('passport', passport)
 
   useEffect(() => {
     console.log('totalAmountInLiquid', totalAmountInLiquid);
@@ -28,11 +28,24 @@ const CardPassport = ({ accounts }) => {
     }
   }, [totalAmountInLiquid]);
 
+  // const reduceDataBalanceTokenRow = useMemo(() => {
+  //   let dataObj = {};
+  //   if (Object.keys(balances).length > 0) {
+  //     const sortable = Object.fromEntries(
+  //       Object.entries(balances).sort(
+  //         ([, a], [, b]) => b.cap.amount - a.cap.amount
+  //       )
+  //     );
+  //     dataObj = sortable;
+  //   }
+  //   return dataObj;
+  // }, [balances]);
+
   const renderbalanceTokenRow = useMemo(() => {
-    return Object.keys(balanceToken).map((key) => {
-      return <RowBalancesDetails balance={balanceToken[key]} />;
+    return Object.keys(balances).map((key) => {
+      return <RowBalancesDetails balance={balances[key]} />;
     });
-  }, [balanceToken]);
+  }, [balances]);
 
   return (
     <ContainerGradient
@@ -42,14 +55,22 @@ const CardPassport = ({ accounts }) => {
         <TitleCard
           accounts={accounts}
           passport={passport}
-          totalLiquid={totalAmountInLiquid}
+          totalLiquid={
+            totalAmountInLiquid.currentCap > 0
+              ? totalAmountInLiquid
+              : totalAmountInLiquidOld
+          }
         />
       }
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <RowBalancesDetails balance={balanceMainToken} />
+        {/* <RowBalancesDetails balance={balanceMainToken} /> */}
 
-        {renderbalanceTokenRow}
+        {Object.keys(renderbalanceTokenRow).length > 0 ? (
+          renderbalanceTokenRow
+        ) : (
+          <Dots />
+        )}
         {/* <div>balance main token</div>
 
       <div>balance tokens </div> */}
