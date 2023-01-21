@@ -28,24 +28,24 @@ const CardPassport = ({ accounts }) => {
     }
   }, [totalAmountInLiquid]);
 
-  // const reduceDataBalanceTokenRow = useMemo(() => {
-  //   let dataObj = {};
-  //   if (Object.keys(balances).length > 0) {
-  //     const sortable = Object.fromEntries(
-  //       Object.entries(balances).sort(
-  //         ([, a], [, b]) => b.cap.amount - a.cap.amount
-  //       )
-  //     );
-  //     dataObj = sortable;
-  //   }
-  //   return dataObj;
-  // }, [balances]);
+  const reduceDataBalanceTokenRow = useMemo(() => {
+    let dataObj = {};
+    if (Object.keys(balances).length > 0) {
+      const sortable = Object.fromEntries(
+        Object.entries(balances).sort(
+          ([, a], [, b]) => b.cap.amount - a.cap.amount
+        )
+      );
+      dataObj = sortable;
+    }
+    return dataObj;
+  }, [balances]);
 
   const renderbalanceTokenRow = useMemo(() => {
-    return Object.keys(balances).map((key) => {
-      return <RowBalancesDetails balance={balances[key]} />;
+    return Object.keys(reduceDataBalanceTokenRow).map((key) => {
+      return <RowBalancesDetails balance={reduceDataBalanceTokenRow[key]} />;
     });
-  }, [balances]);
+  }, [reduceDataBalanceTokenRow]);
 
   return (
     <ContainerGradient
