@@ -34,6 +34,7 @@ function DenomArr({
           tooltipStatusText={tooltipStatusText}
           type={type}
           infoDenom={infoDenom}
+          {...props}
         />
       );
     }

@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { Transition } from 'react-transition-group';
 import BigNumber from 'bignumber.js';
+import { Link } from 'react-router-dom';
 import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
 import BtnArrow from '../BtnArrow';
 import styles from './styles.scss';
 import { AppContext } from '../../../../../context';
-import { convertAmount } from '../../../../../utils/utils';
+import { convertAmount, replaceSlash } from '../../../../../utils/utils';
 import { CYBER } from '../../../../../utils/config';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';
@@ -46,6 +47,26 @@ function RowBalancesDetails({ balance }) {
     return 0;
   }, [balance]);
 
+  const getTypeDenomKey = (key) => {
+    const { denom } = traseDenom(key);
+
+    if (denom.includes('ibc')) {
+      return replaceSlash(denom);
+    }
+
+    if (key.includes('pool')) {
+      return `${getTypeDenomKey(denom[0].denom)}-${getTypeDenomKey(
+        denom[1].denom
+      )}`;
+    }
+
+    return denom;
+  };
+
+  const getLinktoSearch = (key) => {
+    return `/search/${getTypeDenomKey(key)}`;
+  };
+
   return (
     <div style={{ display: 'grid' }}>
       <div
@@ -57,7 +78,13 @@ function RowBalancesDetails({ balance }) {
           alignItems: 'flex-start',
         }}
       >
-        <DenomArr denomValue={balance.total.denom} />
+        <Link to={getLinktoSearch(balance.total.denom)}>
+          <DenomArr
+            justifyContent="flex-end"
+            flexDirection="row-reverse"
+            denomValue={balance.total.denom}
+          />
+        </Link>
 
         <div
           style={{
