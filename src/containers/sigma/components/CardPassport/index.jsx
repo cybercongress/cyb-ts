@@ -8,7 +8,7 @@ import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
 
 const CardPassport = ({ accounts }) => {
-  const { updateTotalCap, updateChangeCap } = useContext(SigmaContext);
+  const { updateDataCap } = useContext(SigmaContext);
   const { passport } = useGetPassportByAddress(accounts);
   const { totalAmountInLiquid, balances, totalAmountInLiquidOld } =
     useGetBalanceBostrom(accounts);
@@ -17,16 +17,12 @@ const CardPassport = ({ accounts }) => {
   // get info address
 
   useEffect(() => {
-    console.log('totalAmountInLiquid', totalAmountInLiquid);
+    if (accounts !== null) {
+      const { bech32 } = accounts;
 
-    if (totalAmountInLiquid.currentCap > 0) {
-      updateTotalCap(totalAmountInLiquid.currentCap);
+      updateDataCap({ [bech32]: { ...totalAmountInLiquid } });
     }
-
-    if (totalAmountInLiquid.change > 0) {
-      updateChangeCap(totalAmountInLiquid.change);
-    }
-  }, [totalAmountInLiquid]);
+  }, [totalAmountInLiquid, accounts]);
 
   const reduceDataBalanceTokenRow = useMemo(() => {
     let dataObj = {};

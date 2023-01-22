@@ -25,6 +25,7 @@ import { formatNumber } from '../../utils/utils';
 const valueContext = {
   totalCap: 0,
   changeCap: 0,
+  dataCap: {},
 };
 
 function Sigma({ defaultAccount }) {
@@ -68,6 +69,20 @@ function Sigma({ defaultAccount }) {
     }
   }, []);
 
+  useEffect(() => {
+    const { dataCap } = value;
+    if (Object.keys(dataCap).length > 0) {
+      let changeCap = new BigNumber(0);
+      let tempCap = new BigNumber(0);
+      Object.values(dataCap).forEach((item) => {
+        changeCap = changeCap.plus(item.change);
+        tempCap = tempCap.plus(item.currentCap);
+      });
+      updateChangeCap(changeCap);
+      updateTotalCap(tempCap);
+    }
+  }, [value.dataCap]);
+
   // get local store
 
   // check passport
@@ -77,20 +92,21 @@ function Sigma({ defaultAccount }) {
   const updateTotalCap = (cap) => {
     setValue((item) => ({
       ...item,
-      totalCap: new BigNumber(item.totalCap)
-        .plus(cap)
-        .dp(0, BigNumber.ROUND_FLOOR)
-        .toNumber(),
+      totalCap: new BigNumber(cap).dp(0, BigNumber.ROUND_FLOOR).toNumber(),
     }));
   };
 
   const updateChangeCap = (cap) => {
     setValue((item) => ({
       ...item,
-      changeCap: new BigNumber(item.changeCap)
-        .plus(cap)
-        .dp(0, BigNumber.ROUND_FLOOR)
-        .toNumber(),
+      changeCap: new BigNumber(cap).dp(0, BigNumber.ROUND_FLOOR).toNumber(),
+    }));
+  };
+
+  const updateDataCap = (newData) => {
+    setValue((item) => ({
+      ...item,
+      dataCap: { ...item.dataCap, ...newData },
     }));
   };
 
@@ -111,7 +127,7 @@ function Sigma({ defaultAccount }) {
 
   return (
     <SigmaContext.Provider
-      value={{ ...value, updateTotalCap, updateChangeCap }}
+      value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
     >
       <MainContainer width="85%">
         <div style={{ marginBottom: 40 }}>

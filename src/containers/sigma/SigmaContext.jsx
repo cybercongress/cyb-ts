@@ -5,6 +5,7 @@ const SigmaContext = createContext({
   changeCap: 0,
   updateTotalCap: () => {},
   updateChangeCap: () => {},
+  updateDataCap: () => {},
 });
 
 const useSigmaContext = () => {

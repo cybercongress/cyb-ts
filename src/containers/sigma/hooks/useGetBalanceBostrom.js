@@ -6,21 +6,18 @@ import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 
-const initValueCap = {
-  currentCap: 0,
-  change: 0,
-};
-
 function useGetBalanceBostrom(address) {
   const { traseDenom, marketData } = useContext(AppContext);
   const { balance: balanceMainToken, loading: loadingMalin } =
     useGetBalanceMainToken(address);
   const { balanceToken, loading: loadingToken } = useBalanceToken(address);
   const [totalAmountInLiquid, setTotalAmountInLiquid] = useState({
-    ...initValueCap,
+    currentCap: 0,
+    change: 0,
   });
   const [totalAmountInLiquidOld, setTotalAmountInLiquidOld] = useState({
-    ...initValueCap,
+    currentCap: 0,
+    change: 0,
   });
   const [balances, setBalances] = useState({});
 
