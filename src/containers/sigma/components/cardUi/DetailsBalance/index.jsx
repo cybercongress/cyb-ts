@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import React, { useContext } from 'react';
 import { AppContext } from '../../../../../context';
+import { CYBER } from '../../../../../utils/config';
 import { convertAmount } from '../../../../../utils/utils';
 import RowItem from './RowItem';
 import styles from './styles.scss';
@@ -15,6 +16,7 @@ import styles from './styles.scss';
 
 function DetailsBalance({ data }) {
   const { traseDenom } = useContext(AppContext);
+  const { price } = data;
 
   return (
     <div className={styles.containerDetailsBalance}>
@@ -25,12 +27,22 @@ function DetailsBalance({ data }) {
         )
         .map((key) => {
           const { amount, denom } = data[key];
-
           const value = { amount, denom };
           const { coinDecimals } = traseDenom(denom);
           value.amount = convertAmount(amount, coinDecimals);
+          const cap = new BigNumber(value.amount)
+            .multipliedBy(price.amount)
+            .dp(0, BigNumber.ROUND_FLOOR)
+            .toNumber();
 
-          return <RowItem key={key} value={value} text={key} cap={data.cap} />;
+          return (
+            <RowItem
+              key={key}
+              value={value}
+              text={key}
+              cap={{ amount: cap, denom: CYBER.DENOM_LIQUID_TOKEN }}
+            />
+          );
         })}
     </div>
   );
