@@ -79,11 +79,7 @@ function RowBalancesDetails({ balance }) {
         }}
       >
         <Link to={getLinktoSearch(balance.total.denom)}>
-          <DenomArr
-            justifyContent="flex-end"
-            flexDirection="row-reverse"
-            denomValue={balance.total.denom}
-          />
+          <DenomArr denomValue={balance.total.denom} />
         </Link>
 
         <div

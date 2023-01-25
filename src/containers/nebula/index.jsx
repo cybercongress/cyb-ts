@@ -130,11 +130,7 @@ function Nebula({ mobile }) {
         <RowItem key={keyItem}>
           <ColItem>
             <Link to={getLinktoSearch(key)}>
-              <DenomArr
-                denomValue={key}
-                justifyContent="flex-end"
-                flexDirection="row-reverse"
-              />
+              <DenomArr denomValue={key} />
             </Link>
           </ColItem>
           <ColItem justifyContent="flex-end">

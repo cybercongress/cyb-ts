@@ -26,7 +26,6 @@ function DenomArr({
     if (typeof denom === 'string') {
       return (
         <Denom
-          {...props}
           onlyImg={onlyImg}
           onlyText={onlyText}
           denomValue={denom}
@@ -34,6 +33,7 @@ function DenomArr({
           tooltipStatusText={tooltipStatusText}
           type={type}
           infoDenom={infoDenom}
+          gap={13}
           {...props}
         />
       );

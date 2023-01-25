@@ -166,15 +166,7 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
       >
         <span>{formatNumber(getDisplayAmount(value, coinDecimals))}</span>
       </Pane>
-      {text && (
-        <DenomArr
-          marginImg="0 3px 0 0"
-          flexDirection="row-reverse"
-          justifyContent="flex-end"
-          denomValue={text}
-          onlyImg
-        />
-      )}
+      {text && <DenomArr denomValue={text} onlyImg />}
     </Pane>
   );
 };

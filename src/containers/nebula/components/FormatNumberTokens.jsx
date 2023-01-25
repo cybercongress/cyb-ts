@@ -45,8 +45,6 @@ const FormatNumberTokens = ({
         <div className={styles.containerFormatNumberTokensDenomImg}>
           <DenomArr
             marginImg="0 3px 0 0"
-            flexDirection="row-reverse"
-            justifyContent="flex-end"
             denomValue={text}
             onlyImg
             tooltipStatusImg={tooltipStatusImg}

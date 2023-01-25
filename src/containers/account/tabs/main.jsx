@@ -85,12 +85,7 @@ const RowToken = ({ denom, amount }) => {
       justifyContent="space-between"
       width="100%"
     >
-      <DenomArr
-        marginImg="0 3px 0 0"
-        flexDirection="row-reverse"
-        justifyContent="flex-end"
-        denomValue={denom}
-      />
+      <DenomArr denomValue={denom} />
       <Pane whiteSpace="nowrap" textAlign="right">
         {formatNumber(getDisplayAmount(amount, coinDecimals))}
       </Pane>
