@@ -1,0 +1,29 @@
+.containerDetailsBalance {
+  display: grid;
+  gap: 30px;
+}
+
+
+.containerRowItem {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  height: 40px;
+
+  &ValueBalance {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 10px;
+
+    &Text {
+      padding-left: 12px;
+    }
+
+    &Value {
+      justify-self: flex-end;
+    }
+  }
+
+  &Market {
+    justify-self: flex-end;
+  }
+}

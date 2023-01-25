@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { AppContainer } from 'react-hot-loader';
 import ApolloClient from 'apollo-client';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ApolloProvider } from 'react-apollo';
 import { getMainDefinition } from 'apollo-utilities';
 import { ApolloLink, split } from 'apollo-link';
@@ -69,12 +71,17 @@ const client = new ApolloClient({
   cache,
 });
 
-
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      // staleTime: 60 * 1000,
+    },
+  },
+});
 
 const container = document.getElementById('root');
 const root = createRoot(container);
-
-
 
 const render = () => {
   root.render(
@@ -82,9 +89,12 @@ const render = () => {
       <Provider store={store}>
         <ApolloProvider client={client}>
           <AppContextProvider>
-            <AppContainer>
-              <AppRouter />
-            </AppContainer>
+            <QueryClientProvider client={queryClient}>
+              <AppContainer>
+                <AppRouter />
+              </AppContainer>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
           </AppContextProvider>
         </ApolloProvider>
       </Provider>

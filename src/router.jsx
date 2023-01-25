@@ -66,6 +66,8 @@ import {
   DetailsNetwork,
 } from './containers/network';
 
+import Sigma from './containers/sigma';
+
 import useIpfsFactory from './useIpfsFactory';
 import defaultNetworks from './utils/defaultNetworks';
 
@@ -141,6 +143,8 @@ function AppRouter() {
 
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
+        {/* Sigma */}
+        <Route path="/sigma" component={Sigma} />
       </Switch>
     </Router>
   );

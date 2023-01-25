@@ -73,19 +73,19 @@ function Denom({
       gap={gap}
       {...props}
     >
-      {!onlyImg && (
-        <CoinDenom
-          coinDenom={denomValue}
-          tooltipStatus={onlyText && tooltipStatusText}
-          infoDenom={infoDenom}
-        />
-      )}
       {!onlyText && (
         <ImgDenom
           coinDenom={denomValue}
           infoDenom={infoDenom}
           tooltipStatus={onlyImg && tooltipStatusImg}
           size={size}
+        />
+      )}
+      {!onlyImg && (
+        <CoinDenom
+          coinDenom={denomValue}
+          tooltipStatus={onlyText && tooltipStatusText}
+          infoDenom={infoDenom}
         />
       )}
     </ContainerDenom>

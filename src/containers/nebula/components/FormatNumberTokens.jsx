@@ -1,10 +1,11 @@
+import BigNumber from 'bignumber.js';
 import React from 'react';
 import { DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import styles from '../styles.scss';
 
 const getDecimal = (number, float) => {
-  const nstring = number.toString();
+  const nstring = new BigNumber(number).toString();
   const narray = nstring.split('.');
   let position = 3;
   if (number < 0.001) {
@@ -27,7 +28,7 @@ const FormatNumberTokens = ({
   const decimal = getDecimal(value, float);
   return (
     <div
-      style={{ gridTemplateColumns: text || customText ? '1fr 20px' : '1fr' }}
+      style={{ gridTemplateColumns: text || customText ? '1fr 30px' : '1fr' }}
       className={styles.containerFormatNumberTokens}
       {...props}
     >
@@ -44,8 +45,6 @@ const FormatNumberTokens = ({
         <div className={styles.containerFormatNumberTokensDenomImg}>
           <DenomArr
             marginImg="0 3px 0 0"
-            flexDirection="row-reverse"
-            justifyContent="flex-end"
             denomValue={text}
             onlyImg
             tooltipStatusImg={tooltipStatusImg}

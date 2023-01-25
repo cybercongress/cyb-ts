@@ -29,7 +29,7 @@ const itemsMenu = (address) => {
 
   if (address !== null) {
     myRobotLinks = [
-      { name: 'Sigma', to: linkSigma },
+      { name: 'Sigma', to: '/sigma' },
       { name: 'Log', to: linkLog },
       { name: 'Swarm', to: linkSwarm },
       { name: 'Security', to: linkSecurity },

@@ -26,7 +26,6 @@ function DenomArr({
     if (typeof denom === 'string') {
       return (
         <Denom
-          {...props}
           onlyImg={onlyImg}
           onlyText={onlyText}
           denomValue={denom}
@@ -34,6 +33,8 @@ function DenomArr({
           tooltipStatusText={tooltipStatusText}
           type={type}
           infoDenom={infoDenom}
+          gap={13}
+          {...props}
         />
       );
     }
@@ -41,28 +42,55 @@ function DenomArr({
     if (typeof denom === 'object') {
       return (
         <div style={{ display: 'flex' }}>
-          <Denom
-            type={type}
-            denomValue={denom[0].denom}
-            onlyImg={onlyImg}
-            onlyText={onlyText}
-            tooltipStatusImg={tooltipStatusImg}
-            tooltipStatusText={tooltipStatusText}
-            infoDenom={infoDenom.denom[0]}
-            {...props}
-          />
-          {onlyText ? '-' : ''}
-          <Denom
-            type={type}
-            denomValue={denom[1].denom}
-            marginContainer={onlyImg ? '0px 0px 0px -12px' : '0px'}
-            onlyImg={onlyImg}
-            onlyText={onlyText}
-            tooltipStatusImg={tooltipStatusImg}
-            tooltipStatusText={tooltipStatusText}
-            infoDenom={infoDenom.denom[1]}
-            {...props}
-          />
+          {!onlyText && (
+            <>
+              <Denom
+                type={type}
+                denomValue={denom[0].denom}
+                onlyImg
+                tooltipStatusImg={tooltipStatusImg}
+                tooltipStatusText={tooltipStatusText}
+                infoDenom={infoDenom.denom[0]}
+                {...props}
+              />
+              <Denom
+                type={type}
+                denomValue={denom[1].denom}
+                marginContainer={
+                  onlyImg ? '0px 0px 0px -12px' : '0px 5px 0px -12px'
+                }
+                onlyImg
+                tooltipStatusImg={tooltipStatusImg}
+                tooltipStatusText={tooltipStatusText}
+                infoDenom={infoDenom.denom[1]}
+                {...props}
+              />
+            </>
+          )}
+
+          {!onlyImg && (
+            <>
+              <Denom
+                type={type}
+                denomValue={denom[0].denom}
+                onlyText
+                tooltipStatusImg={tooltipStatusImg}
+                tooltipStatusText={tooltipStatusText}
+                infoDenom={infoDenom.denom[0]}
+                {...props}
+              />
+              -
+              <Denom
+                type={type}
+                denomValue={denom[1].denom}
+                onlyText
+                tooltipStatusImg={tooltipStatusImg}
+                tooltipStatusText={tooltipStatusText}
+                infoDenom={infoDenom.denom[1]}
+                {...props}
+              />
+            </>
+          )}
         </div>
       );
     }
