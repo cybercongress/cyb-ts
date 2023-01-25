@@ -42,7 +42,7 @@ function TitleCard({ accounts, passport, totalLiquid, node }) {
         <FormatNumberTokens
           value={totalLiquid.currentCap}
           text={CYBER.DENOM_LIQUID_TOKEN}
-          styleValue={{ fontSize: '18px' }}
+          // styleValue={{ fontSize: '18px' }}
         />
       </div>
       <div className={styles.address}>

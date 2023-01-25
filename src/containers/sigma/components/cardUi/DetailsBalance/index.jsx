@@ -14,6 +14,8 @@ import styles from './styles.scss';
 // };
 
 function DetailsBalance({ data }) {
+  const { traseDenom } = useContext(AppContext);
+
   return (
     <div className={styles.containerDetailsBalance}>
       {Object.keys(data)
@@ -22,9 +24,13 @@ function DetailsBalance({ data }) {
             valueKey !== 'total' && valueKey !== 'cap' && valueKey !== 'price'
         )
         .map((key) => {
-          return (
-            <RowItem key={key} value={data[key]} text={key} cap={data.cap} />
-          );
+          const { amount, denom } = data[key];
+
+          const value = { amount, denom };
+          const { coinDecimals } = traseDenom(denom);
+          value.amount = convertAmount(amount, coinDecimals);
+
+          return <RowItem key={key} value={value} text={key} cap={data.cap} />;
         })}
     </div>
   );

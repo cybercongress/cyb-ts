@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import {
   useGetLocalStoge,
   useGetPassportByAddress,
@@ -67,7 +68,7 @@ function Sigma({ defaultAccount }) {
         setAccountsData(data);
       }
     }
-  }, []);
+  }, [defaultAccount]);
 
   useEffect(() => {
     const { dataCap } = value;
@@ -115,10 +116,11 @@ function Sigma({ defaultAccount }) {
   };
 
   const renderItem = useMemo(() => {
-    console.log('renderItem');
     if (accountsData.length > 0) {
       return accountsData.map((item) => {
-        return <CardPassport accounts={item} />;
+        const key = uuidv4();
+
+        return <CardPassport key={`${item.bech32}_${key}`} accounts={item} />;
       });
     }
 
@@ -129,15 +131,15 @@ function Sigma({ defaultAccount }) {
     <SigmaContext.Provider
       value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
     >
-      <MainContainer width="85%">
-        <div style={{ marginBottom: 40 }}>
+      <MainContainer width="100%">
+        <div>
           <ContainerGradientText>
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '20px',
+                fontSize: '16px',
               }}
             >
               <div>Total</div>
@@ -155,7 +157,7 @@ function Sigma({ defaultAccount }) {
                   </div>
                 )}
                 <FormatNumberTokens
-                  styleValue={{ fontSize: '20px' }}
+                  // styleValue={{ fontSize: '18px' }}
                   text={CYBER.DENOM_LIQUID_TOKEN}
                   value={value.totalCap}
                 />

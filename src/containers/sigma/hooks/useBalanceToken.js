@@ -8,21 +8,22 @@ import { reduceAmount } from './utils';
 
 const { DENOM_CYBER, DENOM_LIQUID_TOKEN } = CYBER;
 
-const initValue = {
-  denom: '',
-  amount: '0',
+const initValueResponseFunc = (denom = '', amount = 0) => {
+  return { denom, amount };
 };
 
-const initValueTokens = {
-  liquid: { ...initValue },
-  frozen: { ...initValue },
-  total: { ...initValue },
+const initValueTokens = (denom = '', amount = 0) => {
+  return {
+    liquid: { ...initValueResponseFunc(denom, amount) },
+    frozen: { ...initValueResponseFunc(denom, amount) },
+    total: { ...initValueResponseFunc(denom, amount) },
+  };
 };
 
 const initValueToken = {
-  [DENOM_LIQUID_TOKEN]: { ...initValueTokens },
-  milliampere: { ...initValueTokens },
-  millivolt: { ...initValueTokens },
+  [DENOM_LIQUID_TOKEN]: { ...initValueTokens(DENOM_LIQUID_TOKEN, 0) },
+  milliampere: { ...initValueTokens('milliampere', 0) },
+  millivolt: { ...initValueTokens('millivolt', 0) },
 };
 
 const balanceFetcher = (options, client) => {
@@ -86,15 +87,15 @@ function useBalanceToken(address, updateAddress) {
       setLoading(true);
       const initValueTokenAmount = {
         [DENOM_LIQUID_TOKEN]: {
-          ...initValueTokens,
+          ...initValueTokens(DENOM_LIQUID_TOKEN, 0),
         },
         milliampere: {
-          ...initValueTokens,
+          ...initValueTokens('milliampere', 0),
         },
         millivolt: {
-          ...initValueTokens,
+          ...initValueTokens('millivolt', 0),
         },
-        tocyb: { total: { ...initValue } },
+        tocyb: { total: { ...initValueResponseFunc('tocyb', 0) } },
       };
 
       if (data && data !== null && !loadingAuthAccounts) {

@@ -130,12 +130,16 @@ function Nebula({ mobile }) {
         <RowItem key={keyItem}>
           <ColItem>
             <Link to={getLinktoSearch(key)}>
-              <DenomArr marginImg="0 0 0 3px" denomValue={key} onlyText />
+              <DenomArr
+                denomValue={key}
+                justifyContent="flex-end"
+                flexDirection="row-reverse"
+              />
             </Link>
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
-              text={key}
+              // text={key}
               value={dataRenderItems[key].supply}
               tooltipStatusImg={false}
             />
@@ -195,7 +199,7 @@ function Nebula({ mobile }) {
   );
 
   return (
-    <MainContainer width="85%">
+    <MainContainer width="100%">
       <ContainerGradient
         userStyleContent={{ minHeight: 'auto', height: 'unset' }}
         title={<Title />}

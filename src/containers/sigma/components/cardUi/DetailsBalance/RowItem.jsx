@@ -19,18 +19,11 @@ function RowItem({ text, value, cap }) {
           {text} {iconObj[text] ? iconObj[text] : ''}
         </div>
         <div className={styles.containerRowItemValueBalanceValue}>
-          <FormatNumberTokens
-            value={value.amount}
-            styleValue={{ fontSize: '14px' }}
-          />
+          <FormatNumberTokens value={value.amount} />
         </div>
       </div>
       <div className={styles.containerRowItemMarket}>
-        <FormatNumberTokens
-          value={cap.amount}
-          text={cap.denom}
-          styleValue={{ fontSize: '14px' }}
-        />
+        <FormatNumberTokens value={cap.amount} text={cap.denom} />
       </div>
     </div>
   );

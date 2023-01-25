@@ -108,21 +108,16 @@ function RowBalancesDetails({ balance }) {
               cursor: checkDetailsToken ? 'pointer' : 'default',
             }}
           >
-            <BtnArrow open={isOpen} disabled={!checkDetailsToken} />
+            {checkDetailsToken ? <BtnArrow open={isOpen} /> : <div />}
             <ChartTotal balance={balance} />
           </button>
-          <FormatNumberTokens
-            styleValue={{ fontSize: '14px' }}
-            value={useAmountTotal}
-          />
+          <FormatNumberTokens value={useAmountTotal} />
         </div>
         <FormatNumberTokens
-          styleValue={{ fontSize: '14px' }}
           text={balance.price.denom}
           value={balance.price.amount}
         />
         <FormatNumberTokens
-          styleValue={{ fontSize: '14px' }}
           text={balance.cap.denom}
           value={balance.cap.amount}
         />
