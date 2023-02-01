@@ -6,7 +6,7 @@ function BanerHelp({ addressActive }) {
     let link = 'community';
     if (addressActive && addressActive !== null) {
       const { bech32 } = addressActive;
-      const community = `network/bostrom/contract/${bech32}/community`;
+      const community = `network/bostrom/contract/${bech32}/swarm`;
       link = <Link to={community}>community</Link>;
     }
     return link;
@@ -165,7 +165,7 @@ function BanerHelp({ addressActive }) {
         <Link to="/ipfs/QmP6Nk65ZE7jfvaNFLh7qsq3dyWqakMjfQ4te3UzRNbsXH">
           hire heroes
         </Link>{' '}
-        who manage the <Link to="/halloffame">dyson sphere</Link> and earn more{' '}
+        who manage the <Link to="/sphere">dyson sphere</Link> and earn more{' '}
         <Link to="/token/BOOT">BOOT</Link>.
       </div>
 
@@ -176,13 +176,13 @@ function BanerHelp({ addressActive }) {
           biosynthesis
         </Link>
         . For 1 supllied BOOT neurons get 1 H. If you want to{' '}
-        <Link to="/halloffame">fire a hero</Link> and get your BOOT back, you
+        <Link to="/sphere">fire a hero</Link> and get your BOOT back, you
         have to return H.
       </div>
 
       <div>
         H allows you to produce energy in the{' '}
-        <Link to="/mint">hydrogen fission reactor or HFR</Link>. Energy is
+        <Link to="/hfr">hydrogen fission reactor or HFR</Link>. Energy is
         needed for the superintelligence to learn and submit{' '}
         <Link to="/ipfs/QmWSPQ6krsRfxm852aVsDDSFspcdpcUXutDVBTPQqNGBBD">
           cyberlinks
