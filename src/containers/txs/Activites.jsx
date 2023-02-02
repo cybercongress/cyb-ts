@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';
@@ -12,8 +12,9 @@ import {
   DenomArr,
 } from '../../components';
 import { CYBER } from '../../utils/config';
-import { timeSince } from '../../utils/utils';
-import { reduceAmounToken } from '../teleport/utils';
+import { convertAmount, timeSince } from '../../utils/utils';
+import { AppContext } from '../../context';
+import { FormatNumberTokens } from '../sigma/components/cardUi';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -94,7 +95,10 @@ const MultiSend = ({ msg }) => {
                   return (
                     <span key={j}>
                       {' '}
-                      ({formatNumber(coin.amount)} {coin.denom.toUpperCase()})
+                      <AmountDenom
+                        amountValue={coin.amount}
+                        denom={coin.denom}
+                      />
                     </span>
                   );
                 })}
@@ -118,7 +122,7 @@ const MultiSend = ({ msg }) => {
                 return (
                   <span key={j}>
                     {' '}
-                    ({formatNumber(coin.amount)} {coin.denom.toUpperCase()})
+                    <AmountDenom amountValue={coin.amount} denom={coin.denom} />
                   </span>
                 );
               })}
@@ -175,19 +179,18 @@ const MsgInvestmint = ({ msg }) => (
       <Row
         title="amount"
         value={
-          <Pane display="flex">
-            {formatNumber(msg.amount.amount)}
-            <ValueImg
-              marginContainer="0 0 0 5px"
-              marginImg="0 0 0 3px"
-              text={msg.amount.denom}
-            />
-          </Pane>
+          <AmountDenom
+            amountValue={msg.amount.amount}
+            denom={msg.amount.denom}
+          />
         }
       />
     )}
     {msg.resource && (
-      <Row title="resource" value={<ValueImg text={msg.resource} />} />
+      <Row
+        title="resource"
+        value={<DenomArr gap={8} denomValue={msg.resource} />}
+      />
     )}
     {msg.length && (
       <Row title="length" value={timeSince(msg.length * S_TO_MS)} />
@@ -209,16 +212,7 @@ const MsgEditRoute = ({ msg }) => (
     {msg && (
       <Row
         title="amount"
-        value={
-          <Pane display="flex">
-            {formatNumber(msg.amount * 10 ** -3)}
-            <ValueImg
-              marginContainer="0 0 0 5px"
-              marginImg="0 0 0 3px"
-              text={msg.denom}
-            />
-          </Pane>
-        }
+        value={<AmountDenom amountValue={msg.amount} denom={msg.denom} />}
       />
     )}
     <Row title="destination" value={<Account address={msg.destination} />} />
@@ -233,12 +227,16 @@ const MsgDeleteRoute = ({ msg }) => (
 );
 
 const AmountDenom = ({ amountValue, denom }) => {
-  return (
-    <div style={{ display: 'flex' }}>
-      {formatNumber(reduceAmounToken(parseFloat(amountValue), denom))}
-      <DenomArr marginContainer="0px 0px 0px 5px" denomValue={denom} />
-    </div>
-  );
+  const { traseDenom } = useContext(AppContext);
+
+  let amount = 0;
+
+  if (amountValue && amountValue > 0) {
+    const { coinDecimals } = traseDenom(denom);
+    amount = convertAmount(amountValue, coinDecimals);
+  }
+
+  return <FormatNumberTokens text={denom} value={amount} />;
 };
 
 const MsgEditRouteName = ({ msg }) => <MsgCreateRoute msg={msg} />;
@@ -340,9 +338,12 @@ function Activites({ msg }) {
         />
         <Row
           title="Delegation Amount"
-          value={`${formatNumber(
-            msg.amount.amount
-          )} ${msg.amount.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.amount.amount}
+              denom={msg.amount.denom}
+            />
+          }
         />
       </ContainerMsgsType>
     );
@@ -360,9 +361,12 @@ function Activites({ msg }) {
         />
         <Row
           title="Undelegation Amount"
-          value={`${formatNumber(
-            msg.amount.amount
-          )} ${msg.amount.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.amount.amount}
+              denom={msg.amount.denom}
+            />
+          }
         />
       </ContainerMsgsType>
     );
@@ -384,9 +388,12 @@ function Activites({ msg }) {
         />
         <Row
           title="Redelegation Amount"
-          value={`${formatNumber(
-            msg.amount.amount
-          )} ${msg.amount.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.amount.amount}
+              denom={msg.amount.denom}
+            />
+          }
         />
       </ContainerMsgsType>
     );
@@ -400,18 +407,27 @@ function Activites({ msg }) {
           title="Swap requester address"
           value={<Account address={msg.swap_requester_address} />}
         />
-        <Row title="Demand coin denom" value={msg.demand_coin_denom} />
+        <Row
+          title="Demand coin denom"
+          value={<DenomArr gap={8} denomValue={msg.demand_coin_denom} />}
+        />
         <Row
           title="Offer coin"
-          value={`${formatNumber(
-            msg.offer_coin.amount
-          )} ${msg.offer_coin.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.offer_coin.amount}
+              denom={msg.offer_coin.denom}
+            />
+          }
         />
         <Row
           title="Offer coin fee"
-          value={`${formatNumber(
-            msg.offer_coin_fee.amount
-          )} ${msg.offer_coin_fee.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.offer_coin_fee.amount}
+              denom={msg.offer_coin_fee.denom}
+            />
+          }
         />
         <Row title="Order price" value={msg.order_price} />
         <Row title="Pool ID" value={msg.pool_id} />
@@ -430,9 +446,17 @@ function Activites({ msg }) {
         <Row title="Pool id" value={msg.pool_id} />
         <Row
           title="Deposit coins"
-          value={msg.deposit_coins.map((data, i) => {
-            return `${formatNumber(data.amount)} ${data.denom.toUpperCase()} /`;
-          })}
+          value={
+            <div
+              style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}
+            >
+              {msg.deposit_coins.map((data, i) => {
+                return (
+                  <AmountDenom amountValue={data.amount} denom={data.denom} />
+                );
+              })}
+            </div>
+          }
         />
       </ContainerMsgsType>
     );
@@ -448,9 +472,12 @@ function Activites({ msg }) {
         <Row title="Pool id" value={msg.pool_id} />
         <Row
           title="Pool coin"
-          value={`${formatNumber(
-            msg.pool_coin.amount
-          )} ${msg.pool_coin.denom.toUpperCase()}`}
+          value={
+            <AmountDenom
+              amountValue={msg.pool_coin.amount}
+              denom={msg.pool_coin.denom}
+            />
+          }
         />
       </ContainerMsgsType>
     );
