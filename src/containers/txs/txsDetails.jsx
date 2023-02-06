@@ -9,6 +9,7 @@ import Msgs from './msgs';
 import ActionBarContainer from '../Search/ActionBarContainer';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
+import { MainContainer } from '../portal/components';
 
 export const getTxs = async (txs) => {
   try {
@@ -45,14 +46,8 @@ function TxsDetails({ mobile }) {
       if (response !== null && response.tx_response) {
         let status = false;
         let rawLog = '';
-        const {
-          code,
-          raw_log,
-          height,
-          txhash,
-          timestamp,
-          tx,
-        } = response.tx_response;
+        const { code, raw_log, height, txhash, timestamp, tx } =
+          response.tx_response;
         const { memo } = tx.body;
         if (code !== undefined) {
           if (code !== 0) {
@@ -80,19 +75,15 @@ function TxsDetails({ mobile }) {
   console.log('msgs', msgs);
 
   return (
-    <div>
-      <main className="block-body">
-        <InformationTxs
-          data={information}
-          messageError={messageError}
-          marginBottom={30}
-        />
+    <>
+      <MainContainer width="82%">
+        <InformationTxs data={information} messageError={messageError} />
         {msgs !== null && <Msgs data={msgs} />}
-      </main>
+      </MainContainer>
       {!mobile && (
         <ActionBarContainer valueSearchInput={txHash} keywordHash={txHash} />
       )}
-    </div>
+    </>
   );
 }
 

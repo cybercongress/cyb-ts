@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { formatNumber } from '../../utils/search/utils';
 import { Link } from 'react-router-dom';
+import { ContainerGradient } from '../portal/components';
 
 const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
@@ -9,7 +10,7 @@ const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
 const InformationTxs = ({ data, messageError, ...props }) => {
   console.log(data);
-  const value = Object.keys(data).map(key => {
+  const value = Object.keys(data).map((key) => {
     let item = '';
     switch (key) {
       case 'height':
@@ -30,7 +31,8 @@ const InformationTxs = ({ data, messageError, ...props }) => {
       <Pane
         key={`${key}-container`}
         className="txs-contaiter-row"
-        display="flex"
+        display="grid"
+        gridTemplateColumns="240px 1fr"
       >
         <Text
           key={`${key}-title`}
@@ -73,25 +75,16 @@ const InformationTxs = ({ data, messageError, ...props }) => {
   });
 
   return (
-    <Pane
-      paddingY={20}
-      paddingX={20}
-      borderRadius={5}
-      display="flex"
-      flexDirection="column"
-      boxShadow="0 0 5px #3ab793"
-      {...props}
-    >
-      <Pane
-        paddingX={0}
-        paddingTop={5}
-        paddingBottom={10}
-        borderBottom="1px solid #3ab7938f"
-      >
+    <ContainerGradient
+      togglingDisable
+      userStyleContent={{ height: 'auto' }}
+      title={
         <Text color="#fff" fontSize="20px" fontWeight="500" lineHeight="1.5">
           Information
         </Text>
-      </Pane>
+      }
+      {...props}
+    >
       {!data.status && (
         <Pane
           paddingX={10}
@@ -104,10 +97,10 @@ const InformationTxs = ({ data, messageError, ...props }) => {
           Warning! {messageError}
         </Pane>
       )}
-      <Pane display="flex" paddingTop={20} width="100%" flexDirection="column">
+      <Pane display="flex" width="100%" flexDirection="column">
         {value}
       </Pane>
-    </Pane>
+    </ContainerGradient>
   );
 };
 

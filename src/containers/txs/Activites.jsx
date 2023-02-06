@@ -28,19 +28,19 @@ export const ContainerMsgsType = ({ type, children }) => (
     borderRadius={5}
     display="flex"
     flexDirection="column"
-    boxShadow="0 0 5px #3ab793"
+    // boxShadow="0 0 5px #3ab793"
     marginBottom={20}
   >
     <Pane
-      paddingLeft={16}
-      paddingTop={10}
-      paddingBottom={5}
-      paddingRight={10}
-      borderBottom="1px solid #3ab7938f"
+      display="flex"
+      gap="10px"
+      marginBottom={20}
+      fontSize="18px"
+      alignItems="center"
     >
-      <MsgType type={type} />
+      Type: <MsgType type={type} />
     </Pane>
-    <Pane width="100%" paddingY={10} paddingLeft={20} paddingRight={10}>
+    <Pane width="100%" paddingLeft={10} gap="20px">
       {children}
     </Pane>
   </Pane>
@@ -134,10 +134,10 @@ const MultiSend = ({ msg }) => {
   );
 };
 
-const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
+const MsgLink = ({ msg }) => (
   <ContainerMsgsType type={msg['@type']}>
     <Row title="Neuron" value={<Account address={msg.neuron} />} />
-    {msg.links.slice(0, seeAll ? msg.length : 1).map((item, index) => (
+    {msg.links.map((item, index) => (
       <div
         key={`${item.from}-${index}`}
         style={{
@@ -151,22 +151,6 @@ const MsgLink = ({ msg, seeAll, onClickBtnSeeAll }) => (
         <Row title="to" value={<Cid cid={item.to} />} />
       </div>
     ))}
-    {msg.links.length > 1 && (
-      <button
-        style={{
-          width: '25px',
-          height: '25px',
-          margin: 0,
-          padding: 0,
-          border: 'none',
-          backgroundColor: 'transparent',
-        }}
-        type="button"
-        onClick={onClickBtnSeeAll}
-      >
-        <img src={!seeAll ? imgDropdown : imgDropup} alt="imgDropdown" />
-      </button>
-    )}
   </ContainerMsgsType>
 );
 
@@ -242,8 +226,6 @@ export const AmountDenom = ({ amountValue, denom }) => {
 const MsgEditRouteName = ({ msg }) => <MsgCreateRoute msg={msg} />;
 
 function Activites({ msg }) {
-  console.log(msg);
-  const [seeAll, setSeeAll] = useState(false);
   let type = '';
 
   if (msg['@type']) {
@@ -251,13 +233,7 @@ function Activites({ msg }) {
   }
 
   if (type.includes('MsgCyberlink')) {
-    return (
-      <MsgLink
-        msg={msg}
-        seeAll={seeAll}
-        onClickBtnSeeAll={() => setSeeAll(!seeAll)}
-      />
-    );
+    return <MsgLink msg={msg} />;
   }
 
   // bank

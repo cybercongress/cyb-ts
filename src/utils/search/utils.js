@@ -12,6 +12,7 @@ const {
   CYBER_NODE_URL_API,
   CYBER_NODE_URL_LCD,
   BECH32_PREFIX_ACC_ADDR_CYBERVALOPER,
+  CYBER_GATEWAY,
 } = config.CYBER;
 
 const { PATTERN_IPFS_HASH } = config;
@@ -1238,7 +1239,7 @@ export const getContent = async (cid, timeout = SEARCH_RESULT_TIMEOUT_MS) => {
     new Promise((resolve, reject) => {
       axios({
         method: 'get',
-        url: `https://ipfs.io/ipfs/${cid}`,
+        url: `${CYBER_GATEWAY}/ipfs/${cid}`,
       }).then((response) => {
         // clearTimeout(timerId);
         resolve(response.data);

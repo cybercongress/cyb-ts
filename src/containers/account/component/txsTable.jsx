@@ -17,8 +17,6 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
 
   let validatorRows = [];
 
-  console.log('data', data);
-
   if (data) {
     validatorRows = data.pages.map((page) => (
       <React.Fragment key={page.page}>
