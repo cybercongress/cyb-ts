@@ -10,6 +10,7 @@ import { timeSince, trimString } from '../../../utils/utils';
 import statusTrueImg from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import statusFalseImg from '../../../image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
+import { ContainerGradientText } from '../../portal/components/containerGradient/ContainerGradient';
 
 function TxsTable({ dataGetTsxByAddress, accountUser }) {
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
@@ -39,59 +40,62 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
           }
 
           return (
-            <Table.Row
-              // borderBottom="none"
-              paddingX={0}
-              paddingY={10}
-              borderTop={
-                index === 0 && page.page === 0 ? 'none' : '1px solid #3ab79340'
-              }
-              borderBottom="none"
-              display="flex"
-              minHeight="48px"
-              height="fit-content"
-              key={`${item.transaction_hash}_${key}`}
+            <ContainerGradientText
+              status={item.transaction.success ? 'blue' : 'red'}
             >
-              <Table.TextCell textAlign="center">
-                <TextTable>
-                  <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
-                    {trimString(item.transaction_hash, 6, 6)}
-                  </Link>
-                </TextTable>
-              </Table.TextCell>
-              <Table.TextCell flex={0.5} textAlign="center">
-                <TextTable>
-                  <img
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      marginRight: '5px',
-                    }}
-                    src={
-                      item.transaction.success ? statusTrueImg : statusFalseImg
-                    }
-                    alt="statusImg"
-                  />
-                </TextTable>
-              </Table.TextCell>
-              <Table.TextCell textAlign="center">
-                <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
-              </Table.TextCell>
-              <Table.TextCell flex={1.2} textAlign="center">
-                <TextTable>
-                  <MsgType type={typeTx} />
-                </TextTable>
-              </Table.TextCell>
-              <Table.TextCell flex={2} textAlign="end">
-                <TextTable display="flex">
-                  <RenderValue
-                    value={item.value}
-                    type={item.type}
-                    accountUser={accountUser}
-                  />
-                </TextTable>
-              </Table.TextCell>
-            </Table.Row>
+              <Table.Row
+                // borderBottom="none"
+                paddingX={0}
+                paddingY={10}
+                borderBottom="none"
+                display="flex"
+                minHeight="48px"
+                height="fit-content"
+                key={`${item.transaction_hash}_${key}`}
+              >
+                <Table.TextCell flex={0.5} textAlign="center">
+                  <TextTable>
+                    <img
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                        marginRight: '5px',
+                      }}
+                      src={
+                        item.transaction.success
+                          ? statusTrueImg
+                          : statusFalseImg
+                      }
+                      alt="statusImg"
+                    />
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell flex={1.2} textAlign="center">
+                  <TextTable>
+                    <MsgType type={typeTx} />
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell textAlign="center">
+                  <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
+                </Table.TextCell>
+                <Table.TextCell textAlign="center">
+                  <TextTable>
+                    <Link to={`/network/bostrom/tx/${item.transaction_hash}`}>
+                      {trimString(item.transaction_hash, 6, 6)}
+                    </Link>
+                  </TextTable>
+                </Table.TextCell>
+                <Table.TextCell flex={2} textAlign="end">
+                  <TextTable display="flex">
+                    <RenderValue
+                      value={item.value}
+                      type={item.type}
+                      accountUser={accountUser}
+                    />
+                  </TextTable>
+                </Table.TextCell>
+              </Table.Row>
+            </ContainerGradientText>
           );
         })}
       </React.Fragment>
@@ -115,19 +119,19 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
           paddingBottom: '10px',
         }}
       >
-        <Table.TextHeaderCell textAlign="center">
-          <TextTable>tx</TextTable>
-        </Table.TextHeaderCell>
         <Table.TextHeaderCell flex={0.5} textAlign="center">
           <TextTable>status</TextTable>
+        </Table.TextHeaderCell>
+        <Table.TextHeaderCell flex={1.2} textAlign="center">
+          <TextTable>type</TextTable>
         </Table.TextHeaderCell>
         <Table.TextHeaderCell textAlign="center">
           <TextTable>timestamp</TextTable>
         </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={1.3} textAlign="center">
-          <TextTable>type</TextTable>
+        <Table.TextHeaderCell textAlign="center">
+          <TextTable>tx</TextTable>
         </Table.TextHeaderCell>
-        <Table.TextHeaderCell flex={1.7} textAlign="center">
+        <Table.TextHeaderCell flex={2} textAlign="center">
           <TextTable>action</TextTable>
         </Table.TextHeaderCell>
       </Table.Head>
@@ -141,6 +145,7 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
         <InfiniteScroll
           dataLength={Object.keys(validatorRows).length}
           next={fetchNextPageFnc}
+          style={{ display: 'grid', gap: '15px' }}
           hasMore={hasNextPage}
           loader={
             isFetching && (
