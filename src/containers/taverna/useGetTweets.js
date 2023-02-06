@@ -1,20 +1,23 @@
 import { useEffect, useState, useRef } from 'react';
 import dateFormat from 'dateformat';
+import { useQueryClient } from '@tanstack/react-query';
 import db from '../../db';
 import { getFollows, getTweet, getContent } from '../../utils/search/utils';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { fromBech32 } from '../../utils/utils';
 
-const getIndexdDb = async (cid) => {
+const getIndexdDb = async (queryClient, cid) => {
   let addressResolve = null;
   const dataIndexdDb = await db.table('following').get({ cid });
   if (dataIndexdDb !== undefined) {
     addressResolve = dataIndexdDb.content;
   } else {
-    console.log(`cid`, cid);
-    const responseGetContent = await getContent(cid);
-    console.log(`responseGetContent`, responseGetContent);
+    const responseGetContent = await queryClient.fetchQuery({
+      queryKey: ['getContent', cid],
+      queryFn: () => getContent(cid),
+    });
+    // console.log(`responseGetContent`, responseGetContent);
     addressResolve = responseGetContent;
     const ipfsContentAddtToInddexdDB = {
       cid,
@@ -30,6 +33,7 @@ const getIndexdDb = async (cid) => {
 };
 
 const useGetTweets = (defaultAccount, node = null) => {
+  const queryClient = useQueryClient();
   const [tweets, setTweets] = useState({});
   const [tweetData, setTweetData] = useState([]);
   const [loadingTweets, setLoadingTweets] = useState(true);
@@ -89,7 +93,11 @@ const useGetTweets = (defaultAccount, node = null) => {
     const feachData = async () => {
       let responseFollows = null;
       if (addressActive !== null && addressActive.bech32.match(PATTERN_CYBER)) {
-        responseFollows = await getFollows(addressActive.bech32);
+        // responseFollows = await getFollows(addressActive.bech32);
+        responseFollows = await queryClient.fetchQuery({
+          queryKey: ['getFollows', addressActive.bech32],
+          queryFn: () => getFollows(addressActive.bech32),
+        });
         if (responseFollows !== null && responseFollows.total_count > 0) {
           getFollow(responseFollows);
         }
@@ -103,7 +111,11 @@ const useGetTweets = (defaultAccount, node = null) => {
           CYBER.CYBER_CONGRESS_ADDRESS,
           CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
         );
-        const responseTwit = await getTweet(cyberCongressAdsress);
+
+        const responseTwit = await queryClient.fetchQuery({
+          queryKey: ['getTweet', cyberCongressAdsress],
+          queryFn: () => getTweet(cyberCongressAdsress),
+        });
         if (
           responseTwit &&
           responseTwit !== null &&
@@ -144,8 +156,8 @@ const useGetTweets = (defaultAccount, node = null) => {
     responseFollows.txs.forEach(async (item) => {
       let addressResolve = null;
       const cid = item.tx.value.msg[0].value.links[0].to;
-      const response = await getIndexdDb(cid);
-      console.log(`response`, response);
+      const response = await getIndexdDb(queryClient, cid);
+      // console.log(`response`, response);
       addressResolve = response;
       if (addressResolve && addressResolve !== null) {
         let addressFollow = null;
@@ -156,9 +168,17 @@ const useGetTweets = (defaultAccount, node = null) => {
             ...itemState,
             [addressFollow]: cid,
           }));
-          const responseTwit = await getTweet(addressFollow);
-          if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-            setTweetData((items) => [...items, ...responseTwit.txs]);
+
+          const responseTweet = await queryClient.fetchQuery({
+            queryKey: ['getTweet', addressFollow],
+            queryFn: () => getTweet(addressFollow),
+          });
+          if (
+            responseTweet &&
+            responseTweet.txs &&
+            responseTweet.txs.length > 0
+          ) {
+            setTweetData((items) => [...items, ...responseTweet.txs]);
           }
         }
       }
