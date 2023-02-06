@@ -42,7 +42,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         setStatus('downloaded');
       } else if (nodeIpfs !== null) {
         const responseDag = await nodeIpfs.dag.get(cid);
-        console.log(`responseDag`, responseDag);
+        // console.log(`responseDag`, responseDag);
         const meta = {
           type: 'file',
           size: 0,
@@ -66,7 +66,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
         meta.blockSizes = linksCid;
         if (responseDag.value.size < 15 * 10 ** 6) {
           const responsePin = nodeIpfs.pin.add(cid);
-          console.log('responsePin', responsePin);
+          // console.log('responsePin', responsePin);
 
           // const cids = new CID(cid);
           const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
@@ -79,7 +79,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
           }
           const blob = new Blob([responseCat], { type: mimeType });
           const datagetPinsCid = await getPinsCid(cid, blob);
-          console.log(`datagetPinsCid`, cid, datagetPinsCid);
+          // console.log(`datagetPinsCid`, cid, datagetPinsCid);
           const someVar = responseCat;
           meta.data = someVar;
           const ipfsContentAddtToInddexdDB = {
