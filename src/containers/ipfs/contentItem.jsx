@@ -88,11 +88,7 @@ const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {
             meta,
           };
           // await db.table('test').add(ipfsContentAddtToInddexdDB);
-          db.table('cid')
-            .add(ipfsContentAddtToInddexdDB)
-            .then((id) => {
-              console.log('item :>> ', id);
-            });
+          db.table('cid').add(ipfsContentAddtToInddexdDB);
           const dataTypeContent = await getTypeContent(someVar, cid);
           const {
             text: textContent,

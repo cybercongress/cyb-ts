@@ -12,19 +12,13 @@ const getIndexdDb = async (cid) => {
   if (dataIndexdDb !== undefined) {
     addressResolve = dataIndexdDb.content;
   } else {
-    console.log(`cid`, cid);
     const responseGetContent = await getContent(cid);
-    console.log(`responseGetContent`, responseGetContent);
     addressResolve = responseGetContent;
     const ipfsContentAddtToInddexdDB = {
       cid,
       content: addressResolve,
     };
-    db.table('following')
-      .add(ipfsContentAddtToInddexdDB)
-      .then((id) => {
-        console.log('item :>> ', id);
-      });
+    db.table('following').add(ipfsContentAddtToInddexdDB);
   }
   return addressResolve;
 };
@@ -145,7 +139,6 @@ const useGetTweets = (defaultAccount, node = null) => {
       let addressResolve = null;
       const cid = item.tx.value.msg[0].value.links[0].to;
       const response = await getIndexdDb(cid);
-      console.log(`response`, response);
       addressResolve = response;
       if (addressResolve && addressResolve !== null) {
         let addressFollow = null;
