@@ -128,6 +128,8 @@ function RowBalancesDetails({ balance }) {
                     Object.keys(balance).length === 5,
                   [styles[`containerDetailsBalanceMain${state}`]]:
                     Object.keys(balance).length === 7,
+                  [styles[`containerDetailsBalanceMainComm${state}`]]:
+                    Object.keys(balance).length === 8,
                 })}
               >
                 <DetailsBalance data={balance} />

@@ -12,19 +12,13 @@ const getIndexdDb = async (cid) => {
   if (dataIndexdDb !== undefined) {
     addressResolve = dataIndexdDb.content;
   } else {
-    console.log(`cid`, cid);
     const responseGetContent = await getContent(cid);
-    console.log(`responseGetContent`, responseGetContent);
     addressResolve = responseGetContent;
     const ipfsContentAddtToInddexdDB = {
       cid,
       content: addressResolve,
     };
-    db.table('following')
-      .add(ipfsContentAddtToInddexdDB)
-      .then((id) => {
-        console.log('item :>> ', id);
-      });
+    db.table('following').add(ipfsContentAddtToInddexdDB);
   }
   return addressResolve;
 };
@@ -103,6 +97,7 @@ const useGetTweets = (defaultAccount, node = null) => {
           CYBER.CYBER_CONGRESS_ADDRESS,
           CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
         );
+
         const responseTwit = await getTweet(cyberCongressAdsress);
         if (
           responseTwit &&
@@ -145,7 +140,6 @@ const useGetTweets = (defaultAccount, node = null) => {
       let addressResolve = null;
       const cid = item.tx.value.msg[0].value.links[0].to;
       const response = await getIndexdDb(cid);
-      console.log(`response`, response);
       addressResolve = response;
       if (addressResolve && addressResolve !== null) {
         let addressFollow = null;
@@ -156,9 +150,14 @@ const useGetTweets = (defaultAccount, node = null) => {
             ...itemState,
             [addressFollow]: cid,
           }));
-          const responseTwit = await getTweet(addressFollow);
-          if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-            setTweetData((items) => [...items, ...responseTwit.txs]);
+
+          const responseTweet = await getTweet(addressFollow);
+          if (
+            responseTweet &&
+            responseTweet.txs &&
+            responseTweet.txs.length > 0
+          ) {
+            setTweetData((items) => [...items, ...responseTweet.txs]);
           }
         }
       }

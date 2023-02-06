@@ -1,69 +1,97 @@
-import React from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { getValidatorsInfo } from '../../utils/search/utils';
+import { useQuery } from '@tanstack/react-query';
 import { trimString } from '../../utils/utils';
 import { Dots } from '../ui/Dots';
 import { CYBER } from '../../utils/config';
+import { AppContext } from '../../context';
+import { activePassport } from '../../containers/portal/utils';
 
-class Account extends React.Component {
-  constructor(props) {
-    super(props);
-    const { address } = this.props;
-    this.state = {
-      account: `/network/bostrom/contract/${address}`,
-      moniker: address,
-      loading: true,
-    };
-  }
+function useGetValidatorInfo(address) {
+  const { jsCyber } = useContext(AppContext);
 
-  componentDidMount() {
-    const { address } = this.props;
-    if (address) {
-      if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
-        this.updateAccount();
-      } else {
-        this.setState({
-          account: `/network/bostrom/contract/${address}`,
-          moniker: `${trimString(address, 11, 6)}`,
-          loading: false,
-        });
+  const { data } = useQuery(
+    ['validatorInfo', address],
+    async () => {
+      const response = await jsCyber.validator(address);
+      if (response !== null) {
+        return response;
       }
+      return null;
+    },
+    {
+      enabled: Boolean(
+        jsCyber && address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+      ),
     }
-  }
+  );
 
-  updateAccount = async () => {
-    const { address } = this.props;
+  return { data };
+}
 
-    const result = await getValidatorsInfo(address);
-    if (result) {
-      this.setState({
-        account: `/network/bostrom/hero/${address}`,
-        moniker: `${result.description.moniker}`,
-        loading: false,
-      });
+function useGetPassportByAddress(address) {
+  const { jsCyber } = useContext(AppContext);
+  const { data } = useQuery(
+    ['activePassport', address],
+    async () => {
+      const response = await activePassport(jsCyber, address);
+      if (response !== null) {
+        return response;
+      }
+      return null;
+    },
+    {
+      enabled: Boolean(
+        jsCyber && !address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+      ),
     }
+  );
+
+  return {
+    data,
   };
+}
 
-  render() {
-    const { moniker, account, loading } = this.state;
-    const { children, colorText, margin } = this.props;
+export function Account({ address, children, colorText, margin }) {
+  const [moniker, setMoniker] = useState(null);
+  const { data: dataValidInfo } = useGetValidatorInfo(address);
+  const { data: dataPassport } = useGetPassportByAddress(address);
 
-    if (loading) {
-      return <Dots />;
+  useEffect(() => {
+    if (dataValidInfo !== undefined) {
+      const { description } = dataValidInfo.validator;
+      setMoniker(description.moniker);
     }
 
-    return (
-      <span>
-        <Link
-          style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
-          to={account}
-        >
-          {moniker}
-        </Link>
-        {children}
-      </span>
-    );
-  }
+    if (dataPassport !== undefined && dataPassport !== null) {
+      const { extension } = dataPassport;
+      setMoniker(extension.nickname);
+    }
+  }, [dataValidInfo, dataPassport]);
+
+  const trimAddress = useMemo(() => {
+    return trimString(address, 9, 3);
+  }, [address]);
+
+  const linkAddress = useMemo(() => {
+    if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
+      return `/network/bostrom/hero/${address}`;
+    }
+
+    return `/network/bostrom/contract/${address}`;
+  }, [address]);
+
+  return (
+    <span>
+      <Link
+        style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
+        to={linkAddress}
+      >
+        {moniker === null ? trimAddress : moniker}
+      </Link>
+      {children}
+    </span>
+  );
 }
 
 export default Account;

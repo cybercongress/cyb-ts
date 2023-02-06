@@ -78,13 +78,15 @@ const TxsStatus = ({ data }) => {
           [styles.containerTxsDanger]: data.status === 'error',
         })}
       >
-        <div className={styles.containerTxsTxHash}>
-          <Link to={`/network/bostrom/tx/${data.txHash}`}>
-            <div>{trimString(data.txHash, 5, 5)}</div>
-          </Link>
-          {/* <div>5 min ago</div> */}
-          <div>{data.status}</div>
-        </div>
+        {data.txHash && (
+          <div className={styles.containerTxsTxHash}>
+            <Link to={`/network/bostrom/tx/${data.txHash}`}>
+              <div>{trimString(data.txHash, 5, 5)}</div>
+            </Link>
+            {/* <div>5 min ago</div> */}
+            <div>{data.status}</div>
+          </div>
+        )}
         {data.rawLog && (
           <div className={styles.containerTxsRawLog}>{data.rawLog}</div>
         )}

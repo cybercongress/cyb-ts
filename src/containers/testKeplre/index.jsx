@@ -33,6 +33,7 @@ import { Input } from '../teleport/components';
 import { DenomArr } from '../../components';
 import { useWebworker } from '../nebula/useWebworker';
 import BigNumber from 'bignumber.js';
+import { Account } from '../../components/account/account';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -41,7 +42,7 @@ const token = 'anonymas:mouse123west';
 //   authorization: `Basic YW5vbnltYXM6bW91c2UxMjN3ZXN0`,
 // };
 
-const addressTest = 'bostrom19nk207agguzdvpj9nqsf4zrjw8mcuu9afun3fv';
+const addressTest = 'bostromvaloper1ydc5fy9fjdygvgw36u49yj39fr67pd9m5qexm8';
 
 const headers = {
   'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ const testFunc = (responseDataPools, jsCyber) => {
 };
 
 function TestKeplr() {
-  const { keplr, jsCyber } = useContext(AppContext);
+  // const { keplr, jsCyber } = useContext(AppContext);
   // const { result, error, run } = useWebworker(testFunc);
 
   // console.log('result', result);
@@ -188,7 +189,8 @@ function TestKeplr() {
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      <DenomArr denomValue={bootTocyb} />
+      <Account address={addressTest} />
+      {/* <DenomArr denomValue={bootTocyb} /> */}
       {/* <div>div sdjdsksd</div> */}
       {/* <CoinDenom coinDenom={testDenom} tooltipStatus />
       <NumericFormat

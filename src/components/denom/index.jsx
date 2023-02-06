@@ -77,7 +77,7 @@ function Denom({
         <ImgDenom
           coinDenom={denomValue}
           infoDenom={infoDenom}
-          tooltipStatus={onlyImg && tooltipStatusImg}
+          tooltipStatus={tooltipStatusImg}
           size={size}
         />
       )}

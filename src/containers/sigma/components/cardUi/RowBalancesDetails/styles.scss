@@ -56,3 +56,29 @@
     visibility: hidden;
   }
 }
+
+.containerDetailsBalanceMainComm {
+  &entering {
+    opacity: 0;
+    transition: 1ms ease-in-out;
+  }
+
+  &entered {
+    opacity: 1;
+    min-height: 320px;
+    height: 1px;
+    margin-top: 30px;
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.5s ease-in-out;
+  }
+
+  &exited {
+    opacity: 0;
+    height: 0px;
+    min-height: 0px;
+    visibility: hidden;
+  }
+}

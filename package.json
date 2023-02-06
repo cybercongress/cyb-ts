@@ -139,6 +139,7 @@
     "ethers": "^5.0.26",
     "file-type": "^14.1.3",
     "graphql": "^16.5.0",
+    "graphql-request": "^5.1.0",
     "graphql-tag": "^2.10.1",
     "highlight.js": "^10.0.3",
     "ipfs": "0.54.3",

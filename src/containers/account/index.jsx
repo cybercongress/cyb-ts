@@ -1,15 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
+/* eslint-disable no-nested-ternary */
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Route, Link, useParams, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './tabs/heroes';
 import { coinDecimals, formatNumber, asyncForEach } from '../../utils/utils';
-import { Loading, Copy, ContainerCard, Card, Dots } from '../../components';
+import {
+  Loading,
+  Copy,
+  ContainerCard,
+  Card,
+  Dots,
+  NoItems,
+} from '../../components';
 import ActionBarContainer from './actionBar';
-import GetTxs from './tabs/txs';
+// import GetTxs from './tabs/txs';
 import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
@@ -19,6 +28,8 @@ import CyberLinkCount from './component/cyberLinkCount';
 import { AppContext } from '../../context';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
+import useGetTsxByAddress from './hooks/useGetTsxByAddress';
+import TxsTable from './component/txsTable';
 
 const TabBtn = ({ text, isSelected, onSelect, to }) => (
   <Link to={to}>
@@ -55,6 +66,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     address,
     updateAddress
   );
+  const dataGetTsxByAddress = useGetTsxByAddress(address);
   const [selected, setSelected] = useState('log');
   const [dataTweet, setDataTweet] = useState([]);
   const [tweets, setTweets] = useState(false);
@@ -209,7 +221,12 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     content = (
       <Route
         path="/network/bostrom/contract/:address/timeline"
-        render={() => <GetTxs accountUser={address} />}
+        render={() => (
+          <TxsTable
+            dataGetTsxByAddress={dataGetTsxByAddress}
+            accountUser={address}
+          />
+        )}
       />
     );
   }
@@ -250,6 +267,9 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   return (
     <div>
       <main className="block-body">
+        {/* <button type="button" onClick={() => setOffset((item) => item + 1)}>
+          +
+        </button> */}
         <Pane
           marginBottom={20}
           display="flex"
