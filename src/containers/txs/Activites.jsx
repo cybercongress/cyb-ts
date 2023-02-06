@@ -14,7 +14,7 @@ import {
 import { CYBER } from '../../utils/config';
 import { convertAmount, timeSince } from '../../utils/utils';
 import { AppContext } from '../../context';
-import { FormatNumberTokens } from '../sigma/components/cardUi';
+import { FormatNumberTokens } from '../nebula/components';
 
 const imgDropdown = require('../../image/arrow-dropdown.svg');
 const imgDropup = require('../../image/arrow-dropup.svg');
@@ -226,7 +226,7 @@ const MsgDeleteRoute = ({ msg }) => (
   </ContainerMsgsType>
 );
 
-const AmountDenom = ({ amountValue, denom }) => {
+export const AmountDenom = ({ amountValue, denom }) => {
   const { traseDenom } = useContext(AppContext);
 
   let amount = 0;

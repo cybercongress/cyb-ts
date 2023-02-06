@@ -28,7 +28,7 @@ const FormatNumberTokens = ({
   const decimal = getDecimal(value, float);
   return (
     <div
-      style={{ gridTemplateColumns: text || customText ? '1fr 30px' : '1fr' }}
+      style={{ gridTemplateColumns: text || customText ? '1fr 20px' : '1fr' }}
       className={styles.containerFormatNumberTokens}
       {...props}
     >
