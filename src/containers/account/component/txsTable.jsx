@@ -113,7 +113,7 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
       <Table.Head
         style={{
           backgroundColor: '#000',
-          borderBottom: '1px solid #ffffff80',
+          border: 'none',
           marginTop: '10px',
           padding: 7,
           paddingBottom: '10px',
