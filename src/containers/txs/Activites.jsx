@@ -768,7 +768,16 @@ function Activites({ msg }) {
     );
   }
 
-  return <div>{JSON.stringify(msg)}</div>;
+  return (
+    <div>
+      <ReactJson
+        src={msg}
+        theme="twilight"
+        displayObjectSize={false}
+        displayDataTypes={false}
+      />
+    </div>
+  );
 }
 
 export default Activites;

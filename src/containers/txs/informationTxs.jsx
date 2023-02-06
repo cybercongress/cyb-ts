@@ -84,19 +84,25 @@ const InformationTxs = ({ data, messageError, ...props }) => {
         </Text>
       }
       {...props}
+      styleLampContent={!data.status ? 'red' : 'blue'}
+      txs={
+        !data.status
+          ? { rawLog: messageError, status: !data.status ? 'error' : '' }
+          : false
+      }
     >
-      {!data.status && (
+      {/* {!data.status && (
         <Pane
           paddingX={10}
           paddingY={10}
-          marginTop="20px"
+          marginBottom="20px"
           boxShadow="0 0 4px 0px #d32f2f"
           borderRadius="5px"
           backgroundColor="#d32f2f2b"
         >
           Warning! {messageError}
         </Pane>
-      )}
+      )} */}
       <Pane display="flex" width="100%" flexDirection="column">
         {value}
       </Pane>
