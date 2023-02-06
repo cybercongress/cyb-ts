@@ -97,6 +97,7 @@ const useGetTweets = (defaultAccount, node = null) => {
           CYBER.CYBER_CONGRESS_ADDRESS,
           CYBER.BECH32_PREFIX_ACC_ADDR_CYBER
         );
+
         const responseTwit = await getTweet(cyberCongressAdsress);
         if (
           responseTwit &&
@@ -149,9 +150,14 @@ const useGetTweets = (defaultAccount, node = null) => {
             ...itemState,
             [addressFollow]: cid,
           }));
-          const responseTwit = await getTweet(addressFollow);
-          if (responseTwit && responseTwit.txs && responseTwit.txs.length > 0) {
-            setTweetData((items) => [...items, ...responseTwit.txs]);
+
+          const responseTweet = await getTweet(addressFollow);
+          if (
+            responseTweet &&
+            responseTweet.txs &&
+            responseTweet.txs.length > 0
+          ) {
+            setTweetData((items) => [...items, ...responseTweet.txs]);
           }
         }
       }
