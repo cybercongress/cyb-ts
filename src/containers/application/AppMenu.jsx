@@ -43,6 +43,7 @@ const itemsMenu = (address) => {
   }
 
   const listItemMenu = [
+    { name: 'Temple', to: '/temple', subItems: [] },
     { name: 'Nebula', to: '/', subItems: [] },
     {
       name: 'My robot',
@@ -159,3 +160,4 @@ const AppMenu = ({ addressActive }) => {
 };
 
 export default AppMenu;
+
