@@ -49,6 +49,7 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
+import Temple from './containers/temple'; 
 
 import Ibc from './containers/ibc';
 import {
@@ -145,6 +146,7 @@ function AppRouter() {
         <Route path="/assets" component={Assets} />
         {/* Sigma */}
         <Route path="/sigma" component={Sigma} />
+        <Route path="/temple" component={Temple} />
       </Switch>
     </Router>
   );
