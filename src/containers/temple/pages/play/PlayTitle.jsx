@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
 } from 'react';
@@ -19,6 +20,8 @@ import {
   useGetNegentropy,
   useGetValidatorsBonded,
   useGetGraphStats,
+  useContractsCount,
+  useGetTotalCap,
 } from '../../hooks';
 import slideData from './slideData';
 
@@ -48,19 +51,47 @@ function PlayTitle() {
   const dataGetPortalStats = useGetPortalStats();
   const dataGetNegentropy = useGetNegentropy();
   const dataGetValidatorsBonded = useGetValidatorsBonded();
+  const dataContractsCount = useContractsCount();
   const dataGetGraphStats = useGetGraphStats();
+  const dataGetTotalCap = useGetTotalCap();
+  const slideDataRef = useRef(slideData);
   const timeoutRef = useRef(null);
-  const [slideDataState, setSlideDataState] = useState({ ...slideData });
-  const [index, setIndex] = useState(0);
+
+  const [index, setIndex] = useState(12);
+
+  useEffect(() => {
+    slideDataRef.current = {
+      ...slideDataRef.current,
+      fastGrowing: {
+        ...slideDataRef.current.fastGrowing,
+        amount: formatNumber(dataGetTotalCap.capData.currentCap),
+        change: {
+          time: dataGetTotalCap.capData.change.time,
+          amount: formatNumber(dataGetTotalCap.capData.change.amount),
+        },
+      },
+      futureOf: {
+        ...slideDataRef.current.futureOf,
+        amount: formatNumber(dataGetTotalCap.priceData.price),
+        change: {
+          time: dataGetTotalCap.priceData.change.time,
+          amount: `${dataGetTotalCap.priceData.change.amount}%`,
+        },
+      },
+    };
+  }, [dataGetTotalCap]);
 
   useEffect(() => {
     if (dataGetNegentropy.status === 'success' && dataGetNegentropy.data) {
-      slideDataState.realDistributed = {
-        ...slideDataState.realDistributed,
-        amount: formatNumber(dataGetNegentropy.data.negentropy),
-        change: {
-          time: dataGetNegentropy.changeTimeAmount.time,
-          amount: formatNumber(dataGetNegentropy.changeTimeAmount.amount),
+      slideDataRef.current = {
+        ...slideDataRef.current,
+        realDistributed: {
+          ...slideDataRef.current.realDistributed,
+          amount: formatNumber(dataGetNegentropy.data.negentropy),
+          change: {
+            time: dataGetNegentropy.changeTimeAmount.time,
+            amount: formatNumber(dataGetNegentropy.changeTimeAmount.amount),
+          },
         },
       };
     }
@@ -68,38 +99,59 @@ function PlayTitle() {
 
   useEffect(() => {
     if (dataAccountCount.status === 'success' && dataAccountCount.data) {
-      slideDataState.everGrowing = {
-        ...slideDataState.everGrowing,
-        amount: formatNumber(dataAccountCount.data.accountCount),
-        change: {
-          time: dataAccountCount.changeTimeAmount.time,
-          amount: formatNumber(dataAccountCount.changeTimeAmount.amount),
+      slideDataRef.current = {
+        ...slideDataRef.current,
+        everGrowing: {
+          ...slideDataRef.current.everGrowing,
+          amount: formatNumber(dataAccountCount.data.accountCount),
+          change: {
+            time: dataAccountCount.changeTimeAmount.time,
+            amount: formatNumber(dataAccountCount.changeTimeAmount.amount),
+          },
         },
       };
     }
   }, [dataAccountCount]);
 
   useEffect(() => {
-    if (dataGetPortalStats.status === 'success' && dataGetPortalStats.data) {
-      slideDataState.superintelligentMoon = {
-        ...slideDataState.superintelligentMoon,
-        amount: formatNumber(dataGetPortalStats.data.citizens),
-        change: {
-          time: dataGetPortalStats.changeTimeAmount.time,
-          amount: formatNumber(
-            dataGetPortalStats.changeTimeAmount.citizensAmount
-          ),
+    if (dataContractsCount.status === 'success' && dataContractsCount.data) {
+      slideDataRef.current = {
+        ...slideDataRef.current,
+        autonomousSemantic: {
+          ...slideDataRef.current.autonomousSemantic,
+          amount: formatNumber(dataContractsCount.data.contractsCount),
+          change: {
+            time: dataContractsCount.changeTimeAmount.time,
+            amount: formatNumber(dataContractsCount.changeTimeAmount.amount),
+          },
         },
       };
+    }
+  }, [dataContractsCount]);
 
-      slideDataState.provable = {
-        ...slideDataState.provable,
-        amount: `${formatNumber(dataGetPortalStats.data.procentClaim)} %`,
-        change: {
-          time: dataGetPortalStats.changeTimeAmount.time,
-          amount: `${formatNumber(
-            dataGetPortalStats.changeTimeAmount.procentClaimAmount
-          )} %`,
+  useEffect(() => {
+    if (dataGetPortalStats.status === 'success' && dataGetPortalStats.data) {
+      slideDataRef.current = {
+        ...slideDataRef.current,
+        superintelligentMoon: {
+          ...slideDataRef.current.superintelligentMoon,
+          amount: formatNumber(dataGetPortalStats.data.citizens),
+          change: {
+            time: dataGetPortalStats.changeTimeAmount.time,
+            amount: formatNumber(
+              dataGetPortalStats.changeTimeAmount.citizensAmount
+            ),
+          },
+        },
+        provable: {
+          ...slideDataRef.current.provable,
+          amount: `${formatNumber(dataGetPortalStats.data.procentClaim)} %`,
+          change: {
+            time: dataGetPortalStats.changeTimeAmount.time,
+            amount: `${formatNumber(
+              dataGetPortalStats.changeTimeAmount.procentClaimAmount
+            )} %`,
+          },
         },
       };
     }
@@ -110,12 +162,17 @@ function PlayTitle() {
       dataGetValidatorsBonded.status === 'success' &&
       dataGetValidatorsBonded.data
     ) {
-      slideDataState.biggestUseful = {
-        ...slideDataState.biggestUseful,
-        amount: formatNumber(dataGetValidatorsBonded.data.validators),
-        change: {
-          time: dataGetValidatorsBonded.changeTimeAmount.time,
-          amount: formatNumber(dataGetValidatorsBonded.changeTimeAmount.amount),
+      slideDataRef.current = {
+        ...slideDataRef.current,
+        biggestUseful: {
+          ...slideDataRef.current.biggestUseful,
+          amount: formatNumber(dataGetValidatorsBonded.data.validators),
+          change: {
+            time: dataGetValidatorsBonded.changeTimeAmount.time,
+            amount: formatNumber(
+              dataGetValidatorsBonded.changeTimeAmount.amount
+            ),
+          },
         },
       };
     }
@@ -126,36 +183,39 @@ function PlayTitle() {
       const { cyberlinks, particles, beta, bits } = dataGetGraphStats.data;
       const { changeTimeAmount } = dataGetGraphStats;
 
-      slideDataState.collaborativeNeural = {
-        ...slideDataState.collaborativeNeural,
-        amount: formatNumber(cyberlinks),
-        change: {
-          amount: formatNumber(changeTimeAmount.cyberlinks),
-          time: changeTimeAmount.time,
+      slideDataRef.current = {
+        ...slideDataRef.current,
+        collaborativeNeural: {
+          ...slideDataRef.current.collaborativeNeural,
+          amount: formatNumber(cyberlinks),
+          change: {
+            amount: formatNumber(changeTimeAmount.cyberlinks),
+            time: changeTimeAmount.time,
+          },
         },
-      };
-      slideDataState.nextGen = {
-        ...slideDataState.nextGen,
-        amount: formatNumber(particles),
-        change: {
-          amount: formatNumber(changeTimeAmount.particles),
-          time: changeTimeAmount.time,
+        unstoppablePublic: {
+          ...slideDataRef.current.unstoppablePublic,
+          amount: formatCurrency(bits, 'B', 0, PREFIXES),
+          change: {
+            amount: formatCurrency(changeTimeAmount.bits, 'B', 0, PREFIXES),
+            time: changeTimeAmount.time,
+          },
         },
-      };
-      slideDataState.permissionlessOnchain = {
-        ...slideDataState.permissionlessOnchain,
-        amount: formatNumber(beta),
-        change: {
-          amount: formatNumber(changeTimeAmount.beta),
-          time: changeTimeAmount.time,
+        nextGen: {
+          ...slideDataRef.current.nextGen,
+          amount: formatNumber(particles),
+          change: {
+            amount: formatNumber(changeTimeAmount.particles),
+            time: changeTimeAmount.time,
+          },
         },
-      };
-      slideDataState.unstoppablePublic = {
-        ...slideDataState.unstoppablePublic,
-        amount: formatCurrency(bits, 'B', 0, PREFIXES),
-        change: {
-          amount: formatCurrency(changeTimeAmount.bits, 'B', 0, PREFIXES),
-          time: changeTimeAmount.time,
+        permissionlessOnchain: {
+          ...slideDataRef.current.permissionlessOnchain,
+          amount: formatNumber(beta),
+          change: {
+            amount: formatNumber(changeTimeAmount.beta),
+            time: changeTimeAmount.time,
+          },
         },
       };
     }
@@ -195,6 +255,7 @@ function PlayTitle() {
     }
   }, [index, slideData]);
 
+  const slideDataState = slideDataRef.current;
   return (
     <div
       style={{
@@ -232,14 +293,14 @@ function PlayTitle() {
               parseFloat(Object.values(slideDataState)[index].change.amount) >=
               0
                 ? '#76FF03'
-                : 'FF0000',
+                : '#FF0000',
             fontSize: 20,
           }}
         >
           {parseFloat(Object.values(slideDataState)[index].change.amount) !== 0
             ? parseFloat(Object.values(slideDataState)[index].change.amount) > 0
               ? '+'
-              : '-'
+              : ''
             : ''}
           {Object.values(slideDataState)[index].change.amount}
         </div>

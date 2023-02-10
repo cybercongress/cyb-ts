@@ -9,6 +9,7 @@ import {
 } from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
 import { CYBER } from '../../utils/config';
+import { useQuery } from '@tanstack/react-query';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -84,6 +85,26 @@ function useGetMarketData() {
   const [poolsTotal, setPoolsTotal] = useState([]);
   const [marketData, setMarketData] = useState({});
 
+  const { data: dataTotalSupply } = useQuery({
+    queryKey: ['totalSupply'],
+    queryFn: async () => {
+      const responsetotalSupply = await jsCyber.totalSupply();
+      return responsetotalSupply;
+    },
+    enabled: Boolean(jsCyber),
+    refetchInterval: 1000 * 60 * 3,
+  });
+
+  const { data: dataPools } = useQuery({
+    queryKey: ['pools'],
+    queryFn: async () => {
+      const responsePools = await jsCyber.pools();
+      return responsePools;
+    },
+    enabled: Boolean(jsCyber),
+    refetchInterval: 1000 * 60 * 3,
+  });
+
   useEffect(() => {
     const marketDataLS = localStorage.getItem('marketData');
     if (marketDataLS !== null) {
@@ -93,51 +114,42 @@ function useGetMarketData() {
   }, []);
 
   useEffect(() => {
-    const getBankTotal = async () => {
-      if (jsCyber !== null) {
-        const dataTotalSupply = await jsCyber.totalSupply();
-        try {
-          if (dataTotalSupply && dataTotalSupply.length > 0) {
-            const reduceDataTotalSupply = reduceBalances(dataTotalSupply);
-            setDataTotal({ ...defaultTokenList, ...reduceDataTotalSupply });
-          }
-        } catch (error) {
-          console.log('error', error);
-          setDataTotal([]);
-        }
+    try {
+      if (dataTotalSupply && dataTotalSupply.length > 0) {
+        const reduceDataTotalSupply = reduceBalances(dataTotalSupply);
+        setDataTotal({ ...defaultTokenList, ...reduceDataTotalSupply });
       }
-    };
-    getBankTotal();
-  }, [jsCyber]);
+    } catch (error) {
+      console.log('error', error);
+      setDataTotal([]);
+    }
+  }, [dataTotalSupply]);
 
   useEffect(() => {
     const getPpools = async () => {
-      if (jsCyber !== null) {
-        const dataPools = await jsCyber.pools();
-        try {
-          const { pools } = dataPools;
-          if (dataPools && pools && Object.keys(pools).length > 0) {
-            const reduceObj = pools.reduce(
-              (obj, item) => ({
-                ...obj,
-                [item.poolCoinDenom]: {
-                  ...item,
-                },
-              }),
-              {}
-            );
-            const poolsBalance = await getPoolsBalance(reduceObj, jsCyber);
-            const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
-            setPoolsTotal(poolPriceObj);
-          }
-        } catch (error) {
-          console.log('error', error);
-          setPoolsTotal([]);
+      try {
+        const { pools } = dataPools;
+        if (dataPools && pools && Object.keys(pools).length > 0) {
+          const reduceObj = pools.reduce(
+            (obj, item) => ({
+              ...obj,
+              [item.poolCoinDenom]: {
+                ...item,
+              },
+            }),
+            {}
+          );
+          const poolsBalance = await getPoolsBalance(reduceObj, jsCyber);
+          const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
+          setPoolsTotal(poolPriceObj);
         }
+      } catch (error) {
+        console.log('error', error);
+        setPoolsTotal([]);
       }
     };
     getPpools();
-  }, [jsCyber, traseDenom]);
+  }, [dataPools, traseDenom]);
 
   useEffect(() => {
     try {

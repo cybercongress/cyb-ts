@@ -108,8 +108,9 @@ function App({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  const { jsCyber, updatetMarketData } = useContext(AppContext);
-  const { marketData } = useGetMarketData();
+  const { jsCyber, updatetMarketData, updateDataTotalSupply } =
+    useContext(AppContext);
+  const { marketData, dataTotal } = useGetMarketData();
   const dataIpfsStart = useIpfsStart();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
@@ -128,6 +129,12 @@ function App({
       updatetMarketData(marketData);
     }
   }, [marketData]);
+
+  useEffect(() => {
+    if (Object.keys(dataTotal).length > 0) {
+      updateDataTotalSupply(dataTotal);
+    }
+  }, [dataTotal]);
 
   useEffect(() => {
     initIpfsProps(dataIpfsStart.node);

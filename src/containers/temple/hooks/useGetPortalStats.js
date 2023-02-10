@@ -50,6 +50,7 @@ function useGetPortalStats() {
       }
       return null;
     },
+    refetchInterval: 1000 * 60 * 3,
     enabled: Boolean(jsCyber),
   });
 

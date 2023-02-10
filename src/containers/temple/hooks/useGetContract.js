@@ -1,45 +1,37 @@
-import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import axios from 'axios';
+import request from 'graphql-request';
+import gql from 'graphql-tag';
+import { useEffect, useState } from 'react';
 import { CYBER } from '../../../utils/config';
 
-const getNegentropy = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/rank/negentropy`,
-    });
-
-    return response.data;
-  } catch (e) {
-    return null;
+const GET_CHARACTERS = gql`
+  query MyQuery {
+    contracts_aggregate {
+      aggregate {
+        count
+      }
+    }
   }
-};
+`;
 
-const keyQuery = 'negentropy';
-
-function useGetNegentropy() {
+function useContractsCount() {
+  const keyQuery = 'contractsCount';
   const [changeTimeAmount, setChangeTimeAmount] = useState({
     amount: 0,
     time: 0,
   });
-
   const { data, status } = useQuery({
     queryKey: [keyQuery],
     queryFn: async () => {
-      let response = {
-        negentropy: 0,
-        timestamp: '',
+      let response = { contractsCount: 0, timestamp: '' };
+      const res = await request(CYBER.CYBER_INDEX_HTTPS, GET_CHARACTERS);
+      const d = new Date();
+
+      response = {
+        contractsCount: res.contracts_aggregate.aggregate.count,
+        timestamp: d,
       };
-
-      const responseNegentropy = await getNegentropy();
-
-      if (responseNegentropy && responseNegentropy !== null) {
-        const { result } = responseNegentropy;
-        const d = new Date();
-        response = { negentropy: result.negentropy, timestamp: d };
-      }
 
       return response;
     },
@@ -53,8 +45,8 @@ function useGetNegentropy() {
         const oldData = JSON.parse(lastgraphStatsLs);
         const timeChange =
           Date.parse(data.timestamp) - Date.parse(oldData.timestamp);
-        const amountChange = new BigNumber(data.negentropy)
-          .minus(oldData.negentropy)
+        const amountChange = new BigNumber(data.contractsCount)
+          .minus(oldData.contractsCount)
           .toNumber();
         if (timeChange > 0 && amountChange > 0) {
           setChangeTimeAmount({
@@ -67,7 +59,7 @@ function useGetNegentropy() {
     }
   }, [data]);
 
-  return { data, status, changeTimeAmount };
+  return { data, changeTimeAmount, status };
 }
 
-export default useGetNegentropy;
+export default useContractsCount;

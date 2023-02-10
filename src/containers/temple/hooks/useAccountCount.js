@@ -35,6 +35,7 @@ function useAccountCount() {
 
       return response;
     },
+    refetchInterval: 1000 * 60 * 3,
   });
 
   useEffect(() => {
@@ -45,7 +46,7 @@ function useAccountCount() {
         const timeChange =
           Date.parse(data.timestamp) - Date.parse(oldData.timestamp);
         const amountChange = new BigNumber(data.accountCount)
-          .minus(oldData.amountChange)
+          .minus(oldData.accountCount)
           .toNumber();
         if (timeChange > 0 && amountChange > 0) {
           setChangeTimeAmount({

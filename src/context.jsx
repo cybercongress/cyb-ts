@@ -52,9 +52,11 @@ const valueContext = {
   poolsData: [],
   networks: {},
   marketData: {},
+  dataTotalSupply: {},
   updateNetworks: () => {},
   updatejsCyber: () => {},
   updatetMarketData: () => {},
+  updateDataTotalSupply: () => {},
   initSigner: () => {},
   traseDenom: () => {},
 };
@@ -325,6 +327,13 @@ const AppContextProvider = ({ children }) => {
     }));
   };
 
+  const updateDataTotalSupply = (newData) => {
+    setValue((item) => ({
+      ...item,
+      dataTotalSupply: { ...newData },
+    }));
+  };
+
   const traseDenom = useCallback(
     (denomTrase) => {
       const infoDenomTemp = {
@@ -406,6 +415,7 @@ const AppContextProvider = ({ children }) => {
         updateNetworks,
         updatetMarketData,
         traseDenom,
+        updateDataTotalSupply,
       }}
     >
       {children}

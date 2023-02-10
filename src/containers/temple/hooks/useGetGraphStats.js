@@ -54,6 +54,7 @@ function useGetGraphStats() {
       return response;
     },
     enabled: Boolean(jsCyber),
+    refetchInterval: 1000 * 60 * 3,
   });
 
   useEffect(() => {
