@@ -65,6 +65,12 @@ const slidesTest = [
   {
     title: 'STEP_CLAIME',
   },
+  {
+    title: 'STEP_!!',
+  },
+  {
+    title: 'STEP_3333',
+  },
 ];
 
 const getPoolsBalance = async (data, client) => {
@@ -189,7 +195,7 @@ function TestKeplr() {
 
   return (
     <main className="block-body" style={{ alignItems: 'center' }}>
-      <Account address={addressTest} />
+      {/* <Account address={addressTest} /> */}
       {/* <DenomArr denomValue={bootTocyb} /> */}
       {/* <div>div sdjdsksd</div> */}
       {/* <CoinDenom coinDenom={testDenom} tooltipStatus />
@@ -206,7 +212,7 @@ function TestKeplr() {
         decimalScale={3}
       /> */}
       {/* <ImgDenom coinDenom={testDenom} /> */}
-      {/* <Carousel slides={slidesTest} /> */}
+      <Carousel slides={slidesTest} />
       {/* <Signatures addressActive={{ bech32: addressTest }} /> */}
       {/* <button type="button" onClick={checkGift}>
           getCredit

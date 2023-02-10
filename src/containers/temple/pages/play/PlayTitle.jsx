@@ -67,7 +67,7 @@ function PlayTitle() {
         amount: formatNumber(dataGetTotalCap.capData.currentCap),
         change: {
           time: dataGetTotalCap.capData.change.time,
-          amount: formatNumber(dataGetTotalCap.capData.change.amount),
+          amount: `${dataGetTotalCap.capData.change.amount}%`,
         },
       },
       futureOf: {

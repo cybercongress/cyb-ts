@@ -46,13 +46,28 @@ function useGetTotalCap() {
         if (localStorageDataCap !== null) {
           const oldData = JSON.parse(localStorageDataCap);
           const lastCap = new BigNumber(oldData.cap);
-          const change = new BigNumber(cap).minus(lastCap).toNumber();
+          let change = new BigNumber(0);
+          if (new BigNumber(cap).comparedTo(lastCap)) {
+            const procent = lastCap.dividedBy(cap);
+            change = BigNumber(1)
+              .minus(procent)
+              .multipliedBy(100)
+              .dp(2, BigNumber.ROUND_FLOOR);
+          } else {
+            const procent = new BigNumber(cap).dividedBy(lastCap);
+            change = BigNumber(1)
+              .minus(procent)
+              .multipliedBy(100)
+              .dp(2, BigNumber.ROUND_FLOOR)
+              .multipliedBy(-1);
+          }
+          // const change = new BigNumber(cap).minus(lastCap).toNumber();
           const timeChange = Date.parse(d) - Date.parse(oldData.timestamp);
 
           if (new BigNumber(cap).comparedTo(lastCap) !== 0 && timeChange > 0) {
             setCapData((item) => ({
               ...item,
-              change: { amount: change, time: timeChange },
+              change: { amount: change.toNumber(), time: timeChange },
             }));
           }
         }
@@ -78,7 +93,7 @@ function useGetTotalCap() {
         const priceAtom = new BigNumber(marketData[ibcDenomAtom]);
         const priceBootForAtom = priceAtom
           .dividedBy(priceBoot)
-          .dp(3, BigNumber.ROUND_FLOOR)
+          .dp(0, BigNumber.ROUND_FLOOR)
           .toNumber();
 
         const localStorageDataPrice = localStorage.getItem(
@@ -104,7 +119,7 @@ function useGetTotalCap() {
             amountChangeProcent = new BigNumber(1)
               .minus(procent)
               .multipliedBy(100)
-              .dp(3, BigNumber.ROUND_FLOOR);
+              .dp(2, BigNumber.ROUND_FLOOR);
           }
 
           if (
@@ -116,7 +131,7 @@ function useGetTotalCap() {
             amountChangeProcent = new BigNumber(1)
               .minus(procent)
               .multipliedBy(100)
-              .dp(3, BigNumber.ROUND_FLOOR)
+              .dp(2, BigNumber.ROUND_FLOOR)
               .multipliedBy(-1);
           }
 
@@ -124,7 +139,7 @@ function useGetTotalCap() {
             setPriceData((item) => ({
               ...item,
               change: {
-                amount: amountChangeProcent.toString(),
+                amount: amountChangeProcent.toNumber(),
                 time: timeChange,
               },
             }));

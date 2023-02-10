@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 // import { Play } from './pages';
 import { MainContainer, ContainerGradient } from '../portal/components';
-import Carousel from '../portal/gift/carousel1/Carousel';
-// import Carousel from './components/corusel';
+// import Carousel from '../portal/gift/carousel1/Carousel';
+import Carousel from './components/corusel';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayTitle } from './pages';
 
@@ -59,13 +59,13 @@ const itemCarousel1 = [
 ];
 
 function Temple() {
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(2);
   return (
     <>
       <MainContainer width="82%">
         <Carousel
           slides={itemCarousel1}
-          activeStep={2}
+          activeStep={1}
           setStep={setStep}
           slideWidth={266}
           disableMode
@@ -98,7 +98,7 @@ function Temple() {
           activeStep={step}
           setStep={setStep}
           slideWidth={266}
-          disableMode
+          // disableMode
         />
 
         <PlayContent />
