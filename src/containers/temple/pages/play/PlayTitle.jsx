@@ -57,7 +57,7 @@ function PlayTitle() {
   const slideDataRef = useRef(slideData);
   const timeoutRef = useRef(null);
 
-  const [index, setIndex] = useState(12);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     slideDataRef.current = {
