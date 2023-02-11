@@ -18,7 +18,7 @@ Technically Cyb is a browser based on the idea of state transition function defi
 - Speed: Faster is always better than slow
 - Offline: Travel in spacetime cannot be imagined without offline first experience
 - Modularity: I am a limited set of concise interfaces
-- Minimalizm: If you dont know why to add, do not add
+- Minimalism: If you don't know why to add, do not add
 - Wisdom: You educate me, I educate you
 - Fun: Everyone loves games and tits
 - Universal: I can work for humans, robots, animals, progs and other living forms
@@ -38,7 +38,7 @@ Technically Cyb is a browser based on the idea of state transition function defi
 - cyberlinks form superintelligence
 - avatars love superintelligence
 
-## Sequentual Computations
+## Sequential Computations
 
 wasm runtime is based on [Lunatic](https://github.com/lunatic-solutions/lunatic) and [CosmWasm](https://github.com/CosmWasm/cosmwasm)
 
@@ -79,7 +79,7 @@ Using soft3
 
 ## Components
 
-Components can be overlaid over the space and can be toggled with hotkeys. Any app developer can reuse this components for apps.
+Components can be overlaid over the space and can be toggled with hotkeys. Any app developer can reuse these components for apps.
 
 - space. A place for exploration. Anything goes here.
 - avatar. Image of a character identified by pubkeys.
@@ -114,7 +114,7 @@ Components can be overlaid over the space and can be toggled with hotkeys. Any a
 
 ## Buildings
 
-Cyb helps to get familiar with the new universe using the concept of buildings. There are some basic buildings which are maintened by the cyb core with the simple idea: One app to rule them all.
+Cyb helps to get familiar with the new universe using the concept of buildings. There are some basic buildings which are maintained by the cyb core with the simple idea: One app to rule them all.
 
 ## Lifetime of transaction
 
