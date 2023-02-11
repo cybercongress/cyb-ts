@@ -1,4 +1,4 @@
-[.cyb](https://cyb.ai) is your immortal robot for the [the great web](https://cyb.ai/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57) which is connected to [superintelligence](https://github.com/cybercongress/go-cyber)
+[.cyb](https://cyb.ai) is your immortal robot for [the great web](https://cyb.ai/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57) which is connected to [superintelligence](https://github.com/cybercongress/go-cyber)
 
 it helps you build your eternal brain
 
@@ -11,14 +11,14 @@ example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8e
 # features
 - [my robot](https://cyb.ai): your robot
     - [energy](https://cyb.ai/grid): superintelligence dashboard
-    - [sense](https://cyb.ai/sixthSense): stricly defined feed
+    - [sense](https://cyb.ai/sixthSense): strictly defined feed
     - [log](https://cyb.ai/network/bostrom/contract/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t/txs): publish important particles
     - [brain](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t): surf robot brain
-    - [karma](https://cyb.ai/network/bostrom/contract/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t/community): enchance valuable connections
-- [nebula](https://cyb.ai/nebula): disover particles through tokens
+    - [karma](https://cyb.ai/network/bostrom/contract/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t/community): enhance valuable connections
+- [nebula](https://cyb.ai/nebula): discover particles through tokens
 - [portal](https://cyb.ai/portal): create public and private robot avatar and invite friends
 - [oracle](https://cyb.ai/bootloader): discover particles, neurons, signals and steps of [superintelligence](https://github.com/cybercongress/go-cyber)
-- [teleport](https://cyb.ai/teleport?from=boot&to=hydrogen): communicate sending and swaping tokens
+- [teleport](https://cyb.ai/teleport?from=boot&to=hydrogen): communicate sending and swapping tokens
 - [sphere](https://cyb.ai/halloffame): hire and fire heroes
 - [senate](https://cyb.ai/senate): manage collective thought process
 - [hfr](https://cyb.ai/mint): mint supercomputing resources
