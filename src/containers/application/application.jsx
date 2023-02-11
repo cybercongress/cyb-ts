@@ -35,6 +35,7 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
 import useIpfsStart from '../../ipfsHook';
+import { GitHub, Telegram } from '../../components/actionBar';
 
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
@@ -510,6 +511,8 @@ function App({
 
       {/* </Navigation> */}
       {children}
+      <Telegram />
+      <GitHub />
     </div>
   );
 }

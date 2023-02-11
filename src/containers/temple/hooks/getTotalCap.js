@@ -119,7 +119,8 @@ function useGetTotalCap() {
             amountChangeProcent = new BigNumber(1)
               .minus(procent)
               .multipliedBy(100)
-              .dp(2, BigNumber.ROUND_FLOOR);
+              .dp(2, BigNumber.ROUND_FLOOR)
+              .multipliedBy(-1);
           }
 
           if (
@@ -131,8 +132,7 @@ function useGetTotalCap() {
             amountChangeProcent = new BigNumber(1)
               .minus(procent)
               .multipliedBy(100)
-              .dp(2, BigNumber.ROUND_FLOOR)
-              .multipliedBy(-1);
+              .dp(2, BigNumber.ROUND_FLOOR);
           }
 
           if (timeChange > 0) {

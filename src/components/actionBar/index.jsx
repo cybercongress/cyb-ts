@@ -1,7 +1,15 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ButtonIcon } from '../ledger/stageActionBar';
 import BtnGrd from '../btnGrd';
 import styles from './styles.scss';
+import Tooltip from '../tooltip/tooltip';
+
+import github from '../../image/github-mark-white.svg';
+import star from '../../image/star-reg.svg';
+import share from '../../image/share.svg';
+import telegram from '../../image/telegram.png';
+import { LinkWindow } from '../link/link';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -19,6 +27,190 @@ const ActionBarContentText = ({ children, ...props }) => (
   </div>
 );
 
+const StargazersCountGH = () => {
+  const { data } = useQuery(['stargazers_count']);
+
+  return <div>0</div>;
+};
+
+export function GitHub() {
+  return (
+    <div
+      id="github-bar"
+      style={{
+        position: 'fixed',
+        right: '0',
+        bottom: 0,
+        margin: '0px 25px 25px 0px',
+        fontSize: '14px',
+        background: '#000c',
+        zIndex: 4,
+      }}
+    >
+      <Tooltip
+        placement="left"
+        tooltip={
+          <div
+            id="github-bar"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '20px',
+              background: '#000c',
+              padding: 5,
+            }}
+          >
+            <LinkWindow to="https://github.com/cybercongress/cyb">
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#36D6AE',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                join devs{' '}
+                <img
+                  alt="share"
+                  style={{ width: 20, height: 20 }}
+                  src={share}
+                />
+              </div>
+            </LinkWindow>
+            <LinkWindow to="https://github.com/cybercongress/cyb/issues/new">
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#36D6AE',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                submit issue{' '}
+                <img
+                  alt="share"
+                  style={{ width: 20, height: 20 }}
+                  src={share}
+                />
+              </div>
+            </LinkWindow>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                height: '30px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  backgroundColor: 'rgb(40, 40, 40)',
+                  padding: '5px',
+                  height: '100%',
+                  borderRadius: '5px 0px 0px 5px',
+                  borderRight: '1px solid #cccc',
+                }}
+              >
+                <img alt="star" style={{ width: 20, height: 20 }} src={star} />
+                Star
+              </div>
+              <div
+                style={{
+                  backgroundColor: 'rgb(17, 20, 30)',
+                  padding: '5px',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  borderRadius: '0px 5px 5px 0',
+                }}
+              >
+                {' '}
+                150
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <LinkWindow to="https://github.com/cybercongress">
+          <div>
+            <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+          </div>
+        </LinkWindow>
+      </Tooltip>
+    </div>
+  );
+}
+
+export const Telegram = () => (
+  <div
+    // id="github-bar"
+    style={{
+      position: 'fixed',
+      left: '0',
+      bottom: 0,
+      margin: '0px 0px 25px 25px',
+      fontSize: '14px',
+      background: '#000c',
+      zIndex: 4,
+    }}
+  >
+    <Tooltip
+      placement="right"
+      tooltip={
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '14px',
+            gap: '20px',
+            background: '#000c',
+            padding: 5,
+          }}
+        >
+          <LinkWindow to="https://t.me/cyber">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                color: '#36D6AE',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              feedback{' '}
+              <img alt="share" style={{ width: 20, height: 20 }} src={share} />
+            </div>
+          </LinkWindow>
+          <LinkWindow to="https://t.me/cyber">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                color: '#36D6AE',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              join movement{' '}
+              <img alt="share" style={{ width: 20, height: 20 }} src={share} />
+            </div>
+          </LinkWindow>
+        </div>
+      }
+    >
+      <LinkWindow to="https://t.me/cyber">
+        <div>
+          <img
+            alt="telegram"
+            style={{ width: 30, height: 30 }}
+            src={telegram}
+          />
+        </div>
+      </LinkWindow>
+    </Tooltip>
+  </div>
+);
+
 function ActionBar({
   children,
   btnText,
@@ -29,6 +221,7 @@ function ActionBar({
 }) {
   return (
     <ActionBarContainer>
+      {/* <Telegram /> */}
       {onClickBack && (
         <ButtonIcon
           styleContainer={{ position: 'absolute', left: '0' }}
@@ -47,6 +240,7 @@ function ActionBar({
       >
         {children}
       </ActionBarContentText>
+      {/* <GitHub /> */}
     </ActionBarContainer>
   );
 }
