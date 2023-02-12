@@ -24,6 +24,7 @@ import {
   useGetTotalCap,
 } from '../../hooks';
 import slideData from './slideData';
+import styles from './styles.scss';
 
 const PREFIXES = [
   {
@@ -43,6 +44,28 @@ const PREFIXES = [
     power: 1024,
   },
 ];
+
+const DeltaValue = ({ change }) => {
+  if (parseFloat(change.amount) > 0) {
+    return (
+      <div
+        style={{
+          color: parseFloat(change.amount) >= 0 ? '#76FF03' : '#FF0000',
+          fontSize: 20,
+        }}
+      >
+        {parseFloat(change.amount) !== 0
+          ? parseFloat(change.amount) > 0
+            ? '+'
+            : ''
+          : ''}
+        {change.amount} in {timeSince(change.time)}
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const delay = 4000;
 
@@ -258,54 +281,32 @@ function PlayTitle() {
   const slideDataState = slideDataRef.current;
   return (
     <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        width: '100%',
-      }}
-      onClick={() => restartSlide()}
+      className={styles.gatadienContainer}
+      // onClick={() => restartSlide()}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ color: '#FFD900', fontSize: 20 }}>
-          {Object.values(slideDataState)[index].amount}
-        </div>
-        <div style={{ color: '#777777', fontSize: 14 }}>
-          {Object.values(slideDataState)[index].keyAmount}
-        </div>
-      </div>
-      <div>{Object.values(slideDataState)[index].title}</div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-        }}
-      >
+      <div className={styles.containerTitle}>
+        <div>{Object.values(slideDataState)[index].title}</div>
         <div
           style={{
-            color:
-              parseFloat(Object.values(slideDataState)[index].change.amount) >=
-              0
-                ? '#76FF03'
-                : '#FF0000',
-            fontSize: 20,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
           }}
         >
-          {parseFloat(Object.values(slideDataState)[index].change.amount) !== 0
-            ? parseFloat(Object.values(slideDataState)[index].change.amount) > 0
-              ? '+'
-              : ''
-            : ''}
-          {Object.values(slideDataState)[index].change.amount}
+          <DeltaValue change={Object.values(slideDataState)[index].change} />
         </div>
-        <div style={{ color: '#777777', fontSize: 14 }}>
-          {timeSince(Object.values(slideDataState)[index].change.time)} ago
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          padding: '15px 0px',
+        }}
+      >
+        <div style={{ color: '#FFD900', fontSize: 35 }}>
+          {Object.values(slideDataState)[index].amount}{' '}
+          {Object.values(slideDataState)[index].keyAmount}
         </div>
       </div>
     </div>

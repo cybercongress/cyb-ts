@@ -47,7 +47,11 @@ function AccountItem({ data, node, onClickSetActive, name }) {
       {useGetName !== null && (
         <button
           className={styles.btnContainerText}
-          style={{ display: 'flex', justifyContent: 'flex-end' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            fontSize: '16px',
+          }}
           type="button"
         >
           {useGetName}
@@ -155,7 +159,7 @@ function SwichAccount({
   // return items;
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', fontSize: '20px' }}>
       <div
         className={styles.containerSwichAccount}
         style={{
@@ -167,6 +171,7 @@ function SwichAccount({
             onClick={() => setControlledVisible((item) => !item)}
             className={styles.btnContainerText}
             type="button"
+            style={{ fontSize: '20px' }}
           >
             {useGetName}
           </button>
@@ -175,7 +180,7 @@ function SwichAccount({
           <div
             className={cx(styles.containerAvatarConnect, {
               [styles.containerAvatarConnectFalse]: !ipfsStatus,
-              [styles.containerAvatarConnectTrue]: ipfsStatus,
+              [styles.containerAvatarConnectTrueGreen]: ipfsStatus,
             })}
           >
             <AvataImgIpfs
@@ -198,7 +203,7 @@ function SwichAccount({
               flexDirection: 'column',
               background: '#000000',
               paddingLeft: '15px',
-              width: '250px',
+              width: '300px',
               paddingBottom: '15px',
             }}
           >

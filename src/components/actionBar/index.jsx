@@ -89,6 +89,7 @@ export function GitHub() {
               gap: '20px',
               background: '#000c',
               padding: 5,
+              marginRight: 15,
             }}
           >
             <LinkWindow to="https://github.com/cybercongress/cyb">
@@ -185,6 +186,7 @@ export const Telegram = () => (
       fontSize: '14px',
       background: '#000c',
       zIndex: 4,
+      marginLeft: 15,
     }}
   >
     <Tooltip

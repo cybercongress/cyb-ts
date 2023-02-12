@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 // import { Play } from './pages';
 import { connect } from 'react-redux';
-import { MainContainer, ContainerGradient } from '../portal/components';
+import {
+  MainContainer,
+  ContainerGradient,
+  ContainerGradientText,
+} from '../portal/components';
 // import Carousel from '../portal/gift/carousel1/Carousel';
 import Carousel from './components/corusel';
 import { BOOT_ICON } from '../portal/utils';
@@ -108,7 +112,7 @@ function Temple({ defaultAccount }) {
     console.log(hypot);
   };
 
-  const hendleGetCitizenship = () => {
+  const handleGetCitizenship = () => {
     history.push('/portal');
   };
 
@@ -124,17 +128,17 @@ function Temple({ defaultAccount }) {
           heightSlide="72px"
         />
 
-        <ContainerGradient
-          userStyleContent={{ minHeight: '50px' }}
-          togglingDisable
-          title={<PlayTitle />}
+        <ContainerGradientText
+          userStyleContent={{ padding: 0, paddingTop: 30 }}
         >
+          <PlayTitle />
+
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               color: '#36D6AE',
-              padding: '0 50px',
+              padding: '10px 50px',
             }}
           >
             {itemLinks.map((item) => (
@@ -143,14 +147,14 @@ function Temple({ defaultAccount }) {
               </Link>
             ))}
           </div>
-        </ContainerGradient>
+        </ContainerGradientText>
 
         <Carousel
           slides={itemCarousel}
           activeStep={step}
           setStep={setStep}
           slideWidth={266}
-          // disableMode
+          disableMode
         />
 
         <PlayContent />
@@ -158,7 +162,7 @@ function Temple({ defaultAccount }) {
       {passport === null && (
         <ActionBar>
           <BtnGrd
-            onClick={() => hendleGetCitizenship()}
+            onClick={() => handleGetCitizenship()}
             text="get citizenship"
           />
         </ActionBar>

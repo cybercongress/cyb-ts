@@ -358,7 +358,7 @@ function App({
             display: 'flex',
             justifyContent: 'space-between',
             position: 'relative',
-            padding: '0px 9px',
+            padding: '0px 15px',
             zIndex: 3,
           }}
           className="container-distribution"

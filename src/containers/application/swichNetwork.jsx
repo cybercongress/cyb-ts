@@ -94,10 +94,11 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
             justifyContent: 'space-between',
             padding: '27px 0',
             color: '#1FCBFF',
+            fontSize: '16px',
             alignItems: 'flex-start',
           }}
         >
-          <div>{key}</div>
+          <div style={{ whiteSpace: 'nowrap' }}>{key}</div>
         </div>
       </button>
     ));
@@ -132,11 +133,13 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
             justifyContent: 'space-around',
             padding: '20px 0',
             color: '#1FCBFF',
+            fontSize: 20,
           }}
         >
           <button
             className={styles.btnContainerText}
             type="button"
+            style={{ fontSize: '20px' }}
             onClick={() => setControlledVisible((item) => !item)}
           >
             {CYBER.CHAIN_ID}

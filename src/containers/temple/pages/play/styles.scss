@@ -1,0 +1,57 @@
+@mixin linear-gradient-green($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(54, 214, 174, 1) 100%
+  );
+}
+
+@mixin linear-gradient-blue($route) {
+  background: linear-gradient(
+    $route,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(31, 203, 255, 1) 100%
+  );
+}
+
+@mixin styleGradientPseudoEl {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 400px;
+  top: 0;
+  bottom: 0;
+}
+
+.gatadienContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px;
+  position: relative;
+  margin-bottom: 30px;
+
+  &::after {
+    opacity: 11%;
+    @include styleGradientPseudoEl;
+    @include linear-gradient-green(90deg);
+    right: 0;
+  }
+}
+
+.containerTitle {
+  display: flex;
+  align-items: center;
+  font-size: 30px;
+  padding: 15px 0;
+  position: relative;
+
+  &::before {
+    opacity: 11%;
+    @include styleGradientPseudoEl;
+    // @include linear-gradient-green(-90deg);
+    @include linear-gradient-blue(-90deg);
+
+    left: -20px;
+  }
+}
