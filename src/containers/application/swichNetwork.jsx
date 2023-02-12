@@ -129,8 +129,8 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
             display: 'flex',
             height: '100%',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            padding: '27px 0',
+            justifyContent: 'space-around',
+            padding: '20px 0',
             color: '#1FCBFF',
           }}
         >
@@ -143,8 +143,8 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
           </button>
           <div>
             <BandwidthBar
-              height="8px"
-              styleText={{ whiteSpace: 'nowrap' }}
+              height="10px"
+              styleText={{ display: 'none' }}
               fontSize={12}
               colorText="#000"
               bwRemained={bandwidth.remained}

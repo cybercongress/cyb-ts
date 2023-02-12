@@ -140,7 +140,7 @@ export const Bookmarks = ({ items, ...props }) => {
               onClick={() => onClickItem(item.name)}
             />
             {item.name === selectedItem && (
-              <Pane paddingLeft={20}>
+              <Pane paddingLeft={50}>
                 {renderSubItems(item.subItems, location, onClickSubItem)}
               </Pane>
             )}

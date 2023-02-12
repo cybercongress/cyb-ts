@@ -481,7 +481,7 @@ function App({
               )} */}
             </div>
           )}
-          {/* <Electricity /> */}
+          <Electricity />
           <SwichAccount
             defaultAccount={defaultAccount}
             accounts={accounts}
