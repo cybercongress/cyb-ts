@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 // import { Play } from './pages';
 import { connect } from 'react-redux';
 import { MainContainer, ContainerGradient } from '../portal/components';
@@ -11,7 +11,6 @@ import { ActionBar } from '../../components';
 import BtnGrd from '../../components/btnGrd';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
-/*
 const itemCarousel = [
   { title: 'compute' },
   { title: 'earn' },
@@ -19,13 +18,18 @@ const itemCarousel = [
   { title: 'create' },
   { title: 'hack' },
 ];
-*/
 
 const itemLinks = [
-  { title: 'vision', to: '/ipfs/QmXzGkfxZV2fzpFmq7CjAYsYL1M581ZD4yuF9jztPVTpCn' },
+  {
+    title: 'vision',
+    to: '/ipfs/QmXzGkfxZV2fzpFmq7CjAYsYL1M581ZD4yuF9jztPVTpCn',
+  },
   { title: 'story', to: '/genesis' },
   { title: 'gift', to: '/gift' },
-  { title: 'moon code', to: '/ipfs/QmanZyMFnEti618crNPkn93g7MFaoDGrZ4Pta5drfdt9jb' },
+  {
+    title: 'moon code',
+    to: '/ipfs/QmanZyMFnEti618crNPkn93g7MFaoDGrZ4Pta5drfdt9jb',
+  },
   { title: 'more..', to: '/help' },
 ];
 
@@ -63,6 +67,7 @@ const itemCarousel1 = [
 ];
 
 function Temple({ defaultAccount }) {
+  const history = useHistory();
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [step, setStep] = useState(2);
@@ -101,6 +106,10 @@ function Temple({ defaultAccount }) {
     const distY = to.y - from.y;
     const hypot = Math.sqrt(distX * distX + distY * distY);
     console.log(hypot);
+  };
+
+  const hendleGetCitizenship = () => {
+    history.push('/portal');
   };
 
   return (
@@ -148,8 +157,8 @@ function Temple({ defaultAccount }) {
       </MainContainer>
       {passport === null && (
         <ActionBar>
-          <BtnGrd 
-            onClick={'/portal')
+          <BtnGrd
+            onClick={() => hendleGetCitizenship()}
             text="get citizenship"
           />
         </ActionBar>
