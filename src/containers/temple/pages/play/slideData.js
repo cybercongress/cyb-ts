@@ -28,7 +28,7 @@ const slideData = {
     change: { time: 0, amount: 0 },
   },
   everGrowing: {
-    title: 'ever-growing planet-scale bisingleton',
+    title: 'ever-growing planet-scale singleton',
     amount: 0,
     denom: '',
     keyAmount: 'neurons',
@@ -70,7 +70,7 @@ const slideData = {
     change: { time: 0, amount: 0 },
   },
   nextGen: {
-    title: 'next gen censor free content resolver',
+    title: 'next gen unstoppable content resolver',
     amount: 0,
     denom: '',
     keyAmount: 'particles',
@@ -84,7 +84,7 @@ const slideData = {
     change: { time: 0, amount: 0 },
   },
   futureOf: {
-    title: 'future of ai is cyber: amount:',
+    title: 'future of ai is cyber',
     amount: 0,
     denom: '',
     keyAmount: 'BOOT for ATOM',
