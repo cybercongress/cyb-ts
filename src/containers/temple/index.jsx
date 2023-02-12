@@ -148,7 +148,10 @@ function Temple({ defaultAccount }) {
       </MainContainer>
       {passport === null && (
         <ActionBar>
-          <BtnGrd text="get citizenship" />
+          <BtnGrd 
+            onClick={() => handleHistory('/portal')
+            text="get citizenship"
+          />
         </ActionBar>
       )}
     </div>
