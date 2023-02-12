@@ -24,7 +24,7 @@ const slideData = {
     title: 'fast growing vibrant economy',
     amount: 0,
     denom: '',
-    keyAmount: 'cap',
+    keyAmount: 'cap in H',
     change: { time: 0, amount: 0 },
   },
   everGrowing: {
