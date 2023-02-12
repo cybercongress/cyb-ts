@@ -11,6 +11,7 @@ import { ActionBar } from '../../components';
 import BtnGrd from '../../components/btnGrd';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
+/*
 const itemCarousel = [
   { title: 'compute' },
   { title: 'earn' },
@@ -18,15 +19,14 @@ const itemCarousel = [
   { title: 'create' },
   { title: 'hack' },
 ];
+*/
 
 const itemLinks = [
-  { title: 'vision', to: '/search/vision' },
-  { title: 'story', to: '/search/story' },
-  { title: 'gift', to: '/search/gift' },
-  { title: 'moon', to: '/search/moon' },
-  { title: 'soft3', to: '/search/soft3' },
-  { title: 'updates', to: '/search/updates' },
-  { title: 'more..', to: '/search/more' },
+  { title: 'vision', to: '/ipfs/QmXzGkfxZV2fzpFmq7CjAYsYL1M581ZD4yuF9jztPVTpCn' },
+  { title: 'story', to: '/genesis' },
+  { title: 'gift', to: '/gift' },
+  { title: 'moon code', to: '/ipfs/QmanZyMFnEti618crNPkn93g7MFaoDGrZ4Pta5drfdt9jb' },
+  { title: 'more..', to: '/help' },
 ];
 
 const itemCarousel1 = [
