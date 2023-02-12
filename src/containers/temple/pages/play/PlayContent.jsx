@@ -42,9 +42,9 @@ const playContentItem = [
   },
   {
     icon: shpere,
-    title: 'shpere',
+    title: 'sphere',
     description: 'handy staking',
-    to: '/shpere',
+    to: '/sphere',
   },
   { icon: warp, title: 'warp', description: 'powerfull dex', to: '/warp' },
   { icon: hfr, title: 'hfr', description: 'energy miner', to: '/hfr' },
