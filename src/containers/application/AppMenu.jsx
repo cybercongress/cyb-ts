@@ -56,8 +56,8 @@ const itemsMenu = (address) => {
   }
 
   const listItemMenu = [
-    { name: 'Temple', to: '/temple', subItems: [], icon: temple },
-    { name: 'Nebula', to: '/', subItems: [], icon: nebulaIcon },
+    { name: 'Temple', to: '/', subItems: [], icon: temple },
+    { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
       name: 'My robot',
       icon: robot,

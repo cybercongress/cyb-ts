@@ -20,7 +20,7 @@ const playContentItem = [
     icon: nebulaIcon,
     title: 'nebula',
     description: 'web3 app store',
-    to: '/',
+    to: '/nebula',
   },
   {
     icon: robot,
@@ -59,7 +59,7 @@ const playContentItem = [
     icon: temple,
     title: 'temple',
     description: 'holly knowledge',
-    to: '/temple',
+    to: '/',
   },
   {
     icon: portal,
