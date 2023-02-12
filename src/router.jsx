@@ -81,7 +81,7 @@ function AppRouter() {
     <Router history={history}>
       <Route path="/" component={() => <App />} />
       <Switch>
-        <Route path="/" exact component={Nebula} />
+        <Route path="/" exact component={Temple} />
         <Route path="/robot" component={Wallet} />
         <Route path="/oracle" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
