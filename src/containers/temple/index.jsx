@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 // import { Play } from './pages';
+import { connect } from 'react-redux';
 import { MainContainer, ContainerGradient } from '../portal/components';
 // import Carousel from '../portal/gift/carousel1/Carousel';
 import Carousel from './components/corusel';
@@ -8,6 +9,7 @@ import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayTitle } from './pages';
 import { ActionBar } from '../../components';
 import BtnGrd from '../../components/btnGrd';
+import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -60,11 +62,13 @@ const itemCarousel1 = [
   { title: <div style={{ color: '#777777' }}>🟣 spase-pussy</div> },
 ];
 
-function Temple() {
+function Temple({ defaultAccount }) {
+  const { passport } = useGetPassportByAddress(defaultAccount);
+
   const [step, setStep] = useState(2);
 
   const showCoords = (event) => {
-    let boxShadow = 0;
+    const boxShadow = 0;
 
     const mX = event.pageX;
     const mY = event.pageY;
@@ -100,9 +104,7 @@ function Temple() {
   };
 
   return (
-    <div
-    // onMouseMove={(e) => showCoords(e)}
-    >
+    <div>
       <MainContainer width="82%">
         <Carousel
           slides={itemCarousel1}
@@ -144,11 +146,19 @@ function Temple() {
 
         <PlayContent />
       </MainContainer>
-      <ActionBar>
-        <BtnGrd text="get citizenship" />
-      </ActionBar>
+      {passport === null && (
+        <ActionBar>
+          <BtnGrd text="get citizenship" />
+        </ActionBar>
+      )}
     </div>
   );
 }
 
-export default Temple;
+const mapStateToProps = (store) => {
+  return {
+    defaultAccount: store.pocket.defaultAccount,
+  };
+};
+
+export default connect(mapStateToProps)(Temple);

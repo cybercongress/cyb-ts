@@ -1,0 +1,136 @@
+.networkBtn {
+  border: none;
+  background: transparent;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    width: 100px;
+    height: 100px;
+    background: #000000;
+    box-shadow: 0px 0px 20px rgba(31, 203, 255, 0.4);
+    position: absolute;
+    border-radius: 50%;
+    // z-index: -1;
+    display: flex;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+  }
+}
+
+.btnContainerText {
+  border: none;
+  background: transparent;
+  color: rgb(31, 203, 255);
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.containerBtnItemSelect {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 25px;
+  align-items: center;
+  height: 100px;
+  border: none;
+  background: transparent;
+  color: rgb(31, 203, 255);
+  margin-top: -10px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.tooltipContainer {
+  position: absolute;
+  left: -5px !important;
+  top: unset !important;
+  z-index: 3;
+}
+
+.tooltipContainerRight {
+  position: absolute;
+  right: -5px !important;
+  top: unset !important;
+  left: unset !important;
+  z-index: 3;
+}
+
+.sideBar {
+  position: fixed;
+  top: 120px;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  background: #000000;
+  color: #fff;
+  transition: 0.3s;
+  z-index: 3;
+  opacity: 0.9;
+  box-shadow: 1px 0 20px 2px #000;
+}
+
+.sideBarHide {
+  left: -250px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  width: 24px;
+  height: 24px;
+  font-size: 0;
+  border: none;
+  background: url(./close.svg);
+  cursor: pointer;
+}
+
+.containerSwichAccount {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 25px;
+  align-items: center;
+  height: 100px;
+}
+
+@mixin before-Avatar {
+  content: '';
+  width: 100px;
+  height: 100px;
+  background: #000000;
+  position: absolute;
+  border-radius: 50%;
+  // z-index: -1;
+  display: flex;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+}
+
+.containerAvatarConnect {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  cursor: pointer;
+
+  &False {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px rgba(255, 31, 31, 0.4);
+    }
+  }
+
+  &True {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px rgba(31, 203, 255, 0.4);
+    }
+  }
+}

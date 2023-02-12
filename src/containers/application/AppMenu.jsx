@@ -5,6 +5,19 @@ import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
 import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
+import nebulaIcon from '../../image/temple/nebula.png';
+import teleport from '../../image/temple/teleport.svg';
+import hfr from '../../image/temple/hrf.png';
+import temple from '../../image/temple/temple.png';
+import robot from '../../image/temple/robot.svg';
+import shpere from '../../image/temple/shpere.png';
+import senate from '../../image/temple/senate.png';
+import portal from '../../image/temple/portal.svg';
+import oracle from '../../image/temple/oracle.png';
+import warp from '../../image/temple/warp.png';
+import hub from '../../image/temple/hub.svg';
+import zhdun from '../../image/temple/zhdun.png';
+
 const itemsMenu = (address) => {
   let linkLog = '/robot';
   let linkBrain = '/graph';
@@ -43,20 +56,23 @@ const itemsMenu = (address) => {
   }
 
   const listItemMenu = [
-    { name: 'Temple', to: '/temple', subItems: [] },
-    { name: 'Nebula', to: '/', subItems: [] },
+    { name: 'Temple', to: '/temple', subItems: [], icon: temple },
+    { name: 'Nebula', to: '/', subItems: [], icon: nebulaIcon },
     {
       name: 'My robot',
+      icon: robot,
       to: '/robot',
       subItems: myRobotLinks,
     },
     {
       name: 'Teleport',
       to: '/teleport',
+      icon: teleport,
       subItems: [],
     },
     {
       name: 'Warp',
+      icon: warp,
       to: '/warp',
       subItems: [
         { name: 'Add liquidity', to: '/warp/add-liquidity' },
@@ -66,14 +82,16 @@ const itemsMenu = (address) => {
     },
     {
       name: 'Sphere',
+      icon: shpere,
       to: '/sphere',
       subItems: [{ name: 'Heroes at rest', to: '/sphere/jailed' }],
     },
-    { name: 'HFR', to: '/hfr', subItems: [] },
+    { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
     {
       name: 'Oracle',
       to: '/oracle',
+      icon: oracle,
       subItems: [
         { name: 'Particles', to: '/particles' },
         { name: 'Blocks', to: '/network/bostrom/blocks' },
@@ -85,14 +103,16 @@ const itemsMenu = (address) => {
     {
       name: 'Hub',
       to: '/search/hub',
+      icon: hub,
       subItems: [
         { name: 'Networks', to: '/networks' },
         { name: 'Add network', to: '/networks/add' },
       ],
     },
-    { name: 'Senate', to: '/senate', subItems: [] },
+    { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
     {
       name: 'Help',
+      icon: zhdun,
       to: '/help',
       subItems: [
         {
@@ -139,6 +159,7 @@ const itemsMenu = (address) => {
   if (CYBER.CHAIN_ID === 'bostrom') {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
+      icon: portal,
       to: '/portal',
       subItems: [
         { name: 'Citizenship', to: '/citizenship' },
@@ -160,4 +181,3 @@ const AppMenu = ({ addressActive }) => {
 };
 
 export default AppMenu;
-

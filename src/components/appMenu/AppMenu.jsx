@@ -30,19 +30,32 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
           key={item.name}
           {...props}
         >
-          <Pane
-            display="flex"
-            width="100%"
-            height={20}
-            paddingLeft={20}
-            paddingRight={10}
-            justifyContent="space-between"
-            alignItems="center"
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '30px 1fr',
+              gap: 10,
+              alignItems: 'center',
+              paddingLeft: 15,
+            }}
           >
-            <Pane alignItems="center" flexGrow={1} fontSize={18} display="flex">
+            {item.icon && (
+              <img
+                src={item.icon}
+                style={{ width: 30, height: 30 }}
+                alt="img"
+              />
+            )}
+            <Pane
+              alignItems="center"
+              whiteSpace="nowrap"
+              flexGrow={1}
+              fontSize={18}
+              display="flex"
+            >
               {item.name}
             </Pane>
-          </Pane>
+          </div>
         </Pane>
       </Link>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { ButtonIcon } from '../ledger/stageActionBar';
 import BtnGrd from '../btnGrd';
 import styles from './styles.scss';
@@ -10,6 +11,7 @@ import star from '../../image/star-reg.svg';
 import share from '../../image/share.svg';
 import telegram from '../../image/telegram.png';
 import { LinkWindow } from '../link/link';
+import { formatNumber } from '../../utils/utils';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -27,10 +29,38 @@ const ActionBarContentText = ({ children, ...props }) => (
   </div>
 );
 
-const StargazersCountGH = () => {
-  const { data } = useQuery(['stargazers_count']);
+const getStargazersGitHub = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: 'https://api.github.com/repos/cybercongress/cyb',
+    });
 
-  return <div>0</div>;
+    return response.data;
+  } catch (e) {
+    return null;
+  }
+};
+
+const StargazersCountGH = () => {
+  const { data } = useQuery({
+    queryKey: ['stargazers_count'],
+    queryFn: async () => {
+      const responce = await getStargazersGitHub();
+
+      if (responce !== null) {
+        return responce;
+      }
+
+      return undefined;
+    },
+  });
+
+  return (
+    <div>
+      {data !== undefined ? formatNumber(data.stargazers_count) : '...'}
+    </div>
+  );
 };
 
 export function GitHub() {
@@ -49,6 +79,7 @@ export function GitHub() {
     >
       <Tooltip
         placement="left"
+        hideBorder
         tooltip={
           <div
             id="github-bar"
@@ -127,7 +158,7 @@ export function GitHub() {
                 }}
               >
                 {' '}
-                150
+                <StargazersCountGH />
               </div>
             </div>
           </div>
@@ -157,6 +188,7 @@ export const Telegram = () => (
     }}
   >
     <Tooltip
+      hideBorder
       placement="right"
       tooltip={
         <div

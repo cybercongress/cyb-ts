@@ -37,7 +37,7 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, amounPower, countLink }) => {
     )} and can immediately submit ${Math.floor(countLink)} cyberlinks. `;
   }
   return (
-    <Pane zIndex={4} paddingX={10} paddingY={10} minWidth={200}>
+    <Pane zIndex={4} paddingX={10} paddingY={10} maxWidth={200}>
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
@@ -66,6 +66,7 @@ const BandwidthBar = ({
   return (
     <Tooltip
       placement="bottom"
+      trigger="click"
       tooltip={
         <ContentTooltip
           bwRemained={bwRemained}

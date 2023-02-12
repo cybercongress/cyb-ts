@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import {
   Navigation,
-  AppSideBar,
   NavigationLeft,
   Pane,
 } from '@cybercongress/gravity';
@@ -36,7 +35,12 @@ import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
 import useIpfsStart from '../../ipfsHook';
 import { GitHub, Telegram } from '../../components/actionBar';
+import styles from './styles.scss';
+import AppSideBar from './AppSideBar';
+import SwichAccount from './swichAccount';
+import Input from '../teleport/components/input';
 
+const imgBostrom = require('../../image/cyb.svg');
 const cybFalse = require('../../image/cyb.svg');
 const cybTrue = require('../../image/cybTrue.svg');
 const info = require('../../image/info-circle-outline.svg');
@@ -118,12 +122,14 @@ function App({
   const history = useHistory();
   const location = useLocation();
   const [home, setHome] = useState(false);
-  const [openMenu, setOpenMenu] = useState(true);
+  const [openMenu, setOpenMenu] = useState(false);
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
   const [keywordHash, setKeywordHash] = useState(null);
   const [story, setStory] = useState(true);
+
+// console.log(accounts);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
@@ -352,29 +358,35 @@ function App({
             display: 'flex',
             justifyContent: 'space-between',
             position: 'relative',
-            padding: 0,
+            padding: '0px 9px',
             zIndex: 3,
           }}
           className="container-distribution"
         >
-          <Pane position="relative">
+          <div>
             <AppSideBar
               onCloseSidebar={() => setOpenMenu(false)}
               openMenu={openMenu}
             >
               <AppMenu addressActive={addressActive} />
             </AppSideBar>
-            <SwichNetwork>
+            <SwichNetwork
+              onClickOpenMenu={() => setOpenMenu((item) => !item)}
+              countLink={countLink}
+              bandwidth={bandwidth}
+              amounPower={amounPower}
+            />
+            {/* <SwichNetwork>
               <MenuButton
                 onClick={() => setOpenMenu(!openMenu)}
                 imgLogo={selectNetworkImg(CYBER.CHAIN_ID)}
               />
-            </SwichNetwork>
-            <Pane bottom="-10px" right="-20%" position="absolute">
+            </SwichNetwork> */}
+            {/* <Pane bottom="-10px" right="-20%" position="absolute">
               <LeftTooltip />
-            </Pane>
-          </Pane>
-          <Pane
+            </Pane> */}
+          </div>
+          {/* <Pane
             className="battery-container"
             width="65px"
             position="absolute"
@@ -390,42 +402,53 @@ function App({
               countLink={countLink}
               amounPower={amounPower}
             />
-          </Pane>
+          </Pane> */}
           {!home && (
-            <Pane
-              position="absolute"
-              left="50%"
-              transform="translate(-50%, 0)"
-              marginRight="-50%"
-              zIndex={1}
-              backgroundColor="#000"
-              borderRadius={20}
-              width="60%"
-              // className="box-shadow-input"
-              height="100%"
+            <div
+              style={{
+                width: '52%',
+                transform: 'translate(-50%, -80%)',
+                background: 'rgb(0 0 0 / 79%)',
+                marginRight: '-50%',
+                left: '50%',
+                position: 'absolute',
+                top: '50%',
+                zIndex: '1',
+              }}
+              // position="absolute"
+              // left="50%"
+              // transform="translate(-50%, 0)"
+              // marginRight="-50%"
+              // zIndex={1}
+              // backgroundColor="#000"
+              // borderRadius={20}
+              // width="55%"
+              // // className="box-shadow-input"
+              // height="100%"
             >
-              <input
+              <Input
                 onChange={(e) => onChangeInput(e)}
                 onKeyPress={handleKeyPress}
-                className="search-input"
+                style={{ textAlign: 'center', fontSize: 24 }}
+                // className="search-input"
                 ref={textInput}
                 value={encodeSlash(query)}
                 autoComplete="off"
-                id="search-input-searchBar"
-                style={{
-                  width: '100%',
-                  height: 41,
-                  fontSize: 20,
-                  textAlign: 'center',
-                  position: 'absolute',
-                  top: '50%',
-                  transform: 'translate(0, -50%)',
-                  zIndex: 1,
-                  paddingLeft: '35px',
-                  backgroundColor: '#000',
-                }}
+                // id="search-input-searchBar"
+                // style={{
+                //   width: '100%',
+                //   height: 41,
+                //   fontSize: 20,
+                //   textAlign: 'center',
+                //   position: 'absolute',
+                //   top: '50%',
+                //   transform: 'translate(0, -50%)',
+                //   zIndex: 1,
+                //   paddingLeft: '35px',
+                //   backgroundColor: '#000',
+                // }}
               />
-              <img
+              {/* <img
                 src={lensIcon}
                 alt="lensIcon"
                 style={{
@@ -436,8 +459,8 @@ function App({
                   width: '15px',
                   zIndex: 1,
                 }}
-              />
-              {keywordHash !== null && (
+              /> */}
+              {/* {keywordHash !== null && (
                 <Link to={`/ipfs/${keywordHash}`}>
                   <div>
                     <img
@@ -455,11 +478,16 @@ function App({
                     />
                   </div>
                 </Link>
-              )}
-            </Pane>
+              )} */}
+            </div>
           )}
-          <Electricity />
-          {defaultAccount.name !== null && (
+          {/* <Electricity /> */}
+          <SwichAccount
+            defaultAccount={defaultAccount}
+            accounts={accounts}
+            onClickChangeActiveAcc={onClickChangeActiveAcc}
+          />
+          {/* {defaultAccount.name !== null && (
             <Pane
               className="battery-container"
               width="fit-content"
@@ -485,27 +513,8 @@ function App({
               imgLogo={ipfsStatus ? cybTrue : cybFalse}
               positionBugLeft
             />
-            <Pane bottom="-10px" left="-20%" position="absolute">
-              <Tooltip
-                placement="bottom"
-                tooltip={
-                  <span style={{ width: '250px' }}>
-                    <a href="/search/cyb">Cyb app</a> has not been audited yet.
-                    Be especially careful when interracting with apps from
-                    search results! They can trick you with what you actually
-                    sign! <a href="/search/secure cyb">Join the discussion </a>
-                    on how to make apps in search results secure
-                  </span>
-                }
-              >
-                <img
-                  alt="bugs"
-                  style={{ width: '15px', height: '15px' }}
-                  src={circleYellow}
-                />
-              </Tooltip>
-            </Pane>
-          </Pane>
+           
+          </Pane> */}
         </div>
       )}
 
