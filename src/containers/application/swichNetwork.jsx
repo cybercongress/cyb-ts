@@ -173,7 +173,7 @@ function SwichNetwork({
             <div>
               <BandwidthBar
                 height="10px"
-                styleText={{ display: 'none' }}
+                // styleText={{ display: 'none' }}
                 fontSize={12}
                 colorText="#000"
                 bwRemained={bandwidth.remained}
