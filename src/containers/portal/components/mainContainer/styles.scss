@@ -5,10 +5,10 @@
   gap: 20px;
 
   @media (max-width: 650px) {
-    width: 80%;
+    width: 82%;
   }
 
    @media (max-width: 500px) {
-    width: 100%;
+    width: 100% !important;
   }
 }

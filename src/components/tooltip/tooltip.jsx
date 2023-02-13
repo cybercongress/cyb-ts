@@ -1,8 +1,18 @@
 import React from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import 'react-popper-tooltip/dist/styles.css';
+import styles from './styles.scss';
 
-const Tooltip = ({ children, tooltip, hideArrow, placement, ...props }) => {
+const cx = require('classnames');
+
+const Tooltip = ({
+  children,
+  trigger,
+  tooltip,
+  hideBorder,
+  placement,
+  ...props
+}) => {
   const [mounted, setMounted] = React.useState(false);
 
   const setMountedOnceVisible = (visibleArg) => {
@@ -11,19 +21,14 @@ const Tooltip = ({ children, tooltip, hideArrow, placement, ...props }) => {
     }
   };
 
-  const {
-    visible,
-    getArrowProps,
-    getTooltipProps,
-    setTooltipRef,
-    setTriggerRef,
-  } = usePopperTooltip({
-    trigger: 'hover',
-    delayHide: 100,
-    interactive: true,
-    onVisibleChange: setMountedOnceVisible,
-    placement,
-  });
+  const { visible, getTooltipProps, setTooltipRef, setTriggerRef } =
+    usePopperTooltip({
+      trigger: trigger || 'hover',
+      delayHide: 100,
+      interactive: true,
+      onVisibleChange: setMountedOnceVisible,
+      placement,
+    });
 
   return (
     <>
@@ -35,18 +40,20 @@ const Tooltip = ({ children, tooltip, hideArrow, placement, ...props }) => {
         <div
           ref={setTooltipRef}
           {...getTooltipProps({
-            className: 'tooltip-container',
+            className: cx(styles.tooltipContainer, {
+              [styles.tooltipContainerBorderNone]: hideBorder,
+            }),
             style: visible
               ? { visibility: 'visible' }
               : { visibility: 'hidden', pointerEvents: 'none' },
           })}
         >
-          <div
+          {/* <div
             {...getArrowProps({
               className: 'tooltip-arrow',
               'data-placement': placement,
             })}
-          />
+          /> */}
           {tooltip && <>{tooltip}</>}
         </div>
       )}

@@ -49,6 +49,7 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
+import Temple from './containers/temple'; 
 
 import Ibc from './containers/ibc';
 import {
@@ -80,7 +81,7 @@ function AppRouter() {
     <Router history={history}>
       <Route path="/" component={() => <App />} />
       <Switch>
-        <Route path="/" exact component={Nebula} />
+        <Route path="/" exact component={Temple} />
         <Route path="/robot" component={Wallet} />
         <Route path="/oracle" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
@@ -145,6 +146,8 @@ function AppRouter() {
         <Route path="/assets" component={Assets} />
         {/* Sigma */}
         <Route path="/sigma" component={Sigma} />
+        <Route path="/nebula" component={Nebula} />
+        {/* <Route path="/" component={Temple} /> */}
       </Switch>
     </Router>
   );

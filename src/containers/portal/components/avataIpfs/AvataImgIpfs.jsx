@@ -1,29 +1,66 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
-import ContainerAvatar from './containerAvatar';
 import styles from './styles.scss';
 
-function AvataImgIpfs({ node, cidAvatar, addressCyber, ...props }) {
+function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
   const [avatar, setAvatar] = useState(null);
-  const [status, setStatus] = useState(true);
+  const { data } = useQuery(
+    ['getAvatar', cidAvatar],
+    async () => {
+      const responseImg = await getAvatarIpfs(cidAvatar, node);
+      if (responseImg && responseImg !== null) {
+        return responseImg;
+      }
+      return null;
+    },
+    {
+      enabled: Boolean(node && cidAvatar),
+    }
+  );
 
   useEffect(() => {
-    const feachAvatar = async () => {
-      if (node !== null && cidAvatar) {
-        const responseImg = await getAvatarIpfs(cidAvatar, node);
-        if (responseImg && responseImg !== null) {
-          setAvatar(responseImg);
-        }
-      }
-    };
-    feachAvatar();
-  }, [cidAvatar, node]);
+    if (data !== undefined && data !== null) {
+      setAvatar(data);
+    } else {
+      setAvatar(null);
+    }
+  }, [data]);
+
+  if (avatar !== null) {
+    return (
+      <img
+        {...props}
+        className={styles.imgAvatar}
+        alt="img-avatar"
+        src={avatar}
+      />
+    );
+  }
+
+  if (addressCyber !== null) {
+    return (
+      <img
+        {...props}
+        className={styles.imgAvatar}
+        alt="img-avatar"
+        src={`https://robohash.org/${addressCyber}`}
+      />
+    );
+  }
+
+  if (img) {
+    return (
+      <img {...props} className={styles.imgAvatar} alt="img-avatar" src={img} />
+    );
+  }
 
   return (
     <img
+      {...props}
       className={styles.imgAvatar}
       alt="img-avatar"
-      src={avatar !== null ? avatar : `https://robohash.org/${addressCyber}`}
+      src="https://robohash.org/null"
     />
   );
 }

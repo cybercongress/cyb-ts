@@ -3,14 +3,7 @@
   flex-direction: column;
   padding: 25px 0;
   align-items: center;
-  background-color: #000;
   min-width: 170px;
-  box-shadow: 0 0 5px #36d6ae;
-  border-radius: 5px;
-}
-
-.container-statistics-card:hover {
-  box-shadow: 0 0 15px #36d6ae;
 }
 
 .card-statistics-title {

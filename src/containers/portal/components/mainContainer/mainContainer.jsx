@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles.scss';
 
-function MainContainer({ children, minHeight, width = '62%' }) {
+function MainContainer({ children, minHeight, width = '62%', ...props }) {
   return (
     <main
       style={{
@@ -9,6 +9,7 @@ function MainContainer({ children, minHeight, width = '62%' }) {
         overflow: 'hidden',
       }}
       className="block-body"
+      {...props}
     >
       <div style={{ width }} className={styles.containerContent}>
         {children}

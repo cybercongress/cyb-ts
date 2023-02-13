@@ -95,7 +95,11 @@ const TxsStatus = ({ data }) => {
   );
 };
 
-export const ContainerGradientText = ({ children, status = 'blue' }) => {
+export const ContainerGradientText = ({
+  children,
+  userStyleContent,
+  status = 'blue',
+}) => {
   return (
     <ContainerLamp style={status}>
       <div
@@ -106,7 +110,12 @@ export const ContainerGradientText = ({ children, status = 'blue' }) => {
           [styles.containerGradientTextPink]: status === 'pink',
         })}
       >
-        <div className={styles.containerGradientTextContent}>{children}</div>
+        <div
+          style={userStyleContent}
+          className={styles.containerGradientTextContent}
+        >
+          {children}
+        </div>
       </div>
     </ContainerLamp>
   );

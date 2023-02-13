@@ -17,22 +17,55 @@ function useGetPassportByAddress(accounts) {
       return null;
     },
     {
-      enabled: Boolean(jsCyber && addressBech32),
+      enabled: Boolean(jsCyber && addressBech32 !== null),
     }
   );
 
   useEffect(() => {
-    if (accounts !== null) {
+    if (
+      accounts !== null &&
+      Object.prototype.hasOwnProperty.call(accounts, 'account')
+    ) {
+      const { account } = accounts;
+      if (
+        account !== null &&
+        Object.prototype.hasOwnProperty.call(account, 'cyber')
+      ) {
+        const { bech32 } = account.cyber;
+        setAddressBech32(bech32);
+      } else {
+        setAddressBech32(null);
+      }
+    }
+
+    if (
+      accounts !== null &&
+      Object.prototype.hasOwnProperty.call(accounts, 'cyber')
+    ) {
+      const { bech32 } = accounts.cyber;
+      setAddressBech32(bech32);
+    }
+
+    if (
+      accounts !== null &&
+      Object.prototype.hasOwnProperty.call(accounts, 'bech32')
+    ) {
       const { bech32 } = accounts;
       setAddressBech32(bech32);
+    }
+
+    if (accounts === null) {
+      setAddressBech32(null);
     }
   }, [accounts]);
 
   useEffect(() => {
-    if (data) {
+    if (data && accounts !== null) {
       setPassport(data);
+    } else {
+      setPassport(null);
     }
-  }, [data]);
+  }, [data, accounts]);
 
   return {
     passport,

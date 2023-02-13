@@ -613,6 +613,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
           registerDisabled={registerDisabled}
           setStep={setStep}
           counCitizenshipst={counCitizenshipst}
+          mobile={mobile}
         />
         {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
           <Carousel
@@ -631,24 +632,26 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         </button> */}
       </MainContainer>
 
-      <ActionBar
-        keplr={keplr}
-        step={step}
-        valueNickname={valueNickname}
-        signedMessage={signedMessage}
-        setStep={setStep}
-        setupNickname={setupNickname}
-        checkNickname={checkNickname}
-        uploadAvatarImg={uploadAvatarImg}
-        avatarImg={avatarImg}
-        setAvatarImg={setAvatarImg}
-        avatarIpfs={avatarIpfs}
-        onClickRegister={onClickRegister}
-        checkAddressNetwork={checkAddressNetwork}
-        registerDisabled={registerDisabled}
-        showOpenFileDlg={showOpenFileDlg}
-        onClickSignMoonCode={onClickSignMoonCode}
-      />
+      {!mobile && (
+        <ActionBar
+          keplr={keplr}
+          step={step}
+          valueNickname={valueNickname}
+          signedMessage={signedMessage}
+          setStep={setStep}
+          setupNickname={setupNickname}
+          checkNickname={checkNickname}
+          uploadAvatarImg={uploadAvatarImg}
+          avatarImg={avatarImg}
+          setAvatarImg={setAvatarImg}
+          avatarIpfs={avatarIpfs}
+          onClickRegister={onClickRegister}
+          checkAddressNetwork={checkAddressNetwork}
+          registerDisabled={registerDisabled}
+          showOpenFileDlg={showOpenFileDlg}
+          onClickSignMoonCode={onClickSignMoonCode}
+        />
+      )}
     </>
   );
 }

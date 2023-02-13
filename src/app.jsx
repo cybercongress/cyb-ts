@@ -13,9 +13,9 @@ function App({
   setTypeDeviceProps,
   setIpfsIDProps,
 }) {
-  const { updatetMarketData } = useContext(AppContext);
+  const { updatetMarketData, updateDataTotalSupply } = useContext(AppContext);
   const dataIpfsStart = useIpfsStart();
-  const { marketData } = useGetMarketData();
+  const { marketData, dataTotal } = useGetMarketData();
 
   useEffect(() => {
     initIpfsProps(dataIpfsStart.node);
@@ -30,6 +30,12 @@ function App({
       updatetMarketData(marketData);
     }
   }, [marketData]);
+
+  useEffect(() => {
+    if (Object.keys(dataTotal).length > 0) {
+      updateDataTotalSupply(dataTotal);
+    }
+  }, [dataTotal]);
 
   return <AppRouter />;
 }

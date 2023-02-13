@@ -8,9 +8,9 @@ import { CYBER } from '../../../utils/config';
 const { DENOM_CYBER, HYDROGEN } = CYBER;
 
 const TootipContent = () => (
-  <span style={{ padding: '5px' }}>
+  <div style={{ padding: '10px', width: 200 }}>
     you receive H form staked BOOT, you can use H for investmint A and V
-  </span>
+  </div>
 );
 
 const ContainerGrid = ({ children }) => (

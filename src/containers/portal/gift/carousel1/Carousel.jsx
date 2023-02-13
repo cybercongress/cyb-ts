@@ -17,6 +17,8 @@ const Carousel = ({
   transitionSpeed = 500,
   slideWidth = 200,
   disableNext,
+  disableMode,
+  heightSlide,
 }) => {
   if (slides.length < 2) {
     console.error('Please provide more slides');
@@ -67,7 +69,7 @@ const Carousel = ({
 
   const setActiveItem = useCallback(
     (index) => {
-      if (index !== 0 && index <= slides.length) {
+      if (index !== 0 && index <= slides.length && !disableMode) {
         // setVisibleSlide(index);
         if (index <= visibleSlide) {
           setStep(index);
@@ -80,7 +82,10 @@ const Carousel = ({
   );
 
   return (
-    <div className={styles.carousel}>
+    <div
+      className={styles.carousel}
+      style={{ maxWidth: `${slideWidth * 3}px`, height: heightSlide || '40px' }}
+    >
       <div
         className={styles.slidesContainer}
         // style={slideDimensionStyles()}

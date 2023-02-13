@@ -86,6 +86,7 @@ function Info({
   registerDisabled,
   setStep,
   counCitizenshipst,
+  mobile,
 }) {
   const useContent = useMemo(() => {
     let content;
@@ -110,7 +111,11 @@ function Info({
               beings recieve Moon Citizenship.
             </div>
             <div>I can also assist you in 7 simple steps.</div>
-            <div>If you work hard, you may get a gift!</div>
+            {mobile ? (
+              <div>But only desktop :( </div>
+            ) : (
+              <div>If you work hard, you may get a gift!</div>
+            )}
           </div>
         );
         break;
@@ -256,7 +261,7 @@ function Info({
     }
 
     return content;
-  }, [stepCurrent, counCitizenshipst]);
+  }, [stepCurrent, counCitizenshipst, mobile]);
 
   return (
     <InfoCard style={{ minHeight: '102px' }}>
