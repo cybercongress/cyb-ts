@@ -179,21 +179,21 @@ function SwichAccount({
             useGetName === null || !mediaQuery ? '1fr' : '1fr 100px',
         }}
       >
-        <div className={styles.containerKrmaName}>
-          {useGetName !== null && mediaQuery && (
-            <button
-              onClick={() => setControlledVisible((item) => !item)}
-              className={styles.btnContainerText}
-              type="button"
-              style={{ fontSize: '20px' }}
-            >
-              {useGetName}
-            </button>
-          )}
-          {useGetAddress !== null && mediaQuery && (
-            <Karma address={useGetAddress} />
-          )}
-        </div>
+        {mediaQuery && (
+          <div className={styles.containerKrmaName}>
+            {useGetName !== null && (
+              <button
+                onClick={() => setControlledVisible((item) => !item)}
+                className={styles.btnContainerText}
+                type="button"
+                style={{ fontSize: '20px' }}
+              >
+                {useGetName}
+              </button>
+            )}
+            {useGetAddress !== null && <Karma address={useGetAddress} />}
+          </div>
+        )}
         <Link to="/robot">
           <div
             className={cx(styles.containerAvatarConnect, {
