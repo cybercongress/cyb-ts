@@ -80,6 +80,8 @@ $color-border-lamp-white: #e2e2e2;
       align-items: center;
       justify-content: center;
       position: relative;
+      cursor: pointer;
+      color: #36d6ae;
 
       &::before {
         @include linear-gradient-gray-el;
