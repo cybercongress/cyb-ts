@@ -11,7 +11,13 @@ import useMediaQuery from '../../hooks/useMediaQuery';
 import robot from '../../image/temple/robot.png';
 import Karma from './karma';
 
-function AccountItem({ data, node, onClickSetActive, name }) {
+function AccountItem({
+  data,
+  node,
+  onClickSetActive,
+  setControlledVisible,
+  name,
+}) {
   const { passport } = useGetPassportByAddress(data);
 
   const useGetName = useMemo(() => {
@@ -41,10 +47,15 @@ function AccountItem({ data, node, onClickSetActive, name }) {
     return null;
   }, [data]);
 
+  const hadleOnClick = () => {
+    onClickSetActive();
+    setControlledVisible(false);
+  };
+
   return (
     <button
       type="button"
-      onClick={onClickSetActive}
+      onClick={() => hadleOnClick()}
       className={cx(
         styles.containerSwichAccount,
         styles.btnContainerText,
@@ -99,7 +110,7 @@ function SwichAccount({
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
     usePopperTooltip({
       trigger: 'click',
-      closeOnOutsideClick: true,
+      closeOnTriggerHidden: true,
       visible: controlledVisible,
       onVisibleChange: setControlledVisible,
       placement: 'bottom',
@@ -158,6 +169,7 @@ function SwichAccount({
                 onClickChangeActiveAcc(key, accounts[key])
               }
               node={node}
+              setControlledVisible={setControlledVisible}
               // ipfsStatus={ipfsStatus}
               name={key}
             />
