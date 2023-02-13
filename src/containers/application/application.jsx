@@ -409,7 +409,7 @@ function App({
               style={{
                 width: '52%',
                 transform: 'translate(-50%, -80%)',
-                background: 'rgb(0 0 0 / 79%)',
+                // background: 'rgb(0 0 0 / 79%)',
                 marginRight: '-50%',
                 left: '50%',
                 position: 'absolute',

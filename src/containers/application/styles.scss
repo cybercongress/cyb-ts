@@ -20,6 +20,12 @@
   }
 }
 
+.networkBtnImg {
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
 .networkBtnImgIconMenu {
   position: absolute;
   top: 50%;
@@ -36,6 +42,28 @@
     height: 5px;
     background-color: black;
     margin: 6px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .networkBtn {
+    &::before {
+      width: 60px;
+      height: 60px;
+    }
+  }
+
+  .networkBtnImg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .networkBtnImgIconMenu {
+    div {
+      width: 25px;
+      height: 3px;
+      margin: 4px 0;
+    }
   }
 }
 
@@ -76,7 +104,6 @@
   display: flex;
   justify-content: flex-end;
   font-size: 16px;
-
 }
 
 .containerSwichAccountHover {
@@ -156,6 +183,11 @@
   top: 50%;
   transform: translate(-50%, -50%);
   left: 50%;
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 .containerAvatarConnect {
@@ -183,6 +215,13 @@
       @include before-Avatar;
       box-shadow: 0px 0px 20px #36d6ae;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .containerAvatarConnect {
+    width: 60px;
+    height: 60px;
   }
 }
 

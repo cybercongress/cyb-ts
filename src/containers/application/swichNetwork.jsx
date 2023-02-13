@@ -135,7 +135,6 @@ function SwichNetwork({
           className={styles.networkBtn}
         >
           <img
-            style={{ width: '60px', height: '60px', position: 'relative' }}
             alt="cyb"
             src={selectNetworkImg(CYBER.CHAIN_ID)}
             className={styles.networkBtnImg}

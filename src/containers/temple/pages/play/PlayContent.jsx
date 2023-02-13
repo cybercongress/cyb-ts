@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ContainerGradientText } from '../../../portal/components';
+import styles from './styles.scss';
 
 import nebulaIcon from '../../../../image/temple/nebula.png';
 import teleport from '../../../../image/temple/teleport.png';
@@ -78,38 +79,22 @@ const playContentItem = [
 function PlayContent() {
   return (
     <ContainerGradientText>
-      <div
-        style={{
-          display: 'grid',
-          width: '100%',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          padding: '20px 30px',
-          gap: 20,
-        }}
-      >
+      <div className={styles.containerPlayContent}>
         {playContentItem.map((item) => (
           <Link to={item.to}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '70px 1fr',
-                gap: 10,
-              }}
-            >
+            <div className={styles.containerItemPlayContent}>
               <div>
                 <img
                   alt={item.title}
                   src={item.icon}
-                  style={{ width: 70, height: 70, objectFit: 'contain' }}
+                  className={styles.containerItemPlayContentImg}
                 />
               </div>
-              <div>
-                <div
-                  style={{ fontSize: 16, color: '#36D6AE', margin: '8px 0' }}
-                >
+              <div className={styles.containerPlayContentContainerText}>
+                <div className={styles.containerItemPlayContentTitle}>
                   {item.title}
                 </div>
-                <div style={{ fontSize: 14, color: '#777777' }}>
+                <div className={styles.containerItemPlayContentDsc}>
                   {item.description}
                 </div>
               </div>

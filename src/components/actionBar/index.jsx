@@ -12,6 +12,7 @@ import share from '../../image/share.svg';
 import telegram from '../../image/telegram.png';
 import { LinkWindow } from '../link/link';
 import { formatNumber } from '../../utils/utils';
+import useMediaQuery from '../../hooks/useMediaQuery';
 
 const back = require('../../image/arrow-left-img.svg');
 
@@ -64,6 +65,31 @@ const StargazersCountGH = () => {
 };
 
 export function GitHub() {
+  const mediaQuery = useMediaQuery('(min-width: 768px)');
+
+  if (!mediaQuery) {
+    return (
+      <div
+        id="github-bar"
+        style={{
+          position: 'fixed',
+          right: '0',
+          bottom: 0,
+          margin: '0px 20px 28px 0px',
+          fontSize: '14px',
+          background: '#000c',
+          zIndex: 4,
+        }}
+      >
+        <LinkWindow to="https://github.com/cybercongress">
+          <div>
+            <img alt="github" style={{ width: 30, height: 30 }} src={github} />
+          </div>
+        </LinkWindow>
+      </div>
+    );
+  }
+
   return (
     <div
       id="github-bar"
@@ -175,75 +201,115 @@ export function GitHub() {
   );
 }
 
-export const Telegram = () => (
-  <div
-    // id="github-bar"
-    style={{
-      position: 'fixed',
-      left: '0',
-      bottom: 0,
-      margin: '0px 0px 28px 20px',
-      fontSize: '14px',
-      background: '#000c',
-      zIndex: 4,
-      marginLeft: 15,
-    }}
-  >
-    <Tooltip
-      hideBorder
-      placement="right"
-      tooltip={
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            fontSize: '14px',
-            gap: '20px',
-            background: '#000c',
-            padding: 5,
-          }}
-        >
-          <LinkWindow to="https://t.me/cyber">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                color: '#36D6AE',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              feedback{' '}
-              <img alt="share" style={{ width: 20, height: 20 }} src={share} />
-            </div>
-          </LinkWindow>
-          <LinkWindow to="https://t.me/cyber/47885">
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                color: '#36D6AE',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              join movement{' '}
-              <img alt="share" style={{ width: 20, height: 20 }} src={share} />
-            </div>
-          </LinkWindow>
-        </div>
-      }
+export const Telegram = () => {
+  const mediaQuery = useMediaQuery('(min-width: 768px)');
+
+  if (!mediaQuery) {
+    return (
+      <div
+        // id="github-bar"
+        style={{
+          position: 'fixed',
+          left: '0',
+          bottom: 0,
+          margin: '0px 0px 28px 20px',
+          fontSize: '14px',
+          background: '#000c',
+          zIndex: 4,
+          marginLeft: 15,
+        }}
+      >
+        <LinkWindow to="https://t.me/cyber/47896">
+          <div>
+            <img
+              alt="telegram"
+              style={{ width: 30, height: 30 }}
+              src={telegram}
+            />
+          </div>
+        </LinkWindow>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      // id="github-bar"
+      style={{
+        position: 'fixed',
+        left: '0',
+        bottom: 0,
+        margin: '0px 0px 28px 20px',
+        fontSize: '14px',
+        background: '#000c',
+        zIndex: 4,
+        marginLeft: 15,
+      }}
     >
-      <LinkWindow to="https://t.me/cyber/47896">
-        <div>
-          <img
-            alt="telegram"
-            style={{ width: 30, height: 30 }}
-            src={telegram}
-          />
-        </div>
-      </LinkWindow>
-    </Tooltip>
-  </div>
-);
+      <Tooltip
+        hideBorder
+        placement="right"
+        tooltip={
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '14px',
+              gap: '20px',
+              background: '#000c',
+              padding: 5,
+            }}
+          >
+            <LinkWindow to="https://t.me/cyber">
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#36D6AE',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                feedback{' '}
+                <img
+                  alt="share"
+                  style={{ width: 20, height: 20 }}
+                  src={share}
+                />
+              </div>
+            </LinkWindow>
+            <LinkWindow to="https://t.me/cyber/47885">
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#36D6AE',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                join movement{' '}
+                <img
+                  alt="share"
+                  style={{ width: 20, height: 20 }}
+                  src={share}
+                />
+              </div>
+            </LinkWindow>
+          </div>
+        }
+      >
+        <LinkWindow to="https://t.me/cyber/47896">
+          <div>
+            <img
+              alt="telegram"
+              style={{ width: 30, height: 30 }}
+              src={telegram}
+            />
+          </div>
+        </LinkWindow>
+      </Tooltip>
+    </div>
+  );
+};
 
 function ActionBar({
   children,
