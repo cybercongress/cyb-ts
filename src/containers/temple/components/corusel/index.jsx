@@ -149,6 +149,7 @@ const Carousel = ({
                   })}
                   style={{
                     width: `${itemWidth}px`,
+                    color: disableMode ? '#777777' : '#36d6ae',
                   }}
                 >
                   <div

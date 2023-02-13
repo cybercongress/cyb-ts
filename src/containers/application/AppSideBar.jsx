@@ -8,14 +8,6 @@ const AppSideBar = ({ children, onCloseSidebar, openMenu }) => (
       [styles.sideBarHide]: !openMenu,
     })}
   >
-    <button
-      type="button"
-      onClick={onCloseSidebar}
-      className={styles.closeButton}
-    >
-      close
-    </button>
-
     {children}
   </div>
 );

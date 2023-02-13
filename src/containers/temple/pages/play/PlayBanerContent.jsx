@@ -303,10 +303,7 @@ function PlayBanerContent() {
             width: mediaQuery ? 'unset' : '100%',
           }}
         >
-          <DeltaValue
-            // change={Object.values(slideDataState)[index].change}
-            change={{ amount: 12, time: 0 }}
-          />
+          <DeltaValue change={Object.values(slideDataState)[index].change} />
         </div>
       </div>
       <div

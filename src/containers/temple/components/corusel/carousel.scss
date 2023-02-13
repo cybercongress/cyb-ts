@@ -97,7 +97,7 @@ $color-border-lamp-white: #e2e2e2;
 
     .slide.active {
       cursor: pointer;
-      color: $color-white;
+      color: $color-white !important;
       &::before {
         @include linear-gradient-gray-el;
         @include linear-gradient-gray(270deg);
