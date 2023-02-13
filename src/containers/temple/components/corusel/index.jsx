@@ -4,7 +4,9 @@ import React, {
   useRef,
   Fragment,
   useCallback,
+  useMemo,
 } from 'react';
+import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './carousel.scss';
 
 const cx = require('classnames');
@@ -19,91 +21,59 @@ const Carousel = ({
   heightSlide,
   disableNext,
   disableMode,
+  displaySlide = 3,
 }) => {
   if (slides.length < 2) {
     console.error('Please provide more slides');
     return null;
   }
-
+  const query = useMediaQuery('(min-width: 768px)');
+  const [itemWidth, setItemWidth] = useState(0);
+  const [displaySlideState, setDisplaySlideState] = useState(displaySlide);
   const [visibleSlide, setVisibleSlide] = useState(1);
   const [hasTransitionClass, setHasTransitionClass] = useState(true);
-  const [stateSlides, setStateSlides] = useState(slides);
-  const intervalId = useRef(null);
+  const changeDisplay = useRef(false);
 
   const newItemList = slides.concat(slides, slides, slides);
 
   useEffect(() => {
+    if (displaySlide > 3) {
+      if (!query) {
+        setDisplaySlideState(3);
+        changeDisplay.current = true;
+      }
+      if (query && changeDisplay.current) {
+        setDisplaySlideState(displaySlide);
+        changeDisplay.current = false;
+      }
+    }
+  }, [query]);
+
+  useEffect(() => {
     setVisibleSlide(slides.length * 2 + activeStep);
-  }, [activeStep, slides]);
 
-  // useEffect(() => {
-  //   const slidesWithClones = [...slides];
-  //   // slidesWithClones.unshift({});
-  //   // slidesWithClones.push({});
-  //   setStateSlides(slidesWithClones);
-  // }, [slides]);
+    const resizeCarousel = () => {
+      const { clientWidth } = document.getElementById('containerCarousel');
 
-  const calculateLeftMargin = () => {
-    return `-${visibleSlide * slideWidth - slideWidth}px`;
-  };
+      setItemWidth(clientWidth / displaySlideState);
+    };
 
-  const slideDimensionStyles = () => {
-    return { width: `${slideWidth}px` };
-  };
+    resizeCarousel();
+    window.addEventListener('resize', resizeCarousel);
 
-  // const scrollRight = useCallback(
-  //   (index) => {
-  //     if (index < stateSlides.length - 1) {
-  //       setVisibleSlide((prev) => prev + 1);
-  //     } else {
-  //       const nextStateSlides = [...stateSlides];
-  //       nextStateSlides.push(nextStateSlides.shift());
-  //       console.log(stateSlides, nextStateSlides);
-  //       setStateSlides(nextStateSlides);
+    return () => {
+      window.removeEventListener('resize', resizeCarousel);
+    };
+  }, [activeStep, slides, displaySlideState]);
 
-  //       // setHasTransitionClass(false);
-  //       setVisibleSlide((prev) => prev - 1);
-
-  //       // setTimeout(() => {
-  //       //   setHasTransitionClass(true);
-  //       //   setVisibleSlide((prev) => prev + 1);
-  //       // });
-  //     }
-  //   },
-  //   [stateSlides]
-  // );
-
-  // const scrollLeft = (index) => {
-  //   if (index > 0) {
-  //     setVisibleSlide((prev) => prev - 1);
-  //   } else {
-  //     const nextStateSlides = [...stateSlides];
-  //     nextStateSlides.unshift(nextStateSlides.pop());
-  //     // console.log(stateSlides, nextStateSlides);
-  //     setStateSlides(nextStateSlides);
-
-  //     setHasTransitionClass(false);
-  //     setVisibleSlide((prev) => prev + 1);
-
-  //     setTimeout(() => {
-  //       setHasTransitionClass(true);
-  //       setVisibleSlide((prev) => prev - 1);
-  //     });
-  //   }
-  // };
-
-  // const setActiveItem = useCallback(
-  //   (index) => {
-  //     if (index !== visibleSlide && !disableMode) {
-  //       if (index <= visibleSlide) {
-  //         scrollLeft(index);
-  //       } else if (!disableNext && index > visibleSlide) {
-  //         scrollRight(index);
-  //       }
-  //     }
-  //   },
-  //   [disableNext, visibleSlide, stateSlides]
-  // );
+  const calculateLeftMargin = useMemo(() => {
+    if (itemWidth !== 0) {
+      return `-${
+        visibleSlide * itemWidth - itemWidth * Math.floor(displaySlideState / 2)
+      }px`;
+    }
+    return '0px';
+  }, [visibleSlide, itemWidth, displaySlideState]);
 
   useEffect(() => {
     // make carousel infinite
@@ -146,18 +116,21 @@ const Carousel = ({
     <>
       <div
         className={styles.carousel}
+        id="containerCarousel"
         style={{
-          maxWidth: `${slideWidth * 3}px`,
           height: heightSlide || '40px',
         }}
       >
-        <div className={styles.slidesContainer} style={slideDimensionStyles()}>
+        <div
+          className={styles.slidesContainer}
+          style={{ width: `${itemWidth}px` }}
+        >
           <div
             id="slides"
             className={cx(styles.slides, {
               [styles.transition]: hasTransitionClass,
             })}
-            style={{ left: calculateLeftMargin() }}
+            style={{ left: calculateLeftMargin }}
           >
             {newItemList.map((slide, index) => {
               return (
@@ -167,16 +140,26 @@ const Carousel = ({
                   onClick={() => setActiveItem(index)}
                   className={cx(styles.slide, {
                     [styles.active]: index === visibleSlide,
-                    [styles.left]: index + 1 === visibleSlide,
-                    [styles.right]: index - 1 === visibleSlide,
+                    [styles.left]:
+                      index + Math.floor(displaySlideState / 2) ===
+                      visibleSlide,
+                    [styles.right]:
+                      index - Math.floor(displaySlideState / 2) ===
+                      visibleSlide,
                   })}
-                  style={slideDimensionStyles()}
+                  style={{
+                    width: `${itemWidth}px`,
+                  }}
                 >
                   <div
                     className={cx(styles.lamp, {
                       [styles.active]: index === visibleSlide,
-                      [styles.left]: index + 1 === visibleSlide,
-                      [styles.right]: index - 1 === visibleSlide,
+                      [styles.left]:
+                        index + Math.floor(displaySlideState / 2) ===
+                        visibleSlide,
+                      [styles.right]:
+                        index - Math.floor(displaySlideState / 2) ===
+                        visibleSlide,
                     })}
                   >
                     <div className={styles.containerContent}>

@@ -58,7 +58,6 @@ $color-border-lamp-white: #e2e2e2;
 
 .carousel {
   width: 100%;
-  max-width: 600px;
   overflow-x: hidden;
   height: 40px;
 
@@ -73,6 +72,7 @@ $color-border-lamp-white: #e2e2e2;
     top: 0;
     left: 0;
     display: flex;
+
     .slide {
       // background: #dadada;
       display: flex;
@@ -80,7 +80,19 @@ $color-border-lamp-white: #e2e2e2;
       align-items: center;
       justify-content: center;
       position: relative;
+
+      &::before {
+        @include linear-gradient-gray-el;
+        @include linear-gradient-green(270deg);
+        left: 0;
+      }
+      &::after {
+        @include linear-gradient-gray-el;
+        @include linear-gradient-green(90deg);
+        right: 0;
+      }
     }
+
     .slide.active {
       cursor: pointer;
       color: $color-white;
@@ -95,19 +107,45 @@ $color-border-lamp-white: #e2e2e2;
         right: 0;
       }
     }
+
     .slide.left {
       cursor: pointer;
       color: $color-green;
+      //  margin-left: 10px;
       &::before {
         @include init-pseudo-el-gren-default;
         @include linear-gradient-green(90deg);
       }
+
+      &::after {
+        content: '';
+        background: #000;
+        width: 10px;
+        left: -5px;
+        z-index: 1;
+        opacity: 1;
+        bottom: 0;
+        position: absolute;
+        height: 100%;
+      }
     }
     .slide.right {
+      // margin-right: 10px;
       cursor: pointer;
       &::before {
         @include init-pseudo-el-gren-default;
         @include linear-gradient-green(270deg);
+      }
+      &::after {
+        content: '';
+        background: #000;
+        width: 10px;
+        right: -5px;
+        z-index: 1;
+        opacity: 1;
+        bottom: 0;
+        position: absolute;
+        height: 100%;
       }
       color: $color-green;
     }
@@ -130,8 +168,8 @@ $color-border-lamp-white: #e2e2e2;
         left: 0;
         @include light-lamp(
           $color-white,
-          $color-border-lamp-white,
-          $color-shadow-lamp-white
+          $color-border-lamp-green,
+          $color-shadow-lamp-green
         );
         border-radius: 0px 1px 1px 0px;
       }
@@ -144,8 +182,8 @@ $color-border-lamp-white: #e2e2e2;
         right: 0;
         @include light-lamp(
           $color-white,
-          $color-border-lamp-white,
-          $color-shadow-lamp-white
+          $color-border-lamp-green,
+          $color-shadow-lamp-green
         );
         border-radius: 1px 0px 0px 1px;
       }
@@ -159,6 +197,10 @@ $color-border-lamp-white: #e2e2e2;
         left: 6px;
         transform: translate(6px, -50%);
         @include pils;
+
+        @media (max-width: 768px) {
+          content: unset;
+        }
       }
 
       &::after {
@@ -198,6 +240,10 @@ $color-border-lamp-white: #e2e2e2;
         right: 6px;
         transform: translate(-6px, -50%);
         @include pils;
+
+        @media (max-width: 768px) {
+          content: unset;
+        }
       }
     }
   }

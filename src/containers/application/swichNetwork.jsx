@@ -7,6 +7,7 @@ import { fromBech32, selectNetworkImg } from '../../utils/utils';
 import { BandwidthBar, ButtonNetwork, Tooltip } from '../../components';
 import styles from './styles.scss';
 import { AppContext } from '../../context';
+import useMediaQuery from '../../hooks/useMediaQuery';
 
 const forEachObjbech32 = (data, prefix) => {
   const newObj = {};
@@ -53,6 +54,7 @@ function SwichNetwork({
   amounPower,
   openMenu,
 }) {
+  const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
   const { networks } = useContext(AppContext);
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
@@ -121,7 +123,7 @@ function SwichNetwork({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '100px 1fr',
+          gridTemplateColumns: mediaQuery ? '100px 1fr' : '100px',
           gap: '25px',
           alignItems: 'center',
           height: 100,
@@ -148,38 +150,40 @@ function SwichNetwork({
             <div />
           </div>
         </button>
-        <div
-          style={{
-            display: 'flex',
-            height: '100%',
-            flexDirection: 'column',
-            justifyContent: 'space-around',
-            padding: '20px 0',
-            color: '#1FCBFF',
-            fontSize: 20,
-          }}
-        >
-          <button
-            className={styles.btnContainerText}
-            type="button"
-            style={{ fontSize: '20px' }}
-            onClick={() => setControlledVisible((item) => !item)}
+        {mediaQuery && (
+          <div
+            style={{
+              display: 'flex',
+              height: '100%',
+              flexDirection: 'column',
+              justifyContent: 'space-around',
+              padding: '20px 0',
+              color: '#1FCBFF',
+              fontSize: 20,
+            }}
           >
-            {CYBER.CHAIN_ID}
-          </button>
-          <div>
-            <BandwidthBar
-              height="10px"
-              styleText={{ display: 'none' }}
-              fontSize={12}
-              colorText="#000"
-              bwRemained={bandwidth.remained}
-              bwMaxValue={bandwidth.maxValue}
-              countLink={countLink}
-              amounPower={amounPower}
-            />
+            <button
+              className={styles.btnContainerText}
+              type="button"
+              style={{ fontSize: '20px' }}
+              onClick={() => setControlledVisible((item) => !item)}
+            >
+              {CYBER.CHAIN_ID}
+            </button>
+            <div>
+              <BandwidthBar
+                height="10px"
+                styleText={{ display: 'none' }}
+                fontSize={12}
+                colorText="#000"
+                bwRemained={bandwidth.remained}
+                bwMaxValue={bandwidth.maxValue}
+                countLink={countLink}
+                amounPower={amounPower}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
       {Object.keys(renderItemChain).length > 0 && (
         <Transition in={visible} timeout={300}>

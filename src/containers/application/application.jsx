@@ -414,6 +414,7 @@ function App({
                 left: '50%',
                 position: 'absolute',
                 top: '50%',
+                padding: '0px 20px',
                 zIndex: '1',
               }}
               // position="absolute"

@@ -15,6 +15,7 @@ import { ActionBar } from '../../components';
 import BtnGrd from '../../components/btnGrd';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import Canvas from './components/canvasOne';
+import styles from './styles.scss';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -39,36 +40,18 @@ const itemLinks = [
 ];
 
 const itemCarousel1 = [
-  { title: <div style={{ color: '#777777' }}>🔵 cyber</div> },
+  { title: <div className={styles.itemCarousel}>🔵 cyber</div> },
   {
     title: (
-      <div
-        style={{
-          height: '72px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: '12px 0',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ fontSize: '30px', lineHeight: '26px' }}>
+      <div className={styles.itemCarouselBostrom}>
+        <div className={styles.itemCarouselBostromText}>
           {BOOT_ICON} bostrom
         </div>
-        <div
-          style={{
-            background:
-              'linear-gradient(90.05deg, rgb(118, 255, 3) 1.43%, rgb(0, 196, 255) 66.55%)',
-            WebkitTextFillColor: 'transparent',
-            WebkitBackgroundClip: 'text',
-          }}
-        >
-          collaborative ai
-        </div>
+        <div className={styles.itemCarouselBostromDSC}>collaborative ai</div>
       </div>
     ),
   },
-  { title: <div style={{ color: '#777777' }}>🟣 spase-pussy</div> },
+  { title: <div className={styles.itemCarousel}>🟣 spase-pussy</div> },
 ];
 
 function Temple({ defaultAccount }) {
@@ -89,9 +72,8 @@ function Temple({ defaultAccount }) {
           slides={itemCarousel1}
           activeStep={1}
           setStep={setStep}
-          slideWidth={266}
           disableMode
-          heightSlide="72px"
+          heightSlide="80px"
         />
 
         <ContainerGradientText
@@ -119,8 +101,8 @@ function Temple({ defaultAccount }) {
           slides={itemCarousel}
           activeStep={step}
           setStep={setStep}
-          slideWidth={266}
           disableMode
+          displaySlide={5}
         />
 
         <PlayContent />

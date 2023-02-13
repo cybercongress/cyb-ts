@@ -8,6 +8,7 @@ import { AvataImgIpfs } from '../portal/components/avataIpfs';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
 import robot from '../../image/temple/robot.jpg';
+import useMediaQuery from '../../hooks/useMediaQuery';
 
 function AccountItem({ data, node, onClickSetActive, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -84,6 +85,7 @@ function SwichAccount({
   ipfsStatus,
   onClickChangeActiveAcc,
 }) {
+  const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
   // se;
@@ -167,10 +169,11 @@ function SwichAccount({
       <div
         className={styles.containerSwichAccount}
         style={{
-          gridTemplateColumns: useGetName === null ? '1fr' : '1fr 100px',
+          gridTemplateColumns:
+            useGetName === null || !mediaQuery ? '1fr' : '1fr 100px',
         }}
       >
-        {useGetName !== null && (
+        {useGetName !== null && mediaQuery && (
           <button
             onClick={() => setControlledVisible((item) => !item)}
             className={styles.btnContainerText}

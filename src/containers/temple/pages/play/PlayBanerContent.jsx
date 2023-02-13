@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import useMediaQuery from '../../../../hooks/useMediaQuery';
 import {
   formatCurrency,
   formatNumber,
@@ -74,6 +75,7 @@ const DeltaValue = ({ change }) => {
 const delay = 4000;
 
 function PlayBanerContent() {
+  const mediaQuery = useMediaQuery('(min-width: 768px)');
   const dataAccountCount = useAccountCount();
   const dataGetPortalStats = useGetPortalStats();
   const dataGetNegentropy = useGetNegentropy();
@@ -284,20 +286,27 @@ function PlayBanerContent() {
 
   const slideDataState = slideDataRef.current;
   return (
-    <div
-      className={styles.gatadienContainer}
-      onClick={() => restartSlide()}
-    >
-      <div className={styles.containerTitle}>
+    <div className={styles.gatadienContainer} onClick={() => restartSlide()}>
+      <div
+        className={styles.containerTitle}
+        style={{
+          flexDirection: mediaQuery ? 'row' : 'column',
+          alignItems: mediaQuery ? 'center' : 'flex-start',
+        }}
+      >
         <div>{Object.values(slideDataState)[index].title}</div>
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
+            width: mediaQuery ? 'unset' : '100%',
           }}
         >
-          <DeltaValue change={Object.values(slideDataState)[index].change} />
+          <DeltaValue
+            // change={Object.values(slideDataState)[index].change}
+            change={{ amount: 12, time: 0 }}
+          />
         </div>
       </div>
       <div
@@ -310,13 +319,17 @@ function PlayBanerContent() {
       >
         <div
           style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            flexDirection: mediaQuery ? 'row' : 'column',
             color: '#FFD900',
             textShadow: '0px 0px 10px #FCC539',
-            fontSize: 35,
+            fontSize: mediaQuery ? 35 : 25,
+            gap: 10,
           }}
         >
-          {Object.values(slideDataState)[index].amount}{' '}
-          {Object.values(slideDataState)[index].keyAmount}
+          <div>{Object.values(slideDataState)[index].amount}</div>
+          <div> {Object.values(slideDataState)[index].keyAmount}</div>
         </div>
       </div>
     </div>
