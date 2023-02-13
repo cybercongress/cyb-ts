@@ -118,7 +118,7 @@ export function GitHub() {
               marginRight: 15,
             }}
           >
-            <LinkWindow to="https://github.com/cybercongress/cyb">
+            <LinkWindow to="https://github.com/cybercongress/cyber/blob/master/join.md">
               <div
                 style={{
                   display: 'flex',
@@ -219,7 +219,7 @@ export const Telegram = () => {
           marginLeft: 15,
         }}
       >
-        <LinkWindow to="https://t.me/cyber/47896">
+        <LinkWindow to="https://t.me/cyber">
           <div>
             <img
               alt="telegram"
@@ -260,7 +260,7 @@ export const Telegram = () => {
               padding: 5,
             }}
           >
-            <LinkWindow to="https://t.me/cyber">
+            <LinkWindow to="https://t.me/cyber/47885">
               <div
                 style={{
                   display: 'flex',
