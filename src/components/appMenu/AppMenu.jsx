@@ -42,7 +42,7 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
             {item.icon && (
               <img
                 src={item.icon}
-                style={{ width: 30, height: 30 }}
+                style={{ width: 30, height: 30, objectFit: 'contain' }}
                 alt="img"
               />
             )}

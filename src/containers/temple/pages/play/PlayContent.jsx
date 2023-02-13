@@ -100,7 +100,7 @@ function PlayContent() {
                 <img
                   alt={item.title}
                   src={item.icon}
-                  style={{ width: 70, height: 70 }}
+                  style={{ width: 70, height: 70, objectFit: 'contain' }}
                 />
               </div>
               <div>

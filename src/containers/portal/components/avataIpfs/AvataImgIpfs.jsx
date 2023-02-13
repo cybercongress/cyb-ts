@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';
 
-function AvataImgIpfs({ node, cidAvatar, addressCyber, ...props }) {
+function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
   const [avatar, setAvatar] = useState(null);
   const { data } = useQuery(
     ['getAvatar', cidAvatar],
@@ -46,6 +46,12 @@ function AvataImgIpfs({ node, cidAvatar, addressCyber, ...props }) {
         alt="img-avatar"
         src={`https://robohash.org/${addressCyber}`}
       />
+    );
+  }
+
+  if (img) {
+    return (
+      <img {...props} className={styles.imgAvatar} alt="img-avatar" src={img} />
     );
   }
 

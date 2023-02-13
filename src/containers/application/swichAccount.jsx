@@ -7,6 +7,7 @@ import { Transition } from 'react-transition-group';
 import { AvataImgIpfs } from '../portal/components/avataIpfs';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
+import robot from '../../image/temple/robot.jpg';
 
 function AccountItem({ data, node, onClickSetActive, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -187,10 +188,11 @@ function SwichAccount({
             })}
           >
             <AvataImgIpfs
-              style={{ position: 'relative' }}
+              style={{ position: 'relative', objectFit: 'contain' }}
               cidAvatar={useGetCidAvatar}
               node={node}
               addressCyber={useGetAddress}
+              img={robot}
             />
           </div>
         </Link>
