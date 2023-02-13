@@ -9,6 +9,7 @@ import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import robot from '../../image/temple/robot.png';
+import Karma from './karma';
 
 function AccountItem({ data, node, onClickSetActive, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -37,7 +38,7 @@ function AccountItem({ data, node, onClickSetActive, name }) {
       const { bech32 } = data.cyber;
       return bech32;
     }
-    return '';
+    return null;
   }, [data]);
 
   return (
@@ -51,15 +52,20 @@ function AccountItem({ data, node, onClickSetActive, name }) {
       )}
       style={{ marginTop: -10 }}
     >
-      {useGetName !== null && (
-        <button
-          className={cx(styles.btnContainerText, styles.btnContainerTextHover)}
-          type="button"
-        >
-          {useGetName}
-        </button>
-      )}
-
+      <div className={styles.containerKrmaName}>
+        {useGetName !== null && (
+          <button
+            className={cx(
+              styles.btnContainerText,
+              styles.btnContainerTextHover
+            )}
+            type="button"
+          >
+            {useGetName}
+          </button>
+        )}
+        {useGetAddress !== null && <Karma address={useGetAddress} />}
+      </div>
       <div
         className={cx(
           styles.containerAvatarConnect,
@@ -93,7 +99,7 @@ function SwichAccount({
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
     usePopperTooltip({
       trigger: 'click',
-      closeOnOutsideClick: false,
+      closeOnOutsideClick: true,
       visible: controlledVisible,
       onVisibleChange: setControlledVisible,
       placement: 'bottom',
@@ -173,16 +179,21 @@ function SwichAccount({
             useGetName === null || !mediaQuery ? '1fr' : '1fr 100px',
         }}
       >
-        {useGetName !== null && mediaQuery && (
-          <button
-            onClick={() => setControlledVisible((item) => !item)}
-            className={styles.btnContainerText}
-            type="button"
-            style={{ fontSize: '20px' }}
-          >
-            {useGetName}
-          </button>
-        )}
+        <div className={styles.containerKrmaName}>
+          {useGetName !== null && mediaQuery && (
+            <button
+              onClick={() => setControlledVisible((item) => !item)}
+              className={styles.btnContainerText}
+              type="button"
+              style={{ fontSize: '20px' }}
+            >
+              {useGetName}
+            </button>
+          )}
+          {useGetAddress !== null && mediaQuery && (
+            <Karma address={useGetAddress} />
+          )}
+        </div>
         <Link to="/robot">
           <div
             className={cx(styles.containerAvatarConnect, {
