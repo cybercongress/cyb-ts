@@ -52,6 +52,10 @@ const DeltaValue = ({ change }) => {
         style={{
           color: parseFloat(change.amount) >= 0 ? '#76FF03' : '#FF0000',
           fontSize: 20,
+          textShadow:
+            parseFloat(change.amount) >= 0
+              ? '0px 4px 10px #76FF03'
+              : '0px 4px 10px #FF0000',
         }}
       >
         {parseFloat(change.amount) !== 0
@@ -69,7 +73,7 @@ const DeltaValue = ({ change }) => {
 
 const delay = 4000;
 
-function PlayTitle() {
+function PlayBanerContent() {
   const dataAccountCount = useAccountCount();
   const dataGetPortalStats = useGetPortalStats();
   const dataGetNegentropy = useGetNegentropy();
@@ -282,7 +286,7 @@ function PlayTitle() {
   return (
     <div
       className={styles.gatadienContainer}
-      // onClick={() => restartSlide()}
+      onClick={() => restartSlide()}
     >
       <div className={styles.containerTitle}>
         <div>{Object.values(slideDataState)[index].title}</div>
@@ -304,7 +308,13 @@ function PlayTitle() {
           padding: '15px 0px',
         }}
       >
-        <div style={{ color: '#FFD900', fontSize: 35 }}>
+        <div
+          style={{
+            color: '#FFD900',
+            textShadow: '0px 0px 10px #FCC539',
+            fontSize: 35,
+          }}
+        >
           {Object.values(slideDataState)[index].amount}{' '}
           {Object.values(slideDataState)[index].keyAmount}
         </div>
@@ -313,4 +323,4 @@ function PlayTitle() {
   );
 }
 
-export default PlayTitle;
+export default PlayBanerContent;

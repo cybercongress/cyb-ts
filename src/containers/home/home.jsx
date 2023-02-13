@@ -226,7 +226,6 @@ const Home = ({ block }) => {
           />
           <CardStatisics
             value={formatNumber(communityPool)}
-            styleValue={{ fontSize: '24px' }}
             title="Community pool"
             // styleContainer={{ minWidth: 'unset' }}
           />

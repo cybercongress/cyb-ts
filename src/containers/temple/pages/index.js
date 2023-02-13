@@ -1,3 +1,3 @@
-import { PlayContent, PlayTitle } from './play';
+import { PlayContent, PlayBanerContent } from './play';
 
-export { PlayContent, PlayTitle };
+export { PlayContent, PlayBanerContent };

@@ -1,4 +1,4 @@
 import PlayContent from './PlayContent';
-import PlayTitle from './PlayTitle';
+import PlayBanerContent from './PlayBanerContent';
 
-export { PlayContent, PlayTitle };
+export { PlayContent, PlayBanerContent };

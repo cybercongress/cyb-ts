@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Pane, Icon } from '@cybercongress/gravity';
 import Tooltip from '../tooltip/tooltip';
+import { ContainerGradientText } from '../../containers/portal/components';
+import styles from './styles.scss';
 
 // const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 
@@ -63,28 +65,27 @@ export const CardStatisics = ({
   tooltipValue,
   positionTooltip,
 }) => (
-  <div style={styleContainer} className="container-statistics-card">
-    {(value || value === 0) && (
-      <span style={styleValue} className="card-statistics-value">
-        {value}
-      </span>
-    )}
+  <ContainerGradientText userStyleContent={styleContainer}>
+    <div style={styleValue} className={styles.containerValue}>
+      {(value || value === 0) && <div>{value}</div>}
+    </div>
+
     {title && (
-      <Pane display="flex" alignItems="center">
-        <span style={styleTitle} className="card-statistics-title">
+      <div className={styles.containerTextLink}>
+        <div style={styleTitle} className={styles.containerText}>
           {title}
           {tooltipValue && (
-            <Pane marginLeft={5}>
+            <div className={styles.containerIcon}>
               <Tooltip placement={positionTooltip} tooltip={tooltipValue}>
                 <Icon icon="info-sign" color="#3ab793d4" />
               </Tooltip>
-            </Pane>
+            </div>
           )}
-        </span>
+        </div>
         {link && <Icon icon="arrow-right" color="#4ed6ae" marginLeft={5} />}
-      </Pane>
+      </div>
     )}
-  </div>
+  </ContainerGradientText>
 );
 
 export const CardArrow = ({ title, value, win }) => (

@@ -38,6 +38,7 @@ import { BtnGrd, ActionBarSteps } from '../portal/components';
 import ActionBarStaps from './actionBarSteps';
 
 import testVar from './testJson.json';
+import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -93,6 +94,8 @@ function ActionBar({ stateActionBar }) {
     sourceChannel,
     networkB,
   } = stateActionBar;
+
+  const { passport } = useGetPassportByAddress(addressActive);
 
   useEffect(() => {
     let orderPrice = 0;
@@ -617,6 +620,15 @@ function ActionBar({ stateActionBar }) {
   const handleHistory = (to) => {
     history.push(to);
   };
+
+  if (passport === null) {
+    return (
+      <ActionBarCenter
+        btnText="get citizenship"
+        onClickFnc={() => handleHistory('/portal')}
+      />
+    );
+  }
 
   if (addressActive === null) {
     return (

@@ -371,6 +371,7 @@ function App({
               <AppMenu addressActive={addressActive} />
             </AppSideBar>
             <SwichNetwork
+              openMenu={openMenu}
               onClickOpenMenu={() => setOpenMenu((item) => !item)}
               countLink={countLink}
               bandwidth={bandwidth}

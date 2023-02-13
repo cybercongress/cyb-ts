@@ -15,12 +15,14 @@ import {
   TransactionError,
   CheckAddressInfo,
   Dots,
+  ActionBar as ActionBarCenter,
 } from '../../components';
 
 import { trimString, formatNumber } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { AppContext } from '../../context';
+import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const {
   MEMO,
@@ -189,6 +191,7 @@ function ActionBarContainer({
   unStake,
   updateFnc,
 }) {
+  const { passport } = useGetPassportByAddress(addressPocket);
   const { keplr, jsCyber } = useContext(AppContext);
   const history = useHistory();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -374,6 +377,19 @@ function ActionBarContainer({
     return false;
   }, [balance]);
 
+  const handleHistory = (to) => {
+    history.push(to);
+  };
+
+  if (passport === null) {
+    return (
+      <ActionBarCenter
+        btnText="get citizenship"
+        onClickFnc={() => handleHistory('/portal')}
+      />
+    );
+  }
+
   // addressPocket empty
   if (
     Object.keys(validators).length === 0 &&
@@ -436,7 +452,7 @@ function ActionBarContainer({
                   <button
                     type="button"
                     className="btn-disabled"
-                    onClick={() => history.push('/mint')}
+                    onClick={() => handleHistory('/hfr')}
                     style={{
                       height: 42,
                       maxWidth: '200px',

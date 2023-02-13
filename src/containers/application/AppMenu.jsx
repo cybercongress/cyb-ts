@@ -6,16 +6,16 @@ import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
 import nebulaIcon from '../../image/temple/nebula.png';
-import teleport from '../../image/temple/teleport.svg';
-import hfr from '../../image/temple/hrf.png';
+import teleport from '../../image/temple/teleport.jpg';
+import hfr from '../../image/temple/hfr.png';
 import temple from '../../image/temple/temple.png';
-import robot from '../../image/temple/robot.svg';
+import robot from '../../image/temple/robot.jpg';
 import shpere from '../../image/temple/shpere.png';
 import senate from '../../image/temple/senate.png';
 import portal from '../../image/temple/portal.svg';
 import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
-import hub from '../../image/temple/hub.svg';
+import hub from '../../image/temple/hub.png';
 import zhdun from '../../image/temple/zhdun.png';
 
 const itemsMenu = (address) => {

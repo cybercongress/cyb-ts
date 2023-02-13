@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
+import { Transition } from 'react-transition-group';
 import { AvataImgIpfs } from '../portal/components/avataIpfs';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
@@ -41,17 +42,16 @@ function AccountItem({ data, node, onClickSetActive, name }) {
     <button
       type="button"
       onClick={onClickSetActive}
-      className={cx(styles.containerSwichAccount, styles.btnContainerText)}
+      className={cx(
+        styles.containerSwichAccount,
+        styles.btnContainerText,
+        styles.containerSwichAccountHover
+      )}
       style={{ marginTop: -10 }}
     >
       {useGetName !== null && (
         <button
-          className={styles.btnContainerText}
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            fontSize: '16px',
-          }}
+          className={cx(styles.btnContainerText, styles.btnContainerTextHover)}
           type="button"
         >
           {useGetName}
@@ -61,7 +61,8 @@ function AccountItem({ data, node, onClickSetActive, name }) {
       <div
         className={cx(
           styles.containerAvatarConnect,
-          styles.containerAvatarConnectTrue
+          styles.containerAvatarConnectTrue,
+          styles.containerAvatarConnectHover
         )}
       >
         <AvataImgIpfs
@@ -83,6 +84,7 @@ function SwichAccount({
   onClickChangeActiveAcc,
 }) {
   const [controlledVisible, setControlledVisible] = React.useState(false);
+
   // se;
 
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
@@ -141,6 +143,7 @@ function SwichAccount({
         .map((key, i) => {
           return (
             <AccountItem
+              key={key}
               data={accounts[key]}
               onClickSetActive={() =>
                 onClickChangeActiveAcc(key, accounts[key])
@@ -192,24 +195,27 @@ function SwichAccount({
           </div>
         </Link>
       </div>
-      {visible && (
-        <div
-          ref={setTooltipRef}
-          {...getTooltipProps({ className: styles.tooltipContainerRight })}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              background: '#000000',
-              paddingLeft: '15px',
-              width: '300px',
-              paddingBottom: '15px',
-            }}
-          >
-            {renderItem}
-          </div>
-        </div>
+      {Object.keys(renderItem).length > 0 && (
+        <Transition in={visible} timeout={300}>
+          {(state) => {
+            return (
+              <div
+                ref={setTooltipRef}
+                {...getTooltipProps({
+                  className: styles.tooltipContainerRight,
+                })}
+              >
+                <div
+                  className={cx(styles.containerSwichAccountList, [
+                    styles[`containerSwichAccountList${state}`],
+                  ])}
+                >
+                  {renderItem}
+                </div>
+              </div>
+            );
+          }}
+        </Transition>
       )}
     </div>
   );

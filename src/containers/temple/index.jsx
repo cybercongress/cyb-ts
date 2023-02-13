@@ -10,10 +10,11 @@ import {
 // import Carousel from '../portal/gift/carousel1/Carousel';
 import Carousel from './components/corusel';
 import { BOOT_ICON } from '../portal/utils';
-import { PlayContent, PlayTitle } from './pages';
+import { PlayContent, PlayBanerContent } from './pages';
 import { ActionBar } from '../../components';
 import BtnGrd from '../../components/btnGrd';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
+import Canvas from './components/canvasOne';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -76,42 +77,6 @@ function Temple({ defaultAccount }) {
 
   const [step, setStep] = useState(2);
 
-  const showCoords = (event) => {
-    const boxShadow = 0;
-
-    const mX = event.pageX;
-    const mY = event.pageY;
-    const from = { x: mX, y: mY };
-
-    console.log(from);
-
-    const element = document.getElementById('github-bar');
-    const off = element.getBoundingClientRect();
-    const { width } = off;
-    const { height } = off;
-    // console.log('height', height);
-    // console.log('width', width);
-
-    const nx1 = off.left;
-    const ny1 = off.top;
-    const nx2 = nx1 + width;
-    const ny2 = ny1 + height;
-    const maxX1 = Math.max(mX, nx1);
-    const minX2 = Math.min(mX, nx2);
-    const maxY1 = Math.max(mY, ny1);
-    const minY2 = Math.min(mY, ny2);
-    const intersectX = minX2 >= maxX1;
-    const intersectY = minY2 >= maxY1;
-    const to = {
-      x: intersectX ? mX : nx2 < mX ? nx2 : nx1,
-      y: intersectY ? mY : ny2 < mY ? ny2 : ny1,
-    };
-    const distX = to.x - from.x;
-    const distY = to.y - from.y;
-    const hypot = Math.sqrt(distX * distX + distY * distY);
-    console.log(hypot);
-  };
-
   const handleGetCitizenship = () => {
     history.push('/portal');
   };
@@ -119,6 +84,7 @@ function Temple({ defaultAccount }) {
   return (
     <div>
       <MainContainer width="82%">
+        <Canvas />
         <Carousel
           slides={itemCarousel1}
           activeStep={1}
@@ -131,7 +97,7 @@ function Temple({ defaultAccount }) {
         <ContainerGradientText
           userStyleContent={{ padding: 0, paddingTop: 30 }}
         >
-          <PlayTitle />
+          <PlayBanerContent />
 
           <div
             style={{

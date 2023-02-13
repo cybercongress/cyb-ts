@@ -17,7 +17,7 @@ function useGetPassportByAddress(accounts) {
       return null;
     },
     {
-      enabled: Boolean(jsCyber && addressBech32),
+      enabled: Boolean(jsCyber && addressBech32 !== null),
     }
   );
 
@@ -33,6 +33,8 @@ function useGetPassportByAddress(accounts) {
       ) {
         const { bech32 } = account.cyber;
         setAddressBech32(bech32);
+      } else {
+        setAddressBech32(null);
       }
     }
 
@@ -51,15 +53,19 @@ function useGetPassportByAddress(accounts) {
       const { bech32 } = accounts;
       setAddressBech32(bech32);
     }
+
+    if (accounts === null) {
+      setAddressBech32(null);
+    }
   }, [accounts]);
 
   useEffect(() => {
-    if (data) {
+    if (data && accounts !== null) {
       setPassport(data);
     } else {
       setPassport(null);
     }
-  }, [data]);
+  }, [data, accounts]);
 
   return {
     passport,

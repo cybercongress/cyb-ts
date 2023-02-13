@@ -1,5 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
+import { Transition } from 'react-transition-group';
+import cx from 'classnames';
 import { CYBER } from '../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../utils/utils';
 import { BandwidthBar, ButtonNetwork, Tooltip } from '../../components';
@@ -44,7 +46,13 @@ const updateAddress = async (prefix) => {
   }
 };
 
-function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
+function SwichNetwork({
+  onClickOpenMenu,
+  bandwidth,
+  countLink,
+  amounPower,
+  openMenu,
+}) {
   const [controlledVisible, setControlledVisible] = React.useState(false);
   const { networks } = useContext(AppContext);
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
@@ -98,7 +106,12 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
             alignItems: 'flex-start',
           }}
         >
-          <div style={{ whiteSpace: 'nowrap' }}>{key}</div>
+          <div
+            className={styles.containerBtnItemSelect}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            {key}
+          </div>
         </div>
       </button>
     ));
@@ -123,7 +136,17 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
             style={{ width: '60px', height: '60px', position: 'relative' }}
             alt="cyb"
             src={selectNetworkImg(CYBER.CHAIN_ID)}
+            className={styles.networkBtnImg}
           />
+          <div
+            className={cx(styles.networkBtnImgIconMenu, {
+              [styles.networkBtnImgIconMenuClose]: !openMenu,
+            })}
+          >
+            <div />
+            <div />
+            <div />
+          </div>
         </button>
         <div
           style={{
@@ -158,24 +181,25 @@ function SwichNetwork({ onClickOpenMenu, bandwidth, countLink, amounPower }) {
           </div>
         </div>
       </div>
-      {visible && (
-        <div
-          ref={setTooltipRef}
-          {...getTooltipProps({ className: styles.tooltipContainer })}
-        >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              background: '#000000',
-              paddingLeft: '15px',
-              width: '250px',
-              paddingBottom: '15px',
-            }}
-          >
-            {renderItemChain}
-          </div>
-        </div>
+      {Object.keys(renderItemChain).length > 0 && (
+        <Transition in={visible} timeout={300}>
+          {(state) => {
+            return (
+              <div
+                ref={setTooltipRef}
+                {...getTooltipProps({ className: styles.tooltipContainer })}
+              >
+                <div
+                  className={cx(styles.containerSwichNetworkList, [
+                    styles[`containerSwichNetworkList${state}`],
+                  ])}
+                >
+                  {renderItemChain}
+                </div>
+              </div>
+            );
+          }}
+        </Transition>
       )}
     </>
   );
