@@ -402,9 +402,9 @@ const AppContextProvider = ({ children }) => {
     return <div>...</div>;
   }
 
-  // if (loadUrl) {
-  //   return <div>...</div>;
-  // }
+  if (loadUrl) {
+    return <div>...</div>;
+  }
 
   return (
     <AppContext.Provider
