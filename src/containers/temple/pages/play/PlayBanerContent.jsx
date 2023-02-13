@@ -46,6 +46,29 @@ const PREFIXES = [
   },
 ];
 
+const TypingText = ({ content, delay = 30 }) => {
+  const [displayed, updateDisplay] = useState('');
+  let animID;
+
+  useEffect(() => {
+    updateDisplay(content.charAt(0)); // call once to avoid empty element flash
+    animID = setInterval(typeLetter, delay);
+    return () => {
+      updateDisplay('');
+      clearInterval(animID);
+    };
+  }, [content]);
+
+  const typeLetter = () => {
+    updateDisplay((prevText) => {
+      if (content.length <= prevText.length) clearInterval(animID);
+      return prevText.concat(content.charAt(prevText.length));
+    });
+  };
+
+  return <>{displayed}</>;
+};
+
 const DeltaValue = ({ change }) => {
   if (parseFloat(change.amount) > 0) {
     return (
@@ -294,7 +317,12 @@ function PlayBanerContent() {
           alignItems: mediaQuery ? 'center' : 'flex-start',
         }}
       >
-        <div>{Object.values(slideDataState)[index].title}</div>
+        <div>
+          <TypingText
+            content={Object.values(slideDataState)[index].title}
+            delay={40}
+          />
+        </div>
         <div
           style={{
             display: 'flex',

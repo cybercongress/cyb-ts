@@ -277,7 +277,7 @@ export const Telegram = () => {
                 />
               </div>
             </LinkWindow>
-            <LinkWindow to="https://t.me/cyber/47885">
+            <LinkWindow to="https://t.me/cyber/47896">
               <div
                 style={{
                   display: 'flex',
@@ -297,7 +297,7 @@ export const Telegram = () => {
           </div>
         }
       >
-        <LinkWindow to="https://t.me/cyber/47896">
+        <LinkWindow to="https://t.me/cyber">
           <div>
             <img
               alt="telegram"
