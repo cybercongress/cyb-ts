@@ -6,10 +6,10 @@ import { Bookmarks } from '../../components/appMenu/AppMenu';
 import { CYBER } from '../../utils/config';
 
 import nebulaIcon from '../../image/temple/nebula.png';
-import teleport from '../../image/temple/teleport.jpg';
+import teleport from '../../image/temple/teleport.png';
 import hfr from '../../image/temple/hfr.png';
 import temple from '../../image/temple/temple.png';
-import robot from '../../image/temple/robot.jpg';
+import robot from '../../image/temple/robot.png';
 import shpere from '../../image/temple/shpere.png';
 import senate from '../../image/temple/senate.png';
 import portal from '../../image/temple/portal.svg';
