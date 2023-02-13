@@ -191,7 +191,7 @@ function SwichAccount({
             useGetName === null || !mediaQuery ? '1fr' : '1fr 100px',
         }}
       >
-        {mediaQuery && (
+        {mediaQuery && useGetAddress !== null && (
           <div className={styles.containerKrmaName}>
             {useGetName !== null && (
               <button
