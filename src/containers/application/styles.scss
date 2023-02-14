@@ -104,6 +104,7 @@
   display: flex;
   justify-content: flex-end;
   font-size: 16px;
+  padding-bottom:10px;
 }
 
 .containerSwichAccountHover {
@@ -113,7 +114,8 @@
       height: 105px;
     }
     .btnContainerTextHover {
-      font-size: 17px;
+      font-size: 16px;
+      padding-right:7px;
     }
   }
 }
