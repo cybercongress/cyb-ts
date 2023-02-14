@@ -76,7 +76,7 @@ function Karma({ address }) {
     return null;
   }, [data]);
 
-  return <div style={{ color: '#fff' }}>{karmaNumber}</div>;
+  return <div style={{ color: '#fff'; font-size:16px; padding-top:16px }}>{karmaNumber}</div>;
 }
 
 export default Karma;
