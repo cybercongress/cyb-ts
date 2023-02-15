@@ -10,7 +10,7 @@ import temple from '../../../../image/temple/temple.png';
 import robot from '../../../../image/temple/robot.png';
 import shpere from '../../../../image/temple/shpere.png';
 import senate from '../../../../image/temple/senate.png';
-import portal from '../../../../image/temple/portal.svg';
+import portal from '../../../../image/space-pussy.svg';
 import oracle from '../../../../image/temple/oracle.png';
 import warp from '../../../../image/temple/warp.png';
 import hub from '../../../../image/temple/hub.png';
