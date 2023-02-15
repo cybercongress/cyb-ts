@@ -13,6 +13,7 @@ const amperImg = require('../../image/light.png');
 const hydrogen = require('../../image/hydrogen.svg');
 const tocyb = require('../../image/boot.png');
 const boot = require('../../image/large-green.png');
+const pussy = require('../../image/large-purple-circle.png');
 const defaultImg = require('../../image/large-orange-circle.png');
 
 const getNativeImg = (text) => {
@@ -42,6 +43,12 @@ const getNativeImg = (text) => {
     case 'boot':
     case 'BOOT':
       img = boot;
+
+      break;
+
+    case 'pussy':
+    case 'PUSSY':
+      img = pussy;
 
       break;
 
