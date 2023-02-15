@@ -621,7 +621,7 @@ function ActionBar({ stateActionBar }) {
     history.push(to);
   };
 
-  if (passport === null) {
+  if (passport === null && CYBER.CHAIN_ID === 'bostrom') {
     return (
       <ActionBarCenter
         btnText="get citizenship"

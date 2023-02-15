@@ -16,6 +16,7 @@ import BtnGrd from '../../components/btnGrd';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import Canvas from './components/canvasOne';
 import styles from './styles.scss';
+import { CYBER } from '../../utils/config';
 
 const itemCarousel = [
   { title: 'compute' },
@@ -107,7 +108,7 @@ function Temple({ defaultAccount }) {
 
         <PlayContent />
       </MainContainer>
-      {passport === null && (
+      {passport === null && CYBER.CHAIN_ID === 'bostrom' && (
         <ActionBar>
           <BtnGrd
             onClick={() => handleGetCitizenship()}
