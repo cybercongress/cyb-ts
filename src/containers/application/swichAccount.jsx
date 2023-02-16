@@ -80,16 +80,19 @@ function AccountItem({
       <div
         className={cx(
           styles.containerAvatarConnect,
-          styles.containerAvatarConnectTrue,
           styles.containerAvatarConnectHover
         )}
       >
-        <AvataImgIpfs
-          style={{ position: 'relative' }}
-          cidAvatar={useGetCidAvatar}
-          node={node}
-          addressCyber={useGetAddress}
-        />
+        <div className={styles.containerAvatarConnectHoverAbsolute}>
+          <div className={styles.containerAvatarConnectTrue}>
+            <AvataImgIpfs
+              style={{ position: 'relative' }}
+              cidAvatar={useGetCidAvatar}
+              node={node}
+              addressCyber={useGetAddress}
+            />
+          </div>
+        </div>
       </div>
     </button>
   );
@@ -188,11 +191,11 @@ function SwichAccount({
         className={styles.containerSwichAccount}
         style={{
           gridTemplateColumns:
-            useGetName === null || !mediaQuery ? '1fr' : '1fr 100px',
+            useGetName === null || !mediaQuery ? '1fr' : '1fr 105px',
         }}
       >
         {mediaQuery && useGetAddress !== null && (
-          <div className={styles.containerKrmaName}>
+          <div className={styles.containerKrmaName} style={{ gap: '0' }}>
             {useGetName !== null && (
               <button
                 onClick={() => setControlledVisible((item) => !item)}

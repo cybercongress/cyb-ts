@@ -78,12 +78,12 @@ const playContentItem = [
 
 function PlayContent() {
   return (
-    <ContainerGradientText>
+    <ContainerGradientText status="green">
       <div className={styles.containerPlayContent}>
         {playContentItem.map((item) => (
           <Link to={item.to}>
             <div className={styles.containerItemPlayContent}>
-              <div>
+              <div className={styles.containteImgItemPlayContent}>
                 <img
                   alt={item.title}
                   src={item.icon}

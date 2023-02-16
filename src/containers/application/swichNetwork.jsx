@@ -91,7 +91,7 @@ function SwichNetwork({
       >
         <div className={styles.networkBtn}>
           <img
-            style={{ width: '60px', height: '60px', position: 'relative' }}
+            className={styles.networkBtnImg}
             alt="cyb"
             src={selectNetworkImg(key)}
           />
@@ -101,19 +101,14 @@ function SwichNetwork({
             display: 'flex',
             height: '100%',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            padding: '27px 0',
+            // justifyContent: 'space-between',
+            // padding: '27px 0',
             color: '#1FCBFF',
             fontSize: '16px',
             alignItems: 'flex-start',
           }}
         >
-          <div
-            className={styles.containerBtnItemSelect}
-            style={{ whiteSpace: 'nowrap' }}
-          >
-            {key}
-          </div>
+          <div className={styles.containerBtnItemSelectText}>{key}</div>
         </div>
       </button>
     ));
@@ -155,8 +150,8 @@ function SwichNetwork({
               display: 'flex',
               height: '100%',
               flexDirection: 'column',
-              justifyContent: 'space-around',
-              padding: '20px 0',
+              justifyContent: 'space-between',
+              padding: '25px 0',
               color: '#1FCBFF',
               fontSize: 20,
             }}

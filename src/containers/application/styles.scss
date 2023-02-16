@@ -17,6 +17,7 @@
     top: 50%;
     transform: translate(-50%, -50%);
     left: 50%;
+    transition: 0.2s;
   }
 }
 
@@ -74,6 +75,13 @@
   cursor: pointer;
 }
 
+.networkBtnImg {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  transition: 0.2s;
+}
+
 .containerBtnItemSelect {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -93,28 +101,49 @@
         height: 105px;
       }
     }
+    .networkBtnImg {
+      width: 65px;
+      height: 65px;
+    }
 
     .containerBtnItemSelectText {
-      font-size: 17px;
+      transform: translateX(5px);
     }
   }
+}
+
+.containerBtnItemSelectText {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  transition: 0.4s;
 }
 
 .btnContainerTextHover {
   display: flex;
   justify-content: flex-end;
   font-size: 16px;
-  padding-bottom:10px;
+  transition: 0.4s;
 }
 
 .containerSwichAccountHover {
   &:hover {
-    .containerAvatarConnectHover {
+    .containerAvatarConnectHoverAbsolute {
       width: 105px;
       height: 105px;
     }
     .btnContainerTextHover {
-      /* font-size: 16px; */
+      transform: translateX(-5px);
+    }
+    .containerKarma {
+      transform: translateX(-5px);
+    }
+    .containerAvatarConnectTrue {
+      &::before {
+        width: 105px;
+        height: 105px;
+      }
     }
   }
 }
@@ -128,7 +157,7 @@
 
 .tooltipContainerRight {
   position: absolute;
-  right: -5px !important;
+  right: 0px !important;
   top: unset !important;
   left: unset !important;
   z-index: 3;
@@ -136,7 +165,7 @@
 
 .sideBar {
   position: fixed;
-  top: 120px;
+  top: 140px;
   left: 0;
   bottom: 0;
   width: 218px;
@@ -166,10 +195,10 @@
 
 .containerSwichAccount {
   display: grid;
-  grid-template-columns: 1fr 100px;
+  grid-template-columns: 1fr 105px;
   gap: 25px;
   align-items: center;
-  height: 100px;
+  height: 105px;
 }
 
 @mixin before-Avatar {
@@ -192,10 +221,13 @@
 }
 
 .containerAvatarConnect {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   position: relative;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &False {
     &::before {
@@ -205,7 +237,10 @@
   }
 
   &True {
+    width: 100%;
     &::before {
+      transition: 0.2s;
+
       @include before-Avatar;
       box-shadow: 0px 0px 20px #1fcbff66;
     }
@@ -229,12 +264,14 @@
 .containerSwichNetworkList {
   display: flex;
   flex-direction: column;
-  background: #00000075;
+  background: #0000008c;
+      // background: #0000008c;
   padding-left: 15px;
   width: 250px;
   padding-bottom: 15px;
   opacity: 0;
-  transition: 0.1s;
+  transition: 0.2s;
+  backdrop-filter: blur(7px);
 
   &entering {
     opacity: 0;
@@ -259,12 +296,14 @@
 .containerSwichAccountList {
   display: flex;
   flex-direction: column;
-  background: #00000075;
+  background: #0000008c;
   // padding-right: 15px;
   width: 300px;
   padding-bottom: 15px;
   opacity: 0;
-  transition: 0.1s;
+  transition: 0.2s;
+  backdrop-filter: blur(7px);
+
 
   &entering {
     opacity: 0;
@@ -282,18 +321,33 @@
   &exited {
     opacity: 0;
     visibility: hidden;
+    height: 1px;
   }
 }
-
 
 .containerKrmaName {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 12px;
+  height: 100%;
+  justify-content: space-between;
+  padding: 25px 0;
 }
 
 .containerKarma {
   color: #fff;
   font-size: 16px;
-  padding-top: 12px;
+  // padding-top: 12px;
+  transition: 0.4s;
+}
+
+.containerAvatarConnectHoverAbsolute {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  transition: 0.2s;
 }
