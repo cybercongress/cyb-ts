@@ -5,16 +5,16 @@ import { getAvatarIpfs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
 
-const eth = require('../../image/Ethereum_logo_2014.svg');
-const pool = require('../../image/gravitydexPool.png');
-const ibc = require('../../image/ibc-unauth.png');
-const voltImg = require('../../image/lightning2.png');
-const amperImg = require('../../image/light.png');
-const hydrogen = require('../../image/hydrogen.svg');
-const tocyb = require('../../image/boot.png');
-const boot = require('../../image/large-green.png');
-const pussy = require('../../image/large-purple-circle.png');
-const defaultImg = require('../../image/large-orange-circle.png');
+import eth from '../../image/Ethereum_logo_2014.svg';
+import pool from '../../image/gravitydexPool.png';
+import ibc from '../../image/ibc-unauth.png';
+import voltImg from '../../image/lightning2.png';
+import amperImg from '../../image/light.png';
+import hydrogen from '../../image/hydrogen.svg';
+import tocyb from '../../image/boot.png';
+import boot from '../../image/large-green.png';
+import pussy from '../../image/large-purple-circle.png';
+import defaultImg from '../../image/large-orange-circle.png';
 
 const getNativeImg = (text) => {
   let img = null;

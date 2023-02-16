@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import * as config from '../config';
+import all from 'it-all'
 
 import db from '../../db';
 
-const all = require('it-all');
 const uint8ArrayConcat = require('uint8arrays/concat');
 const uint8ArrayToAsciiString = require('uint8arrays/to-string');
 
@@ -19,7 +19,7 @@ const { PATTERN_IPFS_HASH } = config;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
-const IPFS = require('ipfs-api');
+// const IPFS = require('ipfs-api');
 const isSvg = require('is-svg');
 
 const Unixfs = require('ipfs-unixfs');
@@ -46,7 +46,7 @@ export const initIpfs = async () => {
 
   const ipfsConfig = await getIpfsConfig();
 
-  ipfsApi = new IPFS(ipfsConfig);
+  // ipfsApi = new IPFS(ipfsConfig);
 };
 
 const getIpfs = async () => {

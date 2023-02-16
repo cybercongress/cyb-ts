@@ -9,9 +9,9 @@ import { getRankGrade, getPinsCid } from '../../utils/search/utils';
 import CodeBlock from './codeBlock';
 import { getTypeContent } from './useGetIpfsContentHook';
 import db from '../../db';
+import all from 'it-all';
 
 const uint8ArrayConcat = require('uint8arrays/concat');
-const all = require('it-all');
 const FileType = require('file-type');
 
 const ContentItem = ({ item, cid, nodeIpfs, grade, ...props }) => {

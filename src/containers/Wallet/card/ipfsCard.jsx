@@ -6,7 +6,7 @@ import { Copy, Dots } from '../../../components';
 import { trimString, formatCurrency, formatNumber } from '../../../utils/utils';
 import { getDrop } from '../../../utils/search/utils';
 
-const imgIpfs = require('../../../image/ipfs-logo.svg');
+import imgIpfs from '../../../image/ipfs-logo.svg';
 
 const PREFIXES = [
   {

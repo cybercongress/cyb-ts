@@ -4,7 +4,7 @@ import { formatNumber as format } from '../../utils/search/utils';
 
 import { CYBER } from '../../utils/config';
 
-const giftImg = require('../../image/gift.svg');
+import giftImg from '../../image/gift.svg';
 
 const KEY_NAME = {
   'euler-4_from': 'euler-4 from',

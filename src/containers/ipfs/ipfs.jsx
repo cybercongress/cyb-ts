@@ -40,8 +40,6 @@ import { AppContext } from '../../context';
 
 const dateFormat = require('dateformat');
 
-const FileType = require('file-type');
-
 const Pill = ({ children, active, ...props }) => (
   <Pane
     display="flex"

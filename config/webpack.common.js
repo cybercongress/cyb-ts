@@ -1,5 +1,6 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+// const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
@@ -95,16 +96,17 @@ module.exports = {
         },
       },
       {
-	    test: /\.html$/i,
-	    use: {
-	    	loader: 'html-loader',
-	    }
-	  }
+        test: /\.html$/i,
+        use: {
+          loader: 'html-loader',
+        },
+      },
     ],
   },
   resolve: {
     extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
     alias: {
+      '@': path.src,
       'multicodec/src/base-table': path.dirname(
         require.resolve('multicodec/src/base-table.json')
       ),

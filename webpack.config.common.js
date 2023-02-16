@@ -4,6 +4,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
 
 const Dotenv = require("dotenv-webpack");
 
@@ -22,26 +24,27 @@ module.exports = {
     // filename: 'index.js',
     path: path.join(__dirname, '/build'),
     publicPath: '/',
+    assetModuleFilename: '[name][hash:10][ext]',
   },
   // node: { fs: 'empty' },
   resolve: {
     fallback: {
       buffer: require.resolve('buffer'),
-      "fs": false,
-      "zlib": false,
-      "path": false,
-      "url": false,
-      "crypto": require.resolve("crypto-browserify"),
-      "assert": require.resolve("assert"),
-      "https": require.resolve("https-browserify"),
-      "os": require.resolve("os-browserify/browser"),
-      "http": require.resolve("stream-http") ,
-      "assert": require.resolve("assert/"),
-      "stream": require.resolve("stream-browserify"),
-       "buffer": require.resolve("buffer/"),
+      fs: false,
+      zlib: false,
+      path: false,
+      url: false,
+      crypto: require.resolve('crypto-browserify'),
+      assert: require.resolve('assert'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify/browser'),
+      http: require.resolve('stream-http'),
+      assert: require.resolve('assert/'),
+      stream: require.resolve('stream-browserify'),
+      buffer: require.resolve('buffer/'),
       // "path": require.resolve("path-browserify"),
       // "zlib": require.resolve("browserify-zlib"),
-      "constants": require.resolve("constants-browserify")
+      constants: require.resolve('constants-browserify'),
       // "os": require.resolve("os-browserify")
     },
     extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
@@ -49,15 +52,20 @@ module.exports = {
       'multicodec/src/base-table': path.dirname(
         require.resolve('multicodec/src/base-table.json')
       ),
-      "react/jsx-dev-runtime.js": "react/jsx-dev-runtime",
-      "react/jsx-runtime.js": "react/jsx-runtime",
+      'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
+      'react/jsx-runtime.js': 'react/jsx-runtime',
     },
   },
   plugins: [
+    new NodePolyfillPlugin(),
+    // Note: stream-browserify has assumption about `Buffer` global in its
+    // dependencies causing runtime errors. This is a workaround to provide
+    // global `Buffer` until https://github.com/isaacs/core-util-is/issues/29
+    // is fixed.
     new webpack.ProvidePlugin({
-      Buffer: [ 'buffer', 'Buffer' ],
+      Buffer: ['buffer', 'Buffer'],
       process: 'process/browser',
-  }),
+    }),
     new CleanWebpackPlugin(),
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
@@ -73,7 +81,8 @@ module.exports = {
       chunkFilename: '[id].css',
     }),
     new Dotenv({
-      systemvars: true,}),
+      systemvars: true,
+    }),
   ],
   module: {
     rules: [
@@ -130,26 +139,30 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: ['file-loader'],
+        // use: ['file-loader'],
+        type: 'asset/resource',
       },
       {
         test: /\.(ogg|mp3|wav|mpe?g)$/i,
-        loader: 'file-loader',
-        options: {
-          name: '[path][name].[ext]',
-        },
+        type: 'asset/resource',
+
+        // loader: 'file-loader',
+        // options: {
+        //   name: '[path][name].[ext]',
+        // },
       },
       {
         test: /\.(jpe?g|png|gif|svg|ico)$/i,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: '[name].[hash:10].[ext]',
-            outputPath: '',
-            publicPath: '',
-            useRelativePath: false,
-          },
-        },
+        type: 'asset/resource',
+        // use: {
+        //   loader: 'file-loader',
+        //   options: {
+        //     name: '[name].[hash:10].[ext]',
+        //     outputPath: '',
+        //     publicPath: '',
+        //     useRelativePath: false,
+        //   },
+        // },
       },
       {
         test: /\.m?js$/,

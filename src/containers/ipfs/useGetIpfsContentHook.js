@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
 import db from '../../db';
 import { getPinsCid } from '../../utils/search/utils';
+import all from 'it-all';
 
 const isSvg = require('is-svg');
 
 const FileType = require('file-type');
-const all = require('it-all');
+
 const uint8ArrayConcat = require('uint8arrays/concat');
 const uint8ArrayToAsciiString = require('uint8arrays/to-string');
 

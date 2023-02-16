@@ -1,8 +1,8 @@
 import { PATTERN_CYBER } from '../../utils/config';
 import db from '../../db';
+import all from 'it-all';
 
 const FileType = require('file-type');
-const all = require('it-all');
 
 const getIndexdDb = async (cid, nodeIpfs) => {
   let addressResolve = null;
