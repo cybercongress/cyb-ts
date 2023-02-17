@@ -151,7 +151,7 @@ function SwichNetwork({
               height: '100%',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              padding: '25px 0',
+              padding: '27px 0',
               color: '#1FCBFF',
               fontSize: 20,
             }}
