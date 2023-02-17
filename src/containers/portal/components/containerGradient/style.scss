@@ -73,7 +73,7 @@
     &::after {
       opacity: 11%;
       @include styleGradientPseudoEl;
-      @include linear-gradient-blue(90deg);
+      @include linear-gradient-green(90deg);
       right: 0;
     }
   }
@@ -208,7 +208,7 @@
       &::before {
         opacity: 11%;
         @include styleGradientPseudoEl;
-        @include linear-gradient-blue(-90deg);
+        @include linear-gradient-green(-90deg);
         left: 0;
         z-index: -1;
       }
@@ -558,7 +558,7 @@
   &Primary {
     &::after {
       @include styleGradientPseudoEl;
-      @include linear-gradient-blue(90deg);
+      @include linear-gradient-green(90deg);
       right: 0;
       opacity: 11%;
     }
