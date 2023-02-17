@@ -329,10 +329,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 12px;
+  gap: 10px;
   height: 100%;
   justify-content: space-between;
-  padding: 25px 0;
+  padding: 27px 0;
+}
+
+.containerKrmaName:nth-child(n+2) {
+  gap: 8px;
+  padding: 29px 0;
 }
 
 .containerKarma {
