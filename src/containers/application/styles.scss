@@ -335,8 +335,8 @@
   padding: 27px 0;
 }
 
-.containerKrmaName:nth-child(n+2) {
-  gap: 8px;
+.containerKrmaName > div.containerKrmaName {
+  gap: 6px;
   padding: 29px 0;
 }
 
