@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
-import {
-  Navigation,
-  NavigationLeft,
-  Pane,
-} from '@cybercongress/gravity';
+import { Navigation, NavigationLeft, Pane } from '@cybercongress/gravity';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 // import usePopperTooltip from 'react-popper-tooltip';
@@ -34,6 +30,7 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
 import useIpfsStart from '../../ipfsHook';
+import useNewIpfs from '../../useNewIpfs';
 import { GitHub, Telegram } from '../../components/actionBar';
 import styles from './styles.scss';
 import AppSideBar from './AppSideBar';
@@ -96,6 +93,8 @@ const ListAccounts = ({
   );
 };
 
+let timeintervalPeer;
+
 function App({
   defaultAccount,
   query,
@@ -116,7 +115,9 @@ function App({
   const { jsCyber, updatetMarketData, updateDataTotalSupply } =
     useContext(AppContext);
   const { marketData, dataTotal } = useGetMarketData();
-  const dataIpfsStart = useIpfsStart();
+  // const dataIpfsStart = useIpfsStart();
+  const { ipfs, isIpfsReady, ipfsInitError } = useNewIpfs();
+
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
@@ -129,7 +130,48 @@ function App({
   const [keywordHash, setKeywordHash] = useState(null);
   const [story, setStory] = useState(true);
 
-// console.log(accounts);
+  // console.log(accounts);
+
+  useEffect(() => {
+    const testStart = async () => {
+      if (ipfs !== null) {
+        const status = await ipfs.isOnline();
+        const responseId = await ipfs.id();
+
+        console.log('responseId', responseId)
+
+        initIpfsProps(ipfs);
+        setIpfsIDProps(responseId);
+        setIpfsStatusProps(status);
+
+        // const peerInfos = await node.swarm.addrs();
+
+        // console.log('peerInfos', peerInfos.length);
+
+        //        Lets log out the number of peers we have every 2 seconds
+        // timeintervalPeer = setInterval(async () => {
+        //   try {
+        //     const peerInfos = await node.swarm.peers();
+        //     console.log(`The node now has ${peerInfos.length} peers.`);
+        //   } catch (err) {
+        //     console.log('An error occurred trying to check our peers:', err);
+        //   }
+        // }, 3000);
+
+        // const file = await node.add({
+        //   path: 'test-data.txt',
+        //   content: uint8ArrayFromString('We are using a customized repo!'),
+        // });
+        // // Log out the added files metadata and cat the file from IPFS
+        // console.log('\nAdded file:', file.path, file.cid);
+
+        // // Print out the files contents to console
+
+        //  await node.stop();
+      }
+    };
+    testStart();
+  }, [ipfs]);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
@@ -143,13 +185,13 @@ function App({
     }
   }, [dataTotal]);
 
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    // tryConnectToPeer(dataIpfsStart.node);
-  }, [dataIpfsStart]);
+  // useEffect(() => {
+  //   initIpfsProps(dataIpfsStart.node);
+  //   setIpfsStatusProps(dataIpfsStart.status);
+  //   setTypeDeviceProps(dataIpfsStart.mobile);
+  //   setIpfsIDProps(dataIpfsStart.id);
+  //   // tryConnectToPeer(dataIpfsStart.node);
+  // }, [dataIpfsStart]);
 
   useEffect(() => {
     const { pathname } = location;

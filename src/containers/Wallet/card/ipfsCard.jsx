@@ -64,8 +64,12 @@ function IpfsCard({ storageManager, ipfsId, ...props }) {
         alignItems="baseline"
         value={
           <Pane display="flex" alignItems="center">
-            <div>{trimString(ipfsId.id, 6, 6)}</div>
-            <Copy text={ipfsId.id} />
+            {ipfsId?.id?.string && (
+              <>
+                <div>{trimString(ipfsId.id.string, 6, 6)}</div>
+                <Copy text={ipfsId.id.string} />
+              </>
+            )}
           </Pane>
         }
         title={formatCurrency(storageManager.usage, 'B', 2, PREFIXES)}

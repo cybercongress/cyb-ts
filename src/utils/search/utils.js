@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
+import all from 'it-all';
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import * as config from '../config';
-import all from 'it-all'
 
 import db from '../../db';
-
-const uint8ArrayConcat = require('uint8arrays/concat');
-const uint8ArrayToAsciiString = require('uint8arrays/to-string');
 
 const {
   CYBER_NODE_URL_API,
@@ -1436,16 +1435,24 @@ export const getAvatarIpfs = async (cid, ipfs) => {
   return null;
 };
 
-export const getIpfsGatway = async (cid) => {
+export const getIpfsGatway = async (cid, type = 'json') => {
   try {
-    const response = await axios({
-      method: 'get',
-      url: `${config.CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
-    });
+    const abortController = new AbortController();
+    setTimeout(() => {
+      abortController.abort();
+    }, 1000 * 60 * 1); // 1 min
+
+    const response = await axios.get(
+      `${config.CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
+      {
+        signal: abortController.signal,
+        responseType: type,
+      }
+    );
 
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.log('error getIpfsGatway', error);
     return null;
   }
 };
@@ -1517,7 +1524,6 @@ export const addFileToCluster = async (cid, file) => {
 export const getPinsCid = async (cid, file) => {
   try {
     const responseGetPinsCidGet = await getPinsCidGet(cid);
-    console.log(`responseGetPinsCidGet`, responseGetPinsCidGet);
     if (
       responseGetPinsCidGet.peer_map &&
       Object.keys(responseGetPinsCidGet.peer_map).length > 0
@@ -1528,7 +1534,6 @@ export const getPinsCid = async (cid, file) => {
         if (Object.hasOwnProperty.call(peerMap, key)) {
           const element = peerMap[key];
           if (element.status !== 'unpinned') {
-            console.log(`!== unpinned`);
             return null;
           }
         }
