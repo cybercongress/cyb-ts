@@ -37,12 +37,10 @@ const itemLinks = [
     title: 'moon code',
     to: '/ipfs/QmanZyMFnEti618crNPkn93g7MFaoDGrZ4Pta5drfdt9jb',
   },
-  
   {
     title: 'soft3',
     to: '/ipfs/QmTsBLAHC1Lk7n76GX4P3EvbAfNjBmZxwjknWy41SJZBGg',
   },
-  
   {
     title: 'de-ai',
     to: '/ipfs/QmVcAr1wVdL17GfA5PXu9fHHk6NrpoWsxnb861P7CjoHbk',
