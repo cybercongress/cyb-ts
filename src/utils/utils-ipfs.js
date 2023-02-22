@@ -96,7 +96,10 @@ const pinContentToDbAndIpfs = async (node, content, cid) => {
 
     await getPinsCid(cid, blob); // pin to cluster
 
-    db.table('cid').add(content); // pin to IndexedDB
+    const dataIndexdDb = await db.table('cid').get({ cid });
+    if (dataIndexdDb === undefined) {
+      db.table('cid').add(content); // pin to IndexedDB
+    }
   }
 };
 
