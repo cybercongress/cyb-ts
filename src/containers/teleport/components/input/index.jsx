@@ -5,17 +5,11 @@ import stylesLinear from './stylesLinear.scss';
 
 const classNames = require('classnames');
 
-export const LinearGradientContainer = ({ children, ...props }) => {
+export function LinearGradientContainer({ children, ...props }) {
   return (
     <div className={stylesLinear.textbox} {...props}>
       <div className={stylesLinear.textboxBox}>
         <div className={classNames(stylesLinear.textboxFace)} />
-        <div
-          className={classNames(
-            stylesLinear.textboxFace,
-            stylesLinear.textboxTriangles
-          )}
-        />
         <div
           className={classNames(
             stylesLinear.textboxFace,
@@ -32,7 +26,7 @@ export const LinearGradientContainer = ({ children, ...props }) => {
       </div>
     </div>
   );
-};
+}
 
 function Input({ ...props }) {
   return (

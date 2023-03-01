@@ -73,6 +73,7 @@ import useIpfsFactory from './useIpfsFactory';
 import defaultNetworks from './utils/defaultNetworks';
 
 import { TIME_START, CYBER } from './utils/config';
+import ipfsSettings from './containers/ipfsSettings';
 
 export const history = createBrowserHistory({});
 
@@ -105,6 +106,7 @@ function AppRouter() {
         <Route path="/quitter" component={ForceQuitter} />
         <Route path="/graph" component={ForceGraph} />
         <Route path="/pgraph/:agent" component={ForceGraph} />
+        <Route exact path="/ipfs" component={ipfsSettings} />
         <Route path="/ipfs/:cid" component={Ipfs} />
         <Route exact path="/network/bostrom/blocks" component={Block} />
         <Route

@@ -37,27 +37,30 @@ import AvatarIpfs from '../account/component/avatarIpfs';
 import ContentItem from './contentItem';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import { AppContext } from '../../context';
+import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
 
 const dateFormat = require('dateformat');
 
-const Pill = ({ children, active, ...props }) => (
-  <Pane
-    display="flex"
-    fontSize="14px"
-    borderRadius="20px"
-    height="20px"
-    paddingY="5px"
-    paddingX="8px"
-    alignItems="center"
-    lineHeight="1"
-    justifyContent="center"
-    backgroundColor={active ? '#000' : '#36d6ae'}
-    color={active ? '#36d6ae' : '#000'}
-    {...props}
-  >
-    {children}
-  </Pane>
-);
+function Pill({ children, active, ...props }) {
+  return (
+    <Pane
+      display="flex"
+      fontSize="14px"
+      borderRadius="20px"
+      height="20px"
+      paddingY="5px"
+      paddingX="8px"
+      alignItems="center"
+      lineHeight="1"
+      justifyContent="center"
+      backgroundColor={active ? '#000' : '#36d6ae'}
+      color={active ? '#36d6ae' : '#000'}
+      {...props}
+    >
+      {children}
+    </Pane>
+  );
+}
 
 const search = async (client, hash, page) => {
   try {
@@ -122,7 +125,6 @@ function Ipfs({ nodeIpfs, mobile }) {
   let contentTab;
 
   useEffect(() => {
-    // console.log(`dataGetIpfsContent`, dataGetIpfsContent);
     setContent(dataGetIpfsContent.content);
     setTypeContent(dataGetIpfsContent.typeContent);
     setGateway(dataGetIpfsContent.gateway);
@@ -277,23 +279,6 @@ function Ipfs({ nodeIpfs, mobile }) {
     }
   };
 
-  // if (loading) {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: '50vh',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //         flexDirection: 'column',
-  //       }}
-  //     >
-  //       <Loading />
-  //     </div>
-  //   );
-  // }
-
   if (selected === 'answers') {
     contentTab = (
       <AnswersTab
@@ -313,17 +298,6 @@ function Ipfs({ nodeIpfs, mobile }) {
       <DiscussionTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
     );
   }
-
-  // if (selected === 'content') {
-  //   contentTab = (
-  //     <ContentTab
-  //       typeContent={typeContent}
-  //       gateway={gateway}
-  //       content={content}
-  //       cid={cid}
-  //     />
-  //   );
-  // }
 
   if (selected === 'meta') {
     contentTab = (
@@ -376,30 +350,65 @@ function Ipfs({ nodeIpfs, mobile }) {
     );
   }
 
+  let contentIpfsCid;
+
+  if (dataGetIpfsContent.loading) {
+    contentIpfsCid = (
+      <div
+        style={{
+          width: '100%',
+          // height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          marginBottom: '50px',
+        }}
+      >
+        <ComponentLoader style={{ width: '100px', margin: '30px auto' }} />
+        <div style={{ fontSize: '20px' }}>
+          {dataGetIpfsContent.statusFetching}
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    !dataGetIpfsContent.loading &&
+    dataGetIpfsContent.status === 'impossibleLoad'
+  ) {
+    contentIpfsCid = (
+      <div
+        style={{
+          width: '100%',
+          // height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          marginBottom: '50px',
+        }}
+      >
+        <div style={{ fontSize: '20px' }}>impossible load content</div>
+      </div>
+    );
+  }
+
+  if (content.length !== 0) {
+    contentIpfsCid = (
+      <ContentTab
+        typeContent={typeContent}
+        gateway={gateway}
+        content={content}
+        cid={cid}
+      />
+    );
+  }
+
   return (
     <>
       <main className="block-body">
-        {content.length === 0 ? (
-          <div
-            style={{
-              width: '100%',
-              // height: '50vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-            }}
-          >
-            <Loading />
-          </div>
-        ) : (
-          <ContentTab
-            typeContent={typeContent}
-            gateway={gateway}
-            content={content}
-            cid={cid}
-          />
-        )}
+        {contentIpfsCid}
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
@@ -409,11 +418,6 @@ function Ipfs({ nodeIpfs, mobile }) {
           width="62%"
           marginX="auto"
         >
-          {/* <TabBtn
-          text="content"
-          isSelected={selected === 'content'}
-          to={`/ipfs/${cid}`}
-        /> */}
           <TabBtn
             // text="answers"
             text={

@@ -102,6 +102,7 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
   const [gateway, setGateway] = useState(null);
+  const [statusFetching, setStatusFetching] = useState('');
   const [loading, setLoading] = useState(true);
   const [metaData, setMetaData] = useState({
     type: 'file',
@@ -114,8 +115,13 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
     const feachData = async () => {
       setLoading(true);
       let responseData = null;
+      setStatusFetching('');
 
-      const dataResponseByCid = await getContentByCid(nodeIpfs, cid);
+      const dataResponseByCid = await getContentByCid(
+        nodeIpfs,
+        cid,
+        setStatusFetching
+      );
 
       if (dataResponseByCid !== undefined) {
         if (dataResponseByCid === 'availableDownload') {
@@ -128,6 +134,7 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
         }
       } else {
         setStatus('impossibleLoad');
+        setLoading(false);
       }
 
       if (responseData !== null) {
@@ -162,6 +169,7 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
     gateway,
     metaData,
     loading,
+    statusFetching,
   };
 };
 

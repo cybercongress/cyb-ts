@@ -46,10 +46,16 @@ const checkCidByIpfsNode = async (node, cid) => {
   if (ipfsNodeLs !== null) {
     const meta = {
       type: ipfsNodeLs[0].type,
-      size: ipfsNodeLs[0].size,
+      size: ipfsNodeLs[0].size || 0,
       blockSizes: [],
       data: '',
     };
+
+    if (ipfsNodeLs[0].size === undefined) {
+      const responseCat = uint8ArrayConcat(await all(node.cat(cid)));
+
+      return { data: responseCat, cid, meta };
+    }
 
     if (ipfsNodeLs[0].size < 15 * 10 ** 6) {
       const responseCat = uint8ArrayConcat(await all(node.cat(cid)));
@@ -103,23 +109,42 @@ const pinContentToDbAndIpfs = async (node, content, cid) => {
   }
 };
 
-const getContentByCid = async (node, cid) => {
+const getContentByCid = async (node, cid, callBackFuncStatus) => {
   const dataRsponseDb = await checkCidInDB(cid);
 
   if (dataRsponseDb !== undefined) {
     return dataRsponseDb;
   }
+
   if (node !== null) {
+    if (callBackFuncStatus) {
+      callBackFuncStatus('trying to get with a node');
+    }
     const dataResponseIpfs = await checkCidByIpfsNode(node, cid);
     if (dataResponseIpfs !== undefined) {
       pinContentToDbAndIpfs(node, dataResponseIpfs, cid);
       return dataResponseIpfs;
     }
+    if (callBackFuncStatus) {
+      callBackFuncStatus('trying to get with a gatway');
+    }
+
     const respnseGateway = await checkIpfsGatway(cid);
     if (respnseGateway !== undefined) {
       pinContentToDbAndIpfs(null, respnseGateway, cid);
       return respnseGateway;
     }
+  } else {
+    if (callBackFuncStatus) {
+      callBackFuncStatus('trying to get with a gatway');
+    }
+
+    const respnseGateway = await checkIpfsGatway(cid);
+    if (respnseGateway !== undefined) {
+      pinContentToDbAndIpfs(null, respnseGateway, cid);
+      return respnseGateway;
+    }
+    return undefined;
   }
 
   return undefined;

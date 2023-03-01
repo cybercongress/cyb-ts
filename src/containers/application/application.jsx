@@ -10,7 +10,14 @@ import { MenuButton, BandwidthBar, Tooltip } from '../../components';
 import Electricity from '../home/electricity';
 import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import { initIpfs, setIpfsStatus, setIpfsID } from '../../redux/actions/ipfs';
+import {
+  initIpfs,
+  setIpfsStatus,
+  setIpfsID,
+  setIpfsFailed,
+  setIpfsReady,
+  setIpfsPending,
+} from '../../redux/actions/ipfs';
 import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
@@ -29,13 +36,14 @@ import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
-import useIpfsStart from '../../ipfsHook';
 import useNewIpfs from '../../useNewIpfs';
 import { GitHub, Telegram } from '../../components/actionBar';
 import styles from './styles.scss';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
 import Input from '../teleport/components/input';
+import useIsMobileTablet from '../../hooks/useIsMobileTablet';
+import { InfoCard } from '../portal/components';
 
 const imgBostrom = require('../../image/cyb.svg');
 const cybFalse = require('../../image/cyb.svg');
@@ -44,12 +52,12 @@ const info = require('../../image/info-circle-outline.svg');
 const lensIcon = require('../../image/lens-icon.svg');
 const circleYellow = require('../../image/large-yellow-circle.png');
 
-const ListAccounts = ({
+function ListAccounts({
   accounts,
   defaultAccount,
   children,
   onClickChangeActiveAcc,
-}) => {
+}) {
   let items = {};
   if (accounts && accounts !== null) {
     items = Object.keys(accounts).map((key, i) => {
@@ -91,9 +99,7 @@ const ListAccounts = ({
       <Pane>{children}</Pane>
     </Tooltip>
   );
-};
-
-let timeintervalPeer;
+}
 
 function App({
   defaultAccount,
@@ -108,15 +114,18 @@ function App({
   time,
   children,
   initIpfsProps,
-  setIpfsStatusProps,
   setTypeDeviceProps,
   setIpfsIDProps,
+  setIpfsFailedProps,
+  setIpfsReadyProps,
+  setIpfsPendingProps,
 }) {
   const { jsCyber, updatetMarketData, updateDataTotalSupply } =
     useContext(AppContext);
   const { marketData, dataTotal } = useGetMarketData();
+  const { isMobile } = useIsMobileTablet();
   // const dataIpfsStart = useIpfsStart();
-  const { ipfs, isIpfsReady, ipfsInitError } = useNewIpfs();
+  const { ipfs, isIpfsReady, ipfsInitError, isIpfsPending } = useNewIpfs();
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
@@ -133,45 +142,21 @@ function App({
   // console.log(accounts);
 
   useEffect(() => {
-    const testStart = async () => {
+    const updateIpfsStage = async () => {
+      setIpfsPendingProps(isIpfsPending);
+      setIpfsFailedProps(ipfsInitError);
+      setIpfsReadyProps(isIpfsReady);
+
       if (ipfs !== null) {
-        const status = await ipfs.isOnline();
-        const responseId = await ipfs.id();
-
-        console.log('responseId', responseId)
-
         initIpfsProps(ipfs);
-        setIpfsIDProps(responseId);
-        setIpfsStatusProps(status);
-
-        // const peerInfos = await node.swarm.addrs();
-
-        // console.log('peerInfos', peerInfos.length);
-
-        //        Lets log out the number of peers we have every 2 seconds
-        // timeintervalPeer = setInterval(async () => {
-        //   try {
-        //     const peerInfos = await node.swarm.peers();
-        //     console.log(`The node now has ${peerInfos.length} peers.`);
-        //   } catch (err) {
-        //     console.log('An error occurred trying to check our peers:', err);
-        //   }
-        // }, 3000);
-
-        // const file = await node.add({
-        //   path: 'test-data.txt',
-        //   content: uint8ArrayFromString('We are using a customized repo!'),
-        // });
-        // // Log out the added files metadata and cat the file from IPFS
-        // console.log('\nAdded file:', file.path, file.cid);
-
-        // // Print out the files contents to console
-
-        //  await node.stop();
       }
     };
-    testStart();
-  }, [ipfs]);
+    updateIpfsStage();
+  }, [ipfs, ipfsInitError, isIpfsReady, isIpfsPending]);
+
+  useEffect(() => {
+    setTypeDeviceProps(isMobile);
+  }, [isMobile]);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
@@ -184,14 +169,6 @@ function App({
       updateDataTotalSupply(dataTotal);
     }
   }, [dataTotal]);
-
-  // useEffect(() => {
-  //   initIpfsProps(dataIpfsStart.node);
-  //   setIpfsStatusProps(dataIpfsStart.status);
-  //   setTypeDeviceProps(dataIpfsStart.mobile);
-  //   setIpfsIDProps(dataIpfsStart.id);
-  //   // tryConnectToPeer(dataIpfsStart.node);
-  // }, [dataIpfsStart]);
 
   useEffect(() => {
     const { pathname } = location;
@@ -419,33 +396,8 @@ function App({
               bandwidth={bandwidth}
               amounPower={amounPower}
             />
-            {/* <SwichNetwork>
-              <MenuButton
-                onClick={() => setOpenMenu(!openMenu)}
-                imgLogo={selectNetworkImg(CYBER.CHAIN_ID)}
-              />
-            </SwichNetwork> */}
-            {/* <Pane bottom="-10px" right="-20%" position="absolute">
-              <LeftTooltip />
-            </Pane> */}
           </div>
-          {/* <Pane
-            className="battery-container"
-            width="65px"
-            position="absolute"
-            left="60px"
-          >
-            <BandwidthBar
-              height="15px"
-              styleText={{ whiteSpace: 'nowrap' }}
-              fontSize={12}
-              colorText="#000"
-              bwRemained={bandwidth.remained}
-              bwMaxValue={bandwidth.maxValue}
-              countLink={countLink}
-              amounPower={amounPower}
-            />
-          </Pane> */}
+
           {!home && (
             <div
               style={{
@@ -459,16 +411,6 @@ function App({
                 padding: '0px 20px',
                 zIndex: '1',
               }}
-              // position="absolute"
-              // left="50%"
-              // transform="translate(-50%, 0)"
-              // marginRight="-50%"
-              // zIndex={1}
-              // backgroundColor="#000"
-              // borderRadius={20}
-              // width="55%"
-              // // className="box-shadow-input"
-              // height="100%"
             >
               <Input
                 onChange={(e) => onChangeInput(e)}
@@ -478,51 +420,7 @@ function App({
                 ref={textInput}
                 value={encodeSlash(query)}
                 autoComplete="off"
-                // id="search-input-searchBar"
-                // style={{
-                //   width: '100%',
-                //   height: 41,
-                //   fontSize: 20,
-                //   textAlign: 'center',
-                //   position: 'absolute',
-                //   top: '50%',
-                //   transform: 'translate(0, -50%)',
-                //   zIndex: 1,
-                //   paddingLeft: '35px',
-                //   backgroundColor: '#000',
-                // }}
               />
-              {/* <img
-                src={lensIcon}
-                alt="lensIcon"
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '14px',
-                  transform: 'translate(0, -50%)',
-                  width: '15px',
-                  zIndex: 1,
-                }}
-              /> */}
-              {/* {keywordHash !== null && (
-                <Link to={`/ipfs/${keywordHash}`}>
-                  <div>
-                    <img
-                      src={info}
-                      alt="lensIcon"
-                      style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '35px',
-                        transform: 'translate(0, -50%)',
-                        width: '15px',
-                        zIndex: 1,
-                        cursor: 'pointer',
-                      }}
-                    />
-                  </div>
-                </Link>
-              )} */}
             </div>
           )}
           <Electricity />
@@ -531,38 +429,39 @@ function App({
             accounts={accounts}
             onClickChangeActiveAcc={onClickChangeActiveAcc}
           />
-          {/* {defaultAccount.name !== null && (
-            <Pane
-              className="battery-container"
-              width="fit-content"
-              position="absolute"
-              right="60px"
-              whiteSpace="nowrap"
-              fontSize="14px"
-              backgroundColor="#000"
-              boxShadow="0 0 5px 5px #000"
-            >
-              <ListAccounts
-                accounts={accounts}
-                onClickChangeActiveAcc={onClickChangeActiveAcc}
-                defaultAccount={defaultAccount}
+        </div>
+      )}
+      {ipfsInitError !== null && location.pathname !== '/ipfs' && (
+        <div
+          style={{
+            width: '59%',
+            maxWidth: '1000px',
+            margin: '0 auto',
+          }}
+        >
+          <Link to="/ipfs">
+            <InfoCard status="red">
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '10px 50px 0px 50px',
+                  gap: 20,
+                  display: 'grid',
+                  color: '#fff',
+                }}
               >
-                {defaultAccount.name}
-              </ListAccounts>
-            </Pane>
-          )}
-          <Pane position="relative">
-            <MenuButton
-              to="/robot"
-              imgLogo={ipfsStatus ? cybTrue : cybFalse}
-              positionBugLeft
-            />
-           
-          </Pane> */}
+                <div style={{ fontSize: '28px' }}>
+                  Could not connect to the IPFS API
+                </div>
+                <div>
+                  <span style={{ color: '#36d6ae' }}>Go to ipfs page</span>
+                </div>
+              </div>
+            </InfoCard>
+          </Link>
         </div>
       )}
 
-      {/* </Navigation> */}
       {children}
       <Telegram />
       <GitHub />
@@ -572,7 +471,7 @@ function App({
 
 const mapStateToProps = (store) => {
   return {
-    ipfsStatus: store.ipfs.statusIpfs,
+    ipfsStatus: store.ipfs.ready,
     bandwidth: store.bandwidth.bandwidth,
     query: store.query.query,
     mobile: store.settings.mobile,
@@ -593,6 +492,9 @@ const mapDispatchprops = (dispatch) => {
     setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
     setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
     setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
+    setIpfsFailedProps: (status) => dispatch(setIpfsFailed(status)),
+    setIpfsReadyProps: (status) => dispatch(setIpfsReady(status)),
+    setIpfsPendingProps: (status) => dispatch(setIpfsPending(status)),
   };
 };
 
