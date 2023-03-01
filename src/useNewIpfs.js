@@ -5,7 +5,7 @@ let ipfs = null;
 
 const getOpts = () => {
   let ipfsOpts = {
-    ipfsNodeType: 'external', // external || embedded
+    ipfsNodeType: 'embedded', // external || embedded
     urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
   };
 
