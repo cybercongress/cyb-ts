@@ -7,10 +7,11 @@ import React, {
   useRef,
 } from 'react';
 import { connect } from 'react-redux';
-import { calculateFee } from '@cosmjs/stargate';
+import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import BigNumber from 'bignumber.js';
+import txs from '../../../utils/txs';
+
 import {
   ContainerGradient,
   Signatures,
@@ -458,7 +459,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         address,
         CONTRACT_ADDRESS_PASSPORT,
         msgObject,
-        calculateFee(500000, gasPrice),
+        txs.calculateFee(500000, gasPrice),
         'cyber',
         funds
       );
@@ -612,6 +613,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
           registerDisabled={registerDisabled}
           setStep={setStep}
           counCitizenshipst={counCitizenshipst}
+          mobile={mobile}
         />
         {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
           <Carousel
@@ -630,24 +632,26 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
         </button> */}
       </MainContainer>
 
-      <ActionBar
-        keplr={keplr}
-        step={step}
-        valueNickname={valueNickname}
-        signedMessage={signedMessage}
-        setStep={setStep}
-        setupNickname={setupNickname}
-        checkNickname={checkNickname}
-        uploadAvatarImg={uploadAvatarImg}
-        avatarImg={avatarImg}
-        setAvatarImg={setAvatarImg}
-        avatarIpfs={avatarIpfs}
-        onClickRegister={onClickRegister}
-        checkAddressNetwork={checkAddressNetwork}
-        registerDisabled={registerDisabled}
-        showOpenFileDlg={showOpenFileDlg}
-        onClickSignMoonCode={onClickSignMoonCode}
-      />
+      {!mobile && (
+        <ActionBar
+          keplr={keplr}
+          step={step}
+          valueNickname={valueNickname}
+          signedMessage={signedMessage}
+          setStep={setStep}
+          setupNickname={setupNickname}
+          checkNickname={checkNickname}
+          uploadAvatarImg={uploadAvatarImg}
+          avatarImg={avatarImg}
+          setAvatarImg={setAvatarImg}
+          avatarIpfs={avatarIpfs}
+          onClickRegister={onClickRegister}
+          checkAddressNetwork={checkAddressNetwork}
+          registerDisabled={registerDisabled}
+          showOpenFileDlg={showOpenFileDlg}
+          onClickSignMoonCode={onClickSignMoonCode}
+        />
+      )}
     </>
   );
 }

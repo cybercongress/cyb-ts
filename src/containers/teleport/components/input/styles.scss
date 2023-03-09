@@ -9,8 +9,15 @@ $linear-gradient-blue: linear-gradient(
   rgba(0, 237, 235, 0) -3.3%,
   rgba(0, 237, 235, 0.35) 100%
 );
+$linear-gradient-pink: linear-gradient(
+  180deg,
+  rgba(246, 43, 253, 0) -3.3%,
+  rgba(246, 43, 253, 0.3) 100%
+);
 $color-border-botton-yellow: #fcf000;
 $color-border-botton-blue: #00edeb;
+$color-border-botton-pink: #f62bfd;
+$box-shadow-pink: rgba(246, 43, 253, 0.65);
 
 .textbox {
   width: 100%;

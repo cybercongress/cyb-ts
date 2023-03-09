@@ -17,9 +17,11 @@ import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import {
   reduceBalances,
   formatNumber,
-  coinDecimals,
   roundNumber,
   exponentialToDecimal,
+  getDisplayAmountReverce,
+  findDenomInTokenList,
+  isNative,
 } from '../../utils/utils';
 import { Dots, ValueImg, ButtonIcon } from '../../components';
 import {
@@ -34,7 +36,6 @@ import {
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
-import PoolsList from './poolsList';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
 import getBalances from './hooks/getBalances';
 import Swap from './swap';
@@ -42,20 +43,23 @@ import Withdraw from './withdraw';
 import PoolData from './poolData';
 import coinDecimalsConfig from '../../utils/configToken';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
-import { networkList as networks } from './hooks/useGetBalancesIbc';
+import networks from '../../utils/networkListIbc';
+import Carousel from '../portal/gift/carousel1/Carousel';
+import { MainContainer } from '../portal/components';
+import useGetSelectTab from './hooks/useGetSelectTab';
 // import TracerTx from './tx/TracerTx';
 // import TraceTxTable from './components/ibc-history/traceTxTable';
 // import HistoryContextProvider from './components/ibc-history/historyContext';
 
-const tokenADefaultValue = 'boot';
-const tokenBDefaultValue = 'hydrogen';
+const tokenADefaultValue = CYBER.DENOM_CYBER;
+const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
 // const txHash =
 //   'E15BC5F5B62696F5D08C0860CDA13D39E385BD6245595EB07899954336760C8C';
 
 const defaultTokenList = {
-  boot: 0,
-  hydrogen: 0,
+  [CYBER.DENOM_CYBER]: 0,
+  [CYBER.DENOM_LIQUID_TOKEN]: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,
@@ -75,10 +79,39 @@ const numberString = (num) =>
       .join('')
   );
 
+const itemsStep = [
+  {
+    title: 'add liquidity',
+  },
+  {
+    title: 'create pool',
+  },
+  {
+    title: 'sub liquidity',
+  },
+];
+
+const checkInactiveFunc = (token, ibcDataDenom) => {
+  if (token.includes('ibc')) {
+    if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+function getMyTokenBalanceNumber(denom, indexer) {
+  return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
+}
+
+function addPunctuationToNumbers(number) {
+  return number.replace(/(\d{3})(?=\d)/g, '$1 ');
+}
+
 function Teleport({ defaultAccount }) {
-  const { jsCyber, keplr } = useContext(AppContext);
-  const location = useLocation();
+  const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
   const history = useHistory();
+  const { selectedTab } = useGetSelectTab(history);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
   const { liquidBalances: accountBalances } = getBalances(
@@ -87,7 +120,6 @@ function Teleport({ defaultAccount }) {
   );
   const { params } = useGetParams();
   const { poolsData } = usePoolListInterval();
-  // const [accountBalances, setAccountBalances] = useState(null);
   const [tokenA, setTokenA] = useState(tokenADefaultValue);
   const [tokenB, setTokenB] = useState(tokenBDefaultValue);
   const [tokenAAmount, setTokenAAmount] = useState('');
@@ -96,9 +128,8 @@ function Teleport({ defaultAccount }) {
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState(0);
   const [selectedPool, setSelectedPool] = useState([]);
   const [swapPrice, setSwapPrice] = useState(0);
-  const [tokenPrice, setTokenPrice] = useState(null);
-  const [selectedTab, setSelectedTab] = useState('swap');
   const [totalSupply, setTotalSupply] = useState(null);
+  const [totalSupplyFull, setTotalSupplyFull] = useState(null);
   const [myPools, setMyPools] = useState({});
   const [selectMyPool, setSelectMyPool] = useState('');
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
@@ -114,8 +145,8 @@ function Teleport({ defaultAccount }) {
   const [sourceChannel, setSourceChannel] = useState(null);
 
   let { search } = useLocation();
-  // console.log('search', search);
 
+  // TO-DO Tracer status ibc txs
   // useEffect(() => {
   // const txTracerFunc = async () => {
   //   const txTracer = new TracerTx(networks.bostrom.rpc, '/websocket');
@@ -183,59 +214,38 @@ function Teleport({ defaultAccount }) {
   }, [query]);
 
   useEffect(() => {
+    if (selectedTab === 'swap') {
+      const dataLocalStorageNetworkA = localStorage.getItem('networkA');
+      const dataLocalStorageNetworkB = localStorage.getItem('networkB');
+      if (dataLocalStorageNetworkA !== null) {
+        setNetworkA(dataLocalStorageNetworkA);
+      }
+      if (dataLocalStorageNetworkB !== null) {
+        setNetworkB(dataLocalStorageNetworkB);
+      }
+    } else {
+      setNetworkA(CYBER.CHAIN_ID);
+      setNetworkB(CYBER.CHAIN_ID);
+    }
+  }, [selectedTab]);
+
+  useEffect(() => {
     if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
       setTypeTxs('swap');
     }
 
     if (networkA !== CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
       setTypeTxs('deposit');
-      const { sourceChannelId } = networks[networkList[networkA]];
+      const { sourceChannelId } = networks[networkA];
       setSourceChannel(sourceChannelId);
     }
 
     if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
       setTypeTxs('withdraw');
-      const { destChannelId } = networks[networkList[networkB]];
+      const { destChannelId } = networks[networkB];
       setSourceChannel(destChannelId);
     }
   }, [networkB, networkA]);
-
-  useEffect(() => {
-    const { pathname } = location;
-    if (
-      pathname.match(/add-liquidity/gm) &&
-      pathname.match(/add-liquidity/gm).length > 0
-    ) {
-      setSelectedTab('add-liquidity');
-      setNetworkA(CYBER.CHAIN_ID);
-      setNetworkB(CYBER.CHAIN_ID);
-    } else if (
-      pathname.match(/sub-liquidity/gm) &&
-      pathname.match(/sub-liquidity/gm).length > 0
-    ) {
-      setSelectedTab('sub-liquidity');
-      history.replace({
-        search: '',
-      });
-    } else if (
-      pathname.match(/pools/gm) &&
-      pathname.match(/pools/gm).length > 0
-    ) {
-      setSelectedTab('pools');
-    } else {
-      setSelectedTab('swap');
-    }
-  }, [location.pathname]);
-
-  // useEffect(() => {
-  //   setTokenA('');
-  //   setTokenB('');
-  //   setTokenAAmount('');
-  //   setTokenBAmount('');
-  //   setSelectMyPool('');
-  //   setAmountPoolCoin('');
-  //   setIsExceeded(false);
-  // }, [update, selectedTab]);
 
   useEffect(() => {
     const getTotalSupply = async () => {
@@ -243,11 +253,50 @@ function Teleport({ defaultAccount }) {
         const responseTotalSupply = await jsCyber.totalSupply();
 
         const datareduceTotalSupply = reduceBalances(responseTotalSupply);
-        setTotalSupply({ ...defaultTokenList, ...datareduceTotalSupply });
+
+        if (Object.keys(datareduceTotalSupply).length > 0) {
+          setTotalSupplyFull(datareduceTotalSupply);
+        }
+
+        const reduceData = {};
+
+        if (Object.keys(ibcDataDenom).length > 0) {
+          Object.keys(datareduceTotalSupply).forEach((key) => {
+            const value = datareduceTotalSupply[key];
+            if (!isNative(key)) {
+              if (Object.prototype.hasOwnProperty.call(ibcDataDenom, key)) {
+                const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
+                  ibcDataDenom[key];
+                const denomInfoFromList = findDenomInTokenList(baseDenom);
+                if (denomInfoFromList !== null) {
+                  if (
+                    Object.prototype.hasOwnProperty.call(
+                      denomInfoFromList,
+                      'destChannelId'
+                    )
+                  ) {
+                    const { destChannelId } = denomInfoFromList;
+                    if (destChannelId === sourceChannelIFromPath) {
+                      reduceData[key] = value;
+                    }
+                  }
+                }
+              }
+            } else if (key.indexOf('pool') !== 0) {
+              reduceData[key] = value;
+            }
+          });
+        }
+
+        if (Object.keys(reduceData).length > 0) {
+          setTotalSupply({ ...defaultTokenList, ...reduceData });
+        } else {
+          setTotalSupply({ ...defaultTokenList, ...datareduceTotalSupply });
+        }
       }
     };
     getTotalSupply();
-  }, [jsCyber]);
+  }, [jsCyber, ibcDataDenom]);
 
   useEffect(() => {
     let orderPrice = 0;
@@ -260,68 +309,20 @@ function Teleport({ defaultAccount }) {
       getCoinDecimals(Number(tokenBPoolAmount), tokenB)
     );
 
-    if ([tokenA, tokenB].sort()[0] !== tokenA) {
-      // const poolFee = 1 - 0.003;
-      // const imputNumber = new BigNumber(tokenAAmount).multipliedBy(2);
-      // const secondNumb = poolAmountA.plus(imputNumber);
-      // const testPrice = poolAmountB
-      //   .multipliedBy(poolFee)
-      //   .dividedBy(secondNumb)
-      //   .toNumber();
-      // orderPrice = testPrice;
-      // console.log('testPrice', testPrice);
-      orderPrice = poolAmountB.dividedBy(poolAmountA);
-      orderPrice = orderPrice.multipliedBy(0.97).toNumber();
-    } else {
-      // const poolFee = 1 - 0.003;
-      // const imputNumber = new BigNumber(tokenAAmount).multipliedBy(2);
-      // const secondNumb = poolAmountB.plus(imputNumber);
-      // const testPrice = poolAmountA
-      //   .multipliedBy(poolFee)
-      //   .dividedBy(secondNumb)
-      //   .toNumber();
-      // orderPrice = testPrice;
-      // console.log('testPrice', testPrice);
-      orderPrice = poolAmountA.dividedBy(poolAmountB);
-      orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+    if (poolAmountA.comparedTo(0) > 0 && poolAmountB.comparedTo(0) > 0) {
+      if ([tokenA, tokenB].sort()[0] !== tokenA) {
+        orderPrice = poolAmountB.dividedBy(poolAmountA);
+        orderPrice = orderPrice.multipliedBy(0.97).toNumber();
+      } else {
+        orderPrice = poolAmountA.dividedBy(poolAmountB);
+        orderPrice = orderPrice.multipliedBy(1.03).toNumber();
+      }
     }
 
     if (orderPrice && orderPrice !== Infinity) {
-      // console.log('orderPrice', orderPrice);
       setSwapPrice(orderPrice);
     }
   }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
-
-  // useEffect(() => {
-  //   const poolAmountA = new BigNumber(
-  //     getCoinDecimals(Number(tokenAPoolAmount), tokenA)
-  //   );
-  //   const poolAmountB = new BigNumber(
-  //     getCoinDecimals(Number(tokenBPoolAmount), tokenB)
-  //   );
-
-  //   let decimals = 0;
-  //   if (tokenB.length > 0) {
-  //     decimals = getDecimals(tokenB);
-  //   }
-  //   if (tokenAAmount.length > 0) {
-  //     const amount = new BigNumber(Number(tokenAAmount));
-  //     const amount2 = amount.multipliedBy(2);
-  //     const poolFee = new BigNumber(1).minus(0.003);
-
-  //     const firstamount = poolAmountB
-  //       .multipliedBy(poolFee)
-  //       .multipliedBy(amount);
-  //     const secondamount = poolAmountA.plus(amount2);
-
-  //     const target = firstamount
-  //       .dividedBy(secondamount)
-  //       .dp(decimals, BigNumber.ROUND_FLOOR)
-  //       .toString();
-  //     setTokenBAmount(target);
-  //     // console.log('target', target);
-  //   }
-  // }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount, tokenAAmount]);
 
   useEffect(() => {
     const getAmountPool = async () => {
@@ -345,7 +346,6 @@ function Teleport({ defaultAccount }) {
     setSelectedPool([]);
     if (poolsData && poolsData.length > 0) {
       if (tokenA.length > 0 && tokenB.length > 0) {
-        console.log(`setSelectedPool`);
         const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
         poolsData.forEach((item) => {
           if (
@@ -375,130 +375,130 @@ function Teleport({ defaultAccount }) {
     }
   }, [accountBalances, poolsData]);
 
-  const checkInactiveFunc = (token) => {
-    if (token.includes('ibc')) {
-      if (!Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
-        return false;
-      }
-    }
-    return true;
-  };
-
-  function getMyTokenBalanceNumber(denom, indexer) {
-    return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
-  }
-
   useEffect(() => {
     let exceeded = true;
-    const validTokenA = checkInactiveFunc(tokenA);
-    const validTokenB = checkInactiveFunc(tokenB);
+    const checkTokenA = checkInactiveFunc(tokenA, ibcDataDenom);
+    const checkTokenB = checkInactiveFunc(tokenB, ibcDataDenom);
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
+    const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
-    if (validTokenA && validTokenB) {
+    if (checkTokenA && checkTokenB) {
       if (accountBalances !== null) {
-        if (
-          selectedTab === 'swap' &&
+        const validTokenA = Object.prototype.hasOwnProperty.call(
+          accountBalances,
+          tokenA
+        );
+        const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+        const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+
+        const validTokenAmountA =
+          getDisplayAmountReverce(tokenAAmount, coinDecimalsA) <=
+            myATokenBalance && Number(tokenAAmount) > 0;
+
+        const resultValidTokenA = validTokenAmountA && validTokenA;
+
+        const validTokensAB =
           Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
-          accountBalances[tokenA] > 0
-        ) {
+          Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
+          accountBalances[tokenA] > 0 &&
+          accountBalances[tokenB] > 0;
+
+        const validTokenAmountAB =
+          getDisplayAmountReverce(tokenAAmount, coinDecimalsA) <=
+            myATokenBalance &&
+          Number(tokenAAmount) > 0 &&
+          getDisplayAmountReverce(tokenBAmount, coinDecimalsB) <=
+            myATokenBalanceB &&
+          Number(tokenBAmount) > 0;
+
+        const resultValidSelectTokens = validTokensAB && validTokenAmountAB;
+
+        if (selectedTab === 'swap' && swapPrice !== 0 && resultValidTokenA) {
           exceeded = false;
         }
 
         if (
           selectedTab === 'add-liquidity' &&
-          Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
-          Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
-          accountBalances[tokenA] > 0 &&
-          accountBalances[tokenB] > 0
+          resultValidSelectTokens &&
+          swapPrice !== 0
         ) {
           exceeded = false;
         }
 
-        if (
-          reduceAmounToken(Number(tokenAAmount), tokenA, true) > myATokenBalance
-        ) {
-          exceeded = true;
-        }
-
-        if (swapPrice === 0) {
-          exceeded = true;
+        if (selectedTab === 'createPool' && resultValidSelectTokens) {
+          exceeded = false;
         }
       }
-    } else {
-      exceeded = true;
     }
     setIsExceeded(exceeded);
-  }, [accountBalances, tokenA, tokenB, selectedTab, tokenAAmount, swapPrice]);
+  }, [
+    accountBalances,
+    tokenA,
+    tokenB,
+    selectedTab,
+    tokenAAmount,
+    tokenBAmount,
+    swapPrice,
+    ibcDataDenom,
+  ]);
 
-  // useEffect(() => {
-  //   const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-  //   let exceeded = false;
+  const amountChangeHandler = useCallback(
+    (values, e) => {
+      const inputAmount = values;
 
-  //   if (Number(tokenAAmount) > myATokenBalance) {
-  //     exceeded = true;
-  //   }
+      const isReverse = e.target.id !== 'tokenAAmount';
 
-  //   setIsExceeded(exceeded);
-  // }, [tokenA, tokenAAmount]);
+      // if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
+      const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
 
-  const getDecimals = (denom) => {
-    let decimals = 0;
-    if (Object.hasOwnProperty.call(coinDecimalsConfig, denom)) {
-      decimals = 3;
-    }
-    return decimals;
-  };
-
-  useEffect(() => {
-    let counterPairAmount = '';
-    let decimals = 0;
-    if (tokenB.length > 0) {
-      decimals = getDecimals(tokenB);
-    }
-    if (swapPrice && swapPrice !== Infinity && tokenAAmount.length > 0) {
-      if ([tokenA, tokenB].sort()[0] === tokenA) {
-        const x1 = new BigNumber(1);
-        const price = x1.dividedBy(swapPrice);
-        counterPairAmount = price
-          .multipliedBy(Number(tokenAAmount))
-          .dp(decimals, BigNumber.ROUND_FLOOR)
-          .toString();
+      let { counterPairAmount } = calculateCounterPairAmount(
+        inputAmount,
+        e,
+        state
+      );
+      counterPairAmount = Math.abs(Number(counterPairAmount).toFixed(4));
+      if (isReverse) {
+        setTokenBAmount(new BigNumber(inputAmount).toNumber());
+        setTokenAAmount(counterPairAmount);
       } else {
-        const price = new BigNumber(swapPrice);
-
-        counterPairAmount = price
-          .multipliedBy(Number(tokenAAmount))
-          .dp(decimals, BigNumber.ROUND_FLOOR)
-          .toString();
+        setTokenAAmount(new BigNumber(inputAmount).toNumber());
+        setTokenBAmount(counterPairAmount);
       }
+      // }
+    },
+    [tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA]
+  );
+
+  const amountChangeHandlerCreatePool = useCallback((values, e) => {
+    const inputAmount = values;
+
+    const isReverse = e.target.id !== 'tokenAAmount';
+
+    // if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
+    if (isReverse) {
+      setTokenBAmount(new BigNumber(inputAmount).toNumber());
+    } else {
+      setTokenAAmount(new BigNumber(inputAmount).toNumber());
     }
-    setTokenBAmount(counterPairAmount);
+    // }
+  }, []);
 
-    // setTokenBAmount(numberString(counterPairAmount));
-  }, [tokenAAmount, tokenA, tokenB, swapPrice]);
+  const onChangeInputWithdraw = (values, e) => {
+    const inputAmount = values;
 
-  function amountChangeHandler(e) {
-    const inputAmount = e.target.value;
-    // const retVal = replaceFunc(inputAmount);
-    // if (/^[\d]*\.?[\d]{0,3}$/.test(retVal)) {
-    if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
-      // setTokenAAmount(numberString(retVal));
-      setTokenAAmount(inputAmount);
-    }
-  }
-
-  const onChangeInputWithdraw = (e) => {
-    const inputAmount = e.target.value;
     const myATokenBalance = getMyTokenBalanceNumber(
       selectMyPool,
       accountBalances
     );
-    let exceeded = false;
-    if (parseFloat(inputAmount) > myATokenBalance) {
-      exceeded = true;
+    let exceeded = true;
+    if (
+      parseFloat(inputAmount) <= myATokenBalance &&
+      parseFloat(inputAmount) > 0
+    ) {
+      exceeded = false;
     }
     setIsExceeded(exceeded);
-    setAmountPoolCoin(inputAmount);
+    setAmountPoolCoin(new BigNumber(inputAmount).toNumber());
   };
 
   function tokenChange() {
@@ -517,6 +517,16 @@ function Teleport({ defaultAccount }) {
 
   const updateFunc = () => {
     setUpdate((item) => item + 1);
+  };
+
+  const onChangeSelectNetworksA = (item) => {
+    localStorage.setItem('networkA', item);
+    setNetworkA(item);
+  };
+
+  const onChangeSelectNetworksB = (item) => {
+    localStorage.setItem('networkB', item);
+    setNetworkB(item);
   };
 
   const stateActionBar = {
@@ -557,7 +567,8 @@ function Teleport({ defaultAccount }) {
     tokenChange,
     swapPrice,
     networkA,
-    setNetworkA,
+    onChangeSelectNetworksA,
+    onChangeSelectNetworksB,
     networkB,
     setNetworkB,
     typeTxs,
@@ -580,7 +591,14 @@ function Teleport({ defaultAccount }) {
     content = (
       <Route
         path="/teleport"
-        render={() => <Swap swap stateSwap={stateSwap} />}
+        render={() => (
+          <Swap
+            swap
+            stateSwap={stateSwap}
+            amountChangeHandler={amountChangeHandler}
+            marginTop={42}
+          />
+        )}
       />
     );
   }
@@ -588,8 +606,27 @@ function Teleport({ defaultAccount }) {
   if (selectedTab === 'add-liquidity') {
     content = (
       <Route
-        path="/teleport/add-liquidity"
-        render={() => <Swap stateSwap={stateSwap} />}
+        path="/warp/add-liquidity"
+        render={() => (
+          <Swap
+            stateSwap={stateSwap}
+            amountChangeHandler={amountChangeHandler}
+          />
+        )}
+      />
+    );
+  }
+
+  if (selectedTab === 'createPool') {
+    content = (
+      <Route
+        path="/warp/create-pool"
+        render={() => (
+          <Swap
+            stateSwap={stateSwap}
+            amountChangeHandler={amountChangeHandlerCreatePool}
+          />
+        )}
       />
     );
   }
@@ -597,7 +634,7 @@ function Teleport({ defaultAccount }) {
   if (selectedTab === 'sub-liquidity') {
     content = (
       <Route
-        path="/teleport/sub-liquidity"
+        path="/warp/sub-liquidity"
         render={() => <Withdraw stateSwap={stateWithdraw} />}
       />
     );
@@ -606,11 +643,11 @@ function Teleport({ defaultAccount }) {
   if (selectedTab === 'pools') {
     content = (
       <Route
-        path="/teleport/pools"
+        path="/warp"
         render={() => (
           <PoolData
             data={poolsData}
-            totalSupplyData={totalSupply}
+            totalSupplyData={totalSupplyFull}
             accountBalances={accountBalances}
           />
         )}
@@ -620,8 +657,17 @@ function Teleport({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body">
-        {selectedTab !== 'pools' && <TabList selected={selectedTab} />}
+      <MainContainer width={selectedTab === 'pools' ? '85%' : '62%'}>
+        {selectedTab !== 'pools' && selectedTab !== 'swap' && (
+          // <Carousel
+          //   slides={itemsStep}
+          //   activeStep={Math.floor(appStep)}
+          //   setStep={setStepApp}
+          //   disableNext={false}
+          //   infinity
+          // />
+          <TabList selected={selectedTab} />
+        )}
 
         <Pane
           width="100%"
@@ -634,14 +680,7 @@ function Teleport({ defaultAccount }) {
         </Pane>
 
         {/* <TraceTxTable /> */}
-
-        {/* <PoolsList
-          poolsData={poolsData}
-          accountBalances={accountBalances}
-          totalSupply={totalSupply}
-          selectedTab={selectedTab}
-        /> */}
-      </main>
+      </MainContainer>
       <ActionBar
         addressActive={addressActive}
         stateActionBar={stateActionBar}

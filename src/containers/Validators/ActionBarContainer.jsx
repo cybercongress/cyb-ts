@@ -15,12 +15,14 @@ import {
   TransactionError,
   CheckAddressInfo,
   Dots,
+  ActionBar as ActionBarCenter,
 } from '../../components';
 
 import { trimString, formatNumber } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { AppContext } from '../../context';
+import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const {
   MEMO,
@@ -189,6 +191,7 @@ function ActionBarContainer({
   unStake,
   updateFnc,
 }) {
+  const { passport } = useGetPassportByAddress(addressPocket);
   const { keplr, jsCyber } = useContext(AppContext);
   const history = useHistory();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -234,7 +237,7 @@ function ActionBarContainer({
         const response = await keplr.delegateTokens(
           addressKeplr,
           validatorAddres,
-          coin(parseFloat(amount), 'boot'),
+          coin(parseFloat(amount), CYBER.DENOM_CYBER),
           fee,
           CYBER.MEMO_KEPLR
         );
@@ -260,7 +263,7 @@ function ActionBarContainer({
         const response = await keplr.undelegateTokens(
           addressKeplr,
           validatorAddres,
-          coin(parseFloat(amount), 'boot'),
+          coin(parseFloat(amount), CYBER.DENOM_CYBER),
           fee,
           CYBER.MEMO_KEPLR
         );
@@ -286,7 +289,7 @@ function ActionBarContainer({
           addressKeplr,
           validatorAddres,
           valueSelect,
-          coin(parseFloat(amount), 'boot'),
+          coin(parseFloat(amount), CYBER.DENOM_CYBER),
           fee,
           CYBER.MEMO_KEPLR
         );
@@ -374,6 +377,19 @@ function ActionBarContainer({
     return false;
   }, [balance]);
 
+  const handleHistory = (to) => {
+    history.push(to);
+  };
+
+  if (passport === null && CYBER.CHAIN_ID === 'bostrom') {
+    return (
+      <ActionBarCenter
+        btnText="get citizenship"
+        onClickFnc={() => handleHistory('/portal')}
+      />
+    );
+  }
+
   // addressPocket empty
   if (
     Object.keys(validators).length === 0 &&
@@ -412,7 +428,7 @@ function ActionBarContainer({
   if (
     Object.keys(validators).length === 0 &&
     stage === STAGE_INIT &&
-    balance.delegation  &&
+    balance.delegation &&
     balance.delegation === 0
   ) {
     return (
@@ -430,25 +446,26 @@ function ActionBarContainer({
       <ActionBar>
         <ActionBarContentText>
           <Pane fontSize="18px" display="flex" alignItems="center">
-            {balanceToken.hydrogen && balanceToken.hydrogen.liquid !== 0 && (
-              <Pane>
-                <button
-                  type="button"
-                  className="btn-disabled"
-                  onClick={() => history.push('/mint')}
-                  style={{
-                    height: 42,
-                    maxWidth: '200px',
-                    padding: '0 20px',
-                    marginRight: '15px',
-                  }}
-                >
-                  Investmint
-                </button>
-                yor free H to get A and V
-              </Pane>
-            )}
-            {balanceToken.hydrogen.liquid === 0 &&
+            {balanceToken[CYBER.DENOM_LIQUID_TOKEN] &&
+              balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid !== 0 && (
+                <Pane>
+                  <button
+                    type="button"
+                    className="btn-disabled"
+                    onClick={() => handleHistory('/hfr')}
+                    style={{
+                      height: 42,
+                      maxWidth: '200px',
+                      padding: '0 20px',
+                      marginRight: '15px',
+                    }}
+                  >
+                    Investmint
+                  </button>
+                  yor free H to get A and V
+                </Pane>
+              )}
+            {balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid === 0 &&
               balance.available !== 0 &&
               'Choose hero to get H'}
             {validRewards && (

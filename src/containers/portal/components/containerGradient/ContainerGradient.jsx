@@ -78,13 +78,15 @@ const TxsStatus = ({ data }) => {
           [styles.containerTxsDanger]: data.status === 'error',
         })}
       >
-        <div className={styles.containerTxsTxHash}>
-          <Link to={`/network/bostrom/tx/${data.txHash}`}>
-            <div>{trimString(data.txHash, 5, 5)}</div>
-          </Link>
-          {/* <div>5 min ago</div> */}
-          <div>{data.status}</div>
-        </div>
+        {data.txHash && (
+          <div className={styles.containerTxsTxHash}>
+            <Link to={`/network/bostrom/tx/${data.txHash}`}>
+              <div>{trimString(data.txHash, 5, 5)}</div>
+            </Link>
+            {/* <div>5 min ago</div> */}
+            <div>{data.status}</div>
+          </div>
+        )}
         {data.rawLog && (
           <div className={styles.containerTxsRawLog}>{data.rawLog}</div>
         )}
@@ -93,7 +95,11 @@ const TxsStatus = ({ data }) => {
   );
 };
 
-export const ContainerGradientText = ({ children, status = 'blue' }) => {
+export const ContainerGradientText = ({
+  children,
+  userStyleContent,
+  status = 'blue',
+}) => {
   return (
     <ContainerLamp style={status}>
       <div
@@ -104,7 +110,12 @@ export const ContainerGradientText = ({ children, status = 'blue' }) => {
           [styles.containerGradientTextPink]: status === 'pink',
         })}
       >
-        <div className={styles.containerGradientTextContent}>{children}</div>
+        <div
+          style={userStyleContent}
+          className={styles.containerGradientTextContent}
+        >
+          {children}
+        </div>
       </div>
     </ContainerLamp>
   );
@@ -121,6 +132,7 @@ function ContainerGradient({
   initState = true,
   styleLampContent = 'blue',
   styleLampTitle,
+  togglingDisable,
 }) {
   const [isOpen, setIsOpen] = useState(initState);
 
@@ -130,7 +142,11 @@ function ContainerGradient({
     }
   }, [stateOpen]);
 
-  const toggling = () => setIsOpen(!isOpen);
+  const toggling = () => {
+    if (togglingDisable === undefined || togglingDisable === false) {
+      return setIsOpen(!isOpen);
+    }
+  };
 
   const useTitle = useCallback(
     (state) => {

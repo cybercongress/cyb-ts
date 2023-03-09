@@ -18,7 +18,11 @@ yarn.lock
 
 .idea
 .vscode
+.circleci
+.DS_Store
 
+.yarn
+.yarnrc
 yarn-debug.log*
 yarn-error.log*
 src/.DS_Store

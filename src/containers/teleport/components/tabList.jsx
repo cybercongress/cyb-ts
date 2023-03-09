@@ -36,21 +36,21 @@ function TabList({ selected }) {
       <ButtonTeleport
         status="left"
         isSelected={selected === 'add-liquidity'}
-        onClick={() => handleHistory('/teleport/add-liquidity')}
+        onClick={() => handleHistory('/warp/add-liquidity')}
       >
         Add liquidity
       </ButtonTeleport>
       <ButtonTeleport
         status="center"
-        isSelected={selected === 'swap'}
-        onClick={() => handleHistory('/teleport')}
+        isSelected={selected === 'createPool'}
+        onClick={() => handleHistory('/warp/create-pool')}
       >
-        Swap
+        Create pool
       </ButtonTeleport>
       <ButtonTeleport
         status="right"
         isSelected={selected === 'sub-liquidity'}
-        onClick={() => handleHistory('/teleport/sub-liquidity')}
+        onClick={() => handleHistory('/warp/sub-liquidity')}
       >
         Sub liquidity
       </ButtonTeleport>

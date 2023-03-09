@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import JSONInput from 'react-json-editor-ajrm';
 import { fromBase64, toHex, toUtf8 } from '@cosmjs/encoding';
@@ -75,10 +75,11 @@ function ExecuteContract({ contractAddress }) {
         address,
         contractAddress,
         msgObject.result,
-        calculateFee(400000, gasPrice),
+        txs.calculateFee(400000, gasPrice),
         memo,
         coinsObject.result
       );
+      
       console.log(`executeResponseResult`, executeResponseResult);
       setExecuteResponse({ result: executeResponseResult });
     } catch (e) {

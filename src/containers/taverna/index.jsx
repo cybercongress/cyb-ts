@@ -42,7 +42,7 @@ const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
 function Taverna({ node, mobile, defaultAccount }) {
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
-  console.log(`tweets`, tweets)
+  // console.log(`tweets`, tweets)
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [rankLink, setRankLink] = useState(null);
   const [update, setUpdate] = useState(1);

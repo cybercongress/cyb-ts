@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Route, Router, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -40,6 +39,8 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
+import Temple from './containers/temple'; 
+
 import Ibc from './containers/ibc';
 import {
   Codes,
@@ -50,46 +51,33 @@ import {
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
+import {
+  ListNetwork,
+  CustomNetwork,
+  DetailsNetwork,
+} from './containers/network';
+
+import Sigma from './containers/sigma';
 
 import useIpfsFactory from './useIpfsFactory';
+import defaultNetworks from './utils/defaultNetworks';
 
 import { TIME_START, CYBER } from './utils/config';
 
 export const history = createBrowserHistory({});
 
-function AppRouter({
-  initIpfsProps,
-  setIpfsStatusProps,
-  setTypeDeviceProps,
-  setIpfsIDProps,
-}) {
-  const dataIpfsStart = useIpfsStart();
-  const [loader, setLoader] = useState(true);
-  const [time, setTime] = useState(false);
-  const [genesis, setGenesis] = useState(false);
-  const [baseUrl, setBaseUrl] = useState(true);
-  const [wsClient, setWsClient] = useState(null);
-
-  // Qmdab25Rt2irn9aEQCVCJUCSB9aabit7cwghNgYJhiKeth
-
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    // tryConnectToPeer(dataIpfsStart.node);
-  }, [dataIpfsStart]);
-
+function AppRouter() {
   return (
     <Router history={history}>
-      <Route path="/" component={App} />
+      <Route path="/" component={() => <App />} />
       <Switch>
-        <Route path="/" exact component={Wallet} />
-        <Route path="/bootloader" component={Home} />
+        <Route path="/" exact component={Temple} />
+        <Route path="/robot" component={Wallet} />
+        <Route path="/oracle" component={Home} />
         <Route exact path="/search/:query" component={SearchResults} />
         <Route exact path="/senate" component={Governance} />
         <Route path="/senate/:proposalId" component={ProposalsDetail} />
-        <Route path="/halloffame" component={Validators} />
+        <Route path="/sphere" component={Validators} />
         <Route path="/episode-1" component={Story} />
         <Route exact path="/network/bostrom/tx" component={Txs} />
         <Route path="/network/bostrom/tx/:txHash" component={TxsDetails} />
@@ -105,23 +93,25 @@ function AppRouter({
         <Route path="/graph" component={ForceGraph} />
         <Route path="/pgraph/:agent" component={ForceGraph} />
         <Route path="/ipfs/:cid" component={Ipfs} />
-        <Route exact path="/network/bostrom/block" component={Block} />
+        <Route exact path="/network/bostrom/blocks" component={Block} />
         <Route
-          path="/network/bostrom/block/:idBlock"
+          path="/network/bostrom/blocks/:idBlock"
           component={BlockDetails}
         />
         <Route path="/network/bostrom/parameters" component={ParamNetwork} />
         <Route path="/degenbox" component={TrollBoxx} />
         {/* <Route path="/portal" component={PortPages} /> */}
         <Route path="/test" component={TestKeplr} />
-        <Route path="/mint" component={Mint} />
+        <Route path="/hfr" component={Mint} />
         <Route path="/grid" component={RoutedEnergy} />
         <Route path="/token" component={Market} />
         <Route path="/oracle" component={Oracle} />
         <Route path="/particles" component={Objects} />
         <Route path="/sixthSense" component={Taverna} />
+
         <Route path="/teleport" component={Teleport} />
-        <Route path="/nebula" component={Nebula} />
+        <Route path="/warp" component={Teleport} />
+        {/* <Route path="/genesis" component={Genesis} /> */}
         <Route path="/genesis" component={Movie} />
         <Route path="/citizenship" component={PortalCitizenship} />
         <Route path="/gift" component={PortalGift} />
@@ -129,25 +119,24 @@ function AppRouter({
         <Route path="/portal" component={MainPartal} />
         <Route path="/ibc" component={Ibc} />
         {/* wasm */}
-        <Route path="/codes" exact component={Codes} />
-        <Route path="/codes/:codeId" component={CodePage} />
+        <Route path="/libs" exact component={Codes} />
+        <Route path="/libs/:codeId" component={CodePage} />
         <Route exact path="/contracts" component={DashboardPage} />
         <Route path="/contracts/:contractAddress" component={ContractPage} />
+        {/* network */}
+        <Route path="/networks" exact component={ListNetwork} />
+        <Route path="/networks/add" component={CustomNetwork} />
+        <Route path="/networks/:networkId" component={DetailsNetwork} />
 
         <Route path="/help" component={Help} />
         <Route path="/assets" component={Assets} />
+        {/* Sigma */}
+        <Route path="/sigma" component={Sigma} />
+        <Route path="/nebula" component={Nebula} />
+        {/* <Route path="/" component={Temple} /> */}
       </Switch>
     </Router>
   );
 }
 
-const mapDispatchprops = (dispatch) => {
-  return {
-    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
-    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
-    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
-    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
-  };
-};
-
-export default connect(null, mapDispatchprops)(AppRouter);
+export default AppRouter;

@@ -15,13 +15,13 @@ import {
   IconButton,
 } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
-import { Tooltip } from '../tooltip/tooltip';
+import Tooltip from '../tooltip/tooltip';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
 import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
-import { formatNumber, trimString } from '../../utils/utils';
+import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
 import ButtonImgText from '../Button/buttonImgText';
 import { IconStatus } from '../governance/governance';
 
@@ -91,7 +91,9 @@ const imgKeplr = require('../../image/keplr-icon.svg');
 const imgMetaMask = require('../../image/mm-logo.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../image/large-green.png');
+const imgCyber = require('../../image/large-purple-circle.png');
+const imgBostrom = require('../../image/large-green.png');
+const imgSpace = require('../../image/large-purple-circle.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
 
 const T = new LocalizedStrings(i18n);
@@ -366,7 +368,7 @@ export const StartStageSearchActionBar = ({
             <Pane alignItems="center" display="flex">
               {textBtn}{' '}
               <img
-                src={imgCyber}
+                src={selectNetworkImg(CYBER.CHAIN_ID)}
                 alt="cyber"
                 style={{
                   width: 20,
@@ -1472,8 +1474,8 @@ export const ConnectAddress = ({
                 <ButtonIcon
                   onClick={() => selectNetworkFunc('cyber')}
                   active={selectNetwork === 'cyber'}
-                  img={imgCyber}
-                  text="bostrom"
+                  img={selectNetworkImg(CYBER.CHAIN_ID)}
+                  text={CYBER.CHAIN_ID}
                 />
               )}
               {cosmosNetwork && (

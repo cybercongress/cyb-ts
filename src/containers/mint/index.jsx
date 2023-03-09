@@ -1,9 +1,10 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { Tablist, Pane, Button, Text } from '@cybercongress/gravity';
 import { Link, useLocation } from 'react-router-dom';
 import Slider from 'rc-slider';
 import { coin } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
 import {
@@ -13,6 +14,7 @@ import {
   formatCurrencyNumber,
   formatCurrency,
   convertResources,
+  getDisplayAmount,
 } from '../../utils/utils';
 import { authAccounts } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
@@ -74,16 +76,12 @@ const returnColorDot = (marks) => {
 };
 
 function Mint({ defaultAccount }) {
-  const { jsCyber } = useContext(AppContext);
+  const { jsCyber, traseDenom } = useContext(AppContext);
   const [addressActive, setAddressActive] = useState(null);
   const [updateAddress, setUpdateAddress] = useState(0);
   // const { balance } = useGetBalance(addressActive, updateAddress);
-  const {
-    slotsData,
-    vested,
-    loadingAuthAccounts,
-    originalVesting,
-  } = useGetSlots(addressActive, updateAddress);
+  const { slotsData, vested, loadingAuthAccounts, originalVesting } =
+    useGetSlots(addressActive, updateAddress);
   const [selected, setSelected] = useState('millivolt');
   const [value, setValue] = useState(0);
   const [valueDays, setValueDays] = useState(1);
@@ -101,7 +99,7 @@ function Mint({ defaultAccount }) {
       if (jsCyber !== null && addressActive !== null) {
         const responseBalance = await jsCyber.getBalance(
           addressActive,
-          'hydrogen'
+          CYBER.DENOM_LIQUID_TOKEN
         );
         if (responseBalance.amount) {
           amountHydrogen = parseFloat(responseBalance.amount);
@@ -140,9 +138,8 @@ function Mint({ defaultAccount }) {
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
       const { keys, bech32 } = account.cyber;
-      if (keys === 'keplr') {
-        addressPocket = bech32;
-      }
+
+      addressPocket = bech32;
     }
     setAddressActive(addressPocket);
   }, [defaultAccount.name]);
@@ -150,9 +147,10 @@ function Mint({ defaultAccount }) {
   useEffect(() => {
     let vestedTokens = 0;
     let maxValue = 0;
-    if (originalVesting.hydrogen > 0) {
+    if (originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0) {
       vestedTokens =
-        parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
+        parseFloat(originalVesting[CYBER.DENOM_LIQUID_TOKEN]) -
+        parseFloat(vested[CYBER.DENOM_LIQUID_TOKEN]);
     }
     if (balanceHydrogen > 0) {
       maxValue = Math.floor(balanceHydrogen) - vestedTokens;
@@ -165,9 +163,10 @@ function Mint({ defaultAccount }) {
 
   useEffect(() => {
     let vestedTokens = 0;
-    if (originalVesting.hydrogen > 0) {
+    if (originalVesting[CYBER.DENOM_LIQUID_TOKEN] > 0) {
       vestedTokens =
-        parseFloat(originalVesting.hydrogen) - parseFloat(vested.hydrogen);
+        parseFloat(originalVesting[CYBER.DENOM_LIQUID_TOKEN]) -
+        parseFloat(vested[CYBER.DENOM_LIQUID_TOKEN]);
     }
     if (vestedTokens > 0 && balanceHydrogen > 0) {
       const procent = (vestedTokens / balanceHydrogen) * 100;
@@ -240,6 +239,30 @@ function Mint({ defaultAccount }) {
     setUpdateAddress(updateAddress + 1);
   };
 
+  const vestedA = useMemo(() => {
+    let amountA = 0;
+    if (originalVesting.milliampere > 0) {
+      const { coinDecimals } = traseDenom('milliampere');
+      const vestedTokensA = new BigNumber(originalVesting.milliampere)
+        .minus(vested.milliampere)
+        .toNumber();
+      amountA = getDisplayAmount(vestedTokensA, coinDecimals);
+    }
+    return amountA;
+  }, [vested, originalVesting]);
+
+  const vestedV = useMemo(() => {
+    let amountV = 0;
+    if (originalVesting.millivolt > 0) {
+      const { coinDecimals } = traseDenom('millivolt');
+      const vestedTokensA = new BigNumber(originalVesting.millivolt)
+        .minus(vested.millivolt)
+        .toNumber();
+      amountV = getDisplayAmount(vestedTokensA, coinDecimals);
+    }
+    return amountV;
+  }, [vested, originalVesting]);
+
   return (
     <>
       <main className="block-body">
@@ -253,17 +276,15 @@ function Mint({ defaultAccount }) {
         >
           <CardStatisics
             title={<ValueImg text="millivolt" />}
-            value={formatNumber(originalVesting.millivolt)}
+            value={formatNumber(vestedV)}
           />
           <CardStatisics
             title={<ValueImg text="milliampere" />}
-            value={formatNumber(originalVesting.milliampere)}
+            value={formatNumber(vestedA)}
           />
           <CardStatisics
             title="My Energy"
-            value={`${formatNumber(
-              originalVesting.milliampere * originalVesting.millivolt
-            )} W`}
+            value={`${formatNumber(vestedA * vestedV)} W`}
           />
         </Pane>
         <div
@@ -308,16 +329,17 @@ function Mint({ defaultAccount }) {
             <ItemBalance
               text="Liquid"
               amount={max}
-              currency={<ValueImg text="hydrogen" />}
+              currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
             />
             <ItemBalance
               text="Frozen"
               amount={
                 loadingAuthAccounts
                   ? null
-                  : originalVesting.hydrogen - vested.hydrogen
+                  : originalVesting[CYBER.DENOM_LIQUID_TOKEN] -
+                    vested[CYBER.DENOM_LIQUID_TOKEN]
               }
-              currency={<ValueImg text="hydrogen" />}
+              currency={<ValueImg text={CYBER.DENOM_LIQUID_TOKEN} />}
             />
           </div>
           <div
@@ -394,15 +416,19 @@ function Mint({ defaultAccount }) {
               }}
             >
               You’re freezing {formatNumber(value)} H for {valueDays} days. It
-              will release {resourceToken} {<ValueImg text={selected} />} for
-              you. At the end of the period, {selected} becomes liquid
-              automatically, but you can use it to boost ranking during the
-              freeze. You can have only 8 slots for investmint at a time.
+              will release {resourceToken} <ValueImg text={selected} /> for you.
+              At the end of the period, {selected} becomes liquid automatically,
+              but you can use it to boost ranking during the freeze. You can
+              have only 8 slots for investmint at a time.
             </div>
           )}
         </div>
 
-        {loadingAuthAccounts ? <Dots big /> : <TableSlots data={slotsData} />}
+        {loadingAuthAccounts ? (
+          <Dots big />
+        ) : (
+          <TableSlots data={slotsData} traseDenom={traseDenom} />
+        )}
       </main>
       <ActionBar
         value={value}

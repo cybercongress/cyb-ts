@@ -204,7 +204,7 @@ class ActionBarContainer extends Component {
               txHash: null,
               stage: STAGE_ERROR,
               errorMessage:
-                'Cyberlinking and investmint is not working. Wait updates.',
+                'Cyberlinking and investmint are not working. Wait for updates.',
             });
           } else {
             this.setState({

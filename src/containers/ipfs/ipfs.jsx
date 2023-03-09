@@ -194,7 +194,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     const response = await getToLink(cid);
     console.log(`response`, response);
     if (response !== null && response.txs && response.txs.length > 0) {
-      console.log('response To :>> ', response);
+      // console.log('response To :>> ', response);
       setDataToLink(response.txs.reverse());
     }
   };
@@ -202,8 +202,13 @@ function Ipfs({ nodeIpfs, mobile }) {
   const feachCidFrom = async () => {
     const response = await getFromLink(cid);
     if (response !== null && response.txs && response.txs.length > 0) {
-      // console.log('response From :>> ', response);
-      const addressCreator = response.txs[0].tx.value.msg[0].value.neuron;
+      let addressCreator = '';
+      if (response.txs[0].tx.value.msg[0].value.neuron) {
+        addressCreator = response.txs[0].tx.value.msg[0].value.neuron;
+      }
+      if (response.txs[0].tx.value.msg[0].value.sender) {
+        addressCreator = response.txs[0].tx.value.msg[0].value.sender;
+      }
       const timeCreate = response.txs[0].timestamp;
       setCreator({
         address: addressCreator,

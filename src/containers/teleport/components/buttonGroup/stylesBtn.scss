@@ -15,23 +15,23 @@ $color-border-lamp-white: #e2e2e2;
   background: linear-gradient(
     $route,
     rgba(0, 237, 235, 0) 0%,
-    rgba(0, 237, 235, 0.4) 100%
+    rgba(0, 237, 235, 1) 100%
   );
 }
 
 @mixin line-gradient-green-center($route) {
   background: linear-gradient(
     $route,
-    rgba(0, 237, 235, 0.01) 0%,
-    rgba(0, 237, 235, 0.28) 100%
+    rgba(0, 237, 235, 0) 0%,
+    rgba(0, 237, 235, 1) 100%
   );
 }
 
 @mixin linear-gradient-gray($route) {
   background: linear-gradient(
     $route,
-    rgba(217, 217, 217, 0.03) 0%,
-    rgba(255, 255, 255, 0.2) 100%
+    rgba(217, 217, 217, 0) 0%,
+    rgba(255, 255, 255, 1) 100%
   );
 }
 
@@ -54,6 +54,7 @@ $color-border-lamp-white: #e2e2e2;
   content: '';
   height: 100%;
   position: absolute;
+  opacity: 11%;
 }
 
 @mixin linear-gradient-gray-left {

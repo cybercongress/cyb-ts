@@ -11,7 +11,7 @@ function LeftTooltip({ block }) {
     <Tooltip
       placement="bottom"
       tooltip={
-        <span>
+        <span style={{ width: '225px', display: 'block', padding: 10 }}>
           You are on the{' '}
           <a
             target="_blank"
@@ -22,10 +22,8 @@ function LeftTooltip({ block }) {
           </a>{' '}
           network at block{' '}
           <span style={{ color: '#4ed6ae' }}>
-            <a
-            href="/network/bostrom/block"
-            >
-            {formatNumber(parseFloat(block))}
+            <a href="/network/bostrom/block">
+              {formatNumber(parseFloat(block))}
             </a>
           </span>
         </span>

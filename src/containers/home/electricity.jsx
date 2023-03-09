@@ -163,6 +163,7 @@ function Electricity({ setBlockProps }) {
         width: '100%',
         padding: ' 0 20px',
         position: 'absolute',
+        opacity: 0.5,
       }}
       className="electricity"
     >

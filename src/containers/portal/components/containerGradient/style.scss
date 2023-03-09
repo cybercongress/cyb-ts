@@ -280,7 +280,7 @@
   &Red {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
       left: 0;
     }
@@ -295,7 +295,7 @@
   &Green {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
@@ -309,7 +309,7 @@
   &Blue {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
@@ -323,7 +323,7 @@
   &Yellow {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
       left: 0;
     }
@@ -338,7 +338,7 @@
   &Purple {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
       left: 0;
     }
@@ -353,7 +353,7 @@
   &Pink {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(246, 43, 253, 0.5);;
       left: 0;
     }
@@ -380,7 +380,7 @@
   &Red {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(255, 0, 0, 0.7);
       left: 0;
     }
@@ -388,7 +388,7 @@
   &Green {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(54, 214, 174, 0.7);
       left: 0;
     }
@@ -396,7 +396,7 @@
   &Blue {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(31, 203, 255, 0.7);
       left: 0;
     }
@@ -404,7 +404,7 @@
   &Yellow {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(255, 217, 0, 0.7);
       left: 0;
     }
@@ -412,7 +412,7 @@
   &Purple {
     &::before {
       @include ion-lamp;
-      border-radius: 0px 0px 0px 2px;
+      // border-radius: 0px 0px 0px 2px;
       box-shadow: -3px 0 20px 1.5px rgba(0, 10, 255, 0.65);
       left: 0;
     }
@@ -553,6 +553,7 @@
   min-height: 50px;
   position: relative;
   padding: 0px 5px;
+  height: 100%;
 
   &Primary {
     &::after {

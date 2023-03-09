@@ -8,7 +8,7 @@ import { CYBER } from '../../../utils/config';
 const { DENOM_CYBER, HYDROGEN } = CYBER;
 
 const TootipContent = () => (
-  <div style={{ padding: '5px' }}>
+  <div style={{ padding: '10px', width: 200 }}>
     you receive H form staked BOOT, you can use H for investmint A and V
   </div>
 );
@@ -50,7 +50,7 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
         }
       />
 
-      <Link to="/mint">
+      <Link to="/hfr">
         <CardStatisics
           title={`${HYDROGEN} available`}
           value={
@@ -58,7 +58,9 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
               <Dots />
             ) : (
               formatNumber(
-                balanceToken.hydrogen ? balanceToken.hydrogen.liquid : 0
+                balanceToken[CYBER.DENOM_LIQUID_TOKEN]
+                  ? balanceToken[CYBER.DENOM_LIQUID_TOKEN].liquid
+                  : 0
               )
             )
           }

@@ -75,14 +75,15 @@ function ActionBar({
     if (keplr !== null) {
       setStage(STAGE_SUBMITTED);
       const [{ address }] = await keplr.signer.getAccounts();
+      const gas = DEFAULT_GAS_LIMITS * 2;
       const fee = {
         amount: [],
-        gas: DEFAULT_GAS_LIMITS.toString(),
+        gas: gas.toString(),
       };
       if (addressActive === address) {
         const response = await keplr.investmint(
           address,
-          coin(parseFloat(value), 'hydrogen'),
+          coin(parseFloat(value), CYBER.DENOM_LIQUID_TOKEN),
           selected,
           parseFloat(BASE_VESTING_TIME * valueDays),
           fee

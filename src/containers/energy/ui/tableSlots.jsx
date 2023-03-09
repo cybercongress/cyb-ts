@@ -8,8 +8,13 @@ import {
 } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { convertResources, formatNumber } from '../../../utils/utils';
+import {
+  convertResources,
+  formatNumber,
+  getDisplayAmount,
+} from '../../../utils/utils';
 import { NoItems, Dots, TextTable, ValueImg } from '../../../components';
+import { CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
 
@@ -34,7 +39,10 @@ const NumberCurrency = ({
   );
 };
 
-const TableSlots = ({ data, mobile }) => {
+const TableSlots = ({ data, traseDenom }) => {
+  const { coinDecimals: coinDecimalsA } = traseDenom('milliampere');
+  const { coinDecimals: coinDecimalsV } = traseDenom('millivolt');
+
   let slotRows = [];
 
   if (data.length > 0) {
@@ -56,23 +64,23 @@ const TableSlots = ({ data, mobile }) => {
           {item.time && <TextTable>{item.time}</TextTable>}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
-          {item.amount.hydrogen && (
+          {item.amount[CYBER.DENOM_LIQUID_TOKEN] && (
             <TextTable>
-              {formatNumber(item.amount.hydrogen)}
-              <ValueImg text="hydrogen" onlyImg />
+              {formatNumber(item.amount[CYBER.DENOM_LIQUID_TOKEN])}
+              <ValueImg text={CYBER.DENOM_LIQUID_TOKEN} onlyImg />
             </TextTable>
           )}
         </Table.TextCell>
         <Table.TextCell textAlign="end">
           {item.amount.millivolt && (
             <TextTable>
-              {item.amount.millivolt}
+              {getDisplayAmount(item.amount.millivolt, coinDecimalsV)}
               <ValueImg text="millivolt" onlyImg />
             </TextTable>
           )}
           {item.amount.milliampere && (
             <TextTable>
-              {item.amount.milliampere}
+              {getDisplayAmount(item.amount.milliampere, coinDecimalsA)}
               <ValueImg text="milliampere" onlyImg />
             </TextTable>
           )}

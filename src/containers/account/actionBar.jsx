@@ -94,7 +94,7 @@ class ActionBarContainer extends Component {
       const [{ address }] = await keplr.signer.getAccounts();
       let response = null;
       const msg = [];
-      if (type === 'heroes') {
+      if (type === 'security') {
         if (address === addressSend) {
           const dataTotalRewards = await getTotalRewards(address);
           console.log(`dataTotalRewards`, dataTotalRewards);
@@ -119,11 +119,11 @@ class ActionBarContainer extends Component {
             );
           }
         }
-      } else if (type === 'tweets' && follow) {
+      } else if (type === 'log' && follow) {
         const fromCid = await getPin(node, 'follow');
         const toCid = await getPin(node, addressSend);
         response = await keplr.cyberlink(address, fromCid, toCid, fee);
-      } else if (type === 'tweets' && tweets) {
+      } else if (type === 'log' && tweets) {
         const fromCid = await getPin(node, 'tweet');
         const toCid = await this.calculationIpfsTo(contentHash);
         response = await keplr.cyberlink(address, fromCid, toCid, fee);
@@ -256,7 +256,7 @@ class ActionBarContainer extends Component {
       file,
     } = this.state;
 
-    if (stage === STAGE_INIT && type === 'tweets' && follow) {
+    if (stage === STAGE_INIT && type === 'log' && follow) {
       return (
         <ActionBar>
           <Pane>
@@ -266,7 +266,7 @@ class ActionBarContainer extends Component {
       );
     }
 
-    if (stage === STAGE_INIT && type === 'tweets' && tweets) {
+    if (stage === STAGE_INIT && type === 'log' && tweets) {
       return (
         <StartStageSearchActionBar
           onClickBtn={this.onClickSend}
@@ -289,7 +289,7 @@ class ActionBarContainer extends Component {
 
     if (
       stage === STAGE_INIT &&
-      type === 'heroes' &&
+      type === 'security' &&
       defaultAccount !== null &&
       defaultAccount.keys === 'keplr'
     ) {
@@ -311,7 +311,7 @@ class ActionBarContainer extends Component {
     // console.log('rewards', groupLink(rewards.rewards));
     if (stage === STAGE_READY) {
       // if (this.state.stage === STAGE_READY) {
-      if (type === 'heroes') {
+      if (type === 'security') {
         return (
           <RewardsDelegators
             data={rewards}
@@ -333,7 +333,7 @@ class ActionBarContainer extends Component {
           />
         );
       }
-      if (type === 'tweets') {
+      if (type === 'log') {
         return (
           <ActionBar>
             <ActionBarContentText>

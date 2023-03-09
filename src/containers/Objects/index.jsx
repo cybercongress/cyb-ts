@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Rank, Pane } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
-import { Dots, Loading } from '../../components';
+import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../ipfs/contentItem';
-import { formatNumber } from '../../utils/utils';
+import {
+  coinDecimals,
+  exponentialToDecimal,
+  formatNumber,
+} from '../../utils/utils';
 
 const Relevace = ({ items, fetchMoreData, page, allPage, mobile, node }) => (
   <InfiniteScroll
@@ -76,7 +80,7 @@ function Objects({ node, mobile }) {
       (obj, link) => ({
         ...obj,
         [link.particle]: {
-          rank: formatNumber(link.rank, 6),
+          rank: exponentialToDecimal(parseFloat(link.rank).toPrecision(3)),
           particle: link.particle,
           grade: getRankGrade(link.rank),
           status: 'impossibleLoad',
@@ -101,7 +105,7 @@ function Objects({ node, mobile }) {
       (obj, link) => ({
         ...obj,
         [link.particle]: {
-          rank: formatNumber(link.rank, 6),
+          rank: exponentialToDecimal(parseFloat(link.rank).toPrecision(3)),
           particle: link.particle,
           grade: getRankGrade(link.rank),
           status: 'impossibleLoad',

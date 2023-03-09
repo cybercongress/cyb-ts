@@ -100,7 +100,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         if (query.match(PATTERN_IPFS_HASH)) {
           keywordHashTemp = query;
         } else {
-          keywordHashTemp = await getIpfsHash(encodeSlash(query).toLowerCase());
+          keywordHashTemp = await getIpfsHash(encodeSlash(query));
         }
 
         let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);

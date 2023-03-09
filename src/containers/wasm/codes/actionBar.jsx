@@ -6,7 +6,7 @@ import {
   Pane,
 } from '@cybercongress/gravity';
 import { GasPrice } from '@cosmjs/launchpad';
-import { calculateFee } from '@cosmjs/stargate';
+import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
 import { CYBER, LEDGER } from '../../../utils/config';
 import {
@@ -77,7 +77,7 @@ function ActionBar({ updateFnc, addressActive }) {
         const response = await keplr.upload(
           address,
           wasmBytes,
-          calculateFee(4000000, gasPrice),
+          txs.calculateFee(4000000, gasPrice),
           CYBER.MEMO_KEPLR
         );
         if (response.code === 0) {
