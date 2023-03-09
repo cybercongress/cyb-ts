@@ -7,6 +7,7 @@ const getOpts = () => {
   let ipfsOpts = {
     ipfsNodeType: 'embedded', // external || embedded
     urlOpts: '/ip4/127.0.0.1/tcp/5001', // default url
+    userGateway: 'http://127.0.0.1:8080',
   };
 
   // get type ipfs

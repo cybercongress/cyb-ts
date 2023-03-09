@@ -5,6 +5,7 @@ export const initialState = {
   failed: null,
   ready: false,
   pending: false,
+  ipfsOpts: null,
 };
 
 const ipfsReducer = (state = initialState, action) => {
@@ -48,6 +49,13 @@ const ipfsReducer = (state = initialState, action) => {
       return {
         ...state,
         pending: action.payload,
+      };
+    }
+
+    case 'SET_IPFS_OPTS': {
+      return {
+        ...state,
+        ipfsOpts: action.payload,
       };
     }
 

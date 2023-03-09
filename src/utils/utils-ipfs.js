@@ -5,6 +5,24 @@ import { getPinsCid, getIpfsGatway } from './search/utils';
 
 const FileType = require('file-type');
 
+const checkIpfsState = () => {
+  let userGatewayUrl = null;
+  let ipfsNodeTypeTemp = null;
+
+  const LS_IPFS_STATE = localStorage.getItem('ipfsState');
+
+  if (LS_IPFS_STATE !== null) {
+    const lsTypeIpfsData = JSON.parse(LS_IPFS_STATE);
+    if (Object.prototype.hasOwnProperty.call(lsTypeIpfsData, 'userGateway')) {
+      const { userGateway, ipfsNodeType } = lsTypeIpfsData;
+      userGatewayUrl = userGateway;
+      ipfsNodeTypeTemp = ipfsNodeType;
+    }
+  }
+
+  return { ipfsNodeType: ipfsNodeTypeTemp, userGateway: userGatewayUrl };
+};
+
 const checkCidInDB = async (cid) => {
   const dataIndexdDb = await db.table('cid').get({ cid });
   if (dataIndexdDb !== undefined && dataIndexdDb.content) {
@@ -66,8 +84,8 @@ const checkCidByIpfsNode = async (node, cid) => {
   }
 };
 
-const checkIpfsGatway = async (cid) => {
-  const respnseGateway = await getIpfsGatway(cid, 'arraybuffer');
+const checkIpfsGatway = async (cid, userGateway) => {
+  const respnseGateway = await getIpfsGatway(cid, 'arraybuffer', userGateway);
   if (respnseGateway !== null) {
     const dataUint8Array = new Uint8Array(respnseGateway);
     const meta = {
@@ -127,6 +145,15 @@ const getContentByCid = async (node, cid, callBackFuncStatus) => {
     }
     if (callBackFuncStatus) {
       callBackFuncStatus('trying to get with a gatway');
+    }
+
+    const { ipfsNodeType, userGateway } = checkIpfsState();
+
+    if (ipfsNodeType !== null && ipfsNodeType === 'external') {
+      const respnseGateway = await checkIpfsGatway(cid, userGateway);
+      if (respnseGateway !== undefined) {
+        return respnseGateway;
+      }
     }
 
     const respnseGateway = await checkIpfsGatway(cid);

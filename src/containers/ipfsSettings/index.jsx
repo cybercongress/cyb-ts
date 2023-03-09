@@ -5,8 +5,9 @@ import BtnPasport from '../portal/pasport/btnPasport';
 import Select from '../teleport/components/select';
 import Input from '../teleport/components/input';
 import {
-  updsteIpfsStateUrl,
-  updsteIpfsStateType,
+  updateIpfsStateUrl,
+  updateIpfsStateType,
+  updateUserGatewayUrl,
   renderOptions,
   ContainerKeyValue,
 } from './ipfsComponents/utilsComponents';
@@ -19,25 +20,33 @@ const dataOpts = ['external', 'embedded'];
 function IpfsSettings({ ipfs, failed, ready, pending }) {
   const [valueSelect, setValueSelec] = useState('external');
   const [valueInput, setValueInput] = useState('');
+  const [valueInputGateway, setValueInputGateway] = useState('');
 
   useEffect(() => {
     const lsTypeIpfs = localStorage.getItem('ipfsState');
     if (lsTypeIpfs !== null) {
       const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
-      const { ipfsNodeType, urlOpts } = lsTypeIpfsData;
+      const { ipfsNodeType, urlOpts, userGateway } = lsTypeIpfsData;
       setValueSelec(ipfsNodeType);
       setValueInput(urlOpts);
+      if (userGateway) {
+        setValueInputGateway(userGateway);
+      }
     }
   }, []);
 
   const onChangeSelect = (item) => {
     setValueSelec(item);
-    updsteIpfsStateType(item);
+    updateIpfsStateType(item);
   };
 
   const setNewUrl = useCallback(() => {
-    updsteIpfsStateUrl(valueInput);
+    updateIpfsStateUrl(valueInput);
   }, [valueInput]);
+
+  const setNewUrlGateway = useCallback(() => {
+    updateUserGatewayUrl(valueInputGateway);
+  }, [valueInputGateway]);
 
   const onClickReConnect = () => {
     const event = new Event('reconnectIpfsClient');
@@ -92,30 +101,56 @@ function IpfsSettings({ ipfs, failed, ready, pending }) {
         </ContainerKeyValue>
 
         {valueSelect === 'external' && (
-          <ContainerKeyValue>
-            <div>api</div>
+          <>
+            <ContainerKeyValue>
+              <div>api</div>
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '300px',
-                gap: '20px',
-                position: 'relative',
-              }}
-            >
-              <Input
-                value={valueInput}
-                onChange={(e) => setValueInput(e.target.value)}
-              />
-              <BtnPasport
-                style={{ maxWidth: '100px' }}
-                typeBtn="blue"
-                onClick={() => setNewUrl()}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '300px',
+                  gap: '20px',
+                  position: 'relative',
+                }}
               >
-                edit
-              </BtnPasport>
-            </div>
-          </ContainerKeyValue>
+                <Input
+                  value={valueInput}
+                  onChange={(e) => setValueInput(e.target.value)}
+                />
+                <BtnPasport
+                  style={{ maxWidth: '100px' }}
+                  typeBtn="blue"
+                  onClick={() => setNewUrl()}
+                >
+                  edit
+                </BtnPasport>
+              </div>
+            </ContainerKeyValue>
+            <ContainerKeyValue>
+              <div>gateway</div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '300px',
+                  gap: '20px',
+                  position: 'relative',
+                }}
+              >
+                <Input
+                  value={valueInputGateway}
+                  onChange={(e) => setValueInputGateway(e.target.value)}
+                />
+                <BtnPasport
+                  style={{ maxWidth: '100px' }}
+                  typeBtn="blue"
+                  onClick={() => setNewUrlGateway()}
+                >
+                  edit
+                </BtnPasport>
+              </div>
+            </ContainerKeyValue>
+          </>
         )}
 
         <InfoIpfsNode ipfs={ipfs} />

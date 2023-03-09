@@ -31,9 +31,17 @@ export const setIpfsReady = (status) => {
     payload: status,
   };
 };
+
 export const setIpfsPending = (status) => {
   return {
     type: 'SET_PENDING',
+    payload: status,
+  };
+};
+
+export const setIpfsOpts = (status) => {
+  return {
+    type: 'SET_IPFS_OPTS',
     payload: status,
   };
 };

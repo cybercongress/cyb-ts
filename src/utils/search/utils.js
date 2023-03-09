@@ -1435,20 +1435,21 @@ export const getAvatarIpfs = async (cid, ipfs) => {
   return null;
 };
 
-export const getIpfsGatway = async (cid, type = 'json') => {
+export const getIpfsGatway = async (
+  cid,
+  type = 'json',
+  userGateway = config.CYBER.CYBER_GATEWAY
+) => {
   try {
     const abortController = new AbortController();
     setTimeout(() => {
       abortController.abort();
     }, 1000 * 60 * 1); // 1 min
 
-    const response = await axios.get(
-      `${config.CYBER.CYBER_GATEWAY}/ipfs/${cid}`,
-      {
-        signal: abortController.signal,
-        responseType: type,
-      }
-    );
+    const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
+      signal: abortController.signal,
+      responseType: type,
+    });
 
     return response.data;
   } catch (error) {

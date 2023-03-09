@@ -34,7 +34,7 @@ const renderOptions = (data, selected, valueSelect) => {
   return items;
 };
 
-const updsteIpfsStateType = (newTypeValue) => {
+const updateIpfsStateType = (newTypeValue) => {
   const lsTypeIpfs = localStorage.getItem('ipfsState');
   if (lsTypeIpfs !== null) {
     const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
@@ -43,7 +43,7 @@ const updsteIpfsStateType = (newTypeValue) => {
   }
 };
 
-const updsteIpfsStateUrl = (newUrlValue) => {
+const updateIpfsStateUrl = (newUrlValue) => {
   const lsTypeIpfs = localStorage.getItem('ipfsState');
   if (lsTypeIpfs !== null) {
     const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
@@ -52,9 +52,19 @@ const updsteIpfsStateUrl = (newUrlValue) => {
   }
 };
 
+const updateUserGatewayUrl = (newUrlValue) => {
+  const lsTypeIpfs = localStorage.getItem('ipfsState');
+  if (lsTypeIpfs !== null) {
+    const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
+    const newObj = { ...lsTypeIpfsData, userGateway: newUrlValue };
+    localStorage.setItem('ipfsState', JSON.stringify(newObj));
+  }
+};
+
 export {
-  updsteIpfsStateUrl,
-  updsteIpfsStateType,
+  updateIpfsStateUrl,
+  updateIpfsStateType,
+  updateUserGatewayUrl,
   renderOptions,
   ContainerKeyValue,
 };

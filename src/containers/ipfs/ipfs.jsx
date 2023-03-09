@@ -397,6 +397,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   if (content.length !== 0) {
     contentIpfsCid = (
       <ContentTab
+        nodeIpfs={nodeIpfs}
         typeContent={typeContent}
         gateway={gateway}
         content={content}
