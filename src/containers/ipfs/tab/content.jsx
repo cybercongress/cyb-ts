@@ -6,7 +6,6 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeParse from 'rehype-parse';
 import rehypeStringify from 'rehype-stringify';
-import CodeBlock from '../codeBlock';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
@@ -172,7 +171,6 @@ function ContentTab({
           rehypePlugins={[rehypeStringify, rehypeSanitize]}
           // skipHtml
           // astPlugins={[parseHtml]}
-          // renderers={{ code: CodeBlock }}
           remarkPlugins={[remarkGfm]}
           // plugins={[toc]}
           // escapeHtml={false}

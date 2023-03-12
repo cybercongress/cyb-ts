@@ -31,7 +31,6 @@ import {
 } from '../../../utils/utils';
 import { decFnc } from '../../teleport/utils';
 import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
-import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';

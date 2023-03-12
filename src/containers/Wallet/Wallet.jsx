@@ -11,7 +11,6 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
-import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from './injectKeplr';
 import BanerHelp from '../help/banerHelp';
 

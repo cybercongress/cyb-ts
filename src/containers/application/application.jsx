@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import { Navigation, NavigationLeft, Pane } from '@cybercongress/gravity';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-import queryString from 'query-string';
 // import usePopperTooltip from 'react-popper-tooltip';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';

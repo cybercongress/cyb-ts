@@ -80,7 +80,7 @@ const slideData = {
     title: 'real distributed mind',
     amount: 0,
     denom: '',
-    keyAmount: 'negentropy',
+    keyAmount: 'bits of negentropy',
     change: { time: 0, amount: 0 },
   },
   futureOf: {

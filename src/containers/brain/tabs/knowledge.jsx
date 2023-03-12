@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Pane, Icon } from '@cybercongress/gravity';
 import { CardStatisics } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
-import Txs from '../tx';
 import AccountCount from '../accountCount';
 
 function KnowledgeTab({ linksCount, cidsCount, accountsCount, inlfation }) {

@@ -68,7 +68,6 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
               // escapeHtml
               // skipHtml={false}
               // astPlugins={[parseHtml]}
-              // renderers={{ code: CodeBlock }}
               remarkPlugins={[remarkGfm]}
 
               // escapeHtml={false}

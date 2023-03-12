@@ -21,7 +21,6 @@ import {
   getFromLink,
 } from '../../utils/search/utils';
 import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
-import CodeBlock from './codeBlock';
 import { formatNumber, trimString, coinDecimals } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
