@@ -3,9 +3,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const Dotenv = require('dotenv-webpack');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
-
-const Dotenv = require("dotenv-webpack");
 
 // const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
 //   template: path.join(__dirname, 'src', 'index.html'),
@@ -27,21 +26,21 @@ module.exports = {
   resolve: {
     fallback: {
       buffer: require.resolve('buffer'),
-      "fs": false,
-      "zlib": false,
-      "path": false,
-      "url": false,
-      "crypto": require.resolve("crypto-browserify"),
-      "assert": require.resolve("assert"),
-      "https": require.resolve("https-browserify"),
-      "os": require.resolve("os-browserify/browser"),
-      "http": require.resolve("stream-http") ,
-      "assert": require.resolve("assert/"),
-      "stream": require.resolve("stream-browserify"),
-       "buffer": require.resolve("buffer/"),
+      fs: false,
+      zlib: false,
+      path: false,
+      url: false,
+      crypto: require.resolve('crypto-browserify'),
+      assert: require.resolve('assert'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify/browser'),
+      http: require.resolve('stream-http'),
+      assert: require.resolve('assert/'),
+      stream: require.resolve('stream-browserify'),
+      buffer: require.resolve('buffer/'),
       // "path": require.resolve("path-browserify"),
       // "zlib": require.resolve("browserify-zlib"),
-      "constants": require.resolve("constants-browserify")
+      constants: require.resolve('constants-browserify'),
       // "os": require.resolve("os-browserify")
     },
     extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
@@ -49,15 +48,15 @@ module.exports = {
       'multicodec/src/base-table': path.dirname(
         require.resolve('multicodec/src/base-table.json')
       ),
-      "react/jsx-dev-runtime.js": "react/jsx-dev-runtime",
-      "react/jsx-runtime.js": "react/jsx-runtime",
+      'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
+      'react/jsx-runtime.js': 'react/jsx-runtime',
     },
   },
   plugins: [
     new webpack.ProvidePlugin({
-      Buffer: [ 'buffer', 'Buffer' ],
+      Buffer: ['buffer', 'Buffer'],
       process: 'process/browser',
-  }),
+    }),
     new CleanWebpackPlugin(),
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
@@ -73,7 +72,8 @@ module.exports = {
       chunkFilename: '[id].css',
     }),
     new Dotenv({
-      systemvars: true,}),
+      systemvars: true,
+    }),
   ],
   module: {
     rules: [
