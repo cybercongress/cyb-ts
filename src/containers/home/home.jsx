@@ -5,6 +5,7 @@ import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import BigNumber from 'bignumber.js';
 import { CardStatisics, Dots, Loading } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
@@ -16,10 +17,9 @@ import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SearchTokenInfo from '../market/searchTokensInfo';
-import { useGetStatisticsCyber } from '../brain/hooks';
-import { KnowledgeTab } from '../brain/tabs';
+import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
+import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
-import BigNumber from 'bignumber.js';
 
 const PREFIXES = [
   {
