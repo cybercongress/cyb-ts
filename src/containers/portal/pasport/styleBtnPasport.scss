@@ -48,6 +48,7 @@ $time-animation: 0.5s;
   color: #fff;
   font-size: 18px;
   animation: openBtn $time-animation linear both;
+  max-width: 50px;
 
   opacity: 1;
 
@@ -94,7 +95,7 @@ $time-animation: 0.5s;
   }
 
   100% {
-    width: 50px;
+    width: 100%;
   }
 }
 

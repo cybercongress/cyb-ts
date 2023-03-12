@@ -252,7 +252,7 @@ function SwichAccount({
 const mapStateToProps = (store) => {
   return {
     node: store.ipfs.ipfs,
-    ipfsStatus: store.ipfs.statusIpfs,
+    ipfsStatus: store.ipfs.ready,
   };
 };
 

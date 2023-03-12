@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect, useRef } from 'react';
-
-const uint8ArrayToAsciiString = require('uint8arrays/to-string');
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 const SelectFile = ({ useStateCallback, text = 'Upload query schema' }) => {
   const inputOpenFileRef = useRef(null);

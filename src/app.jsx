@@ -6,6 +6,7 @@ import useIpfsStart from './ipfsHook';
 import AppRouter from './router';
 import useGetMarketData from './containers/nebula/useGetMarketData';
 import { AppContext } from './context';
+import useNewIpfs from './useNewIpfs';
 
 function App({
   initIpfsProps,
@@ -14,16 +15,19 @@ function App({
   setIpfsIDProps,
 }) {
   const { updatetMarketData, updateDataTotalSupply } = useContext(AppContext);
-  const dataIpfsStart = useIpfsStart();
+  const data = useNewIpfs();
+  // const dataIpfsStart = useIpfsStart();
   const { marketData, dataTotal } = useGetMarketData();
 
-  useEffect(() => {
-    initIpfsProps(dataIpfsStart.node);
-    setIpfsStatusProps(dataIpfsStart.status);
-    setTypeDeviceProps(dataIpfsStart.mobile);
-    setIpfsIDProps(dataIpfsStart.id);
-    // tryConnectToPeer(dataIpfsStart.node);
-  }, [dataIpfsStart]);
+  console.log('data', data)
+
+  // useEffect(() => {
+  //   initIpfsProps(dataIpfsStart.node);
+  //   setIpfsStatusProps(dataIpfsStart.status);
+  //   setTypeDeviceProps(dataIpfsStart.mobile);
+  //   setIpfsIDProps(dataIpfsStart.id);
+  //   // tryConnectToPeer(dataIpfsStart.node);
+  // }, [dataIpfsStart]);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {

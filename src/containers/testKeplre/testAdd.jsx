@@ -3,8 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
-const FileType = require('file-type');
-
 const getName = (file) => file.name;
 
 function AddTest({ nodeIpfs }) {

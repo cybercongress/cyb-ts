@@ -212,7 +212,7 @@ function TestKeplr() {
         decimalScale={3}
       /> */}
       {/* <ImgDenom coinDenom={testDenom} /> */}
-      <Carousel slides={slidesTest} />
+      {/* <Carousel slides={slidesTest} /> */}
       {/* <Signatures addressActive={{ bech32: addressTest }} /> */}
       {/* <button type="button" onClick={checkGift}>
           getCredit

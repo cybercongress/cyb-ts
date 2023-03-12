@@ -43,6 +43,7 @@ const itemsMenu = (address) => {
   if (address !== null) {
     myRobotLinks = [
       { name: 'Sigma', to: '/sigma' },
+      { name: 'Ipfs', to: '/ipfs' },
       { name: 'Log', to: linkLog },
       { name: 'Swarm', to: linkSwarm },
       { name: 'Security', to: linkSecurity },
@@ -53,6 +54,8 @@ const itemsMenu = (address) => {
       { name: 'Energy', to: '/grid' },
       { name: 'Badges', to: linkBadges },
     ];
+  } else {
+    myRobotLinks = [{ name: 'Ipfs', to: '/ipfs' }];
   }
 
   const listItemMenu = [

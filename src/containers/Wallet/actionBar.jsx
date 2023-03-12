@@ -14,9 +14,9 @@ import ActionBarConnect from './actionBarConnect';
 import waitForWeb3 from '../../components/web3/waitForWeb3';
 import { NETWORKSIDS } from '../../utils/config';
 
-const imgLedger = require('../../image/ledger.svg');
-const imgKeplr = require('../../image/keplr-icon.svg');
-const imgRead = require('../../image/duplicate-outline.svg');
+import imgLedger from '../../image/ledger.svg';
+import imgKeplr from '../../image/keplr-icon.svg';
+import imgRead from '../../image/duplicate-outline.svg';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;

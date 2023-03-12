@@ -3,17 +3,17 @@ import { Pane } from '@cybercongress/gravity';
 import { Copy, Dots, Tooltip, LinkWindow } from '../../../components';
 import { trimString, formatNumber, getDecimal } from '../../../utils/utils';
 
-const imgLedger = require('../../../image/ledger.svg');
-const imgKeplr = require('../../../image/keplr-icon.svg');
-const imgMetaMask = require('../../../image/mm-logo.svg');
-const imgRead = require('../../../image/duplicate-outline.svg');
-const imgHelp = require('../../../image/ionicons_svg_ios-help-circle-outline.svg');
-const editOutline = require('../../../image/create-outline.svg');
-const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
-const deleteIcon = require('../../../image/trash-outline.svg');
-const imgEth = require('../../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../../image/large-green.png');
-const imgCosmos = require('../../../image/cosmos-2.svg');
+import imgLedger from '../../../image/ledger.svg';
+import imgKeplr from '../../../image/keplr-icon.svg';
+import imgMetaMask from '../../../image/mm-logo.svg';
+import imgRead from '../../../image/duplicate-outline.svg';
+import imgHelp from '../../../image/ionicons_svg_ios-help-circle-outline.svg';
+import editOutline from '../../../image/create-outline.svg';
+import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
+import deleteIcon from '../../../image/trash-outline.svg';
+import imgEth from '../../../image/Ethereum_logo_2014.svg';
+import imgCyber from '../../../image/large-green.png';
+import imgCosmos from '../../../image/cosmos-2.svg';
 
 const imgData = {
   ledger: imgLedger,

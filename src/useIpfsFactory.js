@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isMobileTablet } from './utils/utils';
+import { create } from 'ipfs-core';
 
-const IPFS = require('ipfs');
 const DetectRTC = require('detectrtc');
 
 let ipfs = null;
@@ -41,10 +41,10 @@ const startIpfs = async () => {
   } else {
     try {
       console.time('IPFS Started');
-      ipfs = await IPFS.create(configIpfs());
+      ipfs = await create(configIpfs());
       console.timeEnd('IPFS Started');
     } catch (error) {
-      ipfs = await IPFS.create(configIpfs(false));
+      ipfs = await create(configIpfs(false));
     }
   }
 };
