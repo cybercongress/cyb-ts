@@ -5,10 +5,10 @@ export const getProposals = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals`,
+      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/gov/v1beta1/proposals`,
     });
 
-    return response.data.result;
+    return response.data.proposals;
   } catch (error) {
     console.log('getProposals error', error);
     return [];
@@ -19,10 +19,10 @@ export const getProposalsDetail = (id) =>
   new Promise((resolve) =>
     axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals/${id}`,
+      url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/gov/v1beta1/proposals/${id}`,
     })
       .then((response) => {
-        resolve(response.data.result);
+        resolve(response.data.proposal);
       })
       .catch((e) => {})
   );
@@ -73,7 +73,7 @@ export const getProposalsDetailVotes = (id) =>
       .then((response) => {
         resolve(response.data.result);
       })
-      .catch((e) => {})
+      .catch((e) => [])
   );
 
 export const getMinDeposit = async () => {
@@ -89,17 +89,22 @@ export const getMinDeposit = async () => {
   }
 };
 
-export const getTableVoters = (id) =>
-  new Promise((resolve) =>
-    axios({
+export const getTableVoters = async (id, offset = 0, limit = 20) => {
+  try {
+    const response = await axios({
       method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals/${id}/votes`,
-    })
-      .then((response) => {
-        resolve(response.data.result);
-      })
-      .catch((e) => {})
-  );
+      url: `${
+        CYBER.CYBER_NODE_URL_LCD
+      }/cosmos/tx/v1beta1/txs?pagination.offset=${
+        offset * limit
+      }&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=proposal_vote.proposal_id%3D${id}`,
+    });
+
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+};
 
 export const getTallyingProposals = async (id) => {
   try {
@@ -112,4 +117,14 @@ export const getTallyingProposals = async (id) => {
     console.log(e);
     return null;
   }
+};
+
+export const reduceTxsVoters = (txs) => {
+  return txs.reduce((prevObj, item) => {
+    const messagesItems = item.body.messages.reduce(
+      (mPrevObj, itemM) => ({ ...mPrevObj, ...itemM }),
+      {}
+    );
+    return [...prevObj, messagesItems];
+  }, []);
 };

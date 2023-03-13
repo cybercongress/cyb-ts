@@ -3,12 +3,13 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { Votes, IconStatus, Tooltip, Deposit } from '../../../components';
 import { formatCurrency, formatNumber } from '../../../utils/utils';
 import { CYBER, PROPOSAL_STATUS } from '../../../utils/config';
+import { ContainerGradientText } from '../../portal/components';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');
 const comPropsImg = require('../../../image/wallet-outline.svg');
 
-const finalTallyResult = item => {
+const finalTallyResult = (item) => {
   const finalVotes = {
     yes: 0,
     no: 0,
@@ -31,42 +32,66 @@ const finalTallyResult = item => {
   return finalVotes;
 };
 
-const TypeProps = ({ type }) => {
-  let typeImg;
-  let textType;
+const returnResponseTypeObj = (typeImg, textType) => ({
+  typeImg,
+  textType,
+});
 
-  switch (type) {
-    case 'cosmos-sdk/ParameterChangeProposal':
-      typeImg = paramChangePropsImg;
-      textType = 'Parameter Change Proposal';
-      break;
-    case 'cosmos-sdk/CommunityPoolSpendProposal':
-      typeImg = comPropsImg;
-      textType = 'Community Pool Spend Proposal';
-
-      break;
-
-    default:
-      typeImg = textPropsImg;
-      textType = 'Text Proposal';
-      break;
+const checkTypeProps = (type = '') => {
+  if (type.includes('ParameterChangeProposal')) {
+    return returnResponseTypeObj(
+      paramChangePropsImg,
+      'Parameter Change Proposal'
+    );
   }
+  if (type.includes('CommunityPoolSpendProposal')) {
+    return returnResponseTypeObj(comPropsImg, 'Community Pool Spend Proposal');
+  }
+
+  if (type.includes('SoftwareUpgradeProposal')) {
+    return returnResponseTypeObj(
+      paramChangePropsImg,
+      'Software Upgrade Proposal'
+    );
+  }
+
+  if (type.includes('TextProposal')) {
+    return returnResponseTypeObj(textPropsImg, 'Text Proposal');
+  }
+
+  if (type.includes('ClientUpdateProposal')) {
+    return returnResponseTypeObj(paramChangePropsImg, 'Client Update Proposal');
+  }
+
+  return returnResponseTypeObj(textPropsImg, type);
+};
+
+const TypeProps = ({ type }) => {
+  const { typeImg, textType } = checkTypeProps(type);
+
   return (
-    <Tooltip placement="bottom" tooltip={textType}>
+    <Tooltip
+      placement="bottom"
+      tooltip={
+        <div
+          style={{
+            padding: '10px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {textType}
+        </div>
+      }
+    >
       <img style={{ width: 25, height: 25 }} src={typeImg} alt="type" />
     </Tooltip>
   );
 };
 
 const AcceptedCard = ({ id, name, votes, type, amount, timeEnd }) => (
-  <Pane
-    position="relative"
-    paddingRight="35px"
-    boxShadow="0 0 5px 0px #3ab793"
-    paddingBottom="20px"
-    paddingLeft="15px"
-    paddingTop="10px"
-    borderRadius="5px"
+  <ContainerGradientText
+    status="green"
+    userStyleContent={{ padding: '10px 35px 20px 15px' }}
   >
     <Pane position="absolute" right="5px" top="5px">
       <TypeProps type={type} />
@@ -82,18 +107,13 @@ const AcceptedCard = ({ id, name, votes, type, amount, timeEnd }) => (
       <Pane marginBottom={2}>Time accepted:</Pane>
       <Pane>{timeEnd}</Pane>
     </Pane>
-  </Pane>
+  </ContainerGradientText>
 );
 
 const RejectedCard = ({ id, name, votes, type, amount, timeEnd }) => (
-  <Pane
-    position="relative"
-    paddingRight="35px"
-    boxShadow="0 0 5px 0px #3ab793"
-    paddingBottom="20px"
-    paddingLeft="15px"
-    paddingTop="10px"
-    borderRadius="5px"
+  <ContainerGradientText
+    status="red"
+    userStyleContent={{ padding: '10px 35px 20px 15px' }}
   >
     <Pane position="absolute" right="5px" top="5px">
       <TypeProps type={type} />
@@ -109,7 +129,7 @@ const RejectedCard = ({ id, name, votes, type, amount, timeEnd }) => (
       <Pane marginBottom={2}>Time rejected:</Pane>
       <Pane>{timeEnd}</Pane>
     </Pane>
-  </Pane>
+  </ContainerGradientText>
 );
 
 const ActiveCard = ({
@@ -124,15 +144,7 @@ const ActiveCard = ({
   totalDeposit,
   minDeposit,
 }) => (
-  <Pane
-    position="relative"
-    paddingRight="35px"
-    boxShadow="0 0 5px 0px #3ab793"
-    paddingBottom="20px"
-    paddingLeft="15px"
-    paddingTop="10px"
-    borderRadius="5px"
-  >
+  <ContainerGradientText userStyleContent={{ padding: '10px 35px 20px 15px' }}>
     <Pane position="absolute" right="5px" top="5px">
       <TypeProps type={type} />
     </Pane>
@@ -152,38 +164,6 @@ const ActiveCard = ({
       </Pane>
     </Pane>
 
-    {/* {state === 'VotingPeriod' && (
-      <Pane marginBottom={2}>
-        <Pane marginBottom={2}>Status:</Pane>
-        <Votes finalVotes={finalTallyResult(votes)} />
-      </Pane>
-    )} */}
-
-    {/* {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
-      <Pane marginBottom={30}>
-        <Pane marginBottom={2}>Status:</Pane>
-        <Pane
-          width="100%"
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Text marginX={5} color="#fff">
-            0
-          </Text>
-          {Object.keys(totalDeposit).length > 0 && (
-            <Deposit
-              totalDeposit={parseFloat(totalDeposit[0].amount)}
-              minDeposit={minDeposit}
-            />
-          )}
-          <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit * 10 ** -9)} {CYBER.DENOM_CYBER_G}
-          </Text>
-        </Pane>
-      </Pane>
-    )} */}
-
     {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
       <Pane>
         <Pane marginBottom={2}>Deposit End Time:</Pane>
@@ -196,7 +176,7 @@ const ActiveCard = ({
         <Pane>{timeEndVoting}</Pane>
       </Pane>
     )}
-  </Pane>
+  </ContainerGradientText>
 );
 
 export { AcceptedCard, ActiveCard, RejectedCard };

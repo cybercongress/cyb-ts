@@ -122,17 +122,24 @@ function Governance({ defaultAccount }) {
   console.log('tableData', tableData);
   const active = tableData
     .reverse()
-    .filter((item) => item.status < PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
+    .filter(
+      (item) =>
+        PROPOSAL_STATUS[item.status] < PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+    )
     .map((item) => (
-      <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
+      <Link
+        key={item.proposal_id}
+        style={{ color: 'unset' }}
+        to={`/senate/${item.proposal_id}`}
+      >
         <ActiveCard
-          key={item.id}
-          id={item.id}
-          name={item.content.value.title}
+          key={item.proposal_id}
+          id={item.proposal_id}
+          name={item.content.title}
           minDeposit={minDeposit}
           totalDeposit={item.total_deposit}
-          type={item.content.type}
-          state={item.status}
+          type={item.content['@type']}
+          state={PROPOSAL_STATUS[item.status]}
           timeEndDeposit={dateFormat(
             new Date(item.deposit_end_time),
             'dd/mm/yyyy, HH:MM:ss'
@@ -147,15 +154,22 @@ function Governance({ defaultAccount }) {
     ));
 
   const accepted = tableData
-    .filter((item) => item.status === PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
+    .filter(
+      (item) =>
+        PROPOSAL_STATUS[item.status] === PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+    )
     .map((item) => (
-      <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
+      <Link
+        key={item.proposal_id}
+        style={{ color: 'unset' }}
+        to={`/senate/${item.proposal_id}`}
+      >
         <AcceptedCard
-          key={item.id}
-          id={item.id}
-          name={item.content.value.title}
+          key={item.proposal_id}
+          id={item.proposal_id}
+          name={item.content.title}
           votes={item.final_tally_result}
-          type={item.content.type}
+          type={item.content['@type']}
           amount={item.total_deposit[0]}
           timeEnd={dateFormat(
             new Date(item.voting_end_time),
@@ -167,15 +181,22 @@ function Governance({ defaultAccount }) {
 
   const rejected = tableData
     .reverse()
-    .filter((item) => item.status > PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED)
+    .filter(
+      (item) =>
+        PROPOSAL_STATUS[item.status] > PROPOSAL_STATUS.PROPOSAL_STATUS_PASSED
+    )
     .map((item) => (
-      <Link key={item.id} style={{ color: 'unset' }} to={`/senate/${item.id}`}>
+      <Link
+        key={item.proposal_id}
+        style={{ color: 'unset' }}
+        to={`/senate/${item.proposal_id}`}
+      >
         <RejectedCard
-          key={item.id}
-          id={item.id}
-          name={item.content.value.title}
+          key={item.proposal_id}
+          id={item.proposal_id}
+          name={item.content.title}
           votes={item.final_tally_result}
-          type={item.content.type}
+          type={item.content['@type']}
           amount={item.total_deposit[0]}
           timeEnd={dateFormat(
             new Date(item.voting_end_time),
