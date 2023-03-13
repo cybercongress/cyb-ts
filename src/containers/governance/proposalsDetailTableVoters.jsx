@@ -11,10 +11,12 @@ import {
   Legend,
   Account,
   Dots,
+  TextTable,
 } from '../../components';
 import { VOTE_OPTION } from '../../utils/config';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
 import { ContainerGradientText } from '../portal/components';
+import { timeSince, trimString } from '../../utils/utils';
 
 const LIMIT = 50;
 
@@ -69,7 +71,7 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
 
     const response = await getTableVoters(proposalId, page, LIMIT);
     if (response && Object.keys(response).length > 0) {
-      const { pagination, txs } = response;
+      const { pagination, tx_responses: txs } = response;
       const { total } = pagination;
       tempAllPage = Math.ceil(total / LIMIT);
       firstItem = reduceTxsVoters(txs);
@@ -88,7 +90,7 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
     // 20 more records in 1.5 secs
     const response = await getTableVoters(proposalId, page, LIMIT);
     if (response && Object.keys(response).length > 0) {
-      const { txs } = response;
+      const { tx_responses: txs } = response;
 
       nextItem = reduceTxsVoters(txs);
     }
@@ -108,6 +110,13 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
   const rowsTable = items.map((item) => {
     const key = uuidv4();
 
+    let timeAgoInMS = 0;
+    const d = new Date().toUTCString();
+    const time = Date.parse(d) - Date.parse(item.timestamp);
+    if (time > 0) {
+      timeAgoInMS = time;
+    }
+
     return (
       <ContainerGradientText status={optionTextColor(item.option)}>
         <Table.Row
@@ -123,10 +132,20 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
               {/* <Link to={`/network/bostrom/contract/${item.voter}`}>{item.voter}</Link> */}
             </Text>
           </Table.TextCell>
+          <Table.TextCell textAlign="center">
+            <TextTable>
+              <Link to={`/network/bostrom/tx/${item.txhash}`}>
+                {trimString(item.txhash, 6, 6)}
+              </Link>
+            </TextTable>
+          </Table.TextCell>
           <Table.TextCell textAlign="end">
             <Text fontSize="18px" color="#fff">
               {optionText(item.option)}
             </Text>
+          </Table.TextCell>
+          <Table.TextCell textAlign="end">
+            <TextTable>{timeSince(timeAgoInMS)} ago</TextTable>
           </Table.TextCell>
         </Table.Row>
       </ContainerGradientText>
@@ -145,15 +164,21 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
           }}
           paddingLeft={20}
         >
-          <Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
             <Text color="#fff" fontSize="17px">
-              Voter
+              voter
             </Text>
           </Table.TextHeaderCell>
-          <Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="center">
+            <TextTable>tx</TextTable>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="end">
             <Text color="#fff" fontSize="17px">
-              Vote Option
+              vote option
             </Text>
+          </Table.TextHeaderCell>
+          <Table.TextHeaderCell textAlign="end">
+            <TextTable>timestamp</TextTable>
           </Table.TextHeaderCell>
         </Table.Head>
 

@@ -121,10 +121,11 @@ export const getTallyingProposals = async (id) => {
 
 export const reduceTxsVoters = (txs) => {
   return txs.reduce((prevObj, item) => {
-    const messagesItems = item.body.messages.reduce(
+    const { txhash, timestamp } = item;
+    const messagesItems = item.tx.body.messages.reduce(
       (mPrevObj, itemM) => ({ ...mPrevObj, ...itemM }),
       {}
     );
-    return [...prevObj, messagesItems];
+    return [...prevObj, { txhash, timestamp, ...messagesItems }];
   }, []);
 };
