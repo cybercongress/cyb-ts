@@ -141,7 +141,6 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
             backgroundColor: '#000',
             border: 'none',
             marginTop: '10px',
-            padding: 7,
             paddingBottom: '10px',
           }}
           paddingLeft={20}
@@ -158,9 +157,7 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
           </Table.TextHeaderCell>
         </Table.Head>
 
-        <Table.Body
-          style={{ backgroundColor: '#000', overflow: 'hidden', padding: 7 }}
-        >
+        <Table.Body style={{ backgroundColor: '#000', overflow: 'hidden' }}>
           <InfiniteScroll
             dataLength={items.length}
             next={fetchMoreData}
