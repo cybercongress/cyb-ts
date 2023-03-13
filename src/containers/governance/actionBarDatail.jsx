@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import BigNumber from 'bignumber.js';
-import { ActionBar, Input, Button, Pane } from '@cybercongress/gravity';
+import { NumericFormat } from 'react-number-format';
+import { ActionBar, Button, Pane } from '@cybercongress/gravity';
 import {
   SigningCosmosClient,
   GasPrice,
@@ -36,6 +37,8 @@ import {
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,
 } from '../../utils/config';
+import Input from '../teleport/components/input';
+import BtnGrd from '../../components/btnGrd';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -201,6 +204,10 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     // }
   };
 
+  const onValueChangeDeposit = (values) => {
+    setValueDeposit(new BigNumber(values).toNumber());
+  };
+
   if (stage === STAGE_INIT && Object.keys(proposals).length === 0) {
     return (
       <ActionBar>
@@ -219,36 +226,24 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       <ActionBar>
         <ActionBarContentText>
           <Pane marginRight={10}>send Deposit</Pane>
-          <Input
-            textAlign="end"
-            value={valueDeposit}
-            onChange={(e) => setValueDeposit(e.target.value)}
-            marginRight={10}
-            width={100}
-            autoFocus
-          />
+          <div style={{ margin: '0 10px' }}>
+            <NumericFormat
+              value={valueDeposit}
+              onValueChange={(values) => onValueChangeDeposit(values.value)}
+              customInput={Input}
+              thousandsGroupStyle="thousand"
+              thousandSeparator=" "
+              decimalScale={3}
+              autoComplete="off"
+              allowLeadingZeros
+            />
+          </div>
           <Pane>{CYBER.DENOM_CYBER.toUpperCase()}</Pane>
         </ActionBarContentText>
-        <ButtonImgText
-          text={
-            <Pane alignItems="center" display="flex">
-              Deposit
-              <img
-                src={imgCyber}
-                alt="cyber"
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginLeft: '5px',
-                  paddingTop: '2px',
-                  objectFit: 'contain',
-                }}
-              />
-            </Pane>
-          }
+        <BtnGrd
+          text="Deposit"
           disabled={!parseFloat(valueDeposit) > 0}
           onClick={() => generateTxKeplr()}
-          img={imgKeplr}
         />
       </ActionBar>
     );
