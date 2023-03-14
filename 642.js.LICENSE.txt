@@ -1,6 +1,6 @@
-/*! decimal.js-light v2.5.1 https://github.com/MikeMcl/decimal.js-light/LICENCE */
-
 /*! fromentries. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /**
  * [js-sha3]{@link https://github.com/emn178/js-sha3}
