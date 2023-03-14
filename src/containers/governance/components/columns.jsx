@@ -9,7 +9,7 @@ const Columns = ({ title, children }) => (
     gridGap="20px"
     gridAutoRows="max-content"
     alignItems="flex-start"
-    boxShadow="0 0 3px 0px #fff"
+    // boxShadow="0 0 3px 0px #fff"
     paddingX={10}
     paddingTop={10}
     paddingBottom={15}

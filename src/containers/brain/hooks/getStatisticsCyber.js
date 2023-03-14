@@ -35,7 +35,7 @@ function useGetStatisticsCyber() {
 
         const dataProposals = await getProposals();
         if (dataProposals !== null && dataProposals.length > 0) {
-          proposals = dataProposals[dataProposals.length - 1].id;
+          proposals = dataProposals.length + 1;
         }
 
         setGovernment({ proposals, communityPool });

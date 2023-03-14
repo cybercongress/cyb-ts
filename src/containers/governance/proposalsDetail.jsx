@@ -32,17 +32,19 @@ import {
   getMinDeposit,
   getTableVoters,
   getTallyingProposals,
+  reduceTxsVoters,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
 
-import { formatNumber } from '../../utils/utils';
+import { formatNumber, makeTags } from '../../utils/utils';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
-import { CYBER, VOTE_OPTION } from '../../utils/config';
+import { CYBER, PROPOSAL_STATUS, VOTE_OPTION } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { AppContext } from '../../context';
+import { ContainerGradientText, MainContainer } from '../portal/components';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -92,13 +94,7 @@ function ProposalsDetail({ defaultAccount }) {
     veto_threshold: 0,
   });
 
-  const [votes, setVotes] = useState({
-    yes: 0,
-    no: 0,
-    abstain: 0,
-    noWithVeto: 0,
-    voter: [],
-  });
+  const [votes, setVotes] = useState([]);
 
   const [totalDeposit, setTotalDeposit] = useState(0);
   const [minDeposit, setMinDeposit] = useState(0);
@@ -110,42 +106,40 @@ function ProposalsDetail({ defaultAccount }) {
       let totalDepositAmount = 0;
       if (proposalId && proposalId > 0) {
         const responseProposalsDetail = await getProposalsDetail(proposalId);
-        proposalsInfo = { ...responseProposalsDetail };
-        const {
-          title,
-          description,
-          plan,
-          changes,
-          recipient,
-          amount,
-        } = responseProposalsDetail.content.value;
-        proposalsInfo.title = title;
-        proposalsInfo.type = responseProposalsDetail.content.type;
-        proposalsInfo.description = description;
+        if (Object.keys(responseProposalsDetail).length > 0) {
+          proposalsInfo = { ...responseProposalsDetail };
+          const { title, description, plan, changes, recipient, amount } =
+            responseProposalsDetail.content;
+          proposalsInfo.title = title;
+          proposalsInfo.type = responseProposalsDetail.content['@type'];
+          proposalsInfo.description = description;
+          proposalsInfo.status =
+            PROPOSAL_STATUS[responseProposalsDetail.status];
 
-        if (plan) {
-          proposalsInfo.plan = plan;
-        }
-        if (changes) {
-          proposalsInfo.changes = changes;
-        }
-        if (recipient) {
-          proposalsInfo.recipient = recipient;
-        }
-        if (amount) {
-          proposalsInfo.amount = amount;
-        }
+          if (plan) {
+            proposalsInfo.plan = plan;
+          }
+          if (changes) {
+            proposalsInfo.changes = changes;
+          }
+          if (recipient) {
+            proposalsInfo.recipient = recipient;
+          }
+          if (amount) {
+            proposalsInfo.amount = amount;
+          }
 
-        const responseProposer = await getProposer(proposalId);
+          const responseProposer = await getProposer(proposalId);
 
-        if (responseProposer !== null) {
-          proposalsInfo.proposer = responseProposer.proposer;
-        }
+          if (responseProposer !== null) {
+            proposalsInfo.proposer = responseProposer.proposer;
+          }
 
-        if (responseProposalsDetail.total_deposit.length) {
-          totalDepositAmount = parseFloat(
-            responseProposalsDetail.total_deposit[0].amount
-          );
+          if (responseProposalsDetail.total_deposit.length) {
+            totalDepositAmount = parseFloat(
+              responseProposalsDetail.total_deposit[0].amount
+            );
+          }
         }
       }
       setTotalDeposit(totalDepositAmount);
@@ -201,42 +195,6 @@ function ProposalsDetail({ defaultAccount }) {
     getDeposit();
   }, [updateFunc]);
 
-  useEffect(() => {
-    const getVotes = async () => {
-      const votesTemp = {};
-      let yes = [];
-      let no = [];
-      let abstain = [];
-      let noWithVeto = [];
-      const resultgProposalsDetailVotes = await getProposalsDetailVotes(
-        proposalId
-      );
-      console.log('resultgProposalsDetailVotes', resultgProposalsDetailVotes)
-      if (resultgProposalsDetailVotes) {
-        yes = resultgProposalsDetailVotes.filter(
-          (item) => item.option === VOTE_OPTION.VOTE_OPTION_YES
-        ).length;
-        no = resultgProposalsDetailVotes.filter(
-          (item) => item.option === VOTE_OPTION.VOTE_OPTION_NO
-        ).length;
-        abstain = resultgProposalsDetailVotes.filter(
-          (item) => item.option === VOTE_OPTION.VOTE_OPTION_ABSTAIN
-        ).length;
-        noWithVeto = resultgProposalsDetailVotes.filter(
-          (item) => item.option === VOTE_OPTION.VOTE_OPTION_NO_WITH_VETO
-        ).length;
-      }
-      votesTemp.voter = resultgProposalsDetailVotes;
-      votesTemp.yes = yes;
-      votesTemp.no = no;
-      votesTemp.abstain = abstain;
-      votesTemp.noWithVeto = noWithVeto;
-      console.log('votesTemp', votesTemp)
-      setVotes(votesTemp);
-    };
-    getVotes();
-  }, [proposalId, updateFunc]);
-
   const getSubStr = (str) => {
     let string = str;
     if (string.indexOf('cosmos-sdk/') !== -1) {
@@ -247,120 +205,123 @@ function ProposalsDetail({ defaultAccount }) {
   };
 
   console.log(`proposals`, proposals);
-  console.log(`addressActive`, addressActive)
+  console.log(`addressActive`, addressActive);
 
   return (
-    <div>
-      <main className="block-body">
-        <Pane paddingBottom={50}>
-          <Pane height={70} display="flex" alignItems="center">
-            <Text paddingLeft={20} fontSize="18px" color="#fff">
-              {proposals.title && ` #${proposalId} ${proposals.title}`}
-            </Text>
-          </Pane>
+    <>
+      <MainContainer width="100%">
+        <Pane display="flex" alignItems="center">
+          <Text fontSize="25px" color="#fff">
+            {proposals.title && ` #${proposalId} ${proposals.title}`}
+          </Text>
+        </Pane>
 
-          {proposals.status && (
-            <Pane paddingLeft={20} marginBottom={10}>
-              <IconStatus status={proposals.status} text marginRight={8} />
-            </Pane>
-          )}
-          <ContainerPane marginBottom={20}>
+        {proposals.status && (
+          <Pane>
+            <IconStatus status={proposals.status} text marginRight={8} />
+          </Pane>
+        )}
+        <ContainerGradientText>
+          <Item
+            marginBottom={15}
+            title="Proposer"
+            value={
+              <Link to={`/network/bostrom/contract/${proposals.proposer}`}>
+                {proposals.proposer}
+              </Link>
+            }
+          />
+          {proposals.type && (
             <Item
               marginBottom={15}
-              title="Proposer"
+              title="Type"
+              value={getSubStr(proposals.type)}
+            />
+          )}
+          {proposals.recipient && (
+            <Item
+              title="Recipient"
+              marginBottom={15}
               value={
-                <Link to={`/network/bostrom/contract/${proposals.proposer}`}>
-                  {proposals.proposer}
+                <Link to={`/network/bostrom/contract/${proposals.recipient}`}>
+                  {proposals.recipient}
                 </Link>
               }
             />
-            {proposals.type && (
-              <Item
-                marginBottom={15}
-                title="Type"
-                value={getSubStr(proposals.type)}
-              />
-            )}
-            {proposals.recipient && (
-              <Item
-                title="Recipient"
-                marginBottom={15}
-                value={
-                  <Link to={`/network/bostrom/contract/${proposals.recipient}`}>
-                    {proposals.recipient}
-                  </Link>
-                }
-              />
-            )}
-            {proposals.amount && (
-              <Item
-                title="Amount"
-                marginBottom={15}
-                value={`${formatNumber(
-                  parseFloat(proposals.amount[0].amount)
-                )} ${proposals.amount[0].denom.toUpperCase()}`}
-              />
-            )}
-            {proposals.description && (
-              <Item
-                title="Description"
-                value={
-                  <Pane className="container-description">
-                    <ReactMarkdown
-                      children={proposals.description.replace(/\\n/g, '\n')}
-                      rehypePlugins={[rehypeSanitize]}
-                      remarkPlugins={[remarkGfm]}
-                    />
-                  </Pane>
-                }
-              />
-            )}
-            {proposals.changes && Object.keys(proposals.changes).length > 0 && (
-              <Item
-                title="Changes"
-                value={
-                  <Pane className="container-description">
-                    {proposals.changes.map((item) => (
-                      <Pane>
-                        {item.subspace}: {item.key} {item.value}
-                      </Pane>
-                    ))}
-                  </Pane>
-                }
-              />
-            )}
-            {proposals.plan && (
-              <Item
-                title="Plan"
-                value={
-                  <Pane className="container-description">
-                    <Pane>name: {proposals.plan.name}</Pane>
-                    <Pane>height: {proposals.plan.height}</Pane>
-                  </Pane>
-                }
-              />
-            )}
-          </ContainerPane>
+          )}
+          {proposals.amount && (
+            <Item
+              title="Amount"
+              marginBottom={15}
+              value={`${formatNumber(
+                parseFloat(proposals.amount[0].amount)
+              )} ${proposals.amount[0].denom.toUpperCase()}`}
+            />
+          )}
+          {proposals.description && (
+            <Item
+              title="Description"
+              value={
+                <Pane className="container-description">
+                  <ReactMarkdown
+                    children={proposals.description.replace(/\\n/g, '\n')}
+                    rehypePlugins={[rehypeSanitize]}
+                    remarkPlugins={[remarkGfm]}
+                  />
+                </Pane>
+              }
+            />
+          )}
+          {proposals.changes && Object.keys(proposals.changes).length > 0 && (
+            <Item
+              title="Changes"
+              value={
+                <Pane className="container-description">
+                  {proposals.changes.map((item) => (
+                    <Pane>
+                      {item.subspace}: {item.key} {item.value}
+                    </Pane>
+                  ))}
+                </Pane>
+              }
+            />
+          )}
+          {proposals.plan && (
+            <Item
+              title="Plan"
+              value={
+                <Pane className="container-description">
+                  <Pane>name: {proposals.plan.name}</Pane>
+                  <Pane>height: {proposals.plan.height}</Pane>
+                </Pane>
+              }
+            />
+          )}
+        </ContainerGradientText>
 
-          <ProposalsIdDetail
-            proposals={proposals}
-            tallying={tallying}
-            tally={tally}
-            totalDeposit={0}
-            marginBottom={20}
+        <ProposalsIdDetail
+          proposals={proposals}
+          tallying={tallying}
+          tally={tally}
+          totalDeposit={totalDeposit}
+          marginBottom={20}
+        />
+
+        <ProposalsDetailProgressBar
+          proposals={proposals}
+          totalDeposit={totalDeposit}
+          minDeposit={minDeposit}
+          tallying={tallying}
+          tally={tally}
+        />
+
+        {proposals.status > PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
+          <ProposalsIdDetailTableVoters
+            proposalId={proposalId}
+            updateFunc={updateFunc}
           />
-
-          <ProposalsDetailProgressBar
-            proposals={proposals}
-            totalDeposit={totalDeposit}
-            minDeposit={minDeposit}
-            tallying={tallying}
-            tally={tally}
-          />
-
-          <ProposalsIdDetailTableVoters votes={votes} />
-        </Pane>
-      </main>
+        )}
+      </MainContainer>
       {addressActive !== null && addressActive.keys === 'keplr' ? (
         <ActionBarDetail
           id={proposalId}
@@ -387,7 +348,7 @@ function ProposalsDetail({ defaultAccount }) {
           </Pane>
         </ActionBar>
       )}
-    </div>
+    </>
   );
 }
 

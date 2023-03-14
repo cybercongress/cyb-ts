@@ -76,7 +76,9 @@ function BtnGrd({ disabled, text, img, pending, onClick, ...props }) {
         ) : (
           <>
             {text && text}
-            {img && <img alt="img" />}
+            {img && (
+              <img style={{ width: 20, height: 20 }} alt="img" src={img} />
+            )}
           </>
         )}
       </GradientContainer>
