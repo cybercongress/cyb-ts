@@ -44,7 +44,10 @@ export const Votes = ({ finalVotes }) => {
         display="flex"
       >
         <Pane display="flex" height="100%" width={`${finalVotes.yes}%`}>
-          <Tooltip placement="top" tooltip={<Pane>Yes: %</Pane>}>
+          <Tooltip
+            placement="top"
+            tooltip={<Pane>Yes: {toFixedNumber(finalVotes.yes, 2)}%</Pane>}
+          >
             <Pane
               backgroundColor="#3ab793"
               display="flex"

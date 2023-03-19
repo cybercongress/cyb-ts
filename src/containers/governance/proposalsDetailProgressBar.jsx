@@ -3,6 +3,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { IconStatus, ContainerPane, Votes, Deposit } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
+import { ContainerGradientText } from '../portal/components';
 
 const iconPie = require('../../image/ionicons_svg_ios-pie.svg');
 const iconPieActive = require('../../image/ionicons_svg_ios-pie-active.svg');
@@ -27,7 +28,7 @@ const ProposalsDetailProgressBar = ({
       gridTemplateColumns="repeat(auto-fit, minmax(450px, 1fr))"
       gridGap={20}
     >
-      <ContainerPane
+      <ContainerGradientText
         display="flex"
         // alignItems="center"
         // justifyContent="space-between"
@@ -57,9 +58,9 @@ const ProposalsDetailProgressBar = ({
             {formatNumber(minDeposit)} {CYBER.DENOM_CYBER.toUpperCase()} MinDeposit
           </Text>
         </Pane>
-      </ContainerPane>
+      </ContainerGradientText>
 
-      <ContainerPane>
+      <ContainerGradientText>
         <Pane display="flex" marginBottom={25}>
           <Pane display="flex" alignItems="center" marginRight={15}>
             <img
@@ -123,7 +124,7 @@ const ProposalsDetailProgressBar = ({
             >{`NoWithVeto: ${toFixedNumber(noWithVeto, 2)}%`}</Text>
           </Pane>
         </Pane>
-      </ContainerPane>
+      </ContainerGradientText>
     </Pane>
   );
 };

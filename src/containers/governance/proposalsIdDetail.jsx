@@ -3,6 +3,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { IconStatus, ContainerPane, Item } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
+import { ContainerGradientText } from '../portal/components';
 
 const dateFormat = require('dateformat');
 
@@ -30,7 +31,7 @@ const ProposalsIdDetail = ({
       gridGap={20}
       {...props}
     >
-      <ContainerPane>
+      <ContainerGradientText>
         {proposals.submit_time && (
           <Item
             marginBottom={15}
@@ -65,9 +66,9 @@ const ProposalsIdDetail = ({
             value={formatTime(proposals.voting_end_time)}
           />
         )}
-      </ContainerPane>
+      </ContainerGradientText>
 
-      <ContainerPane>
+      <ContainerGradientText>
         {proposals.status && (
           <Item
             marginBottom={15}
@@ -103,7 +104,7 @@ const ProposalsIdDetail = ({
           )}%)`}
         />
         <Item title="Abstain" value={`${toFixedNumber(abstain, 2)}%`} />
-      </ContainerPane>
+      </ContainerGradientText>
     </Pane>
   );
 };
