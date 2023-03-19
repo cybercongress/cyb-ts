@@ -7,53 +7,59 @@ import { trimString } from '../../../../utils/utils';
 
 const classNames = require('classnames');
 
-const ContainerLamp = ({ style, children }) => (
-  <div
-    className={classNames(styles.wrapContainerLamp, {
-      [styles.wrapContainerLampGreen]: style === 'green',
-      [styles.wrapContainerLampBlue]: style === 'blue',
-      [styles.wrapContainerLampRed]: style === 'red',
-      [styles.wrapContainerLampYellow]: style === 'yellow',
-      [styles.wrapContainerLampPurple]: style === 'purple',
-      [styles.wrapContainerLampPink]: style === 'pink',
-      [styles.wrapContainerLampDefault]: !style,
-    })}
-  >
-    {children}
-  </div>
-);
+function ContainerLamp({ style, children }) {
+  return (
+    <div
+      className={classNames(styles.wrapContainerLamp, {
+        [styles.wrapContainerLampGreen]: style === 'green',
+        [styles.wrapContainerLampBlue]: style === 'blue' || style === 'grey',
+        [styles.wrapContainerLampRed]: style === 'red',
+        [styles.wrapContainerLampYellow]: style === 'yellow',
+        [styles.wrapContainerLampPurple]: style === 'purple',
+        [styles.wrapContainerLampPink]: style === 'pink',
+        [styles.wrapContainerLampDefault]: !style,
+      })}
+    >
+      {children}
+    </div>
+  );
+}
 
-const ContainerLampAfter = ({ style, children }) => (
-  <div
-    className={classNames(styles.wrapContainerLampAfter, {
-      [styles.wrapContainerLampAfterGreen]: style === 'green',
-      [styles.wrapContainerLampAfterBlue]: style === 'blue',
-      [styles.wrapContainerLampAfterRed]: style === 'red',
-      [styles.wrapContainerLampAfterYellow]: style === 'yellow',
-      [styles.wrapContainerLampAfterPurple]: style === 'purple',
-      [styles.wrapContainerLampAfterDefault]: !style,
-    })}
-  >
-    {children}
-  </div>
-);
+function ContainerLampAfter({ style, children }) {
+  return (
+    <div
+      className={classNames(styles.wrapContainerLampAfter, {
+        [styles.wrapContainerLampAfterGreen]: style === 'green',
+        [styles.wrapContainerLampAfterBlue]: style === 'blue',
+        [styles.wrapContainerLampAfterRed]: style === 'red',
+        [styles.wrapContainerLampAfterYellow]: style === 'yellow',
+        [styles.wrapContainerLampAfterPurple]: style === 'purple',
+        [styles.wrapContainerLampAfterDefault]: !style,
+      })}
+    >
+      {children}
+    </div>
+  );
+}
 
-const ContainerLampBefore = ({ style, children }) => (
-  <div
-    className={classNames(styles.wrapContainerLampBefore, {
-      [styles.wrapContainerLampBeforeGreen]: style === 'green',
-      [styles.wrapContainerLampBeforeBlue]: style === 'blue',
-      [styles.wrapContainerLampBeforeRed]: style === 'red',
-      [styles.wrapContainerLampBeforeYellow]: style === 'yellow',
-      [styles.wrapContainerLampBeforePurple]: style === 'purple',
-      [styles.wrapContainerLampBeforeDefault]: !style,
-    })}
-  >
-    {children}
-  </div>
-);
+function ContainerLampBefore({ style, children }) {
+  return (
+    <div
+      className={classNames(styles.wrapContainerLampBefore, {
+        [styles.wrapContainerLampBeforeGreen]: style === 'green',
+        [styles.wrapContainerLampBeforeBlue]: style === 'blue',
+        [styles.wrapContainerLampBeforeRed]: style === 'red',
+        [styles.wrapContainerLampBeforeYellow]: style === 'yellow',
+        [styles.wrapContainerLampBeforePurple]: style === 'purple',
+        [styles.wrapContainerLampBeforeDefault]: !style,
+      })}
+    >
+      {children}
+    </div>
+  );
+}
 
-const TxsStatus = ({ data }) => {
+function TxsStatus({ data }) {
   let style;
   switch (data.status) {
     case 'pending':
@@ -93,13 +99,13 @@ const TxsStatus = ({ data }) => {
       </div>
     </ContainerLamp>
   );
-};
+}
 
-export const ContainerGradientText = ({
+export function ContainerGradientText({
   children,
   userStyleContent,
   status = 'blue',
-}) => {
+}) {
   return (
     <ContainerLamp style={status}>
       <div
@@ -108,6 +114,7 @@ export const ContainerGradientText = ({
           [styles.containerGradientTextDanger]: status === 'red',
           [styles.containerGradientTextGreen]: status === 'green',
           [styles.containerGradientTextPink]: status === 'pink',
+          [styles.containerGradientTextGrey]: status === 'grey',
         })}
       >
         <div
@@ -119,7 +126,7 @@ export const ContainerGradientText = ({
       </div>
     </ContainerLamp>
   );
-};
+}
 
 function ContainerGradient({
   title = 'Moon Citizenship',

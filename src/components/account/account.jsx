@@ -6,6 +6,7 @@ import { Dots } from '../ui/Dots';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import { activePassport } from '../../containers/portal/utils';
+import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 
 function useGetValidatorInfo(address) {
   const { jsCyber } = useContext(AppContext);
@@ -52,7 +53,15 @@ function useGetPassportByAddress(address) {
   };
 }
 
-export function Account({ address, children, colorText, margin }) {
+function Account({
+  address,
+  children,
+  colorText,
+  avatar,
+  margin,
+  sizeAvatar,
+  styleUser,
+}) {
   const [moniker, setMoniker] = useState(null);
   const { data: dataValidInfo } = useGetValidatorInfo(address);
   const { data: dataPassport } = useGetPassportByAddress(address);
@@ -81,8 +90,35 @@ export function Account({ address, children, colorText, margin }) {
     return `/network/bostrom/contract/${address}`;
   }, [address]);
 
+  const cidAvatar = useMemo(() => {
+    if (dataPassport !== undefined && dataPassport !== null) {
+      const { extension } = dataPassport;
+      return extension.avatar;
+    }
+    return null;
+  }, [dataPassport]);
+
   return (
-    <span>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'nowrap',
+        gap: '10px',
+        ...styleUser,
+      }}
+    >
+      {avatar && cidAvatar !== null && (
+        <div
+          style={{
+            width: sizeAvatar || '30px',
+            height: sizeAvatar || '30px',
+            borderRadius: '50%',
+          }}
+        >
+          <AvataImgIpfs cidAvatar={cidAvatar} />
+        </div>
+      )}
       <Link
         style={{ color: colorText || '#36d6ae', padding: margin || 0 }}
         to={linkAddress}
@@ -90,7 +126,7 @@ export function Account({ address, children, colorText, margin }) {
         {moniker === null ? trimAddress : moniker}
       </Link>
       {children}
-    </span>
+    </div>
   );
 }
 

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';
 
@@ -65,4 +66,10 @@ function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
   );
 }
 
-export default AvataImgIpfs;
+const mapStateToProps = (store) => {
+  return {
+    node: store.ipfs.ipfs,
+  };
+};
+
+export default connect(mapStateToProps)(AvataImgIpfs);

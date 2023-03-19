@@ -25,12 +25,12 @@ import Denom from '../../components/denom';
 
 import DenomTest from './testDenom';
 import AddTest from './testAdd';
-import { Signatures } from '../portal/components';
+import { Signatures, MainContainer } from '../portal/components';
 import Carousel from '../portal/gift/carousel1/Carousel';
 import ImgDenom from '../../components/valueImg/imgDenom';
 import CoinDenom from '../../components/valueImg/textDenom';
 import { Input } from '../teleport/components';
-import { DenomArr } from '../../components';
+import { DenomArr, Particle } from '../../components';
 import { useWebworker } from '../nebula/useWebworker';
 import BigNumber from 'bignumber.js';
 import { Account } from '../../components/account/account';
@@ -194,30 +194,11 @@ function TestKeplr() {
   // }, [jsCyber]);
 
   return (
-    <main className="block-body" style={{ alignItems: 'center' }}>
-      {/* <Account address={addressTest} /> */}
-      {/* <DenomArr denomValue={bootTocyb} /> */}
-      {/* <div>div sdjdsksd</div> */}
-      {/* <CoinDenom coinDenom={testDenom} tooltipStatus />
-      <NumericFormat
-        type="text"
-        id="a"
-        value={1231231}
-        onValueChange={(values, sourceInfo) =>
-          console.log('e onChangeValue', values, sourceInfo.event.target.id)
-        }
-        customInput={Input}
-        thousandsGroupStyle="thousand"
-        thousandSeparator=","
-        decimalScale={3}
-      /> */}
-      {/* <ImgDenom coinDenom={testDenom} /> */}
-      {/* <Carousel slides={slidesTest} /> */}
-      {/* <Signatures addressActive={{ bech32: addressTest }} /> */}
-      {/* <button type="button" onClick={checkGift}>
-          getCredit
-        </button> */}
-    </main>
+    <MainContainer>
+      {/* <Particle cid="QmX7kEC9qnP3MnHNSfVZcnFDgV3m5tegdcvDatpKtVeWDz" /> */}
+      {/* <Particle cid="QmeVVkLxBjVfbZ1uFsJsBkzQ3ZxrAVKgRYnFsfDDBpJrMb" /> */}
+      <Particle cid="QmRdMmkcZKXPARbBFe5zcmAn2R1TrfoDqN7Q7w6J9Dwt6o" />
+    </MainContainer>
   );
 }
 

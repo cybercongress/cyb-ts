@@ -5,6 +5,8 @@ import { getPinsCid, getIpfsGatway } from './search/utils';
 
 const FileType = require('file-type');
 
+const FILE_SIZE_DOWNLOAD = 15 * 10 ** 6;
+
 const checkIpfsState = () => {
   let userGatewayUrl = null;
   let ipfsNodeTypeTemp = null;
@@ -53,12 +55,18 @@ const checkCidByIpfsNode = async (node, cid) => {
 
   let ipfsNodeLs = null;
   try {
-    const response = await all(await node.ls(cid, { signal }));
+    const response = await all(node.ls(cid, { signal }));
     ipfsNodeLs = response;
     clearTimeout(timer);
   } catch (error) {
     console.log('error checkCidByIpfsNode', error);
     return undefined;
+  }
+
+  // console.log('ipfsNodeLs', ipfsNodeLs)
+
+  if (ipfsNodeLs !== null && ipfsNodeLs.length > 1) {
+    return 'availableDownload';
   }
 
   if (ipfsNodeLs !== null) {
@@ -75,7 +83,7 @@ const checkCidByIpfsNode = async (node, cid) => {
       return { data: responseCat, cid, meta };
     }
 
-    if (ipfsNodeLs[0].size < 15 * 10 ** 6) {
+    if (ipfsNodeLs[0].size < FILE_SIZE_DOWNLOAD) {
       const responseCat = uint8ArrayConcat(await all(node.cat(cid)));
 
       return { data: responseCat, cid, meta };
@@ -94,7 +102,12 @@ const checkIpfsGatway = async (cid, userGateway) => {
       blockSizes: [],
       data: '',
     };
-    return { data: dataUint8Array, cid, meta };
+
+    if (dataUint8Array.length < FILE_SIZE_DOWNLOAD) {
+      return { data: dataUint8Array, cid, meta };
+    }
+
+    return 'availableDownload';
   }
 
   return undefined;
@@ -134,7 +147,7 @@ const getContentByCid = async (node, cid, callBackFuncStatus) => {
     return dataRsponseDb;
   }
 
-  if (node !== null) {
+  if (node !== undefined && node !== null) {
     if (callBackFuncStatus) {
       callBackFuncStatus('trying to get with a node');
     }

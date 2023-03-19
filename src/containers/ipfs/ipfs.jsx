@@ -20,7 +20,15 @@ import {
   getCreator,
   getFromLink,
 } from '../../utils/search/utils';
-import { Dots, TabBtn, Loading, TextTable, Cid } from '../../components';
+import {
+  Dots,
+  TabBtn,
+  Loading,
+  TextTable,
+  Cid,
+  Particle,
+  Account,
+} from '../../components';
 import { formatNumber, trimString, coinDecimals } from '../../utils/utils';
 import { PATTERN_HTTP } from '../../utils/config';
 import {
@@ -319,13 +327,19 @@ function Ipfs({ nodeIpfs, mobile }) {
               justifyContent="center"
               display="flex"
             >
-              {creator.address.length > 11 && (
+              <Account
+                styleUser={{ flexDirection: 'column' }}
+                sizeAvatar="80px"
+                avatar
+                address={creator.address}
+              />
+              {/* {creator.address.length > 11 && (
                 <Pane> {creator.address.slice(0, 7)}</Pane>
               )}
               <AvatarIpfs node={nodeIpfs} addressCyber={creator.address} />
               {creator.address.length > 11 && (
                 <Pane> {creator.address.slice(-6)}</Pane>
-              )}
+              )} */}
             </Pane>
           </Link>
           {creator.timestamp.length > 0 && (
@@ -408,6 +422,7 @@ function Ipfs({ nodeIpfs, mobile }) {
   return (
     <>
       <main className="block-body">
+        {/* <Particle cid={cid} /> */}
         {contentIpfsCid}
         <Tablist
           display="grid"

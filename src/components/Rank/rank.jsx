@@ -5,46 +5,48 @@ import Tooltip from '../tooltip/tooltip';
 import { LinkWindow } from '../link/link';
 import { trimString, exponentialToDecimal } from '../../utils/utils';
 
-const GradeTooltipContent = ({ grade, hash, color, rank }) => (
-  <Pane paddingX={15} paddingY={15}>
-    <Pane marginBottom={12}>
-      <Text color="#ffff">
-        Answer rank for{' '}
-        {hash && (
-          <Pane display="inline-flex" alignItems="center">
-            {trimString(hash, 5, 5)} <Copy text={hash} />
+function GradeTooltipContent({ grade, hash, color, rank }) {
+  return (
+    <Pane paddingX={15} paddingY={15}>
+      <Pane marginBottom={12}>
+        <Text color="#ffff">
+          Answer rank for{' '}
+          {hash && (
+            <Pane display="inline-flex" alignItems="center">
+              {trimString(hash, 5, 5)} <Copy text={hash} />
+            </Pane>
+          )}{' '}
+          is {rank}
+        </Text>
+      </Pane>
+      <Pane display="flex" marginBottom={12}>
+        <Text color="#ffff">
+          Answers between &nbsp;
+          {exponentialToDecimal(parseFloat(grade.from).toPrecision(3))}
+          &nbsp; and &nbsp;
+          {exponentialToDecimal(parseFloat(grade.to).toPrecision(3))}
+          &nbsp; recieve grade
+          <Pane
+            className="rank"
+            style={{ display: 'inline-flex' }}
+            marginLeft="5px"
+            backgroundColor={color}
+          >
+            {grade.value}
           </Pane>
-        )}{' '}
-        is {rank}
-      </Text>
+        </Text>
+      </Pane>
+      <Pane>
+        <Text color="#ffff">
+          More about{' '}
+          <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
+            cyber~Rank
+          </LinkWindow>
+        </Text>
+      </Pane>
     </Pane>
-    <Pane display="flex" marginBottom={12}>
-      <Text color="#ffff">
-        Answers between &nbsp;
-        {exponentialToDecimal(parseFloat(grade.from).toPrecision(3))}
-        &nbsp; and &nbsp;
-        {exponentialToDecimal(parseFloat(grade.to).toPrecision(3))}
-        &nbsp; recieve grade
-        <Pane
-          className="rank"
-          style={{ display: 'inline-flex' }}
-          marginLeft="5px"
-          backgroundColor={color}
-        >
-          {grade.value}
-        </Pane>
-      </Text>
-    </Pane>
-    <Pane>
-      <Text color="#ffff">
-        More about{' '}
-        <LinkWindow to="https://ipfs.io/ipfs/QmceNpj6HfS81PcCaQXrFMQf7LR5FTLkdG9sbSRNy3UXoZ">
-          cyber~Rank
-        </LinkWindow>
-      </Text>
-    </Pane>
-  </Pane>
-);
+  );
+}
 
 const gradeColorRank = (rank) => {
   let rankGradeColor = '#546e7a';
@@ -79,7 +81,7 @@ const gradeColorRank = (rank) => {
   return rankGradeColor;
 };
 
-const Rank = ({ rank, grade, hash, tooltip, ...props }) => {
+function Rank({ rank, grade, hash, tooltip, ...props }) {
   const color = gradeColorRank(grade.value);
   return (
     <Tooltip
@@ -98,6 +100,6 @@ const Rank = ({ rank, grade, hash, tooltip, ...props }) => {
       </Pane>
     </Tooltip>
   );
-};
+}
 
 export default Rank;

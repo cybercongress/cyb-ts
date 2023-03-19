@@ -5,14 +5,14 @@ import styles from './styles.scss';
 
 const cx = require('classnames');
 
-const Tooltip = ({
+function Tooltip({
   children,
   trigger,
   tooltip,
   hideBorder,
   placement,
   ...props
-}) => {
+}) {
   const [mounted, setMounted] = React.useState(false);
 
   const setMountedOnceVisible = (visibleArg) => {
@@ -49,16 +49,16 @@ const Tooltip = ({
           })}
         >
           {/* <div
-            {...getArrowProps({
-              className: 'tooltip-arrow',
-              'data-placement': placement,
-            })}
-          /> */}
+                      {...getArrowProps({
+                        className: 'tooltip-arrow',
+                        'data-placement': placement,
+                      })}
+                    /> */}
           {tooltip && <>{tooltip}</>}
         </div>
       )}
     </>
   );
-};
+}
 
 export default Tooltip;

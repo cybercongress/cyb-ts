@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { SearchItem } from '@cybercongress/gravity';
 import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { getRankGrade } from '../../utils/search/utils';
 import { getTypeContent } from './useGetIpfsContentHook';
 import { getContentByCid } from '../../utils/utils-ipfs';
+import { SearchItem } from '../../components';
 
 function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
-  const [content, setContent] = useState('');
-  const [text, setText] = useState(cid);
+  const [content, setContent] = useState(null);
+  const [textPreview, setTextPreview] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
@@ -25,7 +25,7 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
       if (dataResponseByCid !== undefined) {
         if (dataResponseByCid === 'availableDownload') {
           setStatus('availableDownload');
-          setText(cid);
+          setTextPreview(cid);
         } else {
           responseData = dataResponseByCid;
         }
@@ -44,7 +44,7 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
           link: linkContent,
         } = dataTypeContent;
 
-        setText(textContent);
+        setTextPreview(textContent);
         setTypeContent(type);
         setContent(contentCid);
         setLink(linkContent);
@@ -58,11 +58,10 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
     <Link {...props} to={link}>
       <SearchItem
         key={cid}
-        text={
+        textPreview={
           <div className="container-text-SearchItem">
-            {/* {`${text}`} */}
             <ReactMarkdown
-              children={text}
+              children={textPreview}
               rehypePlugins={[rehypeSanitize]}
               // skipHtml
               // escapeHtml
@@ -75,7 +74,6 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
           </div>
         }
         status={status}
-        rank={item.rank ? item.rank : 'n/a'}
         grade={
           item.rank
             ? getRankGrade(item.rank)

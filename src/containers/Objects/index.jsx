@@ -3,66 +3,69 @@ import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
-import { Dots, Loading, Rank } from '../../components';
+import { Dots, Loading, Rank, Particle } from '../../components';
 import ContentItem from '../ipfs/contentItem';
 import {
   coinDecimals,
   exponentialToDecimal,
   formatNumber,
 } from '../../utils/utils';
+import { MainContainer } from '../portal/components';
 
-const Relevace = ({ items, fetchMoreData, page, allPage, mobile, node }) => (
-  <InfiniteScroll
-    dataLength={Object.keys(items).length}
-    next={fetchMoreData}
-    hasMore
-    loader={
-      <h4>
-        Loading
-        <Dots />
-      </h4>
-    }
-    pullDownToRefresh
-    pullDownToRefreshContent={
-      <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
-    }
-    releaseToRefreshContent={
-      <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
-    }
-    refreshFunction={fetchMoreData}
-  >
-    {Object.keys(items).map((key) => {
-      return (
-        <Pane
-          position="relative"
-          className="hover-rank"
-          display="flex"
-          alignItems="center"
-          marginBottom="10px"
-        >
-          {!mobile && (
-            <Pane
-              className="time-discussion rank-contentItem"
-              position="absolute"
-            >
-              <Rank
-                hash={key}
-                rank={items[key].rank}
-                grade={items[key].grade}
-              />
-            </Pane>
-          )}
-          <ContentItem
-            nodeIpfs={node}
-            cid={key}
-            item={items[key]}
-            className="contentItem"
-          />
-        </Pane>
-      );
-    })}
-  </InfiniteScroll>
-);
+function Relevace({ items, fetchMoreData, page, allPage, mobile, node }) {
+  return (
+    <InfiniteScroll
+      dataLength={Object.keys(items).length}
+      next={fetchMoreData}
+      hasMore
+      loader={
+        <h4>
+          Loading
+          <Dots />
+        </h4>
+      }
+      pullDownToRefresh
+      pullDownToRefreshContent={
+        <h3 style={{ textAlign: 'center' }}>&#8595; Pull down to refresh</h3>
+      }
+      releaseToRefreshContent={
+        <h3 style={{ textAlign: 'center' }}>&#8593; Release to refresh</h3>
+      }
+      refreshFunction={fetchMoreData}
+    >
+      {Object.keys(items).map((key) => {
+        return (
+          <Pane
+            position="relative"
+            className="hover-rank"
+            display="flex"
+            alignItems="center"
+            marginBottom="10px"
+          >
+            {!mobile && (
+              <Pane
+                className="time-discussion rank-contentItem"
+                position="absolute"
+              >
+                <Rank
+                  hash={key}
+                  rank={items[key].rank}
+                  grade={items[key].grade}
+                />
+              </Pane>
+            )}
+            <ContentItem
+              nodeIpfs={node}
+              cid={key}
+              item={items[key]}
+              className="contentItem"
+            />
+          </Pane>
+        );
+      })}
+    </InfiniteScroll>
+  );
+}
 
 function Objects({ node, mobile }) {
   const [items, setItems] = useState([]);
@@ -80,9 +83,9 @@ function Objects({ node, mobile }) {
       (obj, link) => ({
         ...obj,
         [link.particle]: {
-          rank: exponentialToDecimal(parseFloat(link.rank).toPrecision(3)),
+          rank: coinDecimals(link.rank),
           particle: link.particle,
-          grade: getRankGrade(link.rank),
+          grade: getRankGrade(coinDecimals(link.rank)),
           status: 'impossibleLoad',
           text: link.particle,
           content: false,
@@ -105,9 +108,9 @@ function Objects({ node, mobile }) {
       (obj, link) => ({
         ...obj,
         [link.particle]: {
-          rank: exponentialToDecimal(parseFloat(link.rank).toPrecision(3)),
+          rank: coinDecimals(link.rank),
           particle: link.particle,
-          grade: getRankGrade(link.rank),
+          grade: getRankGrade(coinDecimals(link.rank)),
           status: 'impossibleLoad',
           text: link.particle,
           content: false,
@@ -140,33 +143,16 @@ function Objects({ node, mobile }) {
   }
 
   return (
-    <main
-      // style={{
-      //   padding: '10px 1em 1em 1em',
-      //   height: '1px',
-      //   maxHeight: 'calc(100vh - 96px)',
-      // }}
-      className="block-body"
-    >
-      <Pane
-        width="90%"
-        marginX="auto"
-        marginY={0}
-        display="flex"
-        flexDirection="column"
-      >
-        <div className="container-contentItem" style={{ width: '100%' }}>
-          <Relevace
-            items={items}
-            fetchMoreData={fetchMoreData}
-            page={page}
-            allPage={allPage}
-            node={node}
-            mobile={mobile}
-          />
-        </div>
-      </Pane>
-    </main>
+    <MainContainer width="90%">
+      <Relevace
+        items={items}
+        fetchMoreData={fetchMoreData}
+        page={page}
+        allPage={allPage}
+        node={node}
+        mobile={mobile}
+      />
+    </MainContainer>
   );
 }
 

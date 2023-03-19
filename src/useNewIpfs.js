@@ -15,9 +15,9 @@ const getOpts = () => {
   if (lsTypeIpfs !== null) {
     const lsTypeIpfsData = JSON.parse(lsTypeIpfs);
     ipfsOpts = { ...ipfsOpts, ...lsTypeIpfsData };
-  } else {
-    localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
   }
+
+  localStorage.setItem('ipfsState', JSON.stringify(ipfsOpts));
 
   return { ipfsOpts };
 };

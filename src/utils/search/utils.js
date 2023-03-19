@@ -6,6 +6,7 @@ import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import * as config from '../config';
 
 import db from '../../db';
+import { getContentByCid } from '../utils-ipfs';
 
 const {
   CYBER_NODE_URL_API,
@@ -56,103 +57,6 @@ const getIpfs = async () => {
   await initIpfs();
 
   return ipfsApi;
-};
-
-export const getContentByCid = async (
-  cid,
-  ipfs,
-  timeout = SEARCH_RESULT_TIMEOUT_MS
-) => {
-  let timerId;
-  const timeoutPromise = () =>
-    new Promise((reject) => {
-      timerId = setTimeout(reject, timeout);
-    });
-
-  const ipfsGetPromise = () =>
-    new Promise((resolve, reject) => {
-      ipfs.dag
-        .get(cid, {
-          localResolve: false,
-        })
-        .then((dagGet) => {
-          console.log('dagGet', dagGet);
-          clearTimeout(timerId);
-          const { value: dagGetValue } = dagGet;
-          console.log(dagGetValue);
-          if (
-            dagGetValue &&
-            dagGetValue.size &&
-            dagGetValue.size <= 1.5 * 10 ** 6
-          ) {
-            let mime;
-            ipfs.cat(cid).then((dataCat) => {
-              console.log('dataCat', dataCat);
-              const buf = dataCat;
-              const bufs = [];
-              bufs.push(buf);
-              const data = Buffer.concat(bufs);
-              FileType.fromBuffer(data).then((dataFileType) => {
-                let fileType;
-                if (dataFileType !== undefined) {
-                  mime = dataFileType.mime;
-                  if (mime.indexOf('image') !== -1) {
-                    const dataBase64 = data.toString('base64');
-                    fileType = `data:${mime};base64,${dataBase64}`;
-                    resolve({
-                      status: 'downloaded',
-                      content: fileType,
-                      text: false,
-                    });
-                  } else if (mime.indexOf('application/pdf') !== -1) {
-                    const dataBase64 = data.toString('base64');
-                    fileType = `data:${mime};base64,${dataBase64}`;
-                    resolve({
-                      status: 'downloaded',
-                      content: fileType,
-                      text: false,
-                    });
-                  } else {
-                    resolve({
-                      status: 'downloaded',
-                      content: false,
-                      text: `${cid} ${mime}`,
-                    });
-                  }
-                } else {
-                  const dataBase64 = data.toString();
-                  let text;
-                  if (isSvg(dataBase64)) {
-                    resolve({
-                      status: 'downloaded',
-                      content: false,
-                      text: dataBase64,
-                    });
-                  } else {
-                    if (dataBase64.length > 300) {
-                      text = `${dataBase64.slice(0, 300)}...`;
-                    } else {
-                      text = dataBase64;
-                    }
-                    resolve({
-                      status: 'downloaded',
-                      content: false,
-                      text,
-                    });
-                  }
-                }
-              });
-            });
-          } else {
-            resolve({
-              status: 'availableDownload',
-              content: false,
-              text: cid,
-            });
-          }
-        });
-    });
-  return Promise.race([timeoutPromise(), ipfsGetPromise()]);
 };
 
 export const formatNumber = (number, toFixed) => {
@@ -1290,7 +1194,7 @@ export const getCreator = async (cid) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/txs?cyberlink.particleTo=${cid}&limit=1000000000`,
+      url: `${CYBER_NODE_URL_LCD}/cosmos/tx/v1beta1/txs?pagination.offset=0&pagination.limit=5&orderBy=ORDER_BY_ASC&events=cyberlink.particleTo%3D%27${cid}%27`,
     });
     return response.data;
   } catch (error) {
@@ -1399,39 +1303,12 @@ const generateMeta = (responseDag) => {
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const dataIndexdDb = await db.table('cid').get({ cid });
-  if (dataIndexdDb !== undefined && dataIndexdDb.content) {
-    const contentCidDB = Buffer.from(dataIndexdDb.content);
-    const response = await resolveContentIpfs(contentCidDB);
-    return response;
+  const response = await getContentByCid(ipfs, cid);
+  if (response !== undefined) {
+    const responseResolve = await resolveContentIpfs(response.data);
+    return responseResolve;
   }
-  if (ipfs !== null) {
-    const responseDag = await ipfs.dag.get(cid, {
-      localResolve: false,
-    });
 
-    if (responseDag.value.size <= 1.5 * 10 ** 7) {
-      ipfs.pin.add(cid);
-      const responseCat = uint8ArrayConcat(await all(ipfs.cat(cid)));
-
-      const meta = generateMeta(responseDag);
-
-      meta.data = responseCat;
-      const ipfsContentAddtToInddexdDB = {
-        cid,
-        content: responseCat,
-        meta,
-      };
-      db.table('cid')
-        .add(ipfsContentAddtToInddexdDB)
-        .then((id) => {
-          console.log('item :>> ', id);
-        });
-      const data = responseCat;
-      const response = await resolveContentIpfs(data);
-      return response;
-    }
-  }
   return null;
 };
 
