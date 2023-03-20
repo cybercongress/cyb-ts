@@ -2,13 +2,7 @@ import React, { useEffect, useStatea } from 'react';
 import gql from 'graphql-tag';
 import { v4 as uuidv4 } from 'uuid';
 import { useSubscription } from '@apollo/react-hooks';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Icon,
-  Tooltip,
-} from '@cybercongress/gravity';
+import { Pane, Text, TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
@@ -114,12 +108,7 @@ const Txs = () => {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={1.3} textAlign="center">
-            <TextTable>
-              timestamp{' '}
-              <Tooltip content="UTC" position="bottom">
-                <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-              </Tooltip>
-            </TextTable>
+            <TextTable>timestamp, UTC</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>type</TextTable>

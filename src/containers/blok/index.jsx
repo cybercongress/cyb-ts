@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import gql from 'graphql-tag';
 import { useSubscription } from '@apollo/react-hooks';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Icon,
-  Tooltip,
-} from '@cybercongress/gravity';
+import { Pane, Text, TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getGraphQLQuery } from '../../utils/search/utils';
@@ -141,12 +135,7 @@ const Block = ({ blockThis }) => {
             <TextTable>proposer address</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
-            <TextTable>
-              timestamp{' '}
-              <Tooltip content="UTC" position="bottom">
-                <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-              </Tooltip>
-            </TextTable>
+            <TextTable>timestamp, UTC</TextTable>
           </Table.TextHeaderCell>
         </Table.Head>
         <Table.Body

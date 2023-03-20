@@ -1,5 +1,5 @@
 import React from 'react';
-import { TableEv as Table, Tooltip } from '@cybercongress/gravity';
+import { TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { FormatNumber, Dots, NumberCurrency } from '../../../components';

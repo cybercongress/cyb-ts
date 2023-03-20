@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Tooltip,
-  Icon,
-} from '@cybercongress/gravity';
+import { Pane, Text, TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { trimString, formatNumber } from '../../../utils/utils';
-import { NoItems, Cid, Dots, TextTable } from '../../../components';
+import { NoItems, Cid, Dots, TextTable, Tooltip } from '../../../components';
 
 const dateFormat = require('dateformat');
 
@@ -22,9 +16,10 @@ const TableLink = ({ data }) => {
     }, 250);
   }, [itemsToShow, setItemsToShow]);
 
-  const displayedPalettes = useMemo(() => data.slice(0, itemsToShow), [
-    itemsToShow,
-  ]);
+  const displayedPalettes = useMemo(
+    () => data.slice(0, itemsToShow),
+    [itemsToShow]
+  );
 
   const validatorRows = displayedPalettes.map((item, i) => (
     <Table.Row
@@ -74,12 +69,7 @@ const TableLink = ({ data }) => {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={1.5} textAlign="center">
-            <TextTable>
-              timestamp{' '}
-              <Tooltip content="UTC" position="bottom">
-                <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-              </Tooltip>
-            </TextTable>
+            <TextTable>timestamp, UTC</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>from</TextTable>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Pane, Tooltip, Text, TableEv as Table } from '@cybercongress/gravity';
+import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroller';
 import {
   CardTemplate,

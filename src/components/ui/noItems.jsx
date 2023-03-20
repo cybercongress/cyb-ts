@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pane, Text, Tooltip } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 
 const noitem = require('../../image/noitem.svg');
 
