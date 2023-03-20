@@ -11,7 +11,6 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from './actionBarContainer';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
-import withWeb3 from '../../components/web3/withWeb3';
 import injectKeplr from './injectKeplr';
 import BanerHelp from '../help/banerHelp';
 
@@ -31,12 +30,11 @@ import {
   ImportLinkLedger,
   GolBalance,
   TweetCard,
-  IpfsCard,
 } from './card';
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
 import { AppContext } from '../../context';
-import { InfoCard } from '../portal/components';
+import { InfoCard, MainContainer } from '../portal/components';
 
 import db from '../../db';
 
@@ -573,118 +571,87 @@ class Wallet extends React.Component {
     if (!addAddress) {
       return (
         <>
-          <main
-            style={{ minHeight: 'calc(100vh - 162px)', alignItems: 'center' }}
-            className="block-body"
-          >
-            <Pane
-              width="60%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              flexDirection="column"
-              height="100%"
-            >
-              <LinkWindow
-                style={{ marginBottom: '20px', width: '100%' }}
-                to="https://cyb.ai/portal"
-              >
-                <InfoCard>
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: '10px 50px 0px 50px',
-                      gap: 20,
-                      display: 'grid',
-                      color: '#fff',
-                    }}
-                  >
-                    <div style={{ fontSize: '28px' }}>
-                      The portal is open! 🎉
-                    </div>
-                    <div>
-                      <span style={{ color: '#36d6ae' }}>Go to portal</span> to
-                      register your citizenship and <br /> check for your gift
-                    </div>
+          <MainContainer>
+            <LinkWindow style={{ width: '100%' }} to="https://cyb.ai/portal">
+              <InfoCard>
+                <div
+                  style={{
+                    textAlign: 'center',
+                    padding: '10px 50px 0px 50px',
+                    gap: 20,
+                    display: 'grid',
+                    color: '#fff',
+                  }}
+                >
+                  <div style={{ fontSize: '28px' }}>The portal is open! 🎉</div>
+                  <div>
+                    <span style={{ color: '#36d6ae' }}>Go to portal</span> to
+                    register your citizenship and <br /> check for your gift
                   </div>
-                </InfoCard>
-              </LinkWindow>
+                </div>
+              </InfoCard>
+            </LinkWindow>
+            <PocketCard
+              alignItems="flex-start"
+              onClick={() => this.routeChange()}
+            >
+              <Text fontSize="16px" color="#fff">
+                Hi! I am Cyb! Your immortal robot of the Great Web. Click here
+                for help.
+              </Text>
+            </PocketCard>
+
+            {defaultAccounts !== null && defaultAccounts.cyber && (
+              <TweetCard
+                refresh={refreshTweet}
+                select={selectCard === 'tweet'}
+                onClick={(e) => this.onClickSelect(e, 'tweet')}
+                onMouseEnter={(e) => this.mouselogEnter(e, 'tweet')}
+                onMouseLeave={(e) => this.mouselogLeave()}
+                account={defaultAccounts.cyber.bech32}
+                id="tweet"
+              />
+            )}
+            {accounts !== null &&
+              Object.keys(accounts).map((key, i) => (
+                <PubkeyCard
+                  key={`${key}_${i}`}
+                  onClick={(e) => this.onClickSelect(e, `pubkey_${key}`, key)}
+                  select={selectCard === `pubkey_${key}`}
+                  pocket={accounts[key]}
+                  nameCard={key}
+                  onMouseEnter={(e) =>
+                    this.mouselogEnter(e, `pubkey_${key}`, key)
+                  }
+                  onMouseLeave={(e) => this.mouselogLeave(e, key)}
+                  updateCard={updateCard}
+                  defaultAccounts={defaultAccountsKeys === key}
+                  contractToken={contractToken}
+                  web3={web3}
+                  updateFunc={this.checkAddressLocalStorage}
+                />
+              ))}
+            {link !== null && (
               <PocketCard
-                alignItems="flex-start"
-                marginBottom={20}
-                onClick={() => this.routeChange()}
+                select={selectCard === 'importCli'}
+                onClick={this.onClickImportLink}
               >
                 <Text fontSize="16px" color="#fff">
-                  Hi! I am Cyb! Your immortal robot of the Great Web. Click here
-                  for help.
+                  You have created {link !== null && countLink} cyberlinks in
+                  euler-5. Import using CLI
                 </Text>
               </PocketCard>
-
-              {defaultAccounts !== null && defaultAccounts.cyber && (
-                <TweetCard
-                  refresh={refreshTweet}
-                  select={selectCard === 'tweet'}
-                  onClick={(e) => this.onClickSelect(e, 'tweet')}
-                  onMouseEnter={(e) => this.mouselogEnter(e, 'tweet')}
-                  onMouseLeave={(e) => this.mouselogLeave()}
-                  account={defaultAccounts.cyber.bech32}
-                  marginBottom={20}
-                  id="tweet"
-                />
-              )}
-              {storageManager && storageManager !== null && ipfsId !== null && (
-                <IpfsCard
-                  storageManager={storageManager}
-                  ipfsId={ipfsId}
-                  marginBottom={20}
-                  onClick={(e) => this.onClickSelect(e, 'storageManager')}
-                  select={selectCard === 'storageManager'}
-                  id="storageManager"
-                />
-              )}
-              {accounts !== null &&
-                Object.keys(accounts).map((key, i) => (
-                  <PubkeyCard
-                    key={`${key}_${i}`}
-                    onClick={(e) => this.onClickSelect(e, `pubkey_${key}`, key)}
-                    select={selectCard === `pubkey_${key}`}
-                    pocket={accounts[key]}
-                    nameCard={key}
-                    onMouseEnter={(e) =>
-                      this.mouselogEnter(e, `pubkey_${key}`, key)
-                    }
-                    onMouseLeave={(e) => this.mouselogLeave(e, key)}
-                    marginBottom={20}
-                    updateCard={updateCard}
-                    defaultAccounts={defaultAccountsKeys === key}
-                    contractToken={contractToken}
-                    web3={web3}
-                    updateFunc={this.checkAddressLocalStorage}
-                  />
-                ))}
-              {link !== null && (
-                <PocketCard
-                  marginBottom={20}
-                  select={selectCard === 'importCli'}
-                  onClick={this.onClickImportLink}
-                >
-                  <Text fontSize="16px" color="#fff">
-                    You have created {link !== null && countLink} cyberlinks in
-                    euler-5. Import using CLI
-                  </Text>
-                </PocketCard>
-              )}
-              {link !== null && pocket.keys === 'ledger' && (
-                <ImportLinkLedger
-                  link={link}
-                  countLink={countLink}
-                  select={selectCard === 'importLedger'}
-                  selectedIndex={selectedIndex}
-                  selectLink={this.selectLink}
-                />
-              )}
-            </Pane>
-          </main>
+            )}
+            {link !== null && pocket.keys === 'ledger' && (
+              <ImportLinkLedger
+                link={link}
+                countLink={countLink}
+                select={selectCard === 'importLedger'}
+                selectedIndex={selectedIndex}
+                selectLink={this.selectLink}
+              />
+            )}
+          </MainContainer>
           <ActionBar
             selectCard={selectCard}
             selectAccount={selectAccount}

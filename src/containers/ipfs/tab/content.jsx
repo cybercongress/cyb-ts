@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import { Pane } from '@cybercongress/gravity';
@@ -6,7 +6,6 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeParse from 'rehype-parse';
 import rehypeStringify from 'rehype-stringify';
-import CodeBlock from '../codeBlock';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
@@ -31,8 +30,44 @@ import { CYBER } from '../../../utils/config';
 //   return <canvas id="ipfsImg" />;
 // };
 
-function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
+const checkIpfsState = () => {
+  const LS_IPFS_STATE = localStorage.getItem('ipfsState');
+
+  if (LS_IPFS_STATE !== null) {
+    const lsTypeIpfsData = JSON.parse(LS_IPFS_STATE);
+    if (Object.prototype.hasOwnProperty.call(lsTypeIpfsData, 'userGateway')) {
+      const { userGateway, ipfsNodeType } = lsTypeIpfsData;
+      if (ipfsNodeType === 'external') {
+        return userGateway;
+      }
+    }
+  }
+
+  return CYBER.CYBER_GATEWAY;
+};
+
+function ContentTab({
+  nodeIpfs,
+  typeContent,
+  gateway,
+  content,
+  cid,
+  stylesImg,
+}) {
+  const [gatewayUrl, setGatewayUrl] = useState(null);
+
+  useEffect(() => {
+    if (nodeIpfs && nodeIpfs !== null) {
+      const response = checkIpfsState();
+      setGatewayUrl(response);
+    }
+  }, [nodeIpfs]);
+
   try {
+    if (gatewayUrl === null) {
+      return <div>...</div>;
+    }
+
     if (gateway) {
       return (
         <>
@@ -60,7 +95,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
               // loading={<Dots />}
               id="iframeCid"
               className="iframe-SearchItem"
-              src={`${CYBER.CYBER_GATEWAY}/ipfs/${cid}`}
+              src={`${gatewayUrl}/ipfs/${cid}`}
               style={{
                 backgroundColor: '#fff',
               }}
@@ -136,7 +171,6 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
           rehypePlugins={[rehypeStringify, rehypeSanitize]}
           // skipHtml
           // astPlugins={[parseHtml]}
-          // renderers={{ code: CodeBlock }}
           remarkPlugins={[remarkGfm]}
           // plugins={[toc]}
           // escapeHtml={false}
@@ -159,7 +193,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
           loading={<Dots />}
           id="iframeCid"
           className="iframe-SearchItem"
-          src={`https://io.cybernode.ai/ipfs/${cid}`}
+          src={`${gatewayUrl}/ipfs/${cid}`}
         />
       </div>
     );

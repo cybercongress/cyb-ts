@@ -52,6 +52,8 @@ import ButtonNetwork from './ButtonNetwork';
 import Tooltip from './tooltip/tooltip';
 import ImgNetwork from './networksImg/imgNetwork';
 import ActionBar from './actionBar';
+import Particle from './particle';
+import SearchItem from './SearchItem';
 
 export {
   GovernanceChangeParam,
@@ -106,6 +108,8 @@ export {
   Tooltip,
   ImgNetwork,
   ActionBar,
+  Particle,
+  SearchItem,
 };
 
 export { Nums } from './ui/Numbers';

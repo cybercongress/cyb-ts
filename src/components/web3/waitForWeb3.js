@@ -4,7 +4,7 @@ import { AUCTION } from '../../utils/config';
 
 let web3js;
 
-const resolveWeb3 = async resolve => {
+const resolveWeb3 = async (resolve) => {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (window.web3) {
     web3js = new Web3(window.web3.currentProvider);
@@ -22,7 +22,7 @@ const resolveWeb3 = async resolve => {
 };
 
 const waitForWeb3 = () =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     // If our web3js already exists, resolve immediately
     if (web3js) return resolve(web3js);
 

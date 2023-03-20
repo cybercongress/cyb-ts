@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, {
@@ -36,7 +37,7 @@ const useOnClickOutside = (ref, handler) => {
   }, [ref, handler]);
 };
 
-export const OptionSelect = ({ text, img, bgrImg, value, ...props }) => {
+export function OptionSelect({ text, img, bgrImg, value, ...props }) {
   const { changeSelectedOption } = useSelectContext();
   return (
     <div
@@ -52,9 +53,9 @@ export const OptionSelect = ({ text, img, bgrImg, value, ...props }) => {
       <div>{text}</div>
     </div>
   );
-};
+}
 
-const Select = ({
+function Select({
   type,
   valueSelect,
   textSelectValue,
@@ -62,10 +63,16 @@ const Select = ({
   onChangeSelect,
   children,
   width,
-}) => {
+  custom,
+  disabled,
+}) {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const toggling = () => setIsOpen(!isOpen);
+  const toggling = () => {
+    if (disabled === undefined || disabled === false) {
+      setIsOpen((item) => !item);
+    }
+  };
 
   const clickOutsideHandler = () => setIsOpen(false);
 
@@ -91,7 +98,9 @@ const Select = ({
         <div className={styles.dropDownContainer}>
           <div onClick={toggling} className={styles.dropDownContainerHeader}>
             <div className={styles.dropDownHeader}>
-              {valueSelect === '' ? (
+              {custom ? (
+                <OptionSelect text={textSelectValue} value={valueSelect} />
+              ) : valueSelect === '' ? (
                 <OptionSelect
                   text="choose"
                   img={
@@ -147,6 +156,6 @@ const Select = ({
       </div>
     </SelectContext.Provider>
   );
-};
+}
 
 export default Select;

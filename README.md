@@ -1,12 +1,10 @@
 [.cyb](https://cyb.ai) is your immortal robot for [the great web](https://cyb.ai/ipfs/QmUamt7diQP54eRnmzqMZNEtXNTzbgkQvZuBsgM6qvbd57) which is connected to [superintelligence](https://github.com/cybercongress/go-cyber)
 
-it helps you build your eternal brain
+it helps you upload your brain
 
 example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8eah468neqzn3a0y0t)
 
 <img width="1190" alt="Screen Shot 2022-12-18 at 20 45 02" src="https://user-images.githubusercontent.com/410789/208318513-bdded618-8ed0-4d1c-b3cf-8cec8c8473a8.png">
-
-
 
 # features
 - [my robot](https://cyb.ai): your robot

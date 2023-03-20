@@ -6,8 +6,9 @@
   },
   "extends": [
     "airbnb",
-    "prettier",
-    "prettier/react"
+    "plugin:prettier/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
   "parser": "@babel/eslint-parser",
   "parserOptions": {

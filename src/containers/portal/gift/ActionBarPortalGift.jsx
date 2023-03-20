@@ -37,13 +37,13 @@ import { STEP_INFO } from './utils';
 
 const dateFormat = require('dateformat');
 
-const imgKeplr = require('../../../image/keplr-icon.svg');
-const imgMetaMask = require('../../../image/mm-logo.svg');
-const imgEth = require('../../../image/Ethereum_logo_2014.svg');
-const imgBostrom = require('../../../image/large-green.png');
-const imgOsmosis = require('../../../image/osmosis.svg');
-const imgTerra = require('../../../image/terra.svg');
-const imgCosmos = require('../../../image/cosmos-2.svg');
+import imgKeplr from '../../../image/keplr-icon.svg';
+import imgMetaMask from '../../../image/mm-logo.svg';
+import imgEth from '../../../image/Ethereum_logo_2014.svg';
+import imgBostrom from '../../../image/large-green.png';
+import imgOsmosis from '../../../image/osmosis.svg';
+import imgTerra from '../../../image/terra.svg';
+import imgCosmos from '../../../image/cosmos-2.svg';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

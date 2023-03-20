@@ -6,21 +6,9 @@ import { CYBER } from './config';
 import coinDecimalsConfig from './configToken';
 import tokenList from './tokenList';
 
-const cyberSpace = require('../image/large-purple-circle.png');
-const customNetwork = require('../image/large-orange-circle.png');
-const cyberBostrom = require('../image/large-green.png');
-const voltImg = require('../image/lightning2.png');
-const amperImg = require('../image/light.png');
-const hydrogen = require('../image/hydrogen.svg');
-const tocyb = require('../image/boot.png');
-const downOutline = require('../image/chevronDownOutline.svg');
-const gol = require('../image/seedling.png');
-const atom = require('../image/cosmos-2.svg');
-const eth = require('../image/Ethereum_logo_2014.svg');
-const pool = require('../image/gravitydexPool.png');
-const ibc = require('../image/ibc-unauth.png');
-const cosmos = require('../image/cosmos-2.svg');
-const osmosis = require('../image/osmosis.svg');
+import cyberSpace from '../image/large-purple-circle.png';
+import customNetwork from '../image/large-orange-circle.png';
+import cyberBostrom from '../image/large-green.png';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';

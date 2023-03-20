@@ -18,7 +18,6 @@ import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 
-const FileType = require('file-type');
 const isSvg = require('is-svg');
 const dateFormat = require('dateformat');
 const img = require('../../../image/logo-cyb-v3.svg');

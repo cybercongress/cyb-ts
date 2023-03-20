@@ -31,17 +31,16 @@ import {
 } from '../../../utils/utils';
 import { decFnc } from '../../teleport/utils';
 import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
-import useGetGol from '../../gol/getGolHooks';
 import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
 import coinDecimalsConfig from '../../../utils/configToken';
 import { AppContext } from '../../../context';
 
-const editOutline = require('../../../image/create-outline.svg');
-const editDone = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
-const deleteIcon = require('../../../image/trash-outline.svg');
-const cyb = require('../../../image/cybTrue.svg');
+import editOutline from '../../../image/create-outline.svg';
+import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
+import deleteIcon from '../../../image/trash-outline.svg';
+import cyb from '../../../image/cybTrue.svg';
 
 const RowBalance = ({ children, ...props }) => (
   <Pane display="flex" justifyContent="space-between" width="100%" {...props}>

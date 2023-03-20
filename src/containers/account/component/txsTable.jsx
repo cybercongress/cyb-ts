@@ -24,7 +24,7 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
         {page.data.map((item, index) => {
           const key = uuidv4();
           let timeAgoInMS = null;
-          const d = new Date();
+          const d = new Date().toUTCString();
           const time =
             Date.parse(d) - Date.parse(item.transaction.block.timestamp);
           if (time > 0) {

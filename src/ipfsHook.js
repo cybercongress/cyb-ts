@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
+import { create } from 'ipfs-core';
 import { isMobileTablet } from './utils/utils';
 import configIpfs from './utils/configIpfs';
 
-const IPFS = require('ipfs');
 const DetectRTC = require('detectrtc');
 
 const initIpfsNode = async () => {
@@ -10,7 +10,7 @@ const initIpfsNode = async () => {
   let ipfsStatus = false;
   let id = null;
   try {
-    const node = await IPFS.create(configIpfs(true));
+    const node = await create(configIpfs(true));
     console.log('node init true', node);
     nodeIpfs = node;
     if (nodeIpfs !== null) {
@@ -27,7 +27,7 @@ const initIpfsNode = async () => {
     };
   } catch (error) {
     console.log(error);
-    const node = await IPFS.create(configIpfs(false));
+    const node = await create(configIpfs(false));
     console.log('node init false', node);
     nodeIpfs = node;
     if (node !== null) {

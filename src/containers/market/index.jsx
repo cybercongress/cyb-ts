@@ -90,15 +90,8 @@ function Market({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { jsCyber } = useContext(AppContext);
-  const {
-    gol,
-    cyb,
-    boot,
-    hydrogen,
-    milliampere,
-    millivolt,
-    tocyb,
-  } = useGetCybernomics();
+  const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
+    useGetCybernomics();
   const [selectedTokens, setSelectedTokens] = useState('');
   const [resultSearch, setResultSearch] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(true);

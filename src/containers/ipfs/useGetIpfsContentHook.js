@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
+import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
+import all from 'it-all';
+import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
 import db from '../../db';
 import { getPinsCid } from '../../utils/search/utils';
+import { getContentByCid } from '../../utils/utils-ipfs';
 
 const isSvg = require('is-svg');
 
 const FileType = require('file-type');
-const all = require('it-all');
-const uint8ArrayConcat = require('uint8arrays/concat');
-const uint8ArrayToAsciiString = require('uint8arrays/to-string');
 
 export const getTypeContent = async (dataCid, cid) => {
   const response = {
@@ -77,7 +78,7 @@ export const getTypeContent = async (dataCid, cid) => {
       if (dataBase64.match(PATTERN_IPFS_HASH)) {
         response.gateway = true;
         response.type = 'link';
-        response.content = `https://io.cybernode.ai/ipfs/${dataBase64}`;
+        response.content = `${CYBER.CYBER_GATEWAY}ipfs/${dataBase64}`;
       } else {
         response.type = 'text';
       }
@@ -94,8 +95,6 @@ export const getTypeContent = async (dataCid, cid) => {
   return response;
 };
 
-const size = 15;
-
 const useGetIpfsContent = (cid, nodeIpfs) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
@@ -103,6 +102,7 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
   const [gateway, setGateway] = useState(null);
+  const [statusFetching, setStatusFetching] = useState('');
   const [loading, setLoading] = useState(true);
   const [metaData, setMetaData] = useState({
     type: 'file',
@@ -114,100 +114,46 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
   useEffect(() => {
     const feachData = async () => {
       setLoading(true);
-      const dataIndexdDb = await db.table('cid').get({ cid });
-      // const dataIndexdDb = undefined;
-      if (dataIndexdDb !== undefined && dataIndexdDb.content) {
-        const contentCidDB = Buffer.from(dataIndexdDb.content);
-        const dataTypeContent = await getTypeContent(contentCidDB, cid);
+      let responseData = null;
+      setStatusFetching('');
+
+      const dataResponseByCid = await getContentByCid(
+        nodeIpfs,
+        cid,
+        setStatusFetching
+      );
+
+      if (dataResponseByCid !== undefined) {
+        if (dataResponseByCid === 'availableDownload') {
+          setContent(cid);
+          setGateway(true);
+          setStatus('availableDownload');
+          setText(cid);
+        } else {
+          responseData = dataResponseByCid;
+        }
+      } else {
+        setStatus('impossibleLoad');
+        setLoading(false);
+      }
+
+      if (responseData !== null) {
+        const { data, meta } = responseData;
+        const dataTypeContent = await getTypeContent(data, cid);
         const {
           text: textContent,
           type,
           content: contentCid,
           link: linkContent,
         } = dataTypeContent;
-        if (dataIndexdDb.meta) {
-          setMetaData(dataIndexdDb.meta);
-        } else {
-          setMetaData((item) => ({
-            ...item,
-            data: dataIndexdDb.content,
-          }));
-        }
+
         setText(textContent);
         setTypeContent(type);
         setContent(contentCid);
         setLink(linkContent);
         setGateway(dataTypeContent.gateway);
         setStatus('downloaded');
-        setLoading(false);
-      } else if (nodeIpfs !== null) {
-        const responseDag = await nodeIpfs.dag.get(cid, {
-          localResolve: false,
-        });
-        const meta = {
-          type: 'file',
-          size: 0,
-          blockSizes: [],
-          data: '',
-        };
-        const linksCid = [];
-        if (responseDag.value.Links && responseDag.value.Links.length > 0) {
-          responseDag.value.Links.forEach((item, index) => {
-            if (item.Name.length > 0) {
-              linksCid.push({ name: item.Name, size: item.Tsize });
-            } else {
-              linksCid.push(item.Tsize);
-            }
-          });
-        }
-        meta.size = responseDag.value.size;
-        meta.blockSizes = linksCid;
-        if (responseDag.value.size < size * 10 ** 6) {
-          nodeIpfs.pin.add(cid);
-          const responseCat = uint8ArrayConcat(await all(nodeIpfs.cat(cid)));
-          const dataFileType = await FileType.fromBuffer(responseCat);
-          let mimeType = '';
-          if (dataFileType !== undefined) {
-            const { mime } = dataFileType;
-
-            mimeType = mime;
-          }
-          const blob = new Blob([responseCat], { type: mimeType });
-          getPinsCid(cid, blob);
-          const someVar = responseCat;
-          // const responseCat = await nodeIpfs.cat(cid);
-          // console.log('responseCat', someVar);
-          meta.data = someVar;
-          const ipfsContentAddtToInddexdDB = {
-            cid,
-            content: someVar,
-            meta,
-          };
-          // await db.table('test').add(ipfsContentAddtToInddexdDB);
-          db.table('cid')
-            .add(ipfsContentAddtToInddexdDB)
-            .then((id) => {
-              console.log('item :>> ', id);
-            });
-          const dataTypeContent = await getTypeContent(someVar, cid);
-          const {
-            text: textContent,
-            type,
-            content: contentCid,
-            link: linkContent,
-          } = dataTypeContent;
-          setText(textContent);
-          setTypeContent(type);
-          setContent(contentCid);
-          setLink(linkContent);
-          setStatus('downloaded');
-          setGateway(dataTypeContent.gateway);
-        } else {
-          setContent(cid);
-          setGateway(true);
-          setStatus('availableDownload');
-          setText(cid);
-        }
+        setMetaData(meta);
         setLoading(false);
       }
     };
@@ -223,6 +169,7 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
     gateway,
     metaData,
     loading,
+    statusFetching,
   };
 };
 

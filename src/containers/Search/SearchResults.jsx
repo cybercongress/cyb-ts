@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Pane, SearchItem, Text } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -23,6 +23,8 @@ import {
   Rank,
   NoItems,
   Dots,
+  Particle,
+  SearchItem,
 } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
@@ -36,6 +38,14 @@ import {
 import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../ipfs/contentItem';
 import { AppContext } from '../../context';
+import { MainContainer } from '../portal/components';
+
+const textPreviewSparkApp = (text, value) => (
+  <div style={{ display: 'grid', gap: '10px' }}>
+    <div>{text}</div>
+    <div style={{ fontSize: '18px', color: '#36d6ae' }}>{value}</div>
+  </div>
+);
 
 const search = async (client, hash, page) => {
   try {
@@ -200,8 +210,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
         <Link className="SearchItem" to={`/network/bostrom/contract/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN_CYBER`}
-            text="Explore details of contract"
-            contentApp={<Pane color="#000">{trimString(query, 8, 5)}</Pane>}
+            textPreview={textPreviewSparkApp(
+              'Explore details of contract',
+              <Account avatar address={query} />
+            )}
             status="sparkApp"
           />
         </Link>
@@ -224,7 +236,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
           <SearchItem
             hash={`${query}_PATTERN_CYBER_VALOPER`}
             text="Explore details of hero"
-            contentApp={<Account colorText="#000" address={query} />}
+            textPreview={textPreviewSparkApp(
+              'Explore details of hero',
+              <Account address={query} />
+            )}
             status="sparkApp"
           />
         </Link>
@@ -246,9 +261,11 @@ function SearchResults({ node, mobile, setQueryProps }) {
         <Link className="SearchItem" to={`/network/bostrom/tx/${query}`}>
           <SearchItem
             hash={`${query}_PATTERN_TX`}
-            text="Explore details of tx "
             status="sparkApp"
-            contentApp={<Pane color="#000">{trimString(query, 4, 4)}</Pane>}
+            textPreview={textPreviewSparkApp(
+              'Explore details of tx',
+              trimString(query, 4, 4)
+            )}
           />
         </Link>
       </Pane>
@@ -271,9 +288,10 @@ function SearchResults({ node, mobile, setQueryProps }) {
             hash={`${query}_PATTERN_BLOCK`}
             text="Explore details of block "
             status="sparkApp"
-            contentApp={
-              <Pane color="#000">{formatNumber(parseFloat(query))}</Pane>
-            }
+            textPreview={textPreviewSparkApp(
+              'Explore details of block ',
+              formatNumber(parseFloat(query))
+            )}
           />
         </Link>
       </Pane>
@@ -331,58 +349,27 @@ function SearchResults({ node, mobile, setQueryProps }) {
   console.log(Object.keys(searchResults).length, total);
 
   return (
-    <div>
-      <main
-        className="block-body"
-        // style={{ paddingTop: 30 }}
-      >
-        <Pane
-          width="90%"
-          marginX="auto"
-          marginY={0}
-          display="flex"
-          flexDirection="column"
+    <>
+      <MainContainer width="90%">
+        <InfiniteScroll
+          pageStart={-1}
+          // initialLoad
+          loadMore={fetchMoreData}
+          hasMore={hasMore}
+          loader={
+            <h4>
+              Loading
+              <Dots />
+            </h4>
+          }
         >
-          <div className="container-contentItem" style={{ width: '100%' }}>
-            {/* <InfiniteScroll
-              dataLength={Object.keys(searchResults).length}
-              next={fetchMoreData}
-              hasMore={Object.keys(searchResults).length < total}
-              loader={
-                <h4>
-                  Loading
-                  <Dots />
-                </h4>
-              }
-              refreshFunction={fetchMoreData}
-            >
-              {Object.keys(searchItems).length > 0 ? (
-                searchItems
-              ) : (
-                <NoItems text={`No information about ${query}`} />
-              )}
-            </InfiniteScroll> */}
-            <InfiniteScroll
-              pageStart={-1}
-              // initialLoad
-              loadMore={fetchMoreData}
-              hasMore={hasMore}
-              loader={
-                <h4>
-                  Loading
-                  <Dots />
-                </h4>
-              }
-            >
-              {Object.keys(searchItems).length > 0 ? (
-                searchItems
-              ) : (
-                <NoItems text={`No information about ${query}`} />
-              )}
-            </InfiniteScroll>
-          </div>
-        </Pane>
-      </main>
+          {Object.keys(searchItems).length > 0 ? (
+            searchItems
+          ) : (
+            <NoItems text={`No information about ${query}`} />
+          )}
+        </InfiniteScroll>
+      </MainContainer>
 
       {!mobile && (
         <ActionBarContainer
@@ -391,7 +378,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
           rankLink={rankLink}
         />
       )}
-    </div>
+    </>
   );
 }
 
