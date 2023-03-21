@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dots } from '../ui/Dots';
+import cx from 'classnames';
 import styles from './styles.scss';
 
 const audioBtn = require('../../sounds/main-button.mp3');
@@ -27,7 +28,15 @@ const stopAudioHover = () => {
   audioBtnHoverObg.currentTime = 0;
 };
 
-function BtnGrd({ disabled, text, img, pending, onClick, ...props }) {
+function BtnGrd({
+  disabled,
+  text,
+  img,
+  pending,
+  onClick,
+  className,
+  ...props
+}) {
   // useEffect(() => {
   //   const element = document.querySelector('#BtnGrd');
 
@@ -64,7 +73,7 @@ function BtnGrd({ disabled, text, img, pending, onClick, ...props }) {
       type="button"
       id="BtnGrd"
       onClick={handleClick}
-      className={styles.containerBtnGrd}
+      className={cx(styles.containerBtnGrd, className)}
       disabled={disabled}
       {...props}
     >

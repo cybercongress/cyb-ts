@@ -23,7 +23,9 @@ import AppContextProvider from './context';
 import './style/main.css';
 // import './style/index.scss';
 import './image/favicon.ico';
-import './image/logo-bulb.svg';
+import './image/robot.svg';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.jsx';
+import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 
 const getHeaders = (token) => {
   const headers = {
@@ -90,10 +92,12 @@ const render = () => {
         <ApolloProvider client={client}>
           <AppContextProvider>
             <QueryClientProvider client={queryClient}>
-              <AppContainer>
-                <AppRouter />
-              </AppContainer>
-              <ReactQueryDevtools />
+              <ErrorBoundary fallback={<ErrorScreen />}>
+                <AppContainer>
+                  <AppRouter />
+                </AppContainer>
+                <ReactQueryDevtools />
+              </ErrorBoundary>
             </QueryClientProvider>
           </AppContextProvider>
         </ApolloProvider>
