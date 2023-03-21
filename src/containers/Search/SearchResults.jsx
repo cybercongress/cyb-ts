@@ -88,7 +88,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [allPage, setAllPage] = useState(1);
   const [total, setTotal] = useState(0);
   // const [fetching, setFetching] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
     if (query.match(/\//g)) {
@@ -98,7 +98,6 @@ function SearchResults({ node, mobile, setQueryProps }) {
 
   useEffect(() => {
     const getFirstItem = async () => {
-      setHasMore(true);
       setLoading(true);
       setQueryProps(encodeSlash(query));
       // setPage(0);
@@ -114,6 +113,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
         }
 
         let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);
+
         if (responseSearchResults.length === 0) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
@@ -135,8 +135,12 @@ function SearchResults({ node, mobile, setQueryProps }) {
             Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
           );
           setTotal(parseFloat(responseSearchResults.pagination.total));
+          setHasMore(true);
           // setPage((item) => item + 1);
+        } else {
+          setHasMore(false);
         }
+
         setKeywordHash(keywordHashTemp);
         setSearchResults(searchResultsData);
         setLoading(false);
@@ -357,7 +361,11 @@ function SearchResults({ node, mobile, setQueryProps }) {
           loadMore={fetchMoreData}
           hasMore={hasMore}
           loader={
-            <h4>
+            <h4
+              style={{
+                textAlign: 'center',
+              }}
+            >
               Loading
               <Dots />
             </h4>
