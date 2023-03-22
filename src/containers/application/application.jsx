@@ -5,7 +5,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 // import usePopperTooltip from 'react-popper-tooltip';
 import Menu from './ToggleMenu';
 import AppMenu from './AppMenu';
-import { MenuButton, BandwidthBar, Tooltip } from '../../components';
+import { MenuButton, BandwidthBar, Tooltip, Input } from '../../components';
 import Electricity from '../home/electricity';
 import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
@@ -40,7 +40,6 @@ import { GitHub, Telegram } from '../../components/actionBar';
 import styles from './styles.scss';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
-import Input from '../teleport/components/input';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
 import { InfoCard } from '../portal/components';
 
@@ -412,6 +411,7 @@ function App({
               }}
             >
               <Input
+                color="pink"
                 onChange={(e) => onChangeInput(e)}
                 onKeyPress={handleKeyPress}
                 style={{ textAlign: 'center', fontSize: 24 }}

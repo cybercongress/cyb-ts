@@ -6,8 +6,8 @@ import {
   ActionBarSteps,
   BtnGrd,
 } from '../portal/components';
-import Input from '../teleport/components/input';
 import { AppContext } from '../../context';
+import { Input } from '../../components';
 
 const ValueItem = ({ text, value, onChange }) => (
   <div

@@ -10,7 +10,6 @@ import {
   ActionBarSteps,
   BtnGrd,
 } from './components';
-import Input from '../teleport/components/input';
 import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { activePassport } from './utils';
