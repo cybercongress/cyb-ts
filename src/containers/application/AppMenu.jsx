@@ -17,6 +17,7 @@ import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
 import zhdun from '../../image/temple/zhdun.png';
+import { routes } from '../../router';
 
 const itemsMenu = (address) => {
   let linkLog = '/robot';
@@ -86,8 +87,8 @@ const itemsMenu = (address) => {
     {
       name: 'Sphere',
       icon: shpere,
-      to: '/sphere',
-      subItems: [{ name: 'Heroes at rest', to: '/sphere/jailed' }],
+      to: routes.sphere.path,
+      subItems: [{ name: 'Heroes at rest', to: routes.sphereJailed.path }],
     },
     { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },

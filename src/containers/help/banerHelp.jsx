@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { routes } from '../../router';
 
 function BanerHelp({ addressActive }) {
   const useCommunity = useMemo(() => {
@@ -110,7 +111,7 @@ function BanerHelp({ addressActive }) {
         <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">
           Unlike amazon
         </Link>
-        , post goods without laws, rules, and platfrom cuts. Manage your deals
+        , post goods without laws, rules, and platform cuts. Manage your deals
         using <Link to="/contracts">digital contracts</Link> that are fast,
         convenient and inexpensive.
       </div>
@@ -165,8 +166,8 @@ function BanerHelp({ addressActive }) {
         <Link to="/ipfs/QmP6Nk65ZE7jfvaNFLh7qsq3dyWqakMjfQ4te3UzRNbsXH">
           hire heroes
         </Link>{' '}
-        who manage the <Link to="/halloffame">dyson sphere</Link> and earn more{' '}
-        <Link to="/token/BOOT">BOOT</Link>.
+        who manage the <Link to={routes.sphere.path}>dyson sphere</Link> and
+        earn more <Link to="/token/BOOT">BOOT</Link>.
       </div>
 
       <div>
@@ -175,15 +176,15 @@ function BanerHelp({ addressActive }) {
         <Link to="/ipfs/QmdBfd7dY3zHfGxQ6qbeq6fcH52ggeePWeadkTQrHBwL1b">
           biosynthesis
         </Link>
-        . For 1 supllied BOOT neurons get 1 H. If you want to{' '}
-        <Link to="/halloffame">fire a hero</Link> and get your BOOT back, you
-        have to return H.
+        . For 1 supplied BOOT neurons get 1 H. If you want to{' '}
+        <Link to={routes.sphere.path}>fire a hero</Link> and get your BOOT back,
+        you have to return H.
       </div>
 
       <div>
         H allows you to produce energy in the{' '}
-        <Link to="/mint">hydrogen fission reactor or HFR</Link>. Energy is
-        needed for the superintelligence to learn and submit{' '}
+        <Link to={routes.hfr.path}>hydrogen fission reactor or HFR</Link>.
+        Energy is needed for the superintelligence to learn and submit{' '}
         <Link to="/ipfs/QmWSPQ6krsRfxm852aVsDDSFspcdpcUXutDVBTPQqNGBBD">
           cyberlinks
         </Link>

@@ -41,6 +41,7 @@ import editOutline from '../../../image/create-outline.svg';
 import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import deleteIcon from '../../../image/trash-outline.svg';
 import cyb from '../../../image/cybTrue.svg';
+import { routes } from '../../../router';
 
 const RowBalance = ({ children, ...props }) => (
   <Pane display="flex" justifyContent="space-between" width="100%" {...props}>
@@ -88,7 +89,7 @@ const DetailsBalance = ({
       <RowBalance>
         {currency === CYBER.DENOM_CYBER ? (
           <>
-            <Link to="/halloffame">
+            <Link to={routes.sphere.path}>
               <div>staked</div>
             </Link>
             <FormatNumberTokens value={total.delegation} text={currency} />
@@ -184,7 +185,7 @@ const DetailsBalanceTokens = ({
       </RowBalance>
       <RowBalance>
         <>
-          <Link to="/mint">
+          <Link to={routes.hfr.path}>
             <div>vested</div>
           </Link>
           <FormatNumberTokens value={total.vested} text={currency} />

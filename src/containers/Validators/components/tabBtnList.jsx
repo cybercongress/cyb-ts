@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { PillNumber, TabBtn } from '../../../components';
+import { routes } from '../../../router';
 
 function TabBtnList({ countHeroes, selected }) {
   return (
@@ -13,7 +14,7 @@ function TabBtnList({ countHeroes, selected }) {
       <TabBtn
         key="Active"
         isSelected={selected === 'active'}
-        to="/halloffame"
+        to={routes.sphere.path}
         text={
           <Pane display="flex" alignItems="center">
             <Pane>Active</Pane>
@@ -30,7 +31,7 @@ function TabBtnList({ countHeroes, selected }) {
       <TabBtn
         key="Jailed"
         isSelected={selected === 'jailed'}
-        to="/halloffame/jailed"
+        to={routes.sphereJailed.path}
         text={
           <Pane display="flex" alignItems="center">
             <Pane>Jailed</Pane>
