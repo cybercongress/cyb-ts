@@ -9,14 +9,12 @@ function Input({ color, ...props }) {
       <div
         className={cx(styles.textboxBottomGradient, styles.textboxFace, {
           [styles.textboxFacePink]: color === 'pink',
-          [styles.textboxFaceBlue]: !color,
         })}
       />
 
       <div
         className={cx(styles.textboxBottomLine, {
           [styles.textboxBottomLinePink]: color === 'pink',
-          [styles.textboxBottomLineBlue]: !color,
         })}
       />
 

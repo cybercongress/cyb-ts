@@ -1,34 +1,14 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 import LinearGradientContainer from './LinearGradientContainer';
 import styles from './styles.scss';
 import { SelectContext, useSelectContext } from './selectContext';
+import useOnClickOutside from '../../hooks/useOnClickOutside';
 
 const classNames = require('classnames');
-
-const useOnClickOutside = (ref, handler) => {
-  useEffect(() => {
-    const listener = (event) => {
-      const el = ref?.current;
-      if (!el || el.contains(event?.target || null)) {
-        return;
-      }
-
-      handler(event); // Call the handler only if the click is outside of the element passed.
-    };
-
-    document.addEventListener('mousedown', listener);
-    document.addEventListener('touchstart', listener);
-
-    return () => {
-      document.removeEventListener('mousedown', listener);
-      document.removeEventListener('touchstart', listener);
-    };
-  }, [ref, handler]);
-};
 
 export function OptionSelect({ text, img, bgrImg, value, ...props }) {
   const { changeSelectedOption } = useSelectContext();
@@ -59,7 +39,7 @@ function Select({
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const toggling = () => {
-    if (disabled === undefined || disabled === false) {
+    if (!disabled) {
       setIsOpen((item) => !item);
     }
   };
@@ -86,15 +66,17 @@ function Select({
         ref={selectContainerRef}
       >
         <div className={styles.dropDownContainer}>
-          <div onClick={toggling} className={styles.dropDownContainerHeader}>
+          <button
+            type="button"
+            onClick={toggling}
+            className={styles.dropDownContainerHeader}
+          >
             <div className={styles.dropDownHeader}>{currentValue}</div>
             <LinearGradientContainer />
-          </div>
+          </button>
           {isOpen && (
             <div className={styles.dropDownListContainer}>
-              <div className={styles.dropDownList}>
-                {Object.keys(children).length > 1 ? children : ''}
-              </div>
+              <div className={styles.dropDownList}>{children}</div>
 
               <div
                 className={classNames(

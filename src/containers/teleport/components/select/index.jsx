@@ -2,13 +2,9 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
-import {
-  DenomArr,
-  Select as SelectCommp,
-  OptionSelect,
-} from '../../../../components';
+import { DenomArr, Select, OptionSelect } from '../../../../components';
 
-function Select({
+function SelectTeleport({
   type,
   valueSelect,
   textSelectValue,
@@ -19,7 +15,7 @@ function Select({
   disabled,
 }) {
   return (
-    <SelectCommp
+    <Select
       valueSelect={valueSelect}
       disabled={disabled}
       width={width}
@@ -61,8 +57,8 @@ function Select({
       }
     >
       {Object.keys(children).length > 0 ? children : ''}
-    </SelectCommp>
+    </Select>
   );
 }
 
-export default Select;
+export default SelectTeleport;

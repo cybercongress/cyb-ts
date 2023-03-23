@@ -23,6 +23,10 @@ $color-border-botton-yellow: #fcf000;
     justify-content: flex-end;
     align-items: flex-start;
     height: 100%;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
   }
 
   &Header {
