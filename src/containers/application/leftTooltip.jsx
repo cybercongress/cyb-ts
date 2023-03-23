@@ -11,7 +11,7 @@ function LeftTooltip({ block }) {
     <Tooltip
       placement="bottom"
       tooltip={
-        <span style={{ width: '225px', display: 'block', padding: 10 }}>
+        <span style={{ width: '225px', display: 'block' }}>
           You are on the{' '}
           <a
             target="_blank"

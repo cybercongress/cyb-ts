@@ -63,10 +63,7 @@ function Status({ status }) {
 
   return (
     <div>
-      <Tooltip
-        placement="bottom"
-        tooltip={<div style={{ padding: 18 }}>{text}</div>}
-      >
+      <Tooltip placement="bottom" tooltip={text}>
         <div
           className={cx(styles.customPill, {
             [styles.glow]: status === 'understandingState',

@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { connect } from 'react-redux';
-import { Pane, Text, Tooltip, Icon } from '@cybercongress/gravity';
+import { Pane, Text, Icon } from '@cybercongress/gravity';
 import Web3Utils from 'web3-utils';
 import { Link } from 'react-router-dom';
 

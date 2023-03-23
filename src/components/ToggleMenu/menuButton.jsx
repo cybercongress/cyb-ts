@@ -1,6 +1,5 @@
 import React from 'react';
-import { Pane, Text, Tooltip } from '@cybercongress/gravity';
-// import { Tooltip } from '..';
+import { Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 
 const stausImgCyb = require('../../image/cyb.svg');
