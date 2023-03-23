@@ -56,7 +56,7 @@ function SelectTeleport({
         )
       }
     >
-      {Object.keys(children).length > 0 ? children : ''}
+      {children}
     </Select>
   );
 }
