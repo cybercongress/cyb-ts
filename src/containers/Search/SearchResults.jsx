@@ -114,14 +114,15 @@ function SearchResults({ node, mobile, setQueryProps }) {
 
         let responseSearchResults = await search(jsCyber, keywordHashTemp, 0);
 
-        if (responseSearchResults.length === 0) {
+        if (
+          responseSearchResults.length === 0 ||
+          (responseSearchResults.result &&
+            responseSearchResults.result.length === 0)
+        ) {
           const queryNull = '0';
           keywordHashNull = await getIpfsHash(queryNull);
-          // console.log(`keywordHashNull`, keywordHashNull);
           responseSearchResults = await search(jsCyber, keywordHashNull, 0);
-          // console.log(` responseSearchResults`, responseSearchResults);
         }
-        // console.log(`responseSearchResults`, responseSearchResults);
 
         if (
           responseSearchResults.result &&
