@@ -7,7 +7,7 @@ function BanerHelp({ addressActive }) {
     let link = 'community';
     if (addressActive && addressActive !== null) {
       const { bech32 } = addressActive;
-      const community = `network/bostrom/contract/${bech32}/community`;
+      const community = `network/bostrom/contract/${bech32}/swarm`;
       link = <Link to={community}>community</Link>;
     }
     return link;
@@ -168,6 +168,7 @@ function BanerHelp({ addressActive }) {
         </Link>{' '}
         who manage the <Link to={routes.sphere.path}>dyson sphere</Link> and
         earn more <Link to="/token/BOOT">BOOT</Link>.
+
       </div>
 
       <div>
