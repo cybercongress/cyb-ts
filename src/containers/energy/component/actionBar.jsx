@@ -26,6 +26,7 @@ import {
 } from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
+import { routes } from '../../../router';
 
 const back = require('../../../image/arrow-back-outline.svg');
 
@@ -243,7 +244,9 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   if (stage === STAGE_INIT && selected === 'myEnegy') {
     return (
       <ActionBarContainer>
-        <Button onClick={() => history.push('/mint')}>Investmint</Button>
+        <Button onClick={() => history.push(routes.hfr.path)}>
+          Investmint
+        </Button>
       </ActionBarContainer>
     );
   }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Route, Router, Switch } from 'react-router';
+import { Redirect, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -39,7 +39,7 @@ import Movie from './containers/movie';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
-import Temple from './containers/temple'; 
+import Temple from './containers/temple';
 
 import Ibc from './containers/ibc';
 import {
@@ -64,13 +64,40 @@ import defaultNetworks from './utils/defaultNetworks';
 
 import { TIME_START, CYBER } from './utils/config';
 import ipfsSettings from './containers/ipfsSettings';
+import { Link } from 'react-router-dom';
 
 export const history = createBrowserHistory({});
+
+export const routes = {
+  home: {
+    path: '/',
+  },
+  senateProposal: {
+    path: '/senate/:proposalId',
+    getLink: (proposalId) => `/senate/${proposalId}`,
+  },
+  sphere: {
+    path: '/sphere',
+  },
+  sphereJailed: {
+    path: '/sphere/jailed',
+  },
+  hfr: {
+    path: '/hfr',
+  },
+};
+
+// backward compatibility
+const oldLinks = {
+  halloffame: '/halloffame',
+  halloffameJailed: '/halloffame/jailed',
+  mint: '/mint',
+};
 
 function AppRouter() {
   return (
     <Router history={history}>
-      <Route path="/" component={() => <App />} />
+      <Route path={routes.home.path} component={() => <App />} />
       <Switch>
         <Route path="/" exact component={Temple} />
         <Route path="/robot" component={Wallet} />
@@ -78,7 +105,14 @@ function AppRouter() {
         <Route exact path="/search/:query" component={SearchResults} />
         <Route exact path="/senate" component={Governance} />
         <Route path="/senate/:proposalId" component={ProposalsDetail} />
-        <Route path="/sphere" component={Validators} />
+
+        <Redirect
+          from={oldLinks.halloffameJailed}
+          to={routes.sphereJailed.path}
+        />
+        <Redirect from={oldLinks.halloffame} to={routes.sphere.path} />
+
+        <Route path={routes.sphere.path} component={Validators} />
         <Route path="/episode-1" component={Story} />
         <Route exact path="/network/bostrom/tx" component={Txs} />
         <Route path="/network/bostrom/tx/:txHash" component={TxsDetails} />
@@ -104,7 +138,10 @@ function AppRouter() {
         <Route path="/degenbox" component={TrollBoxx} />
         {/* <Route path="/portal" component={PortPages} /> */}
         <Route path="/test" component={TestKeplr} />
-        <Route path="/hfr" component={Mint} />
+
+        <Redirect from={oldLinks.mint} to={routes.hfr.path} />
+        <Route path={routes.hfr.path} component={Mint} />
+
         <Route path="/grid" component={RoutedEnergy} />
         <Route path="/token" component={Market} />
         <Route path="/oracle" component={Oracle} />
@@ -136,6 +173,20 @@ function AppRouter() {
         <Route path="/sigma" component={Sigma} />
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/" component={Temple} /> */}
+
+        <Route
+          path="*"
+          component={() => {
+            return (
+              // TODO: maybe style
+              <div>
+                page not exists
+                <br />
+                <Link to={routes.home.path}>Home</Link>
+              </div>
+            );
+          }}
+        />
       </Switch>
     </Router>
   );

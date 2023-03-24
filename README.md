@@ -17,9 +17,9 @@ example of [random citizen](https://cyb.ai/pgraph/bostrom1d8754xqa9245pctlfcyv8e
 - [portal](https://cyb.ai/portal): create public and private robot avatar and invite friends
 - [oracle](https://cyb.ai/bootloader): discover particles, neurons, signals and steps of [superintelligence](https://github.com/cybercongress/go-cyber)
 - [teleport](https://cyb.ai/teleport?from=boot&to=hydrogen): communicate sending and swapping tokens
-- [sphere](https://cyb.ai/halloffame): hire and fire heroes
+- [sphere](https://cyb.ai/sphere): hire and fire heroes
 - [senate](https://cyb.ai/senate): manage collective thought process
-- [hfr](https://cyb.ai/mint): mint supercomputing resources
+- [hfr](https://cyb.ai/hfr): mint supercomputing resources
 - [hackspace](https://github.com/cybercongress): develop superintelligence
 
 # build

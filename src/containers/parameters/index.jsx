@@ -81,10 +81,7 @@ function ParamNetwork({ location }) {
       pathname.match(/rank/gm).length > 0
     ) {
       setSelected('rank');
-    } else if (
-      pathname.match(/mint/gm) &&
-      pathname.match(/mint/gm).length > 0
-    ) {
+    } else if (pathname.match(/hfr/gm) && pathname.match(/hfr/gm).length > 0) {
       setSelected('mint');
     } else if (
       pathname.match(/resources/gm) &&
@@ -106,10 +103,7 @@ function ParamNetwork({ location }) {
       pathname.match(/grid/gm).length > 0
     ) {
       setSelected('grid');
-    } else if (
-      pathname.match(/dmn/gm) &&
-      pathname.match(/dmn/gm).length > 0
-    ) {
+    } else if (pathname.match(/dmn/gm) && pathname.match(/dmn/gm).length > 0) {
       setSelected('dmn');
     } else {
       setSelected('bandwidth');

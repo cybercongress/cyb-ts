@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pane, Tablist } from '@cybercongress/gravity';
-import { PillNumber, TabBtn } from '../../components';
+import { TabBtn } from '../../components';
+import { routes } from '../../router';
 
 function TabBtnList({ slotsData = 0, selected }) {
   return (
@@ -13,14 +14,14 @@ function TabBtnList({ slotsData = 0, selected }) {
       <TabBtn
         key="Investmint"
         isSelected={selected === 'investmint'}
-        to="/mint"
+        to={routes.hfr.path}
         text={
           <Pane display="flex" alignItems="center">
             <Pane>Investmint</Pane>
           </Pane>
         }
       />
-      <TabBtn
+      {/* <TabBtn
         key="Slots"
         isSelected={selected === 'slots'}
         to="/mint/slots"
@@ -36,7 +37,7 @@ function TabBtnList({ slotsData = 0, selected }) {
             </PillNumber>
           </Pane>
         }
-      />
+      /> */}
     </Tablist>
   );
 }
