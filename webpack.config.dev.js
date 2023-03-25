@@ -16,10 +16,4 @@ module.exports = merge(commonConfig, {
     },
     historyApiFallback: true,
   },
-  plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
-    }),
-  ],
 });

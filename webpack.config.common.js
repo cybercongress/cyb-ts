@@ -4,7 +4,6 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const Dotenv = require('dotenv-webpack');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 if (process.env.IPFS_DEPLOY) {
@@ -21,7 +20,6 @@ module.exports = {
     publicPath: '/',
     assetModuleFilename: '[name][hash:10][ext]',
   },
-  // node: { fs: 'empty' },
   resolve: {
     fallback: {
       buffer: require.resolve('buffer'),
@@ -75,9 +73,6 @@ module.exports = {
       'process.env.REACT_APP_IPFS_DEPLOY': JSON.stringify(
         process.env.IPFS_DEPLOY
       ),
-    }),
-    new Dotenv({
-      systemvars: true,
     }),
   ],
   module: {
