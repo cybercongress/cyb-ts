@@ -19,9 +19,8 @@ module.exports = {
   entry: ['react-hot-loader/patch', path.join(__dirname, 'src', 'index.js')],
   output: {
     filename: '[name].js',
-    // filename: 'index.js',
     path: path.join(__dirname, '/build'),
-    publicPath: './',
+    publicPath: '/',
     assetModuleFilename: '[name][hash:10][ext]',
   },
   // node: { fs: 'empty' },

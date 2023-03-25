@@ -1,15 +1,16 @@
 const { merge } = require('webpack-merge');
 const webpack = require('webpack');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const commonConfig = require('./webpack.config.common');
 
-
 module.exports = merge(commonConfig, {
-
   mode: 'production',
+  output: {
+    publicPath: './',
+  },
   optimization: {
     nodeEnv: 'production',
     concatenateModules: true,
@@ -48,7 +49,6 @@ module.exports = merge(commonConfig, {
         threshold: 10240,
         minRatio: 0.8,
       }),
-
     ],
   },
 });

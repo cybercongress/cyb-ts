@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router';
+import IpfsRouter from 'ipfs-react-router';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
 import { setTypeDevice } from './redux/actions/settings';
@@ -96,7 +97,7 @@ const oldLinks = {
 
 function AppRouter() {
   return (
-    <Router history={history}>
+    <IpfsRouter history={history}>
       <Route path={routes.home.path} component={() => <App />} />
       <Switch>
         <Route path="/" exact component={Temple} />
@@ -188,7 +189,7 @@ function AppRouter() {
           }}
         />
       </Switch>
-    </Router>
+    </IpfsRouter>
   );
 }
 

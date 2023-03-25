@@ -139,6 +139,7 @@
     "graphql-request": "^5.1.0",
     "graphql-tag": "^2.10.1",
     "ipfs-core": "^0.18.0",
+    "ipfs-react-router": "^0.2.2",
     "ipfs-unixfs": "^0.2.0",
     "ipld-dag-pb": "0.15.3",
     "is-svg": "^4.2.1",
