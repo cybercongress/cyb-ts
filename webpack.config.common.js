@@ -7,7 +7,6 @@ const Dotenv = require('dotenv-webpack');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
-
 // const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
 //   template: path.join(__dirname, 'src', 'index.html'),
 //   favicon: 'src/image/favicon.ico',
@@ -22,7 +21,7 @@ module.exports = {
     filename: '[name].js',
     // filename: 'index.js',
     path: path.join(__dirname, '/build'),
-    publicPath: '/',
+    publicPath: './',
     assetModuleFilename: '[name][hash:10][ext]',
   },
   // node: { fs: 'empty' },
@@ -38,9 +37,7 @@ module.exports = {
       https: require.resolve('https-browserify'),
       os: require.resolve('os-browserify/browser'),
       http: require.resolve('stream-http'),
-      assert: require.resolve('assert/'),
       stream: require.resolve('stream-browserify'),
-      buffer: require.resolve('buffer/'),
       // "path": require.resolve("path-browserify"),
       // "zlib": require.resolve("browserify-zlib"),
       constants: require.resolve('constants-browserify'),
@@ -66,13 +63,14 @@ module.exports = {
       process: 'process/browser',
     }),
     new CleanWebpackPlugin(),
-    new BootloaderPlugin(HTMLWebpackPlugin, {
-      script: './src/components/loader/loader.js',
-    }),
+    // new BootloaderPlugin(HTMLWebpackPlugin, {
+    //   script: './src/components/loader/loader.js',
+    // }),
     new HTMLWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
       filename: 'index.html',
+      publicPath: './',
       inject: 'body',
     }),
     new MiniCssExtractPlugin({
@@ -153,15 +151,6 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg|ico)$/i,
         type: 'asset/resource',
-        // use: {
-        //   loader: 'file-loader',
-        //   options: {
-        //     name: '[name].[hash:10].[ext]',
-        //     outputPath: '',
-        //     publicPath: '',
-        //     useRelativePath: false,
-        //   },
-        // },
       },
       {
         test: /\.m?js$/,
