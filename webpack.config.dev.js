@@ -7,7 +7,7 @@ module.exports = merge(commonConfig, {
   devtool: 'hidden-source-map',
   // devtool: 'inline-source-map',
   devServer: {
-    https: true,
+    https: false,
     host: 'localhost',
     port: process.env.PORT_APP || '3001',
     hot: true,
@@ -16,10 +16,4 @@ module.exports = merge(commonConfig, {
     },
     historyApiFallback: true,
   },
-  plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
-    }),
-  ],
 });
