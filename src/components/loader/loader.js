@@ -3,10 +3,9 @@ require('./loader.css');
 const Bootloader = () => {
   this.progressMap = {};
   this.tagMap = {};
-  this.assets= {};
-  this.totalSize= 0;
-  this.networkSpeed= 0;
-
+  this.assets = {};
+  this.totalSize = 0;
+  this.networkSpeed = 0;
 
   this.attachAssets = (assets) => {
     this.assets = assets;
@@ -58,19 +57,19 @@ const Bootloader = () => {
     return new Promise((resolve, reject) => {
       let endTime, fileSize;
 
-      let startTime = (new Date()).getTime();
+      let startTime = new Date().getTime();
 
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
-          endTime = (new Date()).getTime();
+          endTime = new Date().getTime();
           fileSize = xhr.response.size;
           _this.networkSpeed = fileSize / ((endTime - startTime) / 1000) / 1024;
           // Use (fileSize * 8) instead of fileSize for kBps instead of kbps
           // Report the result, or have fries with it...
           // console.log(speed + " kbps\n");
         }
-      }
+      };
 
       xhr.open('GET', asset.file, true);
       xhr.responseType = 'blob';
@@ -129,10 +128,17 @@ const Bootloader = () => {
           ? void 0
           : _a.removeChild(oldAsset));
       // create new asset
-      const objectURL = URL.createObjectURL(blob);
+
+      //DIRTY HACK to avoid blob url import
+      // const objectURL = URL.createObjectURL(blob);
+      // const tag = js
+      //   ? _this.createScriptTag(objectURL, assetId)
+      //   : _this.createCssTag(objectURL, assetId);
       const tag = js
-        ? _this.createScriptTag(objectURL, assetId)
-        : _this.createCssTag(objectURL, assetId);
+        ? _this.createScriptTag(asset.file, assetId)
+        : _this.createCssTag(asset.file, assetId);
+      // ----------
+
       tag.onload = tag.onerror = () => {
         // remove listeners
         tag.onload = tag.onerror = null;
@@ -222,30 +228,31 @@ function bootstrap() {
       const progressBar = document.getElementById('progressbar');
       const progressData = document.getElementById('progress-data');
 
-
       progressBar === null || progressBar === void 0
         ? void 0
         : progressBar.setAttribute('value', progress.toString());
 
-        
-        progressData.innerHTML=`Loading: <span>${Math.round(progress*100)}%</span>. <br/> Network speed: <span>${Math.round(e.networkSpeed * 100) / 100}kbps</span>`;
+      progressData.innerHTML = `Loading: <span>${Math.round(
+        progress * 100
+      )}%</span>. <br/> Network speed: <span>${
+        Math.round(e.networkSpeed * 100) / 100
+      }kbps</span>`;
 
       // console.log(e.loaded, e.loaded / e.totalSize); // @TODO
     })
     .then((report) => {
       if (window !== null) {
         let pageloader = null;
-        pageloader = setInterval(function(){
+        pageloader = setInterval(function () {
           if (typeof window.onload === 'function') {
-              clearInterval(pageloader);
-              window.onload();
-          } 
+            clearInterval(pageloader);
+            window.onload();
+          }
         }, 300);
-        
       } else {
         console.error('No window');
       }
-       
+
       //selfdestroy @TODO
     });
 }

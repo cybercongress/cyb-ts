@@ -62,9 +62,9 @@ module.exports = {
       process: 'process/browser',
     }),
     new CleanWebpackPlugin(),
-    // new BootloaderPlugin(HTMLWebpackPlugin, {
-    //   script: './src/components/loader/loader.js',
-    // }),
+    new BootloaderPlugin(HTMLWebpackPlugin, {
+      script: './src/components/loader/loader.js',
+    }),
     new HTMLWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
