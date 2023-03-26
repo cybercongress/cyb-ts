@@ -1,11 +1,9 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { NumericFormat } from 'react-number-format';
 import BalanceToken from './balanceToken';
-import Select, { OptionSelect } from './select';
-import Input from './input';
+import Select from './select';
 import { networkList } from '../utils';
-import { DenomArr } from '../../../components';
+import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 
 const renderOptions = (data, selected, valueSelect) => {
   let items = {};
@@ -141,30 +139,7 @@ function TokenSetter({
         </Pane>
       </Pane>
       {!ibcTokenB && (
-        <NumericFormat
-          id={id}
-          value={valueInput}
-          onValueChange={(values, sourceInfo) =>
-            onChangeInput(values.value, sourceInfo.event)
-          }
-          customInput={Input}
-          thousandsGroupStyle="thousand"
-          thousandSeparator=" "
-          decimalScale={3}
-          autoComplete="off"
-          allowLeadingZeros
-        />
-        // <Input
-        //   id={id}
-        //   value={valueInput}
-        //   onChange={(e) => onChangeInput(e)}
-        //   placeholder="amount"
-        //   width="200px"
-        //   height={42}
-        //   fontSize="20px"
-        //   autoComplete="off"
-        //   textAlign="end"
-        // />
+        <InputNumber id={id} value={valueInput} onValueChange={onChangeInput} />
       )}
     </Pane>
   );

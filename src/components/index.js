@@ -54,6 +54,8 @@ import ImgNetwork from './networksImg/imgNetwork';
 import ActionBar from './actionBar';
 import Particle from './particle';
 import SearchItem from './SearchItem';
+import { Input, InputNumber } from './Input';
+import Select, { OptionSelect } from './Select';
 
 export {
   GovernanceChangeParam,
@@ -110,6 +112,10 @@ export {
   ActionBar,
   Particle,
   SearchItem,
+  Input,
+  InputNumber,
+  Select,
+  OptionSelect,
 };
 
 export { Nums } from './ui/Numbers';

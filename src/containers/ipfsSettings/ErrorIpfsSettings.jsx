@@ -1,8 +1,7 @@
 import React from 'react';
-import { LinkWindow } from '../../components';
+import { Input, LinkWindow } from '../../components';
 import { ContainerGradient, MainContainer } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';
-import Input from '../teleport/components/input';
 import Select from '../teleport/components/select';
 import CodeSnipet from './ipfsComponents/codeSnipet';
 import {
