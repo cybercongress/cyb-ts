@@ -8,6 +8,7 @@ import rehypeParse from 'rehype-parse';
 import rehypeStringify from 'rehype-stringify';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
+import PDF from '../../../components/PDF/PDF';
 
 // const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -89,17 +90,15 @@ function ContentTab({
               width: '100%',
             }}
           >
-            <Iframe
+            <PDF url={`${gatewayUrl}/ipfs/${cid}`} />
+            {/* <Iframe
               width="100%"
               height="100%"
               // loading={<Dots />}
               id="iframeCid"
               className="iframe-SearchItem"
               src={`${gatewayUrl}/ipfs/${cid}`}
-              style={{
-                backgroundColor: '#fff',
-              }}
-            />
+            /> */}
           </div>
           {/* </Pane> */}
           {/* <Dots big /> */}
