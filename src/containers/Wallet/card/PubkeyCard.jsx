@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Pane, Input, Button } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import Web3Utils from 'web3-utils';
 import { connect } from 'react-redux';
 import { setDefaultAccount } from '../../../redux/actions/pocket';
 import {
@@ -9,29 +8,21 @@ import {
   ContainerAddressInfo,
   Address,
   ButtonIcon,
-  FormatNumber,
 } from '../components';
 import {
-  Copy,
   Dots,
-  Tooltip,
   LinkWindow,
   NumberCurrency,
-  ValueImg,
   DenomArr,
 } from '../../../components';
 import {
   trimString,
-  formatCurrency,
   formatNumber,
   exponentialToDecimal,
-  formatCurrencyNumber,
-  getDecimal,
   getDisplayAmount,
 } from '../../../utils/utils';
 import { decFnc } from '../../teleport/utils';
-import { getDrop, getBalance, getTotalEUL } from '../../../utils/search/utils';
-import { COSMOS, CYBER, INFINITY } from '../../../utils/config';
+import { COSMOS, CYBER } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
 import coinDecimalsConfig from '../../../utils/configToken';
@@ -40,14 +31,15 @@ import { AppContext } from '../../../context';
 import editOutline from '../../../image/create-outline.svg';
 import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import deleteIcon from '../../../image/trash-outline.svg';
-import cyb from '../../../image/cybTrue.svg';
-import { routes } from "../../../routes";
+import { routes } from '../../../routes';
 
-const RowBalance = ({ children, ...props }) => (
-  <Pane display="flex" justifyContent="space-between" width="100%" {...props}>
-    {children}
-  </Pane>
-);
+function RowBalance({ children, ...props }) {
+  return (
+    <Pane display="flex" justifyContent="space-between" width="100%" {...props}>
+      {children}
+    </Pane>
+  );
+}
 
 export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
@@ -66,13 +58,13 @@ export const reduceAmounToken = (amount, token, reverse) => {
   return amountReduce;
 };
 
-const DetailsBalance = ({
+function DetailsBalance({
   total,
   divisor = COSMOS.DIVISOR_ATOM,
   currency = CYBER.DENOM_CYBER,
   address,
   ...props
-}) => {
+}) {
   return (
     <Pane width="100%" {...props}>
       <RowBalance>
@@ -144,9 +136,9 @@ const DetailsBalance = ({
       </RowBalance>
     </Pane>
   );
-};
+}
 
-const FormatNumberTokens = ({ text, value, ...props }) => {
+function FormatNumberTokens({ text, value, ...props }) {
   const { traseDenom } = useContext(AppContext);
   const { coinDecimals } = traseDenom(text);
   // console.log(text, value);
@@ -169,14 +161,14 @@ const FormatNumberTokens = ({ text, value, ...props }) => {
       {text && <DenomArr denomValue={text} onlyImg />}
     </Pane>
   );
-};
+}
 
-const DetailsBalanceTokens = ({
+function DetailsBalanceTokens({
   total,
   currency = CYBER.DENOM_CYBER,
   address,
   ...props
-}) => {
+}) {
   return (
     <Pane width="100%" {...props}>
       <RowBalance marginBottom={3}>
@@ -193,15 +185,15 @@ const DetailsBalanceTokens = ({
       </RowBalance>
     </Pane>
   );
-};
+}
 
-const CosmosAddressInfo = ({
+function CosmosAddressInfo({
   address,
   loading,
   totalCosmos,
   onClickDeleteAddress,
   network,
-}) => {
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -253,9 +245,9 @@ const CosmosAddressInfo = ({
       </Pane>
     </ContainerAddressInfo>
   );
-};
+}
 
-const CYBNetworkInfo = ({
+function CYBNetworkInfo({
   address,
   onClickDeleteAddress,
   loading,
@@ -265,7 +257,7 @@ const CYBNetworkInfo = ({
   loadingGift,
   network,
   ...props
-}) => {
+}) {
   return (
     <ContainerAddressInfo>
       <Address
@@ -333,15 +325,9 @@ const CYBNetworkInfo = ({
       </Pane>
     </ContainerAddressInfo>
   );
-};
+}
 
-const BalanceToken = ({
-  onClickOpen,
-  open,
-  balanceToken,
-  currency,
-  address,
-}) => {
+function BalanceToken({ onClickOpen, open, balanceToken, currency, address }) {
   return (
     <>
       {' '}
@@ -372,9 +358,9 @@ const BalanceToken = ({
       )}
     </>
   );
-};
+}
 
-const EULnetworkInfo = ({
+function EULnetworkInfo({
   totalCyber,
   address,
   loading,
@@ -383,7 +369,7 @@ const EULnetworkInfo = ({
   network,
   balanceToken,
   ...props
-}) => {
+}) {
   return (
     <ContainerAddressInfo>
       <Address
@@ -459,9 +445,9 @@ const EULnetworkInfo = ({
       </Pane>
     </ContainerAddressInfo>
   );
-};
+}
 
-const CyberAddressInfo = ({
+function CyberAddressInfo({
   address,
   loading,
   loadingGift,
@@ -470,7 +456,7 @@ const CyberAddressInfo = ({
   onClickDeleteAddress,
   network,
   balanceToken,
-}) => {
+}) {
   // const [openCyber, setOpenCyber] = useState(false);
   const [openEul, setOpenEul] = useState(false);
   const [openmilliampere, setOpenmilliampere] = useState(false);
@@ -516,15 +502,15 @@ const CyberAddressInfo = ({
       /> */}
     </>
   );
-};
+}
 
-const EthAddressInfo = ({
+function EthAddressInfo({
   address,
   web3,
   contractToken,
   onClickDeleteAddress,
   network,
-}) => {
+}) {
   const { eth, gol } = useGetBalanceEth(address, contractToken);
 
   return (
@@ -548,7 +534,7 @@ const EthAddressInfo = ({
       </Pane>
     </ContainerAddressInfo>
   );
-};
+}
 
 function PubkeyCard({
   pocket,
@@ -576,22 +562,6 @@ function PubkeyCard({
     setName(nameCard);
     setInputEditName(nameCard);
   }, [nameCard, pocket]);
-
-  useEffect(() => {
-    const feachData = async () => {
-      if (pocket.cosmos) {
-        const dataDrop = await getDrop(pocket.cosmos.bech32);
-        if (dataDrop !== 0) {
-          setGift(dataDrop.gift);
-        }
-        setLoading(false);
-      } else {
-        setLoading(false);
-        setGift(0);
-      }
-    };
-    feachData();
-  }, [pocket]);
 
   const onClickEditNameAccount = async () => {
     if (inputEditName === nameCard) {
