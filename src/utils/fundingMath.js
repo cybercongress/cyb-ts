@@ -14,7 +14,7 @@ const {
   DISCOUNT_TILT_ANGLE,
 } = TAKEOFF;
 
-const getShares = atoms => {
+const getShares = (atoms) => {
   const shares =
     GETSHARES_A +
     GETSHARES_B * atoms -
@@ -23,12 +23,12 @@ const getShares = atoms => {
   return shares;
 };
 
-const getDiscountPlot = atoms => {
+const getDiscountPlot = (atoms) => {
   const discount = DISCOUNT_TG * atoms + DISCOUNT_TILT_ANGLE;
   return discount;
 };
 
-const getDataPlot = tokens => {
+const getDataPlot = (tokens) => {
   let data = {
     y: [],
     x: [],
@@ -61,26 +61,23 @@ const getEstimation = (x0, value) => {
   return estimation;
 };
 
-const funcDiscount = atom => {
+const funcDiscount = (atom) => {
   const discount = -(5 / 10 ** 5) * atom + 30;
   return discount;
 };
 
-const funcDiscountRevers = atom => {
+const funcDiscountRevers = (atom) => {
   const discount = (5 / 10 ** 5) * atom;
   return discount;
 };
 
-const cybWon = atom => {
+const cybWon = (atom) => {
   const won =
-    CYBWON_A * Math.pow(atom, 3) +
-    CYBWON_B * Math.pow(atom, 2) +
-    CYBWON_C * atom +
-    CYBWON_D;
+    CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D;
   return won;
 };
 
-const getDisciplinesAllocation = atom => {
+const getDisciplinesAllocation = (atom) => {
   const allocation =
     1.2 +
     (CYBWON_A * atom ** 3 + CYBWON_B * atom ** 2 + CYBWON_C * atom + CYBWON_D) *
@@ -94,7 +91,7 @@ const getRewards = (price, discount, atoms, amount) => {
   return rewards;
 };
 
-const getGroupAddress = data => {
+const getGroupAddress = (data) => {
   const groupsAddress = data.reverse().reduce((obj, item) => {
     obj[item.from] = obj[item.from] || [];
     obj[item.from].push({
@@ -120,11 +117,11 @@ const getGroupAddress = data => {
     {}
   );
 
-  Object.keys(groups).forEach(key => {
+  Object.keys(groups).forEach((key) => {
     let sum = 0;
     let sumEstimation = 0;
     let eul = 0;
-    groups[key].address.forEach(addressKey => {
+    groups[key].address.forEach((addressKey) => {
       sum += addressKey.amount;
       sumEstimation += addressKey.cybEstimation;
       eul += addressKey.estimationEUL;

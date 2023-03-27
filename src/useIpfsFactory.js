@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { isMobileTablet } from './utils/utils';
 import { create } from 'ipfs-core';
 
-const DetectRTC = require('detectrtc');
+import DetectRTC from 'detectrtc';
+import { isMobileTablet } from './utils/utils';
 
 let ipfs = null;
 

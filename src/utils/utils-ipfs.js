@@ -1,9 +1,8 @@
 import all from 'it-all';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+import FileType from 'file-type';
 import db from '../db';
 import { getPinsCid, getIpfsGatway } from './search/utils';
-
-const FileType = require('file-type');
 
 const FILE_SIZE_DOWNLOAD = 15 * 10 ** 6;
 

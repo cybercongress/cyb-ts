@@ -14,10 +14,10 @@
  *  limitations under the License.
  ******************************************************************************* */
 import { GasPrice } from '@cosmjs/stargate';
-import { COSMOS, CYBER, LEDGER } from './config';
 
-const math = require("@cosmjs/math");
-const proto_signing = require("@cosmjs/proto-signing");
+import { Uint53 } from '@cosmjs/math';
+import { coins } from '@cosmjs/proto-signing';
+import { COSMOS, CYBER, LEDGER } from './config';
 
 const { DENOM_COSMOS, DEFAULT_GAS, DEFAULT_GAS_PRICE } = COSMOS;
 const { DENOM_CYBER } = CYBER;
@@ -665,19 +665,21 @@ function createRedelegateCyber(
 }
 
 function calculateFee(gasLimit, gasPrice) {
+  if (!gasLimit) {
+    return {
+      amount: 0,
+      gas: 0,
+    };
+  }
+  const processedGasPrice =
+    typeof gasPrice === 'string' ? GasPrice.fromString(gasPrice) : gasPrice;
 
-  if (!gasLimit) return {
-    amount: 0,
-    gas: 0,
-};
-  const processedGasPrice = typeof gasPrice === "string" ? GasPrice.fromString(gasPrice) : gasPrice;
-  
   const { denom, amount: gasPriceAmount } = processedGasPrice;
 
-  const amount = gasPriceAmount.multiply(new math.Uint53(gasLimit)).toString();
+  const amount = gasPriceAmount.multiply(new Uint53(gasLimit)).toString();
   return {
-      amount: proto_signing.coins(amount, denom),
-      gas: gasLimit.toString(),
+    amount: coins(amount, denom),
+    gas: gasLimit.toString(),
   };
 }
 

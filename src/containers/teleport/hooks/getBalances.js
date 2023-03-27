@@ -73,9 +73,8 @@ function getBalances(addressActive, updateAddress) {
           getAccount.result.value.base_vesting_account.original_vesting
         ) {
           const { vesting_periods: vestingPeriods } = getAccount.result.value;
-          const {
-            original_vesting: originalVestingAmount,
-          } = getAccount.result.value.base_vesting_account;
+          const { original_vesting: originalVestingAmount } =
+            getAccount.result.value.base_vesting_account;
           const { start_time: startTime } = getAccount.result.value;
           const reduceOriginalVestingAmount = reduceBalances(
             originalVestingAmount

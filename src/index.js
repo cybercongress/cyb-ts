@@ -1,10 +1,8 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-// import React, { useEffect, useState, useContext, useMemo } from 'react';
 import React from 'react';
-import ReactDOM from 'react-dom';
+
 import { createRoot } from 'react-dom/client';
-import { AppContainer } from 'react-hot-loader';
 import ApolloClient from 'apollo-client';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -24,15 +22,6 @@ import './style/main.css';
 // import './style/index.scss';
 import './image/favicon.ico';
 import './image/logo-bulb.svg';
-
-const getHeaders = (token) => {
-  const headers = {
-    'content-type': 'application/json',
-    'x-hasura-admin-secret': 'token',
-    authorization: token ? `Bearer ${token}` : '',
-  };
-  return headers;
-};
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -83,29 +72,16 @@ const queryClient = new QueryClient({
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-const render = () => {
-  root.render(
-    <>
-      <Provider store={store}>
-        <ApolloProvider client={client}>
-          <AppContextProvider>
-            <QueryClientProvider client={queryClient}>
-              <AppContainer>
-                <AppRouter />
-              </AppContainer>
-              <ReactQueryDevtools />
-            </QueryClientProvider>
-          </AppContextProvider>
-        </ApolloProvider>
-      </Provider>
-    </>
-  );
-};
-
-render(AppRouter);
-
-if (module.hot) {
-  module.hot.accept('./router', () => {
-    render(AppRouter);
-  });
-}
+root.render(
+  <Provider store={store}>
+    <ApolloProvider client={client}>
+      <AppContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <AppRouter />
+          <ReactQueryDevtools />
+        </QueryClientProvider>
+      </AppContextProvider>
+    </ApolloProvider>
+  </Provider>
+);
+// };

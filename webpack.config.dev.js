@@ -4,8 +4,8 @@ const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
-  devtool: 'hidden-source-map',
-  // devtool: 'inline-source-map',
+  // devtool: 'hidden-source-map',
+  devtool: 'inline-source-map',
   devServer: {
     https: false,
     host: 'localhost',

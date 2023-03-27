@@ -52,7 +52,6 @@ class BootloaderPlugin {
   }
 
   processHtmlAsset(publicPath, src, assets, excludeFiles, result) {
-
     const scriptName = publicPath ? src.replace(publicPath, '') : src;
     if (excludeFiles.has(scriptName)) {
       return;
@@ -180,9 +179,9 @@ class BootloaderPlugin {
           });
           // removing bootloader files from assets so webpack will not emit them
           entrypoint.getFiles().forEach((filename) => {
-              // console.log(filename);
-              delete compilation.assets[filename];
-            });
+            // console.log(filename);
+            delete compilation.assets[filename];
+          });
         }
       });
     });

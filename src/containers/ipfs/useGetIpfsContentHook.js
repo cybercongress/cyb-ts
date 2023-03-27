@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import all from 'it-all';
+import isSvg from 'is-svg';
+import FileType from 'file-type';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
 import db from '../../db';
 import { getPinsCid } from '../../utils/search/utils';
 import { getContentByCid } from '../../utils/utils-ipfs';
-
-const isSvg = require('is-svg');
-
-const FileType = require('file-type');
 
 export const getTypeContent = async (dataCid, cid) => {
   const response = {

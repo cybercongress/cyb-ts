@@ -3,6 +3,32 @@ import BigNumber from 'bignumber.js';
 import { CYBER } from '../../utils/config';
 import { reduceBalances } from '../../utils/utils';
 import { getAvailable } from '../../utils/search/utils';
+
+// const getPoolPrice = (data) => {
+//   const copyObj = { ...data };
+//   Object.keys(copyObj).forEach((key) => {
+//     const element = copyObj[key];
+//     if (element.balances) {
+//       const coinsPair = element.reserve_coin_denoms;
+//       const { balances } = element;
+//       let price = 0;
+//       if (coinsPair[0] === 'hydrogen' || coinsPair[1] === 'hydrogen') {
+//         if (coinsPair[0] === 'hydrogen') {
+//           price = calculatePrice(coinsPair.reverse(), balances);
+//         } else {
+//           price = calculatePrice(coinsPair, balances);
+//         }
+//       } else {
+//         price = calculatePrice(coinsPair, balances);
+//       }
+
+//       element.price = price;
+//     }
+//   });
+//   return copyObj;
+// };
+
+import { getCoinDecimals } from '../teleport/utils';
 // import { getCoinDecimals } from '../teleport/utils';
 
 // function poolApiCall() {
@@ -51,32 +77,6 @@ const getPoolsBalance = async (data, client) => {
   }
   return copyObj;
 };
-
-// const getPoolPrice = (data) => {
-//   const copyObj = { ...data };
-//   Object.keys(copyObj).forEach((key) => {
-//     const element = copyObj[key];
-//     if (element.balances) {
-//       const coinsPair = element.reserve_coin_denoms;
-//       const { balances } = element;
-//       let price = 0;
-//       if (coinsPair[0] === 'hydrogen' || coinsPair[1] === 'hydrogen') {
-//         if (coinsPair[0] === 'hydrogen') {
-//           price = calculatePrice(coinsPair.reverse(), balances);
-//         } else {
-//           price = calculatePrice(coinsPair, balances);
-//         }
-//       } else {
-//         price = calculatePrice(coinsPair, balances);
-//       }
-
-//       element.price = price;
-//     }
-//   });
-//   return copyObj;
-// };
-
-const { getCoinDecimals } = require('../teleport/utils');
 
 const getMarketData = () => {
   try {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
+import { useQuery } from '@tanstack/react-query';
 import { AppContext } from '../../context';
 import {
   reduceBalances,
@@ -9,7 +10,6 @@ import {
 } from '../../utils/utils';
 import { getCoinDecimals } from '../teleport/utils';
 import { CYBER } from '../../utils/config';
-import { useQuery } from '@tanstack/react-query';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,

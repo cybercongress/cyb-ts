@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { setTypeDevice } from './redux/actions/settings';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
@@ -64,7 +65,6 @@ import defaultNetworks from './utils/defaultNetworks';
 
 import { TIME_START, CYBER } from './utils/config';
 import ipfsSettings from './containers/ipfsSettings';
-import { Link } from 'react-router-dom';
 
 export const history = createBrowserHistory({});
 
@@ -93,7 +93,6 @@ const oldLinks = {
   halloffameJailed: '/halloffame/jailed',
   mint: '/mint',
 };
-
 function AppRouter() {
   return (
     <Router history={history}>

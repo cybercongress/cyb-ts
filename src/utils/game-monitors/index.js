@@ -95,16 +95,8 @@ export const getRewards = async (address) => {
 export const getRelevance = async (dataRelevance, dataQ) => {
   let relevance = 0;
   const arrCof = [
-    1,
-    1.5,
-    1.83333333,
-    2.08333333,
-    2.28333333,
-    2.45,
-    2.59285714,
-    2.71785714,
-    2.82896825,
-    2.92896825,
+    1, 1.5, 1.83333333, 2.08333333, 2.28333333, 2.45, 2.59285714, 2.71785714,
+    2.82896825, 2.92896825,
   ];
   const rankAggr = dataRelevance.relevance_aggregate.aggregate.sum.rank;
 
