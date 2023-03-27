@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { setTypeDevice } from './redux/actions/settings';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
@@ -16,15 +14,11 @@ import TxsDetails from './containers/txs/txsDetails';
 import AccountDetails from './containers/account';
 import ValidatorsDetails from './containers/validator';
 import Ipfs from './containers/ipfs/ipfs';
-import { Dots, Timer } from './components';
-import { initIpfs, setIpfsStatus, setIpfsID } from './redux/actions/ipfs';
-import { setBlock } from './redux/actions/block';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
 import Block from './containers/blok';
 import ParamNetwork from './containers/parameters';
 import TrollBoxx from './containers/trollBox';
-import useIpfsStart from './ipfsHook';
 import ForceGraph from './containers/forceGraph/forceGraph';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
 import TestKeplr from './containers/testKeplre';
@@ -60,32 +54,10 @@ import {
 
 import Sigma from './containers/sigma';
 
-import useIpfsFactory from './useIpfsFactory';
-import defaultNetworks from './utils/defaultNetworks';
-
-import { TIME_START, CYBER } from './utils/config';
 import ipfsSettings from './containers/ipfsSettings';
+import { routes } from './routes';
 
 export const history = createBrowserHistory({});
-
-export const routes = {
-  home: {
-    path: '/',
-  },
-  senateProposal: {
-    path: '/senate/:proposalId',
-    getLink: (proposalId) => `/senate/${proposalId}`,
-  },
-  sphere: {
-    path: '/sphere',
-  },
-  sphereJailed: {
-    path: '/sphere/jailed',
-  },
-  hfr: {
-    path: '/hfr',
-  },
-};
 
 // backward compatibility
 const oldLinks = {
@@ -93,10 +65,19 @@ const oldLinks = {
   halloffameJailed: '/halloffame/jailed',
   mint: '/mint',
 };
+
+const pageNotExist = () => (
+  <div>
+    page not exists
+    <br />
+    <Link to={routes.home.path}>Home</Link>
+  </div>
+);
+
 function AppRouter() {
   return (
     <Router history={history}>
-      <Route path={routes.home.path} component={() => <App />} />
+      <Route path={routes.home.path} component={<App />} />
       <Switch>
         <Route path="/" exact component={Temple} />
         <Route path="/robot" component={Wallet} />
@@ -173,19 +154,7 @@ function AppRouter() {
         <Route path="/nebula" component={Nebula} />
         {/* <Route path="/" component={Temple} /> */}
 
-        <Route
-          path="*"
-          component={() => {
-            return (
-              // TODO: maybe style
-              <div>
-                page not exists
-                <br />
-                <Link to={routes.home.path}>Home</Link>
-              </div>
-            );
-          }}
-        />
+        <Route path="*" component={pageNotExist} />
       </Switch>
     </Router>
   );

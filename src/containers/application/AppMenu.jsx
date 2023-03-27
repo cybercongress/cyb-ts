@@ -17,7 +17,7 @@ import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
 import zhdun from '../../image/temple/zhdun.png';
-import { routes } from '../../router';
+import { routes } from "../../routes";
 
 const itemsMenu = (address) => {
   let linkLog = '/robot';

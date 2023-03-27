@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { TabBtn } from '../../components';
-import { routes } from '../../router';
+import { routes } from "../../routes";
 
 function TabBtnList({ slotsData = 0, selected }) {
   return (
