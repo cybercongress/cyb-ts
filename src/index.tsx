@@ -1,6 +1,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import React from 'react';
+import { OperationDefinitionNode } from 'graphql';
 
 import { createRoot } from 'react-dom/client';
 import ApolloClient from 'apollo-client';
@@ -19,7 +20,6 @@ import store from './redux/store';
 import AppContextProvider from './context';
 
 import './style/main.css';
-// import './style/index.scss';
 import './image/favicon.ico';
 import './image/logo-bulb.svg';
 
@@ -36,15 +36,13 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
   },
-  headers: {
-    'content-type': 'application/json',
-    authorization: '',
-  },
 });
 
 const terminatingLink = split(
   ({ query }) => {
-    const { kind, operation } = getMainDefinition(query);
+    const { kind, operation } = getMainDefinition(
+      query
+    ) as OperationDefinitionNode;
     return kind === 'OperationDefinition' && operation === 'subscription';
   },
   wsLink,

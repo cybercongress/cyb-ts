@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux';
 import ipfsReducer from './ipfs';
 import golReducer from './gol';
 import blockReducer from './block';
@@ -8,7 +7,7 @@ import queryReducer from './query';
 import settingsReducer from './settings';
 import pocketReducer from './pocket';
 
-const rootReducer = combineReducers({
+const rootReducer = {
   ipfs: ipfsReducer,
   gol: golReducer,
   block: blockReducer,
@@ -17,6 +16,6 @@ const rootReducer = combineReducers({
   query: queryReducer,
   settings: settingsReducer,
   pocket: pocketReducer,
-});
+};
 
 export default rootReducer;

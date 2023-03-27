@@ -72,7 +72,8 @@
         ]
       }
     ],
-    "react/jsx-filename-extension": "off"
+    "react/jsx-filename-extension": "off",
+    "import/no-unused-modules": [1, {"unusedExports": true}]
   },
   "settings": {
     "import/resolver": {
