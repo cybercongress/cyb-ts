@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { setTypeDevice } from './redux/actions/settings';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';

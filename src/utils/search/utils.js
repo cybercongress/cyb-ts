@@ -3,10 +3,15 @@ import { DAGNode, util as DAGUtil } from 'ipld-dag-pb';
 import all from 'it-all';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
+import isSvg from 'is-svg';
+import Unixfs from 'ipfs-unixfs';
+import FileType from 'file-type';
 import * as config from '../config';
 
 import db from '../../db';
 import { getContentByCid } from '../utils-ipfs';
+
+// const IPFS = require('ipfs-api');
 
 const {
   CYBER_NODE_URL_API,
@@ -18,12 +23,6 @@ const {
 const { PATTERN_IPFS_HASH } = config;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
-
-// const IPFS = require('ipfs-api');
-const isSvg = require('is-svg');
-
-const Unixfs = require('ipfs-unixfs');
-const FileType = require('file-type');
 
 let ipfsApi;
 

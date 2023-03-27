@@ -24,10 +24,14 @@ const resolveWeb3 = async (resolve) => {
 const waitForWeb3 = () =>
   new Promise((resolve) => {
     // If our web3js already exists, resolve immediately
-    if (web3js) return resolve(web3js);
+    if (web3js) {
+      return resolve(web3js);
+    }
 
     // If an instance of web3 exist in window, resolve immediately
-    if (window.web3 || window.ethereum) return resolveWeb3(resolve);
+    if (window.web3 || window.ethereum) {
+      return resolveWeb3(resolve);
+    }
 
     // If window is already full loaded, resolve immediately
     if (window.document.readyState === 'complete') {

@@ -1,9 +1,11 @@
 import React from 'react';
 
-const Test = () => (
-  <div>
-    <h2>Test</h2>
-  </div>
-);
+function Test() {
+  return (
+    <div>
+      <h2>Test</h2>
+    </div>
+  );
+}
 
 export default Test;

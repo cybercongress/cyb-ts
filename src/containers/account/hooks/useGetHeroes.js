@@ -31,9 +31,8 @@ function useGetHeroes(address, updateAddress) {
           );
         }
 
-        const delegatorUnbondingDelegations = await jsCyber.delegatorUnbondingDelegations(
-          address
-        );
+        const delegatorUnbondingDelegations =
+          await jsCyber.delegatorUnbondingDelegations(address);
         const { unbondingResponses } = delegatorUnbondingDelegations;
         if (unbondingResponses.length > 0) {
           unbondingResponses.forEach((itemUnb) => {

@@ -62,9 +62,8 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
 
       if (jsCyber && jsCyber !== null && addressActive !== null) {
         try {
-          const queryResultsourceRoutedEnergy = await jsCyber.sourceRoutedEnergy(
-            addressActive
-          );
+          const queryResultsourceRoutedEnergy =
+            await jsCyber.sourceRoutedEnergy(addressActive);
           if (queryResultsourceRoutedEnergy.value) {
             const { value } = queryResultsourceRoutedEnergy;
             const sourceRoutedEnergy = getCalculationBalance(value);
@@ -126,9 +125,8 @@ function useGetSourceRoutes(addressActive, updateAddressFunc) {
       setDestinationEnergy(initValue);
       if (jsCyber && jsCyber !== null && addressActive !== null) {
         try {
-          const queryResultdestinationRoutedEnergy = await jsCyber.destinationRoutedEnergy(
-            addressActive
-          );
+          const queryResultdestinationRoutedEnergy =
+            await jsCyber.destinationRoutedEnergy(addressActive);
           if (queryResultdestinationRoutedEnergy.value) {
             const { value } = queryResultdestinationRoutedEnergy;
             const destinationRoutedEnergy = getCalculationBalance(value);

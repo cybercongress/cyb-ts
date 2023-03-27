@@ -13,7 +13,7 @@ if (process.env.IPFS_DEPLOY) {
 
 module.exports = {
   devtool: false,
-  entry: ['react-hot-loader/patch', path.join(__dirname, 'src', 'index.js')],
+  entry: [path.join(__dirname, 'src', 'index.js')],
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
@@ -37,6 +37,7 @@ module.exports = {
     },
     extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
     alias: {
+      // 'react-dom': '@hot-loader/react-dom',
       'multicodec/src/base-table': path.dirname(
         require.resolve('multicodec/src/base-table.json')
       ),
