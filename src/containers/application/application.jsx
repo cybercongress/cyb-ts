@@ -28,7 +28,7 @@ import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
-import useNewIpfs from '../../useNewIpfs';
+import useStartIpfs from '../../useStartIpfs';
 import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
@@ -56,7 +56,7 @@ function App({
   const { marketData, dataTotal } = useGetMarketData();
   const { isMobile } = useIsMobileTablet();
   // const dataIpfsStart = useIpfsStart();
-  const { ipfs, isIpfsReady, ipfsInitError, isIpfsPending } = useNewIpfs();
+  const { ipfs, isIpfsReady, ipfsInitError, isIpfsPending } = useStartIpfs();
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();

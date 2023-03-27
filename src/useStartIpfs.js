@@ -22,7 +22,7 @@ const getOpts = () => {
   return { ipfsOpts };
 };
 
-function useNewIpfs() {
+function useStartIpfs() {
   const [isIpfsReady, setIpfsReady] = useState(Boolean(ipfs));
   const [ipfsInitError, setIpfsInitError] = useState(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
@@ -68,4 +68,4 @@ function useNewIpfs() {
   return { ipfs, isIpfsReady, ipfsInitError, isIpfsPending };
 }
 
-export default useNewIpfs;
+export default useStartIpfs;
