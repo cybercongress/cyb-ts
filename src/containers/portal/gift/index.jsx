@@ -1,17 +1,9 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { useLocation, useHistory } from 'react-router-dom';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {
   useGetActivePassport,
-  CONTRACT_ADDRESS_GIFT,
   getStateGift,
   getConfigGift,
   parseRowLog,
@@ -21,21 +13,17 @@ import ActionBarPortalGift from './ActionBarPortalGift';
 import {
   CurrentGift,
   MainContainer,
-  ScrollableTabs,
   AboutGift,
   Stars,
   MoonAnimation,
 } from '../components';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
-import TabsList from './tabsList';
 import Carousel from './carousel1/Carousel';
-import { STEP_INFO } from './utils';
+import STEP_INFO from './utils';
 import Info from './Info';
-// import useCheckStatusTx from '../../../hooks/useCheckTxs';
-
-const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
-const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
+import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
+import portalAmbient from '../../../sounds/portalAmbient112.mp3';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -81,9 +69,7 @@ const itemsStep = [
 ];
 
 function PortalGift({ defaultAccount, node, mobile }) {
-  const { keplr, jsCyber } = useContext(AppContext);
-  const location = useLocation();
-  const history = useHistory();
+  const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [updateFunc, setUpdateFunc] = useState(0);
   const [currentBonus, setCurrentBonus] = useState(initStateBonus);
@@ -95,14 +81,8 @@ function PortalGift({ defaultAccount, node, mobile }) {
   );
   const [currentGift, setCurrentGift] = useState(null);
   const [isClaimed, setIsClaimed] = useState(null);
-  const {
-    totalGift,
-    totalGiftAmount,
-    totalGiftClaimed,
-    loadingGift,
-    giftData,
-    setLoadingGift,
-  } = useCheckGift(citizenship, addressActive, updateFunc);
+  const { totalGift, totalGiftClaimed, loadingGift, giftData, setLoadingGift } =
+    useCheckGift(citizenship, addressActive, updateFunc);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);
   const [amountClaims, setAmountCaims] = useState(0);
 
@@ -113,40 +93,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
       stopPortalAmbient();
     };
   }, []);
-
-  // console.log('totalGift', totalGift)
-
-  // console.log('<<<<-------------------------');
-  // console.log('totalGiftClaimed', totalGiftClaimed)
-  // console.log('-------------------------')
-  // console.log('totalGiftAmount', totalGiftAmount)
-  // console.log('<<<<-------------------------');
-
-  // useEffect(() => {
-  //   const { pathname } = location;
-  //   if (!loading && citizenship !== null) {
-  //     if (appStep === STEP_INFO.STATE_INIT) {
-  //       if (pathname === '/gift/prove') {
-  //         setStepApp(STEP_INFO.STATE_PROVE);
-  //       }
-  //       if (pathname === '/gift/claim') {
-  //         setStepApp(STEP_INFO.STATE_CLAIME);
-  //       }
-  //     } else if (Math.floor(appStep) === STEP_INFO.STATE_PROVE) {
-  //       if (pathname !== '/gift/prove') {
-  //         history.push('/gift/prove');
-  //       }
-  //     } else if (Math.floor(appStep) === STEP_INFO.STATE_CLAIME) {
-  //       if (pathname !== '/gift/claim') {
-  //         history.push('/gift/claim');
-  //       }
-  //     } else if (Math.floor(appStep) === STEP_INFO.STATE_INIT) {
-  //       if (pathname !== '/gift') {
-  //         history.push('/gift');
-  //       }
-  //     }
-  //   }
-  // }, [appStep, location.pathname, loading, citizenship]);
 
   useEffect(() => {
     if (txHash !== null && txHash.status !== 'pending') {
@@ -209,7 +155,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
               status: 'error',
               rawLog: parseRowLog(response.rawLog.toString()),
             }));
-            // setErrorMessage(response.rawLog);
             return;
           }
         }
@@ -304,7 +249,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
   useEffect(() => {
     if (!loadingGift) {
       if (totalGift !== null) {
-        // if (selectedAddress.match(PATTERN_CYBER)) {
         const tempGift = [];
         Object.keys(totalGift).forEach((key) => {
           if (!totalGift[key].isClaimed) {
@@ -315,11 +259,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
         if (Object.keys(tempGift).length > 0) {
           setCurrentGift(tempGift);
         }
-        // } else if (
-        //   Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
-        // ) {
-        //   setCurrentGift([totalGift[selectedAddress]]);
-        // }
       } else {
         setCurrentGift(null);
       }
@@ -368,23 +307,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
   const updateTxHash = (data) => {
     setTxHash(data);
   };
-
-  // const useSelectedGiftData = useMemo(() => {
-  //   if (selectedAddress !== null) {
-  //     if (selectedAddress.match(PATTERN_CYBER) && totalGiftAmount !== null) {
-  //       return { address: selectedAddress, ...totalGiftAmount };
-  //     }
-
-  //     if (
-  //       totalGift !== null &&
-  //       Object.prototype.hasOwnProperty.call(totalGift, selectedAddress)
-  //     ) {
-  //       return totalGift[selectedAddress];
-  //     }
-  //   }
-
-  //   return null;
-  // }, [selectedAddress, totalGift, totalGiftAmount]);
 
   const useSelectedGiftData = useMemo(() => {
     try {
@@ -458,11 +380,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
     return null;
   }, [giftData, currentBonus, citizenship]);
 
-  // console.log('useSetActiveItem', useSetActiveItem)
-
-  // console.log('citizenship', citizenship);
-  // console.log('selectedAddress', selectedAddress);
-  // console.log('currentGift', currentGift);
   let content;
 
   if (Math.floor(appStep) === STEP_GIFT_INFO) {
@@ -472,7 +389,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
   }
 
   if (Math.floor(appStep) !== STEP_GIFT_INFO) {
-    const { addresses } = citizenship.extension;
     content = (
       <>
         <PasportCitizenship
@@ -504,16 +420,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
             currentBonus={currentBonus}
           />
         )}
-
-        {/* {addresses !== null && (
-          <CurrentGift
-            selectedAddress={selectedAddress}
-            currentBonus={currentBonus}
-            currentGift={useSelectedGiftData}
-            totalGiftAmount={totalGiftAmount}
-            totalGiftClaimed={totalGiftClaimed}
-          />
-        )} */}
       </>
     );
   }
@@ -523,8 +429,6 @@ function PortalGift({ defaultAccount, node, mobile }) {
       <MainContainer>
         <Stars />
         {!mobile && <MoonAnimation />}
-        {/* <ScrollableTabs items={items} active={active} setStep={setActive} /> */}
-        {/* <button onClick={() => checkIsClaim()}>test</button> */}
         {appStep !== null && (
           <Info
             stepCurrent={appStep}
@@ -538,14 +442,9 @@ function PortalGift({ defaultAccount, node, mobile }) {
           setStep={setStepApp}
           disableNext={useDisableNext}
         />
-        {/* <TabsList active={active} setStep={setActive} /> */}
         {content}
-        {/* {currentGift !== null && (
-
-            )} */}
       </MainContainer>
       <ActionBarPortalGift
-        // updateFunc={() => setUpdateFunc((item) => item + 1)}
         addressActive={addressActive}
         citizenship={citizenship}
         updateTxHash={updateTxHash}

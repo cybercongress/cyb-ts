@@ -1,10 +1,8 @@
 import { useEffect, useState, useContext } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { AppContext } from '../../../context';
 import { CYBER } from '../../../utils/config';
-import { reduceBalances } from '../../../utils/utils';
 import useGetSlots from '../../mint/useGetSlots';
-import { reduceAmount } from './utils';
 
 const { DENOM_CYBER, DENOM_LIQUID_TOKEN } = CYBER;
 
@@ -38,7 +36,6 @@ const balanceFetcher = (options, client) => {
 
 const useQueryGetAllBalances = (options) => {
   const { jsCyber } = useContext(AppContext);
-  // const queryClient = useQueryClient();
   const { address } = options;
 
   const { data } = useQuery(
@@ -48,13 +45,6 @@ const useQueryGetAllBalances = (options) => {
       enabled: Boolean(jsCyber && address),
       retry: 1,
       refetchOnWindowFocus: false,
-      // initialData: () => {
-      //   return queryClient
-      //     .getQueryData('getAllBalance')
-      //     ?.find((d) => d.id === address);
-      // },
-      // initialDataUpdatedAt: () =>
-      //   queryClient.getQueryState('getAllBalance')?.dataUpdatedAt,
     }
   );
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Pane, Icon } from '@cybercongress/gravity';
 import Tooltip from '../tooltip/tooltip';
 import { ContainerGradientText } from '../../containers/portal/components';
@@ -13,26 +13,6 @@ export function ContainerCard({ children, col, styles }) {
       className="container-statistics"
     >
       {children}
-    </div>
-  );
-}
-
-export function Indicators({ title, value, tooltipValue, positionTooltip }) {
-  return (
-    <div className="contaiter-indicator">
-      <span className="indicator-title">{value}</span>
-      <div className="indicator-value">
-        {/* <span> */}
-        {title}
-        {/* </span> */}
-
-        {tooltipValue && (
-          <Tooltip position={positionTooltip} content={tooltipValue}>
-            <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-          </Tooltip>
-        )}
-      </div>
-      {/* <div className='dots' /> */}
     </div>
   );
 }
@@ -93,23 +73,5 @@ export function CardStatisics({
         </div>
       )}
     </ContainerGradientText>
-  );
-}
-
-export function CardArrow({ title, value, win }) {
-  return (
-    <div className="container-card-arrow">
-      <div className={`card-title ${win === 'eth' ? 'eth' : 'atom'}`}>
-        {value}
-        <div
-          className={`card-arrow ${
-            win === 'eth'
-              ? 'card-arrow-transfonm-eth'
-              : 'card-arrow-transfonm-atom'
-          }`}
-        />
-      </div>
-      <div className="card-value">{title}</div>
-    </div>
   );
 }

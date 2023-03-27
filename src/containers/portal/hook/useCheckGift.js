@@ -4,11 +4,6 @@ import { useEffect, useState, useCallback, useContext } from 'react';
 import { AppContext } from '../../../context';
 import { checkGift, getClaimedAmount, getIsClaimed } from '../utils';
 
-const initValueGiftAmount = {
-  details: {},
-  amount: 0,
-};
-
 function useCheckGift(citizenship, addressActive, updateFunc) {
   const { jsCyber } = useContext(AppContext);
   const [totalGift, setTotalGift] = useState(null);
@@ -181,7 +176,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     if (citizenship !== null) {
       const { addresses } = citizenship.extension;
       if (addresses !== null) {
-        for (let index = 0; index < addresses.length; index++) {
+        for (let index = 0; index < addresses.length; index + 1) {
           const element = addresses[index];
           if (
             totalGift === null ||

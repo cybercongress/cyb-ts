@@ -6,4 +6,4 @@ const STEP_INFO = {
   STATE_INIT_NULL_BEFORE: 11,
   STATE_INIT_NULL_ACTIVE: 12,
 };
-export { STEP_INFO };
+export default STEP_INFO;

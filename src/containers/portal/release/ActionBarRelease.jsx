@@ -15,7 +15,7 @@ import { Dots } from '../../../components';
 import { ActionBarSteps, BtnGrd } from '../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
-import { STEP_INFO } from './utils';
+import STEP_INFO from './utils';
 
 const { STATE_INIT_NULL_ACTIVE, STATE_INIT_NULL_BEFORE } = STEP_INFO;
 

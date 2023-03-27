@@ -1,6 +1,6 @@
 import React from 'react';
 import { InfoCard } from '../components';
-import { STEP_INFO } from './utils';
+import STEP_INFO from './utils';
 
 const {
   STATE_BEFORE_ACTIVATION,

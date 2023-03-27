@@ -7,11 +7,7 @@ import {
   Input,
   Pane,
   Text,
-  Select,
-  Textarea,
-  FilePicker,
   Battery,
-  Icon,
   IconButton,
 } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -19,17 +15,15 @@ import Tooltip from '../tooltip/tooltip';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
-import { FormatNumber } from '../formatNumber/formatNumber';
 import { LinkWindow } from '../link/link';
 import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
 import ButtonImgText from '../Button/buttonImgText';
-import { IconStatus } from '../governance/governance';
 
 import { i18n } from '../../i18n/en';
 
 import { CYBER, BOND_STATUS } from '../../utils/config';
 
-const { DENOM_CYBER, DENOM_CYBER_G, DIVISOR_CYBER_G } = CYBER;
+const { DENOM_CYBER } = CYBER;
 
 const param = {
   slashing: [
@@ -105,21 +99,23 @@ const toPascalCase = (str) =>
     .map((cht) => cht.charAt(0).toUpperCase() + cht.substr(1).toLowerCase())
     .join('');
 
-export const ActionBarContentText = ({ children, ...props }) => (
-  <Pane
-    display="flex"
-    fontSize="20px"
-    justifyContent="center"
-    alignItems="center"
-    flexGrow={1}
-    marginRight="15px"
-    {...props}
-  >
-    {children}
-  </Pane>
-);
+export function ActionBarContentText({ children, ...props }) {
+  return (
+    <Pane
+      display="flex"
+      fontSize="20px"
+      justifyContent="center"
+      alignItems="center"
+      flexGrow={1}
+      marginRight="15px"
+      {...props}
+    >
+      {children}
+    </Pane>
+  );
+}
 
-export const ButtonIcon = ({
+export function ButtonIcon({
   img,
   active,
   disabled,
@@ -127,173 +123,129 @@ export const ButtonIcon = ({
   placement = 'top',
   styleContainer,
   ...props
-}) => (
-  <Pane style={styleContainer}>
-    <Tooltip placement={placement} tooltip={<Pane>{text}</Pane>}>
-      <button
-        type="button"
-        style={{
-          // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
-          margin: '0 10px',
-          padding: '5px 0',
-        }}
-        className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
-        disabled={disabled}
-        {...props}
-      >
-        <img src={img} alt="img" />
-      </button>
-    </Tooltip>
-  </Pane>
-);
-
-export const JsonTransaction = () => (
-  <ActionBar>
-    <ActionBarContentText>
-      Confirm transaction on your Ledger{' '}
-      <img
-        alt="legder"
-        style={{
-          paddingTop: '8px',
-          marginLeft: '10px',
-          width: '150px',
-          height: '50px',
-        }}
-        src={ledger}
-      />
-    </ActionBarContentText>
-  </ActionBar>
-);
-
-export const TransactionSubmitted = () => (
-  <ActionBar>
-    <ActionBarContentText>
-      Please wait while we confirm the transaction on the blockchain{' '}
-      <Dots big />
-    </ActionBarContentText>
-  </ActionBar>
-);
-
-export const Confirmed = ({ txHash, txHeight, cosmos, onClickBtnCloce }) => (
-  <ActionBar>
-    <ActionBarContentText display="inline">
-      <Pane display="inline">Transaction</Pane>{' '}
-      {cosmos ? (
-        <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
-          {trimString(txHash, 6, 6)}
-        </LinkWindow>
-      ) : (
-        <Link to={`/network/bostrom/tx/${txHash}`}>
-          {trimString(txHash, 6, 6)}
-        </Link>
-      )}{' '}
-      <Pane display="inline">
-        was included in the block <br /> at height{' '}
-        {formatNumber(parseFloat(txHeight))}
-      </Pane>
-    </ActionBarContentText>
-    <Button marginX={10} onClick={onClickBtnCloce}>
-      Fuck Google
-    </Button>
-  </ActionBar>
-);
-
-export const TransactionError = ({ onClickBtn, errorMessage }) => (
-  <ActionBar>
-    <ActionBarContentText display="block">
-      Message Error: {errorMessage}
-    </ActionBarContentText>
-    <Button marginX={10} onClick={onClickBtn}>
-      {T.actionBar.confirmedTX.continue}
-    </Button>
-  </ActionBar>
-);
-
-export const NoResultState = ({ onClickBtn, valueSearchInput }) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <Text fontSize="18px" color="#fff">
-        You are the first one who are searching for{' '}
-        <Text fontSize="18px" color="#fff" fontWeight={600}>
-          {valueSearchInput}
-        </Text>
-      </Text>
-    </ActionBarContentText>
-    <Button onClick={onClickBtn}>Link it using Ledger</Button>
-  </ActionBar>
-);
-
-export const StartState = ({ targetColor, valueSearchInput, onClickBtn }) => (
-  <ActionBar>
-    <Pane
-      position="absolute"
-      bottom={0}
-      left="50%"
-      marginRight="-50%"
-      transform="translate(-50%, -50%)"
-    >
-      <button
-        className="btn-home"
-        type="button"
-        onClick={onClickBtn}
-        style={{
-          backgroundColor: `${targetColor ? '#3ab793' : '#000'}`,
-          color: `${targetColor ? '#fff' : '#3ab793'}`,
-          opacity: `${valueSearchInput.length !== 0 ? 1 : 0}`,
-        }}
-      >
-        {T.actionBar.home.btn}
-      </button>
-
-      <a
-        style={{
-          fontSize: '60px',
-          transition: '0.4s',
-          display: `${valueSearchInput.length === 0 ? 'block' : 'none'}`,
-          opacity: `${valueSearchInput.length === 0 ? 1 : 0}`,
-          position: 'absolute',
-          transform: 'translate(-50%, -50%)',
-          marginRight: '-50%',
-          left: '50%',
-          bottom: '0px',
-          height: '42px',
-        }}
-        href="https://cybercongress.ai"
-        target="_blank"
-      >
-        ~
-      </a>
+}) {
+  return (
+    <Pane style={styleContainer}>
+      <Tooltip placement={placement} tooltip={<Pane>{text}</Pane>}>
+        <button
+          type="button"
+          style={{
+            // boxShadow: active ? '0px 6px 3px -2px #36d6ae' : 'none',
+            margin: '0 10px',
+            padding: '5px 0',
+          }}
+          className={`container-buttonIcon ${active ? 'active-icon' : ''}`}
+          disabled={disabled}
+          {...props}
+        >
+          <img src={img} alt="img" />
+        </button>
+      </Tooltip>
     </Pane>
-  </ActionBar>
-);
+  );
+}
 
-export const ConnectLadger = ({ connectLedger, onClickConnect }) => (
-  <ActionBar>
-    <ActionBarContentText display="inline-flex" flexDirection="column">
-      <div>
-        Connect Ledger, enter pin and open Cosmos app <Dots big />
-      </div>
-      {connectLedger === false && (
-        <Pane fontSize="14px" color="#f00">
-          Cosmos app is not open
+export function JsonTransaction() {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        Confirm transaction on your Ledger{' '}
+        <img
+          alt="legder"
+          style={{
+            paddingTop: '8px',
+            marginLeft: '10px',
+            width: '150px',
+            height: '50px',
+          }}
+          src={ledger}
+        />
+      </ActionBarContentText>
+    </ActionBar>
+  );
+}
+
+export function TransactionSubmitted() {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        Please wait while we confirm the transaction on the blockchain{' '}
+        <Dots big />
+      </ActionBarContentText>
+    </ActionBar>
+  );
+}
+
+export function Confirmed({ txHash, txHeight, cosmos, onClickBtnCloce }) {
+  return (
+    <ActionBar>
+      <ActionBarContentText display="inline">
+        <Pane display="inline">Transaction</Pane>{' '}
+        {cosmos ? (
+          <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
+            {trimString(txHash, 6, 6)}
+          </LinkWindow>
+        ) : (
+          <Link to={`/network/bostrom/tx/${txHash}`}>
+            {trimString(txHash, 6, 6)}
+          </Link>
+        )}{' '}
+        <Pane display="inline">
+          was included in the block <br /> at height{' '}
+          {formatNumber(parseFloat(txHeight))}
         </Pane>
+      </ActionBarContentText>
+      <Button marginX={10} onClick={onClickBtnCloce}>
+        Fuck Google
+      </Button>
+    </ActionBar>
+  );
+}
+
+export function TransactionError({ onClickBtn, errorMessage }) {
+  return (
+    <ActionBar>
+      <ActionBarContentText display="block">
+        Message Error: {errorMessage}
+      </ActionBarContentText>
+      <Button marginX={10} onClick={onClickBtn}>
+        {T.actionBar.confirmedTX.continue}
+      </Button>
+    </ActionBar>
+  );
+}
+
+export function ConnectLadger({ connectLedger, onClickConnect }) {
+  return (
+    <ActionBar>
+      <ActionBarContentText display="inline-flex" flexDirection="column">
+        <div>
+          Connect Ledger, enter pin and open Cosmos app <Dots big />
+        </div>
+        {connectLedger === false && (
+          <Pane fontSize="14px" color="#f00">
+            Cosmos app is not open
+          </Pane>
+        )}
+      </ActionBarContentText>
+      {connectLedger === false && (
+        <Button onClick={onClickConnect}>Connect</Button>
       )}
-    </ActionBarContentText>
-    {connectLedger === false && (
-      <Button onClick={onClickConnect}>Connect</Button>
-    )}
-  </ActionBar>
-);
+    </ActionBar>
+  );
+}
 
-export const CheckAddressInfo = () => (
-  <ActionBar>
-    <ActionBarContentText>
-      {T.actionBar.connectLadger.getDetails} <Dots big />
-    </ActionBarContentText>
-  </ActionBar>
-);
+export function CheckAddressInfo() {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        {T.actionBar.connectLadger.getDetails} <Dots big />
+      </ActionBarContentText>
+    </ActionBar>
+  );
+}
 
-export const StartStageSearchActionBar = ({
+export function StartStageSearchActionBar({
   onClickBtn,
   contentHash,
   onChangeInputContentHash,
@@ -305,7 +257,7 @@ export const StartStageSearchActionBar = ({
   textBtn = 'Cyberlink',
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
-}) => {
+}) {
   return (
     <ActionBar>
       <Pane width="65%" alignItems="flex-end" display="flex">
@@ -387,32 +339,34 @@ export const StartStageSearchActionBar = ({
       </Pane>
     </ActionBar>
   );
-};
+}
 
-export const GovernanceStartStageActionBar = ({
+export function GovernanceStartStageActionBar({
   valueSelect,
   onChangeSelect,
   onClickBtn,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <select
-        style={{ height: 42, width: '60%' }}
-        className="select-green"
-        value={valueSelect}
-        onChange={onChangeSelect}
-      >
-        <option value="textProposal">Text Proposal</option>
-        {/* <option value="communityPool">Community Pool Spend</option>
+}) {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <select
+          style={{ height: 42, width: '60%' }}
+          className="select-green"
+          value={valueSelect}
+          onChange={onChangeSelect}
+        >
+          <option value="textProposal">Text Proposal</option>
+          {/* <option value="communityPool">Community Pool Spend</option>
         <option value="paramChange">Param Change</option>
         <option value="softwareUpgrade">Software Upgrade</option> */}
-      </select>
-    </ActionBarContentText>
-    <Button onClick={onClickBtn}>Propose</Button>
-  </ActionBar>
-);
+        </select>
+      </ActionBarContentText>
+      <Button onClick={onClickBtn}>Propose</Button>
+    </ActionBar>
+  );
+}
 
-export const GovernanceChangeParam = ({
+export function GovernanceChangeParam({
   valueSelect,
   onChangeSelect,
   onClickBtn,
@@ -428,7 +382,7 @@ export const GovernanceChangeParam = ({
   valueDescription,
   valueDeposit,
   onChangeInputDeposit,
-}) => {
+}) {
   const item = [];
   let itemChangeParam = [];
 
@@ -574,9 +528,9 @@ export const GovernanceChangeParam = ({
       </ContainetLedger>
     </ActionBar>
   );
-};
+}
 
-export const GovernanceSoftwareUpgrade = ({
+export function GovernanceSoftwareUpgrade({
   onClickBtn,
   onClickBtnCloce,
   onChangeInputTitle,
@@ -589,7 +543,7 @@ export const GovernanceSoftwareUpgrade = ({
   valueNameUpgrade,
   onChangeInputValueNameUpgrade,
   onChangeInputValueHeightUpgrade,
-}) => {
+}) {
   return (
     <ActionBar>
       <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
@@ -660,9 +614,9 @@ export const GovernanceSoftwareUpgrade = ({
       </ContainetLedger>
     </ActionBar>
   );
-};
+}
 
-export const TextProposal = ({
+export function TextProposal({
   onClickBtn,
   // addrProposer,
   onClickBtnCloce,
@@ -672,61 +626,64 @@ export const TextProposal = ({
   valueDescription,
   valueTitle,
   valueDeposit,
-}) => (
-  <ActionBar>
-    <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
-      <Pane display="flex" flexDirection="column" alignItems="center">
-        <Text fontSize="25px" lineHeight="40px" color="#fff">
-          Text Proposal
-        </Text>
-        {/* <Text fontSize="18px" lineHeight="40px" color="#fff">
+}) {
+  return (
+    <ActionBar>
+      <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+        <Pane display="flex" flexDirection="column" alignItems="center">
+          <Text fontSize="25px" lineHeight="40px" color="#fff">
+            Text Proposal
+          </Text>
+          {/* <Text fontSize="18px" lineHeight="40px" color="#fff">
           proposer
         </Text>
         <Text color="#fff">{addrProposer}</Text> */}
-        <Pane marginY={10} width="100%">
-          <Text color="#fff">title</Text>
-          <input
-            value={valueTitle}
-            style={{
-              height: 42,
-              width: '100%',
-            }}
-            onChange={onChangeInputTitle}
-            placeholder="title"
-          />
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">title</Text>
+            <input
+              value={valueTitle}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputTitle}
+              placeholder="title"
+            />
+          </Pane>
+          <Pane marginBottom={10} width="100%">
+            <Text color="#fff">description</Text>
+            <textarea
+              onChange={onChangeInputDescription}
+              value={valueDescription}
+              className="resize-none"
+            />
+          </Pane>
+          <Pane width="100%">
+            <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
+            <input
+              value={valueDeposit}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputDeposit}
+              placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+            />
+          </Pane>
+          <Button marginTop={25} onClick={onClickBtn}>
+            Create Governance
+          </Button>
         </Pane>
-        <Pane marginBottom={10} width="100%">
-          <Text color="#fff">description</Text>
-          <textarea
-            onChange={onChangeInputDescription}
-            value={valueDescription}
-            className="resize-none"
-          />
-        </Pane>
-        <Pane width="100%">
-          <Text color="#fff">deposit, {CYBER.DENOM_CYBER.toUpperCase()}</Text>
-          <input
-            value={valueDeposit}
-            style={{
-              height: 42,
-              width: '100%',
-            }}
-            onChange={onChangeInputDeposit}
-            placeholder={`amount, ${CYBER.DENOM_CYBER.toUpperCase()}`}
-          />
-        </Pane>
-        <Button marginTop={25} onClick={onClickBtn}>
-          Create Governance
-        </Button>
-      </Pane>
-    </ContainetLedger>
-  </ActionBar>
-);
+      </ContainetLedger>
+    </ActionBar>
+  );
+}
 
-export const ParamChange = ({ valueSelect, onChangeSelect, onClickBtn }) => (
-  <ActionBar>
-    <ActionBarContentText>
-      {/* <select
+export function ParamChange({ valueSelect, onChangeSelect, onClickBtn }) {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        {/* <select
         style={{ height: 42, width: '60%' }}
         className="select-green"
         value={valueSelect}
@@ -736,12 +693,13 @@ export const ParamChange = ({ valueSelect, onChangeSelect, onClickBtn }) => (
         <option value="paramChange">Param Change</option>
         <option value="communityPool">Community Pool Spend</option>
       </select> */}
-    </ActionBarContentText>
-    <Button onClick={onClickBtn}>Create Governance</Button>
-  </ActionBar>
-);
+      </ActionBarContentText>
+      <Button onClick={onClickBtn}>Create Governance</Button>
+    </ActionBar>
+  );
+}
 
-export const CommunityPool = ({
+export function CommunityPool({
   onClickBtn,
   // addrProposer,
   onClickBtnCloce,
@@ -755,105 +713,113 @@ export const CommunityPool = ({
   onChangeInputAmountRecipient,
   onChangeInputAddressRecipient,
   valueAmountRecipient,
-}) => (
-  <ActionBar>
-    <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
-      <Pane display="flex" flexDirection="column" alignItems="center">
-        <Text fontSize="25px" lineHeight="40px" color="#fff">
-          Community Pool Spend
-        </Text>
-        {/* <Text fontSize="18px" lineHeight="40px" color="#fff">
+}) {
+  return (
+    <ActionBar>
+      <ContainetLedger logo onClickBtnCloce={onClickBtnCloce}>
+        <Pane display="flex" flexDirection="column" alignItems="center">
+          <Text fontSize="25px" lineHeight="40px" color="#fff">
+            Community Pool Spend
+          </Text>
+          {/* <Text fontSize="18px" lineHeight="40px" color="#fff">
           proposer
         </Text>
         <Text color="#fff">{addrProposer}</Text> */}
-        <Pane marginY={10} width="100%">
-          <Text color="#fff">title</Text>
-          <input
-            value={valueTitle}
-            style={{
-              height: 42,
-              width: '100%',
-            }}
-            onChange={onChangeInputTitle}
-            placeholder="title"
-          />
-        </Pane>
-        <Pane marginBottom={10} width="100%">
-          <Text color="#fff">description</Text>
-          <textarea
-            onChange={onChangeInputDescription}
-            value={valueDescription}
-            className="resize-none"
-          />
-        </Pane>
-        <Pane marginBottom={10} width="100%">
-          <Text color="#fff">recipient</Text>
-          <Pane display="grid" gridTemplateColumns="0.8fr 0.2fr" gridGap="10px">
+          <Pane marginY={10} width="100%">
+            <Text color="#fff">title</Text>
             <input
-              value={valueAddressRecipient}
+              value={valueTitle}
               style={{
                 height: 42,
                 width: '100%',
               }}
-              onChange={onChangeInputAddressRecipient}
-              placeholder="address"
-            />
-            <input
-              value={valueAmountRecipient}
-              style={{
-                height: 42,
-                width: '100%',
-              }}
-              onChange={onChangeInputAmountRecipient}
-              placeholder="GEUL"
+              onChange={onChangeInputTitle}
+              placeholder="title"
             />
           </Pane>
+          <Pane marginBottom={10} width="100%">
+            <Text color="#fff">description</Text>
+            <textarea
+              onChange={onChangeInputDescription}
+              value={valueDescription}
+              className="resize-none"
+            />
+          </Pane>
+          <Pane marginBottom={10} width="100%">
+            <Text color="#fff">recipient</Text>
+            <Pane
+              display="grid"
+              gridTemplateColumns="0.8fr 0.2fr"
+              gridGap="10px"
+            >
+              <input
+                value={valueAddressRecipient}
+                style={{
+                  height: 42,
+                  width: '100%',
+                }}
+                onChange={onChangeInputAddressRecipient}
+                placeholder="address"
+              />
+              <input
+                value={valueAmountRecipient}
+                style={{
+                  height: 42,
+                  width: '100%',
+                }}
+                onChange={onChangeInputAmountRecipient}
+                placeholder="GEUL"
+              />
+            </Pane>
+          </Pane>
+          <Pane width="100%">
+            <Text color="#fff">deposit, EUL</Text>
+            <input
+              value={valueDeposit}
+              style={{
+                height: 42,
+                width: '100%',
+              }}
+              onChange={onChangeInputDeposit}
+              placeholder="amount, GEUL"
+            />
+          </Pane>
+          <Button marginTop={25} onClick={onClickBtn}>
+            Create Governance
+          </Button>
         </Pane>
-        <Pane width="100%">
-          <Text color="#fff">deposit, EUL</Text>
-          <input
-            value={valueDeposit}
-            style={{
-              height: 42,
-              width: '100%',
-            }}
-            onChange={onChangeInputDeposit}
-            placeholder="amount, GEUL"
-          />
-        </Pane>
-        <Button marginTop={25} onClick={onClickBtn}>
-          Create Governance
-        </Button>
+      </ContainetLedger>
+    </ActionBar>
+  );
+}
+
+function ContentTooltip({ bwRemained, bwMaxValue, linkPrice }) {
+  return (
+    <Pane
+      minWidth={200}
+      paddingX={18}
+      paddingY={14}
+      borderRadius={4}
+      backgroundColor="#fff"
+    >
+      <Pane marginBottom={5}>
+        <Text size={300}>
+          You have {bwRemained} BP out of {bwMaxValue} BP.
+        </Text>
       </Pane>
-    </ContainetLedger>
-  </ActionBar>
-);
+      <Pane marginBottom={5}>
+        <Text size={300}>
+          Full regeneration of bandwidth points or BP happens in 24 hours.
+        </Text>
+      </Pane>
+      <Pane display="flex">
+        <Text size={300}>Current rate for 1 cyberlink is {linkPrice} BP.</Text>
+      </Pane>
+    </Pane>
+  );
+}
 
-const ContentTooltip = ({ bwRemained, bwMaxValue, linkPrice }) => (
-  <Pane
-    minWidth={200}
-    paddingX={18}
-    paddingY={14}
-    borderRadius={4}
-    backgroundColor="#fff"
-  >
-    <Pane marginBottom={5}>
-      <Text size={300}>
-        You have {bwRemained} BP out of {bwMaxValue} BP.
-      </Text>
-    </Pane>
-    <Pane marginBottom={5}>
-      <Text size={300}>
-        Full regeneration of bandwidth points or BP happens in 24 hours.
-      </Text>
-    </Pane>
-    <Pane display="flex">
-      <Text size={300}>Current rate for 1 cyberlink is {linkPrice} BP.</Text>
-    </Pane>
-  </Pane>
-);
-
-export const Cyberlink = ({
+export function Cyberlink({
   bandwidth,
   onClickBtnCloce,
   address,
@@ -862,7 +828,7 @@ export const Cyberlink = ({
   query,
   disabledBtn,
   linkPrice,
-}) => {
+}) {
   return (
     <ActionBar>
       <ActionBarContentText flexDirection="column">
@@ -929,9 +895,9 @@ export const Cyberlink = ({
       </div>
     </ActionBar>
   );
-};
+}
 
-const IntupAutoSize = ({ value, onChangeInputAmount, placeholder }) => {
+function IntupAutoSize({ value, onChangeInputAmount, placeholder }) {
   function isOverflown(element) {
     return element.scrollWidth > element.clientWidth;
   }
@@ -973,46 +939,48 @@ const IntupAutoSize = ({ value, onChangeInputAmount, placeholder }) => {
       placeholder={placeholder}
     />
   );
-};
+}
 
-export const Delegate = ({
+export function Delegate({
   moniker,
   generateTx,
   onChangeInputAmount,
   toSend,
   disabledBtn,
   delegate,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <Text fontSize="16px" color="#fff">
-        {T.actionBar.delegate.enterAmount} {DENOM_CYBER.toUpperCase()}{' '}
-        {delegate
-          ? T.actionBar.delegate.delegate
-          : T.actionBar.delegate.unDelegateFrom}{' '}
-        <Text fontSize="20px" color="#fff" fontWeight={600}>
-          {moniker.length > 14 ? `${moniker.substring(0, 14)}...` : moniker}
+}) {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Text fontSize="16px" color="#fff">
+          {T.actionBar.delegate.enterAmount} {DENOM_CYBER.toUpperCase()}{' '}
+          {delegate
+            ? T.actionBar.delegate.delegate
+            : T.actionBar.delegate.unDelegateFrom}{' '}
+          <Text fontSize="20px" color="#fff" fontWeight={600}>
+            {moniker.length > 14 ? `${moniker.substring(0, 14)}...` : moniker}
+          </Text>
         </Text>
-      </Text>
-      <IntupAutoSize
-        value={toSend}
-        onChangeInputAmount={onChangeInputAmount}
-        placeholder="amount"
-      />
-    </ActionBarContentText>
-    <button
-      type="button"
-      className="btn-disabled"
-      onClick={generateTx}
-      style={{ height: 42, maxWidth: '200px' }}
-      disabled={disabledBtn}
-    >
-      {T.actionBar.delegate.generate}
-    </button>
-  </ActionBar>
-);
+        <IntupAutoSize
+          value={toSend}
+          onChangeInputAmount={onChangeInputAmount}
+          placeholder="amount"
+        />
+      </ActionBarContentText>
+      <button
+        type="button"
+        className="btn-disabled"
+        onClick={generateTx}
+        style={{ height: 42, maxWidth: '200px' }}
+        disabled={disabledBtn}
+      >
+        {T.actionBar.delegate.generate}
+      </button>
+    </ActionBar>
+  );
+}
 
-export const ReDelegate = ({
+export function ReDelegate({
   generateTx,
   onChangeInputAmount,
   toSend,
@@ -1021,74 +989,76 @@ export const ReDelegate = ({
   validatorsAll,
   valueSelect,
   onChangeReDelegate,
-}) => (
-  <ActionBar>
-    <ActionBarContentText>
-      <Text marginRight={5} fontSize="16px" color="#fff">
-        amount{' '}
-      </Text>
-      <Input
-        value={toSend}
-        autoFocus
-        height="32px"
-        width="70px"
-        textAlign="end"
-        onChange={onChangeInputAmount}
-        placeholder="amount"
-      />
-      <Text marginLeft={5} fontSize="16px" color="#fff">
-        {DENOM_CYBER.toUpperCase()} restake from{' '}
-        <Text fontSize="20px" color="#fff" fontWeight={600}>
-          {validators.description.moniker.length > 14
-            ? `${validators.description.moniker.substring(0, 14)}...`
-            : validators.description.moniker}
+}) {
+  return (
+    <ActionBar>
+      <ActionBarContentText>
+        <Text marginRight={5} fontSize="16px" color="#fff">
+          amount{' '}
         </Text>
-      </Text>
-      <Text marginX={5} fontSize="16px" color="#fff">
-        to:
-      </Text>
-      <select
-        style={{
-          width: '120px',
-        }}
-        value={valueSelect}
-        onChange={onChangeReDelegate}
+        <Input
+          value={toSend}
+          autoFocus
+          height="32px"
+          width="70px"
+          textAlign="end"
+          onChange={onChangeInputAmount}
+          placeholder="amount"
+        />
+        <Text marginLeft={5} fontSize="16px" color="#fff">
+          {DENOM_CYBER.toUpperCase()} restake from{' '}
+          <Text fontSize="20px" color="#fff" fontWeight={600}>
+            {validators.description.moniker.length > 14
+              ? `${validators.description.moniker.substring(0, 14)}...`
+              : validators.description.moniker}
+          </Text>
+        </Text>
+        <Text marginX={5} fontSize="16px" color="#fff">
+          to:
+        </Text>
+        <select
+          style={{
+            width: '120px',
+          }}
+          value={valueSelect}
+          onChange={onChangeReDelegate}
+        >
+          <option value="">pick hero</option>
+          {validatorsAll
+            .filter(
+              (validator) =>
+                BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
+            )
+            .map((item) => (
+              <option
+                key={item.operatorAddress}
+                value={item.operatorAddress}
+                style={{
+                  display:
+                    validators.operatorAddress === item.operatorAddress
+                      ? 'none'
+                      : 'block',
+                }}
+              >
+                {item.description.moniker}
+              </option>
+            ))}
+        </select>
+      </ActionBarContentText>
+      <button
+        type="button"
+        className="btn-disabled"
+        onClick={generateTx}
+        style={{ height: 42, maxWidth: '200px' }}
+        disabled={disabledBtn}
       >
-        <option value="">pick hero</option>
-        {validatorsAll
-          .filter(
-            (validator) =>
-              BOND_STATUS[validator.status] === BOND_STATUS.BOND_STATUS_BONDED
-          )
-          .map((item) => (
-            <option
-              key={item.operatorAddress}
-              value={item.operatorAddress}
-              style={{
-                display:
-                  validators.operatorAddress === item.operatorAddress
-                    ? 'none'
-                    : 'block',
-              }}
-            >
-              {item.description.moniker}
-            </option>
-          ))}
-      </select>
-    </ActionBarContentText>
-    <button
-      type="button"
-      className="btn-disabled"
-      onClick={generateTx}
-      style={{ height: 42, maxWidth: '200px' }}
-      disabled={disabledBtn}
-    >
-      {T.actionBar.delegate.generate}
-    </button>
-  </ActionBar>
-);
+        {T.actionBar.delegate.generate}
+      </button>
+    </ActionBar>
+  );
+}
 
-export const SendLedger = ({
+export function SendLedger({
   onClickBtn,
   valueInputAmount,
   valueInputAddressTo,
@@ -1097,44 +1067,46 @@ export const SendLedger = ({
   disabledBtn,
   addressToValid,
   amountSendInputValid,
-}) => (
-  <ActionBar>
-    <Pane display="flex" className="contentItem">
-      <ActionBarContentText>
-        <Input
-          value={valueInputAddressTo}
-          height={42}
-          marginRight={10}
-          width="300px"
-          onChange={onChangeInputAddressTo}
-          placeholder="cyber address To"
-          isInvalid={addressToValid !== null}
-          message={addressToValid}
-        />
+}) {
+  return (
+    <ActionBar>
+      <Pane display="flex" className="contentItem">
+        <ActionBarContentText>
+          <Input
+            value={valueInputAddressTo}
+            height={42}
+            marginRight={10}
+            width="300px"
+            onChange={onChangeInputAddressTo}
+            placeholder="cyber address To"
+            isInvalid={addressToValid !== null}
+            message={addressToValid}
+          />
 
-        <Input
-          value={valueInputAmount}
-          height={42}
-          width="24%"
-          onChange={onChangeInputAmount}
-          placeholder={CYBER.DENOM_CYBER}
-          isInvalid={amountSendInputValid !== null}
-          message={amountSendInputValid}
-        />
-      </ActionBarContentText>
-      <button
-        type="button"
-        className="btn-disabled"
-        disabled={disabledBtn}
-        onClick={onClickBtn}
-      >
-        Generate Tx
-      </button>
-    </Pane>
-  </ActionBar>
-);
+          <Input
+            value={valueInputAmount}
+            height={42}
+            width="24%"
+            onChange={onChangeInputAmount}
+            placeholder={CYBER.DENOM_CYBER}
+            isInvalid={amountSendInputValid !== null}
+            message={amountSendInputValid}
+          />
+        </ActionBarContentText>
+        <button
+          type="button"
+          className="btn-disabled"
+          disabled={disabledBtn}
+          onClick={onClickBtn}
+        >
+          Generate Tx
+        </button>
+      </Pane>
+    </ActionBar>
+  );
+}
 
-export const SendLedgerAtomTot = ({
+export function SendLedgerAtomTot({
   onClickBtn,
   address,
   availableStake,
@@ -1142,48 +1114,50 @@ export const SendLedgerAtomTot = ({
   disabledBtn,
   amount,
   addressTo,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div className="display-flex align-items-center">
-      <span className="actionBar-text">{address}</span>
-      <button
-        className="copy-address-btn"
-        onClick={() => {
-          navigator.clipboard.writeText(address);
-        }}
-      />
-    </div>
-
-    <div>
-      <h3 className="text-align-center">Contribution Details</h3>
-      <p className="text-align-center">{T.actionBar.send.wallet}</p>
-      <span className="actionBar-text">{availableStake}</span>
-
-      <div style={{ marginBottom: 30, marginTop: 30 }}>
-        <div style={{ marginBottom: 10 }}>
-          <span style={{ marginRight: 10 }}>address to:</span>
-          <span>{addressTo}</span>
-        </div>
-        <div>
-          <span style={{ marginRight: 10 }}>contribution amount:</span>
-          <span>{amount} ATOMs</span>
-        </div>
-      </div>
-      <div className="text-align-center">
+}) {
+  return (
+    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+      <div className="display-flex align-items-center">
+        <span className="actionBar-text">{address}</span>
         <button
-          type="button"
-          className="btn-disabled"
-          disabled={disabledBtn}
-          onClick={onClickBtn}
-        >
-          {T.actionBar.send.generate}
-        </button>
+          className="copy-address-btn"
+          onClick={() => {
+            navigator.clipboard.writeText(address);
+          }}
+        />
       </div>
-    </div>
-  </ContainetLedger>
-);
 
-export const ContributeATOMs = ({
+      <div>
+        <h3 className="text-align-center">Contribution Details</h3>
+        <p className="text-align-center">{T.actionBar.send.wallet}</p>
+        <span className="actionBar-text">{availableStake}</span>
+
+        <div style={{ marginBottom: 30, marginTop: 30 }}>
+          <div style={{ marginBottom: 10 }}>
+            <span style={{ marginRight: 10 }}>address to:</span>
+            <span>{addressTo}</span>
+          </div>
+          <div>
+            <span style={{ marginRight: 10 }}>contribution amount:</span>
+            <span>{amount} ATOMs</span>
+          </div>
+        </div>
+        <div className="text-align-center">
+          <button
+            type="button"
+            className="btn-disabled"
+            disabled={disabledBtn}
+            onClick={onClickBtn}
+          >
+            {T.actionBar.send.generate}
+          </button>
+        </div>
+      </div>
+    </ContainetLedger>
+  );
+}
+
+export function ContributeATOMs({
   onClickBtn,
   address,
   availableStake,
@@ -1193,111 +1167,114 @@ export const ContributeATOMs = ({
   onChangeInput,
   onClickBtnCloce,
   onClickMax,
-}) => (
-  <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
-    <div className="display-flex align-items-center">
-      <span className="actionBar-text">{address}</span>
-      <button
-        className="copy-address-btn"
-        onClick={() => {
-          navigator.clipboard.writeText(address);
-        }}
-      />
-    </div>
-    {availableStake > 0 && (
-      <div>
-        <h3 className="text-align-center">Send Details</h3>
-        <p className="text-align-center">Your wallet contains:</p>
-        <span className="actionBar-text">{availableStake}</span>
-        <div style={{ marginTop: '25px', marginBottom: 10 }}>
-          Enter the amount of ATOMs you wish to send to Cyber~Congress:
-        </div>
-        <div className="text-align-center">
-          <input
-            value={valueInput}
-            style={{ marginRight: 10, textAlign: 'end' }}
-            onChange={onChangeInput}
-          />
-          <button
-            type="button"
-            className="btn"
-            onClick={onClickMax}
-            style={{ height: 30 }}
-          >
-            Max
-          </button>
-        </div>
-        <h6 style={{ margin: 20 }}>
-          The fees you will be charged by the network on this transaction will
-          {gasUAtom} uatom ( {gasAtom} ATOMs ).
-        </h6>
-        <div className="text-align-center">
-          <button type="button" className="btn" onClick={onClickBtn}>
-            Generate my transaction
-          </button>
-        </div>
+}) {
+  return (
+    <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
+      <div className="display-flex align-items-center">
+        <span className="actionBar-text">{address}</span>
+        <button
+          className="copy-address-btn"
+          onClick={() => {
+            navigator.clipboard.writeText(address);
+          }}
+        />
       </div>
-    )}
-  </ContainetLedger>
-);
-
-export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
-  <div className="container-action height50 box-shadow-1px">
-    <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
-      <span>
-        [
-        <a
-          onClick={onClickBtnCloce}
-          style={{ color: 'rgb(225, 225, 225)', cursor: 'pointer' }}
-        >
-          exit
-        </a>
-        ]
-      </span>
-    </div>
-    <div className="container-action-content height100">
-      <div className="container-send">
+      {availableStake > 0 && (
         <div>
-          <div>
-            <span
-              className="display-inline-block text-align-center"
-              style={{
-                marginBottom: 20,
-                fontSize: '16px',
-              }}
-            >
-              Send any amount of ATOMs directly to cyber~Congress multisig by
-              your using Cosmos wallet
-            </span>
-            <div
-              className="display-flex align-items-center"
-              style={{
-                justifyContent: 'center',
-              }}
-            >
-              <span className="font-size-16">{address}</span>
-              <button
-                className="copy-address-btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(address);
-                }}
-              />
-            </div>
+          <h3 className="text-align-center">Send Details</h3>
+          <p className="text-align-center">Your wallet contains:</p>
+          <span className="actionBar-text">{availableStake}</span>
+          <div style={{ marginTop: '25px', marginBottom: 10 }}>
+            Enter the amount of ATOMs you wish to send to Cyber~Congress:
           </div>
-        </div>
-        <div className="line-action-bar" />
-        <div className="display-flex flex-direction-column align-items-center">
-          <div className="display-flex flex-direction-column">
-            {/* <span className="display-inline-block font-size-20 margin-bottom-10px">
-              Ledger
-            </span> */}
-            <button className="btn" onClick={onClickBtn}>
-              Send with Ledger
+          <div className="text-align-center">
+            <input
+              value={valueInput}
+              style={{ marginRight: 10, textAlign: 'end' }}
+              onChange={onChangeInput}
+            />
+            <button
+              type="button"
+              className="btn"
+              onClick={onClickMax}
+              style={{ height: 30 }}
+            >
+              Max
+            </button>
+          </div>
+          <h6 style={{ margin: 20 }}>
+            The fees you will be charged by the network on this transaction will
+            {gasUAtom} uatom ( {gasAtom} ATOMs ).
+          </h6>
+          <div className="text-align-center">
+            <button type="button" className="btn" onClick={onClickBtn}>
+              Generate my transaction
             </button>
           </div>
         </div>
+      )}
+    </ContainetLedger>
+  );
+}
+
+export function SendAmount({ onClickBtn, address, onClickBtnCloce }) {
+  return (
+    <div className="container-action height50 box-shadow-1px">
+      <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
+        <span>
+          [
+          <a
+            onClick={onClickBtnCloce}
+            style={{ color: 'rgb(225, 225, 225)', cursor: 'pointer' }}
+          >
+            exit
+          </a>
+          ]
+        </span>
       </div>
-      {/* <span className="actionBar-text">
+      <div className="container-action-content height100">
+        <div className="container-send">
+          <div>
+            <div>
+              <span
+                className="display-inline-block text-align-center"
+                style={{
+                  marginBottom: 20,
+                  fontSize: '16px',
+                }}
+              >
+                Send any amount of ATOMs directly to cyber~Congress multisig by
+                your using Cosmos wallet
+              </span>
+              <div
+                className="display-flex align-items-center"
+                style={{
+                  justifyContent: 'center',
+                }}
+              >
+                <span className="font-size-16">{address}</span>
+                <button
+                  className="copy-address-btn"
+                  onClick={() => {
+                    navigator.clipboard.writeText(address);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="line-action-bar" />
+          <div className="display-flex flex-direction-column align-items-center">
+            <div className="display-flex flex-direction-column">
+              {/* <span className="display-inline-block font-size-20 margin-bottom-10px">
+              Ledger
+            </span> */}
+              <button className="btn" onClick={onClickBtn}>
+                Send with Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* <span className="actionBar-text">
           You can send any amount of ATOMs to cyber•Congress multisig
           cosmos287fhhlgflsef
         </span>
@@ -1305,16 +1282,17 @@ export const SendAmount = ({ onClickBtn, address, onClickBtnCloce }) => (
       <button className="btn" onClick={onClickBtn}>
         Track Contribution
       </button> */}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-export const RewardsDelegators = ({
+export function RewardsDelegators({
   data,
   onClickBtn,
   onClickBtnCloce,
   disabledBtn,
-}) => {
+}) {
   console.log('data :>> ', data);
   const itemReward = data.rewards.map((item) => {
     if (item.reward !== null) {
@@ -1359,9 +1337,9 @@ export const RewardsDelegators = ({
       </div>
     </ContainetLedger>
   );
-};
+}
 
-export const ConnectAddress = ({
+export function ConnectAddress({
   selectMethodFunc,
   selectMethod,
   selectNetworkFunc,
@@ -1370,7 +1348,7 @@ export const ConnectAddress = ({
   web3,
   selectAccount,
   keplr,
-}) => {
+}) {
   const [cyberNetwork, setCyberNetwork] = useState(true);
   const [cosmosNetwork, setCosmosNetwork] = useState(true);
   const [ethNetwork, setEthrNetwork] = useState(true);
@@ -1498,16 +1476,16 @@ export const ConnectAddress = ({
       </Button>
     </ActionBar>
   );
-};
+}
 
-export const SetHdpath = ({
+export function SetHdpath({
   hdpath,
   onChangeAccount,
   onChangeIndex,
   addressLedger,
   hdPathError,
   addAddressLedger,
-}) => {
+}) {
   return (
     <ActionBar>
       <ActionBarContentText>
@@ -1556,4 +1534,4 @@ export const SetHdpath = ({
       </Button>
     </ActionBar>
   );
-};
+}

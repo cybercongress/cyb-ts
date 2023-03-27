@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
-import { reduceBalances, convertResources } from '../../../utils/utils';
+import { reduceBalances } from '../../../utils/utils';
 import { authAccounts } from '../../../utils/search/utils';
 import { CYBER } from '../../../utils/config';
 

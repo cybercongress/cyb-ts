@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { formatNumber, convertResources } from '../../utils/utils';
 import coinDecimalsConfig from '../../utils/configToken';
 
 export function sortReserveCoinDenoms(x, y) {
@@ -8,17 +7,10 @@ export function sortReserveCoinDenoms(x, y) {
 
 function pow(a) {
   let result = 1;
-  for (let i = 0; i < a; i++) {
+  for (let i = 0; i < a; i + 1) {
     result *= 10;
   }
   return result;
-}
-
-export function getDepositCoins(denoms, amounts) {
-  return {
-    denoms: [denoms[0], denoms[1]],
-    amounts: [amounts[denoms[0]], amounts[denoms[1]]],
-  };
 }
 
 export function getMyTokenBalance(token, indexer) {
@@ -158,7 +150,7 @@ export const reduceAmounToken = (amount, token, reverse) => {
   return amountReduce;
 };
 
-export const reduceTextCoin = (text) => {
+const reduceTextCoin = (text) => {
   switch (text) {
     case 'millivolt':
       return 'V';
