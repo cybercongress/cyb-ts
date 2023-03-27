@@ -4,7 +4,6 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const Dotenv = require('dotenv-webpack');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 module.exports = {
@@ -33,10 +32,6 @@ module.exports = {
     },
     extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
     alias: {
-      // 'react-dom': '@hot-loader/react-dom',
-      'multicodec/src/base-table': path.dirname(
-        require.resolve('multicodec/src/base-table.json')
-      ),
       'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
       'react/jsx-runtime.js': 'react/jsx-runtime',
     },
@@ -64,9 +59,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
-    }),
-    new Dotenv({
-      systemvars: true,
     }),
   ],
   module: {

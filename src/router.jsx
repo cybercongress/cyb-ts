@@ -77,7 +77,7 @@ const pageNotExist = () => (
 function AppRouter() {
   return (
     <Router history={history}>
-      <Route path={routes.home.path} component={<App />} />
+      <Route path={routes.home.path} component={() => <App />} />
       <Switch>
         <Route path="/" exact component={Temple} />
         <Route path="/robot" component={Wallet} />
