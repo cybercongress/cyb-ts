@@ -1,4 +1,4 @@
-name: build_ipfs
+name: build_cyb_ipfs
 
 on:
   push:
@@ -25,8 +25,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Build cyb
-        run: yarn build
+      - name: Build cyb for IPFS
+        run: yarn build-ipfs
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
           CHAIN_ID: 'bostrom'
