@@ -37,10 +37,6 @@ module.exports = {
     },
     extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json'],
     alias: {
-      // 'react-dom': '@hot-loader/react-dom',
-      'multicodec/src/base-table': path.dirname(
-        require.resolve('multicodec/src/base-table.json')
-      ),
       'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
       'react/jsx-runtime.js': 'react/jsx-runtime',
     },
