@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { isNativeChainId, useTraseNetworks } from '../../hooks/useTraseNetworks';
+import {
+  isNativeChainId,
+  useTraseNetworks,
+} from '../../hooks/useTraseNetworks';
 import { getAvatarIpfs } from '../../utils/search/utils';
 import Tooltip from '../tooltip/tooltip';
 
-const boot = require('../../image/large-green.png');
-const pussy = require('../../image/large-purple-circle.png');
-const defaultImg = require('../../image/large-orange-circle.png');
+import boot from '../../image/large-green.png';
+import pussy from '../../image/large-purple-circle.png';
+import defaultImg from '../../image/large-orange-circle.png';
 
 const getNativeImg = (text) => {
   let img = null;
