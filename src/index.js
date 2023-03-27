@@ -85,20 +85,18 @@ const root = createRoot(container);
 
 const render = () => {
   root.render(
-    <>
-      <Provider store={store}>
-        <ApolloProvider client={client}>
-          <AppContextProvider>
-            <QueryClientProvider client={queryClient}>
-              <AppContainer>
-                <AppRouter />
-              </AppContainer>
-              <ReactQueryDevtools />
-            </QueryClientProvider>
-          </AppContextProvider>
-        </ApolloProvider>
-      </Provider>
-    </>
+    <Provider store={store}>
+      <ApolloProvider client={client}>
+        <AppContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <AppContainer>
+              <AppRouter />
+            </AppContainer>
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </AppContextProvider>
+      </ApolloProvider>
+    </Provider>
   );
 };
 

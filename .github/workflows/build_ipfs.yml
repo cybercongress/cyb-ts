@@ -1,0 +1,57 @@
+name: build_ipfs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_cyb:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.14.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build cyb
+        run: yarn build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+          CHAIN_ID: 'bostrom'
+
+      - name: Deploy to IPFS 👽
+        id: ipfs
+        uses: dasein108/ipfs-github-action@v1
+        with:
+          path_to_add: ./build
+          cluster_host: ${{ secrets.IPFS_CLUSTER_HOST }}
+          ipfs_gateway: ${{ vars.IPFS_GATEWAY }}
+          cluster_user: ${{ secrets.IPFS_CLUSTER_USER }}
+          cluster_password: ${{ secrets.IPFS_CLUSTER_PASSWORD }}
+
+      - name: Send build results to telegram
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        if: env.TELEGRAM_TOKEN != null
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ⚙️ ${{ github.actor }} -> ${{ github.event.commits[0].message }}
+
+            🏷 See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+
+            👽 IPFS URL: ${{ steps.ipfs.outputs.url }}
