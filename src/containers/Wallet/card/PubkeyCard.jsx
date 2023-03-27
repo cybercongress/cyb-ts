@@ -41,7 +41,7 @@ import editOutline from '../../../image/create-outline.svg';
 import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import deleteIcon from '../../../image/trash-outline.svg';
 import cyb from '../../../image/cybTrue.svg';
-import { routes } from '../../../router';
+import { routes } from "../../../routes";
 
 const RowBalance = ({ children, ...props }) => (
   <Pane display="flex" justifyContent="space-between" width="100%" {...props}>

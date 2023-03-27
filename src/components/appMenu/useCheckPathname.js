@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { routes } from '../../router';
+import { routes } from "../../routes";
 
 const useCheckPathname = () => {
   const location = useLocation();

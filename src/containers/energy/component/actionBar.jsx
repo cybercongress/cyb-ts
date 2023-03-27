@@ -26,7 +26,7 @@ import {
 } from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
-import { routes } from '../../../router';
+import { routes } from "../../../routes";
 
 const back = require('../../../image/arrow-back-outline.svg');
 

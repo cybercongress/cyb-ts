@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { routes } from '../../router';
+import { routes } from '../../routes';
 
 function BanerHelp({ addressActive }) {
   const useCommunity = useMemo(() => {
@@ -168,7 +168,6 @@ function BanerHelp({ addressActive }) {
         </Link>{' '}
         who manage the <Link to={routes.sphere.path}>dyson sphere</Link> and
         earn more <Link to="/token/BOOT">BOOT</Link>.
-
       </div>
 
       <div>
