@@ -10,7 +10,7 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy } from '../../components';
+import { Loading, Copy, NotFound } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';

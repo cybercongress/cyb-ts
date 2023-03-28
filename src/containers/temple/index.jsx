@@ -8,13 +8,12 @@ import {
   ContainerGradientText,
 } from '../portal/components';
 // import Carousel from '../portal/gift/carousel1/Carousel';
-import Carousel from './components/corusel';
+import { Carousel, Canvas } from './components/indexs';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayBanerContent } from './pages';
 import { ActionBar } from '../../components';
 import BtnGrd from '../../components/btnGrd';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import Canvas from './components/canvasOne';
 import styles from './styles.scss';
 import { CYBER } from '../../utils/config';
 
