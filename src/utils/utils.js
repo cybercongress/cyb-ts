@@ -126,7 +126,7 @@ const run = async (func) => {
 };
 
 const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index + 1) {
+  for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
 };
@@ -222,7 +222,7 @@ const exponentialToDecimal = (exponential) => {
         (exponentialSplitted[0].includes('.')
           ? exponentialSplitted[0].split('.')[1].length
           : 0);
-      i + 1
+      i++
     ) {
       postfix += '0';
     }
