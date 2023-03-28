@@ -21,7 +21,7 @@
     },
     "sourceType": "module"
   },
-  "plugins": ["prettier", "react", "import", "typescript"],
+  "plugins": ["prettier", "react", "import", "typescript", "unused-imports"],
   "globals": {
     "expect": true,
     "FileReader": true
@@ -30,10 +30,15 @@
     "valid-jsdoc": "error",
     "prettier/prettier": "error",
     "linebreak-style": ["error", "unix"],
-    "no-unused-vars": [
+    "@typescript-eslint/no-var-requires" : "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
       "error",
       { "vars": "all", "args": "none", "ignoreRestSiblings": false }
     ],
+    "react/prop-types": "off",
+    "no-console":"off",
     "curly": ["warn", "all"],
     "no-alert": "warn",
     "no-debugger": "warn",
