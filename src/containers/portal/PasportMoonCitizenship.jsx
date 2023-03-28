@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import {
   MainContainer,
   ActionBarSteps,
-  BtnGrd,
   MoonAnimation,
   Stars,
 } from './components';
@@ -17,6 +16,7 @@ import { steps } from './citizenship/utils';
 import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
+import { BtnGrd } from '../../components';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 

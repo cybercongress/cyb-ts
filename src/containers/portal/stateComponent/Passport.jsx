@@ -1,8 +1,5 @@
-import {
-  ContainerGradient,
-  Signatures,
-  ParseAddressesImg,
-} from '../components';
+import { ContainerGradient } from '../../../components';
+import { Signatures, ParseAddressesImg } from '../components';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 
 function Passport({ txs, valueNickname, avatar, addressActive }) {

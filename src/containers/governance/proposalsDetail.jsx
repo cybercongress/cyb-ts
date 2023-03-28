@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 
-import { IconStatus, Item } from '../../components';
+import { ContainerGradientText, IconStatus, Item } from '../../components';
 
 import {
   getStakingPool,
@@ -26,7 +26,7 @@ import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
 import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { ContainerGradientText, MainContainer } from '../portal/components';
+import { MainContainer } from '../portal/components';
 
 const finalTallyResult = (item) => {
   const finalVotes = {

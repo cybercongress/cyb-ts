@@ -81,7 +81,9 @@ function Electricity({ setBlockProps }) {
 
   const At = (el, a, v) => {
     try {
-      el.setAttribute(a, v);
+      if (el !== null) {
+        el.setAttribute(a, v);
+      }
     } catch (error) {
       console.error(error);
     }

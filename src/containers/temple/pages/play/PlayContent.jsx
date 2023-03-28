@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ContainerGradientText } from '../../../portal/components';
+import { ContainerGradientText } from '../../../../components';
 import styles from './styles.scss';
 
 import nebulaIcon from '../../../../image/temple/nebula.png';

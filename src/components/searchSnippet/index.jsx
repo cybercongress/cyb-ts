@@ -8,7 +8,7 @@ import {
   exponentialToDecimal,
 } from '../../utils/utils';
 import { getRankGrade } from '../../utils/search/utils';
-import ContentItem from '../../containers/ipfs/contentItem';
+import ContentItem from '../ContentItem/contentItem';
 
 function TimeAgo({ timeAgoInMS }) {
   return (

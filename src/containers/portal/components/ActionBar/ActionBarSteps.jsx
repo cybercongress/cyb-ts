@@ -1,7 +1,6 @@
 import { Pane } from '@cybercongress/gravity';
 import ActionBarContainer from './index';
-import { ButtonIcon } from '../../../../components';
-import BtnGrd from '../btnGrd';
+import { ButtonIcon, BtnGrd } from '../../../../components';
 
 const back = require('../../../../image/arrow-left-img.svg');
 

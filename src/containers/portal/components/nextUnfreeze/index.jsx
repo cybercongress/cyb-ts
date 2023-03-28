@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
+import { ContainerGradientText } from '../../../../components/containerGradient/ContainerGradient';
 import { GIFT_ICON } from '../../utils';
 import { dhm } from '../../../../utils/utils';
 import styles from './styles.scss';

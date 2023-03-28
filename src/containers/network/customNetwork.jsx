@@ -1,13 +1,8 @@
 import { useState, useCallback, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import {
-  MainContainer,
-  ContainerGradientText,
-  ActionBarSteps,
-  BtnGrd,
-} from '../portal/components';
+import { MainContainer, ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
-import { Input } from '../../components';
+import { Input, BtnGrd, ContainerGradientText } from '../../components';
 
 function ValueItem({ text, value, onChange }) {
   return (

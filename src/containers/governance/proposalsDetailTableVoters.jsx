@@ -4,9 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Account, Dots, TextTable } from '../../components';
+import {
+  Account,
+  Dots,
+  TextTable,
+  ContainerGradientText,
+} from '../../components';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
-import { ContainerGradientText } from '../portal/components';
 import { timeSince, trimString } from '../../utils/utils';
 
 const LIMIT = 50;

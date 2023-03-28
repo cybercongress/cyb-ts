@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './carousel.scss';
 
 const cx = require('classnames');
@@ -20,8 +20,10 @@ function Carousel({
   }
 
   const [visibleSlide, setVisibleSlide] = useState(1);
+  const [hasTransitionClass, setHasTransitionClass] = useState(true);
   const [stateSlides, setStateSlides] = useState(slides);
   const [leftAndRightDisabled, setLeftAndRightDisabled] = useState(false);
+  const intervalId = useRef(null);
 
   useEffect(() => {
     setVisibleSlide(activeStep);
@@ -82,7 +84,13 @@ function Carousel({
         className={styles.slidesContainer}
         // style={slideDimensionStyles()}
       >
-        <div id="slides" style={{ left: calculateLeftMargin() }}>
+        <div
+          id="slides"
+          className={cx(styles.slides, {
+            [styles.transition]: hasTransitionClass,
+          })}
+          style={{ left: calculateLeftMargin() }}
+        >
           {stateSlides.map((slide, index) => {
             return (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions

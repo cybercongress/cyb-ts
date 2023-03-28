@@ -2,7 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Rank, NoItems, Dots } from '../../components';
 import { exponentialToDecimal } from '../../utils/utils';
-import ContentItem from '../ipfs/contentItem';
+import ContentItem from '../../components/ContentItem/contentItem';
 
 function SearchTokenInfo({
   data,

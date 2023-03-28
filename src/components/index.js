@@ -43,9 +43,13 @@ import ButtonNetwork from './ButtonNetwork';
 import Tooltip from './tooltip/tooltip';
 import ActionBar from './actionBar';
 import Particle from './particle';
-import SearchItem from './SearchItem';
+import SearchItem from './SearchItem/searchItem';
 import { Input, InputNumber } from './Input';
 import Select, { OptionSelect } from './Select';
+import BtnGrd from './btnGrd';
+import ContainerGradient, {
+  ContainerGradientText,
+} from './containerGradient/ContainerGradient';
 
 export {
   GovernanceChangeParam,
@@ -96,6 +100,9 @@ export {
   InputNumber,
   Select,
   OptionSelect,
+  BtnGrd,
+  ContainerGradient,
+  ContainerGradientText,
 };
 
 export { Dots } from './ui/Dots';

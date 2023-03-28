@@ -1,7 +1,8 @@
 import { useCallback, useContext } from 'react';
-import { ActionBarSteps, BtnGrd } from '../portal/components';
+import { ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
+import { BtnGrd } from 'src/components';
 
 function ActionBar({ updateFunc }) {
   const { keplr, initSigner } = useContext(AppContext);

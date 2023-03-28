@@ -10,7 +10,7 @@ import { timeSince, trimString } from '../../../utils/utils';
 import statusTrueImg from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import statusFalseImg from '../../../image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
-import { ContainerGradientText } from '../../portal/components/containerGradient/ContainerGradient';
+import { ContainerGradientText } from '../../../components/containerGradient/ContainerGradient';
 
 function TxsTable({ dataGetTsxByAddress, accountUser }) {
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =

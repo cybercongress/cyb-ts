@@ -31,7 +31,7 @@ import {
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
 import { setQuery } from '../../redux/actions/query';
-import ContentItem from '../ipfs/contentItem';
+import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
 

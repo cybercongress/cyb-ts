@@ -4,7 +4,7 @@ import { AppContext } from '../../../../context';
 import tokenList from '../../../../utils/tokenList';
 import { exponentialToDecimal } from '../../../../utils/utils';
 import { FormatNumberTokens } from '../../../nebula/components';
-import { ContainerGradient } from '../../../portal/components';
+import { ContainerGradient } from '../../../../components';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';

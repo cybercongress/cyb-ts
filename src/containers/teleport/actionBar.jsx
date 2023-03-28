@@ -12,6 +12,7 @@ import {
   Account,
   LinkWindow,
   ActionBar as ActionBarCenter,
+  BtnGrd,
 } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
@@ -24,7 +25,7 @@ import {
 } from '../../utils/utils';
 import { sortReserveCoinDenoms } from './utils';
 import networks from '../../utils/networkListIbc';
-import { BtnGrd, ActionBarSteps } from '../portal/components';
+import { ActionBarSteps } from '../portal/components';
 
 import ActionBarStaps from './actionBarSteps';
 

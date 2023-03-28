@@ -2,7 +2,8 @@ import { useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
-import { MainContainer, ContainerGradientText } from '../portal/components';
+import { MainContainer } from '../portal/components';
+import { ContainerGradientText } from '../../components';
 import BtnPasport from '../portal/pasport/btnPasport';
 
 function ValueItem({ children }) {

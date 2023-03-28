@@ -1,6 +1,5 @@
 import { useMemo, useEffect, useContext } from 'react';
-import { Dots } from '../../../../components';
-import { ContainerGradient } from '../../../portal/components';
+import { Dots, ContainerGradient } from '../../../../components';
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';

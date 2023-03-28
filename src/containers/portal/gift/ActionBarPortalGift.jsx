@@ -6,10 +6,10 @@ import { useHistory } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import txs from '../../../utils/txs';
-import { Dots, ButtonIcon } from '../../../components';
+import { Dots, ButtonIcon, BtnGrd } from '../../../components';
 import { CYBER, PATTERN_CYBER } from '../../../utils/config';
 import { trimString, groupMsg } from '../../../utils/utils';
-import { getPin, getPinsCid } from '../../../utils/search/utils';
+import { getPin } from '../../../utils/search/utils';
 import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
@@ -18,7 +18,7 @@ import {
   BOOT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
-import { ActionBarSteps, BtnGrd } from '../components';
+import { ActionBarSteps } from '../components';
 import STEP_INFO from './utils';
 
 import imgKeplr from '../../../image/keplr-icon.svg';
@@ -27,6 +27,7 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
+import { getPinsCid } from '../../../utils/utils-ipfs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

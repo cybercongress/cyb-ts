@@ -17,7 +17,6 @@ import {
   MainContainer,
   MoonAnimation,
   Stars,
-  ContainerGradientText,
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
@@ -30,6 +29,7 @@ import Info from './Info';
 
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
+import { ContainerGradientText } from '../../../components';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);

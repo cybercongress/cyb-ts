@@ -1,9 +1,8 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import { ContainerGradient } from '../components';
 import MoonCode from './MoonCode';
-import { LinkWindow } from '../../../components';
+import { LinkWindow, ContainerGradient } from '../../../components';
 
 const linkMovie =
   'https://gateway.ipfs.cybernode.ai/ipfs/QmZKL7toTbohUtrd57LaUgcFB8Z47PfAEU1MdLFNP66tXP';

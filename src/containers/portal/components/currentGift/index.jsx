@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { formatNumber } from '../../../../utils/utils';
-import ContainerGradient from '../containerGradient/ContainerGradient';
+import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
 import styles from './styles.scss';
 import { PATTERN_CYBER } from '../../../../utils/config';
 

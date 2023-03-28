@@ -1,7 +1,11 @@
 import { Pane } from '@cybercongress/gravity';
-import { Votes, IconStatus, Tooltip } from '../../../components';
+import {
+  Votes,
+  IconStatus,
+  Tooltip,
+  ContainerGradientText,
+} from '../../../components';
 import { PROPOSAL_STATUS } from '../../../utils/config';
-import { ContainerGradientText } from '../../portal/components';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');

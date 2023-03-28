@@ -3,13 +3,14 @@ import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
 
-import { MainContainer, ContainerGradientText } from '../portal/components';
+import { MainContainer } from '../portal/components';
 import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
 import { FormatNumberTokens } from '../nebula/components';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';
+import { ContainerGradientText } from '../../components';
 
 const valueContext = {
   totalCap: 0,

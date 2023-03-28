@@ -14,7 +14,7 @@ import {
   ButtonImgText,
 } from '../../components';
 
-import { getPin, getPinsCid } from '../../utils/search/utils';
+import { getPin } from '../../utils/search/utils';
 
 import {
   LEDGER,
@@ -24,6 +24,7 @@ import {
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
+import { getPinsCid } from '../..//utils/utils-ipfs';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');

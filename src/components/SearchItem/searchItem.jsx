@@ -1,6 +1,6 @@
-import * as React from 'react';
+import React from 'react';
 import styles from './styles.scss';
-import { ContainerGradientText } from '../../containers/portal/components';
+import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import Status from './status';
 
 const gradeColorRank = (grade) => {

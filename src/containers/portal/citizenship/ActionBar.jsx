@@ -4,10 +4,10 @@ import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 // import { ActionBarSteps } from '../../energy/component/actionBar';
-import { Dots } from '../../../components';
+import { Dots, BtnGrd } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
-import { BtnGrd, ActionBarSteps } from '../components';
+import { ActionBarSteps } from '../components';
 
 const {
   STEP_INIT,

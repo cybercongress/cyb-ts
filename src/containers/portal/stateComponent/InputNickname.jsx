@@ -1,6 +1,5 @@
-import { ContainerGradient } from '../components';
 import { steps } from '../citizenship/utils';
-import { Input } from '../../../components';
+import { Input, ContainerGradient } from '../../../components';
 
 function InputNickname({ valueNickname, step, onChangeNickname }) {
   return (

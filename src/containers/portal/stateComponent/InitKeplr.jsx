@@ -1,4 +1,4 @@
-import { ContainerGradient } from '../components';
+import { ContainerGradient } from '../../../components';
 
 const linkMovie =
   'https://gateway.ipfs.cybernode.ai/ipfs/QmchVARwukqgxU3PA56UTFzkREZc9uFwki1MmCD249yK7S';

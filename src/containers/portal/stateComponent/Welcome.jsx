@@ -1,4 +1,4 @@
-import { ContainerGradient } from '../components';
+import { ContainerGradient } from '../../../components';
 
 function Welcome() {
   return (

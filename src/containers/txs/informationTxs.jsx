@@ -1,7 +1,7 @@
 import { Text, Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { formatNumber } from '../../utils/search/utils';
-import { ContainerGradient } from '../portal/components';
+import { ContainerGradient } from '../../components';
 
 const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');

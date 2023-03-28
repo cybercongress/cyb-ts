@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { ContainerGradientText, MainContainer } from '../portal/components';
+import { MainContainer } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';
 import Select from '../teleport/components/select';
 import {
@@ -13,7 +13,7 @@ import {
 import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
-import { Input } from '../../components';
+import { ContainerGradientText, Input } from '../../components';
 
 const dataOpts = ['external', 'embedded'];
 

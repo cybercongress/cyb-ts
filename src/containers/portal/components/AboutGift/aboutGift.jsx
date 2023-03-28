@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
-import ContainerGradient from '../containerGradient/ContainerGradient';
+import ContainerGradient from '../../../../components/containerGradient/ContainerGradient';
 import { ProgressBar } from '../progressCard';
 import styles from './styles.scss';
 import { formatNumber } from '../../../../utils/utils';

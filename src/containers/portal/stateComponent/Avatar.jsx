@@ -1,4 +1,4 @@
-import { ContainerGradient } from '../components';
+import { ContainerGradient } from '../../../components';
 import ContainerAvatar, {
   ButtonContainerAvatar,
 } from '../components/avataIpfs/containerAvatar';

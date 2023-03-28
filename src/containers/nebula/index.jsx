@@ -4,8 +4,8 @@ import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { MainContainer, ContainerGradient } from '../portal/components';
-import { DenomArr } from '../../components';
+import { MainContainer } from '../portal/components';
+import { DenomArr, ContainerGradient } from '../../components';
 import {
   formatNumber,
   replaceSlash,

@@ -22,7 +22,7 @@ import {
   Passport,
 } from '../stateComponent';
 import ActionBar from './ActionBar';
-import { getPin, getCredit, getPinsCid } from '../../../utils/search/utils';
+import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
 import {
@@ -37,6 +37,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
+import { getPinsCid } from '../../../utils/utils-ipfs';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');

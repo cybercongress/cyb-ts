@@ -1,4 +1,4 @@
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
+import { ContainerGradientText } from '../../../../components/containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
 function Released({ released }) {

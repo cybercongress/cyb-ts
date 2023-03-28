@@ -13,6 +13,7 @@ import {
   ButtonImgText,
   Account,
   Input,
+  BtnGrd,
 } from '../../components';
 import { AppContext } from '../../context';
 
@@ -25,7 +26,6 @@ import {
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,
 } from '../../utils/config';
-import BtnGrd from '../../components/btnGrd';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgCyber = require('../../image/blue-circle.png');

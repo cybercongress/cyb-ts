@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
 import styles from './style.scss';
-import { trimString } from '../../../../utils/utils';
+import { trimString } from '../../utils/utils';
 
 const classNames = require('classnames');
 

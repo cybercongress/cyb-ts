@@ -1,5 +1,5 @@
 import { Input, LinkWindow } from '../../components';
-import { ContainerGradient, MainContainer } from '../portal/components';
+import { MainContainer } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';
 import Select from '../teleport/components/select';
 import CodeSnipet from './ipfsComponents/codeSnipet';
@@ -7,6 +7,7 @@ import {
   ContainerKeyValue,
   renderOptions,
 } from './ipfsComponents/utilsComponents';
+import { ContainerGradient } from '../../components';
 
 const ipfsDaemon = `$ ipfs daemon
 Initializing daemon... 

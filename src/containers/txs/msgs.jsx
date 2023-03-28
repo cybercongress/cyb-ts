@@ -1,6 +1,6 @@
 import { Text, Pane } from '@cybercongress/gravity';
 import Activites from './Activites';
-import { ContainerGradient } from '../portal/components';
+import { ContainerGradient } from '../../components';
 
 function Msgs({ data }) {
   return (

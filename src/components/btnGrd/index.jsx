@@ -28,28 +28,6 @@ const stopAudioHover = () => {
 };
 
 function BtnGrd({ disabled, text, img, pending, onClick, ...props }) {
-  // useEffect(() => {
-  //   const element = document.querySelector('#BtnGrd');
-
-  //   element.addEventListener('click', playAudioClick, false);
-
-  //   return () => {
-  //     element.removeEventListener('click', playAudioClick);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const element = document.querySelector('#BtnGrd');
-
-  //   element.addEventListener('mouseover', playAudioHover, false);
-  //   element.addEventListener('mouseout', stopAudioHover, false);
-
-  //   return () => {
-  //     element.removeEventListener('mouseover', playAudioHover);
-  //     element.removeEventListener('mouseout', stopAudioHover);
-  //     stopAudioHover();
-  //   };
-  // }, []);
 
   const handleClick = () => {
     if (onClick) {
