@@ -6,6 +6,11 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
+if (process.env.IPFS_DEPLOY) {
+  // eslint-disable-next-line no-console
+  console.log('*** IPFS Version ***');
+}
+
 module.exports = {
   devtool: false,
   entry: [path.join(__dirname, 'src', 'index.tsx')],
@@ -64,11 +69,17 @@ module.exports = {
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
       filename: 'index.html',
+      publicPath: './',
       inject: 'body',
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_IPFS_DEPLOY': JSON.stringify(
+        process.env.IPFS_DEPLOY
+      ),
     }),
   ],
   module: {

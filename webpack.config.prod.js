@@ -6,6 +6,9 @@ const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
   mode: 'production',
+  output: {
+    publicPath: './',
+  },
   optimization: {
     nodeEnv: 'production',
     concatenateModules: true,
@@ -18,7 +21,6 @@ module.exports = merge(commonConfig, {
     minimize: true,
     minimizer: [
       new CssMinimizerPlugin(),
-
       new TerserPlugin({
         // Use multi-process parallel running to improve the build speed
         // Default number of concurrent runs: os.cpus().length - 1
@@ -27,13 +29,17 @@ module.exports = merge(commonConfig, {
         cache: true,
         sourceMap: true,
       }),
-      new CompressionWebpackPlugin({
-        filename: '[path][base].gz',
-        algorithm: 'gzip',
-        test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg?.+$/,
-        threshold: 10240,
-        minRatio: 0.8,
-      }),
+      ...(!process.env.IPFS_DEPLOY
+        ? [
+            new CompressionWebpackPlugin({
+              filename: '[path][base].gz',
+              algorithm: 'gzip',
+              test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg?.+$/,
+              threshold: 10240,
+              minRatio: 0.8,
+            }),
+          ]
+        : []),
     ],
   },
 });
