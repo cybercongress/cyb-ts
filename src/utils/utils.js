@@ -231,7 +231,7 @@ const exponentialToDecimal = (exponential) => {
   if (decimal.toLowerCase().includes('e-')) {
     const exponentialSplitted = decimal.split('e-');
     let prefix = '0.';
-    for (let i = 0; i < +exponentialSplitted[1] - 1; i + 1) {
+    for (let i = 0; i < +exponentialSplitted[1] - 1; i++) {
       prefix += '0';
     }
     decimal = prefix + exponentialSplitted[0].replace('.', '');
