@@ -105,16 +105,13 @@ function SwichAccount({
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
-  // se;
-
-  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
-    usePopperTooltip({
-      trigger: 'click',
-      closeOnTriggerHidden: true,
-      visible: controlledVisible,
-      onVisibleChange: setControlledVisible,
-      placement: 'bottom',
-    });
+  const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
+    trigger: 'click',
+    closeOnTriggerHidden: true,
+    visible: controlledVisible,
+    onVisibleChange: setControlledVisible,
+    placement: 'bottom',
+  });
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const useGetName = useMemo(() => {
@@ -160,7 +157,7 @@ function SwichAccount({
     if (accounts && accounts !== null) {
       items = Object.keys(accounts)
         .filter((item) => defaultAccount.name !== item)
-        .map((key, i) => {
+        .map((key) => {
           return (
             <AccountItem
               key={key}

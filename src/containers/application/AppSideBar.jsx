@@ -1,8 +1,7 @@
-import React from 'react';
 import cx from 'classnames';
 import styles from './styles.scss';
 
-function AppSideBar({ children, onCloseSidebar, openMenu }) {
+function AppSideBar({ children, openMenu }) {
   return (
     <div
       className={cx(styles.sideBar, {

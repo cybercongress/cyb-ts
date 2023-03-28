@@ -57,14 +57,13 @@ function SwichNetwork({
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
   const { networks } = useContext(AppContext);
-  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
-    usePopperTooltip({
-      trigger: 'click',
-      closeOnOutsideClick: false,
-      visible: controlledVisible,
-      onVisibleChange: setControlledVisible,
-      placement: 'bottom',
-    });
+  const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
+    trigger: 'click',
+    closeOnOutsideClick: false,
+    visible: controlledVisible,
+    onVisibleChange: setControlledVisible,
+    placement: 'bottom',
+  });
 
   const onClickChain = async (chainId, prefix) => {
     localStorage.setItem('chainId', chainId);

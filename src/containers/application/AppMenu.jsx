@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
 
 import { Bookmarks } from '../../components/appMenu/AppMenu';
@@ -22,17 +20,13 @@ const itemsMenu = (address) => {
   let linkLog = '/robot';
   let linkBrain = '/graph';
   let linkSwarm = '/robot';
-  let linkSigma = '/robot';
   let linkSecurity = '/robot';
-  let linkCyberlinks = '/robot';
   let linkTimeline = '/robot';
   let linkBadges = '/robot';
   if (address !== null) {
     linkLog = `/network/bostrom/contract/${address.bech32}`;
     linkSwarm = `/network/bostrom/contract/${address.bech32}/swarm`;
-    linkSigma = `/network/bostrom/contract/${address.bech32}/sigma`;
     linkSecurity = `/network/bostrom/contract/${address.bech32}/security`;
-    linkCyberlinks = `/network/bostrom/contract/${address.bech32}/cyberlinks`;
     linkTimeline = `/network/bostrom/contract/${address.bech32}/timeline`;
     linkBadges = `/network/bostrom/contract/${address.bech32}/badges`;
     linkBrain = `/pgraph/${address.bech32}`;

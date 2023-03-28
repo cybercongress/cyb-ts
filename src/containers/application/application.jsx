@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
-import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import {
   initIpfs,
@@ -66,9 +65,6 @@ function App({
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
-  const [keywordHash, setKeywordHash] = useState(null);
-
-  // console.log(accounts);
 
   useEffect(() => {
     const updateIpfsStage = async () => {
@@ -105,21 +101,6 @@ function App({
       setQueryProps('');
     }
   }, [location.pathname]);
-
-  useEffect(() => {
-    const { pathname } = location;
-    if (pathname.match(/search/gm) && pathname.match(/search/gm).length > 0) {
-      const querySubstr = pathname.substr(8, pathname.length);
-      getKeywordHash(querySubstr);
-    } else {
-      setKeywordHash(null);
-    }
-  }, [location]);
-
-  const getKeywordHash = async (text) => {
-    const hash = await getIpfsHash(encodeSlash(text).toLowerCase());
-    setKeywordHash(hash);
-  };
 
   useEffect(() => {
     const getPrice = async () => {
