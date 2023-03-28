@@ -69,7 +69,7 @@ module.exports = {
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
       filename: 'index.html',
-      publicPath: './',
+      ...(!process.env.IPFS_DEPLOY ? { publicPath: './' } : {}),
       inject: 'body',
     }),
     new MiniCssExtractPlugin({
