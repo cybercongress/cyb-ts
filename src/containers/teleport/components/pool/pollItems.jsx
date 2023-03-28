@@ -7,7 +7,7 @@ import { AppContext } from '../../../../context';
 import { CYBER } from '../../../../utils/config';
 import { replaceSlash } from '../../../../utils/utils';
 
-const PoolItemsList = ({ assets, token, ...props }) => {
+function PoolItemsList({ assets, token, ...props }) {
   const { marketData, traseDenom } = useContext(AppContext);
 
   const amounToken = useMemo(() => {
@@ -93,6 +93,6 @@ const PoolItemsList = ({ assets, token, ...props }) => {
       />
     </div>
   );
-};
+}
 
 export default PoolItemsList;

@@ -9,43 +9,45 @@ import {
 } from '../../../components';
 import { formatNumber, convertResources } from '../../../utils/utils';
 
-const TableItem = ({ item, index, selectRouteFunc, selected }) => (
-  <Table.Row
-    borderBottom="none"
-    display="flex"
-    key={index}
-    onSelect={() => selectRouteFunc(item, index)}
-    isSelectable
-    boxShadow={selected ? '0px 0px 7px #3ab793db' : ''}
-  >
-    <Table.TextCell textAlign="start">
-      <TextTable>
-        <Account address={item.destination} />
-      </TextTable>
-    </Table.TextCell>
-    <Table.TextCell textAlign="center">
-      <TextTable>{item.alias}</TextTable>
-    </Table.TextCell>
-    <Table.TextCell textAlign="end">
-      {item.resource.milliampere ? (
+function TableItem({ item, index, selectRouteFunc, selected }) {
+  return (
+    <Table.Row
+      borderBottom="none"
+      display="flex"
+      key={index}
+      onSelect={() => selectRouteFunc(item, index)}
+      isSelectable
+      boxShadow={selected ? '0px 0px 7px #3ab793db' : ''}
+    >
+      <Table.TextCell textAlign="start">
         <TextTable>
-          {formatNumber(convertResources(item.resource.milliampere))}
+          <Account address={item.destination} />
         </TextTable>
-      ) : (
-        <TextTable>0</TextTable>
-      )}
-    </Table.TextCell>
-    <Table.TextCell textAlign="end">
-      {item.resource.millivolt ? (
-        <TextTable>
-          {formatNumber(convertResources(item.resource.millivolt))}
-        </TextTable>
-      ) : (
-        <TextTable>0</TextTable>
-      )}
-    </Table.TextCell>
-  </Table.Row>
-);
+      </Table.TextCell>
+      <Table.TextCell textAlign="center">
+        <TextTable>{item.alias}</TextTable>
+      </Table.TextCell>
+      <Table.TextCell textAlign="end">
+        {item.resource.milliampere ? (
+          <TextTable>
+            {formatNumber(convertResources(item.resource.milliampere))}
+          </TextTable>
+        ) : (
+          <TextTable>0</TextTable>
+        )}
+      </Table.TextCell>
+      <Table.TextCell textAlign="end">
+        {item.resource.millivolt ? (
+          <TextTable>
+            {formatNumber(convertResources(item.resource.millivolt))}
+          </TextTable>
+        ) : (
+          <TextTable>0</TextTable>
+        )}
+      </Table.TextCell>
+    </Table.Row>
+  );
+}
 
 function Outcome({ sourceRouted, selectRouteFunc, selected }) {
   let routerData = [];

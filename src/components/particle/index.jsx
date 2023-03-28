@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { useGetCreator } from './hooks';
-import { Titile, Content } from './components';
-import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
-import { getContentByCid } from '../../utils/utils-ipfs';
+import { Titile } from './components';
 
 function Particle({ cid, node }) {
   const { creator } = useGetCreator(cid);

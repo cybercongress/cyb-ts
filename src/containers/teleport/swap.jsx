@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
-import { Denom, DenomArr } from '../../components';
+import { DenomArr } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
-import { getCoinDecimals, networkList } from './utils';
+import { networkList } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 

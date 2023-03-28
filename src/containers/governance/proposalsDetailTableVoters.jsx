@@ -1,19 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  IconStatus,
-  ContainerPane,
-  Item,
-  Legend,
-  Account,
-  Dots,
-  TextTable,
-} from '../../components';
-import { VOTE_OPTION } from '../../utils/config';
+import { Account, Dots, TextTable } from '../../components';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
 import { ContainerGradientText } from '../portal/components';
 import { timeSince, trimString } from '../../utils/utils';
@@ -55,7 +46,7 @@ const optionTextColor = (option) => {
   }
 };
 
-const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
+function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -201,6 +192,6 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
       </Table>
     </Pane>
   );
-};
+}
 
 export default ProposalsIdDetailTableVoters;

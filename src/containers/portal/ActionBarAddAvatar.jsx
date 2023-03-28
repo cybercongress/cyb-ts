@@ -6,8 +6,8 @@ import React, {
   useContext,
 } from 'react';
 import { connect } from 'react-redux';
-import txs from '../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
+import txs from '../../utils/txs';
 import { ActionBarSteps, BtnGrd, ActionBarContainer } from './components';
 import { Dots } from '../../components';
 import { getPin } from '../../utils/search/utils';

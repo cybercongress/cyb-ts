@@ -15,22 +15,24 @@ const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
 
-export const Legend = ({ color, text, ...props }) => (
-  <Pane display="flex" alignItems="center" {...props}>
-    <Pane
-      width={12}
-      height={12}
-      borderRadius="2px"
-      display="inline-block"
-      marginRight={10}
-      backgroundColor={color}
-      verticalalign="middle"
-    />
-    <Text color="#fff" fontSize="16px">
-      {text}
-    </Text>
-  </Pane>
-);
+export function Legend({ color, text, ...props }) {
+  return (
+    <Pane display="flex" alignItems="center" {...props}>
+      <Pane
+        width={12}
+        height={12}
+        borderRadius="2px"
+        display="inline-block"
+        marginRight={10}
+        backgroundColor={color}
+        verticalalign="middle"
+      />
+      <Text color="#fff" fontSize="16px">
+        {text}
+      </Text>
+    </Pane>
+  );
+}
 
 export const Votes = ({ finalVotes }) => {
   try {
@@ -155,7 +157,7 @@ export const Votes = ({ finalVotes }) => {
   }
 };
 
-export const IconStatus = ({ status, size, text, ...props }) => {
+export function IconStatus({ status, size, text, ...props }) {
   let imgIcon;
   let statusText = '';
 
@@ -201,9 +203,9 @@ export const IconStatus = ({ status, size, text, ...props }) => {
       )}
     </Pane>
   );
-};
+}
 
-export const Deposit = ({ totalDeposit, minDeposit }) => {
+export function Deposit({ totalDeposit, minDeposit }) {
   let procentDeposit = 0;
 
   if (totalDeposit > minDeposit) {
@@ -259,21 +261,30 @@ export const Deposit = ({ totalDeposit, minDeposit }) => {
       )}
     </Pane>
   );
-};
+}
 
-export const ContainerPane = ({ children, ...props }) => (
-  <Pane {...props} paddingX={30} paddingY={20} boxShadow="0 0 3px 0px #3ab793">
-    {children}
-  </Pane>
-);
+export function ContainerPane({ children, ...props }) {
+  return (
+    <Pane
+      {...props}
+      paddingX={30}
+      paddingY={20}
+      boxShadow="0 0 3px 0px #3ab793"
+    >
+      {children}
+    </Pane>
+  );
+}
 
-export const Item = ({ title, value, ...props }) => (
-  <Pane {...props} display="flex">
-    <Text minWidth="150px" color="#fff" fontSize="16px">
-      {title}:{' '}
-    </Text>
-    <Text color="#fff" fontSize="16px">
-      {value}
-    </Text>
-  </Pane>
-);
+export function Item({ title, value, ...props }) {
+  return (
+    <Pane {...props} display="flex">
+      <Text minWidth="150px" color="#fff" fontSize="16px">
+        {title}:{' '}
+      </Text>
+      <Text color="#fff" fontSize="16px">
+        {value}
+      </Text>
+    </Pane>
+  );
+}

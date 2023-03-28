@@ -1,4 +1,4 @@
-import React, {  useContext ,useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { HistoryContext } from './historyContext';
 
 function TraceTxTable() {
@@ -7,7 +7,6 @@ function TraceTxTable() {
   // useEffect(() => {
   //   test.changeHistory('res');
   // }, [test]);
-  
 
   return <div>traceTxTable</div>;
 }

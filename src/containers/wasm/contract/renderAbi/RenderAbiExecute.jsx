@@ -1,10 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import txs from '../../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
+import txs from '../../../../utils/txs';
 import { AppContext } from '../../../../context';
 import { CYBER } from '../../../../utils/config';
 import JsonSchemaParse from './JsonSchemaParse';
-import { FlexWrapCantainer } from '../../ui/ui';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -72,7 +71,6 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
     try {
       const [{ address }] = await keplr.signer.getAccounts();
 
-     
       const executeResponseResult = await keplr.execute(
         address,
         contractAddress,

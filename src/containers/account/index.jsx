@@ -1,22 +1,14 @@
 /* eslint-disable no-nested-ternary */
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Route, Link, useParams, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 // import Balance fro./mainnce';
 import Heroes from './tabs/heroes';
-import { coinDecimals, formatNumber, asyncForEach } from '../../utils/utils';
-import {
-  Loading,
-  Copy,
-  ContainerCard,
-  Card,
-  Dots,
-  NoItems,
-} from '../../components';
+import { formatNumber } from '../../utils/utils';
+import { Copy, ContainerCard, Card, Dots } from '../../components';
 import ActionBarContainer from './actionBar';
 // import GetTxs from './tabs/txs';
 import Main from './tabs/main';
@@ -24,33 +16,34 @@ import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
 import FollowsTab from './tabs/follows';
 import AvatarIpfs from './component/avatarIpfs';
-import CyberLinkCount from './component/cyberLinkCount';
 import { AppContext } from '../../context';
 import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
 
-const TabBtn = ({ text, isSelected, onSelect, to }) => (
-  <Link to={to}>
-    <Tab
-      key={text}
-      isSelected={isSelected}
-      onSelect={onSelect}
-      paddingX={5}
-      paddingY={20}
-      marginX={3}
-      borderRadius={4}
-      color="#36d6ae"
-      boxShadow="0px 0px 5px #36d6ae"
-      fontSize="16px"
-      whiteSpace="nowrap"
-      width="100%"
-    >
-      {text}
-    </Tab>
-  </Link>
-);
+function TabBtn({ text, isSelected, onSelect, to }) {
+  return (
+    <Link to={to}>
+      <Tab
+        key={text}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        paddingX={5}
+        paddingY={20}
+        marginX={3}
+        borderRadius={4}
+        color="#36d6ae"
+        boxShadow="0px 0px 5px #36d6ae"
+        fontSize="16px"
+        whiteSpace="nowrap"
+        width="100%"
+      >
+        {text}
+      </Tab>
+    </Link>
+  );
+}
 
 function AccountDetails({ node, mobile, defaultAccount }) {
   const { jsCyber } = useContext(AppContext);

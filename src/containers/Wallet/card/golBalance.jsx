@@ -9,14 +9,16 @@ import {
   formatNumber,
 } from '../../../utils/utils';
 
-const Row = ({ title, value, marginBottomValue, fontSizeValue, ...props }) => (
-  <Pane width="100%" display="flex" alignItems="center" {...props}>
-    <Pane fontSize={fontSizeValue} marginBottom={marginBottomValue}>
-      {value}
+function Row({ title, value, marginBottomValue, fontSizeValue, ...props }) {
+  return (
+    <Pane width="100%" display="flex" alignItems="center" {...props}>
+      <Pane fontSize={fontSizeValue} marginBottom={marginBottomValue}>
+        {value}
+      </Pane>
+      <Pane>{title}</Pane>
     </Pane>
-    <Pane>{title}</Pane>
-  </Pane>
-);
+  );
+}
 
 function GolBalance({ balance, accounts, ...props }) {
   const { eth, gol } = balance;

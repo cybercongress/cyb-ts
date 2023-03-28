@@ -8,31 +8,23 @@ import React, {
 import { connect } from 'react-redux';
 import { useLocation, useHistory, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import useSWR from 'swr';
 import BigNumber from 'bignumber.js';
 import queryString from 'query-string';
 import { AppContext } from '../../context';
-import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import {
   reduceBalances,
-  formatNumber,
-  roundNumber,
-  exponentialToDecimal,
   getDisplayAmountReverce,
   findDenomInTokenList,
   isNative,
 } from '../../utils/utils';
-import { Dots, ValueImg, ButtonIcon } from '../../components';
 import {
   calculateCounterPairAmount,
-  calculateSlippage,
   sortReserveCoinDenoms,
   getMyTokenBalance,
-  reduceAmounToken,
   getPoolToken,
   getCoinDecimals,
-  networkList,
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
@@ -41,10 +33,8 @@ import getBalances from './hooks/getBalances';
 import Swap from './swap';
 import Withdraw from './withdraw';
 import PoolData from './poolData';
-import coinDecimalsConfig from '../../utils/configToken';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
 import networks from '../../utils/networkListIbc';
-import Carousel from '../portal/gift/carousel1/Carousel';
 import { MainContainer } from '../portal/components';
 import useGetSelectTab from './hooks/useGetSelectTab';
 // import TracerTx from './tx/TracerTx';

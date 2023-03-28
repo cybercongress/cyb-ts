@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { getDecimal } from '../../utils/utils';
 import { formatNumber } from '../../utils/search/utils';

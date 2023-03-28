@@ -9,36 +9,38 @@ import {
 } from '../../../components';
 import { formatNumber, convertResources } from '../../../utils/utils';
 
-const TableItem = ({ item, index }) => (
-  <Table.Row borderBottom="none" display="flex" key={index}>
-    <Table.TextCell textAlign="start">
-      <TextTable>
-        <Account address={item.source} />
-      </TextTable>
-    </Table.TextCell>
-    <Table.TextCell textAlign="center">
-      <TextTable>{item.alias}</TextTable>
-    </Table.TextCell>
-    <Table.TextCell textAlign="end">
-      {item.resource.milliampere ? (
+function TableItem({ item, index }) {
+  return (
+    <Table.Row borderBottom="none" display="flex" key={index}>
+      <Table.TextCell textAlign="start">
         <TextTable>
-          {formatNumber(convertResources(item.resource.milliampere))}
+          <Account address={item.source} />
         </TextTable>
-      ) : (
-        <TextTable>0</TextTable>
-      )}
-    </Table.TextCell>
-    <Table.TextCell textAlign="end">
-      {item.resource.millivolt ? (
-        <TextTable>
-          {formatNumber(convertResources(item.resource.millivolt))}
-        </TextTable>
-      ) : (
-        <TextTable>0</TextTable>
-      )}
-    </Table.TextCell>
-  </Table.Row>
-);
+      </Table.TextCell>
+      <Table.TextCell textAlign="center">
+        <TextTable>{item.alias}</TextTable>
+      </Table.TextCell>
+      <Table.TextCell textAlign="end">
+        {item.resource.milliampere ? (
+          <TextTable>
+            {formatNumber(convertResources(item.resource.milliampere))}
+          </TextTable>
+        ) : (
+          <TextTable>0</TextTable>
+        )}
+      </Table.TextCell>
+      <Table.TextCell textAlign="end">
+        {item.resource.millivolt ? (
+          <TextTable>
+            {formatNumber(convertResources(item.resource.millivolt))}
+          </TextTable>
+        ) : (
+          <TextTable>0</TextTable>
+        )}
+      </Table.TextCell>
+    </Table.Row>
+  );
+}
 
 function Income({ destinationRoutes, mobile }) {
   let routerData = [];

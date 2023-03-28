@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { Loading, Dots } from '../../../components';
-import { formatNumber } from '../../../utils/utils';
+import { Dots } from '../../../components';
 
 function CyberLinkCount({ accountUser }) {
   try {

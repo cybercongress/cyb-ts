@@ -3,7 +3,7 @@ import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
 function Released({ released }) {
-  console.log('released', released)
+  console.log('released', released);
   return (
     <ContainerGradientText status="red">
       <div className={styles.containerReleased}>

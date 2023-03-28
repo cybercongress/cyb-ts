@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
-import { IconStatus, ContainerPane, Votes, Deposit } from '../../components';
+import { IconStatus, Votes, Deposit } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
 import { ContainerGradientText } from '../portal/components';
@@ -12,13 +12,13 @@ const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
 
-const ProposalsDetailProgressBar = ({
+function ProposalsDetailProgressBar({
   proposals,
   totalDeposit,
   minDeposit,
   tallying,
   tally,
-}) => {
+}) {
   const { quorum, threshold, veto } = tallying;
   const { yes, abstain, no, noWithVeto, participation } = tally;
 
@@ -55,7 +55,8 @@ const ProposalsDetailProgressBar = ({
           </Text>
           <Deposit totalDeposit={totalDeposit} minDeposit={minDeposit} />
           <Text marginX={5} color="#fff" whiteSpace="nowrap">
-            {formatNumber(minDeposit)} {CYBER.DENOM_CYBER.toUpperCase()} MinDeposit
+            {formatNumber(minDeposit)} {CYBER.DENOM_CYBER.toUpperCase()}{' '}
+            MinDeposit
           </Text>
         </Pane>
       </ContainerGradientText>
@@ -127,6 +128,6 @@ const ProposalsDetailProgressBar = ({
       </ContainerGradientText>
     </Pane>
   );
-};
+}
 
 export default ProposalsDetailProgressBar;

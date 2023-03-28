@@ -9,21 +9,12 @@ import {
   TransactionError,
 } from '../../components';
 
-const {
-  STAGE_ERROR,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-} = LEDGER;
+const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
+  LEDGER;
 
 function ActionBarStaps({ stageActionBarStaps }) {
-  const {
-    stage,
-    cleatState,
-    txHash,
-    txHeight,
-    errorMessage,
-  } = stageActionBarStaps;
+  const { stage, cleatState, txHash, txHeight, errorMessage } =
+    stageActionBarStaps;
 
   if (stage === STAGE_SUBMITTED) {
     return (

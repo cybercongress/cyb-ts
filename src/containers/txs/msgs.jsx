@@ -3,7 +3,7 @@ import { Text, Pane } from '@cybercongress/gravity';
 import Activites from './Activites';
 import { ContainerGradient } from '../portal/components';
 
-const Msgs = ({ data }) => {
+function Msgs({ data }) {
   return (
     <ContainerGradient
       userStyleContent={{ height: 'auto' }}
@@ -21,6 +21,6 @@ const Msgs = ({ data }) => {
       </Pane>
     </ContainerGradient>
   );
-};
+}
 
 export default Msgs;

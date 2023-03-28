@@ -1,36 +1,21 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { connect } from 'react-redux';
-import { Pane, Text, Icon } from '@cybercongress/gravity';
-import Web3Utils from 'web3-utils';
-import { Link } from 'react-router-dom';
+import { Text } from '@cybercongress/gravity';
 
-import { check } from 'prettier';
-import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
-import NotFound from '../application/notFound';
-import ActionBarContainer from './actionBarContainer';
+import { Loading, LinkWindow } from '../../components';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
-import injectKeplr from './injectKeplr';
 import BanerHelp from '../help/banerHelp';
 
-import { LEDGER, COSMOS, PATTERN_CYBER } from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 import {
-  getBalance,
-  getTotalEUL,
   getImportLink,
   getAccountBandwidth,
   getGraphQLQuery,
 } from '../../utils/search/utils';
-import { formatCurrency } from '../../utils/utils';
 import { PocketCard } from './components';
-import {
-  PubkeyCard,
-  GolCard,
-  ImportLinkLedger,
-  GolBalance,
-  TweetCard,
-} from './card';
+import { PubkeyCard, ImportLinkLedger, TweetCard } from './card';
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
 import { AppContext } from '../../context';

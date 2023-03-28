@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useContext } from 'react';
 import { Transition } from 'react-transition-group';
-import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
 import DetailsBalance from '../DetailsBalance';
 import ChartTotal from '../ChartTotal';
@@ -8,7 +7,6 @@ import BtnArrow from '../BtnArrow';
 import styles from './styles.scss';
 import { AppContext } from '../../../../../context';
 import { convertAmount, replaceSlash } from '../../../../../utils/utils';
-import { CYBER } from '../../../../../utils/config';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { DenomArr } from '../../../../../components';
 

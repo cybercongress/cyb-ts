@@ -6,16 +6,18 @@ import { LinkWindow, Dots } from '../../components';
 const success = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const warning = require('../../image/ionicons_svg_ios-warning.svg');
 
-const Img = ({ img }) => (
-  <img
-    src={img}
-    alt="img-verified"
-    style={{
-      width: 20,
-      height: 20,
-    }}
-  />
-);
+function Img({ img }) {
+  return (
+    <img
+      src={img}
+      alt="img-verified"
+      style={{
+        width: 20,
+        height: 20,
+      }}
+    />
+  );
+}
 
 function KeybaseCheck({ identity }) {
   const [verified, setVerified] = useState(false);
@@ -24,7 +26,7 @@ function KeybaseCheck({ identity }) {
 
   useEffect(() => {
     setLoading(true);
-    keybaseCheck(identity).then(data => {
+    keybaseCheck(identity).then((data) => {
       if (data.status.code > 0) {
         setVerified(false);
         setLoading(false);

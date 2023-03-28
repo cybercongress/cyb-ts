@@ -7,23 +7,27 @@ import { CYBER } from '../../../utils/config';
 
 const { DENOM_CYBER, HYDROGEN } = CYBER;
 
-const TootipContent = () => (
-  <div style={{ width: 200 }}>
-    you receive H form staked BOOT, you can use H for investmint A and V
-  </div>
-);
+function TootipContent() {
+  return (
+    <div style={{ width: 200 }}>
+      you receive H form staked BOOT, you can use H for investmint A and V
+    </div>
+  );
+}
 
-const ContainerGrid = ({ children }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))"
-    gridGap="20px"
-  >
-    {children}
-  </Pane>
-);
+function ContainerGrid({ children }) {
+  return (
+    <Pane
+      marginTop={10}
+      marginBottom={50}
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))"
+      gridGap="20px"
+    >
+      {children}
+    </Pane>
+  );
+}
 
 function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
   return (

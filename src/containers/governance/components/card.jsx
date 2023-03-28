@@ -1,8 +1,7 @@
 import React from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
-import { Votes, IconStatus, Tooltip, Deposit } from '../../../components';
-import { formatCurrency, formatNumber } from '../../../utils/utils';
-import { CYBER, PROPOSAL_STATUS } from '../../../utils/config';
+import { Pane } from '@cybercongress/gravity';
+import { Votes, IconStatus, Tooltip } from '../../../components';
+import { PROPOSAL_STATUS } from '../../../utils/config';
 import { ContainerGradientText } from '../../portal/components';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
@@ -66,7 +65,7 @@ const checkTypeProps = (type = '') => {
   return returnResponseTypeObj(textPropsImg, type);
 };
 
-const TypeProps = ({ type }) => {
+function TypeProps({ type }) {
   const { typeImg, textType } = checkTypeProps(type);
 
   return (
@@ -86,53 +85,57 @@ const TypeProps = ({ type }) => {
       <img style={{ width: 25, height: 25 }} src={typeImg} alt="type" />
     </Tooltip>
   );
-};
+}
 
-const AcceptedCard = ({ id, name, votes, type, amount, timeEnd }) => (
-  <ContainerGradientText
-    status="green"
-    userStyleContent={{ padding: '10px 35px 20px 15px' }}
-  >
-    <Pane position="absolute" right="5px" top="5px">
-      <TypeProps type={type} />
-    </Pane>
-    <Pane fontSize="20px" marginBottom={15}>
-      #{id} {name}
-    </Pane>
-    <Pane marginBottom={5}>
-      <Pane marginBottom={2}>Votes:</Pane>
-      <Votes finalVotes={finalTallyResult(votes)} />
-    </Pane>
-    <Pane>
-      <Pane marginBottom={2}>Time accepted:</Pane>
-      <Pane>{timeEnd}</Pane>
-    </Pane>
-  </ContainerGradientText>
-);
+function AcceptedCard({ id, name, votes, type, amount, timeEnd }) {
+  return (
+    <ContainerGradientText
+      status="green"
+      userStyleContent={{ padding: '10px 35px 20px 15px' }}
+    >
+      <Pane position="absolute" right="5px" top="5px">
+        <TypeProps type={type} />
+      </Pane>
+      <Pane fontSize="20px" marginBottom={15}>
+        #{id} {name}
+      </Pane>
+      <Pane marginBottom={5}>
+        <Pane marginBottom={2}>Votes:</Pane>
+        <Votes finalVotes={finalTallyResult(votes)} />
+      </Pane>
+      <Pane>
+        <Pane marginBottom={2}>Time accepted:</Pane>
+        <Pane>{timeEnd}</Pane>
+      </Pane>
+    </ContainerGradientText>
+  );
+}
 
-const RejectedCard = ({ id, name, votes, type, amount, timeEnd }) => (
-  <ContainerGradientText
-    status="red"
-    userStyleContent={{ padding: '10px 35px 20px 15px' }}
-  >
-    <Pane position="absolute" right="5px" top="5px">
-      <TypeProps type={type} />
-    </Pane>
-    <Pane fontSize="20px" marginBottom={15}>
-      #{id} {name}
-    </Pane>
-    <Pane marginBottom={5}>
-      <Pane marginBottom={2}>Votes:</Pane>
-      <Votes finalVotes={finalTallyResult(votes)} />
-    </Pane>
-    <Pane>
-      <Pane marginBottom={2}>Time rejected:</Pane>
-      <Pane>{timeEnd}</Pane>
-    </Pane>
-  </ContainerGradientText>
-);
+function RejectedCard({ id, name, votes, type, amount, timeEnd }) {
+  return (
+    <ContainerGradientText
+      status="red"
+      userStyleContent={{ padding: '10px 35px 20px 15px' }}
+    >
+      <Pane position="absolute" right="5px" top="5px">
+        <TypeProps type={type} />
+      </Pane>
+      <Pane fontSize="20px" marginBottom={15}>
+        #{id} {name}
+      </Pane>
+      <Pane marginBottom={5}>
+        <Pane marginBottom={2}>Votes:</Pane>
+        <Votes finalVotes={finalTallyResult(votes)} />
+      </Pane>
+      <Pane>
+        <Pane marginBottom={2}>Time rejected:</Pane>
+        <Pane>{timeEnd}</Pane>
+      </Pane>
+    </ContainerGradientText>
+  );
+}
 
-const ActiveCard = ({
+function ActiveCard({
   id,
   name,
   state,
@@ -143,40 +146,44 @@ const ActiveCard = ({
   timeEndVoting,
   totalDeposit,
   minDeposit,
-}) => (
-  <ContainerGradientText userStyleContent={{ padding: '10px 35px 20px 15px' }}>
-    <Pane position="absolute" right="5px" top="5px">
-      <TypeProps type={type} />
-    </Pane>
-    <Pane fontSize="20px" marginBottom={15}>
-      #{id} {name}
-    </Pane>
-    <Pane marginBottom={2}>
-      <Pane alignItems="center" display="flex" marginBottom={2}>
-        State:
-        <IconStatus
-          text
-          marginLeft={10}
-          marginRight={5}
-          size={25}
-          status={state}
-        />
+}) {
+  return (
+    <ContainerGradientText
+      userStyleContent={{ padding: '10px 35px 20px 15px' }}
+    >
+      <Pane position="absolute" right="5px" top="5px">
+        <TypeProps type={type} />
       </Pane>
-    </Pane>
+      <Pane fontSize="20px" marginBottom={15}>
+        #{id} {name}
+      </Pane>
+      <Pane marginBottom={2}>
+        <Pane alignItems="center" display="flex" marginBottom={2}>
+          State:
+          <IconStatus
+            text
+            marginLeft={10}
+            marginRight={5}
+            size={25}
+            status={state}
+          />
+        </Pane>
+      </Pane>
 
-    {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
-      <Pane>
-        <Pane marginBottom={2}>Deposit End Time:</Pane>
-        <Pane>{timeEndDeposit}</Pane>
-      </Pane>
-    )}
-    {state === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD && (
-      <Pane>
-        <Pane marginBottom={2}>Voting End Time:</Pane>
-        <Pane>{timeEndVoting}</Pane>
-      </Pane>
-    )}
-  </ContainerGradientText>
-);
+      {state === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD && (
+        <Pane>
+          <Pane marginBottom={2}>Deposit End Time:</Pane>
+          <Pane>{timeEndDeposit}</Pane>
+        </Pane>
+      )}
+      {state === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD && (
+        <Pane>
+          <Pane marginBottom={2}>Voting End Time:</Pane>
+          <Pane>{timeEndVoting}</Pane>
+        </Pane>
+      )}
+    </ContainerGradientText>
+  );
+}
 
 export { AcceptedCard, ActiveCard, RejectedCard };

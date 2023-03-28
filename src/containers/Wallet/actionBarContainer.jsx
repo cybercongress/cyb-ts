@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link } from 'react-router-dom';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -10,7 +9,6 @@ import {
   SendLedger,
   ConnectLadger,
   TransactionError,
-  Dots,
   CheckAddressInfo,
 } from '../../components';
 import {
@@ -18,7 +16,6 @@ import {
   CYBER,
   PATTERN_COSMOS,
   PATTERN_CYBER,
-  POCKET,
 } from '../../utils/config';
 import { getBalanceWallet, statusNode } from '../../utils/search/utils';
 import { downloadObjectAsJson, fromBech32 } from '../../utils/utils';

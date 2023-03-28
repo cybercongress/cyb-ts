@@ -1,8 +1,7 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Vitalik } from '../../../components';
-import { formatNumber, formatCurrency } from '../../../utils/utils';
-import { dhm } from '../../../utils/utils';
+import { formatCurrency, dhm } from '../../../utils/utils';
 
 const NS_TO_MS = 1 * 10 ** 6;
 

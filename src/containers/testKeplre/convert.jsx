@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@cybercongress/gravity';
 import { Btn } from './ui';
 
-const Convert = ({
+function Convert({
   amount,
   select,
   setSelect,
@@ -10,7 +10,7 @@ const Convert = ({
   convert,
   time,
   setTime,
-}) => {
+}) {
   return (
     <>
       amount
@@ -55,6 +55,6 @@ const Convert = ({
       </Button>
     </>
   );
-};
+}
 
 export default Convert;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import { MenuContainer, ReportLinkContainer } from '@cybercongress/gravity';
 
@@ -16,8 +16,7 @@ import portal from '../../image/space-pussy.svg';
 import oracle from '../../image/temple/oracle.png';
 import warp from '../../image/temple/warp.png';
 import hub from '../../image/temple/hub.png';
-import zhdun from '../../image/temple/zhdun.png';
-import { routes } from "../../routes";
+import { routes } from '../../routes';
 
 const itemsMenu = (address) => {
   let linkLog = '/robot';
@@ -175,13 +174,13 @@ const itemsMenu = (address) => {
   return listItemMenu;
 };
 
-const AppMenu = ({ addressActive }) => {
+function AppMenu({ addressActive }) {
   return (
     <MenuContainer>
       <Bookmarks items={itemsMenu(addressActive)} />
       <ReportLinkContainer />
     </MenuContainer>
   );
-};
+}
 
 export default AppMenu;

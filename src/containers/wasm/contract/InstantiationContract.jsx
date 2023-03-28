@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
-import txs from '../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';
+import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
 import { jsonInputStyle, FlexWrapCantainer } from '../ui/ui';
 import { CYBER } from '../../../utils/config';
@@ -32,19 +32,23 @@ const executePlaceholder = {
 const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 const gasPrice = GasPrice.fromString('0.001boot');
 
-export const JSONInputCard = ({ title, placeholder, setState, height }) => (
-  <div className={styles.containerJsonContractJSONInput}>
-    <span className={styles.containerJsonContractJSONInputTitle}>{title}:</span>
-    <JSONInput
-      width="100%"
-      height={height || '200px'}
-      placeholder={placeholder}
-      confirmGood={false}
-      style={jsonInputStyle}
-      onChange={({ jsObject }) => setState({ result: jsObject })}
-    />
-  </div>
-);
+export function JSONInputCard({ title, placeholder, setState, height }) {
+  return (
+    <div className={styles.containerJsonContractJSONInput}>
+      <span className={styles.containerJsonContractJSONInputTitle}>
+        {title}:
+      </span>
+      <JSONInput
+        width="100%"
+        height={height || '200px'}
+        placeholder={placeholder}
+        confirmGood={false}
+        style={jsonInputStyle}
+        onChange={({ jsObject }) => setState({ result: jsObject })}
+      />
+    </div>
+  );
+}
 
 function InstantiationContract({ codeId, updateFnc }) {
   const { keplr } = useContext(AppContext);

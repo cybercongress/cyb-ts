@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useRef,
-  Fragment,
   useCallback,
   useMemo,
 } from 'react';

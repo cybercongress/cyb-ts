@@ -5,9 +5,9 @@ import ReactJson from 'react-json-view';
 import { CardCantainer } from '../ui/ui';
 import styles from './stylesHistoryInfo.scss';
 
-const CodeLink = ({ codeId, text }) => {
+function CodeLink({ codeId, text }) {
   return <Link to={`/codes/${codeId}`}>{text || `Code #${codeId}`}</Link>;
-};
+}
 
 function HistoryInfo({ contractCodeHistory }) {
   return (

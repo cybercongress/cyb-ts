@@ -20,12 +20,8 @@ function RoutedEnergy({ defaultAccount }) {
     addressActive,
     updateAddressFunc
   );
-  const {
-    sourceRouted,
-    sourceEnergy,
-    destinationRoutes,
-    destinationEnergy,
-  } = useGetSourceRoutes(addressActive, updateAddressFunc);
+  const { sourceRouted, sourceEnergy, destinationRoutes, destinationEnergy } =
+    useGetSourceRoutes(addressActive, updateAddressFunc);
 
   useEffect(() => {
     setSelectedRoute({});
@@ -41,7 +37,7 @@ function RoutedEnergy({ defaultAccount }) {
     ) {
       const { keys, bech32 } = account.cyber;
       // if (keys === 'keplr') {
-        addressPocket = bech32;
+      addressPocket = bech32;
       // }
     }
     setAddressActive(addressPocket);

@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import { CYBER } from '../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../utils/utils';
-import { BandwidthBar, ButtonNetwork, Tooltip } from '../../components';
+import { BandwidthBar } from '../../components';
 import styles from './styles.scss';
 import { AppContext } from '../../context';
 import useMediaQuery from '../../hooks/useMediaQuery';

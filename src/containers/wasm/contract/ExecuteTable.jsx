@@ -18,10 +18,10 @@ function ExecuteTable({ executions }) {
     }, 250);
   }, [itemsToShow, setItemsToShow]);
 
-  const displayedPalettes = useMemo(() => executions.slice(0, itemsToShow), [
-    itemsToShow,
-    executions,
-  ]);
+  const displayedPalettes = useMemo(
+    () => executions.slice(0, itemsToShow),
+    [itemsToShow, executions]
+  );
 
   const itemTable = displayedPalettes.map((item) => {
     return (

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { Loading, Dots } from '../../components';
+import { Dots } from '../../components';
 import { formatNumber } from '../../utils/utils';
 
 const GET_CHARACTERS = gql`

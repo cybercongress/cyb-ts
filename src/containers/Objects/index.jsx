@@ -3,13 +3,9 @@ import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
-import { Dots, Loading, Rank, Particle } from '../../components';
+import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../ipfs/contentItem';
-import {
-  coinDecimals,
-  exponentialToDecimal,
-  formatNumber,
-} from '../../utils/utils';
+import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
 
 function Relevace({ items, fetchMoreData, page, allPage, mobile, node }) {

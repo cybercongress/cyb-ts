@@ -1,15 +1,9 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  Fragment,
-  useCallback,
-} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './carousel.scss';
 
 const cx = require('classnames');
 
-const Carousel = ({
+function Carousel({
   slides = [],
   speed = 3000,
   activeStep,
@@ -19,7 +13,7 @@ const Carousel = ({
   disableNext,
   disableMode,
   heightSlide,
-}) => {
+}) {
   if (slides.length < 2) {
     console.error('Please provide more slides');
     return null;
@@ -133,6 +127,6 @@ const Carousel = ({
       </div>
     </div>
   );
-};
+}
 
 export default Carousel;

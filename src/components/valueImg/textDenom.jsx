@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tooltip from '../tooltip/tooltip';
-import { isNative, trimString } from '../../utils/utils';
-import { AppContext } from '../../context';
+import { trimString } from '../../utils/utils';
 
 function CoinDenom({ coinDenom, tooltipStatus, infoDenom }) {
   const [textDenom, setTextDenom] = useState(null);

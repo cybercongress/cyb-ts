@@ -2,7 +2,6 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../../../../context';
 import JsonSchemaParse from './JsonSchemaParse';
-import { FlexWrapCantainer } from '../../ui/ui';
 
 function RenderAbiQuery({ contractAddress, schema }) {
   const { jsCyber } = useContext(AppContext);

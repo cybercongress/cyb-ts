@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { TableEv as Table, Pane } from '@cybercongress/gravity';
-import { TextTable, Cid, NoItems } from '../../../components';
-import { trimString } from '../../../utils/utils';
+import React from 'react';
+import { Pane } from '@cybercongress/gravity';
+import { NoItems } from '../../../components';
 import AvatarIpfs from '../component/avatarIpfs';
 
 function FollowsTab({ community, node }) {

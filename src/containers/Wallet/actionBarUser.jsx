@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { SendLedger } from '../../components';
 import txs from '../../utils/txs';
 import { CYBER } from '../../utils/config';
 import { downloadObjectAsJson } from '../../utils/utils';
-import { deletPubkey } from './utils';
 
 const MEMO = 'cyb.ai, using CLI';
 const STAGE_INIT = 1;

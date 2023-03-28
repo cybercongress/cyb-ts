@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 // import { Play } from './pages';
 import { connect } from 'react-redux';
-import {
-  MainContainer,
-  ContainerGradient,
-  ContainerGradientText,
-} from '../portal/components';
+import { MainContainer, ContainerGradientText } from '../portal/components';
 // import Carousel from '../portal/gift/carousel1/Carousel';
 import { Carousel, Canvas } from './components/indexs';
 import { BOOT_ICON } from '../portal/utils';

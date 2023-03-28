@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   JsonTransaction,
@@ -13,7 +12,6 @@ import {
 } from '../../components';
 import { LEDGER, PATTERN_CYBER } from '../../utils/config';
 import { getBalanceWallet, statusNode, getTxs } from '../../utils/search/utils';
-import { deletPubkey } from './utils';
 
 const imgLedger = require('../../image/ledger.svg');
 

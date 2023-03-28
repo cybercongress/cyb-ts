@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Account } from '../../../../components';
 import { AppContext } from '../../../../context';
 import { trimString } from '../../../../utils/utils';

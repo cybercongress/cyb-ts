@@ -1,29 +1,17 @@
 import React from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Tooltip,
-  Icon,
-} from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  convertResources,
-  formatNumber,
-  getDisplayAmount,
-} from '../../../utils/utils';
-import { NoItems, Dots, TextTable, ValueImg } from '../../../components';
+import { Pane, TableEv as Table } from '@cybercongress/gravity';
+import { formatNumber, getDisplayAmount } from '../../../utils/utils';
+import { NoItems, TextTable, ValueImg } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
 
-const NumberCurrency = ({
+function NumberCurrency({
   amount,
   fontSizeDecimal,
   currencyNetwork,
   ...props
-}) => {
+}) {
   return (
     <Pane
       display="grid"
@@ -37,9 +25,9 @@ const NumberCurrency = ({
       <div style={{ textAlign: 'start' }}>{currencyNetwork.toUpperCase()}</div>
     </Pane>
   );
-};
+}
 
-const TableSlots = ({ data, traseDenom }) => {
+function TableSlots({ data, traseDenom }) {
   const { coinDecimals: coinDecimalsA } = traseDenom('milliampere');
   const { coinDecimals: coinDecimalsV } = traseDenom('millivolt');
 
@@ -125,6 +113,6 @@ const TableSlots = ({ data, traseDenom }) => {
       </Table>
     </div>
   );
-};
+}
 
 export default TableSlots;

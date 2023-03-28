@@ -2,7 +2,6 @@ import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import BalanceToken from './balanceToken';
 import Select from './select';
-import { networkList } from '../utils';
 import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 
 const renderOptions = (data, selected, valueSelect) => {

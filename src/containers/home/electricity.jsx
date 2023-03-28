@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { CYBER } from '../../utils/config';
 import { setBlock } from '../../redux/actions/block';
-import { AppContext } from '../../context';
 
 const { CYBER_WEBSOCKET_URL } = CYBER;
 

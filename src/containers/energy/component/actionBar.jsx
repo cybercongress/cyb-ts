@@ -18,7 +18,6 @@ import {
 } from '../../../components';
 import { AppContext } from '../../../context';
 import {
-  CYBER,
   LEDGER,
   PATTERN_CYBER,
   PATTERN_CYBER_CONTRACT,
@@ -26,7 +25,7 @@ import {
 } from '../../../utils/config';
 import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
-import { routes } from "../../../routes";
+import { routes } from '../../../routes';
 
 const back = require('../../../image/arrow-back-outline.svg');
 
@@ -42,50 +41,54 @@ const STAGE_ADD_ROUTER = 2.1;
 const STAGE_SET_ROUTER = 2.2;
 const STAGE_DELETE_ROUTER = 2.3;
 
-const Btn = ({ onSelect, checkedSwitch, text, ...props }) => (
-  <Tab
-    isSelected={checkedSwitch}
-    onSelect={onSelect}
-    color="#36d6ae"
-    boxShadow="0px 0px 10px #36d6ae"
-    minWidth="100px"
-    marginX={0}
-    paddingX={10}
-    paddingY={10}
-    fontSize="18px"
-    height={42}
-    {...props}
-  >
-    {text}
-  </Tab>
-);
+function Btn({ onSelect, checkedSwitch, text, ...props }) {
+  return (
+    <Tab
+      isSelected={checkedSwitch}
+      onSelect={onSelect}
+      color="#36d6ae"
+      boxShadow="0px 0px 10px #36d6ae"
+      minWidth="100px"
+      marginX={0}
+      paddingX={10}
+      paddingY={10}
+      fontSize="18px"
+      height={42}
+      {...props}
+    >
+      {text}
+    </Tab>
+  );
+}
 
-export const ActionBarSteps = ({
+export function ActionBarSteps({
   children,
   btnText,
   onClickFnc,
   onClickBack,
   disabled,
-}) => (
-  <ActionBarContainer>
-    {onClickBack && (
-      <ButtonIcon
-        style={{ padding: 0 }}
-        img={back}
-        onClick={onClickBack}
-        text="previous step"
-      />
-    )}
-    <ActionBarContentText marginLeft={onClickBack ? 30 : 0}>
-      {children}
-    </ActionBarContentText>
-    {btnText && (
-      <Button disabled={disabled} onClick={onClickFnc}>
-        {btnText}
-      </Button>
-    )}
-  </ActionBarContainer>
-);
+}) {
+  return (
+    <ActionBarContainer>
+      {onClickBack && (
+        <ButtonIcon
+          style={{ padding: 0 }}
+          img={back}
+          onClick={onClickBack}
+          text="previous step"
+        />
+      )}
+      <ActionBarContentText marginLeft={onClickBack ? 30 : 0}>
+        {children}
+      </ActionBarContentText>
+      {btnText && (
+        <Button disabled={disabled} onClick={onClickFnc}>
+          {btnText}
+        </Button>
+      )}
+    </ActionBarContainer>
+  );
+}
 
 function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   const history = useHistory();

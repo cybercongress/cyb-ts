@@ -8,61 +8,80 @@ import { AmountDenom } from '../../txs/Activites';
 
 const S_TO_MS = 1 * 10 ** 3;
 
-const ContainerMsgsType = ({ children, alignItems }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: alignItems || 'flex-start',
-      gap: '5px',
-      width: '100%',
-    }}
-  >
-    {children}
-  </div>
-);
+function ContainerMsgsType({ children, alignItems }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: alignItems || 'flex-start',
+        gap: '5px',
+        width: '100%',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
-const Row = ({ title, value }) => (
-  <div
-    style={{
-      display: 'flex',
-      gap: '5px',
-      width: '100%',
-      justifyContent: 'space-between',
-    }}
-  >
-    <div>{title}:</div>
-    <div>{value}</div>
-  </div>
-);
+function Row({ title, value }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: '5px',
+        width: '100%',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>{title}:</div>
+      <div>{value}</div>
+    </div>
+  );
+}
 
-const MsgCreateRoute = ({ value }) => (
-  <ContainerMsgsType>
-    <Row title="source" value={<Account address={value.source} />} />
-    <Row title="name" value={value.name} />
-    <Row title="destination" value={<Account address={value.destination} />} />
-  </ContainerMsgsType>
-);
-
-const MsgEditRoute = ({ value }) => (
-  <ContainerMsgsType>
-    <Row title="source" value={<Account address={value.source} />} />
-    {value && (
+function MsgCreateRoute({ value }) {
+  return (
+    <ContainerMsgsType>
+      <Row title="source" value={<Account address={value.source} />} />
+      <Row title="name" value={value.name} />
       <Row
-        title="amount"
-        value={<AmountDenom amountValue={value.amount} denom={value.denom} />}
+        title="destination"
+        value={<Account address={value.destination} />}
       />
-    )}
-    <Row title="destination" value={<Account address={value.destination} />} />
-  </ContainerMsgsType>
-);
+    </ContainerMsgsType>
+  );
+}
 
-const MsgDeleteRoute = ({ value }) => (
-  <ContainerMsgsType>
-    <Row title="source" value={<Account address={value.source} />} />
-    <Row title="destination" value={<Account address={value.destination} />} />
-  </ContainerMsgsType>
-);
+function MsgEditRoute({ value }) {
+  return (
+    <ContainerMsgsType>
+      <Row title="source" value={<Account address={value.source} />} />
+      {value && (
+        <Row
+          title="amount"
+          value={<AmountDenom amountValue={value.amount} denom={value.denom} />}
+        />
+      )}
+      <Row
+        title="destination"
+        value={<Account address={value.destination} />}
+      />
+    </ContainerMsgsType>
+  );
+}
+
+function MsgDeleteRoute({ value }) {
+  return (
+    <ContainerMsgsType>
+      <Row title="source" value={<Account address={value.source} />} />
+      <Row
+        title="destination"
+        value={<Account address={value.destination} />}
+      />
+    </ContainerMsgsType>
+  );
+}
 
 function RenderValue({ value, type, accountUser }) {
   if (type.includes('MsgCyberlink')) {

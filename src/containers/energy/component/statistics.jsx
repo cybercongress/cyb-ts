@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pane, Icon } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 import Card from '../ui/card';
 import { formatNumber } from '../../../utils/utils';

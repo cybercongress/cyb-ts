@@ -43,7 +43,7 @@ const config = {
   showSendToCloud: true,
 };
 
-const Dinamics = ({ data }) => {
+function Dinamics({ data }) {
   const { available, delegation, unbonding, rewards } = data;
 
   const values = [available, delegation, unbonding, rewards];
@@ -76,6 +76,6 @@ const Dinamics = ({ data }) => {
       onLegendClick={() => false}
     />
   );
-};
+}
 
 export default Dinamics;

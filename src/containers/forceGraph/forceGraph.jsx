@@ -21,7 +21,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceGraph = () => {
+function ForceGraph() {
   const location = useLocation();
   const params = useParams();
   const history = useHistory();
@@ -195,11 +195,11 @@ const ForceGraph = () => {
     );
   }
 
-  var pocket;
+  let pocket;
   if (localStorage.getItem('pocket') != null) {
-    var localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
-    var keyPocket = Object.keys(localStoragePocketData)[0];
-    pocket = localStoragePocketData[keyPocket]['cyber'].bech32;
+    const localStoragePocketData = JSON.parse(localStorage.getItem('pocket'));
+    const keyPocket = Object.keys(localStoragePocketData)[0];
+    pocket = localStoragePocketData[keyPocket].cyber.bech32;
   }
 
   return (
@@ -262,6 +262,6 @@ const ForceGraph = () => {
       />
     </div>
   );
-};
+}
 
 export default ForceGraph;

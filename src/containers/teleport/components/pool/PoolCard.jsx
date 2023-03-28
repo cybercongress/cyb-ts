@@ -9,7 +9,7 @@ import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';
 
-const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
+function PoolCard({ pool, totalSupplyData, accountBalances }) {
   const { traseDenom } = useContext(AppContext);
 
   const [sharesToken, setSharesToken] = useState(null);
@@ -78,9 +78,7 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
           const keyItem = uuidv4();
 
           return (
-            <>
-              <PoolItemsList key={keyItem} assets={pool.assets} token={items} />
-            </>
+            <PoolItemsList key={keyItem} assets={pool.assets} token={items} />
           );
         })}
       </div>
@@ -95,6 +93,6 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
       )}
     </ContainerGradient>
   );
-};
+}
 
 export default PoolCard;

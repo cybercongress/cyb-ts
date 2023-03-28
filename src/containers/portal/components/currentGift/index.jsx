@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { trimString, formatNumber } from '../../../../utils/utils';
+import { formatNumber } from '../../../../utils/utils';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 import { PATTERN_CYBER } from '../../../../utils/config';
@@ -21,21 +21,25 @@ const keyTable = [
   'True Hero of the Great Web',
 ];
 
-const ItemValue = ({ value, title }) => (
-  <div className={styles.containerItemValue}>
-    <div className={styles.containerItemValueValue}>{value}</div>
-    <div className={styles.containerItemValueTitle}>{title}</div>
-  </div>
-);
-
-const ItemTable = ({ title, value }) => (
-  <div className={styles.containerItemTable}>
-    <div>{title}</div>
-    <div>
-      {formatNumber(value)} {BOOT_ICON}
+function ItemValue({ value, title }) {
+  return (
+    <div className={styles.containerItemValue}>
+      <div className={styles.containerItemValueValue}>{value}</div>
+      <div className={styles.containerItemValueTitle}>{title}</div>
     </div>
-  </div>
-);
+  );
+}
+
+function ItemTable({ title, value }) {
+  return (
+    <div className={styles.containerItemTable}>
+      <div>{title}</div>
+      <div>
+        {formatNumber(value)} {BOOT_ICON}
+      </div>
+    </div>
+  );
+}
 
 const formatBonus = (amount) => {
   if (typeof amount === 'number') {
@@ -44,7 +48,7 @@ const formatBonus = (amount) => {
   return '';
 };
 
-const TableAllocation = ({ currentBonus, currentGift }) => {
+function TableAllocation({ currentBonus, currentGift }) {
   const itemTable = useMemo(() => {
     if (currentGift !== null && currentGift.details) {
       const { details } = currentGift;
@@ -65,7 +69,7 @@ const TableAllocation = ({ currentBonus, currentGift }) => {
   }, [currentGift]);
 
   return <div className={styles.containerTableAllocation}>{itemTable}</div>;
-};
+}
 
 function CurrentGift({
   currentGift,

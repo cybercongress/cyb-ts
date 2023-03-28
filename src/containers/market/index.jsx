@@ -11,20 +11,21 @@ import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
-import PoolData from '../teleport/poolData';
 import { reduceBalances, coinDecimals } from '../../utils/utils';
 
-const ContainerGrid = ({ children }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-    gridGap="20px"
-  >
-    {children}
-  </Pane>
-);
+function ContainerGrid({ children }) {
+  return (
+    <Pane
+      marginTop={10}
+      marginBottom={50}
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridGap="20px"
+    >
+      {children}
+    </Pane>
+  );
+}
 
 const search = async (client, hash, page) => {
   try {

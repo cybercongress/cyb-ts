@@ -1,7 +1,6 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Vitalik } from '../../../components';
-import { formatNumber, formatCurrency } from '../../../utils/utils';
 
 function InlfationParam({ data }) {
   try {

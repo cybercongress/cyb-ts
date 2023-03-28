@@ -1,24 +1,19 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
-import { coins, coin } from '@cosmjs/launchpad';
+import { coin } from '@cosmjs/launchpad';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import {
-  JsonTransaction,
-  ConnectLadger,
   Confirmed,
-  ContainetLedger,
-  FormatNumber,
   TransactionSubmitted,
   Delegate,
   ReDelegate,
   TransactionError,
-  CheckAddressInfo,
   Dots,
   ActionBar as ActionBarCenter,
 } from '../../components';
 
-import { trimString, formatNumber } from '../../utils/utils';
+import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { AppContext } from '../../context';
@@ -49,21 +44,23 @@ export const TXTYPE_REDELEGATE = 2;
 const LEDGER_TX_ACOUNT_INFO = 10;
 const LEDGER_GENERATION = 23;
 
-const ActionBarContentText = ({ children, ...props }) => (
-  <Pane
-    display="flex"
-    fontSize="20px"
-    justifyContent="center"
-    alignItems="center"
-    flexGrow={1}
-    marginRight="15px"
-    {...props}
-  >
-    {children}
-  </Pane>
-);
+function ActionBarContentText({ children, ...props }) {
+  return (
+    <Pane
+      display="flex"
+      fontSize="20px"
+      justifyContent="center"
+      alignItems="center"
+      flexGrow={1}
+      marginRight="15px"
+      {...props}
+    >
+      {children}
+    </Pane>
+  );
+}
 
-const StatusTx = ({ stage, cleatState, errorMessage, txHash, txHeight }) => {
+function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
   if (stage === LEDGER_GENERATION) {
     return (
       <ActionBar>
@@ -106,7 +103,7 @@ const StatusTx = ({ stage, cleatState, errorMessage, txHash, txHeight }) => {
   }
 
   return null;
-};
+}
 
 const getValidatorAddres = (validators) => {
   let validatorAddres = null;

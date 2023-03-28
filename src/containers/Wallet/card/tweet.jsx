@@ -3,7 +3,7 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { PocketCard } from '../components';
-import { Copy, Dots, LinkWindow } from '../../../components';
+import { Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import {
   getAvatar,
@@ -102,9 +102,8 @@ function TweetCard({
   node,
   ...props
 }) {
-  const { count: countNewsToday, loading: loadingNewsToday } = useNewsToday(
-    account
-  );
+  const { count: countNewsToday, loading: loadingNewsToday } =
+    useNewsToday(account);
   const [stage, setStage] = useState(STAGE_ADD_AVATAR);
   const [loading, setLoading] = useState(true);
   const [avatar, setAvatar] = useState({
@@ -214,8 +213,8 @@ function TweetCard({
       <PocketCard display="flex" alignItems="flex-start" {...props}>
         <Text fontSize="16px" color="#fff">
           You can start{' '}
-          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link> right
-          now. Adding an avatar will help others recognize your content.
+          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link>{' '}
+          right now. Adding an avatar will help others recognize your content.
         </Text>
       </PocketCard>
     );

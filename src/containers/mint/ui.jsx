@@ -1,7 +1,6 @@
 import React from 'react';
-import { Tab, Pane, Pill, Text } from '@cybercongress/gravity';
+import { Tab, Pane, Pill } from '@cybercongress/gravity';
 import {
-  trimString,
   formatNumber,
   getDecimal,
   formatCurrencyNumber,
@@ -9,31 +8,33 @@ import {
 import { Dots, Tooltip } from '../../components';
 import { CYBER } from '../../utils/config';
 
-const Btn = ({ onSelect, checkedSwitch, text, disabledBtn, ...props }) => (
-  <Tab
-    isSelected={checkedSwitch}
-    onSelect={onSelect}
-    color="#36d6ae"
-    boxShadow="0px 0px 10px #36d6ae"
-    minWidth="100px"
-    marginX={0}
-    paddingX={10}
-    paddingY={10}
-    fontSize="18px"
-    height={42}
-    {...props}
-  >
-    {text}
-  </Tab>
-);
+function Btn({ onSelect, checkedSwitch, text, disabledBtn, ...props }) {
+  return (
+    <Tab
+      isSelected={checkedSwitch}
+      onSelect={onSelect}
+      color="#36d6ae"
+      boxShadow="0px 0px 10px #36d6ae"
+      minWidth="100px"
+      marginX={0}
+      paddingX={10}
+      paddingY={10}
+      fontSize="18px"
+      height={42}
+      {...props}
+    >
+      {text}
+    </Tab>
+  );
+}
 
-const FormatNumber = ({
+function FormatNumber({
   number,
   fontSizeDecimal,
   fontSizeNumber,
   currency = `${CYBER.DENOM_CYBER.toUpperCase()}`,
   ...props
-}) => {
+}) {
   const formatNumberCurrency = formatCurrencyNumber(number, currency);
   const decimal = getDecimal(formatNumberCurrency.number);
 
@@ -55,9 +56,9 @@ const FormatNumber = ({
       <div>{formatNumberCurrency.currency}</div>
     </Pane>
   );
-};
+}
 
-const ItemBalance = ({ text, amount, currency }) => {
+function ItemBalance({ text, amount, currency }) {
   return (
     <Pane marginBottom={15}>
       <Pane color="#979797" fontSize="16px">
@@ -72,9 +73,9 @@ const ItemBalance = ({ text, amount, currency }) => {
       )}
     </Pane>
   );
-};
+}
 
-const StatusTooltip = ({ status }) => {
+function StatusTooltip({ status }) {
   let statusColor;
 
   if (status === 'available') {
@@ -106,6 +107,6 @@ const StatusTooltip = ({ status }) => {
       </Tooltip>
     </Pane>
   );
-};
+}
 
 export { Btn, FormatNumber, ItemBalance, StatusTooltip };

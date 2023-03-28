@@ -1,14 +1,14 @@
 import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
-import { formatNumber } from '../../utils/search/utils';
 import { Link } from 'react-router-dom';
+import { formatNumber } from '../../utils/search/utils';
 import { ContainerGradient } from '../portal/components';
 
 const dateFormat = require('dateformat');
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 
-const InformationTxs = ({ data, messageError, ...props }) => {
+function InformationTxs({ data, messageError, ...props }) {
   console.log(data);
   const value = Object.keys(data).map((key) => {
     let item = '';
@@ -108,6 +108,6 @@ const InformationTxs = ({ data, messageError, ...props }) => {
       </Pane>
     </ContainerGradient>
   );
-};
+}
 
 export default InformationTxs;

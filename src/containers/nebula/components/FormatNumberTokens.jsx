@@ -16,7 +16,7 @@ const getDecimal = (number, float) => {
   return result;
 };
 
-const FormatNumberTokens = ({
+function FormatNumberTokens({
   text,
   value,
   tooltipStatusImg,
@@ -24,7 +24,7 @@ const FormatNumberTokens = ({
   float,
   customText,
   ...props
-}) => {
+}) {
   const decimal = getDecimal(value, float);
   return (
     <div
@@ -58,6 +58,6 @@ const FormatNumberTokens = ({
       )}
     </div>
   );
-};
+}
 
 export default FormatNumberTokens;

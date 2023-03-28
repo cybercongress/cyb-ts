@@ -1,30 +1,17 @@
 import React, { useEffect, useContext, useState, useMemo } from 'react';
-import { Tablist, Pane, Button, Text } from '@cybercongress/gravity';
-import { Link, useLocation } from 'react-router-dom';
+import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
-import { coin } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
-import {
-  trimString,
-  formatNumber,
-  getDecimal,
-  formatCurrencyNumber,
-  formatCurrency,
-  convertResources,
-  getDisplayAmount,
-} from '../../utils/utils';
-import { authAccounts } from '../../utils/search/utils';
+import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import ERatio from './eRatio';
-import { useGetBalance } from '../account/hooks';
 import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
-import TabBtnList from './tabLinsBtn';
 import ActionBar from './actionBar';
 
 const INIT_STAGE = 0;

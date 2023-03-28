@@ -11,9 +11,9 @@ const statusHeroes = {
   BOND_STATUS_BONDED: 3,
 };
 
-const StatusTooltip = ({ status, size }) => {
+function StatusTooltip({ status, size }) {
   let statusColor;
-  console.log(`status`, status)
+  console.log(`status`, status);
   switch (status) {
     case 1:
       statusColor = 'red';
@@ -57,6 +57,6 @@ const StatusTooltip = ({ status, size }) => {
       </Tooltip>
     </Pane>
   );
-};
+}
 
 export default StatusTooltip;

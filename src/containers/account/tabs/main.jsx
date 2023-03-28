@@ -1,30 +1,31 @@
 import React, { useContext } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
-import { reduceAmounToken } from '../../Wallet/card/PubkeyCard';
 import { AppContext } from '../../../context';
 
-const Row = ({ text, number, procent, color }) => (
-  <Pane display="flex" alignItems="center" paddingY={7}>
-    <Pane display="flex" alignItems="center">
-      <Pane
-        width="30px"
-        height="4px"
-        backgroundColor={color}
-        marginRight="10px"
-      />
-      <Pane width={100}>{text}</Pane>
+function Row({ text, number, procent, color }) {
+  return (
+    <Pane display="flex" alignItems="center" paddingY={7}>
+      <Pane display="flex" alignItems="center">
+        <Pane
+          width="30px"
+          height="4px"
+          backgroundColor={color}
+          marginRight="10px"
+        />
+        <Pane width={100}>{text}</Pane>
+      </Pane>
+      <Pane flex="1 1" textAlign="right">
+        {number} {CYBER.DENOM_CYBER.toUpperCase()}
+      </Pane>
     </Pane>
-    <Pane flex="1 1" textAlign="right">
-      {number} {CYBER.DENOM_CYBER.toUpperCase()}
-    </Pane>
-  </Pane>
-);
+  );
+}
 
-const DetailsMainToken = ({ balance }) => {
+function DetailsMainToken({ balance }) {
   const { available, delegation, unbonding, rewards, total } = balance;
 
   return (
@@ -73,9 +74,9 @@ const DetailsMainToken = ({ balance }) => {
       </Pane>
     </Pane>
   );
-};
+}
 
-const RowToken = ({ denom, amount }) => {
+function RowToken({ denom, amount }) {
   const { traseDenom } = useContext(AppContext);
   const { coinDecimals } = traseDenom(denom);
   return (
@@ -91,9 +92,9 @@ const RowToken = ({ denom, amount }) => {
       </Pane>
     </Pane>
   );
-};
+}
 
-const Tokens = ({ balanceToken, balance }) => {
+function Tokens({ balanceToken, balance }) {
   return (
     <Pane
       display="flex"
@@ -133,7 +134,7 @@ const Tokens = ({ balanceToken, balance }) => {
       </Pane>
     </Pane>
   );
-};
+}
 
 const Main = ({ balance, balanceToken, ...props }) => {
   try {

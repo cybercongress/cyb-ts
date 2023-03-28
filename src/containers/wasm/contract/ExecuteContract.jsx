@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
-import txs from '../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
-import JSONInput from 'react-json-editor-ajrm';
-import { fromBase64, toHex, toUtf8 } from '@cosmjs/encoding';
-import { JsonView, jsonInputStyle } from '../ui/ui';
+import txs from '../../../utils/txs';
+import { JsonView } from '../ui/ui';
 import { AppContext } from '../../../context';
 import { CYBER, DEFAULT_GAS_LIMITS } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
@@ -79,7 +77,7 @@ function ExecuteContract({ contractAddress }) {
         memo,
         coinsObject.result
       );
-      
+
       console.log(`executeResponseResult`, executeResponseResult);
       setExecuteResponse({ result: executeResponseResult });
     } catch (e) {

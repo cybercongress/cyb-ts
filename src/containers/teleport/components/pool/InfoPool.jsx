@@ -4,7 +4,7 @@ import { FormatNumberTokens } from '../../../nebula/components';
 import { ContainerGradientText } from '../../../portal/components';
 import styles from './styles.scss';
 
-const PoolsInfo = ({ totalCap, myCap, useMyProcent }) => {
+function PoolsInfo({ totalCap, myCap, useMyProcent }) {
   return (
     <div className={styles.PoolsInfoContainer}>
       <ContainerGradientText>
@@ -35,6 +35,6 @@ const PoolsInfo = ({ totalCap, myCap, useMyProcent }) => {
       </ContainerGradientText>
     </div>
   );
-};
+}
 
 export default PoolsInfo;

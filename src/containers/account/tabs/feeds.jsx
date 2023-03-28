@@ -1,8 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Pane } from '@cybercongress/gravity';
-import ContentItem from '../../ipfs/contentItem';
-import { Rank, NoItems, SearchSnippet } from '../../../components';
+import { NoItems, SearchSnippet } from '../../../components';
 
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);

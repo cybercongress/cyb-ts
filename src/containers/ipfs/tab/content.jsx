@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
-import { Pane } from '@cybercongress/gravity';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import rehypeParse from 'rehype-parse';
 import rehypeStringify from 'rehype-stringify';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';

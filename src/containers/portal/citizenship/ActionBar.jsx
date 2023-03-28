@@ -1,17 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useRef,
-  useCallback,
-} from 'react';
-import { Button, Pane } from '@cybercongress/gravity';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 // import { ActionBarSteps } from '../../energy/component/actionBar';
-import { ActionBarContentText, Dots } from '../../../components';
+import { Dots } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
 import { BtnGrd, ActionBarSteps } from '../components';

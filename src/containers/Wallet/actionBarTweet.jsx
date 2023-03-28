@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link as LinkRoute } from 'react-router-dom';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
@@ -11,20 +8,13 @@ import {
   TransactionSubmitted,
   Confirmed,
   StartStageSearchActionBar,
-  Cyberlink,
   TransactionError,
   ActionBarContentText,
   CheckAddressInfo,
   Dots,
 } from '../../components';
 
-import {
-  getIpfsHash,
-  getPin,
-  statusNode,
-  getAccountBandwidth,
-  getCurrentBandwidthPrice,
-} from '../../utils/search/utils';
+import { getPin } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 
 import { AppContext } from '../../context';

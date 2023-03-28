@@ -8,7 +8,7 @@ function KeybaseAvatar({ identity }) {
   const [imgKeyBase, setImgKeyBase] = useState('');
 
   useEffect(() => {
-    keybaseAvatar(identity).then(data => {
+    keybaseAvatar(identity).then((data) => {
       if (data.status.code > 0) {
         setAvatar(false);
       } else if (data.them.length > 0) {

@@ -9,18 +9,20 @@ import {
 import { AppContext } from '../../context';
 import { Input } from '../../components';
 
-const ValueItem = ({ text, value, onChange }) => (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: '120px 1fr',
-      alignItems: 'center',
-    }}
-  >
-    <div>{text}</div>
-    <Input type="text" autoComplete="off" value={value} onChange={onChange} />
-  </div>
-);
+function ValueItem({ text, value, onChange }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '120px 1fr',
+        alignItems: 'center',
+      }}
+    >
+      <div>{text}</div>
+      <Input type="text" autoComplete="off" value={value} onChange={onChange} />
+    </div>
+  );
+}
 
 const initValue = {
   CHAIN_ID: 'bostrom',

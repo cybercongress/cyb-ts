@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { trimString } from '../../../utils/utils';
 import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 

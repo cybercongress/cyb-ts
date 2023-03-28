@@ -6,7 +6,7 @@ import { ValueImg } from '../../../../components';
 const cx = require('classnames');
 const imgSwap = require('../../../../image/exchange-arrows.svg');
 
-const Mark = ({ value }) => {
+function Mark({ value }) {
   let position = '';
 
   if (value <= 5) {
@@ -35,9 +35,9 @@ const Mark = ({ value }) => {
       </div>
     </div>
   );
-};
+}
 
-export const ButtonIcon = ({ img, disabled, ...props }) => {
+export function ButtonIcon({ img, disabled, ...props }) {
   return (
     <button
       type="button"
@@ -48,9 +48,9 @@ export const ButtonIcon = ({ img, disabled, ...props }) => {
       <img src={img} alt="img" />
     </button>
   );
-};
+}
 
-const SpetionLabel = ({ value, lable }) => {
+function SpetionLabel({ value, lable }) {
   let position = '';
 
   if (value <= 3) {
@@ -76,7 +76,7 @@ const SpetionLabel = ({ value, lable }) => {
       </div>
     </label>
   );
-};
+}
 
 const constValue = {
   0: 0,

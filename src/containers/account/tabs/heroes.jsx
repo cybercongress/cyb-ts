@@ -19,56 +19,60 @@ const getDaysIn = (time) => {
   return Math.round(daysIn);
 };
 
-const TextTable = ({ children, fontSize, color, display, ...props }) => (
-  <Text
-    fontSize={`${fontSize || 16}px`}
-    color={`${color || '#fff'}`}
-    display={`${display || 'inline-flex'}`}
-    {...props}
-  >
-    {children}
-  </Text>
-);
-
-const Unbonding = ({ amount, stages, entries }) => (
-  <Pane display="flex" alignItems="flex-end">
-    <Pane
-      // key={}
-      fontSize="16px"
-      display="inline"
-      color="#fff"
-      width="100%"
-      textOverflow="ellipsis"
-      overflow="hidden"
+function TextTable({ children, fontSize, color, display, ...props }) {
+  return (
+    <Text
+      fontSize={`${fontSize || 16}px`}
+      color={`${color || '#fff'}`}
+      display={`${display || 'inline-flex'}`}
+      {...props}
     >
-      {stages > 1
-        ? `${formatCurrency(
-            amount,
-            CYBER.DENOM_CYBER.toUpperCase()
-          )} in ${stages} stages`
-        : `${formatCurrency(
-            entries[0].balance,
-            CYBER.DENOM_CYBER.toUpperCase()
-          )} in 
+      {children}
+    </Text>
+  );
+}
+
+function Unbonding({ amount, stages, entries }) {
+  return (
+    <Pane display="flex" alignItems="flex-end">
+      <Pane
+        // key={}
+        fontSize="16px"
+        display="inline"
+        color="#fff"
+        width="100%"
+        textOverflow="ellipsis"
+        overflow="hidden"
+      >
+        {stages > 1
+          ? `${formatCurrency(
+              amount,
+              CYBER.DENOM_CYBER.toUpperCase()
+            )} in ${stages} stages`
+          : `${formatCurrency(
+              entries[0].balance,
+              CYBER.DENOM_CYBER.toUpperCase()
+            )} in 
       ${getDaysIn(entries[0].completionTime)} days`}
+      </Pane>
+      <Tooltip
+        content={entries.map((items, index) => (
+          <div key={index}>
+            {`${formatNumber(
+              parseFloat(items.balance)
+            )} ${CYBER.DENOM_CYBER.toUpperCase()}`}{' '}
+            in {getDaysIn(items.completionTime)} days
+          </div>
+        ))}
+        position="bottom"
+      >
+        <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
+      </Tooltip>
     </Pane>
-    <Tooltip
-      content={entries.map((items, index) => (
-        <div key={index}>
-          {`${formatNumber(
-            parseFloat(items.balance)
-          )} ${CYBER.DENOM_CYBER.toUpperCase()}`}{' '}
-          in {getDaysIn(items.completionTime)} days
-        </div>
-      ))}
-      position="bottom"
-    >
-      <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-    </Tooltip>
-  </Pane>
-);
+  );
+}
 
-const Heroes = ({ data, ...props }) => {
+function Heroes({ data, ...props }) {
   const delegationsItem = Object.keys(data).map((key) => {
     let amount = 0;
     if (data[key].entries !== undefined) {
@@ -159,6 +163,6 @@ const Heroes = ({ data, ...props }) => {
       </Table>
     </Pane>
   );
-};
+}
 
 export default Heroes;

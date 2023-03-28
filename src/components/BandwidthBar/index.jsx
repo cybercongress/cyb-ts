@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Battery, Pane, Heading, Text } from '@cybercongress/gravity';
+import React, { useState } from 'react';
+import { Battery, Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Tooltip from '../tooltip/tooltip';
 import { CYBER } from '../../utils/config';
@@ -24,7 +24,7 @@ const PREFIXES = [
   },
 ];
 
-const ContentTooltip = ({ bwRemained, bwMaxValue, amounPower, countLink }) => {
+function ContentTooltip({ bwRemained, bwMaxValue, amounPower, countLink }) {
   let text =
     'Empty battery. You have no power & energy so you cannot submit cyberlinks. ';
 
@@ -41,20 +41,22 @@ const ContentTooltip = ({ bwRemained, bwMaxValue, amounPower, countLink }) => {
       <Pane marginBottom={12}>
         <Text color="#fff" size={400}>
           {text}
-          <Link to="/search/get BOOT">Get {CYBER.DENOM_CYBER.toUpperCase()}</Link>
+          <Link to="/search/get BOOT">
+            Get {CYBER.DENOM_CYBER.toUpperCase()}
+          </Link>
         </Text>
       </Pane>
     </Pane>
   );
-};
+}
 
-const BandwidthBar = ({
+function BandwidthBar({
   bwRemained = 0,
   bwMaxValue = 0,
   countLink = 0,
   amounPower,
   ...props
-}) => {
+}) {
   const [linkPrice, setlinkPrice] = useState(4);
   const bwPercent =
     bwMaxValue > 0 ? Math.floor((bwRemained / bwMaxValue) * 100) : 0;
@@ -86,6 +88,6 @@ const BandwidthBar = ({
       />
     </Tooltip>
   );
-};
+}
 
 export default BandwidthBar;

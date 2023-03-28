@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import { ContainerGradient } from '../components';
 import ContainerAvatar, {
   ButtonContainerAvatar,

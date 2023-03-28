@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Pane, Input, Button } from '@cybercongress/gravity';
+import { Pane, Input } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount } from '../../../redux/actions/pocket';

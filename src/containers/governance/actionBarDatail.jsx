@@ -1,19 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
-import { ActionBar, Button, Pane } from '@cybercongress/gravity';
+import { ActionBar, Pane } from '@cybercongress/gravity';
+import { coins } from '@cosmjs/launchpad';
 import {
-  SigningCosmosClient,
-  GasPrice,
-  coins,
-  makeSignDoc,
-  makeStdTx,
-} from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
-import {
-  ConnectLadger,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   TransactionError,
@@ -26,14 +16,11 @@ import {
 } from '../../components';
 import { AppContext } from '../../context';
 
-import { downloadObjectAsJson } from '../../utils/utils';
-
 import { getTxs } from '../../utils/search/utils';
 
 import {
   LEDGER,
   CYBER,
-  PATTERN_CYBER,
   PROPOSAL_STATUS,
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,

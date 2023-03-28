@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   TransitionGroup as ReactCSSTransitionGroup,
   CSSTransition,
@@ -78,19 +78,7 @@ function ScrollableTabs({ items, active, setStep }) {
 
   return (
     <div className={cx(styles.noselect, styles.carousel)}>
-      <ReactCSSTransitionGroup
-      // transitionName={direction}
-      // classNames={{
-      //   enter: styles[`${direction}-enter`],
-      //   enterActive: styles[`${direction}-enter-active`],
-      //   leave: styles[`${direction}-leave`],
-      //   leaveActive: styles[`${direction}-leave-active`],
-      //   appear: styles[`${direction}-appear`],
-      //   appearActive: styles[`${direction}-appear-active`],
-      // }}
-      >
-        {generateItems()}
-      </ReactCSSTransitionGroup>
+      <ReactCSSTransitionGroup>{generateItems()}</ReactCSSTransitionGroup>
     </div>
   );
 }

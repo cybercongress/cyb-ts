@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { Copy, Dots, Tooltip, LinkWindow } from '../../../components';
+import { Copy, Tooltip } from '../../../components';
 import { trimString, formatNumber, getDecimal } from '../../../utils/utils';
 
 import imgLedger from '../../../image/ledger.svg';
@@ -8,8 +8,6 @@ import imgKeplr from '../../../image/keplr-icon.svg';
 import imgMetaMask from '../../../image/mm-logo.svg';
 import imgRead from '../../../image/duplicate-outline.svg';
 import imgHelp from '../../../image/ionicons_svg_ios-help-circle-outline.svg';
-import editOutline from '../../../image/create-outline.svg';
-import editDone from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import deleteIcon from '../../../image/trash-outline.svg';
 import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgCyber from '../../../image/large-green.png';
@@ -25,24 +23,26 @@ const imgData = {
   eth: imgEth,
 };
 
-export const FormatNumber = ({
-  number,
-  fontSizeDecimal,
-  currency,
-  ...props
-}) => (
-  <Pane display="grid" gridTemplateColumns="1fr 45px" gridGap="5px" {...props}>
-    <Pane display="flex" alignItems="center">
-      <span>{formatNumber(Math.floor(number))}</span>.
-      <div style={{ width: 25, fontSize: `${fontSizeDecimal || 14}px` }}>
-        {getDecimal(number)}
-      </div>
+export function FormatNumber({ number, fontSizeDecimal, currency, ...props }) {
+  return (
+    <Pane
+      display="grid"
+      gridTemplateColumns="1fr 45px"
+      gridGap="5px"
+      {...props}
+    >
+      <Pane display="flex" alignItems="center">
+        <span>{formatNumber(Math.floor(number))}</span>.
+        <div style={{ width: 25, fontSize: `${fontSizeDecimal || 14}px` }}>
+          {getDecimal(number)}
+        </div>
+      </Pane>
+      <div>{currency}</div>
     </Pane>
-    <div>{currency}</div>
-  </Pane>
-);
+  );
+}
 
-export const ButtonIcon = ({
+export function ButtonIcon({
   icon,
   onClickButtonIcon,
   width = 25,
@@ -50,7 +50,7 @@ export const ButtonIcon = ({
   customClass = '',
   textTooltip = '',
   ...props
-}) => {
+}) {
   return (
     <Pane {...props}>
       {/* //   <Tooltip placement="bottom" tooltip={<Pane>{textTooltip}</Pane>}> */}
@@ -64,23 +64,25 @@ export const ButtonIcon = ({
       {/* //   </Tooltip> */}
     </Pane>
   );
-};
+}
 
-export const ContainerAddressInfo = ({ children, ...props }) => (
-  <Pane
-    width="100%"
-    display="grid"
-    gridTemplateColumns="0.8fr 1fr"
-    gridGap="5px"
-    alignItems="baseline"
-    className="cosmos-address-container"
-    {...props}
-  >
-    {children}
-  </Pane>
-);
+export function ContainerAddressInfo({ children, ...props }) {
+  return (
+    <Pane
+      width="100%"
+      display="grid"
+      gridTemplateColumns="0.8fr 1fr"
+      gridGap="5px"
+      alignItems="baseline"
+      className="cosmos-address-container"
+      {...props}
+    >
+      {children}
+    </Pane>
+  );
+}
 
-const InfoAddress = ({ pk, hdpath, ...props }) => {
+function InfoAddress({ pk, hdpath, ...props }) {
   return (
     <Pane {...props}>
       <Tooltip
@@ -101,71 +103,80 @@ const InfoAddress = ({ pk, hdpath, ...props }) => {
       </Tooltip>
     </Pane>
   );
-};
+}
 
-export const Address = ({ address, addressLink, onClickDeleteAddress, network }) => (
-  <Pane
-    className="cosmos-address"
-    display="flex"
-    marginBottom={5}
-    alignItems="center"
-  >
-    <img
-      style={{ width: 18, height: 15, marginRight: 8, objectFit: 'contain' }}
-      src={imgData[network]}
-      alt="imgAddress"
-    />
-    <img
-      style={{ width: 15, height: 15, marginRight: 8, objectFit: 'contain' }}
-      src={imgData[address.keys]}
-      alt="imgAddress"
-    />
-    <Pane width={135}>{addressLink}</Pane>
-    <Pane display="flex" className="img-method-addedAddress">
-      {address.pk && (
-        <InfoAddress marginLeft={5} hdpath={address.path} pk={address.pk} />
-      )}
-      <Copy style={{ marginLeft: 2 }} text={address.bech32} />
-      <ButtonIcon
-        marginLeft={5}
-        width={16}
-        height={16}
-        icon={deleteIcon}
-        textTooltip="delete address"
-        onClickButtonIcon={onClickDeleteAddress}
+export function Address({
+  address,
+  addressLink,
+  onClickDeleteAddress,
+  network,
+}) {
+  return (
+    <Pane
+      className="cosmos-address"
+      display="flex"
+      marginBottom={5}
+      alignItems="center"
+    >
+      <img
+        style={{ width: 18, height: 15, marginRight: 8, objectFit: 'contain' }}
+        src={imgData[network]}
+        alt="imgAddress"
+      />
+      <img
+        style={{ width: 15, height: 15, marginRight: 8, objectFit: 'contain' }}
+        src={imgData[address.keys]}
+        alt="imgAddress"
+      />
+      <Pane width={135}>{addressLink}</Pane>
+      <Pane display="flex" className="img-method-addedAddress">
+        {address.pk && (
+          <InfoAddress marginLeft={5} hdpath={address.path} pk={address.pk} />
+        )}
+        <Copy style={{ marginLeft: 2 }} text={address.bech32} />
+        <ButtonIcon
+          marginLeft={5}
+          width={16}
+          height={16}
+          icon={deleteIcon}
+          textTooltip="delete address"
+          onClickButtonIcon={onClickDeleteAddress}
+        />
+      </Pane>
+    </Pane>
+  );
+}
+
+export function Vitalik() {
+  return (
+    <Pane
+      height="23px"
+      width="23px"
+      boxShadow="0 0 2px 1px #009688"
+      borderRadius="50%"
+      display="flex"
+      alignItems="center"
+      justifyContent="space-around"
+    >
+      <Pane
+        height="4px"
+        width="7px"
+        boxShadow="0 0 2px 1px #009688"
+        borderRadius="50%"
+        transform="rotate(25deg)"
+        marginBottom="3px"
+      />
+      <Pane
+        height="4px"
+        width="7px"
+        boxShadow="0 0 2px 1px #009688"
+        borderRadius="50%"
+        transform="rotate(-25deg)"
+        marginBottom="3px"
       />
     </Pane>
-  </Pane>
-);
-
-export const Vitalik = () => (
-  <Pane
-    height="23px"
-    width="23px"
-    boxShadow="0 0 2px 1px #009688"
-    borderRadius="50%"
-    display="flex"
-    alignItems="center"
-    justifyContent="space-around"
-  >
-    <Pane
-      height="4px"
-      width="7px"
-      boxShadow="0 0 2px 1px #009688"
-      borderRadius="50%"
-      transform="rotate(25deg)"
-      marginBottom="3px"
-    />
-    <Pane
-      height="4px"
-      width="7px"
-      boxShadow="0 0 2px 1px #009688"
-      borderRadius="50%"
-      transform="rotate(-25deg)"
-      marginBottom="3px"
-    />
-  </Pane>
-);
+  );
+}
 
 export function PocketCard({ children, select, ...props }) {
   return (

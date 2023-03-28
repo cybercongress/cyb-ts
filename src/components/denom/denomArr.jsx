@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import Denom from './index';
 import { AppContext } from '../../context';
 

@@ -16,7 +16,6 @@ import {
 import { AppContext } from '../../context';
 import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
 
 const {
   STAGE_INIT,

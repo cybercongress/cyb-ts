@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
-import { SigningCyberClient, SigningCyberClientOptions } from '@cybercongress/cyber-js';
+import { GasPrice } from '@cosmjs/launchpad';
+import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';
 import { CYBER } from '../../utils/config';
 import { Loading } from '../../components';

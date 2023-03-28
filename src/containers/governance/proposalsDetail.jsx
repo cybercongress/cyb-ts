@@ -1,47 +1,30 @@
 /* eslint-disable react/no-children-prop */
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  ActionBar,
-} from '@cybercongress/gravity';
-import { fromAscii, fromBase64 } from '@cosmjs/encoding';
+import { Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 
-import {
-  Votes,
-  Legend,
-  IconStatus,
-  Deposit,
-  ContainerPane,
-  Item,
-} from '../../components';
+import { IconStatus, Item } from '../../components';
 
 import {
-  getProposals,
   getStakingPool,
   getTallying,
   getProposalsDetail,
   getProposer,
-  getProposalsDetailVotes,
   getMinDeposit,
-  getTableVoters,
   getTallyingProposals,
-  reduceTxsVoters,
 } from '../../utils/governance';
 import ActionBarDetail from './actionBarDatail';
 
-import { formatNumber, makeTags } from '../../utils/utils';
+import { formatNumber } from '../../utils/utils';
 
 import ProposalsIdDetail from './proposalsIdDetail';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsIdDetailTableVoters from './proposalsDetailTableVoters';
-import { CYBER, PROPOSAL_STATUS, VOTE_OPTION } from '../../utils/config';
+import { PROPOSAL_STATUS } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { AppContext } from '../../context';
 import { ContainerGradientText, MainContainer } from '../portal/components';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Copy = ({ text, ...props }) => {
+export function Copy({ text, ...props }) {
   return (
     <button
       className="copy-address-btn"
@@ -12,4 +12,4 @@ export const Copy = ({ text, ...props }) => {
       }}
     />
   );
-};
+}

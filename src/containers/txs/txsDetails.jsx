@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Text, Pane } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';

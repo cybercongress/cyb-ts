@@ -13,7 +13,7 @@ const styleLable = {
   whiteSpace: 'nowrap',
 };
 
-const ContractTable = ({ contracts, count, setOffset }) => {
+function ContractTable({ contracts, count, setOffset }) {
   const setNextDisplayedPalettes = useCallback(() => {
     setTimeout(() => {
       setOffset((itemsState) => itemsState + 1);
@@ -82,6 +82,6 @@ const ContractTable = ({ contracts, count, setOffset }) => {
       )}
     </InfiniteScroll>
   );
-};
+}
 
 export default ContractTable;

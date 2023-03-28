@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { AppContext } from '../../context';
 import { formatNumber } from '../../utils/utils';
 

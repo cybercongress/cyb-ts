@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import Iframe from 'react-iframe';
+import React from 'react';
 import { ContainerGradient } from '../components';
-import { Loading } from '../../../components';
 
 const linkMovie =
   'https://gateway.ipfs.cybernode.ai/ipfs/QmW99p83AGb3Qa62iL6B24RNLcwRh9x9U2nqkF94dfvuze';

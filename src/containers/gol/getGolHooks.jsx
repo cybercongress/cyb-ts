@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import finalResultGoL from '../../utils/finalResultGoL';
-import { fromBech32 } from '../../utils/utils';
 
 const initValueState = {
   cybercongress: 0,

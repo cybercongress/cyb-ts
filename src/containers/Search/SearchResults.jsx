@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import React, { useState, useEffect, useContext } from 'react';
+import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -17,18 +17,13 @@ import {
 import {
   Loading,
   Account,
-  Copy,
-  Tooltip,
-  LinkWindow,
   Rank,
   NoItems,
   Dots,
-  Particle,
   SearchItem,
 } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
-  PATTERN,
   PATTERN_CYBER,
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,

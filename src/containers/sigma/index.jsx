@@ -1,24 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  useGetLocalStoge,
-  useGetPassportByAddress,
-  useGetBalanceBostrom,
-} from './hooks';
-import {
-  ActionBarSteps,
-  BtnGrd,
-  ActionBarContainer,
-  MainContainer,
-  ContainerGradientText,
-} from '../portal/components';
-import ActionBar from './ActionBar';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { useSigmaContext, SigmaContext } from './SigmaContext';
+import BigNumber from 'bignumber.js';
+
+import { MainContainer, ContainerGradientText } from '../portal/components';
+import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
-import BigNumber from 'bignumber.js';
 import { FormatNumberTokens } from '../nebula/components';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';

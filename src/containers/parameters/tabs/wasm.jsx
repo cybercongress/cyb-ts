@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { CardStatisics, Vitalik } from '../../../components';
+import { CardStatisics } from '../../../components';
 
 const NS_TO_MS = 1 * 10 ** 6;
 

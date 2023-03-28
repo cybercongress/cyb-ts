@@ -1,6 +1,6 @@
 import React from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
-import { IconStatus, ContainerPane, Item } from '../../components';
+import { Pane } from '@cybercongress/gravity';
+import { IconStatus, Item } from '../../components';
 import { formatNumber } from '../../utils/search/utils';
 import { CYBER } from '../../utils/config';
 import { ContainerGradientText } from '../portal/components';
@@ -14,13 +14,13 @@ const toFixedNumber = (number, toFixed) => {
 const formatTime = (time) =>
   dateFormat(new Date(time), 'dd/mm/yyyy, hh:MM:ss TT');
 
-const ProposalsIdDetail = ({
+function ProposalsIdDetail({
   totalDeposit,
   proposals,
   tallying,
   tally,
   ...props
-}) => {
+}) {
   const { yes, abstain, no, noWithVeto, participation } = tally;
   const { quorum, threshold, veto_threshold: veto } = tallying;
 
@@ -107,6 +107,6 @@ const ProposalsIdDetail = ({
       </ContainerGradientText>
     </Pane>
   );
-};
+}
 
 export default ProposalsIdDetail;

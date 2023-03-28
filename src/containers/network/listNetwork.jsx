@@ -5,13 +5,19 @@ import { CYBER } from '../../utils/config';
 import { MainContainer, ContainerGradientText } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';
 
-const ValueItem = ({ children }) => (
-  <div
-    style={{ display: 'grid', gridTemplateColumns: '120px 1fr', color: '#fff' }}
-  >
-    {children}
-  </div>
-);
+function ValueItem({ children }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '120px 1fr',
+        color: '#fff',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 const statusCard = (status) => {
   switch (status) {
@@ -41,11 +47,13 @@ function ListNetwork() {
     const item = networks[key];
     return (
       <ContainerGradientText status={statusCard(key)}>
-        {key !== 'bostrom' && key !== 'space-pussy' && key !== CYBER.CHAIN_ID && (
-          <BtnPasport onClick={() => onClickDeleteAddress(key)} typeBtn="red">
-            X
-          </BtnPasport>
-        )}
+        {key !== 'bostrom' &&
+          key !== 'space-pussy' &&
+          key !== CYBER.CHAIN_ID && (
+            <BtnPasport onClick={() => onClickDeleteAddress(key)} typeBtn="red">
+              X
+            </BtnPasport>
+          )}
         <Link to={`/networks/${key}`}>
           <div style={{ gap: '5px', display: 'grid' }}>
             <ValueItem>

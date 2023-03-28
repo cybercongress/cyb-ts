@@ -10,20 +10,22 @@ import {
 import { getRankGrade } from '../../utils/search/utils';
 import ContentItem from '../../containers/ipfs/contentItem';
 
-const TimeAgo = ({ timeAgoInMS }) => (
-  <Pane
-    className="time-discussion rank-contentItem"
-    position="absolute"
-    right="0"
-    fontSize={12}
-    whiteSpace="nowrap"
-    top="50%"
-    transform="translate(0, -50%)"
-    marginTop="-5px"
-  >
-    {timeSince(timeAgoInMS)} ago
-  </Pane>
-);
+function TimeAgo({ timeAgoInMS }) {
+  return (
+    <Pane
+      className="time-discussion rank-contentItem"
+      position="absolute"
+      right="0"
+      fontSize={12}
+      whiteSpace="nowrap"
+      top="50%"
+      transform="translate(0, -50%)"
+      marginTop="-5px"
+    >
+      {timeSince(timeAgoInMS)} ago
+    </Pane>
+  );
+}
 
 const initialState = {
   rank: 'n/a',

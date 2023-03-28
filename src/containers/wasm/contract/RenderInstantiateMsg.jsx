@@ -1,10 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import txs from '../../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
+import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
-import { CYBER } from '../../../utils/config';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
-import { FlexWrapCantainer } from '../ui/ui';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -67,7 +65,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     setActiveKey(key);
     setExecuting(true);
 
-    console.log(`formData`, formData)
+    console.log(`formData`, formData);
 
     try {
       const [{ address }] = await keplr.signer.getAccounts();

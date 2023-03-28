@@ -12,22 +12,13 @@ import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import txs from '../../../utils/txs';
 
+import { MainContainer, MoonAnimation, Stars } from '../components';
 import {
-  ContainerGradient,
-  Signatures,
-  ScrollableTabs,
-  MainContainer,
-  MoonAnimation,
-  Stars,
-} from '../components';
-import {
-  Welcome,
   Rules,
   InputNickname,
   Avatar,
   InitKeplr,
   SetupKeplr,
-  ConnectKeplr,
   Passport,
 } from '../stateComponent';
 import ActionBar from './ActionBar';

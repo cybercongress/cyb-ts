@@ -2,14 +2,14 @@ import React from 'react';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
-export const ProgressBar = ({
+export function ProgressBar({
   progress = 0,
   styleContainer,
   styleContainerTrack,
   rotate = 0,
   coefficient,
   amount,
-}) => {
+}) {
   return (
     <div
       className={styles.containerProgressBar}
@@ -42,7 +42,7 @@ export const ProgressBar = ({
       )}
     </div>
   );
-};
+}
 
 // progressCard
 // headerTitle

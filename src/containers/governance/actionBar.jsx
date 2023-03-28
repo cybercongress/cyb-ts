@@ -1,31 +1,16 @@
 import React, { Component } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Button } from '@cybercongress/gravity';
-import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
-import {
-  SigningCosmosClient,
-  GasPrice,
-  coins,
-  makeSignDoc,
-  makeStdTx,
-} from '@cosmjs/launchpad';
+import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  ConnectLadger,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   GovernanceStartStageActionBar,
-  Cyberlink,
   CommunityPool,
-  ParamChange,
   TextProposal,
   TransactionError,
-  CheckAddressInfo,
   GovernanceChangeParam,
   GovernanceSoftwareUpgrade,
 } from '../../components';
-import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
@@ -98,7 +83,7 @@ class ActionBar extends Component {
       const title = valueTitle;
       const description = valueDescription;
       const recipient = valueAddressRecipient;
-      let msgs = [];
+      const msgs = [];
       let response = {};
       const fee = {
         amount: [],
@@ -471,7 +456,6 @@ class ActionBar extends Component {
         />
       );
     }
-
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
       return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;

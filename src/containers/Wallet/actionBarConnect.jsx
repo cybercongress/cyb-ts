@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link } from 'react-router-dom';
-import { Pane, Input, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
   Dots,
-  ActionBarContentText,
   ConnectAddress,
   SetHdpath,
   TransactionError,
@@ -16,17 +14,11 @@ import {
   CYBER,
   PATTERN_COSMOS,
   PATTERN_CYBER,
-  POCKET,
 } from '../../utils/config';
-import { fromBech32, trimString } from '../../utils/utils';
+import { fromBech32 } from '../../utils/utils';
 
-const {
-  STAGE_INIT,
-  STAGE_LEDGER_INIT,
-  HDPATH,
-  LEDGER_OK,
-  STAGE_ERROR,
-} = LEDGER;
+const { STAGE_INIT, STAGE_LEDGER_INIT, HDPATH, LEDGER_OK, STAGE_ERROR } =
+  LEDGER;
 
 const STAGE_ADD_ADDRESS_LEDGER = 1.1;
 const STAGE_ADD_ADDRESS_USER = 2.1;

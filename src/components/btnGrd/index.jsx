@@ -5,9 +5,9 @@ import styles from './styles.scss';
 const audioBtn = require('../../sounds/main-button.mp3');
 const audioBtnHover = require('../../sounds/main-button-hover.mp3');
 
-const GradientContainer = ({ disabled, children }) => {
+function GradientContainer({ disabled, children }) {
   return <div className={styles.GradientContainer}>{children}</div>;
-};
+}
 
 const audioBtnObg = new Audio(audioBtn);
 const audioBtnHoverObg = new Audio(audioBtnHover);

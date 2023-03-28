@@ -4,12 +4,14 @@ import { AppContext } from '../../../../context';
 import styles from './styles.scss';
 import { trimString } from '../../../../utils/utils';
 
-export const CardItem = ({ title, value }) => (
-  <div className={styles.containetCodesCardFillsItem}>
-    <div className={styles.containetCodesCardFillsItemTitle}>{title}:</div>
-    <div className={styles.containetCodesCardFillsItemValue}>{value}</div>
-  </div>
-);
+export function CardItem({ title, value }) {
+  return (
+    <div className={styles.containetCodesCardFillsItem}>
+      <div className={styles.containetCodesCardFillsItemTitle}>{title}:</div>
+      <div className={styles.containetCodesCardFillsItemValue}>{value}</div>
+    </div>
+  );
+}
 
 function Code({ data }) {
   const { jsCyber } = useContext(AppContext);

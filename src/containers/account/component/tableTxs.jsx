@@ -1,14 +1,8 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Icon,
-  Tooltip,
-} from '@cybercongress/gravity';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { trimString, formatNumber, formatCurrency } from '../../../utils/utils';
+import { trimString, formatNumber } from '../../../utils/utils';
 import {
   NoItems,
   MsgType,
@@ -16,7 +10,6 @@ import {
   TextTable,
   NumberCurrency,
 } from '../../../components';
-import { CYBER } from '../../../utils/config';
 
 const dateFormat = require('dateformat');
 const imgDropdown = require('../../../image/arrow-dropdown.svg');
@@ -24,7 +17,7 @@ const imgDropup = require('../../../image/arrow-dropup.svg');
 const statusTrueImg = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../../image/ionicons_svg_ios-close-circle.svg');
 
-const TableTxs = ({ data, type, accountUser, amount }) => {
+function TableTxs({ data, type, accountUser, amount }) {
   const [itemsToShow, setItemsToShow] = useState(30);
 
   const setNextDisplayedPalettes = useCallback(() => {
@@ -220,6 +213,6 @@ const TableTxs = ({ data, type, accountUser, amount }) => {
       </Table.Body>
     </Table>
   );
-};
+}
 
 export default TableTxs;

@@ -1,7 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Pane, Icon } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { CardStatisics } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import AccountCount from '../brain/accountCount';

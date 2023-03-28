@@ -7,8 +7,8 @@ import RankParam from './rank';
 import InlfationParam from './inlfation';
 import ResourcesParam from './resources';
 import WasmParam from './wasm';
-import LiquidityParam from './liquidity'
-import GridParam from './grid'
+import LiquidityParam from './liquidity';
+import GridParam from './grid';
 import DmnParam from './dmn';
 
 export {

@@ -1,14 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import BigNumber from 'bignumber.js';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import {
   formatCurrency,
@@ -46,7 +37,7 @@ const PREFIXES = [
   },
 ];
 
-const TypingText = ({ content, delay = 30 }) => {
+function TypingText({ content, delay = 30 }) {
   const [displayed, updateDisplay] = useState('');
   let animID;
 
@@ -61,15 +52,17 @@ const TypingText = ({ content, delay = 30 }) => {
 
   const typeLetter = () => {
     updateDisplay((prevText) => {
-      if (content.length <= prevText.length) clearInterval(animID);
+      if (content.length <= prevText.length) {
+        clearInterval(animID);
+      }
       return prevText.concat(content.charAt(prevText.length));
     });
   };
 
   return <>{displayed}</>;
-};
+}
 
-const DeltaValue = ({ change }) => {
+function DeltaValue({ change }) {
   if (parseFloat(change.amount) > 0) {
     return (
       <div
@@ -93,7 +86,7 @@ const DeltaValue = ({ change }) => {
   }
 
   return null;
-};
+}
 
 const delay = 4000;
 

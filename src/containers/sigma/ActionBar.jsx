@@ -1,16 +1,5 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
-import { toHex } from '@cosmjs/encoding';
-import {
-  ActionBarSteps,
-  BtnGrd,
-  ActionBarContainer,
-} from '../portal/components';
+import React, { useCallback, useContext } from 'react';
+import { ActionBarSteps, BtnGrd } from '../portal/components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 

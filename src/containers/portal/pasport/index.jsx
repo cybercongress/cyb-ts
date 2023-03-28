@@ -7,8 +7,6 @@ import {
   ParseAddressesImg,
 } from '../components';
 import { AppContext } from '../../../context';
-import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   ChainId,
   Token,
@@ -6,12 +6,7 @@ import {
   Fetcher,
   Route as RouteUniswap,
 } from '@uniswap/sdk';
-import {
-  TOTAL_GOL_GENESIS_SUPPLY,
-  CYBER,
-  TAKEOFF,
-  GENESIS_SUPPLY,
-} from '../../utils/config';
+import { TOTAL_GOL_GENESIS_SUPPLY, CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import { convertResources } from '../../utils/utils';
 

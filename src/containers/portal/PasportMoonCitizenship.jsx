@@ -1,11 +1,7 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { ActionBar, Button } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 import {
-  ContainerGradient,
-  Signatures,
-  ScrollableTabs,
   MainContainer,
   ActionBarSteps,
   BtnGrd,
@@ -16,7 +12,6 @@ import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { activePassport, parseRowLog } from './utils';
 import PasportCitizenship from './pasport';
-import GetCitizenship from './citizenship';
 import Info from './citizenship/Info';
 import { steps } from './citizenship/utils';
 import STEP_INFO from './gift/utils';

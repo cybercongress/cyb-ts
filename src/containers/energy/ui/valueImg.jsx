@@ -4,7 +4,7 @@ const voltImg = require('../../../image/lightning2.png');
 const amperImg = require('../../../image/light.png');
 const hydrogen = require('../../../image/hydrogen.svg');
 
-const ValueImg = ({ text, onlyImg }) => {
+function ValueImg({ text, onlyImg }) {
   let img = null;
   let textCurency = text;
 
@@ -48,6 +48,6 @@ const ValueImg = ({ text, onlyImg }) => {
       )}
     </div>
   );
-};
+}
 
 export default ValueImg;

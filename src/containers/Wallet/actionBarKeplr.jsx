@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Link } from 'react-router-dom';
-import { Pane, Text, ActionBar, Button, Input } from '@cybercongress/gravity';
+import { Pane, ActionBar, Input } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  ConnectLadger,
   Dots,
   ActionBarContentText,
   TransactionSubmitted,
@@ -15,13 +11,10 @@ import {
 import {
   LEDGER,
   CYBER,
-  PATTERN_COSMOS,
   PATTERN_CYBER,
-  POCKET,
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
-import { deletPubkey } from './utils';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 

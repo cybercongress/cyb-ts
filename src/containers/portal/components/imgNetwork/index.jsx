@@ -25,12 +25,7 @@ const PATTERN_TERRA = /^terra[a-zA-Z0-9]{39}$/g;
 
 const GIFT_ICON_CLAIM = '🎁✅';
 
-const ParseAddressesImg = ({
-  address,
-  active,
-  statusAddressGift,
-  ...props
-}) => {
+function ParseAddressesImg({ address, active, statusAddressGift, ...props }) {
   let gift;
   let claimed;
 
@@ -105,6 +100,6 @@ const ParseAddressesImg = ({
       )}
     </button>
   );
-};
+}
 
 export default ParseAddressesImg;

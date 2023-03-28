@@ -11,7 +11,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-const ForceQuitter = ({ nodeIpfs }) => {
+function ForceQuitter({ nodeIpfs }) {
   let graph;
   const [hasLoaded, setHasLoaded] = useState(true);
   const { data: dataGql } = useGetDataGql(nodeIpfs);
@@ -215,7 +215,7 @@ const ForceQuitter = ({ nodeIpfs }) => {
       />
     </div>
   );
-};
+}
 
 const mapStateToProps = (store) => {
   return {

@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback, useContext } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { AppContext } from '../../context';
 import { getAvatarIpfs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';

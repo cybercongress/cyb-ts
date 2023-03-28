@@ -1,10 +1,8 @@
 import React from 'react';
 import { TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { formatNumber, formatCurrency } from '../../../utils/utils';
 import { FormatNumber, Dots, NumberCurrency } from '../../../components';
 import { TextTable, StatusTooltip } from './ui';
-import { CYBER } from '../../../utils/config';
 
 const imgSearch = require('../../../image/ionicons_svg_ios-help-circle-outline.svg');
 

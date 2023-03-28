@@ -1,15 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { TableEv as Table, Pane } from '@cybercongress/gravity';
-import { NoItems, Cid } from '../../../components';
-import { trimString } from '../../../utils/utils';
+import { Pane } from '@cybercongress/gravity';
+import { NoItems } from '../../../components';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 
 function CommunityTab({ data, node }) {
   if (Object.keys(data).length > 0) {
     const rowItem = Object.keys(data)
       .sort((a, b) => data[b].amount - data[a].amount)
-      .map(key => (
+      .map((key) => (
         <AvatarIpfs key={key} showAddress node={node} addressCyber={key} />
       ));
 

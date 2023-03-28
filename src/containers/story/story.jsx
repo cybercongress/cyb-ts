@@ -35,7 +35,7 @@ class Story extends React.Component {
   }
 
   chekKeydown = () => {
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', (event) => {
       if (event.code === 'Space') {
         this.swapStory();
       }

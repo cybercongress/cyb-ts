@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
-const SelectFile = ({ useStateCallback, text = 'Upload query schema' }) => {
+function SelectFile({ useStateCallback, text = 'Upload query schema' }) {
   const inputOpenFileRef = useRef(null);
   const [file, setFile] = useState(null);
 
@@ -57,6 +57,6 @@ const SelectFile = ({ useStateCallback, text = 'Upload query schema' }) => {
       />
     </div>
   );
-};
+}
 
 export default SelectFile;

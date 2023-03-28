@@ -10,7 +10,7 @@ import { DenomArr } from '../../components';
 import { getKeplr } from '../ibc/useSetupIbc';
 import ActionBarAssets from './ActionBarAssets';
 
-const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
+function AssetsRow({ denom, allBalances, deposit, withdraw, disabledBtns }) {
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
       </div>
     </div>
   );
-};
+}
 
 const createClient = async (denom, keplrCybre) => {
   let client = null;

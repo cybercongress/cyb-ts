@@ -1,13 +1,11 @@
 import React, { useMemo, useEffect, useContext } from 'react';
 import { Dots } from '../../../../components';
-import { AppContext } from '../../../../context';
-import { CYBER } from '../../../../utils/config';
 import { ContainerGradient } from '../../../portal/components';
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
 
-const CardPassport = ({ accounts }) => {
+function CardPassport({ accounts }) {
   const { updateDataCap } = useContext(SigmaContext);
   const { passport } = useGetPassportByAddress(accounts);
   const { totalAmountInLiquid, balances, totalAmountInLiquidOld } =
@@ -73,6 +71,6 @@ const CardPassport = ({ accounts }) => {
       </div>
     </ContainerGradient>
   );
-};
+}
 
 export default CardPassport;
