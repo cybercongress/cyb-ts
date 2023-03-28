@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
-import { Navigation, NavigationLeft, Pane } from '@cybercongress/gravity';
 import { Link, useHistory, useLocation } from 'react-router-dom';
-// import usePopperTooltip from 'react-popper-tooltip';
-import Menu from './ToggleMenu';
+import { Input } from '../../components';
 import AppMenu from './AppMenu';
-import { MenuButton, BandwidthBar, Tooltip, Input } from '../../components';
 import Electricity from '../home/electricity';
 import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
@@ -20,100 +17,36 @@ import {
 import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
-import { CYBER, WP } from '../../utils/config';
 import {
-  formatNumber,
   convertResources,
   coinDecimals,
   reduceBalances,
   replaceSlash,
   encodeSlash,
-  selectNetworkImg,
 } from '../../utils/utils';
 import { AppContext } from '../../context';
-import LeftTooltip from './leftTooltip';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
-import useNewIpfs from '../../useNewIpfs';
+import useStartIpfs from '../../useStartIpfs';
 import { GitHub, Telegram } from '../../components/actionBar';
-import styles from './styles.scss';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
 import { InfoCard } from '../portal/components';
 
-const imgBostrom = require('../../image/cyb.svg');
-const cybFalse = require('../../image/cyb.svg');
-const cybTrue = require('../../image/cybTrue.svg');
-const info = require('../../image/info-circle-outline.svg');
-const lensIcon = require('../../image/lens-icon.svg');
-const circleYellow = require('../../image/large-yellow-circle.png');
-
-function ListAccounts({
-  accounts,
-  defaultAccount,
-  children,
-  onClickChangeActiveAcc,
-}) {
-  let items = {};
-  if (accounts && accounts !== null) {
-    items = Object.keys(accounts).map((key, i) => {
-      let active = false;
-      if (
-        defaultAccount &&
-        defaultAccount.name &&
-        defaultAccount.name === key
-      ) {
-        active = true;
-      }
-      return (
-        <Pane
-          key={`${key}_${i}`}
-          paddingX={10}
-          paddingY={5}
-          whiteSpace="nowrap"
-          color={active ? '#ff9100' : '#fff'}
-          onClick={() =>
-            active ? '' : onClickChangeActiveAcc(key, accounts[key])
-          }
-          className={active ? '' : 'account-popaps'}
-        >
-          {key}
-        </Pane>
-      );
-    });
-  }
-  return (
-    <Tooltip
-      placement="bottom"
-      trigger={['click', 'hover']}
-      tooltip={
-        Object.keys(items).length > 0
-          ? items
-          : "you don't have accounts in your pocket"
-      }
-    >
-      <Pane>{children}</Pane>
-    </Tooltip>
-  );
-}
-
 function App({
   defaultAccount,
   query,
-  ipfsStatus,
   bandwidth,
   accounts,
   setQueryProps,
   setAccountsProps,
   setDefaultAccountProps,
   setBandwidthProps,
-  time,
   children,
   initIpfsProps,
   setTypeDeviceProps,
-  setIpfsIDProps,
   setIpfsFailedProps,
   setIpfsReadyProps,
   setIpfsPendingProps,
@@ -123,19 +56,17 @@ function App({
   const { marketData, dataTotal } = useGetMarketData();
   const { isMobile } = useIsMobileTablet();
   // const dataIpfsStart = useIpfsStart();
-  const { ipfs, isIpfsReady, ipfsInitError, isIpfsPending } = useNewIpfs();
+  const { ipfs, isIpfsReady, ipfsInitError, isIpfsPending } = useStartIpfs();
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useHistory();
   const location = useLocation();
-  const [home, setHome] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
   const [keywordHash, setKeywordHash] = useState(null);
-  const [story, setStory] = useState(true);
 
   // console.log(accounts);
 
@@ -363,73 +294,65 @@ function App({
     }
   };
 
-  // if (story) {
-  //   return <div>{children}</div>;
-  // }
-
   return (
     <div>
-      {story && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            position: 'relative',
-            padding: '0px 15px',
-            zIndex: 3,
-          }}
-          className="container-distribution"
-        >
-          <div>
-            <AppSideBar
-              onCloseSidebar={() => setOpenMenu(false)}
-              openMenu={openMenu}
-            >
-              <AppMenu addressActive={addressActive} />
-            </AppSideBar>
-            <SwichNetwork
-              openMenu={openMenu}
-              onClickOpenMenu={() => setOpenMenu((item) => !item)}
-              countLink={countLink}
-              bandwidth={bandwidth}
-              amounPower={amounPower}
-            />
-          </div>
-
-          {!home && (
-            <div
-              style={{
-                width: '52%',
-                transform: 'translate(-50%, -80%)',
-                // background: 'rgb(0 0 0 / 79%)',
-                marginRight: '-50%',
-                left: '50%',
-                position: 'absolute',
-                top: '50%',
-                padding: '0px 20px',
-                zIndex: '1',
-              }}
-            >
-              <Input
-                color="pink"
-                onChange={(e) => onChangeInput(e)}
-                onKeyPress={handleKeyPress}
-                style={{ textAlign: 'center', fontSize: 24 }}
-                // className="search-input"
-                ref={textInput}
-                value={encodeSlash(query)}
-                autoComplete="off"
-              />
-            </div>
-          )}
-          <Electricity />
-          <SwichAccount
-            defaultAccount={defaultAccount}
-            accounts={accounts}
-            onClickChangeActiveAcc={onClickChangeActiveAcc}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          position: 'relative',
+          padding: '0px 15px',
+          zIndex: 3,
+        }}
+        className="container-distribution"
+      >
+        <div>
+          <AppSideBar
+            onCloseSidebar={() => setOpenMenu(false)}
+            openMenu={openMenu}
+          >
+            <AppMenu addressActive={addressActive} />
+          </AppSideBar>
+          <SwichNetwork
+            openMenu={openMenu}
+            onClickOpenMenu={() => setOpenMenu((item) => !item)}
+            countLink={countLink}
+            bandwidth={bandwidth}
+            amounPower={amounPower}
           />
         </div>
-      )}
+
+        <div
+          style={{
+            width: '52%',
+            transform: 'translate(-50%, -80%)',
+            // background: 'rgb(0 0 0 / 79%)',
+            marginRight: '-50%',
+            left: '50%',
+            position: 'absolute',
+            top: '50%',
+            padding: '0px 20px',
+            zIndex: '1',
+          }}
+        >
+          <Input
+            color="pink"
+            onChange={(e) => onChangeInput(e)}
+            onKeyPress={handleKeyPress}
+            style={{ textAlign: 'center', fontSize: 24 }}
+            // className="search-input"
+            ref={textInput}
+            value={encodeSlash(query)}
+            autoComplete="off"
+          />
+        </div>
+        <Electricity />
+        <SwichAccount
+          defaultAccount={defaultAccount}
+          accounts={accounts}
+          onClickChangeActiveAcc={onClickChangeActiveAcc}
+        />
+      </div>
       {ipfsInitError !== null && location.pathname !== '/ipfs' && (
         <div
           style={{

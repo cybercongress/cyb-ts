@@ -23,71 +23,6 @@ const { DENOM_COSMOS, DEFAULT_GAS, DEFAULT_GAS_PRICE } = COSMOS;
 const { DENOM_CYBER } = CYBER;
 const { MEMO } = LEDGER;
 
-function isObject(v) {
-  return Object.prototype.toString.call(v) === '[object Object]';
-}
-
-const sortJson = (o) => {
-  if (Array.isArray(o)) {
-    return o.sort().map(sortJson);
-  }
-  if (isObject(o)) {
-    return Object.keys(o)
-      .sort()
-      .reduce((a, k) => {
-        a[k] = sortJson(o[k]);
-
-        return a;
-      }, {});
-  }
-
-  return o;
-};
-
-function canonicalizeJson(jsonTx) {
-  if (Array.isArray(jsonTx)) {
-    return jsonTx.map(canonicalizeJson);
-  }
-  if (typeof jsonTx !== 'object') {
-    return jsonTx;
-  }
-  const tmp = {};
-  Object.keys(jsonTx)
-    .sort()
-    .forEach((key) => {
-      // eslint-disable-next-line no-unused-expressions
-      jsonTx[key] != null && (tmp[key] = jsonTx[key]);
-    });
-
-  return tmp;
-}
-
-function getBytesToSign(tx, txContext) {
-  if (typeof txContext === 'undefined') {
-    throw new Error('txContext is not defined');
-  }
-  if (typeof txContext.chainId === 'undefined') {
-    throw new Error('txContext does not contain the chainId');
-  }
-  if (typeof txContext.accountNumber === 'undefined') {
-    throw new Error('txContext does not contain the accountNumber');
-  }
-  if (typeof txContext.sequence === 'undefined') {
-    throw new Error('txContext does not contain the sequence value');
-  }
-
-  const txFieldsToSign = {
-    account_number: txContext.accountNumber.toString(),
-    chain_id: txContext.chainId,
-    fee: tx.value.fee,
-    memo: tx.value.memo,
-    msgs: tx.value.msg,
-    sequence: txContext.sequence.toString(),
-  };
-
-  return JSON.stringify(sortJson(txFieldsToSign));
-}
-
 function applyGas(unsignedTx, gas) {
   if (typeof unsignedTx === 'undefined') {
     throw new Error('undefined unsignedTx');
@@ -712,7 +647,6 @@ export default {
   createDelegate,
   createRedelegate,
   createUndelegate,
-  getBytesToSign,
   applySignature,
   createSend,
   createLink,

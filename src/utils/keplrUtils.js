@@ -70,4 +70,4 @@ const configKeplr = (prefix) => {
   };
 };
 
-export { configKeplr };
+export default configKeplr;

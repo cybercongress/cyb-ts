@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { destroyIpfsClient, initIpfsClient } from './utils/ipfs/init';
 
 let ipfs = null;
@@ -22,7 +22,7 @@ const getOpts = () => {
   return { ipfsOpts };
 };
 
-function useNewIpfs() {
+function useStartIpfs() {
   const [isIpfsReady, setIpfsReady] = useState(Boolean(ipfs));
   const [ipfsInitError, setIpfsInitError] = useState(null);
   const [isIpfsPending, setIsIpfsPending] = useState(false);
@@ -36,9 +36,7 @@ function useNewIpfs() {
 
       try {
         ipfs = await initIpfsClient(ipfsOpts);
-        console.log('ipfs', ipfs);
       } catch (err) {
-        console.log('initIpfsClient', err);
         setIpfsInitError(err.message || err);
       }
       setIpfsReady(Boolean(ipfs));
@@ -70,4 +68,4 @@ function useNewIpfs() {
   return { ipfs, isIpfsReady, ipfsInitError, isIpfsPending };
 }
 
-export default useNewIpfs;
+export default useStartIpfs;

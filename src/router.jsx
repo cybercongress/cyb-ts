@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
+import { Link, HashRouter } from 'react-router-dom';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
@@ -54,7 +55,6 @@ import {
 import Sigma from './containers/sigma';
 
 import ipfsSettings from './containers/ipfsSettings';
-import { Link, HashRouter } from 'react-router-dom';
 import { routes } from './routes';
 
 export const history = createBrowserHistory({});
@@ -84,7 +84,7 @@ function WrappedRouter({ children }) {
 function AppRouter() {
   return (
     <WrappedRouter history={history}>
-      <Route path={routes.home.path} component={() => <App />} />
+      <Route path={routes.home.path} component={App} />
       <Switch>
         <Route path="/" exact component={Temple} />
         <Route path="/robot" component={Wallet} />

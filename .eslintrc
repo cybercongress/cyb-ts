@@ -47,6 +47,7 @@
     "object-property-newline": 0,
     "one-var-declaration-per-line": ["warn", "always"],
     "no-use-before-define": ["error", { "variables": false }],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "padded-blocks": [
       "warn",
       {
@@ -72,7 +73,8 @@
         ]
       }
     ],
-    "react/jsx-filename-extension": "off"
+    "react/jsx-filename-extension": "off",
+    "import/no-unused-modules": [1, {"unusedExports": true}]
   },
   "settings": {
     "import/resolver": {

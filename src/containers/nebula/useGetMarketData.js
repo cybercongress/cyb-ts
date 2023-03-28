@@ -2,13 +2,8 @@ import { useState, useEffect, useContext, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { AppContext } from '../../context';
-import {
-  reduceBalances,
-  getDisplayAmount,
-  convertAmountReverce,
-  convertAmount,
-} from '../../utils/utils';
-import { getCoinDecimals } from '../teleport/utils';
+import { reduceBalances, convertAmount } from '../../utils/utils';
+
 import { CYBER } from '../../utils/config';
 
 const defaultTokenList = {

@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
@@ -20,9 +14,7 @@ import {
   CurrentGift,
   ProgressCard,
   NextUnfreeze,
-  Released,
   MainContainer,
-  UnclaimedGift,
   MoonAnimation,
   Stars,
   ContainerGradientText,
@@ -33,12 +25,11 @@ import useCheckRelease from '../hook/useCheckRelease';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
 import { formatNumber } from '../../../utils/search/utils';
-import { STEP_INFO } from './utils';
+import STEP_INFO from './utils';
 import Info from './Info';
-import { LinkWindow } from '../../../components';
 
-const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
-const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
+import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
+import portalAmbient from '../../../sounds/portalAmbient112.mp3';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -67,24 +58,26 @@ const {
   STATE_INIT_NULL_BEFORE,
 } = STEP_INFO;
 
-const InfoBaner = ({ title, text, status }) => (
-  <ContainerGradientText status={status}>
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px',
-        padding: '15px 0',
-      }}
-    >
-      <div style={{ color: '#36D6AE', fontSize: '22px' }}>{title}</div>
-      <div style={{ fontSize: '18px', color: '#fff', textAlign: 'center' }}>
-        {text}
+function InfoBaner({ title, text, status }) {
+  return (
+    <ContainerGradientText status={status}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
+          padding: '15px 0',
+        }}
+      >
+        <div style={{ color: '#36D6AE', fontSize: '22px' }}>{title}</div>
+        <div style={{ fontSize: '18px', color: '#fff', textAlign: 'center' }}>
+          {text}
+        </div>
       </div>
-    </div>
-  </ContainerGradientText>
-);
+    </ContainerGradientText>
+  );
+}
 
 const NS_TO_MS = 1 * 10 ** -6;
 

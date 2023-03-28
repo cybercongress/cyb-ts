@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
 import { Sha256 } from '@cosmjs/crypto';
@@ -86,7 +87,7 @@ export function formatCurrency(
   prefixCustom = PREFIXES
 ) {
   const { prefix = '', power = 1 } =
-    prefixCustom.find(({ power }) => value >= power) || {};
+    prefixCustom.find((obj) => value >= obj.power) || {};
 
   return `${roundNumber(
     value / power,
@@ -101,7 +102,7 @@ export const formatCurrencyNumber = (
   prefixCustom = PREFIXES
 ) => {
   const { prefix = '', power = 1 } =
-    prefixCustom.find(({ power }) => value >= power) || {};
+    prefixCustom.find((obj) => value >= obj.power) || {};
 
   return {
     number: roundNumber(value / power, decimalDigits),
@@ -125,7 +126,7 @@ const run = async (func) => {
 };
 
 const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < array.length; index + 1) {
     await callback(array[index], index, array);
   }
 };
@@ -221,23 +222,10 @@ const exponentialToDecimal = (exponential) => {
         (exponentialSplitted[0].includes('.')
           ? exponentialSplitted[0].split('.')[1].length
           : 0);
-      i++
+      i + 1
     ) {
       postfix += '0';
     }
-    const addCommas = (text) => {
-      let j = 3;
-      let textLength = text.length;
-      while (j < textLength) {
-        text = `${text.slice(0, textLength - j)},${text.slice(
-          textLength - j,
-          textLength
-        )}`;
-        textLength++;
-        j += 3 + 1;
-      }
-      return text;
-    };
     decimal = exponentialSplitted[0].replace('.', '') + postfix;
   }
   if (decimal.toLowerCase().includes('e-')) {
@@ -261,11 +249,11 @@ function dhm(t) {
     return n < 10 ? `0${n}${unit}` : `${n}${unit}`;
   };
   if (m === 60) {
-    h++;
+    h += 1;
     m = 0;
   }
   if (h === 24) {
-    d++;
+    d += 1;
     h = 0;
   }
   return [`${d}d`, pad(h, 'h'), pad(m, 'm')].join(':');

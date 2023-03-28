@@ -4,26 +4,28 @@ import ImgDenom from '../valueImg/imgDenom';
 import ImgNetwork from '../networksImg/imgNetwork';
 import TextNetwork from '../networksImg/textNetwork';
 
-const ContainerDenom = ({
+function ContainerDenom({
   justifyContent,
   marginContainer,
   flexDirection,
   gap,
   children,
-}) => (
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: justifyContent || 'flex-start',
-      margin: marginContainer || 0,
-      flexDirection: flexDirection || 'unset',
-      gap: gap || 5,
-    }}
-  >
-    {children}
-  </div>
-);
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: justifyContent || 'flex-start',
+        margin: marginContainer || 0,
+        flexDirection: flexDirection || 'unset',
+        gap: gap || 5,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 function Denom({
   denomValue,

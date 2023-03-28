@@ -131,10 +131,6 @@ class CosmosDelegateTool {
       throw new Error('context should include the account path');
     }
     // console.log('txContext', txContext);
-    const bytesToSign = txs.getBytesToSign(unsignedTx, txContext);
-    const response = await this.app.sign(txContext.path, bytesToSign);
-
-    return response;
   }
 
   async applySignature(signature, unsignedTx, txContext) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import { useEffect, useContext, useState } from 'react';
 import { AppContext } from '../../../context';
 import { coinDecimals } from '../../../utils/utils';
 

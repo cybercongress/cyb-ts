@@ -19,7 +19,7 @@ import PasportCitizenship from './pasport';
 import GetCitizenship from './citizenship';
 import Info from './citizenship/Info';
 import { steps } from './citizenship/utils';
-import { STEP_INFO } from './gift/utils';
+import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
 
