@@ -10,7 +10,8 @@
     "plugin:import/recommended",
     "plugin:import/typescript",
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/jsx-runtime"
   ],
   "root": true,
   "parser": "@typescript-eslint/parser",
@@ -30,7 +31,8 @@
     "valid-jsdoc": "error",
     "prettier/prettier": "error",
     "linebreak-style": ["error", "unix"],
-    "@typescript-eslint/no-var-requires" : "off",
+    "react/no-array-index-key": "off",
+    "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
@@ -38,7 +40,7 @@
       { "vars": "all", "args": "none", "ignoreRestSiblings": false }
     ],
     "react/prop-types": "off",
-    "no-console":"off",
+    "no-console": "off",
     "curly": ["warn", "all"],
     "no-alert": "warn",
     "no-debugger": "warn",
@@ -79,7 +81,7 @@
       }
     ],
     "react/jsx-filename-extension": "off",
-    "import/no-unused-modules": [1, {"unusedExports": true}]
+    "import/no-unused-modules": [1, { "unusedExports": true }]
   },
   "settings": {
     "import/resolver": {

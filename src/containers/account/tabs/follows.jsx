@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { NoItems } from '../../../components';
 import AvatarIpfs from '../component/avatarIpfs';

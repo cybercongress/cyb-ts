@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Account, Cid, DenomArr } from '../../../components';
 import { CYBER } from '../../../utils/config';

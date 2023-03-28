@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
-
-const img = require('../../../image/logo-cyb-v3.svg');
 
 function AvatarIpfs({
   addressCyber = CYBER.BECH32_PREFIX_ACC_ADDR_CYBER,
@@ -22,11 +20,11 @@ function AvatarIpfs({
   useEffect(() => {
     if (addressCyber.match(PATTERN_CYBER)) {
       setAvatar(null);
-      feachAvatar(addressCyber);
+      fetchAvatar(addressCyber);
     }
   }, [addressCyber, node]);
 
-  const feachAvatar = async (address) => {
+  const fetchAvatar = async (address) => {
     const response = await getAvatar(address);
     if (response !== null && response.total_count > 0) {
       const cidTo =

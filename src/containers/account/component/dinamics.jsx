@@ -1,4 +1,3 @@
-import React from 'react';
 import Plotly from 'react-plotly.js';
 
 const color = ['#00e676', '#d500f9', '#00e5ff', '#651fff'];

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -11,9 +11,6 @@ import {
   NumberCurrency,
 } from '../../../components';
 
-const dateFormat = require('dateformat');
-const imgDropdown = require('../../../image/arrow-dropdown.svg');
-const imgDropup = require('../../../image/arrow-dropup.svg');
 const statusTrueImg = require('../../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../../image/ionicons_svg_ios-close-circle.svg');
 
@@ -33,7 +30,6 @@ function TableTxs({ data, type, accountUser, amount }) {
 
   const validatorRows = displayedPalettes.map((item, index) => (
     <Table.Row
-      // borderBottom="none"
       paddingX={0}
       paddingY={5}
       borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}
@@ -102,7 +98,7 @@ function TableTxs({ data, type, accountUser, amount }) {
               alignItems: 'flex-end',
             }}
           >
-            {item.messages.map((items, i) => (
+            {item.messages.map((items) => (
               // <Tooltip
               //   position="bottom"
               //   key={i}
@@ -115,24 +111,19 @@ function TableTxs({ data, type, accountUser, amount }) {
                   items['@type'].includes('MsgDelegate') ? '#4ed6ae' : '#f4516b'
                 }
               >
-                {items['@type'].includes('MsgDelegate') && (
-                  <>
-                    {items.amount?.amount && (
-                      <>
-                        + <NumberCurrency amount={items.amount.amount} />
-                      </>
-                    )}
-                  </>
-                )}
-                {items['@type'].includes('MsgUndelegate') && (
-                  <>
-                    {items.amount?.amount && (
-                      <>
-                        - <NumberCurrency amount={items.amount.amount} />
-                      </>
-                    )}
-                  </>
-                )}
+                {items['@type'].includes('MsgDelegate') &&
+                  items.amount?.amount && (
+                    <>
+                      + <NumberCurrency amount={items.amount.amount} />
+                    </>
+                  )}
+
+                {items['@type'].includes('MsgUndelegate') &&
+                  items.amount?.amount && (
+                    <>
+                      - <NumberCurrency amount={items.amount.amount} />
+                    </>
+                  )}
               </TextTable>
               // </Tooltip>
             ))}
