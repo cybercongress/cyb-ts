@@ -1,7 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router';
 import { createBrowserHistory } from 'history';
-import { Link } from 'react-router-dom';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
