@@ -176,7 +176,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
     if (citizenship !== null) {
       const { addresses } = citizenship.extension;
       if (addresses !== null) {
-        for (let index = 0; index < addresses.length; index + 1) {
+        for (let index = 0; index < addresses.length; index++) {
           const element = addresses[index];
           if (
             totalGift === null ||
