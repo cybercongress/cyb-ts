@@ -1,4 +1,3 @@
-import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { Dots } from '../../components';

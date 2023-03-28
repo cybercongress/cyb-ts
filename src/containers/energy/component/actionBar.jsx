@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
@@ -61,7 +61,7 @@ function Btn({ onSelect, checkedSwitch, text, ...props }) {
   );
 }
 
-export function ActionBarSteps({
+function ActionBarSteps({
   children,
   btnText,
   onClickFnc,

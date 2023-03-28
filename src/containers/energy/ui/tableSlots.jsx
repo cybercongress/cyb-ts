@@ -1,31 +1,7 @@
-import React from 'react';
-import { Pane, TableEv as Table } from '@cybercongress/gravity';
+import { TableEv as Table } from '@cybercongress/gravity';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { NoItems, TextTable, ValueImg } from '../../../components';
 import { CYBER } from '../../../utils/config';
-
-const dateFormat = require('dateformat');
-
-function NumberCurrency({
-  amount,
-  fontSizeDecimal,
-  currencyNetwork,
-  ...props
-}) {
-  return (
-    <Pane
-      display="grid"
-      gridTemplateColumns="1fr 55px"
-      gridGap="5px"
-      {...props}
-    >
-      <Pane whiteSpace="nowrap" display="flex" alignItems="center">
-        <span>{formatNumber(Math.floor(amount))}</span>
-      </Pane>
-      <div style={{ textAlign: 'start' }}>{currencyNetwork.toUpperCase()}</div>
-    </Pane>
-  );
-}
 
 function TableSlots({ data, traseDenom }) {
   const { coinDecimals: coinDecimalsA } = traseDenom('milliampere');

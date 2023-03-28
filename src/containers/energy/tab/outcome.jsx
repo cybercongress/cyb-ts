@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import {
   LinkWindow,

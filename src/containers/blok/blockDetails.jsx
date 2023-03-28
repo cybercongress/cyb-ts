@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import InformationBlock from './informationBlock';

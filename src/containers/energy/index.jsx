@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { MyEnergy, Income, Outcome } from './tab';
@@ -35,10 +35,8 @@ function RoutedEnergy({ defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
-      // if (keys === 'keplr') {
+      const { bech32 } = account.cyber;
       addressPocket = bech32;
-      // }
     }
     setAddressActive(addressPocket);
   }, [defaultAccount.name]);

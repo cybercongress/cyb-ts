@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Card, TableSlots } from '../ui';
 import { Dots, LinkWindow } from '../../../components';

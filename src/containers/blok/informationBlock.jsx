@@ -1,11 +1,10 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { CardTemplate } from '../../components';
 import { trimString, formatNumber } from '../../utils/utils';
 
 const dateFormat = require('dateformat');
 
-export function Row({ value, title, marginBottom }) {
+function Row({ value, title, marginBottom }) {
   return (
     <Pane
       key={`${value}-container`}

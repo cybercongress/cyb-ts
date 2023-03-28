@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { AppContext } from '../../context';

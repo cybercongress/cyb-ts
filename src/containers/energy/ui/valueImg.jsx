@@ -1,5 +1,3 @@
-import React from 'react';
-
 const voltImg = require('../../../image/lightning2.png');
 const amperImg = require('../../../image/light.png');
 const hydrogen = require('../../../image/hydrogen.svg');
