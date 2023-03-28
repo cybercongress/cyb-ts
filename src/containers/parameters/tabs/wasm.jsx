@@ -1,8 +1,5 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics } from '../../../components';
-
-const NS_TO_MS = 1 * 10 ** 6;
 
 function WasmParam({ data }) {
   return (

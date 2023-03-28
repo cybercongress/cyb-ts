@@ -1,4 +1,3 @@
-import React from 'react';
 import stylesBtn from './stylesBtn.scss';
 
 const classNames = require('classnames');

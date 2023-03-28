@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { CardTemplate, FormatNumber } from '../../components';

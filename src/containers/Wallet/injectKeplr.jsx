@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { Decimal } from '@cosmjs/math';

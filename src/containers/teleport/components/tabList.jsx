@@ -1,4 +1,3 @@
-import React from 'react';
 import { Tablist } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 

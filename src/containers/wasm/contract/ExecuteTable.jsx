@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinkTx, LinkCreator } from '../ui/ui';
 import {

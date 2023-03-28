@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Card, StatusTooltip } from '../../components';
 import { formatNumber } from '../../utils/utils';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 
 function ActionBarWeb3({ web3, accountsETH }) {

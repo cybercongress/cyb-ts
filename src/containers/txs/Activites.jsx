@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Text, Pane } from '@cybercongress/gravity';
 import { fromBase64, fromUtf8 } from '@cosmjs/encoding';

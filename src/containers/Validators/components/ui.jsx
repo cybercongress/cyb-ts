@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Pill, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { Tooltip } from '../../../components';

@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './carousel.scss';
 

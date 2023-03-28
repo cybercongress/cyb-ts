@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, TableEv as Table } from '@cybercongress/gravity';
 
 function RowTable({ text, cybWon }) {

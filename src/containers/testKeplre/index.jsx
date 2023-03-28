@@ -1,5 +1,3 @@
-import React from 'react';
-
 import BigNumber from 'bignumber.js';
 import { reduceBalances, convertAmount } from '../../utils/utils';
 

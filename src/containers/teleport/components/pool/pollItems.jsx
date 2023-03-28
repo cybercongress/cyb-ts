@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import { useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
 import { DenomArr } from '../../../../components';

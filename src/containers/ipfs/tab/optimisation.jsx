@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import ContentItem from '../contentItem';
 import { Rank, NoItems } from '../../../components';

@@ -1,21 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 
 import { AppContext } from '../../context';
 import { activePassport } from './utils';
 import GetCitizenship from './citizenship';
 import PasportMoonCitizenship from './PasportMoonCitizenship';
-
-const styleSteps = { width: '120px', height: '40px' };
-const items = [
-  'nickname',
-  'rules',
-  'avatar',
-  'install keplr',
-  'setup keplr',
-  'connect keplr',
-  'passport look',
-];
 
 const STAGE_LOADING = 0;
 const STAGE_INIT = 1;

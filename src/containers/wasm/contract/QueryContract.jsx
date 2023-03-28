@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
 import { JsonView } from '../ui/ui';
 import styles from './stylesQueryContract.scss';

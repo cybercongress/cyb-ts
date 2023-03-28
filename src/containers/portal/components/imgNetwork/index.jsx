@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   PATTERN_COSMOS,
   PATTERN_CYBER,

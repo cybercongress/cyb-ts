@@ -1,4 +1,3 @@
-import React from 'react';
 import { DenomArr } from '../../../../../components';
 import { formatNumber } from '../../../../../utils/utils';
 import styles from './styles.scss';

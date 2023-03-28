@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 
 function Columns({ title, children }) {

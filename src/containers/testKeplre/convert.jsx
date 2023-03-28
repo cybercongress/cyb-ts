@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@cybercongress/gravity';
 import { Btn } from './ui';
 

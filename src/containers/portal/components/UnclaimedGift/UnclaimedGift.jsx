@@ -1,4 +1,3 @@
-import React from 'react';
 import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
@@ -31,4 +30,5 @@ function UnclaimedGift({ unClaimedGiftAmount = '' }) {
   }
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default UnclaimedGift;

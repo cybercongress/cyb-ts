@@ -1,4 +1,3 @@
-import React from 'react';
 import { TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { FormatNumber, Dots, NumberCurrency } from '../../../components';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Dots } from '../../../components';

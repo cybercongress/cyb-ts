@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { steps } from './utils';
 import { InfoCard } from '../components';
@@ -29,55 +29,6 @@ const {
   STEP_CHECK_ADDRESS_CHECK_FNC,
   STEP_ACTIVE_ADD,
 } = steps;
-
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
-const typeInterval = () => {
-  const randomMs = 100 * Math.random();
-  return randomMs < 50 ? 10 : randomMs;
-};
-
-const InfoTypingText = ({ content }) => {
-  // useEffect(() => {
-  //   const typingFunc = async () => {
-  //     const node = document.querySelector('#TypingText');
-  //     node.innerHTML = '';
-  //     if (content !== null) {
-  //       const { children } = content.props;
-  //       for (const key in children) {
-  //         if (Object.hasOwnProperty.call(children, key)) {
-  //           const item = children[key];
-  //           if (item.type && item.type === 'br') {
-  //             node.innerHTML += '<br />';
-  //           } else {
-  //             for (const character in item) {
-  //               if (Object.hasOwnProperty.call(item, character)) {
-  //                 const element = item[character];
-  //                 node.innerHTML += element;
-  //                 await sleep(typeInterval());
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   };
-  //   typingFunc();
-  // }, [content]);
-
-  useEffect(() => {
-    const typingFunc = async () => {
-      const node = document.querySelector('#TypingText');
-      console.log('node', node);
-      node.innerText = '';
-      await node.type('Hello, \n dfsd');
-    };
-    typingFunc();
-  }, [content]);
-
-  // return customElements.define('type-async', TypeAsync, { extends: 'span' });
-  // return <type-async id="TypingText" />;
-  // return <span id="TypingText" />;
-};
 
 function Info({
   stepCurrent,

@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { AppContext } from '../../../../../context';
 import { CYBER } from '../../../../../utils/config';
 import { convertAmount } from '../../../../../utils/utils';

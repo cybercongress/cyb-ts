@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../../../../context';
 import { makeTags } from '../../../../utils/utils';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tx } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 import { Registry } from '@cosmjs/proto-signing';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Tab } from '@cybercongress/gravity';
 
 function Btn({ onSelect, checkedSwitch, text, ...props }) {

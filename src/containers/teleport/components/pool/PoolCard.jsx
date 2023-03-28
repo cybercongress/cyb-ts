@@ -1,4 +1,4 @@
-import React, { useMemo, useContext, useState, useEffect } from 'react';
+import { useMemo, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { AppContext } from '../../../../context';
 import tokenList from '../../../../utils/tokenList';

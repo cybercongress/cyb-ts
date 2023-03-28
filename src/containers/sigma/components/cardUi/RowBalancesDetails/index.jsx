@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext } from 'react';
+import { useState, useMemo, useContext } from 'react';
 import { Transition } from 'react-transition-group';
 import { Link } from 'react-router-dom';
 import DetailsBalance from '../DetailsBalance';

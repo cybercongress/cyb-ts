@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useState,
   useCallback,
@@ -493,12 +493,6 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
   const onFilePickerChange = (files) => {
     const file = files.current.files[0];
     setAvatarImg(file);
-  };
-
-  const onClickClear = () => {
-    if (fncClearAvatar) {
-      fncClearAvatar();
-    }
   };
 
   let content;

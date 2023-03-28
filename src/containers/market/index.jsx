@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Route, Link, useLocation } from 'react-router-dom';
@@ -11,7 +11,7 @@ import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
-import { reduceBalances, coinDecimals } from '../../utils/utils';
+import { coinDecimals } from '../../utils/utils';
 
 function ContainerGrid({ children }) {
   return (
@@ -99,7 +99,6 @@ function Market({ node, mobile, defaultAccount }) {
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(0);
   const [rankLink, setRankLink] = useState(null);
-  const [accountBalances, setAccountBalances] = useState(null);
   const [page, setPage] = useState(0);
   const [allPage, setAllPage] = useState(0);
 
@@ -108,21 +107,6 @@ function Market({ node, mobile, defaultAccount }) {
     const requere = chekPathname(pathname);
     setSelectedTokens(requere);
   }, [location.pathname]);
-
-  useEffect(() => {
-    const getBalances = async () => {
-      if (jsCyber !== null && addressActive !== null && addressActive.bech32) {
-        const getAllBalancesPromise = await jsCyber.getAllBalances(
-          addressActive.bech32
-        );
-
-        const data = reduceBalances(getAllBalancesPromise);
-        console.log(`reduceBalances`, data);
-        setAccountBalances(data);
-      }
-    };
-    getBalances();
-  }, [jsCyber, addressActive, update]);
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -282,6 +266,7 @@ function Market({ node, mobile, defaultAccount }) {
             marginY={20}
           >
             <Text fontSize="16px" color="#fff">
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
               Subscribe to someone to make your feed work. Until then, we'll
               show you the project feed. Start by adding a ledger to{' '}
               <Link to="/">your pocket</Link>.

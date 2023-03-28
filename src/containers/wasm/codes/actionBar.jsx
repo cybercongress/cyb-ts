@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useContext, useRef } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,

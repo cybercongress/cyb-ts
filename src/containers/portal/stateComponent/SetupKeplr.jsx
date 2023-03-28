@@ -1,4 +1,3 @@
-import React from 'react';
 import { ContainerGradient } from '../components';
 
 const linkMovie =
@@ -18,6 +17,7 @@ function SetupKeplr() {
           height: '100%',
         }}
       >
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video width="100%" height="100%" controls>
           <source src={linkMovie} type="video/mp4" />
         </video>

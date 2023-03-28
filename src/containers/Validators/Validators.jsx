@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';

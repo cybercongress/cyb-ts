@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../context';
 import { reduceBalances } from '../../utils/utils';
 

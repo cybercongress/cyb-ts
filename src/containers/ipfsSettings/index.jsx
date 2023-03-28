@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { ContainerGradientText, MainContainer } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
@@ -362,6 +362,7 @@ function PortalGift({ defaultAccount, node, mobile }) {
         return lastIndex + 1;
       }
     }
+    return undefined;
   }, [loading, appStep, txHash, citizenship]);
 
   const useUnClaimedGiftData = useMemo(() => {

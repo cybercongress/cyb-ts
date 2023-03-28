@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
@@ -79,8 +79,6 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
-  // const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(1);
   const [total, setTotal] = useState(0);
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -95,8 +93,6 @@ function SearchResults({ node, mobile, setQueryProps }) {
     const getFirstItem = async () => {
       setLoading(true);
       setQueryProps(encodeSlash(query));
-      // setPage(0);
-      setAllPage(1);
       if (jsCyber !== null) {
         let keywordHashTemp = '';
         let keywordHashNull = '';
@@ -127,9 +123,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
             responseSearchResults.result,
             query
           );
-          setAllPage(
-            Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
-          );
+
           setTotal(parseFloat(responseSearchResults.pagination.total));
           setHasMore(true);
           // setPage((item) => item + 1);

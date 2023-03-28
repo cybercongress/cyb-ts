@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import Activites from './Activites';
 import { ContainerGradient } from '../portal/components';

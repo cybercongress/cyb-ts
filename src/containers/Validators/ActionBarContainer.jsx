@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { useHistory } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
@@ -21,11 +21,9 @@ import ActionBarAddAvatar from './ActionBarAddAvatar';
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
 const STAGE_LOADING = 0;
-const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
 const STATE_AVATAR = 15;
-const STATE_AVATAR_IN_PROCESS = 15.1;
 
 const portalAmbientObg = new Audio(portalAmbient);
 const playPortalAmbient = () => {
@@ -41,10 +39,11 @@ const stopPortalAmbient = () => {
 
 function PasportMoonCitizenship({ defaultAccount, mobile }) {
   const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [updateFunc, setUpdateFunc] = useState(0);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [citizenship, setCitizenship] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);

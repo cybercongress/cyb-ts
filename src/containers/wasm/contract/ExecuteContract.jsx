@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
 import { JsonView } from '../ui/ui';

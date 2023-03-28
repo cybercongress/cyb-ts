@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { routes } from '../../routes';
 
@@ -101,6 +101,7 @@ function BanerHelp({ addressActive }) {
 
       <div>
         <Link to="/ipfs/QmQvKF9Jb6QKmsqHJzEZJUfcbB9aBBKwa5dh3pMxYEj7oi">
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           Unlike twitter's
         </Link>
         , manipulative feed use your <Link to="/sixthSense">sense</Link> which

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Vitalik } from '../../../components';
 import { formatCurrency, dhm } from '../../../utils/utils';

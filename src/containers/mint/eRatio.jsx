@@ -1,4 +1,3 @@
-import React from 'react';
 import { Icon, Pane } from '@cybercongress/gravity';
 import { Tooltip } from '../../components';
 

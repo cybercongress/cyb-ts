@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { MainContainer, InfoCard, Stars } from './components';

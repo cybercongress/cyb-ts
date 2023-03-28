@@ -1,4 +1,3 @@
-import React from 'react';
 import { ActionBar as ActionBarContainer } from '@cybercongress/gravity';
 import { LEDGER } from '../../utils/config';
 import {

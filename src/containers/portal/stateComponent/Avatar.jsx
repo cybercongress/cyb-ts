@@ -1,4 +1,3 @@
-import React from 'react';
 import { ContainerGradient } from '../components';
 import ContainerAvatar, {
   ButtonContainerAvatar,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './styles.scss';
 import {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, ActionBar, Input } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
 import {

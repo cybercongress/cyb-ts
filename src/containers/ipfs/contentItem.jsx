@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
@@ -61,6 +61,7 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
         textPreview={
           <div className="container-text-SearchItem">
             <ReactMarkdown
+              // eslint-disable-next-line react/no-children-prop
               children={textPreview}
               rehypePlugins={[rehypeSanitize]}
               // skipHtml

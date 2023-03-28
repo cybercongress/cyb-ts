@@ -1,4 +1,3 @@
-import React from 'react';
 import gql from 'graphql-tag';
 import { v4 as uuidv4 } from 'uuid';
 import { useSubscription } from '@apollo/react-hooks';

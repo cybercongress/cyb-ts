@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from 'react';
+import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useHistory, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';

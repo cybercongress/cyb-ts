@@ -1,15 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+/* eslint-disable eqeqeq */
+/* eslint-disable no-nested-ternary */
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
 import { connect } from 'react-redux';
 import { Loading } from '../../components';
 
 import useGetDataGql from './hooks';
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
 
 function ForceQuitter({ nodeIpfs }) {
   let graph;

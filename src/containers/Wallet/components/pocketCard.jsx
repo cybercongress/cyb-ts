@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Copy, Tooltip } from '../../../components';
 import { trimString, formatNumber, getDecimal } from '../../../utils/utils';

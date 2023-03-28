@@ -1,4 +1,3 @@
-import React from 'react';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 

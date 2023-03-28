@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import RowTable from './components/row';
 import useGetGol from './getGolHooks';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { connect } from 'react-redux';

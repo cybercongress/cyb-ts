@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { CosmosDelegateTool } from '../../utils/ledger';

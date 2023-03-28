@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Button, Input } from '@cybercongress/gravity';
 import { STEPS } from '../utils';
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { parseCoins } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import Long from 'long';

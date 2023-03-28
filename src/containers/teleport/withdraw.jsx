@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { DenomArr, InputNumber, OptionSelect } from '../../components';
 import BalanceToken from './components/balanceToken';

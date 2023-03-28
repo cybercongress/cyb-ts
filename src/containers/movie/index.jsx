@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Iframe from 'react-iframe';
 import { Loading } from '../../components';
@@ -33,7 +33,7 @@ function Movie() {
     const iframeTag = document.querySelector('iframe');
 
     if (iframeTag) {
-      iframeTag.addEventListener('load', function (e) {
+      iframeTag.addEventListener('load', () => {
         setLoading(false);
       });
     } else {

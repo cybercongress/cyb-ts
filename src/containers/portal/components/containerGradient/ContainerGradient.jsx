@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
@@ -153,6 +153,7 @@ function ContainerGradient({
     if (togglingDisable === undefined || togglingDisable === false) {
       return setIsOpen(!isOpen);
     }
+    return undefined;
   };
 
   const useTitle = useCallback(
@@ -172,6 +173,8 @@ function ContainerGradient({
       if (state === 'entered') {
         return title;
       }
+
+      return undefined;
       // }, 500);
     },
     [isOpen, closedTitle, title]

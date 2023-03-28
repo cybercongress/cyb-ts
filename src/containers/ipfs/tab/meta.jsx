@@ -1,6 +1,6 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
+import { NoItems } from '../../../components';
 import { formatCurrency } from '../../../utils/utils';
 
 const objectInspectorTheme = {

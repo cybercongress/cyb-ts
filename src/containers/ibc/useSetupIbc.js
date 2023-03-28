@@ -7,7 +7,9 @@ import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
 import { config, STEPS } from './utils';
 
 const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 };
 
 const setupClientIbc = async (signer, option, logger) => {

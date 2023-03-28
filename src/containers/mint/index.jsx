@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useMemo } from 'react';
+import { useEffect, useContext, useState, useMemo } from 'react';
 import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
 import { connect } from 'react-redux';
@@ -14,32 +14,8 @@ import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
 
-const INIT_STAGE = 0;
-const TSX_SEND = 1;
-
-const BASE_VESTING_AMOUNT = 10000000;
 const BASE_VESTING_TIME = 86401;
-const VESTING_TIME_HOURS = 3601;
 const BASE_MAX_MINT_TIME = 41;
-
-const PREFIXES = [
-  {
-    prefix: 't',
-    power: 10 ** 12,
-  },
-  {
-    prefix: 'g',
-    power: 10 ** 9,
-  },
-  {
-    prefix: 'm',
-    power: 10 ** 6,
-  },
-  {
-    prefix: 'k',
-    power: 10 ** 3,
-  },
-];
 
 const grid = {
   display: 'grid',
@@ -124,7 +100,7 @@ function Mint({ defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
+      const { bech32 } = account.cyber;
 
       addressPocket = bech32;
     }

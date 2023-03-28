@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';

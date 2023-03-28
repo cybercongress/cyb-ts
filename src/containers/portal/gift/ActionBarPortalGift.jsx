@@ -1,13 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import { useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';

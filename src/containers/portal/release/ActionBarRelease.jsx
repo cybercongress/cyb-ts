@@ -1,11 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useMemo,
-  useContext,
-  useCallback,
-  useState,
-  useEffect,
-} from 'react';
+import { useMemo, useContext, useCallback, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
@@ -20,27 +14,6 @@ import STEP_INFO from './utils';
 const { STATE_INIT_NULL_ACTIVE, STATE_INIT_NULL_BEFORE } = STEP_INFO;
 
 const gasPrice = GasPrice.fromString('0.001boot');
-
-export const getKeplr = async () => {
-  if (window.keplr) {
-    return window.keplr;
-  }
-
-  if (document.readyState === 'complete') {
-    return window.keplr;
-  }
-
-  return new Promise((resolve) => {
-    const documentStateChange = (event) => {
-      if (event.target && event.target.readyState === 'complete') {
-        resolve(window.keplr);
-        document.removeEventListener('readystatechange', documentStateChange);
-      }
-    };
-
-    document.addEventListener('readystatechange', documentStateChange);
-  });
-};
 
 const releaseMsg = (giftAddress) => {
   return {

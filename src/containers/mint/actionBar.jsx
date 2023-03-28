@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
@@ -25,7 +25,6 @@ const {
   STAGE_CONFIRMED,
 } = LEDGER;
 
-const VESTING_TIME_HOURS = 3601;
 const BASE_VESTING_TIME = 86401;
 
 function ActionBar({

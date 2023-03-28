@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';

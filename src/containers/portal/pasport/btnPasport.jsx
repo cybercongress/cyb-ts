@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './styleBtnPasport.scss';
 
 const cx = require('classnames');

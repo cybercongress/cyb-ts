@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+/* eslint-disable */
+import { Component } from 'react';
 import { coins } from '@cosmjs/launchpad';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {
@@ -18,22 +19,13 @@ import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 const STAGE_TYPE_GOV = 9;
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
   STAGE_LEDGER_INIT,
-  STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
 } = LEDGER;
-
-const LEDGER_TX_ACOUNT_INFO = 10;
 
 class ActionBar extends Component {
   constructor(props) {
@@ -70,11 +62,7 @@ class ActionBar extends Component {
       valueDescription,
       valueTitle,
       valueDeposit,
-      valueAmountRecipient,
       valueAddressRecipient,
-      changeParam,
-      nameUpgrade,
-      heightUpgrade,
     } = this.state;
     const { keplr } = this.context;
     console.log('keplr', keplr);
@@ -83,7 +71,6 @@ class ActionBar extends Component {
       const title = valueTitle;
       const description = valueDescription;
       const recipient = valueAddressRecipient;
-      const msgs = [];
       let response = {};
       const fee = {
         amount: [],

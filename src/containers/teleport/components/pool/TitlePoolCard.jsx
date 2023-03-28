@@ -1,4 +1,3 @@
-import React from 'react';
 import { DenomArr } from '../../../../components';
 import { CYBER } from '../../../../utils/config';
 import { FormatNumberTokens } from '../../../nebula/components';

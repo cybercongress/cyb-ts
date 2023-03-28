@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, ActionBar } from '@cybercongress/gravity';
@@ -29,24 +30,14 @@ const imgLedger = require('../../image/ledger.svg');
 const imgCyber = require('../../image/blue-circle.png');
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
-  STAGE_LEDGER_INIT,
   STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
 } = LEDGER;
 
-const CREATE_LINK = 10;
-const ADD_ADDRESS = 11;
-const LEDGER_TX_ACOUNT_INFO = 12;
 const STAGE_IPFS_HASH = 3.1;
 const STAGE_KEPLR_APPROVE = 3.2;
 

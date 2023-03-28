@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './styles.scss';
 import s from './styles1.scss';
 import { ValueImg } from '../../../../components';

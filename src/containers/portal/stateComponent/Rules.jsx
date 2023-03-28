@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
@@ -26,6 +25,7 @@ function Rules() {
           marginBottom: '10px',
         }}
       >
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video width="100%" height="100%" controls>
           <source src={linkMovie} type="video/mp4" />
         </video>
@@ -35,15 +35,18 @@ function Rules() {
         style={{ paddingRight: '15px', height: '100%', width: '100%' }}
       >
         <ReactMarkdown
+          // eslint-disable-next-line react/no-children-prop
           children={MoonCode}
           rehypePlugins={[rehypeSanitize]}
           remarkPlugins={[remarkGfm]}
           components={{
+            // eslint-disable-next-line react/no-unstable-nested-components
             a: ({ node, ...props }) => {
               if (node.properties && node.properties.href) {
                 const { href } = node.properties;
                 return <LinkWindow to={href} {...props} />;
               }
+              return null;
             },
           }}
         />

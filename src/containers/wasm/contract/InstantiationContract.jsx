@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
 import { Link } from 'react-router-dom';
 import JSONInput from 'react-json-editor-ajrm';

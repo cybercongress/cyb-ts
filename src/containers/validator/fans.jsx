@@ -1,4 +1,3 @@
-import React from 'react';
 import { TableEv as Table } from '@cybercongress/gravity';
 import { Account, TextTable, NoItems, NumberCurrency } from '../../components';
 import { formatNumber } from '../../utils/utils';

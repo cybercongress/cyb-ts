@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, Pane } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { formatNumber } from '../../utils/search/utils';

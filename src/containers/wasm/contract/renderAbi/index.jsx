@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Tab, Tablist } from '@cybercongress/gravity';
 import RenderAbiQuery from './RenderAbiQuery';
 import RenderAbiExecute from './RenderAbiExecute';

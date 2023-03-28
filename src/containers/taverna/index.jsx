@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import { NoItems, Dots, SearchSnippet } from '../../components';

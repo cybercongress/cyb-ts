@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
 function SelectFile({ useStateCallback, text = 'Upload query schema' }) {

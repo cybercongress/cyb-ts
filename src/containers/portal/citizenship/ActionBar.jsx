@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';

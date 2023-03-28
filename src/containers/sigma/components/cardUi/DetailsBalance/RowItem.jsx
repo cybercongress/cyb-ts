@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import styles from './styles.scss';
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
 import { NoItems } from '../../components';

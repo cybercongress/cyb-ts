@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { CosmosDelegateTool } from '../../utils/ledger';
 import {

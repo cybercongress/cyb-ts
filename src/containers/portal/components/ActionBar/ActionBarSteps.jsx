@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import ActionBarContainer from './index';
 import { ButtonIcon } from '../../../../components';
@@ -6,7 +5,7 @@ import BtnGrd from '../btnGrd';
 
 const back = require('../../../../image/arrow-left-img.svg');
 
-export function ActionBarContentText({ children, gridGap, ...props }) {
+function ActionBarContentText({ children, gridGap, ...props }) {
   return (
     <Pane
       display="flex"

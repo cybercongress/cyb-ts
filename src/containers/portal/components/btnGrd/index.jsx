@@ -1,31 +1,30 @@
-import React from 'react';
 import { Dots } from '../../../../components';
 import styles from './styles.scss';
 
 const audioBtn = require('../../../../sounds/main-button.mp3');
-const audioBtnHover = require('../../../../sounds/main-button-hover.mp3');
+// const audioBtnHover = require('../../../../sounds/main-button-hover.mp3');
 
 function GradientContainer({ disabled, children }) {
   return <div className={styles.GradientContainer}>{children}</div>;
 }
 
 const audioBtnObg = new Audio(audioBtn);
-const audioBtnHoverObg = new Audio(audioBtnHover);
+// const audioBtnHoverObg = new Audio(audioBtnHover);
 
 const playAudioClick = () => {
   audioBtnObg.play();
 };
 
-const playAudioHover = () => {
-  audioBtnHoverObg.loop = true;
-  audioBtnHoverObg.play();
-};
+// const playAudioHover = () => {
+//   audioBtnHoverObg.loop = true;
+//   audioBtnHoverObg.play();
+// };
 
-const stopAudioHover = () => {
-  audioBtnHoverObg.loop = false;
-  audioBtnHoverObg.pause();
-  audioBtnHoverObg.currentTime = 0;
-};
+// const stopAudioHover = () => {
+//   audioBtnHoverObg.loop = false;
+//   audioBtnHoverObg.pause();
+//   audioBtnHoverObg.currentTime = 0;
+// };
 
 function BtnGrd({ disabled, text, img, pending, onClick, ...props }) {
   // useEffect(() => {

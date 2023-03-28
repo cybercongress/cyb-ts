@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../utils/txs';

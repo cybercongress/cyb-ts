@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';

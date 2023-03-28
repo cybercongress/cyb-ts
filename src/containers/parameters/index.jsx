@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import { getParamNetwork } from '../../utils/search/utils';

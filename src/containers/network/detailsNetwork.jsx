@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { useState, useCallback, useEffect, useContext } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import {
   MainContainer,

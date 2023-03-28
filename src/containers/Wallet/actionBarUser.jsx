@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SendLedger } from '../../components';
 import txs from '../../utils/txs';
 import { CYBER } from '../../utils/config';

@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { CYBER } from '../../utils/config';
 import { setBlock } from '../../redux/actions/block';
 
-const { CYBER_WEBSOCKET_URL } = CYBER;
-
 const M = Math;
 const DOC = document;
-const F = 0;
 
 function Electricity({ setBlockProps }) {
   const [data, setData] = useState('M0,0 L240,0');
@@ -85,7 +82,9 @@ function Electricity({ setBlockProps }) {
   const At = (el, a, v) => {
     try {
       el.setAttribute(a, v);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const R = (min, max) => {
@@ -107,7 +106,6 @@ function Electricity({ setBlockProps }) {
     const A = [];
     const D = 10;
     let NP = 'M';
-    const S = R(1, 3) * 0.01;
     const B = R(-2, 5);
     const RF = 0.4;
     const yPos = 15;

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { AppContext } from '../../../../context';
 import JsonSchemaParse from './JsonSchemaParse';
 

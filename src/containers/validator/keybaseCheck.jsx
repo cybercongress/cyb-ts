@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { keybaseCheck } from '../../utils/search/utils';
 import { LinkWindow, Dots } from '../../components';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { keybaseAvatar } from '../../utils/search/utils';
 
 const img = require('../../image/logo-cyb-v3.svg');

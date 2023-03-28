@@ -1,4 +1,3 @@
-import React from 'react';
 import { ContainerGradientText, MainContainer } from '../portal/components';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 

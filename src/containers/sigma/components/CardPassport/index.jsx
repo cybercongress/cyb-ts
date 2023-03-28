@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useContext } from 'react';
+import { useMemo, useEffect, useContext } from 'react';
 import { Dots } from '../../../../components';
 import { ContainerGradient } from '../../../portal/components';
 import { useGetBalanceBostrom, useGetPassportByAddress } from '../../hooks';

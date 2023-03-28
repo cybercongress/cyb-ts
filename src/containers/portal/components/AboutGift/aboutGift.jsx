@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import ContainerGradient from '../containerGradient/ContainerGradient';
 import { ProgressBar } from '../progressCard';
@@ -50,6 +50,7 @@ function AboutGift({
           marginBottom: '10px',
         }}
       >
+        {/*  eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video width="100%" height="100%" controls>
           <source src={linkMovie} type="video/mp4" />
         </video>

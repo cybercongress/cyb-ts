@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Pane,

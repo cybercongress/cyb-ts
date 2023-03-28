@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 

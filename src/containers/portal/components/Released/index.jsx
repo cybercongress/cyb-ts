@@ -1,4 +1,3 @@
-import React from 'react';
 import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import styles from './styles.scss';
 
@@ -14,4 +13,5 @@ function Released({ released }) {
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default Released;

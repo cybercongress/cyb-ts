@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
@@ -20,7 +20,6 @@ const valueContext = {
 function Sigma({ defaultAccount }) {
   const [accountsData, setAccountsData] = useState([]);
   const [value, setValue] = useState(valueContext);
-  const [updateState, setUpdateState] = useState(0);
   // const { addressActive: accounts } = useSetActiveAddress(defaultAccount);
 
   // const { accounts } = useGetLocalStoge(updateState);
@@ -99,10 +98,6 @@ function Sigma({ defaultAccount }) {
     }));
   };
 
-  const updateStateFunc = () => {
-    setUpdateState((item) => item + 1);
-  };
-
   const renderItem = useMemo(() => {
     if (accountsData.length > 0) {
       return accountsData.map((item) => {
@@ -117,6 +112,7 @@ function Sigma({ defaultAccount }) {
 
   return (
     <SigmaContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{ ...value, updateTotalCap, updateChangeCap, updateDataCap }}
     >
       <MainContainer width="100%">

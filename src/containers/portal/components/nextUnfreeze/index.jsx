@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import { GIFT_ICON } from '../../utils';
 import { dhm } from '../../../../utils/utils';

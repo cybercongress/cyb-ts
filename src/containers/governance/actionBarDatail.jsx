@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
 import { ActionBar, Pane } from '@cybercongress/gravity';
@@ -28,27 +28,16 @@ import {
 import BtnGrd from '../../components/btnGrd';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
-const imgLedger = require('../../image/ledger.svg');
 const imgCyber = require('../../image/blue-circle.png');
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
   STAGE_INIT,
-  STAGE_SELECTION,
-  STAGE_LEDGER_INIT,
-  STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
 } = LEDGER;
 const LEDGER_TX_ACOUNT_INFO = 10;
-
-const STAGE_CLI_ADD_ADDRESS = 1.3;
-const STAGE_GENERATION_TX = 12.2;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
   const { keplr, jsCyber } = useContext(AppContext);
