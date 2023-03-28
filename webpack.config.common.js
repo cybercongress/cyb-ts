@@ -77,9 +77,7 @@ module.exports = {
       chunkFilename: '[id].css',
     }),
     new webpack.DefinePlugin({
-      'process.env.REACT_APP_IPFS_DEPLOY': JSON.stringify(
-        process.env.IPFS_DEPLOY
-      ),
+      'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
     }),
   ],
   module: {
