@@ -7,7 +7,7 @@ export function sortReserveCoinDenoms(x, y) {
 
 function pow(a) {
   let result = 1;
-  for (let i = 0; i < a; i + 1) {
+  for (let i = 0; i < a; i++) {
     result *= 10;
   }
   return result;
@@ -44,8 +44,8 @@ const getDecimals = (denom) => {
   return decimals;
 };
 
-const getCounterPairAmount = (amaunt, decimals, swapPrice) => {
-  const inputAmountBN = new BigNumber(amaunt);
+const getCounterPairAmount = (amount, decimals, swapPrice) => {
+  const inputAmountBN = new BigNumber(amount);
   return inputAmountBN
     .dividedBy(swapPrice)
     .dp(decimals, BigNumber.ROUND_FLOOR)

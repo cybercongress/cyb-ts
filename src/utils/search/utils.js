@@ -575,6 +575,19 @@ const getParamResources = async () => {
   }
 };
 
+const getParamStaking = async () => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${CYBER_NODE_URL_LCD}/staking/parameters`,
+    });
+    return response.data.result;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 const getParamLiquidity = async () => {
   try {
     const response = await axios({
