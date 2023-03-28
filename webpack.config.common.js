@@ -17,7 +17,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
-    publicPath: '/',
+    publicPath: process.env.IPFS_DEPLOY ? '/.' : '/',
     assetModuleFilename: '[name][hash:10][ext]',
   },
   resolve: {
@@ -69,7 +69,7 @@ module.exports = {
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
       filename: 'index.html',
-      ...(!process.env.IPFS_DEPLOY ? { publicPath: './' } : {}),
+      ...(process.env.IPFS_DEPLOY ? { publicPath: './' } : {}),
       inject: 'body',
     }),
     new MiniCssExtractPlugin({
