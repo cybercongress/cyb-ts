@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import { useRef, useEffect } from 'react';
 
 const sphereRad = 250;
@@ -143,7 +142,7 @@ function useCanvas() {
         count += 1;
         if (count >= wait) {
           count = 0;
-          for (i = 0; i < numToAddEachFrame; i + 1) {
+          for (i = 0; i < numToAddEachFrame; i++) {
             theta = Math.random() * 2 * Math.PI;
             phi = Math.acos(Math.random() * 2 - 1);
             x0 = sphereRad * Math.sin(phi) * Math.cos(theta);
