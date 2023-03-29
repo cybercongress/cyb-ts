@@ -18,9 +18,7 @@ import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 
-const isSvg = require('is-svg');
 const dateFormat = require('dateformat');
-const img = require('../../../image/logo-cyb-v3.svg');
 
 const STAGE_ADD_AVATAR = 0;
 const STAGE_ADD_FIRST_FOLLOWER = 1;

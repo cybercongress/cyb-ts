@@ -13,8 +13,6 @@ import {
 import { LEDGER, PATTERN_CYBER } from '../../utils/config';
 import { getBalanceWallet, statusNode, getTxs } from '../../utils/search/utils';
 
-const imgLedger = require('../../image/ledger.svg');
-
 const {
   STAGE_INIT,
   STAGE_LEDGER_INIT,
@@ -23,7 +21,6 @@ const {
   STAGE_READY,
   STAGE_WAIT,
   STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
   MEMO,
@@ -246,18 +243,6 @@ function ActionBarLedger({
     setDisabledGenerate(true);
     setAddressToValid(null);
     setAmountSendInputValid(null);
-    if (updateAddress) {
-      updateAddress();
-    }
-  };
-
-  const changeDefaultAccounts = async () => {
-    if (selectAccount !== null && selectAccount.cyber) {
-      localStorage.setItem(
-        'pocket',
-        JSON.stringify({ [selectAccount.cyber.bech32]: selectAccount })
-      );
-    }
     if (updateAddress) {
       updateAddress();
     }

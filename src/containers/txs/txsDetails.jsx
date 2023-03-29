@@ -10,7 +10,7 @@ import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
 
-export const getTxs = async (txs) => {
+const getTxs = async (txs) => {
   try {
     const response = await axios({
       method: 'get',

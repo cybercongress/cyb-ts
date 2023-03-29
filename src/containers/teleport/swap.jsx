@@ -49,7 +49,6 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
     onChangeSelectNetworksA,
     onChangeSelectNetworksB,
     networkB,
-    setNetworkB,
     typeTxs,
     balanceIbc,
     denomIbc,

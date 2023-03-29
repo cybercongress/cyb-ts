@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';

@@ -16,15 +16,8 @@ import {
 } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
 
-const imgKeplr = require('../../image/keplr-icon.svg');
-
-const {
-  STAGE_INIT,
-  STAGE_ERROR,
-  STAGE_SUBMITTED,
-  STAGE_CONFIRMING,
-  STAGE_CONFIRMED,
-} = LEDGER;
+const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
+  LEDGER;
 
 const STAGE_SEND = 1.1;
 
@@ -33,7 +26,6 @@ function ActionBarKeplr({
   updateAddress,
   updateBalance,
   selectAccount,
-  defaultAccounts,
 }) {
   const [stage, setStage] = useState(STAGE_SEND);
   const [amountSend, setAmountSend] = useState('');
@@ -135,18 +127,6 @@ function ActionBarKeplr({
       setDisabledGenerate(true);
     }
   }, [recipient, amountSend]);
-
-  const changeDefaultAccounts = async () => {
-    if (selectAccount !== null && selectAccount.cyber) {
-      localStorage.setItem(
-        'pocket',
-        JSON.stringify({ [selectAccount.cyber.bech32]: selectAccount })
-      );
-    }
-    if (updateAddress) {
-      updateAddress();
-    }
-  };
 
   // if (stage === STAGE_INIT) {
   //   return (

@@ -20,12 +20,7 @@ import { AppContext } from '../../context';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
-  STAGE_LEDGER_INIT,
   STAGE_READY,
   STAGE_WAIT,
   STAGE_SUBMITTED,
@@ -38,10 +33,9 @@ const fee = {
   amount: [],
   gas: (DEFAULT_GAS_LIMITS * 2).toString(),
 };
-export const TXTYPE_DELEGATE = 0;
-export const TXTYPE_UNDELEGATE = 1;
-export const TXTYPE_REDELEGATE = 2;
-const LEDGER_TX_ACOUNT_INFO = 10;
+const TXTYPE_DELEGATE = 0;
+const TXTYPE_UNDELEGATE = 1;
+const TXTYPE_REDELEGATE = 2;
 const LEDGER_GENERATION = 23;
 
 function ActionBarContentText({ children, ...props }) {
@@ -397,6 +391,7 @@ function ActionBarContainer({
       <ActionBar>
         <ActionBarContentText>
           <Pane fontSize="18px">
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
             you don't have cyber address in your pocket
           </Pane>
         </ActionBarContentText>

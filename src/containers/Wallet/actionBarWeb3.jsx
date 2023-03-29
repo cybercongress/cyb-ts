@@ -33,4 +33,5 @@ function ActionBarWeb3({ web3, accountsETH }) {
   return null;
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default ActionBarWeb3;

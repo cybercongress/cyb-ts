@@ -1,49 +1,49 @@
-import { Pane, Text } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { Card, StatusTooltip } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseAvatar from './keybaseAvatar';
 import UptimeHook from './UptimeHook';
 
-export function Row({ value, title, marginBottom }) {
-  return (
-    <Pane
-      key={`${value}-container`}
-      style={{ marginBottom: marginBottom || 0 }}
-      className="txs-contaiter-row"
-      display="flex"
-    >
-      <Text
-        key={`${title}-title`}
-        display="flex"
-        fontSize="15px"
-        textTransform="capitalize"
-        color="#fff"
-        whiteSpace="nowrap"
-        width="240px"
-        marginBottom="5px"
-        lineHeight="20px"
-      >
-        {title} :
-      </Text>
-      <Text
-        key={`${value}-value`}
-        display="flex"
-        color="#fff"
-        fontSize="14px"
-        wordBreak="break-all"
-        lineHeight="20px"
-        marginBottom="5px"
-        flexDirection="column"
-        alignItems="flex-start"
-      >
-        {value}
-      </Text>
-    </Pane>
-  );
-}
+// function Row({ value, title, marginBottom }) {
+//   return (
+//     <Pane
+//       key={`${value}-container`}
+//       style={{ marginBottom: marginBottom || 0 }}
+//       className="txs-contaiter-row"
+//       display="flex"
+//     >
+//       <Text
+//         key={`${title}-title`}
+//         display="flex"
+//         fontSize="15px"
+//         textTransform="capitalize"
+//         color="#fff"
+//         whiteSpace="nowrap"
+//         width="240px"
+//         marginBottom="5px"
+//         lineHeight="20px"
+//       >
+//         {title} :
+//       </Text>
+//       <Text
+//         key={`${value}-value`}
+//         display="flex"
+//         color="#fff"
+//         fontSize="14px"
+//         wordBreak="break-all"
+//         lineHeight="20px"
+//         marginBottom="5px"
+//         flexDirection="column"
+//         alignItems="flex-start"
+//       >
+//         {value}
+//       </Text>
+//     </Pane>
+//   );
+// }
 
 function ValidatorInfo({ data }) {
-  const { moniker, identity, website, details } = data.description;
+  const { moniker, identity, website } = data.description;
 
   return (
     <Pane

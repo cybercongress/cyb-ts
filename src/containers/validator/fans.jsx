@@ -2,9 +2,6 @@ import { TableEv as Table } from '@cybercongress/gravity';
 import { Account, TextTable, NoItems, NumberCurrency } from '../../components';
 import { formatNumber } from '../../utils/utils';
 
-const imgDropdown = require('../../image/arrow-dropdown.svg');
-const imgDropup = require('../../image/arrow-dropup.svg');
-
 function Fans({ data }) {
   // const containerReference = useRef();
   // const [itemsToShow, setItemsToShow] = useState(10);

@@ -117,16 +117,6 @@ export const decFnc = (number, dec, reverse) => {
   return amount;
 };
 
-export function calculateSlippage(swapAmount, poolReserve) {
-  let slippage = (2 * swapAmount) / poolReserve;
-
-  if (slippage > 0.997) {
-    slippage = 0.997;
-  }
-
-  return slippage;
-}
-
 export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
 

@@ -6,8 +6,6 @@ import { Link } from 'react-router-dom';
 import { trimString, formatNumber } from '../../utils/utils';
 import { MsgType, TextTable } from '../../components';
 
-const dateFormat = require('dateformat');
-
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
 

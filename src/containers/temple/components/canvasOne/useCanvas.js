@@ -242,6 +242,7 @@ function useCanvas() {
             // depth-dependent darkening
             depthAlphaFactor = 1 - rotZ / zeroAlphaDepth;
             depthAlphaFactor =
+              // eslint-disable-next-line no-nested-ternary
               depthAlphaFactor > 1
                 ? 1
                 : depthAlphaFactor < 0

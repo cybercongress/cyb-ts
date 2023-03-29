@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { connect } from 'react-redux';
 // import Room from 'ipfs-pubsub-room';
@@ -80,8 +81,12 @@ function SendMessage({
           className="resize-none minHeightTextarea"
           onChange={onChangeMessage}
           placeholder={placeholder}
-          onFocus={(e) => (e.target.placeholder = '')}
-          onBlur={(e) => (e.target.placeholder = placeholder)}
+          onFocus={(e) => {
+            e.target.placeholder = '';
+          }}
+          onBlur={(e) => {
+            e.target.placeholder = placeholder;
+          }}
           onKeyDown={(e) => handleKeyDown(e)}
         />
       </ActionBarContentText>
@@ -168,19 +173,19 @@ class TrollBoxx extends React.PureComponent {
     // });
   };
 
-  updatedMessages = (msg = {}) => {
-    const { messages } = this.state;
+  // updatedMessages = (msg = {}) => {
+  //   const { messages } = this.state;
 
-    if (Object.keys(msg).length > 0) {
-      if (messages.length > 0) {
-        const updatedMessages = [...messages, msg].slice(-1000);
-        this.setState({ messages: updatedMessages });
-      } else {
-        const updatedMessages = [msg];
-        this.setState({ messages: updatedMessages });
-      }
-    }
-  };
+  //   if (Object.keys(msg).length > 0) {
+  //     if (messages.length > 0) {
+  //       const updatedMessages = [...messages, msg].slice(-1000);
+  //       this.setState({ messages: updatedMessages });
+  //     } else {
+  //       const updatedMessages = [msg];
+  //       this.setState({ messages: updatedMessages });
+  //     }
+  //   }
+  // };
 
   onClickSend = async () => {
     const { room, valueInputMassage } = this.state;

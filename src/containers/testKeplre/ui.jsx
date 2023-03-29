@@ -20,4 +20,5 @@ function Btn({ onSelect, checkedSwitch, text, ...props }) {
   );
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export { Btn };

@@ -49,31 +49,31 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-const replaceFunc = (number) => {
-  return number.replace(/ /g, '');
-};
+// const replaceFunc = (number) => {
+//   return number.replace(/ /g, '');
+// };
 
-const numberString = (num) =>
-  String(num).replace(/^\d+/, (number) =>
-    [...number]
-      .map(
-        (digit, index, digits) =>
-          (!index || (digits.length - index) % 3 ? '' : ' ') + digit
-      )
-      .join('')
-  );
+// const numberString = (num) =>
+//   String(num).replace(/^\d+/, (number) =>
+//     [...number]
+//       .map(
+//         (digit, index, digits) =>
+//           (!index || (digits.length - index) % 3 ? '' : ' ') + digit
+//       )
+//       .join('')
+//   );
 
-const itemsStep = [
-  {
-    title: 'add liquidity',
-  },
-  {
-    title: 'create pool',
-  },
-  {
-    title: 'sub liquidity',
-  },
-];
+// const itemsStep = [
+//   {
+//     title: 'add liquidity',
+//   },
+//   {
+//     title: 'create pool',
+//   },
+//   {
+//     title: 'sub liquidity',
+//   },
+// ];
 
 const checkInactiveFunc = (token, ibcDataDenom) => {
   if (token.includes('ibc')) {
@@ -88,9 +88,9 @@ function getMyTokenBalanceNumber(denom, indexer) {
   return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
 }
 
-function addPunctuationToNumbers(number) {
-  return number.replace(/(\d{3})(?=\d)/g, '$1 ');
-}
+// function addPunctuationToNumbers(number) {
+//   return number.replace(/(\d{3})(?=\d)/g, '$1 ');
+// }
 
 function Teleport({ defaultAccount }) {
   const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);

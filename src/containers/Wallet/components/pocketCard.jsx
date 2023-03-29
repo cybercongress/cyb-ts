@@ -146,36 +146,36 @@ export function Address({
   );
 }
 
-export function Vitalik() {
-  return (
-    <Pane
-      height="23px"
-      width="23px"
-      boxShadow="0 0 2px 1px #009688"
-      borderRadius="50%"
-      display="flex"
-      alignItems="center"
-      justifyContent="space-around"
-    >
-      <Pane
-        height="4px"
-        width="7px"
-        boxShadow="0 0 2px 1px #009688"
-        borderRadius="50%"
-        transform="rotate(25deg)"
-        marginBottom="3px"
-      />
-      <Pane
-        height="4px"
-        width="7px"
-        boxShadow="0 0 2px 1px #009688"
-        borderRadius="50%"
-        transform="rotate(-25deg)"
-        marginBottom="3px"
-      />
-    </Pane>
-  );
-}
+// function Vitalik() {
+//   return (
+//     <Pane
+//       height="23px"
+//       width="23px"
+//       boxShadow="0 0 2px 1px #009688"
+//       borderRadius="50%"
+//       display="flex"
+//       alignItems="center"
+//       justifyContent="space-around"
+//     >
+//       <Pane
+//         height="4px"
+//         width="7px"
+//         boxShadow="0 0 2px 1px #009688"
+//         borderRadius="50%"
+//         transform="rotate(25deg)"
+//         marginBottom="3px"
+//       />
+//       <Pane
+//         height="4px"
+//         width="7px"
+//         boxShadow="0 0 2px 1px #009688"
+//         borderRadius="50%"
+//         transform="rotate(-25deg)"
+//         marginBottom="3px"
+//       />
+//     </Pane>
+//   );
+// }
 
 export function PocketCard({ children, select, ...props }) {
   return (

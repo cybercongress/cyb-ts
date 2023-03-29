@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Component } from 'react';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';

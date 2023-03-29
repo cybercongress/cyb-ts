@@ -10,7 +10,7 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy, NotFound } from '../../components';
+import { Loading, Copy } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
@@ -46,6 +46,7 @@ class ValidatorsDetails extends React.PureComponent {
     this.state = {
       selected: 'main',
       validatorInfo: [],
+      // eslint-disable-next-line react/no-unused-state
       data: {},
       delegated: {},
       loader: true,
@@ -130,11 +131,13 @@ class ValidatorsDetails extends React.PureComponent {
     this.getDelegators();
   };
 
+  // eslint-disable-next-line class-methods-use-this
   getSupply = async () => {
     const bondedTokens = await stakingPool();
     return bondedTokens.bonded_tokens;
   };
 
+  // eslint-disable-next-line class-methods-use-this
   getDelegated = async (delegatorShares, delegateAddress, operatorAddress) => {
     const data = {
       self: 0,
@@ -246,7 +249,6 @@ class ValidatorsDetails extends React.PureComponent {
       fans,
       error,
       selected,
-      data,
       addressPocket,
       unStake,
     } = this.state;

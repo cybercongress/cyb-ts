@@ -7,7 +7,7 @@ import KeybaseCheck from './keybaseCheck';
 
 const dateFormat = require('dateformat');
 
-export function Row({ value, title, marginBottom }) {
+function Row({ value, title, marginBottom }) {
   return (
     <Pane
       key={`${value}-container`}
@@ -50,8 +50,6 @@ function Delegated({ data, marginBottom }) {
   const {
     self,
     selfPercent,
-    others,
-    othersPercent,
     total,
     jailed,
     unbondingTime,

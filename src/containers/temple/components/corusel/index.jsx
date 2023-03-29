@@ -79,6 +79,7 @@ function Carousel({
         setVisibleSlide(visibleSlide - slides.length);
       }, 500);
     }
+    // eslint-disable-next-line eqeqeq
     if (visibleSlide == slides.length) {
       // keep index near the middle of the list when moving right
       // setNavDisabled(true);

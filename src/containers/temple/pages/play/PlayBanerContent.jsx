@@ -59,7 +59,7 @@ function TypingText({ content, delay = 30 }) {
     });
   };
 
-  return <>{displayed}</>;
+  return { displayed };
 }
 
 function DeltaValue({ change }) {
@@ -302,6 +302,7 @@ function PlayBanerContent() {
 
   const slideDataState = slideDataRef.current;
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div className={styles.gatadienContainer} onClick={() => restartSlide()}>
       <div
         className={styles.containerTitle}

@@ -18,7 +18,7 @@ function useUptime({ accountUser }) {
     }
   `;
 
-    const { loading, error, data } = useQuery(GET_CHARACTERS);
+    const { loading, data } = useQuery(GET_CHARACTERS);
 
     if (loading) {
       return <Dots />;

@@ -9,23 +9,16 @@ import {
   Address,
   ButtonIcon,
 } from '../components';
-import {
-  Dots,
-  LinkWindow,
-  NumberCurrency,
-  DenomArr,
-} from '../../../components';
+import { Dots, LinkWindow, DenomArr } from '../../../components';
 import {
   trimString,
   formatNumber,
   exponentialToDecimal,
   getDisplayAmount,
 } from '../../../utils/utils';
-import { decFnc } from '../../teleport/utils';
 import { COSMOS, CYBER } from '../../../utils/config';
 import { deleteAccount, deleteAddress, renameKeys } from '../utils';
 import { useAddressInfo, useGetBalanceEth } from '../hooks/pubkeyCard';
-import coinDecimalsConfig from '../../../utils/configToken';
 import { AppContext } from '../../../context';
 
 import editOutline from '../../../image/create-outline.svg';
@@ -41,22 +34,46 @@ function RowBalance({ children, ...props }) {
   );
 }
 
-export const reduceAmounToken = (amount, token, reverse) => {
-  let amountReduce = amount;
+function FormatNumberTokens({ text, value, ...props }) {
+  const { traseDenom } = useContext(AppContext);
+  const { coinDecimals } = traseDenom(text);
+  return (
+    <Pane
+      display="grid"
+      gridTemplateColumns="1fr 55px"
+      gridGap="5px"
+      fontSize="15px"
+      {...props}
+    >
+      <Pane
+        // paddingRight={5}
+        whiteSpace="nowrap"
+        display="flex"
+        alignItems="center"
+      >
+        <span>{formatNumber(getDisplayAmount(value, coinDecimals))}</span>
+      </Pane>
+      {text && <DenomArr denomValue={text} onlyImg />}
+    </Pane>
+  );
+}
 
-  if (token.includes('ibc')) {
-    if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
-      const { coinDecimals } = coinDecimalsConfig[token];
-      if (reverse) {
-        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-      } else {
-        amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
-      }
-    }
-  }
+// const reduceAmounToken = (amount, token, reverse) => {
+//   let amountReduce = amount;
 
-  return amountReduce;
-};
+//   if (token.includes('ibc')) {
+//     if (Object.prototype.hasOwnProperty.call(coinDecimalsConfig, token)) {
+//       const { coinDecimals } = coinDecimalsConfig[token];
+//       if (reverse) {
+//         amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+//       } else {
+//         amountReduce = decFnc(parseFloat(amount), coinDecimals, reverse);
+//       }
+//     }
+//   }
+
+//   return amountReduce;
+// };
 
 function DetailsBalance({
   total,
@@ -134,31 +151,6 @@ function DetailsBalance({
           </>
         )}
       </RowBalance>
-    </Pane>
-  );
-}
-
-function FormatNumberTokens({ text, value, ...props }) {
-  const { traseDenom } = useContext(AppContext);
-  const { coinDecimals } = traseDenom(text);
-  // console.log(text, value);
-  return (
-    <Pane
-      display="grid"
-      gridTemplateColumns="1fr 55px"
-      gridGap="5px"
-      fontSize="15px"
-      {...props}
-    >
-      <Pane
-        // paddingRight={5}
-        whiteSpace="nowrap"
-        display="flex"
-        alignItems="center"
-      >
-        <span>{formatNumber(getDisplayAmount(value, coinDecimals))}</span>
-      </Pane>
-      {text && <DenomArr denomValue={text} onlyImg />}
     </Pane>
   );
 }
@@ -247,85 +239,85 @@ function CosmosAddressInfo({
   );
 }
 
-function CYBNetworkInfo({
-  address,
-  onClickDeleteAddress,
-  loading,
-  gol,
-  gift,
-  openCyber,
-  loadingGift,
-  network,
-  ...props
-}) {
-  return (
-    <ContainerAddressInfo>
-      <Address
-        network={network}
-        address={address}
-        onClickDeleteAddress={onClickDeleteAddress}
-        addressLink={
-          <Link to={`/network/bostrom/contract/${address.bech32}`}>
-            <div>{trimString(address.bech32, 9, 3)}</div>
-          </Link>
-        }
-      />
-      <Pane flexDirection="column" display="flex" alignItems="flex-end">
-        {loading ? (
-          <span>
-            <Dots /> CYB
-          </span>
-        ) : (
-          <>
-            <RowBalance {...props} className="cosmos-address-balance">
-              {openCyber ? (
-                <div>total</div>
-              ) : (
-                <div className="details-balance">details</div>
-              )}
-              <NumberCurrency
-                amount={Math.floor(gol) + Math.floor(gift)}
-                currencyNetwork="cyb"
-              />
-            </RowBalance>
-            {openCyber && (
-              <Pane
-                width="100%"
-                paddingLeft={15}
-                flexDirection="column"
-                display="flex"
-                alignItems="flex-end"
-              >
-                <RowBalance>
-                  <div>game of links</div>
-                  <NumberCurrency
-                    amount={Math.floor(gol)}
-                    currencyNetwork="CYB"
-                  />
-                </RowBalance>
-                <RowBalance>
-                  <div>gift</div>
-                  <Pane>
-                    {loadingGift ? (
-                      <span>
-                        <Dots /> CYB
-                      </span>
-                    ) : (
-                      <NumberCurrency
-                        amount={Math.floor(gift)}
-                        currencyNetwork="CYB"
-                      />
-                    )}
-                  </Pane>
-                </RowBalance>
-              </Pane>
-            )}
-          </>
-        )}
-      </Pane>
-    </ContainerAddressInfo>
-  );
-}
+// function CYBNetworkInfo({
+//   address,
+//   onClickDeleteAddress,
+//   loading,
+//   gol,
+//   gift,
+//   openCyber,
+//   loadingGift,
+//   network,
+//   ...props
+// }) {
+//   return (
+//     <ContainerAddressInfo>
+//       <Address
+//         network={network}
+//         address={address}
+//         onClickDeleteAddress={onClickDeleteAddress}
+//         addressLink={
+//           <Link to={`/network/bostrom/contract/${address.bech32}`}>
+//             <div>{trimString(address.bech32, 9, 3)}</div>
+//           </Link>
+//         }
+//       />
+//       <Pane flexDirection="column" display="flex" alignItems="flex-end">
+//         {loading ? (
+//           <span>
+//             <Dots /> CYB
+//           </span>
+//         ) : (
+//           <>
+//             <RowBalance {...props} className="cosmos-address-balance">
+//               {openCyber ? (
+//                 <div>total</div>
+//               ) : (
+//                 <div className="details-balance">details</div>
+//               )}
+//               <NumberCurrency
+//                 amount={Math.floor(gol) + Math.floor(gift)}
+//                 currencyNetwork="cyb"
+//               />
+//             </RowBalance>
+//             {openCyber && (
+//               <Pane
+//                 width="100%"
+//                 paddingLeft={15}
+//                 flexDirection="column"
+//                 display="flex"
+//                 alignItems="flex-end"
+//               >
+//                 <RowBalance>
+//                   <div>game of links</div>
+//                   <NumberCurrency
+//                     amount={Math.floor(gol)}
+//                     currencyNetwork="CYB"
+//                   />
+//                 </RowBalance>
+//                 <RowBalance>
+//                   <div>gift</div>
+//                   <Pane>
+//                     {loadingGift ? (
+//                       <span>
+//                         <Dots /> CYB
+//                       </span>
+//                     ) : (
+//                       <NumberCurrency
+//                         amount={Math.floor(gift)}
+//                         currencyNetwork="CYB"
+//                       />
+//                     )}
+//                   </Pane>
+//                 </RowBalance>
+//               </Pane>
+//             )}
+//           </>
+//         )}
+//       </Pane>
+//     </ContainerAddressInfo>
+//   );
+// }
 
 function BalanceToken({ onClickOpen, open, balanceToken, currency, address }) {
   return (
@@ -548,7 +540,9 @@ function PubkeyCard({
   setDefaultAccountProps,
   ...props
 }) {
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [gift, setGift] = useState(0);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [loading, setLoading] = useState(true);
   const { totalCyber, totalCosmos, loadingInfo, balanceToken } = useAddressInfo(
     pocket,

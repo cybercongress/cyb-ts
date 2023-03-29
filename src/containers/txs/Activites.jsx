@@ -10,16 +10,13 @@ import { convertAmount, timeSince } from '../../utils/utils';
 import { AppContext } from '../../context';
 import { FormatNumberTokens } from '../nebula/components';
 
-const imgDropdown = require('../../image/arrow-dropdown.svg');
-const imgDropup = require('../../image/arrow-dropup.svg');
-
 const S_TO_MS = 1 * 10 ** 3;
 
 function Cid({ cid }) {
   return <Link to={`/ipfs/${cid}`}>{cid}</Link>;
 }
 
-export function ContainerMsgsType({ type, children }) {
+function ContainerMsgsType({ type, children }) {
   return (
     <Pane
       borderRadius={5}
@@ -44,7 +41,7 @@ export function ContainerMsgsType({ type, children }) {
   );
 }
 
-export function Row({ value, title }) {
+function Row({ value, title }) {
   return (
     <Pane
       key={`${value}-container`}
@@ -79,6 +76,20 @@ export function Row({ value, title }) {
       </Text>
     </Pane>
   );
+}
+
+// eslint-disable-next-line import/no-unused-modules
+export function AmountDenom({ amountValue, denom }) {
+  const { traseDenom } = useContext(AppContext);
+
+  let amount = 0;
+
+  if (amountValue && amountValue > 0) {
+    const { coinDecimals } = traseDenom(denom);
+    amount = convertAmount(amountValue, coinDecimals);
+  }
+
+  return <FormatNumberTokens text={denom} value={amount} />;
 }
 
 function MultiSend({ msg }) {
@@ -222,19 +233,6 @@ function MsgDeleteRoute({ msg }) {
       <Row title="destination" value={<Account address={msg.destination} />} />
     </ContainerMsgsType>
   );
-}
-
-export function AmountDenom({ amountValue, denom }) {
-  const { traseDenom } = useContext(AppContext);
-
-  let amount = 0;
-
-  if (amountValue && amountValue > 0) {
-    const { coinDecimals } = traseDenom(denom);
-    amount = convertAmount(amountValue, coinDecimals);
-  }
-
-  return <FormatNumberTokens text={denom} value={amount} />;
 }
 
 function MsgEditRouteName({ msg }) {

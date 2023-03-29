@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { useCallback, useContext } from 'react';
+import { BtnGrd } from 'src/components';
 import { ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
-import { BtnGrd } from 'src/components';
 
 function ActionBar({ updateFunc }) {
   const { keplr, initSigner } = useContext(AppContext);

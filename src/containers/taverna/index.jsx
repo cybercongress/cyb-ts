@@ -6,42 +6,10 @@ import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
-function timeSince(timeMS) {
-  const seconds = Math.floor(timeMS / 1000);
-
-  if (seconds === 0) {
-    return 'now';
-  }
-
-  let interval = Math.floor(seconds / 31536000);
-
-  if (interval > 1) {
-    return `${interval} years`;
-  }
-  interval = Math.floor(seconds / 2592000);
-  if (interval > 1) {
-    return `${interval} months`;
-  }
-  interval = Math.floor(seconds / 86400);
-  if (interval > 1) {
-    return `${interval} days`;
-  }
-  interval = Math.floor(seconds / 3600);
-  if (interval > 1) {
-    return `${interval} hours`;
-  }
-  interval = Math.floor(seconds / 60);
-  if (interval > 1) {
-    return `${interval} minutes`;
-  }
-  return `${Math.floor(seconds)} seconds`;
-}
-
 const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
 function Taverna({ node, mobile, defaultAccount }) {
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
-  // console.log(`tweets`, tweets)
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [rankLink, setRankLink] = useState(null);
   const [update, setUpdate] = useState(1);
@@ -60,7 +28,7 @@ function Taverna({ node, mobile, defaultAccount }) {
 
   try {
     const searchItems = [];
-    const d = new Date();
+    // const d = new Date();
 
     if (loadingTweets) {
       return <Dots />;
@@ -73,12 +41,12 @@ function Taverna({ node, mobile, defaultAccount }) {
           const y = Date.parse(tweets[b].time);
           return y - x;
         })
-        .map((key, i) => {
-          let timeAgoInMS = 0;
-          const time = Date.parse(d) - Date.parse(tweets[key].time);
-          if (time > 0) {
-            timeAgoInMS = time;
-          }
+        .map((key) => {
+          // let timeAgoInMS = 0;
+          // const time = Date.parse(d) - Date.parse(tweets[key].time);
+          // if (time > 0) {
+          //   timeAgoInMS = time;
+          // }
           return (
             <SearchSnippet
               key={key}

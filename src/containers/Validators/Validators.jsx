@@ -20,7 +20,7 @@ function Validators({ mobile, defaultAccount }) {
     addressActive,
     updatePage
   );
-  const { validators, countHeroes, loadingValidators } = getHeroes();
+  const { validators, loadingValidators } = getHeroes();
   const [loadingSelf, setLoadingSelf] = useState(true);
   const [loadingBond, setLoadingBond] = useState(true);
   const [bondedTokens, setBondedTokens] = useState(0);
