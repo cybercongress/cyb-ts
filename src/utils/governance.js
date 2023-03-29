@@ -64,18 +64,6 @@ export const getProposer = async (id) => {
   }
 };
 
-export const getProposalsDetailVotes = (id) =>
-  new Promise((resolve) =>
-    axios({
-      method: 'get',
-      url: `${CYBER.CYBER_NODE_URL_LCD}/gov/proposals/${id}/votes`,
-    })
-      .then((response) => {
-        resolve(response.data.result);
-      })
-      .catch((e) => [])
-  );
-
 export const getMinDeposit = async () => {
   try {
     const response = await axios({

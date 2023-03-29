@@ -1,4 +1,4 @@
-export const initialState = {
+const initialState = {
   ipfs: null,
   statusIpfs: false,
   id: null,

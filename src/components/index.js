@@ -9,7 +9,6 @@ import {
   SendLedger,
   GovernanceStartStageActionBar,
   CommunityPool,
-  ParamChange,
   TextProposal,
   RewardsDelegators,
   ReDelegate,
@@ -19,7 +18,6 @@ import {
   GovernanceChangeParam,
   GovernanceSoftwareUpgrade,
   ConnectAddress,
-  SetHdpath,
   ButtonIcon,
 } from './ledger/stageActionBar';
 import Account from './account/account';
@@ -37,9 +35,7 @@ import NoItems from './ui/noItems';
 import ValueImg from './valueImg';
 import NumberCurrency from './numberCurrency';
 import SearchSnippet from './searchSnippet';
-import Denom from './denom';
 import DenomArr from './denom/denomArr';
-import ButtonNetwork from './ButtonNetwork';
 import Tooltip from './tooltip/tooltip';
 import ActionBar from './actionBar';
 import Particle from './particle';
@@ -67,7 +63,6 @@ export {
   SendLedger,
   GovernanceStartStageActionBar,
   CommunityPool,
-  ParamChange,
   TextProposal,
   RewardsDelegators,
   ReDelegate,
@@ -80,7 +75,6 @@ export {
   TabBtn,
   GovernanceSoftwareUpgrade,
   ConnectAddress,
-  SetHdpath,
   ButtonImgText,
   Rank,
   PillNumber,
@@ -89,9 +83,7 @@ export {
   ValueImg,
   NumberCurrency,
   SearchSnippet,
-  Denom,
   DenomArr,
-  ButtonNetwork,
   Tooltip,
   ActionBar,
   Particle,
@@ -108,16 +100,7 @@ export {
 export { Dots } from './ui/Dots';
 export { ContainerCard, Card, CardStatisics } from './statistics/item';
 export { Loading } from './ui/loading';
-export { ContainetLedger } from './ledger/container';
 export { FormatNumber } from './formatNumber/formatNumber';
-export { MenuButton } from './ToggleMenu/menuButton';
 export { Copy } from './ui/copy';
-export {
-  Votes,
-  Legend,
-  IconStatus,
-  Deposit,
-  ContainerPane,
-  Item,
-} from './governance/governance';
+export { Votes, IconStatus, Deposit, Item } from './governance/governance';
 export { LinkWindow, Cid } from './link/link';

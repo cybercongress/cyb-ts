@@ -45,11 +45,11 @@ const checkCidInDB = async (cid) => {
   return undefined;
 };
 
+// TODO: bad code -> refactor
 const checkCidByIpfsNode = async (node, cid) => {
-  let timer;
   const controller = new AbortController();
   const { signal } = controller;
-  timer = setTimeout(() => {
+  const timer = setTimeout(() => {
     controller.abort();
   }, 1000 * 60 * 1); // 1 min
 
@@ -309,4 +309,4 @@ const getPinsCid = async (cid, file) => {
   }
 };
 
-export { getContentByCid, getIpfsGatway, getPinsCid };
+export { getContentByCid, getPinsCid };

@@ -104,7 +104,7 @@ export function calculateCounterPairAmount(values, e, state) {
   };
 }
 
-export const decFnc = (number, dec, reverse) => {
+const decFnc = (number, dec, reverse) => {
   let amount = number;
 
   if (reverse) {

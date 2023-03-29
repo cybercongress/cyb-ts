@@ -1,6 +1,6 @@
 import { CYBER } from '../utils/config';
 
-const { DENOM_CYBER, DENOM_CYBER_G } = CYBER;
+const { DENOM_CYBER } = CYBER;
 
 const i18n = {
   en: {

@@ -8,9 +8,7 @@ import * as config from '../config';
 
 import { getContentByCid } from '../utils-ipfs';
 
-// const IPFS = require('ipfs-api');
-
-const { CYBER_NODE_URL_API, CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
+const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
 
@@ -28,7 +26,7 @@ export const getPin = async (node, content) => {
   let cid;
   if (node) {
     if (typeof content === 'string') {
-      cid = await node.add(new Buffer(content), { pin: true });
+      cid = await node.add(Buffer.from(content), { pin: true });
     } else {
       cid = await node.add(content, { pin: true });
     }
@@ -134,19 +132,6 @@ export const getAccountBandwidth = async (address) => {
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/bandwidth/neuron/${address}`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const statusNode = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/status`,
     });
     return response.data.result;
   } catch (e) {
@@ -283,18 +268,6 @@ export const getTotalEUL = (data) => {
   }
   return balance;
 };
-
-export const getBalanceWallet = (address) =>
-  new Promise((resolve) =>
-    axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/account?address="${address}"`,
-    })
-      .then((response) => {
-        resolve(response.data.result);
-      })
-      .catch((e) => {})
-  );
 
 export const getTxs = async (txs) => {
   try {
@@ -807,44 +780,6 @@ export const authAccounts = async (address) => {
   }
 };
 
-const convertAvatarImg = async (data) => {
-  let img = null;
-
-  const dataFileType = await FileType.fromBuffer(data);
-  console.log(`dataFileType`, dataFileType);
-
-  const base64 = btoa(
-    new Uint8Array(data).reduce(
-      (dataR, byte) => dataR + String.fromCharCode(byte),
-      ''
-    )
-  );
-
-  const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-  console.log(`base64`, base64);
-
-  if (dataFileType !== undefined) {
-    const { mime } = dataFileType;
-    if (mime.indexOf('image') !== -1) {
-      // const dataBase64 = data.toString('base64');
-      const file = `data:${mime};base64,${dataBase64}`;
-      return file;
-    }
-  }
-
-  if (isSvg(data)) {
-    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-      dataBase64,
-      'base64'
-    )}`;
-    img = svg;
-  } else {
-    img = data;
-  }
-
-  return img;
-};
-
 const resolveContentIpfs = async (data) => {
   let mime;
   const dataFileType = await FileType.fromBuffer(data);
@@ -867,30 +802,6 @@ const resolveContentIpfs = async (data) => {
     return svg;
   }
   return null;
-};
-
-const generateMeta = (responseDag) => {
-  const meta = {
-    type: 'file',
-    size: 0,
-    blockSizes: [],
-    data: '',
-  };
-
-  const linksCid = [];
-  if (responseDag.value.Links && responseDag.value.Links.length > 0) {
-    responseDag.value.Links.forEach((item, index) => {
-      if (item.Name.length > 0) {
-        linksCid.push({ name: item.Name, size: item.Tsize });
-      } else {
-        linksCid.push(item.Tsize);
-      }
-    });
-  }
-  meta.size = responseDag.value.size;
-  meta.blockSizes = linksCid;
-
-  return meta;
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
