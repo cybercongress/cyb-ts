@@ -182,12 +182,11 @@ function StateSetUpChain({
 }
 
 function LogRelayer({ relayerLog }) {
-  // console.log(`relayerLog`, relayerLog);
   return (
     <div style={styleLog}>
       {relayerLog &&
         Object.keys(relayerLog).length > 0 &&
-        relayerLog.map((item) => <MessageItem text={item} />)}
+        relayerLog.map((item, i) => <MessageItem text={item} key={i} />)}
     </div>
   );
 }

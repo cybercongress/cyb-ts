@@ -12,10 +12,11 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
             const y = Date.parse(b.timestamp);
             return y - x;
           })
-          .map((item) => {
+          .map((item, i) => {
             const cid = item.tx.value.msg[0].value.links[0].to;
             return (
               <SearchSnippet
+                key={i}
                 cid={cid}
                 data={item}
                 mobile={mobile}

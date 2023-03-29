@@ -14,24 +14,24 @@ const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
 
-function Legend({ color, text, ...props }) {
-  return (
-    <Pane display="flex" alignItems="center" {...props}>
-      <Pane
-        width={12}
-        height={12}
-        borderRadius="2px"
-        display="inline-block"
-        marginRight={10}
-        backgroundColor={color}
-        verticalalign="middle"
-      />
-      <Text color="#fff" fontSize="16px">
-        {text}
-      </Text>
-    </Pane>
-  );
-}
+// function Legend({ color, text, ...props }) {
+//   return (
+//     <Pane display="flex" alignItems="center" {...props}>
+//       <Pane
+//         width={12}
+//         height={12}
+//         borderRadius="2px"
+//         display="inline-block"
+//         marginRight={10}
+//         backgroundColor={color}
+//         verticalalign="middle"
+//       />
+//       <Text color="#fff" fontSize="16px">
+//         {text}
+//       </Text>
+//     </Pane>
+//   );
+// }
 
 export const Votes = ({ finalVotes }) => {
   try {

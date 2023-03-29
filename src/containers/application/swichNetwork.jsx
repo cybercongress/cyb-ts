@@ -82,6 +82,7 @@ function SwichNetwork({
       //   network={key}
       // />
       <button
+        key={key}
         type="button"
         className={styles.containerBtnItemSelect}
         onClick={() =>

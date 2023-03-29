@@ -44,7 +44,7 @@ function ActionBarRelease({
   const [step, setStep] = useState(STEP_INIT);
   const { keplr } = useContext(AppContext);
 
-  const useRelease = useCallback(async () => {
+  const getRelease = useCallback(async () => {
     try {
       if (keplr !== null && currentRelease !== null) {
         const msgs = [];
@@ -90,6 +90,7 @@ function ActionBarRelease({
       console.log('error', error);
       setStep(STEP_INIT);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keplr, currentRelease]);
 
   useEffect(() => {
@@ -100,7 +101,7 @@ function ActionBarRelease({
           const { bech32 } = addressActive;
           if (address === bech32) {
             setStep(STEP_RELEASE);
-            useRelease();
+            getRelease();
           } else {
             setStep(STATE_CHANGE_ACCOUNT);
           }
@@ -108,6 +109,7 @@ function ActionBarRelease({
       }
     };
     checkAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, keplr, addressActive]);
 
   const useAddressOwner = useMemo(() => {

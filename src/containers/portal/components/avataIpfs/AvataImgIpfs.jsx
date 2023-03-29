@@ -38,6 +38,7 @@ function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
     } else {
       setAvatar(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (avatar !== null) {

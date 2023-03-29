@@ -62,6 +62,7 @@ function Governance({ defaultAccount }) {
     } else {
       setAccount(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {

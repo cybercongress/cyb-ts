@@ -27,6 +27,7 @@ function Movie() {
     return () => {
       window.removeEventListener('message', handlerEventListener);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

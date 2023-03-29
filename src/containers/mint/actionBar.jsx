@@ -67,6 +67,7 @@ function ActionBar({
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const investmint = async () => {

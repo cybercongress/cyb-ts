@@ -167,6 +167,7 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   return { txHeight };

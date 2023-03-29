@@ -266,6 +266,7 @@ function ActionBar({ stateActionBar }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const createPool = async () => {
@@ -561,6 +562,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, ibcClient, tokenAAmount, denomIbc, keplr]);
 
   const withdrawOnClick = useCallback(async () => {
@@ -606,6 +608,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
 
   const handleHistory = (to) => {

@@ -5,13 +5,13 @@ import { useLocation, Link } from 'react-router-dom';
 import './AppMenu.css';
 import { Pane } from '@cybercongress/gravity';
 
-function Logo(props) {
-  return (
-    <a {...props} className="logo">
-      logo
-    </a>
-  );
-}
+// function Logo(props) {
+//   return (
+//     <a {...props} className="logo">
+//       logo
+//     </a>
+//   );
+// }
 
 function Items({ item, deleteAppFromMenu, selected, height, ...props }) {
   if (item.to !== '#') {
@@ -98,6 +98,7 @@ const renderSubItems = (subItems, location, onClickSubItem) => {
   return itemsSub;
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export function Bookmarks({ items, ...props }) {
   const [selectedItem, setSelectedItem] = useState('');
   const [selectedItemSub, setSelectedItemSub] = useState('');

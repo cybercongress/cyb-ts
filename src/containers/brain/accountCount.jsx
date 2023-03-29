@@ -15,6 +15,7 @@ const GET_CHARACTERS = gql`
 
 function AccountCount() {
   try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { loading, data } = useQuery(GET_CHARACTERS);
     if (loading) {
       return <Dots />;

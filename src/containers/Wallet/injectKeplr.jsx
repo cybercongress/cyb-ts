@@ -64,7 +64,7 @@ const configKeplr = () => {
 };
 
 const injectKeplr = (InnerComponent) =>
-  class extends PureComponent {
+  class KeplrInject extends PureComponent {
     constructor(props) {
       super(props);
       this.state = {

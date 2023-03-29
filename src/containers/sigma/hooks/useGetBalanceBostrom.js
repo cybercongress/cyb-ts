@@ -31,7 +31,7 @@ function useGetBalanceBostrom(address) {
         let dataResult = {};
         const mainToken = { [CYBER.DENOM_CYBER]: { ...balanceMainToken } };
         const dataResultTemp = { ...mainToken, ...balanceToken };
-        const tempData = useGetBalanceMarket(dataResultTemp);
+        const tempData = getBalanceMarket(dataResultTemp);
         dataResult = { ...tempData };
         setBalances(dataResult);
         if (Object.keys(dataResult).length > 0) {
@@ -42,9 +42,10 @@ function useGetBalanceBostrom(address) {
         setBalances(dataLs);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadingMalin, loadingToken, balanceMainToken, balanceToken, address]);
 
-  const useGetBalanceMarket = useCallback(
+  const getBalanceMarket = useCallback(
     (data) => {
       if (Object.keys(data).length > 0) {
         return Object.keys(data).reduce((obj, key) => {
@@ -80,6 +81,7 @@ function useGetBalanceBostrom(address) {
       }
       return {};
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [marketData]
   );
 
@@ -131,6 +133,7 @@ function useGetBalanceBostrom(address) {
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useGetCapTokens]);
 
   return {

@@ -59,11 +59,6 @@ function ValueImg({
       textCurency = 'BOOT';
       break;
 
-    case 'pussy':
-      img = pussy;
-      textCurency = 'PUSSY';
-      break;
-
     case 'tocyb':
       img = tocyb;
       textCurency = 'TOCYB';

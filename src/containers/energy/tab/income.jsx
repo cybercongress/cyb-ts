@@ -46,7 +46,7 @@ function Income({ destinationRoutes, mobile }) {
 
   if (Object.keys(destinationRoutes).length > 0) {
     routerData = destinationRoutes.map((item, index) => (
-      <TableItem item={item} index={index} />
+      <TableItem item={item} index={index} key={index} />
     ));
   }
 

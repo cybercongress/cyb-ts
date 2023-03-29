@@ -18,6 +18,7 @@ function ContractTable({ contracts, count, setOffset }) {
     setTimeout(() => {
       setOffset((itemsState) => itemsState + 1);
     }, 250);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const itemTable = contracts.map((item) => {

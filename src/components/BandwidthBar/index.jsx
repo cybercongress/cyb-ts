@@ -57,13 +57,9 @@ function BandwidthBar({
   amounPower,
   ...props
 }) {
-  const [linkPrice, setlinkPrice] = useState(4);
+  const [linkPrice] = useState(4);
   const bwPercent =
     bwMaxValue > 0 ? Math.floor((bwRemained / bwMaxValue) * 100) : 0;
-
-  // useEffect(() => {
-
-  // }, [])
 
   return (
     <Tooltip

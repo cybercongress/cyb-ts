@@ -43,6 +43,7 @@ function RowBalancesDetails({ balance }) {
     }
 
     return 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance]);
 
   const getTypeDenomKey = (key) => {

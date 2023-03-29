@@ -65,6 +65,7 @@ function Signatures({ addressActive }) {
         setPlaing(true);
       }, 7000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, plaing]);
 
   return (

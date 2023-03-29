@@ -95,6 +95,7 @@ function DenomArr({
       );
     }
     return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [denomValue]);
 
   try {

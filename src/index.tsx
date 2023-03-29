@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unused-modules
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import React from 'react';

@@ -77,6 +77,7 @@ function Electricity({ setBlockProps }) {
         wsClient.removeEventListener('message', handlerMessage);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsClient]);
 
   const At = (el, a, v) => {

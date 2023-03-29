@@ -212,6 +212,7 @@ function Info({
     }
 
     return content;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepCurrent, counCitizenshipst, mobile]);
 
   return (

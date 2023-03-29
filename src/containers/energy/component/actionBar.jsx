@@ -129,6 +129,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   useEffect(() => {

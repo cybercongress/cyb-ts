@@ -72,6 +72,7 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
       );
     }
     return <span> </span>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swapPrice]);
 
   const getTextSellSend = useMemo(() => {

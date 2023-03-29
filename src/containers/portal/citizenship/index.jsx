@@ -308,6 +308,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
       }
     };
     checkAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, addressActive, step]);
 
   const getBalanceAndNickname = useCallback(

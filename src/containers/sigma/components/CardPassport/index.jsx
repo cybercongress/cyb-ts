@@ -19,6 +19,7 @@ function CardPassport({ accounts }) {
 
       updateDataCap({ [bech32]: { ...totalAmountInLiquid } });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalAmountInLiquid, accounts]);
 
   const reduceDataBalanceTokenRow = useMemo(() => {
@@ -36,7 +37,12 @@ function CardPassport({ accounts }) {
 
   const renderbalanceTokenRow = useMemo(() => {
     return Object.keys(reduceDataBalanceTokenRow).map((key) => {
-      return <RowBalancesDetails balance={reduceDataBalanceTokenRow[key]} />;
+      return (
+        <RowBalancesDetails
+          balance={reduceDataBalanceTokenRow[key]}
+          key={key}
+        />
+      );
     });
   }, [reduceDataBalanceTokenRow]);
 

@@ -7,7 +7,7 @@ import JsonSchemaParse from './JsonSchemaParse';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
-const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
+// const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 
 function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
   const { keplr, jsCyber } = useContext(AppContext);
@@ -58,6 +58,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash, activeKey]);
 
   const runExecute = async ({ formData }, key) => {
@@ -103,6 +104,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
       // const key = uuidv4();
       return (
         <JsonSchemaParse
+          key={key}
           executing={executing}
           activeKey={activeKey}
           schema={items}
@@ -114,7 +116,7 @@ function RenderAbiExecute({ contractAddress, schema, updateFnc }) {
     });
   }
 
-  return <>{itemAutoForm.length > 0 && itemAutoForm}</>;
+  return itemAutoForm.length > 0 && itemAutoForm;
 }
 
 export default RenderAbiExecute;

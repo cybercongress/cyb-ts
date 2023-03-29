@@ -25,7 +25,7 @@ function DenomTest() {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {totalSupply !== null &&
         Object.keys(totalSupply).map((key) => {
-          return <Denom denomValue={key} />;
+          return <Denom denomValue={key} key={key} />;
         })}
     </div>
   );

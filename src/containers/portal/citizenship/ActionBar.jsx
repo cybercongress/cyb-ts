@@ -148,6 +148,7 @@ function ActionBar({
     } else {
       setStep(STEP_KEPLR_SETUP);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keplr]);
 
   useEffect(() => {
@@ -162,6 +163,7 @@ function ActionBar({
     } else {
       onClickSignMoonCode();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signedMessage]);
 
   if (step === STEP_INIT) {

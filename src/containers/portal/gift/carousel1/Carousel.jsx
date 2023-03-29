@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useState, useEffect, useCallback } from 'react';
 import styles from './carousel.scss';
 
 const cx = require('classnames');
@@ -20,10 +21,8 @@ function Carousel({
   }
 
   const [visibleSlide, setVisibleSlide] = useState(1);
-  const [hasTransitionClass, setHasTransitionClass] = useState(true);
   const [stateSlides, setStateSlides] = useState(slides);
   const [leftAndRightDisabled, setLeftAndRightDisabled] = useState(false);
-  const intervalId = useRef(null);
 
   useEffect(() => {
     setVisibleSlide(activeStep);
@@ -37,6 +36,7 @@ function Carousel({
     slidesWithClones.unshift({});
     slidesWithClones.push({});
     setStateSlides(slidesWithClones);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Whenever the left and right arrows are disabled
@@ -51,6 +51,7 @@ function Carousel({
         setLeftAndRightDisabled(false);
       }, transitionSpeed * 2);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leftAndRightDisabled]);
 
   const calculateLeftMargin = () => {
@@ -72,6 +73,7 @@ function Carousel({
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [disableNext, visibleSlide]
   );
 
@@ -86,9 +88,7 @@ function Carousel({
       >
         <div
           id="slides"
-          className={cx(styles.slides, {
-            [styles.transition]: hasTransitionClass,
-          })}
+          className={cx(styles.slides, styles.transition)}
           style={{ left: calculateLeftMargin() }}
         >
           {stateSlides.map((slide, index) => {

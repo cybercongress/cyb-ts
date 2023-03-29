@@ -93,7 +93,7 @@ function Temple({ defaultAccount }) {
             }}
           >
             {itemLinks.map((item) => (
-              <Link to={item.to}>
+              <Link to={item.to} key={item.to}>
                 <div>{item.title}</div>
               </Link>
             ))}

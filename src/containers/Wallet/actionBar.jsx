@@ -93,6 +93,7 @@ function ActionBar({
           break;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectCard, hoverCard, selectAccount]);
 
   useEffect(() => {
@@ -103,6 +104,7 @@ function ActionBar({
         setMakeActive(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccounts, selectAccount]);
 
   useEffect(() => {

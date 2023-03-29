@@ -85,9 +85,6 @@ const imgKeplr = require('../../image/keplr-icon.svg');
 const imgMetaMask = require('../../image/mm-logo.svg');
 const imgRead = require('../../image/duplicate-outline.svg');
 const imgEth = require('../../image/Ethereum_logo_2014.svg');
-const imgCyber = require('../../image/large-purple-circle.png');
-const imgBostrom = require('../../image/large-green.png');
-const imgSpace = require('../../image/large-purple-circle.png');
 const imgCosmos = require('../../image/cosmos-2.svg');
 
 const T = new LocalizedStrings(i18n);
@@ -285,8 +282,12 @@ export function StartStageSearchActionBar({
               className="resize-none minHeightTextarea"
               onChange={(e) => onChangeInputContentHash(e)}
               placeholder={placeholder}
-              onFocus={(e) => (e.target.placeholder = '')}
-              onBlur={(e) => (e.target.placeholder = placeholder)}
+              onFocus={(e) => {
+                e.target.placeholder = '';
+              }}
+              onBlur={(e) => {
+                e.target.placeholder = placeholder;
+              }}
             />
             <Pane
               position="absolute"
@@ -301,6 +302,8 @@ export function StartStageSearchActionBar({
                 style={{ display: 'none' }}
               />
               <button
+                type="button"
+                aria-label="add file"
                 className={
                   file !== null && file !== undefined
                     ? 'btn-add-close'
@@ -414,6 +417,7 @@ export function GovernanceChangeParam({
         item.push(...temp);
       }
     }
+    return undefined;
   });
 
   if (changeParam.length > 0) {
@@ -679,25 +683,25 @@ export function TextProposal({
   );
 }
 
-export function ParamChange({ valueSelect, onChangeSelect, onClickBtn }) {
-  return (
-    <ActionBar>
-      <ActionBarContentText>
-        {/* <select
-        style={{ height: 42, width: '60%' }}
-        className="select-green"
-        value={valueSelect}
-        onChange={onChangeSelect}
-      >
-        <option value="textProposal">Text Proposal</option>
-        <option value="paramChange">Param Change</option>
-        <option value="communityPool">Community Pool Spend</option>
-      </select> */}
-      </ActionBarContentText>
-      <Button onClick={onClickBtn}>Create Governance</Button>
-    </ActionBar>
-  );
-}
+// function ParamChange({ onClickBtn }) {
+//   return (
+//     <ActionBar>
+//       <ActionBarContentText>
+//         {/* <select
+//         style={{ height: 42, width: '60%' }}
+//         className="select-green"
+//         value={valueSelect}
+//         onChange={onChangeSelect}
+//       >
+//         <option value="textProposal">Text Proposal</option>
+//         <option value="paramChange">Param Change</option>
+//         <option value="communityPool">Community Pool Spend</option>
+//       </select> */}
+//       </ActionBarContentText>
+//       <Button onClick={onClickBtn}>Create Governance</Button>
+//     </ActionBar>
+//   );
+// }
 
 export function CommunityPool({
   onClickBtn,
@@ -821,7 +825,6 @@ function ContentTooltip({ bwRemained, bwMaxValue, linkPrice }) {
 
 export function Cyberlink({
   bandwidth,
-  onClickBtnCloce,
   address,
   contentHash,
   onClickBtn,
@@ -1129,6 +1132,7 @@ export function RewardsDelegators({
         </Pane>
       );
     }
+    return undefined;
   });
   return (
     <ContainetLedger onClickBtnCloce={onClickBtnCloce}>
@@ -1297,60 +1301,60 @@ export function ConnectAddress({
   );
 }
 
-export function SetHdpath({
-  hdpath,
-  onChangeAccount,
-  onChangeIndex,
-  addressLedger,
-  hdPathError,
-  addAddressLedger,
-}) {
-  return (
-    <ActionBar>
-      <ActionBarContentText>
-        <Pane>
-          <Pane
-            display="flex"
-            alignItems="center"
-            flex={1}
-            justifyContent="center"
-          >
-            <Text color="#fff" fontSize="20px">
-              HD derivation path: {hdpath[0]}/{hdpath[1]}/
-            </Text>
-            <Input
-              value={hdpath[2]}
-              onChange={(e) => onChangeAccount(e)}
-              width="50px"
-              height={42}
-              marginLeft={3}
-              marginRight={3}
-              fontSize="20px"
-              textAlign="end"
-            />
-            <Text color="#fff" fontSize="20px">
-              /{hdpath[3]}/
-            </Text>
-            <Input
-              value={hdpath[4]}
-              onChange={(e) => onChangeIndex(e)}
-              width="50px"
-              marginLeft={3}
-              height={42}
-              fontSize="20px"
-              textAlign="end"
-            />
-          </Pane>
-          {addressLedger !== null ? (
-            <Pane>{trimString(addressLedger.bech32, 10, 3)}</Pane>
-          ) : (
-            <Dots />
-          )}
-        </Pane>
-      </ActionBarContentText>
-      <Button disabled={hdPathError} onClick={() => addAddressLedger()}>
-        Apply
-      </Button>
-    </ActionBar>
-  );
-}
+// function SetHdpath({
+//   hdpath,
+//   onChangeAccount,
+//   onChangeIndex,
+//   addressLedger,
+//   hdPathError,
+//   addAddressLedger,
+// }) {
+//   return (
+//     <ActionBar>
+//       <ActionBarContentText>
+//         <Pane>
+//           <Pane
+//             display="flex"
+//             alignItems="center"
+//             flex={1}
+//             justifyContent="center"
+//           >
+//             <Text color="#fff" fontSize="20px">
+//               HD derivation path: {hdpath[0]}/{hdpath[1]}/
+//             </Text>
+//             <Input
+//               value={hdpath[2]}
+//               onChange={(e) => onChangeAccount(e)}
+//               width="50px"
+//               height={42}
+//               marginLeft={3}
+//               marginRight={3}
+//               fontSize="20px"
+//               textAlign="end"
+//             />
+//             <Text color="#fff" fontSize="20px">
+//               /{hdpath[3]}/
+//             </Text>
+//             <Input
+//               value={hdpath[4]}
+//               onChange={(e) => onChangeIndex(e)}
+//               width="50px"
+//               marginLeft={3}
+//               height={42}
+//               fontSize="20px"
+//               textAlign="end"
+//             />
+//           </Pane>
+//           {addressLedger !== null ? (
+//             <Pane>{trimString(addressLedger.bech32, 10, 3)}</Pane>
+//           ) : (
+//             <Dots />
+//           )}
+//         </Pane>
+//       </ActionBarContentText>
+//       <Button disabled={hdPathError} onClick={() => addAddressLedger()}>
+//         Apply
+//       </Button>
+//     </ActionBar>
+//   );
+// }

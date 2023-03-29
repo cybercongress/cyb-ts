@@ -346,6 +346,7 @@ function PortalGift({ defaultAccount, node, mobile }) {
       return false;
     }
     return true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, citizenship]);
 
   const useSetActiveItem = useMemo(() => {

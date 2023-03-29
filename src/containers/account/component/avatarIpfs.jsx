@@ -22,6 +22,7 @@ function AvatarIpfs({
       setAvatar(null);
       fetchAvatar(addressCyber);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addressCyber, node]);
 
   const fetchAvatar = async (address) => {

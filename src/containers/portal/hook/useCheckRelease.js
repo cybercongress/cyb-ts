@@ -92,6 +92,7 @@ function useCheckRelease(totalGift, loadingGift, updateFunc) {
       }
     };
     checkReleaseFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalGift, loadingGift, updateFunc]);
 
   const calculationStateRelease = (dataQuery) => {

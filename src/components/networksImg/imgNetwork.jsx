@@ -57,6 +57,7 @@ function ImgNetwork({
       const nativeImg = getNativeImg(network);
       setImgDenom(nativeImg);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainInfo, node, network]);
 
   const getImgFromIpfsByCid = useCallback(

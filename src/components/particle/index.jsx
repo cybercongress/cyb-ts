@@ -8,7 +8,7 @@ function Particle({ cid, node }) {
   // const [content, setContent] = useState('');
   // const [textPreview, setTextPreview] = useState(cid);
   // const [typeContent, setTypeContent] = useState('');
-  const [status, setStatus] = useState('understandingState');
+  const [status] = useState('understandingState');
   // const [link, setLink] = useState(`/ipfs/${cid}`);
 
   // useEffect(() => {

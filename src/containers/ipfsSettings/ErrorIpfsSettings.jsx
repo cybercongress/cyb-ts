@@ -1,4 +1,4 @@
-import { Input, LinkWindow } from '../../components';
+import { Input, LinkWindow, ContainerGradient } from '../../components';
 import { MainContainer } from '../portal/components';
 import BtnPasport from '../portal/pasport/btnPasport';
 import Select from '../teleport/components/select';
@@ -7,7 +7,6 @@ import {
   ContainerKeyValue,
   renderOptions,
 } from './ipfsComponents/utilsComponents';
-import { ContainerGradient } from '../../components';
 
 const ipfsDaemon = `$ ipfs daemon
 Initializing daemon... 

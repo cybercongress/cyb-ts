@@ -57,6 +57,7 @@ function Validators({ mobile, defaultAccount }) {
     } else {
       setSelected('active');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {

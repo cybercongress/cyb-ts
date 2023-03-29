@@ -87,6 +87,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
     if (query.match(/\//g)) {
       history.push(`/search/${replaceSlash(query)}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   useEffect(() => {
@@ -137,6 +138,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
       }
     };
     getFirstItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, location, update, jsCyber]);
 
   const fetchMoreData = async (page) => {

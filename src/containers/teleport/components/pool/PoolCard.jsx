@@ -63,6 +63,7 @@ function PoolCard({ pool, totalSupplyData, accountBalances }) {
       console.log('error', error);
       return false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool]);
 
   return (

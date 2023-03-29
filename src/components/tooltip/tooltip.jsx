@@ -54,7 +54,7 @@ function Tooltip({
                         'data-placement': placement,
                       })}
                     /> */}
-          {tooltip && <>{tooltip}</>}
+          {tooltip}
         </div>
       )}
     </>

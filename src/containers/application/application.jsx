@@ -76,22 +76,26 @@ function App({
       }
     };
     updateIpfsStage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ipfs, ipfsInitError, isIpfsReady, isIpfsPending]);
 
   useEffect(() => {
     setTypeDeviceProps(isMobile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
       updatetMarketData(marketData);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marketData]);
 
   useEffect(() => {
     if (Object.keys(dataTotal).length > 0) {
       updateDataTotalSupply(dataTotal);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal]);
 
   useEffect(() => {
@@ -99,6 +103,7 @@ function App({
     if (pathname.indexOf(query) === -1) {
       setQueryProps('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {
@@ -159,6 +164,7 @@ function App({
       }
     };
     checkAddressLocalStorage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -198,6 +204,7 @@ function App({
       }
     };
     getBandwidth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount, location.pathname, priceLink, jsCyber]);
 
   useEffect(() => {

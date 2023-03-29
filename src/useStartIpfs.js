@@ -52,6 +52,7 @@ function useStartIpfs() {
       setIpfsReady(false);
       ipfs = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -63,6 +64,7 @@ function useStartIpfs() {
     return () => {
       document.removeEventListener('reconnectIpfsClient', handlerEventListener);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { ipfs, isIpfsReady, ipfsInitError, isIpfsPending };

@@ -47,7 +47,7 @@ function ListNetwork() {
   const renderItem = Object.keys(networks).map((key) => {
     const item = networks[key];
     return (
-      <ContainerGradientText status={statusCard(key)}>
+      <ContainerGradientText status={statusCard(key)} key={key}>
         {key !== 'bostrom' &&
           key !== 'space-pussy' &&
           key !== CYBER.CHAIN_ID && (

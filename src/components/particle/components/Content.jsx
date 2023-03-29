@@ -38,6 +38,7 @@ function Content({ typeContent, gateway, content, textPreview, cid }) {
     contentItem = (
       <div className="container-text-SearchItem">
         <ReactMarkdown
+          // eslint-disable-next-line react/no-children-prop
           children={textPreview}
           rehypePlugins={[rehypeSanitize]}
           remarkPlugins={[remarkGfm]}

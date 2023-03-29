@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import useMediaQuery from '../../../../hooks/useMediaQuery';
+import useMediaQuery from 'src/hooks/useMediaQuery';
 import {
   formatCurrency,
   formatNumber,
@@ -43,6 +43,7 @@ function TypingText({ content, delay = 30 }) {
 
   useEffect(() => {
     updateDisplay(content.charAt(0)); // call once to avoid empty element flash
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     animID = setInterval(typeLetter, delay);
     return () => {
       updateDisplay('');
@@ -59,7 +60,7 @@ function TypingText({ content, delay = 30 }) {
     });
   };
 
-  return <>{ displayed }</>;
+  return displayed;
 }
 
 function DeltaValue({ change }) {
@@ -291,6 +292,7 @@ function PlayBanerContent() {
     return () => {
       resetTimeout();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, slideData]);
 
   const restartSlide = useCallback(() => {
@@ -298,6 +300,7 @@ function PlayBanerContent() {
       resetTimeout();
       setIndex(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, slideData]);
 
   const slideDataState = slideDataRef.current;
