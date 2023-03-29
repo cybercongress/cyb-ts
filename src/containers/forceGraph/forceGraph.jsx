@@ -19,6 +19,7 @@ function ForceGraph() {
   useEffect(() => {
     const feachData = async () => {
       if (params.agent) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         where = `{neuron: {_eq: "${params.agent}"}}`;
       } else {
         where = '{}';
@@ -53,6 +54,7 @@ function ForceGraph() {
           // curvative: getRandomInt(20, 500) / 1000,
         };
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       graph = {
         nodes: object,
         links: cyberlinks,
@@ -96,6 +98,7 @@ function ForceGraph() {
     (node) => {
       window.open(`${window.location.origin}/ipfs/${node.id}`, '_blank');
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
@@ -106,9 +109,11 @@ function ForceGraph() {
         '_blank'
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleEngineStop = useCallback(() => {
     console.log('engine stopped!');
     setHasLoaded(false);

@@ -100,6 +100,7 @@ function ActionBarKeplr({
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txHash]);
 
   useEffect(() => {

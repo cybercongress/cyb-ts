@@ -12,17 +12,27 @@ const styles = {
   paddingBottom: '37px',
 };
 
-const CustomDescriptionField = ({ id, description }) => (
-  <div id={id} style={{ display: 'none' }}>
-    {description}
-  </div>
-);
+function CustomDescriptionField({ id, description }) {
+  return (
+    <div id={id} style={{ display: 'none' }}>
+      {description}
+    </div>
+  );
+}
 
 const fields = {
   DescriptionField: CustomDescriptionField,
 };
 
-function JsonSchemaParse({ schema, executing, activeKey, contractResponse, keyItem, onSubmitFnc, disabledOnSubmit }) {
+function JsonSchemaParse({
+  schema,
+  executing,
+  activeKey,
+  contractResponse,
+  keyItem,
+  onSubmitFnc,
+  disabledOnSubmit,
+}) {
   return (
     <div style={styles}>
       <JsonSchema

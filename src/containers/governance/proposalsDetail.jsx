@@ -156,6 +156,7 @@ function ProposalsDetail({ defaultAccount }) {
       setTally(tallyTemp);
     };
     getStatusVoting();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, updateFunc]);
 
   useEffect(() => {
@@ -254,7 +255,7 @@ function ProposalsDetail({ defaultAccount }) {
               value={
                 <Pane className="container-description">
                   {proposals.changes.map((item) => (
-                    <Pane>
+                    <Pane key={item.key}>
                       {item.subspace}: {item.key} {item.value}
                     </Pane>
                   ))}

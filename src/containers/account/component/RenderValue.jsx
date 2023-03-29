@@ -116,9 +116,13 @@ function RenderValue({ value, type, accountUser }) {
           title="amount"
           value={
             <ContainerMsgsType>
-              {value.amount.map((item) => {
+              {value.amount.map((item, i) => {
                 return (
-                  <AmountDenom denom={item.denom} amountValue={item.amount} />
+                  <AmountDenom
+                    denom={item.denom}
+                    amountValue={item.amount}
+                    key={i}
+                  />
                 );
               })}
             </ContainerMsgsType>
@@ -141,11 +145,12 @@ function RenderValue({ value, type, accountUser }) {
               title="inputs coins"
               value={
                 <ContainerMsgsType>
-                  {itemInputs.coins.map((itemCoins) => {
+                  {itemInputs.coins.map((itemCoins, i) => {
                     return (
                       <AmountDenom
                         denom={itemCoins.denom}
                         amountValue={itemCoins.amount}
+                        key={i}
                       />
                     );
                   })}
@@ -166,9 +171,10 @@ function RenderValue({ value, type, accountUser }) {
                   title="outputs coins"
                   value={
                     <ContainerMsgsType>
-                      {itemOutputs.coins.map((itemCoins) => {
+                      {itemOutputs.coins.map((itemCoins, i) => {
                         return (
                           <AmountDenom
+                            key={i}
                             denom={itemCoins.denom}
                             amountValue={itemCoins.amount}
                           />
@@ -251,7 +257,11 @@ function RenderValue({ value, type, accountUser }) {
             <ContainerMsgsType alignItems="flex-end">
               {value.deposit_coins.map((data, i) => {
                 return (
-                  <AmountDenom amountValue={data.amount} denom={data.denom} />
+                  <AmountDenom
+                    amountValue={data.amount}
+                    denom={data.denom}
+                    key={i}
+                  />
                 );
               })}
             </ContainerMsgsType>
@@ -460,6 +470,7 @@ function RenderValue({ value, type, accountUser }) {
                 }
                 return (
                   <AmountDenom
+                    key={i}
                     amountValue={amount.amount}
                     denom={amount.denom}
                   />
@@ -500,7 +511,11 @@ function RenderValue({ value, type, accountUser }) {
               );
             }
             return (
-              <AmountDenom amountValue={amount.amount} denom={amount.denom} />
+              <AmountDenom
+                amountValue={amount.amount}
+                denom={amount.denom}
+                key={i}
+              />
             );
           })}
         />

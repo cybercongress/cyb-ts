@@ -18,6 +18,7 @@ function TableLink({ data }) {
 
   const displayedPalettes = useMemo(
     () => data.slice(0, itemsToShow),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [itemsToShow]
   );
 

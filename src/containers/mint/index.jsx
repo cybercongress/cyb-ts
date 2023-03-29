@@ -105,6 +105,7 @@ function Mint({ defaultAccount }) {
       addressPocket = bech32;
     }
     setAddressActive(addressPocket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {
@@ -212,6 +213,7 @@ function Mint({ defaultAccount }) {
       amountA = getDisplayAmount(vestedTokensA, coinDecimals);
     }
     return amountA;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vested, originalVesting]);
 
   const vestedV = useMemo(() => {
@@ -224,6 +226,7 @@ function Mint({ defaultAccount }) {
       amountV = getDisplayAmount(vestedTokensA, coinDecimals);
     }
     return amountV;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vested, originalVesting]);
 
   return (

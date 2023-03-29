@@ -123,6 +123,7 @@ function TweetCard({
 
   useEffect(() => {
     feachData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, refresh]);
 
   const feachData = async () => {
@@ -151,6 +152,7 @@ function TweetCard({
       }
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar, myTweet, follows]);
 
   const getAvatarAccounts = async (address) => {

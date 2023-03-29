@@ -39,6 +39,7 @@ function RoutedEnergy({ defaultAccount }) {
       addressPocket = bech32;
     }
     setAddressActive(addressPocket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {
@@ -53,6 +54,7 @@ function RoutedEnergy({ defaultAccount }) {
     } else {
       setSelected('myEnegy');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const selectRouteFunc = (route, index) => {

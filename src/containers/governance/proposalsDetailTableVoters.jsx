@@ -58,6 +58,7 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
 
   useEffect(() => {
     getFirstItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, updateFunc]);
 
   const getFirstItem = async () => {
@@ -113,7 +114,7 @@ function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
     }
 
     return (
-      <ContainerGradientText status={optionTextColor(item.option)}>
+      <ContainerGradientText status={optionTextColor(item.option)} key={d}>
         <Table.Row
           borderBottom="none"
           paddingLeft={20}

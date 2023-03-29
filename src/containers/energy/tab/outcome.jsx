@@ -54,6 +54,7 @@ function Outcome({ sourceRouted, selectRouteFunc, selected }) {
   if (Object.keys(sourceRouted).length > 0) {
     routerData = sourceRouted.map((item, index) => (
       <TableItem
+        key={index}
         selected={selected === index}
         selectRouteFunc={selectRouteFunc}
         item={item}

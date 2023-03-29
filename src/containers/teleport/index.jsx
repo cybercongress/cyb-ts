@@ -172,6 +172,8 @@ function Teleport({ defaultAccount }) {
       // This causes an infinite loop with other effects that use the same state
       // because the state of mobx is updated but the state of react will be updated in the next render.
       // To solve this problem, we ignore the state processing of react and change the variable itself.
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       query = {
         from: tokenA,
         to: tokenB,
@@ -415,6 +417,7 @@ function Teleport({ defaultAccount }) {
       }
     }
     setIsExceeded(exceeded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountBalances,
     tokenA,

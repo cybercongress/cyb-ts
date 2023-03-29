@@ -115,6 +115,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     if (jsCyber !== null) {
       getLinks();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cid, jsCyber]);
 
   useEffect(() => {
@@ -224,6 +225,7 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   useEffect(() => {
     chekPathname();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const chekPathname = () => {

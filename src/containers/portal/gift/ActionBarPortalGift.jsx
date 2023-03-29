@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
@@ -297,7 +298,7 @@ function ActionBarPortalGift({
     }
   }, [keplr, citizenship, signedMessageKeplr, setLoading, node]);
 
-  const useClaime = useCallback(async () => {
+  const claim = useCallback(async () => {
     try {
       if (keplr === null) {
         if (initSigner) {
@@ -649,7 +650,7 @@ function ActionBarPortalGift({
           onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
           text="prove one more address"
         />
-        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claim" />
+        <BtnGrd disabled={isClaime} onClick={() => claim()} text="claim" />
       </ActionBarSteps>
     );
   }

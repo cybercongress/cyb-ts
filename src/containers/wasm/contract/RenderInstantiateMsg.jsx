@@ -55,6 +55,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash, activeKey]);
 
   const runExecute = async ({ formData }, key) => {
@@ -106,6 +107,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
         <JsonSchemaParse
           executing={executing}
           activeKey={activeKey}
+          key={key}
           schema={items}
           contractResponse={contractResponse}
           keyItem={key}
@@ -116,7 +118,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     });
   }
 
-  return <>{itemAutoForm.length > 0 && itemAutoForm}</>;
+  return itemAutoForm.length > 0 && itemAutoForm;
 }
 
 export default RenderInstantiateMsg;

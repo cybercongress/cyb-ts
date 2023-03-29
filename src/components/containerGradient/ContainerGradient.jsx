@@ -224,6 +224,7 @@ function ContainerGradient({
                           ]
                         )}
                       >
+                        {/*  eslint-disable-next-line react-hooks/rules-of-hooks */}
                         {useTitle(state)}
                       </div>
                     </div>

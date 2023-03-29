@@ -33,6 +33,7 @@ function useSetupIbcClient(denom, network, keplrCybre) {
       setIbcClient(client);
     };
     createClient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [network, denom]);
 
   return { ibcClient, balanceIbc, denomIbc };

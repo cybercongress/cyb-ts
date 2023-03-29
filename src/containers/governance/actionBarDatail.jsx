@@ -78,6 +78,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const cleatState = () => {

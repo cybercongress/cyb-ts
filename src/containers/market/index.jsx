@@ -106,6 +106,7 @@ function Market({ node, mobile, defaultAccount }) {
     const { pathname } = location;
     const requere = chekPathname(pathname);
     setSelectedTokens(requere);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {

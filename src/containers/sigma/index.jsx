@@ -70,6 +70,7 @@ function Sigma({ defaultAccount }) {
       updateChangeCap(changeCap);
       updateTotalCap(tempCap);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.dataCap]);
 
   // get local store

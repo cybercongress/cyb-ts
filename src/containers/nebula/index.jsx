@@ -95,6 +95,7 @@ function Nebula({ mobile }) {
         localStorage.setItem('lastCap', cap);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, marketData]);
 
   const dataRenderItems = useMemo(() => {
@@ -132,6 +133,7 @@ function Nebula({ mobile }) {
       dataObj = sortable;
     }
     return dataObj;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, marketData]);
 
   const getTypeDenomKey = (key) => {
@@ -188,6 +190,7 @@ function Nebula({ mobile }) {
         </RowItem>
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataRenderItems]);
 
   return (

@@ -80,7 +80,7 @@ function PlayContent() {
     <ContainerGradientText>
       <div className={styles.containerPlayContent}>
         {playContentItem.map((item) => (
-          <Link to={item.to}>
+          <Link to={item.to} key={item.to}>
             <div className={styles.containerItemPlayContent}>
               <div>
                 <img

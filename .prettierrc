@@ -4,6 +4,5 @@
   "trailingComma": "es5",
   "bracketSpacing": true,
   "jsxBracketSameLine": false,
-  "useTabs": false,
-  "printWidth": 120
+  "useTabs": false
 }

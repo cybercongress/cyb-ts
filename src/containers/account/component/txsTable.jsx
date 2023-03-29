@@ -41,6 +41,7 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
 
           return (
             <ContainerGradientText
+              key={index}
               status={item.transaction.success ? 'blue' : 'red'}
             >
               <Table.Row

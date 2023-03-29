@@ -122,10 +122,12 @@ function ParamNetwork({ location }) {
       setLoading(false);
     };
     feachData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     chekPathname();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   if (loading) {

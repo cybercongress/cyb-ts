@@ -103,6 +103,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     } else {
       setSelected('log');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {
@@ -154,6 +155,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       }
     };
     chekFollowAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name, address, updateAddress]);
 
   useEffect(() => {
@@ -182,6 +184,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       }
     };
     chekAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name, address]);
 
   let content;

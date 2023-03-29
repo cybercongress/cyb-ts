@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../context';
 
-function getHeroes() {
+function useGetHeroes() {
   const { jsCyber } = useContext(AppContext);
   const [validators, setValidators] = useState([]);
   const [loadingValidators, setLoadingValidators] = useState(true);
@@ -73,4 +73,4 @@ function getHeroes() {
   return { validators, countHeroes, loadingValidators };
 }
 
-export default getHeroes;
+export default useGetHeroes;

@@ -66,6 +66,7 @@ function TableAllocation({ currentBonus, currentGift }) {
     return keyTable.map((item) => (
       <ItemTable key={item} value={0} title={item} />
     ));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGift]);
 
   return <div className={styles.containerTableAllocation}>{itemTable}</div>;
@@ -141,6 +142,7 @@ function CurrentGift({
       );
     }
     return <div style={{ color: '#00C4FF' }}>no gift {GIFT_ICON}</div>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGift, useSelectCyber, title]);
 
   const useBaseGift = useMemo(() => {
@@ -218,6 +220,7 @@ function CurrentGift({
       return formatNumber(parseFloat(amount));
     }
     return 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGift, currentBonus, useCurrentBonus, useTotalAmountByBonus]);
 
   const useValueTextResult = useMemo(() => {

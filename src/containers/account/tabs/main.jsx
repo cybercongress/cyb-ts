@@ -124,12 +124,18 @@ function Tokens({ balanceToken, balance }) {
             if (Object.keys(balanceToken[key]).length > 0) {
               if (balanceToken[key].total > 0) {
                 return (
-                  <RowToken denom={key} amount={balanceToken[key].total} />
+                  <RowToken
+                    denom={key}
+                    amount={balanceToken[key].total}
+                    key={key}
+                  />
                 );
               }
               return '';
             }
-            return <RowToken denom={key} amount={balanceToken[key]} />;
+            return (
+              <RowToken denom={key} amount={balanceToken[key]} key={key} />
+            );
           })}
       </Pane>
     </Pane>

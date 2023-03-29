@@ -20,7 +20,7 @@ function RenderAbiQuery({ contractAddress, schema }) {
       console.log(`queryResponseResult`, queryResponseResult);
       setContractResponse({ result: queryResponseResult, key });
     } catch (e) {
-      console.log(`errore`, e);
+      console.log(`error`, e);
       // setQueryResponse({ error: `Query error: ${e.message}` });
     }
   };
@@ -33,6 +33,7 @@ function RenderAbiQuery({ contractAddress, schema }) {
       // const key = uuidv4();
       return (
         <JsonSchemaParse
+          key={key}
           schema={items}
           contractResponse={contractResponse}
           keyItem={key}
@@ -42,7 +43,7 @@ function RenderAbiQuery({ contractAddress, schema }) {
     });
   }
 
-  return <>{itemAutoForm.length > 0 && itemAutoForm}</>;
+  return itemAutoForm.length > 0 && itemAutoForm;
 }
 
 export default RenderAbiQuery;

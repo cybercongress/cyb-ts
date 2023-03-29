@@ -271,7 +271,11 @@ function Activites({ msg }) {
                     );
                   }
                   return (
-                    <AmountDenom amountValue={amountValue} denom={denom} />
+                    <AmountDenom
+                      amountValue={amountValue}
+                      denom={denom}
+                      key={i}
+                    />
                   );
                 })
               : `0 ${CYBER.DENOM_CYBER.toUpperCase()}`
@@ -442,7 +446,11 @@ function Activites({ msg }) {
             >
               {msg.deposit_coins.map((data, i) => {
                 return (
-                  <AmountDenom amountValue={data.amount} denom={data.denom} />
+                  <AmountDenom
+                    amountValue={data.amount}
+                    key={i}
+                    denom={data.denom}
+                  />
                 );
               })}
             </div>

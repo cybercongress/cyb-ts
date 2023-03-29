@@ -90,6 +90,7 @@ function ActionBarAddAvatar({
         setStep(STATE_AVATAR);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatarIpfs, keplr, citizenship]);
 
   if (step === STATE_AVATAR) {

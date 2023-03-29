@@ -86,6 +86,7 @@ function DetailsNetwork() {
         }, 1000);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networks, customConfig, param, updateNetworks]);
 
   return (

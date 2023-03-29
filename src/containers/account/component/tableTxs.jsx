@@ -98,7 +98,7 @@ function TableTxs({ data, type, accountUser, amount }) {
               alignItems: 'flex-end',
             }}
           >
-            {item.messages.map((items) => (
+            {item.messages.map((items, i) => (
               // <Tooltip
               //   position="bottom"
               //   key={i}
@@ -107,6 +107,7 @@ function TableTxs({ data, type, accountUser, amount }) {
               //   )} ${CYBER.DENOM_CYBER.toUpperCase()}`}
               // >
               <TextTable
+                key={i}
                 color={
                   items['@type'].includes('MsgDelegate') ? '#4ed6ae' : '#f4516b'
                 }

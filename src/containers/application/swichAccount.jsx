@@ -30,6 +30,7 @@ function AccountItem({
     }
 
     return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passport]);
 
   const useGetCidAvatar = useMemo(() => {
@@ -175,6 +176,7 @@ function SwichAccount({
     }
 
     return items;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, defaultAccount, node]);
 
   // return items;

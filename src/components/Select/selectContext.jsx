@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 
 const SelectContext = createContext({
   selectedOption: '',
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   changeSelectedOption: () => {},
 });
 

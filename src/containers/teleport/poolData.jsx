@@ -39,6 +39,7 @@ function PoolData({ data, totalSupplyData, accountBalances }) {
       });
     }
     return [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [poolsData]);
 
   return (

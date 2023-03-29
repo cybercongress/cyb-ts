@@ -3,7 +3,7 @@ import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
 import { JsonView } from '../ui/ui';
 import { AppContext } from '../../../context';
-import { CYBER, DEFAULT_GAS_LIMITS } from '../../../utils/config';
+import { CYBER } from '../../../utils/config';
 import { JSONInputCard } from './InstantiationContract';
 import styles from './stylesExecuteContract.scss';
 
@@ -16,10 +16,10 @@ const executePlaceholder = {
 
 const coinsPlaceholder = [{ denom: CYBER.DENOM_CYBER, amount: '1' }];
 
-const fee = {
-  amount: [],
-  gas: DEFAULT_GAS_LIMITS.toString(),
-};
+// const fee = {
+//   amount: [],
+//   gas: DEFAULT_GAS_LIMITS.toString(),
+// };
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

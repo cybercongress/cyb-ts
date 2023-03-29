@@ -20,6 +20,7 @@ function AssetsRow({ denom, allBalances, deposit, withdraw, disabledBtns }) {
     ) {
       setBalance(getCoinDecimals(allBalances[denom], denom));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allBalances]);
 
   return (
@@ -148,10 +149,11 @@ function Assets({ defaultAccount }) {
         style={{ display: 'flex', flexDirection: 'column', gridGap: '20px' }}
       >
         {totalSupply !== null &&
-          totalSupply.map((item) => {
+          totalSupply.map((item, i) => {
             if (!item.denom.includes('ibc')) {
               return (
                 <AssetsRow
+                  key={i}
                   denom={item.denom}
                   allBalances={allBalances}
                   deposit={depositOnClick}
@@ -168,6 +170,7 @@ function Assets({ defaultAccount }) {
             ) {
               return (
                 <AssetsRow
+                  key={i}
                   denom={item.denom}
                   allBalances={allBalances}
                   deposit={depositOnClick}

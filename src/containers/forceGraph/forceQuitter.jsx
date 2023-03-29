@@ -38,8 +38,8 @@ function ForceQuitter({ nodeIpfs }) {
           ],
           []
         );
-        // console.log('dataGqlObj', dataGqlObj);
-        // console.log('object', object);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         graph = {
           nodes: object,
           links: dataGqlObj,
@@ -87,6 +87,7 @@ function ForceQuitter({ nodeIpfs }) {
         '_blank'
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
@@ -97,9 +98,12 @@ function ForceQuitter({ nodeIpfs }) {
         '_blank'
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fgRef]
   );
 
+  // check and fix
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleEngineStop = useCallback(() => {
     console.log('rendering engine is stopped!');
     setHasLoaded(false);
