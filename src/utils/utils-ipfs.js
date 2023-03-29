@@ -309,4 +309,4 @@ const getPinsCid = async (cid, file) => {
   }
 };
 
-export { getContentByCid, getPinsCid };
+export { getContentByCid, getPinsCid, checkIpfsState };
