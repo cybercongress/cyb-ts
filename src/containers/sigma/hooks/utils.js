@@ -75,6 +75,7 @@ const getCommissionAmount = (data) => {
 
 export const useGetBalance = (client, addressBech32) => {
   try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { data, isFetching } = useQuery(
       ['getBalance', addressBech32],
       async () => {

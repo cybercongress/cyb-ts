@@ -38,7 +38,7 @@ function RenderAbi({ contractAddress, updateFnc }) {
 
   if (selected === 'query') {
     if (fileAbiQuery === null) {
-      content = <SelectFile useStateCallback={setFileAbiQuery} />;
+      content = <SelectFile stateCallback={setFileAbiQuery} />;
     } else {
       content = (
         <RenderAbiQuery
@@ -54,7 +54,7 @@ function RenderAbi({ contractAddress, updateFnc }) {
       content = (
         <SelectFile
           text="Upload execute schema"
-          useStateCallback={setFileAbiExecute}
+          stateCallback={setFileAbiExecute}
         />
       );
     } else {

@@ -2,22 +2,23 @@
 import { useState, useEffect, useRef } from 'react';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 
-function SelectFile({ useStateCallback, text = 'Upload query schema' }) {
+function SelectFile({ stateCallback, text = 'Upload query schema' }) {
   const inputOpenFileRef = useRef(null);
   const [file, setFile] = useState(null);
 
   useEffect(() => {
     const updateState = async () => {
-      if (useStateCallback) {
+      if (stateCallback) {
         if (file !== null && file.type === 'application/json') {
           const bufferJson = new Uint8Array(await file.arrayBuffer());
           const stringJson = uint8ArrayToAsciiString(bufferJson);
           const jsonObj = JSON.parse(stringJson);
-          useStateCallback(jsonObj);
+          stateCallback(jsonObj);
         }
       }
     };
     updateState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
   const showOpenFileDlg = () => {
@@ -32,7 +33,7 @@ function SelectFile({ useStateCallback, text = 'Upload query schema' }) {
 
   const onClickClear = () => {
     setFile(null);
-    useStateCallback(null);
+    stateCallback(null);
   };
 
   return (
