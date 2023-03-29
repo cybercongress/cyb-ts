@@ -22,7 +22,7 @@
     },
     "sourceType": "module"
   },
-  "plugins": ["prettier", "react", "import", "typescript", "unused-imports"],
+  "plugins": ["prettier", "react", "import", "@typescript-eslint"],
   "globals": {
     "expect": true,
     "FileReader": true

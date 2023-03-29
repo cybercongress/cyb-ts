@@ -67,18 +67,25 @@ const queryClient = new QueryClient({
   },
 });
 
-const container = document.getElementById('root');
+const container: HTMLElement | null = document.getElementById('root');
+
+if (container === null) {
+  throw new Error('Root container missing in index.html');
+}
+
 const root = createRoot(container);
 
 root.render(
-  <Provider store={store}>
-    <ApolloProvider client={client}>
-      <AppContextProvider>
-        <QueryClientProvider client={queryClient}>
-          <AppRouter />
-          <ReactQueryDevtools />
-        </QueryClientProvider>
-      </AppContextProvider>
-    </ApolloProvider>
-  </Provider>
+  <React.StrictMode>
+    <Provider store={store}>
+      <ApolloProvider client={client}>
+        <AppContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <AppRouter />
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </AppContextProvider>
+      </ApolloProvider>
+    </Provider>
+  </React.StrictMode>
 );
