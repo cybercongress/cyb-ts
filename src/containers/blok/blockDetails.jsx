@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import withRouter from 'src/components/helpers/withRouter';
+
 import InformationBlock from './informationBlock';
 import TableTxs from '../account/component/tableTxs';
 import { CardTemplate } from '../../components';
@@ -30,8 +32,8 @@ const initialState = {
   transactions: [],
 };
 
-function BlockDetails({ match }) {
-  const { idBlock } = match.params;
+function BlockDetails({ router }) {
+  const { idBlock } = router.params;
   const [blockInfo, setBlockInfo] = useState(initialState);
   const { loading, error, data } = useQuery(GET_CHARACTERS, {
     variables: {
@@ -60,11 +62,7 @@ function BlockDetails({ match }) {
   return (
     <div>
       <main className="block-body">
-        <InformationBlock
-          numbTx={blockInfo.transactions}
-          marginBottom={20}
-          data={blockInfo}
-        />
+        <InformationBlock numbTx={blockInfo.transactions} marginBottom={20} data={blockInfo} />
         <CardTemplate title="Transactions">
           <TableTxs data={blockInfo.transactions} />
         </CardTemplate>
@@ -74,4 +72,4 @@ function BlockDetails({ match }) {
   );
 }
 
-export default BlockDetails;
+export default withRouter(BlockDetails);

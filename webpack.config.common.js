@@ -35,20 +35,11 @@ module.exports = {
       stream: require.resolve('stream-browserify'),
       constants: require.resolve('constants-browserify'),
     },
-    extensions: [
-      '*',
-      '.js',
-      '.jsx',
-      '.scss',
-      '.svg',
-      '.css',
-      '.json',
-      '.ts',
-      '.tsx',
-    ],
+    extensions: ['*', '.js', '.jsx', '.scss', '.svg', '.css', '.json', '.ts', '.tsx'],
     alias: {
       'react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
       'react/jsx-runtime.js': 'react/jsx-runtime',
+      src: path.resolve(__dirname, 'src/'),
     },
   },
   plugins: [

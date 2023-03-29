@@ -21,7 +21,9 @@ import AppContextProvider from './context';
 
 import './style/main.css';
 import './image/favicon.ico';
-import './image/logo-bulb.svg';
+import './image/robot.svg';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.jsx';
+import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -40,9 +42,7 @@ const wsLink = new WebSocketLink({
 
 const terminatingLink = split(
   ({ query }) => {
-    const { kind, operation } = getMainDefinition(
-      query
-    ) as OperationDefinitionNode;
+    const { kind, operation } = getMainDefinition(query) as OperationDefinitionNode;
     return kind === 'OperationDefinition' && operation === 'subscription';
   },
   wsLink,
@@ -81,8 +81,10 @@ root.render(
       <ApolloProvider client={client}>
         <AppContextProvider>
           <QueryClientProvider client={queryClient}>
-            <AppRouter />
-            <ReactQueryDevtools />
+            <ErrorBoundary fallback={<ErrorScreen />}>
+              <AppRouter />
+              <ReactQueryDevtools />
+            </ErrorBoundary>
           </QueryClientProvider>
         </AppContextProvider>
       </ApolloProvider>

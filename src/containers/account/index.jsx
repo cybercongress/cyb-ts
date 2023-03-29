@@ -51,14 +51,8 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   const location = useLocation();
   const [updateAddress, setUpdateAddress] = useState(0);
   const { community } = useGetCommunity(address, updateAddress);
-  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
-    address,
-    updateAddress
-  );
-  const { staking, totalRewards, loadingHeroesInfo } = useGetHeroes(
-    address,
-    updateAddress
-  );
+  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(address, updateAddress);
+  const { staking, totalRewards, loadingHeroesInfo } = useGetHeroes(address, updateAddress);
   const dataGetTsxByAddress = useGetTsxByAddress(address);
   const [selected, setSelected] = useState('log');
   const [dataTweet, setDataTweet] = useState([]);
@@ -70,35 +64,17 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   console.log('------------contract', location);
   useEffect(() => {
     const { pathname } = location;
-    if (
-      pathname.match(/timeline/gm) &&
-      pathname.match(/timeline/gm).length > 0
-    ) {
+    if (pathname.match(/timeline/gm) && pathname.match(/timeline/gm).length > 0) {
       setSelected('timeline');
-    } else if (
-      pathname.match(/sigma/gm) &&
-      pathname.match(/sigma/gm).length > 0
-    ) {
+    } else if (pathname.match(/sigma/gm) && pathname.match(/sigma/gm).length > 0) {
       setSelected('sigma');
-    } else if (
-      pathname.match(/security/gm) &&
-      pathname.match(/security/gm).length > 0
-    ) {
+    } else if (pathname.match(/security/gm) && pathname.match(/security/gm).length > 0) {
       setSelected('security');
-    } else if (
-      pathname.match(/badges/gm) &&
-      pathname.match(/badges/gm).length > 0
-    ) {
+    } else if (pathname.match(/badges/gm) && pathname.match(/badges/gm).length > 0) {
       setSelected('badges');
-    } else if (
-      pathname.match(/cyberlinks/gm) &&
-      pathname.match(/cyberlinks/gm).length > 0
-    ) {
+    } else if (pathname.match(/cyberlinks/gm) && pathname.match(/cyberlinks/gm).length > 0) {
       setSelected('cyberlinks');
-    } else if (
-      pathname.match(/swarm/gm) &&
-      pathname.match(/swarm/gm).length > 0
-    ) {
+    } else if (pathname.match(/swarm/gm) && pathname.match(/swarm/gm).length > 0) {
       setSelected('swarm');
     } else {
       setSelected('log');
@@ -138,16 +114,9 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     const chekFollowAddress = async () => {
       const addressFromIpfs = await getIpfsHash(address);
       if (defaultAccount.account !== null && defaultAccount.account.cyber) {
-        const response = await chekFollow(
-          defaultAccount.account.cyber.bech32,
-          addressFromIpfs
-        );
+        const response = await chekFollow(defaultAccount.account.cyber.bech32, addressFromIpfs);
         console.log(`response`, response);
-        if (
-          response !== null &&
-          response.total_count > 0 &&
-          defaultAccount.account.cyber.bech32 !== address
-        ) {
+        if (response !== null && response.total_count > 0 && defaultAccount.account.cyber.bech32 !== address) {
           setFollow(false);
           setTweets(false);
         }
@@ -159,10 +128,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   useEffect(() => {
     const chekAddress = async () => {
       const { account } = defaultAccount;
-      if (
-        account !== null &&
-        Object.prototype.hasOwnProperty.call(account, 'cyber')
-      ) {
+      if (account !== null && Object.prototype.hasOwnProperty.call(account, 'cyber')) {
         const { keys } = account.cyber;
         if (keys !== 'read-only') {
           if (account.cyber.bech32 === address) {
@@ -189,12 +155,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     if (loadingHeroesInfo) {
       content = <Dots />;
     } else {
-      content = (
-        <Route
-          path="/network/bostrom/contract/:address/security"
-          render={() => <Heroes data={staking} />}
-        />
-      );
+      content = <Route path="/network/bostrom/contract/:address/security" render={() => <Heroes data={staking} />} />;
     }
   }
   // console.log('balance', balance);
@@ -214,22 +175,14 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     content = (
       <Route
         path="/network/bostrom/contract/:address/timeline"
-        render={() => (
-          <TxsTable
-            dataGetTsxByAddress={dataGetTsxByAddress}
-            accountUser={address}
-          />
-        )}
+        render={() => <TxsTable dataGetTsxByAddress={dataGetTsxByAddress} accountUser={address} />}
       />
     );
   }
 
   if (selected === 'badges') {
     content = (
-      <Route
-        path="/network/bostrom/contract/:address/badges"
-        render={() => <TableDiscipline address={address} />}
-      />
+      <Route path="/network/bostrom/contract/:address/badges" render={() => <TableDiscipline address={address} />} />
     );
   }
 
@@ -238,10 +191,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
       content = <Dots />;
     } else {
       content = (
-        <Route
-          path="/network/bostrom/contract/:address"
-          render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />}
-        />
+        <Route path="/network/bostrom/contract/:address" render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />} />
       );
     }
     // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
@@ -263,12 +213,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
         {/* <button type="button" onClick={() => setOffset((item) => item + 1)}>
           +
         </button> */}
-        <Pane
-          marginBottom={20}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
+        <Pane marginBottom={20} display="flex" justifyContent="center" alignItems="center">
           <Text color="#fff" fontSize="18px">
             {address} <Copy text={address} />
           </Text>
@@ -294,54 +239,28 @@ function AccountDetails({ node, mobile, defaultAccount }) {
             }}
           />
         </ContainerCard>
-        <Tablist
-          display="grid"
-          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
-          gridGap="10px"
-        >
+        <Tablist display="grid" gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))" gridGap="10px">
           <TabBtn
             text="Security"
             isSelected={selected === 'security'}
             to={`/network/bostrom/contract/${address}/security`}
           />
-          <TabBtn
-            text="Sigma"
-            isSelected={selected === 'sigma'}
-            to={`/network/bostrom/contract/${address}/sigma`}
-          />
+          <TabBtn text="Sigma" isSelected={selected === 'sigma'} to={`/network/bostrom/contract/${address}/sigma`} />
           <TabBtn
             text="Cyberlinks"
             isSelected={selected === 'cyberlinks'}
             to={`/network/bostrom/contract/${address}/cyberlinks`}
           />
-          <TabBtn
-            text="Log"
-            isSelected={selected === 'log'}
-            to={`/network/bostrom/contract/${address}`}
-          />
-          <TabBtn
-            text="Swarm"
-            isSelected={selected === 'swarm'}
-            to={`/network/bostrom/contract/${address}/swarm`}
-          />
+          <TabBtn text="Log" isSelected={selected === 'log'} to={`/network/bostrom/contract/${address}`} />
+          <TabBtn text="Swarm" isSelected={selected === 'swarm'} to={`/network/bostrom/contract/${address}/swarm`} />
           <TabBtn
             text="Timeline"
             isSelected={selected === 'timeline'}
             to={`/network/bostrom/contract/${address}/timeline`}
           />
-          <TabBtn
-            text="Badges"
-            isSelected={selected === 'badges'}
-            to={`/network/bostrom/contract/${address}/badges`}
-          />
+          <TabBtn text="Badges" isSelected={selected === 'badges'} to={`/network/bostrom/contract/${address}/badges`} />
         </Tablist>
-        <Pane
-          display="flex"
-          marginTop={20}
-          marginBottom={50}
-          justifyContent="center"
-          flexDirection="column"
-        >
+        <Pane display="flex" marginTop={20} marginBottom={50} justifyContent="center" flexDirection="column">
           {content}
         </Pane>
       </main>

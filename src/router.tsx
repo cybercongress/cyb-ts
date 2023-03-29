@@ -1,12 +1,5 @@
 // import { createBrowserHistory } from 'history';
-import {
-  Link,
-  HashRouter,
-  BrowserRouter,
-  Routes,
-  Route,
-  Outlet,
-} from 'react-router-dom';
+import { Link, HashRouter, BrowserRouter, Routes, Route, Outlet, useMatch } from 'react-router-dom';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
@@ -42,20 +35,11 @@ import Release from './containers/portal/release';
 import Temple from './containers/temple';
 import IpfsSettings from './containers/ipfsSettings';
 import Ibc from './containers/ibc';
-import {
-  Codes,
-  CodePage,
-  ContractPage,
-  DashboardPage,
-} from './containers/wasm';
+import { Codes, CodePage, ContractPage, DashboardPage } from './containers/wasm';
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
-import {
-  ListNetwork,
-  CustomNetwork,
-  DetailsNetwork,
-} from './containers/network';
+import { ListNetwork, CustomNetwork, DetailsNetwork } from './containers/network';
 
 import Sigma from './containers/sigma';
 
@@ -80,11 +64,7 @@ function PageNotExist() {
   );
 }
 function WrappedRouter({ children }) {
-  return process.env.IPFS_DEPLOY ? (
-    <HashRouter>{children}</HashRouter>
-  ) : (
-    <BrowserRouter>{children}</BrowserRouter>
-  );
+  return process.env.IPFS_DEPLOY ? <HashRouter>{children}</HashRouter> : <BrowserRouter>{children}</BrowserRouter>;
 }
 
 function MainLayout() {
@@ -99,7 +79,6 @@ function MainLayout() {
 function AppRouter() {
   return (
     <WrappedRouter>
-      {/* <Route path={routes.home.path} element={<App />}/> */}
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Temple />} />
@@ -112,20 +91,22 @@ function AppRouter() {
           <Route path={oldLinks.halloffame} element={<Validators />} />
           <Route path="/sphere/*" element={<Validators />} />
           <Route path="/episode-1" element={<Story />} />
-          <Route path="/network/bostrom/" element={<Txs />}>
-            <Route path="tx" element={<Txs />} />
-            <Route path="tx/:txHash" element={<TxsDetails />} />
+          <Route path="/quitter" element={<ForceQuitter />} />
+          <Route path="/graph" element={<ForceGraph />} />
+          <Route path="/pgraph/:agent" element={<ForceGraph />} />
+          <Route path="/ipfs" element={<IpfsSettings />} />
+          <Route path="/ipfs/:cid" element={<Ipfs />} />
+
+          <Route path="network/bostrom">
+            <Route path="tx" element={<Txs />}>
+              <Route path=":txHash" element={<TxsDetails />} />
+            </Route>
             <Route path="contract/:address" element={<AccountDetails />} />
             <Route path="hero/:address" element={<ValidatorsDetails />} />
             <Route path="blocks/:idBlock" element={<BlockDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />
             <Route path="blocks" element={<Block />} />
           </Route>
-          <Route path="/quitter" element={<ForceQuitter />} />
-          <Route path="/graph" element={<ForceGraph />} />
-          <Route path="/pgraph/:agent" element={<ForceGraph />} />
-          <Route path="/ipfs" element={<IpfsSettings />} />
-          <Route path="/ipfs/:cid" element={<Ipfs />} />
 
           <Route path="/degenbox" element={<TrollBoxx />} />
           {/* <Route path="/portal" element={<PortPages />}/> */}
@@ -150,10 +131,7 @@ function AppRouter() {
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />
           <Route path="/contracts" element={<DashboardPage />} />
-          <Route
-            path="/contracts/:contractAddress"
-            element={<ContractPage />}
-          />
+          <Route path="/contracts/:contractAddress" element={<ContractPage />} />
           {/* network */}
           <Route path="/networks" element={<ListNetwork />} />
           <Route path="/networks/add" element={<CustomNetwork />} />
