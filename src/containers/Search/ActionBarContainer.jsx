@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Link as LinkRoute } from 'react-router-dom';
 import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -14,7 +13,7 @@ import {
   ButtonImgText,
 } from '../../components';
 
-import { getPin } from '../../utils/search/utils';
+import { getPin, getTxs } from '../../utils/search/utils';
 
 import {
   LEDGER,
@@ -58,14 +57,12 @@ class ActionBarContainer extends Component {
     };
     this.timeOut = null;
     this.inputOpenFileRef = React.createRef();
-    this.ledger = null;
     this.transport = null;
   }
 
   async componentDidMount() {
     console.warn('Looking for Ledger Nano');
     await this.checkAddressLocalStorage();
-    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate(prevProps) {
@@ -218,7 +215,7 @@ class ActionBarContainer extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(this.state.txHash);
+      const status = await getTxs(this.state.txHash);
       console.log('status', status);
       const data = await status;
       if (data.logs) {

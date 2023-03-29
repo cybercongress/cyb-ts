@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
   JsonTransaction,
@@ -15,7 +14,7 @@ import {
   Dots,
 } from '../../components';
 
-import { getPin } from '../../utils/search/utils';
+import { getPin, getTxs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 
 import { AppContext } from '../../context';
@@ -83,7 +82,7 @@ class ActionBarTweet extends Component {
       placeholder: '',
     };
     this.timeOut = null;
-    this.ledger = null;
+
     this.inputOpenFileRef = React.createRef();
   }
 
@@ -91,7 +90,6 @@ class ActionBarTweet extends Component {
     await this.checkAddressLocalStorage();
     this.getNameBtn();
     console.warn('Looking for Ledger Nano');
-    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate(prevProps) {
@@ -255,7 +253,7 @@ class ActionBarTweet extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(this.state.txHash);
+      const status = await getTxs(this.state.txHash);
       console.log('status', status);
       const data = await status;
       if (data.logs) {

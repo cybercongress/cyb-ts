@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { Component } from 'react';
 import { coins } from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -15,6 +14,7 @@ import {
 import { AppContext } from '../../context';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { getTxs } from '../../utils/search/utils';
 
 const STAGE_TYPE_GOV = 9;
 
@@ -48,12 +48,7 @@ class ActionBar extends Component {
       heightUpgrade: '',
     };
     this.timeOut = null;
-    this.ledger = null;
     this.transport = null;
-  }
-
-  componentDidMount() {
-    this.ledger = new CosmosDelegateTool();
   }
 
   generateTxKeplr = async () => {
@@ -136,7 +131,7 @@ class ActionBar extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(this.state.txHash);
+      const status = await getTxs(this.state.txHash);
       const data = await status;
       if (data.logs) {
         this.setState({

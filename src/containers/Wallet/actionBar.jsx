@@ -7,7 +7,6 @@ import {
 import ActionBarTweet from './actionBarTweet';
 import ActionBarKeplr from './actionBarKeplr';
 import ActionBarUser from './actionBarUser';
-import ActionBarLedger from './actionBarLedger';
 import ActionBarConnect from './actionBarConnect';
 import waitForWeb3 from '../../components/web3/waitForWeb3';
 import { NETWORKSIDS } from '../../utils/config';
@@ -309,18 +308,6 @@ function ActionBar({
         updateBalance={updateAddress}
       />
     );
-  }
-
-  if (stage === STAGE_SEND_LEDGER) {
-    return (
-      <ActionBarLedger
-        selectAccount={selectAccount}
-        updateAddress={updateFuncActionBar}
-        defaultAccounts={defaultAccounts}
-        updateBalance={updateAddress}
-      />
-    );
-    // return <div />;u
   }
 
   if (stage === STAGE_SEND_READ_ONLY) {

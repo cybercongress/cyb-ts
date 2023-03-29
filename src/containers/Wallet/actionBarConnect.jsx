@@ -1,13 +1,10 @@
 /* eslint-disable */
 import { useEffect, useState } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
   ConnectLadger,
   Dots,
   ConnectAddress,
-  SetHdpath,
   TransactionError,
 } from '../../components';
 import {
@@ -34,8 +31,6 @@ const checkAddress = (obj, network, address) =>
     }
   });
 
-let ledger = null;
-
 function ActionBarConnect({
   addAddress,
   updateAddress,
@@ -61,31 +56,6 @@ function ActionBarConnect({
       cleatState();
     }
   }, [stage, addAddress]);
-
-  useEffect(() => {
-    const feachData = async () => {
-      if (
-        stage === STAGE_HDPATH &&
-        parseInt(hdpath[2], 10) >= 0 &&
-        parseInt(hdpath[4], 10) >= 0
-      ) {
-        setHdPathError(false);
-        setAddressLedger(null);
-        let retrieveAddress = null;
-        if (selectNetwork === 'cyber') {
-          retrieveAddress = await ledger.retrieveAddressCyber(hdpath);
-        }
-        if (selectNetwork === 'cosmos') {
-          retrieveAddress = await ledger.retrieveAddress(hdpath);
-        }
-        setAddressLedger(retrieveAddress);
-      } else {
-        setAddressLedger(null);
-        setHdPathError(true);
-      }
-    };
-    feachData();
-  }, [hdpath, stage]);
 
   useEffect(() => {
     if (selectAccount && selectAccount !== null) {
@@ -126,9 +96,6 @@ function ActionBarConnect({
 
   const connctAddress = () => {
     switch (selectMethod) {
-      case 'ledger':
-        onClickAddAddressLedger();
-        break;
 
       case 'keplr':
         connectKeplr();
@@ -144,119 +111,9 @@ function ActionBarConnect({
     }
   };
 
-  const getLedgerAddress = async () => {
-    const transport = await TransportWebUSB.create(120 * 1000);
-    ledger = new CosmosDelegateTool(transport);
-
-    const connect = await ledger.connect();
-    if (connect.return_code === LEDGER_OK) {
-      let retrieveAddress = null;
-      if (selectNetwork === 'cyber') {
-        retrieveAddress = await ledger.retrieveAddressCyber(hdpath);
-      } else {
-        retrieveAddress = await ledger.retrieveAddress(hdpath);
-      }
-      setAddressLedger(retrieveAddress);
-      setConnectLedger(true);
-      setStage(STAGE_HDPATH);
-    } else {
-      setConnectLedger(false);
-    }
-  };
-
-  const addAddressLedger = async () => {
-    setStage(STAGE_ADD_ADDRESS_OK);
-    const accounts = {};
-    let key = 'Account 1';
-    let dataPocketAccount = null;
-    let pocketAccount = {};
-    let valueObj = {};
-    let count = 1;
-
-    const localStorageStory = await localStorage.getItem('pocketAccount');
-    const localStoragePocket = await localStorage.getItem('pocket');
-
-    if (selectAccount === null) {
-      const localStorageCount = await localStorage.getItem('count');
-      if (localStorageCount !== null) {
-        const dataCount = JSON.parse(localStorageCount);
-        count = parseFloat(dataCount);
-        key = `Account ${count}`;
-      }
-      localStorage.setItem('count', JSON.stringify(count + 1));
-    }
-    if (localStorageStory !== null) {
-      dataPocketAccount = JSON.parse(localStorageStory);
-      valueObj = Object.values(dataPocketAccount);
-      if (selectAccount !== null) {
-        key = selectAccount.key;
-      }
-    }
-    if (selectNetwork === 'cyber' || addCyberAddress) {
-      const addressLedgerCyber = await ledger.retrieveAddressCyber(hdpath);
-      if (
-        selectAccount !== null ||
-        !checkAddress(valueObj, 'cyber', addressLedgerCyber.bech32)
-      ) {
-        accounts.cyber = { ...addressLedgerCyber, keys: 'ledger' };
-      }
-    }
-    if (selectNetwork === 'cosmos') {
-      const addressLedgerCosmos = await ledger.retrieveAddress(hdpath);
-      if (
-        selectAccount !== null ||
-        !checkAddress(valueObj, 'cosmos', addressLedgerCosmos.bech32)
-      ) {
-        accounts.cosmos = { ...addressLedgerCosmos, keys: 'ledger' };
-      }
-    }
-    setStage(STAGE_ADD_ADDRESS_OK);
-    if (selectAccount === null) {
-      if (localStorageStory !== null) {
-        if (Object.keys(accounts).length > 0) {
-          pocketAccount = { [key]: accounts, ...dataPocketAccount };
-        }
-      } else {
-        pocketAccount = { [key]: accounts };
-      }
-      if (Object.keys(pocketAccount).length > 0) {
-        localStorage.setItem('pocketAccount', JSON.stringify(pocketAccount));
-      }
-    } else {
-      dataPocketAccount[selectAccount.key][selectNetwork] =
-        accounts[selectNetwork];
-      if (Object.keys(dataPocketAccount).length > 0) {
-        localStorage.setItem(
-          'pocketAccount',
-          JSON.stringify(dataPocketAccount)
-        );
-      }
-      if (localStoragePocket !== null) {
-        const localStoragePocketData = JSON.parse(localStoragePocket);
-        const keyPocket = Object.keys(localStoragePocketData)[0];
-        localStoragePocketData[keyPocket][selectNetwork] =
-          accounts[selectNetwork];
-        if (keyPocket === selectAccount.key) {
-          localStorage.setItem(
-            'pocket',
-            JSON.stringify(localStoragePocketData)
-          );
-        }
-      }
-    }
-    cleatState();
-    if (updateAddress) {
-      updateAddress();
-    }
-    if (updateFuncActionBar) {
-      updateFuncActionBar();
-    }
-  };
-
   const cleatState = () => {
     setStage(STAGE_INIT);
     setValueInputAddres('');
-    ledger = null;
     setHDpath(HDPATH);
     setConnectLedger(null);
     setSelectMethod('');
@@ -265,11 +122,6 @@ function ActionBarConnect({
     setAddressLedger(null);
     setAddCyberAddress(false);
     setValidAddressAddedUser(true);
-  };
-
-  const onClickAddAddressLedger = async () => {
-    setStage(STAGE_ADD_ADDRESS_LEDGER);
-    getLedgerAddress();
   };
 
   const onClickAddAddressUser = () => {
@@ -643,19 +495,6 @@ function ActionBarConnect({
         web3={web3}
         selectAccount={selectAccount}
         keplr={keplr}
-      />
-    );
-  }
-
-  if (stage === STAGE_HDPATH) {
-    return (
-      <SetHdpath
-        hdpath={hdpath}
-        onChangeAccount={onChangeAccount}
-        onChangeIndex={onChangeIndex}
-        addressLedger={addressLedger}
-        hdPathError={hdPathError}
-        addAddressLedger={addAddressLedger}
       />
     );
   }
