@@ -33,6 +33,7 @@ export const getPin = async (node, content) => {
     console.warn('content', content, 'cid', cid);
     return cid.path;
   }
+  return undefined;
 };
 
 export const getIpfsHash = (string) =>

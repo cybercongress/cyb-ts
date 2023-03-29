@@ -142,4 +142,5 @@ const i18n = {
   },
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export { i18n };

@@ -1,4 +1,3 @@
-
 import Signatures from './signatures/Signatures';
 import ScrollableTabs from './scrollableTabs/ScrollableTabs';
 import ParseAddressesImg from './imgNetwork';

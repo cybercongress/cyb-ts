@@ -47,6 +47,7 @@ import ContainerGradient, {
   ContainerGradientText,
 } from './containerGradient/ContainerGradient';
 
+// eslint-disable-next-line import/no-unused-modules
 export {
   GovernanceChangeParam,
   Account,
