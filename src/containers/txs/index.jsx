@@ -1,14 +1,10 @@
-import React, { useEffect, useStatea } from 'react';
 import gql from 'graphql-tag';
 import { v4 as uuidv4 } from 'uuid';
 import { useSubscription } from '@apollo/react-hooks';
-import { Pane, Text, TableEv as Table, Icon } from '@cybercongress/gravity';
+import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { getGraphQLQuery } from '../../utils/search/utils';
-import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
-import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
-
-const dateFormat = require('dateformat');
+import { trimString, formatNumber } from '../../utils/utils';
+import { MsgType, TextTable } from '../../components';
 
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
@@ -24,7 +20,7 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-const Txs = () => {
+function Txs() {
   const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
 
   if (error) {
@@ -126,6 +122,6 @@ const Txs = () => {
       </Table>
     </main>
   );
-};
+}
 
 export default Txs;

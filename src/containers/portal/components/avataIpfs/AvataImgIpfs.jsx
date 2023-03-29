@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { CYBER } from '../../../../utils/config';
+import { checkIpfsState } from '../../../../utils/utils-ipfs';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';
 
@@ -22,10 +24,21 @@ function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
 
   useEffect(() => {
     if (data !== undefined && data !== null) {
-      setAvatar(data);
+      if (data === 'availableDownload') {
+        const { userGateway } = checkIpfsState();
+        let urlGateway = CYBER.CYBER_GATEWAY;
+
+        if (userGateway !== null) {
+          urlGateway = userGateway;
+        }
+        setAvatar(`${urlGateway}/ipfs/${cidAvatar}`);
+      } else {
+        setAvatar(data);
+      }
     } else {
       setAvatar(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   if (avatar !== null) {

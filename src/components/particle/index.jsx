@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { useGetCreator } from './hooks';
-import { Titile, Content } from './components';
-import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
-import { getContentByCid } from '../../utils/utils-ipfs';
+import { Titile } from './components';
 
 function Particle({ cid, node }) {
   const { creator } = useGetCreator(cid);
   // const [content, setContent] = useState('');
   // const [textPreview, setTextPreview] = useState(cid);
   // const [typeContent, setTypeContent] = useState('');
-  const [status, setStatus] = useState('understandingState');
+  const [status] = useState('understandingState');
   // const [link, setLink] = useState(`/ipfs/${cid}`);
 
   // useEffect(() => {

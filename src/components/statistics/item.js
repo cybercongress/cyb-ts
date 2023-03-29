@@ -1,12 +1,11 @@
-import React from 'react';
 import { Pane, Icon } from '@cybercongress/gravity';
 import Tooltip from '../tooltip/tooltip';
-import { ContainerGradientText } from '../../containers/portal/components';
 import styles from './styles.scss';
+import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 
 // const iconHelp = require('../../image/_ionicons_svg_ios-help-circle-outline.svg');
 
-export function ContainerCard({ children, col, styles }) {
+export function ContainerCard({ children, col }) {
   return (
     <div
       style={{ gridTemplateColumns: `repeat(${col}, 1fr)`, ...styles }}

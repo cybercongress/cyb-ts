@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Button,
@@ -16,7 +16,6 @@ import {
 import { AppContext } from '../../context';
 import { CYBER, LEDGER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { getTxs } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
 
 const {
   STAGE_INIT,
@@ -26,7 +25,6 @@ const {
   STAGE_CONFIRMED,
 } = LEDGER;
 
-const VESTING_TIME_HOURS = 3601;
 const BASE_VESTING_TIME = 86401;
 
 function ActionBar({
@@ -69,6 +67,7 @@ function ActionBar({
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const investmint = async () => {

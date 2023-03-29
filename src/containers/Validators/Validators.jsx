@@ -1,16 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import {
-  TableHeroes,
-  TableItem,
-  TextBoard,
-  TabBtnList,
-  InfoBalance,
-} from './components';
+import { TableHeroes, TableItem, InfoBalance } from './components';
 import { AppContext } from '../../context';
 import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
@@ -26,7 +20,7 @@ function Validators({ mobile, defaultAccount }) {
     addressActive,
     updatePage
   );
-  const { validators, countHeroes, loadingValidators } = getHeroes();
+  const { validators, loadingValidators } = getHeroes();
   const [loadingSelf, setLoadingSelf] = useState(true);
   const [loadingBond, setLoadingBond] = useState(true);
   const [bondedTokens, setBondedTokens] = useState(0);
@@ -63,6 +57,7 @@ function Validators({ mobile, defaultAccount }) {
     } else {
       setSelected('active');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {
@@ -82,9 +77,8 @@ function Validators({ mobile, defaultAccount }) {
       const feachDelegatorDelegations = async () => {
         let delegationsDataTemp = [];
         if (addressActive !== null && jsCyber !== null) {
-          const responseDelegatorDelegations = await jsCyber.delegatorDelegations(
-            addressActive.bech32
-          );
+          const responseDelegatorDelegations =
+            await jsCyber.delegatorDelegations(addressActive.bech32);
           delegationsDataTemp =
             responseDelegatorDelegations.delegationResponses;
         }

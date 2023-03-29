@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback, useContext } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { AppContext } from '../../context';
 import { getAvatarIpfs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
@@ -107,6 +106,7 @@ function ImgDenom({
     } else {
       setImgDenom(defaultImg);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [node, coinDenom, infoDenom]);
 
   const getImgFromIpfsByCid = useCallback(

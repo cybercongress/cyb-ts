@@ -1,39 +1,9 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import axios from 'axios';
-import { connect } from 'react-redux';
-import ReactMarkdown from 'react-markdown';
-
-import { coin, coins } from '@cosmjs/launchpad';
-import {
-  SigningCyberClient,
-  SigningCyberClientOptions,
-} from '@cybercongress/cyber-js';
-import { Tablist, Pane } from '@cybercongress/gravity';
-import { NumericFormat } from 'react-number-format';
-import { AppContext } from '../../context';
-import { CYBER } from '../../utils/config';
-import {
-  trimString,
-  formatNumber,
-  reduceBalances,
-  convertAmount,
-} from '../../utils/utils';
-import { Btn } from './ui';
-import Convert from './convert';
-import { getPinsCid } from '../../utils/search/utils';
-import Denom from '../../components/denom';
-
-import DenomTest from './testDenom';
-import AddTest from './testAdd';
-import { Signatures, MainContainer } from '../portal/components';
-import Carousel from '../portal/gift/carousel1/Carousel';
-import ImgDenom from '../../components/valueImg/imgDenom';
-import CoinDenom from '../../components/valueImg/textDenom';
-import { Input } from '../teleport/components';
-import { DenomArr, Particle } from '../../components';
-import { useWebworker } from '../nebula/useWebworker';
+/* eslint-disable */
 import BigNumber from 'bignumber.js';
-import { Account } from '../../components/account/account';
+import { reduceBalances, convertAmount } from '../../utils/utils';
+
+import { MainContainer } from '../portal/components';
+import { Particle } from '../../components';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';

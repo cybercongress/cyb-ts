@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
 import Iframe from 'react-iframe';
-import { Dots, Loading } from '../../components';
+import { Loading } from '../../components';
 
 // const linkMovie =
 //   'http://127.0.0.1:8080/ipfs/QmY37mCc1FuSMzpKaHoz5aDtJsz4gnJWG13Vrih8ifxXjS/';
@@ -28,13 +27,14 @@ function Movie() {
     return () => {
       window.removeEventListener('message', handlerEventListener);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const iframeTag = document.querySelector('iframe');
 
     if (iframeTag) {
-      iframeTag.addEventListener('load', function (e) {
+      iframeTag.addEventListener('load', () => {
         setLoading(false);
       });
     } else {

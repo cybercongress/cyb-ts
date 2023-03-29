@@ -10,7 +10,7 @@ import {
   getDelegators,
 } from '../../utils/search/utils';
 import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy, NotFound } from '../../components';
+import { Loading, Copy } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
@@ -18,32 +18,35 @@ import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
 
-const TabBtn = ({ text, isSelected, onSelect, to }) => (
-  <Link to={to}>
-    <Tab
-      key={text}
-      isSelected={isSelected}
-      onSelect={onSelect}
-      paddingX={20}
-      paddingY={20}
-      marginX={3}
-      borderRadius={4}
-      color="#36d6ae"
-      boxShadow="0px 0px 5px #36d6ae"
-      fontSize="16px"
-      whiteSpace="nowrap"
-      width="100%"
-    >
-      {text}
-    </Tab>
-  </Link>
-);
+function TabBtn({ text, isSelected, onSelect, to }) {
+  return (
+    <Link to={to}>
+      <Tab
+        key={text}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        paddingX={20}
+        paddingY={20}
+        marginX={3}
+        borderRadius={4}
+        color="#36d6ae"
+        boxShadow="0px 0px 5px #36d6ae"
+        fontSize="16px"
+        whiteSpace="nowrap"
+        width="100%"
+      >
+        {text}
+      </Tab>
+    </Link>
+  );
+}
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       selected: 'main',
       validatorInfo: [],
+      // eslint-disable-next-line react/no-unused-state
       data: {},
       delegated: {},
       loader: true,
@@ -128,11 +131,13 @@ class ValidatorsDetails extends React.PureComponent {
     this.getDelegators();
   };
 
+  // eslint-disable-next-line class-methods-use-this
   getSupply = async () => {
     const bondedTokens = await stakingPool();
     return bondedTokens.bonded_tokens;
   };
 
+  // eslint-disable-next-line class-methods-use-this
   getDelegated = async (delegatorShares, delegateAddress, operatorAddress) => {
     const data = {
       self: 0,
@@ -244,7 +249,6 @@ class ValidatorsDetails extends React.PureComponent {
       fans,
       error,
       selected,
-      data,
       addressPocket,
       unStake,
     } = this.state;

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   TransitionGroup as ReactCSSTransitionGroup,
   CSSTransition,
@@ -7,8 +7,19 @@ import styles from './ScrollableTabs.scss';
 
 const cx = require('classnames');
 
+function Item({ level, id, ...props }) {
+  const className = `level${level}`;
+  return (
+    <div {...props} className={cx(styles.item, styles[className])}>
+      <div className={cx(styles.itemLamp, styles[`itemLamp${className}`])} />
+      {id}
+    </div>
+  );
+}
+
 function ScrollableTabs({ items, active, setStep }) {
   const [direction, setDirection] = useState('');
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [activeItem, setActiveItem] = useState(active);
 
   // useEffect(() => {
@@ -78,29 +89,7 @@ function ScrollableTabs({ items, active, setStep }) {
 
   return (
     <div className={cx(styles.noselect, styles.carousel)}>
-      <ReactCSSTransitionGroup
-      // transitionName={direction}
-      // classNames={{
-      //   enter: styles[`${direction}-enter`],
-      //   enterActive: styles[`${direction}-enter-active`],
-      //   leave: styles[`${direction}-leave`],
-      //   leaveActive: styles[`${direction}-leave-active`],
-      //   appear: styles[`${direction}-appear`],
-      //   appearActive: styles[`${direction}-appear-active`],
-      // }}
-      >
-        {generateItems()}
-      </ReactCSSTransitionGroup>
-    </div>
-  );
-}
-
-function Item({ level, id, ...props }) {
-  const className = `level${level}`;
-  return (
-    <div {...props} className={cx(styles.item, styles[className])}>
-      <div className={cx(styles.itemLamp, styles[`itemLamp${className}`])} />
-      {id}
+      <ReactCSSTransitionGroup>{generateItems()}</ReactCSSTransitionGroup>
     </div>
   );
 }

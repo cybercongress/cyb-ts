@@ -1,4 +1,3 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ButtonIcon } from '../ledger/stageActionBar';
@@ -24,11 +23,13 @@ function ActionBarContainer({ children }) {
   );
 }
 
-const ActionBarContentText = ({ children, ...props }) => (
-  <div className={styles.ActionBarContentText} {...props}>
-    {children}
-  </div>
-);
+function ActionBarContentText({ children, ...props }) {
+  return (
+    <div className={styles.ActionBarContentText} {...props}>
+      {children}
+    </div>
+  );
+}
 
 const getStargazersGitHub = async () => {
   try {
@@ -43,7 +44,7 @@ const getStargazersGitHub = async () => {
   }
 };
 
-const StargazersCountGH = () => {
+function StargazersCountGH() {
   const { data } = useQuery({
     queryKey: ['stargazers_count'],
     queryFn: async () => {
@@ -62,7 +63,7 @@ const StargazersCountGH = () => {
       {data !== undefined ? formatNumber(data.stargazers_count) : '...'}
     </div>
   );
-};
+}
 
 export function GitHub() {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
@@ -201,7 +202,7 @@ export function GitHub() {
   );
 }
 
-export const Telegram = () => {
+export function Telegram() {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   if (!mediaQuery) {
@@ -309,7 +310,7 @@ export const Telegram = () => {
       </Tooltip>
     </div>
   );
-};
+}
 
 function ActionBar({
   children,

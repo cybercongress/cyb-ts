@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
-import { getIpfsHash } from '../../utils/search/utils';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import {
   initIpfs,
@@ -66,9 +65,6 @@ function App({
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
-  const [keywordHash, setKeywordHash] = useState(null);
-
-  // console.log(accounts);
 
   useEffect(() => {
     const updateIpfsStage = async () => {
@@ -81,22 +77,26 @@ function App({
       }
     };
     updateIpfsStage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ipfs, ipfsInitError, isIpfsReady, isIpfsPending]);
 
   useEffect(() => {
     setTypeDeviceProps(isMobile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {
       updatetMarketData(marketData);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marketData]);
 
   useEffect(() => {
     if (Object.keys(dataTotal).length > 0) {
       updateDataTotalSupply(dataTotal);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal]);
 
   useEffect(() => {
@@ -104,22 +104,8 @@ function App({
     if (pathname.indexOf(query) === -1) {
       setQueryProps('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
-
-  useEffect(() => {
-    const { pathname } = location;
-    if (pathname.match(/search/gm) && pathname.match(/search/gm).length > 0) {
-      const querySubstr = pathname.substr(8, pathname.length);
-      getKeywordHash(querySubstr);
-    } else {
-      setKeywordHash(null);
-    }
-  }, [location]);
-
-  const getKeywordHash = async (text) => {
-    const hash = await getIpfsHash(encodeSlash(text).toLowerCase());
-    setKeywordHash(hash);
-  };
 
   useEffect(() => {
     const getPrice = async () => {
@@ -179,6 +165,7 @@ function App({
       }
     };
     checkAddressLocalStorage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -218,6 +205,7 @@ function App({
       }
     };
     getBandwidth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount, location.pathname, priceLink, jsCyber]);
 
   useEffect(() => {

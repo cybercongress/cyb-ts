@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
@@ -17,7 +17,6 @@ import {
   MainContainer,
   MoonAnimation,
   Stars,
-  ContainerGradientText,
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
@@ -30,6 +29,7 @@ import Info from './Info';
 
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
+import { ContainerGradientText } from '../../../components';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -79,8 +79,6 @@ function InfoBaner({ title, text, status }) {
   );
 }
 
-const NS_TO_MS = 1 * 10 ** -6;
-
 const initStateBonus = {
   current: 0,
 };
@@ -93,13 +91,10 @@ function Release({ defaultAccount, mobile }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { citizenship, loading: loadingCitizenship } =
     useGetActivePassport(defaultAccount);
-  const {
-    totalGift,
-    totalGiftClaimed,
-    giftData,
-    totalGiftAmount,
-    loadingGift,
-  } = useCheckGift(citizenship, addressActive);
+  const { totalGift, totalGiftClaimed, giftData, loadingGift } = useCheckGift(
+    citizenship,
+    addressActive
+  );
   const {
     totalRelease,
     totalReadyRelease,
@@ -382,25 +377,6 @@ function Release({ defaultAccount, mobile }) {
     return '';
   }, [citizensTargetClaim, citizensClaim]);
 
-  const useUnClaimedGiftAmount = useMemo(() => {
-    if (totalGiftClaimed !== null && totalGiftAmount !== null) {
-      if (totalGiftAmount.claim === totalGiftClaimed.claim) {
-        return false;
-      }
-
-      if (currentBonus?.current) {
-        const unclaimedGift = totalGiftAmount.amount - totalGiftClaimed.amount;
-        const unclaimedGiftByBonus = Math.floor(
-          unclaimedGift * currentBonus.current
-        );
-        return formatNumber(parseFloat(unclaimedGiftByBonus));
-      }
-
-      return false;
-    }
-    return false;
-  }, [totalGiftAmount, totalGiftClaimed, currentBonus]);
-
   const useUnClaimedGiftData = useMemo(() => {
     if (
       giftData !== null &&
@@ -428,10 +404,6 @@ function Release({ defaultAccount, mobile }) {
   let content;
 
   // console.log('currentRelease', currentRelease);
-
-  const validNextUnfreeze =
-    (timeNext === null && readyRelease !== null) ||
-    (timeNext !== null && readyRelease === null);
 
   const validstateInfoBEFORE =
     stateInfo === STATE_INIT_NULL_BEFORE ||

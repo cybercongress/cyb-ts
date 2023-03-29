@@ -1,20 +1,15 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  ContainerGradient,
-  Signatures,
-  ParseAddressesImg,
-} from '../components';
+import { Signatures, ParseAddressesImg } from '../components';
 import { AppContext } from '../../../context';
-import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
-import { activePassport } from '../utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import ContainerAvatar from '../components/avataIpfs/containerAvatar';
 import { formatNumber, trimString } from '../../../utils/utils';
 import { PATTERN_CYBER } from '../../../utils/config';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
+import { ContainerGradient } from '../../../components';
 
 function PasportCitizenship({
   citizenship,

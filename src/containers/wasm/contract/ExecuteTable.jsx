@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinkTx, LinkCreator } from '../ui/ui';
 import {
@@ -18,10 +18,10 @@ function ExecuteTable({ executions }) {
     }, 250);
   }, [itemsToShow, setItemsToShow]);
 
-  const displayedPalettes = useMemo(() => executions.slice(0, itemsToShow), [
-    itemsToShow,
-    executions,
-  ]);
+  const displayedPalettes = useMemo(
+    () => executions.slice(0, itemsToShow),
+    [itemsToShow, executions]
+  );
 
   const itemTable = displayedPalettes.map((item) => {
     return (

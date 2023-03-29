@@ -1,4 +1,4 @@
-export const initialState = {
+const initialState = {
   block: 0,
 };
 

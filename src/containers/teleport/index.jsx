@@ -1,38 +1,24 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from 'react';
+import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useLocation, useHistory, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import useSWR from 'swr';
 import BigNumber from 'bignumber.js';
 import queryString from 'query-string';
 import { AppContext } from '../../context';
-import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { CYBER } from '../../utils/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import {
   reduceBalances,
-  formatNumber,
-  roundNumber,
-  exponentialToDecimal,
   getDisplayAmountReverce,
   findDenomInTokenList,
   isNative,
 } from '../../utils/utils';
-import { Dots, ValueImg, ButtonIcon } from '../../components';
 import {
   calculateCounterPairAmount,
-  calculateSlippage,
   sortReserveCoinDenoms,
   getMyTokenBalance,
-  reduceAmounToken,
   getPoolToken,
   getCoinDecimals,
-  networkList,
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
@@ -41,10 +27,8 @@ import getBalances from './hooks/getBalances';
 import Swap from './swap';
 import Withdraw from './withdraw';
 import PoolData from './poolData';
-import coinDecimalsConfig from '../../utils/configToken';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
 import networks from '../../utils/networkListIbc';
-import Carousel from '../portal/gift/carousel1/Carousel';
 import { MainContainer } from '../portal/components';
 import useGetSelectTab from './hooks/useGetSelectTab';
 // import TracerTx from './tx/TracerTx';
@@ -65,31 +49,31 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-const replaceFunc = (number) => {
-  return number.replace(/ /g, '');
-};
+// const replaceFunc = (number) => {
+//   return number.replace(/ /g, '');
+// };
 
-const numberString = (num) =>
-  String(num).replace(/^\d+/, (number) =>
-    [...number]
-      .map(
-        (digit, index, digits) =>
-          (!index || (digits.length - index) % 3 ? '' : ' ') + digit
-      )
-      .join('')
-  );
+// const numberString = (num) =>
+//   String(num).replace(/^\d+/, (number) =>
+//     [...number]
+//       .map(
+//         (digit, index, digits) =>
+//           (!index || (digits.length - index) % 3 ? '' : ' ') + digit
+//       )
+//       .join('')
+//   );
 
-const itemsStep = [
-  {
-    title: 'add liquidity',
-  },
-  {
-    title: 'create pool',
-  },
-  {
-    title: 'sub liquidity',
-  },
-];
+// const itemsStep = [
+//   {
+//     title: 'add liquidity',
+//   },
+//   {
+//     title: 'create pool',
+//   },
+//   {
+//     title: 'sub liquidity',
+//   },
+// ];
 
 const checkInactiveFunc = (token, ibcDataDenom) => {
   if (token.includes('ibc')) {
@@ -104,9 +88,9 @@ function getMyTokenBalanceNumber(denom, indexer) {
   return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
 }
 
-function addPunctuationToNumbers(number) {
-  return number.replace(/(\d{3})(?=\d)/g, '$1 ');
-}
+// function addPunctuationToNumbers(number) {
+//   return number.replace(/(\d{3})(?=\d)/g, '$1 ');
+// }
 
 function Teleport({ defaultAccount }) {
   const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
@@ -188,6 +172,8 @@ function Teleport({ defaultAccount }) {
       // This causes an infinite loop with other effects that use the same state
       // because the state of mobx is updated but the state of react will be updated in the next render.
       // To solve this problem, we ignore the state processing of react and change the variable itself.
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       query = {
         from: tokenA,
         to: tokenB,
@@ -431,6 +417,7 @@ function Teleport({ defaultAccount }) {
       }
     }
     setIsExceeded(exceeded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountBalances,
     tokenA,

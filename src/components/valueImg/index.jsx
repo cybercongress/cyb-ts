@@ -1,7 +1,5 @@
 import React from 'react';
 import { trimString } from '../../utils/utils';
-import Tooltip from '../tooltip/tooltip';
-import { traseDenom } from './imgDenom';
 
 const voltImg = require('../../image/lightning2.png');
 const amperImg = require('../../image/light.png');
@@ -19,7 +17,7 @@ const osmosis = require('../../image/osmosis.svg');
 const pussy = require('../../image/large-purple-circle.png');
 const customNetwork = require('../../image/large-orange-circle.png');
 
-const ValueImg = ({
+function ValueImg({
   text,
   onlyImg,
   onlyText,
@@ -31,7 +29,7 @@ const ValueImg = ({
   size,
   type,
   ...props
-}) => {
+}) {
   let img = null;
   let textCurency = text;
 
@@ -59,11 +57,6 @@ const ValueImg = ({
     case 'boot':
       img = boot;
       textCurency = 'BOOT';
-      break;
-
-    case 'pussy':
-      img = pussy;
-      textCurency = 'PUSSY';
       break;
 
     case 'tocyb':
@@ -190,6 +183,6 @@ const ValueImg = ({
       )}
     </div>
   );
-};
+}
 
 export default ValueImg;

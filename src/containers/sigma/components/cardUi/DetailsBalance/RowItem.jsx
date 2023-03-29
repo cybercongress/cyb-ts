@@ -1,5 +1,3 @@
-import React from 'react';
-import { CYBER } from '../../../../../utils/config';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import styles from './styles.scss';
 

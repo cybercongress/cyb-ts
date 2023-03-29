@@ -57,6 +57,7 @@ import Sigma from './containers/sigma';
 import ipfsSettings from './containers/ipfsSettings';
 import { routes } from './routes';
 
+// eslint-disable-next-line import/no-unused-modules
 export const history = createBrowserHistory({});
 
 // backward compatibility

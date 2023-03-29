@@ -1,8 +1,5 @@
-import React from 'react';
 import { InfoCard } from '../components';
 import STEP_INFO from './utils';
-import { PATTERN_CYBER } from '../../../utils/config';
-import { trimString } from '../../../utils/utils';
 
 const {
   STATE_INIT,
@@ -29,12 +26,7 @@ const {
 function Info({ stepCurrent, selectedAddress, amountClaims }) {
   try {
     let content;
-    let address = '';
-    if (selectedAddress && !selectedAddress.match(PATTERN_CYBER)) {
-      address = trimString(selectedAddress, 10, 3);
-    } else {
-      address = '';
-    }
+
     switch (stepCurrent) {
       case STATE_INIT_NULL:
         content = (

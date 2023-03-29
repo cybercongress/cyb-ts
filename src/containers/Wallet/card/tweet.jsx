@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { PocketCard } from '../components';
-import { Copy, Dots, LinkWindow } from '../../../components';
+import { Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import {
   getAvatar,
@@ -18,9 +18,7 @@ import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 
-const isSvg = require('is-svg');
 const dateFormat = require('dateformat');
-const img = require('../../../image/logo-cyb-v3.svg');
 
 const STAGE_ADD_AVATAR = 0;
 const STAGE_ADD_FIRST_FOLLOWER = 1;
@@ -102,9 +100,8 @@ function TweetCard({
   node,
   ...props
 }) {
-  const { count: countNewsToday, loading: loadingNewsToday } = useNewsToday(
-    account
-  );
+  const { count: countNewsToday, loading: loadingNewsToday } =
+    useNewsToday(account);
   const [stage, setStage] = useState(STAGE_ADD_AVATAR);
   const [loading, setLoading] = useState(true);
   const [avatar, setAvatar] = useState({
@@ -126,6 +123,7 @@ function TweetCard({
 
   useEffect(() => {
     feachData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, refresh]);
 
   const feachData = async () => {
@@ -154,6 +152,7 @@ function TweetCard({
       }
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar, myTweet, follows]);
 
   const getAvatarAccounts = async (address) => {
@@ -214,8 +213,8 @@ function TweetCard({
       <PocketCard display="flex" alignItems="flex-start" {...props}>
         <Text fontSize="16px" color="#fff">
           You can start{' '}
-          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link> right
-          now. Adding an avatar will help others recognize your content.
+          <Link to={`/network/bostrom/contract/${account}`}>tweeting</Link>{' '}
+          right now. Adding an avatar will help others recognize your content.
         </Text>
       </PocketCard>
     );

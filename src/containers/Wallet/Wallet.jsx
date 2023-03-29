@@ -1,36 +1,21 @@
-/* eslint-disable no-nested-ternary */
+/* eslint-disable */
 import React from 'react';
 import { connect } from 'react-redux';
-import { Pane, Text, Icon } from '@cybercongress/gravity';
-import Web3Utils from 'web3-utils';
-import { Link } from 'react-router-dom';
+import { Text } from '@cybercongress/gravity';
 
-import { check } from 'prettier';
-import { Loading, ConnectLadger, Copy, LinkWindow } from '../../components';
-import NotFound from '../application/notFound';
-import ActionBarContainer from './actionBarContainer';
+import { Loading, LinkWindow } from '../../components';
 import { setBandwidth } from '../../redux/actions/bandwidth';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
-import injectKeplr from './injectKeplr';
 import BanerHelp from '../help/banerHelp';
 
-import { LEDGER, COSMOS, PATTERN_CYBER } from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 import {
-  getBalance,
-  getTotalEUL,
   getImportLink,
   getAccountBandwidth,
   getGraphQLQuery,
 } from '../../utils/search/utils';
-import { formatCurrency } from '../../utils/utils';
 import { PocketCard } from './components';
-import {
-  PubkeyCard,
-  GolCard,
-  ImportLinkLedger,
-  GolBalance,
-  TweetCard,
-} from './card';
+import { PubkeyCard, ImportLinkLedger, TweetCard } from './card';
 import ActionBarConnect from './actionBarConnect';
 import ActionBar from './actionBar';
 import { AppContext } from '../../context';
@@ -38,16 +23,7 @@ import { InfoCard, MainContainer } from '../portal/components';
 
 import db from '../../db';
 
-const {
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
-  STAGE_INIT,
-  STAGE_LEDGER_INIT,
-  STAGE_READY,
-  STAGE_ERROR,
-  LEDGER_VERSION_REQ,
-} = LEDGER;
+const { STAGE_INIT } = LEDGER;
 
 const QueryAddress = (address) =>
   `
@@ -122,7 +98,7 @@ class Wallet extends React.Component {
   }
 
   async componentDidMount() {
-    const { accountKeplr, accounts, web3 } = this.props;
+    const { accountKeplr, accounts } = this.props;
 
     await this.setState({
       accountsETH: accounts,
@@ -157,6 +133,7 @@ class Wallet extends React.Component {
       const count = countCid + countFollowing;
       const { quota, usage } = estimation;
       this.setState({
+        // eslint-disable-next-line react/no-unused-state
         storageManager: {
           quota,
           usage,
@@ -266,6 +243,7 @@ class Wallet extends React.Component {
     }
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getLocalStorageLink = async () => {
     const { accounts } = this.state;
     const localStorageStoryLink = localStorage.getItem('linksImport');
@@ -327,6 +305,7 @@ class Wallet extends React.Component {
     }
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   cleatState = () => {
     this.setState({
       stage: STAGE_INIT,
@@ -445,6 +424,7 @@ class Wallet extends React.Component {
     });
   };
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   updateFuncPubkeyCard = (accounts, accountName = '') => {
     const { defaultAccountsKeys } = this.state;
     console.log('defaultAccountsKeys', defaultAccountsKeys);
@@ -479,15 +459,10 @@ class Wallet extends React.Component {
       loading,
       addAddress,
       stage,
-      returnCode,
-      ledgerVersion,
       accounts,
       link,
-      importLinkCli,
       selectedIndex,
-      linkSelected,
       selectCard,
-      balanceEthAccount,
       accountsETH,
       refreshTweet,
       accountKeplr,
@@ -495,13 +470,13 @@ class Wallet extends React.Component {
       updateCard,
       defaultAccounts,
       defaultAccountsKeys,
-      storageManager,
       hoverCard,
     } = this.state;
-    const { web3, contractToken, ipfsId } = this.props;
+    const { web3, contractToken } = this.props;
     const { keplr } = this.context;
     let countLink = 0;
     if (link !== null) {
+      // eslint-disable-next-line prefer-spread
       countLink = [].concat.apply([], link).length;
     }
     if (loading) {
@@ -607,7 +582,7 @@ class Wallet extends React.Component {
                 select={selectCard === 'tweet'}
                 onClick={(e) => this.onClickSelect(e, 'tweet')}
                 onMouseEnter={(e) => this.mouselogEnter(e, 'tweet')}
-                onMouseLeave={(e) => this.mouselogLeave()}
+                onMouseLeave={() => this.mouselogLeave()}
                 account={defaultAccounts.cyber.bech32}
                 id="tweet"
               />

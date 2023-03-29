@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../context';
 
-function getHeroes() {
+function useGetHeroes() {
   const { jsCyber } = useContext(AppContext);
   const [validators, setValidators] = useState([]);
   const [loadingValidators, setLoadingValidators] = useState(true);
@@ -16,7 +16,7 @@ function getHeroes() {
       let validatorsArr = [];
       if (jsCyber !== null) {
         const responseActive = await jsCyber.validators('BOND_STATUS_BONDED');
-        console.log(`responseActive`, responseActive)
+        console.log(`responseActive`, responseActive);
         if (
           responseActive.validators &&
           Object.keys(responseActive.validators).length > 0
@@ -73,4 +73,4 @@ function getHeroes() {
   return { validators, countHeroes, loadingValidators };
 }
 
-export default getHeroes;
+export default useGetHeroes;

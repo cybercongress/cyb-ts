@@ -1,56 +1,55 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { CardTemplate, StatusTooltip, FormatNumber } from '../../components';
+import { CardTemplate, FormatNumber } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import KeybaseCheck from './keybaseCheck';
 
 const dateFormat = require('dateformat');
 
-export const Row = ({ value, title, marginBottom }) => (
-  <Pane
-    key={`${value}-container`}
-    style={{ marginBottom: marginBottom || 0 }}
-    className="txs-contaiter-row"
-    display="flex"
-  >
-    <Text
-      key={`${title}-title`}
+function Row({ value, title, marginBottom }) {
+  return (
+    <Pane
+      key={`${value}-container`}
+      style={{ marginBottom: marginBottom || 0 }}
+      className="txs-contaiter-row"
       display="flex"
-      fontSize="16px"
-      textTransform="capitalize"
-      color="#fff"
-      whiteSpace="nowrap"
-      width="240px"
-      marginBottom="5px"
-      lineHeight="20px"
     >
-      {title} :
-    </Text>
-    <Text
-      key={`${value}-value`}
-      display="flex"
-      color="#fff"
-      fontSize="16px"
-      wordBreak="break-all"
-      lineHeight="20px"
-      marginBottom="5px"
-      flexDirection="column"
-      alignItems="flex-start"
-    >
-      {value}
-    </Text>
-  </Pane>
-);
+      <Text
+        key={`${title}-title`}
+        display="flex"
+        fontSize="16px"
+        textTransform="capitalize"
+        color="#fff"
+        whiteSpace="nowrap"
+        width="240px"
+        marginBottom="5px"
+        lineHeight="20px"
+      >
+        {title} :
+      </Text>
+      <Text
+        key={`${value}-value`}
+        display="flex"
+        color="#fff"
+        fontSize="16px"
+        wordBreak="break-all"
+        lineHeight="20px"
+        marginBottom="5px"
+        flexDirection="column"
+        alignItems="flex-start"
+      >
+        {value}
+      </Text>
+    </Pane>
+  );
+}
 
-const Delegated = ({ data, marginBottom }) => {
+function Delegated({ data, marginBottom }) {
   console.log('Delegated', data);
   const {
     self,
     selfPercent,
-    others,
-    othersPercent,
     total,
     jailed,
     unbondingTime,
@@ -138,6 +137,6 @@ const Delegated = ({ data, marginBottom }) => {
       </CardTemplate>
     </Pane>
   );
-};
+}
 
 export default Delegated;

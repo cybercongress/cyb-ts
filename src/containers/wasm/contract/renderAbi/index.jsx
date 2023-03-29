@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Tab, Tablist } from '@cybercongress/gravity';
 import RenderAbiQuery from './RenderAbiQuery';
 import RenderAbiExecute from './RenderAbiExecute';
@@ -7,23 +7,25 @@ import useParseJsonSchema from './useParseJsonSchema';
 // import testJson from '../query_msg.json';
 // import testJsonTx from '../cw20_execute_msg.json';
 
-const Btn = ({ onSelect, checkedSwitch, text, ...props }) => (
-  <Tab
-    isSelected={checkedSwitch}
-    onSelect={onSelect}
-    color="#36d6ae"
-    boxShadow="0px 0px 10px #36d6ae"
-    minWidth="100px"
-    marginX={0}
-    paddingX={10}
-    paddingY={10}
-    fontSize="18px"
-    height={42}
-    {...props}
-  >
-    {text}
-  </Tab>
-);
+function Btn({ onSelect, checkedSwitch, text, ...props }) {
+  return (
+    <Tab
+      isSelected={checkedSwitch}
+      onSelect={onSelect}
+      color="#36d6ae"
+      boxShadow="0px 0px 10px #36d6ae"
+      minWidth="100px"
+      marginX={0}
+      paddingX={10}
+      paddingY={10}
+      fontSize="18px"
+      height={42}
+      {...props}
+    >
+      {text}
+    </Tab>
+  );
+}
 
 function RenderAbi({ contractAddress, updateFnc }) {
   const [selected, setSelected] = useState('query');
@@ -36,7 +38,7 @@ function RenderAbi({ contractAddress, updateFnc }) {
 
   if (selected === 'query') {
     if (fileAbiQuery === null) {
-      content = <SelectFile useStateCallback={setFileAbiQuery} />;
+      content = <SelectFile stateCallback={setFileAbiQuery} />;
     } else {
       content = (
         <RenderAbiQuery
@@ -52,7 +54,7 @@ function RenderAbi({ contractAddress, updateFnc }) {
       content = (
         <SelectFile
           text="Upload execute schema"
-          useStateCallback={setFileAbiExecute}
+          stateCallback={setFileAbiExecute}
         />
       );
     } else {

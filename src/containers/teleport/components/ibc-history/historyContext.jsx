@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useContext, useState, useEffect } from 'react';
 import dbIbcHistory from './db';
 
@@ -13,7 +14,7 @@ const useHistoryContext = () => {
   return context;
 };
 
-const HistoryContextProvider = ({ children }) => {
+function HistoryContextProvider({ children }) {
   const [value, setValue] = useState(valueContext);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const HistoryContextProvider = ({ children }) => {
   }, []);
 
   const changeHistory = (history) => {
-    console.log('history', history)
+    console.log('history', history);
     // setValue((item) => ({ ...item, history: { ...item.history, history } }));
   };
 
@@ -35,6 +36,6 @@ const HistoryContextProvider = ({ children }) => {
       {children}
     </HistoryContext.Provider>
   );
-};
+}
 
 export default HistoryContextProvider;

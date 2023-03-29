@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   Pane,
   ActionBar as ActionBarGravity,
@@ -7,9 +6,7 @@ import {
 } from '@cybercongress/gravity';
 import ActionBarTweet from './actionBarTweet';
 import ActionBarKeplr from './actionBarKeplr';
-import ActionBarWeb3 from './actionBarWeb3';
 import ActionBarUser from './actionBarUser';
-import ActionBarLedger from './actionBarLedger';
 import ActionBarConnect from './actionBarConnect';
 import waitForWeb3 from '../../components/web3/waitForWeb3';
 import { NETWORKSIDS } from '../../utils/config';
@@ -24,21 +21,23 @@ const STAGE_SEND_LEDGER = 3.1;
 const STAGE_SEND_KEPLR = 4.1;
 const STAGE_SEND_READ_ONLY = 5.1;
 
-const ButtonImgText = ({ img, text = 'Send', ...props }) => (
-  <Button marginX={10} {...props}>
-    {text}{' '}
-    <img
-      style={{
-        width: 20,
-        height: 20,
-        marginLeft: '5px',
-        paddingTop: '2px',
-      }}
-      src={img}
-      alt="img"
-    />
-  </Button>
-);
+function ButtonImgText({ img, text = 'Send', ...props }) {
+  return (
+    <Button marginX={10} {...props}>
+      {text}{' '}
+      <img
+        style={{
+          width: 20,
+          height: 20,
+          marginLeft: '5px',
+          paddingTop: '2px',
+        }}
+        src={img}
+        alt="img"
+      />
+    </Button>
+  );
+}
 
 function ActionBar({
   selectCard,
@@ -94,6 +93,7 @@ function ActionBar({
           break;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectCard, hoverCard, selectAccount]);
 
   useEffect(() => {
@@ -104,6 +104,7 @@ function ActionBar({
         setMakeActive(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccounts, selectAccount]);
 
   useEffect(() => {
@@ -309,18 +310,6 @@ function ActionBar({
         updateBalance={updateAddress}
       />
     );
-  }
-
-  if (stage === STAGE_SEND_LEDGER) {
-    return (
-      <ActionBarLedger
-        selectAccount={selectAccount}
-        updateAddress={updateFuncActionBar}
-        defaultAccounts={defaultAccounts}
-        updateBalance={updateAddress}
-      />
-    );
-    // return <div />;u
   }
 
   if (stage === STAGE_SEND_READ_ONLY) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { keybaseAvatar } from '../../utils/search/utils';
 
 const img = require('../../image/logo-cyb-v3.svg');
@@ -8,7 +8,7 @@ function KeybaseAvatar({ identity }) {
   const [imgKeyBase, setImgKeyBase] = useState('');
 
   useEffect(() => {
-    keybaseAvatar(identity).then(data => {
+    keybaseAvatar(identity).then((data) => {
       if (data.status.code > 0) {
         setAvatar(false);
       } else if (data.them.length > 0) {
@@ -16,6 +16,7 @@ function KeybaseAvatar({ identity }) {
         setAvatar(true);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

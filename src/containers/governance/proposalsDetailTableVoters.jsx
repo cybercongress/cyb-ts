@@ -1,21 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
-  IconStatus,
-  ContainerPane,
-  Item,
-  Legend,
   Account,
   Dots,
   TextTable,
+  ContainerGradientText,
 } from '../../components';
-import { VOTE_OPTION } from '../../utils/config';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
-import { ContainerGradientText } from '../portal/components';
 import { timeSince, trimString } from '../../utils/utils';
 
 const LIMIT = 50;
@@ -55,7 +50,7 @@ const optionTextColor = (option) => {
   }
 };
 
-const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
+function ProposalsIdDetailTableVoters({ proposalId, updateFunc, ...props }) {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -63,6 +58,7 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
 
   useEffect(() => {
     getFirstItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalId, updateFunc]);
 
   const getFirstItem = async () => {
@@ -118,7 +114,7 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
     }
 
     return (
-      <ContainerGradientText status={optionTextColor(item.option)}>
+      <ContainerGradientText status={optionTextColor(item.option)} key={d}>
         <Table.Row
           borderBottom="none"
           paddingLeft={20}
@@ -201,6 +197,6 @@ const ProposalsIdDetailTableVoters = ({ proposalId, updateFunc, ...props }) => {
       </Table>
     </Pane>
   );
-};
+}
 
 export default ProposalsIdDetailTableVoters;

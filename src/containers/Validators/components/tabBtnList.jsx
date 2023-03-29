@@ -1,7 +1,6 @@
-import React from 'react';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { PillNumber, TabBtn } from '../../../components';
-import { routes } from "../../../routes";
+import { routes } from '../../../routes';
 
 function TabBtnList({ countHeroes, selected }) {
   return (

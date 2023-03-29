@@ -1,7 +1,6 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import ContentItem from '../contentItem';
+import ContentItem from '../../../components/ContentItem/contentItem';
 import { Rank, NoItems, Dots } from '../../../components';
 import { getRankGrade } from '../../../utils/search/utils';
 import { exponentialToDecimal, coinDecimals } from '../../../utils/utils';

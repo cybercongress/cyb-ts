@@ -1,10 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
-import txs from '../../../utils/txs';
+import { useState, useContext, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
+import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
-import { CYBER } from '../../../utils/config';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
-import { FlexWrapCantainer } from '../ui/ui';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -57,6 +55,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash, activeKey]);
 
   const runExecute = async ({ formData }, key) => {
@@ -67,7 +66,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     setActiveKey(key);
     setExecuting(true);
 
-    console.log(`formData`, formData)
+    console.log(`formData`, formData);
 
     try {
       const [{ address }] = await keplr.signer.getAccounts();
@@ -108,6 +107,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
         <JsonSchemaParse
           executing={executing}
           activeKey={activeKey}
+          key={key}
           schema={items}
           contractResponse={contractResponse}
           keyItem={key}
@@ -118,7 +118,7 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     });
   }
 
-  return <>{itemAutoForm.length > 0 && itemAutoForm}</>;
+  return itemAutoForm.length > 0 && itemAutoForm;
 }
 
 export default RenderInstantiateMsg;

@@ -1,14 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import {
-  ButtonIcon,
-  ValueImg,
-  Dots,
-  Denom,
-  DenomArr,
-  InputNumber,
-  OptionSelect,
-} from '../../components';
+import { DenomArr, InputNumber, OptionSelect } from '../../components';
 import BalanceToken from './components/balanceToken';
 import Select from './components/select';
 

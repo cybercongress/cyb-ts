@@ -1,43 +1,34 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Pane,
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
-import { logs } from '@cosmjs/stargate';
 import { Link, useHistory } from 'react-router-dom';
-import { coin, coins } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
 import {
   ActionBarContentText,
   Account,
   LinkWindow,
   ActionBar as ActionBarCenter,
+  BtnGrd,
 } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
-  exponentialToDecimal,
   fromBech32,
   trimString,
   selectNetworkImg,
   convertAmountReverce,
   convertAmount,
 } from '../../utils/utils';
-import { getTxs } from '../../utils/search/utils';
-import {
-  sortReserveCoinDenoms,
-  reduceAmounToken,
-  networkList,
-  getCoinDecimals,
-} from './utils';
+import { sortReserveCoinDenoms } from './utils';
 import networks from '../../utils/networkListIbc';
-import { BtnGrd, ActionBarSteps } from '../portal/components';
+import { ActionBarSteps } from '../portal/components';
 
 import ActionBarStaps from './actionBarSteps';
 
-import testVar from './testJson.json';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const POOL_TYPE_INDEX = 1;
@@ -275,6 +266,7 @@ function ActionBar({ stateActionBar }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const createPool = async () => {
@@ -570,6 +562,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, ibcClient, tokenAAmount, denomIbc, keplr]);
 
   const withdrawOnClick = useCallback(async () => {
@@ -615,6 +608,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
 
   const handleHistory = (to) => {

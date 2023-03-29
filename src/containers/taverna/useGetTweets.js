@@ -57,6 +57,7 @@ const useGetTweets = (defaultAccount, node = null) => {
     return () => {
       ws.current.close();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // useEffect(() => {

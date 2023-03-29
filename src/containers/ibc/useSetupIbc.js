@@ -7,7 +7,9 @@ import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
 import { config, STEPS } from './utils';
 
 const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 };
 
 const setupClientIbc = async (signer, option, logger) => {
@@ -78,6 +80,7 @@ function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
     if (step === STEPS.STOP_RELAYER) {
       setRunning(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   useEffect(() => {
@@ -90,12 +93,14 @@ function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
       }
     };
     getKeplrClient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   useEffect(() => {
     window.addEventListener('keplr_keystorechange', () => {
       initSigner();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

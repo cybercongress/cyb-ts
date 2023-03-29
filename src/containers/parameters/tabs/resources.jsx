@@ -1,4 +1,4 @@
-import React from 'react';
+/* eslint-disable radix */
 import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Vitalik } from '../../../components';
 import { formatCurrency, dhm } from '../../../utils/utils';

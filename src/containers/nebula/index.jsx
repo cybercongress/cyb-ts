@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { MainContainer, ContainerGradient } from '../portal/components';
-import { DenomArr } from '../../components';
+import { MainContainer } from '../portal/components';
+import { DenomArr, ContainerGradient } from '../../components';
 import {
   formatNumber,
   replaceSlash,
@@ -95,6 +95,7 @@ function Nebula({ mobile }) {
         localStorage.setItem('lastCap', cap);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, marketData]);
 
   const dataRenderItems = useMemo(() => {
@@ -132,6 +133,7 @@ function Nebula({ mobile }) {
       dataObj = sortable;
     }
     return dataObj;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, marketData]);
 
   const getTypeDenomKey = (key) => {
@@ -188,6 +190,7 @@ function Nebula({ mobile }) {
         </RowItem>
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataRenderItems]);
 
   return (

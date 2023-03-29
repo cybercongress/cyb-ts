@@ -8,25 +8,9 @@ import * as config from '../config';
 
 import { getContentByCid } from '../utils-ipfs';
 
-// const IPFS = require('ipfs-api');
-
-const { CYBER_NODE_URL_API, CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
+const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
 const SEARCH_RESULT_TIMEOUT_MS = 10000;
-
-let ipfsApi;
-
-const getIpfsConfig = async () => {
-  if (window.getIpfsConfig) {
-    return window.getIpfsConfig();
-  }
-
-  return {
-    host: 'localhost',
-    port: 5001,
-    protocol: 'http',
-  };
-};
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -42,13 +26,14 @@ export const getPin = async (node, content) => {
   let cid;
   if (node) {
     if (typeof content === 'string') {
-      cid = await node.add(new Buffer(content), { pin: true });
+      cid = await node.add(Buffer.from(content), { pin: true });
     } else {
       cid = await node.add(content, { pin: true });
     }
     console.warn('content', content, 'cid', cid);
     return cid.path;
   }
+  return undefined;
 };
 
 export const getIpfsHash = (string) =>
@@ -148,19 +133,6 @@ export const getAccountBandwidth = async (address) => {
     const response = await axios({
       method: 'get',
       url: `${CYBER_NODE_URL_LCD}/bandwidth/neuron/${address}`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const statusNode = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/status`,
     });
     return response.data.result;
   } catch (e) {
@@ -298,33 +270,6 @@ export const getTotalEUL = (data) => {
   return balance;
 };
 
-export const getAmountATOM = (data) => {
-  let amount = 0;
-  for (let item = 0; item < data.length; item++) {
-    if (amount <= config.TAKEOFF.ATOMsALL) {
-      amount +=
-        Number.parseInt(data[item].tx.value.msg[0].value.amount[0].amount) /
-        config.COSMOS.DIVISOR_ATOM;
-    } else {
-      amount = config.TAKEOFF.ATOMsALL;
-      break;
-    }
-  }
-  return amount;
-};
-
-export const getBalanceWallet = (address) =>
-  new Promise((resolve) =>
-    axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/account?address="${address}"`,
-    })
-      .then((response) => {
-        resolve(response.data.result);
-      })
-      .catch((e) => {})
-  );
-
 export const getTxs = async (txs) => {
   try {
     const response = await axios({
@@ -403,32 +348,6 @@ export const getTotalRewards = async (delegatorAddr) => {
   }
 };
 
-export const getCurrentBandwidthPrice = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/current_bandwidth_price`,
-    });
-    return response.data.result.price;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getIndexStats = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_API}/index_stats`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 export const getGraphQLQuery = async (
   query,
   urlGraphql = config.CYBER.CYBER_INDEX_HTTPS
@@ -451,19 +370,6 @@ export const getGraphQLQuery = async (
   } catch (e) {
     console.log(e);
     return null;
-  }
-};
-
-export const getSendTxToTakeoff = async (sender, recipient) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${config.COSMOS.GAIA_NODE_URL_LSD}/txs?message.action=send&message.sender=${sender}&transfer.recipient=${recipient}&limit=1000000000`,
-    });
-    return response.data.txs;
-  } catch (e) {
-    console.log(e);
-    return [];
   }
 };
 
@@ -726,19 +632,6 @@ export const getInlfation = async () => {
   }
 };
 
-export const getcommunityPool = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${CYBER_NODE_URL_LCD}/distribution/community_pool`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 export const getImportLink = async (address) => {
   try {
     const response = await axios({
@@ -888,44 +781,6 @@ export const authAccounts = async (address) => {
   }
 };
 
-const convertAvatarImg = async (data) => {
-  let img = null;
-
-  const dataFileType = await FileType.fromBuffer(data);
-  console.log(`dataFileType`, dataFileType);
-
-  const base64 = btoa(
-    new Uint8Array(data).reduce(
-      (dataR, byte) => dataR + String.fromCharCode(byte),
-      ''
-    )
-  );
-
-  const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
-  console.log(`base64`, base64);
-
-  if (dataFileType !== undefined) {
-    const { mime } = dataFileType;
-    if (mime.indexOf('image') !== -1) {
-      // const dataBase64 = data.toString('base64');
-      const file = `data:${mime};base64,${dataBase64}`;
-      return file;
-    }
-  }
-
-  if (isSvg(data)) {
-    const svg = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-      dataBase64,
-      'base64'
-    )}`;
-    img = svg;
-  } else {
-    img = data;
-  }
-
-  return img;
-};
-
 const resolveContentIpfs = async (data) => {
   let mime;
   const dataFileType = await FileType.fromBuffer(data);
@@ -950,157 +805,18 @@ const resolveContentIpfs = async (data) => {
   return null;
 };
 
-const generateMeta = (responseDag) => {
-  const meta = {
-    type: 'file',
-    size: 0,
-    blockSizes: [],
-    data: '',
-  };
-
-  const linksCid = [];
-  if (responseDag.value.Links && responseDag.value.Links.length > 0) {
-    responseDag.value.Links.forEach((item, index) => {
-      if (item.Name.length > 0) {
-        linksCid.push({ name: item.Name, size: item.Tsize });
-      } else {
-        linksCid.push(item.Tsize);
-      }
-    });
-  }
-  meta.size = responseDag.value.size;
-  meta.blockSizes = linksCid;
-
-  return meta;
-};
-
 export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getContentByCid(ipfs, cid);
+  if (response === 'availableDownload') {
+    return 'availableDownload';
+  }
+
   if (response !== undefined) {
     const responseResolve = await resolveContentIpfs(response.data);
     return responseResolve;
   }
 
   return null;
-};
-
-export const getIpfsGatway = async (
-  cid,
-  type = 'json',
-  userGateway = config.CYBER.CYBER_GATEWAY
-) => {
-  try {
-    const abortController = new AbortController();
-    setTimeout(() => {
-      abortController.abort();
-    }, 1000 * 60 * 1); // 1 min
-
-    const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
-      signal: abortController.signal,
-      responseType: type,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.log('error getIpfsGatway', error);
-    return null;
-  }
-};
-
-const getPinsCidPost = async (cid) => {
-  console.log(`getPinsCidPost`);
-  try {
-    const response = await axios({
-      method: 'post',
-      url: `https://io.cybernode.ai/pins/${cid}`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const getPinsCidGet = async (cid) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `https://io.cybernode.ai/pins/${cid}`,
-    });
-    return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-const addFileToCluster = async (cid, file) => {
-  console.log(`addFileToCluster`);
-  let dataFile = null;
-  if (cid === file) {
-    const responseGetPinsCidPost = await getPinsCidPost(cid);
-    return responseGetPinsCidPost;
-  }
-
-  if (file instanceof Blob) {
-    console.log(`Blob`);
-    dataFile = file;
-  } else if (typeof file === 'string') {
-    dataFile = new File([file], 'file.txt');
-  } else if (file.name && file.size < 8 * 10 ** 6) {
-    dataFile = new File([file], file.name);
-  }
-
-  if (dataFile !== null) {
-    const formData = new FormData();
-    formData.append('file', dataFile);
-    try {
-      const response = await axios({
-        method: 'post',
-        url: 'https://io.cybernode.ai/add',
-        data: formData,
-      });
-      return response;
-    } catch (error) {
-      const responseGetPinsCidPost = await getPinsCidPost(cid);
-      return responseGetPinsCidPost;
-    }
-  } else {
-    const responseGetPinsCidPost = await getPinsCidPost(cid);
-    return responseGetPinsCidPost;
-  }
-};
-
-export const getPinsCid = async (cid, file) => {
-  try {
-    const responseGetPinsCidGet = await getPinsCidGet(cid);
-    if (
-      responseGetPinsCidGet.peer_map &&
-      Object.keys(responseGetPinsCidGet.peer_map).length > 0
-    ) {
-      const { peer_map: peerMap } = responseGetPinsCidGet;
-      // eslint-disable-next-line no-restricted-syntax
-      for (const key in peerMap) {
-        if (Object.hasOwnProperty.call(peerMap, key)) {
-          const element = peerMap[key];
-          if (element.status !== 'unpinned') {
-            return null;
-          }
-        }
-      }
-
-      if (file !== undefined) {
-        const responseGetPinsCidPost = await addFileToCluster(cid, file);
-        return responseGetPinsCidPost;
-      }
-      const responseGetPinsCidPost = await getPinsCidPost(cid);
-      return responseGetPinsCidPost;
-    }
-    return null;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
 };
 
 // Access-Control-Allow-Origin

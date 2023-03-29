@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import React from 'react';
 import { DenomArr } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
 import styles from '../styles.scss';
@@ -16,7 +15,7 @@ const getDecimal = (number, float) => {
   return result;
 };
 
-const FormatNumberTokens = ({
+function FormatNumberTokens({
   text,
   value,
   tooltipStatusImg,
@@ -24,7 +23,7 @@ const FormatNumberTokens = ({
   float,
   customText,
   ...props
-}) => {
+}) {
   const decimal = getDecimal(value, float);
   return (
     <div
@@ -58,6 +57,6 @@ const FormatNumberTokens = ({
       )}
     </div>
   );
-};
+}
 
 export default FormatNumberTokens;

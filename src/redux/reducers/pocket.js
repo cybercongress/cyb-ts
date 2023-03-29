@@ -1,6 +1,6 @@
 import { POCKET } from '../../utils/config';
 
-export const initialState = {
+const initialState = {
   actionBar: {
     tweet: POCKET.STAGE_TWEET_ACTION_BAR.TWEET, // stage for tweet ActionBar: 'addAvatar' 'follow' 'tweet'
   },

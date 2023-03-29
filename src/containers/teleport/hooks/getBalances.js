@@ -40,7 +40,7 @@ const getVestingPeriodsData = (data, startTime) => {
   return vestedAmount;
 };
 
-function getBalances(addressActive, updateAddress) {
+function useGetBalances(addressActive, updateAddress) {
   const { jsCyber } = useContext(AppContext);
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
@@ -132,4 +132,4 @@ function getBalances(addressActive, updateAddress) {
   return { liquidBalances };
 }
 
-export default getBalances;
+export default useGetBalances;

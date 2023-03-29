@@ -1,6 +1,6 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
+import { NoItems } from '../../../components';
 import { formatCurrency } from '../../../utils/utils';
 
 const objectInspectorTheme = {
@@ -30,12 +30,14 @@ const PREFIXES = [
   },
 ];
 
-const RowItem = ({ text, value }) => (
-  <Pane display="flex" marginBottom={10}>
-    <Pane width={50}>{text}:</Pane>
-    <Pane>{value}</Pane>
-  </Pane>
-);
+function RowItem({ text, value }) {
+  return (
+    <Pane display="flex" marginBottom={10}>
+      <Pane width={50}>{text}:</Pane>
+      <Pane>{value}</Pane>
+    </Pane>
+  );
+}
 
 function MetaTab({ data, cid }) {
   try {

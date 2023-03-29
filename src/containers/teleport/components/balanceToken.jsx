@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 
-const BalanceToken = ({ token, data }) => {
+function BalanceToken({ token, data }) {
   const { traseDenom } = useContext(AppContext);
   let balance = 0;
 
@@ -31,6 +31,6 @@ const BalanceToken = ({ token, data }) => {
       <Pane>{balance}</Pane>
     </Pane>
   );
-};
+}
 
 export default BalanceToken;

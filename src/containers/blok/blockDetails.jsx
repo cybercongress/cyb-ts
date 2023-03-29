@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import bech32 from 'bech32';
 import InformationBlock from './informationBlock';
 import TableTxs from '../account/component/tableTxs';
 import { CardTemplate } from '../../components';

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import { useState, useEffect, useContext } from 'react';
+import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -17,18 +17,13 @@ import {
 import {
   Loading,
   Account,
-  Copy,
-  Tooltip,
-  LinkWindow,
   Rank,
   NoItems,
   Dots,
-  Particle,
   SearchItem,
 } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import {
-  PATTERN,
   PATTERN_CYBER,
   PATTERN_TX,
   PATTERN_CYBER_VALOPER,
@@ -36,7 +31,7 @@ import {
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
 import { setQuery } from '../../redux/actions/query';
-import ContentItem from '../ipfs/contentItem';
+import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
 
@@ -84,8 +79,6 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const [keywordHash, setKeywordHash] = useState('');
   const [update, setUpdate] = useState(1);
   const [rankLink, setRankLink] = useState(null);
-  // const [page, setPage] = useState(0);
-  const [allPage, setAllPage] = useState(1);
   const [total, setTotal] = useState(0);
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -94,14 +87,13 @@ function SearchResults({ node, mobile, setQueryProps }) {
     if (query.match(/\//g)) {
       history.push(`/search/${replaceSlash(query)}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
       setQueryProps(encodeSlash(query));
-      // setPage(0);
-      setAllPage(1);
       if (jsCyber !== null) {
         let keywordHashTemp = '';
         let keywordHashNull = '';
@@ -132,9 +124,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
             responseSearchResults.result,
             query
           );
-          setAllPage(
-            Math.ceil(parseFloat(responseSearchResults.pagination.total) / 10)
-          );
+
           setTotal(parseFloat(responseSearchResults.pagination.total));
           setHasMore(true);
           // setPage((item) => item + 1);
@@ -148,6 +138,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
       }
     };
     getFirstItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, location, update, jsCyber]);
 
   const fetchMoreData = async (page) => {

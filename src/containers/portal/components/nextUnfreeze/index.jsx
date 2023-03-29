@@ -1,15 +1,17 @@
-import React, { useMemo } from 'react';
-import { ContainerGradientText } from '../containerGradient/ContainerGradient';
-import { BOOT_ICON, GIFT_ICON } from '../../utils';
-import { formatNumber, dhm } from '../../../../utils/utils';
+import { useMemo } from 'react';
+import { ContainerGradientText } from '../../../../components/containerGradient/ContainerGradient';
+import { GIFT_ICON } from '../../utils';
+import { dhm } from '../../../../utils/utils';
 import styles from './styles.scss';
 
-const ItemRow = ({ value, title }) => (
-  <div className={styles.containerItemRow}>
-    <div>{title}</div>
-    <div>{value}</div>
-  </div>
-);
+function ItemRow({ value, title }) {
+  return (
+    <div className={styles.containerItemRow}>
+      <div>{title}</div>
+      <div>{value}</div>
+    </div>
+  );
+}
 
 function NextUnfreeze({ timeNext = '', readyRelease }) {
   try {

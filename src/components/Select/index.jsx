@@ -55,6 +55,7 @@ function Select({
 
   return (
     <SelectContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         selectedOption: valueSelect,
         changeSelectedOption: updateSelectedOption,

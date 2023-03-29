@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { getRankGrade } from '../../utils/search/utils';
-import { getTypeContent } from './useGetIpfsContentHook';
+import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
 import { getContentByCid } from '../../utils/utils-ipfs';
-import { SearchItem } from '../../components';
+import SearchItem from '../SearchItem/searchItem';
 
 function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
   const [content, setContent] = useState(null);
@@ -61,6 +61,7 @@ function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
         textPreview={
           <div className="container-text-SearchItem">
             <ReactMarkdown
+              // eslint-disable-next-line react/no-children-prop
               children={textPreview}
               rehypePlugins={[rehypeSanitize]}
               // skipHtml

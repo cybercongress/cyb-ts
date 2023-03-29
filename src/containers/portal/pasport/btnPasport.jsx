@@ -1,10 +1,8 @@
-import React from 'react';
-import { Transition } from 'react-transition-group';
 import styles from './styleBtnPasport.scss';
 
 const cx = require('classnames');
 
-const GradientContainer = ({ styleContent, children }) => {
+function GradientContainer({ styleContent, children }) {
   return (
     <div
       className={cx(styles.GradientContainer, {
@@ -15,7 +13,7 @@ const GradientContainer = ({ styleContent, children }) => {
       {children}
     </div>
   );
-};
+}
 
 function BtnPasport({ children, typeBtn, ...props }) {
   return (

@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 // import { Play } from './pages';
 import { connect } from 'react-redux';
-import {
-  MainContainer,
-  ContainerGradient,
-  ContainerGradientText,
-} from '../portal/components';
+import { MainContainer } from '../portal/components';
 // import Carousel from '../portal/gift/carousel1/Carousel';
-import { Carousel, Canvas } from './components/indexs';
+import { Carousel, Canvas } from './components';
 import { BOOT_ICON } from '../portal/utils';
 import { PlayContent, PlayBanerContent } from './pages';
-import { ActionBar } from '../../components';
-import BtnGrd from '../../components/btnGrd';
+import { ActionBar, ContainerGradientText, BtnGrd } from '../../components';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
 import { CYBER } from '../../utils/config';
@@ -98,7 +93,7 @@ function Temple({ defaultAccount }) {
             }}
           >
             {itemLinks.map((item) => (
-              <Link to={item.to}>
+              <Link to={item.to} key={item.to}>
                 <div>{item.title}</div>
               </Link>
             ))}

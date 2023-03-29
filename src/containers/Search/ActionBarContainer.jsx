@@ -1,32 +1,19 @@
+/* eslint-disable */
 import React, { Component } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { Link as LinkRoute } from 'react-router-dom';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, ActionBar } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { coins } from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
 import {
-  ConnectLadger,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   StartStageSearchActionBar,
-  Cyberlink,
   TransactionError,
   ActionBarContentText,
-  CheckAddressInfo,
   Dots,
   ButtonImgText,
 } from '../../components';
 
-import {
-  getIpfsHash,
-  getPin,
-  statusNode,
-  getAccountBandwidth,
-  getCurrentBandwidthPrice,
-  getPinsCid,
-} from '../../utils/search/utils';
+import { getPin, getTxs } from '../../utils/search/utils';
 
 import {
   LEDGER,
@@ -36,30 +23,21 @@ import {
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
+import { getPinsCid } from '../..//utils/utils-ipfs';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
 const imgCyber = require('../../image/blue-circle.png');
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
-  STAGE_LEDGER_INIT,
   STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
 } = LEDGER;
 
-const CREATE_LINK = 10;
-const ADD_ADDRESS = 11;
-const LEDGER_TX_ACOUNT_INFO = 12;
 const STAGE_IPFS_HASH = 3.1;
 const STAGE_KEPLR_APPROVE = 3.2;
 
@@ -79,14 +57,12 @@ class ActionBarContainer extends Component {
     };
     this.timeOut = null;
     this.inputOpenFileRef = React.createRef();
-    this.ledger = null;
     this.transport = null;
   }
 
   async componentDidMount() {
     console.warn('Looking for Ledger Nano');
     await this.checkAddressLocalStorage();
-    this.ledger = new CosmosDelegateTool();
   }
 
   componentDidUpdate(prevProps) {
@@ -239,26 +215,26 @@ class ActionBarContainer extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(this.state.txHash);
-      console.log('status', status);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (update) {
-          update();
+      const data = await getTxs(this.state.txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (update) {
+            update();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);

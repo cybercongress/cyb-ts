@@ -101,9 +101,11 @@ const useCheckPathname = () => {
     } else {
       setMain('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return { main };
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export default useCheckPathname;

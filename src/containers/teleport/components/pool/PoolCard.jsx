@@ -1,15 +1,15 @@
-import React, { useMemo, useContext, useState, useEffect } from 'react';
+import { useMemo, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { AppContext } from '../../../../context';
 import tokenList from '../../../../utils/tokenList';
 import { exponentialToDecimal } from '../../../../utils/utils';
 import { FormatNumberTokens } from '../../../nebula/components';
-import { ContainerGradient } from '../../../portal/components';
+import { ContainerGradient } from '../../../../components';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';
 
-const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
+function PoolCard({ pool, totalSupplyData, accountBalances }) {
   const { traseDenom } = useContext(AppContext);
 
   const [sharesToken, setSharesToken] = useState(null);
@@ -63,6 +63,7 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
       console.log('error', error);
       return false;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pool]);
 
   return (
@@ -78,9 +79,7 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
           const keyItem = uuidv4();
 
           return (
-            <>
-              <PoolItemsList key={keyItem} assets={pool.assets} token={items} />
-            </>
+            <PoolItemsList key={keyItem} assets={pool.assets} token={items} />
           );
         })}
       </div>
@@ -95,6 +94,6 @@ const PoolCard = ({ pool, totalSupplyData, accountBalances }) => {
       )}
     </ContainerGradient>
   );
-};
+}
 
 export default PoolCard;

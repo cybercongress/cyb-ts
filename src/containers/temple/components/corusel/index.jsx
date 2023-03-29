@@ -1,11 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  Fragment,
-  useCallback,
-  useMemo,
-} from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './carousel.scss';
 
@@ -23,18 +17,12 @@ function Carousel({
   disableMode,
   displaySlide = 3,
 }) {
-  if (slides.length < 2) {
-    console.error('Please provide more slides');
-    return null;
-  }
   const query = useMediaQuery('(min-width: 768px)');
   const [itemWidth, setItemWidth] = useState(0);
   const [displaySlideState, setDisplaySlideState] = useState(displaySlide);
   const [visibleSlide, setVisibleSlide] = useState(1);
   const [hasTransitionClass, setHasTransitionClass] = useState(true);
   const changeDisplay = useRef(false);
-
-  const newItemList = slides.concat(slides, slides, slides);
 
   useEffect(() => {
     if (displaySlide > 3) {
@@ -47,7 +35,13 @@ function Carousel({
         changeDisplay.current = false;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
+
+  if (slides.length < 2) {
+    console.error('Please provide more slides');
+    return null;
+  }
 
   useEffect(() => {
     setVisibleSlide(slides.length * 2 + activeStep);
@@ -86,6 +80,7 @@ function Carousel({
         setVisibleSlide(visibleSlide - slides.length);
       }, 500);
     }
+    // eslint-disable-next-line eqeqeq
     if (visibleSlide == slides.length) {
       // keep index near the middle of the list when moving right
       // setNavDisabled(true);
@@ -101,6 +96,7 @@ function Carousel({
         // setNavDisabled(false);
       }, 500 / 10);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleSlide]);
 
   const setActiveItem = useCallback(
@@ -111,6 +107,8 @@ function Carousel({
     },
     [disableMode]
   );
+
+  const newItemList = slides.concat(slides, slides, slides);
 
   return (
     <div

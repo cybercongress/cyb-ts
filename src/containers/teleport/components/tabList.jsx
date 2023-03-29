@@ -1,8 +1,6 @@
-import React from 'react';
 import { Tablist } from '@cybercongress/gravity';
 import { useHistory } from 'react-router-dom';
 
-import { TabBtn } from '../../../components';
 import ButtonTeleport from './buttonGroup/indexBtn';
 
 function TabList({ selected }) {

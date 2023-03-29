@@ -48,6 +48,7 @@ const usePoolsAssetAmount = (pools) => {
       }
     };
     getBalances();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, pools]);
 
   useEffect(() => {

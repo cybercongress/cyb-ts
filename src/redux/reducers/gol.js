@@ -1,4 +1,4 @@
-export const initialState = {
+const initialState = {
   takeoff: {
     cybAbsolute: 0,
     currentPrize: 0,

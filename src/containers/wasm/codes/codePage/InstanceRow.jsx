@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { Account } from '../../../../components';
 import { AppContext } from '../../../../context';
 import { trimString } from '../../../../utils/utils';
@@ -55,26 +55,24 @@ function InstanceRow({ position, address }) {
   }, [jsCyber, address]);
 
   return (
-    <>
-      {Object.keys(contract).length > 0 && (
-        <tr style={{ textAlign: 'center' }}>
-          <th scope="row">{position}</th>
-          <td>
-            <div style={styleLable}>{contract.label}</div>
-          </td>
-          <td>
-            <Link to={`/contracts/${contract.address}`}>
-              {trimString(contract.address, 10, 6)}
-            </Link>
-          </td>
-          <td>
-            <Account address={contract.creator} />
-          </td>
-          <td>{contract.admin ? contract.admin : '-'}</td>
-          <td style={{ textAlign: 'end' }}>{executionCount}</td>
-        </tr>
-      )}
-    </>
+    Object.keys(contract).length > 0 && (
+      <tr style={{ textAlign: 'center' }}>
+        <th scope="row">{position}</th>
+        <td>
+          <div style={styleLable}>{contract.label}</div>
+        </td>
+        <td>
+          <Link to={`/contracts/${contract.address}`}>
+            {trimString(contract.address, 10, 6)}
+          </Link>
+        </td>
+        <td>
+          <Account address={contract.creator} />
+        </td>
+        <td>{contract.admin ? contract.admin : '-'}</td>
+        <td style={{ textAlign: 'end' }}>{executionCount}</td>
+      </tr>
+    )
   );
 }
 

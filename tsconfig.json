@@ -10,7 +10,10 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,  
+    "strict": true,
     "noEmit": true,
     "jsx": "react-jsx"
-  }
+  },
+  "include": ["src"]
 }

@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useState,
   useCallback,
@@ -12,26 +12,17 @@ import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import txs from '../../../utils/txs';
 
+import { MainContainer, MoonAnimation, Stars } from '../components';
 import {
-  ContainerGradient,
-  Signatures,
-  ScrollableTabs,
-  MainContainer,
-  MoonAnimation,
-  Stars,
-} from '../components';
-import {
-  Welcome,
   Rules,
   InputNickname,
   Avatar,
   InitKeplr,
   SetupKeplr,
-  ConnectKeplr,
   Passport,
 } from '../stateComponent';
 import ActionBar from './ActionBar';
-import { getPin, getCredit, getPinsCid } from '../../../utils/search/utils';
+import { getPin, getCredit } from '../../../utils/search/utils';
 import { AvataImgIpfs } from '../components/avataIpfs';
 import { AppContext } from '../../../context';
 import {
@@ -46,6 +37,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
+import { getPinsCid } from '../../../utils/utils-ipfs';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
@@ -316,6 +308,7 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
       }
     };
     checkAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, addressActive, step]);
 
   const getBalanceAndNickname = useCallback(
@@ -502,12 +495,6 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
   const onFilePickerChange = (files) => {
     const file = files.current.files[0];
     setAvatarImg(file);
-  };
-
-  const onClickClear = () => {
-    if (fncClearAvatar) {
-      fncClearAvatar();
-    }
   };
 
   let content;

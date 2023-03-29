@@ -1,43 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import styles from './styles.scss';
+import { useState, useEffect } from 'react';
 import s from './styles1.scss';
 import { ValueImg } from '../../../../components';
 
 const cx = require('classnames');
 const imgSwap = require('../../../../image/exchange-arrows.svg');
 
-const Mark = ({ value }) => {
-  let position = '';
-
-  if (value <= 5) {
-    position = 'left';
-  } else if (value === 10) {
-    position = 'center';
-  } else {
-    position = 'right';
-  }
-
-  return (
-    <div className={styles.trackMark}>
-      <div className={styles.trackMarkBgBlur} />
-      <div
-        className={cx(
-          styles.trackMarkGradient,
-          styles[`trackMarkGradient${position}`]
-        )}
-      />
-      <div
-        className={cx(styles.trackMarkLabel, {
-          [styles.trackMarkLabelColorBlue]: value === 'Max',
-        })}
-      >
-        {value !== 'Max' ? `${value}%` : 'Max'}
-      </div>
-    </div>
-  );
-};
-
-export const ButtonIcon = ({ img, disabled, ...props }) => {
+export function ButtonIcon({ img, disabled, ...props }) {
   return (
     <button
       type="button"
@@ -48,9 +16,9 @@ export const ButtonIcon = ({ img, disabled, ...props }) => {
       <img src={img} alt="img" />
     </button>
   );
-};
+}
 
-const SpetionLabel = ({ value, lable }) => {
+function SpetionLabel({ value, lable }) {
   let position = '';
 
   if (value <= 3) {
@@ -76,7 +44,7 @@ const SpetionLabel = ({ value, lable }) => {
       </div>
     </label>
   );
-};
+}
 
 const constValue = {
   0: 0,
@@ -237,4 +205,5 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default Slider;

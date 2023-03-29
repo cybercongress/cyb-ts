@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
-import { Dots, Loading, Rank, Particle } from '../../components';
-import ContentItem from '../ipfs/contentItem';
-import {
-  coinDecimals,
-  exponentialToDecimal,
-  formatNumber,
-} from '../../utils/utils';
+import { Dots, Loading, Rank } from '../../components';
+import ContentItem from '../../components/ContentItem/contentItem';
+import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
 
 function Relevace({ items, fetchMoreData, page, allPage, mobile, node }) {
@@ -36,6 +32,7 @@ function Relevace({ items, fetchMoreData, page, allPage, mobile, node }) {
       {Object.keys(items).map((key) => {
         return (
           <Pane
+            key={key}
             position="relative"
             className="hover-rank"
             display="flex"
@@ -75,6 +72,7 @@ function Objects({ node, mobile }) {
 
   useEffect(() => {
     getFirstItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getFirstItem = async () => {

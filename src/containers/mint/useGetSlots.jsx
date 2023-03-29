@@ -93,6 +93,7 @@ function useGetSlots(addressActive, updateAddress) {
       refetchGetAllBalances();
       refetchAuthAccounts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateAddress]);
 
   useEffect(() => {
@@ -168,6 +169,7 @@ function useGetSlots(addressActive, updateAddress) {
       }
     };
     getBalacesResource();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateAddress, addressActive, jsCyber]);
 
   const getCalculationBalance = (data) => {

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { trimString } from '../../utils/utils';
-import { Dots } from '../ui/Dots';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import { activePassport } from '../../containers/portal/utils';

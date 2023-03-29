@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import { AppContext } from '../../context';
 import { formatNumber } from '../../utils/utils';
 
@@ -25,7 +25,7 @@ const PREFIXES = [
   },
 ];
 
-export const formatKarma = (value, prefixCustom = PREFIXES) => {
+const formatKarma = (value, prefixCustom = PREFIXES) => {
   const { prefix = '', power = 1 } =
     prefixCustom.find((powerItem) => value >= powerItem.power) || {};
 

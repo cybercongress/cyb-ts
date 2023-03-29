@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
 import { Route, Link } from 'react-router-dom';
 import { getParamNetwork } from '../../utils/search/utils';
@@ -18,26 +18,28 @@ import {
   DmnParam,
 } from './tabs';
 
-const TabBtn = ({ text, isSelected, onSelect, to }) => (
-  <Link to={to}>
-    <Tab
-      key={text}
-      isSelected={isSelected}
-      onSelect={onSelect}
-      paddingX={10}
-      paddingY={20}
-      marginX={3}
-      borderRadius={4}
-      color="#36d6ae"
-      boxShadow="0px 0px 5px #36d6ae"
-      fontSize="16px"
-      whiteSpace="nowrap"
-      width="100%"
-    >
-      {text}
-    </Tab>
-  </Link>
-);
+function TabBtn({ text, isSelected, onSelect, to }) {
+  return (
+    <Link to={to}>
+      <Tab
+        key={text}
+        isSelected={isSelected}
+        onSelect={onSelect}
+        paddingX={10}
+        paddingY={20}
+        marginX={3}
+        borderRadius={4}
+        color="#36d6ae"
+        boxShadow="0px 0px 5px #36d6ae"
+        fontSize="16px"
+        whiteSpace="nowrap"
+        width="100%"
+      >
+        {text}
+      </Tab>
+    </Link>
+  );
+}
 
 const initParam = {
   staking: null,
@@ -120,10 +122,12 @@ function ParamNetwork({ location }) {
       setLoading(false);
     };
     feachData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     chekPathname();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   if (loading) {

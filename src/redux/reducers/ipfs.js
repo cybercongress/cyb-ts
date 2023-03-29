@@ -1,4 +1,4 @@
-export const initialState = {
+const initialState = {
   ipfs: null,
   statusIpfs: false,
   id: null,
@@ -49,13 +49,6 @@ const ipfsReducer = (state = initialState, action) => {
       return {
         ...state,
         pending: action.payload,
-      };
-    }
-
-    case 'SET_IPFS_OPTS': {
-      return {
-        ...state,
-        ipfsOpts: action.payload,
       };
     }
 

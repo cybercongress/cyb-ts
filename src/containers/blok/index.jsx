@@ -1,30 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import gql from 'graphql-tag';
-import { useSubscription } from '@apollo/react-hooks';
-import { Pane, Text, TableEv as Table, Icon } from '@cybercongress/gravity';
+import { TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { getGraphQLQuery } from '../../utils/search/utils';
 import { Dots, TextTable } from '../../components';
-import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
-const dateFormat = require('dateformat');
+import { trimString, formatNumber } from '../../utils/utils';
 
-const GET = gql`
-  subscription Query {
-    block(limit: 1, order_by: { height: desc }, offset: 0) {
-      hash
-      height
-      proposer_address
-      transactions_aggregate {
-        aggregate {
-          count
-        }
-      }
-      timestamp
-    }
-  }
-`;
+const dateFormat = require('dateformat');
 
 const GET_CHARACTERS = `
   query Query {
@@ -58,7 +41,7 @@ const QueryAddress = (block) =>
   }
   `;
 
-const Block = ({ blockThis }) => {
+function Block({ blockThis }) {
   const [page, setPage] = useState(1);
   const [lastBlockQuery, setlastBlockQuery] = useState(0);
   const [items, setItems] = useState([]);
@@ -213,7 +196,7 @@ const Block = ({ blockThis }) => {
       </Table>
     </main>
   );
-};
+}
 
 const mapStateToProps = (store) => {
   return {

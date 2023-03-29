@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { Loading, Dots } from '../../components';
+import { Dots } from '../../components';
 import { formatNumber, fromBech32 } from '../../utils/utils';
 
 function useUptime({ accountUser }) {
-  console.log(`accountUser`, accountUser)
   try {
     const GET_CHARACTERS = gql`
     query uptime {
@@ -19,21 +17,14 @@ function useUptime({ accountUser }) {
     }
   `;
 
-    const { loading, error, data } = useQuery(GET_CHARACTERS);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { loading, data } = useQuery(GET_CHARACTERS);
 
     if (loading) {
       return <Dots />;
     }
 
     let uptime = 0;
-
-    console.log(
-      `
-      )`,
-      fromBech32(accountUser, 'bostromvalcons')
-    );
-
-    console.log('data', data);
 
     if (data !== undefined) {
       if (

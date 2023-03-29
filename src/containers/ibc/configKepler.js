@@ -68,4 +68,5 @@ const configKeplr = (option) => {
   };
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export { configKeplr };

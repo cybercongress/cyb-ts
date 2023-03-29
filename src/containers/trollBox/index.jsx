@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable */
+import React from 'react';
 import { connect } from 'react-redux';
 // import Room from 'ipfs-pubsub-room';
-import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
+import { Pane, Text, ActionBar } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
 import { trimString } from '../../utils/utils';
 import { ActionBarContentText, NoItems } from '../../components';
@@ -12,8 +13,7 @@ const test = [
   { name: 'anonymous coward', text: 'cvcvx1' },
   {
     name: 'anonymous1',
-    text:
-      'Trollginator there is enough BTC to go around man lol and keep my call in mind, 48H from now come back and check in',
+    text: 'Trollginator there is enough BTC to go around man lol and keep my call in mind, 48H from now come back and check in',
   },
   { name: 'anonymous2', text: 'gi anonymous' },
   { name: 'anonymous3', text: 'dskx234ewrd' },
@@ -31,69 +31,77 @@ function repo() {
   return `ipfs/pubsub/${Math.random()}`;
 }
 
-const MessageItem = ({ name = '', text = '' }) => (
-  <Pane
-    backgroundColor="#03cba029"
-    borderRadius="5px"
-    paddingX={5}
-    paddingY={5}
-    marginY={5}
-    width="70%"
-    marginX="auto"
-  >
-    {/* <Pane overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
+function MessageItem({ name = '', text = '' }) {
+  return (
+    <Pane
+      backgroundColor="#03cba029"
+      borderRadius="5px"
+      paddingX={5}
+      paddingY={5}
+      marginY={5}
+      width="70%"
+      marginX="auto"
+    >
+      {/* <Pane overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis">
       {name}
     </Pane> */}
-    <Pane>
-      <Text color="#36d6ae">{trimString(name, 4, 4)}</Text>:{' '}
-      <span style={{ whiteSpace: 'pre-wrap' }}>{text}</span>
+      <Pane>
+        <Text color="#36d6ae">{trimString(name, 4, 4)}</Text>:{' '}
+        <span style={{ whiteSpace: 'pre-wrap' }}>{text}</span>
+      </Pane>
     </Pane>
-  </Pane>
-);
+  );
+}
 
-const SendMessage = ({
+function SendMessage({
   onClickSend,
   placeholder = 'message',
   onChangeMessage,
   valueInputMassage = '',
   handleKeyDown,
-}) => (
-  <Pane width="65%" alignItems="flex-end" display="flex">
-    <ActionBarContentText>
-      <TextareaAutosize
-        value={valueInputMassage}
-        maxRows={20}
-        style={{
-          height: 42,
-          width: '100%',
-          color: '#fff',
-          paddingLeft: '10px',
-          borderRadius: '20px',
-          textAlign: 'start',
-          paddingRight: '35px',
-          paddingTop: '10px',
-          paddingBottom: '10px',
-          marginRight: '15px',
-        }}
-        className="resize-none minHeightTextarea"
-        onChange={onChangeMessage}
-        placeholder={placeholder}
-        onFocus={(e) => (e.target.placeholder = '')}
-        onBlur={(e) => (e.target.placeholder = placeholder)}
-        onKeyDown={(e) => handleKeyDown(e)}
-      />
-    </ActionBarContentText>
-    <button
-      className="container-buttonIcon"
-      type="button"
-      onClick={onClickSend}
-      style={{ height: 25 }}
-      disabled={/^\s*$/.test(valueInputMassage)}
-    >
-      <img src={imgSend} alt="edit" style={{ width: 25, height: 25 }} />
-    </button>
-  </Pane>
-);
+}) {
+  return (
+    <Pane width="65%" alignItems="flex-end" display="flex">
+      <ActionBarContentText>
+        <TextareaAutosize
+          value={valueInputMassage}
+          maxRows={20}
+          style={{
+            height: 42,
+            width: '100%',
+            color: '#fff',
+            paddingLeft: '10px',
+            borderRadius: '20px',
+            textAlign: 'start',
+            paddingRight: '35px',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            marginRight: '15px',
+          }}
+          className="resize-none minHeightTextarea"
+          onChange={onChangeMessage}
+          placeholder={placeholder}
+          onFocus={(e) => {
+            e.target.placeholder = '';
+          }}
+          onBlur={(e) => {
+            e.target.placeholder = placeholder;
+          }}
+          onKeyDown={(e) => handleKeyDown(e)}
+        />
+      </ActionBarContentText>
+      <button
+        className="container-buttonIcon"
+        type="button"
+        onClick={onClickSend}
+        style={{ height: 25 }}
+        disabled={/^\s*$/.test(valueInputMassage)}
+      >
+        <img src={imgSend} alt="edit" style={{ width: 25, height: 25 }} />
+      </button>
+    </Pane>
+  );
+}
 
 class TrollBoxx extends React.PureComponent {
   constructor(props) {
@@ -132,7 +140,6 @@ class TrollBoxx extends React.PureComponent {
 
   init = async () => {
     // const { node, ipfsId } = this.props;
-
     // const roomIpfs = new Room(node, TOPIC);
     // this.setState({
     //   room: roomIpfs,
@@ -146,7 +153,6 @@ class TrollBoxx extends React.PureComponent {
     // // );
     // const peers = roomIpfs.getPeers();
     // console.log(peers);
-
     // roomIpfs.on('message', (message) => {
     //   console.log('message', message);
     //   console.log('message', message.data.toString());
@@ -167,19 +173,19 @@ class TrollBoxx extends React.PureComponent {
     // });
   };
 
-  updatedMessages = (msg = {}) => {
-    const { messages } = this.state;
+  // updatedMessages = (msg = {}) => {
+  //   const { messages } = this.state;
 
-    if (Object.keys(msg).length > 0) {
-      if (messages.length > 0) {
-        const updatedMessages = [...messages, msg].slice(-1000);
-        this.setState({ messages: updatedMessages });
-      } else {
-        const updatedMessages = [msg];
-        this.setState({ messages: updatedMessages });
-      }
-    }
-  };
+  //   if (Object.keys(msg).length > 0) {
+  //     if (messages.length > 0) {
+  //       const updatedMessages = [...messages, msg].slice(-1000);
+  //       this.setState({ messages: updatedMessages });
+  //     } else {
+  //       const updatedMessages = [msg];
+  //       this.setState({ messages: updatedMessages });
+  //     }
+  //   }
+  // };
 
   onClickSend = async () => {
     const { room, valueInputMassage } = this.state;
@@ -269,7 +275,7 @@ class TrollBoxx extends React.PureComponent {
                 <NoItems
                   text={
                     <Pane textAlign="center">
-                      <Pane marginBottom={5}>No messages.</Pane> 
+                      <Pane marginBottom={5}>No messages.</Pane>
                       <Pane>Write something below to begin</Pane>
                     </Pane>
                   }

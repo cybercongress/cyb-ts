@@ -144,6 +144,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataPools, traseDenom]);
 
   useEffect(() => {
@@ -174,6 +175,7 @@ function useGetMarketData() {
     } catch (error) {
       console.log('error', error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, poolsTotal]);
 
   const saveToLocalStorage = (obj) => {
@@ -226,6 +228,7 @@ function useGetMarketData() {
         return {};
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dataTotal, poolsTotal]
   );
 

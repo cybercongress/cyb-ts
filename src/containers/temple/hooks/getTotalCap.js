@@ -78,6 +78,7 @@ function useGetTotalCap() {
         );
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [marketData, dataTotalSupply]);
 
   useEffect(() => {

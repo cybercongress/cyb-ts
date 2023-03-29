@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import React, { useState, useEffect, useCallback } from 'react';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
@@ -13,7 +14,7 @@ import {
 } from './utils/utils';
 import { getDenomTraces } from './utils/search/utils';
 
-export const getKeplr = async () => {
+const getKeplr = async () => {
   if (window.keplr) {
     return window.keplr;
   }
@@ -53,9 +54,9 @@ const valueContext = {
 
 export const AppContext = React.createContext(valueContext);
 
-export const useContextProvider = () => useContext(AppContext);
+// const useContextProvider = () => useContext(AppContext);
 
-export async function createClient(signer) {
+async function createClient(signer) {
   if (signer) {
     const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
     const client = await SigningCyberClient.connectWithSigner(
@@ -309,6 +310,7 @@ function AppContextProvider({ children }) {
 
       return { ...infoDenomTemp };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [value.ibcDataDenom, value.poolsData]
   );
 
@@ -322,6 +324,7 @@ function AppContextProvider({ children }) {
 
   return (
     <AppContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         ...value,
         updatejsCyber,
