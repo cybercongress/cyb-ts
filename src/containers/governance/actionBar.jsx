@@ -67,7 +67,6 @@ class ActionBar extends Component {
     const { keplr } = this.context;
     console.log('keplr', keplr);
     if (keplr !== null) {
-      // let deposit = [];
       const title = valueTitle;
       const description = valueDescription;
       const recipient = valueAddressRecipient;
@@ -77,14 +76,6 @@ class ActionBar extends Component {
         gas: DEFAULT_GAS_LIMITS.toString(),
       };
       const [{ address }] = await keplr.signer.getAccounts();
-
-      // if (valueDeposit > 0) {
-      //   deposit = coins(valueDeposit, CYBER.DENOM_CYBER);
-      // }
-
-      // if (valueAmountRecipient > 0) {
-      //   amount = coins(valueAmountRecipient, CYBER.DENOM_CYBER);
-      // }
 
       try {
         const deposit = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
@@ -366,7 +357,6 @@ class ActionBar extends Component {
     if (valueSelect === 'textProposal' && stage === STAGE_TYPE_GOV) {
       return (
         <TextProposal
-          // addrProposer={address.bech32}
           onClickBtn={this.generateTxInit}
           onChangeInputTitle={this.onChangeInputTitle}
           onChangeInputDescription={this.onChangeInputDescription}
@@ -382,7 +372,6 @@ class ActionBar extends Component {
     if (valueSelect === 'communityPool' && stage === STAGE_TYPE_GOV) {
       return (
         <CommunityPool
-          // addrProposer={address.bech32}
           onClickBtn={this.generateTxInit}
           onChangeInputTitle={this.onChangeInputTitle}
           onChangeInputDescription={this.onChangeInputDescription}

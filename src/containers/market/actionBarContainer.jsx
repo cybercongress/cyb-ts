@@ -15,7 +15,6 @@ function ActionBarCont({
     if (addressActive.keys !== 'read-only') {
       return (
         <ActionBarContainer
-          // placeholder={placeholder}
           keywordHash={keywordHash}
           update={updateFunc}
           rankLink={rankLink}

@@ -103,10 +103,6 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   const [amountInput, setAmountInput] = useState('');
   const [selectResource, setSelectResource] = useState('milliampere');
 
-  // useEffect(() => {
-  //   cleatState();
-  // }, [selectedRoute]);
-
   useEffect(() => {
     const confirmTx = async () => {
       if (jsCyber !== null && txHash !== null) {

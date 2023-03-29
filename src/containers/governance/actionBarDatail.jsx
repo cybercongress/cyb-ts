@@ -94,10 +94,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       try {
         const [{ address }] = await keplr.signer.getAccounts();
         if (addressActive !== null && addressActive.bech32 === address) {
-          // let amount = [];
-          // if (parseFloat(valueDeposit) > 0) {
-          //   amount = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
-          // }
           let response = {};
           const fee = {
             amount: [],
@@ -155,29 +151,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
         setStage(STAGE_ERROR);
       }
     }
-    // if (keplr !== null) {
-    //   if (period === 'deposit') {
-    //     msgs.push({
-    //       type: 'cosmos-sdk/MsgDeposit',
-    //       value: {
-    //         amount,
-    //         depositor: accounts.address,
-    //         proposal_id: id,
-    //       },
-    //     });
-    //   }
-
-    //   if (period === 'vote') {
-    //     msgs.push({
-    //       type: 'cosmos-sdk/MsgVote',
-    //       value: {
-    //         option: valueSelect,
-    //         voter: accounts.address,
-    //         proposal_id: id,
-    //       },
-    //     });
-    //   }
-    // }
   };
 
   const onValueChangeDeposit = (values) => {
@@ -269,30 +242,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       </ActionBar>
     );
   }
-
-  // if (stage === STAGE_CLI_ADD_ADDRESS) {
-  //   return (
-  //     <ActionBar>
-  //       <ActionBarContentText>
-  //         <Pane marginRight={10}>Put your cyber address</Pane>
-  //         <Input
-  //           textAlign="end"
-  //           value={valueAddress}
-  //           onChange={this.onChangeValueAddress}
-  //           marginRight={10}
-  //           width={170}
-  //           autoFocus
-  //         />
-  //       </ActionBarContentText>
-  //       <Button
-  //         disabled={!valueAddress.match(PATTERN_CYBER)}
-  //         onClick={this.onClickPutAddress}
-  //       >
-  //         put
-  //       </Button>
-  //     </ActionBar>
-  //   );
-  // }
 
   if (stage === LEDGER_TX_ACOUNT_INFO) {
     return <CheckAddressInfo />;

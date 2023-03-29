@@ -21,10 +21,9 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 
-import { getTotalRewards, getPin } from '../../utils/search/utils';
+import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
 
 import { AppContext } from '../../context';
-import { CosmosDelegateTool } from '../../utils/ledger';
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -59,7 +58,6 @@ class ActionBarContainer extends Component {
       },
     };
     this.timeOut = null;
-    this.ledger = new CosmosDelegateTool();
     this.inputOpenFileRef = React.createRef();
   }
 
@@ -160,7 +158,7 @@ class ActionBarContainer extends Component {
     const { txHash } = this.state;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(txHash);
+      const status = await getTxs(txHash);
       const data = await status;
       if (data.logs) {
         this.setState({
@@ -286,7 +284,6 @@ class ActionBarContainer extends Component {
         />
       );
     }
-    // console.log('rewards', rewards);
 
     if (
       stage === STAGE_INIT &&
@@ -307,11 +304,9 @@ class ActionBarContainer extends Component {
         </ActionBar>
       );
     }
-    // console.log('rewards', rewards);
 
-    // console.log('rewards', groupLink(rewards.rewards));
     if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
+
       if (type === 'security') {
         return (
           <RewardsDelegators
