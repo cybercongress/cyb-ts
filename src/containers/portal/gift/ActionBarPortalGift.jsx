@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useContext, useCallback, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
 import txs from '../../../utils/txs';
@@ -96,7 +96,7 @@ function ActionBarPortalGift({
   loadingGift,
   node,
 }) {
-  const history = useHistory();
+  const history = useNavigate();
   const { keplr, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');

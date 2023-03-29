@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useContext } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MainContainer, ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
 import { Input, BtnGrd, ContainerGradientText } from '../../components';
@@ -21,7 +21,7 @@ function ValueItem({ text, value, onChange }) {
 
 function DetailsNetwork() {
   const param = useParams();
-  const history = useHistory();
+  const history = useNavigate();
   const { networks, updateNetworks } = useContext(AppContext);
   const [customConfig, setCustomConfig] = useState({});
 

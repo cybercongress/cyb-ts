@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams, useLocation, useHistory, Link } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -73,7 +73,7 @@ function SearchResults({ node, mobile, setQueryProps }) {
   const { jsCyber } = useContext(AppContext);
   const { query } = useParams();
   const location = useLocation();
-  const history = useHistory();
+  const history = useNavigate();
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');

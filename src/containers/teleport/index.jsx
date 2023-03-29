@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useLocation, useHistory, Route } from 'react-router-dom';
+import { useLocation, useNavigate, Route } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import queryString from 'query-string';
@@ -94,7 +94,7 @@ function getMyTokenBalanceNumber(denom, indexer) {
 
 function Teleport({ defaultAccount }) {
   const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
-  const history = useHistory();
+  const history = useNavigate();
   const { selectedTab } = useGetSelectTab(history);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);

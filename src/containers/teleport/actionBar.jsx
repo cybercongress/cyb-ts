@@ -5,7 +5,7 @@ import {
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import {
   ActionBarContentText,
@@ -54,7 +54,7 @@ const coinFunc = (amount, denom) => {
 
 function ActionBar({ stateActionBar }) {
   const { keplr, jsCyber, traseDenom } = useContext(AppContext);
-  const history = useHistory();
+  const history = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHashIbc, setTxHashIbc] = useState(null);

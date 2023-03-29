@@ -22,6 +22,7 @@ const GET_CHARACTERS = gql`
 
 function Txs() {
   const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
+  console.log('------------Txs', loading, error, dataTxs);
 
   if (error) {
     return `Error! ${error.message}`;

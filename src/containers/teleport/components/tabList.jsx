@@ -1,10 +1,10 @@
 import { Tablist } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import ButtonTeleport from './buttonGroup/indexBtn';
 
 function TabList({ selected }) {
-  const history = useHistory();
+  const history = useNavigate();
 
   const handleHistory = (to) => {
     history.push(to);

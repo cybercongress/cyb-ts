@@ -1,10 +1,10 @@
 import { Pane } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Card from '../ui/card';
 import { formatNumber } from '../../../utils/utils';
 
 function Statistics({ myEnegy = 0, income = 0, outcome = 0, active }) {
-  const history = useHistory();
+  const history = useNavigate();
 
   const freeEnergy = myEnegy + income - outcome;
 

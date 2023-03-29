@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Iframe from 'react-iframe';
 import { Loading } from '../../components';
 
@@ -11,7 +11,7 @@ const linkMovie =
 
 function Movie() {
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+  const history = useNavigate();
 
   const redirect = () => {
     history.push(`/oracle`);

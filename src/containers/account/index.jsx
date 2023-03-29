@@ -67,7 +67,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   const [follow, setFollow] = useState(false);
   const [activeAddress, setActiveAddress] = useState(null);
   const [karmaNeuron, setKarmaNeuron] = useState(0);
-
+  console.log('------------contract', location);
   useEffect(() => {
     const { pathname } = location;
     if (

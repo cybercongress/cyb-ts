@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 // import { ActionBarSteps } from '../../energy/component/actionBar';
@@ -47,7 +47,7 @@ function ActionBar({
   onClickSignMoonCode,
   signedMessage,
 }) {
-  const history = useHistory();
+  const history = useNavigate();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
     useState(false);
 

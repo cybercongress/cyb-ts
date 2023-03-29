@@ -6,7 +6,7 @@ import {
   Tab,
 } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Dots,
   ActionBarContentText,
@@ -91,7 +91,7 @@ function ActionBarSteps({
 }
 
 function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
-  const history = useHistory();
+  const history = useNavigate();
   const { keplr, jsCyber } = useContext(AppContext);
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);

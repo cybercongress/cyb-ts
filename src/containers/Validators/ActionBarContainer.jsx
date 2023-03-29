@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import {
   Confirmed,
@@ -184,7 +184,7 @@ function ActionBarContainer({
 }) {
   const { passport } = useGetPassportByAddress(addressPocket);
   const { keplr, jsCyber } = useContext(AppContext);
-  const history = useHistory();
+  const history = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
