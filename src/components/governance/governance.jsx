@@ -14,7 +14,7 @@ const toFixedNumber = (number, toFixed) => {
   return Math.floor(number * 10 ** toFixed) / 10 ** toFixed;
 };
 
-export function Legend({ color, text, ...props }) {
+function Legend({ color, text, ...props }) {
   return (
     <Pane display="flex" alignItems="center" {...props}>
       <Pane
@@ -258,19 +258,6 @@ export function Deposit({ totalDeposit, minDeposit }) {
           width={`${100 - procentDeposit}%`}
         />
       )}
-    </Pane>
-  );
-}
-
-export function ContainerPane({ children, ...props }) {
-  return (
-    <Pane
-      {...props}
-      paddingX={30}
-      paddingY={20}
-      boxShadow="0 0 3px 0px #3ab793"
-    >
-      {children}
     </Pane>
   );
 }

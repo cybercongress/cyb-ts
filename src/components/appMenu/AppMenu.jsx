@@ -13,14 +13,6 @@ function Logo(props) {
   );
 }
 
-export function LogoLink({ onClick }) {
-  return (
-    <div className="menu-logo">
-      <Logo dura="" onClick={onClick} />
-    </div>
-  );
-}
-
 function Items({ item, deleteAppFromMenu, selected, height, ...props }) {
   if (item.to !== '#') {
     return (

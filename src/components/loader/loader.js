@@ -1,3 +1,4 @@
+/* eslint-disable  */
 require('./loader.css');
 
 const Bootloader = () => {

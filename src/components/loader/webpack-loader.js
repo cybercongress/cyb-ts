@@ -1,3 +1,4 @@
+/* eslint-disable  */
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 
 class BootloaderPlugin {
