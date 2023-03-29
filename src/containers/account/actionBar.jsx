@@ -158,25 +158,26 @@ class ActionBarContainer extends Component {
     const { txHash } = this.state;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await getTxs(txHash);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (updateAddress) {
-          updateAddress();
+      const data = await getTxs(txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (updateAddress) {
+            updateAddress();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);

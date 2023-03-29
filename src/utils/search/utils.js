@@ -33,6 +33,7 @@ export const getPin = async (node, content) => {
     console.warn('content', content, 'cid', cid);
     return cid.path;
   }
+  return undefined;
 };
 
 export const getIpfsHash = (string) =>
@@ -806,6 +807,10 @@ const resolveContentIpfs = async (data) => {
 
 export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getContentByCid(ipfs, cid);
+  if (response === 'availableDownload') {
+    return 'availableDownload';
+  }
+
   if (response !== undefined) {
     const responseResolve = await resolveContentIpfs(response.data);
     return responseResolve;

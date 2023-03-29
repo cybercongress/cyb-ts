@@ -52,13 +52,6 @@ const ipfsReducer = (state = initialState, action) => {
       };
     }
 
-    case 'SET_IPFS_OPTS': {
-      return {
-        ...state,
-        ipfsOpts: action.payload,
-      };
-    }
-
     default:
       return state;
   }

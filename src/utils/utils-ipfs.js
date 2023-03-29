@@ -63,8 +63,6 @@ const checkCidByIpfsNode = async (node, cid) => {
     return undefined;
   }
 
-  // console.log('ipfsNodeLs', ipfsNodeLs)
-
   if (ipfsNodeLs !== null && ipfsNodeLs.length > 1) {
     return 'availableDownload';
   }
@@ -90,6 +88,7 @@ const checkCidByIpfsNode = async (node, cid) => {
     }
     return 'availableDownload';
   }
+  return undefined;
 };
 
 const checkIpfsGatway = async (cid, userGateway) => {
@@ -309,4 +308,4 @@ const getPinsCid = async (cid, file) => {
   }
 };
 
-export { getContentByCid, getPinsCid };
+export { getContentByCid, getPinsCid, checkIpfsState };

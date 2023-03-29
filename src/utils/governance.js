@@ -16,7 +16,7 @@ export const getProposals = async () => {
 };
 
 export const getProposalsDetail = (id) =>
-  new Promise((resolve) =>
+  new Promise((resolve) => {
     axios({
       method: 'get',
       url: `${CYBER.CYBER_NODE_URL_LCD}/cosmos/gov/v1beta1/proposals/${id}`,
@@ -24,11 +24,13 @@ export const getProposalsDetail = (id) =>
       .then((response) => {
         resolve(response.data.proposal);
       })
-      .catch((e) => {})
-  );
+      .catch((e) => {
+        console.error(e);
+      });
+  });
 
 export const getStakingPool = () =>
-  new Promise((resolve) =>
+  new Promise((resolve) => {
     axios({
       method: 'get',
       url: `${CYBER.CYBER_NODE_URL_LCD}/staking/pool`,
@@ -36,11 +38,13 @@ export const getStakingPool = () =>
       .then((response) => {
         resolve(response.data.result);
       })
-      .catch((e) => {})
-  );
+      .catch((e) => {
+        console.error(e);
+      });
+  });
 
 export const getTallying = () =>
-  new Promise((resolve) =>
+  new Promise((resolve) => {
     axios({
       method: 'get',
       url: `${CYBER.CYBER_NODE_URL_LCD}/gov/parameters/tallying`,
@@ -48,8 +52,10 @@ export const getTallying = () =>
       .then((response) => {
         resolve(response.data.result);
       })
-      .catch((e) => {})
-  );
+      .catch((e) => {
+        console.error(e);
+      });
+  });
 
 export const getProposer = async (id) => {
   try {

@@ -30,6 +30,7 @@ function LogoLedger() {
   );
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export function ContainetLedger({ logo, children, onClickBtnCloce, styles }) {
   return (
     <div
@@ -39,12 +40,13 @@ export function ContainetLedger({ logo, children, onClickBtnCloce, styles }) {
       <div style={{ position: 'absolute', padding: '0 5px', right: 3, top: 5 }}>
         <span>
           [
-          <a
+          <button
             onClick={onClickBtnCloce}
-            style={{ color: 'rgb(225, 225, 225)', cursor: 'pointer' }}
+            type="button"
+            style={{ color: 'rgb(225, 225, 225)' }}
           >
             exit
-          </a>
+          </button>
           ]
         </span>
       </div>
