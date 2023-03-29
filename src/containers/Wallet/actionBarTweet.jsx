@@ -253,26 +253,26 @@ class ActionBarTweet extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await getTxs(this.state.txHash);
-      console.log('status', status);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (update) {
-          update();
+      const data = await getTxs(this.state.txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (update) {
+            update();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
