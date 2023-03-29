@@ -13,7 +13,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
   const [loadingGift, setLoadingGift] = useState(true);
 
   useEffect(() => {
-    // console.log('useEffect | useCheckGift');
     const createObjGift = async () => {
       if (citizenship !== null && addressActive !== null) {
         setLoadingGift(true);
@@ -22,8 +21,6 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
         const { owner } = citizenship;
         const { bech32 } = addressActive;
         if (owner === bech32) {
-          // console.log('useEffect | useCheckGift');
-
           const response = await funcCheckGiftLoop();
           if (Object.keys(response).length > 0) {
             const responseClaim = await checkIsClaim(response);
@@ -48,6 +45,7 @@ function useCheckGift(citizenship, addressActive, updateFunc) {
       }
     };
     createObjGift();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [citizenship, addressActive, updateFunc]);
 
   useEffect(() => {

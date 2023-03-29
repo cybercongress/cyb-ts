@@ -145,7 +145,7 @@ function InstantiationContract({ codeId, updateFnc }) {
         <div>
           <SelectFile
             text="Upload instantiate schema"
-            useStateCallback={setFileAbiExecute}
+            stateCallback={setFileAbiExecute}
           />
         </div>
       );

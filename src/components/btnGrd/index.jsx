@@ -28,7 +28,6 @@ const stopAudioHover = () => {
 };
 
 function BtnGrd({ disabled, text, img, pending, onClick, ...props }) {
-
   const handleClick = () => {
     if (onClick) {
       onClick();
