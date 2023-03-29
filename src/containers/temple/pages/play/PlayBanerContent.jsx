@@ -59,7 +59,7 @@ function TypingText({ content, delay = 30 }) {
     });
   };
 
-  return { displayed };
+  return <>{ displayed }</>;
 }
 
 function DeltaValue({ change }) {
