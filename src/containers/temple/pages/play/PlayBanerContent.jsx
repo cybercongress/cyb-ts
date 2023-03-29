@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import useMediaQuery from '../../../../hooks/useMediaQuery';
+import useMediaQuery from 'src/hooks/useMediaQuery';
 import {
   formatCurrency,
   formatNumber,
