@@ -125,6 +125,7 @@ function AppRouter() {
             <Route path="hero/:address/" element={<ValidatorsDetails />} />
             <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />
+            <Route path="parameters/:param" element={<ParamNetwork />} />
             <Route path="blocks" element={<Block />} />
             <Route path="blocks/:idBlock" element={<BlockDetails />} />
           </Route>
