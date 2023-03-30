@@ -1,11 +1,11 @@
 import { useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
-import { DenomArr } from '../../../../components';
-import FormatNumberTokens from '../../../nebula/components/FormatNumberTokens';
-import { AppContext } from '../../../../context';
-import { CYBER } from '../../../../utils/config';
-import { replaceSlash } from '../../../../utils/utils';
+import { DenomArr } from '../../../components';
+import FormatNumberTokens from '../../nebula/components/FormatNumberTokens';
+import { AppContext } from '../../../context';
+import { CYBER } from '../../../utils/config';
+import { replaceSlash } from '../../../utils/utils';
 
 function PoolItemsList({ assets, token, ...props }) {
   const { marketData, traseDenom } = useContext(AppContext);

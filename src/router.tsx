@@ -59,6 +59,7 @@ import {
 import Sigma from './containers/sigma';
 
 import { routes } from './routes';
+import Warp from './containers/warp/Warp';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -134,11 +135,13 @@ function AppRouter() {
           <Route path={routes.hfr.path} element={<Mint />} />
           <Route path="/grid" element={<RoutedEnergy />} />
           <Route path="/token" element={<Market />} />
+          <Route path="/token/:tab" element={<Market />} />
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
           <Route path="/sixthSense" element={<Taverna />} />
           <Route path="/teleport" element={<Teleport />} />
-          <Route path="/warp" element={<Teleport />} />
+          <Route path="/warp" element={<Warp />} />
+          <Route path="/warp/:tab" element={<Teleport />} />
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />

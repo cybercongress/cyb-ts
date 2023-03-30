@@ -1,6 +1,6 @@
-import { ContainerGradientText } from '../../../../components';
-import { CYBER } from '../../../../utils/config';
-import { FormatNumberTokens } from '../../../nebula/components';
+import { ContainerGradientText } from '../../../components';
+import { CYBER } from '../../../utils/config';
+import { FormatNumberTokens } from '../../nebula/components';
 import styles from './styles.scss';
 
 function PoolsInfo({ totalCap, myCap, useMyProcent }) {

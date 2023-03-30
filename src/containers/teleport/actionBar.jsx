@@ -71,7 +71,7 @@ function ActionBar({ stateActionBar }) {
     tokenB,
     params,
     selectedPool,
-    selectedTab,
+    tab,
     updateFunc,
     selectMyPool,
     myPools,
@@ -652,7 +652,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'pools' && stage === STAGE_INIT) {
+  if (tab === 'pools' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -663,7 +663,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'createPool' && stage === STAGE_INIT) {
+  if (tab === 'create-pool' && stage === STAGE_INIT) {
     return (
       <ActionBarCenter
         disabled={isExceeded}
@@ -682,7 +682,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'sub-liquidity' && stage === STAGE_INIT) {
+  if (tab === 'sub-liquidity' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -694,7 +694,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'add-liquidity' && stage === STAGE_INIT) {
+  if (tab === 'add-liquidity' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -706,7 +706,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'swap' && typeTxs === 'swap' && stage === STAGE_INIT) {
+  if (tab === 'swap' && typeTxs === 'swap' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -718,7 +718,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'swap' && typeTxs === 'deposit' && stage === STAGE_INIT) {
+  if (tab === 'swap' && typeTxs === 'deposit' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -730,11 +730,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (
-    selectedTab === 'swap' &&
-    typeTxs === 'withdraw' &&
-    stage === STAGE_INIT
-  ) {
+  if (tab === 'swap' && typeTxs === 'withdraw' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
