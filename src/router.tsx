@@ -121,6 +121,7 @@ function AppRouter() {
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
             <Route path="contract/:address" element={<AccountDetails />} />
+            <Route path="contract/:address/:tab" element={<AccountDetails />} />
             <Route path="hero/:address/" element={<ValidatorsDetails />} />
             <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />

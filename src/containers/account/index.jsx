@@ -1,16 +1,14 @@
 /* eslint-disable no-nested-ternary */
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useMemo } from 'react';
 import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
-import { Route, Link, useParams, useLocation } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
-// import Balance fro./mainnce';
 import Heroes from './tabs/heroes';
 import { formatNumber } from '../../utils/utils';
 import { Copy, ContainerCard, Card, Dots } from '../../components';
 import ActionBarContainer from './actionBar';
-// import GetTxs from './tabs/txs';
 import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
 import FeedsTab from './tabs/feeds';
@@ -45,42 +43,49 @@ function TabBtn({ text, isSelected, onSelect, to }) {
   );
 }
 
+const getTabsMap = (address) => ({
+  security: {
+    text: 'Security',
+    to: `/network/bostrom/contract/${address}/security`,
+  },
+  sigma: { text: 'Sigma', to: `/network/bostrom/contract/${address}/sigma` },
+  cyberlinks: {
+    text: 'Cyberlinks',
+    to: `/network/bostrom/contract/${address}/cyberlinks`,
+  },
+  log: { text: 'Log', to: `/network/bostrom/contract/${address}` },
+  swarm: { text: 'Swarm', to: `/network/bostrom/contract/${address}/swarm` },
+  timeline: {
+    text: 'Timeline',
+    to: `/network/bostrom/contract/${address}/timeline`,
+  },
+  badges: { text: 'Badges', to: `/network/bostrom/contract/${address}/badges` },
+});
+
 function AccountDetails({ node, mobile, defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
-  const { address } = useParams();
-  const location = useLocation();
+  const { address, tab = 'log' } = useParams();
   const [updateAddress, setUpdateAddress] = useState(0);
   const { community } = useGetCommunity(address, updateAddress);
-  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(address, updateAddress);
-  const { staking, totalRewards, loadingHeroesInfo } = useGetHeroes(address, updateAddress);
+  const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
+    address,
+    updateAddress
+  );
+  const { staking, totalRewards, loadingHeroesInfo } = useGetHeroes(
+    address,
+    updateAddress
+  );
   const dataGetTsxByAddress = useGetTsxByAddress(address);
-  const [selected, setSelected] = useState('log');
   const [dataTweet, setDataTweet] = useState([]);
   const [tweets, setTweets] = useState(false);
   const [loaderTweets, setLoaderTweets] = useState(true);
   const [follow, setFollow] = useState(false);
   const [activeAddress, setActiveAddress] = useState(null);
   const [karmaNeuron, setKarmaNeuron] = useState(0);
-  console.log('------------contract', location);
-  useEffect(() => {
-    const { pathname } = location;
-    if (pathname.match(/timeline/gm) && pathname.match(/timeline/gm).length > 0) {
-      setSelected('timeline');
-    } else if (pathname.match(/sigma/gm) && pathname.match(/sigma/gm).length > 0) {
-      setSelected('sigma');
-    } else if (pathname.match(/security/gm) && pathname.match(/security/gm).length > 0) {
-      setSelected('security');
-    } else if (pathname.match(/badges/gm) && pathname.match(/badges/gm).length > 0) {
-      setSelected('badges');
-    } else if (pathname.match(/cyberlinks/gm) && pathname.match(/cyberlinks/gm).length > 0) {
-      setSelected('cyberlinks');
-    } else if (pathname.match(/swarm/gm) && pathname.match(/swarm/gm).length > 0) {
-      setSelected('swarm');
-    } else {
-      setSelected('log');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+
+  const tabs = useMemo(() => {
+    return getTabsMap(address);
+  }, [address]);
 
   useEffect(() => {
     const getFeeds = async () => {
@@ -115,9 +120,16 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     const chekFollowAddress = async () => {
       const addressFromIpfs = await getIpfsHash(address);
       if (defaultAccount.account !== null && defaultAccount.account.cyber) {
-        const response = await chekFollow(defaultAccount.account.cyber.bech32, addressFromIpfs);
+        const response = await chekFollow(
+          defaultAccount.account.cyber.bech32,
+          addressFromIpfs
+        );
         console.log(`response`, response);
-        if (response !== null && response.total_count > 0 && defaultAccount.account.cyber.bech32 !== address) {
+        if (
+          response !== null &&
+          response.total_count > 0 &&
+          defaultAccount.account.cyber.bech32 !== address
+        ) {
           setFollow(false);
           setTweets(false);
         }
@@ -130,7 +142,10 @@ function AccountDetails({ node, mobile, defaultAccount }) {
   useEffect(() => {
     const chekAddress = async () => {
       const { account } = defaultAccount;
-      if (account !== null && Object.prototype.hasOwnProperty.call(account, 'cyber')) {
+      if (
+        account !== null &&
+        Object.prototype.hasOwnProperty.call(account, 'cyber')
+      ) {
         const { keys } = account.cyber;
         if (keys !== 'read-only') {
           if (account.cyber.bech32 === address) {
@@ -153,70 +168,19 @@ function AccountDetails({ node, mobile, defaultAccount }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name, address]);
 
-  let content;
-  if (selected === 'security') {
-    if (loadingHeroesInfo) {
-      content = <Dots />;
-    } else {
-      content = <Route path="/network/bostrom/contract/:address/security" render={() => <Heroes data={staking} />} />;
-    }
-  }
-  // console.log('balance', balance);
-  if (selected === 'sigma') {
-    if (loadingBalanceInfo) {
-      content = <Dots />;
-    } else {
-      content = <Main balance={balance} balanceToken={balanceToken} />;
-    }
-  }
-
-  if (selected === 'cyberlinks') {
-    content = <GetLink accountUser={address} />;
-  }
-
-  if (selected === 'timeline') {
-    content = (
-      <Route
-        path="/network/bostrom/contract/:address/timeline"
-        render={() => <TxsTable dataGetTsxByAddress={dataGetTsxByAddress} accountUser={address} />}
-      />
-    );
-  }
-
-  if (selected === 'badges') {
-    content = (
-      <Route path="/network/bostrom/contract/:address/badges" render={() => <TableDiscipline address={address} />} />
-    );
-  }
-
-  if (selected === 'log') {
-    if (loaderTweets) {
-      content = <Dots />;
-    } else {
-      content = (
-        <Route path="/network/bostrom/contract/:address" render={() => <FeedsTab data={dataTweet} nodeIpfs={node} />} />
-      );
-    }
-    // connect = <FeedsTab data={dataTweet} nodeIpfs={node} />;
-  }
-
-  if (selected === 'swarm') {
-    content = (
-      <Route
-        path="/network/bostrom/contract/:address/swarm"
-        render={() => <FollowsTab node={node} community={community} />}
-      />
-    );
-    // connect = <FollowsTab data={addressFollows} />;
-  }
-
+  const showLoadingDots =
+    (loadingHeroesInfo && ['security', 'sigma', ''].indexOf(tab) !== -1) ||
+    (loaderTweets && tab === 'log') ||
+    (loadingBalanceInfo && tab === 'sigma');
   return (
     <div>
       <main className="block-body">
-        {/* <button type="button" onClick={() => setOffset((item) => item + 1)}>
-          +
-        </button> */}
-        <Pane marginBottom={20} display="flex" justifyContent="center" alignItems="center">
+        <Pane
+          marginBottom={20}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
           <Text color="#fff" fontSize="18px">
             {address} <Copy text={address} />
           </Text>
@@ -242,29 +206,50 @@ function AccountDetails({ node, mobile, defaultAccount }) {
             }}
           />
         </ContainerCard>
-        <Tablist display="grid" gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))" gridGap="10px">
-          <TabBtn
-            text="Security"
-            isSelected={selected === 'security'}
-            to={`/network/bostrom/contract/${address}/security`}
-          />
-          <TabBtn text="Sigma" isSelected={selected === 'sigma'} to={`/network/bostrom/contract/${address}/sigma`} />
-          <TabBtn
-            text="Cyberlinks"
-            isSelected={selected === 'cyberlinks'}
-            to={`/network/bostrom/contract/${address}/cyberlinks`}
-          />
-          <TabBtn text="Log" isSelected={selected === 'log'} to={`/network/bostrom/contract/${address}`} />
-          <TabBtn text="Swarm" isSelected={selected === 'swarm'} to={`/network/bostrom/contract/${address}/swarm`} />
-          <TabBtn
-            text="Timeline"
-            isSelected={selected === 'timeline'}
-            to={`/network/bostrom/contract/${address}/timeline`}
-          />
-          <TabBtn text="Badges" isSelected={selected === 'badges'} to={`/network/bostrom/contract/${address}/badges`} />
+        <Tablist
+          display="grid"
+          gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
+          gridGap="10px"
+        >
+          {Object.entries(tabs).map(([key, item]) => (
+            <TabBtn
+              key={`acc_tabs_${key}`}
+              text={item.text}
+              isSelected={tab === key}
+              to={item.to}
+            />
+          ))}
         </Tablist>
-        <Pane display="flex" marginTop={20} marginBottom={50} justifyContent="center" flexDirection="column">
-          {content}
+        <Pane
+          display="flex"
+          marginTop={20}
+          marginBottom={50}
+          justifyContent="center"
+          flexDirection="column"
+        >
+          {showLoadingDots && <Dots />}
+
+          {!showLoadingDots && (
+            <>
+              {tab === 'security' && <Heroes data={staking} />}
+              {tab === 'sigma' && (
+                <Main balance={balance} balanceToken={balanceToken} />
+              )}
+              {tab === 'cyberlinks' && <GetLink accountUser={address} />}
+
+              {tab === 'timeline' && (
+                <TxsTable
+                  dataGetTsxByAddress={dataGetTsxByAddress}
+                  accountUser={address}
+                />
+              )}
+              {tab === 'badges' && <TableDiscipline address={address} />}
+              {tab === 'log' && <FeedsTab data={dataTweet} nodeIpfs={node} />}
+              {tab === 'swarm' && (
+                <FollowsTab node={node} community={community} />
+              )}
+            </>
+          )}
         </Pane>
       </main>
       {!mobile &&
@@ -272,7 +257,7 @@ function AccountDetails({ node, mobile, defaultAccount }) {
           <ActionBarContainer
             updateAddress={() => setUpdateAddress(updateAddress + 1)}
             addressSend={address}
-            type={selected}
+            type={tab}
             follow={follow}
             tweets={tweets}
             defaultAccount={activeAddress}
