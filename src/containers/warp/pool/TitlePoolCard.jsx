@@ -1,6 +1,6 @@
-import { DenomArr } from '../../../../components';
-import { CYBER } from '../../../../utils/config';
-import { FormatNumberTokens } from '../../../nebula/components';
+import { DenomArr } from '../../../components';
+import { CYBER } from '../../../utils/config';
+import { FormatNumberTokens } from '../../nebula/components';
 import styles from './styles.scss';
 
 function TitlePool({ pool, totalCap, useInactive }) {

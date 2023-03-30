@@ -60,6 +60,7 @@ import {
 import Sigma from './containers/sigma';
 
 import { routes } from './routes';
+import Warp from './containers/warp/Warp';
 
 // const history = createBrowserHistory({});
 
@@ -139,7 +140,8 @@ function AppRouter() {
           <Route path="/particles" element={<Objects />} />
           <Route path="/sixthSense" element={<Taverna />} />
           <Route path="/teleport" element={<Teleport />} />
-          <Route path="/warp" element={<Teleport />} />
+          <Route path="/warp" element={<Warp />} />
+          <Route path="/warp/:tab" element={<Teleport />} />
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />

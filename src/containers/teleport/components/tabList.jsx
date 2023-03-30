@@ -7,7 +7,7 @@ function TabList({ selected }) {
   const history = useNavigate();
 
   const handleHistory = (to) => {
-    history.push(to);
+    history(to);
   };
 
   return (
@@ -40,7 +40,7 @@ function TabList({ selected }) {
       </ButtonTeleport>
       <ButtonTeleport
         status="center"
-        isSelected={selected === 'createPool'}
+        isSelected={selected === 'create-pool'}
         onClick={() => handleHistory('/warp/create-pool')}
       >
         Create pool
