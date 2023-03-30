@@ -1,15 +1,13 @@
-import React from 'react';
 import { Tablist } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import { TabBtn } from '../../../components';
 import ButtonTeleport from './buttonGroup/indexBtn';
 
 function TabList({ selected }) {
-  const history = useHistory();
+  const history = useNavigate();
 
   const handleHistory = (to) => {
-    history.push(to);
+    history(to);
   };
 
   return (
@@ -22,17 +20,6 @@ function TabList({ selected }) {
       width="375px"
       marginX="auto"
     >
-      {/* <TabBtn
-        text="add liquidity"
-        isSelected={selected === 'add-liquidity'}
-        to="/teleport/add-liquidity"
-      /> */}
-      {/* <TabBtn text="Swap" isSelected={selected === 'swap'} to="/teleport" /> */}
-      {/* <TabBtn
-        text="sub liquidity"
-        isSelected={selected === 'sub-liquidity'}
-        to="/teleport/sub-liquidity"
-      /> */}
       <ButtonTeleport
         status="left"
         isSelected={selected === 'add-liquidity'}
@@ -42,7 +29,7 @@ function TabList({ selected }) {
       </ButtonTeleport>
       <ButtonTeleport
         status="center"
-        isSelected={selected === 'createPool'}
+        isSelected={selected === 'create-pool'}
         onClick={() => handleHistory('/warp/create-pool')}
       >
         Create pool

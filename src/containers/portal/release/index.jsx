@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Link } from 'react-router-dom';
@@ -20,12 +14,9 @@ import {
   CurrentGift,
   ProgressCard,
   NextUnfreeze,
-  Released,
   MainContainer,
-  UnclaimedGift,
   MoonAnimation,
   Stars,
-  ContainerGradientText,
 } from '../components';
 import PasportCitizenship from '../pasport';
 import ActionBarRelease from './ActionBarRelease';
@@ -33,12 +24,12 @@ import useCheckRelease from '../hook/useCheckRelease';
 import useCheckGift from '../hook/useCheckGift';
 import { PATTERN_CYBER } from '../../../utils/config';
 import { formatNumber } from '../../../utils/search/utils';
-import { STEP_INFO } from './utils';
+import STEP_INFO from './utils';
 import Info from './Info';
-import { LinkWindow } from '../../../components';
 
-const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
-const portalAmbient = require('../../../sounds/portalAmbient112.mp3');
+import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
+import portalAmbient from '../../../sounds/portalAmbient112.mp3';
+import { ContainerGradientText } from '../../../components';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -67,26 +58,26 @@ const {
   STATE_INIT_NULL_BEFORE,
 } = STEP_INFO;
 
-const InfoBaner = ({ title, text, status }) => (
-  <ContainerGradientText status={status}>
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px',
-        padding: '15px 0',
-      }}
-    >
-      <div style={{ color: '#36D6AE', fontSize: '22px' }}>{title}</div>
-      <div style={{ fontSize: '18px', color: '#fff', textAlign: 'center' }}>
-        {text}
+function InfoBaner({ title, text, status }) {
+  return (
+    <ContainerGradientText status={status}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
+          padding: '15px 0',
+        }}
+      >
+        <div style={{ color: '#36D6AE', fontSize: '22px' }}>{title}</div>
+        <div style={{ fontSize: '18px', color: '#fff', textAlign: 'center' }}>
+          {text}
+        </div>
       </div>
-    </div>
-  </ContainerGradientText>
-);
-
-const NS_TO_MS = 1 * 10 ** -6;
+    </ContainerGradientText>
+  );
+}
 
 const initStateBonus = {
   current: 0,
@@ -100,13 +91,10 @@ function Release({ defaultAccount, mobile }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { citizenship, loading: loadingCitizenship } =
     useGetActivePassport(defaultAccount);
-  const {
-    totalGift,
-    totalGiftClaimed,
-    giftData,
-    totalGiftAmount,
-    loadingGift,
-  } = useCheckGift(citizenship, addressActive);
+  const { totalGift, totalGiftClaimed, giftData, loadingGift } = useCheckGift(
+    citizenship,
+    addressActive
+  );
   const {
     totalRelease,
     totalReadyRelease,
@@ -389,25 +377,6 @@ function Release({ defaultAccount, mobile }) {
     return '';
   }, [citizensTargetClaim, citizensClaim]);
 
-  const useUnClaimedGiftAmount = useMemo(() => {
-    if (totalGiftClaimed !== null && totalGiftAmount !== null) {
-      if (totalGiftAmount.claim === totalGiftClaimed.claim) {
-        return false;
-      }
-
-      if (currentBonus?.current) {
-        const unclaimedGift = totalGiftAmount.amount - totalGiftClaimed.amount;
-        const unclaimedGiftByBonus = Math.floor(
-          unclaimedGift * currentBonus.current
-        );
-        return formatNumber(parseFloat(unclaimedGiftByBonus));
-      }
-
-      return false;
-    }
-    return false;
-  }, [totalGiftAmount, totalGiftClaimed, currentBonus]);
-
   const useUnClaimedGiftData = useMemo(() => {
     if (
       giftData !== null &&
@@ -435,10 +404,6 @@ function Release({ defaultAccount, mobile }) {
   let content;
 
   // console.log('currentRelease', currentRelease);
-
-  const validNextUnfreeze =
-    (timeNext === null && readyRelease !== null) ||
-    (timeNext !== null && readyRelease === null);
 
   const validstateInfoBEFORE =
     stateInfo === STATE_INIT_NULL_BEFORE ||

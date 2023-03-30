@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
-import { reduceBalances, convertResources } from '../../../utils/utils';
+import { reduceBalances } from '../../../utils/utils';
 import { authAccounts } from '../../../utils/search/utils';
 import { CYBER } from '../../../utils/config';
 
@@ -40,7 +40,7 @@ const getVestingPeriodsData = (data, startTime) => {
   return vestedAmount;
 };
 
-function getBalances(addressActive, updateAddress) {
+function useGetBalances(addressActive, updateAddress) {
   const { jsCyber } = useContext(AppContext);
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
@@ -73,9 +73,8 @@ function getBalances(addressActive, updateAddress) {
           getAccount.result.value.base_vesting_account.original_vesting
         ) {
           const { vesting_periods: vestingPeriods } = getAccount.result.value;
-          const {
-            original_vesting: originalVestingAmount,
-          } = getAccount.result.value.base_vesting_account;
+          const { original_vesting: originalVestingAmount } =
+            getAccount.result.value.base_vesting_account;
           const { start_time: startTime } = getAccount.result.value;
           const reduceOriginalVestingAmount = reduceBalances(
             originalVestingAmount
@@ -133,4 +132,4 @@ function getBalances(addressActive, updateAddress) {
   return { liquidBalances };
 }
 
-export default getBalances;
+export default useGetBalances;

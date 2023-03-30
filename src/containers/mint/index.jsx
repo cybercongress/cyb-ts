@@ -1,58 +1,21 @@
-import React, { useEffect, useContext, useState, useMemo } from 'react';
-import { Tablist, Pane, Button, Text } from '@cybercongress/gravity';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useContext, useState, useMemo } from 'react';
+import { Tablist, Pane } from '@cybercongress/gravity';
 import Slider from 'rc-slider';
-import { coin } from '@cosmjs/launchpad';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { Btn, ItemBalance } from './ui';
 import 'rc-slider/assets/index.css';
-import {
-  trimString,
-  formatNumber,
-  getDecimal,
-  formatCurrencyNumber,
-  formatCurrency,
-  convertResources,
-  getDisplayAmount,
-} from '../../utils/utils';
-import { authAccounts } from '../../utils/search/utils';
+import { formatNumber, getDisplayAmount } from '../../utils/utils';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
 import ERatio from './eRatio';
-import { useGetBalance } from '../account/hooks';
 import { Dots, CardStatisics, ValueImg } from '../../components';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
-import TabBtnList from './tabLinsBtn';
 import ActionBar from './actionBar';
 
-const INIT_STAGE = 0;
-const TSX_SEND = 1;
-
-const BASE_VESTING_AMOUNT = 10000000;
 const BASE_VESTING_TIME = 86401;
-const VESTING_TIME_HOURS = 3601;
 const BASE_MAX_MINT_TIME = 41;
-
-const PREFIXES = [
-  {
-    prefix: 't',
-    power: 10 ** 12,
-  },
-  {
-    prefix: 'g',
-    power: 10 ** 9,
-  },
-  {
-    prefix: 'm',
-    power: 10 ** 6,
-  },
-  {
-    prefix: 'k',
-    power: 10 ** 3,
-  },
-];
 
 const grid = {
   display: 'grid',
@@ -137,11 +100,12 @@ function Mint({ defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
+      const { bech32 } = account.cyber;
 
       addressPocket = bech32;
     }
     setAddressActive(addressPocket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {
@@ -249,6 +213,7 @@ function Mint({ defaultAccount }) {
       amountA = getDisplayAmount(vestedTokensA, coinDecimals);
     }
     return amountA;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vested, originalVesting]);
 
   const vestedV = useMemo(() => {
@@ -261,6 +226,7 @@ function Mint({ defaultAccount }) {
       amountV = getDisplayAmount(vestedTokensA, coinDecimals);
     }
     return amountV;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vested, originalVesting]);
 
   return (

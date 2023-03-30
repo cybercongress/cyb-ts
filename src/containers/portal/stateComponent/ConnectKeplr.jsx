@@ -1,5 +1,4 @@
-import React from 'react';
-import { ContainerGradient } from '../components';
+import { ContainerGradient } from '../../../components';
 
 const linkMovie =
   'https://gateway.ipfs.cybernode.ai/ipfs/QmSWJNCBxj4m5Lpg1XGueh38NbEVDLAGsQrueD937xSnMC';
@@ -18,6 +17,7 @@ function ConnectKeplr() {
           height: '100%',
         }}
       >
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video width="100%" height="100%" controls>
           <source src={linkMovie} type="video/mp4" />
         </video>
@@ -26,4 +26,5 @@ function ConnectKeplr() {
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default ConnectKeplr;

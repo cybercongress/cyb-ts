@@ -26,4 +26,4 @@ const STEP_INFO = {
   STATE_DELETE_IN_PROCESS: 5.1,
 };
 
-export { STEP_INFO };
+export default STEP_INFO;

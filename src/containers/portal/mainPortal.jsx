@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MainContainer, InfoCard, Stars } from './components';
 import { AppContext } from '../../context';
 import { activePassport } from './utils';
@@ -43,7 +43,7 @@ const getActiveAddress = (address) => {
 const scaleInitValue = 0.9;
 
 function MainPartal({ defaultAccount }) {
-  const history = useHistory();
+  const history = useNavigate();
   const { jsCyber } = useContext(AppContext);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [scale, setScale] = useState(scaleInitValue);

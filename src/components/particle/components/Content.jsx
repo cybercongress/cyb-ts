@@ -3,7 +3,7 @@ import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import ReactMarkdown from 'react-markdown';
-import { ContainerGradientText } from '../../../containers/portal/components/containerGradient/ContainerGradient';
+import { ContainerGradientText } from '../../containerGradient/ContainerGradient';
 import { CYBER } from '../../../utils/config';
 
 const checkIpfsState = () => {
@@ -38,6 +38,7 @@ function Content({ typeContent, gateway, content, textPreview, cid }) {
     contentItem = (
       <div className="container-text-SearchItem">
         <ReactMarkdown
+          // eslint-disable-next-line react/no-children-prop
           children={textPreview}
           rehypePlugins={[rehypeSanitize]}
           remarkPlugins={[remarkGfm]}

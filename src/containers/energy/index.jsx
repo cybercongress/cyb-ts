@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { MyEnergy, Income, Outcome } from './tab';
@@ -20,12 +20,8 @@ function RoutedEnergy({ defaultAccount }) {
     addressActive,
     updateAddressFunc
   );
-  const {
-    sourceRouted,
-    sourceEnergy,
-    destinationRoutes,
-    destinationEnergy,
-  } = useGetSourceRoutes(addressActive, updateAddressFunc);
+  const { sourceRouted, sourceEnergy, destinationRoutes, destinationEnergy } =
+    useGetSourceRoutes(addressActive, updateAddressFunc);
 
   useEffect(() => {
     setSelectedRoute({});
@@ -39,12 +35,11 @@ function RoutedEnergy({ defaultAccount }) {
       account !== null &&
       Object.prototype.hasOwnProperty.call(account, 'cyber')
     ) {
-      const { keys, bech32 } = account.cyber;
-      // if (keys === 'keplr') {
-        addressPocket = bech32;
-      // }
+      const { bech32 } = account.cyber;
+      addressPocket = bech32;
     }
     setAddressActive(addressPocket);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {
@@ -59,6 +54,7 @@ function RoutedEnergy({ defaultAccount }) {
     } else {
       setSelected('myEnegy');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const selectRouteFunc = (route, index) => {

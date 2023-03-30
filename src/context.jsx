@@ -1,19 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-  useCallback,
-} from 'react';
-import { SigningCosmosClient, GasPrice } from '@cosmjs/launchpad';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import React, { useState, useEffect, useCallback } from 'react';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
-import { Decimal } from '@cosmjs/math';
 import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
 
-import queryString from 'query-string';
 import { CYBER } from './utils/config';
-import { configKeplr } from './utils/keplrUtils';
-import useGetNetworks from './hooks/useGetNetworks';
+import configKeplr from './utils/keplrUtils';
 import defaultNetworks from './utils/defaultNetworks';
 import {
   getDenomHash,
@@ -23,7 +14,7 @@ import {
 } from './utils/utils';
 import { getDenomTraces } from './utils/search/utils';
 
-export const getKeplr = async () => {
+const getKeplr = async () => {
   if (window.keplr) {
     return window.keplr;
   }
@@ -63,24 +54,10 @@ const valueContext = {
 
 export const AppContext = React.createContext(valueContext);
 
-export const useContextProvider = () => useContext(AppContext);
+// const useContextProvider = () => useContext(AppContext);
 
-export async function createClient(signer) {
+async function createClient(signer) {
   if (signer) {
-    const firstAddress = await signer.getAccounts();
-    console.log('firstAddress', firstAddress);
-    // const gasPrice = new GasPrice(Decimal.fromAtomics(0, 0), 'boot');
-    const gasPrice = GasPrice.fromString('0.001boot');
-
-    const gasLimits = {
-      send: 200000,
-      cyberlink: 256000,
-      investmint: 160000,
-      createRoute: 128000,
-      editRoute: 128000,
-      editRouteAlias: 128000,
-      deleteRoute: 128000,
-    };
     const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
     const client = await SigningCyberClient.connectWithSigner(
       CYBER.CYBER_NODE_URL_API,
@@ -88,22 +65,12 @@ export async function createClient(signer) {
       options
     );
 
-    // client.firstAddress = firstAddress;
-    // const cosmJS = new SigningCyberClient(
-    //   CYBER.CYBER_NODE_URL_LCD,
-    //   firstAddress,
-    //   signer,
-    //   gasPrice,
-    //   gasLimits,
-    //   'sync'
-    // );
-
     return client;
   }
   return null;
 }
 
-const AppContextProvider = ({ children }) => {
+function AppContextProvider({ children }) {
   const [value, setValue] = useState(valueContext);
   const [signer, setSigner] = useState(null);
   const [client, setClient] = useState(null);
@@ -142,27 +109,6 @@ const AppContextProvider = ({ children }) => {
     }));
   }, []);
 
-  // const getUplParam = (dataNetworks) => {
-  //   const urlOptions = queryString.parse(window.location.href.split('?')[1]);
-  //   const LOCALSTORAGE_CHAIN_ID = localStorage.getItem('chainId');
-  //   if (urlOptions.network) {
-  //     const { network } = urlOptions;
-  //     if (Object.prototype.hasOwnProperty.call(dataNetworks, network)) {
-  //       console.log('LOCALSTORAGE_CHAIN_ID', LOCALSTORAGE_CHAIN_ID);
-  //       console.log('network', network);
-  //       if (
-  //         LOCALSTORAGE_CHAIN_ID === null ||
-  //         LOCALSTORAGE_CHAIN_ID !== network
-  //       ) {
-  //         localStorage.setItem('chainId', network);
-  //       } else {
-  //         localStorage.setItem('chainId', 'bostrom');
-  //       }
-  //     }
-  //   }
-  //   setLoadUrl(false);
-  // };
-
   useEffect(() => {
     const createQueryCliet = async () => {
       setLoadUrl(true);
@@ -195,7 +141,7 @@ const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const getIBCDenomData = async (queryClient) => {
+    const getIBCDenomData = async () => {
       // const responce = await queryClient.allDenomTraces();
       const responce = await getDenomTraces();
       // const { denomTraces } = responce;
@@ -230,37 +176,6 @@ const AppContextProvider = ({ children }) => {
     };
     getIBCDenomData();
   }, []);
-
-  // const getIBCDenomData = async (queryClient) => {
-  //   const responce = await queryClient.allDenomTraces();
-  //   const { denomTraces } = responce;
-  //   const ibcData = {};
-
-  //   if (denomTraces && denomTraces.length > 0) {
-  //     denomTraces.forEach((item) => {
-  //       const { path, baseDenom } = item;
-  //       const ibcDenom = getDenomHash(path, baseDenom);
-
-  //       // sourceChannelId
-  //       const parts = path.split('/');
-  //       const removetr = parts.filter((itemStr) => itemStr !== 'transfer');
-  //       const sourceChannelId = removetr.join('/');
-
-  //       ibcData[ibcDenom] = {
-  //         sourceChannelId,
-  //         baseDenom,
-  //         ibcDenom,
-  //       };
-  //     });
-  //   }
-
-  //   if (Object.keys(ibcData).length > 0) {
-  //     setValue((item) => ({
-  //       ...item,
-  //       ibcDataDenom: { ...ibcData },
-  //     }));
-  //   }
-  // };
 
   useEffect(() => {
     if (signer !== null) {
@@ -395,6 +310,7 @@ const AppContextProvider = ({ children }) => {
 
       return { ...infoDenomTemp };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [value.ibcDataDenom, value.poolsData]
   );
 
@@ -408,6 +324,7 @@ const AppContextProvider = ({ children }) => {
 
   return (
     <AppContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         ...value,
         updatejsCyber,
@@ -421,6 +338,6 @@ const AppContextProvider = ({ children }) => {
       {children}
     </AppContext.Provider>
   );
-};
+}
 
 export default AppContextProvider;

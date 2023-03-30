@@ -1,9 +1,9 @@
+/* eslint-disable no-await-in-loop */
 import bech32 from 'bech32';
 import { fromUtf8 } from '@cosmjs/encoding';
 import { Sha256 } from '@cosmjs/crypto';
 import BigNumber from 'bignumber.js';
 import { CYBER } from './config';
-import coinDecimalsConfig from './configToken';
 import tokenList from './tokenList';
 
 import cyberSpace from '../image/large-purple-circle.png';
@@ -12,12 +12,6 @@ import cyberBostrom from '../image/large-green.png';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
-
-const ORDER = {
-  NONE: 'NONE',
-  ASC: 'ASC',
-  DESC: 'DESC',
-};
 
 const { BECH32_PREFIX_ACC_ADDR_CYBER } = CYBER;
 
@@ -86,28 +80,13 @@ export function formatCurrency(
   prefixCustom = PREFIXES
 ) {
   const { prefix = '', power = 1 } =
-    prefixCustom.find(({ power }) => value >= power) || {};
+    prefixCustom.find((obj) => value >= obj.power) || {};
 
   return `${roundNumber(
     value / power,
     decimalDigits
   )} ${prefix}${currency.toLocaleUpperCase()}`;
 }
-
-export const formatCurrencyNumber = (
-  value,
-  currency = DEFAULT_CURRENCY,
-  decimalDigits = DEFAULT_DECIMAL_DIGITS,
-  prefixCustom = PREFIXES
-) => {
-  const { prefix = '', power = 1 } =
-    prefixCustom.find(({ power }) => value >= power) || {};
-
-  return {
-    number: roundNumber(value / power, decimalDigits),
-    currency: `${prefix}${currency.toLocaleUpperCase()}`,
-  };
-};
 
 const getDecimal = (number, toFixed) => {
   const nstring = number.toString();
@@ -116,22 +95,10 @@ const getDecimal = (number, toFixed) => {
   return result;
 };
 
-const run = async (func) => {
-  try {
-    await func();
-  } catch (error) {
-    setTimeout(run, 1000, func);
-  }
-};
-
 const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
-};
-
-const timer = (func) => {
-  setInterval(func, 1000);
 };
 
 const fromBech32 = (operatorAddr, prefix = BECH32_PREFIX_ACC_ADDR_CYBER) => {
@@ -154,61 +121,6 @@ const trimString = (address, firstArg, secondArg) => {
   return '';
 };
 
-const msgType = (type) => {
-  switch (type) {
-    // cyberd
-    case 'cyberd/Link':
-      return 'Link';
-
-    // bank
-    case 'cosmos-sdk/MsgSend':
-      return 'Send';
-    case 'cosmos-sdk/MsgMultiSend':
-      return 'Multi Send';
-
-    // staking
-    case 'cosmos-sdk/MsgCreateValidator':
-      return 'Create Validator';
-    case 'cosmos-sdk/MsgEditValidator':
-      return 'Edit Validator';
-    case 'cosmos-sdk/MsgDelegate':
-      return 'Delegate';
-    case 'cosmos-sdk/MsgUndelegate':
-      return 'Undelegate';
-    case 'cosmos-sdk/MsgBeginRedelegate':
-      return 'Redelegate';
-
-    // gov
-    case 'cosmos-sdk/MsgSubmitProposal':
-      return 'Submit Proposal';
-    case 'cosmos-sdk/MsgDeposit':
-      return 'Deposit';
-    case 'cosmos-sdk/MsgVote':
-      return 'Vote';
-
-    // distribution
-    case 'cosmos-sdk/MsgWithdrawValidatorCommission':
-      return 'Withdraw Commission';
-    case 'cosmos-sdk/MsgWithdrawDelegationReward':
-      return 'Withdraw Reward';
-    case 'cosmos-sdk/MsgModifyWithdrawAddress':
-      return 'Modify Withdraw Address';
-
-    // slashing
-    case 'cosmos-sdk/MsgUnjail':
-      return 'Unjail';
-
-    // ibc
-    case 'cosmos-sdk/IBCTransferMsg':
-      return 'IBCTransfer';
-    case 'cosmos-sdk/IBCReceiveMsg':
-      return 'IBC Receive';
-
-    default:
-      return { type };
-  }
-};
-
 const exponentialToDecimal = (exponential) => {
   let decimal = exponential.toString().toLowerCase();
   if (decimal.includes('e+')) {
@@ -225,19 +137,6 @@ const exponentialToDecimal = (exponential) => {
     ) {
       postfix += '0';
     }
-    const addCommas = (text) => {
-      let j = 3;
-      let textLength = text.length;
-      while (j < textLength) {
-        text = `${text.slice(0, textLength - j)},${text.slice(
-          textLength - j,
-          textLength
-        )}`;
-        textLength++;
-        j += 3 + 1;
-      }
-      return text;
-    };
     decimal = exponentialSplitted[0].replace('.', '') + postfix;
   }
   if (decimal.toLowerCase().includes('e-')) {
@@ -257,43 +156,19 @@ function dhm(t) {
   let d = Math.floor(t / cd);
   let h = Math.floor((t - d * cd) / ch);
   let m = Math.round((t - d * cd - h * ch) / 60000);
-  const pad = function (n, unit) {
+  const pad = (n, unit) => {
     return n < 10 ? `0${n}${unit}` : `${n}${unit}`;
   };
   if (m === 60) {
-    h++;
+    h += 1;
     m = 0;
   }
   if (h === 24) {
-    d++;
+    d += 1;
     h = 0;
   }
   return [`${d}d`, pad(h, 'h'), pad(m, 'm')].join(':');
 }
-
-const sort = (data, sortKey, ordering = ORDER.DESC) => {
-  if (ordering === ORDER.NONE) {
-    return data;
-  }
-  if (sortKey === 'timestamp') {
-    return data.sort((a, b) => {
-      const x = new Date(a[sortKey]);
-      const y = new Date(b[sortKey]);
-      if (ordering === ORDER.ASC) {
-        return x - y;
-      }
-      return y - x;
-    });
-  }
-  return data.sort((a, b) => {
-    const x = a[sortKey];
-    const y = b[sortKey];
-    if (ordering === ORDER.ASC) {
-      return x - y;
-    }
-    return y - x;
-  });
-};
 
 const downloadObjectAsJson = (exportObj, exportName) => {
   const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -306,21 +181,6 @@ const downloadObjectAsJson = (exportObj, exportName) => {
   document.body.appendChild(downloadAnchorNode);
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
-};
-
-const getTimeRemaining = (endtime) => {
-  const t = Date.parse(endtime) - Date.parse(new Date());
-  const seconds = Math.floor((t / 1000) % 60);
-  const minutes = Math.floor((t / 1000 / 60) % 60);
-  const hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-  const days = Math.floor(t / (1000 * 60 * 60 * 24));
-  return {
-    total: t,
-    days,
-    hours,
-    minutes,
-    seconds,
-  };
 };
 
 const isMobileTablet = () => {
@@ -404,24 +264,6 @@ const reduceBalances = (data) => {
   }
 };
 
-const reduceObj = (data) => {
-  try {
-    let objTemp = {};
-    if (Object.keys(data).length > 0) {
-      objTemp = data.reduce(
-        (obj, item) => ({
-          ...obj,
-          [item.key]: item.value,
-        }),
-        {}
-      );
-    }
-    return objTemp;
-  } catch (error) {
-    return {};
-  }
-};
-
 // example: oneLiner -> message.module=wasm&message.action=/cosmwasm.wasm.v1.MsgStoreCode&store_code.code_id=${codeId}
 function makeTags(oneLiner) {
   return oneLiner.split('&').map((pair) => {
@@ -469,26 +311,6 @@ const selectNetworkImg = (network) => {
     default:
       return customNetwork;
   }
-};
-
-const denonFnc = (text) => {
-  let denom = text;
-
-  if (
-    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
-    text.includes('ibc')
-  ) {
-    denom = coinDecimalsConfig[text].denom;
-  }
-
-  if (
-    Object.prototype.hasOwnProperty.call(coinDecimalsConfig, text) &&
-    text.includes('pool')
-  ) {
-    const poolDenoms = coinDecimalsConfig[text].denom;
-    denom = [denonFnc(poolDenoms[0]), denonFnc(poolDenoms[1])];
-  }
-  return denom;
 };
 
 const sha256 = (data) => {
@@ -564,33 +386,25 @@ const findPoolDenomInArr = (baseDenom, dataPools) => {
 };
 
 export {
-  run,
-  sort,
-  roundNumber,
   formatNumber,
   asyncForEach,
-  timer,
   getDecimal,
   fromBech32,
   trimString,
-  msgType,
   exponentialToDecimal,
   dhm,
   downloadObjectAsJson,
-  getTimeRemaining,
   isMobileTablet,
   coinDecimals,
   convertResources,
   timeSince,
   reduceBalances,
   makeTags,
-  reduceObj,
   parseMsgContract,
   replaceSlash,
   encodeSlash,
   groupMsg,
   selectNetworkImg,
-  denonFnc,
   getDenomHash,
   getDisplayAmount,
   getDisplayAmountReverce,

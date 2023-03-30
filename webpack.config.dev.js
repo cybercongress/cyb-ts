@@ -1,11 +1,10 @@
 const { merge } = require('webpack-merge');
-const webpack = require('webpack');
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
-  devtool: 'hidden-source-map',
-  // devtool: 'inline-source-map',
+  // devtool: 'hidden-source-map',
+  devtool: 'inline-source-map',
   devServer: {
     https: true,
     host: 'localhost',
@@ -16,10 +15,4 @@ module.exports = merge(commonConfig, {
     },
     historyApiFallback: true,
   },
-  plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
-    }),
-  ],
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import axios from 'axios';
 import { AppContext } from '../../context';
 
@@ -29,8 +29,6 @@ const DICTIONARY = {
     'True Hero of the Great Web',
   Leeches: 'Devil',
 };
-
-const COUNT_STAGES = 91;
 
 const GIFT_ICON = '🎁';
 const BOOT_ICON = '🟢';
@@ -317,7 +315,6 @@ export {
   CONTRACT_ADDRESS_GIFT,
   GIFT_ICON,
   BOOT_ICON,
-  COUNT_STAGES,
   checkGift,
   getConfigGift,
   getStateGift,

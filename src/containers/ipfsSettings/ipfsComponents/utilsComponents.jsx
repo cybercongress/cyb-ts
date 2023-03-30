@@ -1,5 +1,4 @@
-import React from 'react';
-import { OptionSelect } from '../../teleport/components/select';
+import { OptionSelect } from '../../../components';
 
 function ContainerKeyValue({ children }) {
   return (

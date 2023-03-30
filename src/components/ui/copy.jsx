@@ -1,6 +1,5 @@
-import React from 'react';
-
-export const Copy = ({ text, ...props }) => {
+// eslint-disable-next-line import/prefer-default-export
+export function Copy({ text, ...props }) {
   return (
     <button
       className="copy-address-btn"
@@ -12,4 +11,4 @@ export const Copy = ({ text, ...props }) => {
       }}
     />
   );
-};
+}

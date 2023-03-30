@@ -1,43 +1,34 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import {
   ActionBar as ActionBarContainer,
   Pane,
   Button,
 } from '@cybercongress/gravity';
 import Long from 'long';
-import { logs } from '@cosmjs/stargate';
-import { Link, useHistory } from 'react-router-dom';
-import { coin, coins } from '@cosmjs/launchpad';
+import { Link, useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import {
   ActionBarContentText,
   Account,
   LinkWindow,
   ActionBar as ActionBarCenter,
+  BtnGrd,
 } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER, DEFAULT_GAS_LIMITS, LEDGER } from '../../utils/config';
 import {
-  exponentialToDecimal,
   fromBech32,
   trimString,
   selectNetworkImg,
   convertAmountReverce,
   convertAmount,
 } from '../../utils/utils';
-import { getTxs } from '../../utils/search/utils';
-import {
-  sortReserveCoinDenoms,
-  reduceAmounToken,
-  networkList,
-  getCoinDecimals,
-} from './utils';
+import { sortReserveCoinDenoms } from './utils';
 import networks from '../../utils/networkListIbc';
-import { BtnGrd, ActionBarSteps } from '../portal/components';
+import { ActionBarSteps } from '../portal/components';
 
 import ActionBarStaps from './actionBarSteps';
 
-import testVar from './testJson.json';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const POOL_TYPE_INDEX = 1;
@@ -63,7 +54,7 @@ const coinFunc = (amount, denom) => {
 
 function ActionBar({ stateActionBar }) {
   const { keplr, jsCyber, traseDenom } = useContext(AppContext);
-  const history = useHistory();
+  const history = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -80,7 +71,7 @@ function ActionBar({ stateActionBar }) {
     tokenB,
     params,
     selectedPool,
-    selectedTab,
+    tab,
     updateFunc,
     selectMyPool,
     myPools,
@@ -275,6 +266,7 @@ function ActionBar({ stateActionBar }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const createPool = async () => {
@@ -570,6 +562,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, ibcClient, tokenAAmount, denomIbc, keplr]);
 
   const withdrawOnClick = useCallback(async () => {
@@ -615,6 +608,7 @@ function ActionBar({ stateActionBar }) {
       setErrorMessage(e.toString());
       setStage(STAGE_ERROR);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
 
   const handleHistory = (to) => {
@@ -658,7 +652,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'pools' && stage === STAGE_INIT) {
+  if (tab === 'pools' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -669,7 +663,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'createPool' && stage === STAGE_INIT) {
+  if (tab === 'create-pool' && stage === STAGE_INIT) {
     return (
       <ActionBarCenter
         disabled={isExceeded}
@@ -688,7 +682,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'sub-liquidity' && stage === STAGE_INIT) {
+  if (tab === 'sub-liquidity' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -700,7 +694,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'add-liquidity' && stage === STAGE_INIT) {
+  if (tab === 'add-liquidity' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -712,7 +706,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'swap' && typeTxs === 'swap' && stage === STAGE_INIT) {
+  if (tab === 'swap' && typeTxs === 'swap' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -724,7 +718,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (selectedTab === 'swap' && typeTxs === 'deposit' && stage === STAGE_INIT) {
+  if (tab === 'swap' && typeTxs === 'deposit' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd
@@ -736,11 +730,7 @@ function ActionBar({ stateActionBar }) {
     );
   }
 
-  if (
-    selectedTab === 'swap' &&
-    typeTxs === 'withdraw' &&
-    stage === STAGE_INIT
-  ) {
+  if (tab === 'swap' && typeTxs === 'withdraw' && stage === STAGE_INIT) {
     return (
       <ActionBarSteps>
         <BtnGrd

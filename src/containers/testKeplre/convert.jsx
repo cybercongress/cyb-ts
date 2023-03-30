@@ -1,8 +1,7 @@
-import React from 'react';
 import { Button } from '@cybercongress/gravity';
 import { Btn } from './ui';
 
-const Convert = ({
+function Convert({
   amount,
   select,
   setSelect,
@@ -10,7 +9,7 @@ const Convert = ({
   convert,
   time,
   setTime,
-}) => {
+}) {
   return (
     <>
       amount
@@ -55,6 +54,7 @@ const Convert = ({
       </Button>
     </>
   );
-};
+}
 
+// eslint-disable-next-line import/no-unused-modules
 export default Convert;

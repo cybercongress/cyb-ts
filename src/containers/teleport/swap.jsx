@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import BigNumber from 'bignumber.js';
 import { TokenSetter } from './components';
-import { Denom, DenomArr } from '../../components';
+import { DenomArr } from '../../components';
 import { exponentialToDecimal, formatNumber } from '../../utils/utils';
 import { ButtonIcon } from './components/slider';
-import { getCoinDecimals, networkList } from './utils';
+import { networkList } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
@@ -50,7 +49,6 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
     onChangeSelectNetworksA,
     onChangeSelectNetworksB,
     networkB,
-    setNetworkB,
     typeTxs,
     balanceIbc,
     denomIbc,
@@ -74,6 +72,7 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
       );
     }
     return <span> </span>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swapPrice]);
 
   const getTextSellSend = useMemo(() => {

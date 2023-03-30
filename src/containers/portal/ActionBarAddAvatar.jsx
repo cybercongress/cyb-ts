@@ -1,15 +1,9 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { connect } from 'react-redux';
-import txs from '../../utils/txs';
 import { GasPrice } from '@cosmjs/launchpad';
-import { ActionBarSteps, BtnGrd, ActionBarContainer } from './components';
-import { Dots } from '../../components';
+import txs from '../../utils/txs';
+import { ActionBarSteps, ActionBarContainer } from './components';
+import { Dots, BtnGrd } from '../../components';
 import { getPin } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
@@ -96,6 +90,7 @@ function ActionBarAddAvatar({
         setStep(STATE_AVATAR);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatarIpfs, keplr, citizenship]);
 
   if (step === STATE_AVATAR) {

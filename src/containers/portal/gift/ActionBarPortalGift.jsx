@@ -1,29 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Button,
-  Pane,
-} from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
-import Web3 from 'web3';
+import { useEffect, useState, useContext, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GasPrice } from '@cosmjs/launchpad';
+import { toAscii, toBase64 } from '@cosmjs/encoding';
 import txs from '../../../utils/txs';
-import { coins, GasPrice } from '@cosmjs/launchpad';
-import { connect } from 'react-redux';
-import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
-import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
-import { ActionBarContentText, Dots, ButtonIcon } from '../../../components';
-import { CYBER, LEDGER, PATTERN_CYBER } from '../../../utils/config';
-import { trimString, dhm, timeSince, groupMsg } from '../../../utils/utils';
-import { getPin, getPinsCid } from '../../../utils/search/utils';
+import { Dots, ButtonIcon, BtnGrd } from '../../../components';
+import { CYBER, PATTERN_CYBER } from '../../../utils/config';
+import { trimString, groupMsg } from '../../../utils/utils';
+import { getPin } from '../../../utils/search/utils';
 import { AppContext } from '../../../context';
 import {
   CONSTITUTION_HASH,
@@ -32,31 +19,18 @@ import {
   BOOT_ICON,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
-import { ActionBarSteps, BtnGrd } from '../components';
-import { STEP_INFO } from './utils';
-
-const dateFormat = require('dateformat');
+import { ActionBarSteps } from '../components';
+import STEP_INFO from './utils';
 
 import imgKeplr from '../../../image/keplr-icon.svg';
 import imgMetaMask from '../../../image/mm-logo.svg';
 import imgEth from '../../../image/Ethereum_logo_2014.svg';
-import imgBostrom from '../../../image/large-green.png';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
+import { getPinsCid } from '../../../utils/utils-ipfs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
-
-const STEP_INIT = 0;
-const STEP_CONNECT = 1;
-const STEP_SIGN = 2;
-const STEP_CHECK_ACCOUNT = 2.1;
-const STEP_CHANGE_ACCOUNT = 2.2;
-const STEP_SEND_SIGN = 3;
-
-const STEP_GIFT_INFO = 1;
-const STEP_PROVE_ADD = 2;
-const STEP_CLAIME = 3;
 
 export const getKeplr = async () => {
   if (window.keplr) {
@@ -123,8 +97,8 @@ function ActionBarPortalGift({
   loadingGift,
   node,
 }) {
-  const history = useHistory();
-  const { keplr, jsCyber, initSigner } = useContext(AppContext);
+  const history = useNavigate();
+  const { keplr, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
   const [signedMessageKeplr, setSignedMessageKeplr] = useState(null);
@@ -324,7 +298,7 @@ function ActionBarPortalGift({
     }
   }, [keplr, citizenship, signedMessageKeplr, setLoading, node]);
 
-  const useClaime = useCallback(async () => {
+  const claim = useCallback(async () => {
     try {
       if (keplr === null) {
         if (initSigner) {
@@ -676,7 +650,7 @@ function ActionBarPortalGift({
           onClick={() => setStepApp(STEP_INFO.STATE_PROVE_CONNECT)}
           text="prove one more address"
         />
-        <BtnGrd disabled={isClaime} onClick={() => useClaime()} text="claim" />
+        <BtnGrd disabled={isClaime} onClick={() => claim()} text="claim" />
       </ActionBarSteps>
     );
   }
@@ -703,150 +677,6 @@ function ActionBarPortalGift({
       </ActionBarSteps>
     );
   }
-
-  /*
-  if (step === STEP_INIT && activeStep === STEP_PROVE_ADD) {
-    return (
-      <ActionBarContainer>
-        <BtnGrd
-          disabled={isProve}
-          onClick={() => funcChangeState(STEP_CONNECT, STEP_INFO.STATE_CONNECT)}
-          text="prove address"
-        />
-      </ActionBarContainer>
-    );
-  }
-
-  if (step === STEP_INIT && activeStep === STEP_CLAIME && isClaimed) {
-    return (
-      <ActionBarContainer>
-        <BtnGrd
-          onClick={() => history.push('/release')}
-          text="go to release"
-        />
-      </ActionBarContainer>
-    );
-  }
-
-  if (step === STEP_INIT && activeStep === STEP_CLAIME) {
-    return (
-      <ActionBarContainer>
-        <BtnGrd
-          disabled={isClaime}
-          onClick={() => useClaime()}
-          text={useSelectCyber ? 'claim all' : 'claim'}
-        />
-      </ActionBarContainer>
-    );
-  }
-
-  if (step === STEP_CONNECT) {
-    return (
-      <ActionBarSteps
-        onClickBack={() => funcChangeState(STEP_INIT, STEP_INFO.STATE_PROVE)}
-        onClickFnc={() =>
-          funcChangeState(
-            STEP_SIGN,
-            selectMethod === 'keplr'
-              ? STEP_INFO.STATE_SIGN_KEPLR
-              : STEP_INFO.STATE_SIGN_MM
-          )
-        }
-        btnText="connect"
-        disabled={selectMethod === ''}
-      >
-        <ButtonIcon
-          onClick={() => setSelectMethod('keplr')}
-          active={selectMethod === 'keplr'}
-          img={imgKeplr}
-          text="keplr"
-        />
-        <ButtonIcon
-          onClick={() => setSelectMethod('MetaMask')}
-          active={selectMethod === 'MetaMask'}
-          img={imgMetaMask}
-          text="metaMask"
-        />
-      </ActionBarSteps>
-    );
-  }
-
-  if (step === STEP_SIGN && selectMethod === 'keplr') {
-    return (
-      <ActionBarSteps
-        onClickBack={() =>
-          funcChangeState(STEP_CONNECT, STEP_INFO.STATE_CONNECT)
-        }
-        onClickFnc={() => signMsgKeplr()}
-        btnText="sign message"
-        disabled={selectNetwork === ''}
-      >
-        <ButtonIcon
-          onClick={() => setSelectNetwork('osmosis')}
-          active={selectNetwork === 'osmosis'}
-          img={imgOsmosis}
-          text="osmosis"
-        />
-        <ButtonIcon
-          onClick={() => setSelectNetwork('columbus-5')}
-          active={selectNetwork === 'columbus-5'}
-          img={imgTerra}
-          text="terra"
-        />
-        <ButtonIcon
-          onClick={() => setSelectNetwork('cosmoshub')}
-          active={selectNetwork === 'cosmoshub'}
-          img={imgCosmos}
-          text="cosmoshub"
-        />
-      </ActionBarSteps>
-    );
-  }
-
-  if (step === STEP_CHECK_ACCOUNT && selectMethod === 'keplr') {
-    return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_CONNECT)}>
-        address comparison <Dots />
-      </ActionBarSteps>
-    );
-  }
-
-  if (step === STEP_CHANGE_ACCOUNT && selectMethod === 'keplr') {
-    return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_CONNECT)}>
-        choose this address {addressOwner} in keplr
-      </ActionBarSteps>
-    );
-  }
-
-  if (step === STEP_SEND_SIGN) {
-    return (
-      <ActionBarSteps onClickBack={() => setStep(STEP_CONNECT)}>
-        <BtnGrd
-          onClick={() => sendSignedMessage()}
-          text="send signed message"
-        />
-      </ActionBarSteps>
-    );
-  }
-
-  if (step === STEP_SIGN && selectMethod === 'MetaMask') {
-    return (
-      <ActionBarSteps
-        onClickBack={() => setStep(STEP_CONNECT)}
-        onClickFnc={() => signMsgETH()}
-        btnText="sign message"
-      >
-        <ButtonIcon
-          onClick={() => setSelectNetwork('eth')}
-          active={selectNetwork === 'eth'}
-          img={imgEth}
-          text="eth"
-        />
-      </ActionBarSteps>
-    );
-  }
-  */
 
   return null;
 }

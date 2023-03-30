@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
-import JSONInput from 'react-json-editor-ajrm';
+import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
-import { JsonView, jsonInputStyle } from '../ui/ui';
+import { JsonView } from '../ui/ui';
 import styles from './stylesQueryContract.scss';
 import { JSONInputCard } from './InstantiationContract';
 

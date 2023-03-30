@@ -1,4 +1,3 @@
-import React from 'react';
 import Plotly from 'react-plotly.js';
 
 const color = ['#00e676', '#d500f9', '#00e5ff', '#651fff'];
@@ -43,7 +42,7 @@ const config = {
   showSendToCloud: true,
 };
 
-const Dinamics = ({ data }) => {
+function Dinamics({ data }) {
   const { available, delegation, unbonding, rewards } = data;
 
   const values = [available, delegation, unbonding, rewards];
@@ -76,6 +75,6 @@ const Dinamics = ({ data }) => {
       onLegendClick={() => false}
     />
   );
-};
+}
 
 export default Dinamics;

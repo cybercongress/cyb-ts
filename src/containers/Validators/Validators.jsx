@@ -1,16 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
-import {
-  TableHeroes,
-  TableItem,
-  TextBoard,
-  TabBtnList,
-  InfoBalance,
-} from './components';
+import { TableHeroes, TableItem, InfoBalance } from './components';
 import { AppContext } from '../../context';
 import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
@@ -18,7 +12,8 @@ import { useGetBalance } from '../account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 
 function Validators({ mobile, defaultAccount }) {
-  const location = useLocation();
+  const { status = 'active' } = useParams();
+
   const { jsCyber } = useContext(AppContext);
   const [updatePage, setUpdatePage] = useState(0);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -26,13 +21,12 @@ function Validators({ mobile, defaultAccount }) {
     addressActive,
     updatePage
   );
-  const { validators, countHeroes, loadingValidators } = getHeroes();
+  const { validators, loadingValidators } = getHeroes();
   const [loadingSelf, setLoadingSelf] = useState(true);
   const [loadingBond, setLoadingBond] = useState(true);
   const [bondedTokens, setBondedTokens] = useState(0);
   const [validatorSelect, setValidatorSelect] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState('');
-  const [selected, setSelected] = useState('active');
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
   const [validatorsData, setValidatorsData] = useState([]);
@@ -56,16 +50,6 @@ function Validators({ mobile, defaultAccount }) {
   }, [addressActive]);
 
   useEffect(() => {
-    const { pathname } = location;
-
-    if (pathname.match(/jailed/gm) && pathname.match(/jailed/gm).length > 0) {
-      setSelected('jailed');
-    } else {
-      setSelected('active');
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
     const feachPool = async () => {
       if (jsCyber !== null) {
         const response = await jsCyber.stakingPool();
@@ -82,9 +66,8 @@ function Validators({ mobile, defaultAccount }) {
       const feachDelegatorDelegations = async () => {
         let delegationsDataTemp = [];
         if (addressActive !== null && jsCyber !== null) {
-          const responseDelegatorDelegations = await jsCyber.delegatorDelegations(
-            addressActive.bech32
-          );
+          const responseDelegatorDelegations =
+            await jsCyber.delegatorDelegations(addressActive.bech32);
           delegationsDataTemp =
             responseDelegatorDelegations.delegationResponses;
         }
@@ -202,16 +185,15 @@ function Validators({ mobile, defaultAccount }) {
   return (
     <div>
       <main className="block-body" style={{ paddingTop: 0 }}>
-        {/* <TabBtnList selected={selected} countHeroes={countHeroes} /> */}
         <InfoBalance
           balance={balance}
           loadingBalanceInfo={loadingBalanceInfo}
           balanceToken={balanceToken}
         />
-        <TableHeroes mobile={mobile} showJailed={selected === 'jailed'}>
+        <TableHeroes mobile={mobile} showJailed={status === 'jailed'}>
           {validatorsData
             .filter((validator) =>
-              selected === 'jailed'
+              status === 'jailed'
                 ? BOND_STATUS[validator.status] < 3
                 : BOND_STATUS[validator.status] === 3
             )
@@ -234,7 +216,7 @@ function Validators({ mobile, defaultAccount }) {
                   selected={index === selectedIndex}
                   selectValidators={() => selectValidators(validator, index)}
                   mobile={mobile}
-                  showJailed={selected === 'jailed'}
+                  showJailed={status === 'jailed'}
                   loadingSelf={loadingSelf}
                   loadingBond={loadingBond}
                 />

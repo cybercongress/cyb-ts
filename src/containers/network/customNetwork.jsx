@@ -1,26 +1,23 @@
-import React, { useState, useCallback, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
-import {
-  MainContainer,
-  ContainerGradientText,
-  ActionBarSteps,
-  BtnGrd,
-} from '../portal/components';
-import Input from '../teleport/components/input';
+import { useState, useCallback, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MainContainer, ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
+import { Input, BtnGrd, ContainerGradientText } from '../../components';
 
-const ValueItem = ({ text, value, onChange }) => (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: '120px 1fr',
-      alignItems: 'center',
-    }}
-  >
-    <div>{text}</div>
-    <Input type="text" autoComplete="off" value={value} onChange={onChange} />
-  </div>
-);
+function ValueItem({ text, value, onChange }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '120px 1fr',
+        alignItems: 'center',
+      }}
+    >
+      <div>{text}</div>
+      <Input type="text" autoComplete="off" value={value} onChange={onChange} />
+    </div>
+  );
+}
 
 const initValue = {
   CHAIN_ID: 'bostrom',
@@ -38,7 +35,7 @@ const initValue = {
 };
 
 function CustomNetwork() {
-  const history = useHistory();
+  const history = useNavigate();
   const { networks, updateNetworks } = useContext(AppContext);
   const [customConfig, setCustomConfig] = useState({ ...initValue });
 
@@ -87,6 +84,7 @@ function CustomNetwork() {
         }, 2000);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networks, customConfig, updateNetworks]);
 
   return (

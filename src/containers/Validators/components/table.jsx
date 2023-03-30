@@ -1,4 +1,3 @@
-import React from 'react';
 import { TableEv as Table, Icon } from '@cybercongress/gravity';
 import { Tooltip } from '../../../components';
 import { TextTable } from './ui';
@@ -49,7 +48,7 @@ function TableHeroes({ mobile, showJailed, children }) {
                 <Tooltip
                   placement="bottom"
                   tooltip={
-                    <div style={{ width: 150, padding: 10 }}>
+                    <div style={{ width: 150 }}>
                       Amount of {CYBER.DENOM_CYBER.toUpperCase()} (tokens you
                       bonded to validator in)
                     </div>

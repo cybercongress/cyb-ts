@@ -1,17 +1,24 @@
-import React, { useContext, useCallback } from 'react';
+import { useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
-import { MainContainer, ContainerGradientText } from '../portal/components';
+import { MainContainer } from '../portal/components';
+import { ContainerGradientText } from '../../components';
 import BtnPasport from '../portal/pasport/btnPasport';
 
-const ValueItem = ({ children }) => (
-  <div
-    style={{ display: 'grid', gridTemplateColumns: '120px 1fr', color: '#fff' }}
-  >
-    {children}
-  </div>
-);
+function ValueItem({ children }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '120px 1fr',
+        color: '#fff',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 const statusCard = (status) => {
   switch (status) {
@@ -40,12 +47,14 @@ function ListNetwork() {
   const renderItem = Object.keys(networks).map((key) => {
     const item = networks[key];
     return (
-      <ContainerGradientText status={statusCard(key)}>
-        {key !== 'bostrom' && key !== 'space-pussy' && key !== CYBER.CHAIN_ID && (
-          <BtnPasport onClick={() => onClickDeleteAddress(key)} typeBtn="red">
-            X
-          </BtnPasport>
-        )}
+      <ContainerGradientText status={statusCard(key)} key={key}>
+        {key !== 'bostrom' &&
+          key !== 'space-pussy' &&
+          key !== CYBER.CHAIN_ID && (
+            <BtnPasport onClick={() => onClickDeleteAddress(key)} typeBtn="red">
+              X
+            </BtnPasport>
+          )}
         <Link to={`/networks/${key}`}>
           <div style={{ gap: '5px', display: 'grid' }}>
             <ValueItem>

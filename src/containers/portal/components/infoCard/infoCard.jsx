@@ -1,6 +1,4 @@
-import React from 'react';
 import styles from './styles.scss';
-import eyeLight from '../../../../image/ion-eye-light.svg';
 
 const cx = require('classnames');
 

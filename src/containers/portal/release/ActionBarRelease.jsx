@@ -1,46 +1,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useMemo,
-  useContext,
-  useCallback,
-  useState,
-  useEffect,
-} from 'react';
-import { useHistory } from 'react-router-dom';
+import { useMemo, useContext, useCallback, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
 import { CONTRACT_ADDRESS_GIFT, GIFT_ICON } from '../utils';
-import { Dots } from '../../../components';
-import { ActionBarSteps, BtnGrd } from '../components';
+import { Dots, BtnGrd } from '../../../components';
+import { ActionBarSteps } from '../components';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
 import { trimString } from '../../../utils/utils';
-import { STEP_INFO } from './utils';
+import STEP_INFO from './utils';
 
 const { STATE_INIT_NULL_ACTIVE, STATE_INIT_NULL_BEFORE } = STEP_INFO;
 
 const gasPrice = GasPrice.fromString('0.001boot');
-
-export const getKeplr = async () => {
-  if (window.keplr) {
-    return window.keplr;
-  }
-
-  if (document.readyState === 'complete') {
-    return window.keplr;
-  }
-
-  return new Promise((resolve) => {
-    const documentStateChange = (event) => {
-      if (event.target && event.target.readyState === 'complete') {
-        resolve(window.keplr);
-        document.removeEventListener('readystatechange', documentStateChange);
-      }
-    };
-
-    document.addEventListener('readystatechange', documentStateChange);
-  });
-};
 
 const releaseMsg = (giftAddress) => {
   return {
@@ -67,11 +40,11 @@ function ActionBarRelease({
   loadingRelease,
   addressActive,
 }) {
-  const history = useHistory();
+  const history = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { keplr } = useContext(AppContext);
 
-  const useRelease = useCallback(async () => {
+  const getRelease = useCallback(async () => {
     try {
       if (keplr !== null && currentRelease !== null) {
         const msgs = [];
@@ -117,6 +90,7 @@ function ActionBarRelease({
       console.log('error', error);
       setStep(STEP_INIT);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keplr, currentRelease]);
 
   useEffect(() => {
@@ -127,7 +101,7 @@ function ActionBarRelease({
           const { bech32 } = addressActive;
           if (address === bech32) {
             setStep(STEP_RELEASE);
-            useRelease();
+            getRelease();
           } else {
             setStep(STATE_CHANGE_ACCOUNT);
           }
@@ -135,6 +109,7 @@ function ActionBarRelease({
       }
     };
     checkAddress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, keplr, addressActive]);
 
   const useAddressOwner = useMemo(() => {

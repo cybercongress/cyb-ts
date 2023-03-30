@@ -1,24 +1,8 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { Pane, Tooltip, Text, TableEv as Table } from '@cybercongress/gravity';
-import InfiniteScroll from 'react-infinite-scroller';
-import {
-  CardTemplate,
-  Link,
-  StatusTooltip,
-  FormatNumber,
-  Account,
-  TextTable,
-  Loading,
-  NoItems,
-  NumberCurrency,
-} from '../../components';
-import { formatNumber, formatCurrency } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
+import { TableEv as Table } from '@cybercongress/gravity';
+import { Account, TextTable, NoItems, NumberCurrency } from '../../components';
+import { formatNumber } from '../../utils/utils';
 
-const imgDropdown = require('../../image/arrow-dropdown.svg');
-const imgDropup = require('../../image/arrow-dropup.svg');
-
-const Fans = ({ data }) => {
+function Fans({ data }) {
   // const containerReference = useRef();
   // const [itemsToShow, setItemsToShow] = useState(10);
 
@@ -112,6 +96,6 @@ const Fans = ({ data }) => {
       </Table.Body>
     </Table>
   );
-};
+}
 
 export default Fans;

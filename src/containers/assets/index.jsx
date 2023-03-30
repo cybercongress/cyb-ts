@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { AppContext } from '../../context';
@@ -10,7 +10,7 @@ import { DenomArr } from '../../components';
 import { getKeplr } from '../ibc/useSetupIbc';
 import ActionBarAssets from './ActionBarAssets';
 
-const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
+function AssetsRow({ denom, allBalances, deposit, withdraw, disabledBtns }) {
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
     ) {
       setBalance(getCoinDecimals(allBalances[denom], denom));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allBalances]);
 
   return (
@@ -60,7 +61,7 @@ const AssetsRow = ({ denom, allBalances, deposit, withdraw, disabledBtns }) => {
       </div>
     </div>
   );
-};
+}
 
 const createClient = async (denom, keplrCybre) => {
   let client = null;
@@ -148,10 +149,11 @@ function Assets({ defaultAccount }) {
         style={{ display: 'flex', flexDirection: 'column', gridGap: '20px' }}
       >
         {totalSupply !== null &&
-          totalSupply.map((item) => {
+          totalSupply.map((item, i) => {
             if (!item.denom.includes('ibc')) {
               return (
                 <AssetsRow
+                  key={i}
                   denom={item.denom}
                   allBalances={allBalances}
                   deposit={depositOnClick}
@@ -168,6 +170,7 @@ function Assets({ defaultAccount }) {
             ) {
               return (
                 <AssetsRow
+                  key={i}
                   denom={item.denom}
                   allBalances={allBalances}
                   deposit={depositOnClick}

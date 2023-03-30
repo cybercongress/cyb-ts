@@ -1,45 +1,9 @@
-import React from 'react';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Tooltip,
-  Icon,
-} from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  convertResources,
-  formatNumber,
-  getDisplayAmount,
-} from '../../../utils/utils';
-import { NoItems, Dots, TextTable, ValueImg } from '../../../components';
+import { TableEv as Table } from '@cybercongress/gravity';
+import { formatNumber, getDisplayAmount } from '../../../utils/utils';
+import { NoItems, TextTable, ValueImg } from '../../../components';
 import { CYBER } from '../../../utils/config';
 
-const dateFormat = require('dateformat');
-
-const NumberCurrency = ({
-  amount,
-  fontSizeDecimal,
-  currencyNetwork,
-  ...props
-}) => {
-  return (
-    <Pane
-      display="grid"
-      gridTemplateColumns="1fr 55px"
-      gridGap="5px"
-      {...props}
-    >
-      <Pane whiteSpace="nowrap" display="flex" alignItems="center">
-        <span>{formatNumber(Math.floor(amount))}</span>
-      </Pane>
-      <div style={{ textAlign: 'start' }}>{currencyNetwork.toUpperCase()}</div>
-    </Pane>
-  );
-};
-
-const TableSlots = ({ data, traseDenom }) => {
+function TableSlots({ data, traseDenom }) {
   const { coinDecimals: coinDecimalsA } = traseDenom('milliampere');
   const { coinDecimals: coinDecimalsV } = traseDenom('millivolt');
 
@@ -125,6 +89,6 @@ const TableSlots = ({ data, traseDenom }) => {
       </Table>
     </div>
   );
-};
+}
 
 export default TableSlots;

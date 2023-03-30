@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Pill, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { Tooltip } from '../../../components';
@@ -13,19 +12,21 @@ const statusHeroes = {
   BOND_STATUS_BONDED: 3,
 };
 
-export const TextTable = ({ children, fontSize, color, display, ...props }) => (
-  <Text
-    fontSize={`${fontSize || 13}px`}
-    color={`${color || '#fff'}`}
-    display={`${display || 'inline-flex'}`}
-    alignItems="center"
-    {...props}
-  >
-    {children}
-  </Text>
-);
+export function TextTable({ children, fontSize, color, display, ...props }) {
+  return (
+    <Text
+      fontSize={`${fontSize || 13}px`}
+      color={`${color || '#fff'}`}
+      display={`${display || 'inline-flex'}`}
+      alignItems="center"
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+}
 
-export const StatusTooltip = ({ status }) => {
+export function StatusTooltip({ status }) {
   let statusColor;
 
   switch (statusHeroes[status]) {
@@ -69,22 +70,24 @@ export const StatusTooltip = ({ status }) => {
       </Tooltip>
     </Pane>
   );
-};
+}
 
-export const TextBoard = () => (
-  <Pane
-    boxShadow="0px 0px 5px #36d6ae"
-    paddingX={20}
-    paddingY={20}
-    marginY={20}
-  >
-    <Text fontSize="16px" color="#fff">
-      If all heroes collectively will be able to gather 100 heroes, and this
-      number can last for 10000 blocks, additionally 2 TCYB will be allocated to
-      heroes who take part in <Link to="/search/Genesis">Genesis</Link>. If the
-      number of heroes will increase to or over 146, additional 3 TCYB will be
-      allocated. All rewards in that discipline will be distributed to
-      validators per capita.
-    </Text>
-  </Pane>
-);
+export function TextBoard() {
+  return (
+    <Pane
+      boxShadow="0px 0px 5px #36d6ae"
+      paddingX={20}
+      paddingY={20}
+      marginY={20}
+    >
+      <Text fontSize="16px" color="#fff">
+        If all heroes collectively will be able to gather 100 heroes, and this
+        number can last for 10000 blocks, additionally 2 TCYB will be allocated
+        to heroes who take part in <Link to="/search/Genesis">Genesis</Link>. If
+        the number of heroes will increase to or over 146, additional 3 TCYB
+        will be allocated. All rewards in that discipline will be distributed to
+        validators per capita.
+      </Text>
+    </Pane>
+  );
+}

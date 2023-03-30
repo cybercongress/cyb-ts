@@ -4,21 +4,16 @@ import { useLocation, Link } from 'react-router-dom';
 // import CybLink from '../CybLink';
 import './AppMenu.css';
 import { Pane } from '@cybercongress/gravity';
-import useCheckPathname from './useCheckPathname';
 
-const Logo = (props) => (
-  <a {...props} className="logo">
-    logo
-  </a>
-);
+// function Logo(props) {
+//   return (
+//     <a {...props} className="logo">
+//       logo
+//     </a>
+//   );
+// }
 
-export const LogoLink = ({ onClick }) => (
-  <div className="menu-logo">
-    <Logo dura="" onClick={onClick} />
-  </div>
-);
-
-const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
+function Items({ item, deleteAppFromMenu, selected, height, ...props }) {
   if (item.to !== '#') {
     return (
       <Link style={{ color: '#fff' }} to={item.to}>
@@ -83,7 +78,7 @@ const Items = ({ item, deleteAppFromMenu, selected, height, ...props }) => {
       </Pane>
     </Pane>
   );
-};
+}
 
 const renderSubItems = (subItems, location, onClickSubItem) => {
   let itemsSub = [];
@@ -103,7 +98,8 @@ const renderSubItems = (subItems, location, onClickSubItem) => {
   return itemsSub;
 };
 
-export const Bookmarks = ({ items, ...props }) => {
+// eslint-disable-next-line import/prefer-default-export
+export function Bookmarks({ items, ...props }) {
   const [selectedItem, setSelectedItem] = useState('');
   const [selectedItemSub, setSelectedItemSub] = useState('');
   const location = useLocation();
@@ -149,4 +145,4 @@ export const Bookmarks = ({ items, ...props }) => {
       })}
     </div>
   );
-};
+}

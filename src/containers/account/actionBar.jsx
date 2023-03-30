@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component } from 'react';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
@@ -20,10 +21,9 @@ import {
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
 
-import { getTotalRewards, getPin } from '../../utils/search/utils';
+import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
 
 import { AppContext } from '../../context';
-import { CosmosDelegateTool } from '../../utils/ledger';
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -58,7 +58,6 @@ class ActionBarContainer extends Component {
       },
     };
     this.timeOut = null;
-    this.ledger = new CosmosDelegateTool();
     this.inputOpenFileRef = React.createRef();
   }
 
@@ -159,25 +158,26 @@ class ActionBarContainer extends Component {
     const { txHash } = this.state;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(txHash);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (updateAddress) {
-          updateAddress();
+      const data = await getTxs(txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (updateAddress) {
+            updateAddress();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
@@ -285,7 +285,6 @@ class ActionBarContainer extends Component {
         />
       );
     }
-    // console.log('rewards', rewards);
 
     if (
       stage === STAGE_INIT &&
@@ -306,11 +305,9 @@ class ActionBarContainer extends Component {
         </ActionBar>
       );
     }
-    // console.log('rewards', rewards);
 
-    // console.log('rewards', groupLink(rewards.rewards));
     if (stage === STAGE_READY) {
-      // if (this.state.stage === STAGE_READY) {
+
       if (type === 'security') {
         return (
           <RewardsDelegators

@@ -1,9 +1,9 @@
 import all from 'it-all';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
+import axios from 'axios';
+import FileType from 'file-type';
 import db from '../db';
-import { getPinsCid, getIpfsGatway } from './search/utils';
-
-const FileType = require('file-type');
+import * as config from './config';
 
 const FILE_SIZE_DOWNLOAD = 15 * 10 ** 6;
 
@@ -45,11 +45,11 @@ const checkCidInDB = async (cid) => {
   return undefined;
 };
 
+// TODO: bad code -> refactor
 const checkCidByIpfsNode = async (node, cid) => {
-  let timer;
   const controller = new AbortController();
   const { signal } = controller;
-  timer = setTimeout(() => {
+  const timer = setTimeout(() => {
     controller.abort();
   }, 1000 * 60 * 1); // 1 min
 
@@ -62,8 +62,6 @@ const checkCidByIpfsNode = async (node, cid) => {
     console.log('error checkCidByIpfsNode', error);
     return undefined;
   }
-
-  // console.log('ipfsNodeLs', ipfsNodeLs)
 
   if (ipfsNodeLs !== null && ipfsNodeLs.length > 1) {
     return 'availableDownload';
@@ -90,6 +88,7 @@ const checkCidByIpfsNode = async (node, cid) => {
     }
     return 'availableDownload';
   }
+  return undefined;
 };
 
 const checkIpfsGatway = async (cid, userGateway) => {
@@ -190,4 +189,123 @@ const getContentByCid = async (node, cid, callBackFuncStatus) => {
   return undefined;
 };
 
-export { getContentByCid };
+const getIpfsGatway = async (
+  cid,
+  type = 'json',
+  userGateway = config.CYBER.CYBER_GATEWAY
+) => {
+  try {
+    const abortController = new AbortController();
+    setTimeout(() => {
+      abortController.abort();
+    }, 1000 * 60 * 1); // 1 min
+
+    const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
+      signal: abortController.signal,
+      responseType: type,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.log('error getIpfsGatway', error);
+    return null;
+  }
+};
+
+const getPinsCidPost = async (cid) => {
+  console.log(`getPinsCidPost`);
+  try {
+    const response = await axios({
+      method: 'post',
+      url: `https://io.cybernode.ai/pins/${cid}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+const getPinsCidGet = async (cid) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `https://io.cybernode.ai/pins/${cid}`,
+    });
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+const addFileToCluster = async (cid, file) => {
+  console.log(`addFileToCluster`);
+  let dataFile = null;
+  if (cid === file) {
+    const responseGetPinsCidPost = await getPinsCidPost(cid);
+    return responseGetPinsCidPost;
+  }
+
+  if (file instanceof Blob) {
+    console.log(`Blob`);
+    dataFile = file;
+  } else if (typeof file === 'string') {
+    dataFile = new File([file], 'file.txt');
+  } else if (file.name && file.size < 8 * 10 ** 6) {
+    dataFile = new File([file], file.name);
+  }
+
+  if (dataFile !== null) {
+    const formData = new FormData();
+    formData.append('file', dataFile);
+    try {
+      const response = await axios({
+        method: 'post',
+        url: 'https://io.cybernode.ai/add',
+        data: formData,
+      });
+      return response;
+    } catch (error) {
+      const responseGetPinsCidPost = await getPinsCidPost(cid);
+      return responseGetPinsCidPost;
+    }
+  } else {
+    const responseGetPinsCidPost = await getPinsCidPost(cid);
+    return responseGetPinsCidPost;
+  }
+};
+
+const getPinsCid = async (cid, file) => {
+  try {
+    const responseGetPinsCidGet = await getPinsCidGet(cid);
+    if (
+      responseGetPinsCidGet.peer_map &&
+      Object.keys(responseGetPinsCidGet.peer_map).length > 0
+    ) {
+      const { peer_map: peerMap } = responseGetPinsCidGet;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in peerMap) {
+        if (Object.hasOwnProperty.call(peerMap, key)) {
+          const element = peerMap[key];
+          if (element.status !== 'unpinned') {
+            return null;
+          }
+        }
+      }
+
+      if (file !== undefined) {
+        const responseGetPinsCidPost = await addFileToCluster(cid, file);
+        return responseGetPinsCidPost;
+      }
+      const responseGetPinsCidPost = await getPinsCidPost(cid);
+      return responseGetPinsCidPost;
+    }
+    return null;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export { getContentByCid, getPinsCid, checkIpfsState };

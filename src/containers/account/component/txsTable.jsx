@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { Pane, TableEv as Table } from '@cybercongress/gravity';
+import { TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,7 +10,7 @@ import { timeSince, trimString } from '../../../utils/utils';
 import statusTrueImg from '../../../image/ionicons_svg_ios-checkmark-circle.svg';
 import statusFalseImg from '../../../image/ionicons_svg_ios-close-circle.svg';
 import RenderValue from './RenderValue';
-import { ContainerGradientText } from '../../portal/components/containerGradient/ContainerGradient';
+import { ContainerGradientText } from '../../../components/containerGradient/ContainerGradient';
 
 function TxsTable({ dataGetTsxByAddress, accountUser }) {
   const { data, error, status, isFetching, fetchNextPage, hasNextPage } =
@@ -41,6 +41,7 @@ function TxsTable({ dataGetTsxByAddress, accountUser }) {
 
           return (
             <ContainerGradientText
+              key={index}
               status={item.transaction.success ? 'blue' : 'red'}
             >
               <Table.Row

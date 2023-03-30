@@ -1,14 +1,9 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { connect } from 'react-redux';
-import { ActionBar, Button } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
-  ContainerGradient,
-  Signatures,
-  ScrollableTabs,
   MainContainer,
   ActionBarSteps,
-  BtnGrd,
   MoonAnimation,
   Stars,
 } from './components';
@@ -16,21 +11,19 @@ import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { activePassport, parseRowLog } from './utils';
 import PasportCitizenship from './pasport';
-import GetCitizenship from './citizenship';
 import Info from './citizenship/Info';
 import { steps } from './citizenship/utils';
-import { STEP_INFO } from './gift/utils';
+import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
+import { BtnGrd } from '../../components';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
 const STAGE_LOADING = 0;
-const STAGE_INIT = 1;
 const STAGE_READY = 2;
 
 const STATE_AVATAR = 15;
-const STATE_AVATAR_IN_PROCESS = 15.1;
 
 const portalAmbientObg = new Audio(portalAmbient);
 const playPortalAmbient = () => {
@@ -45,11 +38,12 @@ const stopPortalAmbient = () => {
 };
 
 function PasportMoonCitizenship({ defaultAccount, mobile }) {
-  const history = useHistory();
-  const { keplr, jsCyber } = useContext(AppContext);
+  const history = useNavigate();
+  const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [updateFunc, setUpdateFunc] = useState(0);
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [citizenship, setCitizenship] = useState(null);
   const [appStep, setStepApp] = useState(STEP_INFO.STATE_INIT);

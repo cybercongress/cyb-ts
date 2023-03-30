@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { LinkCreator } from '../ui/ui';
@@ -13,11 +13,12 @@ const styleLable = {
   whiteSpace: 'nowrap',
 };
 
-const ContractTable = ({ contracts, count, setOffset }) => {
+function ContractTable({ contracts, count, setOffset }) {
   const setNextDisplayedPalettes = useCallback(() => {
     setTimeout(() => {
       setOffset((itemsState) => itemsState + 1);
     }, 250);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const itemTable = contracts.map((item) => {
@@ -82,6 +83,6 @@ const ContractTable = ({ contracts, count, setOffset }) => {
       )}
     </InfiniteScroll>
   );
-};
+}
 
 export default ContractTable;

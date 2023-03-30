@@ -1,30 +1,27 @@
-import React, { useState, useCallback, useEffect, useContext } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import {
-  MainContainer,
-  ContainerGradientText,
-  ActionBarSteps,
-  BtnGrd,
-} from '../portal/components';
-import Input from '../teleport/components/input';
+import { useState, useCallback, useEffect, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { MainContainer, ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
+import { Input, BtnGrd, ContainerGradientText } from '../../components';
 
-const ValueItem = ({ text, value, onChange }) => (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: '120px 1fr',
-      alignItems: 'center',
-    }}
-  >
-    <div>{text}</div>
-    <Input type="text" autoComplete="off" value={value} onChange={onChange} />
-  </div>
-);
+function ValueItem({ text, value, onChange }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '120px 1fr',
+        alignItems: 'center',
+      }}
+    >
+      <div>{text}</div>
+      <Input type="text" autoComplete="off" value={value} onChange={onChange} />
+    </div>
+  );
+}
 
 function DetailsNetwork() {
   const param = useParams();
-  const history = useHistory();
+  const history = useNavigate();
   const { networks, updateNetworks } = useContext(AppContext);
   const [customConfig, setCustomConfig] = useState({});
 
@@ -89,6 +86,7 @@ function DetailsNetwork() {
         }, 1000);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networks, customConfig, param, updateNetworks]);
 
   return (

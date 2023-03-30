@@ -6,9 +6,9 @@ import styles from './styles.scss';
 const audioBtn = require('../../sounds/main-button.mp3');
 const audioBtnHover = require('../../sounds/main-button-hover.mp3');
 
-const GradientContainer = ({ disabled, children }) => {
+function GradientContainer({ disabled, children }) {
   return <div className={styles.GradientContainer}>{children}</div>;
-};
+}
 
 const audioBtnObg = new Audio(audioBtn);
 const audioBtnHoverObg = new Audio(audioBtnHover);
@@ -28,15 +28,7 @@ const stopAudioHover = () => {
   audioBtnHoverObg.currentTime = 0;
 };
 
-function BtnGrd({
-  disabled,
-  text,
-  img,
-  pending,
-  onClick,
-  className,
-  ...props
-}) {
+function BtnGrd({ disabled, text, img, pending, onClick, className, ...props }) {
   // useEffect(() => {
   //   const element = document.querySelector('#BtnGrd');
 
@@ -85,9 +77,7 @@ function BtnGrd({
         ) : (
           <>
             {text && text}
-            {img && (
-              <img style={{ width: 20, height: 20 }} alt="img" src={img} />
-            )}
+            {img && <img style={{ width: 20, height: 20 }} alt="img" src={img} />}
           </>
         )}
       </GradientContainer>

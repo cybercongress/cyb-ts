@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
@@ -6,17 +6,11 @@ import axios from 'axios';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import BigNumber from 'bignumber.js';
-import { CardStatisics, Dots, Loading } from '../../components';
+import { CardStatisics, Dots } from '../../components';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
-import AccountCount from '../brain/accountCount';
 import Txs from '../brain/tx';
-import { formatCurrency, coinDecimals, formatNumber } from '../../utils/utils';
-import { setQuery } from '../../redux/actions/query';
-import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
-import ActionBarCont from '../market/actionBarContainer';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import SearchTokenInfo from '../market/searchTokensInfo';
+import { formatCurrency, formatNumber } from '../../utils/utils';
 import useGetStatisticsCyber from '../brain/hooks/getStatisticsCyber';
 import KnowledgeTab from '../brain/tabs/knowledge';
 import { getNumTokens, getStateGift } from '../portal/utils';
@@ -40,17 +34,19 @@ const PREFIXES = [
   },
 ];
 
-const ContainerGrid = ({ children }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(210px, 1fr))"
-    gridGap="20px"
-  >
-    {children}
-  </Pane>
-);
+function ContainerGrid({ children }) {
+  return (
+    <Pane
+      marginTop={10}
+      marginBottom={50}
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(210px, 1fr))"
+      gridGap="20px"
+    >
+      {children}
+    </Pane>
+  );
+}
 
 const GET_CHARACTERS = gql`
   query MyQuery {
@@ -62,7 +58,7 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-const Home = ({ block }) => {
+function Home({ block }) {
   const { jsCyber } = useContext(AppContext);
   const [entropy, setEntropy] = useState(0);
   const [entropyLoader, setEntropyLoader] = useState(true);
@@ -173,93 +169,91 @@ const Home = ({ block }) => {
   }, [linksCount, cidsCount]);
 
   return (
-    <>
-      <main className="block-body">
-        <ContainerGrid>
+    <main className="block-body">
+      <ContainerGrid>
+        <CardStatisics
+          value={entropyLoader ? <Dots /> : `${entropy} bits`}
+          title="Negentropy"
+          styleContainer={{ minWidth: 'unset' }}
+        />
+        <CardStatisics
+          value={
+            memoryLoader ? <Dots /> : formatCurrency(memory, 'B', 0, PREFIXES)
+          }
+          title="GPU memory"
+          styleContainer={{ minWidth: 'unset' }}
+        />
+        <Link to="/network/bostrom/tx">
           <CardStatisics
-            value={entropyLoader ? <Dots /> : `${entropy} bits`}
-            title="Negentropy"
+            title="Transactions"
+            value={<Txs />}
             styleContainer={{ minWidth: 'unset' }}
+            link
           />
+        </Link>
+        <Link to="/network/bostrom/blocks">
           <CardStatisics
-            value={
-              memoryLoader ? <Dots /> : formatCurrency(memory, 'B', 0, PREFIXES)
-            }
-            title="GPU memory"
+            title="Blocks"
+            value={formatNumber(parseFloat(block))}
             styleContainer={{ minWidth: 'unset' }}
+            link
           />
-          <Link to="/network/bostrom/tx">
-            <CardStatisics
-              title="Transactions"
-              value={<Txs />}
-              styleContainer={{ minWidth: 'unset' }}
-              link
-            />
-          </Link>
-          <Link to="/network/bostrom/blocks">
-            <CardStatisics
-              title="Blocks"
-              value={formatNumber(parseFloat(block))}
-              styleContainer={{ minWidth: 'unset' }}
-              link
-            />
-          </Link>
-        </ContainerGrid>
-        <ContainerGrid>
-          <KnowledgeTab
-            linksCount={parseInt(linksCount, 10)}
-            cidsCount={parseInt(cidsCount, 10)}
-            accountsCount={parseInt(accountsCount, 10)}
-            inlfation={parseFloat(inlfation)}
-          />
-        </ContainerGrid>
-        <ContainerGrid>
-          <CardStatisics
-            value={`${formatNumber(staked * 100, 2)} %`}
-            title={`Staked ${CYBER.DENOM_CYBER.toUpperCase()}`}
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            value={formatNumber(activeValidatorsCount)}
-            title="Active heroes"
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            value={formatNumber(communityPool)}
-            title="Community pool"
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            value={formatNumber(proposals)}
-            title="Proposals"
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-        </ContainerGrid>
-        <ContainerGrid>
-          <CardStatisics
-            value={formatNumber(counCitizenshipst)}
-            title="Citizens"
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            value={formatNumber(citizensClaim)}
-            title="Gift claims"
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-          <CardStatisics
-            title="Contracts"
-            value={loading ? <Dots /> : formatNumber(useCountContracts)}
-          />
-          <CardStatisics
-            value={formatNumber(useGetBeta)}
-            title="Beta"
-            // styleContainer={{ minWidth: 'unset' }}
-          />
-        </ContainerGrid>
-      </main>
-    </>
+        </Link>
+      </ContainerGrid>
+      <ContainerGrid>
+        <KnowledgeTab
+          linksCount={parseInt(linksCount, 10)}
+          cidsCount={parseInt(cidsCount, 10)}
+          accountsCount={parseInt(accountsCount, 10)}
+          inlfation={parseFloat(inlfation)}
+        />
+      </ContainerGrid>
+      <ContainerGrid>
+        <CardStatisics
+          value={`${formatNumber(staked * 100, 2)} %`}
+          title={`Staked ${CYBER.DENOM_CYBER.toUpperCase()}`}
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+        <CardStatisics
+          value={formatNumber(activeValidatorsCount)}
+          title="Active heroes"
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+        <CardStatisics
+          value={formatNumber(communityPool)}
+          title="Community pool"
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+        <CardStatisics
+          value={formatNumber(proposals)}
+          title="Proposals"
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+      </ContainerGrid>
+      <ContainerGrid>
+        <CardStatisics
+          value={formatNumber(counCitizenshipst)}
+          title="Citizens"
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+        <CardStatisics
+          value={formatNumber(citizensClaim)}
+          title="Gift claims"
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+        <CardStatisics
+          title="Contracts"
+          value={loading ? <Dots /> : formatNumber(useCountContracts)}
+        />
+        <CardStatisics
+          value={formatNumber(useGetBeta)}
+          title="Beta"
+          // styleContainer={{ minWidth: 'unset' }}
+        />
+      </ContainerGrid>
+    </main>
   );
-};
+}
 
 const mapStateToProps = (store) => {
   return {

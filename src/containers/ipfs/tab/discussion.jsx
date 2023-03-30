@@ -1,6 +1,5 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import ContentItem from '../contentItem';
+import ContentItem from '../../../components/ContentItem/contentItem';
 import { Rank, NoItems } from '../../../components';
 
 function timeSince(timeMS) {

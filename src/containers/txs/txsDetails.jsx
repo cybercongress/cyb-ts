@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Text, Pane } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import InformationTxs from './informationTxs';
 import Msgs from './msgs';
@@ -11,7 +10,7 @@ import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
 
-export const getTxs = async (txs) => {
+const getTxs = async (txs) => {
   try {
     const response = await axios({
       method: 'get',

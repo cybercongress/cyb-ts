@@ -1,20 +1,10 @@
-import React, { useEffect, useStatea } from 'react';
 import gql from 'graphql-tag';
 import { v4 as uuidv4 } from 'uuid';
 import { useSubscription } from '@apollo/react-hooks';
-import {
-  Pane,
-  Text,
-  TableEv as Table,
-  Icon,
-  Tooltip,
-} from '@cybercongress/gravity';
+import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
-import { getGraphQLQuery } from '../../utils/search/utils';
-import { trimString, formatNumber, formatCurrency } from '../../utils/utils';
-import { CardTemplate, MsgType, Loading, TextTable } from '../../components';
-
-const dateFormat = require('dateformat');
+import { trimString, formatNumber } from '../../utils/utils';
+import { MsgType, TextTable } from '../../components';
 
 const statusTrueImg = require('../../image/ionicons_svg_ios-checkmark-circle.svg');
 const statusFalseImg = require('../../image/ionicons_svg_ios-close-circle.svg');
@@ -30,11 +20,12 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-const Txs = () => {
+function Txs() {
   const { loading, error, data: dataTxs } = useSubscription(GET_CHARACTERS);
+  console.log('------------Txs', loading, error, dataTxs);
 
   if (error) {
-    return `Error! ${error.message}`;
+    return <div>`Error! ${error.message}`</div>;
   }
 
   if (loading) {
@@ -45,7 +36,6 @@ const Txs = () => {
 
   const validatorRows = dataTxs.transaction.map((item, index) => (
     <Table.Row
-      // borderBottom="none"
       paddingX={0}
       paddingY={5}
       borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}
@@ -114,12 +104,7 @@ const Txs = () => {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={1.3} textAlign="center">
-            <TextTable>
-              timestamp{' '}
-              <Tooltip content="UTC" position="bottom">
-                <Icon icon="info-sign" color="#3ab793d4" marginLeft={5} />
-              </Tooltip>
-            </TextTable>
+            <TextTable>timestamp, UTC</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>type</TextTable>
@@ -137,6 +122,6 @@ const Txs = () => {
       </Table>
     </main>
   );
-};
+}
 
 export default Txs;

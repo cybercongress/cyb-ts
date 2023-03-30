@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Pane } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 // import { formatNumber } from '../../utils/search/utils';
 // import { msgType } from '../../utils/utils';
 
@@ -16,24 +16,26 @@ const addLiquidity = require('../../image/msgs_ic_pooladd.svg');
 const subLiquidity = require('../../image/msgs_ic_poolremove.svg');
 const createPool = require('../../image/flask-outline.svg');
 
-const ContainerTitle = ({ img, children }) => (
-  <Pane display="flex" alignItems="center">
-    {img && (
-      <img
-        alt={children}
-        style={{
-          width: '30px',
-          height: '30px',
-          marginRight: '5px',
-        }}
-        src={img}
-      />
-    )}
-    {children}
-  </Pane>
-);
+function ContainerTitle({ img, children }) {
+  return (
+    <Pane display="flex" alignItems="center">
+      {img && (
+        <img
+          alt={children}
+          style={{
+            width: '30px',
+            height: '30px',
+            marginRight: '5px',
+          }}
+          src={img}
+        />
+      )}
+      {children}
+    </Pane>
+  );
+}
 
-const MsgType = ({ type }) => {
+function MsgType({ type }) {
   // if (type.includes('Link')) {
   //   return <ContainerTitle img={link}>Link</ContainerTitle>;
   // }
@@ -187,8 +189,7 @@ const MsgType = ({ type }) => {
     return <ContainerTitle img={bank}>Clear Program Admin</ContainerTitle>;
   }
 
-
   return <div>{type}</div>;
-};
+}
 
 export default MsgType;

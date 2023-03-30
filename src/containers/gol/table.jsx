@@ -1,7 +1,4 @@
-import React from 'react';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
-import { Link } from 'react-router-dom';
-import { LinkWindow } from '../../components';
 import RowTable from './components/row';
 import useGetGol from './getGolHooks';
 import { formatNumber } from '../../utils/utils';

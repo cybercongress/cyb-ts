@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
@@ -6,38 +6,39 @@ import ActionBar from './actionBar';
 import { getProposals, getMinDeposit } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
-import { Card, ContainerCard, CardStatisics } from '../../components';
+import { CardStatisics } from '../../components';
 import { CYBER, PROPOSAL_STATUS } from '../../utils/config';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import { getcommunityPool } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 
 const dateFormat = require('dateformat');
 
-const Statistics = ({ communityPoolCyber, staked }) => (
-  <Pane
-    marginTop={10}
-    marginBottom={50}
-    display="grid"
-    gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
-    gridGap="20px"
-  >
-    <CardStatisics
-      title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
-      value={formatNumber(Math.floor(communityPoolCyber))}
-    />
-    <Link to="/sphere">
+function Statistics({ communityPoolCyber, staked }) {
+  return (
+    <Pane
+      marginTop={10}
+      marginBottom={50}
+      display="grid"
+      gridTemplateColumns="repeat(auto-fit, minmax(250px, 1fr))"
+      gridGap="20px"
+    >
       <CardStatisics
-        title="% of staked BOOT"
-        value={formatNumber(staked * 100)}
-        link
+        title={`Community pool, ${CYBER.DENOM_CYBER.toUpperCase()}`}
+        value={formatNumber(Math.floor(communityPoolCyber))}
       />
-    </Link>
-    <Link to="/network/bostrom/parameters">
-      <CardStatisics title="Network parameters" value={53} link />
-    </Link>
-  </Pane>
-);
+      <Link to="/sphere">
+        <CardStatisics
+          title="% of staked BOOT"
+          value={formatNumber(staked * 100)}
+          link
+        />
+      </Link>
+      <Link to="/network/bostrom/parameters">
+        <CardStatisics title="Network parameters" value={53} link />
+      </Link>
+    </Pane>
+  );
+}
 
 function Governance({ defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
@@ -61,6 +62,7 @@ function Governance({ defaultAccount }) {
     } else {
       setAccount(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   useEffect(() => {

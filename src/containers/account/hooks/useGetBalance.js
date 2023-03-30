@@ -1,10 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
-import {
-  coinDecimals,
-  fromBech32,
-  convertResources,
-} from '../../../utils/utils';
+import { coinDecimals, fromBech32 } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import useGetSlots from '../../mint/useGetSlots';
 
@@ -148,9 +144,7 @@ function useGetBalance(address, updateAddress) {
       } catch (e) {
         console.log(e);
         setLoadingBalanceInfo(false);
-        return {
-          ...initValue,
-        };
+        setBalance(...initValue);
       }
     };
     getBalance();
@@ -227,17 +221,6 @@ function useGetBalance(address, updateAddress) {
 
     return balances;
   };
-
-  const getPools = (data) =>
-    Object.keys(data)
-      .filter((key) => key.includes('pool'))
-      .reduce(
-        (obj, key) => ({
-          ...obj,
-          [key]: data[key],
-        }),
-        {}
-      );
 
   return { balance, loadingBalanceInfo, balanceToken, loadingBalanceToken };
 }

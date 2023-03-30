@@ -1,5 +1,4 @@
-import React from 'react';
-import { ContainerGradient } from '../components';
+import { ContainerGradient } from '../../../components';
 
 function Welcome() {
   return (
@@ -20,4 +19,5 @@ function Welcome() {
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default Welcome;

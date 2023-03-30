@@ -1,9 +1,8 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
-import ContentItem from '../contentItem';
+import ContentItem from '../../../components/ContentItem/contentItem';
 import { Rank, NoItems } from '../../../components';
 
-const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
+function OptimisationTab({ data, mobile, nodeIpfs }) {
   if (data && Object.keys(data).length > 0) {
     return (
       <div style={{ width: '100%' }}>
@@ -42,6 +41,6 @@ const OptimisationTab = ({ data, mobile, nodeIpfs }) => {
       <NoItems text="No cyberLinks" />
     </div>
   );
-};
+}
 
 export default OptimisationTab;

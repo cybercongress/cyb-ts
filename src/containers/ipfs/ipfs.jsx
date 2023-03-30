@@ -1,36 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
-import {
-  Pane,
-  SearchItem,
-  Tablist,
-  TableEv as Table,
-  Rank,
-  Text,
-} from '@cybercongress/gravity';
+import { Pane, Tablist } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import ReactMarkdown from 'react-markdown';
-import Iframe from 'react-iframe';
-import { useQuery, useSubscription } from '@apollo/react-hooks';
-import { ObjectInspector, chromeDark } from '@tableflip/react-inspector';
-import gql from 'graphql-tag';
-import {
-  getRankGrade,
-  getToLink,
-  getCreator,
-  getFromLink,
-} from '../../utils/search/utils';
-import {
-  Dots,
-  TabBtn,
-  Loading,
-  TextTable,
-  Cid,
-  Particle,
-  Account,
-} from '../../components';
-import { formatNumber, trimString, coinDecimals } from '../../utils/utils';
-import { PATTERN_HTTP } from '../../utils/config';
+import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
+import { TabBtn, Account } from '../../components';
+import { formatNumber, coinDecimals } from '../../utils/utils';
 import {
   DiscussionTab,
   CommunityTab,
@@ -40,8 +14,6 @@ import {
   MetaTab,
 } from './tab';
 import ActionBarContainer from '../Search/ActionBarContainer';
-import AvatarIpfs from '../account/component/avatarIpfs';
-import ContentItem from './contentItem';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import { AppContext } from '../../context';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
@@ -143,6 +115,7 @@ function Ipfs({ nodeIpfs, mobile }) {
     if (jsCyber !== null) {
       getLinks();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cid, jsCyber]);
 
   useEffect(() => {
@@ -252,6 +225,7 @@ function Ipfs({ nodeIpfs, mobile }) {
 
   useEffect(() => {
     chekPathname();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const chekPathname = () => {

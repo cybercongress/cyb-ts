@@ -1,15 +1,10 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  Fragment,
-  useCallback,
-} from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useState, useEffect, useCallback } from 'react';
 import styles from './carousel.scss';
 
 const cx = require('classnames');
 
-const Carousel = ({
+function Carousel({
   slides = [],
   speed = 3000,
   activeStep,
@@ -19,17 +14,15 @@ const Carousel = ({
   disableNext,
   disableMode,
   heightSlide,
-}) => {
+}) {
   if (slides.length < 2) {
     console.error('Please provide more slides');
     return null;
   }
 
   const [visibleSlide, setVisibleSlide] = useState(1);
-  const [hasTransitionClass, setHasTransitionClass] = useState(true);
   const [stateSlides, setStateSlides] = useState(slides);
   const [leftAndRightDisabled, setLeftAndRightDisabled] = useState(false);
-  const intervalId = useRef(null);
 
   useEffect(() => {
     setVisibleSlide(activeStep);
@@ -43,6 +36,7 @@ const Carousel = ({
     slidesWithClones.unshift({});
     slidesWithClones.push({});
     setStateSlides(slidesWithClones);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Whenever the left and right arrows are disabled
@@ -57,6 +51,7 @@ const Carousel = ({
         setLeftAndRightDisabled(false);
       }, transitionSpeed * 2);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leftAndRightDisabled]);
 
   const calculateLeftMargin = () => {
@@ -78,6 +73,7 @@ const Carousel = ({
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [disableNext, visibleSlide]
   );
 
@@ -92,9 +88,7 @@ const Carousel = ({
       >
         <div
           id="slides"
-          className={cx(styles.slides, {
-            [styles.transition]: hasTransitionClass,
-          })}
+          className={cx(styles.slides, styles.transition)}
           style={{ left: calculateLeftMargin() }}
         >
           {stateSlides.map((slide, index) => {
@@ -133,6 +127,6 @@ const Carousel = ({
       </div>
     </div>
   );
-};
+}
 
 export default Carousel;

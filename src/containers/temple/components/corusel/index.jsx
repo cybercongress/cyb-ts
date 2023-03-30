@@ -1,17 +1,11 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  Fragment,
-  useCallback,
-  useMemo,
-} from 'react';
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import styles from './carousel.scss';
 
 const cx = require('classnames');
 
-const Carousel = ({
+function Carousel({
   slides = [],
   speed = 3000,
   activeStep,
@@ -22,19 +16,13 @@ const Carousel = ({
   disableNext,
   disableMode,
   displaySlide = 3,
-}) => {
-  if (slides.length < 2) {
-    console.error('Please provide more slides');
-    return null;
-  }
+}) {
   const query = useMediaQuery('(min-width: 768px)');
   const [itemWidth, setItemWidth] = useState(0);
   const [displaySlideState, setDisplaySlideState] = useState(displaySlide);
   const [visibleSlide, setVisibleSlide] = useState(1);
   const [hasTransitionClass, setHasTransitionClass] = useState(true);
   const changeDisplay = useRef(false);
-
-  const newItemList = slides.concat(slides, slides, slides);
 
   useEffect(() => {
     if (displaySlide > 3) {
@@ -47,7 +35,13 @@ const Carousel = ({
         changeDisplay.current = false;
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
+
+  if (slides.length < 2) {
+    console.error('Please provide more slides');
+    return null;
+  }
 
   useEffect(() => {
     setVisibleSlide(slides.length * 2 + activeStep);
@@ -86,6 +80,7 @@ const Carousel = ({
         setVisibleSlide(visibleSlide - slides.length);
       }, 500);
     }
+    // eslint-disable-next-line eqeqeq
     if (visibleSlide == slides.length) {
       // keep index near the middle of the list when moving right
       // setNavDisabled(true);
@@ -101,6 +96,7 @@ const Carousel = ({
         // setNavDisabled(false);
       }, 500 / 10);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleSlide]);
 
   const setActiveItem = useCallback(
@@ -112,33 +108,47 @@ const Carousel = ({
     [disableMode]
   );
 
+  const newItemList = slides.concat(slides, slides, slides);
+
   return (
-    <>
+    <div
+      className={styles.carousel}
+      id="containerCarousel"
+      style={{
+        height: heightSlide || '40px',
+      }}
+    >
       <div
-        className={styles.carousel}
-        id="containerCarousel"
-        style={{
-          height: heightSlide || '40px',
-        }}
+        className={styles.slidesContainer}
+        style={{ width: `${itemWidth}px` }}
       >
         <div
-          className={styles.slidesContainer}
-          style={{ width: `${itemWidth}px` }}
+          id="slides"
+          className={cx(styles.slides, {
+            [styles.transition]: hasTransitionClass,
+          })}
+          style={{ left: calculateLeftMargin }}
         >
-          <div
-            id="slides"
-            className={cx(styles.slides, {
-              [styles.transition]: hasTransitionClass,
-            })}
-            style={{ left: calculateLeftMargin }}
-          >
-            {newItemList.map((slide, index) => {
-              return (
-                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+          {newItemList.map((slide, index) => {
+            return (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+              <div
+                key={index}
+                onClick={() => setActiveItem(index)}
+                className={cx(styles.slide, {
+                  [styles.active]: index === visibleSlide,
+                  [styles.left]:
+                    index + Math.floor(displaySlideState / 2) === visibleSlide,
+                  [styles.right]:
+                    index - Math.floor(displaySlideState / 2) === visibleSlide,
+                })}
+                style={{
+                  width: `${itemWidth}px`,
+                  color: disableMode ? '#777777' : '#36d6ae',
+                }}
+              >
                 <div
-                  key={index}
-                  onClick={() => setActiveItem(index)}
-                  className={cx(styles.slide, {
+                  className={cx(styles.lamp, {
                     [styles.active]: index === visibleSlide,
                     [styles.left]:
                       index + Math.floor(displaySlideState / 2) ===
@@ -147,39 +157,23 @@ const Carousel = ({
                       index - Math.floor(displaySlideState / 2) ===
                       visibleSlide,
                   })}
-                  style={{
-                    width: `${itemWidth}px`,
-                    color: disableMode ? '#777777' : '#36d6ae',
-                  }}
                 >
-                  <div
-                    className={cx(styles.lamp, {
-                      [styles.active]: index === visibleSlide,
-                      [styles.left]:
-                        index + Math.floor(displaySlideState / 2) ===
-                        visibleSlide,
-                      [styles.right]:
-                        index - Math.floor(displaySlideState / 2) ===
-                        visibleSlide,
-                    })}
-                  >
-                    <div className={styles.containerContent}>
-                      {!!slide.step && (
-                        <div className={styles.step}>step {slide.step}</div>
-                      )}
-                      {!!slide.title && (
-                        <div className={styles.title}>{slide.title}</div>
-                      )}
-                    </div>
+                  <div className={styles.containerContent}>
+                    {!!slide.step && (
+                      <div className={styles.step}>step {slide.step}</div>
+                    )}
+                    {!!slide.title && (
+                      <div className={styles.title}>{slide.title}</div>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </>
+    </div>
   );
-};
+}
 
 export default Carousel;

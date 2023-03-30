@@ -35,7 +35,7 @@ class Story extends React.Component {
   }
 
   chekKeydown = () => {
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', (event) => {
       if (event.code === 'Space') {
         this.swapStory();
       }
@@ -76,6 +76,7 @@ class Story extends React.Component {
     }, 70000);
   };
 
+  // eslint-disable-next-line class-methods-use-this
   audio = () => {
     const sound = document.getElementById('sound');
     sound.volume = 0.2;
@@ -158,6 +159,7 @@ class Story extends React.Component {
               <p>{T.story.asTheyBegin}</p>
             </div>
           </section>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <audio id="sound" preload="auto">
             <source src={mp3} type="audio/mpeg" />
           </audio>

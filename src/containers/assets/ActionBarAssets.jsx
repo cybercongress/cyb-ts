@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ActionBar, Pane, Button } from '@cybercongress/gravity';
+import { useState, useEffect, useCallback } from 'react';
+import { ActionBar, Button } from '@cybercongress/gravity';
 import Long from 'long';
 import { coin } from '@cosmjs/launchpad';
 import coinDecimalsConfig from '../../utils/configToken';

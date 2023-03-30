@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { formatNumber, convertResources } from '../../utils/utils';
 import coinDecimalsConfig from '../../utils/configToken';
 
 export function sortReserveCoinDenoms(x, y) {
@@ -12,13 +11,6 @@ function pow(a) {
     result *= 10;
   }
   return result;
-}
-
-export function getDepositCoins(denoms, amounts) {
-  return {
-    denoms: [denoms[0], denoms[1]],
-    amounts: [amounts[denoms[0]], amounts[denoms[1]]],
-  };
 }
 
 export function getMyTokenBalance(token, indexer) {
@@ -52,8 +44,8 @@ const getDecimals = (denom) => {
   return decimals;
 };
 
-const getCounterPairAmount = (amaunt, decimals, swapPrice) => {
-  const inputAmountBN = new BigNumber(amaunt);
+const getCounterPairAmount = (amount, decimals, swapPrice) => {
+  const inputAmountBN = new BigNumber(amount);
   return inputAmountBN
     .dividedBy(swapPrice)
     .dp(decimals, BigNumber.ROUND_FLOOR)
@@ -112,7 +104,7 @@ export function calculateCounterPairAmount(values, e, state) {
   };
 }
 
-export const decFnc = (number, dec, reverse) => {
+const decFnc = (number, dec, reverse) => {
   let amount = number;
 
   if (reverse) {
@@ -124,16 +116,6 @@ export const decFnc = (number, dec, reverse) => {
   }
   return amount;
 };
-
-export function calculateSlippage(swapAmount, poolReserve) {
-  let slippage = (2 * swapAmount) / poolReserve;
-
-  if (slippage > 0.997) {
-    slippage = 0.997;
-  }
-
-  return slippage;
-}
 
 export const reduceAmounToken = (amount, token, reverse) => {
   let amountReduce = amount;
@@ -158,7 +140,7 @@ export const reduceAmounToken = (amount, token, reverse) => {
   return amountReduce;
 };
 
-export const reduceTextCoin = (text) => {
+const reduceTextCoin = (text) => {
   switch (text) {
     case 'millivolt':
       return 'V';

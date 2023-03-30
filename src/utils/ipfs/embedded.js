@@ -27,7 +27,9 @@ export async function init() {
 
 export async function destroy() {
   console.log('destroy');
-  if (!node) return;
+  if (!node) {
+    return;
+  }
 
   console.log('node', node);
   await node.stop();

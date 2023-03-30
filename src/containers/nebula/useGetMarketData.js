@@ -1,15 +1,10 @@
 import { useState, useEffect, useContext, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { AppContext } from '../../context';
-import {
-  reduceBalances,
-  getDisplayAmount,
-  convertAmountReverce,
-  convertAmount,
-} from '../../utils/utils';
-import { getCoinDecimals } from '../teleport/utils';
-import { CYBER } from '../../utils/config';
 import { useQuery } from '@tanstack/react-query';
+import { AppContext } from '../../context';
+import { reduceBalances, convertAmount } from '../../utils/utils';
+
+import { CYBER } from '../../utils/config';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -149,6 +144,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataPools, traseDenom]);
 
   useEffect(() => {
@@ -179,6 +175,7 @@ function useGetMarketData() {
     } catch (error) {
       console.log('error', error);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, poolsTotal]);
 
   const saveToLocalStorage = (obj) => {
@@ -231,6 +228,7 @@ function useGetMarketData() {
         return {};
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dataTotal, poolsTotal]
   );
 

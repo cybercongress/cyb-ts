@@ -8,9 +8,15 @@
     "airbnb",
     "plugin:prettier/recommended",
     "plugin:import/recommended",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
-  "parser": "@babel/eslint-parser",
+  "root": true,
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {
@@ -18,7 +24,14 @@
     },
     "sourceType": "module"
   },
-  "plugins": ["prettier", "react"],
+  "plugins": [
+    "prettier",
+    "react",
+    "import",
+    "unused-imports",
+    "typescript",
+    "@typescript-eslint"
+  ],
   "globals": {
     "expect": true,
     "FileReader": true
@@ -27,10 +40,18 @@
     "valid-jsdoc": "error",
     "prettier/prettier": "error",
     "linebreak-style": ["error", "unix"],
-    "no-unused-vars": [
+    "react/no-array-index-key": "off",
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
       "error",
       { "vars": "all", "args": "none", "ignoreRestSiblings": false }
     ],
+    "default-param-last": "off",
+    "react/prop-types": "off",
+    "no-console": "off",
     "curly": ["warn", "all"],
     "no-alert": "warn",
     "no-debugger": "warn",
@@ -44,6 +65,7 @@
     "object-property-newline": 0,
     "one-var-declaration-per-line": ["warn", "always"],
     "no-use-before-define": ["error", { "variables": false }],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "padded-blocks": [
       "warn",
       {
@@ -54,9 +76,6 @@
     ],
     "react/jsx-closing-bracket-location": "warn",
     "react/jsx-indent-props": [2, 2],
-    "react/prop-types": 0,
-    // "react/jsx-indent": ["warn", 2],
-    // "indent": ["warn", 2, {"ignoredNodes": ["JSXElement *", "JSXElement"]}],
     "react/jsx-props-no-spreading": "off",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "jsx-a11y/no-noninteractive-element-interactions": [
@@ -71,6 +90,25 @@
           "onKeyUp"
         ]
       }
+    ],
+    "react/jsx-filename-extension": "off",
+    "react/tsx-filename-extension": "off",
+    "import/no-unused-modules": [1],
+    "import/extensions": [
+      "error",
+      "never",
+      { "svg": "always", "json": "always" }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {},
+      "alias": {
+        "map": [
+          ["components", "./src/components"],
+          ["images", "./src/image"]
+        ]
+      }
+    }
   }
 }

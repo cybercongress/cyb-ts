@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import { CYBER } from '../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../utils/utils';
-import { BandwidthBar, ButtonNetwork, Tooltip } from '../../components';
+import { BandwidthBar } from '../../components';
 import styles from './styles.scss';
 import { AppContext } from '../../context';
 import useMediaQuery from '../../hooks/useMediaQuery';
@@ -57,14 +57,13 @@ function SwichNetwork({
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
   const { networks } = useContext(AppContext);
-  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
-    usePopperTooltip({
-      trigger: 'click',
-      closeOnOutsideClick: false,
-      visible: controlledVisible,
-      onVisibleChange: setControlledVisible,
-      placement: 'bottom',
-    });
+  const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
+    trigger: 'click',
+    closeOnOutsideClick: false,
+    visible: controlledVisible,
+    onVisibleChange: setControlledVisible,
+    placement: 'bottom',
+  });
 
   const onClickChain = async (chainId, prefix) => {
     localStorage.setItem('chainId', chainId);
@@ -83,6 +82,7 @@ function SwichNetwork({
       //   network={key}
       // />
       <button
+        key={key}
         type="button"
         className={styles.containerBtnItemSelect}
         onClick={() =>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { routes } from '../../routes';
 
 const useCheckPathname = () => {
   const location = useLocation();
@@ -40,7 +41,7 @@ const useCheckPathname = () => {
       setMain('Dyson Sphere');
     } else if (pathname === '/search/hfr') {
       setMain('HFR');
-    } else if (pathname === '/mint') {
+    } else if (pathname === routes.hfr.path) {
       setMain('HFR');
     } else if (pathname === '/token/A') {
       setMain('HFR');
@@ -76,9 +77,9 @@ const useCheckPathname = () => {
       setMain('Senate');
     } else if (pathname === '/search/dyson shpere') {
       setMain('Dyson Sphere');
-    } else if (pathname === '/halloffame') {
+    } else if (pathname === routes.sphere.path) {
       setMain('Dyson Sphere');
-    } else if (pathname === '/halloffame/jailed') {
+    } else if (pathname === routes.sphereJailed.path) {
       setMain('Dyson Sphere');
     } else if (pathname === '/search/Become a Hero') {
       setMain('Dyson Sphere');
@@ -100,9 +101,11 @@ const useCheckPathname = () => {
     } else {
       setMain('');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return { main };
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export default useCheckPathname;

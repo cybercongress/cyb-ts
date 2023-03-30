@@ -1,20 +1,14 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { useEffect, useState, useMemo, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import {
-  MainContainer,
-  ContainerGradientText,
-  InfoCard,
-  ContainerGradient,
-} from '../portal/components';
-import { DenomArr } from '../../components';
+import { MainContainer } from '../portal/components';
+import { DenomArr, ContainerGradient } from '../../components';
 import {
   formatNumber,
   replaceSlash,
-  denonFnc,
   getDisplayAmount,
 } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
@@ -22,6 +16,43 @@ import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
+
+function Title({ capData }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        // paddingBottom: '20px',
+      }}
+    >
+      <div style={{ fontSize: '22px', width: '112px', height: '112px' }}>
+        <NebulaImg />
+      </div>
+      {capData.currentCap !== 0 && (
+        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
+          {capData.change !== 0 && (
+            <div
+              style={{
+                color: capData.change > 0 ? '#7AFAA1' : '#FF0000',
+              }}
+            >
+              {capData.change > 0 ? '+' : ''}
+              {formatNumber(capData.change)}
+            </div>
+          )}
+          <FormatNumberTokens
+            text={CYBER.DENOM_LIQUID_TOKEN}
+            value={capData.currentCap}
+            tooltipStatusImg={false}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Nebula({ mobile }) {
   const { traseDenom } = useContext(AppContext);
@@ -64,6 +95,7 @@ function Nebula({ mobile }) {
         localStorage.setItem('lastCap', cap);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, marketData]);
 
   const dataRenderItems = useMemo(() => {
@@ -101,6 +133,7 @@ function Nebula({ mobile }) {
       dataObj = sortable;
     }
     return dataObj;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataTotal, marketData]);
 
   const getTypeDenomKey = (key) => {
@@ -157,48 +190,14 @@ function Nebula({ mobile }) {
         </RowItem>
       );
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataRenderItems]);
-
-  const Title = () => (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        // paddingBottom: '20px',
-      }}
-    >
-      <div style={{ fontSize: '22px', width: '112px', height: '112px' }}>
-        <NebulaImg />
-      </div>
-      {capData.currentCap !== 0 && (
-        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
-          {capData.change !== 0 && (
-            <div
-              style={{
-                color: capData.change > 0 ? '#7AFAA1' : '#FF0000',
-              }}
-            >
-              {capData.change > 0 ? '+' : ''}
-              {formatNumber(capData.change)}
-            </div>
-          )}
-          <FormatNumberTokens
-            text={CYBER.DENOM_LIQUID_TOKEN}
-            value={capData.currentCap}
-            tooltipStatusImg={false}
-          />
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <MainContainer width="100%">
       <ContainerGradient
         userStyleContent={{ minHeight: 'auto', height: 'unset' }}
-        title={<Title />}
+        title={<Title capData={capData} />}
         togglingDisable
       >
         <div>{itemRowMarketData}</div>

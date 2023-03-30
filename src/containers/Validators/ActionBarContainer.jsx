@@ -1,36 +1,26 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import { Pane, Text, ActionBar, Button } from '@cybercongress/gravity';
-import { coins, coin } from '@cosmjs/launchpad';
-import { useHistory } from 'react-router-dom';
+import { coin } from '@cosmjs/launchpad';
+import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import {
-  JsonTransaction,
-  ConnectLadger,
   Confirmed,
-  ContainetLedger,
-  FormatNumber,
   TransactionSubmitted,
   Delegate,
   ReDelegate,
   TransactionError,
-  CheckAddressInfo,
   Dots,
   ActionBar as ActionBarCenter,
 } from '../../components';
 
-import { trimString, formatNumber } from '../../utils/utils';
+import { trimString } from '../../utils/utils';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
 import { AppContext } from '../../context';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
-  STAGE_LEDGER_INIT,
   STAGE_READY,
   STAGE_WAIT,
   STAGE_SUBMITTED,
@@ -43,27 +33,28 @@ const fee = {
   amount: [],
   gas: (DEFAULT_GAS_LIMITS * 2).toString(),
 };
-export const TXTYPE_DELEGATE = 0;
-export const TXTYPE_UNDELEGATE = 1;
-export const TXTYPE_REDELEGATE = 2;
-const LEDGER_TX_ACOUNT_INFO = 10;
+const TXTYPE_DELEGATE = 0;
+const TXTYPE_UNDELEGATE = 1;
+const TXTYPE_REDELEGATE = 2;
 const LEDGER_GENERATION = 23;
 
-const ActionBarContentText = ({ children, ...props }) => (
-  <Pane
-    display="flex"
-    fontSize="20px"
-    justifyContent="center"
-    alignItems="center"
-    flexGrow={1}
-    marginRight="15px"
-    {...props}
-  >
-    {children}
-  </Pane>
-);
+function ActionBarContentText({ children, ...props }) {
+  return (
+    <Pane
+      display="flex"
+      fontSize="20px"
+      justifyContent="center"
+      alignItems="center"
+      flexGrow={1}
+      marginRight="15px"
+      {...props}
+    >
+      {children}
+    </Pane>
+  );
+}
 
-const StatusTx = ({ stage, cleatState, errorMessage, txHash, txHeight }) => {
+function StatusTx({ stage, cleatState, errorMessage, txHash, txHeight }) {
   if (stage === LEDGER_GENERATION) {
     return (
       <ActionBar>
@@ -106,7 +97,7 @@ const StatusTx = ({ stage, cleatState, errorMessage, txHash, txHeight }) => {
   }
 
   return null;
-};
+}
 
 const getValidatorAddres = (validators) => {
   let validatorAddres = null;
@@ -176,6 +167,7 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   return { txHeight };
@@ -193,7 +185,7 @@ function ActionBarContainer({
 }) {
   const { passport } = useGetPassportByAddress(addressPocket);
   const { keplr, jsCyber } = useContext(AppContext);
-  const history = useHistory();
+  const history = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -400,6 +392,7 @@ function ActionBarContainer({
       <ActionBar>
         <ActionBarContentText>
           <Pane fontSize="18px">
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
             you don't have cyber address in your pocket
           </Pane>
         </ActionBarContentText>

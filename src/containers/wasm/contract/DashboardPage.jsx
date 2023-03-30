@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
@@ -44,7 +44,7 @@ const useGetContracts = (offset) => {
       offset: offset * PAGE_SIZE,
     },
   });
-
+  console.log('------data useGetContracts', data, loading, error, '------data');
   if (error) {
     console.log(`Error!`, `Error! ${error.message}`);
   }
@@ -67,9 +67,13 @@ const useGetCodes = () => {
 
   useEffect(() => {
     const getCodes = async () => {
+      console.log('------data useGetCodes', jsCyber);
+
       try {
         if (jsCyber !== null) {
           const resposeCodes = await jsCyber.getCodes();
+          console.log('------data useGetCodes resposeCodes', resposeCodes);
+
           if (resposeCodes && resposeCodes.length > 0) {
             setCodes(resposeCodes.length);
           } else {

@@ -1,95 +1,39 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from 'react';
+import { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
-import { useLocation, useHistory, Route } from 'react-router-dom';
-import { Pane } from '@cybercongress/gravity';
-import useSWR from 'swr';
-import BigNumber from 'bignumber.js';
-import queryString from 'query-string';
-import { AppContext } from '../../context';
-import { CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import {
-  reduceBalances,
-  formatNumber,
-  roundNumber,
-  exponentialToDecimal,
-  getDisplayAmountReverce,
-  findDenomInTokenList,
-  isNative,
-} from '../../utils/utils';
-import { Dots, ValueImg, ButtonIcon } from '../../components';
+  useParams,
+  createSearchParams,
+  useSearchParams,
+} from 'react-router-dom';
+import { Pane } from '@cybercongress/gravity';
+import BigNumber from 'bignumber.js';
+import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
+import { AppContext } from '../../context';
+import { CYBER } from '../../utils/config';
+import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import {
   calculateCounterPairAmount,
-  calculateSlippage,
   sortReserveCoinDenoms,
   getMyTokenBalance,
-  reduceAmounToken,
   getPoolToken,
   getCoinDecimals,
-  networkList,
 } from './utils';
 import { TabList } from './components';
 import ActionBar from './actionBar';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPools';
 import getBalances from './hooks/getBalances';
-import Swap from './swap';
-import Withdraw from './withdraw';
-import PoolData from './poolData';
-import coinDecimalsConfig from '../../utils/configToken';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
 import networks from '../../utils/networkListIbc';
-import Carousel from '../portal/gift/carousel1/Carousel';
 import { MainContainer } from '../portal/components';
-import useGetSelectTab from './hooks/useGetSelectTab';
+import Swap from './swap';
+import Withdraw from './withdraw';
 // import TracerTx from './tx/TracerTx';
 // import TraceTxTable from './components/ibc-history/traceTxTable';
 // import HistoryContextProvider from './components/ibc-history/historyContext';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
-
-// const txHash =
-//   'E15BC5F5B62696F5D08C0860CDA13D39E385BD6245595EB07899954336760C8C';
-
-const defaultTokenList = {
-  [CYBER.DENOM_CYBER]: 0,
-  [CYBER.DENOM_LIQUID_TOKEN]: 0,
-  milliampere: 0,
-  millivolt: 0,
-  tocyb: 0,
-};
-
-const replaceFunc = (number) => {
-  return number.replace(/ /g, '');
-};
-
-const numberString = (num) =>
-  String(num).replace(/^\d+/, (number) =>
-    [...number]
-      .map(
-        (digit, index, digits) =>
-          (!index || (digits.length - index) % 3 ? '' : ' ') + digit
-      )
-      .join('')
-  );
-
-const itemsStep = [
-  {
-    title: 'add liquidity',
-  },
-  {
-    title: 'create pool',
-  },
-  {
-    title: 'sub liquidity',
-  },
-];
 
 const checkInactiveFunc = (token, ibcDataDenom) => {
   if (token.includes('ibc')) {
@@ -104,21 +48,18 @@ function getMyTokenBalanceNumber(denom, indexer) {
   return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
 }
 
-function addPunctuationToNumbers(number) {
-  return number.replace(/(\d{3})(?=\d)/g, '$1 ');
-}
-
 function Teleport({ defaultAccount }) {
   const { jsCyber, keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
-  const history = useHistory();
-  const { selectedTab } = useGetSelectTab(history);
+  const { tab = 'swap' } = useParams();
   const { addressActive } = useSetActiveAddress(defaultAccount);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [update, setUpdate] = useState(0);
   const { liquidBalances: accountBalances } = getBalances(
     addressActive,
     update
   );
   const { params } = useGetParams();
+  const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const { poolsData } = usePoolListInterval();
   const [tokenA, setTokenA] = useState(tokenADefaultValue);
   const [tokenB, setTokenB] = useState(tokenBDefaultValue);
@@ -128,8 +69,6 @@ function Teleport({ defaultAccount }) {
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState(0);
   const [selectedPool, setSelectedPool] = useState([]);
   const [swapPrice, setSwapPrice] = useState(0);
-  const [totalSupply, setTotalSupply] = useState(null);
-  const [totalSupplyFull, setTotalSupplyFull] = useState(null);
   const [myPools, setMyPools] = useState({});
   const [selectMyPool, setSelectMyPool] = useState('');
   const [amountPoolCoin, setAmountPoolCoin] = useState('');
@@ -143,8 +82,6 @@ function Teleport({ defaultAccount }) {
     keplr
   );
   const [sourceChannel, setSourceChannel] = useState(null);
-
-  let { search } = useLocation();
 
   // TO-DO Tracer status ibc txs
   // useEffect(() => {
@@ -162,59 +99,34 @@ function Teleport({ defaultAccount }) {
   // txTracerFunc();
   // }, []);
 
-  if (search.startsWith('?')) {
-    search = search.slice(1);
-  } else if (selectedTab !== 'sub-liquidity') {
-    const query = {
-      from: tokenA,
-      to: tokenB,
-    };
-
-    const searchQuery = queryString.stringify(query);
-
-    history.replace({
-      search: searchQuery,
-    });
-  }
-
-  let query = queryString.parse(search);
   const firstEffectOccured = useRef(false);
 
   useEffect(() => {
-    // Update current in and out currency to query string.
-    // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
     if (firstEffectOccured.current) {
-      // Mobx is mutable, but react's state is immutable.
-      // This causes an infinite loop with other effects that use the same state
-      // because the state of mobx is updated but the state of react will be updated in the next render.
-      // To solve this problem, we ignore the state processing of react and change the variable itself.
-      query = {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const query = {
         from: tokenA,
         to: tokenB,
       };
 
-      const searchQuery = queryString.stringify(query);
-
-      history.replace({
-        search: searchQuery,
-      });
+      setSearchParams(createSearchParams(query));
     } else {
       firstEffectOccured.current = true;
+      const param = Object.fromEntries(searchParams.entries());
+      if (Object.keys(param).length > 0) {
+        const { from, to } = param;
+        setTokenA(from);
+        setTokenB(to);
+      }
     }
-  }, [tokenA, tokenB]);
+
+    if (tab === 'sub-liquidity') {
+      setSearchParams(createSearchParams({}));
+    }
+  }, [tokenA, tokenB, setSearchParams, searchParams, tab]);
 
   useEffect(() => {
-    if (query.from) {
-      setTokenA(query.from);
-    }
-
-    if (query.to) {
-      setTokenB(query.to);
-    }
-  }, [query]);
-
-  useEffect(() => {
-    if (selectedTab === 'swap') {
+    if (tab === 'swap') {
       const dataLocalStorageNetworkA = localStorage.getItem('networkA');
       const dataLocalStorageNetworkB = localStorage.getItem('networkB');
       if (dataLocalStorageNetworkA !== null) {
@@ -227,7 +139,7 @@ function Teleport({ defaultAccount }) {
       setNetworkA(CYBER.CHAIN_ID);
       setNetworkB(CYBER.CHAIN_ID);
     }
-  }, [selectedTab]);
+  }, [tab]);
 
   useEffect(() => {
     if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
@@ -246,57 +158,6 @@ function Teleport({ defaultAccount }) {
       setSourceChannel(destChannelId);
     }
   }, [networkB, networkA]);
-
-  useEffect(() => {
-    const getTotalSupply = async () => {
-      if (jsCyber !== null) {
-        const responseTotalSupply = await jsCyber.totalSupply();
-
-        const datareduceTotalSupply = reduceBalances(responseTotalSupply);
-
-        if (Object.keys(datareduceTotalSupply).length > 0) {
-          setTotalSupplyFull(datareduceTotalSupply);
-        }
-
-        const reduceData = {};
-
-        if (Object.keys(ibcDataDenom).length > 0) {
-          Object.keys(datareduceTotalSupply).forEach((key) => {
-            const value = datareduceTotalSupply[key];
-            if (!isNative(key)) {
-              if (Object.prototype.hasOwnProperty.call(ibcDataDenom, key)) {
-                const { baseDenom, sourceChannelId: sourceChannelIFromPath } =
-                  ibcDataDenom[key];
-                const denomInfoFromList = findDenomInTokenList(baseDenom);
-                if (denomInfoFromList !== null) {
-                  if (
-                    Object.prototype.hasOwnProperty.call(
-                      denomInfoFromList,
-                      'destChannelId'
-                    )
-                  ) {
-                    const { destChannelId } = denomInfoFromList;
-                    if (destChannelId === sourceChannelIFromPath) {
-                      reduceData[key] = value;
-                    }
-                  }
-                }
-              }
-            } else if (key.indexOf('pool') !== 0) {
-              reduceData[key] = value;
-            }
-          });
-        }
-
-        if (Object.keys(reduceData).length > 0) {
-          setTotalSupply({ ...defaultTokenList, ...reduceData });
-        } else {
-          setTotalSupply({ ...defaultTokenList, ...datareduceTotalSupply });
-        }
-      }
-    };
-    getTotalSupply();
-  }, [jsCyber, ibcDataDenom]);
 
   useEffect(() => {
     let orderPrice = 0;
@@ -413,29 +274,30 @@ function Teleport({ defaultAccount }) {
 
         const resultValidSelectTokens = validTokensAB && validTokenAmountAB;
 
-        if (selectedTab === 'swap' && swapPrice !== 0 && resultValidTokenA) {
+        if (tab === 'swap' && swapPrice !== 0 && resultValidTokenA) {
           exceeded = false;
         }
 
         if (
-          selectedTab === 'add-liquidity' &&
+          tab === 'add-liquidity' &&
           resultValidSelectTokens &&
           swapPrice !== 0
         ) {
           exceeded = false;
         }
 
-        if (selectedTab === 'createPool' && resultValidSelectTokens) {
+        if (tab === 'create-pool' && resultValidSelectTokens) {
           exceeded = false;
         }
       }
     }
     setIsExceeded(exceeded);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountBalances,
     tokenA,
     tokenB,
-    selectedTab,
+    tab,
     tokenAAmount,
     tokenBAmount,
     swapPrice,
@@ -537,7 +399,7 @@ function Teleport({ defaultAccount }) {
     tokenB,
     params,
     selectedPool,
-    selectedTab,
+    tab,
     updateFunc,
     selectMyPool,
     myPools,
@@ -585,98 +447,38 @@ function Teleport({ defaultAccount }) {
     onChangeInputWithdraw,
   };
 
-  let content;
-
-  if (selectedTab === 'swap') {
-    content = (
-      <Route
-        path="/teleport"
-        render={() => (
-          <Swap
-            swap
-            stateSwap={stateSwap}
-            amountChangeHandler={amountChangeHandler}
-            marginTop={42}
-          />
-        )}
-      />
-    );
-  }
-
-  if (selectedTab === 'add-liquidity') {
-    content = (
-      <Route
-        path="/warp/add-liquidity"
-        render={() => (
-          <Swap
-            stateSwap={stateSwap}
-            amountChangeHandler={amountChangeHandler}
-          />
-        )}
-      />
-    );
-  }
-
-  if (selectedTab === 'createPool') {
-    content = (
-      <Route
-        path="/warp/create-pool"
-        render={() => (
-          <Swap
-            stateSwap={stateSwap}
-            amountChangeHandler={amountChangeHandlerCreatePool}
-          />
-        )}
-      />
-    );
-  }
-
-  if (selectedTab === 'sub-liquidity') {
-    content = (
-      <Route
-        path="/warp/sub-liquidity"
-        render={() => <Withdraw stateSwap={stateWithdraw} />}
-      />
-    );
-  }
-
-  if (selectedTab === 'pools') {
-    content = (
-      <Route
-        path="/warp"
-        render={() => (
-          <PoolData
-            data={poolsData}
-            totalSupplyData={totalSupplyFull}
-            accountBalances={accountBalances}
-          />
-        )}
-      />
-    );
-  }
-
   return (
     <>
-      <MainContainer width={selectedTab === 'pools' ? '85%' : '62%'}>
-        {selectedTab !== 'pools' && selectedTab !== 'swap' && (
-          // <Carousel
-          //   slides={itemsStep}
-          //   activeStep={Math.floor(appStep)}
-          //   setStep={setStepApp}
-          //   disableNext={false}
-          //   infinity
-          // />
-          <TabList selected={selectedTab} />
-        )}
+      <MainContainer width="62%">
+        {tab !== 'swap' && <TabList selected={tab} />}
 
         <Pane
           width="100%"
           display="flex"
           alignItems="center"
           flexDirection="column"
-          // height="84vh"
         >
-          {content}
+          {tab === 'swap' && (
+            <Swap
+              swap
+              stateSwap={stateSwap}
+              amountChangeHandler={amountChangeHandler}
+              marginTop={42}
+            />
+          )}
+          {tab === 'add-liquidity' && (
+            <Swap
+              stateSwap={stateSwap}
+              amountChangeHandler={amountChangeHandler}
+            />
+          )}
+          {tab === 'create-pool' && (
+            <Swap
+              stateSwap={stateSwap}
+              amountChangeHandler={amountChangeHandlerCreatePool}
+            />
+          )}
+          {tab === 'sub-liquidity' && <Withdraw stateSwap={stateWithdraw} />}
         </Pane>
 
         {/* <TraceTxTable /> */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../context';
 import { reduceBalances } from '../../utils/utils';
 
@@ -25,14 +25,11 @@ function DenomTest() {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {totalSupply !== null &&
         Object.keys(totalSupply).map((key) => {
-          return (
-            <>
-              <Denom denomValue={key} />
-            </>
-          );
+          return <Denom denomValue={key} key={key} />;
         })}
     </div>
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default DenomTest;

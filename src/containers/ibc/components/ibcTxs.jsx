@@ -1,5 +1,4 @@
-import React from 'react';
-import { Pane, Button, Input } from '@cybercongress/gravity';
+import { Button, Input } from '@cybercongress/gravity';
 
 function IbcTxs({ ...props }) {
   const {

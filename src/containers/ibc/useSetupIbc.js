@@ -5,27 +5,11 @@ import { GasPrice } from '@cosmjs/launchpad';
 import { stringToPath } from '@cosmjs/crypto';
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
 import { config, STEPS } from './utils';
-import { configKeplr } from './configKepler';
-
-const init = async (option) => {
-  let signer = null;
-  console.log(`window.keplr `, window.keplr);
-  console.log(`window.getOfflineSignerAuto`, window.getOfflineSignerAuto);
-  if (window.keplr || window.getOfflineSignerAuto) {
-    if (window.keplr.experimentalSuggestChain) {
-      await window.keplr.experimentalSuggestChain(configKeplr(option));
-      await window.keplr.enable(option.chainId);
-      const offlineSigner = await window.getOfflineSignerAuto(option.chainId);
-      signer = offlineSigner;
-      console.log(`offlineSigner`, offlineSigner);
-      // setSigner(offlineSigner);
-    }
-  }
-  return signer;
-};
 
 const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 };
 
 const setupClientIbc = async (signer, option, logger) => {
@@ -73,8 +57,6 @@ function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
   const [running, setRunning] = useState(false);
   const [signerA, setSignerA] = useState(null);
   const [signerB, setSignerB] = useState(null);
-  const [clientA, setClientA] = useState(null);
-  const [clientB, setClientB] = useState(null);
   const [link, setLink] = useState(null);
   const [channels, setChannels] = useState(null);
   const [relayerLog, setRelayerLog] = useState([]);
@@ -98,6 +80,7 @@ function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
     if (step === STEPS.STOP_RELAYER) {
       setRunning(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   useEffect(() => {
@@ -110,12 +93,14 @@ function useSetupIbc(step, configChains, setStep, valueChannelsRelayer) {
       }
     };
     getKeplrClient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   useEffect(() => {
     window.addEventListener('keplr_keystorechange', () => {
       initSigner();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable */
+import { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
@@ -36,8 +36,7 @@ function AddTest({ nodeIpfs }) {
     try {
       const response = await axios({
         method: 'get',
-        url:
-          'https://gateway.ipfs.cybernode.ai/ipfs/QmVdVFZDsSTVCeVLgWLU1fWxmZnYLCM5yD5RS4NpZQmDBp',
+        url: 'https://gateway.ipfs.cybernode.ai/ipfs/QmVdVFZDsSTVCeVLgWLU1fWxmZnYLCM5yD5RS4NpZQmDBp',
       });
       console.log(`response`, response);
     } catch (error) {

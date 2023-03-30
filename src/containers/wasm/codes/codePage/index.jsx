@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 import { AppContext } from '../../../../context';
 import { makeTags } from '../../../../utils/utils';
 import InstantiationContract from '../../contract/InstantiationContract';
 import CodeInfo from './CodeInfo';
 import TableInstance from './TableInstance';
 import styles from './styles.scss';
-import { FlexWrapCantainer, a } from '../../ui/ui';
+import { FlexWrapCantainer } from '../../ui/ui';
 
 const initDetails = {
   checksum: '',

@@ -1,54 +1,31 @@
-import React, { Component } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { Button } from '@cybercongress/gravity';
-import { toAscii, fromBase64, toBase64 } from '@cosmjs/encoding';
+/* eslint-disable */
+import { Component } from 'react';
+import { coins } from '@cosmjs/launchpad';
 import {
-  SigningCosmosClient,
-  GasPrice,
-  coins,
-  makeSignDoc,
-  makeStdTx,
-} from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
-import {
-  ConnectLadger,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   GovernanceStartStageActionBar,
-  Cyberlink,
   CommunityPool,
-  ParamChange,
   TextProposal,
   TransactionError,
-  CheckAddressInfo,
   GovernanceChangeParam,
   GovernanceSoftwareUpgrade,
 } from '../../components';
-import { getAccountBandwidth, statusNode } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 
 import { LEDGER, CYBER, DEFAULT_GAS_LIMITS } from '../../utils/config';
+import { getTxs } from '../../utils/search/utils';
 
 const STAGE_TYPE_GOV = 9;
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
-  LEDGER_NOAPP,
   STAGE_INIT,
   STAGE_LEDGER_INIT,
-  STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
-  LEDGER_VERSION_REQ,
 } = LEDGER;
-
-const LEDGER_TX_ACOUNT_INFO = 10;
 
 class ActionBar extends Component {
   constructor(props) {
@@ -71,12 +48,7 @@ class ActionBar extends Component {
       heightUpgrade: '',
     };
     this.timeOut = null;
-    this.ledger = null;
     this.transport = null;
-  }
-
-  componentDidMount() {
-    this.ledger = new CosmosDelegateTool();
   }
 
   generateTxKeplr = async () => {
@@ -85,34 +57,20 @@ class ActionBar extends Component {
       valueDescription,
       valueTitle,
       valueDeposit,
-      valueAmountRecipient,
       valueAddressRecipient,
-      changeParam,
-      nameUpgrade,
-      heightUpgrade,
     } = this.state;
     const { keplr } = this.context;
     console.log('keplr', keplr);
     if (keplr !== null) {
-      // let deposit = [];
       const title = valueTitle;
       const description = valueDescription;
       const recipient = valueAddressRecipient;
-      let msgs = [];
       let response = {};
       const fee = {
         amount: [],
         gas: DEFAULT_GAS_LIMITS.toString(),
       };
       const [{ address }] = await keplr.signer.getAccounts();
-
-      // if (valueDeposit > 0) {
-      //   deposit = coins(valueDeposit, CYBER.DENOM_CYBER);
-      // }
-
-      // if (valueAmountRecipient > 0) {
-      //   amount = coins(valueAmountRecipient, CYBER.DENOM_CYBER);
-      // }
 
       try {
         const deposit = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
@@ -173,25 +131,26 @@ class ActionBar extends Component {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const status = await this.ledger.txStatusCyber(this.state.txHash);
-      const data = await status;
-      if (data.logs) {
-        this.setState({
-          stage: STAGE_CONFIRMED,
-          txHeight: data.height,
-        });
-        if (update) {
-          update();
+      const data = await getTxs(this.state.txHash);
+      if (data !== null) {
+        if (data.logs) {
+          this.setState({
+            stage: STAGE_CONFIRMED,
+            txHeight: data.height,
+          });
+          if (update) {
+            update();
+          }
+          return;
         }
-        return;
-      }
-      if (data.code) {
-        this.setState({
-          stage: STAGE_ERROR,
-          txHeight: data.height,
-          errorMessage: data.raw_log,
-        });
-        return;
+        if (data.code) {
+          this.setState({
+            stage: STAGE_ERROR,
+            txHeight: data.height,
+            errorMessage: data.raw_log,
+          });
+          return;
+        }
       }
     }
     this.timeOut = setTimeout(this.confirmTx, 1500);
@@ -394,7 +353,6 @@ class ActionBar extends Component {
     if (valueSelect === 'textProposal' && stage === STAGE_TYPE_GOV) {
       return (
         <TextProposal
-          // addrProposer={address.bech32}
           onClickBtn={this.generateTxInit}
           onChangeInputTitle={this.onChangeInputTitle}
           onChangeInputDescription={this.onChangeInputDescription}
@@ -410,7 +368,6 @@ class ActionBar extends Component {
     if (valueSelect === 'communityPool' && stage === STAGE_TYPE_GOV) {
       return (
         <CommunityPool
-          // addrProposer={address.bech32}
           onClickBtn={this.generateTxInit}
           onChangeInputTitle={this.onChangeInputTitle}
           onChangeInputDescription={this.onChangeInputDescription}
@@ -471,7 +428,6 @@ class ActionBar extends Component {
         />
       );
     }
-
 
     if (stage === STAGE_SUBMITTED || stage === STAGE_CONFIRMING) {
       return <TransactionSubmitted onClickBtnCloce={this.onClickInitStage} />;

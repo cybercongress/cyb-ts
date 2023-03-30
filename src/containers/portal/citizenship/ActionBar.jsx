@@ -1,20 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useEffect,
-  useState,
-  useContext,
-  useRef,
-  useCallback,
-} from 'react';
-import { Button, Pane } from '@cybercongress/gravity';
-import { useHistory } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { setDefaultAccount, setAccounts } from '../../../redux/actions/pocket';
 // import { ActionBarSteps } from '../../energy/component/actionBar';
-import { ActionBarContentText, Dots } from '../../../components';
+import { Dots, BtnGrd } from '../../../components';
 import { CYBER, LEDGER } from '../../../utils/config';
 import { steps } from './utils';
-import { BtnGrd, ActionBarSteps } from '../components';
+import { ActionBarSteps } from '../components';
 
 const {
   STEP_INIT,
@@ -54,7 +47,7 @@ function ActionBar({
   onClickSignMoonCode,
   signedMessage,
 }) {
-  const history = useHistory();
+  const history = useNavigate();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
     useState(false);
 
@@ -155,6 +148,7 @@ function ActionBar({
     } else {
       setStep(STEP_KEPLR_SETUP);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keplr]);
 
   useEffect(() => {
@@ -169,6 +163,7 @@ function ActionBar({
     } else {
       onClickSignMoonCode();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signedMessage]);
 
   if (step === STEP_INIT) {

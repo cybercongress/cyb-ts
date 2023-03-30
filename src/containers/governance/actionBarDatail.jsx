@@ -1,19 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import { useContext, useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
-import { ActionBar, Button, Pane } from '@cybercongress/gravity';
+import { ActionBar, Pane } from '@cybercongress/gravity';
+import { coins } from '@cosmjs/launchpad';
 import {
-  SigningCosmosClient,
-  GasPrice,
-  coins,
-  makeSignDoc,
-  makeStdTx,
-} from '@cosmjs/launchpad';
-import { CosmosDelegateTool } from '../../utils/ledger';
-import {
-  ConnectLadger,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
   TransactionError,
@@ -22,46 +12,32 @@ import {
   CheckAddressInfo,
   ButtonImgText,
   Account,
+  Input,
+  BtnGrd,
 } from '../../components';
 import { AppContext } from '../../context';
-
-import { downloadObjectAsJson } from '../../utils/utils';
 
 import { getTxs } from '../../utils/search/utils';
 
 import {
   LEDGER,
   CYBER,
-  PATTERN_CYBER,
   PROPOSAL_STATUS,
   DEFAULT_GAS_LIMITS,
   VOTE_OPTION,
 } from '../../utils/config';
-import Input from '../teleport/components/input';
-import BtnGrd from '../../components/btnGrd';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
-const imgLedger = require('../../image/ledger.svg');
 const imgCyber = require('../../image/blue-circle.png');
 
 const {
-  MEMO,
-  HDPATH,
-  LEDGER_OK,
   STAGE_INIT,
-  STAGE_SELECTION,
-  STAGE_LEDGER_INIT,
-  STAGE_READY,
-  STAGE_WAIT,
   STAGE_SUBMITTED,
   STAGE_CONFIRMING,
   STAGE_CONFIRMED,
   STAGE_ERROR,
 } = LEDGER;
 const LEDGER_TX_ACOUNT_INFO = 10;
-
-const STAGE_CLI_ADD_ADDRESS = 1.3;
-const STAGE_GENERATION_TX = 12.2;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
   const { keplr, jsCyber } = useContext(AppContext);
@@ -102,6 +78,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       }
     };
     confirmTx();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jsCyber, txHash]);
 
   const cleatState = () => {
@@ -118,10 +95,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       try {
         const [{ address }] = await keplr.signer.getAccounts();
         if (addressActive !== null && addressActive.bech32 === address) {
-          // let amount = [];
-          // if (parseFloat(valueDeposit) > 0) {
-          //   amount = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
-          // }
           let response = {};
           const fee = {
             amount: [],
@@ -179,29 +152,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
         setStage(STAGE_ERROR);
       }
     }
-    // if (keplr !== null) {
-    //   if (period === 'deposit') {
-    //     msgs.push({
-    //       type: 'cosmos-sdk/MsgDeposit',
-    //       value: {
-    //         amount,
-    //         depositor: accounts.address,
-    //         proposal_id: id,
-    //       },
-    //     });
-    //   }
-
-    //   if (period === 'vote') {
-    //     msgs.push({
-    //       type: 'cosmos-sdk/MsgVote',
-    //       value: {
-    //         option: valueSelect,
-    //         voter: accounts.address,
-    //         proposal_id: id,
-    //       },
-    //     });
-    //   }
-    // }
   };
 
   const onValueChangeDeposit = (values) => {
@@ -293,30 +243,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
       </ActionBar>
     );
   }
-
-  // if (stage === STAGE_CLI_ADD_ADDRESS) {
-  //   return (
-  //     <ActionBar>
-  //       <ActionBarContentText>
-  //         <Pane marginRight={10}>Put your cyber address</Pane>
-  //         <Input
-  //           textAlign="end"
-  //           value={valueAddress}
-  //           onChange={this.onChangeValueAddress}
-  //           marginRight={10}
-  //           width={170}
-  //           autoFocus
-  //         />
-  //       </ActionBarContentText>
-  //       <Button
-  //         disabled={!valueAddress.match(PATTERN_CYBER)}
-  //         onClick={this.onClickPutAddress}
-  //       >
-  //         put
-  //       </Button>
-  //     </ActionBar>
-  //   );
-  // }
 
   if (stage === LEDGER_TX_ACOUNT_INFO) {
     return <CheckAddressInfo />;
