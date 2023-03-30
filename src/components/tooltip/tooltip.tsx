@@ -15,10 +15,10 @@ type TooltipProps = {
 
 function Tooltip({
   children,
-  trigger,
+  trigger = 'hover',
   tooltip,
-  hideBorder,
-  placement,
+  hideBorder = true,
+  placement = 'top',
 }: TooltipProps) {
   const [mounted, setMounted] = React.useState(false);
 
@@ -61,11 +61,4 @@ function Tooltip({
     </>
   );
 }
-
-Tooltip.defaultProps = {
-  trigger: 'hover',
-  hideBorder: true,
-  placement: 'top',
-};
-
 export default Tooltip;

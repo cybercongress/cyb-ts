@@ -106,7 +106,8 @@
       "alias": {
         "map": [
           ["components", "./src/components"],
-          ["images", "./src/image"]
+          ["images", "./src/image"],
+          ["src", "./src"]
         ]
       }
     }
