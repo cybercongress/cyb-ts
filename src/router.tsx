@@ -5,6 +5,8 @@ import {
   Routes,
   Route,
   Outlet,
+  Navigate,
+  useParams,
 } from 'react-router-dom';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
@@ -92,6 +94,11 @@ function MainLayout() {
   );
 }
 
+const ValidatorsRedirect = () => {
+  const { status } = useParams();
+  return <Navigate to={`/sphere/${status}`} />;
+};
+
 function AppRouter() {
   return (
     <WrappedRouter>
@@ -108,9 +115,9 @@ function AppRouter() {
           />
 
           {/* old links - start */}
-          <Route path="/halloffame" element={<Validators />} />
-          <Route path="/halloffame/:status" element={<Validators />} />
-          <Route path="/mint" element={<Mint />} />
+          <Route path="/halloffame" element={<Navigate to="/sphere" />} />
+          <Route path="/halloffame/:status" element={<ValidatorsRedirect />} />
+          <Route path="/mint" element={<Navigate to={routes.hfr.path} />} />
           {/* old links - end */}
 
           <Route path="/sphere" element={<Validators />} />
