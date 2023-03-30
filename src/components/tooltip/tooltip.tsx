@@ -1,9 +1,17 @@
 import React from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import 'react-popper-tooltip/dist/styles.css';
+import cx from 'classnames';
+
 import styles from './styles.scss';
 
-const cx = require('classnames');
+type TooltipProps = {
+  children: React.ReactNode;
+  trigger?: 'click' | 'hover';
+  tooltip: React.ReactNode;
+  hideBorder?: boolean;
+  placement?: 'top' | 'bottom' | 'left' | 'right';
+};
 
 function Tooltip({
   children,
@@ -11,11 +19,10 @@ function Tooltip({
   tooltip,
   hideBorder,
   placement,
-  ...props
-}) {
+}: TooltipProps) {
   const [mounted, setMounted] = React.useState(false);
 
-  const setMountedOnceVisible = (visibleArg) => {
+  const setMountedOnceVisible = (visibleArg: boolean) => {
     if (!mounted && visibleArg) {
       setMounted(true);
     }
@@ -23,7 +30,7 @@ function Tooltip({
 
   const { visible, getTooltipProps, setTooltipRef, setTriggerRef } =
     usePopperTooltip({
-      trigger: trigger || 'hover',
+      trigger,
       delayHide: 100,
       interactive: true,
       onVisibleChange: setMountedOnceVisible,
@@ -48,17 +55,17 @@ function Tooltip({
               : { visibility: 'hidden', pointerEvents: 'none' },
           })}
         >
-          {/* <div
-                      {...getArrowProps({
-                        className: 'tooltip-arrow',
-                        'data-placement': placement,
-                      })}
-                    /> */}
           {tooltip}
         </div>
       )}
     </>
   );
 }
+
+Tooltip.defaultProps = {
+  trigger: 'hover',
+  hideBorder: true,
+  placement: 'top',
+};
 
 export default Tooltip;
