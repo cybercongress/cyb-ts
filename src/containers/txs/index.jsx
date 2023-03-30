@@ -25,7 +25,7 @@ function Txs() {
   console.log('------------Txs', loading, error, dataTxs);
 
   if (error) {
-    return `Error! ${error.message}`;
+    return <div>`Error! ${error.message}`</div>;
   }
 
   if (loading) {
@@ -36,7 +36,6 @@ function Txs() {
 
   const validatorRows = dataTxs.transaction.map((item, index) => (
     <Table.Row
-      // borderBottom="none"
       paddingX={0}
       paddingY={5}
       borderTop={index === 0 ? 'none' : '1px solid #3ab79340'}

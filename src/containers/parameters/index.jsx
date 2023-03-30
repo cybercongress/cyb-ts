@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
-import { Link, useParams } from 'react-router-dom';
+import { Tablist, Pane, Text } from '@cybercongress/gravity';
+import { useParams } from 'react-router-dom';
 import { getParamNetwork } from '../../utils/search/utils';
-import { Loading } from '../../components';
+import { Loading, TabBtn } from '../../components';
 import {
   BandwidthParam,
   SlashingParam,
@@ -17,30 +17,6 @@ import {
   GridParam,
   DmnParam,
 } from './tabs';
-
-// TODO: Dublicate refactor!
-function TabBtn({ text, isSelected, onSelect, to }) {
-  return (
-    <Link to={to}>
-      <Tab
-        key={text}
-        isSelected={isSelected}
-        onSelect={onSelect}
-        paddingX={10}
-        paddingY={20}
-        marginX={3}
-        borderRadius={4}
-        color="#36d6ae"
-        boxShadow="0px 0px 5px #36d6ae"
-        fontSize="16px"
-        whiteSpace="nowrap"
-        width="100%"
-      >
-        {text}
-      </Tab>
-    </Link>
-  );
-}
 
 const paramsTabs = {
   staking: { text: 'Staking', to: '/network/bostrom/parameters/staking' },

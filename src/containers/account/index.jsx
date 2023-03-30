@@ -7,7 +7,7 @@ import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 import Heroes from './tabs/heroes';
 import { formatNumber } from '../../utils/utils';
-import { Copy, ContainerCard, Card, Dots } from '../../components';
+import { Copy, ContainerCard, Card, Dots, TabBtn } from '../../components';
 import ActionBarContainer from './actionBar';
 import Main from './tabs/main';
 import TableDiscipline from '../gol/table';
@@ -19,30 +19,6 @@ import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
-
-// TODO: Dublicate refactor!
-function TabBtn({ text, isSelected, onSelect, to }) {
-  return (
-    <Link to={to}>
-      <Tab
-        key={text}
-        isSelected={isSelected}
-        onSelect={onSelect}
-        paddingX={5}
-        paddingY={20}
-        marginX={3}
-        borderRadius={4}
-        color="#36d6ae"
-        boxShadow="0px 0px 5px #36d6ae"
-        fontSize="16px"
-        whiteSpace="nowrap"
-        width="100%"
-      >
-        {text}
-      </Tab>
-    </Link>
-  );
-}
 
 const getTabsMap = (address) => ({
   security: {

@@ -60,6 +60,18 @@ import Sigma from './containers/sigma';
 
 import { routes } from './routes';
 
+type WrappedRouterProps = {
+  children: React.ReactNode;
+};
+
+function WrappedRouter({ children }: WrappedRouterProps) {
+  return process.env.IPFS_DEPLOY ? (
+    <HashRouter>{children}</HashRouter>
+  ) : (
+    <BrowserRouter>{children}</BrowserRouter>
+  );
+}
+
 function PageNotExist() {
   return (
     <div>
@@ -67,13 +79,6 @@ function PageNotExist() {
       <br />
       <Link to={routes.home.path}>Home</Link>
     </div>
-  );
-}
-function WrappedRouter({ children }) {
-  return process.env.IPFS_DEPLOY ? (
-    <HashRouter>{children}</HashRouter>
-  ) : (
-    <BrowserRouter>{children}</BrowserRouter>
   );
 }
 
