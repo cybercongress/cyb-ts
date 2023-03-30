@@ -40,9 +40,7 @@ function BlockDetails({ router }) {
       blockId: idBlock,
     },
   });
-
   useEffect(() => {
-    console.log(`data`, data);
     if (data && data.block && Object.keys(data.block).length > 0) {
       setBlockInfo(data.block[0]);
     } else {
@@ -52,7 +50,7 @@ function BlockDetails({ router }) {
   }, [data, idBlock]);
 
   if (loading) {
-    return 'Loading...';
+    return <div>Loading...</div>;
   }
 
   if (error) {
@@ -62,7 +60,11 @@ function BlockDetails({ router }) {
   return (
     <div>
       <main className="block-body">
-        <InformationBlock numbTx={blockInfo.transactions} marginBottom={20} data={blockInfo} />
+        <InformationBlock
+          numbTx={blockInfo.transactions}
+          marginBottom={20}
+          data={blockInfo}
+        />
         <CardTemplate title="Transactions">
           <TableTxs data={blockInfo.transactions} />
         </CardTemplate>

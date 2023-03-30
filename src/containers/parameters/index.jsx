@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, useLocation } from 'react-router-dom';
 import { getParamNetwork } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import {
@@ -56,10 +56,11 @@ const initParam = {
   dmn: null,
 };
 
-function ParamNetwork({ location }) {
+function ParamNetwork() {
   const [selected, setSelected] = useState('bandwidth');
   const [dataParam, setDataParam] = useState(initParam);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   const chekPathname = () => {
     const { pathname } = location;
@@ -216,7 +217,11 @@ function ParamNetwork({ location }) {
         <TabBtn text="Mint" isSelected={selected === 'mint'} to="/network/bostrom/parameters/mint" />
         <TabBtn text="Resources" isSelected={selected === 'resources'} to="/network/bostrom/parameters/resources" />
         <TabBtn text="Wasm" isSelected={selected === 'wasm'} to="/network/bostrom/parameters/wasm" />
-        <TabBtn text="Liquidity" isSelected={selected === 'liquidity'} to="/network/bostrom/parameters/liquidity" />
+        <TabBtn
+          text="Liquidity"
+          isSelected={selected === 'liquidity'}
+          to="/network/bostrom/parameters/liquidity"
+        />
         <TabBtn text="Grid" isSelected={selected === 'grid'} to="/network/bostrom/parameters/grid" />
         <TabBtn text="DMN" isSelected={selected === 'dmn'} to="/network/bostrom/parameters/dmn" />
       </Tablist>

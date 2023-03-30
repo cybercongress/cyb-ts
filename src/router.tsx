@@ -1,5 +1,12 @@
 // import { createBrowserHistory } from 'history';
-import { Link, HashRouter, BrowserRouter, Routes, Route, Outlet, useMatch } from 'react-router-dom';
+import {
+  Link,
+  HashRouter,
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
+} from 'react-router-dom';
 import App from './containers/application/application';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
@@ -35,11 +42,20 @@ import Release from './containers/portal/release';
 import Temple from './containers/temple';
 import IpfsSettings from './containers/ipfsSettings';
 import Ibc from './containers/ibc';
-import { Codes, CodePage, ContractPage, DashboardPage } from './containers/wasm';
+import {
+  Codes,
+  CodePage,
+  ContractPage,
+  DashboardPage,
+} from './containers/wasm';
 import Help from './containers/help';
 import Assets from './containers/assets';
 import MainPartal from './containers/portal/mainPortal';
-import { ListNetwork, CustomNetwork, DetailsNetwork } from './containers/network';
+import {
+  ListNetwork,
+  CustomNetwork,
+  DetailsNetwork,
+} from './containers/network';
 
 import Sigma from './containers/sigma';
 
@@ -64,7 +80,11 @@ function PageNotExist() {
   );
 }
 function WrappedRouter({ children }) {
-  return process.env.IPFS_DEPLOY ? <HashRouter>{children}</HashRouter> : <BrowserRouter>{children}</BrowserRouter>;
+  return process.env.IPFS_DEPLOY ? (
+    <HashRouter>{children}</HashRouter>
+  ) : (
+    <BrowserRouter>{children}</BrowserRouter>
+  );
 }
 
 function MainLayout() {
@@ -98,18 +118,17 @@ function AppRouter() {
           <Route path="/ipfs/:cid" element={<Ipfs />} />
 
           <Route path="network/bostrom">
-            <Route path="tx" element={<Txs />}>
-              <Route path=":txHash" element={<TxsDetails />} />
-            </Route>
+            <Route path="tx" element={<Txs />} />
+            <Route path="tx/:txHash" element={<TxsDetails />} />
             <Route path="contract/:address" element={<AccountDetails />} />
-            <Route path="hero/:address" element={<ValidatorsDetails />} />
-            <Route path="blocks/:idBlock" element={<BlockDetails />} />
+            <Route path="hero/:address/" element={<ValidatorsDetails />} />
+            <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />
             <Route path="blocks" element={<Block />} />
+            <Route path="blocks/:idBlock" element={<BlockDetails />} />
           </Route>
 
           <Route path="/degenbox" element={<TrollBoxx />} />
-          {/* <Route path="/portal" element={<PortPages />}/> */}
           <Route path="/test" element={<TestKeplr />} />
           <Route path={oldLinks.mint} element={<Mint />} />
           <Route path={routes.hfr.path} element={<Mint />} />
@@ -120,7 +139,6 @@ function AppRouter() {
           <Route path="/sixthSense" element={<Taverna />} />
           <Route path="/teleport" element={<Teleport />} />
           <Route path="/warp" element={<Teleport />} />
-          {/* <Route path="/genesis" element={<Genesis />}/> */}
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />
@@ -131,7 +149,10 @@ function AppRouter() {
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />
           <Route path="/contracts" element={<DashboardPage />} />
-          <Route path="/contracts/:contractAddress" element={<ContractPage />} />
+          <Route
+            path="/contracts/:contractAddress"
+            element={<ContractPage />}
+          />
           {/* network */}
           <Route path="/networks" element={<ListNetwork />} />
           <Route path="/networks/add" element={<CustomNetwork />} />
@@ -141,7 +162,6 @@ function AppRouter() {
           {/* Sigma */}
           <Route path="/sigma" element={<Sigma />} />
           <Route path="/nebula" element={<Nebula />} />
-          {/* <Route path="/" element={<Temple />}/> */}
           <Route path="*" element={<PageNotExist />} />
         </Route>
       </Routes>
