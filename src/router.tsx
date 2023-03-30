@@ -1,4 +1,3 @@
-// import { createBrowserHistory } from 'history';
 import {
   Link,
   HashRouter,
@@ -61,15 +60,6 @@ import Sigma from './containers/sigma';
 
 import { routes } from './routes';
 
-// const history = createBrowserHistory({});
-
-// backward compatibility
-const oldLinks = {
-  halloffame: '/halloffame',
-  halloffameJailed: '/halloffame/jailed',
-  mint: '/mint',
-};
-
 function PageNotExist() {
   return (
     <div>
@@ -107,16 +97,21 @@ function AppRouter() {
           <Route path="/search/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
           <Route path="/senate/:proposalId" element={<ProposalsDetail />} />
-          <Route path={oldLinks.halloffameJailed} element={<Validators />} />
-          <Route path={oldLinks.halloffame} element={<Validators />} />
-          <Route path="/sphere/*" element={<Validators />} />
+
+          {/* old links - start */}
+          <Route path="/halloffame" element={<Validators />} />
+          <Route path="/halloffame/:status" element={<Validators />} />
+          <Route path="/mint" element={<Mint />} />
+          {/* old links - end */}
+
+          <Route path="/sphere" element={<Validators />} />
+          <Route path="/sphere/:status" element={<Validators />} />
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
           <Route path="/graph" element={<ForceGraph />} />
           <Route path="/pgraph/:agent" element={<ForceGraph />} />
           <Route path="/ipfs" element={<IpfsSettings />} />
           <Route path="/ipfs/:cid" element={<Ipfs />} />
-
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
@@ -129,10 +124,8 @@ function AppRouter() {
             <Route path="blocks" element={<Block />} />
             <Route path="blocks/:idBlock" element={<BlockDetails />} />
           </Route>
-
           <Route path="/degenbox" element={<TrollBoxx />} />
           <Route path="/test" element={<TestKeplr />} />
-          <Route path={oldLinks.mint} element={<Mint />} />
           <Route path={routes.hfr.path} element={<Mint />} />
           <Route path="/grid" element={<RoutedEnergy />} />
           <Route path="/token" element={<Market />} />

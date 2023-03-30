@@ -20,6 +20,7 @@ import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
 
+// TODO: Dublicate refactor!
 function TabBtn({ text, isSelected, onSelect, to }) {
   return (
     <Link to={to}>
