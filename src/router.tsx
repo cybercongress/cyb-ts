@@ -96,13 +96,16 @@ function AppRouter() {
   return (
     <WrappedRouter>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
+        <Route path={routes.home.path} element={<MainLayout />}>
           <Route index element={<Temple />} />
           <Route path="/robot" element={<Wallet />} />
           <Route path="/oracle" element={<Home />} />
           <Route path="/search/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
-          <Route path="/senate/:proposalId" element={<ProposalsDetail />} />
+          <Route
+            path={routes.senateProposal.path}
+            element={<ProposalsDetail />}
+          />
 
           {/* old links - start */}
           <Route path="/halloffame" element={<Validators />} />
