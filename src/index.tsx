@@ -23,7 +23,7 @@ import AppContextProvider from './context';
 import './style/main.css';
 import './image/favicon.ico';
 import './image/robot.svg';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary.jsx';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 
 const httpLink = new HttpLink({
@@ -43,7 +43,9 @@ const wsLink = new WebSocketLink({
 
 const terminatingLink = split(
   ({ query }) => {
-    const { kind, operation } = getMainDefinition(query) as OperationDefinitionNode;
+    const { kind, operation } = getMainDefinition(
+      query
+    ) as OperationDefinitionNode;
     return kind === 'OperationDefinition' && operation === 'subscription';
   },
   wsLink,

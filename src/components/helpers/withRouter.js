@@ -1,10 +1,11 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
+// TODO: Tmp solution for legacy components, - remove when all components are migrated to hooks
 function withRouter(Component) {
   function ComponentWithRouterProp(props) {
-    let location = useLocation();
-    let navigate = useNavigate();
-    let params = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const params = useParams();
     return <Component {...props} router={{ location, navigate, params }} />;
   }
 

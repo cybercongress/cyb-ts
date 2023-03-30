@@ -20,17 +20,6 @@ function TabList({ selected }) {
       width="375px"
       marginX="auto"
     >
-      {/* <TabBtn
-        text="add liquidity"
-        isSelected={selected === 'add-liquidity'}
-        to="/teleport/add-liquidity"
-      /> */}
-      {/* <TabBtn text="Swap" isSelected={selected === 'swap'} to="/teleport" /> */}
-      {/* <TabBtn
-        text="sub liquidity"
-        isSelected={selected === 'sub-liquidity'}
-        to="/teleport/sub-liquidity"
-      /> */}
       <ButtonTeleport
         status="left"
         isSelected={selected === 'add-liquidity'}

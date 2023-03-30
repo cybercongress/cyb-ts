@@ -1,4 +1,3 @@
-// import { createBrowserHistory } from 'history';
 import {
   Link,
   HashRouter,
@@ -62,14 +61,17 @@ import Sigma from './containers/sigma';
 import { routes } from './routes';
 import Warp from './containers/warp/Warp';
 
-// const history = createBrowserHistory({});
-
-// backward compatibility
-const oldLinks = {
-  halloffame: '/halloffame',
-  halloffameJailed: '/halloffame/jailed',
-  mint: '/mint',
+type WrappedRouterProps = {
+  children: React.ReactNode;
 };
+
+function WrappedRouter({ children }: WrappedRouterProps) {
+  return process.env.IPFS_DEPLOY ? (
+    <HashRouter>{children}</HashRouter>
+  ) : (
+    <BrowserRouter>{children}</BrowserRouter>
+  );
+}
 
 function PageNotExist() {
   return (
@@ -78,13 +80,6 @@ function PageNotExist() {
       <br />
       <Link to={routes.home.path}>Home</Link>
     </div>
-  );
-}
-function WrappedRouter({ children }) {
-  return process.env.IPFS_DEPLOY ? (
-    <HashRouter>{children}</HashRouter>
-  ) : (
-    <BrowserRouter>{children}</BrowserRouter>
   );
 }
 
@@ -108,16 +103,21 @@ function AppRouter() {
           <Route path="/search/:query" element={<SearchResults />} />
           <Route path="/senate" element={<Governance />} />
           <Route path="/senate/:proposalId" element={<ProposalsDetail />} />
-          <Route path={oldLinks.halloffameJailed} element={<Validators />} />
-          <Route path={oldLinks.halloffame} element={<Validators />} />
-          <Route path="/sphere/*" element={<Validators />} />
+
+          {/* old links - start */}
+          <Route path="/halloffame" element={<Validators />} />
+          <Route path="/halloffame/:status" element={<Validators />} />
+          <Route path="/mint" element={<Mint />} />
+          {/* old links - end */}
+
+          <Route path="/sphere" element={<Validators />} />
+          <Route path="/sphere/:status" element={<Validators />} />
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
           <Route path="/graph" element={<ForceGraph />} />
           <Route path="/pgraph/:agent" element={<ForceGraph />} />
           <Route path="/ipfs" element={<IpfsSettings />} />
           <Route path="/ipfs/:cid" element={<Ipfs />} />
-
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
@@ -126,13 +126,12 @@ function AppRouter() {
             <Route path="hero/:address/" element={<ValidatorsDetails />} />
             <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
             <Route path="parameters" element={<ParamNetwork />} />
+            <Route path="parameters/:param" element={<ParamNetwork />} />
             <Route path="blocks" element={<Block />} />
             <Route path="blocks/:idBlock" element={<BlockDetails />} />
           </Route>
-
           <Route path="/degenbox" element={<TrollBoxx />} />
           <Route path="/test" element={<TestKeplr />} />
-          <Route path={oldLinks.mint} element={<Mint />} />
           <Route path={routes.hfr.path} element={<Mint />} />
           <Route path="/grid" element={<RoutedEnergy />} />
           <Route path="/token" element={<Market />} />
