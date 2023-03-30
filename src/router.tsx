@@ -135,6 +135,7 @@ function AppRouter() {
           <Route path={routes.hfr.path} element={<Mint />} />
           <Route path="/grid" element={<RoutedEnergy />} />
           <Route path="/token" element={<Market />} />
+          <Route path="/token/:tab" element={<Market />} />
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
           <Route path="/sixthSense" element={<Taverna />} />
