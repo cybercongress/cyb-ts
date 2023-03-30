@@ -79,18 +79,16 @@ if (container === null) {
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ApolloProvider client={client}>
-        <AppContextProvider>
-          <QueryClientProvider client={queryClient}>
-            <ErrorBoundary fallback={<ErrorScreen />}>
-              <AppRouter />
-              <ReactQueryDevtools />
-            </ErrorBoundary>
-          </QueryClientProvider>
-        </AppContextProvider>
-      </ApolloProvider>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <ApolloProvider client={client}>
+      <AppContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <ErrorBoundary fallback={<ErrorScreen />}>
+            <AppRouter />
+            <ReactQueryDevtools />
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </AppContextProvider>
+    </ApolloProvider>
+  </Provider>
 );
