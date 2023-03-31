@@ -66,7 +66,7 @@ function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
   );
 }
 
-function Objects({ node, mobile }) {
+function Objects({ mobile }) {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -149,7 +149,6 @@ function Objects({ node, mobile }) {
         fetchMoreData={fetchMoreData}
         page={page}
         allPage={allPage}
-        node={node}
         mobile={mobile}
       />
     </MainContainer>

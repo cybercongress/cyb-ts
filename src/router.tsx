@@ -128,6 +128,7 @@ function AppRouter() {
           <Route path="/pgraph/:agent" element={<ForceGraph />} />
           <Route path="/ipfs" element={<IpfsSettings />} />
           <Route path="/ipfs/:cid" element={<Ipfs />} />
+          <Route path="/ipfs/:cid/:tab" element={<Ipfs />} />
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
             <Route path="tx/:txHash" element={<TxsDetails />} />
