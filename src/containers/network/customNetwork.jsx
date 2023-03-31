@@ -1,5 +1,5 @@
 import { useState, useCallback, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MainContainer, ActionBarSteps } from '../portal/components';
 import { AppContext } from '../../context';
 import { Input, BtnGrd, ContainerGradientText } from '../../components';
@@ -35,7 +35,7 @@ const initValue = {
 };
 
 function CustomNetwork() {
-  const history = useHistory();
+  const history = useNavigate();
   const { networks, updateNetworks } = useContext(AppContext);
   const [customConfig, setCustomConfig] = useState({ ...initValue });
 

@@ -1,10 +1,10 @@
 import { useMemo, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { AppContext } from '../../../../context';
-import tokenList from '../../../../utils/tokenList';
-import { exponentialToDecimal } from '../../../../utils/utils';
-import { FormatNumberTokens } from '../../../nebula/components';
-import { ContainerGradient } from '../../../../components';
+import { AppContext } from '../../../context';
+import tokenList from '../../../utils/tokenList';
+import { exponentialToDecimal } from '../../../utils/utils';
+import { FormatNumberTokens } from '../../nebula/components';
+import { ContainerGradient } from '../../../components';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';

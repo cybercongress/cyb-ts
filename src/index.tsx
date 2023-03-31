@@ -22,7 +22,9 @@ import AppContextProvider from './context';
 
 import './style/main.css';
 import './image/favicon.ico';
-import './image/logo-bulb.svg';
+import './image/robot.svg';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -77,16 +79,16 @@ if (container === null) {
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ApolloProvider client={client}>
-        <AppContextProvider>
-          <QueryClientProvider client={queryClient}>
+  <Provider store={store}>
+    <ApolloProvider client={client}>
+      <AppContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <ErrorBoundary fallback={<ErrorScreen />}>
             <AppRouter />
             <ReactQueryDevtools />
-          </QueryClientProvider>
-        </AppContextProvider>
-      </ApolloProvider>
-    </Provider>
-  </React.StrictMode>
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </AppContextProvider>
+    </ApolloProvider>
+  </Provider>
 );

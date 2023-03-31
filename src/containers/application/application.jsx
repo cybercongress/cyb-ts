@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
@@ -43,7 +43,6 @@ function App({
   setAccountsProps,
   setDefaultAccountProps,
   setBandwidthProps,
-  children,
   initIpfsProps,
   setTypeDeviceProps,
   setIpfsFailedProps,
@@ -59,7 +58,7 @@ function App({
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
-  const history = useHistory();
+  const history = useNavigate();
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState(false);
   const [countLink, setCountLink] = useState(0);
@@ -371,8 +370,6 @@ function App({
           </Link>
         </div>
       )}
-
-      {children}
       <Telegram />
       <GitHub />
     </div>

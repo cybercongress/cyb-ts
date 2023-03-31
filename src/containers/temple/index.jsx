@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import { Play } from './pages';
 import { connect } from 'react-redux';
 import { MainContainer } from '../portal/components';
@@ -58,7 +58,7 @@ const itemCarousel1 = [
 ];
 
 function Temple({ defaultAccount }) {
-  const history = useHistory();
+  const history = useNavigate();
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [step, setStep] = useState(2);

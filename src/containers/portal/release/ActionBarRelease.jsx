@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMemo, useContext, useCallback, useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GasPrice } from '@cosmjs/launchpad';
 import txs from '../../../utils/txs';
 import { AppContext } from '../../../context';
@@ -40,7 +40,7 @@ function ActionBarRelease({
   loadingRelease,
   addressActive,
 }) {
-  const history = useHistory();
+  const history = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { keplr } = useContext(AppContext);
 
