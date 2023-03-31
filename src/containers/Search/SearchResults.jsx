@@ -34,6 +34,7 @@ import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
+import useIpfs from 'src/hooks/useIpfs';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -69,7 +70,8 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
-function SearchResults({ node, mobile, setQueryProps }) {
+function SearchResults({ mobile, setQueryProps }) {
+  const { node } = useIpfs();
   const { jsCyber } = useContext(AppContext);
   const { query } = useParams();
   const location = useLocation();
@@ -384,7 +386,6 @@ function SearchResults({ node, mobile, setQueryProps }) {
 
 const mapStateToProps = (store) => {
   return {
-    node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };

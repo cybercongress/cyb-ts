@@ -23,6 +23,7 @@ import AppContextProvider from './context';
 import './style/main.css';
 import './image/favicon.ico';
 import './image/logo-bulb.svg';
+import IpfsProvider from './contexts/ipfs';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -79,14 +80,16 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ApolloProvider client={client}>
-        <AppContextProvider>
-          <QueryClientProvider client={queryClient}>
-            <AppRouter />
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-        </AppContextProvider>
-      </ApolloProvider>
+      <IpfsProvider>
+        <ApolloProvider client={client}>
+          <AppContextProvider>
+            <QueryClientProvider client={queryClient}>
+              <AppRouter />
+              <ReactQueryDevtools />
+            </QueryClientProvider>
+          </AppContextProvider>
+        </ApolloProvider>
+      </IpfsProvider>
     </Provider>
   </React.StrictMode>
 );

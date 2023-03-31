@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { getAvatarIpfs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
@@ -69,7 +69,6 @@ const getNativeImg = (text) => {
 
 function ImgDenom({
   coinDenom,
-  node,
   marginImg,
   size,
   zIndexImg,
@@ -78,6 +77,8 @@ function ImgDenom({
 }) {
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(coinDenom);
+
+  const { node } = useIpfs();
 
   useEffect(() => {
     if (
@@ -158,10 +159,4 @@ function ImgDenom({
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ImgDenom);
+export default ImgDenom;

@@ -14,13 +14,15 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import PendingIpfsSettings from './PendingIpfsSettings';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import { ContainerGradientText, Input } from '../../components';
+import useIpfs from 'src/hooks/useIpfs';
 
 const dataOpts = ['external', 'embedded'];
 
-function IpfsSettings({ ipfs, failed, ready, pending }) {
+function IpfsSettings() {
   const [valueSelect, setValueSelec] = useState('external');
   const [valueInput, setValueInput] = useState('');
   const [valueInputGateway, setValueInputGateway] = useState('');
+  const { node: ipfs, isLoading: pending, error: failed } = useIpfs();
 
   useEffect(() => {
     const lsTypeIpfs = localStorage.getItem('ipfsState');
@@ -159,13 +161,4 @@ function IpfsSettings({ ipfs, failed, ready, pending }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    ipfs: store.ipfs.ipfs,
-    failed: store.ipfs.failed,
-    ready: store.ipfs.ready,
-    pending: store.ipfs.pending,
-  };
-};
-
-export default connect(mapStateToProps)(IpfsSettings);
+export default IpfsSettings;

@@ -24,6 +24,8 @@ import {
 import { getTotalRewards, getPin, getTxs } from '../../utils/search/utils';
 
 import { AppContext } from '../../context';
+import { IpfsContext } from 'src/contexts/ipfs';
+import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const { DIVISOR_CYBER_G } = CYBER;
 
@@ -38,6 +40,7 @@ const {
 } = LEDGER;
 
 class ActionBarContainer extends Component {
+  static contextType = IpfsContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -81,8 +84,7 @@ class ActionBarContainer extends Component {
 
   generateTxSendKplr = async () => {
     const { contentHash, toSendAddres, toSend } = this.state;
-    const { keplr } = this.context;
-    const { type, addressSend, node, follow, tweets } = this.props;
+    const { type, addressSend, follow, tweets, keplr, node } = this.props;
     const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
     const fee = {
       amount: [],
@@ -307,7 +309,6 @@ class ActionBarContainer extends Component {
     }
 
     if (stage === STAGE_READY) {
-
       if (type === 'security') {
         return (
           <RewardsDelegators
@@ -376,12 +377,4 @@ class ActionBarContainer extends Component {
   }
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-ActionBarContainer.contextType = AppContext;
-
-export default connect(mapStateToProps)(ActionBarContainer);
+export default withIpfsAndKeplr(ActionBarContainer);

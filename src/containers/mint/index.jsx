@@ -411,7 +411,6 @@ function Mint({ defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

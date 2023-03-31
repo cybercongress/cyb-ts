@@ -23,7 +23,7 @@ export async function initIpfsClient(opts) {
     client = backend;
     return instance;
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 }
 

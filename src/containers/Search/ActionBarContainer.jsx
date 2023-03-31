@@ -24,6 +24,7 @@ import {
 import { trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
 import { getPinsCid } from '../..//utils/utils-ipfs';
+import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -152,7 +153,7 @@ class ActionBarContainer extends Component {
 
   generateTx = async () => {
     try {
-      const { keplr } = this.context;
+      const { keplr } = this.props;
       const { fromCid, toCid, addressLocalStor } = this.state;
 
       this.setState({
@@ -455,11 +456,8 @@ class ActionBarContainer extends Component {
 
 const mapStateToProps = (store) => {
   return {
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-ActionBarContainer.contextType = AppContext;
-
-export default connect(mapStateToProps)(ActionBarContainer);
+export default withIpfsAndKeplr(connect(mapStateToProps)(ActionBarContainer));

@@ -10,15 +10,11 @@ import styles from './styles.scss';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import robot from '../../image/temple/robot.png';
 import Karma from './karma';
+import useIpfs from 'src/hooks/useIpfs';
 
-function AccountItem({
-  data,
-  node,
-  onClickSetActive,
-  setControlledVisible,
-  name,
-}) {
+function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
+  const { node } = useIpfs();
 
   const useGetName = useMemo(() => {
     if (passport && passport !== null) {
@@ -96,13 +92,8 @@ function AccountItem({
   );
 }
 
-function SwichAccount({
-  defaultAccount,
-  accounts,
-  node,
-  ipfsStatus,
-  onClickChangeActiveAcc,
-}) {
+function SwichAccount({ defaultAccount, accounts, onClickChangeActiveAcc }) {
+  const { node, isReady: ipfsStatus } = useIpfs();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
@@ -248,11 +239,4 @@ function SwichAccount({
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-    ipfsStatus: store.ipfs.ready,
-  };
-};
-
-export default connect(mapStateToProps)(SwichAccount);
+export default SwichAccount;

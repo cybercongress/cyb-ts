@@ -5,8 +5,10 @@ import { CYBER } from '../../../../utils/config';
 import { checkIpfsState } from '../../../../utils/utils-ipfs';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';
+import useIpfs from 'src/hooks/useIpfs';
 
-function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
+function AvataImgIpfs({  img, cidAvatar, addressCyber, ...props }) {
+  const { node } = useIpfs();
   const [avatar, setAvatar] = useState(null);
   const { data } = useQuery(
     ['getAvatar', cidAvatar],
@@ -79,10 +81,4 @@ function AvataImgIpfs({ node, img, cidAvatar, addressCyber, ...props }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(AvataImgIpfs);
+export default AvataImgIpfs;

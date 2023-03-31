@@ -2,3 +2,10 @@
 // eslint-disable-next-line import/no-unused-modules
 type $TsFixMe = any;
 type $TsFixMeFunc = (...args: any[]) => any;
+
+export {};
+declare global {
+  interface Window {
+    ipfs: any;
+  }
+}

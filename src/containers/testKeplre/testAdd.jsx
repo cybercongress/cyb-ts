@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const getName = (file) => file.name;
 
-function AddTest({ nodeIpfs }) {
+function AddTest() {
   const inputOpenFileRef = useRef();
   const [totalSupply, setTotalSupply] = useState(null);
   const [file, setFile] = useState(null);
@@ -85,10 +85,4 @@ function AddTest({ nodeIpfs }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    nodeIpfs: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(AddTest);
+export default AddTest;

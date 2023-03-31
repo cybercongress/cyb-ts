@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import { Pane, ActionBar, Button } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import {
@@ -26,6 +26,7 @@ import {
   POCKET,
   DEFAULT_GAS_LIMITS,
 } from '../../utils/config';
+import useIpfs from 'src/hooks/useIpfs';
 
 const {
   MEMO,
@@ -206,7 +207,7 @@ class ActionBarTweet extends Component {
   };
 
   generateTxKeplr = async () => {
-    const { keplr } = this.context;
+    const { keplr } = this.props;
     const { fromCid, toCid, addressLocalStor } = this.state;
 
     console.log('fromCid, toCid :>> ', fromCid, toCid);
@@ -499,14 +500,18 @@ class ActionBarTweet extends Component {
   }
 }
 
-ActionBarTweet.contextType = AppContext;
-
 const mapStateToProps = (store) => {
   return {
-    node: store.ipfs.ipfs,
     stageTweetActionBar: store.pocket.actionBar.tweet,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(ActionBarTweet);
+// temp
+export const withIpfsAndKeplr = (Component) => (props) => {
+  const { node } = useIpfs();
+  const { keplr } = useContext(AppContext);
+  return <Component {...props} node={node} keplr={keplr} />;
+};
+
+export default withIpfsAndKeplr(connect(mapStateToProps)(ActionBarTweet));

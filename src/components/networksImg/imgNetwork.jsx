@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { connect } from 'react-redux';
+import { useEffect, useState, useCallback } from 'react';
+import useIpfs from 'src/hooks/useIpfs';
 import {
   isNativeChainId,
   useTraseNetworks,
@@ -29,17 +29,12 @@ const getNativeImg = (text) => {
   return img;
 };
 
-function ImgNetwork({
-  network,
-  node,
-  marginImg,
-  size,
-  zIndexImg,
-  tooltipStatus,
-}) {
+function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
   const { chainInfo } = useTraseNetworks(network);
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(network);
+
+  const { node } = useIpfs();
 
   useEffect(() => {
     if (network && !isNativeChainId(network)) {
@@ -109,10 +104,4 @@ function ImgNetwork({
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ImgNetwork);
+export default ImgNetwork;

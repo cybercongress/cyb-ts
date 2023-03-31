@@ -12,6 +12,7 @@ import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
+import useIpfs from 'src/hooks/useIpfs';
 
 function ContainerGrid({ children }) {
   return (
@@ -87,7 +88,8 @@ const chekPathname = (pathname) => {
   return '';
 };
 
-function Market({ node, mobile, defaultAccount }) {
+function Market({  mobile, defaultAccount }) {
+  const { node } = useIpfs();
   const location = useLocation();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { jsCyber } = useContext(AppContext);
@@ -321,7 +323,6 @@ function Market({ node, mobile, defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

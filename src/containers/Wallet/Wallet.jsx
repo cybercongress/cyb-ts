@@ -663,7 +663,6 @@ const mapDispatchprops = (dispatch) => {
 
 const mapStateToProps = (store) => {
   return {
-    ipfsId: store.ipfs.id,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
