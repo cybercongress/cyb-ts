@@ -80,16 +80,6 @@ function IpfsProvider({ children }: { children: React.ReactNode }) {
     };
   }, [startConnectionIpfs]);
 
-  console.log({
-    ipfs,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    node: ipfs,
-    isReady: !ipfs,
-    error: ipfsInitError,
-    isLoading: isIpfsPending,
-  });
-
   return (
     <IpfsContext.Provider
       value={useMemo(

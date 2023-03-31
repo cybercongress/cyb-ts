@@ -47,7 +47,6 @@ function App({
   const history = useNavigate();
   const location = useLocation();
 
-  console.log(location);
   const [openMenu, setOpenMenu] = useState(false);
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);

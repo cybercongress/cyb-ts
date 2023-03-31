@@ -123,7 +123,7 @@ function useGetMarketData() {
   useEffect(() => {
     const getPpools = async () => {
       try {
-        const { pools } = dataPools;
+        const { pools } = dataPools || {};
         if (dataPools && pools && Object.keys(pools).length > 0) {
           const reduceObj = pools.reduce(
             (obj, item) => ({
