@@ -1,16 +1,15 @@
 import React, { useMemo } from 'react';
-import { connect } from 'react-redux';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
+import useIpfs from 'src/hooks/useIpfs';
 import { AvataImgIpfs } from '../portal/components/avataIpfs';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import robot from '../../image/temple/robot.png';
 import Karma from './karma';
-import useIpfs from 'src/hooks/useIpfs';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);

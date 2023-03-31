@@ -1,4 +1,3 @@
-import React from 'react';
 import CoinDenom from '../valueImg/textDenom';
 import ImgDenom from '../valueImg/imgDenom';
 import ImgNetwork from '../networksImg/imgNetwork';

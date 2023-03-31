@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@cybercongress/gravity';
 
 function ButtonImgText({ img, text = 'Send', ...props }) {

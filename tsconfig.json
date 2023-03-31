@@ -13,8 +13,13 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "typeRoots": ["./src/types"]
+    "jsx": "react-jsx"
+    // "paths": {
+    //   "components": ["src/components"],
+    //   "images": ["src/image"],
+    //   "src": ["src"]
+    // },
+    // "typeRoots": ["./src/types"]
   },
   "include": ["src"]
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { Pane, Tablist } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
 import { TabBtn, Account } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
@@ -17,7 +18,6 @@ import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import { AppContext } from '../../context';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
-import useIpfs from 'src/hooks/useIpfs';
 
 const dateFormat = require('dateformat');
 

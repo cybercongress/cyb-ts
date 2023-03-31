@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { PocketCard } from '../components';
 import { Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
@@ -17,7 +18,6 @@ import {
 import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
-import useIpfs from 'src/hooks/useIpfs';
 
 const dateFormat = require('dateformat');
 

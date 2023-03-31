@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './styles.scss';
 import { ContainerGradientText } from '../containerGradient/ContainerGradient';
 import Status from './status';

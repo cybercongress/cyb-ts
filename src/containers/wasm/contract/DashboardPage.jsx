@@ -39,7 +39,7 @@ const GET_CHARACTERS = gql`
 const useGetContracts = (offset) => {
   const [dataContracts, setDataContracts] = useState([]);
   const [dataAggregate, setDataAggregate] = useState(null);
-  const { loading, error, data } = useQuery(GET_CHARACTERS, {
+  const { loading, data } = useQuery(GET_CHARACTERS, {
     variables: {
       offset: offset * PAGE_SIZE,
     },
@@ -63,7 +63,6 @@ const useGetCodes = () => {
 
   useEffect(() => {
     const getCodes = async () => {
-
       try {
         if (jsCyber !== null) {
           const resposeCodes = await jsCyber.getCodes();

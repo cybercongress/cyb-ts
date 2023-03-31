@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+
+import useIpfs from 'src/hooks/useIpfs';
 import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
@@ -23,7 +25,7 @@ import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
-import useIpfs from 'src/hooks/useIpfs';
+import { InfoCard } from '../portal/components';
 
 function App({
   defaultAccount,
