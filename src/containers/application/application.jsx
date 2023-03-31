@@ -5,14 +5,6 @@ import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import {
-  initIpfs,
-  setIpfsStatus,
-  setIpfsID,
-  setIpfsFailed,
-  setIpfsReady,
-  setIpfsPending,
-} from '../../redux/actions/ipfs';
 import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { setQuery } from '../../redux/actions/query';
@@ -27,12 +19,11 @@ import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import SwichNetwork from './swichNetwork';
 import useGetMarketData from '../nebula/useGetMarketData';
-import useStartIpfs from '../../useStartIpfs';
 import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
-import { InfoCard } from '../portal/components';
+import useIpfs from 'src/hooks/useIpfs';
 
 function App({
   defaultAccount,
@@ -43,41 +34,24 @@ function App({
   setAccountsProps,
   setDefaultAccountProps,
   setBandwidthProps,
-  initIpfsProps,
+  children,
   setTypeDeviceProps,
-  setIpfsFailedProps,
-  setIpfsReadyProps,
-  setIpfsPendingProps,
 }) {
   const { jsCyber, updatetMarketData, updateDataTotalSupply } =
     useContext(AppContext);
   const { marketData, dataTotal } = useGetMarketData();
   const { isMobile } = useIsMobileTablet();
-  // const dataIpfsStart = useIpfsStart();
-  const { ipfs, isIpfsReady, ipfsInitError, isIpfsPending } = useStartIpfs();
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
   const history = useNavigate();
   const location = useLocation();
+
   const [openMenu, setOpenMenu] = useState(false);
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
-
-  useEffect(() => {
-    const updateIpfsStage = async () => {
-      setIpfsPendingProps(isIpfsPending);
-      setIpfsFailedProps(ipfsInitError);
-      setIpfsReadyProps(isIpfsReady);
-
-      if (ipfs !== null) {
-        initIpfsProps(ipfs);
-      }
-    };
-    updateIpfsStage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ipfs, ipfsInitError, isIpfsReady, isIpfsPending]);
+  const ipfs = useIpfs();
 
   useEffect(() => {
     setTypeDeviceProps(isMobile);
@@ -282,7 +256,7 @@ function App({
   };
 
   return (
-    <div>
+    <>
       <div
         style={{
           display: 'flex',
@@ -340,7 +314,7 @@ function App({
           onClickChangeActiveAcc={onClickChangeActiveAcc}
         />
       </div>
-      {ipfsInitError !== null && location.pathname !== '/ipfs' && (
+      {ipfs.error !== null && location.pathname !== '/ipfs' && (
         <div
           style={{
             width: '59%',
@@ -370,15 +344,17 @@ function App({
           </Link>
         </div>
       )}
+
+      {children}
+
       <Telegram />
       <GitHub />
-    </div>
+    </>
   );
 }
 
 const mapStateToProps = (store) => {
   return {
-    ipfsStatus: store.ipfs.ready,
     bandwidth: store.bandwidth.bandwidth,
     query: store.query.query,
     mobile: store.settings.mobile,
@@ -395,13 +371,7 @@ const mapDispatchprops = (dispatch) => {
     setDefaultAccountProps: (name, account) =>
       dispatch(setDefaultAccount(name, account)),
     setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
-    initIpfsProps: (ipfsNode) => dispatch(initIpfs(ipfsNode)),
-    setIpfsStatusProps: (status) => dispatch(setIpfsStatus(status)),
     setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
-    setIpfsIDProps: (id) => dispatch(setIpfsID(id)),
-    setIpfsFailedProps: (status) => dispatch(setIpfsFailed(status)),
-    setIpfsReadyProps: (status) => dispatch(setIpfsReady(status)),
-    setIpfsPendingProps: (status) => dispatch(setIpfsPending(status)),
   };
 };
 

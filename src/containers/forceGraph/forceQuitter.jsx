@@ -6,11 +6,13 @@ import { connect } from 'react-redux';
 import { Loading } from '../../components';
 
 import useGetDataGql from './hooks';
+import useIpfs from 'src/hooks/useIpfs';
 
-function ForceQuitter({ nodeIpfs }) {
+function ForceQuitter() {
+  const { node } = useIpfs();
   let graph;
   const [hasLoaded, setHasLoaded] = useState(true);
-  const { data: dataGql } = useGetDataGql(nodeIpfs);
+  const { data: dataGql } = useGetDataGql(node);
   const [data, setItems] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const fgRef = useRef();
@@ -217,10 +219,4 @@ function ForceQuitter({ nodeIpfs }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    nodeIpfs: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ForceQuitter);
+export default ForceQuitter;

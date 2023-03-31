@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-unused-modules
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import React from 'react';
 import { OperationDefinitionNode } from 'graphql';
 
 import { createRoot } from 'react-dom/client';
@@ -22,7 +21,11 @@ import AppContextProvider from './context';
 
 import './style/main.css';
 import './image/favicon.ico';
+
+// for bootloading
 import './image/robot.svg';
+
+import IpfsProvider from './contexts/ipfs';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 
@@ -80,15 +83,17 @@ const root = createRoot(container);
 
 root.render(
   <Provider store={store}>
-    <ApolloProvider client={client}>
-      <AppContextProvider>
-        <QueryClientProvider client={queryClient}>
-          <ErrorBoundary fallback={<ErrorScreen />}>
-            <AppRouter />
-            <ReactQueryDevtools />
-          </ErrorBoundary>
-        </QueryClientProvider>
-      </AppContextProvider>
-    </ApolloProvider>
+    <IpfsProvider>
+      <ApolloProvider client={client}>
+        <AppContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary fallback={<ErrorScreen />}>
+              <AppRouter />
+              <ReactQueryDevtools />
+            </ErrorBoundary>
+          </QueryClientProvider>
+        </AppContextProvider>
+      </ApolloProvider>
+    </IpfsProvider>
   </Provider>
 );

@@ -17,6 +17,7 @@ import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import { AppContext } from '../../context';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
+import useIpfs from 'src/hooks/useIpfs';
 
 const dateFormat = require('dateformat');
 
@@ -69,10 +70,11 @@ const reduceParticleArr = (data, query = '') => {
   );
 };
 
-function Ipfs({ nodeIpfs, mobile }) {
+function Ipfs({ mobile }) {
   const { jsCyber } = useContext(AppContext);
   const { cid } = useParams();
   const location = useLocation();
+  const { node: nodeIpfs } = useIpfs();
   const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs);
 
   const [content, setContent] = useState('');
@@ -467,7 +469,6 @@ function Ipfs({ nodeIpfs, mobile }) {
 
 const mapStateToProps = (store) => {
   return {
-    nodeIpfs: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };

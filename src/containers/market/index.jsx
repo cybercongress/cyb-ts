@@ -12,6 +12,7 @@ import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
+import useIpfs from 'src/hooks/useIpfs';
 
 function ContainerGrid({ children }) {
   return (
@@ -55,7 +56,7 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
-function Market({ node, mobile, defaultAccount }) {
+function Market({ mobile, defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { jsCyber } = useContext(AppContext);
   const { tab = 'BOOT' } = useParams();
@@ -68,6 +69,7 @@ function Market({ node, mobile, defaultAccount }) {
   const [rankLink, setRankLink] = useState(null);
   const [page, setPage] = useState(0);
   const [allPage, setAllPage] = useState(0);
+  const { node } = useIpfs();
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -219,7 +221,6 @@ function Market({ node, mobile, defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

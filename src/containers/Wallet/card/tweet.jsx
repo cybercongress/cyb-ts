@@ -17,6 +17,7 @@ import {
 import { setStageTweetActionBar } from '../../../redux/actions/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
+import useIpfs from 'src/hooks/useIpfs';
 
 const dateFormat = require('dateformat');
 
@@ -97,9 +98,9 @@ function TweetCard({
   account,
   refresh,
   setStageTweetActionBarProps,
-  node,
   ...props
 }) {
+  const { node } = useIpfs();
   const { count: countNewsToday, loading: loadingNewsToday } =
     useNewsToday(account);
   const [stage, setStage] = useState(STAGE_ADD_AVATAR);
@@ -305,12 +306,6 @@ function TweetCard({
   return null;
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
 const mapDispatchprops = (dispatch) => {
   return {
     setStageTweetActionBarProps: (stage) =>
@@ -318,4 +313,4 @@ const mapDispatchprops = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchprops)(TweetCard);
+export default connect(null, mapDispatchprops)(TweetCard);

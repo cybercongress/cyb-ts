@@ -1,7 +1,8 @@
 import { create } from 'ipfs-core';
 import configIpfs from './configIpfs';
+import { IPFS } from 'kubo-rpc-client/dist/src/types';
 
-let node = null;
+let node: null | IPFS = null;
 
 export async function init() {
   if (node !== null) {
@@ -18,7 +19,7 @@ export async function init() {
     } catch (error) {
       console.error('IPFS init error:', error);
       node = null;
-      throw new Error('init embedded type', error);
+      throw new Error('init embedded type ' + error);
     }
   }
 

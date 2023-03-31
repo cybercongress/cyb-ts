@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { useState } from 'react';
 import { useGetCreator } from './hooks';
 import { Titile } from './components';
 
-function Particle({ cid, node }) {
+function Particle({ cid }) {
   const { creator } = useGetCreator(cid);
+
   // const [content, setContent] = useState('');
   // const [textPreview, setTextPreview] = useState(cid);
   // const [typeContent, setTypeContent] = useState('');
@@ -66,10 +66,4 @@ function Particle({ cid, node }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(Particle);
+export default Particle;

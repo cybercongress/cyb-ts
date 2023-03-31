@@ -5,10 +5,12 @@ import { NoItems, Dots, SearchSnippet } from '../../components';
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import useIpfs from 'src/hooks/useIpfs';
 
 const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
-function Taverna({ node, mobile, defaultAccount }) {
+function Taverna({ mobile, defaultAccount }) {
+  const { node } = useIpfs();
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [rankLink, setRankLink] = useState(null);
@@ -136,7 +138,6 @@ function Taverna({ node, mobile, defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

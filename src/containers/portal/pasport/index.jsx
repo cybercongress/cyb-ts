@@ -10,11 +10,11 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
 import { ContainerGradient } from '../../../components';
+import useIpfs from 'src/hooks/useIpfs';
 
 function PasportCitizenship({
   citizenship,
   txHash,
-  node,
   updateFunc,
   stateOpen,
   initStateCard,
@@ -24,6 +24,7 @@ function PasportCitizenship({
   onClickProveeAddress,
   onClickEditAvatar,
 }) {
+  const { node } = useIpfs();
   const { jsCyber } = useContext(AppContext);
   const [owner, setOwner] = useState(null);
   const [addresses, setAddresses] = useState(null);
@@ -273,10 +274,4 @@ function PasportCitizenship({
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(PasportCitizenship);
+export default PasportCitizenship;

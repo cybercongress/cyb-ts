@@ -7,8 +7,10 @@ import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
+import useIpfs from 'src/hooks/useIpfs';
 
-function Relevace({ items, fetchMoreData, page, allPage, mobile, node }) {
+function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
+  const { node } = useIpfs();
   return (
     <InfiniteScroll
       dataLength={Object.keys(items).length}
@@ -156,7 +158,6 @@ function Objects({ node, mobile }) {
 
 const mapStateToProps = (store) => {
   return {
-    node: store.ipfs.ipfs,
     mobile: store.settings.mobile,
   };
 };

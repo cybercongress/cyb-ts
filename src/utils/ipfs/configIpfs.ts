@@ -91,7 +91,7 @@ const configIpfs = (init = true) => ({
     },
   },
   EXPERIMENTAL: {
-    pubsub: true,
+    ipnsPubsub: true,
   },
 });
 

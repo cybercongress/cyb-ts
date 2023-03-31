@@ -6,6 +6,7 @@ import { Pane, Text, ActionBar } from '@cybercongress/gravity';
 import TextareaAutosize from 'react-textarea-autosize';
 import { trimString } from '../../utils/utils';
 import { ActionBarContentText, NoItems } from '../../components';
+import { IpfsContext } from 'src/contexts/ipfs';
 
 const imgSend = require('../../image/paper-plane-outline.svg');
 
@@ -104,6 +105,7 @@ function SendMessage({
 }
 
 class TrollBoxx extends React.PureComponent {
+  static contextType = IpfsContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -116,7 +118,7 @@ class TrollBoxx extends React.PureComponent {
   }
 
   async componentDidMount() {
-    const { node } = this.props;
+    const { node } = this.context;
     if (node !== null) {
       // await this.init();
     }
@@ -124,7 +126,7 @@ class TrollBoxx extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { node } = this.props;
+    const { node } = this.context;
     if (node !== prevProps.node) {
       // this.init();
     }
@@ -298,11 +300,4 @@ class TrollBoxx extends React.PureComponent {
   }
 }
 
-const mapStateToProps = (store) => {
-  return {
-    ipfsId: store.ipfs.id,
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(TrollBoxx);
+export default TrollBoxx;

@@ -38,6 +38,7 @@ import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
 import { getPinsCid } from '../../../utils/utils-ipfs';
+import useIpfs from 'src/hooks/useIpfs';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
@@ -138,7 +139,8 @@ const calculatePriceNicname = (valueNickname) => {
   return funds;
 };
 
-function GetCitizenship({ node, defaultAccount, mobile }) {
+function GetCitizenship({ defaultAccount, mobile }) {
+  const { node } = useIpfs();
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [step, setStep] = useState(STEP_INIT);
@@ -645,7 +647,6 @@ function GetCitizenship({ node, defaultAccount, mobile }) {
 
 const mapStateToProps = (store) => {
   return {
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
     mobile: store.settings.mobile,
   };

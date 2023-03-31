@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { getAvatarIpfs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
@@ -54,9 +54,7 @@ function ImgDenom({
 }: ImgDenomProps) {
   const [imgDenom, setImgDenom] = useState<string | null>(null);
   const [tooltipText, setTooltipText] = useState<string>(coinDenom);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const node = useSelector((state: any) => state.ipfs.ipfs);
+  const { node } = useIpfs();
 
   const getImgFromIpfsByCid = useCallback(
     async (cidAvatar) => {

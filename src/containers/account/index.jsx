@@ -19,6 +19,7 @@ import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
+import useIpfs from 'src/hooks/useIpfs';
 
 const getTabsMap = (address) => ({
   security: {
@@ -39,10 +40,11 @@ const getTabsMap = (address) => ({
   badges: { text: 'Badges', to: `/network/bostrom/contract/${address}/badges` },
 });
 
-function AccountDetails({ node, mobile, defaultAccount }) {
+function AccountDetails({ mobile, defaultAccount }) {
   const { jsCyber } = useContext(AppContext);
   const { address, tab = 'log' } = useParams();
   const [updateAddress, setUpdateAddress] = useState(0);
+  const { node } = useIpfs();
   const { community } = useGetCommunity(address, updateAddress);
   const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
     address,
@@ -264,7 +266,6 @@ function AccountDetails({ node, mobile, defaultAccount }) {
 const mapStateToProps = (store) => {
   return {
     mobile: store.settings.mobile,
-    node: store.ipfs.ipfs,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

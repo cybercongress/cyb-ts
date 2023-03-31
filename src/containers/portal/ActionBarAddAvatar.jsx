@@ -7,6 +7,7 @@ import { Dots, BtnGrd } from '../../components';
 import { getPin } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
+import useIpfs from 'src/hooks/useIpfs';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;
@@ -14,14 +15,9 @@ const STATE_AVATAR_IN_PROCESS = 15.1;
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
-function ActionBarAddAvatar({
-  step,
-  setStep,
-  node,
-  updateTxHash,
-  citizenship,
-}) {
+function ActionBarAddAvatar({ step, setStep, updateTxHash, citizenship }) {
   const { keplr } = useContext(AppContext);
+  const { node } = useIpfs();
 
   const inputOpenFileRef = useRef();
   const [avatarIpfs, setAvatarIpfs] = useState(null);
@@ -126,10 +122,4 @@ function ActionBarAddAvatar({
   return null;
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(ActionBarAddAvatar);
+export default ActionBarAddAvatar;

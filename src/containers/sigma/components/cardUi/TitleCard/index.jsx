@@ -6,8 +6,10 @@ import { FormatNumberTokens } from '../../../../nebula/components';
 import { Signatures } from '../../../../portal/components';
 import { AvataImgIpfs } from '../../../../portal/components/avataIpfs';
 import styles from './styles.scss';
+import useIpfs from 'src/hooks/useIpfs';
 
-function TitleCard({ accounts, passport, totalLiquid, node }) {
+function TitleCard({ accounts, passport, totalLiquid }) {
+  const { node } = useIpfs();
   const useGetName = useMemo(() => {
     if (passport && passport !== null) {
       return passport.extension.nickname;
@@ -52,10 +54,4 @@ function TitleCard({ accounts, passport, totalLiquid, node }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    node: store.ipfs.ipfs,
-  };
-};
-
-export default connect(mapStateToProps)(TitleCard);
+export default TitleCard;
