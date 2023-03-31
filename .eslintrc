@@ -92,11 +92,24 @@
       }
     ],
     "react/jsx-filename-extension": "off",
-    "import/no-unused-modules": [1]
+    "react/tsx-filename-extension": "off",
+    "import/no-unused-modules": [1],
+    "import/extensions": [
+      "error",
+      "never",
+      { "svg": "always", "json": "always" }
+    ]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {}
+      "typescript": {},
+      "alias": {
+        "map": [
+          ["components", "./src/components"],
+          ["images", "./src/image"],
+          ["src", "./src"]
+        ]
+      }
     }
   }
 }

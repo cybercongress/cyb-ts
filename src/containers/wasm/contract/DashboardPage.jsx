@@ -45,10 +45,6 @@ const useGetContracts = (offset) => {
     },
   });
 
-  if (error) {
-    console.log(`Error!`, `Error! ${error.message}`);
-  }
-
   useEffect(() => {
     if (data && data.contracts && data.contracts_aggregate) {
       setDataContracts((items) => [...items, ...data.contracts]);
@@ -67,9 +63,11 @@ const useGetCodes = () => {
 
   useEffect(() => {
     const getCodes = async () => {
+
       try {
         if (jsCyber !== null) {
           const resposeCodes = await jsCyber.getCodes();
+
           if (resposeCodes && resposeCodes.length > 0) {
             setCodes(resposeCodes.length);
           } else {

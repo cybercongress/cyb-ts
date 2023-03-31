@@ -4,67 +4,44 @@ import { getAvatarIpfs } from '../../utils/search/utils';
 import { trimString } from '../../utils/utils';
 import Tooltip from '../tooltip/tooltip';
 
-import eth from '../../image/Ethereum_logo_2014.svg';
-import pool from '../../image/gravitydexPool.png';
-import ibc from '../../image/ibc-unauth.png';
-import voltImg from '../../image/lightning2.png';
-import amperImg from '../../image/light.png';
-import hydrogen from '../../image/hydrogen.svg';
-import tocyb from '../../image/boot.png';
-import boot from '../../image/large-green.png';
-import pussy from '../../image/large-purple-circle.png';
-import defaultImg from '../../image/large-orange-circle.png';
+import eth from 'images/Ethereum_logo_2014.svg';
+import pool from 'images/gravitydexPool.png';
+import ibc from 'images/ibc-unauth.png';
+import voltImg from 'images/lightning2.png';
+import amperImg from 'images/light.png';
+import hydrogen from 'images/hydrogen.svg';
+import tocyb from 'images/boot.png';
+import boot from 'images/large-green.png';
+import pussy from 'images/large-purple-circle.png';
+import defaultImg from 'images/large-orange-circle.png';
 
-const getNativeImg = (text) => {
-  let img = null;
+const nativeImageMap = {
+  millivolt: voltImg,
+  v: voltImg,
+  milliampere: amperImg,
+  a: amperImg,
+  hydrogen,
+  h: hydrogen,
+  liquidpussy: hydrogen,
+  lp: hydrogen,
+  boot,
+  pussy,
+  tocyb,
+  eth,
+};
 
-  switch (text) {
-    case 'millivolt':
-    case 'V':
-      img = voltImg;
-      break;
+const getNativeImg = (text: string) => {
+  return nativeImageMap[text.toLowerCase()] || defaultImg;
+};
 
-    case 'milliampere':
-    case 'A':
-      img = amperImg;
-      break;
-
-    case 'hydrogen':
-    case 'H':
-      img = hydrogen;
-      break;
-
-    case 'liquidpussy':
-    case 'LP':
-      img = hydrogen;
-      break;
-
-    case 'boot':
-    case 'BOOT':
-      img = boot;
-
-      break;
-
-    case 'pussy':
-    case 'PUSSY':
-      img = pussy;
-
-      break;
-
-    case 'tocyb':
-    case 'TOCYB':
-      img = tocyb;
-      break;
-
-    case 'eth':
-    case 'ETH':
-      img = eth;
-      break;
-
-    default:
-      img = defaultImg;
-  }
-  return img;
+type ImgDenomProps = {
+  coinDenom: string;
+  marginImg: string;
+  size: string | number;
+  zIndexImg: number;
+  tooltipStatus: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  infoDenom: any;
 };
 
 function ImgDenom({
@@ -74,11 +51,22 @@ function ImgDenom({
   zIndexImg,
   tooltipStatus,
   infoDenom,
-}) {
-  const [imgDenom, setImgDenom] = useState(null);
-  const [tooltipText, setTooltipText] = useState(coinDenom);
-
+}: ImgDenomProps) {
+  const [imgDenom, setImgDenom] = useState<string | null>(null);
+  const [tooltipText, setTooltipText] = useState<string>(coinDenom);
   const { node } = useIpfs();
+
+  const getImgFromIpfsByCid = useCallback(
+    async (cidAvatar) => {
+      if (cidAvatar) {
+        const responseImg = await getAvatarIpfs(cidAvatar, node);
+        if (responseImg && responseImg !== null) {
+          setImgDenom(responseImg);
+        }
+      }
+    },
+    [node]
+  );
 
   useEffect(() => {
     if (
@@ -107,20 +95,7 @@ function ImgDenom({
     } else {
       setImgDenom(defaultImg);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [node, coinDenom, infoDenom]);
-
-  const getImgFromIpfsByCid = useCallback(
-    async (cidAvatar) => {
-      if (cidAvatar) {
-        const responseImg = await getAvatarIpfs(cidAvatar, node);
-        if (responseImg && responseImg !== null) {
-          setImgDenom(responseImg);
-        }
-      }
-    },
-    [node]
-  );
+  }, [node, coinDenom, infoDenom, getImgFromIpfsByCid]);
 
   if (tooltipStatus) {
     return (
@@ -131,7 +106,6 @@ function ImgDenom({
               margin: marginImg || 0,
               width: size || 20,
               height: size || 20,
-              // objectFit: 'cover',
               zIndex: zIndexImg || 0,
             }}
             src={imgDenom !== null ? imgDenom : defaultImg}
@@ -149,7 +123,6 @@ function ImgDenom({
           margin: marginImg || 0,
           width: size || 20,
           height: size || 20,
-          // objectFit: 'cover',
           zIndex: zIndexImg || 0,
         }}
         src={imgDenom !== null ? imgDenom : defaultImg}
@@ -159,4 +132,5 @@ function ImgDenom({
   );
 }
 
+// eslint-disable-next-line import/no-unused-modules
 export default ImgDenom;

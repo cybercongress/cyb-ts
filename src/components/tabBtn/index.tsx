@@ -1,8 +1,15 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Tab } from '@cybercongress/gravity';
 
-function TabBtn({ key, text, isSelected, onSelect, to, ...props }) {
+type TabBtnProps = {
+  key: string;
+  text: string;
+  isSelected: boolean;
+  onSelect: () => void;
+  to: string;
+};
+
+function TabBtn({ key, text, isSelected, onSelect, to }: TabBtnProps) {
   return (
     <Link to={to}>
       <Tab
@@ -18,7 +25,6 @@ function TabBtn({ key, text, isSelected, onSelect, to, ...props }) {
         fontSize="16px"
         whiteSpace="nowrap"
         width="100%"
-        {...props}
       >
         {text}
       </Tab>

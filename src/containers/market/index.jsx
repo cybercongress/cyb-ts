@@ -2,7 +2,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
-import { Route, Link, useLocation } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
@@ -56,46 +56,12 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
-const chekPathname = (pathname) => {
-  if (pathname === '/token/BOOT') {
-    return 'BOOT';
-  }
-
-  if (pathname === '/token/CYB') {
-    return 'CYB';
-  }
-
-  if (pathname === '/token/A') {
-    return 'A';
-  }
-
-  if (pathname === '/token/V') {
-    return 'V';
-  }
-
-  if (pathname === '/token/GOL') {
-    return 'GOL';
-  }
-
-  if (pathname === '/token/H') {
-    return 'H';
-  }
-
-  if (pathname === '/token/TOCYB') {
-    return 'TOCYB';
-  }
-
-  return '';
-};
-
-function Market({  mobile, defaultAccount }) {
-  const { node } = useIpfs();
-  const location = useLocation();
+function Market({ mobile, defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { jsCyber } = useContext(AppContext);
+  const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
     useGetCybernomics();
-  const [selectedTokens, setSelectedTokens] = useState('');
   const [resultSearch, setResultSearch] = useState([]);
   const [loadingSearch, setLoadingSearch] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
@@ -103,13 +69,7 @@ function Market({  mobile, defaultAccount }) {
   const [rankLink, setRankLink] = useState(null);
   const [page, setPage] = useState(0);
   const [allPage, setAllPage] = useState(0);
-
-  useEffect(() => {
-    const { pathname } = location;
-    const requere = chekPathname(pathname);
-    setSelectedTokens(requere);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  const { node } = useIpfs();
 
   useEffect(() => {
     const getFirstItem = async () => {
@@ -118,14 +78,11 @@ function Market({  mobile, defaultAccount }) {
         setAllPage(0);
         setResultSearch([]);
         setLoadingSearch(true);
-        const hash = await getIpfsHash(selectedTokens);
+        const hash = await getIpfsHash(tab);
         setKeywordHash(hash);
         const responseApps = await search(jsCyber, hash, 0);
         if (responseApps.result && responseApps.result.length > 0) {
-          const dataApps = reduceSearchResults(
-            responseApps.result,
-            selectedTokens
-          );
+          const dataApps = reduceSearchResults(responseApps.result, tab);
           setResultSearch(dataApps);
           setLoadingSearch(false);
           setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
@@ -140,7 +97,7 @@ function Market({  mobile, defaultAccount }) {
       }
     };
     getFirstItem();
-  }, [jsCyber, selectedTokens, update]);
+  }, [jsCyber, tab, update]);
 
   const fetchMoreData = async () => {
     // a fake async api call like which sends
@@ -148,7 +105,7 @@ function Market({  mobile, defaultAccount }) {
     let links = [];
     const data = await search(jsCyber, keywordHash, page);
     if (data.result) {
-      links = reduceSearchResults(data.result, selectedTokens);
+      links = reduceSearchResults(data.result, tab);
     }
 
     setTimeout(() => {
@@ -169,95 +126,6 @@ function Market({  mobile, defaultAccount }) {
     }
   };
 
-  let content;
-
-  if (selectedTokens === 'BOOT') {
-    content = (
-      <Route
-        path="/token"
-        render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={boot} />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'H') {
-    content = (
-      <Route
-        path="/token/H"
-        render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={hydrogen} />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'A') {
-    content = (
-      <Route
-        path="/token/A"
-        render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={milliampere} />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'V') {
-    content = (
-      <Route
-        path="/token/V"
-        render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={millivolt} />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'TOCYB') {
-    content = (
-      <Route
-        path="/token/TOCYB"
-        render={() => (
-          <InfoTokens selectedTokens={selectedTokens} data={tocyb} />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'GOL') {
-    content = (
-      <Route
-        path="/token/GOL"
-        render={() => (
-          <InfoTokens
-            selectedTokens={selectedTokens}
-            data={gol}
-            titlePrice="Uniswap price of GGOL in ETH"
-            linkSupply="https://etherscan.io/token/0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64"
-            linkPrice="https://app.uniswap.org/#/swap?inputCurrency=ETH&outputCurrency=0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64"
-          />
-        )}
-      />
-    );
-  }
-
-  if (selectedTokens === 'CYB') {
-    content = (
-      <Route
-        path="/token/CYB"
-        render={() => (
-          <InfoTokens
-            selectedTokens={selectedTokens}
-            data={cyb}
-            titlePrice="Port price of GCYB in ETH"
-          />
-        )}
-      />
-    );
-  }
-
   return (
     <>
       <main className="block-body">
@@ -276,7 +144,37 @@ function Market({  mobile, defaultAccount }) {
             </Text>
           </Pane>
         )}
-        <ContainerGrid>{content}</ContainerGrid>
+        <ContainerGrid>
+          {tab === 'BOOT' && <InfoTokens selectedTokens={tab} data={boot} />}
+
+          {tab === 'H' && <InfoTokens selectedTokens={tab} data={hydrogen} />}
+
+          {tab === 'A' && (
+            <InfoTokens selectedTokens={tab} data={milliampere} />
+          )}
+
+          {tab === 'V' && <InfoTokens selectedTokens={tab} data={millivolt} />}
+
+          {tab === 'TOCYB' && <InfoTokens selectedTokens={tab} data={tocyb} />}
+
+          {tab === 'GOL' && (
+            <InfoTokens
+              selectedTokens={tab}
+              data={gol}
+              titlePrice="Uniswap price of GGOL in ETH"
+              linkSupply="https://etherscan.io/token/0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64"
+              linkPrice="https://app.uniswap.org/#/swap?inputCurrency=ETH&outputCurrency=0xF4ecdBa8ba4144Ff3a2d8792Cad9051431Aa4F64"
+            />
+          )}
+
+          {tab === 'CYB' && (
+            <InfoTokens
+              selectedTokens={tab}
+              data={cyb}
+              titlePrice="Port price of GCYB in ETH"
+            />
+          )}
+        </ContainerGrid>
         <ContainerGrid>
           {loadingSearch ? (
             <div
@@ -298,7 +196,7 @@ function Market({  mobile, defaultAccount }) {
               data={resultSearch}
               node={node}
               mobile={mobile}
-              selectedTokens={selectedTokens}
+              selectedTokens={tab}
               onClickRank={onClickRank}
               fetchMoreData={fetchMoreData}
               page={page}

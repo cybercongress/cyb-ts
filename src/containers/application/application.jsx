@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
@@ -23,6 +23,7 @@ import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
+import useIpfs from 'src/hooks/useIpfs';
 
 function App({
   defaultAccount,
@@ -43,12 +44,15 @@ function App({
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
-  const history = useHistory();
+  const history = useNavigate();
   const location = useLocation();
+
+  console.log(location);
   const [openMenu, setOpenMenu] = useState(false);
   const [countLink, setCountLink] = useState(0);
   const [priceLink, setPriceLink] = useState(0.25);
   const [amounPower, setAmounPower] = useState(0);
+  const ipfs = useIpfs();
 
   useEffect(() => {
     setTypeDeviceProps(isMobile);
@@ -253,7 +257,7 @@ function App({
   };
 
   return (
-    <div>
+    <>
       <div
         style={{
           display: 'flex',
@@ -311,7 +315,7 @@ function App({
           onClickChangeActiveAcc={onClickChangeActiveAcc}
         />
       </div>
-      {/* {ipfsInitError !== null && location.pathname !== '/ipfs' && (
+      {ipfs.error !== null && location.pathname !== '/ipfs' && (
         <div
           style={{
             width: '59%',
@@ -339,13 +343,14 @@ function App({
               </div>
             </InfoCard>
           </Link>
-        </div> */}
-      {/* )} */}
+        </div>
+      )}
 
       {children}
+
       <Telegram />
       <GitHub />
-    </div>
+    </>
   );
 }
 

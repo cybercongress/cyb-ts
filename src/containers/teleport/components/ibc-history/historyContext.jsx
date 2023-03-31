@@ -6,7 +6,7 @@ const valueContext = { history: {}, changeHistory: () => {} };
 
 export const HistoryContext = React.createContext(valueContext);
 
-const useHistoryContext = () => {
+const useNavigateContext = () => {
   const context = useContext(HistoryContext);
   if (!context) {
     throw new Error('Error in creating the context');
