@@ -4,7 +4,7 @@ export async function init(opts) {
   console.log(`init with IPFS API at ${opts.urlOpts}`);
 
   try {
-    const api = await IpfsHttpClient(opts.urlOpts);
+    const api = IpfsHttpClient(opts.urlOpts);
     // getPeers(api, opts);
     try {
       const peers = await api.swarm.peers();

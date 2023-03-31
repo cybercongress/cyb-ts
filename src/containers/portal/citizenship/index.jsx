@@ -37,7 +37,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
-import { getPinsCid } from '../../../utils/utils-ipfs';
+import { getPinsCid } from '../../../utils/ipfs/utils-ipfs';
 import useIpfs from 'src/hooks/useIpfs';
 // import InfoCard from '../components/infoCard/infoCard';
 

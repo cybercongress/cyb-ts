@@ -2,7 +2,7 @@
 import { webSockets } from '@libp2p/websockets';
 import * as filters from '@libp2p/websockets/filters';
 
-const configIpfs = (init = true) => ({
+const configIpfs = () => ({
   start: true,
   // repo: 'ipfs-repo-cyber-v2',
   repo: `ok${Math.random()}`,

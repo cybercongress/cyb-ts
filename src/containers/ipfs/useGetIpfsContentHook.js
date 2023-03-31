@@ -3,7 +3,7 @@ import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
 import FileType from 'file-type';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
-import { getContentByCid } from '../../utils/utils-ipfs';
+import { getContentByCid } from '../../utils/ipfs/utils-ipfs';
 
 export const getTypeContent = async (dataCid, cid) => {
   const response = {

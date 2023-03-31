@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { getRankGrade } from '../../utils/search/utils';
 import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
-import { getContentByCid } from '../../utils/utils-ipfs';
+import { getContentByCid } from '../../utils/ipfs/utils-ipfs';
 import SearchItem from '../SearchItem/searchItem';
 
 function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {

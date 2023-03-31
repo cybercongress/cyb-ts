@@ -6,7 +6,7 @@ import Unixfs from 'ipfs-unixfs';
 import FileType from 'file-type';
 import * as config from '../config';
 
-import { getContentByCid } from '../utils-ipfs';
+import { getContentByCid } from '../ipfs/utils-ipfs';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
