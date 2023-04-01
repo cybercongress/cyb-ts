@@ -91,7 +91,6 @@ function SearchSnippet({ cid, data, mobile, onClickRank }) {
         cid={cid}
         item={data}
         className="contentItem"
-        rank={rankInfo.rank}
         grade={rankInfo.grade}
       />
       {timeAgoInMS !== null && <TimeAgo timeAgoInMS={timeAgoInMS} />}

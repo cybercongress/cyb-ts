@@ -167,7 +167,7 @@ async function replicateToLocalDb(cid: string): Promise<IPFSContentMaybe> {
 const getContentByCid = async (
   node: IPFS,
   cid: string,
-  callBackFuncStatus: CallBackFuncStatus
+  callBackFuncStatus?: CallBackFuncStatus
 ): Promise<IPFSContentMaybe> => {
   const dataRsponseDb = await checkCidInDB(cid);
 

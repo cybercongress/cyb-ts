@@ -9,21 +9,27 @@ import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
 import { getContentByCid } from '../../utils/ipfs/utils-ipfs';
 import SearchItem from '../SearchItem/searchItem';
 import useIpfs from 'src/hooks/useIpfs';
+import { $TsFixMe } from 'src/types/tsfix';
 
-function ContentItem({ item, cid, grade, ...props }) {
-  const [content, setContent] = useState(null);
-  const [textPreview, setTextPreview] = useState(cid);
-  const [typeContent, setTypeContent] = useState('');
+type ContentItemProps = {
+  item: $TsFixMe;
+  cid: string;
+  grade?: $TsFixMe;
+  className?: string;
+};
+
+function ContentItem({ item, cid, grade, className }: ContentItemProps) {
+  const [content, setContent] = useState<string | undefined>(undefined);
+  const [textPreview, setTextPreview] = useState<string | undefined>(cid);
+  const [typeContent, setTypeContent] = useState<string | undefined>(undefined);
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
   const { node } = useIpfs();
 
   useEffect(() => {
     const feachData = async () => {
-      let responseData = null;
-
       const dataResponseByCid = await getContentByCid(node, cid);
-      if (dataResponseByCid !== undefined) {
+      if (dataResponseByCid) {
         if (dataResponseByCid === 'availableDownload') {
           setStatus('availableDownload');
           setTextPreview(cid);
@@ -56,13 +62,12 @@ function ContentItem({ item, cid, grade, ...props }) {
   }, [cid, node]);
 
   return (
-    <Link {...props} to={link}>
+    <Link className={className} to={link}>
       <SearchItem
         key={cid}
         textPreview={
           <div className="container-text-SearchItem">
             <ReactMarkdown
-              // eslint-disable-next-line react/no-children-prop
               children={textPreview}
               rehypePlugins={[rehypeSanitize]}
               // skipHtml
