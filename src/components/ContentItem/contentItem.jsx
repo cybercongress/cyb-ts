@@ -40,7 +40,6 @@ function ContentItem({ item, cid, grade, ...props }) {
             content: contentCid,
             link: linkContent,
           } = dataTypeContent;
-          console.log('----dataResponseByCid', dataTypeContent, textContent);
 
           //TODO: dublicate code that is in the useGetIpfsContentHook -> refactor
           setTextPreview(textContent);
