@@ -8,51 +8,53 @@ import { getRankGrade } from '../../utils/search/utils';
 import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
 import { getContentByCid } from '../../utils/ipfs/utils-ipfs';
 import SearchItem from '../SearchItem/searchItem';
+import useIpfs from 'src/hooks/useIpfs';
 
-function ContentItem({ item, cid, nodeIpfs, grade, ...props }) {
+function ContentItem({ item, cid, grade, ...props }) {
   const [content, setContent] = useState(null);
   const [textPreview, setTextPreview] = useState(cid);
   const [typeContent, setTypeContent] = useState('');
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
+  const { node } = useIpfs();
 
   useEffect(() => {
     const feachData = async () => {
       let responseData = null;
 
-      const dataResponseByCid = await getContentByCid(nodeIpfs, cid);
-
+      const dataResponseByCid = await getContentByCid(node, cid);
       if (dataResponseByCid !== undefined) {
         if (dataResponseByCid === 'availableDownload') {
           setStatus('availableDownload');
           setTextPreview(cid);
         } else {
-          responseData = dataResponseByCid;
+          // const { data } = dataResponseByCid;
+          const dataTypeContent = await getTypeContent(
+            dataResponseByCid.data,
+            cid
+          );
+
+          const {
+            text: textContent,
+            type,
+            content: contentCid,
+            link: linkContent,
+          } = dataTypeContent;
+          console.log('----dataResponseByCid', dataTypeContent, textContent);
+
+          //TODO: dublicate code that is in the useGetIpfsContentHook -> refactor
+          setTextPreview(textContent);
+          setTypeContent(type);
+          setContent(contentCid);
+          setLink(linkContent);
+          setStatus('downloaded');
         }
       } else {
         setStatus('impossibleLoad');
       }
-
-      if (responseData !== null) {
-        const { data } = responseData;
-        const dataTypeContent = await getTypeContent(data, cid);
-
-        const {
-          text: textContent,
-          type,
-          content: contentCid,
-          link: linkContent,
-        } = dataTypeContent;
-
-        setTextPreview(textContent);
-        setTypeContent(type);
-        setContent(contentCid);
-        setLink(linkContent);
-        setStatus('downloaded');
-      }
     };
     feachData();
-  }, [cid, nodeIpfs]);
+  }, [cid, node]);
 
   return (
     <Link {...props} to={link}>

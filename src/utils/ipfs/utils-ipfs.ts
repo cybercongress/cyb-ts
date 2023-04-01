@@ -68,7 +68,6 @@ const checkCidByIpfsNode = async (
   const timer = setTimeout(() => {
     controller.abort();
   }, 1000 * 60 * 1); // 1 min
-
   let ipfsNodeLs: IPFSEntry[];
   try {
     const response = await all(node.ls(cid, { signal }));
@@ -180,7 +179,9 @@ const getContentByCid = async (
     if (callBackFuncStatus) {
       callBackFuncStatus('trying to get with a node');
     }
+
     const dataResponseIpfs = await checkCidByIpfsNode(node, cid);
+
     if (dataResponseIpfs !== undefined) {
       pinContentToDbAndIpfs(node, dataResponseIpfs, cid);
       return dataResponseIpfs;
@@ -191,6 +192,7 @@ const getContentByCid = async (
 
     if (ipfsNodeType !== null && ipfsNodeType === 'external') {
       const respnseGateway = await checkIpfsGatway(cid, userGateway);
+
       if (respnseGateway !== undefined) {
         return respnseGateway;
       }

@@ -70,6 +70,7 @@ const reduceParticleArr = (data, query = '') => {
   );
 };
 
+//TODO: Move to reusable components
 const PaneWithPill = ({ caption, count, active }) => (
   <Pane display="flex" alignItems="center">
     <Pane>{caption}</Pane>
@@ -88,6 +89,7 @@ function ContentIpfsCid(dataGetIpfsContent) {
     return (
       <div
         style={{
+          //TODO: Avoid inline styles
           width: '100%',
           // height: '50vh',
           display: 'flex',
@@ -278,7 +280,6 @@ function Ipfs({ mobile }) {
           <ContentIpfsCid dataGetIpfsContent={dataGetIpfsContent} />
         ) : (
           <ContentTab
-            nodeIpfs={nodeIpfs}
             typeContent={typeContent}
             gateway={gateway}
             content={content}
@@ -330,17 +331,12 @@ function Ipfs({ mobile }) {
           flexDirection="column"
         >
           {tab === 'discussion' && (
-            <DiscussionTab
-              data={dataToLink}
-              mobile={mobile}
-              nodeIpfs={nodeIpfs}
-            />
+            <DiscussionTab data={dataToLink} mobile={mobile} />
           )}
           {tab === 'answers' && (
             <AnswersTab
               data={dataAnswers}
               mobile={mobile}
-              nodeIpfs={nodeIpfs}
               fetchMoreData={fetchMoreData}
               page={page}
               allPage={allPage}
@@ -381,7 +377,7 @@ function Ipfs({ mobile }) {
                   </Pane>
                 )}
               </Pane>
-              <CommunityTab node={nodeIpfs} data={communityData} />
+              <CommunityTab data={communityData} />
               <Pane
                 width="60%"
                 marginX="auto"
@@ -390,11 +386,7 @@ function Ipfs({ mobile }) {
               >
                 Backlinks
               </Pane>
-              <OptimisationTab
-                data={dataBacklinks}
-                mobile={mobile}
-                nodeIpfs={nodeIpfs}
-              />
+              <OptimisationTab data={dataBacklinks} mobile={mobile} />
               <Pane width="60%" marginX="auto" fontSize="18px">
                 Meta
               </Pane>

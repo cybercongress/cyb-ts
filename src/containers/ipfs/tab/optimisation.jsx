@@ -2,7 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import ContentItem from '../../../components/ContentItem/contentItem';
 import { Rank, NoItems } from '../../../components';
 
-function OptimisationTab({ data, mobile, nodeIpfs }) {
+function OptimisationTab({ data, mobile }) {
   if (data && Object.keys(data).length > 0) {
     return (
       <div style={{ width: '100%' }}>
@@ -24,12 +24,7 @@ function OptimisationTab({ data, mobile, nodeIpfs }) {
                   <Rank hash={key} rank="n/a" grade={data[key].grade} />
                 </Pane>
               )}
-              <ContentItem
-                nodeIpfs={nodeIpfs}
-                cid={key}
-                item={data[key]}
-                className="contentItem"
-              />
+              <ContentItem cid={key} item={data[key]} className="contentItem" />
             </Pane>
           );
         })}

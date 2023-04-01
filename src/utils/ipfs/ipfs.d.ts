@@ -18,8 +18,10 @@ export type IPFSContentMeta = {
   data: string | null;
 };
 
+type IPFSData = Buffer | Uint8Array | ArrayBuffer;
+
 type IPFSContent = {
-  data: Buffer | Uint8Array | undefined;
+  data: IPFSData | undefined;
   cid: IPFSPath;
   meta: IPFSContentMeta;
 };
