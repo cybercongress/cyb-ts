@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Pane, Tablist } from '@cybercongress/gravity';
+import { Pane, Tablist, Pill } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
 import { TabBtn, Account } from '../../components';
@@ -20,27 +20,6 @@ import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
 import useIpfs from 'src/hooks/useIpfs';
 
 const dateFormat = require('dateformat');
-
-function Pill({ children, active, ...props }) {
-  return (
-    <Pane
-      display="flex"
-      fontSize="14px"
-      borderRadius="20px"
-      height="20px"
-      paddingY="5px"
-      paddingX="8px"
-      alignItems="center"
-      lineHeight="1"
-      justifyContent="center"
-      backgroundColor={active ? '#000' : '#36d6ae'}
-      color={active ? '#36d6ae' : '#000'}
-      {...props}
-    >
-      {children}
-    </Pane>
-  );
-}
 
 const search = async (client, hash, page) => {
   try {
