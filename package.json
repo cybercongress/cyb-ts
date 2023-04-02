@@ -73,7 +73,6 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-json-editor-ajrm": "^2.5.13",
     "react-json-view": "^1.21.3",
-    "react-plotly.js": "^2.3.0",
     "react-popper-tooltip": "^4.4.2",
     "react-refresh": "^0.14.0",
     "redux": "^4.0.5",
