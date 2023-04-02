@@ -8,9 +8,8 @@ function FollowsTab({ community }) {
   const friendsItems = friends.map((item) => {
     return <AvatarIpfs key={item} showAddress addressCyber={item} />;
   });
-
   const followingItems = following.map((item) => {
-    return <AvatarIpfs key={item} showAddressaddressCyber={item} />;
+    return <AvatarIpfs key={item} addressCyber={item} />;
   });
 
   const followersItems = followers.map((item) => {
