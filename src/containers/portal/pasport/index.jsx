@@ -130,16 +130,13 @@ function PasportCitizenship({
           </div>
 
           <div style={{ width: '32px', height: '32px' }}>
-            <AvataImgIpfs
-              cidAvatar={citizenship.extension.avatar}
-              node={node}
-            />
+            <AvataImgIpfs cidAvatar={citizenship.extension.avatar} />
           </div>
         </div>
       );
     }
     return null;
-  }, [citizenship, addresses, active, node]);
+  }, [citizenship, addresses, active]);
 
   const checkClaimedAddress = (itemAddress, totalGiftArr) => {
     const statusAddress = {
@@ -221,7 +218,6 @@ function PasportCitizenship({
               cidAvatar={
                 citizenship !== null ? citizenship.extension.avatar : false
               }
-              node={node}
             />
             {onClickEditAvatar && (
               <BtnPasport onClick={onClickEditAvatar} typeBtn="blue">

@@ -23,6 +23,7 @@ const FILE_SIZE_DOWNLOAD = 15 * 10 ** 6;
 const CYBERNODE_URL = 'https://io.cybernode.ai';
 const cyberNode = new RestIpfsNode(CYBERNODE_URL);
 
+// Get IPFS node from local storage
 const checkIpfsState = (): CheckIpfsState => {
   let userGatewayUrl = undefined;
   let ipfsNodeTypeTemp = undefined;
@@ -41,6 +42,7 @@ const checkIpfsState = (): CheckIpfsState => {
   return { ipfsNodeType: ipfsNodeTypeTemp, userGateway: userGatewayUrl };
 };
 
+// Get data by CID from local storage
 const checkCidInDB = async (cid: IPFSPath): Promise<IPFSContentMaybe> => {
   const dataIndexdDb = await db.table('cid').get({ cid });
   if (dataIndexdDb !== undefined && dataIndexdDb.content) {
@@ -69,6 +71,8 @@ const checkCidByIpfsNode = async (
     controller.abort();
   }, 1000 * 60 * 1); // 1 min
   let ipfsNodeLs: IPFSEntry[];
+  // Try to read directory
+
   try {
     const response = await all(node.ls(cid, { signal }));
     ipfsNodeLs = response;
@@ -90,12 +94,14 @@ const checkCidByIpfsNode = async (
     data: null,
   };
 
+  // If content is file read it
   if (ipfsNodeLs[0].size === undefined) {
     const responseCat = uint8ArrayConcat(await all(node.cat(cid)));
 
     return { data: responseCat, cid, meta };
   }
 
+  // If content is not big file read it
   if (ipfsNodeLs[0].size < FILE_SIZE_DOWNLOAD) {
     const responseCat = uint8ArrayConcat(await all(node.cat(cid)));
 
@@ -176,9 +182,7 @@ const getContentByCid = async (
   }
 
   if (!node) {
-    if (callBackFuncStatus) {
-      callBackFuncStatus('trying to get with a node');
-    }
+    callBackFuncStatus && callBackFuncStatus('trying to get with a node');
 
     const dataResponseIpfs = await checkCidByIpfsNode(node, cid);
 
@@ -215,6 +219,9 @@ const getIpfsGatway = async (
     setTimeout(() => {
       abortController.abort();
     }, 1000 * 60 * 1); // 1 min
+
+    //Read object from IPFS gateway
+    //Object size can be infinite?
 
     const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
       signal: abortController.signal,
@@ -253,15 +260,18 @@ const addFileToCluster = async (
     const formData = new FormData();
     formData.append('file', dataFile);
 
-    //TODO: add method also pin automatically ?????
     if (!cyberNode.add(formData)) {
-      return cyberNode.pin(cid);
+      //TODO: add method also pin automatically ?????
+      // return cyberNode.pin(cid);
     }
   } else {
     return await cyberNode.pin(cid);
   }
 };
 
+// check if the file is pinned to cybernode,
+// if not, add&pin it to cluster
+// file can be .... text/blob and ???
 const getPinsCid = async (cid: string, file: $TsFixMe) => {
   try {
     const responseGetPinsCidGet = await cyberNode.pinInfo(cid);
@@ -283,7 +293,7 @@ const getPinsCid = async (cid: string, file: $TsFixMe) => {
       if (file !== undefined) {
         return await addFileToCluster(cid, file);
       }
-
+      // TODO: secondary pin to cybernode after pinning to cluster. why???
       return await cyberNode.pin(cid);
     }
 

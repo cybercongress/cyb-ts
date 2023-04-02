@@ -529,7 +529,7 @@ function GetCitizenship({ defaultAccount, mobile }) {
           avatarIpfs === null ? (
             'upload avatar'
           ) : (
-            <AvataImgIpfs cidAvatar={avatarIpfs} node={node} />
+            <AvataImgIpfs cidAvatar={avatarIpfs} />
           )
         }
       />
@@ -566,7 +566,7 @@ function GetCitizenship({ defaultAccount, mobile }) {
       <Passport
         valueNickname={valueNickname}
         txs={txHash}
-        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
+        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} />}
         addressActive={addressActive}
       />
     );
@@ -576,7 +576,7 @@ function GetCitizenship({ defaultAccount, mobile }) {
     content = (
       <Passport
         valueNickname={valueNickname}
-        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
+        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} />}
         txs={txHash}
         addressActive={addressActive}
       />

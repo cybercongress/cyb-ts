@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
-
+import useIpfs from 'src/hooks/useIpfs';
 function AvatarIpfs({
   addressCyber = CYBER.BECH32_PREFIX_ACC_ADDR_CYBER,
   width = '80px',
   height = '80px',
   showAddress,
-  node,
 }) {
   const [avatar, setAvatar] = useState(null);
+  const { node } = useIpfs();
   let trimAddress = '';
   if (addressCyber.length > 0) {
     trimAddress = addressCyber.replace(/cyber/g, '');

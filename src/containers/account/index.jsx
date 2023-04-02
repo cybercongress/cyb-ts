@@ -174,7 +174,7 @@ function AccountDetails({ mobile, defaultAccount }) {
               margin: 0,
             }}
           />
-          <AvatarIpfs addressCyber={address} node={node} />
+          <AvatarIpfs addressCyber={address} />
           <Card
             title={`total, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={formatNumber(balance.total)}
@@ -223,10 +223,8 @@ function AccountDetails({ mobile, defaultAccount }) {
                 />
               )}
               {tab === 'badges' && <TableDiscipline address={address} />}
-              {tab === 'log' && <FeedsTab data={dataTweet} nodeIpfs={node} />}
-              {tab === 'swarm' && (
-                <FollowsTab node={node} community={community} />
-              )}
+              {tab === 'log' && <FeedsTab data={dataTweet} />}
+              {tab === 'swarm' && <FollowsTab community={community} />}
             </>
           )}
         </Pane>

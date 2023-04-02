@@ -55,7 +55,6 @@ function Taverna({ mobile, defaultAccount }) {
               cid={key}
               data={tweets[key]}
               mobile={mobile}
-              node={node}
               onClickRank={onClickRank}
             />
             // <Pane

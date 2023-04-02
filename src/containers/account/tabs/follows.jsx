@@ -2,25 +2,19 @@ import { Pane } from '@cybercongress/gravity';
 import { NoItems } from '../../../components';
 import AvatarIpfs from '../component/avatarIpfs';
 
-function FollowsTab({ community, node }) {
+function FollowsTab({ community }) {
   const { following, followers, friends } = community;
 
   const friendsItems = friends.map((item) => {
-    return (
-      <AvatarIpfs key={item} showAddress node={node} addressCyber={item} />
-    );
+    return <AvatarIpfs key={item} showAddress addressCyber={item} />;
   });
 
   const followingItems = following.map((item) => {
-    return (
-      <AvatarIpfs key={item} showAddress node={node} addressCyber={item} />
-    );
+    return <AvatarIpfs key={item} showAddressaddressCyber={item} />;
   });
 
   const followersItems = followers.map((item) => {
-    return (
-      <AvatarIpfs key={item} showAddress node={node} addressCyber={item} />
-    );
+    return <AvatarIpfs key={item} showAddress addressCyber={item} />;
   });
 
   return (

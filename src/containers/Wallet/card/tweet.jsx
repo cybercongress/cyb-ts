@@ -257,7 +257,7 @@ function TweetCard({
     return (
       <PocketCard display="flex" flexDirection="row" {...props}>
         <Pane display="flex" flex={1}>
-          <AvatarIpfs addressCyber={account} node={node} />
+          <AvatarIpfs addressCyber={account} />
         </Pane>
         <Link style={{ margin: '0 10px' }} to="/sixthSense">
           <Pane

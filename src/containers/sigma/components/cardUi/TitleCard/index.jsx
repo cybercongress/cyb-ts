@@ -27,7 +27,7 @@ function TitleCard({ accounts, passport, totalLiquid }) {
   return (
     <div className={styles.container}>
       <div className={styles.avatar}>
-        <AvataImgIpfs cidAvatar={useGetCidAvatar} node={node} />
+        <AvataImgIpfs cidAvatar={useGetCidAvatar} />
       </div>
       <div className={styles.name}>{useGetName}</div>
       <div className={styles.total}>

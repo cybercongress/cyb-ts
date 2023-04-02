@@ -250,6 +250,7 @@ class ActionBar extends Component {
   };
 
   onFilePickerChange = (files) => {
+    //TODO: create utils method for that
     const reader = new FileReader();
 
     reader.readAsText(files[0], 'UTF-8');
