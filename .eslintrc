@@ -45,7 +45,7 @@
     "linebreak-style": ["error", "unix"],
     "react/no-array-index-key": "off",
     "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-var-requires": "error",
+    "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/explicit-function-return-type": "error",
     // "@typescript-eslint/no-var-requires": "off",
@@ -105,7 +105,11 @@
       "always",
       { "ts": "never", "tsx": "never", "jsx": "never", "js": "never" }
     ],
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "no-unused-expressions": [
+      "error",
+      { "allowShortCircuit": true, "allowTernary": true }
+    ]
   },
   "settings": {
     "import/resolver": {

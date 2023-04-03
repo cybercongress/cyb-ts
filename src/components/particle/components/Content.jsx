@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { ContainerGradientText } from '../../containerGradient/ContainerGradient';
 import { CYBER } from '../../../utils/config';
 
-const checkIpfsState = () => {
+const getIpfsUserGatewanAndNodeType = () => {
   const LS_IPFS_STATE = localStorage.getItem('ipfsState');
 
   if (LS_IPFS_STATE !== null) {
@@ -27,7 +27,7 @@ function Content({ typeContent, gateway, content, textPreview, cid }) {
 
   useEffect(() => {
     // if (nodeIpfs && nodeIpfs !== null) {
-    const response = checkIpfsState();
+    const response = getIpfsUserGatewanAndNodeType();
     setGatewayUrl(response);
     // }
   }, [cid]);

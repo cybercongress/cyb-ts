@@ -4,12 +4,13 @@ import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import { getRankGrade } from '../../utils/search/utils';
-import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
-import { getContentByCid } from '../../utils/ipfs/utils-ipfs';
-import SearchItem from '../SearchItem/searchItem';
-import useIpfs from 'src/hooks/useIpfs';
 import { $TsFixMe } from 'src/types/tsfix';
+import useIpfs from 'src/hooks/useIpfs';
+import SearchItem from '../SearchItem/searchItem';
+import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
+import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
+
+import { getRankGrade } from '../../utils/search/utils';
 
 type ContentItemProps = {
   item: $TsFixMe;
@@ -18,7 +19,12 @@ type ContentItemProps = {
   className?: string;
 };
 
-function ContentItem({ item, cid, grade, className }: ContentItemProps) {
+function ContentItem({
+  item,
+  cid,
+  grade,
+  className,
+}: ContentItemProps): JSX.Element {
   const [content, setContent] = useState<string | undefined>(undefined);
   const [textPreview, setTextPreview] = useState<string | undefined>(cid);
   const [typeContent, setTypeContent] = useState<string | undefined>(undefined);
@@ -27,11 +33,15 @@ function ContentItem({ item, cid, grade, className }: ContentItemProps) {
   const { node } = useIpfs();
 
   useEffect(() => {
-    const feachData = async () => {
-      const dataResponseByCid = await getContentByCid(node, cid);
+    const feachData = async (): Promise<void> => {
+      const dataResponseByCid = await getIPFSContent(node, cid);
+      console.log('dataResponseByCid', dataResponseByCid);
       if (dataResponseByCid) {
         if (dataResponseByCid === 'availableDownload') {
           setStatus('availableDownload');
+          setTextPreview(cid);
+        } else if (!dataResponseByCid.data) {
+          setStatus('Not Available');
           setTextPreview(cid);
         } else {
           // const { data } = dataResponseByCid;
@@ -47,7 +57,6 @@ function ContentItem({ item, cid, grade, className }: ContentItemProps) {
             link: linkContent,
           } = dataTypeContent;
 
-          //TODO: dublicate code that is in the useGetIpfsContentHook -> refactor
           setTextPreview(textContent);
           setTypeContent(type);
           setContent(contentCid);
@@ -68,7 +77,6 @@ function ContentItem({ item, cid, grade, className }: ContentItemProps) {
         textPreview={
           <div className="container-text-SearchItem">
             <ReactMarkdown
-              children={textPreview}
               rehypePlugins={[rehypeSanitize]}
               // skipHtml
               // escapeHtml
@@ -77,7 +85,9 @@ function ContentItem({ item, cid, grade, className }: ContentItemProps) {
               remarkPlugins={[remarkGfm]}
 
               // escapeHtml={false}
-            />
+            >
+              {textPreview || ''}
+            </ReactMarkdown>
           </div>
         }
         status={status}
@@ -94,7 +104,7 @@ function ContentItem({ item, cid, grade, className }: ContentItemProps) {
             src={content}
           />
         )}
-        {typeContent === 'application/pdf' && (
+        {content && typeContent === 'application/pdf' && (
           <Iframe
             width="100%"
             height="400px"

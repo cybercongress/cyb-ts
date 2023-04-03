@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
 import FileType from 'file-type';
-import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
-import { getContentByCid } from '../../utils/ipfs/utils-ipfs';
-import { IPFSData, IPFSContentMeta } from '../../utils/ipfs/ipfs.d';
 import { IPFS } from 'kubo-rpc-client/types';
+import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
+import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
+import { IPFSData, IPFSContentMeta } from '../../utils/ipfs/ipfs.d';
 
 type TextMaybe = string | undefined;
 
@@ -115,7 +115,7 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
       setLoading(true);
       setStatusFetching('');
 
-      const dataResponseByCid = await getContentByCid(
+      const dataResponseByCid = await getIPFSContent(
         nodeIpfs,
         cid,
         setStatusFetching

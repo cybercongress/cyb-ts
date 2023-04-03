@@ -6,7 +6,7 @@ export type IPFSMaybe = IPFS | null;
 
 type IPFSNodeType = 'emdedded' | 'external';
 
-export type CheckIpfsState = {
+export type getIpfsUserGatewanAndNodeType = {
   ipfsNodeType: IPFSNodeType | undefined;
   userGateway: string | undefined;
 };
@@ -18,7 +18,14 @@ export type IPFSContentMeta = {
   data: string | null;
 };
 
-type IPFSData = Buffer | Uint8Array | ArrayBuffer;
+type IPFSData =
+  | Blob
+  | Buffer
+  | string
+  | ReadableStream<Uint8Array>
+  | Uint8Array
+  | File
+  | Blob[];
 
 type IPFSContent = {
   data: IPFSData | undefined;

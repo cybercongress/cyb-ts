@@ -15,7 +15,7 @@ function Particle({ cid }) {
   //   const feachData = async () => {
   //     let responseData = null;
 
-  //     const dataResponseByCid = await getContentByCid(node, cid);
+  //     const dataResponseByCid = await getIPFSContent(node, cid);
 
   //     if (dataResponseByCid !== undefined) {
   //       if (dataResponseByCid === 'availableDownload') {
