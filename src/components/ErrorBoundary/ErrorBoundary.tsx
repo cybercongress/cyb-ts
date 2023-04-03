@@ -1,16 +1,15 @@
 import { Component } from 'react';
 
-// interface Props {
-//   fallback: JSX.Element;
-//   children: JSX.Element;
-// }
+interface Props {
+  fallback: JSX.Element;
+  children: JSX.Element;
+}
 
-// type State = {
-//   hasError: boolean;
-// };
+type State = {
+  hasError: boolean;
+};
 
-class ErrorBoundary extends Component {
-  /* <Props, State> */
+class ErrorBoundary extends Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = { hasError: false };

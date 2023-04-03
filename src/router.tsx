@@ -94,10 +94,10 @@ function MainLayout() {
   );
 }
 
-const ValidatorsRedirect = () => {
+function ValidatorsRedirect() {
   const { status } = useParams();
   return <Navigate to={`/sphere/${status}`} />;
-};
+}
 
 function AppRouter() {
   return (

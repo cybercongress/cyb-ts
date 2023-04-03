@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
+import useIpfs from 'src/hooks/useIpfs';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import { Loading } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
@@ -12,7 +13,6 @@ import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
-import useIpfs from 'src/hooks/useIpfs';
 
 function ContainerGrid({ children }) {
   return (

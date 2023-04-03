@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IPFS } from 'kubo-rpc-client/types';
+
 import { destroyIpfsClient, initIpfsClient } from '../utils/ipfs/init';
+
 let ipfs = null;
 
 const getOpts = () => {

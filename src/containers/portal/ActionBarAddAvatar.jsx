@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect, useCallback, useContext } from 'react';
-import { connect } from 'react-redux';
 import { GasPrice } from '@cosmjs/launchpad';
+import useIpfs from 'src/hooks/useIpfs';
 import txs from '../../utils/txs';
 import { ActionBarSteps, ActionBarContainer } from './components';
 import { Dots, BtnGrd } from '../../components';
 import { getPin } from '../../utils/search/utils';
 import { AppContext } from '../../context';
 import { CONTRACT_ADDRESS_PASSPORT } from './utils';
-import useIpfs from 'src/hooks/useIpfs';
 
 const STATE_INIT = 1;
 const STATE_AVATAR = 15;

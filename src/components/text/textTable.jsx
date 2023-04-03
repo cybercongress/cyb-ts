@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text } from '@cybercongress/gravity';
 
 function TextTable({ children, fontSize, color, display, ...props }) {

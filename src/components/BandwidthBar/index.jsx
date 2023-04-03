@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Battery, Pane, Text } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import Tooltip from '../tooltip/tooltip';

@@ -1,8 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 import useIpfs from 'src/hooks/useIpfs';
-import { getAvatarIpfs } from '../../utils/search/utils';
-import { trimString } from '../../utils/utils';
-import Tooltip from '../tooltip/tooltip';
 
 import eth from 'images/Ethereum_logo_2014.svg';
 import pool from 'images/gravitydexPool.png';
@@ -14,6 +11,9 @@ import tocyb from 'images/boot.png';
 import boot from 'images/large-green.png';
 import pussy from 'images/large-purple-circle.png';
 import defaultImg from 'images/large-orange-circle.png';
+import Tooltip from '../tooltip/tooltip';
+import { trimString } from '../../utils/utils';
+import { getAvatarIpfs } from '../../utils/search/utils';
 
 const nativeImageMap = {
   millivolt: voltImg,

@@ -5,6 +5,7 @@ import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
+import useIpfs from 'src/hooks/useIpfs';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -34,7 +35,6 @@ import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
-import useIpfs from 'src/hooks/useIpfs';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>

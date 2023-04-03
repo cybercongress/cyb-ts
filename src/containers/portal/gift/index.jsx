@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext, useMemo } from 'react';
 import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { AppContext } from '../../../context';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 import {
@@ -24,7 +25,6 @@ import STEP_INFO from './utils';
 import Info from './Info';
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
-import useIpfs from 'src/hooks/useIpfs';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);

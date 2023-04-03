@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { CYBER } from '../../utils/config';
 import { formatNumber } from '../../utils/utils';

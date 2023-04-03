@@ -2,11 +2,10 @@
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
-import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { Loading } from '../../components';
 
 import useGetDataGql from './hooks';
-import useIpfs from 'src/hooks/useIpfs';
 
 function ForceQuitter() {
   const { node } = useIpfs();

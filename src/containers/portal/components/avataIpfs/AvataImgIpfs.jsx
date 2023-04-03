@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { CYBER } from '../../../../utils/config';
 import { checkIpfsState } from '../../../../utils/ipfs/utils-ipfs';
 import { getAvatarIpfs } from '../../../../utils/search/utils';
 import styles from './styles.scss';
-import useIpfs from 'src/hooks/useIpfs';
 
 function AvataImgIpfs({ img, cidAvatar, addressCyber, ...props }) {
   const { node } = useIpfs();

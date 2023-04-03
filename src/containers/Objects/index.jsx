@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import useIpfs from 'src/hooks/useIpfs';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
 import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../../components/ContentItem/contentItem';

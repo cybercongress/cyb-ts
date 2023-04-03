@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 import { Copy } from '../ui/copy';
 import Tooltip from '../tooltip/tooltip';

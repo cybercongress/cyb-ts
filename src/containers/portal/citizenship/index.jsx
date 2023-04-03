@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
+import useIpfs from 'src/hooks/useIpfs';
 import txs from '../../../utils/txs';
 
 import { MainContainer, MoonAnimation, Stars } from '../components';
@@ -38,7 +39,6 @@ import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
 import { getPinsCid } from '../../../utils/ipfs/utils-ipfs';
-import useIpfs from 'src/hooks/useIpfs';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
