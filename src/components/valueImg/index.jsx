@@ -1,4 +1,3 @@
-import React from 'react';
 import { trimString } from '../../utils/utils';
 
 const voltImg = require('../../image/lightning2.png');

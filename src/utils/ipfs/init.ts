@@ -18,13 +18,9 @@ export async function initIpfsClient(opts) {
       throw new Error(`Unsupported ipfsNodeType: ${opts.ipfsNodeType}`);
   }
 
-  try {
-    const instance = await backend.init(opts);
-    client = backend;
-    return instance;
-  } catch (err) {
-    throw err;
-  }
+  const instance = await backend.init(opts);
+  client = backend;
+  return instance;
 }
 
 export async function destroyIpfsClient() {

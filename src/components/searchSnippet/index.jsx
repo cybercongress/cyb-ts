@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { AppContext } from '../../context';
 import Rank from '../Rank/rank';
