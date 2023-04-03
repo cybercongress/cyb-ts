@@ -11,14 +11,13 @@ if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
 }
-
 module.exports = {
   devtool: false,
   entry: ['react-hot-loader/patch', path.join(__dirname, 'src', 'index.js')],
   output: {
     filename: '[name].js',
     path: path.join(__dirname, '/build'),
-    publicPath: '/',
+    publicPath: process.env.IPFS_DEPLOY ? './' : '/',
     assetModuleFilename: '[name][hash:10][ext]',
   },
   // node: { fs: 'empty' },
@@ -64,7 +63,7 @@ module.exports = {
       template: path.join(__dirname, 'src', 'index.html'),
       favicon: 'src/image/favicon.ico',
       filename: 'index.html',
-      publicPath: './',
+      ...(process.env.IPFS_DEPLOY ? { publicPath: './' } : {}),
       inject: 'body',
     }),
     new MiniCssExtractPlugin({
@@ -72,9 +71,7 @@ module.exports = {
       chunkFilename: '[id].css',
     }),
     new webpack.DefinePlugin({
-      'process.env.REACT_APP_IPFS_DEPLOY': JSON.stringify(
-        process.env.IPFS_DEPLOY
-      ),
+      'process.env.IPFS_DEPLOY': JSON.stringify(process.env.IPFS_DEPLOY),
     }),
     new Dotenv({
       systemvars: true,
