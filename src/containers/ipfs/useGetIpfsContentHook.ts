@@ -96,7 +96,7 @@ export const getTypeContent = async (
 const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
-  const [typeContent, setTypeContent] = useState('');
+  const [typeContent, setTypeContent] = useState<string | undefined>('');
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
   const [gateway, setGateway] = useState(false);
@@ -111,7 +111,7 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
   });
 
   useEffect(() => {
-    const feachData = async () => {
+    const feachData = async (): Promise<void> => {
       setLoading(true);
       setStatusFetching('');
 
@@ -121,25 +121,23 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
         setStatusFetching
       );
 
-      if (dataResponseByCid !== undefined) {
-        if (dataResponseByCid === 'availableDownload') {
-          setContent(cid);
-          setGateway(true);
-          setStatus('availableDownload');
-          setText(cid);
-        } else {
-          const { data, meta } = dataResponseByCid;
-          const dataTypeContent = await getTypeContent(data as IPFSData, cid);
-          setTypeContent(dataTypeContent.type);
-          setContent(dataTypeContent.content);
-          setLink(dataTypeContent.link);
-          setGateway(dataTypeContent.gateway);
-          setStatus('downloaded');
-          setMetaData(meta);
-          setLoading(false);
-        }
-      } else {
+      if (!dataResponseByCid) {
         setStatus('impossibleLoad');
+        setLoading(false);
+      } else if (dataResponseByCid === 'availableDownload') {
+        setContent(cid);
+        setGateway(true);
+        setStatus('availableDownload');
+        setText(cid);
+      } else {
+        const { data, meta } = dataResponseByCid;
+        const dataTypeContent = await getTypeContent(data as IPFSData, cid);
+        setTypeContent(dataTypeContent.type);
+        setContent(dataTypeContent.content);
+        setLink(dataTypeContent.link);
+        setGateway(dataTypeContent.gateway);
+        setStatus('downloaded');
+        setMetaData(meta);
         setLoading(false);
       }
     };

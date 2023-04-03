@@ -174,14 +174,6 @@ const pinContentToDbAndIpfs = async (
   }
 };
 
-async function replicateToLocalDb(cid: string): Promise<IPFSContentMaybe> {
-  const respnseGateway = await fetchIPFSContentFromGateway(cid);
-  if (respnseGateway !== undefined) {
-    pinContentToDbAndIpfs(null, respnseGateway, cid);
-  }
-  return respnseGateway;
-}
-
 const getIPFSContent = async (
   node: IPFS,
   cid: string,
@@ -202,27 +194,20 @@ const getIPFSContent = async (
       pinContentToDbAndIpfs(node, dataResponseIpfs, cid);
       return dataResponseIpfs;
     }
-    callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
-
-    const { ipfsNodeType, userGateway } = getIpfsUserGatewanAndNodeType();
-
-    if (ipfsNodeType !== null && ipfsNodeType === 'external') {
-      const respnseGateway = await fetchIPFSContentFromGateway(
-        cid,
-        userGateway
-      );
-
-      if (respnseGateway !== undefined) {
-        return respnseGateway;
-      }
-    }
-
-    return replicateToLocalDb(cid);
   }
 
   callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
 
-  return replicateToLocalDb(cid);
+  const { userGateway } = getIpfsUserGatewanAndNodeType();
+  const respnseGateway = await fetchIPFSContentFromGateway(cid, userGateway);
+
+  if (respnseGateway !== undefined) {
+    pinContentToDbAndIpfs(null, respnseGateway, cid);
+
+    return respnseGateway;
+  }
+
+  return undefined;
 };
 
 const getIpfsDataFromGatway = async (
