@@ -63,7 +63,7 @@ function TokenSetter({
             textSelectValue={token !== '' ? token : ''}
             onChangeSelect={(item) => onChangeSelect(item)}
           >
-            {!!totalSupply && renderOptions(totalSupply, selected, token)}
+            {totalSupply && renderOptions(totalSupply, selected, token)}
           </Select>
         </Pane>
       </Pane>

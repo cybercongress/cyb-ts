@@ -61,7 +61,7 @@ function NetworkSetter({
             textSelectValue={selectedNetwork !== '' ? selectedNetwork : ''}
             onChangeSelect={(item) => onChangeSelectNetwork(item)}
           >
-            {!!networks && renderNetwork(networks)}
+            {networks && renderNetwork(networks)}
           </Select>
         </Pane>
       </Pane>

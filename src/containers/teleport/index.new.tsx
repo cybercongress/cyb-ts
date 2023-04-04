@@ -38,6 +38,7 @@ import TokenSetter from './components/tokenSetter.new';
 import NetworkSetter from './components/networkSetter';
 import useSdk from 'src/hooks/useSdk';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import useSigningClient from 'src/hooks/useSigningClient';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -235,8 +236,7 @@ function Teleport({ defaultAccount }) {
         const arrangedReserveCoinDenoms = sortReserveCoinDenoms(tokenA, tokenB);
         poolsData.forEach((item) => {
           if (
-            item.reserveCoinDenoms.join() ===
-            arrangedReserveCoinDenoms.join()
+            item.reserveCoinDenoms.join() === arrangedReserveCoinDenoms.join()
           ) {
             setSelectedPool(item);
           }
