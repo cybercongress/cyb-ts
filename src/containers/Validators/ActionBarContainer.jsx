@@ -185,7 +185,7 @@ function ActionBarContainer({
 }) {
   const { passport } = useGetPassportByAddress(addressPocket);
   const { keplr, jsCyber } = useContext(AppContext);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -370,7 +370,7 @@ function ActionBarContainer({
   }, [balance]);
 
   const handleHistory = (to) => {
-    history.push(to);
+    navigate(to);
   };
 
   if (passport === null && CYBER.CHAIN_ID === 'bostrom') {

@@ -58,13 +58,13 @@ const itemCarousel1 = [
 ];
 
 function Temple({ defaultAccount }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { passport } = useGetPassportByAddress(defaultAccount);
 
   const [step, setStep] = useState(2);
 
   const handleGetCitizenship = () => {
-    history.push('/portal');
+    navigate('/portal');
   };
 
   return (

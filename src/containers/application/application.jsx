@@ -45,7 +45,7 @@ function App({
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -234,7 +234,7 @@ function App({
   const handleKeyPress = async (e) => {
     if (query.length > 0) {
       if (e.key === 'Enter') {
-        history.push(`/search/${replaceSlash(query)}`);
+        navigate(`/search/${replaceSlash(query)}`);
         setQueryProps(query);
       }
     }

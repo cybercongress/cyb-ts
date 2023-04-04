@@ -11,10 +11,10 @@ const linkMovie =
 
 function Movie() {
   const [loading, setLoading] = useState(true);
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const redirect = () => {
-    history.push(`/oracle`);
+    navigate(`/oracle`);
   };
 
   useEffect(() => {

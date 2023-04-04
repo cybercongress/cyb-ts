@@ -35,7 +35,7 @@ const initValue = {
 };
 
 function CustomNetwork() {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { networks, updateNetworks } = useContext(AppContext);
   const [customConfig, setCustomConfig] = useState({ ...initValue });
 
@@ -80,7 +80,7 @@ function CustomNetwork() {
         newList[customConfig.CHAIN_ID] = { ...customConfig };
         updateNetworks(newList);
         setTimeout(() => {
-          history.push('/network');
+          navigate('/network');
         }, 2000);
       }
     }
