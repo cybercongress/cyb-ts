@@ -71,7 +71,6 @@ const reduceSearchResults = (data, query) => {
 };
 
 function SearchResults({ mobile, setQueryProps }) {
-  const { node } = useIpfs();
   const { jsCyber } = useContext(AppContext);
   const { query } = useParams();
   const location = useLocation();
@@ -327,7 +326,6 @@ function SearchResults({ mobile, setQueryProps }) {
               </Pane>
             )}
             <ContentItem
-              nodeIpfs={node}
               cid={key}
               item={searchResults[key]}
               className="SearchItem"

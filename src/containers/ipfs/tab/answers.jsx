@@ -5,15 +5,7 @@ import { Rank, NoItems, Dots } from '../../../components';
 import { getRankGrade } from '../../../utils/search/utils';
 import { exponentialToDecimal, coinDecimals } from '../../../utils/utils';
 
-function AnswersTab({
-  data,
-  mobile,
-  nodeIpfs,
-  fetchMoreData,
-  page,
-  allPage,
-  total,
-}) {
+function AnswersTab({ data, mobile, fetchMoreData, page, allPage, total }) {
   const answers = [];
   if (Object.keys(data).length > 0) {
     answers.push(
@@ -42,7 +34,6 @@ function AnswersTab({
               </Pane>
             )}
             <ContentItem
-              nodeIpfs={nodeIpfs}
               cid={data[item].particle}
               item={data[item]}
               className="contentItem"

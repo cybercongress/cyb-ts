@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
-import { Pane, Tablist } from '@cybercongress/gravity';
+import { useParams, Link } from 'react-router-dom';
+import { Pane, Tablist, Pill } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import useIpfs from 'src/hooks/useIpfs';
 import { getRankGrade, getToLink, getFromLink } from '../../utils/search/utils';
@@ -21,32 +21,11 @@ import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
 
 const dateFormat = require('dateformat');
 
-function Pill({ children, active, ...props }) {
-  return (
-    <Pane
-      display="flex"
-      fontSize="14px"
-      borderRadius="20px"
-      height="20px"
-      paddingY="5px"
-      paddingX="8px"
-      alignItems="center"
-      lineHeight="1"
-      justifyContent="center"
-      backgroundColor={active ? '#000' : '#36d6ae'}
-      color={active ? '#36d6ae' : '#000'}
-      {...props}
-    >
-      {children}
-    </Pane>
-  );
-}
-
 const search = async (client, hash, page) => {
   try {
     const responseSearchResults = await client.search(hash, page);
     console.log(`responseSearchResults`, responseSearchResults);
-    return responseSearchResults.result ? responseSearchResults : [];
+    return responseSearchResults.result || [];
   } catch (error) {
     return [];
   }
@@ -70,20 +49,72 @@ const reduceParticleArr = (data, query = '') => {
   );
 };
 
+//TODO: Move to reusable components
+const PaneWithPill = ({ caption, count, active }) => (
+  <Pane display="flex" alignItems="center">
+    <Pane>{caption}</Pane>
+    {count > 0 && (
+      <Pill marginLeft={5} active={active}>
+        {formatNumber(count)}
+      </Pill>
+    )}
+  </Pane>
+);
+
+function ContentIpfsCid(dataGetIpfsContent) {
+  const loading = dataGetIpfsContent.loading;
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          //TODO: Avoid inline styles
+          width: '100%',
+          // height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          marginBottom: '50px',
+        }}
+      >
+        <ComponentLoader style={{ width: '100px', margin: '30px auto' }} />
+        <div style={{ fontSize: '20px' }}>
+          {dataGetIpfsContent.statusFetching}
+        </div>
+      </div>
+    );
+  }
+
+  if (!loading && dataGetIpfsContent.status === 'impossibleLoad') {
+    return (
+      <div
+        style={{
+          width: '100%',
+          // height: '50vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          marginBottom: '50px',
+        }}
+      >
+        <div style={{ fontSize: '20px' }}>impossible load content</div>
+      </div>
+    );
+  }
+}
+
 function Ipfs({ mobile }) {
   const { jsCyber } = useContext(AppContext);
-  const { cid } = useParams();
-  const location = useLocation();
+  const { cid, tab = 'discussion' } = useParams();
   const { node: nodeIpfs } = useIpfs();
   const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs);
 
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
   const [communityData, setCommunityData] = useState({});
-  // const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState('discussion');
   const [gateway, setGateway] = useState(null);
-  const [placeholder, setPlaceholder] = useState('');
   const [dataToLink, setDataToLink] = useState([]);
   const [dataFromLink, setDataFromLink] = useState([]);
   const [dataAnswers, setDataAnswers] = useState([]);
@@ -101,15 +132,11 @@ function Ipfs({ mobile }) {
     blockSizes: [],
     data: '',
   });
-  const [textBtn, setTextBtn] = useState(false);
-
-  let contentTab;
 
   useEffect(() => {
     setContent(dataGetIpfsContent.content);
     setTypeContent(dataGetIpfsContent.typeContent);
     setGateway(dataGetIpfsContent.gateway);
-    // setLoading(dataGetIpfsContent.loading);
     setMetaData(dataGetIpfsContent.metaData);
   }, [dataGetIpfsContent]);
 
@@ -225,223 +252,53 @@ function Ipfs({ mobile }) {
     }
   }, [dataToLink, dataFromLink]);
 
-  useEffect(() => {
-    chekPathname();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  const chekPathname = () => {
-    const { pathname } = location;
-
-    if (
-      pathname.match(/baclinks/gm) &&
-      pathname.match(/baclinks/gm).length > 0
-    ) {
-      setSelected('meta');
-    } else if (
-      pathname.match(/community/gm) &&
-      pathname.match(/community/gm).length > 0
-    ) {
-      setSelected('meta');
-    } else if (
-      pathname.match(/answers/gm) &&
-      pathname.match(/answers/gm).length > 0
-    ) {
-      setTextBtn('add answer');
-      setPlaceholder('add keywords, hash or file');
-      setSelected('answers');
-    } else if (
-      pathname.match(/meta/gm) &&
-      pathname.match(/meta/gm).length > 0
-    ) {
-      setSelected('meta');
-    } else {
-      setPlaceholder('add message');
-      setTextBtn('Comment');
-      setSelected('discussion');
-    }
-  };
-
-  if (selected === 'answers') {
-    contentTab = (
-      <AnswersTab
-        data={dataAnswers}
-        mobile={mobile}
-        nodeIpfs={nodeIpfs}
-        fetchMoreData={fetchMoreData}
-        page={page}
-        allPage={allPage}
-        total={total}
-      />
-    );
-  }
-
-  if (selected === 'discussion') {
-    contentTab = (
-      <DiscussionTab data={dataToLink} mobile={mobile} nodeIpfs={nodeIpfs} />
-    );
-  }
-
-  if (selected === 'meta') {
-    contentTab = (
-      <>
-        <Pane width="60%" marginX="auto" marginTop="25px" fontSize="18px">
-          Creator
-        </Pane>
-        <Pane
-          alignItems="center"
-          width="60%"
-          marginX="auto"
-          justifyContent="center"
-          display="flex"
-          flexDirection="column"
-        >
-          <Link to={`/network/bostrom/contract/${creator.address}`}>
-            <Pane
-              alignItems="center"
-              marginX="auto"
-              justifyContent="center"
-              display="flex"
-            >
-              <Account
-                styleUser={{ flexDirection: 'column' }}
-                sizeAvatar="80px"
-                avatar
-                address={creator.address}
-              />
-              {/* {creator.address.length > 11 && (
-                <Pane> {creator.address.slice(0, 7)}</Pane>
-              )}
-              <AvatarIpfs node={nodeIpfs} addressCyber={creator.address} />
-              {creator.address.length > 11 && (
-                <Pane> {creator.address.slice(-6)}</Pane>
-              )} */}
-            </Pane>
-          </Link>
-          {creator.timestamp.length > 0 && (
-            <Pane>{dateFormat(creator.timestamp, 'dd/mm/yyyy, HH:MM:ss')}</Pane>
-          )}
-        </Pane>
-        <CommunityTab node={nodeIpfs} data={communityData} />
-        <Pane width="60%" marginX="auto" marginBottom="15px" fontSize="18px">
-          Backlinks
-        </Pane>
-        <OptimisationTab
-          data={dataBacklinks}
-          mobile={mobile}
-          nodeIpfs={nodeIpfs}
-        />
-        <Pane width="60%" marginX="auto" fontSize="18px">
-          Meta
-        </Pane>
-        <MetaTab cid={cid} data={metaData} />
-      </>
-    );
-  }
-
-  let contentIpfsCid;
-
-  if (dataGetIpfsContent.loading) {
-    contentIpfsCid = (
-      <div
-        style={{
-          width: '100%',
-          // height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          marginBottom: '50px',
-        }}
-      >
-        <ComponentLoader style={{ width: '100px', margin: '30px auto' }} />
-        <div style={{ fontSize: '20px' }}>
-          {dataGetIpfsContent.statusFetching}
-        </div>
-      </div>
-    );
-  }
-
-  if (
-    !dataGetIpfsContent.loading &&
-    dataGetIpfsContent.status === 'impossibleLoad'
-  ) {
-    contentIpfsCid = (
-      <div
-        style={{
-          width: '100%',
-          // height: '50vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          marginBottom: '50px',
-        }}
-      >
-        <div style={{ fontSize: '20px' }}>impossible load content</div>
-      </div>
-    );
-  }
-
-  if (content.length !== 0) {
-    contentIpfsCid = (
-      <ContentTab
-        nodeIpfs={nodeIpfs}
-        typeContent={typeContent}
-        gateway={gateway}
-        content={content}
-        cid={cid}
-      />
-    );
-  }
-
   return (
     <>
       <main className="block-body">
-        {/* <Particle cid={cid} /> */}
-        {contentIpfsCid}
+        {content.length ? (
+          <ContentIpfsCid dataGetIpfsContent={dataGetIpfsContent} />
+        ) : (
+          <ContentTab
+            typeContent={typeContent}
+            gateway={gateway}
+            content={content}
+            cid={cid}
+          />
+        )}
         <Tablist
           display="grid"
           gridTemplateColumns="repeat(auto-fit, minmax(110px, 1fr))"
           gridGap="10px"
           marginTop={25}
-          marginBottom={selected !== 'meta' ? 25 : 0}
+          marginBottom={tab !== 'meta' ? 25 : 0}
           width="62%"
           marginX="auto"
         >
           <TabBtn
-            // text="answers"
             text={
-              <Pane display="flex" alignItems="center">
-                <Pane>answers</Pane>
-                {dataAnswers.length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'answers'}>
-                    {formatNumber(dataAnswers.length)}
-                  </Pill>
-                )}
-              </Pane>
+              <PaneWithPill
+                caption="answers"
+                count={dataAnswers.length}
+                active={tab === 'answers'}
+              />
             }
-            isSelected={selected === 'answers'}
+            isSelected={tab === 'answers'}
             to={`/ipfs/${cid}/answers`}
           />
           <TabBtn
-            // text="discussion"
             text={
-              <Pane display="flex" alignItems="center">
-                <Pane>discussion</Pane>
-                {dataToLink && dataToLink.length > 0 && (
-                  <Pill marginLeft={5} active={selected === 'discussion'}>
-                    {formatNumber(dataToLink.length)}
-                  </Pill>
-                )}
-              </Pane>
+              <PaneWithPill
+                caption="discussion"
+                count={dataToLink.length}
+                active={tab === 'discussion'}
+              />
             }
-            isSelected={selected === 'discussion'}
+            isSelected={tab === 'discussion'}
             to={`/ipfs/${cid}`}
           />
           <TabBtn
             text="meta"
-            isSelected={selected === 'meta'}
+            isSelected={tab === 'meta'}
             to={`/ipfs/${cid}/meta`}
           />
         </Tablist>
@@ -452,13 +309,77 @@ function Ipfs({ mobile }) {
           display="flex"
           flexDirection="column"
         >
-          {contentTab}
+          {tab === 'discussion' && (
+            <DiscussionTab data={dataToLink} mobile={mobile} />
+          )}
+          {tab === 'answers' && (
+            <AnswersTab
+              data={dataAnswers}
+              mobile={mobile}
+              fetchMoreData={fetchMoreData}
+              page={page}
+              allPage={allPage}
+              total={total}
+            />
+          )}
+          {tab === 'meta' && (
+            <>
+              <Pane width="60%" marginX="auto" marginTop="25px" fontSize="18px">
+                Creator
+              </Pane>
+              <Pane
+                alignItems="center"
+                width="60%"
+                marginX="auto"
+                justifyContent="center"
+                display="flex"
+                flexDirection="column"
+              >
+                <Link to={`/network/bostrom/contract/${creator.address}`}>
+                  <Pane
+                    alignItems="center"
+                    marginX="auto"
+                    justifyContent="center"
+                    display="flex"
+                  >
+                    <Account
+                      styleUser={{ flexDirection: 'column' }}
+                      sizeAvatar="80px"
+                      avatar
+                      address={creator.address}
+                    />
+                  </Pane>
+                </Link>
+                {creator.timestamp.length > 0 && (
+                  <Pane>
+                    {dateFormat(creator.timestamp, 'dd/mm/yyyy, HH:MM:ss')}
+                  </Pane>
+                )}
+              </Pane>
+              <CommunityTab data={communityData} />
+              <Pane
+                width="60%"
+                marginX="auto"
+                marginBottom="15px"
+                fontSize="18px"
+              >
+                Backlinks
+              </Pane>
+              <OptimisationTab data={dataBacklinks} mobile={mobile} />
+              <Pane width="60%" marginX="auto" fontSize="18px">
+                Meta
+              </Pane>
+              <MetaTab cid={cid} data={metaData} />
+            </>
+          )}
         </Pane>
       </main>
-      {!mobile && (selected === 'discussion' || selected === 'answers') && (
+      {!mobile && (tab === 'discussion' || tab === 'answers') && (
         <ActionBarContainer
-          placeholder={placeholder}
-          textBtn={textBtn}
+          placeholder={
+            tab == 'answers' ? 'add keywords, hash or file' : 'add message'
+          }
+          textBtn={tab == 'answers' ? 'add answer' : 'Comment'}
           keywordHash={cid}
           update={() => getLinks()}
         />

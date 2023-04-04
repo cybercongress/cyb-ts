@@ -36,7 +36,6 @@ function App({
   setAccountsProps,
   setDefaultAccountProps,
   setBandwidthProps,
-  children,
   setTypeDeviceProps,
 }) {
   const { jsCyber, updatetMarketData, updateDataTotalSupply } =
@@ -346,8 +345,6 @@ function App({
           </Link>
         </div>
       )}
-
-      {children}
 
       <Telegram />
       <GitHub />

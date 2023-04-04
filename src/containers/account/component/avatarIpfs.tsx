@@ -3,15 +3,23 @@ import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import { getAvatar, getAvatarIpfs } from '../../../utils/search/utils';
 import { PATTERN_CYBER, CYBER } from '../../../utils/config';
+import useIpfs from 'src/hooks/useIpfs';
+
+type AvatarIpfsProps = {
+  addressCyber: string;
+  width?: string;
+  height?: string;
+  showAddress?: boolean;
+};
 
 function AvatarIpfs({
   addressCyber = CYBER.BECH32_PREFIX_ACC_ADDR_CYBER,
   width = '80px',
   height = '80px',
-  showAddress,
-  node,
-}) {
-  const [avatar, setAvatar] = useState(null);
+  showAddress = false,
+}: AvatarIpfsProps) {
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const { node } = useIpfs();
   let trimAddress = '';
   if (addressCyber.length > 0) {
     trimAddress = addressCyber.replace(/cyber/g, '');
@@ -22,7 +30,6 @@ function AvatarIpfs({
       setAvatar(null);
       fetchAvatar(addressCyber);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addressCyber, node]);
 
   const fetchAvatar = async (address) => {
@@ -31,7 +38,7 @@ function AvatarIpfs({
       const cidTo =
         response.txs[response.txs.length - 1].tx.value.msg[0].value.links[0].to;
       const responseImg = await getAvatarIpfs(cidTo, node);
-      if (responseImg && responseImg !== null) {
+      if (responseImg) {
         setAvatar(responseImg);
       }
     }

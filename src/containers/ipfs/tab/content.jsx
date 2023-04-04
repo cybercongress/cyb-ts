@@ -28,7 +28,7 @@ import { CYBER } from '../../../utils/config';
 //   return <canvas id="ipfsImg" />;
 // };
 
-const checkIpfsState = () => {
+const getIpfsUserGatewanAndNodeType = () => {
   const LS_IPFS_STATE = localStorage.getItem('ipfsState');
 
   if (LS_IPFS_STATE !== null) {
@@ -56,7 +56,7 @@ function ContentTab({
 
   useEffect(() => {
     if (nodeIpfs && nodeIpfs !== null) {
-      const response = checkIpfsState();
+      const response = getIpfsUserGatewanAndNodeType();
       setGatewayUrl(response);
     }
   }, [nodeIpfs]);

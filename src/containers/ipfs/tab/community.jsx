@@ -2,13 +2,11 @@ import { Pane } from '@cybercongress/gravity';
 import { NoItems } from '../../../components';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 
-function CommunityTab({ data, node }) {
+function CommunityTab({ data }) {
   if (Object.keys(data).length > 0) {
     const rowItem = Object.keys(data)
       .sort((a, b) => data[b].amount - data[a].amount)
-      .map((key) => (
-        <AvatarIpfs key={key} showAddress node={node} addressCyber={key} />
-      ));
+      .map((key) => <AvatarIpfs key={key} showAddressaddressCyber={key} />);
 
     return (
       <Pane marginX="auto" width="60%" marginY={25}>

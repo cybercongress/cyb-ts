@@ -194,7 +194,6 @@ function Market({ mobile, defaultAccount }) {
           ) : (
             <SearchTokenInfo
               data={resultSearch}
-              node={node}
               mobile={mobile}
               selectedTokens={tab}
               onClickRank={onClickRank}

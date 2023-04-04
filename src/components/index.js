@@ -30,7 +30,6 @@ import BandwidthBar from './BandwidthBar';
 import TabBtn from './tabBtn';
 import ButtonImgText from './Button/buttonImgText';
 import Rank from './Rank/rank';
-import PillNumber from './pill';
 import NoItems from './ui/noItems';
 import ValueImg from './valueImg';
 import NumberCurrency from './numberCurrency';
@@ -78,7 +77,6 @@ export {
   ConnectAddress,
   ButtonImgText,
   Rank,
-  PillNumber,
   ButtonIcon,
   NoItems,
   ValueImg,

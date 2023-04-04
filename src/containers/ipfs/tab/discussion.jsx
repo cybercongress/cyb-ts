@@ -2,6 +2,7 @@ import { Pane } from '@cybercongress/gravity';
 import ContentItem from '../../../components/ContentItem/contentItem';
 import { Rank, NoItems } from '../../../components';
 
+//TODO: rethink that helper use Map
 function timeSince(timeMS) {
   const seconds = Math.floor(timeMS / 1000);
 
@@ -33,7 +34,7 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-function DiscussionTab({ data, mobile, nodeIpfs }) {
+function DiscussionTab({ data, mobile }) {
   if (data && data.length > 0) {
     const d = new Date();
     return (
@@ -70,12 +71,7 @@ function DiscussionTab({ data, mobile, nodeIpfs }) {
                   />
                 </Pane>
               )}
-              <ContentItem
-                nodeIpfs={nodeIpfs}
-                cid={cid}
-                item={item}
-                className="contentItem"
-              />
+              <ContentItem cid={cid} item={item} className="contentItem" />
               <Pane
                 className="time-discussion rank-contentItem"
                 position="absolute"

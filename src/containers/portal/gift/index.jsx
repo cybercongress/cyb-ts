@@ -460,7 +460,6 @@ function PortalGift({ defaultAccount, mobile }) {
         setLoading={setLoading}
         setLoadingGift={setLoadingGift}
         loadingGift={loadingGift}
-        node={node}
       />
     </>
   );

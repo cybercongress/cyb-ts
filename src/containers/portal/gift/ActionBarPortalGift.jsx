@@ -28,7 +28,8 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
-import { getPinsCid } from '../../../utils/utils-ipfs';
+import { pinToIpfsCluster } from '../../../utils/ipfs/utils-ipfs';
+import useIpfs from 'src/hooks/useIpfs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -95,8 +96,8 @@ function ActionBarPortalGift({
   setLoading,
   setLoadingGift,
   loadingGift,
-  node,
 }) {
+  const { node } = useIpfs();
   const history = useNavigate();
   const { keplr, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
@@ -241,7 +242,7 @@ function ActionBarPortalGift({
     try {
       const cidAddress = await getPin(nodeIpfs, address);
       console.log('cidAddress', cidAddress);
-      getPinsCid(cidAddress, address);
+      pinToIpfsCluster(cidAddress, address);
     } catch (error) {
       console.log('error', error);
     }
