@@ -1,6 +1,16 @@
 import React, { useContext, useMemo } from 'react';
 import Denom from './index';
 import { AppContext } from '../../context';
+import { $TsFixMe } from 'src/types/tsfix';
+
+type DenomArrProps = {
+  denomValue: string;
+  onlyText?: boolean;
+  onlyImg?: boolean;
+  tooltipStatusImg?: boolean;
+  tooltipStatusText?: boolean;
+  type?: string;
+};
 
 function DenomArr({
   denomValue,
@@ -9,13 +19,12 @@ function DenomArr({
   tooltipStatusImg,
   tooltipStatusText,
   type,
-  ...props
-}) {
+}: DenomArrProps) {
   const { traseDenom } = useContext(AppContext);
 
   const useDenomValue = useMemo(() => {
-    let denom = denomValue;
-    let infoDenom = {};
+    let denom: $TsFixMe  = denomValue;
+    let infoDenom: $TsFixMe = {};
 
     if (type === undefined) {
       infoDenom = traseDenom(denomValue);
@@ -34,7 +43,6 @@ function DenomArr({
           type={type}
           infoDenom={infoDenom}
           gap={13}
-          {...props}
         />
       );
     }
@@ -51,7 +59,6 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenom.denom[0]}
-                {...props}
               />
               <Denom
                 type={type}
@@ -63,7 +70,6 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenom.denom[1]}
-                {...props}
               />
             </>
           )}
@@ -77,7 +83,6 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenom.denom[0]}
-                {...props}
               />
               -
               <Denom
@@ -87,7 +92,6 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenom.denom[1]}
-                {...props}
               />
             </>
           )}

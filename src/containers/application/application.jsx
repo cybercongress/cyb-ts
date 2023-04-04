@@ -24,6 +24,7 @@ import AppSideBar from './AppSideBar';
 import SwichAccount from './swichAccount';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
 import useIpfs from 'src/hooks/useIpfs';
+import { InfoCard } from '../portal/components';
 
 function App({
   defaultAccount,

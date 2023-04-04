@@ -1,6 +1,12 @@
 import { createContext, useContext } from 'react';
+import { $TsFixMeFunc } from 'src/types/tsfix';
 
-const SelectContext = createContext({
+type SelectContextProps = {
+  selectedOption: string;
+  changeSelectedOption: $TsFixMeFunc;
+};
+
+const SelectContext = createContext<SelectContextProps>({
   selectedOption: '',
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   changeSelectedOption: () => {},

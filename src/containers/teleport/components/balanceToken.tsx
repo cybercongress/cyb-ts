@@ -4,17 +4,22 @@ import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 
-function BalanceToken({ token, data }) {
+type DataBalanceToken = {
+  [key: string]: number;
+};
+
+type BalanceTokenProps = {
+  token: string;
+  data: DataBalanceToken[] | null;
+};
+
+function BalanceToken({ token, data }: BalanceTokenProps) {
   const { traseDenom } = useContext(AppContext);
   let balance = 0;
 
-  if (data === null) {
-    balance = <Dots />;
-  } else if (data[token]) {
+  if (data && data[token]) {
     const { coinDecimals } = traseDenom(token);
     balance = formatNumber(getDisplayAmount(data[token], coinDecimals));
-  } else {
-    balance = 0;
   }
 
   return (
@@ -28,7 +33,7 @@ function BalanceToken({ token, data }) {
       marginBottom={12}
     >
       <Pane>Available</Pane>
-      <Pane>{balance}</Pane>
+      <Pane>{!data ? <Dots /> : balance}</Pane>
     </Pane>
   );
 }

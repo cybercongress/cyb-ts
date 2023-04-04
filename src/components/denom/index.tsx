@@ -4,6 +4,21 @@ import ImgDenom from '../valueImg/imgDenom';
 import ImgNetwork from '../networksImg/imgNetwork';
 import TextNetwork from '../networksImg/textNetwork';
 
+type DenomProps = {
+  denomValue: string;
+  onlyText?: boolean;
+  onlyImg?: boolean;
+  tooltipStatusImg?: boolean;
+  tooltipStatusText?: boolean;
+  marginContainer?: string,
+  justifyContent?: string,
+  flexDirection?: string,
+  gap?: number,
+  infoDenom?: any,
+  type?: string,
+  size?: number,
+}
+
 function ContainerDenom({
   justifyContent,
   marginContainer,
@@ -40,8 +55,7 @@ function Denom({
   infoDenom,
   type,
   size,
-  ...props
-}) {
+}: DenomProps) {
   if (type && type === 'network') {
     return (
       <ContainerDenom
@@ -49,7 +63,6 @@ function Denom({
         marginContainer={marginContainer}
         flexDirection={flexDirection}
         gap={gap}
-        {...props}
       >
         {!onlyImg && (
           <TextNetwork
@@ -73,7 +86,6 @@ function Denom({
       marginContainer={marginContainer}
       flexDirection={flexDirection}
       gap={gap}
-      {...props}
     >
       {!onlyText && (
         <ImgDenom

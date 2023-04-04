@@ -28,6 +28,7 @@ import './image/robot.svg';
 import IpfsProvider from './contexts/ipfs';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
+import SdkQueryClientProvider from './contexts/queryClient';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -84,16 +85,18 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <IpfsProvider>
-      <ApolloProvider client={client}>
-        <AppContextProvider>
-          <QueryClientProvider client={queryClient}>
-            <ErrorBoundary fallback={<ErrorScreen />}>
-              <AppRouter />
-              <ReactQueryDevtools />
-            </ErrorBoundary>
-          </QueryClientProvider>
-        </AppContextProvider>
-      </ApolloProvider>
+      <SdkQueryClientProvider>
+        <ApolloProvider client={client}>
+          <AppContextProvider>
+            <QueryClientProvider client={queryClient}>
+              <ErrorBoundary fallback={<ErrorScreen />}>
+                <AppRouter />
+                <ReactQueryDevtools />
+              </ErrorBoundary>
+            </QueryClientProvider>
+          </AppContextProvider>
+        </ApolloProvider>
+      </SdkQueryClientProvider>
     </IpfsProvider>
   </Provider>
 );

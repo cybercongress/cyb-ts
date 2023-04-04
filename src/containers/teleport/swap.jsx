@@ -8,29 +8,6 @@ import { networkList } from './utils';
 
 const imgSwap = require('../../image/exchange-arrows.svg');
 
-// return (
-//   <>
-//     <div style={{ display: 'flex' }}>
-//       1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenA} /> =
-//       <div style={{ whiteSpace: 'nowrap' }}>
-//         {price % 10 > 0
-//           ? formatNumber(Math.floor(price))
-//           : exponentialToDecimal(price.toPrecision(3))}
-//       </div>
-//       <Denom denomValue={tokenB} />
-//     </div>
-//     <div style={{ display: 'flex' }}>
-//       1<Denom marginContainer="0px 0px 0px 3px" denomValue={tokenB} /> =
-//       <div style={{ whiteSpace: 'nowrap' }}>
-//         {reversePrice % 10 > 0
-//           ? formatNumber(Math.floor(reversePrice))
-//           : exponentialToDecimal(reversePrice.toPrecision(3))}
-//       </div>
-//       <Denom denomValue={tokenA} />
-//     </div>
-//   </>
-// );
-
 function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
   const {
     accountBalances,
@@ -146,13 +123,6 @@ function Swap({ stateSwap, swap, amountChangeHandler, ...props }) {
         swap={swap}
         network={ListNetworkA}
       />
-      {/* <Slider
-        id="tokenAAmount"
-        tokenA={tokenA}
-        tokenB={tokenB}
-        tokenAAmount={tokenAAmount}
-        accountBalances={accountBalances}
-      /> */}
       <ButtonIcon
         onClick={() => tokenChange()}
         img={imgSwap}

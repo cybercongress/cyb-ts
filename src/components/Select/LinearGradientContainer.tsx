@@ -2,9 +2,9 @@ import React from 'react';
 import cx from 'classnames';
 import stylesLinear from './stylesLinear.scss';
 
-function LinearGradientContainer({ children, ...props }) {
+function LinearGradientContainer() {
   return (
-    <div className={stylesLinear.textbox} {...props}>
+    <div className={stylesLinear.textbox}>
       <div
         className={cx(
           stylesLinear.textboxFace,

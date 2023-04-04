@@ -93,6 +93,8 @@ function TokenSetter({
   // console.log(`denomIbc`, denomIbc);
   // console.log('balanceIbc', balanceIbc);
 
+  // console.log('accountBalances', accountBalances)
+
   return (
     <Pane width="inherit">
       {!ibcTokenB && (

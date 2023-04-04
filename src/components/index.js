@@ -46,6 +46,7 @@ import BtnGrd from './btnGrd';
 import ContainerGradient, {
   ContainerGradientText,
 } from './containerGradient/ContainerGradient';
+import MainContainer from './MainContainer';
 
 // eslint-disable-next-line import/no-unused-modules
 export {
@@ -96,6 +97,7 @@ export {
   BtnGrd,
   ContainerGradient,
   ContainerGradientText,
+  MainContainer,
 };
 
 export { Dots } from './ui/Dots';

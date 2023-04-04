@@ -1,7 +1,20 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { DenomArr, Select, OptionSelect } from '../../../../components';
+import React from 'react';
+import { DenomArr, Select, OptionSelect } from 'src/components';
+import { $TsFixMeFunc } from 'src/types/tsfix';
+
+type SelectTeleportProps = {
+  type?: string;
+  valueSelect: string;
+  textSelectValue: string;
+  onChangeSelect: $TsFixMeFunc;
+  children: React.ReactNode;
+  width?: string;
+  custom?: boolean;
+  disabled?: boolean;
+};
 
 function SelectTeleport({
   type,
@@ -12,7 +25,7 @@ function SelectTeleport({
   width,
   custom,
   disabled,
-}) {
+}: SelectTeleportProps) {
   return (
     <Select
       valueSelect={valueSelect}
@@ -26,7 +39,7 @@ function SelectTeleport({
           <OptionSelect
             text="choose"
             img={
-              <DenomArr justifyContent="center" denomValue="choose" onlyImg />
+              <DenomArr denomValue="choose" onlyImg />
             }
             value=""
           />
@@ -44,7 +57,6 @@ function SelectTeleport({
             img={
               <DenomArr
                 type={type}
-                justifyContent="center"
                 denomValue={textSelectValue}
                 onlyImg
                 tooltipStatusImg={false}

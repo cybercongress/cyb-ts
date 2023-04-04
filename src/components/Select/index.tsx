@@ -7,10 +7,23 @@ import LinearGradientContainer from './LinearGradientContainer';
 import styles from './styles.scss';
 import { SelectContext, useSelectContext } from './selectContext';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
+import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
 
 const classNames = require('classnames');
 
-export function OptionSelect({ text, img, bgrImg, value, ...props }) {
+type OptionSelectProps = {
+  text: React.ReactNode;
+  value: string;
+  img?: React.ReactNode;
+  bgrImg?: boolean;
+};
+
+export function OptionSelect({
+  text,
+  img,
+  bgrImg,
+  value,
+}: OptionSelectProps) {
   const { changeSelectedOption } = useSelectContext();
   return (
     <div
@@ -28,6 +41,15 @@ export function OptionSelect({ text, img, bgrImg, value, ...props }) {
   );
 }
 
+type SelectProps = {
+  valueSelect: $TsFixMe;
+  onChangeSelect: $TsFixMeFunc;
+  children: React.ReactNode;
+  width?: string;
+  disabled?: boolean;
+  currentValue: React.ReactNode;
+};
+
 function Select({
   valueSelect,
   onChangeSelect,
@@ -35,7 +57,7 @@ function Select({
   width,
   disabled,
   currentValue,
-}) {
+}: SelectProps) {
   const selectContainerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const toggling = () => {

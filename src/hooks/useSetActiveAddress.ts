@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
+import { DefaultAccountType, AccountValueType } from 'src/types/defaultAccount';
 
-function useSetActiveAddress(defaultAccount) {
-  const [addressActive, setAddressActive] = useState(null);
+function useSetActiveAddress(defaultAccount: DefaultAccountType) {
+  const [addressActive, setAddressActive] = useState<AccountValueType | null>(
+    null
+  );
 
   useEffect(() => {
+    console.log('defaultAccount', defaultAccount)
     const { account } = defaultAccount;
-    let addressPocket = null;
-    if (
-      account !== null &&
-      Object.prototype.hasOwnProperty.call(account, 'cyber')
-    ) {
+    let addressPocket: AccountValueType | null = null;
+    console.log('account', account)
+    if (!!account && account.cyber) {
       const { keys, bech32, name } = account.cyber;
       addressPocket = {
         bech32,
@@ -21,7 +23,6 @@ function useSetActiveAddress(defaultAccount) {
       }
     }
     setAddressActive(addressPocket);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultAccount.name]);
 
   return { addressActive };
