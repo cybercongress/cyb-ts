@@ -209,12 +209,13 @@ function AppContextProvider({ children }) {
   }, [signer]);
 
   useEffect(() => {
-    window.onload = async () => {
+    const getKeplrFunc = async () => {
       const windowKeplr = await getKeplr();
       if (windowKeplr) {
         initSigner();
       }
     };
+    getKeplrFunc();
   }, []);
 
   useEffect(() => {

@@ -430,10 +430,14 @@ function Teleport({ defaultAccount }) {
     balanceIbc,
   };
 
+  console.log('typeTxs', typeTxs)
+  console.log('denomIbc', denomIbc)
+  console.log('balanceIbc', balanceIbc)
+
   return (
     <>
       <MainContainer width="52%">
-        {tab !== 'swap' && <TabList selected={tab} />}
+        {/* {tab !== 'swap' && <TabList selected={tab} />} */}
 
         <Pane
           width="100%"
