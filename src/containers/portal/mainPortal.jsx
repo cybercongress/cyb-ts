@@ -43,7 +43,7 @@ const getActiveAddress = (address) => {
 const scaleInitValue = 0.9;
 
 function MainPartal({ defaultAccount }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { jsCyber } = useContext(AppContext);
   const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
   const [scale, setScale] = useState(scaleInitValue);
@@ -83,7 +83,7 @@ function MainPartal({ defaultAccount }) {
   const onClickSpacePussy = () => {
     setScale(6);
     setTimeout(() => {
-      history.push('/citizenship');
+      navigate('/citizenship');
       // setScale(1);
     }, 2705);
     playAudioClick();

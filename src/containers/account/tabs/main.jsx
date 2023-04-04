@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
-import Dinamics from '../component/dinamics';
+// import Dinamics from '../component/dinamics';
 import { CYBER } from '../../../utils/config';
 import { DenomArr } from '../../../components';
 import { AppContext } from '../../../context';
 
-function Row({ text, number, procent, color }) {
+function Row({ text, number, color }) {
   return (
     <Pane display="flex" alignItems="center" paddingY={7}>
       <Pane display="flex" alignItems="center">
@@ -37,7 +37,7 @@ function DetailsMainToken({ balance }) {
       borderRadius={4}
       className="container-account-balance"
     >
-      {total > 0 && <Dinamics data={balance} />}
+      {/* {total > 0 && <Dinamics data={balance} />} */}
       <Pane className="account-balance">
         <Row
           text="Available"

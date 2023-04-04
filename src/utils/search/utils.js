@@ -6,7 +6,7 @@ import Unixfs from 'ipfs-unixfs';
 import FileType from 'file-type';
 import * as config from '../config';
 
-import { getContentByCid } from '../utils-ipfs';
+import { getIPFSContent } from '../ipfs/utils-ipfs';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -806,7 +806,7 @@ const resolveContentIpfs = async (data) => {
 };
 
 export const getAvatarIpfs = async (cid, ipfs) => {
-  const response = await getContentByCid(ipfs, cid);
+  const response = await getIPFSContent(ipfs, cid);
   if (response === 'availableDownload') {
     return 'availableDownload';
   }

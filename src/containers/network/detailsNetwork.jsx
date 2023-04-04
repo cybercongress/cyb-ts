@@ -21,7 +21,7 @@ function ValueItem({ text, value, onChange }) {
 
 function DetailsNetwork() {
   const param = useParams();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { networks, updateNetworks } = useContext(AppContext);
   const [customConfig, setCustomConfig] = useState({});
 
@@ -81,7 +81,7 @@ function DetailsNetwork() {
         newList[customConfig.CHAIN_ID] = { ...customConfig };
         updateNetworks(newList);
         setTimeout(() => {
-          history.push(`/network/${customConfig.CHAIN_ID}`);
+          navigate(`/network/${customConfig.CHAIN_ID}`);
           window.location.reload();
         }, 1000);
       }

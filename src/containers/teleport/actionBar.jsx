@@ -54,7 +54,7 @@ const coinFunc = (amount, denom) => {
 
 function ActionBar({ stateActionBar }) {
   const { keplr, jsCyber, traseDenom } = useContext(AppContext);
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
   const [txHashIbc, setTxHashIbc] = useState(null);
@@ -612,7 +612,7 @@ function ActionBar({ stateActionBar }) {
   }, [tokenA, keplr, tokenAAmount, sourceChannel, networkB]);
 
   const handleHistory = (to) => {
-    history.push(to);
+    navigate(to);
   };
 
   if (passport === null && CYBER.CHAIN_ID === 'bostrom') {

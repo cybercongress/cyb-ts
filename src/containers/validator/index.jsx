@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tablist, Tab, Pane, Text } from '@cybercongress/gravity';
-import { Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import withRouter from 'src/components/helpers/withRouter';
 

@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import { CYBER } from '../../../../../utils/config';
 import { formatNumber } from '../../../../../utils/utils';
 import { FormatNumberTokens } from '../../../../nebula/components';
 import { Signatures } from '../../../../portal/components';
 import { AvataImgIpfs } from '../../../../portal/components/avataIpfs';
 import styles from './styles.scss';
-import useIpfs from 'src/hooks/useIpfs';
 
 function TitleCard({ accounts, passport, totalLiquid }) {
   const { node } = useIpfs();
@@ -27,7 +26,7 @@ function TitleCard({ accounts, passport, totalLiquid }) {
   return (
     <div className={styles.container}>
       <div className={styles.avatar}>
-        <AvataImgIpfs cidAvatar={useGetCidAvatar} node={node} />
+        <AvataImgIpfs cidAvatar={useGetCidAvatar} />
       </div>
       <div className={styles.name}>{useGetName}</div>
       <div className={styles.total}>

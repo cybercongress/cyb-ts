@@ -2,18 +2,32 @@ import { useState, useEffect } from 'react';
 import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
 import isSvg from 'is-svg';
 import FileType from 'file-type';
+import { IPFS } from 'kubo-rpc-client/types';
 import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
-import { getContentByCid } from '../../utils/utils-ipfs';
+import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
+import { IPFSData, IPFSContentMeta } from '../../utils/ipfs/ipfs.d';
 
-export const getTypeContent = async (dataCid, cid) => {
-  const response = {
+type TextMaybe = string | undefined;
+
+type TypeContent = {
+  text: TextMaybe;
+  type: 'image' | 'application/pdf' | 'link' | 'text' | undefined;
+  content: string;
+  link: string;
+  gateway: boolean;
+};
+
+export const getTypeContent = async (
+  data: IPFSData,
+  cid: string
+): Promise<TypeContent> => {
+  const response: TypeContent = {
     text: '',
-    type: '',
+    type: undefined,
     content: '',
     link: `/ipfs/${cid}`,
-    gateway: null,
+    gateway: false,
   };
-  const data = dataCid;
   const dataFileType = await FileType.fromBuffer(data);
   // console.log(`dataFileType`, dataFileType)
   if (dataFileType !== undefined) {
@@ -22,7 +36,6 @@ export const getTypeContent = async (dataCid, cid) => {
     // const dataBase64 = uint8ArrayToAsciiString(data, 'base64');
 
     if (mime.indexOf('image') !== -1) {
-      response.text = false;
       const imgBase64 = uint8ArrayToAsciiString(data, 'base64');
       const file = `data:${mime};base64,${imgBase64}`;
       response.type = 'image';
@@ -30,7 +43,6 @@ export const getTypeContent = async (dataCid, cid) => {
       response.gateway = false;
       // response.status = 'downloaded';
     } else if (mime.indexOf('application/pdf') !== -1) {
-      response.text = false;
       const file = `data:${mime};base64,${dataBase64}`;
       response.type = 'application/pdf';
       response.content = file;
@@ -43,7 +55,6 @@ export const getTypeContent = async (dataCid, cid) => {
     const dataBase64 = uint8ArrayToAsciiString(data);
     response.content = dataBase64;
     if (isSvg(data)) {
-      response.text = false;
       const file = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
         data,
         'base64'
@@ -82,16 +93,17 @@ export const getTypeContent = async (dataCid, cid) => {
   return response;
 };
 
-const useGetIpfsContent = (cid, nodeIpfs) => {
+const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
   const [content, setContent] = useState('');
   const [text, setText] = useState(cid);
-  const [typeContent, setTypeContent] = useState('');
+  const [typeContent, setTypeContent] = useState<string | undefined>('');
   const [status, setStatus] = useState('understandingState');
   const [link, setLink] = useState(`/ipfs/${cid}`);
-  const [gateway, setGateway] = useState(null);
+  const [gateway, setGateway] = useState(false);
   const [statusFetching, setStatusFetching] = useState('');
   const [loading, setLoading] = useState(true);
-  const [metaData, setMetaData] = useState({
+
+  const [metaData, setMetaData] = useState<IPFSContentMeta>({
     type: 'file',
     size: 0,
     blockSizes: [],
@@ -99,45 +111,30 @@ const useGetIpfsContent = (cid, nodeIpfs) => {
   });
 
   useEffect(() => {
-    const feachData = async () => {
+    const feachData = async (): Promise<void> => {
       setLoading(true);
-      let responseData = null;
       setStatusFetching('');
 
-      const dataResponseByCid = await getContentByCid(
+      const dataResponseByCid = await getIPFSContent(
         nodeIpfs,
         cid,
         setStatusFetching
       );
 
-      if (dataResponseByCid !== undefined) {
-        if (dataResponseByCid === 'availableDownload') {
-          setContent(cid);
-          setGateway(true);
-          setStatus('availableDownload');
-          setText(cid);
-        } else {
-          responseData = dataResponseByCid;
-        }
-      } else {
+      if (!dataResponseByCid) {
         setStatus('impossibleLoad');
         setLoading(false);
-      }
-
-      if (responseData !== null) {
-        const { data, meta } = responseData;
-        const dataTypeContent = await getTypeContent(data, cid);
-        const {
-          text: textContent,
-          type,
-          content: contentCid,
-          link: linkContent,
-        } = dataTypeContent;
-
-        setText(textContent);
-        setTypeContent(type);
-        setContent(contentCid);
-        setLink(linkContent);
+      } else if (dataResponseByCid === 'availableDownload') {
+        setContent(cid);
+        setGateway(true);
+        setStatus('availableDownload');
+        setText(cid);
+      } else {
+        const { data, meta } = dataResponseByCid;
+        const dataTypeContent = await getTypeContent(data as IPFSData, cid);
+        setTypeContent(dataTypeContent.type);
+        setContent(dataTypeContent.content);
+        setLink(dataTypeContent.link);
         setGateway(dataTypeContent.gateway);
         setStatus('downloaded');
         setMetaData(meta);

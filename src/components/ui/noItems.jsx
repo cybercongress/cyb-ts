@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane, Text } from '@cybercongress/gravity';
 
 const noitem = require('../../image/noitem.svg');

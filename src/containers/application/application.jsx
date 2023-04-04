@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef, useContext } from 'react';
 import { connect } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+
+import useIpfs from 'src/hooks/useIpfs';
 import { Input } from '../../components';
 import AppMenu from './AppMenu';
 import Electricity from '../home/electricity';
@@ -35,7 +37,6 @@ function App({
   setAccountsProps,
   setDefaultAccountProps,
   setBandwidthProps,
-  children,
   setTypeDeviceProps,
 }) {
   const { jsCyber, updatetMarketData, updateDataTotalSupply } =
@@ -45,7 +46,7 @@ function App({
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const textInput = useRef();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -234,7 +235,7 @@ function App({
   const handleKeyPress = async (e) => {
     if (query.length > 0) {
       if (e.key === 'Enter') {
-        history.push(`/search/${replaceSlash(query)}`);
+        navigate(`/search/${replaceSlash(query)}`);
         setQueryProps(query);
       }
     }
@@ -345,8 +346,6 @@ function App({
           </Link>
         </div>
       )}
-
-      {children}
 
       <Telegram />
       <GitHub />

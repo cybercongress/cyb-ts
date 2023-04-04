@@ -2,15 +2,14 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import useIpfs from 'src/hooks/useIpfs';
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
 import { Dots, Loading, Rank } from '../../components';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { coinDecimals } from '../../utils/utils';
 import { MainContainer } from '../portal/components';
-import useIpfs from 'src/hooks/useIpfs';
 
 function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
-  const { node } = useIpfs();
   return (
     <InfiniteScroll
       dataLength={Object.keys(items).length}
@@ -53,12 +52,7 @@ function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
                 />
               </Pane>
             )}
-            <ContentItem
-              nodeIpfs={node}
-              cid={key}
-              item={items[key]}
-              className="contentItem"
-            />
+            <ContentItem cid={key} item={items[key]} className="contentItem" />
           </Pane>
         );
       })}
@@ -66,7 +60,7 @@ function Relevace({ items, fetchMoreData, page, allPage, mobile }) {
   );
 }
 
-function Objects({ node, mobile }) {
+function Objects({ mobile }) {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -149,7 +143,6 @@ function Objects({ node, mobile }) {
         fetchMoreData={fetchMoreData}
         page={page}
         allPage={allPage}
-        node={node}
         mobile={mobile}
       />
     </MainContainer>

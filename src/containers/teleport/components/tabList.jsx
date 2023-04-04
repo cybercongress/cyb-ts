@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ButtonTeleport from './buttonGroup/indexBtn';
 
 function TabList({ selected }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const handleHistory = (to) => {
     history(to);

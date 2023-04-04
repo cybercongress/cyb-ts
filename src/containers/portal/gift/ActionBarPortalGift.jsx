@@ -28,7 +28,8 @@ import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
 import imgTerra from '../../../image/terra.svg';
 import imgCosmos from '../../../image/cosmos-2.svg';
-import { getPinsCid } from '../../../utils/utils-ipfs';
+import { pinToIpfsCluster } from '../../../utils/ipfs/utils-ipfs';
+import useIpfs from 'src/hooks/useIpfs';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -95,9 +96,9 @@ function ActionBarPortalGift({
   setLoading,
   setLoadingGift,
   loadingGift,
-  node,
 }) {
-  const history = useNavigate();
+  const { node } = useIpfs();
+  const navigate = useNavigate();
   const { keplr, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
@@ -241,7 +242,7 @@ function ActionBarPortalGift({
     try {
       const cidAddress = await getPin(nodeIpfs, address);
       console.log('cidAddress', cidAddress);
-      getPinsCid(cidAddress, address);
+      pinToIpfsCluster(cidAddress, address);
     } catch (error) {
       console.log('error', error);
     }
@@ -457,7 +458,7 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps>
         <BtnGrd
-          onClick={() => history.push('/citizenship')}
+          onClick={() => navigate('/citizenship')}
           text="get citizenship"
         />
       </ActionBarSteps>
@@ -502,7 +503,7 @@ function ActionBarPortalGift({
           text="prove one more address"
         />
         <BtnGrd
-          onClick={() => history.push('/teleport')}
+          onClick={() => navigate('/teleport')}
           text={`buy ${BOOT_ICON}`}
         />
       </ActionBarSteps>
@@ -637,7 +638,7 @@ function ActionBarPortalGift({
   ) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('/release')} text="go to release" />
+        <BtnGrd onClick={() => navigate('/release')} text="go to release" />
       </ActionBarSteps>
     );
   }

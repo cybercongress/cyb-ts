@@ -1,20 +1,18 @@
 import React, { useMemo } from 'react';
-import { connect } from 'react-redux';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
+import useIpfs from 'src/hooks/useIpfs';
 import { AvataImgIpfs } from '../portal/components/avataIpfs';
 import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
 import styles from './styles.scss';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import robot from '../../image/temple/robot.png';
 import Karma from './karma';
-import useIpfs from 'src/hooks/useIpfs';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
-  const { node } = useIpfs();
 
   const useGetName = useMemo(() => {
     if (passport && passport !== null) {
@@ -84,7 +82,6 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
         <AvataImgIpfs
           style={{ position: 'relative' }}
           cidAvatar={useGetCidAvatar}
-          node={node}
           addressCyber={useGetAddress}
         />
       </div>
@@ -157,7 +154,6 @@ function SwichAccount({ defaultAccount, accounts, onClickChangeActiveAcc }) {
               onClickSetActive={() =>
                 onClickChangeActiveAcc(key, accounts[key])
               }
-              node={node}
               setControlledVisible={setControlledVisible}
               // ipfsStatus={ipfsStatus}
               name={key}
@@ -206,7 +202,6 @@ function SwichAccount({ defaultAccount, accounts, onClickChangeActiveAcc }) {
             <AvataImgIpfs
               style={{ position: 'relative', objectFit: 'contain' }}
               cidAvatar={useGetCidAvatar}
-              node={node}
               addressCyber={useGetAddress}
               img={robot}
             />

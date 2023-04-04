@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { coins, GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
+import useIpfs from 'src/hooks/useIpfs';
+import { pinToIpfsCluster } from 'src/utils/ipfs/utils-ipfs';
 import txs from '../../../utils/txs';
 
 import { MainContainer, MoonAnimation, Stars } from '../components';
@@ -37,8 +39,6 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
-import { getPinsCid } from '../../../utils/utils-ipfs';
-import useIpfs from 'src/hooks/useIpfs';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
@@ -201,8 +201,8 @@ function GetCitizenship({ defaultAccount, mobile }) {
           const toCid = await getPin(node, avatarImg);
           console.log('toCid', toCid);
           setAvatarIpfs(toCid);
-          const datagetPinsCid = await getPinsCid(toCid, avatarImg);
-          console.log(`datagetPinsCid`, datagetPinsCid);
+          const datapinToIpfsCluster = await pinToIpfsCluster(toCid, avatarImg);
+          console.log(`datapinToIpfsCluster`, datapinToIpfsCluster);
         }
       } catch (error) {
         console.log('error', error);
@@ -426,8 +426,8 @@ function GetCitizenship({ defaultAccount, mobile }) {
       console.log('cidNickname', cidNickname);
       const cidAddress = await getPin(nodeIpfs, address);
       console.log('cidAddress', cidAddress);
-      getPinsCid(cidAddress, address);
-      getPinsCid(cidNickname, nickname);
+      pinToIpfsCluster(cidAddress, address);
+      pinToIpfsCluster(cidNickname, nickname);
     } catch (error) {
       console.log('error', error);
     }
@@ -529,7 +529,7 @@ function GetCitizenship({ defaultAccount, mobile }) {
           avatarIpfs === null ? (
             'upload avatar'
           ) : (
-            <AvataImgIpfs cidAvatar={avatarIpfs} node={node} />
+            <AvataImgIpfs cidAvatar={avatarIpfs} />
           )
         }
       />
@@ -566,7 +566,7 @@ function GetCitizenship({ defaultAccount, mobile }) {
       <Passport
         valueNickname={valueNickname}
         txs={txHash}
-        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
+        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} />}
         addressActive={addressActive}
       />
     );
@@ -576,7 +576,7 @@ function GetCitizenship({ defaultAccount, mobile }) {
     content = (
       <Passport
         valueNickname={valueNickname}
-        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} node={node} />}
+        avatar={<AvataImgIpfs cidAvatar={avatarIpfs} />}
         txs={txHash}
         addressActive={addressActive}
       />

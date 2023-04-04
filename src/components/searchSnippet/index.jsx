@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { AppContext } from '../../context';
 import Rank from '../Rank/rank';
@@ -32,7 +32,7 @@ const initialState = {
   grade: { from: 'n/a', to: 'n/a', value: 'n/a' },
 };
 
-function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
+function SearchSnippet({ cid, data, mobile, onClickRank }) {
   const { jsCyber } = useContext(AppContext);
   const [rankInfo, setRankInfo] = useState(initialState);
 
@@ -88,11 +88,9 @@ function SearchSnippet({ cid, data, mobile, node, onClickRank }) {
         </Pane>
       )}
       <ContentItem
-        nodeIpfs={node}
         cid={cid}
         item={data}
         className="contentItem"
-        rank={rankInfo.rank}
         grade={rankInfo.grade}
       />
       {timeAgoInMS !== null && <TimeAgo timeAgoInMS={timeAgoInMS} />}

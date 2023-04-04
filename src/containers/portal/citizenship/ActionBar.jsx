@@ -47,7 +47,7 @@ function ActionBar({
   onClickSignMoonCode,
   signedMessage,
 }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [checkAddressNetworkState, setCheckAddressNetworkState] =
     useState(false);
 
@@ -340,8 +340,8 @@ function ActionBar({
   if (step === STEP_CHECK_GIFT) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('/gift')} text="check gift" />
-        {/* <Button onClick={() => history.push('/gift')}>check gift</Button> */}
+        <BtnGrd onClick={() => navigate('/gift')} text="check gift" />
+        {/* <Button onClick={() => navigate('/gift')}>check gift</Button> */}
       </ActionBarSteps>
     );
   }

@@ -23,7 +23,7 @@ import {
 } from '../../utils/config';
 import { trimString } from '../../utils/utils';
 import { AppContext } from '../../context';
-import { getPinsCid } from '../..//utils/utils-ipfs';
+import { pinToIpfsCluster } from '../../utils/ipfs/utils-ipfs';
 import { withIpfsAndKeplr } from '../Wallet/actionBarTweet';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
@@ -125,8 +125,8 @@ class ActionBarContainer extends Component {
       toCid,
     });
 
-    const datagetPinsCid = await getPinsCid(toCid, content);
-    console.log(`datagetPinsCid`, datagetPinsCid);
+    const datapinToIpfsCluster = await pinToIpfsCluster(toCid, content);
+    console.log(`datapinToIpfsCluster`, datapinToIpfsCluster);
   };
 
   calculationIpfsFrom = async () => {

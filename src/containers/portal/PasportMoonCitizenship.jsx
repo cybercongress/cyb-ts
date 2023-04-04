@@ -38,7 +38,7 @@ const stopPortalAmbient = () => {
 };
 
 function PasportMoonCitizenship({ defaultAccount, mobile }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -162,7 +162,7 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
       </MainContainer>
       {Math.floor(appStep) === STEP_INFO.STATE_INIT && (
         <ActionBarSteps>
-          <BtnGrd text="check gift" onClick={() => history.push('/gift')} />
+          <BtnGrd text="check gift" onClick={() => navigate('/gift')} />
         </ActionBarSteps>
       )}
       {Math.floor(appStep) !== STEP_INFO.STATE_INIT &&

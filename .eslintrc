@@ -6,14 +6,14 @@
   },
   "extends": [
     "airbnb",
-    "plugin:prettier/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/jsx-runtime",
+    "plugin:prettier/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
   "root": true,
   "parser": "@typescript-eslint/parser",
@@ -27,10 +27,10 @@
   "plugins": [
     "prettier",
     "react",
-    "import",
-    "unused-imports",
     "typescript",
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "import",
+    "unused-imports"
   ],
   "globals": {
     "expect": true,
@@ -38,13 +38,19 @@
   },
   "rules": {
     "valid-jsdoc": "error",
+    "no-shadow": "off",
+    "react/require-default-props": "off", // typescript types using
+    "react/destructuring-assignment": "off",
     "prettier/prettier": "error",
     "linebreak-style": ["error", "unix"],
     "react/no-array-index-key": "off",
     "react/react-in-jsx-scope": "off",
     "react/require-default-props": "off",
     "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/explicit-function-return-type": "error",
+    // "@typescript-eslint/no-var-requires": "off",
+    // "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
       "error",
@@ -96,21 +102,31 @@
     "react/tsx-filename-extension": "off",
     "import/no-unused-modules": [1],
     "import/extensions": [
+      "off",
+      "always",
+      { "ts": "never", "tsx": "never", "jsx": "never", "js": "never" }
+    ],
+    "import/no-unresolved": "off",
+    "no-unused-expressions": [
       "error",
-      "never",
-      { "svg": "always", "json": "always" }
+      { "allowShortCircuit": true, "allowTernary": true }
     ]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {},
-      "alias": {
-        "map": [
-          ["components", "./src/components"],
-          ["images", "./src/image"],
-          ["src", "./src"]
-        ]
+      "typescript": {
+        "alwaysTryTypes": true,
+        "directory": "./",
+        "project": "./tsconfig.json"
       }
+      //   "alias": {
+      //     "map": [
+      //       // ["components", "./src/components"],
+      //       // ["images", "./src/image"]
+      //       ["src", "./src/"]
+      //     ],
+      //     "extensions": [".ts", ".tsx", ".js", ".jsx", ".png"]
+      //   }
     }
   }
 }

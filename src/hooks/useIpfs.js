@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import Ipfs, { IpfsContext } from 'src/contexts/ipfs';
+import { useContext } from 'react';
+import { IpfsContext } from 'src/contexts/ipfs';
 
 function useIpfs() {
   const ipfs = useContext(IpfsContext);

@@ -5,6 +5,7 @@ import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
+import useIpfs from 'src/hooks/useIpfs';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -34,7 +35,6 @@ import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
-import useIpfs from 'src/hooks/useIpfs';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -71,11 +71,10 @@ const reduceSearchResults = (data, query) => {
 };
 
 function SearchResults({ mobile, setQueryProps }) {
-  const { node } = useIpfs();
   const { jsCyber } = useContext(AppContext);
   const { query } = useParams();
   const location = useLocation();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
@@ -87,7 +86,7 @@ function SearchResults({ mobile, setQueryProps }) {
 
   useEffect(() => {
     if (query.match(/\//g)) {
-      history.push(`/search/${replaceSlash(query)}`);
+      navigate(`/search/${replaceSlash(query)}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
@@ -327,7 +326,6 @@ function SearchResults({ mobile, setQueryProps }) {
               </Pane>
             )}
             <ContentItem
-              nodeIpfs={node}
               cid={key}
               item={searchResults[key]}
               className="SearchItem"

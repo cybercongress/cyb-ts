@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Tooltip from '../tooltip/tooltip';
 import { useTraseNetworks } from '../../hooks/useTraseNetworks';
 

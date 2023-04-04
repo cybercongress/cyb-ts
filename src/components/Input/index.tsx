@@ -1,4 +1,3 @@
-import React from 'react';
 import cx from 'classnames';
 import { NumericFormat } from 'react-number-format';
 import styles from './styles.scss';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useLocation, Link } from 'react-router-dom';
 // import CybLink from '../CybLink';
@@ -13,7 +13,7 @@ import { Pane } from '@cybercongress/gravity';
 //   );
 // }
 
-function Items({ item, deleteAppFromMenu, selected, height, ...props }) {
+function Items({ item, selected, ...props }) {
   if (item.to !== '#') {
     return (
       <Link style={{ color: '#fff' }} to={item.to}>
@@ -99,11 +99,10 @@ const renderSubItems = (subItems, location, onClickSubItem) => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export function Bookmarks({ items, ...props }) {
+export function Bookmarks({ items }) {
   const [selectedItem, setSelectedItem] = useState('');
   const [selectedItemSub, setSelectedItemSub] = useState('');
   const location = useLocation();
-  // const { main } = useCheckPathname();
 
   const onClickItem = (itemKey) => {
     setSelectedItem(itemKey);

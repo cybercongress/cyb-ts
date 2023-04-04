@@ -6,7 +6,6 @@ import ContentItem from '../../components/ContentItem/contentItem';
 
 function SearchTokenInfo({
   data,
-  node,
   mobile,
   selectedTokens,
   onClickRank,
@@ -43,12 +42,7 @@ function SearchTokenInfo({
                   />
                 </Pane>
               )}
-              <ContentItem
-                nodeIpfs={node}
-                cid={key}
-                item={data[key]}
-                className="contentItem"
-              />
+              <ContentItem cid={key} item={data[key]} className="contentItem" />
             </Pane>
           );
         })

@@ -20,7 +20,6 @@ function FeedsTab({ data, mobile, nodeIpfs }) {
                 cid={cid}
                 data={item}
                 mobile={mobile}
-                node={nodeIpfs}
                 onClickRank={onClickRank}
               />
             );

@@ -1,4 +1,3 @@
-import React from 'react';
 import JsonSchema from '@rjsf/core';
 import { Dots } from '../../../../components';
 import { JsonView } from '../../ui/ui';

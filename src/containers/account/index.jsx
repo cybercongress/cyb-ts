@@ -1,8 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import { useContext, useEffect, useState, useMemo } from 'react';
-import { Tablist, Tab, Pane, Text, ActionBar } from '@cybercongress/gravity';
+import { Tablist, Pane, Text, ActionBar } from '@cybercongress/gravity';
 import { Link, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
+import useIpfs from 'src/hooks/useIpfs';
 import GetLink from './tabs/link';
 import { getIpfsHash, getTweet, chekFollow } from '../../utils/search/utils';
 import Heroes from './tabs/heroes';
@@ -19,7 +20,6 @@ import { useGetCommunity, useGetBalance, useGetHeroes } from './hooks';
 import { CYBER, PATTERN_CYBER } from '../../utils/config';
 import useGetTsxByAddress from './hooks/useGetTsxByAddress';
 import TxsTable from './component/txsTable';
-import useIpfs from 'src/hooks/useIpfs';
 
 const getTabsMap = (address) => ({
   security: {
@@ -174,7 +174,7 @@ function AccountDetails({ mobile, defaultAccount }) {
               margin: 0,
             }}
           />
-          <AvatarIpfs addressCyber={address} node={node} />
+          <AvatarIpfs addressCyber={address} />
           <Card
             title={`total, ${CYBER.DENOM_CYBER.toUpperCase()}`}
             value={formatNumber(balance.total)}
@@ -223,10 +223,8 @@ function AccountDetails({ mobile, defaultAccount }) {
                 />
               )}
               {tab === 'badges' && <TableDiscipline address={address} />}
-              {tab === 'log' && <FeedsTab data={dataTweet} nodeIpfs={node} />}
-              {tab === 'swarm' && (
-                <FollowsTab node={node} community={community} />
-              )}
+              {tab === 'log' && <FeedsTab data={dataTweet} />}
+              {tab === 'swarm' && <FollowsTab community={community} />}
             </>
           )}
         </Pane>

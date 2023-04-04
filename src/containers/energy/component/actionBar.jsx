@@ -91,7 +91,7 @@ function ActionBarSteps({
 }
 
 function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { keplr, jsCyber } = useContext(AppContext);
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
@@ -244,9 +244,7 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
   if (stage === STAGE_INIT && selected === 'myEnegy') {
     return (
       <ActionBarContainer>
-        <Button onClick={() => history.push(routes.hfr.path)}>
-          Investmint
-        </Button>
+        <Button onClick={() => navigate(routes.hfr.path)}>Investmint</Button>
       </ActionBarContainer>
     );
   }

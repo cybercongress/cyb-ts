@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, useMemo } from 'react';
-import { connect } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import useIpfs from 'src/hooks/useIpfs';
 import { Signatures, ParseAddressesImg } from '../components';
 import { AppContext } from '../../../context';
 import { AvataImgIpfs } from '../components/avataIpfs';
@@ -10,7 +10,6 @@ import { PATTERN_CYBER } from '../../../utils/config';
 import BtnPasport from './btnPasport';
 import plus from '../../../image/plus.svg';
 import { ContainerGradient } from '../../../components';
-import useIpfs from 'src/hooks/useIpfs';
 
 function PasportCitizenship({
   citizenship,
@@ -130,16 +129,13 @@ function PasportCitizenship({
           </div>
 
           <div style={{ width: '32px', height: '32px' }}>
-            <AvataImgIpfs
-              cidAvatar={citizenship.extension.avatar}
-              node={node}
-            />
+            <AvataImgIpfs cidAvatar={citizenship.extension.avatar} />
           </div>
         </div>
       );
     }
     return null;
-  }, [citizenship, addresses, active, node]);
+  }, [citizenship, addresses, active]);
 
   const checkClaimedAddress = (itemAddress, totalGiftArr) => {
     const statusAddress = {
@@ -221,7 +217,6 @@ function PasportCitizenship({
               cidAvatar={
                 citizenship !== null ? citizenship.extension.avatar : false
               }
-              node={node}
             />
             {onClickEditAvatar && (
               <BtnPasport onClick={onClickEditAvatar} typeBtn="blue">

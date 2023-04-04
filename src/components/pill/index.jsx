@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pane } from '@cybercongress/gravity';
 
 function PillNumber({ children, active, ...props }) {
