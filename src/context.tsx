@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState, useEffect, useCallback } from 'react';
 import { SigningCyberClient, CyberClient } from '@cybercongress/cyber-js';
-import { Tendermint34Client } from '@cosmjs/tendermint-rpc';
-
 import { CYBER } from './utils/config';
 import configKeplr from './utils/keplrUtils';
 import defaultNetworks from './utils/defaultNetworks';
@@ -13,8 +11,14 @@ import {
   findPoolDenomInArr,
 } from './utils/utils';
 import { getDenomTraces } from './utils/search/utils';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { Keplr } from '@keplr-wallet/types';
+import { $TsFixMe, $TsFixMeFunc } from './types/tsfix';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { Option } from './types/common';
+import { QueryLiquidityPoolsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
 
-const getKeplr = async () => {
+const getKeplr = async (): Promise<Keplr | undefined> => {
   if (window.keplr) {
     return window.keplr;
   }
@@ -24,8 +28,11 @@ const getKeplr = async () => {
   }
 
   return new Promise((resolve) => {
-    const documentStateChange = (event) => {
-      if (event.target && event.target.readyState === 'complete') {
+    const documentStateChange = (event: Event) => {
+      if (
+        event.target &&
+        (event.target as Document).readyState === 'complete'
+      ) {
         resolve(window.keplr);
         document.removeEventListener('readystatechange', documentStateChange);
       }
@@ -35,9 +42,39 @@ const getKeplr = async () => {
   });
 };
 
+type TraseDenom = {
+  denom: $TsFixMe;
+  coinDecimals: number;
+  path: string;
+  coinImageCid: string;
+  native: boolean;
+};
+
+type TraseDenomFuncType = (denom: string) => {
+  denom: string | TraseDenom;
+  coinDecimals: number;
+  path: string;
+  coinImageCid: string;
+  native: boolean;
+};
+
+type ValueContextType = {
+  keplr: SigningCyberClient | null;
+  jsCyber: CyberClient | null;
+  ibcDataDenom: $TsFixMe;
+  poolsData: Pool[] | null;
+  networks: $TsFixMe;
+  marketData: $TsFixMe;
+  dataTotalSupply: $TsFixMe;
+  updateNetworks: $TsFixMeFunc;
+  updatetMarketData: $TsFixMeFunc;
+  updateDataTotalSupply: $TsFixMeFunc;
+  initSigner: () => void;
+  traseDenom: TraseDenomFuncType;
+};
+
 const valueContext = {
   keplr: null,
-  ws: null,
   jsCyber: null,
   ibcDataDenom: {},
   poolsData: [],
@@ -45,52 +82,35 @@ const valueContext = {
   marketData: {},
   dataTotalSupply: {},
   updateNetworks: () => {},
-  updatejsCyber: () => {},
   updatetMarketData: () => {},
   updateDataTotalSupply: () => {},
   initSigner: () => {},
   traseDenom: () => {},
 };
 
-export const AppContext = React.createContext(valueContext);
+export const AppContext = React.createContext<ValueContextType>(valueContext);
 
 // const useContextProvider = () => useContext(AppContext);
 
-async function createClient(signer) {
-  if (signer) {
-    const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
-    const client = await SigningCyberClient.connectWithSigner(
-      CYBER.CYBER_NODE_URL_API,
-      signer,
-      options
-    );
+async function createClient(signer: OfflineSigner) {
+  const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
+  const client = await SigningCyberClient.connectWithSigner(
+    CYBER.CYBER_NODE_URL_API,
+    signer,
+    options
+  );
 
-    return client;
-  }
-  return null;
+  return client;
 }
 
 function AppContextProvider({ children }) {
   const [value, setValue] = useState(valueContext);
-  const [signer, setSigner] = useState(null);
-  const [client, setClient] = useState(null);
+  const [signer, setSigner] = useState<OfflineSigner | undefined>(undefined);
+  const [client, setClient] = useState<CyberClient | undefined>(undefined);
   const [loadUrl, setLoadUrl] = useState(true);
   // const dataMarket = useGetMarketData(value.jsCyber, value.traseDenom);
 
   // console.log('dataMarket', dataMarket);
-
-  const updatejsCyber = (rpc) => {
-    const createQueryCliet = async () => {
-      const tendermintClient = await Tendermint34Client.connect(rpc);
-      const queryClient = new CyberClient(tendermintClient);
-
-      setValue((item) => ({
-        ...item,
-        jsCyber: queryClient,
-      }));
-    };
-    createQueryCliet();
-  };
 
   useEffect(() => {
     let networks = {};
@@ -112,12 +132,9 @@ function AppContextProvider({ children }) {
   useEffect(() => {
     const createQueryCliet = async () => {
       setLoadUrl(true);
-      const tendermintClient = await Tendermint34Client.connect(
-        CYBER.CYBER_NODE_URL_API
-      );
-      const queryClient = new CyberClient(tendermintClient);
+      const queryClient = await CyberClient.connect(CYBER.CYBER_NODE_URL_API);
       await getPools(queryClient);
-      setValue((item) => ({
+      setValue((item: $TsFixMe) => ({
         ...item,
         jsCyber: queryClient,
       }));
@@ -126,12 +143,16 @@ function AppContextProvider({ children }) {
     createQueryCliet();
   }, []);
 
-  const getPools = async (queryClient) => {
+  const getPools = async (queryClient: CyberClient) => {
     if (queryClient) {
       try {
-        const response = await queryClient.pools();
-        if (response && response !== null && response.pools) {
-          setValue((item) => ({ ...item, poolsData: response.pools }));
+        const response: Option<QueryLiquidityPoolsResponse> =
+          await queryClient.pools();
+        if (response) {
+          setValue((item: $TsFixMe) => ({
+            ...item,
+            poolsData: response.pools,
+          }));
         }
         return;
       } catch (error) {
@@ -178,7 +199,7 @@ function AppContextProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (signer !== null) {
+    if (signer) {
       const updateClient = async () => {
         const clientJs = await createClient(signer);
         setClient(clientJs);
@@ -204,13 +225,15 @@ function AppContextProvider({ children }) {
 
   const initSigner = async () => {
     const windowKeplr = await getKeplr();
-    if (windowKeplr || window.getOfflineSignerAuto) {
-      if (windowKeplr.experimentalSuggestChain) {
+    if (windowKeplr) {
+      if (windowKeplr?.experimentalSuggestChain) {
         await windowKeplr.experimentalSuggestChain(
           configKeplr(CYBER.BECH32_PREFIX_ACC_ADDR_CYBER)
         );
         await windowKeplr.enable(CYBER.CHAIN_ID);
-        const offlineSigner = await window.getOfflineSignerAuto(CYBER.CHAIN_ID);
+        const offlineSigner = await windowKeplr.getOfflineSignerAuto(
+          CYBER.CHAIN_ID
+        );
         console.log(`offlineSigner`, offlineSigner);
         setSigner(offlineSigner);
       }
@@ -218,16 +241,15 @@ function AppContextProvider({ children }) {
   };
 
   useEffect(() => {
-    if (client !== null) {
-      setValue((item) => ({
+    if (client) {
+      setValue((item: $TsFixMe) => ({
         ...item,
         keplr: client,
-        ws: CYBER.CYBER_WEBSOCKET_URL,
       }));
     }
   }, [client]);
 
-  const updateNetworks = (newList) => {
+  const updateNetworks = (newList: $TsFixMe) => {
     localStorage.setItem('CHAIN_PARAMS', JSON.stringify(newList));
     setValue((item) => ({
       ...item,
@@ -235,30 +257,30 @@ function AppContextProvider({ children }) {
     }));
   };
 
-  const updatetMarketData = (newData) => {
+  const updatetMarketData = (newData: $TsFixMe) => {
     setValue((item) => ({
       ...item,
       marketData: { ...newData },
     }));
   };
 
-  const updateDataTotalSupply = (newData) => {
+  const updateDataTotalSupply = (newData: $TsFixMe) => {
     setValue((item) => ({
       ...item,
       dataTotalSupply: { ...newData },
     }));
   };
 
-  const traseDenom = useCallback(
-    (denomTrase) => {
-      const infoDenomTemp = {
+  const traseDenom = useCallback<TraseDenomFuncType>(
+    (denomTrase: string) => {
+      const infoDenomTemp: TraseDenom = {
         denom: denomTrase,
         coinDecimals: 0,
         path: '',
         coinImageCid: '',
         native: true,
       };
-      let findDenom = null;
+      let findDenom = '';
 
       const { ibcDataDenom, poolsData } = value;
 
@@ -327,8 +349,6 @@ function AppContextProvider({ children }) {
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         ...value,
-        updatejsCyber,
-        initSigner,
         updateNetworks,
         updatetMarketData,
         traseDenom,

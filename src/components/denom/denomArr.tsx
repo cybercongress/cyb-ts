@@ -24,10 +24,10 @@ function DenomArr({
 
   const useDenomValue = useMemo(() => {
     let denom: $TsFixMe  = denomValue;
-    let infoDenom: $TsFixMe = {};
+    let infoDenomTemp= {};
 
     if (type === undefined) {
-      infoDenom = traseDenom(denomValue);
+      const infoDenom = traseDenom(denomValue);
       const { denom: denomTrase } = infoDenom;
       denom = denomTrase;
     }
@@ -41,7 +41,7 @@ function DenomArr({
           tooltipStatusImg={tooltipStatusImg}
           tooltipStatusText={tooltipStatusText}
           type={type}
-          infoDenom={infoDenom}
+          infoDenom={infoDenomTemp}
           gap={13}
         />
       );
