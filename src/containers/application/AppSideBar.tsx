@@ -1,15 +1,20 @@
 import cx from 'classnames';
 import styles from './styles.scss';
 
-function AppSideBar({ children, openMenu }) {
+interface Props {
+  children: React.ReactNode;
+  openMenu: boolean;
+}
+
+function AppSideBar({ children, openMenu }: Props) {
   return (
-    <div
+    <aside
       className={cx(styles.sideBar, {
         [styles.sideBarHide]: !openMenu,
       })}
     >
       {children}
-    </div>
+    </aside>
   );
 }
 

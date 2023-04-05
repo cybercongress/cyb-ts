@@ -4,14 +4,19 @@ import { Link } from 'react-router-dom';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import useIpfs from 'src/hooks/useIpfs';
-import { AvataImgIpfs } from '../portal/components/avataIpfs';
-import useGetPassportByAddress from '../sigma/hooks/useGetPassportByAddress';
-import styles from './styles.scss';
-import useMediaQuery from '../../hooks/useMediaQuery';
-import robot from '../../image/temple/robot.png';
-import Karma from './karma';
+import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
+import useGetPassportByAddress from '../../../sigma/hooks/useGetPassportByAddress';
+import styles from './SwitchAccount.module.scss';
+import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
+import useMediaQuery from '../../../../hooks/useMediaQuery';
+import robot from '../../../../image/temple/robot.png';
+import Karma from '../../karma';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAccounts, setDefaultAccount } from '../../redux/actions/pocket';
+import {
+  setAccounts,
+  setDefaultAccount,
+} from '../../../../redux/actions/pocket';
+import { RootState } from 'src/redux/store';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -55,24 +60,23 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
       onClick={() => hadleOnClick()}
       className={cx(
         styles.containerSwichAccount,
-        styles.btnContainerText,
+        networkStyles.btnContainerText,
         styles.containerSwichAccountHover
       )}
       style={{ marginTop: -10 }}
     >
-      <div className={styles.containerKrmaName}>
-        {useGetName !== null && (
-          <button
+      <div className={networkStyles.containerKrmaName}>
+        {useGetName && (
+          <span
             className={cx(
-              styles.btnContainerText,
-              styles.btnContainerTextHover
+              networkStyles.btnContainerText,
+              networkStyles.btnContainerTextHover
             )}
-            type="button"
           >
             {useGetName}
-          </button>
+          </span>
         )}
-        {useGetAddress !== null && <Karma address={useGetAddress} />}
+        {useGetAddress && <Karma address={useGetAddress} />}
       </div>
       <div
         className={cx(
@@ -91,12 +95,14 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   );
 }
 
-function SwichAccount() {
+function SwitchAccount() {
   const { node, isReady: ipfsStatus } = useIpfs();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
-  const { defaultAccount, accounts } = useSelector((state) => state.pocket);
+  const { defaultAccount, accounts } = useSelector(
+    (state: RootState) => state.pocket
+  );
 
   const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
     trigger: 'click',
@@ -109,7 +115,7 @@ function SwichAccount() {
 
   const dispatch = useDispatch();
 
-  const onClickChangeActiveAcc = async (key) => {
+  const onClickChangeActiveAcc = async (key: string) => {
     if (
       accounts !== null &&
       Object.prototype.hasOwnProperty.call(accounts, key)
@@ -163,28 +169,24 @@ function SwichAccount() {
   }, [defaultAccount]);
 
   const renderItem = useMemo(() => {
-    let items = {};
-
-    if (accounts && accounts !== null) {
-      items = Object.keys(accounts)
-        .filter((item) => defaultAccount.name !== item)
-        .map((key) => {
-          return (
-            <AccountItem
-              key={key}
-              data={accounts[key]}
-              onClickSetActive={() =>
-                onClickChangeActiveAcc(key, accounts[key])
-              }
-              setControlledVisible={setControlledVisible}
-              // ipfsStatus={ipfsStatus}
-              name={key}
-            />
-          );
-        });
+    if (!accounts) {
+      return null;
     }
 
-    return items;
+    return Object.keys(accounts)
+      .filter((item) => defaultAccount.name !== item)
+      .map((key) => {
+        return (
+          <AccountItem
+            key={key}
+            data={accounts[key]}
+            onClickSetActive={() => onClickChangeActiveAcc(key)}
+            setControlledVisible={setControlledVisible}
+            name={key}
+          />
+        );
+      });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, defaultAccount, node]);
 
@@ -200,18 +202,18 @@ function SwichAccount() {
         }}
       >
         {mediaQuery && useGetAddress !== null && (
-          <div className={styles.containerKrmaName}>
-            {useGetName !== null && (
+          <div className={networkStyles.containerKrmaName}>
+            {useGetName && (
               <button
                 onClick={() => setControlledVisible((item) => !item)}
-                className={styles.btnContainerText}
+                className={networkStyles.btnContainerText}
                 type="button"
                 style={{ fontSize: '20px' }}
               >
                 {useGetName}
               </button>
             )}
-            {useGetAddress !== null && <Karma address={useGetAddress} />}
+            {useGetAddress && <Karma address={useGetAddress} />}
           </div>
         )}
         <Link to="/robot">
@@ -230,7 +232,7 @@ function SwichAccount() {
           </div>
         </Link>
       </div>
-      {Object.keys(renderItem).length > 0 && (
+      {renderItem && Object.keys(renderItem).length > 0 && (
         <Transition in={visible} timeout={300}>
           {(state) => {
             return (
@@ -256,4 +258,4 @@ function SwichAccount() {
   );
 }
 
-export default SwichAccount;
+export default SwitchAccount;

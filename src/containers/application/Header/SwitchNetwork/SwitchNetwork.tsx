@@ -2,12 +2,12 @@ import React, { useContext } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
-import { CYBER } from '../../utils/config';
-import { fromBech32, selectNetworkImg } from '../../utils/utils';
-import { BandwidthBar } from '../../components';
-import styles from './styles.scss';
-import { AppContext } from '../../context';
-import useMediaQuery from '../../hooks/useMediaQuery';
+import { CYBER } from '../../../../utils/config';
+import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
+import { BandwidthBar } from '../../../../components';
+import styles from './SwitchNetwork.module.scss';
+import { AppContext } from '../../../../context';
+import useMediaQuery from '../../../../hooks/useMediaQuery';
 
 const forEachObjbech32 = (data, prefix) => {
   const newObj = {};
@@ -28,7 +28,7 @@ const forEachObjbech32 = (data, prefix) => {
   return newObj;
 };
 
-const updateAddress = async (prefix) => {
+const updateAddress = async (prefix: any) => {
   const localStoragePocketAccount = await localStorage.getItem('pocketAccount');
   const localStoragePocket = await localStorage.getItem('pocket');
 
@@ -59,7 +59,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
     placement: 'bottom',
   });
 
-  const onClickChain = async (chainId, prefix) => {
+  const onClickChain = async (chainId: string, prefix: any) => {
     localStorage.setItem('chainId', chainId);
     await updateAddress(prefix);
     window.location.reload();

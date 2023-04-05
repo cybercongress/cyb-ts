@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
 import useIpfs from 'src/hooks/useIpfs';
@@ -14,17 +14,15 @@ import AppSideBar from './AppSideBar';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
 import { InfoCard } from '../portal/components';
 import Header from './Header/Header';
+import { AppDispatch, RootState } from 'src/redux/store';
 
-function App({
-  pocket,
-  setAccountsProps,
-  setDefaultAccountProps,
-  setTypeDeviceProps,
-}) {
+function App() {
   const { updatetMarketData, updateDataTotalSupply } = useContext(AppContext);
   const { marketData, dataTotal } = useGetMarketData();
   const { isMobile } = useIsMobileTablet();
 
+  const { pocket } = useSelector((state: RootState) => state);
+  const dispatch: AppDispatch = useDispatch();
   const { defaultAccount } = pocket;
 
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -35,7 +33,7 @@ function App({
   const ipfs = useIpfs();
 
   useEffect(() => {
-    setTypeDeviceProps(isMobile);
+    dispatch(setTypeDevice(isMobile));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
@@ -104,8 +102,8 @@ function App({
           localStorage.removeItem('pocket');
           localStorage.removeItem('pocketAccount');
         }
-        setDefaultAccountProps(defaultAccountsKeys, defaultAccounts);
-        setAccountsProps(accountsTemp);
+        dispatch(setDefaultAccount(defaultAccountsKeys, defaultAccounts));
+        dispatch(setAccounts(accountsTemp));
       }
     };
     checkAddressLocalStorage();
@@ -124,23 +122,18 @@ function App({
   // };
 
   return (
-    <>
-      <div>
-        <Header
-          menuProps={{
-            toggleMenu: () => setOpenMenu(!openMenu),
-            isOpen: openMenu,
-          }}
-        />
-        <div className="container-distribution">
-          <AppSideBar
-            onCloseSidebar={() => setOpenMenu(false)}
-            openMenu={openMenu}
-          >
-            <AppMenu addressActive={addressActive} />
-          </AppSideBar>
-        </div>
-      </div>
+    <div>
+      <Header
+        menuProps={{
+          toggleMenu: () => setOpenMenu(!openMenu),
+          isOpen: openMenu,
+        }}
+      />
+
+      <AppSideBar openMenu={openMenu}>
+        <AppMenu addressActive={addressActive} />
+      </AppSideBar>
+
       {ipfs.error !== null && location.pathname !== '/ipfs' && (
         <div
           style={{
@@ -172,26 +165,12 @@ function App({
         </div>
       )}
 
-      <Telegram />
-      <GitHub />
-    </>
+      <footer>
+        <Telegram />
+        <GitHub />
+      </footer>
+    </div>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-    pocket: store.pocket,
-  };
-};
-
-const mapDispatchprops = (dispatch) => {
-  return {
-    setDefaultAccountProps: (name, account) =>
-      dispatch(setDefaultAccount(name, account)),
-    setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
-    setTypeDeviceProps: (type) => dispatch(setTypeDevice(type)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchprops)(App);
+export default App;
