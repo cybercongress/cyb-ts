@@ -8,7 +8,7 @@ import {
   Navigate,
   useParams,
 } from 'react-router-dom';
-import App from './containers/application/application';
+import App from './containers/application/App';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
 import Home from './containers/home/home';

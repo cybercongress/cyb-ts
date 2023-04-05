@@ -1,47 +1,38 @@
-import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { encodeSlash, replaceSlash } from '../../../../utils/utils';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
+import styles from './Commander.module.scss';
 
 function Commander() {
   const navigate = useNavigate();
-  let [searchParams, setSearchParams] = useSearchParams();
+  const { query } = useParams();
+  const [search, setSearch] = useState(query || '');
 
-  console.log(searchParams);
+  useEffect(() => {
+    setSearch(query || '');
+  }, [query]);
 
-  const query = '';
-
-  function submit(event) {
+  function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const value = event.target.search.value;
-    if (!value) {
+    if (!search) {
       return;
     }
 
-    navigate(`/search/${replaceSlash(value)}`);
+    navigate(`/search/${replaceSlash(search)}`);
   }
 
   return (
-    <form
-      style={{
-        width: '52%',
-        transform: 'translate(-50%, -80%)',
-        // background: 'rgb(0 0 0 / 79%)',
-        marginRight: '-50%',
-        left: '50%',
-        position: 'absolute',
-        top: '50%',
-        padding: '0px 20px',
-        zIndex: '1',
-      }}
-      onSubmit={submit}
-    >
+    <form className={styles.wrapper} onSubmit={submit}>
       <Input
         color="pink"
         name="search"
+        value={search}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setSearch(e.target.value)
+        }
         style={{ textAlign: 'center', fontSize: 24 }}
-        // className="search-input"
         autoComplete="off"
       />
     </form>

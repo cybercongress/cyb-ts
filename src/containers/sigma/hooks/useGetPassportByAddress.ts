@@ -3,9 +3,25 @@ import { useEffect, useState, useContext } from 'react';
 import { AppContext } from '../../../context';
 import { activePassport } from '../../portal/utils';
 
-function useGetPassportByAddress(accounts) {
+type Passport = {
+  owner: string;
+  approvals: any[];
+  token_uri: string | null;
+  extension: {
+    addresses: {
+      label: string | null;
+      address: string;
+    }[];
+    avatar: string;
+    nickname: string;
+    data: any | null;
+    particle: any | null;
+  };
+};
+
+function useGetPassportByAddress(accounts: any) {
   const { jsCyber } = useContext(AppContext);
-  const [passport, setPassport] = useState(null);
+  const [passport, setPassport] = useState<Passport | null>(null);
   const [addressBech32, setAddressBech32] = useState(null);
   const { data } = useQuery(
     ['activePassport', addressBech32],

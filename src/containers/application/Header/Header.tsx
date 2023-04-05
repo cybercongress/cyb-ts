@@ -1,8 +1,9 @@
 import React from 'react';
-import SwitchNetwork from '../SwitchNetwork';
+import SwitchNetwork from './SwitchNetwork/SwitchNetwork';
 import Electricity from '../../home/electricity';
-import SwitchAccount from '../SwitchAccount';
+import SwitchAccount from './SwitchAccount/SwitchAccount';
 import Commander from './Commander/Commander';
+import styles from './Header.module.scss';
 
 type Props = {
   menuProps: {
@@ -13,15 +14,7 @@ type Props = {
 
 function Header({ menuProps }: Props) {
   return (
-    <header
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        position: 'relative',
-        padding: '0px 15px',
-        zIndex: 5,
-      }}
-    >
+    <header className={styles.wrapper}>
       <SwitchNetwork
         openMenu={menuProps.isOpen}
         onClickOpenMenu={menuProps.toggleMenu}
