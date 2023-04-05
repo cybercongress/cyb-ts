@@ -20,6 +20,8 @@ import {
   sortReserveCoinDenoms,
   getMyTokenBalance,
   networkList,
+  checkInactiveFunc,
+  getMyTokenBalanceNumber,
 } from './utils';
 import ActionBar from './actionBar.new';
 import networks from '../../utils/networkListIbc';
@@ -40,19 +42,6 @@ import {
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
-
-const checkInactiveFunc = (token: string, ibcDataDenom: string): boolean => {
-  if (token.includes('ibc')) {
-    if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-function getMyTokenBalanceNumber(denom, indexer) {
-  return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
-}
 
 type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
 

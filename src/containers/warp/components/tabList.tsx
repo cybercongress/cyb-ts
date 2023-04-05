@@ -2,12 +2,17 @@ import { Tablist } from '@cybercongress/gravity';
 import { useNavigate } from 'react-router-dom';
 
 import ButtonTeleport from './buttonGroup/indexBtn';
+import { TypeTab } from '../type';
 
-function TabList({ selected }) {
+type TabListProps = {
+  selected: TypeTab;
+};
+
+function TabList({ selected }: TabListProps) {
   const navigate = useNavigate();
 
-  const handleHistory = (to) => {
-    history(to);
+  const handleHistory = (to: string) => {
+    navigate(to);
   };
 
   return (

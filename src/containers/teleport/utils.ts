@@ -1,9 +1,26 @@
 import BigNumber from 'bignumber.js';
 import coinDecimalsConfig from '../../utils/configToken';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { ObjKeyValue } from 'src/types/data';
+import { MyPoolsT } from './type';
 
 export function sortReserveCoinDenoms(x, y) {
   return [x, y].sort();
 }
+
+export const checkInactiveFunc = (token: string, ibcDataDenom: string): boolean => {
+  if (token.includes('ibc')) {
+    if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+export function getMyTokenBalanceNumber(denom: string, indexer) {
+  return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
+}
+
 
 function pow(a) {
   let result = 1;
@@ -159,24 +176,22 @@ const reduceTextCoin = (text) => {
   }
 };
 
-export function getPoolToken(pool, myPoolTokens) {
-  const myPools = [];
+
+export function getPoolToken(pool: Pool[], myPoolTokens: ObjKeyValue): MyPoolsT[] {
+  const myPools: MyPoolsT[] = [];
+
   pool.forEach((item) => {
     if (
-      Object.prototype.hasOwnProperty.call(myPoolTokens, item.pool_coin_denom)
+      Object.prototype.hasOwnProperty.call(myPoolTokens, item.poolCoinDenom)
     ) {
-      const myTokenAmount = myPoolTokens[item.pool_coin_denom];
+      const myTokenAmount = myPoolTokens[item.poolCoinDenom];
       myPools.push({
+        ...item,
         coinDenom: `${reduceTextCoin(
-          item.reserve_coin_denoms[0]
-        )}-${reduceTextCoin(item.reserve_coin_denoms[1])}`,
-        reserveCoinDenoms: [
-          item.reserve_coin_denoms[0],
-          item.reserve_coin_denoms[1],
-        ],
-        poolCoinDenom: item.pool_coin_denom,
+          item.reserveCoinDenoms[0]
+        )}-${reduceTextCoin(item.reserveCoinDenoms[1])}`,
         myTokenAmount,
-        id: item.id,
+       
       });
     }
   });

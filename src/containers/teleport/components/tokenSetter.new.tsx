@@ -39,7 +39,7 @@ function TokenSetter({
   selected,
   token,
   onChangeSelect,
-  textLeft,
+  textLeft = '',
   balancesByDenom,
 }: TokenSetterProps) {
   return (

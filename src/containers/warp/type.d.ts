@@ -13,3 +13,5 @@ export interface PoolsWithAssetsCapType extends PoolsWithAssetsType {
 }
 
 export type OptionNeverArray<T> = T | never[];
+
+export type TypeTab = 'create-pool' | 'add-liquidity' | 'sub-liquidity';
