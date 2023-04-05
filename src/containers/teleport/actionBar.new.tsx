@@ -36,6 +36,7 @@ import useSigningClient from 'src/hooks/useSigningClient';
 import { Option } from 'src/types/common';
 import { DeliverTxResponse } from '@cosmjs/stargate';
 import { connect } from 'react-redux';
+import { Coin } from '@cosmjs/launchpad';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -54,7 +55,7 @@ const fee = {
   gas: DEFAULT_GAS_LIMITS.toString(),
 };
 
-const coinFunc = (amount, denom) => {
+const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
@@ -65,7 +66,7 @@ function ActionBar({ stateActionBar, defaultAccount }) {
   const { traseDenom } = useContext(AppContext);
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
-  const [txHash, setTxHash] = useState(null);
+  const [txHash, setTxHash] = useState<Option<string>>(undefined);
   const [txHashIbc, setTxHashIbc] = useState(null);
   const [linkIbcTxs, setLinkIbcTxs] = useState<Option<string>>(undefined);
   const [txHeight, setTxHeight] = useState<Option<number>>(undefined);
@@ -92,7 +93,7 @@ function ActionBar({ stateActionBar, defaultAccount }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (queryClient !== null && txHash !== null) {
+      if (queryClient && txHash) {
         setStage(STAGE_CONFIRMING);
         const response = await queryClient.getTx(txHash);
         console.log('response :>> ', response);
@@ -167,12 +168,12 @@ function ActionBar({ stateActionBar, defaultAccount }) {
           if (response.code === 0) {
             setTxHash(response.transactionHash);
           } else {
-            setTxHash(null);
+            setTxHash(undefined);
             setErrorMessage(response.rawLog.toString());
             setStage(STAGE_ERROR);
           }
         } catch (error) {
-          setTxHash(null);
+          setTxHash(undefined);
           setErrorMessage(error.toString());
           setStage(STAGE_ERROR);
         }
@@ -190,7 +191,7 @@ function ActionBar({ stateActionBar, defaultAccount }) {
 
   const cleatState = () => {
     setStage(STAGE_INIT);
-    setTxHash(null);
+    setTxHash(undefined);
     setTxHeight(undefined);
     setErrorMessage(undefined);
     setTxHashIbc(null);
@@ -199,22 +200,20 @@ function ActionBar({ stateActionBar, defaultAccount }) {
 
   const depositOnClick = useCallback(async () => {
     if (signer) {
-
       console.log('tokenAAmount', tokenAAmount);
       const [{ address }] = await ibcClient.signer.getAccounts();
-      const [{ address: counterpartyAccount }] =
-        await signer.getAccounts();
-  
+      const [{ address: counterpartyAccount }] = await signer.getAccounts();
+
       setStage(STAGE_SUBMITTED);
-  
+
       const sourcePort = 'transfer';
-  
+
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + 60000}000000`
       );
       const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
       const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
-  
+
       const transferAmount = coinFunc(amount, denomIbc);
       const msg = {
         typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
@@ -314,7 +313,7 @@ function ActionBar({ stateActionBar, defaultAccount }) {
         }
       } catch (e) {
         console.error(`Caught error: `, e);
-        setTxHash(null);
+        setTxHash(undefined);
         setErrorMessage(e.toString());
         setStage(STAGE_ERROR);
       }
@@ -322,7 +321,7 @@ function ActionBar({ stateActionBar, defaultAccount }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenA, signer, tokenAAmount, sourceChannel, networkB]);
 
-  const handleHistory = (to:string) => {
+  const handleHistory = (to: string) => {
     navigate(to);
   };
 

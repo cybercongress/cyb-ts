@@ -1,4 +1,4 @@
-import {
+import React, {
   useContext,
   useEffect,
   useState,
@@ -191,14 +191,12 @@ function Teleport({ defaultAccount }) {
       setTypeTxs('deposit');
       const { sourceChannelId } = networks[networkA];
       setSourceChannel(sourceChannelId);
-      setTokenB('');
     }
 
     if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
       setTypeTxs('withdraw');
       const { destChannelId } = networks[networkB];
       setSourceChannel(destChannelId);
-      setTokenB('');
     }
   }, [networkB, networkA]);
 
@@ -237,22 +235,6 @@ function Teleport({ defaultAccount }) {
     }
   }, [poolsData, tokenA, tokenB]);
 
-  // useEffect(() => {
-  //   if (accountBalances !== null && poolsData && poolsData !== null) {
-  //     const poolTokenData = getPoolToken(poolsData, accountBalances);
-  //     let poolTokenDataIndexer = {};
-
-  //     poolTokenDataIndexer = poolTokenData.reduce(
-  //       (obj, item) => ({
-  //         ...obj,
-  //         [item.poolCoinDenom]: item,
-  //       }),
-  //       {}
-  //     );
-  //     setMyPools(poolTokenDataIndexer);
-  //   }
-  // }, [accountBalances, poolsData]);
-
   useEffect(() => {
     let exceeded = true;
     const checkTokenA = checkInactiveFunc(tokenA, ibcDataDenom);
@@ -279,21 +261,16 @@ function Teleport({ defaultAccount }) {
     }
     setIsExceeded(exceeded);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    accountBalances,
-    tokenA,
-    tokenAAmount,
-    swapPrice,
-    ibcDataDenom,
-  ]);
+  }, [accountBalances, tokenA, tokenAAmount, swapPrice, ibcDataDenom]);
 
   const amountChangeHandler = useCallback(
-    (values, e) => {
+    (values: string, e: React.ChangeEvent) => {
       const inputAmount = values;
+
+      console.log('values', values);
 
       const isReverse = e.target.id !== 'tokenAAmount';
 
-      // if (/^[\d]*\.?[\d]{0,3}$/.test(inputAmount)) {
       const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
 
       let { counterPairAmount } = calculateCounterPairAmount(
@@ -301,7 +278,9 @@ function Teleport({ defaultAccount }) {
         e,
         state
       );
-      counterPairAmount = Math.abs(parseFloat(Number(counterPairAmount).toFixed(4)));
+      counterPairAmount = Math.abs(
+        parseFloat(Number(counterPairAmount).toFixed(4))
+      );
       if (isReverse) {
         setTokenBAmount(new BigNumber(inputAmount).toNumber());
         setTokenAAmount(counterPairAmount);
@@ -362,6 +341,13 @@ function Teleport({ defaultAccount }) {
     return tokenA;
   }, [typeTxs, tokenA, denomIbc]);
 
+  const getTextInput = useMemo<{ tokenA: string; tokenB: string }>(() => {
+    if (typeTxs === 'swap') {
+      return { tokenA: 'sell', tokenB: 'buy' };
+    }
+    return { tokenA: 'send', tokenB: 'to' };
+  }, [typeTxs]);
+
   const stateActionBar = {
     tokenAAmount,
     tokenA,
@@ -380,12 +366,13 @@ function Teleport({ defaultAccount }) {
 
   return (
     <>
-      <MainContainer width="52%">
+      <MainContainer width="62%">
         <Pane
-          width="100%"
+          width="375px"
           display="flex"
           alignItems="center"
           flexDirection="column"
+          marginX="auto"
         >
           <TokenSetter
             accountBalances={useGetAccountBalancesTokenA}
@@ -394,7 +381,7 @@ function Teleport({ defaultAccount }) {
             totalSupply={totalSupply}
             selected={tokenB}
             onChangeSelect={setTokenA}
-            // textLeft={}
+            textLeft={getTextInput.tokenA}
           />
           <NetworkSetter
             selectedNetwork={networkA}
@@ -415,6 +402,7 @@ function Teleport({ defaultAccount }) {
               top: 0,
               transform: 'unset',
               left: 0,
+              margin: '10px 0',
             }}
           />
 
@@ -424,14 +412,16 @@ function Teleport({ defaultAccount }) {
               balancesByDenom={tokenB}
               token={tokenB}
               totalSupply={totalSupply}
-              selected={tokenB}
+              selected={tokenA}
               onChangeSelect={setTokenB}
+              textLeft={getTextInput.tokenB}
             />
           )}
           <NetworkSetter
             selectedNetwork={networkB}
             onChangeSelectNetwork={onChangeSelectNetworksB}
             networks={networkList}
+            textLeft={typeTxs !== 'swap' ? getTextInput.tokenB : ''}
           />
           {typeTxs === 'swap' && (
             <InputNumber
