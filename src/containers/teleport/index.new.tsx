@@ -28,7 +28,7 @@ import {
   networkList,
 } from './utils';
 import { TabList } from './components';
-import ActionBar from './actionBar';
+import ActionBar from './actionBar.new';
 import { useGetParams, usePoolListInterval } from './hooks/useGetPoolsTs.new';
 import getBalances from './hooks/getBalances';
 import useSetupIbcClient from './hooks/useSetupIbcClient';
@@ -38,7 +38,8 @@ import TokenSetter from './components/tokenSetter.new';
 import NetworkSetter from './components/networkSetter';
 import useSdk from 'src/hooks/useSdk';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import useSigningClient from 'src/hooks/useSigningClient';
+import imgSwap from 'images/exchange-arrows.svg';
+import { ButtonIcon } from './components/slider';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
@@ -91,10 +92,11 @@ function useGetSwapPrice(
   return swapPrice;
 }
 
+type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
+
 function Teleport({ defaultAccount }) {
   const { queryClient } = useSdk();
   const { keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
-  const { tab = 'swap' } = useParams();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [searchParams, setSearchParams] = useSearchParams();
   const [update, setUpdate] = useState(0);
@@ -106,21 +108,18 @@ function Teleport({ defaultAccount }) {
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const poolsData = usePoolListInterval();
 
-  const [tokenA, setTokenA] = useState(tokenADefaultValue);
-  const [tokenB, setTokenB] = useState(tokenBDefaultValue);
-  const [tokenAAmount, setTokenAAmount] = useState('');
-  const [tokenBAmount, setTokenBAmount] = useState('');
+  const [tokenA, setTokenA] = useState<string>(tokenADefaultValue);
+  const [tokenB, setTokenB] = useState<string>(tokenBDefaultValue);
+  const [tokenAAmount, setTokenAAmount] = useState<string | number>('');
+  const [tokenBAmount, setTokenBAmount] = useState<string | number>('');
   const [tokenAPoolAmount, setTokenAPoolAmount] = useState<number>(0);
   const [tokenBPoolAmount, setTokenBPoolAmount] = useState<number>(0);
   const [selectedPool, setSelectedPool] = useState<Pool | undefined>(undefined);
-  const [myPools, setMyPools] = useState({});
-  const [selectMyPool, setSelectMyPool] = useState('');
-  const [amountPoolCoin, setAmountPoolCoin] = useState('');
-  const [isExceeded, setIsExceeded] = useState(false);
-  const [networkA, setNetworkA] = useState(CYBER.CHAIN_ID);
-  const [networkB, setNetworkB] = useState(CYBER.CHAIN_ID);
-  const [typeTxs, setTypeTxs] = useState('swap');
-  const [sourceChannel, setSourceChannel] = useState(null);
+  const [isExceeded, setIsExceeded] = useState<boolean>(false);
+  const [networkA, setNetworkA] = useState<string>(CYBER.CHAIN_ID);
+  const [networkB, setNetworkB] = useState<string>(CYBER.CHAIN_ID);
+  const [typeTxs, setTypeTxs] = useState<TypeTxsT>('swap');
+  const [sourceChannel, setSourceChannel] = useState<string | null>(null);
 
   const { ibcClient, balanceIbc, denomIbc } = useSetupIbcClient(
     tokenA,
@@ -170,27 +169,18 @@ function Teleport({ defaultAccount }) {
         setTokenB(to);
       }
     }
-
-    if (tab === 'sub-liquidity') {
-      setSearchParams(createSearchParams({}));
-    }
-  }, [tokenA, tokenB, setSearchParams, searchParams, tab]);
+  }, [tokenA, tokenB, setSearchParams, searchParams]);
 
   useEffect(() => {
-    if (tab === 'swap') {
-      const dataLocalStorageNetworkA = localStorage.getItem('networkA');
-      const dataLocalStorageNetworkB = localStorage.getItem('networkB');
-      if (dataLocalStorageNetworkA !== null) {
-        setNetworkA(dataLocalStorageNetworkA);
-      }
-      if (dataLocalStorageNetworkB !== null) {
-        setNetworkB(dataLocalStorageNetworkB);
-      }
-    } else {
-      setNetworkA(CYBER.CHAIN_ID);
-      setNetworkB(CYBER.CHAIN_ID);
+    const dataLocalStorageNetworkA = localStorage.getItem('networkA');
+    const dataLocalStorageNetworkB = localStorage.getItem('networkB');
+    if (dataLocalStorageNetworkA !== null) {
+      setNetworkA(dataLocalStorageNetworkA);
     }
-  }, [tab]);
+    if (dataLocalStorageNetworkB !== null) {
+      setNetworkB(dataLocalStorageNetworkB);
+    }
+  }, []);
 
   useEffect(() => {
     if (networkA === CYBER.CHAIN_ID && networkB === CYBER.CHAIN_ID) {
@@ -201,12 +191,14 @@ function Teleport({ defaultAccount }) {
       setTypeTxs('deposit');
       const { sourceChannelId } = networks[networkA];
       setSourceChannel(sourceChannelId);
+      setTokenB('');
     }
 
     if (networkA === CYBER.CHAIN_ID && networkB !== CYBER.CHAIN_ID) {
       setTypeTxs('withdraw');
       const { destChannelId } = networks[networkB];
       setSourceChannel(destChannelId);
+      setTokenB('');
     }
   }, [networkB, networkA]);
 
@@ -264,18 +256,15 @@ function Teleport({ defaultAccount }) {
   useEffect(() => {
     let exceeded = true;
     const checkTokenA = checkInactiveFunc(tokenA, ibcDataDenom);
-    const checkTokenB = checkInactiveFunc(tokenB, ibcDataDenom);
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
-    const myATokenBalanceB = getMyTokenBalanceNumber(tokenB, accountBalances);
 
-    if (checkTokenA && checkTokenB) {
+    if (checkTokenA) {
       if (accountBalances !== null) {
         const validTokenA = Object.prototype.hasOwnProperty.call(
           accountBalances,
           tokenA
         );
         const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-        const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
 
         const validTokenAmountA =
           parseFloat(getDisplayAmountReverce(tokenAAmount, coinDecimalsA)) <=
@@ -283,23 +272,7 @@ function Teleport({ defaultAccount }) {
 
         const resultValidTokenA = validTokenAmountA && validTokenA;
 
-        const validTokensAB =
-          Object.prototype.hasOwnProperty.call(accountBalances, tokenA) &&
-          Object.prototype.hasOwnProperty.call(accountBalances, tokenB) &&
-          accountBalances[tokenA] > 0 &&
-          accountBalances[tokenB] > 0;
-
-        const validTokenAmountAB =
-          parseFloat(getDisplayAmountReverce(tokenAAmount, coinDecimalsA)) <=
-            myATokenBalance &&
-          Number(tokenAAmount) > 0 &&
-          parseFloat(getDisplayAmountReverce(tokenBAmount, coinDecimalsB)) <=
-            myATokenBalanceB &&
-          Number(tokenBAmount) > 0;
-
-        const resultValidSelectTokens = validTokensAB && validTokenAmountAB;
-
-        if (tab === 'swap' && swapPrice !== 0 && resultValidTokenA) {
+        if (swapPrice !== 0 && resultValidTokenA) {
           exceeded = false;
         }
       }
@@ -309,10 +282,7 @@ function Teleport({ defaultAccount }) {
   }, [
     accountBalances,
     tokenA,
-    tokenB,
-    tab,
     tokenAAmount,
-    tokenBAmount,
     swapPrice,
     ibcDataDenom,
   ]);
@@ -331,7 +301,7 @@ function Teleport({ defaultAccount }) {
         e,
         state
       );
-      counterPairAmount = Math.abs(Number(counterPairAmount).toFixed(4));
+      counterPairAmount = Math.abs(parseFloat(Number(counterPairAmount).toFixed(4)));
       if (isReverse) {
         setTokenBAmount(new BigNumber(inputAmount).toNumber());
         setTokenAAmount(counterPairAmount);
@@ -372,73 +342,45 @@ function Teleport({ defaultAccount }) {
     setNetworkB(item);
   };
 
-  // const useGetAccountBalancesTokenA = useMemo(
-  //   (token?: string): number => {
-  //     let balance: number = 0;
-  //     console.log('token', token)
-  //     console.log('accountBalances', accountBalances)
+  const useGetAccountBalancesTokenA = useMemo(() => {
+    if (typeTxs === 'deposit') {
+      return balanceIbc;
+    }
 
-  //     return balance;
-  //   },
-  //   [accountBalances]
-  // );
+    if (typeTxs === 'swap' || typeTxs === 'withdraw') {
+      return accountBalances;
+    }
+
+    return null;
+  }, [typeTxs, accountBalances, balanceIbc]);
+
+  const useGetDenomTokenA = useMemo(() => {
+    if (typeTxs === 'deposit' && denomIbc) {
+      return denomIbc;
+    }
+
+    return tokenA;
+  }, [typeTxs, tokenA, denomIbc]);
 
   const stateActionBar = {
-    addressActive,
     tokenAAmount,
-    tokenBAmount,
     tokenA,
     tokenB,
     params,
     selectedPool,
-    tab,
     updateFunc,
-    selectMyPool,
-    myPools,
-    amountPoolCoin,
     isExceeded,
-    tokenAPoolAmount,
-    tokenBPoolAmount,
     typeTxs,
     ibcClient,
+    denomIbc,
     sourceChannel,
-    denomIbc,
     networkB,
-  };
-
-  const stateSwap = {
-    accountBalances,
-    totalSupply,
-    tokenB,
-    setTokenB,
-    tokenBAmount,
-    tokenA,
-    setTokenA,
-    tokenAAmount,
-    amountChangeHandler,
-    tokenAPoolAmount,
-    tokenBPoolAmount,
-    tokenChange,
     swapPrice,
-    networkA,
-    onChangeSelectNetworksA,
-    onChangeSelectNetworksB,
-    networkB,
-    setNetworkB,
-    typeTxs,
-    denomIbc,
-    balanceIbc,
   };
-
-  console.log('typeTxs', typeTxs)
-  console.log('denomIbc', denomIbc)
-  console.log('balanceIbc', balanceIbc)
 
   return (
     <>
       <MainContainer width="52%">
-        {/* {tab !== 'swap' && <TabList selected={tab} />} */}
-
         <Pane
           width="100%"
           display="flex"
@@ -446,7 +388,8 @@ function Teleport({ defaultAccount }) {
           flexDirection="column"
         >
           <TokenSetter
-            accountBalances={accountBalances}
+            accountBalances={useGetAccountBalancesTokenA}
+            balancesByDenom={useGetDenomTokenA}
             token={tokenA}
             totalSupply={totalSupply}
             selected={tokenB}
@@ -463,7 +406,7 @@ function Teleport({ defaultAccount }) {
             onValueChange={amountChangeHandler}
             value={tokenAAmount}
           />
-          {/* 
+
           <ButtonIcon
             onClick={() => tokenChange()}
             img={imgSwap}
@@ -475,17 +418,33 @@ function Teleport({ defaultAccount }) {
             }}
           />
 
-          <TokenSetter />
-          <NetworkSetter />
-          <InputNumber id="tokenBAmount" /> */}
+          {typeTxs === 'swap' && (
+            <TokenSetter
+              accountBalances={accountBalances}
+              balancesByDenom={tokenB}
+              token={tokenB}
+              totalSupply={totalSupply}
+              selected={tokenB}
+              onChangeSelect={setTokenB}
+            />
+          )}
+          <NetworkSetter
+            selectedNetwork={networkB}
+            onChangeSelectNetwork={onChangeSelectNetworksB}
+            networks={networkList}
+          />
+          {typeTxs === 'swap' && (
+            <InputNumber
+              id="tokenBAmount"
+              value={tokenBAmount}
+              onValueChange={amountChangeHandler}
+            />
+          )}
         </Pane>
 
         {/* <TraceTxTable /> */}
       </MainContainer>
-      <ActionBar
-        addressActive={addressActive}
-        stateActionBar={stateActionBar}
-      />
+      <ActionBar stateActionBar={stateActionBar} />
     </>
   );
 }

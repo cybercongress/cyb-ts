@@ -21,6 +21,15 @@ function ActionBarContentText({ children, gridGap, ...props }) {
   );
 }
 
+type ActionBarSteps = {
+  children?: JSX.Element; 
+  btnText?: string;
+  disabled?: boolean;
+  gridGap?: number;
+  onClickFnc?: () => void;
+  onClickBack?: () => void;
+};
+
 function ActionBarSteps({
   children,
   btnText,
@@ -28,7 +37,7 @@ function ActionBarSteps({
   onClickBack,
   disabled,
   gridGap,
-}) {
+}: ActionBarSteps) {
   return (
     <ActionBarContainer>
       {onClickBack && (

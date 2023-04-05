@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CyberClient, SigningCyberClient } from '@cybercongress/cyber-js';
+import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from 'src/utils/config';
 import { Keplr } from '@keplr-wallet/types';
 import configKeplr from 'src/utils/keplrUtils';
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient'; 
 
 type SigningClientContextType = {
   readonly signingClient: null | SigningCyberClient;
+  readonly signer: null | OfflineSigner
   initSigner: () => void;
 };
 
@@ -42,11 +43,14 @@ async function createClient(signer: OfflineSigner): Promise<SigningCyberClient> 
     options
   );
 
+  console.log('client', client)
+
   return client;
 }
 
 const valueContext = {
   signingClient: null,
+  signer: null,
   initSigner: () => {},
 };
 
@@ -86,6 +90,7 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
         const clientJs = await createClient(offlineSigner);
         setValue((item) => ({
           ...item,
+          signer: offlineSigner,
           signingClient: clientJs,
         }));
      

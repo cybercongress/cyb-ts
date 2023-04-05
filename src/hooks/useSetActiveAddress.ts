@@ -7,7 +7,6 @@ function useSetActiveAddress(defaultAccount: DefaultAccountType) {
   );
 
   useEffect(() => {
-    console.log('defaultAccount', defaultAccount)
     const { account } = defaultAccount;
     let addressPocket: AccountValueType | null = null;
     console.log('account', account)

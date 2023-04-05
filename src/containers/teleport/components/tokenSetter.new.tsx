@@ -11,6 +11,7 @@ type BalanceTokenDataType = {
 type TokenSetterProps = {
   accountBalances: BalanceTokenDataType[] | null;
   totalSupply: BalanceTokenDataType[] | null;
+  balancesByDenom: string;
   selected: string;
   token: string;
   onChangeSelect: $TsFixMeFunc;
@@ -42,10 +43,11 @@ function TokenSetter({
   token,
   onChangeSelect,
   textLeft,
+  balancesByDenom,
 }: TokenSetterProps) {
   return (
     <Pane width="inherit">
-      <BalanceToken data={accountBalances} token={token} />
+      <BalanceToken data={accountBalances} token={balancesByDenom} />
       <Pane
         display="grid"
         gridTemplateColumns="40px 1fr"

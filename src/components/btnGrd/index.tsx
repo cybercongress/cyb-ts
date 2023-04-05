@@ -1,6 +1,7 @@
 import cx from 'classnames';
 import { Dots } from '../ui/Dots';
 import styles from './styles.scss';
+import { $TsFixMe } from 'src/types/tsfix';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
@@ -27,6 +28,15 @@ const playAudioClick = () => {
 //   audioBtnHoverObg.currentTime = 0;
 // };
 
+type BtnGrdProsp = {
+  disabled?: boolean;
+  text: string | JSX.Element;
+  img?: $TsFixMe;
+  pending?: boolean;
+  className?: $TsFixMe;
+  onClick: () => void;
+};
+
 function BtnGrd({
   disabled,
   text,
@@ -35,7 +45,7 @@ function BtnGrd({
   onClick,
   className,
   ...props
-}) {
+}: BtnGrdProsp) {
   // useEffect(() => {
   //   const element = document.querySelector('#BtnGrd');
 

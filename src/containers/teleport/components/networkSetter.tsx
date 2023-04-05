@@ -50,7 +50,7 @@ function NetworkSetter({
         display="grid"
         gridTemplateColumns="1fr"
         alignItems="flex-start"
-        marginLeft={60}
+        paddingLeft={67}
         marginBottom={20}
       >
         <Pane width="100%" display="flex" flexDirection="column" gap="20px">
