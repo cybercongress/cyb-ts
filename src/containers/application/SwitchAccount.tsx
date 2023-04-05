@@ -10,6 +10,8 @@ import styles from './styles.scss';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import robot from '../../image/temple/robot.png';
 import Karma from './karma';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAccounts, setDefaultAccount } from '../../redux/actions/pocket';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   const { passport } = useGetPassportByAddress(data);
@@ -89,10 +91,12 @@ function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
   );
 }
 
-function SwichAccount({ defaultAccount, accounts, onClickChangeActiveAcc }) {
+function SwichAccount() {
   const { node, isReady: ipfsStatus } = useIpfs();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
+
+  const { defaultAccount, accounts } = useSelector((state) => state.pocket);
 
   const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
     trigger: 'click',
@@ -102,6 +106,24 @@ function SwichAccount({ defaultAccount, accounts, onClickChangeActiveAcc }) {
     placement: 'bottom',
   });
   const { passport } = useGetPassportByAddress(defaultAccount);
+
+  const dispatch = useDispatch();
+
+  const onClickChangeActiveAcc = async (key) => {
+    if (
+      accounts !== null &&
+      Object.prototype.hasOwnProperty.call(accounts, key)
+    ) {
+      const defaultAccountTemp = { [key]: accounts[key] };
+      const accountsPocket = {
+        [key]: accounts[key],
+        ...accounts,
+      };
+      dispatch(setDefaultAccount(key, accounts[key]));
+      dispatch(setAccounts(accountsPocket));
+      localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
+    }
+  };
 
   const useGetName = useMemo(() => {
     if (passport && passport !== null) {

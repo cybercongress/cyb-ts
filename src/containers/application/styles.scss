@@ -121,14 +121,16 @@
 .tooltipContainer {
   position: absolute;
   left: 0px !important;
-  top: unset !important;
+  // top: unset !important;
+  top: 90px !important;
   z-index: 3;
 }
 
 .tooltipContainerRight {
   position: absolute;
   right: -5px !important;
-  top: unset !important;
+  // top: unset !important;
+  top: 90px !important;
   left: unset !important;
   z-index: 3;
 }
@@ -283,7 +285,6 @@
     visibility: hidden;
   }
 }
-
 
 .containerKrmaName {
   display: flex;
