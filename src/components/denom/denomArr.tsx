@@ -4,12 +4,13 @@ import { AppContext } from '../../context';
 import { $TsFixMe } from 'src/types/tsfix';
 
 type DenomArrProps = {
-  denomValue: string;
+  denomValue: $TsFixMe;
   onlyText?: boolean;
   onlyImg?: boolean;
   tooltipStatusImg?: boolean;
   tooltipStatusText?: boolean;
   type?: string;
+  size?: number;
 };
 
 function DenomArr({
@@ -19,18 +20,19 @@ function DenomArr({
   tooltipStatusImg,
   tooltipStatusText,
   type,
+  size,
 }: DenomArrProps) {
   const { traseDenom } = useContext(AppContext);
 
   const useDenomValue = useMemo(() => {
-    let denom: $TsFixMe  = denomValue;
+    let denom: $TsFixMe = denomValue;
     let infoDenomTemp;
 
     if (type === undefined) {
       const infoDenom = traseDenom(denomValue);
       const { denom: denomTrase } = infoDenom;
       denom = denomTrase;
-      infoDenomTemp = {...infoDenom}
+      infoDenomTemp = { ...infoDenom };
     }
 
     if (typeof denom === 'string') {
@@ -44,6 +46,7 @@ function DenomArr({
           type={type}
           infoDenom={infoDenomTemp}
           gap={13}
+          size={size}
         />
       );
     }
@@ -60,6 +63,7 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenomTemp.denom[0]}
+                size={size}
               />
               <Denom
                 type={type}
@@ -71,6 +75,7 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenomTemp.denom[1]}
+                size={size}
               />
             </>
           )}
@@ -84,6 +89,7 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenomTemp.denom[0]}
+                size={size}
               />
               -
               <Denom
@@ -93,6 +99,7 @@ function DenomArr({
                 tooltipStatusImg={tooltipStatusImg}
                 tooltipStatusText={tooltipStatusText}
                 infoDenom={infoDenomTemp.denom[1]}
+                size={size}
               />
             </>
           )}

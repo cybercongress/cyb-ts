@@ -3,14 +3,11 @@ import BalanceToken from './balanceToken';
 import Select from './select';
 import { DenomArr, InputNumber, OptionSelect } from '../../../components';
 import { $TsFixMeFunc } from 'src/types/tsfix';
-
-type BalanceTokenDataType = {
-  [key: string]: number;
-};
+import { ObjKeyValue } from 'src/types/data';
 
 type TokenSetterProps = {
-  accountBalances: BalanceTokenDataType[] | null;
-  totalSupply: BalanceTokenDataType[] | null;
+  accountBalances: ObjKeyValue | null;
+  totalSupply: ObjKeyValue | undefined;
   balancesByDenom: string;
   selected: string;
   token: string;
@@ -19,7 +16,7 @@ type TokenSetterProps = {
 };
 
 const renderOptions = (
-  data: BalanceTokenDataType[],
+  data: ObjKeyValue,
   selected: string,
   valueSelect: string
 ) => {

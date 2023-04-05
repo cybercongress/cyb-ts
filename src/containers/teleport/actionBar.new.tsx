@@ -35,7 +35,7 @@ import useSdk from 'src/hooks/useSdk';
 import useSigningClient from 'src/hooks/useSigningClient';
 import { Option } from 'src/types/common';
 import { DeliverTxResponse } from '@cosmjs/stargate';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 
 const POOL_TYPE_INDEX = 1;
@@ -59,7 +59,8 @@ const coinFunc = (amount: number, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
 };
 
-function ActionBar({ stateActionBar, defaultAccount }) {
+function ActionBar({ stateActionBar }) {
+  const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { queryClient } = useSdk();
   const { signingClient, signer } = useSigningClient();
@@ -423,10 +424,4 @@ function ActionBar({ stateActionBar, defaultAccount }) {
   return <ActionBarStaps stageActionBarStaps={stageActionBarStaps} />;
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(ActionBar);
+export default ActionBar;

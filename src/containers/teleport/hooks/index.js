@@ -2,6 +2,7 @@ import getBalances from './getBalances';
 import useGetBalancesIbc from './useGetBalancesIbc';
 import useSetupIbcClient from './useSetupIbcClient';
 import { usePoolListInterval, useGetParams } from './useGetPools';
+import useGetSwapPrice from './useGetSwapPrice'
 
 // eslint-disable-next-line import/no-unused-modules
 export {
@@ -10,4 +11,5 @@ export {
   useSetupIbcClient,
   useGetParams,
   usePoolListInterval,
+  useGetSwapPrice,
 };

@@ -8,8 +8,17 @@ import { ContainerGradient } from '../../../components';
 import PoolItemsList from './pollItems';
 import TitlePool from './TitlePoolCard';
 import styles from './styles.scss';
+import { PoolsWithAssetsCapType } from '../type'
+import { Option } from 'src/types/common';
+import { ObjKeyValue } from 'src/types/data';
 
-function PoolCard({ pool, totalSupplyData, accountBalances }) {
+type PoolCardProps = {
+  pool: PoolsWithAssetsCapType;
+  totalSupplyData: Option<ObjKeyValue>;
+  accountBalances: Option<ObjKeyValue>;
+};
+
+function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
   const { traseDenom } = useContext(AppContext);
 
   const [sharesToken, setSharesToken] = useState(null);
@@ -17,19 +26,16 @@ function PoolCard({ pool, totalSupplyData, accountBalances }) {
   useEffect(() => {
     setSharesToken(null);
     if (
-      totalSupplyData !== null &&
+      totalSupplyData &&
       Object.prototype.hasOwnProperty.call(
         totalSupplyData,
-        pool.pool_coin_denom
+        pool.poolCoinDenom
       ) &&
-      accountBalances !== null &&
-      Object.prototype.hasOwnProperty.call(
-        accountBalances,
-        pool.pool_coin_denom
-      )
+      accountBalances &&
+      Object.prototype.hasOwnProperty.call(accountBalances, pool.poolCoinDenom)
     ) {
-      const amountTotal = totalSupplyData[pool.pool_coin_denom];
-      const amountAccountBalances = accountBalances[pool.pool_coin_denom];
+      const amountTotal = totalSupplyData[pool.poolCoinDenom];
+      const amountAccountBalances = accountBalances[pool.poolCoinDenom];
       const procent = (amountAccountBalances / amountTotal) * 100;
       const shares = exponentialToDecimal(procent.toPrecision(2));
       setSharesToken(shares);
@@ -39,7 +45,7 @@ function PoolCard({ pool, totalSupplyData, accountBalances }) {
   const useInactive = useMemo(() => {
     try {
       let status = false;
-      const { reserve_coin_denoms: reserveCoinDenoms } = pool;
+      const { reserveCoinDenoms } = pool;
       if (reserveCoinDenoms && Object.keys(reserveCoinDenoms).length > 0) {
         reserveCoinDenoms.forEach((itemCoin) => {
           if (itemCoin.includes('ibc')) {
@@ -75,7 +81,7 @@ function PoolCard({ pool, totalSupplyData, accountBalances }) {
       }
     >
       <div>
-        {pool.reserve_coin_denoms.map((items) => {
+        {pool.reserveCoinDenoms.map((items) => {
           const keyItem = uuidv4();
 
           return (

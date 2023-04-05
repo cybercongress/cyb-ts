@@ -64,17 +64,7 @@ function PoolItemsList({ assets, token, ...props }) {
       }}
     >
       <Link to={getLinktoSearch(token)}>
-        <DenomArr
-          style={{
-            flexDirection: 'row-reverse',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          denomValue={token}
-          onlyText
-          marginImg="0 5px"
-        />
+        <DenomArr denomValue={token} onlyText />
       </Link>
       <FormatNumberTokens
         marginContainer="0px"

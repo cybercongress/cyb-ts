@@ -1,7 +1,6 @@
 import { Pane } from '@cybercongress/gravity';
-import BalanceToken from './balanceToken';
 import Select from './select';
-import { DenomArr, InputNumber, OptionSelect } from '../../../components';
+import { DenomArr, OptionSelect } from '../../../components';
 
 
 type NetworkList = {

@@ -9,6 +9,7 @@ import tokenList from './tokenList';
 import cyberSpace from '../image/large-purple-circle.png';
 import customNetwork from '../image/large-orange-circle.png';
 import cyberBostrom from '../image/large-green.png';
+import { ObjKeyValue } from 'src/types/data';
 
 const DEFAULT_DECIMAL_DIGITS = 3;
 const DEFAULT_CURRENCY = 'GoL';
@@ -36,7 +37,7 @@ function numberWithCommas(x) {
   return parts.join('.');
 }
 
-const formatNumber = (number, toFixed) => {
+const formatNumber = (number: number | string, toFixed?: number): string => {
   let formatted = number;
 
   if (toFixed) {
@@ -245,7 +246,7 @@ function timeSince(timeMS) {
   return `${Math.floor(seconds)} seconds`;
 }
 
-const reduceBalances = (data) => {
+const reduceBalances = (data): ObjKeyValue => {
   try {
     let balances = {};
     if (Object.keys(data).length > 0) {
@@ -340,11 +341,11 @@ function convertAmountReverce(rawAmount, precision) {
     .toNumber();
 }
 
-function getDisplayAmount(rawAmount, precision, custom) {
-  return new BigNumber(rawAmount)
+function getDisplayAmount(rawAmount: number, precision: number): number {
+  return parseFloat(new BigNumber(rawAmount)
     .shiftedBy(-precision)
     .dp(precision, BigNumber.ROUND_FLOOR)
-    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR);
+    .toFixed(precision > 0 ? 3 : 0, BigNumber.ROUND_FLOOR));
 }
 
 function getDisplayAmountReverce(rawAmount, precision) {

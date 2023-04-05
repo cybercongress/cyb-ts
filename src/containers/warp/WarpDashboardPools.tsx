@@ -3,18 +3,18 @@ import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
-import { NoItems } from '../../components';
+import { NoItems, MainContainer } from 'src/components';
 import { PoolsInfo, PoolCard } from './pool';
 import { getBalances, usePoolListInterval } from '../teleport/hooks';
 import styles from './pool/styles.scss';
-import { MainContainer } from '../portal/components';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
 
-function WarpDashboardPools({ defaultAccount }) {
-  const { poolsData: data } = usePoolListInterval();
+function WarpDashboardPools() {
+  const { defaultAccount } = useSelector((state) => state.pocket);
+  const data = usePoolListInterval();
   const { poolsData, totalCap } = usePoolsAssetAmount(data);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { liquidBalances: accountBalances } = getBalances(addressActive);
@@ -70,10 +70,4 @@ function WarpDashboardPools({ defaultAccount }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(WarpDashboardPools);
+export default WarpDashboardPools;
