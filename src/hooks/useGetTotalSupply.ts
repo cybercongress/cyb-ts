@@ -7,6 +7,9 @@ import {
   reduceBalances,
   isNative,
 } from 'src/utils/utils';
+import useSdk from './useSdk';
+import { Option } from 'src/types/common';
+import { ObjKeyValue } from 'src/types/data';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -25,14 +28,17 @@ const totalSupplyFetcher = (client) => {
 };
 
 function useGetTotalSupply() {
-  const { jsCyber, ibcDataDenom } = useContext(AppContext);
-  const [totalSupplyAll, setTotalSupplyAll] = useState(null);
-  const [totalSupplyProofList, setTotalSupplyProofList] = useState(null);
+  const { queryClient } = useSdk();
+  const { ibcDataDenom } = useContext(AppContext);
+  const [totalSupplyAll, setTotalSupplyAll] =
+    useState<Option<ObjKeyValue>>(undefined);
+  const [totalSupplyProofList, setTotalSupplyProofList] =
+    useState<Option<ObjKeyValue>>(undefined);
   const { data: dataGetTotalSupply } = useQuery(
     ['getTotalSupply'],
-    () => totalSupplyFetcher(jsCyber),
+    () => totalSupplyFetcher(queryClient),
     {
-      enabled: Boolean(jsCyber),
+      enabled: Boolean(queryClient),
     }
   );
 

@@ -2,12 +2,23 @@ import BigNumber from 'bignumber.js';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../../context';
 import { convertAmount, reduceBalances } from '../../../utils/utils';
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { Option } from 'src/types/common';
+import useSdk from 'src/hooks/useSdk';
+import { OptionNeverArray, PoolsWithAssetsType, PoolsWithAssetsCapType, AssetsType } from '../type';
 
-const usePoolsAssetAmount = (pools) => {
-  const { jsCyber, traseDenom, marketData } = useContext(AppContext);
-  const [poolsBal, setPoolsBal] = useState([]);
-  const [poolsData, setPoolsData] = useState([]);
-  const [totalCap, setTotalCap] = useState(0);
+
+
+const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
+  const { queryClient } = useSdk();
+  const { traseDenom, marketData } = useContext(AppContext);
+  const [poolsBal, setPoolsBal] = useState<
+    OptionNeverArray<PoolsWithAssetsType[]>
+  >([]);
+  const [poolsData, setPoolsData] = useState<
+    OptionNeverArray<PoolsWithAssetsCapType[]>
+  >([]);
+  const [totalCap, setTotalCap] = useState<number>(0);
 
   useEffect(() => {
     const lastPoolCapLocalStorage = localStorage.getItem('lastPoolCap');
@@ -27,14 +38,16 @@ const usePoolsAssetAmount = (pools) => {
 
   useEffect(() => {
     const getBalances = async () => {
-      if (jsCyber !== null && pools.length > 0) {
-        const newArrPools = [];
+      if (queryClient && pools) {
+        const newArrPools: PoolsWithAssetsType[] = [];
         for (let index = 0; index < pools.length; index += 1) {
           const pool = pools[index];
-          const assetsData = {};
-          const { reserve_account_address: addressPool } = pool;
+          const assetsData: AssetsType = {};
+          const { reserveAccountAddress } = pool;
           // eslint-disable-next-line no-await-in-loop
-          const getBalancePromise = await jsCyber.getAllBalances(addressPool);
+          const getBalancePromise = await queryClient.getAllBalances(
+            reserveAccountAddress
+          );
           const dataReduceBalances = reduceBalances(getBalancePromise);
           Object.keys(dataReduceBalances).forEach((key) => {
             const amount = new BigNumber(dataReduceBalances[key]).toNumber();
@@ -42,23 +55,25 @@ const usePoolsAssetAmount = (pools) => {
             const reduceAmoun = convertAmount(amount, coinDecimals);
             assetsData[key] = reduceAmoun;
           });
-          newArrPools.push({ ...pool, assets: { ...assetsData } });
+          if (Object.keys(assetsData).length > 0) {
+            newArrPools.push({ ...pool, assets: { ...assetsData } });
+          }
         }
         setPoolsBal(newArrPools);
       }
     };
     getBalances();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, pools]);
+  }, [queryClient, pools]);
 
   useEffect(() => {
     if (poolsBal.length > 0) {
-      const newArrPools = [];
+      const newArrPools: PoolsWithAssetsCapType[] = [];
       let totalCapTemp = new BigNumber(0);
       poolsBal.forEach((pool) => {
-        const { reserve_coin_denoms: coinDenoms, assets } = pool;
+        const { reserveCoinDenoms, assets } = pool;
         let cap = new BigNumber(0);
-        coinDenoms.forEach((item) => {
+        reserveCoinDenoms.forEach((item) => {
           if (
             Object.keys(marketData).length > 0 &&
             Object.prototype.hasOwnProperty.call(assets, item) &&

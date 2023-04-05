@@ -3,14 +3,11 @@ import { Pane } from '@cybercongress/gravity';
 import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { AppContext } from '../../../context';
-
-type DataBalanceToken = {
-  [key: string]: number;
-};
+import { ObjKeyValue } from 'src/types/data';
 
 type BalanceTokenProps = {
   token: string;
-  data: DataBalanceToken[] | null;
+  data: ObjKeyValue | null;
 };
 
 function BalanceToken({ token, data }: BalanceTokenProps) {
@@ -19,7 +16,7 @@ function BalanceToken({ token, data }: BalanceTokenProps) {
 
   if (data && data[token]) {
     const { coinDecimals } = traseDenom(token);
-    balance = formatNumber(getDisplayAmount(data[token], coinDecimals));
+    balance = getDisplayAmount(data[token], coinDecimals);
   }
 
   return (
@@ -33,7 +30,7 @@ function BalanceToken({ token, data }: BalanceTokenProps) {
       marginBottom={12}
     >
       <Pane>Available</Pane>
-      <Pane>{!data ? <Dots /> : balance}</Pane>
+      <Pane>{!data ? <Dots /> : formatNumber(balance)}</Pane>
     </Pane>
   );
 }

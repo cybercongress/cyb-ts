@@ -6,12 +6,8 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import { connect } from 'react-redux';
-import {
-  useParams,
-  createSearchParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { createSearchParams, useSearchParams } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import BigNumber from 'bignumber.js';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
@@ -23,15 +19,9 @@ import {
   calculateCounterPairAmount,
   sortReserveCoinDenoms,
   getMyTokenBalance,
-  getPoolToken,
-  getCoinDecimals,
   networkList,
 } from './utils';
-import { TabList } from './components';
 import ActionBar from './actionBar.new';
-import { useGetParams, usePoolListInterval } from './hooks/useGetPoolsTs.new';
-import getBalances from './hooks/getBalances';
-import useSetupIbcClient from './hooks/useSetupIbcClient';
 import networks from '../../utils/networkListIbc';
 import { InputNumber, MainContainer } from 'src/components';
 import TokenSetter from './components/tokenSetter.new';
@@ -40,11 +30,18 @@ import useSdk from 'src/hooks/useSdk';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import imgSwap from 'images/exchange-arrows.svg';
 import { ButtonIcon } from './components/slider';
+import {
+  useGetSwapPrice,
+  usePoolListInterval,
+  useGetParams,
+  getBalances,
+  useSetupIbcClient,
+} from './hooks';
 
 const tokenADefaultValue = CYBER.DENOM_CYBER;
 const tokenBDefaultValue = CYBER.DENOM_LIQUID_TOKEN;
 
-const checkInactiveFunc = (token, ibcDataDenom) => {
+const checkInactiveFunc = (token: string, ibcDataDenom: string): boolean => {
   if (token.includes('ibc')) {
     if (!Object.prototype.hasOwnProperty.call(ibcDataDenom, token)) {
       return false;
@@ -57,46 +54,12 @@ function getMyTokenBalanceNumber(denom, indexer) {
   return Number(getMyTokenBalance(denom, indexer).split(':')[1].trim());
 }
 
-function useGetSwapPrice(
-  tokenA: string,
-  tokenB: string,
-  tokenAPoolAmount: number,
-  tokenBPoolAmount: number
-): number {
-  const [swapPrice, setSwapPrice] = useState<number>(0);
-
-  useEffect(() => {
-    let orderPrice = new BigNumber(0);
-    setSwapPrice(0);
-
-    const poolAmountA = new BigNumber(
-      getCoinDecimals(tokenAPoolAmount, tokenA)
-    );
-    const poolAmountB = new BigNumber(
-      getCoinDecimals(tokenBPoolAmount, tokenB)
-    );
-
-    if (poolAmountA.comparedTo(0) > 0 && poolAmountB.comparedTo(0) > 0) {
-      if ([tokenA, tokenB].sort()[0] !== tokenA) {
-        orderPrice = poolAmountB.dividedBy(poolAmountA);
-        orderPrice = orderPrice.multipliedBy(0.97);
-      } else {
-        orderPrice = poolAmountA.dividedBy(poolAmountB);
-        orderPrice = orderPrice.multipliedBy(1.03);
-      }
-    }
-
-    setSwapPrice(orderPrice.toNumber());
-  }, [tokenA, tokenB, tokenAPoolAmount, tokenBPoolAmount]);
-
-  return swapPrice;
-}
-
 type TypeTxsT = 'swap' | 'deposit' | 'withdraw';
 
-function Teleport({ defaultAccount }) {
+function Teleport() {
   const { queryClient } = useSdk();
-  const { keplr, ibcDataDenom, traseDenom } = useContext(AppContext);
+  const { ibcDataDenom, traseDenom } = useContext(AppContext);
+  const { defaultAccount } = useSelector((state) => state.pocket);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [searchParams, setSearchParams] = useSearchParams();
   const [update, setUpdate] = useState(0);
@@ -123,9 +86,9 @@ function Teleport({ defaultAccount }) {
 
   const { ibcClient, balanceIbc, denomIbc } = useSetupIbcClient(
     tokenA,
-    networkA,
-    keplr
+    networkA
   );
+
   const swapPrice = useGetSwapPrice(
     tokenA,
     tokenB,
@@ -201,11 +164,11 @@ function Teleport({ defaultAccount }) {
   }, [networkB, networkA]);
 
   useEffect(() => {
-    const getAmountPool = async () => {
+    const getBalancesPoolCurrentPair = async () => {
       setTokenAPoolAmount(0);
       setTokenBPoolAmount(0);
 
-      if (!!queryClient && selectedPool) {
+      if (queryClient && selectedPool) {
         const getAllBalancesPromise = await queryClient.getAllBalances(
           selectedPool.reserveAccountAddress
         );
@@ -216,10 +179,11 @@ function Teleport({ defaultAccount }) {
         }
       }
     };
-    getAmountPool();
+    getBalancesPoolCurrentPair();
   }, [queryClient, tokenA, tokenB, selectedPool, update]);
 
   useEffect(() => {
+    // find pool for current pair
     setSelectedPool(undefined);
     if (poolsData && poolsData.length > 0) {
       if (tokenA.length > 0 && tokenB.length > 0) {
@@ -236,6 +200,7 @@ function Teleport({ defaultAccount }) {
   }, [poolsData, tokenA, tokenB]);
 
   useEffect(() => {
+    // validation swap
     let exceeded = true;
     const checkTokenA = checkInactiveFunc(tokenA, ibcDataDenom);
     const myATokenBalance = getMyTokenBalanceNumber(tokenA, accountBalances);
@@ -267,8 +232,6 @@ function Teleport({ defaultAccount }) {
     (values: string, e: React.ChangeEvent) => {
       const inputAmount = values;
 
-      console.log('values', values);
-
       const isReverse = e.target.id !== 'tokenAAmount';
 
       const state = { tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA };
@@ -288,7 +251,6 @@ function Teleport({ defaultAccount }) {
         setTokenAAmount(new BigNumber(inputAmount).toNumber());
         setTokenBAmount(counterPairAmount);
       }
-      // }
     },
     [tokenAPoolAmount, tokenBPoolAmount, tokenB, tokenA]
   );
@@ -311,12 +273,12 @@ function Teleport({ defaultAccount }) {
     setUpdate((item) => item + 1);
   };
 
-  const onChangeSelectNetworksA = (item) => {
+  const onChangeSelectNetworksA = (item: string) => {
     localStorage.setItem('networkA', item);
     setNetworkA(item);
   };
 
-  const onChangeSelectNetworksB = (item) => {
+  const onChangeSelectNetworksB = (item: string) => {
     localStorage.setItem('networkB', item);
     setNetworkB(item);
   };
@@ -333,7 +295,7 @@ function Teleport({ defaultAccount }) {
     return null;
   }, [typeTxs, accountBalances, balanceIbc]);
 
-  const useGetDenomTokenA = useMemo(() => {
+  const useGetDenomTokenA = useMemo<string>(() => {
     if (typeTxs === 'deposit' && denomIbc) {
       return denomIbc;
     }
@@ -439,11 +401,4 @@ function Teleport({ defaultAccount }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(Teleport);
+export default Teleport;

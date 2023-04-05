@@ -1,9 +1,16 @@
+import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { DenomArr } from '../../../components';
 import { CYBER } from '../../../utils/config';
 import { FormatNumberTokens } from '../../nebula/components';
 import styles from './styles.scss';
 
-function TitlePool({ pool, totalCap, useInactive }) {
+type TitlePoolPool = {
+  pool: Pool;
+  totalCap: number;
+  useInactive?: boolean;
+};
+
+function TitlePool({ pool, totalCap, useInactive }: TitlePoolPool) {
   return (
     <div className={styles.TitlePoolContainer}>
       <div className={styles.TitlePoolContainerInfoPool}>
@@ -12,23 +19,11 @@ function TitlePool({ pool, totalCap, useInactive }) {
         </div>
 
         <div className={styles.TitlePoolContainerInfoPoolImg}>
-          <DenomArr
-            size={30}
-            denomValue={pool.reserve_coin_denoms[0]}
-            onlyImg
-            zIndexImg={1}
-          />
-          <DenomArr
-            size={30}
-            denomValue={pool.reserve_coin_denoms[1]}
-            onlyImg
-            marginContainer="0px 0px 0px -8px"
-          />
+          <DenomArr size={30} denomValue={pool.poolCoinDenom} onlyImg />
         </div>
 
         <div className={styles.TitlePoolContainerInfoPoolDenom}>
-          <DenomArr denomValue={pool.reserve_coin_denoms[0]} onlyText />/
-          <DenomArr denomValue={pool.reserve_coin_denoms[1]} onlyText />
+          <DenomArr denomValue={pool.poolCoinDenom} onlyText />
         </div>
       </div>
       {totalCap !== undefined && (
