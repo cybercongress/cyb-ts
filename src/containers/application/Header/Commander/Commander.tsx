@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { replaceSlash } from '../../../../utils/utils';
 import { Input } from '../../../../components';
@@ -7,17 +7,20 @@ import styles from './Commander.module.scss';
 function Commander() {
   const navigate = useNavigate();
   const { query } = useParams();
+  const [search, setSearch] = useState(query || '');
+
+  useEffect(() => {
+    setSearch(query || '');
+  }, [query]);
 
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // @ts-ignore
-    const value = event.target.search.value;
-    if (!value) {
+    if (!search) {
       return;
     }
 
-    navigate(`/search/${replaceSlash(value)}`);
+    navigate(`/search/${replaceSlash(search)}`);
   }
 
   return (
@@ -25,7 +28,10 @@ function Commander() {
       <Input
         color="pink"
         name="search"
-        defaultValue={query || ''}
+        value={search}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setSearch(e.target.value)
+        }
         style={{ textAlign: 'center', fontSize: 24 }}
         autoComplete="off"
       />
