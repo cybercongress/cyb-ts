@@ -47,13 +47,7 @@ const updateAddress = async (prefix) => {
   }
 };
 
-function SwichNetwork({
-  onClickOpenMenu,
-  bandwidth,
-  countLink,
-  amounPower,
-  openMenu,
-}) {
+function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
   const { networks } = useContext(AppContext);
@@ -170,20 +164,12 @@ function SwichNetwork({
               {CYBER.CHAIN_ID}
             </button>
             <div>
-              <BandwidthBar
-                height="10px"
-                // styleText={{ display: 'none' }}
-                fontSize={12}
-                colorText="#000"
-                bwRemained={bandwidth.remained}
-                bwMaxValue={bandwidth.maxValue}
-                countLink={countLink}
-                amounPower={amounPower}
-              />
+              <BandwidthBar />
             </div>
           </div>
         )}
       </div>
+
       {Object.keys(renderItemChain).length > 0 && (
         <Transition in={visible} timeout={300}>
           {(state) => {
@@ -208,4 +194,4 @@ function SwichNetwork({
   );
 }
 
-export default SwichNetwork;
+export default SwitchNetwork;
