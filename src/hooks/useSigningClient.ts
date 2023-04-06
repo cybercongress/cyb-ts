@@ -3,7 +3,7 @@ import { SignerClientContext } from 'src/contexts/signerClient';
 
 function useSigningClient() {
   const signingClient = useContext(SignerClientContext);
-  return { ...signingClient};
+  return signingClient;
 }
 
 export default useSigningClient;
