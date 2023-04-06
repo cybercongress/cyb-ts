@@ -60,26 +60,6 @@ function Slider({ tokenA, tokenB, tokenAAmount, accountBalances }) {
   const [valueSilder, setValueSilder] = useState(0);
   const [angle, setAngle] = useState(26);
 
-  // console.log(`test`, valueSilder);
-
-  // useEffect(() => {
-  //   const getAngle = () => {
-  //     const minval = 0.1;
-  //     const maxval = 100;
-  //     const minlog = Math.log10(minval);
-  //     const maxlog = Math.log10(maxval);
-  //     const range = maxlog - minlog;
-  //     console.log(`range`, range);
-  //     const lineartolog = (n) => {
-  //       return (Math.log10(n) - minlog) / range;
-  //     };
-  //     const logplots = [0.1, 2, 5, 10, 20, 50, 100].map(lineartolog);
-  //     console.log(`logplots`, logplots);
-  //   };
-
-  //   getAngle();
-  // }, []);
-
   useEffect(() => {
     if (
       tokenA !== '' &&

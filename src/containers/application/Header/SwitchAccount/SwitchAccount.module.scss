@@ -1,0 +1,111 @@
+@mixin before-Avatar {
+  content: '';
+  width: 100px;
+  height: 100px;
+  background: #000000;
+  position: absolute;
+  border-radius: 50%;
+  // z-index: -1;
+  display: flex;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.tooltipContainerRight {
+  position: absolute;
+  right: -5px !important;
+  // top: unset !important;
+  top: 90px !important;
+  left: unset !important;
+  z-index: 3;
+}
+
+.containerSwichAccount {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  gap: 25px;
+  align-items: center;
+  height: 100px;
+}
+
+.containerSwichAccountList {
+  display: flex;
+  flex-direction: column;
+  background: #00000075;
+  // padding-right: 15px;
+  width: 300px;
+  padding-bottom: 15px;
+  opacity: 0;
+  transition: 0.1s;
+
+  &entering {
+    opacity: 0;
+  }
+
+  &entered {
+    opacity: 1;
+  }
+
+  &exiting {
+    opacity: 0;
+    transition: 0.1s;
+  }
+
+  &exited {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.containerSwichAccountHover {
+  &:hover {
+    .containerAvatarConnectHover {
+      width: 105px;
+      height: 105px;
+    }
+    .btnContainerTextHover {
+      font-size: 17px;
+    }
+  }
+}
+
+.containerAvatarConnect {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  cursor: pointer;
+
+  &False {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px rgba(255, 31, 31, 0.4);
+    }
+  }
+
+  &True {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px #1fcbff66;
+    }
+  }
+
+  &TrueGreen {
+    &::before {
+      @include before-Avatar;
+      box-shadow: 0px 0px 20px #36d6ae;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .containerAvatarConnect {
+    width: 60px;
+    height: 60px;
+  }
+}

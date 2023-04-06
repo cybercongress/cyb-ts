@@ -6,8 +6,10 @@ import { CYBER } from '../../../utils/config';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
+import useSigningClient from 'src/hooks/useSigningClient';
 
-function useSetupIbcClient(denom, network, keplrCybre) {
+function useSetupIbcClient(denom, network) {
+  const { signingClient } = useSigningClient();
   const [ibcClient, setIbcClient] = useState(null);
   const { balanceIbc, denomIbc } = useGetBalancesIbc(ibcClient, denom);
 
@@ -28,13 +30,13 @@ function useSetupIbcClient(denom, network, keplrCybre) {
           options
         );
       } else {
-        client = keplrCybre;
+        client = signingClient;
       }
       setIbcClient(client);
     };
     createClient();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [network, denom]);
+  }, [network, signingClient]);
 
   return { ibcClient, balanceIbc, denomIbc };
 }

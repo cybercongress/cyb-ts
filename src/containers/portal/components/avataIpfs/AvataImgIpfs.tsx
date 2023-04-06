@@ -9,7 +9,7 @@ import styles from './styles.scss';
 const getRoboHashImage = (addressCyber: string) =>
   `https://robohash.org/${addressCyber}`;
 
-function AvataImgIpfs({ img, cidAvatar, addressCyber, ...props }) {
+function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   const { node } = useIpfs();
   const [avatar, setAvatar] = useState<string | null>(null);
   const { data } = useQuery(
