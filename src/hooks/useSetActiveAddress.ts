@@ -9,8 +9,7 @@ function useSetActiveAddress(defaultAccount: DefaultAccountType) {
   useEffect(() => {
     const { account } = defaultAccount;
     let addressPocket: AccountValueType | null = null;
-    console.log('account', account)
-    if (!!account && account.cyber) {
+    if (account && account.cyber) {
       const { keys, bech32, name } = account.cyber;
       addressPocket = {
         bech32,

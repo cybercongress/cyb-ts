@@ -14,7 +14,7 @@ function BalanceToken({ token, data }: BalanceTokenProps) {
   const { traseDenom } = useContext(AppContext);
   let balance = 0;
 
-  if (data && data[token]) {
+  if (data) {
     const { coinDecimals } = traseDenom(token);
     balance = getDisplayAmount(data[token], coinDecimals);
   }

@@ -2,8 +2,8 @@ import { useContext } from 'react';
 import { SignerClientContext } from 'src/contexts/signerClient';
 
 function useSigningClient() {
-  const { signingClient, signer, initSigner } = useContext(SignerClientContext);
-  return { signingClient, signer, initSigner };
+  const signingClient = useContext(SignerClientContext);
+  return { ...signingClient};
 }
 
 export default useSigningClient;

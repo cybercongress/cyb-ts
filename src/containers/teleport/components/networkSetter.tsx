@@ -62,7 +62,7 @@ function NetworkSetter({
             type="network"
             width="100%"
             valueSelect={selectedNetwork}
-            textSelectValue={selectedNetwork !== '' ? selectedNetwork : ''}
+            textSelectValue={selectedNetwork || ''}
             onChangeSelect={(item) => onChangeSelectNetwork(item)}
           >
             {networks && renderNetwork(networks)}

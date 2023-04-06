@@ -3,11 +3,11 @@ import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { CYBER } from 'src/utils/config';
 import { Keplr } from '@keplr-wallet/types';
 import configKeplr from 'src/utils/keplrUtils';
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient'; 
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 
 type SigningClientContextType = {
   readonly signingClient: null | SigningCyberClient;
-  readonly signer: null | OfflineSigner
+  readonly signer: null | OfflineSigner;
   initSigner: () => void;
 };
 
@@ -35,7 +35,9 @@ const getKeplr = async (): Promise<Keplr | undefined> => {
   });
 };
 
-async function createClient(signer: OfflineSigner): Promise<SigningCyberClient> {
+async function createClient(
+  signer: OfflineSigner
+): Promise<SigningCyberClient> {
   const options = { prefix: CYBER.BECH32_PREFIX_ACC_ADDR_CYBER };
   const client = await SigningCyberClient.connectWithSigner(
     CYBER.CYBER_NODE_URL_API,
@@ -43,7 +45,7 @@ async function createClient(signer: OfflineSigner): Promise<SigningCyberClient> 
     options
   );
 
-  console.log('client', client)
+  console.log('client', client);
 
   return client;
 }
@@ -77,24 +79,21 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
 
   const initSigner = async () => {
     const windowKeplr = await getKeplr();
-    if (windowKeplr) {
-      if (windowKeplr?.experimentalSuggestChain) {
-        await windowKeplr.experimentalSuggestChain(
-          configKeplr(CYBER.BECH32_PREFIX_ACC_ADDR_CYBER)
-        );
-        await windowKeplr.enable(CYBER.CHAIN_ID);
-        const offlineSigner = await windowKeplr.getOfflineSignerAuto(
-          CYBER.CHAIN_ID
-        );
-        
-        const clientJs = await createClient(offlineSigner);
-        setValue((item) => ({
-          ...item,
-          signer: offlineSigner,
-          signingClient: clientJs,
-        }));
-     
-      }
+    if (windowKeplr && windowKeplr.experimentalSuggestChain) {
+      await windowKeplr.experimentalSuggestChain(
+        configKeplr(CYBER.BECH32_PREFIX_ACC_ADDR_CYBER)
+      );
+      await windowKeplr.enable(CYBER.CHAIN_ID);
+      const offlineSigner = await windowKeplr.getOfflineSignerAuto(
+        CYBER.CHAIN_ID
+      );
+
+      const clientJs = await createClient(offlineSigner);
+      setValue((item) => ({
+        ...item,
+        signer: offlineSigner,
+        signingClient: clientJs,
+      }));
     }
   };
 
