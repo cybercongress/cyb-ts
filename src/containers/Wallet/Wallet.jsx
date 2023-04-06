@@ -449,7 +449,7 @@ class Wallet extends React.Component {
   routeChange = () => {
     const { history } = this.props;
     if (history) {
-      history.push('/help');
+      navigate('/help');
     }
   };
 

@@ -2,10 +2,9 @@ import { useState, useEffect, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
-import useIpfs from 'src/hooks/useIpfs';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
 import {
   formatNumber,
@@ -13,7 +12,6 @@ import {
   trimString,
   coinDecimals,
   encodeSlash,
-  replaceSlash,
 } from '../../utils/utils';
 import {
   Loading,
@@ -31,7 +29,6 @@ import {
   PATTERN_BLOCK,
   PATTERN_IPFS_HASH,
 } from '../../utils/config';
-import { setQuery } from '../../redux/actions/query';
 import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
@@ -70,11 +67,12 @@ const reduceSearchResults = (data, query) => {
   );
 };
 
-function SearchResults({ mobile, setQueryProps }) {
+function SearchResults() {
   const { jsCyber } = useContext(AppContext);
   const { query } = useParams();
+
   const location = useLocation();
-  const history = useNavigate();
+  // const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState({});
   const [loading, setLoading] = useState(true);
   const [keywordHash, setKeywordHash] = useState('');
@@ -84,17 +82,18 @@ function SearchResults({ mobile, setQueryProps }) {
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
-  useEffect(() => {
-    if (query.match(/\//g)) {
-      history.push(`/search/${replaceSlash(query)}`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  const { mobile } = useSelector((state) => state.settings);
+
+  // useEffect(() => {
+  //   if (query.match(/\//g)) {
+  //     navigate(`/search/${replaceSlash(query)}`);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [query]);
 
   useEffect(() => {
     const getFirstItem = async () => {
       setLoading(true);
-      setQueryProps(encodeSlash(query));
       if (jsCyber !== null) {
         let keywordHashTemp = '';
         let keywordHashNull = '';
@@ -382,16 +381,4 @@ function SearchResults({ mobile, setQueryProps }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-const mapDispatchprops = (dispatch) => {
-  return {
-    setQueryProps: (query) => dispatch(setQuery(query)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchprops)(SearchResults);
+export default SearchResults;

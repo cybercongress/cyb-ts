@@ -40,7 +40,7 @@ function ActionBarRelease({
   loadingRelease,
   addressActive,
 }) {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [step, setStep] = useState(STEP_INIT);
   const { keplr } = useContext(AppContext);
 
@@ -198,7 +198,7 @@ function ActionBarRelease({
     return (
       <ActionBarSteps>
         <BtnGrd
-          onClick={() => history.push('citizenship')}
+          onClick={() => navigate('citizenship')}
           text="get citizenship"
         />
       </ActionBarSteps>
@@ -224,10 +224,7 @@ function ActionBarRelease({
   if (activeReleases && isValidProve) {
     return (
       <ActionBarSteps>
-        <BtnGrd
-          onClick={() => history.push('gift')}
-          text="go to prove address"
-        />
+        <BtnGrd onClick={() => navigate('gift')} text="go to prove address" />
       </ActionBarSteps>
     );
   }
@@ -235,7 +232,7 @@ function ActionBarRelease({
   if (activeReleases && isValidClaime) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('gift')} text="go to claim" />
+        <BtnGrd onClick={() => navigate('gift')} text="go to claim" />
       </ActionBarSteps>
     );
   }

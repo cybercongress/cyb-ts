@@ -8,7 +8,7 @@ import {
   Navigate,
   useParams,
 } from 'react-router-dom';
-import App from './containers/application/application';
+import App from './containers/application/App';
 import SearchResults from './containers/Search/SearchResults';
 import Wallet from './containers/Wallet/Wallet';
 import Home from './containers/home/home';
@@ -34,6 +34,7 @@ import Market from './containers/market';
 import Oracle from './containers/oracle';
 import Objects from './containers/Objects';
 import Taverna from './containers/taverna';
+import TeleportTs from './containers/teleport/index.new';
 import Teleport from './containers/teleport';
 import Nebula from './containers/nebula';
 import Movie from './containers/movie';
@@ -61,6 +62,7 @@ import {
 import Sigma from './containers/sigma';
 
 import { routes } from './routes';
+import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Warp from './containers/warp/Warp';
 
 type WrappedRouterProps = {
@@ -150,9 +152,9 @@ function AppRouter() {
           <Route path="/oracle" element={<Oracle />} />
           <Route path="/particles" element={<Objects />} />
           <Route path="/sixthSense" element={<Taverna />} />
-          <Route path="/teleport" element={<Teleport />} />
-          <Route path="/warp" element={<Warp />} />
-          <Route path="/warp/:tab" element={<Teleport />} />
+          <Route path="/teleport" element={<TeleportTs />} />
+          <Route path="/warp" element={<WarpDashboardPools />} />
+          <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />

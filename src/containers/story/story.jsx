@@ -102,7 +102,7 @@ class Story extends React.Component {
   swapStory = () => {
     const { history } = this.props;
     localStorage.setItem('story', JSON.stringify(true));
-    history.push('/superintelligence');
+    navigate('/superintelligence');
   };
 
   render() {

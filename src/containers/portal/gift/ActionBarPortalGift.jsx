@@ -98,7 +98,7 @@ function ActionBarPortalGift({
   loadingGift,
 }) {
   const { node } = useIpfs();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { keplr, initSigner } = useContext(AppContext);
   const [selectMethod, setSelectMethod] = useState('');
   const [selectNetwork, setSelectNetwork] = useState('');
@@ -458,7 +458,7 @@ function ActionBarPortalGift({
     return (
       <ActionBarSteps>
         <BtnGrd
-          onClick={() => history.push('/citizenship')}
+          onClick={() => navigate('/citizenship')}
           text="get citizenship"
         />
       </ActionBarSteps>
@@ -503,7 +503,7 @@ function ActionBarPortalGift({
           text="prove one more address"
         />
         <BtnGrd
-          onClick={() => history.push('/teleport')}
+          onClick={() => navigate('/teleport')}
           text={`buy ${BOOT_ICON}`}
         />
       </ActionBarSteps>
@@ -638,7 +638,7 @@ function ActionBarPortalGift({
   ) {
     return (
       <ActionBarSteps>
-        <BtnGrd onClick={() => history.push('/release')} text="go to release" />
+        <BtnGrd onClick={() => navigate('/release')} text="go to release" />
       </ActionBarSteps>
     );
   }
