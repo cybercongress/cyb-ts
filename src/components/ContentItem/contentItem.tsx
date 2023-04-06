@@ -5,10 +5,10 @@ import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
-import useIpfs from 'src/hooks/useIpfs';
+import useIpfsContent from 'src/hooks/useIpfsContent';
+
 import SearchItem from '../SearchItem/searchItem';
 import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
-import { getIPFSContent } from '../../utils/ipfs/utils-ipfs';
 
 import { getRankGrade } from '../../utils/search/utils';
 
@@ -25,50 +25,37 @@ function ContentItem({
   grade,
   className,
 }: ContentItemProps): JSX.Element {
-  const [content, setContent] = useState<string | undefined>(undefined);
   const [textPreview, setTextPreview] = useState<string | undefined>(cid);
   const [typeContent, setTypeContent] = useState<string | undefined>(undefined);
-  const [status, setStatus] = useState('understandingState');
+  const [ipfsContent, setIpfsContent] = useState<$TsFixMe>(undefined);
   const [link, setLink] = useState(`/ipfs/${cid}`);
-  const { node } = useIpfs();
+
+  const { status, content } = useIpfsContent(cid, item.rank, '');
 
   useEffect(() => {
     const feachData = async (): Promise<void> => {
-      const dataResponseByCid = await getIPFSContent(node, cid);
-      console.log('dataResponseByCid', dataResponseByCid);
-      if (dataResponseByCid) {
-        if (dataResponseByCid === 'availableDownload') {
-          setStatus('availableDownload');
-          setTextPreview(cid);
-        } else if (!dataResponseByCid.data) {
-          setStatus('Not Available');
+      // console.log('dataResponseByCid', content, status);
+      if (content) {
+        if (content === 'availableDownload' || !content.data) {
           setTextPreview(cid);
         } else {
-          // const { data } = dataResponseByCid;
-          const dataTypeContent = await getTypeContent(
-            dataResponseByCid.data,
-            cid
-          );
-
+          const dataTypeContent = await getTypeContent(content.data, cid);
           const {
             text: textContent,
             type,
-            content: contentCid,
+            content: dataContent,
             link: linkContent,
           } = dataTypeContent;
 
           setTextPreview(textContent);
           setTypeContent(type);
-          setContent(contentCid);
+          setIpfsContent(dataContent);
           setLink(linkContent);
-          setStatus('downloaded');
         }
-      } else {
-        setStatus('impossibleLoad');
       }
     };
     feachData();
-  }, [cid, node]);
+  }, [content, status, cid]);
 
   return (
     <Link className={className} to={link}>
@@ -78,13 +65,7 @@ function ContentItem({
           <div className="container-text-SearchItem">
             <ReactMarkdown
               rehypePlugins={[rehypeSanitize]}
-              // skipHtml
-              // escapeHtml
-              // skipHtml={false}
-              // astPlugins={[parseHtml]}
               remarkPlugins={[remarkGfm]}
-
-              // escapeHtml={false}
             >
               {textPreview || ''}
             </ReactMarkdown>
@@ -101,7 +82,7 @@ function ContentItem({
           <img
             style={{ width: '100%', paddingTop: 10 }}
             alt="img"
-            src={content}
+            src={ipfsContent}
           />
         )}
         {content && typeContent === 'application/pdf' && (
@@ -109,7 +90,7 @@ function ContentItem({
             width="100%"
             height="400px"
             className="iframe-SearchItem"
-            url={content}
+            url={ipfsContent}
           />
         )}
       </SearchItem>

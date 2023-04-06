@@ -118,6 +118,7 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
       const dataResponseByCid = await getIPFSContent(
         nodeIpfs,
         cid,
+        undefined,
         setStatusFetching
       );
 

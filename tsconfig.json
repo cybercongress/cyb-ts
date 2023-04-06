@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "sourceMap": true,
     "module": "Node16",
-    "target": "ES6",
+    "target": "ES5",
+    "lib": ["dom", "ES5"],
     "allowJs": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
@@ -13,6 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noEmit": true,
+    "types": ["node", "jest", "@types/jest"],
     "jsx": "react-jsx",
     // "paths": {
     //   "components": ["src/components"],

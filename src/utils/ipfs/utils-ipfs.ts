@@ -71,13 +71,17 @@ const getIPFSContentFromDb = async (
 
 const fetchIPFSContentFromNode = async (
   node: IPFS,
-  cid: IPFSPath
+  cid: IPFSPath,
+  controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
-  const controller = new AbortController();
-  const { signal } = controller;
-  const timer = setTimeout(() => {
-    controller.abort();
-  }, 1000 * 60 * 1); // 1 min
+  const controllerLegacy = controller || new AbortController();
+  const { signal } = controllerLegacy;
+  let timer: NodeJS.Timeout | undefined;
+  if (!controller) {
+    timer = setTimeout(() => {
+      controllerLegacy.abort();
+    }, 1000 * 60 * 1);
+  } // 1 min
   let ipfsNodeLs: IPFSEntry[];
   // Try to read directory
 
@@ -121,12 +125,14 @@ const fetchIPFSContentFromNode = async (
 
 const fetchIPFSContentFromGateway = async (
   cid: string,
-  userGateway?: string | undefined
+  userGateway?: string | undefined,
+  controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
   const respnseGateway = await getIpfsDataFromGatway(
     cid,
     'arraybuffer',
-    userGateway
+    userGateway,
+    controller
   );
   if (respnseGateway !== null) {
     const dataUint8Array = new Uint8Array(respnseGateway as ArrayBufferLike);
@@ -177,6 +183,7 @@ const pinContentToDbAndIpfs = async (
 const getIPFSContent = async (
   node: IPFS,
   cid: string,
+  controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
 ): Promise<IPFSContentMaybe> => {
   const dataRsponseDb = await getIPFSContentFromDb(cid);
@@ -188,7 +195,11 @@ const getIPFSContent = async (
   if (node) {
     callBackFuncStatus && callBackFuncStatus('trying to get with a node');
 
-    const dataResponseIpfs = await fetchIPFSContentFromNode(node, cid);
+    const dataResponseIpfs = await fetchIPFSContentFromNode(
+      node,
+      cid,
+      controller
+    );
 
     if (dataResponseIpfs !== undefined) {
       pinContentToDbAndIpfs(node, dataResponseIpfs, cid);
@@ -199,7 +210,11 @@ const getIPFSContent = async (
   callBackFuncStatus && callBackFuncStatus('trying to get with a gatway');
 
   const { userGateway } = getIpfsUserGatewanAndNodeType();
-  const respnseGateway = await fetchIPFSContentFromGateway(cid, userGateway);
+  const respnseGateway = await fetchIPFSContentFromGateway(
+    cid,
+    userGateway,
+    controller
+  );
 
   if (respnseGateway !== undefined) {
     pinContentToDbAndIpfs(null, respnseGateway, cid);
@@ -213,19 +228,20 @@ const getIPFSContent = async (
 const getIpfsDataFromGatway = async (
   cid: string,
   type: ResponseType = 'json',
-  userGateway = config.CYBER.CYBER_GATEWAY
+  userGateway = config.CYBER.CYBER_GATEWAY,
+  controller?: AbortController
 ): Promise<IPFSData | undefined> => {
   try {
-    const abortController = new AbortController();
+    const abortControllerLegacy = controller || new AbortController();
     setTimeout(() => {
-      abortController.abort();
+      abortControllerLegacy.abort();
     }, 1000 * 60 * 1); // 1 min
 
     // Read object from IPFS gateway
     // Object size can be infinite?
 
     const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
-      signal: abortController.signal,
+      signal: abortControllerLegacy.signal,
       responseType: type,
     });
 

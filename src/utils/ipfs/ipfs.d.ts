@@ -1,4 +1,5 @@
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
+import { Nullable } from 'index';
 
 export type CallBackFuncStatus = (a: string) => void;
 
@@ -35,4 +36,4 @@ type IPFSContent = {
 
 type IPFSContentStatus = 'availableDownload' | undefined;
 
-export type IPFSContentMaybe = IPFSContent | IPFSContentStatus;
+export type IPFSContentMaybe = Nullable<IPFSContent | IPFSContentStatus>;
