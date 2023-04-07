@@ -6,6 +6,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
+import useIpfs from 'src/hooks/useIpfs';
 
 // const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -45,13 +46,13 @@ const getIpfsUserGatewanAndNodeType = () => {
 };
 
 function ContentTab({
-  nodeIpfs,
   typeContent,
   gateway,
   content,
   cid,
   stylesImg,
 }) {
+  const { node: nodeIpfs } = useIpfs();
   const [gatewayUrl, setGatewayUrl] = useState(null);
 
   useEffect(() => {
