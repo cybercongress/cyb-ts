@@ -1,6 +1,7 @@
-import { BehaviorSubject, map, filter, mergeMap } from 'rxjs';
-import * as R from 'ramda';
+import { BehaviorSubject, map, timeout, throwError } from 'rxjs';
+import { promiseToObservable } from 'src/utils/helpers';
 
+import * as R from 'ramda';
 import { Nullable } from '../../types';
 
 type QueueItemStatus =
@@ -24,7 +25,7 @@ type QueueItemCallback<T> = (
 
 type QueueItem<T> = {
   cid: string;
-  promise: () => Promise<Nullable<T>>;
+  promiseFactory: () => Promise<Nullable<T>>;
   status: QueueItemStatus;
   callback: QueueItemCallback<T>;
   controller?: AbortController;
@@ -32,22 +33,13 @@ type QueueItem<T> = {
   priority?: number;
 };
 
-async function withTimeout<T>(
-  promise: Promise<T>,
-  timeout: number,
-  abortController?: AbortController
-): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => {
-      const timer = setTimeout(() => {
-        abortController?.abort('timeout');
-        clearTimeout(timer);
-        reject(new DOMException('timeout', 'AbortError'));
-      }, timeout);
-    }),
-  ]);
+class QueueItemTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(`Timeout after ${timeoutMs}`);
+    Object.setPrototypeOf(this, QueueItemTimeoutError.prototype);
+  }
 }
+
 class QueueManager<T> {
   private queue$ = new BehaviorSubject<QueueItem<T>[]>([]);
 
@@ -57,82 +49,70 @@ class QueueManager<T> {
 
   private timeout: number;
 
-  constructor(maxConcurrentExecutions: number, timeout: number) {
+  constructor(maxConcurrentExecutions: number, timeoutMs: number) {
     this.maxConcurrentExecutions = maxConcurrentExecutions;
-    this.timeout = timeout;
+    this.timeout = timeoutMs;
     this.queue$
       .pipe(
-        map((items) =>
-          items
-            .filter((p) => p.status === 'pending')
-            .sort((a, b) => (b.priority || 0) - (a.priority || 0))
-        ),
-        filter((queue) => {
-          return (
-            this.executing < this.maxConcurrentExecutions && queue?.length > 0
-          );
+        map((queue) => {
+          if (this.executing < this.maxConcurrentExecutions) {
+            return queue
+              .filter((i) => i.status === 'pending')
+              .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+          }
+
+          return [] as QueueItem<T>[];
         })
-        // mergeMap((queue) => {
-        //   const item = queue[0];
-        //   if (item) {
-        //     console.log('----exec', this.executing, queue.length, item.cid);
-        //     item.status = 'executing';
-        //     this.executing++;
-        //     item.callback(item.cid, item.status);
-        //   }
-        //   return queue;
-        // })
       )
       .subscribe((queue) => {
-        const item = queue[0];
-        if (item) {
+        if (queue.length) {
+          const item = queue[0];
+          const { cid, promiseFactory, callback, controller } = item;
           item.status = 'executing';
+          // console.log('------item!', item, item.priority, this.getStats());
+
+          item.callback(cid, 'executing');
           this.executing++;
-          item.callback(item.cid, item.status);
 
-          const { cid, promise, callback, controller } = item;
-
-          // const timeoutId = setTimeout(() => {
-          //   controller?.abort();
-          //   console.log('----timeout', cid);
-          //   callback(cid, 'timeout');
-          // }, this.timeout);
-
-          promise()
-            .then((result) => {
-              callback(cid, 'completed', result);
+          promiseToObservable(promiseFactory)
+            .pipe(
+              timeout({
+                each: this.timeout,
+                with: () =>
+                  throwError(() => {
+                    controller?.abort('timeout');
+                    return new QueueItemTimeoutError(this.timeout);
+                  }),
+              })
+            )
+            .subscribe({
+              next: (result) => callback(cid, 'completed', result),
+              error: (error) => {
+                if (error instanceof QueueItemTimeoutError) {
+                  callback(cid, 'timeout');
+                } else if (error.name === 'AbortError') {
+                  callback(cid, 'cancelled');
+                } else {
+                  callback(cid, 'error');
+                }
+              },
             })
-            .catch((error) => {
-              if (error.name === 'AbortError') {
-                callback(
-                  cid,
-                  error.message === 'timeout' ? 'timeout' : 'cancelled'
-                );
-              } else {
-                callback(cid, 'error');
-              }
-            })
-            .finally(() => {
+            .add(() => {
               this.executing--;
-              this.next();
-              // clearTimeout(timeoutId);
+              this.remove(item);
             });
         }
       });
   }
 
-  private next(): void {
-    if (this.executing < this.maxConcurrentExecutions) {
-      const [item, ...rest] = this.queue$.value;
-      if (item) {
-        this.queue$.next(rest);
-      }
-    }
+  private remove(item: QueueItem<T>): void {
+    const updatedQueue = this.queue$.value.filter((i) => i.cid !== item.cid);
+    this.queue$.next(updatedQueue);
   }
 
   public enqueue(
     cid: string,
-    promise: () => Promise<T>,
+    promiseFactory: () => Promise<T>,
     callback: QueueItemCallback<T>,
     controller?: AbortController,
     parent?: string,
@@ -140,37 +120,66 @@ class QueueManager<T> {
   ): void {
     const item: QueueItem<T> = {
       cid,
-      promise: () => withTimeout(promise(), this.timeout, controller),
+      promiseFactory,
       status: 'pending',
       callback,
       controller,
       parent,
       priority,
     };
-    const currentQueue = this.queue$.value;
-    this.queue$.next([...currentQueue, item]);
+
+    this.queue$.next([...this.queue$.value, item]);
+  }
+
+  private updateStatus(cid: string, status: QueueItemStatus) {
+    const alterStatus = R.curry((cid, status, items) =>
+      R.map(R.when(R.propEq('cid', cid), R.assoc('status', status)), items)
+    );
+    const updatedQueue = alterStatus(
+      cid,
+      status,
+      this.queue$.value
+    ) as QueueItem<T>[];
+
+    this.queue$.next(updatedQueue);
   }
 
   public cancel(cid: string): void {
     const currentQueue = this.queue$.value;
     const item = currentQueue.find((item) => item.cid === cid);
     if (item) {
-      item.controller?.abort('cancelled');
-      // item.callback(cid, item.status);
-      const updatedQueue = currentQueue.filter((item) => item.cid !== cid);
-      this.queue$.next(updatedQueue);
+      // If item has no abortController we can just remove it
+      // Otherwise abort should be handled by subscriber
+
+      if (!item.controller) {
+        this.queue$.next(currentQueue.filter((item) => item.cid !== cid));
+      } else {
+        item.controller.abort('cancelled');
+      }
     }
+  }
+
+  public cancelByParent(parent: string): void {
+    const newQueue: QueueItem<T>[] = [];
+
+    this.queue$.value.forEach((i) => {
+      // If item parent is different the keep item,
+      // If item managed by abortController abort&keep
+      // Otherwise just skip it
+
+      if (i.parent !== parent) {
+        newQueue.push(i);
+      } else if (i.controller) {
+        i.controller.abort();
+        newQueue.push(i);
+      }
+    });
+
+    this.queue$.next(newQueue);
   }
 
   public getQueue(): QueueItem<T>[] {
     return this.queue$.value;
-  }
-
-  public cancelByParent(parent: string): void {
-    const currentQueue = [...this.queue$.value].filter(
-      (i) => i.parent === parent
-    );
-    currentQueue.map((i) => this.cancel(i.cid));
   }
 
   public getStats(): QueueStats[] {
@@ -186,4 +195,4 @@ class QueueManager<T> {
 
 export { QueueManager };
 
-export type { QueueItemCallback, QueueItemStatus };
+export type { QueueItemStatus };

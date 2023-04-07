@@ -24,7 +24,7 @@ function wrapPromiseWithSignal(
 }
 
 const getPromise = (
-  cid: string,
+  cid: string = 'result',
   timeout = 500,
   signal?: AbortSignal
 ): Promise<string> =>
@@ -118,23 +118,27 @@ describe('QueueManager', () => {
 
   it('should execute queue items in order', () => {
     queueManager.enqueue(
-      '1',
-      () => getPromise('1'),
-      (cid, status, result) => {
-        expect(cid).toBe('1');
+      '2',
+      () => getPromise(),
+      (cid, status) => {
+        expect(cid).toBe('2');
         expect(status).toBe('executing');
-        expect(result).toBeUndefined();
-      }
+      },
+      undefined,
+      undefined,
+      1
     );
 
     queueManager.enqueue(
-      '2',
-      () => getPromise('2'),
-      (cid, status, result) => {
-        expect(cid).toBe('2');
+      '3',
+      () => getPromise(),
+      (cid, status) => {
+        expect(cid).toBe('3');
         expect(status).toBe('executing');
-        expect(result).toBeUndefined();
-      }
+      },
+      undefined,
+      undefined,
+      10
     );
 
     const queue = queueManager.getQueue();

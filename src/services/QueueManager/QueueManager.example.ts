@@ -2,7 +2,7 @@
 import { QueueManager } from './QueueManager';
 import searchResponse from './stub/searchResponse.json';
 
-const queue = new QueueManager(3, 1000);
+const queue = new QueueManager(3, 500);
 
 const resultAll: Record<string, any> = {};
 
@@ -39,7 +39,13 @@ const doEnqueue = (cid: string): void => {
 
   queue.enqueue(
     cid,
-    () => fetch(`https://ipfs.io/ipfs/${cid}`, { signal }),
+    async () => {
+      return fetch(`https://ipfs.io/ipfs/${cid}`, { signal });
+      // .catch((err) => {
+      //   console.log('----errcacth', err);
+      //   return Promise.reject(new DOMException('canceled', 'AbortError'));
+      // });
+    },
     (id, status, result) => {
       resultAll[id] = { status };
       console.log(`callback ${id}(${status}):`);
@@ -48,6 +54,9 @@ const doEnqueue = (cid: string): void => {
   );
 };
 Object.values(searchResponse).forEach((i) => doEnqueue(i.particle));
+
+queue.cancel(Object.values(searchResponse)[9].particle);
+queue.cancel(Object.values(searchResponse)[3].particle);
 async function demo() {
   // sleep(1000);
   // printStack();

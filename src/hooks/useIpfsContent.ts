@@ -11,15 +11,15 @@ import {
 
 import useIpfs from './useIpfs';
 
-const FETCH_LIMIT = 5;
-const FETCH_TIMEOUT = 1000 * 10 * 1; // 1 min
+const FETCH_LIMIT = 9;
+const FETCH_TIMEOUT = 1000 * 10 * 1; // 10 sec
 
 const queueManager = new QueueManager<IPFSContentMaybe>(
   FETCH_LIMIT,
   FETCH_TIMEOUT
 );
 
-window.q = queueManager;
+window.qm = queueManager;
 
 type UseIpfsContentReturn = {
   status?: string;
@@ -60,7 +60,7 @@ function useIpfsContent(
         query,
         rank
       );
-      console.log('query', queueManager.getStats());
+      // console.log('---query', queueManager.getStats());
 
       if (prevQueryRef.current !== query) {
         if (prevQueryRef.current) {

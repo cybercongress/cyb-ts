@@ -225,6 +225,9 @@
       "ts",
       "tsx"
     ],
+    "moduleNameMapper": {
+      "^src(.*)$": "<rootDir>/src/$1"
+    },
     "preset": "ts-jest",
     "resolver": "ts-jest-resolver",
     "globals": {
