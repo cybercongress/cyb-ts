@@ -255,7 +255,7 @@ function Ipfs({ mobile }) {
   return (
     <>
       <main className="block-body">
-        {content.length ? (
+        {dataGetIpfsContent.loading ? (
           <ContentIpfsCid dataGetIpfsContent={dataGetIpfsContent} />
         ) : (
           <ContentTab

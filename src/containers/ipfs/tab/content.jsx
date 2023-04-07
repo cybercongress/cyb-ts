@@ -45,20 +45,16 @@ const getIpfsUserGatewanAndNodeType = () => {
   return CYBER.CYBER_GATEWAY;
 };
 
-function ContentTab({
-  typeContent,
-  gateway,
-  content,
-  cid,
-  stylesImg,
-}) {
+function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
   const { node: nodeIpfs } = useIpfs();
   const [gatewayUrl, setGatewayUrl] = useState(null);
 
   useEffect(() => {
-    if (nodeIpfs && nodeIpfs !== null) {
+    if (!nodeIpfs) {
       const response = getIpfsUserGatewanAndNodeType();
       setGatewayUrl(response);
+    } else {
+      setGatewayUrl(CYBER.CYBER_GATEWAY);
     }
   }, [nodeIpfs]);
 
