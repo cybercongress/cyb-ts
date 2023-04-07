@@ -4,6 +4,8 @@ export type AccountValueType = {
   keys: string;
   bech32: string;
   name?: string;
+  path?: number[];
+  pk?: string;
 };
 
 type AccountType = {

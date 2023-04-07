@@ -4,7 +4,7 @@ import golReducer from './gol';
 import blockReducer from './block';
 import bandwidthReducer from './bandwidth';
 import settingsReducer from './settings';
-import pocketReducer from './pocket';
+import pocketReducer from '../features/pocket';
 
 const rootReducer = combineReducers({
   gol: golReducer,

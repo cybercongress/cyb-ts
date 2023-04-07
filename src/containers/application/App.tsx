@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import useIpfs from 'src/hooks/useIpfs';
 import AppMenu from './AppMenu';
 import { setTypeDevice } from '../../redux/actions/settings';
-import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
+import { initPocket } from '../../redux/features/pocket';
 import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import useGetMarketData from '../nebula/useGetMarketData';
@@ -60,54 +60,7 @@ function App() {
   // }, [location.pathname]);
 
   useEffect(() => {
-    const checkAddressLocalStorage = async () => {
-      const { account } = defaultAccount;
-      // console.log(`!!! ===> 96 useEffect checkAddressLocalStorage`, account);
-      if (account === null) {
-        let defaultAccounts = null;
-        let defaultAccountsKeys = null;
-        let accountsTemp = null;
-
-        const localStoragePocketAccount = await localStorage.getItem(
-          'pocketAccount'
-        );
-        const localStoragePocket = localStorage.getItem('pocket');
-        if (localStoragePocket !== null) {
-          const localStoragePocketData = JSON.parse(localStoragePocket);
-          const keyPocket = Object.keys(localStoragePocketData)[0];
-          const accountPocket = Object.values(localStoragePocketData)[0];
-          defaultAccounts = accountPocket;
-          defaultAccountsKeys = keyPocket;
-        }
-        if (localStoragePocketAccount !== null) {
-          const localStoragePocketAccountData = JSON.parse(
-            localStoragePocketAccount
-          );
-          if (localStoragePocket === null) {
-            const keys0 = Object.keys(localStoragePocketAccountData)[0];
-            localStorage.setItem(
-              'pocket',
-              JSON.stringify({ [keys0]: localStoragePocketAccountData[keys0] })
-            );
-            defaultAccounts = localStoragePocketAccountData[keys0];
-            defaultAccountsKeys = keys0;
-          } else {
-            accountsTemp = {
-              [defaultAccountsKeys]:
-                localStoragePocketAccountData[defaultAccountsKeys],
-              ...localStoragePocketAccountData,
-            };
-          }
-        } else {
-          localStorage.removeItem('pocket');
-          localStorage.removeItem('pocketAccount');
-        }
-        dispatch(setDefaultAccount(defaultAccountsKeys, defaultAccounts));
-        dispatch(setAccounts(accountsTemp));
-      }
-    };
-    checkAddressLocalStorage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    dispatch(initPocket());
   }, []);
 
   // chekEvangelism = () => {
