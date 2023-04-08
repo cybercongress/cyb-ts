@@ -1,4 +1,10 @@
-import { BehaviorSubject, map, timeout, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  map,
+  timeout,
+  throwError,
+  distinctUntilChanged,
+} from 'rxjs';
 import { promiseToObservable } from 'src/utils/helpers';
 
 import * as R from 'ramda';
@@ -23,15 +29,18 @@ type QueueItemCallback<T> = (
   result?: Nullable<T>
 ) => void;
 
+type QueueItemOptions = {
+  controller?: AbortController;
+  parent?: string;
+  priority?: number;
+};
+
 type QueueItem<T> = {
   cid: string;
   promiseFactory: () => Promise<Nullable<T>>;
   status: QueueItemStatus;
   callback: QueueItemCallback<T>;
-  controller?: AbortController;
-  parent?: string;
-  priority?: number;
-};
+} & QueueItemOptions;
 
 class QueueItemTimeoutError extends Error {
   constructor(timeoutMs: number) {
@@ -54,6 +63,7 @@ class QueueManager<T> {
     this.timeout = timeoutMs;
     this.queue$
       .pipe(
+        // distinctUntilChanged()
         map((queue) => {
           if (this.executing < this.maxConcurrentExecutions) {
             return queue
@@ -114,10 +124,9 @@ class QueueManager<T> {
     cid: string,
     promiseFactory: () => Promise<T>,
     callback: QueueItemCallback<T>,
-    controller?: AbortController,
-    parent?: string,
-    priority?: number
+    options: QueueItemOptions = {}
   ): void {
+    const { controller, parent, priority } = options;
     const item: QueueItem<T> = {
       cid,
       promiseFactory,

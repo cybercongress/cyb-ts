@@ -12,7 +12,7 @@ import {
 import useIpfs from './useIpfs';
 
 const FETCH_LIMIT = 9;
-const FETCH_TIMEOUT = 1000 * 10 * 1; // 10 sec
+const FETCH_TIMEOUT = 1000 * 49 * 1; // 10 sec
 
 const queueManager = new QueueManager<IPFSContentMaybe>(
   FETCH_LIMIT,
@@ -56,9 +56,7 @@ function useIpfsContent(
         cid,
         () => getIPFSContent(node, cid, controller),
         callback,
-        controller,
-        query,
-        rank
+        { controller, parent: query, priority: rank }
       );
       // console.log('---query', queueManager.getStats());
 

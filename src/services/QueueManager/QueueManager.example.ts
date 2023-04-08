@@ -50,7 +50,9 @@ const doEnqueue = (cid: string): void => {
       resultAll[id] = { status };
       console.log(`callback ${id}(${status}):`);
     },
-    controller
+    {
+      controller,
+    }
   );
 };
 Object.values(searchResponse).forEach((i) => doEnqueue(i.particle));

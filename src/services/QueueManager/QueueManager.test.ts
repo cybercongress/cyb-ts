@@ -24,13 +24,13 @@ function wrapPromiseWithSignal(
 }
 
 const getPromise = (
-  cid: string = 'result',
+  result: string = 'result',
   timeout = 500,
   signal?: AbortSignal
 ): Promise<string> =>
   wrapPromiseWithSignal(
     new Promise<string>((resolve) => {
-      setTimeout(() => resolve(`result ${cid}`), timeout);
+      setTimeout(() => resolve(`result ${result}`), timeout);
     }),
     signal
   );
@@ -63,7 +63,9 @@ describe('QueueManager', () => {
         expect(cid).toBe(itemId);
         expect(status).toBe(statuses.next().value);
       },
-      controller
+      {
+        controller,
+      }
     );
 
     setTimeout(() => {
@@ -87,20 +89,22 @@ describe('QueueManager', () => {
         expect(cid).toBe(itemId);
         expect(status).toBe(statuses.next().value);
       },
-      controller
+      { controller }
     );
     queueManager.cancel(itemId);
+
+    expect(controller.signal.aborted).toBe(true);
+
     setTimeout(() => {
       expect(queueManager.getQueue().length).toEqual(0);
       done();
-    }, 500);
+    }, 0);
   });
+
   it('should handle execution errors', () => {
     const statuses = statusesExpected('error');
     const itemId = '1';
-    const promise = new Promise<string>((resolve, reject) => {
-      reject(new Error('some error'));
-    });
+    const promise = Promise.reject(new Error('some error'));
 
     queueManager.enqueue(
       itemId,
@@ -116,34 +120,40 @@ describe('QueueManager', () => {
     }, 0);
   });
 
-  it('should execute queue items in order', () => {
-    queueManager.enqueue(
-      '2',
-      () => getPromise(),
-      (cid, status) => {
-        expect(cid).toBe('2');
-        expect(status).toBe('executing');
-      },
-      undefined,
-      undefined,
-      1
-    );
+  it('should execute queue items in order by priority', () => {
+    queueManager.enqueue('1', () => getPromise('1', 100), jest.fn);
+    queueManager.enqueue('2', () => getPromise('2', 100), jest.fn);
 
+    const executingByPriority: string[] = [];
     queueManager.enqueue(
       '3',
       () => getPromise(),
       (cid, status) => {
-        expect(cid).toBe('3');
-        expect(status).toBe('executing');
+        executingByPriority.push(cid);
       },
-      undefined,
-      undefined,
-      10
+      { priority: 1 }
+    );
+
+    queueManager.enqueue(
+      '4',
+      () => getPromise(),
+      (cid, status) => {
+        executingByPriority.push(cid);
+      },
+      { priority: 10 }
     );
 
     const queue = queueManager.getQueue();
+    expect(queue.length).toBe(4);
+    expect(queue[0].status).toBe('executing');
+    expect(queue[1].status).toBe('executing');
+    expect(queue[3].status).toBe('pending');
 
-    expect(queue.length).toBe(2);
-    expect(queue[0].cid).toBe('1');
+    setTimeout(() => {
+      const queue = queueManager.getQueue();
+      expect(queue.length).toBe(0);
+      expect(executingByPriority[0]).toBe('4');
+      expect(executingByPriority[1]).toBe('3');
+    }, 150);
   });
 });
