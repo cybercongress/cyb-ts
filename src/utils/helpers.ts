@@ -35,6 +35,7 @@ export function promiseToObservable<T>(promiseFactory: () => Promise<T>) {
     promiseFactory()
       .then((response) => {
         observer.next(response);
+        observer.complete();
       })
       .catch((error) => {
         observer.error(error);

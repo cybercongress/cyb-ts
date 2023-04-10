@@ -12,7 +12,7 @@ import {
 import useIpfs from './useIpfs';
 
 const FETCH_LIMIT = 21;
-const FETCH_TIMEOUT = 1000 * 49 * 1; // 10 sec
+const FETCH_TIMEOUT = 1000 * 60 * 1; // 10 sec
 
 const queueManager = new QueueManager<IPFSContentMaybe>(
   FETCH_LIMIT,

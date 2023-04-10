@@ -6,7 +6,7 @@ import {
   throwError,
   // distinctUntilChanged,
 } from 'rxjs';
-import { promiseToObservable } from 'src/utils/helpers';
+import { promiseToObservable } from '../../utils/helpers';
 
 import * as R from 'ramda';
 import { Nullable } from '../../types';
