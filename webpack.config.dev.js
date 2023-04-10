@@ -1,5 +1,6 @@
 const { merge } = require('webpack-merge');
 const commonConfig = require('./webpack.config.common');
+const webpack = require('webpack');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
@@ -15,4 +16,8 @@ module.exports = merge(commonConfig, {
     },
     historyApiFallback: true,
   },
+  plugins: [
+    // Only update what has changed on hot reload
+    new webpack.HotModuleReplacementPlugin(),
+  ],
 });
