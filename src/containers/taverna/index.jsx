@@ -6,10 +6,12 @@ import { NoItems, Dots, SearchSnippet } from '../../components';
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { useDevice } from 'src/contexts/device';
 
 const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 
-function Taverna({ mobile, defaultAccount }) {
+function Taverna({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
   const { node } = useIpfs();
   const { tweets, loadingTweets } = useGetTweets(defaultAccount, node);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -136,7 +138,6 @@ function Taverna({ mobile, defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

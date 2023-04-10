@@ -10,8 +10,10 @@ import getHeroes from './getHeroesHook';
 import { BOND_STATUS } from '../../utils/config';
 import { useGetBalance } from '../account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
+import { useDevice } from 'src/contexts/device';
 
-function Validators({ mobile, defaultAccount }) {
+function Validators({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
   const { status = 'active' } = useParams();
 
   const { jsCyber } = useContext(AppContext);
@@ -242,7 +244,6 @@ function Validators({ mobile, defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
