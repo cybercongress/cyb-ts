@@ -410,7 +410,6 @@ function Mint({ defaultAccount }) {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
   };
 };

@@ -17,6 +17,7 @@ import STEP_INFO from './gift/utils';
 import ActionBarPortalGift from './gift/ActionBarPortalGift';
 import ActionBarAddAvatar from './ActionBarAddAvatar';
 import { BtnGrd } from '../../components';
+import { useDevice } from 'src/contexts/device';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
@@ -37,7 +38,8 @@ const stopPortalAmbient = () => {
   portalAmbientObg.currentTime = 0;
 };
 
-function PasportMoonCitizenship({ defaultAccount, mobile }) {
+function PasportMoonCitizenship({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
   const navigate = useNavigate();
   const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -193,7 +195,6 @@ function PasportMoonCitizenship({ defaultAccount, mobile }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
-    mobile: store.settings.mobile,
   };
 };
 

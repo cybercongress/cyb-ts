@@ -4,22 +4,20 @@ import { Link, useLocation } from 'react-router-dom';
 
 import useIpfs from 'src/hooks/useIpfs';
 import AppMenu from './AppMenu';
-import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
 import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import useGetMarketData from '../nebula/useGetMarketData';
 import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
-import useIsMobileTablet from '../../hooks/useIsMobileTablet';
 import { InfoCard } from '../portal/components';
 import Header from './Header/Header';
 import { AppDispatch, RootState } from 'src/redux/store';
+import { useDevice } from 'src/contexts/device';
 
 function App() {
   const { updatetMarketData, updateDataTotalSupply } = useContext(AppContext);
   const { marketData, dataTotal } = useGetMarketData();
-  const { isMobile } = useIsMobileTablet();
 
   const { pocket } = useSelector((state: RootState) => state);
   const dispatch: AppDispatch = useDispatch();
@@ -31,11 +29,6 @@ function App() {
   const [openMenu, setOpenMenu] = useState(false);
 
   const ipfs = useIpfs();
-
-  useEffect(() => {
-    dispatch(setTypeDevice(isMobile));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile]);
 
   useEffect(() => {
     if (Object.keys(marketData).length > 0) {

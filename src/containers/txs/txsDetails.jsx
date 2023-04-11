@@ -9,6 +9,7 @@ import ActionBarContainer from '../Search/ActionBarContainer';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
+import { useDevice } from 'src/contexts/device';
 
 const getTxs = async (txs) => {
   try {
@@ -31,7 +32,8 @@ const initValueInformation = {
   memo: '',
 };
 
-function TxsDetails({ mobile }) {
+function TxsDetails() {
+  const { isMobile: mobile } = useDevice();
   const { jsCyber } = useContext(AppContext);
   const { txHash } = useParams();
   const [msgs, setMsgs] = useState(null);
@@ -86,10 +88,4 @@ function TxsDetails({ mobile }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(TxsDetails);
+export default TxsDetails;
