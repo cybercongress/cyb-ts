@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setAccounts,
   setDefaultAccount,
-} from '../../../../redux/actions/pocket';
+} from '../../../../redux/features/pocket';
 import { RootState } from 'src/redux/store';
 
 function AccountItem({ data, onClickSetActive, setControlledVisible, name }) {
@@ -125,7 +125,12 @@ function SwitchAccount() {
         [key]: accounts[key],
         ...accounts,
       };
-      dispatch(setDefaultAccount(key, accounts[key]));
+      dispatch(
+        setDefaultAccount({
+          name: key,
+          account: accounts[key],
+        })
+      );
       dispatch(setAccounts(accountsPocket));
       localStorage.setItem('pocket', JSON.stringify(defaultAccountTemp));
     }

@@ -2,13 +2,11 @@ import { combineReducers } from 'redux';
 
 import golReducer from './gol';
 import bandwidthReducer from './bandwidth';
-import settingsReducer from './settings';
-import pocketReducer from './pocket';
+import pocketReducer from '../features/pocket';
 
 const rootReducer = combineReducers({
   gol: golReducer,
   bandwidth: bandwidthReducer,
-  settings: settingsReducer,
   pocket: pocketReducer,
 });
 

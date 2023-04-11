@@ -15,7 +15,7 @@ import {
   getGraphQLQuery,
   getIpfsHash,
 } from '../../../utils/search/utils';
-import { setStageTweetActionBar } from '../../../redux/actions/pocket';
+import { setStageTweetActionBar } from '../../../redux/features/pocket';
 import { POCKET, PATTERN_CYBER } from '../../../utils/config';
 import AvatarIpfs from '../../account/component/avatarIpfs';
 

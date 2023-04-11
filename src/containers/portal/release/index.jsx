@@ -30,6 +30,7 @@ import Info from './Info';
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
 import { ContainerGradientText } from '../../../components';
+import { useDevice } from 'src/contexts/device';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -83,7 +84,8 @@ const initStateBonus = {
   current: 0,
 };
 
-function Release({ defaultAccount, mobile }) {
+function Release({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
   const { jsCyber } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
   const [updateFunc, setUpdateFunc] = useState(0);
@@ -551,7 +553,6 @@ function Release({ defaultAccount, mobile }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
-    mobile: store.settings.mobile,
   };
 };
 

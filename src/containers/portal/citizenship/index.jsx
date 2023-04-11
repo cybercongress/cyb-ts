@@ -39,6 +39,7 @@ import { steps } from './utils';
 import Info from './Info';
 import Carousel from '../gift/carousel1/Carousel';
 import { getKeplr } from '../gift/ActionBarPortalGift';
+import { useDevice } from 'src/contexts/device';
 // import InfoCard from '../components/infoCard/infoCard';
 
 const portalConfirmed = require('../../../sounds/portalConfirmed112.mp3');
@@ -139,7 +140,8 @@ const calculatePriceNicname = (valueNickname) => {
   return funds;
 };
 
-function GetCitizenship({ defaultAccount, mobile }) {
+function GetCitizenship({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
   const { node } = useIpfs();
   const { keplr, jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -648,7 +650,6 @@ function GetCitizenship({ defaultAccount, mobile }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
-    mobile: store.settings.mobile,
   };
 };
 

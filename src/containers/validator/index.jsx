@@ -19,6 +19,8 @@ import NotFound from '../application/notFound';
 import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
+import { useDevice } from 'src/contexts/device';
+import withDevice from 'src/components/helpers/withDevice';
 
 function TabBtn({ text, isSelected, onSelect, to }) {
   return (
@@ -269,6 +271,7 @@ class ValidatorsDetails extends React.PureComponent {
             alignItems="center"
           >
             <Text color="#fff" fontSize="18px">
+              {/* seems better use viewport width or css */}
               {mobile
                 ? trimString(validatorInfo.operator_address, 16, 5)
                 : validatorInfo.operator_address}{' '}
@@ -333,9 +336,10 @@ class ValidatorsDetails extends React.PureComponent {
 
 const mapStateToProps = (store) => {
   return {
-    mobile: store.settings.mobile,
     defaultAccount: store.pocket.defaultAccount,
   };
 };
 
-export default connect(mapStateToProps)(withRouter(ValidatorsDetails));
+export default connect(mapStateToProps)(
+  withDevice(withRouter(ValidatorsDetails))
+);
