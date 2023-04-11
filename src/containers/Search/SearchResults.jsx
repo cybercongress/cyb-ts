@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useParams, useLocation, Link } from 'react-router-dom';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import InfiniteScroll from 'react-infinite-scroller';
 import { getIpfsHash, getRankGrade } from '../../utils/search/utils';
@@ -32,6 +31,7 @@ import {
 import ContentItem from '../../components/ContentItem/contentItem';
 import { AppContext } from '../../context';
 import { MainContainer } from '../portal/components';
+import { useDevice } from 'src/contexts/device';
 
 const textPreviewSparkApp = (text, value) => (
   <div style={{ display: 'grid', gap: '10px' }}>
@@ -82,7 +82,7 @@ function SearchResults() {
   // const [fetching, setFetching] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
-  const { mobile } = useSelector((state) => state.settings);
+  const { isMobile: mobile } = useDevice();
 
   // useEffect(() => {
   //   if (query.match(/\//g)) {

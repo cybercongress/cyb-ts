@@ -25,6 +25,7 @@ import STEP_INFO from './utils';
 import Info from './Info';
 import portalConfirmed from '../../../sounds/portalConfirmed112.mp3';
 import portalAmbient from '../../../sounds/portalAmbient112.mp3';
+import { useDevice } from 'src/contexts/device';
 
 const portalAmbientObg = new Audio(portalAmbient);
 const portalConfirmedObg = new Audio(portalConfirmed);
@@ -69,8 +70,8 @@ const itemsStep = [
   },
 ];
 
-function PortalGift({ defaultAccount, mobile }) {
-  const { node } = useIpfs();
+function PortalGift({ defaultAccount }) {
+  const { isMobile: mobile } = useDevice();
   const { jsCyber } = useContext(AppContext);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [updateFunc, setUpdateFunc] = useState(0);
@@ -468,7 +469,6 @@ function PortalGift({ defaultAccount, mobile }) {
 const mapStateToProps = (store) => {
   return {
     defaultAccount: store.pocket.defaultAccount,
-    mobile: store.settings.mobile,
   };
 };
 

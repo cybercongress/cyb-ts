@@ -18,6 +18,7 @@ import ActionBarContainer from '../Search/ActionBarContainer';
 import useGetIpfsContent from './useGetIpfsContentHook';
 import { AppContext } from '../../context';
 import ComponentLoader from '../ipfsSettings/ipfsComponents/ipfsLoader';
+import { useDevice } from 'src/contexts/device';
 
 const dateFormat = require('dateformat');
 
@@ -105,11 +106,12 @@ function ContentIpfsCid(dataGetIpfsContent) {
   }
 }
 
-function Ipfs({ mobile }) {
+function Ipfs() {
   const { jsCyber } = useContext(AppContext);
   const { cid, tab = 'discussion' } = useParams();
   const { node: nodeIpfs } = useIpfs();
   const dataGetIpfsContent = useGetIpfsContent(cid, nodeIpfs);
+  const { isMobile: mobile } = useDevice();
 
   const [content, setContent] = useState('');
   const [typeContent, setTypeContent] = useState('');
@@ -255,7 +257,7 @@ function Ipfs({ mobile }) {
   return (
     <>
       <main className="block-body">
-        {content.length ? (
+        {dataGetIpfsContent.loading ? (
           <ContentIpfsCid dataGetIpfsContent={dataGetIpfsContent} />
         ) : (
           <ContentTab
@@ -388,10 +390,4 @@ function Ipfs({ mobile }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(Ipfs);
+export default Ipfs;

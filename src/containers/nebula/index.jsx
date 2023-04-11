@@ -54,7 +54,7 @@ function Title({ capData }) {
   );
 }
 
-function Nebula({ mobile }) {
+function Nebula() {
   const { traseDenom } = useContext(AppContext);
   const { dataTotal, marketData } = useGetMarketData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
@@ -206,10 +206,4 @@ function Nebula({ mobile }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    mobile: store.settings.mobile,
-  };
-};
-
-export default connect(mapStateToProps)(Nebula);
+export default Nebula;
