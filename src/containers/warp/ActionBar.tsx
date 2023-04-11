@@ -31,6 +31,7 @@ import { useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
 import ActionBarStaps from '../teleport/actionBarSteps';
 import { sortReserveCoinDenoms } from '../teleport/utils';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -58,7 +59,7 @@ function ActionBar({ stateActionBar }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { queryClient } = useSdk();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
@@ -117,8 +118,8 @@ function ActionBar({ stateActionBar }) {
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
 
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-      const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
       const reduceAmountA = convertAmountReverce(tokenAAmount, coinDecimalsA);
       const reduceAmountB = convertAmountReverce(tokenBAmount, coinDecimalsB);
@@ -209,10 +210,10 @@ function ActionBar({ stateActionBar }) {
         [tokenB]: amountY,
       };
 
-      const { coinDecimals: coinDecimalsA } = traseDenom(
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(
         arrangedReserveCoinDenoms[0]
       );
-      const { coinDecimals: coinDecimalsB } = traseDenom(
+      const [{ coinDecimals: coinDecimalsB }] = traseDenom(
         arrangedReserveCoinDenoms[1]
       );
 
@@ -250,7 +251,7 @@ function ActionBar({ stateActionBar }) {
         if (response.code === 0) {
           setTxHash(response.transactionHash);
         } else {
-          setTxHash(null);
+          setTxHash(undefined);
           setErrorMessage(response.rawLog.toString());
           setStage(STAGE_ERROR);
         }

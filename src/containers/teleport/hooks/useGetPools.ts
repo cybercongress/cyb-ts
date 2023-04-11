@@ -1,41 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useSdk from 'src/hooks/useSdk';
-import {
-  Params,
-  Pool,
-} from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
-import {
-  QueryLiquidityPoolsResponse,
-  QueryParamsResponse,
-} from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
+import { Params } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
+import { QueryParamsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
+import { Option } from 'src/types/common';
 
-type Option<T> = T | undefined;
-
-export function usePoolListInterval() {
-  const { queryClient } = useSdk();
-  const [poolsData, setPoolsData] = useState<Pool[]>();
-  const { data } = useQuery(
-    ['liquidityPools'],
-    () => {
-      return queryClient?.pools() as Option<QueryLiquidityPoolsResponse>;
-    },
-    {
-      enabled: Boolean(queryClient),
-      refetchInterval: 50000,
-    }
-  );
-
-  useEffect(() => {
-    if (data !== undefined) {
-      setPoolsData(data.pools);
-    }
-  }, [data]);
-
-  return poolsData;
-}
-
-export function useGetParams() {
+function useGetParams() {
   const { queryClient } = useSdk();
   const { data } = useQuery(
     ['liquidityParams'],
@@ -59,3 +29,5 @@ export function useGetParams() {
 
   return params;
 }
+
+export default useGetParams;

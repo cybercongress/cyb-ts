@@ -1,12 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
+import useNetworks from 'src/hooks/useNetwork';
 import { CYBER } from '../../../../utils/config';
 import { fromBech32, selectNetworkImg } from '../../../../utils/utils';
 import { BandwidthBar } from '../../../../components';
 import styles from './SwitchNetwork.module.scss';
-import { AppContext } from '../../../../context';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 
 const forEachObjbech32 = (data, prefix) => {
@@ -50,7 +50,7 @@ const updateAddress = async (prefix: any) => {
 function SwitchNetwork({ onClickOpenMenu, openMenu }) {
   const mediaQuery = useMediaQuery('(min-width: 768px)');
   const [controlledVisible, setControlledVisible] = React.useState(false);
-  const { networks } = useContext(AppContext);
+  const { networks } = useNetworks();
   const { getTooltipProps, setTooltipRef, visible } = usePopperTooltip({
     trigger: 'click',
     closeOnOutsideClick: false,
@@ -65,52 +65,54 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
     window.location.reload();
   };
 
-  const renderItemChain = Object.keys(networks)
-    .filter((itemKey) => itemKey !== CYBER.CHAIN_ID)
-    .map((key) => (
-      // <ButtonNetwork
-      //   // disabled={CYBER.CHAIN_ID === key}
-      //   onClick={() =>
-      //     onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
-      //   }
-      //   network={key}
-      // />
-      <button
-        key={key}
-        type="button"
-        className={styles.containerBtnItemSelect}
-        onClick={() =>
-          onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
-        }
-      >
-        <div className={styles.networkBtn}>
-          <img
-            style={{ width: '60px', height: '60px', position: 'relative' }}
-            alt="cyb"
-            src={selectNetworkImg(key)}
-          />
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            height: '100%',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            padding: '27px 0',
-            color: '#1FCBFF',
-            fontSize: '16px',
-            alignItems: 'flex-start',
-          }}
+  const renderItemChain =
+    networks &&
+    Object.keys(networks)
+      .filter((itemKey) => itemKey !== CYBER.CHAIN_ID)
+      .map((key) => (
+        // <ButtonNetwork
+        //   // disabled={CYBER.CHAIN_ID === key}
+        //   onClick={() =>
+        //     onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
+        //   }
+        //   network={key}
+        // />
+        <button
+          key={key}
+          type="button"
+          className={styles.containerBtnItemSelect}
+          onClick={() =>
+            onClickChain(key, networks[key].BECH32_PREFIX_ACC_ADDR_CYBER)
+          }
         >
-          <div
-            className={styles.containerBtnItemSelect}
-            style={{ whiteSpace: 'nowrap' }}
-          >
-            {key}
+          <div className={styles.networkBtn}>
+            <img
+              style={{ width: '60px', height: '60px', position: 'relative' }}
+              alt="cyb"
+              src={selectNetworkImg(key)}
+            />
           </div>
-        </div>
-      </button>
-    ));
+          <div
+            style={{
+              display: 'flex',
+              height: '100%',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              padding: '27px 0',
+              color: '#1FCBFF',
+              fontSize: '16px',
+              alignItems: 'flex-start',
+            }}
+          >
+            <div
+              className={styles.containerBtnItemSelect}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              {key}
+            </div>
+          </div>
+        </button>
+      ));
 
   return (
     <>
@@ -170,7 +172,7 @@ function SwitchNetwork({ onClickOpenMenu, openMenu }) {
         )}
       </div>
 
-      {Object.keys(renderItemChain).length > 0 && (
+      {renderItemChain && Object.keys(renderItemChain).length > 0 && (
         <Transition in={visible} timeout={300}>
           {(state) => {
             return (

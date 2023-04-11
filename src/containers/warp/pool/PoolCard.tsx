@@ -11,6 +11,7 @@ import styles from './styles.scss';
 import { PoolsWithAssetsCapType } from '../type'
 import { Option } from 'src/types/common';
 import { ObjKeyValue } from 'src/types/data';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 type PoolCardProps = {
   pool: PoolsWithAssetsCapType;
@@ -19,7 +20,7 @@ type PoolCardProps = {
 };
 
 function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
 
   const [sharesToken, setSharesToken] = useState(null);
 
@@ -49,7 +50,7 @@ function PoolCard({ pool, totalSupplyData, accountBalances }: PoolCardProps) {
       if (reserveCoinDenoms && Object.keys(reserveCoinDenoms).length > 0) {
         reserveCoinDenoms.forEach((itemCoin) => {
           if (itemCoin.includes('ibc')) {
-            const { denom, path } = traseDenom(itemCoin);
+            const [{ denom, path }] = traseDenom(itemCoin);
             const result = tokenList.find((item) => item.denom === denom);
             if (result !== undefined) {
               const { counterpartyChainId, destChannelId } = result;

@@ -1,9 +1,9 @@
 /* eslint-disable no-restricted-syntax */
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Sha256 } from '@cosmjs/crypto';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 import { CYBER } from '../../../utils/config';
 import networkList from '../../../utils/networkListIbc';
-import { AppContext } from '../../../context';
 
 const sha256 = (data) => {
   return new Uint8Array(new Sha256().update(data).digest());
@@ -23,7 +23,7 @@ const ibcDenom = (paths, coinMinimalDenom) => {
 };
 
 function useGetBalancesIbc(client, denom) {
-  const { ibcDataDenom } = useContext(AppContext);
+  const { ibcDenoms: ibcDataDenom } = useIbcDenom();
   const [balanceIbc, setBalanceIbc] = useState(null);
   const [denomIbc, setDenomIbc] = useState(null);
 
@@ -33,7 +33,7 @@ function useGetBalancesIbc(client, denom) {
         const responseChainId = client.signer.chainId;
         if (responseChainId !== CYBER.CHAIN_ID) {
           let coinMinimalDenom = null;
-          if (denom.includes('ibc')) {
+          if (denom.includes('ibc') && ibcDataDenom) {
             coinMinimalDenom = ibcDataDenom[denom].baseDenom;
           } else {
             coinMinimalDenom = ibcDenom(

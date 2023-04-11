@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from 'src/context';
+import { useEffect, useState } from 'react';
 import { CYBER } from 'src/utils/config';
 import {
   findDenomInTokenList,
   reduceBalances,
   isNative,
 } from 'src/utils/utils';
-import useSdk from './useSdk';
 import { Option } from 'src/types/common';
 import { ObjKeyValue } from 'src/types/data';
+import useSdk from './useSdk';
+import useIbcDenom from './useIbcDenom';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -29,7 +29,7 @@ const totalSupplyFetcher = (client) => {
 
 function useGetTotalSupply() {
   const { queryClient } = useSdk();
-  const { ibcDataDenom } = useContext(AppContext);
+  const { ibcDenoms: ibcDataDenom } = useIbcDenom();
   const [totalSupplyAll, setTotalSupplyAll] =
     useState<Option<ObjKeyValue>>(undefined);
   const [totalSupplyProofList, setTotalSupplyProofList] =
@@ -53,7 +53,7 @@ function useGetTotalSupply() {
 
         const reduceData = {};
 
-        if (Object.keys(ibcDataDenom).length > 0) {
+        if (ibcDataDenom) {
           Object.keys(datareduceTotalSupply).forEach((key) => {
             const value = datareduceTotalSupply[key];
             if (!isNative(key)) {

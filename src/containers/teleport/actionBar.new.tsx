@@ -37,6 +37,7 @@ import { Option } from 'src/types/common';
 import { DeliverTxResponse } from '@cosmjs/stargate';
 import { connect, useSelector } from 'react-redux';
 import { Coin } from '@cosmjs/launchpad';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 const POOL_TYPE_INDEX = 1;
 
@@ -64,7 +65,7 @@ function ActionBar({ stateActionBar }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { queryClient } = useSdk();
   const { signingClient, signer } = useSigningClient();
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState<Option<string>>(undefined);
@@ -127,7 +128,7 @@ function ActionBar({ stateActionBar }) {
 
       let amountTokenA = tokenAAmount;
 
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
 
       amountTokenA = convertAmountReverce(amountTokenA, coinDecimalsA);
 
@@ -212,7 +213,7 @@ function ActionBar({ stateActionBar }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + 60000}000000`
       );
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
       const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
 
       const transferAmount = coinFunc(amount, denomIbc);
@@ -282,7 +283,7 @@ function ActionBar({ stateActionBar }) {
       const timeoutTimestamp = Long.fromString(
         `${new Date().getTime() + 60000}000000`
       );
-      const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
+      const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
       const amount = convertAmountReverce(tokenAAmount, coinDecimalsA);
       const transferAmount = coinFunc(amount, tokenA);
       const msg = {

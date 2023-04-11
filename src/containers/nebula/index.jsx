@@ -16,6 +16,7 @@ import useGetMarketData from './useGetMarketData';
 import { ColItem, RowItem, FormatNumberTokens, NebulaImg } from './components';
 import { CYBER } from '../../utils/config';
 import { AppContext } from '../../context';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 function Title({ capData }) {
   return (
@@ -55,7 +56,7 @@ function Title({ capData }) {
 }
 
 function Nebula({ mobile }) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const { dataTotal, marketData } = useGetMarketData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
@@ -64,7 +65,7 @@ function Nebula({ mobile }) {
       let cap = 0;
       Object.keys(dataTotal).forEach((key) => {
         const amount = dataTotal[key];
-        const { coinDecimals } = traseDenom(key);
+        const [{ coinDecimals }] = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (
           Object.keys(marketData).length > 0 &&
@@ -105,7 +106,7 @@ function Nebula({ mobile }) {
         const amount = dataTotal[key];
         let price = 0;
         let cap = 0;
-        const { coinDecimals } = traseDenom(key);
+        const [{ coinDecimals }] = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
 
         if (
@@ -137,10 +138,10 @@ function Nebula({ mobile }) {
   }, [dataTotal, marketData]);
 
   const getTypeDenomKey = (key) => {
-    const { denom } = traseDenom(key);
+    const denom = traseDenom(key);
 
-    if (denom.includes('ibc')) {
-      return replaceSlash(denom);
+    if (denom[0].denom.includes('ibc')) {
+      return replaceSlash(denom[0].denom);
     }
 
     if (key.includes('pool')) {
@@ -149,7 +150,7 @@ function Nebula({ mobile }) {
       )}`;
     }
 
-    return denom;
+    return denom[0].denom;
   };
 
   const getLinktoSearch = (key) => {

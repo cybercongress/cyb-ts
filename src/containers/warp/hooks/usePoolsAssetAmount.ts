@@ -6,12 +6,14 @@ import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v
 import { Option } from 'src/types/common';
 import useSdk from 'src/hooks/useSdk';
 import { OptionNeverArray, PoolsWithAssetsType, PoolsWithAssetsCapType, AssetsType } from '../type';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 
 
 const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
   const { queryClient } = useSdk();
-  const { traseDenom, marketData } = useContext(AppContext);
+  const { marketData } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const [poolsBal, setPoolsBal] = useState<
     OptionNeverArray<PoolsWithAssetsType[]>
   >([]);
@@ -51,7 +53,7 @@ const usePoolsAssetAmount = (pools: Option<Pool[]>) => {
           const dataReduceBalances = reduceBalances(getBalancePromise);
           Object.keys(dataReduceBalances).forEach((key) => {
             const amount = new BigNumber(dataReduceBalances[key]).toNumber();
-            const { coinDecimals } = traseDenom(key);
+            const [{ coinDecimals }] = traseDenom(key);
             const reduceAmoun = convertAmount(amount, coinDecimals);
             assetsData[key] = reduceAmoun;
           });

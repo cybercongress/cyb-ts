@@ -7,9 +7,11 @@ import {
   getDenomHash,
   getDisplayAmount,
 } from '../../../utils/utils';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 function useGetTotalCap() {
-  const { marketData, traseDenom, dataTotalSupply } = useContext(AppContext);
+  const { marketData, dataTotalSupply } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   const [capData, setCapData] = useState({
     currentCap: 0,
     change: { amount: 0, time: 0 },
@@ -28,7 +30,7 @@ function useGetTotalCap() {
       let cap = 0;
       Object.keys(dataTotalSupply).forEach((key) => {
         const amount = dataTotalSupply[key];
-        const { coinDecimals } = traseDenom(key);
+        const [{ coinDecimals }] = traseDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (Object.prototype.hasOwnProperty.call(marketData, key)) {
           const poolPrice = new BigNumber(marketData[key]);

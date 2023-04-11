@@ -1,5 +1,6 @@
 import { useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import useNetworks from 'src/hooks/useNetwork';
 import { AppContext } from '../../context';
 import { CYBER } from '../../utils/config';
 import { MainContainer } from '../portal/components';
@@ -33,7 +34,7 @@ const statusCard = (status) => {
 };
 
 function ListNetwork() {
-  const { networks, updateNetworks } = useContext(AppContext);
+  const { networks, updateNetworks } = useNetworks();
 
   const onClickDeleteAddress = useCallback(
     (key) => {
@@ -44,7 +45,7 @@ function ListNetwork() {
     [networks, updateNetworks]
   );
 
-  const renderItem = Object.keys(networks).map((key) => {
+  const renderItem = networks && Object.keys(networks).map((key) => {
     const item = networks[key];
     return (
       <ContainerGradientText status={statusCard(key)} key={key}>

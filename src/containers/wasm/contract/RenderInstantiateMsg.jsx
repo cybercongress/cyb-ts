@@ -1,13 +1,15 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { GasPrice } from '@cosmjs/launchpad';
+import useSdk from 'src/hooks/useSdk';
+import useSigningClient from 'src/hooks/useSigningClient';
 import txs from '../../../utils/txs';
-import { AppContext } from '../../../context';
 import JsonSchemaParse from './renderAbi/JsonSchemaParse';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
 function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
-  const { keplr, jsCyber } = useContext(AppContext);
+  const { queryClient } = useSdk();
+  const { signer, signingClient } = useSigningClient();
   const [contractResponse, setContractResponse] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [executing, setExecuting] = useState(false);
@@ -15,8 +17,8 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (jsCyber !== null && txHash !== null) {
-        const response = await jsCyber.getTx(txHash);
+      if (queryClient && txHash !== null) {
+        const response = await queryClient.getTx(txHash);
         console.log('response :>> ', response);
         if (response && response !== null) {
           const { code, hash, height } = response;
@@ -56,10 +58,10 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jsCyber, txHash, activeKey]);
+  }, [queryClient, txHash, activeKey]);
 
   const runExecute = async ({ formData }, key) => {
-    if (keplr === null || !formData) {
+    if (!signer || !formData) {
       return;
     }
 
@@ -69,9 +71,9 @@ function RenderInstantiateMsg({ label, codeId, memo, schema, updateFnc }) {
     console.log(`formData`, formData);
 
     try {
-      const [{ address }] = await keplr.signer.getAccounts();
+      const [{ address }] = await signer.getAccounts();
 
-      const executeResponseResult = await keplr.instantiate(
+      const executeResponseResult = await signingClient.instantiate(
         address,
         parseFloat(codeId),
         formData,

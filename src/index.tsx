@@ -30,6 +30,8 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ErrorScreen from './components/ErrorBoundary/ErrorScreen/ErrorScreen';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
+import IbcDenomProvider from './contexts/ibcDenom';
+import NetworksProvider from './contexts/networks';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -86,20 +88,24 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <IpfsProvider>
-      <SdkQueryClientProvider>
-        <SigningClientProvider>
-          <ApolloProvider client={client}>
-            <AppContextProvider>
-              <QueryClientProvider client={queryClient}>
-                <ErrorBoundary fallback={<ErrorScreen />}>
-                  <AppRouter />
-                  <ReactQueryDevtools />
-                </ErrorBoundary>
-              </QueryClientProvider>
-            </AppContextProvider>
-          </ApolloProvider>
-        </SigningClientProvider>
-      </SdkQueryClientProvider>
+      <NetworksProvider>
+        <SdkQueryClientProvider>
+          <SigningClientProvider>
+            <ApolloProvider client={client}>
+              <AppContextProvider>
+                <QueryClientProvider client={queryClient}>
+                  <IbcDenomProvider>
+                    <ErrorBoundary fallback={<ErrorScreen />}>
+                      <AppRouter />
+                      <ReactQueryDevtools />
+                    </ErrorBoundary>
+                  </IbcDenomProvider>
+                </QueryClientProvider>
+              </AppContextProvider>
+            </ApolloProvider>
+          </SigningClientProvider>
+        </SdkQueryClientProvider>
+      </NetworksProvider>
     </IpfsProvider>
   </Provider>
 );

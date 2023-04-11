@@ -3,7 +3,8 @@ import BigNumber from 'bignumber.js';
 import { reduceBalances, convertAmount } from '../../utils/utils';
 
 import { MainContainer } from '../portal/components';
-import { Particle } from '../../components';
+import { DenomArr, Particle } from '../../components';
+import Denom from 'src/components/denom';
 
 // const token = Buffer.from(`anonymas:mouse123west`, 'utf8').toString('base64');
 const token = 'anonymas:mouse123west';
@@ -74,8 +75,8 @@ const testFunc = (responseDataPools, jsCyber) => {
     let price = 0;
     const tokenA = coinsPair[0];
     const tokenB = coinsPair[1];
-    const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-    const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+    const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+    const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
     const amountA = new BigNumber(
       convertAmount(balances[tokenA], coinDecimalsA)
@@ -167,7 +168,9 @@ function TestKeplr() {
     <MainContainer>
       {/* <Particle cid="QmX7kEC9qnP3MnHNSfVZcnFDgV3m5tegdcvDatpKtVeWDz" /> */}
       {/* <Particle cid="QmeVVkLxBjVfbZ1uFsJsBkzQ3ZxrAVKgRYnFsfDDBpJrMb" /> */}
-      <Particle cid="QmRdMmkcZKXPARbBFe5zcmAn2R1TrfoDqN7Q7w6J9Dwt6o" />
+      {/* <Particle cid="QmRdMmkcZKXPARbBFe5zcmAn2R1TrfoDqN7Q7w6J9Dwt6o" /> */}
+      <DenomArr denomValue={bootTocyb} />
+      <DenomArr denomValue={testDenom} />
     </MainContainer>
   );
 }

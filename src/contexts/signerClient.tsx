@@ -4,10 +4,11 @@ import { CYBER } from 'src/utils/config';
 import { Keplr } from '@keplr-wallet/types';
 import configKeplr from 'src/utils/keplrUtils';
 import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { Option } from 'src/types/common';
 
 type SigningClientContextType = {
-  readonly signingClient: null | SigningCyberClient;
-  readonly signer: null | OfflineSigner;
+  readonly signingClient: Option<SigningCyberClient>;
+  readonly signer: Option<OfflineSigner>;
   initSigner: () => void;
 };
 
@@ -51,8 +52,8 @@ async function createClient(
 }
 
 const valueContext = {
-  signingClient: null,
-  signer: null,
+  signingClient: undefined,
+  signer: undefined,
   initSigner: () => {},
 };
 

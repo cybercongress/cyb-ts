@@ -5,6 +5,8 @@ import { AppContext } from '../../context';
 import { reduceBalances, convertAmount } from '../../utils/utils';
 
 import { CYBER } from '../../utils/config';
+import useSdk from 'src/hooks/useSdk';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -18,8 +20,8 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
   const tokenB = coinsPair[1];
-  const { coinDecimals: coinDecimalsA } = traseDenom(tokenA);
-  const { coinDecimals: coinDecimalsB } = traseDenom(tokenB);
+  const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
+  const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
 
   const amountA = new BigNumber(convertAmount(balances[tokenA], coinDecimalsA));
   const amountB = new BigNumber(convertAmount(balances[tokenB], coinDecimalsB));
@@ -74,7 +76,8 @@ const getPoolsBalance = async (data, client) => {
 };
 
 function useGetMarketData() {
-  const { jsCyber, traseDenom } = useContext(AppContext);
+  const { queryClient } = useSdk();
+  const { traseDenom } = useIbcDenom();
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
@@ -83,20 +86,20 @@ function useGetMarketData() {
   const { data: dataTotalSupply } = useQuery({
     queryKey: ['totalSupply'],
     queryFn: async () => {
-      const responsetotalSupply = await jsCyber.totalSupply();
+      const responsetotalSupply = await queryClient.totalSupply();
       return responsetotalSupply;
     },
-    enabled: Boolean(jsCyber),
+    enabled: Boolean(queryClient),
     refetchInterval: 1000 * 60 * 3,
   });
 
   const { data: dataPools } = useQuery({
     queryKey: ['pools'],
     queryFn: async () => {
-      const responsePools = await jsCyber.pools();
+      const responsePools = await queryClient.pools();
       return responsePools;
     },
-    enabled: Boolean(jsCyber),
+    enabled: Boolean(queryClient),
     refetchInterval: 1000 * 60 * 3,
   });
 
@@ -134,7 +137,7 @@ function useGetMarketData() {
             }),
             {}
           );
-          const poolsBalance = await getPoolsBalance(reduceObj, jsCyber);
+          const poolsBalance = await getPoolsBalance(reduceObj, queryClient);
           const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
           setPoolsTotal(poolPriceObj);
         }
@@ -204,7 +207,7 @@ function useGetMarketData() {
                 reserveCoinDenoms.forEach((itemJ) => {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
-                    const { coinDecimals } = traseDenom(itemJ);
+                    const [{ coinDecimals }] = traseDenom(itemJ);
                     const balancesConvert = convertAmount(
                       balances[itemJ],
                       coinDecimals

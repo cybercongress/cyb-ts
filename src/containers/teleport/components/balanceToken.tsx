@@ -4,6 +4,7 @@ import { Dots } from '../../../components';
 import { formatNumber, getDisplayAmount } from '../../../utils/utils';
 import { AppContext } from '../../../context';
 import { ObjKeyValue } from 'src/types/data';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 
 type BalanceTokenProps = {
   token: string;
@@ -11,11 +12,11 @@ type BalanceTokenProps = {
 };
 
 function BalanceToken({ token, data }: BalanceTokenProps) {
-  const { traseDenom } = useContext(AppContext);
+  const { traseDenom } = useIbcDenom();
   let balance = 0;
 
   if (data) {
-    const { coinDecimals } = traseDenom(token);
+    const [{ coinDecimals }] = traseDenom(token);
     balance = getDisplayAmount(data[token], coinDecimals);
   }
 

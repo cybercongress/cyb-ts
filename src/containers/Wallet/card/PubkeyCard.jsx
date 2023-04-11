@@ -1,7 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { Pane, Input } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import useIbcDenom from 'src/hooks/useIbcDenom';
 import { setDefaultAccount } from '../../../redux/actions/pocket';
 import {
   PocketCard,
@@ -35,8 +36,8 @@ function RowBalance({ children, ...props }) {
 }
 
 function FormatNumberTokens({ text, value, ...props }) {
-  const { traseDenom } = useContext(AppContext);
-  const { coinDecimals } = traseDenom(text);
+  const { traseDenom } = useIbcDenom();
+  const [{ coinDecimals }] = traseDenom(text);
   return (
     <Pane
       display="grid"
