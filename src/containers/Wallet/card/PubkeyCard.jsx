@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { Pane, Input } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { setDefaultAccount } from '../../../redux/actions/pocket';
+import { setDefaultAccount } from '../../../redux/features/pocket';
 import {
   PocketCard,
   ContainerAddressInfo,
@@ -733,7 +733,7 @@ function PubkeyCard({
 const mapDispatchprops = (dispatch) => {
   return {
     setDefaultAccountProps: (name, account) =>
-      dispatch(setDefaultAccount(name, account)),
+      dispatch(setDefaultAccount({ name, account })),
   };
 };
 
