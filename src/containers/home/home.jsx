@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext, useMemo } from 'react';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
 import axios from 'axios';
@@ -58,8 +57,8 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-function Home({ block }) {
-  const { jsCyber } = useContext(AppContext);
+function Home() {
+  const { jsCyber, block } = useContext(AppContext);
   const [entropy, setEntropy] = useState(0);
   const [entropyLoader, setEntropyLoader] = useState(true);
   const [memory, setMemory] = useState(0);
@@ -255,10 +254,4 @@ function Home({ block }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    block: store.block.block,
-  };
-};
-
-export default connect(mapStateToProps)(Home);
+export default Home;

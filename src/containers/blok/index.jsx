@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -41,12 +40,13 @@ const QueryAddress = (block) =>
   }
   `;
 
-function Block({ blockThis }) {
+function Block() {
   const [page, setPage] = useState(1);
   const [lastBlockQuery, setlastBlockQuery] = useState(0);
   const [items, setItems] = useState([]);
   const [allPage, setAllPage] = useState(1);
 
+  // blockThis logic moved to app context
   // useEffect(() => {
   //   const thisBlock = [
   //     {
@@ -198,10 +198,4 @@ function Block({ blockThis }) {
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    blockThis: store.block.block,
-  };
-};
-
-export default connect(mapStateToProps)(Block);
+export default Block;
