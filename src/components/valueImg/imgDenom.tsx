@@ -34,7 +34,7 @@ const getNativeImg = (text: string) => {
   return nativeImageMap[text.toLowerCase()] || defaultImg;
 };
 
-type ImgDenomProps = {
+export type ImgDenomProps = {
   coinDenom: string;
   marginImg: string;
   size: string | number;

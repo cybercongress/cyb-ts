@@ -43,6 +43,11 @@ $color-text: #36d6ae;
     color: #40ecc1;
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    color: #777;
+  }
+
   &:disabled:hover {
     color: #777;
   }

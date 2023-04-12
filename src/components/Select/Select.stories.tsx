@@ -1,77 +1,68 @@
-import React, { useState } from 'react';
-import { Select, OptionSelect } from './';
+import { Story, Meta } from '@storybook/react';
+import Select, { SelectProps, OptionSelect } from './';
 
 export default {
-  title: 'Select',
+  title: 'Components/Select',
   component: Select,
   argTypes: {
-    width: { control: 'text' },
-    disabled: { control: 'boolean' },
-    currentValue: { control: 'text' },
+    valueSelect: {
+      control: {
+        type: 'text',
+      },
+    },
+    onChangeSelect: {
+      action: 'onChange',
+    },
+    children: {
+      control: {
+        disable: true,
+      },
+    },
+    width: {
+      control: {
+        type: 'text',
+      },
+    },
+    disabled: {
+      control: {
+        type: 'boolean',
+      },
+    },
+    currentValue: {
+      control: {
+        type: 'text',
+      },
+    },
   },
-};
+} as Meta;
 
-const Template = (args) => {
-  const [valueSelect, setValueSelect] = useState('option1');
-  const handleSelectChange = (option) => setValueSelect(option);
-
-  return (
-    <Select
-      {...args}
-      valueSelect={valueSelect}
-      onChangeSelect={handleSelectChange}
-    >
-      <OptionSelect value="option1" text="Option 1" />
-      <OptionSelect value="option2" text="Option 2" />
-      <OptionSelect value="option3" text="Option 3" />
-    </Select>
-  );
-};
+const Template: Story<SelectProps> = (args) => (
+  <Select {...args}>
+    <OptionSelect
+      value="1"
+      text="BOOT"
+      // bgrImg={require('../../image/boot.png')}
+    />
+    <OptionSelect value="2" text="ATOM" />
+    <OptionSelect value="3" text="PUSSY" />
+    <OptionSelect value="3" text="JUNO" />
+  </Select>
+);
 
 export const Default = Template.bind({});
 Default.args = {
-  currentValue: 'Option 1',
+  valueSelect: '',
+  onChangeSelect: () => {},
+  width: '220px',
+  disabled: false,
+  currentValue: 'BOOT',
 };
 
-export const WithWidth = Template.bind({});
-WithWidth.args = {
-  currentValue: 'Option 1',
-  width: '200px',
-};
-
-export const Disabled = Template.bind({});
-Disabled.args = {
-  currentValue: 'Option 1',
-  disabled: true,
-};
-
-// export default {
-//   title: 'OptionSelect',
-//   component: OptionSelect,
-//   argTypes: {
-//     text: { control: 'text' },
-//     img: { control: 'text' },
-//     bgrImg: { control: 'boolean' },
-//   },
+// export const Disabled = Template.bind({});
+// Default.args = {
+//   valueSelect: '',
+//   onChangeSelect: () => {},
+//   width: '220px',
+//   disabled: true,
+//   currentValue: 'BOOT',
 // };
-
-// export const DefaultOptionSelect = () => (
-//   <OptionSelect value="option1" text="Option 1" />
-// );
-
-// export const WithImage = () => (
-//   <OptionSelect
-//     value="option2"
-//     text="Option 2"
-//     img={<img src="https://via.placeholder.com/20x20" />}
-//   />
-// );
-
-// export const WithBackgroundImage = () => (
-//   <OptionSelect
-//     value="option3"
-//     text="Option 3"
-//     img={<img src="https://via.placeholder.com/20x20" />}
-//     bgrImg
-//   />
-// );

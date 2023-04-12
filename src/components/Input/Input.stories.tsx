@@ -1,39 +1,30 @@
-import React from 'react';
-import { Input, InputNumber } from './';
+import { Story, Meta } from '@storybook/react';
+import Input, { Props } from './Input';
 
 export default {
-  title: 'Input',
+  title: 'Components/Input',
   component: Input,
   argTypes: {
-    color: { control: 'radio', options: ['default', 'pink'] },
-    placeholder: { control: 'text' },
+    color: {
+      control: {
+        type: 'inline-radio',
+        options: ['pink', undefined],
+      },
+    },
   },
-};
+} as Meta;
 
-const Template = (args) => <Input {...args} />;
+const Template: Story<Props> = (args) => <Input {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  placeholder: 'Enter text...',
+  placeholder: 'Enter...',
+  value: 'Default',
 };
 
 export const Pink = Template.bind({});
 Pink.args = {
-  placeholder: 'Enter pink text...',
   color: 'pink',
+  value: 'Pink',
+  placeholder: 'Enter...',
 };
-
-export const DefaultNumber = () => (
-  <InputNumber
-    value="1234.567"
-    onValueChange={(value, event) => console.log(value, event)}
-  />
-);
-
-export const PinkNumber = () => (
-  <InputNumber
-    value="9876.543"
-    onValueChange={(value, event) => console.log(value, event)}
-    color="pink"
-  />
-);

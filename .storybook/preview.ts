@@ -1,5 +1,8 @@
 import type { Preview } from '@storybook/react';
 
+import '../src/style/main.css';
+import './styles.scss';
+
 // storybook error that React not defined, may be fixed in future
 import React from 'react';
 window.React = React;

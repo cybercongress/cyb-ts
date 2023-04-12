@@ -1,37 +1,48 @@
-// Button.stories.js
-
-import React from 'react';
-// import { action } from '@storybook/addon-actions';
 import BtnGrd, { Props } from './';
 
-export default {
-  title: 'Button',
-  component: BtnGrd,
-  argTypes: {
-    text: { control: 'text' },
-    img: { control: 'text' },
-    disabled: { control: 'boolean' },
-    pending: { control: 'boolean' },
-    onClick: { action: 'clicked' },
+const Button = BtnGrd;
+
+import type { Meta, StoryObj } from '@storybook/react';
+
+const meta: Meta<typeof Button> = {
+  component: Button,
+  title: 'Components/Button',
+  // argTypes: { onClick: { action: 'clicked' } },
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+const defaultArgs: Props = {
+  onClick: () => {
+    console.log('button clicked');
+  },
+  text: 'Click me',
+};
+
+export const Main: Story = {
+  args: {
+    ...defaultArgs,
   },
 };
 
-const Template = (args: Props) => <BtnGrd {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-  children: 'Click me',
-  // onClick: action('Button clicked'),
+export const Disabled: Story = {
+  args: {
+    ...defaultArgs,
+    disabled: true,
+  },
 };
 
-export const Disabled = Template.bind({});
-Disabled.args = {
-  children: 'Click me',
-  disabled: true,
+export const Pending: Story = {
+  args: {
+    ...defaultArgs,
+    pending: true,
+  },
 };
 
-export const Pending = Template.bind({});
-Pending.args = {
-  children: 'Click me',
-  pending: true,
+export const ButtonWithImage: Story = {
+  args: {
+    ...defaultArgs,
+    img: require('../../image/Bitcoin.svg'),
+  },
 };

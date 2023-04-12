@@ -1,10 +1,18 @@
 import cx from 'classnames';
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import Tooltip from '../tooltip/tooltip';
 
 const size = '15 Mb';
 
-const typeStatus = (type) => {
+export type StatusType =
+  | 'understandingState'
+  | 'impossibleLoad'
+  | 'availableDownload'
+  | 'downloaded'
+  | 'sparkApp'
+  | 'legacy';
+
+const typeStatus = (type: StatusType) => {
   let status = {
     color: '#546e7a',
     text: 'IPFS',
@@ -57,7 +65,11 @@ const typeStatus = (type) => {
   return status;
 };
 
-function Status({ status }) {
+type Props = {
+  status: StatusType;
+};
+
+function Status({ status }: Props) {
   const { color, text } = typeStatus(status);
 
   return (

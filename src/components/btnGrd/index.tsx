@@ -1,9 +1,7 @@
 import cx from 'classnames';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
-
 import { $TsFixMe } from 'src/types/tsfix';
-import React from 'react';
 
 const audioBtn = require('../../sounds/main-button.mp3');
 // const audioBtnHover = require('../../sounds/main-button-hover.mp3');
@@ -38,7 +36,7 @@ const playAudioClick = () => {
 
 export type Props = {
   disabled?: boolean;
-  children: string | JSX.Element;
+  text: string | JSX.Element;
   img?: $TsFixMe;
   pending?: boolean;
   className?: $TsFixMe;
@@ -47,7 +45,7 @@ export type Props = {
 
 function BtnGrd({
   disabled,
-  children,
+  text,
   img,
   pending,
   onClick,
@@ -102,7 +100,7 @@ function BtnGrd({
           </>
         ) : (
           <>
-            {children}
+            {text}
             {img && (
               <img style={{ width: 20, height: 20 }} alt="img" src={img} />
             )}
