@@ -33,6 +33,7 @@
     "@rjsf/core": "^3.2.1",
     "@testing-library/react": "^14.0.0",
     "@types/compression-webpack-plugin": "^9.1.1",
+    "@types/react-transition-group": "^4.4.5",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "assert": "^2.0.0",

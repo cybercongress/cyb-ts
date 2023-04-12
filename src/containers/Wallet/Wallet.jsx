@@ -5,7 +5,7 @@ import { Text } from '@cybercongress/gravity';
 
 import { Loading, LinkWindow } from '../../components';
 import { setBandwidth } from '../../redux/actions/bandwidth';
-import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
+import { setDefaultAccount, setAccounts } from '../../redux/features/pocket';
 import BanerHelp from '../help/banerHelp';
 
 import { LEDGER } from '../../utils/config';
@@ -656,7 +656,7 @@ const mapDispatchprops = (dispatch) => {
     setBandwidthProps: (remained, maxValue) =>
       dispatch(setBandwidth(remained, maxValue)),
     setDefaultAccountProps: (name, account) =>
-      dispatch(setDefaultAccount(name, account)),
+      dispatch(setDefaultAccount({ name, account })),
     setAccountsProps: (accounts) => dispatch(setAccounts(accounts)),
   };
 };
