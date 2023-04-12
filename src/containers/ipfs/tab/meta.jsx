@@ -41,6 +41,9 @@ function RowItem({ text, value }) {
 
 function MetaTab({ data, cid }) {
   try {
+    if (!data) {
+      return <div>Loading....</div>;
+    }
     return (
       <>
         <Pane

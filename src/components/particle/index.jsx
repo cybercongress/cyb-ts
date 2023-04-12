@@ -52,16 +52,6 @@ function Particle({ cid }) {
   return (
     <div>
       <Titile cid={cid} creator={creator} status={status} />
-      {/* {status === 'downloaded' && (
-        // <Link to={link}>
-          <Content
-            cid={cid}
-            typeContent={typeContent}
-            textPreview={textPreview}
-            content={content}
-          />
-        // </Link>
-      )} */}
     </div>
   );
 }

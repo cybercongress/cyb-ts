@@ -1,12 +1,15 @@
+// TODO: refactor this component, + add styles
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
+import useIpfs from 'src/hooks/useIpfs';
+
 import { Dots, LinkWindow } from '../../../components';
 import { CYBER } from '../../../utils/config';
-import useIpfs from 'src/hooks/useIpfs';
+import { IPFSContent } from 'src/utils/ipfs/ipfs';
 
 // const htmlParser = require('react-markdown/plugins/html-parser');
 
@@ -45,10 +48,15 @@ const getIpfsUserGatewanAndNodeType = () => {
   return CYBER.CYBER_GATEWAY;
 };
 
-function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
-  const { node: nodeIpfs } = useIpfs();
-  const [gatewayUrl, setGatewayUrl] = useState(null);
+type ContentTabProps = {
+  contentIpfs: IPFSContent;
+  cid: string;
+};
 
+function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
+  const { node: nodeIpfs } = useIpfs();
+  const [gatewayUrl, setGatewayUrl] = useState<string | undefined>(undefined);
+  console.log('----contentIpfs ContentTab', contentIpfs);
   useEffect(() => {
     if (!nodeIpfs) {
       const response = getIpfsUserGatewanAndNodeType();
@@ -59,11 +67,11 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
   }, [nodeIpfs]);
 
   try {
-    if (gatewayUrl === null) {
+    if (!gatewayUrl) {
       return <div>...</div>;
     }
 
-    if (gateway) {
+    if (contentIpfs?.data?.gateway) {
       return (
         <>
           {/* <Pane
@@ -101,17 +109,29 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
         </>
       );
     }
-    if (typeContent === 'image') {
+    if (contentIpfs.data?.type === 'image') {
       return (
         <img
           alt="content"
           id="imgIpfs"
-          style={stylesImg || { objectFit: 'contain', width: '100%' }}
-          src={content}
+          style={{ objectFit: 'contain', width: '100%' }}
+          src={contentIpfs.data?.content}
         />
       );
     }
-    if (typeContent === 'link') {
+    if (contentIpfs.data?.type === 'text') {
+      return (
+        <div
+          style={{
+            textAlign: 'center',
+          }}
+        >
+          {contentIpfs.data?.text || contentIpfs.cid.toString()}
+        </div>
+      );
+    }
+
+    if (contentIpfs.data?.type === 'link') {
       return (
         <div
           style={{
@@ -121,7 +141,9 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
             minHeight: '100px',
           }}
         >
-          <LinkWindow to={content}>{content}</LinkWindow>
+          <LinkWindow to={contentIpfs.data?.link}>
+            {contentIpfs.data?.content}
+          </LinkWindow>
 
           <Iframe
             width="100%"
@@ -129,7 +151,7 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
             // loading={<Dots />}
             id="iframeCid"
             className="iframe-SearchItem"
-            src={content}
+            src={contentIpfs.data?.content}
             style={{
               backgroundColor: '#fff',
             }}
@@ -163,14 +185,16 @@ function ContentTab({ typeContent, gateway, content, cid, stylesImg }) {
       <div className="markdown">
         <ReactMarkdown
           // eslint-disable-next-line react/no-children-prop
-          children={content}
+
           rehypePlugins={[rehypeStringify, rehypeSanitize]}
           // skipHtml
           // astPlugins={[parseHtml]}
           remarkPlugins={[remarkGfm]}
           // plugins={[toc]}
           // escapeHtml={false}
-        />
+        >
+          {contentIpfs.data?.content}
+        </ReactMarkdown>
       </div>
     );
   } catch (error) {

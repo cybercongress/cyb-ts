@@ -6,10 +6,10 @@ import {
   throwError,
   // distinctUntilChanged,
 } from 'rxjs';
-import { promiseToObservable } from '../../utils/helpers';
 
 import * as R from 'ramda';
-import { Nullable } from '../../types';
+
+import { promiseToObservable } from '../../utils/helpers';
 
 type QueueItemStatus =
   | 'pending'
@@ -27,7 +27,7 @@ type QueueStats = {
 type QueueItemCallback<T> = (
   cid: string,
   status: QueueItemStatus,
-  result?: Nullable<T>
+  result?: T
 ) => void;
 
 type QueueItemOptions = {
@@ -38,7 +38,7 @@ type QueueItemOptions = {
 
 type QueueItem<T> = {
   cid: string;
-  promiseFactory: () => Promise<Nullable<T>>;
+  promiseFactory: () => Promise<T>;
   status: QueueItemStatus;
   callback: QueueItemCallback<T>;
 } & QueueItemOptions;

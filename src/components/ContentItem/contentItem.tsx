@@ -5,10 +5,10 @@ import Iframe from 'react-iframe';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
-import useIpfsContent from 'src/hooks/useIpfsContent';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { IPFSContentWithType } from 'src/utils/ipfs/ipfs';
 
 import SearchItem from '../SearchItem/searchItem';
-import { getTypeContent } from '../../containers/ipfs/useGetIpfsContentHook';
 
 import { getRankGrade } from '../../utils/search/utils';
 
@@ -17,48 +17,28 @@ type ContentItemProps = {
   cid: string;
   grade?: $TsFixMe;
   className?: string;
+  parent?: string;
 };
 
 function ContentItem({
   item,
   cid,
   grade,
+  parent: parentId,
   className,
 }: ContentItemProps): JSX.Element {
-  const [textPreview, setTextPreview] = useState<string | undefined>(cid);
-  const [typeContent, setTypeContent] = useState<string | undefined>(undefined);
-  const [ipfsContent, setIpfsContent] = useState<$TsFixMe>(undefined);
-  const [link, setLink] = useState(`/ipfs/${cid}`);
-
-  const { status, content } = useIpfsContent(cid, item.rank, '');
+  const [ipfsData, setIpfData] = useState<IPFSContentWithType>(undefined);
+  const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
   useEffect(() => {
-    const feachData = async (): Promise<void> => {
-      // console.log('dataResponseByCid', content, status);
-      if (content) {
-        if (content === 'availableDownload' || !content.data) {
-          setTextPreview(cid);
-        } else {
-          const dataTypeContent = await getTypeContent(content.data, cid);
-          const {
-            text: textContent,
-            type,
-            content: dataContent,
-            link: linkContent,
-          } = dataTypeContent;
-
-          setTextPreview(textContent);
-          setTypeContent(type);
-          setIpfsContent(dataContent);
-          setLink(linkContent);
-        }
-      }
-    };
-    feachData();
-  }, [content, status, cid]);
+    // TODO: cover case with content === 'availableDownload'
+    if (status === 'completed' && content && content !== 'availableDownload') {
+      setIpfData(content.data);
+    }
+  }, [content, status]);
 
   return (
-    <Link className={className} to={link}>
+    <Link className={className} to={`/ipfs/${cid}`}>
       <SearchItem
         key={cid}
         textPreview={
@@ -67,7 +47,7 @@ function ContentItem({
               rehypePlugins={[rehypeSanitize]}
               remarkPlugins={[remarkGfm]}
             >
-              {textPreview || ''}
+              {ipfsData?.text || cid}
             </ReactMarkdown>
           </div>
         }
@@ -78,19 +58,19 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        {typeContent === 'image' && (
+        {ipfsData?.type === 'image' && (
           <img
             style={{ width: '100%', paddingTop: 10 }}
             alt="img"
-            src={ipfsContent}
+            src={ipfsData?.content}
           />
         )}
-        {content && typeContent === 'application/pdf' && (
+        {ipfsData?.type === 'application/pdf' && (
           <Iframe
             width="100%"
             height="400px"
             className="iframe-SearchItem"
-            url={ipfsContent}
+            url={ipfsData?.content}
           />
         )}
       </SearchItem>

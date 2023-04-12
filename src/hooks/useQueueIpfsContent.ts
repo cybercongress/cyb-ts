@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
-import { IPFSContentMaybe } from '../utils/ipfs/ipfs.d';
+import { IPFSContentMaybe } from '../utils/ipfs/ipfs';
 
 import {
   QueueManager,
@@ -23,18 +22,17 @@ window.qm = queueManager;
 
 type UseIpfsContentReturn = {
   status?: string;
-  content?: IPFSContentMaybe;
+  content: IPFSContentMaybe;
 };
 
-function useIpfsContent(
+function useQueueIpfsContent(
   cid: string,
   rank: number,
-  parent: string
+  parentId?: string
 ): UseIpfsContentReturn {
   const [status, setStatus] = useState<QueueItemStatus | undefined>();
   const [content, setContent] = useState<IPFSContentMaybe>();
-  const { query } = useParams();
-  const prevQueryRef = useRef<string | undefined>();
+  const prevParentIdRef = useRef<string | undefined>();
   const { node } = useIpfs();
 
   useEffect(() => {
@@ -56,20 +54,19 @@ function useIpfsContent(
         cid,
         () => getIPFSContent(node, cid, controller),
         callback,
-        { controller, parent: query, priority: rank }
+        { controller, parent: parentId, priority: rank }
       );
-      // console.log('---query', queueManager.getStats());
 
-      if (prevQueryRef.current !== query) {
-        if (prevQueryRef.current) {
-          queueManager.cancelByParent(prevQueryRef.current);
+      if (prevParentIdRef.current !== parentId) {
+        if (prevParentIdRef.current) {
+          queueManager.cancelByParent(prevParentIdRef.current);
         }
-        prevQueryRef.current = query;
+        prevParentIdRef.current = parentId;
       }
     }
-  }, [node, cid, parent, rank, query]);
+  }, [node, cid, rank, parentId]);
 
   return { status, content };
 }
 
-export default useIpfsContent;
+export default useQueueIpfsContent;
