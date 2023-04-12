@@ -6,22 +6,12 @@ const configIpfs = () => ({
   start: true,
   // repo: 'ipfs-repo-cyber-v2',
   repo: `ok${Math.random()}`,
-  relay: {
-    enabled: true,
-    hop: {
-      enabled: true,
-    },
-  },
+
   config: {
     API: {
       HTTPHeaders: {
         'Access-Control-Allow-Methods': ['PUT', 'POST'],
-        'Access-Control-Allow-Origin': [
-          'http://localhost:3000',
-          'http://127.0.0.1:5001',
-          'http://127.0.0.1:8888',
-          'http://localhost:8888',
-        ],
+        'Access-Control-Allow-Origin': ['*'],
       },
     },
     Addresses: {
@@ -30,6 +20,8 @@ const configIpfs = () => ({
         '/dns4/ws-star.discovery.cybernode.ai/tcp/443/wss/p2p-webrtc-star',
         '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
         '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        '/ip4/88.99.105.146/tcp/9094/p2p/12D3KooWGJvMBPGSQtLeXJgL11wmK67Tp2v69A1Q4rp5FjoSGBNd',
+        '/ip4/135.181.19.86/tcp/9094/p2p/12D3KooWRkf2iZHfy1mUrdReHBFXu8TWWzK1XzsMy8TXqVohwEtH',
       ],
       Delegates: [
         '/dns4/node0.delegate.ipfs.io/tcp/443/https',
@@ -47,14 +39,14 @@ const configIpfs = () => ({
       },
     },
     Peering: {
-      Peers: null,
+      Peers: [],
     },
     Bootstrap: [
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
-      '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
+      // '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
+      // '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
+      // '/dnsaddr/bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp',
+      // '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
+      // '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
       '/dns4/ws-star.discovery.cybernode.ai/tcp/4430/wss/p2p/QmUgmRxoLtGERot7Y6G7UyF6fwvnusQZfGR15PuE6pY3aB',
     ],
     Pubsub: {
@@ -70,8 +62,8 @@ const configIpfs = () => ({
       },
       DisableBandwidthMetrics: false,
       DisableNatPortMap: false,
-      EnableAutoRelay: false,
-      EnableRelayHop: false,
+      EnableAutoRelay: true,
+      EnableRelayHop: true,
     },
     Routing: {
       Type: 'dhtclient',
@@ -83,7 +75,7 @@ const configIpfs = () => ({
       // In a production environment the default filter should be used
       // where only DNS + WSS addresses will be dialed by websockets in the browser.
       webSockets({
-        filter: filters.dnsWss,
+        filter: filters.all,
       }),
     ],
     nat: {

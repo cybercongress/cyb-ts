@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JS-IPFS Node Connection Example</title>
+  </head>
+  <body>
+    <h1>JS-IPFS Node Connection Example</h1>
+
+    <script src="https://cdn.jsdelivr.net/npm/ipfs/dist/index.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        // create an async function to initialize the nodes
+        const initNodes = async () => {
+          // create a temporary repo for each node
+          const repo1 = 'ipfs-repo-1-' + Math.random();
+          const repo2 = 'ipfs-repo-2-' + Math.random();
+          const params = {
+            config: {
+              Addresses: {
+                Swarm: [`/ip4/0.0.0.0/tcp/0`, `/ip4/127.0.0.1/tcp/0/ws`],
+                API: `/ip4/127.0.0.1/tcp/0`,
+                Gateway: `/ip4/127.0.0.1/tcp/0`,
+                RPC: `/ip4/127.0.0.1/tcp/0`,
+              },
+              Bootstrap: [],
+            },
+          };
+
+          // create the nodes with the temporary repos
+          const node1 = await Ipfs.create({ repo: repo1, ...params });
+          const node2 = await Ipfs.create({ repo: repo2, ...params });
+          setTimeout(async () => {
+            // connect the nodes to each other
+            const id1 = await node1.id();
+            const id2 = await node2.id();
+            console.log('------------------', id1, node1);
+            await node1.swarm.connect(id1.id.toString());
+            await node2.swarm.connect(id2.id.toString());
+            // console.log('-----------------33333-', id1.id.toString());
+
+            // log the node peer ids
+            // console.log('node1 peer id:', node1.peerId.toB58String());
+            // console.log('node2 peer id:', node2.peerId.toB58String());
+
+            // verify that the nodes are connected to each other
+            const peers = await node1.swarm.peers();
+            console.log('peers:', peers);
+          }, 2000);
+        };
+
+        // call the async function to initialize the nodes
+        initNodes();
+      });
+    </script>
+  </body>
+</html>

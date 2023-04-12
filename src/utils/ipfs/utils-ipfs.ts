@@ -186,8 +186,9 @@ const getIPFSContent = async (
   controller?: AbortController,
   callBackFuncStatus?: CallBackFuncStatus
 ): Promise<IPFSContentMaybe> => {
-  const dataRsponseDb = await getIPFSContentFromDb(cid);
-
+  //TODO: DISABLED TMP
+  // const dataRsponseDb = await getIPFSContentFromDb(cid);
+  const dataRsponseDb = undefined;
   if (dataRsponseDb !== undefined) {
     return dataRsponseDb;
   }
