@@ -32,6 +32,7 @@ import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
+import DataProvider from './contexts/DataProvider';
 
 const httpLink = new HttpLink({
   uri: CYBER.CYBER_INDEX_HTTPS,
@@ -91,18 +92,20 @@ root.render(
       <NetworksProvider>
         <SdkQueryClientProvider>
           <SigningClientProvider>
-            <ApolloProvider client={client}>
-              <AppContextProvider>
-                <QueryClientProvider client={queryClient}>
-                  <IbcDenomProvider>
-                    <ErrorBoundary fallback={<ErrorScreen />}>
-                      <AppRouter />
-                      <ReactQueryDevtools />
-                    </ErrorBoundary>
-                  </IbcDenomProvider>
-                </QueryClientProvider>
-              </AppContextProvider>
-            </ApolloProvider>
+            <DataProvider>
+              <ApolloProvider client={client}>
+                <AppContextProvider>
+                  <QueryClientProvider client={queryClient}>
+                    <IbcDenomProvider>
+                      <ErrorBoundary fallback={<ErrorScreen />}>
+                        <AppRouter />
+                        <ReactQueryDevtools />
+                      </ErrorBoundary>
+                    </IbcDenomProvider>
+                  </QueryClientProvider>
+                </AppContextProvider>
+              </ApolloProvider>
+            </DataProvider>
           </SigningClientProvider>
         </SdkQueryClientProvider>
       </NetworksProvider>

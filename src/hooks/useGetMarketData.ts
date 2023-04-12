@@ -1,12 +1,11 @@
-import { useState, useEffect, useContext, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
-import { useQuery } from '@tanstack/react-query';
-import { AppContext } from '../../context';
-import { reduceBalances, convertAmount } from '../../utils/utils';
-
-import { CYBER } from '../../utils/config';
-import useSdk from 'src/hooks/useSdk';
-import useIbcDenom from 'src/hooks/useIbcDenom';
+import useSdk from './useSdk';
+import useGetTotalSupply from './useGetTotalSupply';
+import usePoolListInterval from './usePoolListInterval';
+import useIbcDenom from './useIbcDenom';
+import { CYBER } from '../utils/config';
+import { reduceBalances, convertAmount } from '../utils/utils';
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -82,26 +81,10 @@ function useGetMarketData() {
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
   const [marketData, setMarketData] = useState({});
-
-  const { data: dataTotalSupply } = useQuery({
-    queryKey: ['totalSupply'],
-    queryFn: async () => {
-      const responsetotalSupply = await queryClient.totalSupply();
-      return responsetotalSupply;
-    },
-    enabled: Boolean(queryClient),
+  const { totalSupplyAll: dataTotalSupply } = useGetTotalSupply({
     refetchInterval: 1000 * 60 * 3,
   });
-
-  const { data: dataPools } = useQuery({
-    queryKey: ['pools'],
-    queryFn: async () => {
-      const responsePools = await queryClient.pools();
-      return responsePools;
-    },
-    enabled: Boolean(queryClient),
-    refetchInterval: 1000 * 60 * 3,
-  });
+  const dataPools = usePoolListInterval({ refetchInterval: 1000 * 60 * 3 });
 
   useEffect(() => {
     const marketDataLS = localStorage.getItem('marketData');
@@ -113,9 +96,8 @@ function useGetMarketData() {
 
   useEffect(() => {
     try {
-      if (dataTotalSupply && dataTotalSupply.length > 0) {
-        const reduceDataTotalSupply = reduceBalances(dataTotalSupply);
-        setDataTotal({ ...defaultTokenList, ...reduceDataTotalSupply });
+      if (dataTotalSupply && Object.keys(dataTotalSupply).length > 0) {
+        setDataTotal({ ...defaultTokenList, ...dataTotalSupply });
       }
     } catch (error) {
       console.log('error', error);
@@ -126,9 +108,8 @@ function useGetMarketData() {
   useEffect(() => {
     const getPpools = async () => {
       try {
-        const { pools } = dataPools || {};
-        if (dataPools && pools && Object.keys(pools).length > 0) {
-          const reduceObj = pools.reduce(
+        if (dataPools && Object.keys(dataPools).length > 0) {
+          const reduceObj = dataPools.reduce(
             (obj, item) => ({
               ...obj,
               [item.poolCoinDenom]: {
@@ -147,8 +128,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataPools, traseDenom]);
+  }, [dataPools, queryClient, traseDenom]);
 
   useEffect(() => {
     try {

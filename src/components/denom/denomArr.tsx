@@ -10,7 +10,7 @@ type DenomArrProps = {
   onlyImg?: boolean;
   tooltipStatusImg?: boolean;
   tooltipStatusText?: boolean;
-  type?: string;
+  type?: 'network';
   size?: number;
 };
 
@@ -31,6 +31,22 @@ function DenomArr({
     if (type === undefined) {
       const denomTrase = traseDenom(denomValue);
       denom = denomTrase;
+    }
+
+    if (type === 'network') {
+      return (
+        <Denom
+          onlyImg={onlyImg}
+          onlyText={onlyText}
+          denomValue={denomValue}
+          tooltipStatusImg={tooltipStatusImg}
+          tooltipStatusText={tooltipStatusText}
+          type={type}
+          infoDenom={{}}
+          gap={13}
+          size={size}
+        />
+      );
     }
 
     if (denom && denom.length === 1) {

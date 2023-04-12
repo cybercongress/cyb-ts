@@ -29,7 +29,7 @@ function useGetBalancesIbc(client, denom) {
 
   useEffect(() => {
     const getBalance = async () => {
-      if (client !== null && denom !== null) {
+      if (client && denom !== null) {
         const responseChainId = client.signer.chainId;
         if (responseChainId !== CYBER.CHAIN_ID) {
           let coinMinimalDenom = null;

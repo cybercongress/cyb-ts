@@ -6,9 +6,10 @@ import useBalanceToken from './useBalanceToken';
 import { convertAmount } from '../../../utils/utils';
 import { CYBER } from '../../../utils/config';
 import useIbcDenom from 'src/hooks/useIbcDenom';
+import useAppData from 'src/hooks/useAppData';
 
 function useGetBalanceBostrom(address) {
-  const { marketData } = useContext(AppContext);
+  const { marketData } = useAppData();
   const { traseDenom } = useIbcDenom();
   const { balance: balanceMainToken, loading: loadingMalin } =
     useGetBalanceMainToken(address);

@@ -3,8 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import useSdk from 'src/hooks/useSdk';
 import { Pool } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/liquidity';
 import { QueryLiquidityPoolsResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
-
-type Option<T> = T | undefined;
+import { Option } from 'src/types/common';
 
 type OptionPoolListInterval = {
   refetchInterval?: number | false;

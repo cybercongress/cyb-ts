@@ -5,9 +5,8 @@ import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient'
 import { Keplr } from '@keplr-wallet/types';
 import { CYBER } from './utils/config';
 import configKeplr from './utils/keplrUtils';
-import defaultNetworks from './utils/defaultNetworks';
 
-import { $TsFixMe, $TsFixMeFunc } from './types/tsfix';
+import { $TsFixMe } from './types/tsfix';
 
 const getKeplr = async (): Promise<Keplr | undefined> => {
   if (window.keplr) {
@@ -36,22 +35,12 @@ const getKeplr = async (): Promise<Keplr | undefined> => {
 type ValueContextType = {
   keplr: SigningCyberClient | null;
   jsCyber: CyberClient | null;
-  networks: $TsFixMe;
-  marketData: $TsFixMe;
-  dataTotalSupply: $TsFixMe;
-  updateNetworks: $TsFixMeFunc;
-  updatetMarketData: $TsFixMeFunc;
-  updateDataTotalSupply: $TsFixMeFunc;
   initSigner: () => void;
 };
 
 const valueContext = {
   keplr: null,
   jsCyber: null,
-  marketData: {},
-  dataTotalSupply: {},
-  updatetMarketData: () => {},
-  updateDataTotalSupply: () => {},
   initSigner: () => {},
 };
 
@@ -75,7 +64,6 @@ function AppContextProvider({ children }) {
   const [signer, setSigner] = useState<OfflineSigner | undefined>(undefined);
   const [client, setClient] = useState<CyberClient | undefined>(undefined);
   const [loadUrl, setLoadUrl] = useState(true);
-  // const dataMarket = useGetMarketData(value.jsCyber, value.traseDenom);
 
   // console.log('dataMarket', dataMarket);
 
@@ -144,20 +132,6 @@ function AppContextProvider({ children }) {
     }
   }, [client]);
 
-  const updatetMarketData = (newData: $TsFixMe) => {
-    setValue((item) => ({
-      ...item,
-      marketData: { ...newData },
-    }));
-  };
-
-  const updateDataTotalSupply = (newData: $TsFixMe) => {
-    setValue((item) => ({
-      ...item,
-      dataTotalSupply: { ...newData },
-    }));
-  };
-
   if (loadUrl) {
     return <div>...</div>;
   }
@@ -167,8 +141,7 @@ function AppContextProvider({ children }) {
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         ...value,
-        updatetMarketData,
-        updateDataTotalSupply,
+        initSigner,
       }}
     >
       {children}

@@ -1,23 +1,23 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 
 import useIpfs from 'src/hooks/useIpfs';
+import { AppDispatch, RootState } from 'src/redux/store';
+import useAppData from 'src/hooks/useAppData';
+import useGetMarketData from 'src/hooks/useGetMarketData';
 import AppMenu from './AppMenu';
 import { setTypeDevice } from '../../redux/actions/settings';
 import { setDefaultAccount, setAccounts } from '../../redux/actions/pocket';
-import { AppContext } from '../../context';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import useGetMarketData from '../nebula/useGetMarketData';
 import { GitHub, Telegram } from '../../components/actionBar';
 import AppSideBar from './AppSideBar';
 import useIsMobileTablet from '../../hooks/useIsMobileTablet';
 import { InfoCard } from '../portal/components';
 import Header from './Header/Header';
-import { AppDispatch, RootState } from 'src/redux/store';
 
 function App() {
-  const { updatetMarketData, updateDataTotalSupply } = useContext(AppContext);
+  const { updatetMarketData, updateDataTotalSupply } = useAppData();
   const { marketData, dataTotal } = useGetMarketData();
   const { isMobile } = useIsMobileTablet();
 

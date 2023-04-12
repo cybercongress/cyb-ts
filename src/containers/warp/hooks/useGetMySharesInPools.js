@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../../context';
+import { useEffect, useState } from 'react';
+import useAppData from 'src/hooks/useAppData';
 
 const useGetMySharesInPools = (accountBalances) => {
   const [myCap, setMyCap] = useState(0);
-  const { marketData } = useContext(AppContext);
+  const { marketData } = useAppData();
 
   useEffect(() => {
     let myCaptemp = new BigNumber(0);

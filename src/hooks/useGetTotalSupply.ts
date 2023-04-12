@@ -8,8 +8,13 @@ import {
 } from 'src/utils/utils';
 import { Option } from 'src/types/common';
 import { ObjKeyValue } from 'src/types/data';
+import { CyberClient } from '@cybercongress/cyber-js';
 import useSdk from './useSdk';
 import useIbcDenom from './useIbcDenom';
+
+type OptionInterval = {
+  refetchInterval?: number | false;
+};
 
 const defaultTokenList = {
   [CYBER.DENOM_CYBER]: 0,
@@ -19,15 +24,17 @@ const defaultTokenList = {
   tocyb: 0,
 };
 
-const totalSupplyFetcher = (client) => {
-  if (client === null) {
-    return null;
+const totalSupplyFetcher = (client: Option<CyberClient>) => {
+  if (!client) {
+    return undefined;
   }
 
   return client.totalSupply();
 };
 
-function useGetTotalSupply() {
+function useGetTotalSupply(
+  option: OptionInterval = { refetchInterval: false }
+) {
   const { queryClient } = useSdk();
   const { ibcDenoms: ibcDataDenom } = useIbcDenom();
   const [totalSupplyAll, setTotalSupplyAll] =
@@ -35,10 +42,11 @@ function useGetTotalSupply() {
   const [totalSupplyProofList, setTotalSupplyProofList] =
     useState<Option<ObjKeyValue>>(undefined);
   const { data: dataGetTotalSupply } = useQuery(
-    ['getTotalSupply'],
+    ['totalSupply'],
     () => totalSupplyFetcher(queryClient),
     {
       enabled: Boolean(queryClient),
+      refetchInterval: option.refetchInterval,
     }
   );
 
