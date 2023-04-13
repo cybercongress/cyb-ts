@@ -4,6 +4,8 @@ import Unixfs from 'ipfs-unixfs';
 import * as config from '../config';
 
 import { getIPFSContent } from '../ipfs/utils-ipfs';
+import { readStreamDummy } from '../ipfs/stream-utils';
+import { parseRawIpfsData } from '../ipfs/content-utils';
 
 const { CYBER_NODE_URL_LCD, CYBER_GATEWAY } = config.CYBER;
 
@@ -780,10 +782,14 @@ export const authAccounts = async (address) => {
 
 export const getAvatarIpfs = async (cid, ipfs) => {
   const response = await getIPFSContent(ipfs, cid);
-  if (response === 'availableDownload') {
-    return 'availableDownload';
+
+  if (response.stream) {
+    const rawData = await readStreamDummy(cid, response.stream);
+    const details = parseRawIpfsData(rawData, response.meta.mime, cid);
+    return details.content;
   }
-  return response?.details?.content;
+
+  return undefined;
 };
 
 // Access-Control-Allow-Origin

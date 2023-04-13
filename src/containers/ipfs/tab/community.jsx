@@ -6,7 +6,7 @@ function CommunityTab({ data }) {
   if (Object.keys(data).length > 0) {
     const rowItem = Object.keys(data)
       .sort((a, b) => data[b].amount - data[a].amount)
-      .map((key) => <AvatarIpfs key={key} showAddressaddressCyber={key} />);
+      .map((key) => <AvatarIpfs key={key} showAddress addressCyber={key} />);
 
     return (
       <Pane marginX="auto" width="60%" marginY={25}>

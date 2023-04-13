@@ -1,9 +1,5 @@
-import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import axios, { ResponseType } from 'axios';
-import { fileTypeFromBuffer } from 'file-type';
+import axios from 'axios';
 import { Cluster } from '@nftstorage/ipfs-cluster';
-import { toString as uint8ArrayToAsciiString } from 'uint8arrays/to-string';
-import isSvg from 'is-svg';
 
 import { $TsFixMe } from 'src/types/tsfix';
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
@@ -19,14 +15,15 @@ import {
   IPFSContentMeta,
   IPFSMaybe,
   CallBackFuncStatus,
-  IPFSData,
-  IPFSContentWithType,
 } from './ipfs.d';
 
 import db from '../../db';
 
-import * as config from '../config';
-import { CYBER, PATTERN_HTTP, PATTERN_IPFS_HASH } from '../../utils/config';
+import {
+  asyncGeneratorToReadableStream,
+  arrayToReadableStream,
+  readableStreamToAsyncGenerator,
+} from './stream-utils';
 
 // import RestIpfsNode from './restIpfsNode';
 
@@ -52,112 +49,45 @@ const getIpfsUserGatewanAndNodeType = (): getIpfsUserGatewanAndNodeType => {
   return { ipfsNodeType: undefined, userGateway: undefined };
 };
 
-type Uint8ArrayWithMime = {
-  mime: string;
-  rawData: Uint8Array;
-};
+// const toUint8ArrayWithMime = async (
+//   source: AsyncIterable<Uint8Array>
+// ): Promise<Uint8ArrayWithMime> => {
+//   const iterator = source[Symbol.asyncIterator]();
+//   const firstChunk = await iterator.next();
+//   const chunks: Array<Uint8Array> = [firstChunk.value];
+//   const mime = await getUint8ArrayMime(firstChunk.value);
 
-const getUint8ArrayMime = async (raw: Uint8Array): Promise<string> =>
-  (await fileTypeFromBuffer(raw))?.mime || 'text/plain';
+//   // TODO: should be wrapped as ReadableStream
+//   // eslint-disable-next-line no-restricted-syntax
+//   for await (const chunk of source) {
+//     chunks.push(chunk);
+//   }
 
-const toUint8ArrayWithMime = async (
-  source: AsyncIterable<Uint8Array>
-): Promise<Uint8ArrayWithMime> => {
-  const iterator = source[Symbol.asyncIterator]();
-  const firstChunk = await iterator.next();
-  const chunks: Array<Uint8Array> = [firstChunk.value];
-  const mime = await getUint8ArrayMime(firstChunk.value);
-
-  // TODO: should be wrapped as ReadableStream
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const chunk of source) {
-    chunks.push(chunk);
-  }
-
-  return { mime, rawData: uint8ArrayConcat(chunks) };
-};
-
-// eslint-disable-next-line import/no-unused-modules
-export const parseRawIpfsData = (
-  data: Uint8ArrayWithMime,
-  cid: IPFSPath
-): IPFSContentWithType => {
-  const { mime, rawData } = data;
-  const response: IPFSContentWithType = {
-    text: '',
-    type: undefined,
-    content: '',
-    link: `/ipfs/${cid}`,
-    gateway: false,
-  };
-
-  if (data.mime === 'text/plain') {
-    if (isSvg(rawData as Buffer)) {
-      response.type = 'image';
-      response.content = `data:image/svg+xml;base64,${uint8ArrayToAsciiString(
-        rawData,
-        'base64'
-      )}`;
-    } else {
-      const dataBase64 = uint8ArrayToAsciiString(rawData);
-      // TODO: search can bel longer for 42???!
-      // also cover ipns links
-      response.link =
-        dataBase64.length > 42 ? `/ipfs/${cid}` : `/search/${dataBase64}`;
-
-      if (dataBase64.match(PATTERN_IPFS_HASH)) {
-        response.gateway = true;
-        response.type = 'link';
-        response.content = `${CYBER.CYBER_GATEWAY}ipfs/${dataBase64}`;
-      } else if (dataBase64.match(PATTERN_HTTP)) {
-        response.type = 'link';
-        response.gateway = false;
-        response.content = dataBase64;
-        response.link = `/ipfs/${cid}`;
-      } else {
-        response.type = 'text';
-        response.text =
-          dataBase64.length > 300
-            ? `${dataBase64.slice(0, 300)}...`
-            : dataBase64;
-      }
-    }
-  } else if (mime.indexOf('image') !== -1) {
-    const imgBase64 = uint8ArrayToAsciiString(rawData, 'base64');
-    const file = `data:${mime};base64,${imgBase64}`;
-    response.type = 'image';
-    response.content = file;
-    response.gateway = false;
-  } else if (mime.indexOf('application/pdf') !== -1) {
-    const file = `data:${mime};base64,${uint8ArrayToAsciiString(rawData)}`;
-    response.type = 'application/pdf';
-    response.content = file;
-    response.gateway = true; // ???
-  } else {
-    // TODO: support more file types
-    response.text = cid.toString();
-    response.gateway = true; // ???
-  }
-
-  return response;
-};
+//   return { mime, rawData: uint8ArrayConcat(chunks) };
+// };
 
 // Get data by CID from local storage
 const getIPFSContentFromDb = async (
   cid: IPFSPath
 ): Promise<IPFSContentMaybe> => {
+  // TODO: use cursor
   const dataIndexdDb = await db.table('cid').get({ cid });
-  if (dataIndexdDb !== undefined && dataIndexdDb.content) {
-    const data = await toUint8ArrayWithMime(dataIndexdDb.content);
-    console.log('getIPFSContentFromDb data', data);
+
+  // backward compatibility
+  const data = dataIndexdDb.data || dataIndexdDb.content;
+
+  if (dataIndexdDb !== undefined && data) {
+    // TODO: use cursor
+    const { mime, stream } = await arrayToReadableStream(data);
     const meta = dataIndexdDb.meta || {
       type: 'file',
-      size: 0,
-      blockSizes: [],
-      data: null,
+      size: -1,
+      mime,
     };
+    // backward compatibility
+    meta.mime = mime;
 
-    return { details: parseRawIpfsData(data, cid), cid, meta };
+    return { stream, cid, meta };
   }
 
   return undefined;
@@ -189,25 +119,28 @@ const fetchIPFSContentFromNode = async (
     switch (stat.type) {
       case 'directory': {
         // TODO: return directory structure
-        return 'availableDownload';
+        return { cid, availableDownload: true };
       }
       default: {
         // return await fetchIPFSFile(ipfs, path);
-        const meta: IPFSContentMeta = {
-          type: stat.type,
-          size: stat.size || 0,
-          blockSizes: [],
-          data: null,
-        };
 
         if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
-          const dataWithMime = await toUint8ArrayWithMime(node.cat(path));
-          return { details: parseRawIpfsData(dataWithMime, cid), cid, meta };
+          // const dataWithMime = await toUint8ArrayWithMime(node.cat(path));
+          // return { details: parseRawIpfsData(dataWithMime, cid), cid, meta };
+          const { mime, stream } = await asyncGeneratorToReadableStream(
+            node.cat(path)
+          );
+          const meta: IPFSContentMeta = {
+            type: stat.type,
+            size: stat.size || -1,
+            mime,
+          };
+          return { stream, cid, meta };
         }
       }
     }
 
-    return 'availableDownload';
+    return { cid, availableDownload: true };
   } catch (error) {
     console.log('error fetch stat', error);
     return undefined;
@@ -219,58 +152,60 @@ const fetchIPFSContentFromGateway = async (
   userGateway?: string | undefined,
   controller?: AbortController
 ): Promise<IPFSContentMaybe> => {
-  const response = await getIpfsDataFromGatway(
-    cid,
-    'arraybuffer',
-    userGateway,
-    controller
-  );
-  if (response !== null) {
-    const dataUint8Array = new Uint8Array(response as ArrayBufferLike);
+  // const response = await getIpfsDataFromGatway(
+  //   cid,
+  //   'arraybuffer',
+  //   userGateway,
+  //   controller
+  // );
+
+  const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
+    signal: controller?.signal,
+    responseType: 'stream',
+  });
+
+  if (response) {
+    const contentLength = parseInt(
+      response.headers['content-length'] || '-1',
+      10
+    );
+    // const dataUint8Array = new Uint8Array(response as ArrayBufferLike);
+
+    const isReadableStream = typeof response.data.read === 'function';
+
+    // In case if axios return cached value convert it to buffer->readablestream
+    const { mime, stream } = await (isReadableStream
+      ? asyncGeneratorToReadableStream(
+          readableStreamToAsyncGenerator(response.data)
+        )
+      : arrayToReadableStream(Buffer.from(response.data)));
+
     const meta: IPFSContentMeta = {
-      type: 'file',
-      size: dataUint8Array.length,
-      blockSizes: [],
-      data: '',
+      type: 'file', // TODO: can be directory?
+      size: contentLength,
+      mime,
     };
 
-    if (dataUint8Array.length < FILE_SIZE_DOWNLOAD) {
-      const mime = await getUint8ArrayMime(dataUint8Array);
+    return {
+      stream,
+      cid,
+      meta,
+    };
 
-      return {
-        details: parseRawIpfsData({ mime, rawData: dataUint8Array }, cid),
-        cid,
-        meta,
-      };
-    }
+    // if (dataUint8Array.length < FILE_SIZE_DOWNLOAD) {
+    //   const mime = await getUint8ArrayMime(dataUint8Array);
 
-    return 'availableDownload';
+    //   return {
+    //     details: parseRawIpfsData({ mime, rawData: dataUint8Array }, cid),
+    //     cid,
+    //     meta,
+    //   };
   }
+
+  // return 'availableDownload';
+  // }
 
   return undefined;
-};
-
-const pinContentToDbAndIpfs = async (
-  node: IPFSMaybe,
-  content: IPFSContentMaybe,
-  cid: string
-): Promise<void> => {
-  if (node && node !== null) {
-    node.pin.add(cid); // pin to local ipfs node
-  }
-
-  if (content && content !== 'availableDownload' && content.details) {
-    const { details: data } = content;
-
-    const blob = new Blob([data.content], { type: data.type });
-
-    await pinToIpfsCluster(cid, blob); // pin to cluster
-
-    const dataIndexdDb = await db.table('cid').get({ cid });
-    if (dataIndexdDb === undefined) {
-      db.table('cid').add(content); // pin to IndexedDB
-    }
-  }
 };
 
 const getIPFSContent = async (
@@ -291,10 +226,10 @@ const getIPFSContent = async (
     const ipfsContent = await fetchIPFSContentFromNode(node, cid, controller);
 
     // TODO: disabled TMP
-    if (ipfsContent !== undefined) {
-      pinContentToDbAndIpfs(node, ipfsContent, cid);
-      return ipfsContent;
-    }
+    // if (ipfsContent !== undefined) {
+    //   pinContentToDbAndIpfs(node, ipfsContent, cid);
+    //   return ipfsContent;
+    // }
     return ipfsContent;
   }
 
@@ -307,39 +242,65 @@ const getIPFSContent = async (
     controller
   );
 
-  if (respnseGateway !== undefined) {
-    pinContentToDbAndIpfs(null, respnseGateway, cid);
+  return respnseGateway;
 
-    return respnseGateway;
+  // TODO: tmp disabled
+  // if (respnseGateway !== undefined) {
+  //   pinContentToDbAndIpfs(null, respnseGateway, cid);
+
+  //   return respnseGateway;
+  // }
+
+  // return undefined;
+};
+// TODO: remove
+// const getIpfsDataFromGatway = async (
+//   cid: string,
+//   type: ResponseType = 'json',
+//   userGateway = config.CYBER.CYBER_GATEWAY,
+//   controller?: AbortController
+// ): Promise<IPFSData | undefined> => {
+//   try {
+//     const abortControllerLegacy = controller || new AbortController();
+//     setTimeout(() => {
+//       abortControllerLegacy.abort();
+//     }, 1000 * 60 * 1); // 1 min
+
+//     // Read object from IPFS gateway
+//     // Object size can be infinite?
+
+//     const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
+//       signal: abortControllerLegacy.signal,
+//       responseType: 'stream',
+//     });
+
+//     return response.data;
+//   } catch (error) {
+//     console.log('error getIpfsDataFromGatway', error);
+//     return undefined;
+//   }
+// };
+
+const pinContentToDbAndIpfs = async (
+  node: IPFSMaybe,
+  content: IPFSContentMaybe,
+  cid: string
+): Promise<void> => {
+  if (node && node !== null) {
+    node.pin.add(cid); // pin to local ipfs node
   }
 
-  return undefined;
-};
+  if (content && !content.availableDownload && content.stream) {
+    const { stream: data } = content;
 
-const getIpfsDataFromGatway = async (
-  cid: string,
-  type: ResponseType = 'json',
-  userGateway = config.CYBER.CYBER_GATEWAY,
-  controller?: AbortController
-): Promise<IPFSData | undefined> => {
-  try {
-    const abortControllerLegacy = controller || new AbortController();
-    setTimeout(() => {
-      abortControllerLegacy.abort();
-    }, 1000 * 60 * 1); // 1 min
+    const blob = new Blob([data.content], { type: data.type });
 
-    // Read object from IPFS gateway
-    // Object size can be infinite?
+    await pinToIpfsCluster(cid, blob); // pin to cluster
 
-    const response = await axios.get(`${userGateway}/ipfs/${cid}`, {
-      signal: abortControllerLegacy.signal,
-      responseType: type,
-    });
-
-    return response.data;
-  } catch (error) {
-    console.log('error getIpfsDataFromGatway', error);
-    return undefined;
+    const dataIndexdDb = await db.table('cid').get({ cid });
+    if (dataIndexdDb === undefined) {
+      db.table('cid').add(content); // pin to IndexedDB
+    }
   }
 };
 
@@ -355,7 +316,6 @@ const addFileToIpfsCluster = async (
   // }
 
   if (file instanceof Blob) {
-    console.log(`Blob`);
     dataFile = file;
   } else if (typeof file === 'string') {
     dataFile = new File([file], 'file.txt');

@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
@@ -108,7 +108,7 @@ module.exports = {
           loader: 'esbuild-loader',
           options: {
             loader: 'tsx',
-            target: 'es2015', // Syntax to compile to (see options below for possible values)
+            target: 'es2018', // Syntax to compile to (see options below for possible values)
           },
         },
       },

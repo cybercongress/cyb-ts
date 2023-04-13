@@ -31,17 +31,14 @@ export async function withTimeout<T>(
  * @returns
  */
 export function promiseToObservable<T>(promiseFactory: () => Promise<T>) {
-  console.log('-----promiseToObservable');
   return new Observable<T>((observer) => {
     promiseFactory()
       .then((response) => {
-        console.log('-----promiseToObservable responsible');
-
         observer.next(response);
         observer.complete();
       })
       .catch((error) => {
-        console.log('-----promiseToObservable err');
+        console.log('-----promiseToObservable err', error);
 
         observer.error(error);
       });

@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
+
 import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
 import { IPFSContentMaybe } from '../utils/ipfs/ipfs';
 
 import QueueManager from '../services/QueueManager/QueueManager';
-import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
 
 import useIpfs from './useIpfs';
 

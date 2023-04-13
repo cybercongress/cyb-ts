@@ -21,16 +21,16 @@ function AvataImgIpfs({ img = '', cidAvatar, addressCyber, ...props }) {
   );
 
   useEffect(() => {
-    if (data) {
-      if (data === 'availableDownload') {
+    if (!data) {
+      if (cidAvatar) {
         const { userGateway } = getIpfsUserGatewanAndNodeType();
         const urlGateway = userGateway || CYBER.CYBER_GATEWAY;
         setAvatar(`${urlGateway}/ipfs/${cidAvatar}`);
       } else {
-        setAvatar(data);
+        setAvatar(null);
       }
     } else {
-      setAvatar(null);
+      setAvatar(data);
     }
   }, [data, cidAvatar]);
 

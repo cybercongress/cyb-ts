@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 import { IPFS, IPFSPath } from 'kubo-rpc-client/types';
 
 export type CallBackFuncStatus = (a: string) => void;
@@ -12,10 +13,11 @@ export type getIpfsUserGatewanAndNodeType = {
 };
 
 export type IPFSContentMeta = {
-  type: 'file' | 'dir';
+  type: 'file' | 'directory';
   size: number;
-  blockSizes: never[];
-  data: string | null;
+  blockSizes?: never[]; // ???
+  data?: string; // ???
+  mime?: string;
 };
 
 type IPFSData =
@@ -27,22 +29,26 @@ type IPFSData =
   | File
   | Blob[];
 
-type IPFSContentDetails =
+export type Uint8ArrayWithMime = {
+  mime: string;
+  rawData: Uint8Array;
+};
+
+export type IPFSContentDetails =
   | {
-      text: string | undefined;
-      type: 'image' | 'application/pdf' | 'link' | 'text' | undefined;
-      content: string;
-      link: string;
+      text?: string;
+      type?: 'image' | 'pdf' | 'link' | 'text';
+      content?: string;
+      link?: string;
       gateway: boolean;
     }
   | undefined;
 
 export type IPFSContent = {
-  details: IPFSContentDetails;
+  availableDownload?: boolean;
+  stream?: ReadableStream<Uint8Array>; //IPFSContentDetails;
   cid: IPFSPath;
-  meta: IPFSContentMeta;
+  meta?: IPFSContentMeta;
 };
 
-type IPFSContentStatus = 'availableDownload' | undefined;
-
-export type IPFSContentMaybe = IPFSContent | IPFSContentStatus;
+export type IPFSContentMaybe = IPFSContent | undefined;

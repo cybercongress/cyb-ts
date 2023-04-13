@@ -67,6 +67,7 @@ function SearchItem({ status, grade, children, textPreview }) {
               <div className={styles.containerTextPreview}>{textPreview}</div>
             )}
           </div>
+          {/* TODO: Status seems that processed incorrect */}
           {status !== 'downloaded' && <Status status={status} />}
         </div>
         <div className={styles.containerChildren}>{children}</div>

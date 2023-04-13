@@ -1,3 +1,4 @@
+// TODO: refactor needed
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -6,7 +7,9 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { $TsFixMe } from 'src/types/tsfix';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
-import { IPFSContentWithType } from 'src/utils/ipfs/ipfs';
+import { IPFSContentDetails } from 'src/utils/ipfs/ipfs';
+import { parseRawIpfsData } from 'src/utils/ipfs/content-utils';
+import { readStreamDummy } from 'src/utils/ipfs/stream-utils';
 
 import SearchItem from '../SearchItem/searchItem';
 
@@ -27,29 +30,40 @@ function ContentItem({
   parent: parentId,
   className,
 }: ContentItemProps): JSX.Element {
-  const [ipfsData, setIpfData] = useState<IPFSContentWithType>(undefined);
+  const [ipfsDataDetails, setIpfsDatDetails] =
+    useState<IPFSContentDetails>(undefined);
   const { status, content } = useQueueIpfsContent(cid, item.rank, parentId);
 
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
-    if (status === 'completed' && content && content !== 'availableDownload') {
-      setIpfData(content.details);
+    if (status === 'completed' && content && content.stream) {
+      const fetchData = async (): Promise<void> => {
+        const rawData = await readStreamDummy(cid, content.stream);
+        const details = parseRawIpfsData(rawData, content.meta.mime, cid);
+
+        setIpfsDatDetails(details);
+      };
+
+      fetchData();
     }
-  }, [content, status]);
+  }, [content, status, cid]);
 
   return (
     <Link className={className} to={`/ipfs/${cid}`}>
       <SearchItem
         key={cid}
         textPreview={
-          <div className="container-text-SearchItem">
-            <ReactMarkdown
-              rehypePlugins={[rehypeSanitize]}
-              remarkPlugins={[remarkGfm]}
-            >
-              {ipfsData?.text || cid}
-            </ReactMarkdown>
-          </div>
+          // NEED TO move out from here this code or encapsulate whole logic into SearchItem
+          ipfsDataDetails?.type === 'text' && (
+            <div className="container-text-SearchItem">
+              <ReactMarkdown
+                rehypePlugins={[rehypeSanitize]}
+                remarkPlugins={[remarkGfm]}
+              >
+                {ipfsDataDetails?.text || cid}
+              </ReactMarkdown>
+            </div>
+          )
         }
         status={status}
         grade={
@@ -58,19 +72,19 @@ function ContentItem({
             : grade || { from: 'n/a', to: 'n/a', value: 'n/a' }
         }
       >
-        {ipfsData?.type === 'image' && (
+        {ipfsDataDetails?.type === 'image' && (
           <img
             style={{ width: '100%', paddingTop: 10 }}
             alt="img"
-            src={ipfsData?.content}
+            src={ipfsDataDetails?.content}
           />
         )}
-        {ipfsData?.type === 'application/pdf' && (
+        {ipfsDataDetails?.type === 'pdf' && (
           <Iframe
             width="100%"
             height="400px"
             className="iframe-SearchItem"
-            url={ipfsData?.content}
+            url={ipfsDataDetails?.content}
           />
         )}
       </SearchItem>

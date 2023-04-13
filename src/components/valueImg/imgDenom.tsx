@@ -52,7 +52,7 @@ function ImgDenom({
   tooltipStatus,
   infoDenom,
 }: ImgDenomProps) {
-  const [imgDenom, setImgDenom] = useState<string | null>(null);
+  const [imgDenom, setImgDenom] = useState<string | undefined>(undefined);
   const [tooltipText, setTooltipText] = useState<string>(coinDenom);
   const { node } = useIpfs();
 
@@ -60,7 +60,7 @@ function ImgDenom({
     async (cidAvatar) => {
       if (cidAvatar) {
         const responseImg = await getAvatarIpfs(cidAvatar, node);
-        if (responseImg && responseImg !== null) {
+        if (responseImg) {
           setImgDenom(responseImg);
         }
       }
@@ -108,7 +108,7 @@ function ImgDenom({
               height: size || 20,
               zIndex: zIndexImg || 0,
             }}
-            src={imgDenom !== null ? imgDenom : defaultImg}
+            src={imgDenom || defaultImg}
             alt="text"
           />
         </Tooltip>
@@ -125,7 +125,7 @@ function ImgDenom({
           height: size || 20,
           zIndex: zIndexImg || 0,
         }}
-        src={imgDenom !== null ? imgDenom : defaultImg}
+        src={imgDenom || defaultImg}
         alt="text"
       />
     </div>

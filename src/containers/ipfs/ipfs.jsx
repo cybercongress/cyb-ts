@@ -109,10 +109,8 @@ function Ipfs() {
   const { jsCyber } = useContext(AppContext);
   const { cid, tab = 'discussion' } = useParams();
   const { node: nodeIpfs } = useIpfs();
-  const { contentIpfs, status, loading, statusFetching } = useGetIpfsContent(
-    cid,
-    nodeIpfs
-  );
+  const { contentDetails, meta, status, loading, statusFetching } =
+    useGetIpfsContent(cid, nodeIpfs);
   const { isMobile: mobile } = useDevice();
 
   // const [content, setContent] = useState('');
@@ -272,7 +270,7 @@ function Ipfs() {
           />
         ) : (
           <ContentTab
-            contentIpfs={contentIpfs}
+            contentDetails={contentDetails}
             // typeContent={typeContent}
             // status={loadStatus}
             // gateway={gateway}
@@ -394,7 +392,7 @@ function Ipfs() {
               <Pane width="60%" marginX="auto" fontSize="18px">
                 Meta
               </Pane>
-              <MetaTab cid={cid} data={contentIpfs?.meta} />
+              <MetaTab cid={cid} data={meta} />
             </>
           )}
         </Pane>
