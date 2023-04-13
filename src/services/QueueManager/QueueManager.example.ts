@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { QueueManager } from './QueueManager';
+import QueueManager from './QueueManager';
 import searchResponse from './stub/searchResponse.json';
 
-const queue = new QueueManager(3, 500);
+const queue = new QueueManager(3, 1500);
 
 const resultAll: Record<string, any> = {};
 
@@ -40,11 +40,11 @@ const doEnqueue = (cid: string): void => {
   queue.enqueue(
     cid,
     async () => {
-      return fetch(`https://ipfs.io/ipfs/${cid}`, { signal });
-      // .catch((err) => {
-      //   console.log('----errcacth', err);
-      //   return Promise.reject(new DOMException('canceled', 'AbortError'));
-      // });
+      console.log('----start', cid);
+      return fetch(`https://ipfs.io/ipfs/${cid}`, { signal }).catch((err) => {
+        console.log('----errcacth', err);
+        return Promise.reject(new DOMException('canceled', 'AbortError'));
+      });
     },
     (id, status, result) => {
       resultAll[id] = { status };

@@ -1,4 +1,4 @@
-import { QueueManager } from './QueueManager';
+import QueueManager from './QueueManager';
 
 function* statusesExpected(resultStatus: string): Generator<string> {
   yield 'executing';
@@ -24,7 +24,7 @@ function wrapPromiseWithSignal(
 }
 
 const getPromise = (
-  result: string = 'result',
+  result = 'result',
   timeout = 500,
   signal?: AbortSignal
 ): Promise<string> =>

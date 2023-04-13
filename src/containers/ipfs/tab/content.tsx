@@ -71,7 +71,7 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
       return <div>...</div>;
     }
 
-    if (contentIpfs?.data?.gateway) {
+    if (contentIpfs?.details?.gateway) {
       return (
         <>
           {/* <Pane
@@ -109,29 +109,29 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
         </>
       );
     }
-    if (contentIpfs.data?.type === 'image') {
+    if (contentIpfs.details?.type === 'image') {
       return (
         <img
           alt="content"
           id="imgIpfs"
           style={{ objectFit: 'contain', width: '100%' }}
-          src={contentIpfs.data?.content}
+          src={contentIpfs.details?.content}
         />
       );
     }
-    if (contentIpfs.data?.type === 'text') {
+    if (contentIpfs.details?.type === 'text') {
       return (
         <div
           style={{
             textAlign: 'center',
           }}
         >
-          {contentIpfs.data?.text || contentIpfs.cid.toString()}
+          {contentIpfs.details?.text || contentIpfs.cid.toString()}
         </div>
       );
     }
 
-    if (contentIpfs.data?.type === 'link') {
+    if (contentIpfs.details?.type === 'link') {
       return (
         <div
           style={{
@@ -141,8 +141,8 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
             minHeight: '100px',
           }}
         >
-          <LinkWindow to={contentIpfs.data?.link}>
-            {contentIpfs.data?.content}
+          <LinkWindow to={contentIpfs.details?.link}>
+            {contentIpfs.details?.content}
           </LinkWindow>
 
           <Iframe
@@ -151,7 +151,7 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
             // loading={<Dots />}
             id="iframeCid"
             className="iframe-SearchItem"
-            src={contentIpfs.data?.content}
+            src={contentIpfs.details?.content}
             style={{
               backgroundColor: '#fff',
             }}
@@ -193,7 +193,7 @@ function ContentTab({ contentIpfs, cid }: ContentTabProps): JSX.Element {
           // plugins={[toc]}
           // escapeHtml={false}
         >
-          {contentIpfs.data?.content}
+          {contentIpfs.details?.content}
         </ReactMarkdown>
       </div>
     );

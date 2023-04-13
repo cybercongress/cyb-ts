@@ -783,7 +783,7 @@ export const getAvatarIpfs = async (cid, ipfs) => {
   if (response === 'availableDownload') {
     return 'availableDownload';
   }
-  return response?.data?.content;
+  return response?.details?.content;
 };
 
 // Access-Control-Allow-Origin

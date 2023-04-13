@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Pane } from '@cybercongress/gravity';
 import useIpfs from 'src/hooks/useIpfs';
+import { useDevice } from 'src/contexts/device';
 import { NoItems, Dots, SearchSnippet } from '../../components';
 import useGetTweets from './useGetTweets';
 import ActionBarCont from '../market/actionBarContainer';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { useDevice } from 'src/contexts/device';
 
 const keywordHash = 'QmbdH2WBamyKLPE5zu4mJ9v49qvY8BFfoumoVPMR5V4Rvx';
 

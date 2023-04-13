@@ -47,7 +47,7 @@ const useGetIpfsContent = (cid: string, nodeIpfs: IPFS) => {
         setStatus('availableDownload');
         // }
         //   setText(cid);
-      } else if (contentIpfs.data) {
+      } else if (contentIpfs.details) {
         //   const { data, meta } = contentIpfs;
         //   setTypeContent(data.type);
         //   setContent(data.content);

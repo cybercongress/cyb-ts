@@ -157,7 +157,7 @@ const getIPFSContentFromDb = async (
       data: null,
     };
 
-    return { data: parseRawIpfsData(data, cid), cid, meta };
+    return { details: parseRawIpfsData(data, cid), cid, meta };
   }
 
   return undefined;
@@ -202,7 +202,7 @@ const fetchIPFSContentFromNode = async (
 
         if (!stat.size || stat.size < FILE_SIZE_DOWNLOAD) {
           const dataWithMime = await toUint8ArrayWithMime(node.cat(path));
-          return { data: parseRawIpfsData(dataWithMime, cid), cid, meta };
+          return { details: parseRawIpfsData(dataWithMime, cid), cid, meta };
         }
       }
     }
@@ -238,7 +238,7 @@ const fetchIPFSContentFromGateway = async (
       const mime = await getUint8ArrayMime(dataUint8Array);
 
       return {
-        data: parseRawIpfsData({ mime, rawData: dataUint8Array }, cid),
+        details: parseRawIpfsData({ mime, rawData: dataUint8Array }, cid),
         cid,
         meta,
       };
@@ -259,8 +259,8 @@ const pinContentToDbAndIpfs = async (
     node.pin.add(cid); // pin to local ipfs node
   }
 
-  if (content && content !== 'availableDownload' && content.data) {
-    const { data } = content;
+  if (content && content !== 'availableDownload' && content.details) {
+    const { details: data } = content;
 
     const blob = new Blob([data.content], { type: data.type });
 

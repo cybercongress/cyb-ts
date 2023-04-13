@@ -3,10 +3,8 @@ import { getIPFSContent } from 'src/utils/ipfs/utils-ipfs';
 
 import { IPFSContentMaybe } from '../utils/ipfs/ipfs';
 
-import {
-  QueueManager,
-  QueueItemStatus,
-} from '../services/QueueManager/QueueManager';
+import QueueManager from '../services/QueueManager/QueueManager';
+import { QueueItemStatus } from 'src/services/QueueManager/QueueManager.d';
 
 import useIpfs from './useIpfs';
 

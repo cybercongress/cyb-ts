@@ -33,7 +33,7 @@ function ContentItem({
   useEffect(() => {
     // TODO: cover case with content === 'availableDownload'
     if (status === 'completed' && content && content !== 'availableDownload') {
-      setIpfData(content.data);
+      setIpfData(content.details);
     }
   }, [content, status]);
 
